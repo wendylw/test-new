@@ -1,8 +1,13 @@
 import * as timeLib from './time-lib';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 /**
- * get the time is available order time
+ * check whether dateTime is available order time
  * @param {Dayjs} dateTime
  * @param {object} param1
+ * @returns {boolean}
  */
 export const isAvailableOrderTime = (
   dateTime,
@@ -16,15 +21,30 @@ export const isAvailableOrderTime = (
   );
 };
 
+/**
+ * check whether dateTime is in valid days
+ * @param {Dayjs} dateTime
+ * @param {number[]} validDays
+ * @returns {boolean}
+ */
 export const isInValidDays = (dateTime, validDays) => {
   if (!validDays) {
     return false;
   }
 
   const day = dateTime.day();
-  return validDays.includes(day);
+  // validDays from api start from 1
+  return validDays.includes(day + 1);
 };
 
+/**
+ * check whether dateTime is in valid time
+ * @param {Dayjs} dateTime
+ * @param {Object} param1
+ * @param {string} param1.validTimeFrom
+ * @param {string} param1.validTimeTo
+ * @returns {boolean}
+ */
 export const isInValidTime = (dateTime, { validTimeFrom, validTimeTo }) => {
   if (!timeLib.isValidTime(validTimeFrom) || !timeLib.isValidTime(validTimeTo)) {
     return false;
@@ -35,6 +55,14 @@ export const isInValidTime = (dateTime, { validTimeFrom, validTimeTo }) => {
   return timeLib.isBetween(time, { minTime: validTimeFrom, maxTime: validTimeTo }, '[)');
 };
 
+/**
+ * check whether dateTime is in break time
+ * @param {Dayjs} dateTime
+ * @param {Object} param1
+ * @param {string} param1.breakTimeFrom
+ * @param {string} param1.breakTimeTo
+ * @returns {boolean}
+ */
 export const isInBreakTime = (dateTime, { breakTimeFrom, breakTimeTo }) => {
   if (!timeLib.isValidTime(breakTimeFrom) || !timeLib.isValidTime(breakTimeTo)) {
     return false;
@@ -45,6 +73,14 @@ export const isInBreakTime = (dateTime, { breakTimeFrom, breakTimeTo }) => {
   return timeLib.isBetween(time, { minTime: breakTimeFrom, maxTime: breakTimeTo }, '[)');
 };
 
+/**
+ * check whether dateTime is in vacations
+ * @param {Dayjs} dateTime
+ * @param {Object} vacations
+ * @param {string} vacations[].vacationTimeFrom
+ * @param {string} vacations[].vacationTimeTo
+ * @returns {boolean}
+ */
 export const isInVacations = (dateTime, vacations) => {
   if (!vacations) {
     return false;
@@ -57,4 +93,12 @@ export const isInVacations = (dateTime, vacations) => {
   });
 
   return inVacation;
+};
+/**
+ * return merchant current time
+ * @param {number} businessUTCOffset  merchant time zone utc offset
+ * @returns {Dayjs}
+ */
+export const getBusinessCurrentTime = businessUTCOffset => {
+  return dayjs().utcOffset(businessUTCOffset);
 };

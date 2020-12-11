@@ -4,11 +4,12 @@ import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
+import { isAvailableOrderTime, getBusinessCurrentTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { getBusiness } from '../../../ordering/redux/modules/app';
+import { getBusiness, getBusinessUTCOffset } from '../../../ordering/redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
@@ -59,7 +60,7 @@ class App extends Component {
   }
 
   async gotoDelivery(storeId) {
-    const { homeActions } = this.props;
+    const { homeActions, businessUTCOffset } = this.props;
     // 请求 coreBusiness
     await homeActions.loadCoreBusiness();
     // if store is closed,go straight to ordering page and let it display store is closed
@@ -76,7 +77,9 @@ class App extends Component {
       business,
       allBusinessInfo,
     });
-    const isValidTimeToOrder = Utils.isValidTimeToOrder({
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+
+    const isValidTimeToOrder = isAvailableOrderTime(currentTime, {
       validDays,
       validTimeFrom,
       validTimeTo,
@@ -84,6 +87,7 @@ class App extends Component {
       breakTimeTo,
       vacations,
     });
+
     if (isValidTimeToOrder || enablePreOrder) {
       window.location.href = `${window.location.href}${window.location.search ? '&' : '?'}s=${storeId}&from=home`;
       // homeActions.setCurrentStore(storeId);
@@ -170,6 +174,7 @@ export default compose(
       error: getError(state),
       business: getBusiness(state),
       allBusinessInfo: getAllBusinesses(state),
+      businessUTCOffset: getBusinessUTCOffset(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

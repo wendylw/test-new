@@ -151,6 +151,8 @@ export class Home extends Component {
 
     this.checkRange();
     this.checkOrderTime();
+
+    // "checkDeliveryBar" function MUST call AFTER "checkOrderTime" function
     this.checkDeliveryBar();
 
     this.setState({ windowSize: windowSize() });
@@ -192,50 +194,34 @@ export class Home extends Component {
     });
   }
 
-  checkMultipleStoreIsValidTimeToOrder = storeList => {
-    let isMultipleValidTimeToOrder = false;
-    for (let i = 0; i < storeList.length; i++) {
-      let item = storeList[i];
-      const { qrOrderingSettings } = item;
-
-      if (Utils.isValidTimeToOrder(qrOrderingSettings)) {
-        return true;
-      }
-    }
-
-    return isMultipleValidTimeToOrder;
-  };
-
-  checkMultipleStoreIsPreOrderEnabled = storeList => {
-    let isMultipleEnablePreOrder = false;
-    for (let i = 0; i < storeList.length; i++) {
-      let item = storeList[i];
-      const { qrOrderingSettings } = item;
-      const { enablePreOrder } = qrOrderingSettings || {};
-
-      if (enablePreOrder) {
-        return true;
-      }
-    }
-
-    return isMultipleEnablePreOrder;
-  };
-
   getStatusFromMultipleStore = () => {
-    const { allStore } = this.props;
-    let enablePreOrderFroMulitpeStore = false,
-      isValidToOrderFromMulitpeStore = false;
-    const { qrOrderingSettings } = allStore[0] || {};
-    const { enablePreOrder } = qrOrderingSettings || {};
+    const allStore = this.props.allStore || [];
+    const businessUTCOffset = this.props.businessUTCOffset;
 
-    if (allStore && allStore.length) {
-      enablePreOrderFroMulitpeStore =
-        allStore.length === 1 ? enablePreOrder : this.checkMultipleStoreIsPreOrderEnabled(allStore);
-      isValidToOrderFromMulitpeStore =
-        allStore.length === 1
-          ? Utils.isValidTimeToOrder(qrOrderingSettings)
-          : this.checkMultipleStoreIsValidTimeToOrder(allStore);
-    }
+    const currentTime = dayjs().utcOffset(businessUTCOffset);
+
+    const enablePreOrderFroMulitpeStore = allStore.some(store => {
+      const { qrOrderingSettings } = store;
+
+      return qrOrderingSettings.enablePreOrder;
+    });
+
+    const isValidToOrderFromMulitpeStore = allStore.some(store => {
+      const { qrOrderingSettings } = store;
+      const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays } = qrOrderingSettings;
+
+      const availableOrderTime = isAvailableOrderTime(currentTime, {
+        validDays,
+        validTimeFrom,
+        validTimeTo,
+        vacations,
+        breakTimeFrom,
+        breakTimeTo,
+      });
+
+      return availableOrderTime;
+    });
+
     this.setState({
       enablePreOrderFroMulitpeStore,
       isValidToOrderFromMulitpeStore,
@@ -312,7 +298,7 @@ export class Home extends Component {
 
       const currentTime = dayjs().utcOffset(businessUTCOffset);
       const availableOrderTime = isAvailableOrderTime(currentTime, {
-        validDays: validDays.map(day => day - 1), // set start 0
+        validDays,
         validTimeFrom: orderValidTimeFrom,
         validTimeTo: orderValidTimeTo,
         vacations,
@@ -594,25 +580,33 @@ export class Home extends Component {
 
   isPreOrderEnabled = () => {
     const { enablePreOrder } = this.props.deliveryInfo;
-    const { search, enablePreOrderFroMulitpeStore } = this.state;
-    const { h } = search;
+    const { enablePreOrderFroMulitpeStore } = this.state;
+    const storeId = config.storeId;
 
-    return !h ? enablePreOrderFroMulitpeStore : !!enablePreOrder;
+    return !storeId ? enablePreOrderFroMulitpeStore : !!enablePreOrder;
   };
 
   isValidTimeToOrder = () => {
-    const { deliveryInfo } = this.props;
-    const { search, isValidToOrderFromMulitpeStore } = this.state;
-    const { h } = search;
+    const { deliveryInfo, businessUTCOffset } = this.props;
+    const { isValidToOrderFromMulitpeStore } = this.state;
+    const storeId = config.storeId;
     const { validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations } = deliveryInfo;
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
-    return !h
-      ? isValidToOrderFromMulitpeStore
-      : Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations });
+    const currentTime = dayjs().utcOffset(businessUTCOffset);
+    const availableOrderTime = isAvailableOrderTime(currentTime, {
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+    });
+
+    return !storeId ? isValidToOrderFromMulitpeStore : availableOrderTime;
   };
 
   renderHeaderChildren() {

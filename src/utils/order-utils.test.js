@@ -1,5 +1,7 @@
-import { isInBreakTime, isInVacations, isInValidDays, isInValidTime } from './order-utils';
+import { getBusinessCurrentTime, isInBreakTime, isInVacations, isInValidDays, isInValidTime } from './order-utils';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 describe('test isAvailableOrderTime function', () => {
   test.each`
@@ -19,15 +21,15 @@ describe('test isInValidDays function', () => {
   const saturdayDate = '2020-12-26T00:00:00+08:00';
 
   test.each`
-    date            | validDays       | expected
-    ${fridayDate}   | ${[0, 1, 2]}    | ${false}
-    ${fridayDate}   | ${[5]}          | ${true}
-    ${sundayDate}   | ${[2, 3, 4]}    | ${false}
-    ${sundayDate}   | ${[1, 0]}       | ${true}
-    ${saturdayDate} | ${[1, 2, 3, 4]} | ${false}
-    ${saturdayDate} | ${[6]}          | ${true}
-    ${saturdayDate} | ${[]}           | ${false}
-    ${saturdayDate} | ${null}         | ${false}
+    date            | validDays             | expected
+    ${fridayDate}   | ${[1, 2, 3]}          | ${false}
+    ${fridayDate}   | ${[6]}                | ${true}
+    ${sundayDate}   | ${[3, 4, 5]}          | ${false}
+    ${sundayDate}   | ${[1]}                | ${true}
+    ${saturdayDate} | ${[7]}                | ${true}
+    ${saturdayDate} | ${[1, 2, 3, 4, 5, 6]} | ${false}
+    ${saturdayDate} | ${[]}                 | ${false}
+    ${saturdayDate} | ${null}               | ${false}
   `('return $expected, $date whether in $validDays', ({ date, validDays, expected }) => {
     expect(isInValidDays(dayjs(date), validDays)).toBe(expected);
   });
@@ -86,5 +88,19 @@ describe('test isInVacations function', () => {
       : null;
 
     expect(isInVacations(dayjs(date), vacationsArray)).toBe(expected);
+  });
+});
+
+describe('test getBusinessCurrentTime function', () => {
+  const currentTime = dayjs();
+
+  test.each`
+    utcOffset | expected
+    ${480}    | ${currentTime.utcOffset(480)}
+    ${0}      | ${currentTime.utcOffset(0)}
+    ${420}    | ${currentTime.utcOffset(420)}
+    ${-480}   | ${currentTime.utcOffset(-480)}
+  `('return $expected when set current time utcOffset to $utcOffset', ({ utcOffset, expected }) => {
+    expect(getBusinessCurrentTime(utcOffset).isSame(expected, 'minute')).toBeTruthy();
   });
 });

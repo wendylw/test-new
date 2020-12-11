@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import ErrorToast from '../../../components/ErrorToast';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
@@ -6,7 +8,12 @@ import faviconImage from '../../../images/favicon.ico';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getPageError } from '../../../redux/modules/entities/error';
-import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getBusinessUTCOffset,
+  getError,
+} from '../../redux/modules/app';
 import {
   actions as storesActionsCreators,
   getDeliveryStatus,
@@ -25,11 +32,13 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import { isAvailableOrderTime } from '../../../utils/order-utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
-const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
+const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
+dayjs.extend(utc);
 class App extends Component {
   constructor(props) {
     super(props);
@@ -121,10 +130,29 @@ class App extends Component {
   };
 
   checkStoreIsClose = store => {
+    const { businessUTCOffset } = this.props;
     const { qrOrderingSettings } = store;
-    const { enablePreOrder } = qrOrderingSettings;
+    const {
+      enablePreOrder,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+    } = qrOrderingSettings;
+    const currentTime = dayjs().utcOffset(businessUTCOffset);
 
-    return !(enablePreOrder || Utils.isValidTimeToOrder(qrOrderingSettings));
+    const availableOrderTime = isAvailableOrderTime(currentTime, {
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+    });
+
+    return !(enablePreOrder || availableOrderTime);
   };
 
   getNearlyStore = async (stores, type, deliveryAddress) => {
@@ -278,6 +306,7 @@ export default connect(
     pageError: getPageError(state),
     storeHash: getStoreHashCode(state),
     deliveryRadius: getDeliveryRadius(state),
+    businessUTCOffset: getBusinessUTCOffset(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
