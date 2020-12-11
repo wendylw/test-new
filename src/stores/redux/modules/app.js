@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import _get from 'lodash/get';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
