@@ -24,7 +24,9 @@ Utils.isWebview = function isWebview() {
 };
 
 Utils.isIOSWebview = function isIOSWebview() {
-  return Boolean(window.webkit && window.webkit.messageHandlers.shareAction);
+  return Boolean(
+    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
+  );
 };
 
 Utils.isAndroidWebview = function isAndroidWebview() {
