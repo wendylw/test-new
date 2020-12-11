@@ -29,7 +29,7 @@ const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
   MULTIPLE_CHOICE: 'MultipleChoice',
 };
-const EXECLUDE_KEYS = ['variationType'];
+const EXCLUDED_KEYS = ['variationType'];
 
 SwiperCore.use([Autoplay, Pagination]);
 
@@ -222,7 +222,7 @@ class ProductDetail extends Component {
 
       if (allowMultiQty && variationsByIdMap[id]) {
         let selectTotal = 0;
-        let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXECLUDE_KEYS[0]);
+        let optionKeyList = Object.keys(variationsByIdMap[id]).filter(item => item !== EXCLUDED_KEYS[0]);
 
         optionKeyList.forEach(key => {
           selectTotal += optionQuantity[key];
@@ -326,11 +326,13 @@ class ProductDetail extends Component {
       cartQuantity: Constants.ADD_TO_CART_MIN_QUANTITY,
       resizedImage: false,
       currentProductDescriptionImageIndex: 0,
+      increasingProductOnCat: false,
     });
   }
 
   handleHideProductDetail(e) {
     if (e && e.target !== e.currentTarget) {
+      this.setState({ increasingProductOnCat: false });
       return;
     }
 
@@ -366,7 +368,7 @@ class ProductDetail extends Component {
 
     await homeActions.addOrUpdateShoppingCartItem(variables);
     await homeActions.loadShoppingCart();
-    this.setState({ increasingProductOnCat: false });
+
     this.handleHideProductDetail();
   };
 
@@ -496,9 +498,15 @@ class ProductDetail extends Component {
               const { variationsByIdMap, optionQuantity } = this.state;
               let variations = [];
 
+              if (!this.isSubmitable()) {
+                return;
+              }
+
+              this.setState({ increasingProductOnCat: true });
+
               Object.keys(variationsByIdMap).forEach(function(variationId) {
                 Object.keys(variationsByIdMap[variationId]).forEach(key => {
-                  if (!EXECLUDE_KEYS.includes(key)) {
+                  if (!EXCLUDED_KEYS.includes(key)) {
                     variations.push({
                       variationId,
                       optionId: key,
@@ -517,16 +525,13 @@ class ProductDetail extends Component {
                 }
               });
 
-              if (this.isSubmitable()) {
-                this.setState({ increasingProductOnCat: true });
-                this.handleAddOrUpdateShoppingCartItem({
-                  action: 'add',
-                  business: config.business,
-                  productId: this.currentProductId || productId,
-                  quantity: cartQuantity,
-                  variations,
-                });
-              }
+              this.handleAddOrUpdateShoppingCartItem({
+                action: 'add',
+                business: config.business,
+                productId: this.currentProductId || productId,
+                quantity: cartQuantity,
+                variations,
+              });
             }}
           >
             {increasingProductOnCat ? (
