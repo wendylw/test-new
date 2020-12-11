@@ -1,50 +1,49 @@
+import { captureException } from '@sentry/react';
+import qs from 'qs';
 import React, { PureComponent } from 'react';
-import { withTranslation, Trans } from 'react-i18next';
-import Header from '../../../components/Header';
-import PhoneLogin from './components/PhoneLogin';
-import Constants from '../../../utils/constants';
-import Utils from '../../../utils/utils';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import { IconPin, IconAccessTime } from '../../../components/Icons';
+import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
-import {
-  actions as thankYouActionCreators,
-  getOrder,
-  getStoreHashCode,
-  getCashbackInfo,
-  getBusinessInfo,
-  getReceiptNumber,
-  getLoadOrderStatus,
-} from '../../redux/modules/thankYou';
-import { GTM_TRACKING_EVENTS, gtmEventTracking, gtmSetUserProperties, gtmSetPageViewData } from '../../../utils/gtm';
-
-import beepSuccessImage from '../../../images/beep-success.png';
-import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
-import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
-import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
-import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
-import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
-import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif';
-import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
-import IconCelebration from '../../../images/icon-celebration.svg';
-import cashbackSuccessImage from '../../../images/succeed-animation.gif';
-import logisticsGrab from '../../../images/beep-logistics-grab.png';
+import Header from '../../../components/Header';
+import { IconAccessTime, IconPin } from '../../../components/Icons';
+import LiveChat from '../../../components/LiveChat';
+import config from '../../../config';
+import beepAppDownloadBanner from '../../../images/beep-app-download.png';
 import logisticsGoget from '../../../images/beep-logistics-goget.png';
+import logisticsGrab from '../../../images/beep-logistics-grab.png';
 import logisticsLalamove from '../../../images/beep-logistics-lalamove.png';
 import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.png';
 import beepLogo from '../../../images/beep-logo.svg';
-
-import beepAppDownloadBanner from '../../../images/beep-app-download.png';
-import config from '../../../config';
-import { toDayDateMonth, toNumericTimeRange, formatPickupAddress } from '../../../utils/datetime-lib';
-import './OrderingThanks.scss';
-import qs from 'qs';
+import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
+import beepSuccessImage from '../../../images/beep-success.png';
+import IconCelebration from '../../../images/icon-celebration.svg';
+import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
+import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
+import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
+import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif';
+import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
+import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
+import cashbackSuccessImage from '../../../images/succeed-animation.gif';
+import Constants from '../../../utils/constants';
+import { formatPickupAddress, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
+import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
+import Utils from '../../../utils/utils';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
+import {
+  actions as thankYouActionCreators,
+  getBusinessInfo,
+  getCashbackInfo,
+  getLoadOrderStatus,
+  getOrder,
+  getReceiptNumber,
+  getRiderLocations,
+  getStoreHashCode,
+} from '../../redux/modules/thankYou';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
-import { captureException } from '@sentry/react';
-import LiveChat from '../../../components/LiveChat';
+import PhoneLogin from './components/PhoneLogin';
+import './OrderingThanks.scss';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -52,12 +51,39 @@ import LiveChat from '../../../components/LiveChat';
 const ANIMATION_TIME = 3600;
 
 export class ThankYou extends PureComponent {
-  state = {
-    cashbackSuccessImage,
-    supportCallPhone: Utils.getQueryVariable('supportCallPhone'),
-    showPhoneCopy: false,
-    phoneCopyTitle: '',
-    phoneCopyContent: '',
+  constructor(props) {
+    super(props);
+
+    let version = '0',
+      supportCallPhone = false;
+
+    if (Utils.isWebview()) {
+      version = window.beepAppVersion;
+    }
+
+    if (version > '1.0.1') {
+      supportCallPhone = true;
+    } else {
+      supportCallPhone = false;
+    }
+
+    this.state = {
+      cashbackSuccessImage,
+      isHideTopArea: false,
+      supportCallPhone,
+      showPhoneCopy: false,
+      phoneCopyTitle: '',
+      phoneCopyContent: '',
+    };
+    this.injectFun();
+  }
+
+  injectFun = () => {
+    window.contactUs = !Utils.isDineInType()
+      ? () => {
+          this.handleVisitMerchantInfoPage();
+        }
+      : null;
   };
 
   pollOrderStatusTimer = null;
@@ -79,40 +105,155 @@ export class ThankYou extends PureComponent {
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
+
     this.loadOrder();
-    this.pollOrderStatus();
+
+    this.setContainerHeight();
+
+    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
+      this.pollOrderStatus();
+    }
   }
+
+  setContainerHeight() {
+    const { isHideTopArea } = this.state;
+
+    if (
+      (isHideTopArea,
+      Utils.isIOSWebview() &&
+        document.querySelector('.table-ordering') &&
+        document.querySelector('.ordering-thanks__container'))
+    ) {
+      document.querySelector('.table-ordering').style.minHeight = '0';
+      document.querySelector('.ordering-thanks').style.backgroundColor = 'transparent';
+      document.querySelector('.ordering-thanks__container').style.height = 'auto';
+      document.querySelector('.ordering-thanks__container').style.overflowY = 'visible';
+    }
+  }
+
+  closeMap = () => {
+    try {
+      if (Utils.isAndroidWebview()) {
+        window.androidInterface.closeMap();
+      }
+
+      if (Utils.isIOSWebview()) {
+        window.webkit.messageHandlers.shareAction.postMessage({
+          functionName: 'closeMap',
+        });
+      }
+    } catch (e) {}
+    this.setState({
+      isHideTopArea: false,
+    });
+  };
+
+  updateAppLocationAndStatus = () => {
+    //      nOrderStatusChanged(status: String) // 更新Order Status
+    //      updateStorePosition(lat: Double, lng: Double) // 更新商家坐标
+    //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
+    //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
+
+    const { updatedStatus, riderLocations = [] } = this.props;
+    const [lat = null, lng = null] = riderLocations || [];
+    const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
+    const { PICKUP } = CONSUMERFLOW_STATUS;
+    const { order = {}, t } = this.props;
+    const { orderId, storeInfo = {}, deliveryInformation = [] } = order;
+    const { location = {} } = storeInfo;
+    const { latitude: storeLat, longitude: storeLng } = location;
+    const { address = {} } = deliveryInformation[0] || {};
+    const { latitude: deliveryeLat, longitude: deliveryLng } = address.location || {};
+    const title = `#${orderId}`;
+    const text = t('ContactUs');
+
+    if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
+      try {
+        if (Utils.isAndroidWebview() && lat && lng) {
+          const res = window.beepAppVersion;
+          if (res > '1.0.1') {
+            window.androidInterface.updateHeaderOptionsAndShowMap(
+              JSON.stringify({
+                title,
+                rightButtons: [
+                  {
+                    text,
+                    callbackName: 'contactUs',
+                  },
+                ],
+              })
+            );
+            window.androidInterface.updateStorePosition(storeLat, storeLng);
+            window.androidInterface.updateHomePosition(deliveryeLat, deliveryLng);
+            window.androidInterface.updateRiderPosition(lat, lng);
+            this.setState({
+              isHideTopArea: true,
+            });
+          }
+        }
+
+        if (Utils.isIOSWebview() && lat && lng) {
+          const res = window.beepAppVersion;
+          if (res > '1.0.1') {
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'updateHeaderOptionsAndShowMap',
+              title,
+              rightButtons: [
+                {
+                  text,
+                  callbackName: 'contactUs',
+                },
+              ],
+            });
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'updateStorePosition',
+              lat: storeLat,
+              lng: storeLng,
+            });
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'updateHomePosition',
+              lat: deliveryeLat,
+              lng: deliveryLng,
+            });
+            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
+            this.setState({
+              isHideTopArea: true,
+            });
+          }
+        }
+      } catch (e) {
+        this.setState({
+          isHideTopArea: false,
+        });
+      }
+    } else {
+      this.closeMap();
+    }
+  };
 
   loadOrder = async () => {
     const { thankYouActions, receiptNumber } = this.props;
 
-    thankYouActions.loadOrder(receiptNumber);
-  };
+    await thankYouActions.loadOrder(receiptNumber);
 
-  pollOrderStatus = () => {
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
-      this.pollOrderStatusTimer = setInterval(async () => {
-        const {
-          receiptNumber,
-          // thankYouActions,
-          // order: { status },
-        } = this.props;
-        try {
-          // order status api is not ready, we just leave the code here and will enable it in the future
-          // await thankYouActions.loadOrderStatus(receiptNumber);
-          // const { updatedStatus } = this.props;
-          // if (updatedStatus !== status) {
-          //   await this.loadOrder(receiptNumber);
-          // }
-          await this.loadOrder(receiptNumber);
-        } catch (e) {
-          captureException(e);
-        }
-      }, 60000);
+      await thankYouActions.loadOrderStatus(receiptNumber);
+
+      this.updateAppLocationAndStatus();
     }
   };
 
-  componentDidUpdate(prevProps) {
+  pollOrderStatus = () => {
+    this.pollOrderStatusTimer = setInterval(async () => {
+      try {
+        await this.loadOrder();
+      } catch (e) {
+        captureException(e);
+      }
+    }, 60000);
+  };
+
+  componentDidUpdate(prevProps, prevStates) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const { storeId } = this.props.order || {};
@@ -131,10 +272,13 @@ export class ThankYou extends PureComponent {
       const orderInfo = this.props.order;
       this.handleGtmEventTracking({ order: orderInfo });
     }
+
+    this.setContainerHeight();
   }
 
   componentWillUnmount = () => {
     clearInterval(this.pollOrderStatusTimer);
+    this.closeMap();
   };
 
   getThankYouSource = () => {
@@ -370,6 +514,13 @@ export class ThankYou extends PureComponent {
       clearTimeout(timer);
     }, ANIMATION_TIME);
   };
+
+  isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS) => {
+    const { PICKUP } = CONSUMERFLOW_STATUS;
+    const { isHideTopArea } = this.state;
+
+    return !(isWebview && isHideTopArea && status === PICKUP && Utils.isDeliveryType());
+  };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     t,
@@ -392,6 +543,9 @@ export class ThankYou extends PureComponent {
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
     };
+    const { user, updatedStatus } = this.props;
+    const { isWebview } = user;
+    const { isHideTopArea } = this.state;
 
     let currentStatusObj = {};
     // status = CONFIMRMED;
@@ -472,11 +626,13 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        <img
-          className="ordering-thanks__image padding-normal margin-normal"
-          src={currentStatusObj.bannerImage}
-          alt="Beep Success"
-        />
+        {this.isRenderImage(isWebview, updatedStatus, CONSUMERFLOW_STATUS) && (
+          <img
+            className="ordering-thanks__image padding-normal margin-normal"
+            src={currentStatusObj.bannerImage}
+            alt="Beep Success"
+          />
+        )}
         {currentStatusObj.status === 'cancelled' ? (
           <div className="card text-center margin-normal flex">
             <div className="padding-small text-left">
@@ -738,33 +894,44 @@ export class ThankYou extends PureComponent {
             {status === 'confirmed' && (
               <React.Fragment>
                 {storePhone &&
-                  (Utils.isWebview() && !supportCallPhone ? (
+                  (Utils.isWebview() ? (
+                    !supportCallPhone ? (
+                      <a
+                        href="javascript:void(0)"
+                        className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
+                        onClick={() => this.copyPhoneNumber(storePhone, 'store')}
+                      >
+                        {t('CallStore')}
+                      </a>
+                    ) : (
+                      <a
+                        href={`tel:+${storePhone}`}
+                        className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+                      >
+                        {t('CallStore')}
+                      </a>
+                    )
+                  ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                     <a
-                      href="javascript:void(0)"
-                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
-                      onClick={() => this.copyPhoneNumber(storePhone, 'store')}
+                      href={trackingUrl}
+                      className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+                      target="__blank"
+                      data-heap-name="ordering.thank-you.logistics-tracking-link"
                     >
-                      {t('CallStore')}
+                      {t('TrackOrder')}
                     </a>
-                  ) : (
-                    <a
-                      href={`tel:+${storePhone}`}
-                      className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-                    >
-                      {t('CallStore')}
-                    </a>
-                  ))}
+                  ) : null)}
                 {Utils.isWebview() && !supportCallPhone ? (
                   <a
                     href="javascript:void(0)"
                     onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
-                    {t('CallDriver')}
+                    {t('CallRider')}
                   </a>
                 ) : (
                   <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                    {t('CallDriver')}
+                    {t('CallRider')}
                   </a>
                 )}
               </React.Fragment>
@@ -772,7 +939,24 @@ export class ThankYou extends PureComponent {
 
             {status === 'riderPickUp' && (
               <React.Fragment>
-                {trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+                {Utils.isWebview() ? (
+                  !supportCallPhone ? (
+                    <a
+                      href="javascript:void(0)"
+                      onClick={() => this.copyPhoneNumber(storePhone, 'drive')}
+                      className="text-weight-bolder button ordering-thanks__link text-uppercase ordering-thanks__button-link"
+                    >
+                      {t('CallStore')}
+                    </a>
+                  ) : (
+                    <a
+                      href={`tel:+${storePhone}`}
+                      className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+                    >
+                      {t('CallStore')}
+                    </a>
+                  )
+                ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
                   <a
                     href={trackingUrl}
                     className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
@@ -788,11 +972,11 @@ export class ThankYou extends PureComponent {
                     onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
                     className="text-weight-bolder button ordering-thanks__link text-uppercase"
                   >
-                    {t('CallDriver')}
+                    {t('CallRider')}
                   </a>
                 ) : (
                   <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                    {t('CallDriver')}
+                    {t('CallRider')}
                   </a>
                 )}
               </React.Fragment>
@@ -1020,6 +1204,7 @@ export class ThankYou extends PureComponent {
     let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
+    const { isHideTopArea } = this.state;
 
     if (isDeliveryType && this.isNowPaidPreOrder()) {
       orderInfo = this.renderPreOrderMessage();
@@ -1048,58 +1233,71 @@ export class ThankYou extends PureComponent {
         data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
-          <Header
-            headerRef={ref => (this.headerEl = ref)}
-            className="flex-middle border__bottom-divider"
-            isPage={!isWebview}
-            contentClassName="flex-middle"
-            data-heap-name="ordering.thank-you.header"
-            title={`#${orderId}`}
-            navFunc={() => {
-              if (isWebview) {
-                if (window.androidInterface) {
-                  window.androidInterface.gotoHome();
-                } else if (window.webkit) {
-                  window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
-                }
-              } else {
-                // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-                history.replace({
-                  pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                  search: `?${options.join('&')}`,
-                });
-              }
-            }}
-          >
-            {!isDineInType ? (
-              !isWebview ? (
-                <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
-              ) : (
-                <button
-                  className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
-                  onClick={this.handleVisitMerchantInfoPage}
-                  data-heap-name="ordering.thank-you.contact-us-btn"
-                >
-                  <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
-                </button>
-              )
-            ) : (
-              <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
-                {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
-              </div>
-            )}
-          </Header>
+          {isWebview && isHideTopArea ? null : (
+            <Header
+              headerRef={ref => (this.headerEl = ref)}
+              className="flex-middle border__bottom-divider"
+              isPage={!isWebview}
+              contentClassName="flex-middle"
+              data-heap-name="ordering.thank-you.header"
+              title={`#${orderId}`}
+              navFunc={() => {
+                if (isWebview) {
+                  if (window.androidInterface) {
+                    window.androidInterface.gotoHome();
+                  } else if (window.webkit) {
+                    const version = window.beepAppVersion;
 
+                    if (version > '1.0.1') {
+                      window.webkit.messageHandlers.shareAction.postMessage({
+                        functionName: 'gotoHome',
+                      });
+                    } else {
+                      window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
+                    }
+                  }
+                } else {
+                  // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
+                  history.replace({
+                    pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+                    search: `?${options.join('&')}`,
+                  });
+                }
+              }}
+            >
+              {!isDineInType ? (
+                !isWebview ? (
+                  <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+                ) : (
+                  <button
+                    className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
+                    onClick={this.handleVisitMerchantInfoPage}
+                    data-heap-name="ordering.thank-you.contact-us-btn"
+                  >
+                    <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
+                  </button>
+                )
+              ) : (
+                <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
+                  {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
+                </div>
+              )}
+            </Header>
+          )}
           <div
             className="ordering-thanks__container"
-            style={{
-              top: `${Utils.mainTop({
-                headerEls: [this.headerEl],
-              })}px`,
-              height: Utils.containerHeight({
-                headerEls: [this.headerEl],
-              }),
-            }}
+            style={
+              !Utils.isIOSWebview()
+                ? {
+                    top: `${Utils.mainTop({
+                      headerEls: [this.headerEl],
+                    })}px`,
+                    height: Utils.containerHeight({
+                      headerEls: [this.headerEl],
+                    }),
+                  }
+                : {}
+            }
           >
             {!isWebview && this.renderDownloadBanner()}
             {isDeliveryType ? (
@@ -1180,6 +1378,7 @@ export default compose(
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
       updatedStatus: getLoadOrderStatus(state),
+      riderLocations: getRiderLocations(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
