@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import ErrorToast from '../../../components/ErrorToast';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
@@ -32,13 +30,12 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { isAvailableOrderTime } from '../../../utils/order-utils';
+import { isAvailableOrderTime, getBusinessCurrentTime } from '../../../utils/order-utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
-dayjs.extend(utc);
 class App extends Component {
   constructor(props) {
     super(props);
@@ -141,7 +138,7 @@ class App extends Component {
       breakTimeTo,
       vacations,
     } = qrOrderingSettings;
-    const currentTime = dayjs().utcOffset(businessUTCOffset);
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
 
     const availableOrderTime = isAvailableOrderTime(currentTime, {
       validDays,

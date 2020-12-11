@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
 
@@ -19,7 +17,7 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
-import { isAvailableOrderTime } from '../../../utils/order-utils';
+import { isAvailableOrderTime, getBusinessCurrentTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -43,8 +41,6 @@ import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { captureException } from '@sentry/react';
 import './OrderingHome.scss';
-
-dayjs.extend(utc);
 
 const localState = {
   blockScrollTop: 0,
@@ -198,7 +194,7 @@ export class Home extends Component {
     const allStore = this.props.allStore || [];
     const businessUTCOffset = this.props.businessUTCOffset;
 
-    const currentTime = dayjs().utcOffset(businessUTCOffset);
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
 
     const enablePreOrderFroMulitpeStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
@@ -296,7 +292,7 @@ export class Home extends Component {
       const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
       const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
 
-      const currentTime = dayjs().utcOffset(businessUTCOffset);
+      const currentTime = getBusinessCurrentTime(businessUTCOffset);
       const availableOrderTime = isAvailableOrderTime(currentTime, {
         validDays,
         validTimeFrom: orderValidTimeFrom,
@@ -596,7 +592,7 @@ export class Home extends Component {
       return true;
     }
 
-    const currentTime = dayjs().utcOffset(businessUTCOffset);
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
     const availableOrderTime = isAvailableOrderTime(currentTime, {
       validDays,
       validTimeFrom,
