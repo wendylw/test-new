@@ -18,6 +18,7 @@ export const initialState = {
   cashbackInfo: null /* included: customerId, consumerId, status */,
   storeHashCode: null,
   orderStatus: null,
+  riderLocations: null,
   isWebView: Utils.isWebview(),
 };
 
@@ -161,11 +162,12 @@ const reducer = (state = initialState, action) => {
     }
     case types.FETCH_ORDER_STATUS_SUCCESS: {
       const { response } = action;
-      const { status } = response;
+      const { status, riderLocations } = response;
 
       return {
         ...state,
         orderStatus: status,
+        riderLocations,
       };
     }
 
@@ -210,6 +212,8 @@ export const getStoreHashCode = state => state.thankYou.storeHashCode;
 export const getCashbackInfo = state => state.thankYou.cashbackInfo;
 
 export const getLoadOrderStatus = state => state.thankYou.orderStatus;
+export const getRiderLocations = state => state.thankYou.riderLocations;
+
 export const getWebViewStatus = state => state.thankYou.isWebView;
 
 export const getOrderStatus = createSelector([getOrder], order => {
@@ -222,4 +226,11 @@ export const getIsUseStorehubLogistics = createSelector([getOrder], order => {
 
 export const getReceiptNumber = state => {
   return Utils.getQueryString('receiptNumber');
+};
+
+export const getServiceCharge = state => {
+  const order = getOrder(state);
+  const { items } = order || {};
+  const serviceChargeItem = (items || []).find(item => item.itemType === 'ServiceCharge');
+  return serviceChargeItem && serviceChargeItem.displayPrice;
 };

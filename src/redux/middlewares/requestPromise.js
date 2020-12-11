@@ -34,7 +34,7 @@ export default store => next => action => {
       return next({ ...other, type: successType, response });
     })
     .catch(error => {
-      if (error.name === 'AbortError') {
+      if (error.name === 'AbortError' || /TypeError: cancelled/i.test(error.message)) {
         return next({ ...other, type: cancelType || failureType, error });
       }
       console.error(error);

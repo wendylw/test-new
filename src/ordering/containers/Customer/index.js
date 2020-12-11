@@ -28,6 +28,7 @@ const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 class Customer extends Component {
   state = {
     addressChange: false,
+    processing: false,
   };
 
   async componentDidMount() {
@@ -58,6 +59,10 @@ class Customer extends Component {
     if (shippingFee && prevCartSummary.shippingFee && shippingFee !== prevCartSummary.shippingFee) {
       this.setState({ addressChange: true });
     }
+  }
+
+  componentWillUnmount() {
+    this.setState({ processing: false });
   }
 
   getBusinessCountry = () => {
@@ -123,6 +128,8 @@ class Customer extends Component {
 
     if (error.showModal) {
       customerActions.setError(error);
+    } else {
+      this.setState({ processing: true });
     }
   };
 
@@ -151,7 +158,7 @@ class Customer extends Component {
   };
 
   renderDeliveryPickupDetail() {
-    if (Utils.isDineInType()) {
+    if (Utils.isDineInType() || Utils.isTakeAwayType()) {
       return null;
     }
 
@@ -282,7 +289,7 @@ class Customer extends Component {
 
   render() {
     const { t, history, deliveryDetails, cartSummary, error } = this.props;
-    const { addressChange } = this.state;
+    const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(phone);
@@ -389,12 +396,12 @@ class Customer extends Component {
             history={history}
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
-            disabled={false}
+            disabled={processing}
             validCreateOrder={!total && !this.validateFields().showModal}
             beforeCreateOrder={this.handleBeforeCreateOrder}
             afterCreateOrder={this.visitPaymentPage}
           >
-            {t('Continue')}
+            {processing ? t('Processing') : t('Continue')}
           </CreateOrderButton>
         </footer>
         {error.show ? (

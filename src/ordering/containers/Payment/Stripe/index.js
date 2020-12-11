@@ -314,7 +314,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
 
       <footer className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
         <CreateOrderButton
-          className="margin-top-bottom-smaller"
+          className="margin-top-bottom-smaller text-uppercase"
           history={history}
           buttonType="submit"
           data-heap-name="ordering.payment.stripe.pay-btn"
@@ -339,12 +339,17 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
               setPaymentMethod(payload.paymentMethod);
             }
           }}
+          paymentName={'Stripe'}
         >
-          <CurrencyNumber
-            className="text-center text-weight-bolder text-uppercase"
-            addonBefore={t('Pay')}
-            money={total || 0}
-          />
+          {processing ? (
+            t('Processing')
+          ) : (
+            <CurrencyNumber
+              className="text-center text-weight-bolder text-uppercase"
+              addonBefore={t('Pay')}
+              money={total || 0}
+            />
+          )}
         </CreateOrderButton>
       </footer>
 

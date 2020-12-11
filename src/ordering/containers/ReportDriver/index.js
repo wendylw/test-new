@@ -158,7 +158,7 @@ class ReportDriver extends Component {
       case SUBMIT_STATUS.NOT_SUBMIT:
         return t('Submit');
       case SUBMIT_STATUS.IN_PROGRESS:
-        return <div className="loader"></div>;
+        return t('Processing');
       case SUBMIT_STATUS.SUBMITTED:
         return t('Submitted');
       default:

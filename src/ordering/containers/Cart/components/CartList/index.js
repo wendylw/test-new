@@ -118,7 +118,7 @@ class CartList extends Component {
   };
 
   render() {
-    const { shoppingCart, viewAside, product } = this.props;
+    const { shoppingCart, viewAside, product, style } = this.props;
     if (!shoppingCart) {
       return null;
     }
@@ -143,16 +143,22 @@ class CartList extends Component {
       return cartItems.sort(sortFn).map(this.generateProductItemView);
     };
 
-    return <ul data-heap-name="ordering.common.cart-list">{generateCartItemUI()}</ul>;
+    return (
+      <ul style={style} data-heap-name="ordering.common.cart-list">
+        {generateCartItemUI()}
+      </ul>
+    );
   }
 }
 
 CartList.propTypes = {
   isList: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 CartList.defaultProps = {
   isList: false,
+  style: {},
 };
 
 export default connect(

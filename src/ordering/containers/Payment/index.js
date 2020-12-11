@@ -155,6 +155,7 @@ class Payment extends Component {
       unavailablePaymentList,
       cartSummary,
       currentPaymentInfo,
+      merchantCountry,
     } = this.props;
     const { total } = cartSummary || {};
     const { payNowLoading, cartContainerHeight } = this.state;
@@ -253,13 +254,14 @@ class Payment extends Component {
             disabled={payNowLoading}
             validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+            paymentName={getPaymentName(merchantCountry, currentPayment)}
             afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
               });
             }}
           >
-            {payNowLoading ? <div className="loader"></div> : t('Continue')}
+            {payNowLoading ? t('Processing') : t('Continue')}
           </CreateOrderButton>
         </footer>
 

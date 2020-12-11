@@ -8,7 +8,6 @@ import SearchBox from '../components/SearchBox';
 import SwitchPanel from '../components/SwitchPanel';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import StoreList from '../home/components/StoreList';
-import JumpMenu from '../home/components/JumpMenu';
 import EmptySearch from './components/EmptySearch';
 import MvpNotFoundImage from '../../images/mvp-no-search.svg';
 import MvpStartSearchImage from '../../images/mvp-start-search.svg';
@@ -179,7 +178,6 @@ class SearchPage extends React.Component {
                 withInfiniteScroll
               />
             </StoreListAutoScroll>
-            <JumpMenu {...storeLinkInfo} deliveryAddress={currentPlaceInfo} />
           </div>
         ) : null}
       </React.Fragment>

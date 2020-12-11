@@ -43,7 +43,7 @@ class PhoneView extends React.Component {
     let buttonContent = buttonText;
 
     if (isLoading) {
-      buttonContent = <div className="loader"></div>;
+      buttonContent = t('Processing');
     }
 
     return (
@@ -54,7 +54,7 @@ class PhoneView extends React.Component {
           country={country}
           metadata={metadataMobile}
           onChange={phone => {
-            const selectedCountry = document.querySelector('.react-phone-number-input__country-select').value;
+            const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
             if (metadataMobile.countries[selectedCountry]) {
               setPhone(Utils.getFormatPhoneNumber(phone, metadataMobile.countries[selectedCountry][0]));

@@ -157,6 +157,9 @@ export class Home extends Component {
     }
     this.checkRange();
     this.checkOrderTime();
+
+    this.setState({ windowSize: windowSize() });
+
     window.addEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
@@ -801,6 +804,8 @@ export class Home extends Component {
       freeShippingMinAmount,
       enableConditionalFreeShipping,
       enableLiveOnline,
+      breakTimeFrom,
+      breakTimeTo,
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
@@ -886,7 +891,9 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             enablePreOrder={this.isPreOrderEnabled()}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
-            isValidTimeToOrder={this.isValidTimeToOrder()}
+            isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
+            breakTimeFrom={this.getItemFromStore(breakTimeFrom, 'breakTimeFrom')}
+            breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
           />
         )}
 

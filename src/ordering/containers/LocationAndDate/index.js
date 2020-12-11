@@ -80,6 +80,7 @@ class LocationAndDate extends Component {
     isDeliveryType: false,
     isPickUpType: false,
     nearlyStore: { name: '' },
+    // TODO: to clone url parameter to state is not a good idea, try to remove it later.
     search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
     onlyType: Utils.getLocalStorageVariable('ONLYTYPE'),
     displayHourList: [],
@@ -100,6 +101,7 @@ class LocationAndDate extends Component {
   fullTimeList = [];
 
   componentDidMount = () => {
+    this.ensureDeliveryType();
     const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
 
     // Should do setState to here for what is in componentDidUpdate to work
@@ -112,6 +114,18 @@ class LocationAndDate extends Component {
       this.setDeliveryType();
     } else if (this.state.search.type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
       this.setPickUpType(false);
+    }
+  };
+
+  ensureDeliveryType = () => {
+    const { type = '' } = this.state.search;
+    const deliveryType = type.toLowerCase();
+    if (![DELIVERY_METHOD.DELIVERY, DELIVERY_METHOD.PICKUP].includes(deliveryType)) {
+      if ([DELIVERY_METHOD.TAKE_AWAY, DELIVERY_METHOD.DINE_IN].includes(deliveryType)) {
+        window.location.href = `${window.location.origin}${ROUTER_PATHS.DINE}`;
+      } else {
+        window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}`;
+      }
     }
   };
 
@@ -900,6 +914,19 @@ class LocationAndDate extends Component {
     return true;
   };
 
+  deleteNextDayItem = list => {
+    if (!list || !list.length) return [];
+
+    const { isPickUpType } = this.state;
+    const lastItem = list[list.length - 1];
+    const lastItemDateString = lastItem.from === 'now' ? undefined : getHourAndMinuteFromTime(lastItem.from);
+
+    if (isPickUpType && lastItem.from !== 'now' && lastItemDateString === '00:00') {
+      list.pop();
+    }
+    return list;
+  };
+
   renderHoursList = timeList => {
     if (!timeList || !timeList.length) return;
 
@@ -907,12 +934,15 @@ class LocationAndDate extends Component {
     const { selectedHour = {}, selectedDate } = this.state;
     const country = this.getBusinessCountry();
 
+    timeList = this.deleteNextDayItem(timeList);
     timeList = this.patchBreakTime(timeList);
     const { qrOrderingSettings } = allBusinessInfo[business];
     const { disableOnDemandOrder, disableTodayPreOrder, enablePreOrder } = qrOrderingSettings;
     const dateList = this.deliveryDates.map(item => this.getDateFromTime(item.date));
+    const haveAvailableDate = this.deliveryDates.some(item => item.isOpen);
 
     timeList = dateList.includes(this.getDateFromTime(selectedDate.date)) && selectedDate.isOpen ? timeList : [];
+    timeList = haveAvailableDate ? timeList : [];
 
     return timeList.map(item => {
       if (item.from === PREORDER_IMMEDIATE_TAG.from) {
