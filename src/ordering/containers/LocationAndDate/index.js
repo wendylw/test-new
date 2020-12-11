@@ -24,7 +24,14 @@ import qs from 'qs';
 import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 import './OrderingLocationDate.scss';
 
-const { ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, PREORDER_IMMEDIATE_TAG, ADDRESS_RANGE, DELIVERY_METHOD } = Constants;
+const {
+  ROUTER_PATHS,
+  WEEK_DAYS_I18N_KEYS,
+  PREORDER_IMMEDIATE_TAG,
+  ADDRESS_RANGE,
+  DELIVERY_METHOD,
+  SH_LOGISTICS_VALID_TIME,
+} = Constants;
 const closestMinute = minute => [0, 15, 30, 45, 60].find(i => i >= minute);
 
 // If time is 8:14, should return valid time as 8:30
@@ -68,7 +75,7 @@ const isAfterTime = (time1, time2) => new Date(time1).valueOf < new Date(time2).
 
 const isNoLaterThan = (time1, time2) => new Date(time1).valueOf() <= new Date(time2).valueOf();
 
-const storehubLogisticsBusinessHours = ['09:00', '21:00'];
+const storehubLogisticsBusinessHours = [SH_LOGISTICS_VALID_TIME.FROM, SH_LOGISTICS_VALID_TIME.TO];
 
 class LocationAndDate extends Component {
   state = {
