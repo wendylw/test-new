@@ -44,7 +44,7 @@ function mayProxy(pathname) {
 // Refer to: https://github.com/facebook/create-react-app/blob/f5c3bdb65480f93b2d4a4c2f3214fc50753de434/packages/react-dev-utils/WebpackDevServerUtils.js#L423
 const shouldForward = function(req) {
   try {
-    const path = req.originalUrl;
+    const path = req.path;
 
     return (
       req.method !== 'GET' ||
@@ -58,12 +58,12 @@ const shouldForward = function(req) {
 };
 
 const setCookie = async (req, res, next) => {
-  const path = req.originalUrl;
+  const original = req.originalUrl;
 
   try {
-    debug(`${path} Start set cookie`);
+    debug(`${original} Start set cookie`);
 
-    const url = new URL(path, `http://${req.headers.host}`);
+    const url = new URL(original, `http://${req.headers.host}`);
     const backendUrl = target + url.search;
 
     const response = await fetch(backendUrl);
@@ -73,16 +73,16 @@ const setCookie = async (req, res, next) => {
     }
 
     const cookies = response.headers.raw()['set-cookie'] || [];
-    debug(`${path} Cookies from backend:\n${cookies.join('\n')}`);
+    debug(`${original} Cookies from backend:\n${cookies.join('\n')}`);
 
     // remove Domain
     const removeDomainCookies = cookies.map(cookie => cookie.replace(/Domain=(\.|\w)+;?/gi, ''));
 
-    debug(`${path} Set Cookie:\n${removeDomainCookies.join('\n')}`);
+    debug(`${original} Set Cookie:\n${removeDomainCookies.join('\n')}`);
     res.setHeader('Set-Cookie', removeDomainCookies);
-    debug(`${path} Set Cookie done`);
+    debug(`${original} Set Cookie done`);
   } catch (e) {
-    console.error('Set %s Cookie Error: %o', path, e);
+    console.error('Set %s Cookie Error: %o', original, e);
   } finally {
     next();
   }
