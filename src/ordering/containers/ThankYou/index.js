@@ -159,13 +159,26 @@ export class ThankYou extends PureComponent {
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
     const { PICKUP } = CONSUMERFLOW_STATUS;
     const { order = {}, t } = this.props;
-    const { orderId, storeInfo = {}, deliveryInformation = [] } = order;
-    const { location = {} } = storeInfo;
-    const { latitude: storeLat, longitude: storeLng } = location;
+    const { orderId, /* storeInfo = {},*/ deliveryInformation = [] } = order;
+    /*
+     * LOG-266 will use this location:
+     * const { location = {} } = storeInfo;
+     * const { latitude: storeLat, longitude: storeLng } = location;
+     * */
     const { address = {} } = deliveryInformation[0] || {};
-    const { latitude: deliveryeLat, longitude: deliveryLng } = address.location || {};
+    const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
     const title = `#${orderId}`;
     const text = t('ContactUs');
+    const focusPositionList = [
+      {
+        lat: deliveryLat,
+        lng: deliveryLng,
+      },
+      {
+        lat,
+        lng,
+      },
+    ];
 
     if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
       try {
@@ -183,9 +196,7 @@ export class ThankYou extends PureComponent {
                 ],
               })
             );
-            window.androidInterface.updateStorePosition(storeLat, storeLng);
-            window.androidInterface.updateHomePosition(deliveryeLat, deliveryLng);
-            window.androidInterface.updateRiderPosition(lat, lng);
+            window.androidInterface.focusPositions(JSON.stringify(focusPositionList));
             this.setState({
               isHideTopArea: true,
             });
@@ -206,16 +217,9 @@ export class ThankYou extends PureComponent {
               ],
             });
             window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateStorePosition',
-              lat: storeLat,
-              lng: storeLng,
+              functionName: 'focusPositions',
+              positions: focusPositionList,
             });
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateHomePosition',
-              lat: deliveryeLat,
-              lng: deliveryLng,
-            });
-            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
             this.setState({
               isHideTopArea: true,
             });
