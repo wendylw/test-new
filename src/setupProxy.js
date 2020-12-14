@@ -1,11 +1,19 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
 const fs = require('fs');
+const fetch = require('node-fetch');
+const createDebug = require('debug');
+const debug = createDebug('setupProxy:');
+
+debug('Start setup proxy');
 
 const target = process.env.PROXY;
 let proxy;
 if (target) {
   proxy = createProxyMiddleware({ target, changeOrigin: process.env.PROXY_CHANGE_ORIGIN !== 'false' });
+  debug(`proxy to ${target}`);
+} else {
+  debug(`Not config target for proxy`);
 }
 
 let servedPathname = '';
@@ -36,10 +44,12 @@ function mayProxy(pathname) {
 // Refer to: https://github.com/facebook/create-react-app/blob/f5c3bdb65480f93b2d4a4c2f3214fc50753de434/packages/react-dev-utils/WebpackDevServerUtils.js#L423
 const shouldForward = function(req) {
   try {
+    const path = req.path;
+
     return (
       req.method !== 'GET' ||
-      (mayProxy(req.path) && req.headers.accept && req.headers.accept.indexOf('text/html') === -1) ||
-      req.path.startsWith('/cross-storage')
+      (mayProxy(path) && req.headers.accept && req.headers.accept.indexOf('text/html') === -1) ||
+      path.startsWith('/cross-storage')
     );
   } catch (e) {
     console.error(e.message);
@@ -47,11 +57,50 @@ const shouldForward = function(req) {
   }
 };
 
-module.exports = function(app) {
-  app.use('/', (req, res, next) => {
-    if (proxy && shouldForward(req)) {
-      return proxy(req, res, next);
+const setCookie = async (req, res, next) => {
+  const original = req.originalUrl;
+
+  try {
+    debug(`${original} Start set cookie`);
+
+    const url = new URL(original, `http://${req.headers.host}`);
+    const backendUrl = target + url.search;
+
+    const response = await fetch(backendUrl);
+
+    if (!response.ok) {
+      throw new Error(`${backendUrl} response ${response.statusText} ${response.status}`);
     }
-    return next();
-  });
+
+    const cookies = response.headers.raw()['set-cookie'] || [];
+    debug(`${original} Cookies from backend:\n${cookies.join('\n')}`);
+
+    // remove Domain
+    const removeDomainCookies = cookies.map(cookie => cookie.replace(/Domain=(\.|\w)+;?/gi, ''));
+
+    debug(`${original} Set Cookie:\n${removeDomainCookies.join('\n')}`);
+    res.setHeader('Set-Cookie', removeDomainCookies);
+    debug(`${original} Set Cookie done`);
+  } catch (e) {
+    console.error('Set %s Cookie Error: %o', original, e);
+  } finally {
+    next();
+  }
+};
+
+const backendProxy = (req, res, next) => {
+  if (proxy && shouldForward(req)) {
+    debug(`${req.originalUrl} proxy to ${target}`);
+
+    return proxy(req, res, next);
+  }
+
+  next();
+};
+
+module.exports = function(app) {
+  app.use(backendProxy);
+
+  // only '/' or '/ordering*' need set cookie
+  app.get(/^(\/|\/ordering(.*))$/i, setCookie);
 };
