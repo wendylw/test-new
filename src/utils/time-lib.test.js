@@ -67,16 +67,16 @@ describe('test toMinutes function', () => {
 
 describe('test stringify function', () => {
   test.each`
-    timeObject                    | expected
-    ${{ hour: 16, minute: 30 }}   | ${'16:30'}
-    ${{ hour: 0, minute: 0 }}     | ${'00:00'}
-    ${{ hour: -10, minute: 0 }}   | ${'-10:00'}
-    ${{ hour: -1, minute: 0 }}    | ${'-1:00'}
-    ${{ hour: 0, minute: 5 }}     | ${'00:05'}
-    ${{ hour: 35, minute: 5 }}    | ${'35:05'}
-    ${{ hour: 0, minute: 100 }}   | ${'01:40'}
-    ${{ hour: 0, minute: -100 }}  | ${'-2:40'}
-    ${{ hour: -1, minute: -100 }} | ${'-3:40'}
+    timeObject                   | expected
+    ${{ hour: 16, minute: 30 }}  | ${'16:30'}
+    ${{ hour: 0, minute: 0 }}    | ${'00:00'}
+    ${{ hour: -10, minute: 0 }}  | ${'-10:00'}
+    ${{ hour: -1, minute: 0 }}   | ${'-1:00'}
+    ${{ hour: 0, minute: 5 }}    | ${'00:05'}
+    ${{ hour: 35, minute: 5 }}   | ${'35:05'}
+    ${{ hour: 0, minute: 100 }}  | ${'01:40'}
+    ${{ hour: 0, minute: -100 }} | ${'-2:20'}
+    ${{ hour: -1, minute: -30 }} | ${'-2:30'}
   `('return $expected when stringify $timeObject', ({ timeObject, expected }) => {
     expect(stringify(timeObject)).toBe(expected);
   });

@@ -62,8 +62,9 @@ export const parse = time => {
  * @returns {string} time string
  */
 export const stringify = ({ hour, minute }) => {
+  // if minute over 60, need enters 1 hour
   const h = Math.floor(minute / 60);
-  const m = Math.abs(minute % 60);
+  const m = minute - h * 60;
 
   return `${padZero(hour + h)}:${padZero(m)}`;
 };
