@@ -408,7 +408,7 @@ class Stripe extends Component {
       redirectURL,
       webhookURL,
       paymentName: 'Stripe',
-      isInternal: !!planId,
+      isInternal: String(planId || '').startsWith('internal'),
       paymentMethodId: '',
     };
   };

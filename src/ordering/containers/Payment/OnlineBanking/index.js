@@ -75,7 +75,7 @@ class OnlineBanking extends Component {
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
-      isInternal: !!planId,
+      isInternal: String(planId || '').startsWith('internal'),
     };
   };
 

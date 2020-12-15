@@ -96,7 +96,7 @@ class Payment extends Component {
       redirectURL: redirectURL,
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
-      isInternal: !!planId,
+      isInternal: String(planId || '').startsWith('internal'),
     };
   };
 
