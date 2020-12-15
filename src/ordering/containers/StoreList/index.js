@@ -9,13 +9,14 @@ import Image from '../../../components/Image';
 import { IconChecked } from '../../../components/Icons';
 
 import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
-import { actions as appActionCreators, getOnlineStoreInfo } from '../../redux/modules/app';
+import { actions as appActionCreators, getOnlineStoreInfo, getBusinessUTCOffset } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 import { IconLocation } from '../../../components/Icons';
 import Tag from '../../../components/Tag';
 import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
+import { isAvailableOrderOnDemand } from '../../../utils/order-utils';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
@@ -95,7 +96,6 @@ class StoreList extends Component {
     );
 
     this.getStoreList();
-    // await this.props.appActions.fetchOnlineStoreInfo();
   }
 
   getStoreList = () => {
@@ -116,57 +116,32 @@ class StoreList extends Component {
   };
 
   checkStoreIsClose = store => {
+    const { businessUTCOffset } = this.props;
+
     const { qrOrderingSettings } = store;
-    const { enablePreOrder } = qrOrderingSettings;
+    const {
+      enablePreOrder,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+      disableOnDemandOrder,
+    } = qrOrderingSettings;
 
-    return !(enablePreOrder || this.isValidTimeToOrder(qrOrderingSettings));
-  };
+    const availableOrderOnDemand = isAvailableOrderOnDemand({
+      businessUTCOffset,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+      disableOnDemandOrder,
+    });
 
-  isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
-    const zero = num => (num < 10 ? '0' + num : num + '');
-    const getDateStringFromTime = time => {
-      time = new Date(time);
-      return `${time.getFullYear()}${zero(time.getMonth() + 1)}${zero(time.getDate())}`;
-    };
-    const getHourAndMinuteStringFromTime = time => {
-      time = new Date(time);
-      return `${zero(time.getHours())}:${zero(time.getMinutes())}`;
-    };
-
-    const isVacation = (list, date) => {
-      let isVacationDay = false;
-
-      for (let i = 0; i < list.length; i++) {
-        let item = list[i];
-        if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
-          return true;
-        }
-      }
-      return isVacationDay;
-    };
-
-    const currTime = getHourAndMinuteStringFromTime(new Date());
-    const week = new Date().getDay();
-    const currDate = getDateStringFromTime(new Date());
-    const vacationList = vacations
-      ? vacations.map(item => {
-          return {
-            vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
-            vacationTimeTo: item.vacationTimeTo.split('/').join(''),
-          };
-        })
-      : [];
-    const validDaysArray = Array.from(validDays, v => v - 1);
-
-    if (isVacation(vacationList, currDate)) return false;
-
-    if (!validDaysArray.includes(week)) return false;
-
-    if (currTime < validTimeFrom || currTime > validTimeTo) return false;
-
-    if (breakTimeFrom && breakTimeTo && currTime >= breakTimeFrom && currTime <= breakTimeTo) return false;
-
-    return true;
+    return !(enablePreOrder || availableOrderOnDemand);
   };
 
   selectStore = store => {
@@ -288,6 +263,7 @@ export default compose(
       allStore: getStoresList(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHash: getStoreHashCode(state),
+      businessUTCOffset: getBusinessUTCOffset(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
