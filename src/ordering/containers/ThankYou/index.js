@@ -194,7 +194,7 @@ export class ThankYou extends PureComponent {
               })
             );
             window.androidInterface.updateStorePosition(storeLat, storeLng);
-            window.androidInterface.updateHomePosition(deliveryeLat, deliveryLng);
+            window.androidInterface.updateHomePosition(deliveryLat, deliveryLng);
             window.androidInterface.updateRiderPosition(lat, lng);
             window.androidInterface.focusPositions(JSON.stringify(focusPositionList));
             this.setState({
@@ -225,8 +225,6 @@ export class ThankYou extends PureComponent {
               functionName: 'updateHomePosition',
               lat: deliveryLat,
               lng: deliveryLng,
-              functionName: 'focusPositions',
-              positions: focusPositionList,
             });
             window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
             window.webkit.messageHandlers.shareAction.postMessage({
