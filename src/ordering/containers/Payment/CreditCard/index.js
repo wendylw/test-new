@@ -20,6 +20,7 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getBusinessInfo } from '../../../redux/modules/cart';
 import {
   getPaymentName,
   getSupportCreditCardBrands,
@@ -82,10 +83,11 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
+    const { onlineStoreInfo, currentOrder, business, merchantCountry, businessInfo } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
     const { card } = this.state;
     const { cardholderName } = card || {};
+    const { planId } = businessInfo || {};
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
       return null;
@@ -108,6 +110,7 @@ class CreditCard extends Component {
       expYearCardInfo,
       expMonthCardInfo,
       maskedCardInfo,
+      isInternal: !!planId,
     };
   };
 
@@ -595,6 +598,7 @@ export default compose(
 
       return {
         business: getBusiness(state),
+        businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),

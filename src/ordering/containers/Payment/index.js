@@ -79,7 +79,8 @@ class Payment extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business, merchantCountry } = this.props;
+    const { onlineStoreInfo, currentOrder, currentPayment, business, businessInfo, merchantCountry } = this.props;
+    const { planId } = businessInfo || {};
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || EXCLUDED_PAYMENTS.includes(currentPayment)) {
       return null;
@@ -95,6 +96,7 @@ class Payment extends Component {
       redirectURL: redirectURL,
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
+      isInternal: !!planId,
     };
   };
 
