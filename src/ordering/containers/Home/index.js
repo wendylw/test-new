@@ -159,13 +159,31 @@ export class Home extends Component {
   };
 
   checkDeliveryBar() {
+    const isDeliveryType = Utils.isDeliveryType();
+    const isPickUpType = Utils.isPickUpType();
     const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+    if (!isDeliveryType && !isPickUpType) {
+      this.setState({
+        deliveryBar: false,
+      });
+      return;
+    }
 
-    this.setState({
-      deliveryBar: deliveryAddress && expectedDeliveryDate && expectedDeliveryHour,
-    });
+    if (isDeliveryType) {
+      this.setState({
+        deliveryBar: Boolean(deliveryAddress && expectedDeliveryDate && expectedDeliveryHour),
+      });
+      return;
+    }
+
+    if (isPickUpType) {
+      this.setState({
+        deliveryBar: Boolean(expectedDeliveryDate && expectedDeliveryHour),
+      });
+      return;
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
