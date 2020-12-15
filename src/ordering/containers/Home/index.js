@@ -60,8 +60,8 @@ export class Home extends Component {
       deliveryBar: false,
       alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
       callApiFinish: false,
-      enablePreOrderFroMulitpeStore: false,
-      isValidToOrderFromMulitpeStore: false,
+      enablePreOrderFroMultipleStore: false,
+      isValidToOrderFromMultipleStore: false,
       search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
       windowSize: windowSize(),
     };
@@ -214,13 +214,13 @@ export class Home extends Component {
 
     const currentTime = getBusinessCurrentTime(businessUTCOffset);
 
-    const enablePreOrderFroMulitpeStore = allStore.some(store => {
+    const enablePreOrderFroMultipleStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
 
       return qrOrderingSettings.enablePreOrder;
     });
 
-    const isValidToOrderFromMulitpeStore = allStore.some(store => {
+    const isValidToOrderFromMultipleStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
       const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays } = qrOrderingSettings;
 
@@ -237,8 +237,8 @@ export class Home extends Component {
     });
 
     this.setState({
-      enablePreOrderFroMulitpeStore,
-      isValidToOrderFromMulitpeStore,
+      enablePreOrderFroMultipleStore,
+      isValidToOrderFromMultipleStore,
       callApiFinish: true,
     });
   };
@@ -594,15 +594,15 @@ export class Home extends Component {
 
   isPreOrderEnabled = () => {
     const { enablePreOrder } = this.props.deliveryInfo;
-    const { enablePreOrderFroMulitpeStore } = this.state;
+    const { enablePreOrderFroMultipleStore } = this.state;
     const storeId = config.storeId;
 
-    return !storeId ? enablePreOrderFroMulitpeStore : !!enablePreOrder;
+    return !storeId ? enablePreOrderFroMultipleStore : !!enablePreOrder;
   };
 
   isValidTimeToOrder = () => {
     const { deliveryInfo, businessUTCOffset } = this.props;
-    const { isValidToOrderFromMulitpeStore } = this.state;
+    const { isValidToOrderFromMultipleStore } = this.state;
     const storeId = config.storeId;
     const { validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations } = deliveryInfo;
 
@@ -620,7 +620,7 @@ export class Home extends Component {
       vacations,
     });
 
-    return !storeId ? isValidToOrderFromMulitpeStore : availableOrderTime;
+    return !storeId ? isValidToOrderFromMultipleStore : availableOrderTime;
   };
 
   renderHeaderChildren() {
