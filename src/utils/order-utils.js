@@ -3,6 +3,38 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(utc);
+
+/**
+ * check current time whether it is available to place on demand order
+ * @param {*} param0
+ * @returns {boolean}
+ */
+export const isAvailableOrderOnDemand = ({
+  businessUTCOffset,
+  validDays,
+  validTimeFrom,
+  validTimeTo,
+  breakTimeFrom,
+  breakTimeTo,
+  vacations,
+  disableOnDemandOrder,
+}) => {
+  if (disableOnDemandOrder) {
+    return false;
+  }
+
+  const currentTime = getBusinessCurrentTime(businessUTCOffset);
+
+  return isAvailableOrderTime(currentTime, {
+    validDays,
+    validTimeFrom,
+    validTimeTo,
+    breakTimeFrom,
+    breakTimeTo,
+    vacations,
+  });
+};
+
 /**
  * check whether dateTime is available order time
  * @param {Dayjs} dateTime

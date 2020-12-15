@@ -30,7 +30,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { isAvailableOrderTime, getBusinessCurrentTime } from '../../../utils/order-utils';
+import { isAvailableOrderOnDemand } from '../../../utils/order-utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
@@ -137,16 +137,18 @@ class App extends Component {
       breakTimeFrom,
       breakTimeTo,
       vacations,
+      disableOnDemandOrder,
     } = qrOrderingSettings;
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
 
-    const availableOrderTime = isAvailableOrderTime(currentTime, {
+    const availableOrderTime = isAvailableOrderOnDemand({
+      businessUTCOffset,
       validDays,
       validTimeFrom,
       validTimeTo,
       breakTimeFrom,
       breakTimeTo,
       vacations,
+      disableOnDemandOrder,
     });
 
     return !(enablePreOrder || availableOrderTime);

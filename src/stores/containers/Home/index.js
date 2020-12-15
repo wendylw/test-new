@@ -4,7 +4,7 @@ import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
-import { isAvailableOrderTime, getBusinessCurrentTime } from '../../../utils/order-utils';
+import { isAvailableOrderOnDemand } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -73,19 +73,21 @@ class App extends Component {
       breakTimeFrom,
       breakTimeTo,
       vacations,
+      disableOnDemandOrder,
     } = Utils.getDeliveryInfo({
       business,
       allBusinessInfo,
     });
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
 
-    const isValidTimeToOrder = isAvailableOrderTime(currentTime, {
+    const isValidTimeToOrder = isAvailableOrderOnDemand({
+      businessUTCOffset,
       validDays,
       validTimeFrom,
       validTimeTo,
       breakTimeFrom,
       breakTimeTo,
       vacations,
+      disableOnDemandOrder,
     });
 
     if (isValidTimeToOrder || enablePreOrder) {

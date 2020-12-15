@@ -3,6 +3,10 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
+describe('test isAvailableOrderOnDemand function', () => {
+  test.todo('How to write UT for this function that has many arguments?');
+});
+
 describe('test isAvailableOrderTime function', () => {
   test.todo('Do we actually need test isAvailableOrderTime function?');
 });

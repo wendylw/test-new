@@ -17,7 +17,7 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
-import { isAvailableOrderTime, getBusinessCurrentTime } from '../../../utils/order-utils';
+import { isAvailableOrderOnDemand, getBusinessCurrentTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -212,8 +212,6 @@ export class Home extends Component {
     const allStore = this.props.allStore || [];
     const businessUTCOffset = this.props.businessUTCOffset;
 
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
-
     const enablePreOrderFroMultipleStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
 
@@ -222,18 +220,25 @@ export class Home extends Component {
 
     const isValidToOrderFromMultipleStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
-      const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays } = qrOrderingSettings;
-
-      const availableOrderTime = isAvailableOrderTime(currentTime, {
-        validDays,
+      const {
         validTimeFrom,
         validTimeTo,
-        vacations,
         breakTimeFrom,
         breakTimeTo,
+        vacations,
+        validDays,
+        disableOnDemandOrder,
+      } = qrOrderingSettings;
+      return isAvailableOrderOnDemand({
+        businessUTCOffset,
+        validTimeFrom,
+        validTimeTo,
+        breakTimeFrom,
+        breakTimeTo,
+        vacations,
+        validDays,
+        disableOnDemandOrder,
       });
-
-      return availableOrderTime;
     });
 
     this.setState({
@@ -303,26 +308,26 @@ export class Home extends Component {
         logisticsValidTimeFrom,
         logisticsValidTimeTo,
       } = deliveryInfo;
-      if (disableOnDemandOrder) {
-        return;
-      }
 
       const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
       const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
 
-      const currentTime = getBusinessCurrentTime(businessUTCOffset);
-      const availableOrderTime = isAvailableOrderTime(currentTime, {
+      const availableOrderTime = isAvailableOrderOnDemand({
+        businessUTCOffset,
         validDays,
         validTimeFrom: orderValidTimeFrom,
         validTimeTo: orderValidTimeTo,
         vacations,
         breakTimeFrom,
         breakTimeTo,
+        disableOnDemandOrder,
       });
 
       if (!availableOrderTime) {
         return;
       }
+
+      const currentTime = getBusinessCurrentTime(businessUTCOffset);
 
       Utils.setSessionVariable(
         'expectedDeliveryDate',
@@ -604,23 +609,38 @@ export class Home extends Component {
     const { deliveryInfo, businessUTCOffset } = this.props;
     const { isValidToOrderFromMultipleStore } = this.state;
     const storeId = config.storeId;
-    const { validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations } = deliveryInfo;
-
-    if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
-      return true;
-    }
-
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
-    const availableOrderTime = isAvailableOrderTime(currentTime, {
+    const {
       validDays,
       validTimeFrom,
       validTimeTo,
       breakTimeFrom,
       breakTimeTo,
       vacations,
+      disableOnDemandOrder,
+    } = deliveryInfo;
+
+    if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
+      return true;
+    }
+
+    // not select store
+    if (!storeId) {
+      return isValidToOrderFromMultipleStore;
+    }
+
+    // selected store
+    const availableOrderTime = isAvailableOrderOnDemand({
+      businessUTCOffset,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+      disableOnDemandOrder,
     });
 
-    return !storeId ? isValidToOrderFromMultipleStore : availableOrderTime;
+    return availableOrderTime;
   };
 
   renderHeaderChildren() {
