@@ -159,12 +159,9 @@ export class ThankYou extends PureComponent {
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
     const { PICKUP } = CONSUMERFLOW_STATUS;
     const { order = {}, t } = this.props;
-    const { orderId, /* storeInfo = {},*/ deliveryInformation = [] } = order;
-    /*
-     * LOG-266 will use this location:
-     * const { location = {} } = storeInfo;
-     * const { latitude: storeLat, longitude: storeLng } = location;
-     * */
+    const { orderId, storeInfo = {}, deliveryInformation = [] } = order;
+    const { location = {} } = storeInfo;
+    const { latitude: storeLat, longitude: storeLng } = location;
     const { address = {} } = deliveryInformation[0] || {};
     const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
     const title = `#${orderId}`;
@@ -196,6 +193,9 @@ export class ThankYou extends PureComponent {
                 ],
               })
             );
+            window.androidInterface.updateStorePosition(storeLat, storeLng);
+            window.androidInterface.updateHomePosition(deliveryeLat, deliveryLng);
+            window.androidInterface.updateRiderPosition(lat, lng);
             window.androidInterface.focusPositions(JSON.stringify(focusPositionList));
             this.setState({
               isHideTopArea: true,
@@ -216,6 +216,19 @@ export class ThankYou extends PureComponent {
                 },
               ],
             });
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'updateStorePosition',
+              lat: storeLat,
+              lng: storeLng,
+            });
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'updateHomePosition',
+              lat: deliveryLat,
+              lng: deliveryLng,
+              functionName: 'focusPositions',
+              positions: focusPositionList,
+            });
+            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
             window.webkit.messageHandlers.shareAction.postMessage({
               functionName: 'focusPositions',
               positions: focusPositionList,
