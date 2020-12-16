@@ -21,7 +21,6 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
-import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
 import './OrderingBanking.scss';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -55,8 +54,7 @@ class OnlineBanking extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, businessInfo, merchantCountry } = this.props;
-    const { planId } = businessInfo || {};
+    const { onlineStoreInfo, currentOrder, business, merchantCountry } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
     const { agentCode } = this.state;
 
@@ -75,7 +73,6 @@ class OnlineBanking extends Component {
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
-      isInternal: String(planId || '').startsWith('internal'),
     };
   };
 
@@ -253,7 +250,6 @@ export default compose(
       return {
         bankingList: getBankList(state),
         business: getBusiness(state),
-        businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
