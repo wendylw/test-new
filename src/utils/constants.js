@@ -385,7 +385,7 @@ const COLLECTIONS_TYPE = {
 };
 // storeHub Logistics valid time period
 const SH_LOGISTICS_VALID_TIME = {
-  FROM: '9:00',
+  FROM: '09:00',
   TO: '21:00',
 };
 
