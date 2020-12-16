@@ -5,27 +5,32 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
 /**
- * check current time whether it is available to place on demand order
- * @param {*} param0
+ * check store whether it is open or not at given time
+ * @param {Dayjs} dateTime
+ * @param {Store} store
  * @returns {boolean}
  */
-export const isAvailableOrderOnDemand = ({
-  businessUTCOffset,
-  validDays,
-  validTimeFrom,
-  validTimeTo,
-  breakTimeFrom,
-  breakTimeTo,
-  vacations,
-  disableOnDemandOrder,
-}) => {
-  if (disableOnDemandOrder) {
+export const checkStoreIsOpened = (dateTime, store) => {
+  if (!dateTime || !store) {
     return false;
   }
 
-  const currentTime = getBusinessCurrentTime(businessUTCOffset);
+  const { qrOrderingSettings } = store;
+  const {
+    enablePreOrder,
+    validDays,
+    validTimeFrom,
+    validTimeTo,
+    breakTimeFrom,
+    breakTimeTo,
+    vacations,
+  } = qrOrderingSettings;
 
-  return isAvailableOrderTime(currentTime, {
+  if (enablePreOrder) {
+    return true;
+  }
+
+  return isAvailableOrderTime(dateTime, {
     validDays,
     validTimeFrom,
     validTimeTo,

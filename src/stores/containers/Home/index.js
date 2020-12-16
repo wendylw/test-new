@@ -4,15 +4,15 @@ import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
-import { isAvailableOrderOnDemand } from '../../../utils/order-utils';
+import { checkStoreIsOpened, getBusinessCurrentTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getOnlineStoreInfo, getError } from '../../redux/modules/app';
-import { getBusiness, getBusinessUTCOffset } from '../../../ordering/redux/modules/app';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getBusiness, getBusinessInfo, getBusinessUTCOffset } from '../../../ordering/redux/modules/app';
 import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
+import _get from 'lodash/get';
 import qs from 'qs';
 import './StoresHome.scss';
 
@@ -63,34 +63,18 @@ class App extends Component {
     const { homeActions, businessUTCOffset } = this.props;
     // 请求 coreBusiness
     await homeActions.loadCoreBusiness();
+    const { businessInfo } = this.props;
+
+    const store = _get(businessInfo, 'stores.0', null);
+
+    const enablePreOrder = _get(store, 'qrOrderingSettings.enablePreOrder', false);
+
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+
+    const isStoreOpened = store && checkStoreIsOpened(currentTime, store);
+
     // if store is closed,go straight to ordering page and let it display store is closed
-    const { allBusinessInfo, business } = this.props;
-    const {
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      enablePreOrder,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-      disableOnDemandOrder,
-    } = Utils.getDeliveryInfo({
-      business,
-      allBusinessInfo,
-    });
-
-    const isValidTimeToOrder = isAvailableOrderOnDemand({
-      businessUTCOffset,
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-      disableOnDemandOrder,
-    });
-
-    if (isValidTimeToOrder || enablePreOrder) {
+    if (isStoreOpened) {
       window.location.href = `${window.location.href}${window.location.search ? '&' : '?'}s=${storeId}&from=home`;
       // homeActions.setCurrentStore(storeId);
     } else {
@@ -175,8 +159,8 @@ export default compose(
       stores: getAllStores(state),
       error: getError(state),
       business: getBusiness(state),
-      allBusinessInfo: getAllBusinesses(state),
       businessUTCOffset: getBusinessUTCOffset(state),
+      businessInfo: getBusinessInfo(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

@@ -30,7 +30,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { isAvailableOrderOnDemand } from '../../../utils/order-utils';
+import { getBusinessCurrentTime, checkStoreIsOpened } from '../../../utils/order-utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
@@ -126,35 +126,10 @@ class App extends Component {
     }
   };
 
-  checkStoreIsClose = store => {
-    const { businessUTCOffset } = this.props;
-    const { qrOrderingSettings } = store;
-    const {
-      enablePreOrder,
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-      disableOnDemandOrder,
-    } = qrOrderingSettings;
-
-    const availableOrderTime = isAvailableOrderOnDemand({
-      businessUTCOffset,
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-      disableOnDemandOrder,
-    });
-
-    return !(enablePreOrder || availableOrderTime);
-  };
-
   getNearlyStore = async (stores, type, deliveryAddress) => {
+    const { businessUTCOffset } = this.props;
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+
     stores.forEach(item => {
       if (item.location) {
         item.distance = computeStraightDistance(deliveryAddress.coords, {
@@ -165,7 +140,8 @@ class App extends Component {
     });
     stores = stores.filter(
       item =>
-        !this.checkStoreIsClose(item) && item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1
+        checkStoreIsOpened(currentTime, item) &&
+        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1
     );
     let nearly;
     stores.forEach(item => {

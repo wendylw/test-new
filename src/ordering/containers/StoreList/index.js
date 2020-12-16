@@ -16,7 +16,7 @@ import Tag from '../../../components/Tag';
 import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
-import { isAvailableOrderOnDemand } from '../../../utils/order-utils';
+import { checkStoreIsOpened, getBusinessCurrentTime } from '../../../utils/order-utils';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
@@ -100,48 +100,21 @@ class StoreList extends Component {
 
   getStoreList = () => {
     let stores = [];
-    const { allStore } = this.props;
+    const { allStore, businessUTCOffset } = this.props;
     stores = allStore.filter(
       item =>
         item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
     );
 
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+
     stores.forEach(store => {
-      store.isClose = this.checkStoreIsClose(store);
+      store.isClose = !checkStoreIsOpened(currentTime, store);
     });
 
     this.setState({
       storeList: stores,
     });
-  };
-
-  checkStoreIsClose = store => {
-    const { businessUTCOffset } = this.props;
-
-    const { qrOrderingSettings } = store;
-    const {
-      enablePreOrder,
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-      disableOnDemandOrder,
-    } = qrOrderingSettings;
-
-    const availableOrderOnDemand = isAvailableOrderOnDemand({
-      businessUTCOffset,
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-      disableOnDemandOrder,
-    });
-
-    return !(enablePreOrder || availableOrderOnDemand);
   };
 
   selectStore = store => {

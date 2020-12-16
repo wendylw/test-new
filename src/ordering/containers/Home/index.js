@@ -17,7 +17,7 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
-import { isAvailableOrderOnDemand, getBusinessCurrentTime } from '../../../utils/order-utils';
+import { isAvailableOrderTime, getBusinessCurrentTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -212,6 +212,8 @@ export class Home extends Component {
     const allStore = this.props.allStore || [];
     const businessUTCOffset = this.props.businessUTCOffset;
 
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+
     const enablePreOrderFroMultipleStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
 
@@ -229,15 +231,18 @@ export class Home extends Component {
         validDays,
         disableOnDemandOrder,
       } = qrOrderingSettings;
-      return isAvailableOrderOnDemand({
-        businessUTCOffset,
+
+      if (disableOnDemandOrder) {
+        return false;
+      }
+
+      return isAvailableOrderTime(currentTime, {
         validTimeFrom,
         validTimeTo,
         breakTimeFrom,
         breakTimeTo,
         vacations,
         validDays,
-        disableOnDemandOrder,
       });
     });
 
@@ -309,25 +314,27 @@ export class Home extends Component {
         logisticsValidTimeTo,
       } = deliveryInfo;
 
+      if (disableOnDemandOrder) {
+        return;
+      }
+
+      const currentTime = getBusinessCurrentTime(businessUTCOffset);
+
       const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
       const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
 
-      const availableOrderTime = isAvailableOrderOnDemand({
-        businessUTCOffset,
+      const availableOrderTime = isAvailableOrderTime(currentTime, {
         validDays,
         validTimeFrom: orderValidTimeFrom,
         validTimeTo: orderValidTimeTo,
         vacations,
         breakTimeFrom,
         breakTimeTo,
-        disableOnDemandOrder,
       });
 
       if (!availableOrderTime) {
         return;
       }
-
-      const currentTime = getBusinessCurrentTime(businessUTCOffset);
 
       Utils.setSessionVariable(
         'expectedDeliveryDate',
@@ -628,16 +635,20 @@ export class Home extends Component {
       return isValidToOrderFromMultipleStore;
     }
 
+    if (disableOnDemandOrder) {
+      return false;
+    }
+
+    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+
     // selected store
-    const availableOrderTime = isAvailableOrderOnDemand({
-      businessUTCOffset,
+    const availableOrderTime = isAvailableOrderTime(currentTime, {
       validDays,
       validTimeFrom,
       validTimeTo,
       breakTimeFrom,
       breakTimeTo,
       vacations,
-      disableOnDemandOrder,
     });
 
     return availableOrderTime;
