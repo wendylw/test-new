@@ -415,6 +415,11 @@ export class Home extends Component {
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
     const deliverMethod = Utils.getOrderTypeFromUrl();
     const previousDeliveryMethod = this.getPreviousDeliveryMethod();
+    const storeId = config.storeId;
+
+    if (!storeId) {
+      return true;
+    }
 
     if (!date.date || !hour.from) {
       return true;
