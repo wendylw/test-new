@@ -134,8 +134,9 @@ export const isInVacations = (dateTime, vacations) => {
 /**
  * return merchant current time
  * @param {number} businessUTCOffset  merchant time zone utc offset
+ * @param {Date} date date obj, default is today
  * @returns {Dayjs}
  */
-export const getBusinessCurrentTime = businessUTCOffset => {
-  return dayjs().utcOffset(businessUTCOffset);
+export const getBusinessDateTime = (businessUTCOffset, date = new Date()) => {
+  return dayjs(date).utcOffset(businessUTCOffset);
 };

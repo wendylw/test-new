@@ -1,4 +1,4 @@
-import { getBusinessCurrentTime, isInBreakTime, isInVacations, isInValidDays, isInValidTime } from './order-utils';
+import { getBusinessDateTime, isInBreakTime, isInVacations, isInValidDays, isInValidTime } from './order-utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
@@ -87,16 +87,16 @@ describe('test isInVacations function', () => {
   });
 });
 
-describe('test getBusinessCurrentTime function', () => {
+describe('test getBusinessDateTime function', () => {
   const currentTime = dayjs();
 
   test.each`
-    utcOffset | expected
-    ${480}    | ${currentTime.utcOffset(480)}
-    ${0}      | ${currentTime.utcOffset(0)}
-    ${420}    | ${currentTime.utcOffset(420)}
-    ${-480}   | ${currentTime.utcOffset(-480)}
-  `('return $expected when set current time utcOffset to $utcOffset', ({ utcOffset, expected }) => {
-    expect(getBusinessCurrentTime(utcOffset).isSame(expected, 'minute')).toBeTruthy();
+    utcOffset | date                                    | expected
+    ${480}    | ${undefined}                            | ${currentTime.utcOffset(480).format()}
+    ${480}    | ${new Date('2020-12-15T16:23:12.000Z')} | ${'2020-12-16T00:23:12+08:00'}
+    ${420}    | ${new Date('2020-12-15T10:55:55.000Z')} | ${'2020-12-15T17:55:55+07:00'}
+    ${0}      | ${new Date('2020-12-15T16:00:00.000Z')} | ${'2020-12-15T16:00:00Z'}
+  `('return $expected when set date is $date, utcOffset is $utcOffset', ({ utcOffset, date, expected }) => {
+    expect(getBusinessDateTime(utcOffset, date).format()).toBe(expected);
   });
 });

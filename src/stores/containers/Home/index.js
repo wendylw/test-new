@@ -4,7 +4,7 @@ import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
-import { checkStoreIsOpened, getBusinessCurrentTime } from '../../../utils/order-utils';
+import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -69,7 +69,7 @@ class App extends Component {
 
     const enablePreOrder = _get(store, 'qrOrderingSettings.enablePreOrder', false);
 
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+    const currentTime = getBusinessDateTime(businessUTCOffset);
 
     const isStoreOpened = store && checkStoreIsOpened(currentTime, store);
 

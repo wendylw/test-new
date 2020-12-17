@@ -30,7 +30,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { getBusinessCurrentTime, checkStoreIsOpened } from '../../../utils/order-utils';
+import { getBusinessDateTime, checkStoreIsOpened } from '../../../utils/order-utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
@@ -128,7 +128,7 @@ class App extends Component {
 
   getNearlyStore = async (stores, type, deliveryAddress) => {
     const { businessUTCOffset } = this.props;
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+    const currentTime = getBusinessDateTime(businessUTCOffset);
 
     stores.forEach(item => {
       if (item.location) {

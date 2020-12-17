@@ -16,7 +16,7 @@ import Tag from '../../../components/Tag';
 import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
-import { checkStoreIsOpened, getBusinessCurrentTime } from '../../../utils/order-utils';
+import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/order-utils';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
@@ -106,7 +106,7 @@ class StoreList extends Component {
         item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
     );
 
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+    const currentTime = getBusinessDateTime(businessUTCOffset);
 
     stores.forEach(store => {
       store.isClose = !checkStoreIsOpened(currentTime, store);

@@ -17,7 +17,7 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
-import { isAvailableOrderTime, getBusinessCurrentTime } from '../../../utils/order-utils';
+import { isAvailableOrderTime, getBusinessDateTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -39,6 +39,7 @@ import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
+import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import './OrderingHome.scss';
 
@@ -48,7 +49,7 @@ const localState = {
 
 const SCROLL_DEPTH_DENOMINATOR = 4;
 
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
 export class Home extends Component {
   constructor(props) {
     super(props);
@@ -132,8 +133,6 @@ export class Home extends Component {
       await this.setupDeliveryAddressByRedirectState();
     }
 
-    this.handleDeliveryTimeInSession();
-
     await homeActions.loadProductList();
 
     const pageRf = this.getPageRf();
@@ -212,7 +211,7 @@ export class Home extends Component {
     const allStore = this.props.allStore || [];
     const businessUTCOffset = this.props.businessUTCOffset;
 
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+    const currentTime = getBusinessDateTime(businessUTCOffset);
 
     const enablePreOrderFroMultipleStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
@@ -283,7 +282,48 @@ export class Home extends Component {
     }
   };
 
+  isAvailableOnDemandOrder = () => {
+    const isDeliveryType = Utils.isDeliveryType();
+
+    const { deliveryInfo, businessUTCOffset } = this.props;
+    const {
+      validDays,
+      vacations,
+      breakTimeFrom,
+      breakTimeTo,
+      disableOnDemandOrder,
+      validTimeFrom,
+      validTimeTo,
+      logisticsValidTimeFrom,
+      logisticsValidTimeTo,
+    } = deliveryInfo;
+
+    if (disableOnDemandOrder) {
+      return false;
+    }
+
+    const currentTime = getBusinessDateTime(businessUTCOffset);
+
+    const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
+    const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
+
+    const availableOrderTime = isAvailableOrderTime(currentTime, {
+      validDays,
+      validTimeFrom: orderValidTimeFrom,
+      validTimeTo: orderValidTimeTo,
+      vacations,
+      breakTimeFrom,
+      breakTimeTo,
+    });
+
+    return availableOrderTime;
+  };
+
   checkOrderTime = async () => {
+    if (this.isExpectedDeliverTimeExpired()) {
+      Utils.removeExpectedDeliveryTime();
+    }
+
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const storeId = config.storeId;
@@ -301,40 +341,14 @@ export class Home extends Component {
     }
 
     if (isDeliveryType || isPickUpType) {
-      const { deliveryInfo, businessUTCOffset } = this.props;
-      const {
-        validDays,
-        vacations,
-        breakTimeFrom,
-        breakTimeTo,
-        disableOnDemandOrder,
-        validTimeFrom,
-        validTimeTo,
-        logisticsValidTimeFrom,
-        logisticsValidTimeTo,
-      } = deliveryInfo;
+      const { businessUTCOffset } = this.props;
+      const isAvailableOnDemandOrder = this.isAvailableOnDemandOrder();
 
-      if (disableOnDemandOrder) {
+      if (!isAvailableOnDemandOrder) {
         return;
       }
 
-      const currentTime = getBusinessCurrentTime(businessUTCOffset);
-
-      const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
-      const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
-
-      const availableOrderTime = isAvailableOrderTime(currentTime, {
-        validDays,
-        validTimeFrom: orderValidTimeFrom,
-        validTimeTo: orderValidTimeTo,
-        vacations,
-        breakTimeFrom,
-        breakTimeTo,
-      });
-
-      if (!availableOrderTime) {
-        return;
-      }
+      const currentTime = getBusinessDateTime(businessUTCOffset);
 
       Utils.setSessionVariable(
         'expectedDeliveryDate',
@@ -382,25 +396,53 @@ export class Home extends Component {
     }
   };
 
-  // Remove user previously selected delivery/pickup time from session
-  // Just in case the previous one they select is delivery and the new one is pickup
-  // which will cause delivery/pickup time displayed in header incorrect
-  handleDeliveryTimeInSession = () => {
+  getPreviousDeliveryMethod = () => {
     const { hour = {} } = Utils.getExpectedDeliveryDateFromSession();
-    let previousDeliveryMethod = '';
 
     if (hour.from && hour.to) {
-      previousDeliveryMethod = Constants.DELIVERY_METHOD.DELIVERY;
-    } else if (hour.from && !hour.to) {
-      previousDeliveryMethod = Constants.DELIVERY_METHOD.PICKUP;
+      return Constants.DELIVERY_METHOD.DELIVERY;
     }
 
-    if (
-      (Utils.isPickUpType() && previousDeliveryMethod === Constants.DELIVERY_METHOD.DELIVERY) ||
-      (Utils.isDeliveryType() && previousDeliveryMethod === Constants.DELIVERY_METHOD.PICKUP)
-    ) {
-      Utils.removeExpectedDeliveryTime();
+    if (hour.from && !hour.to) {
+      return Constants.DELIVERY_METHOD.PICKUP;
     }
+
+    return null;
+  };
+
+  isExpectedDeliverTimeExpired = () => {
+    const { businessUTCOffset } = this.props;
+    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
+    const deliverMethod = Utils.getOrderTypeFromUrl();
+    const previousDeliveryMethod = this.getPreviousDeliveryMethod();
+
+    if (!date.date || !hour.from) {
+      return true;
+    }
+
+    // Remove user previously selected delivery/pickup time from session
+    // Just in case the previous one they select is delivery and the new one is pickup
+    // which will cause delivery/pickup time displayed in header incorrect
+    if (previousDeliveryMethod && previousDeliveryMethod !== deliverMethod) {
+      return true;
+    }
+
+    if (hour.from === PREORDER_IMMEDIATE_TAG.from && !this.isAvailableOnDemandOrder()) {
+      return true;
+    }
+
+    if (hour.from !== PREORDER_IMMEDIATE_TAG.from) {
+      const currentTime = getBusinessDateTime(businessUTCOffset);
+      const expectedDate = getBusinessDateTime(businessUTCOffset, new Date(date.date));
+
+      const expectedDeliveryTime = setDateTime(hour.from, expectedDate);
+
+      if (expectedDeliveryTime.isBefore(currentTime)) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   getBusinessCountry = () => {
@@ -639,7 +681,7 @@ export class Home extends Component {
       return false;
     }
 
-    const currentTime = getBusinessCurrentTime(businessUTCOffset);
+    const currentTime = getBusinessDateTime(businessUTCOffset);
 
     // selected store
     const availableOrderTime = isAvailableOrderTime(currentTime, {
