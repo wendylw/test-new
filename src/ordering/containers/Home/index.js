@@ -229,9 +229,11 @@ export class Home extends Component {
         vacations,
         validDays,
         disableOnDemandOrder,
+        enablePreOrder,
       } = qrOrderingSettings;
 
-      if (disableOnDemandOrder) {
+      // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
+      if (enablePreOrder && disableOnDemandOrder) {
         return false;
       }
 
@@ -296,9 +298,11 @@ export class Home extends Component {
       validTimeTo,
       logisticsValidTimeFrom,
       logisticsValidTimeTo,
+      enablePreOrder,
     } = deliveryInfo;
 
-    if (disableOnDemandOrder) {
+    // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
+    if (enablePreOrder && disableOnDemandOrder) {
       return false;
     }
 
@@ -660,18 +664,8 @@ export class Home extends Component {
   };
 
   isValidTimeToOrder = () => {
-    const { deliveryInfo, businessUTCOffset } = this.props;
     const { isValidToOrderFromMultipleStore } = this.state;
     const storeId = config.storeId;
-    const {
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-      disableOnDemandOrder,
-    } = deliveryInfo;
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
@@ -682,23 +676,7 @@ export class Home extends Component {
       return isValidToOrderFromMultipleStore;
     }
 
-    if (disableOnDemandOrder) {
-      return false;
-    }
-
-    const currentTime = getBusinessDateTime(businessUTCOffset);
-
-    // selected store
-    const availableOrderTime = isAvailableOrderTime(currentTime, {
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-    });
-
-    return availableOrderTime;
+    return this.isAvailableOnDemandOrder();
   };
 
   renderHeaderChildren() {
