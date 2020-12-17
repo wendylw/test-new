@@ -163,9 +163,19 @@ export class ThankYou extends PureComponent {
     const { location = {} } = storeInfo;
     const { latitude: storeLat, longitude: storeLng } = location;
     const { address = {} } = deliveryInformation[0] || {};
-    const { latitude: deliveryeLat, longitude: deliveryLng } = address.location || {};
+    const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
     const title = `#${orderId}`;
     const text = t('ContactUs');
+    const focusPositionList = [
+      {
+        lat: deliveryLat,
+        lng: deliveryLng,
+      },
+      {
+        lat,
+        lng,
+      },
+    ];
 
     if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
       try {
@@ -184,8 +194,9 @@ export class ThankYou extends PureComponent {
               })
             );
             window.androidInterface.updateStorePosition(storeLat, storeLng);
-            window.androidInterface.updateHomePosition(deliveryeLat, deliveryLng);
+            window.androidInterface.updateHomePosition(deliveryLat, deliveryLng);
             window.androidInterface.updateRiderPosition(lat, lng);
+            window.androidInterface.focusPositions(JSON.stringify(focusPositionList));
             this.setState({
               isHideTopArea: true,
             });
@@ -212,10 +223,14 @@ export class ThankYou extends PureComponent {
             });
             window.webkit.messageHandlers.shareAction.postMessage({
               functionName: 'updateHomePosition',
-              lat: deliveryeLat,
+              lat: deliveryLat,
               lng: deliveryLng,
             });
             window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'focusPositions',
+              positions: focusPositionList,
+            });
             this.setState({
               isHideTopArea: true,
             });
