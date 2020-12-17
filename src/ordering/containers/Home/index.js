@@ -330,12 +330,17 @@ export class Home extends Component {
 
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
-    const storeId = config.storeId;
     const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+
+    const storeId = config.storeId;
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
 
-    if (!deliveryAddress || !storeId) {
+    if (!storeId) {
+      return;
+    }
+
+    if (isDeliveryType && !deliveryAddress) {
       return;
     }
 
