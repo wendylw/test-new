@@ -1066,9 +1066,6 @@ export class ThankYou extends PureComponent {
       toDayDateMonth(new Date()) ? toDayDateMonth(new Date()).split(',')[1] : ''
     }, ${immediatePickUpTime.split(',')[1]}`;
 
-    console.log('dateString===>', toDayDateMonth(new Date()) ? toDayDateMonth(new Date()).split(',')[1] : '');
-    console.log('immediatePickUpTime===>', toDayDateMonth(new Date()));
-
     return (
       <div className="padding-small">
         <div className="padding-left-right-small flex flex-middle flex-space-between">
