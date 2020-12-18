@@ -1062,9 +1062,12 @@ export class ThankYou extends PureComponent {
       date: new Date().getTime() + 1000 * 60 * 30,
       locale: onlineStoreInfo.country,
     });
-    immediatePickUpTime = `${immediatePickUpTime.split(',')[0]},${toDayDateMonth(new Date())}, ${
-      immediatePickUpTime.split(',')[1]
-    }`;
+    immediatePickUpTime = `${immediatePickUpTime.split(',')[0]},${
+      toDayDateMonth(new Date()) ? toDayDateMonth(new Date()).split(',')[1] : ''
+    }, ${immediatePickUpTime.split(',')[1]}`;
+
+    console.log('dateString===>', toDayDateMonth(new Date()) ? toDayDateMonth(new Date()).split(',')[1] : '');
+    console.log('immediatePickUpTime===>', toDayDateMonth(new Date()));
 
     return (
       <div className="padding-small">
@@ -1077,7 +1080,7 @@ export class ThankYou extends PureComponent {
             <h4 className="margin-top-bottom-small text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="flex flex-top padding-top-bottom-small">
               <IconAccessTime className="icon icon__small icon__primary" />
-              <span className="ordering-thanks__time padding-top-ottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
+              <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
                 {isPreOrder ? pickupTime : immediatePickUpTime}
               </span>
             </p>

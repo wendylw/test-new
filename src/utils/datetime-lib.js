@@ -194,7 +194,12 @@ export const formatPickupAddress = ({ date, locale, separator = ',' }) => {
     part1 = toDayDateMonth(orderTime, locale);
   }
 
+  console.log('part1===>', part1);
+
   const part2 = toNumericTime(orderTime, locale);
+
+  console.log('separator===>', separator);
+  console.log('part2===>', part2);
 
   return !Boolean(part1) && !Boolean(part2) ? null : `${part1}${separator} ${part2}`;
 };
