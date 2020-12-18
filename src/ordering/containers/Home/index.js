@@ -285,21 +285,12 @@ export class Home extends Component {
   };
 
   isAvailableOnDemandOrder = () => {
-    const isDeliveryType = Utils.isDeliveryType();
-
+    // if not select store return false
+    if (!config.storeId) {
+      return false;
+    }
     const { deliveryInfo, businessUTCOffset } = this.props;
-    const {
-      validDays,
-      vacations,
-      breakTimeFrom,
-      breakTimeTo,
-      disableOnDemandOrder,
-      validTimeFrom,
-      validTimeTo,
-      logisticsValidTimeFrom,
-      logisticsValidTimeTo,
-      enablePreOrder,
-    } = deliveryInfo;
+    const { disableOnDemandOrder, enablePreOrder } = deliveryInfo;
 
     // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
     if (enablePreOrder && disableOnDemandOrder) {
@@ -308,10 +299,33 @@ export class Home extends Component {
 
     const currentTime = getBusinessDateTime(businessUTCOffset);
 
+    return this.isAvailableTimeToOrder(currentTime);
+  };
+
+  isAvailableTimeToOrder = dateTime => {
+    // if not select store return false
+    if (!config.storeId) {
+      return false;
+    }
+
+    const isDeliveryType = Utils.isDeliveryType();
+
+    const { deliveryInfo } = this.props;
+    const {
+      validDays,
+      vacations,
+      breakTimeFrom,
+      breakTimeTo,
+      validTimeFrom,
+      validTimeTo,
+      logisticsValidTimeFrom,
+      logisticsValidTimeTo,
+    } = deliveryInfo;
+
     const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
     const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
 
-    const availableOrderTime = isAvailableOrderTime(currentTime, {
+    const availableOrderTime = isAvailableOrderTime(dateTime, {
       validDays,
       validTimeFrom: orderValidTimeFrom,
       validTimeTo: orderValidTimeTo,
@@ -452,6 +466,10 @@ export class Home extends Component {
       const expectedDeliveryTime = setDateTime(hour.from, expectedDate);
 
       if (expectedDeliveryTime.isBefore(currentTime)) {
+        return true;
+      }
+
+      if (storeId && !this.isAvailableTimeToOrder(expectedDeliveryTime)) {
         return true;
       }
     }
