@@ -339,6 +339,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
               setPaymentMethod(payload.paymentMethod);
             }
           }}
+          paymentName={'Stripe'}
         >
           {processing ? (
             t('Processing')
