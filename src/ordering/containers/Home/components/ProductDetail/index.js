@@ -375,7 +375,6 @@ class ProductDetail extends Component {
 
   handleHideProductDetail(e) {
     if (e && e.target !== e.currentTarget) {
-      this.setState({ increasingProductOnCat: false });
       return;
     }
 
@@ -522,6 +521,8 @@ class ProductDetail extends Component {
     if (!product) {
       return null;
     }
+
+    console.log(increasingProductOnCat);
 
     return (
       <React.Fragment>
