@@ -25,7 +25,7 @@ import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import Constants from '../../../utils/constants';
-import { formatPickupAddress, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
+import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -1053,12 +1053,15 @@ export class ThankYou extends PureComponent {
     const deliveryAddress = address && address.address;
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const pickupTime = formatPickupAddress({
+    const pickupTime = formatPickupTime({
       date: expectDeliveryDateFrom,
       locale: onlineStoreInfo.country,
+      isPreOrder,
     });
 
-    let immediatePickUpTime = formatPickupAddress({
+    console.log(pickupTime);
+
+    let immediatePickUpTime = formatPickupTime({
       date: new Date().getTime() + 1000 * 60 * 30,
       locale: onlineStoreInfo.country,
     });
@@ -1078,7 +1081,7 @@ export class ThankYou extends PureComponent {
             <p className="flex flex-top padding-top-bottom-small">
               <IconAccessTime className="icon icon__small icon__primary" />
               <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
-                {isPreOrder ? pickupTime : immediatePickUpTime}
+                {pickupTime}
               </span>
             </p>
           </div>
