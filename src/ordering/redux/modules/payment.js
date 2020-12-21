@@ -26,6 +26,8 @@ export const initialState = {
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
+  selectedPaymentCard: {},
+  cardList: [],
 };
 
 export const types = {
@@ -53,6 +55,14 @@ export const types = {
   FETCH_BANKLIST_REQUEST: 'ORDERING/PAYMENT/FETCH_BANKLIST_REQUEST',
   FETCH_BANKLIST_SUCCESS: 'ORDERING/PAYMENT/FETCH_BANKLIST_SUCCESS',
   FETCH_BANKLIST_FAILURE: 'ORDERING/PAYMENT/FETCH_BANKLIST_FAILURE',
+
+  // get saved card list
+  FETCH_CARD_REQUEST: 'ORDERING/PAYMENT/FETCH_CARD_REQUEST',
+  FETCH_CARD_SUCCESS: 'ORDERING/PAYMENT/FETCH_CARD_SUCCESS',
+  FETCH_CARD_FAILURE: 'ORDERING/PAYMENT/FETCH_CARD_FAILURE',
+
+  // set payment card
+  SET_PAYMENT_CARD: 'ORDERING/PAYMENTT/SET_PAYMENT_CARD',
 
   // get online banking merchant list
   FETCH_ONLINE_BANKING_MERCHANT_LIST: 'ORDERING/PAYMENT/FETCH_ONLINE_BANKING_MERCHANT_LIST',
@@ -284,6 +294,19 @@ export const actions = {
       params: { country },
     },
   }),
+
+  fetchSavedCard: params => ({
+    [API_REQUEST]: {
+      types: [types.FETCH_CARD_REQUEST, types.FETCH_CARD_SUCCESS, types.FETCH_CARD_FAILURE],
+      ...Url.API_URLS.GET_SAVED_CARD(params.userId),
+      params: { provider: params.paymentName },
+    },
+  }),
+
+  setPaymentCard: card => ({
+    type: types.SET_PAYMENT_CARD,
+    card,
+  }),
 };
 
 const getOrderSource = () => {
@@ -376,6 +399,14 @@ const reducer = (state = initialState, action) => {
 
       return { ...state, bankingList };
     }
+    case types.FETCH_CARD_SUCCESS: {
+      const { paymentMethods = [] } = response || {};
+
+      return { ...state, cardList: paymentMethods, selectedPaymentCard: paymentMethods[0] };
+    }
+    case types.SET_PAYMENT_CARD: {
+      return { ...state, selectedPaymentCard: action.card };
+    }
     default:
       return state;
   }
@@ -387,6 +418,10 @@ export default reducer;
 export const getCurrentPayment = state => state.payment.currentPayment;
 
 export const getCurrentOrderId = state => state.payment.orderId;
+
+export const getCardList = state => state.payment.cardList;
+
+export const getSelectedPaymentCard = state => state.payment.selectedPaymentCard;
 
 export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 
@@ -418,22 +453,7 @@ export const getPayments = createSelector(
     const paymentList = getPaymentList(merchantCountry);
 
     return paymentList
-      .map(paymentKey => {
-        const { total } = cartSummary;
-
-        // for Malaysia
-        if (merchantCountry === 'MY' && ['stripe', 'creditCard'].includes(paymentKey)) {
-          return paymentOptions[
-            total &&
-            process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL &&
-            total <= parseFloat(process.env.REACT_APP_PAYMENT_STRIPE_THRESHOLD_TOTAL)
-              ? 'creditCard'
-              : 'stripe'
-          ];
-        }
-
-        return paymentOptions[paymentKey];
-      })
+      .map(paymentKey => paymentOptions[paymentKey])
       .filter(payment => {
         return true;
       });
