@@ -25,7 +25,7 @@ import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import Constants from '../../../utils/constants';
-import { formatPickupAddress, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
+import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -163,9 +163,19 @@ export class ThankYou extends PureComponent {
     const { location = {} } = storeInfo;
     const { latitude: storeLat, longitude: storeLng } = location;
     const { address = {} } = deliveryInformation[0] || {};
-    const { latitude: deliveryeLat, longitude: deliveryLng } = address.location || {};
+    const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
     const title = `#${orderId}`;
     const text = t('ContactUs');
+    const focusPositionList = [
+      {
+        lat: deliveryLat,
+        lng: deliveryLng,
+      },
+      {
+        lat,
+        lng,
+      },
+    ];
 
     if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
       try {
@@ -184,8 +194,9 @@ export class ThankYou extends PureComponent {
               })
             );
             window.androidInterface.updateStorePosition(storeLat, storeLng);
-            window.androidInterface.updateHomePosition(deliveryeLat, deliveryLng);
+            window.androidInterface.updateHomePosition(deliveryLat, deliveryLng);
             window.androidInterface.updateRiderPosition(lat, lng);
+            window.androidInterface.focusPositions(JSON.stringify(focusPositionList));
             this.setState({
               isHideTopArea: true,
             });
@@ -212,10 +223,14 @@ export class ThankYou extends PureComponent {
             });
             window.webkit.messageHandlers.shareAction.postMessage({
               functionName: 'updateHomePosition',
-              lat: deliveryeLat,
+              lat: deliveryLat,
               lng: deliveryLng,
             });
             window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
+            window.webkit.messageHandlers.shareAction.postMessage({
+              functionName: 'focusPositions',
+              positions: focusPositionList,
+            });
             this.setState({
               isHideTopArea: true,
             });
@@ -1038,18 +1053,21 @@ export class ThankYou extends PureComponent {
     const deliveryAddress = address && address.address;
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const pickupTime = formatPickupAddress({
+    const pickupTime = formatPickupTime({
       date: expectDeliveryDateFrom,
       locale: onlineStoreInfo.country,
+      isPreOrder,
     });
 
-    let immediatePickUpTime = formatPickupAddress({
+    console.log(pickupTime);
+
+    let immediatePickUpTime = formatPickupTime({
       date: new Date().getTime() + 1000 * 60 * 30,
       locale: onlineStoreInfo.country,
     });
-    immediatePickUpTime = `${immediatePickUpTime.split(',')[0]},${toDayDateMonth(new Date())}, ${
-      immediatePickUpTime.split(',')[1]
-    }`;
+    immediatePickUpTime = `${immediatePickUpTime.split(',')[0]},${
+      toDayDateMonth(new Date()) ? toDayDateMonth(new Date()).split(',')[1] : ''
+    }, ${immediatePickUpTime.split(',')[1]}`;
 
     return (
       <div className="padding-small">
@@ -1062,8 +1080,8 @@ export class ThankYou extends PureComponent {
             <h4 className="margin-top-bottom-small text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="flex flex-top padding-top-bottom-small">
               <IconAccessTime className="icon icon__small icon__primary" />
-              <span className="ordering-thanks__time padding-top-ottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
-                {isPreOrder ? pickupTime : immediatePickUpTime}
+              <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
+                {pickupTime}
               </span>
             </p>
           </div>
