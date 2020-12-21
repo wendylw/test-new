@@ -1288,7 +1288,8 @@ class LocationAndDate extends Component {
     });
     Utils.removeSessionVariable('deliveryAddressUpdate');
 
-    const callbackUrl = Utils.getQueryString('callbackUrl');
+    // callbackUrl equals 'undefined' from customer page
+    const callbackUrl = Utils.getQueryString('callbackUrl') === 'undefined' ? '' : Utils.getQueryString('callbackUrl');
 
     if (typeof callbackUrl === 'string' || (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO && urlType !== currentType)) {
       if ((callbackUrl || '').split('?')[0] === '/customer') {
