@@ -89,7 +89,7 @@ export const isInValidTime = (dateTime, { validTimeFrom, validTimeTo }) => {
 
   const time = timeLib.getTimeFromDayjs(dateTime);
 
-  return timeLib.isBetween(time, { minTime: validTimeFrom, maxTime: validTimeTo }, '[)');
+  return timeLib.isBetween(time, { minTime: validTimeFrom, maxTime: validTimeTo }, '[]');
 };
 
 /**
