@@ -62,7 +62,7 @@ class App extends Component {
   async gotoDelivery(storeId) {
     const { homeActions, businessUTCOffset } = this.props;
     // 请求 coreBusiness
-    await homeActions.loadCoreBusiness();
+    await homeActions.loadCoreBusiness(storeId);
     const { businessInfo } = this.props;
 
     const store = _get(businessInfo, 'stores.0', null);
