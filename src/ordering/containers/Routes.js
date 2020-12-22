@@ -13,6 +13,7 @@ import NotFound from '../../NotFound';
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
 const Receipt = lazy(() => Utils.attemptLoad(() => import('./Receipt')));
 const StripePayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Stripe')));
+const AdyenPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Adyen')));
 const CreditCard = lazy(() => Utils.attemptLoad(() => import('./Payment/CreditCard')));
 const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/OnlineBanking')));
 const ThankYou = lazy(() => Utils.attemptLoad(() => import('./ThankYou')));
@@ -27,6 +28,8 @@ const Profile = lazy(() => Utils.attemptLoad(() => import('./Profile')));
 const AddressList = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressList')));
 const AddressDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressDetail')));
 const ContactDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/ContactDetail')));
+const SavedCards = lazy(() => Utils.attemptLoad(() => import('./Payment/SavedCards')));
+const CardCvv = lazy(() => Utils.attemptLoad(() => import('./Payment/SavedCards/CVV')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -46,6 +49,9 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION_AND_DATE} component={LocationAndDate} />
             <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={CreditCard} />
             <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT} component={StripePayment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_ADYEN_PAYMENT} component={AdyenPayment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS} component={SavedCards} />
+            <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_CVV} component={CardCvv} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.RECEIPT_DETAIL} component={Receipt} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />

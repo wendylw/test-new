@@ -15,7 +15,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../red
 import { getDeliveryInfo } from '../../redux/modules/home';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { getOnlineStoreInfo, getUser, getBusiness, getMerchantCountry } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../redux/modules/app';
 import {
   actions as paymentActionCreators,
   getCurrentPayment,
@@ -24,6 +24,7 @@ import {
   getDefaultPayment,
   getCurrentPaymentInfo,
   getUnavailablePayments,
+  getCardList,
 } from '../../redux/modules/payment';
 import Utils from '../../../utils/utils';
 import { getPaymentName, getPaymentRedirectAndWebHookUrl } from './utils';
@@ -130,12 +131,43 @@ class Payment extends Component {
     }
   };
 
-  handleBeforeCreateOrder = () => {
-    const { history, currentPaymentInfo } = this.props;
+  handleBeforeCreateOrder = async () => {
+    const { history, currentPaymentInfo, user } = this.props;
 
     this.setState({
       payNowLoading: true,
     });
+
+    if (!user || !user.consumerId) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+      });
+    }
+
+    // Check if is credit pay, if credit pay, should check if go to saved page or
+    if (currentPaymentInfo && currentPaymentInfo.supportSaveCards) {
+      await this.props.paymentActions.fetchSavedCard({
+        userId: user.consumerId,
+        paymentName: currentPaymentInfo.key,
+      });
+
+      const { cardList } = this.props;
+
+      if (cardList && cardList.length) {
+        history.push({
+          pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
+          search: window.location.search,
+        });
+        return;
+      } else {
+        history.push({
+          pathname: Constants.ROUTER_PATHS.ORDERING_ADYEN_PAYMENT,
+          search: window.location.search,
+        });
+        return;
+      }
+    }
 
     // redirect to customized payment page when the payment contains pathname of page router
     if (currentPaymentInfo && currentPaymentInfo.pathname) {
@@ -300,7 +332,6 @@ export default compose(
         payments: getPayments(state),
         currentPayment: getCurrentPayment(state) || getDefaultPayment(state),
         currentPaymentInfo: getCurrentPaymentInfo(state),
-        user: getUser(state),
         business: getBusiness(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
@@ -309,6 +340,8 @@ export default compose(
         unavailablePaymentList: getUnavailablePayments(state),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
+        cardList: getCardList(state),
+        user: getUser(state),
       };
     },
     dispatch => ({

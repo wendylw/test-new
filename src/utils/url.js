@@ -29,6 +29,10 @@ const API_URLS = {
     url: '/payment/onlineBanking',
     method: 'get',
   },
+  GET_SAVED_CARD: id => ({
+    url: `/api/consumers/${id}/paymentMethods`,
+    method: 'get',
+  }),
   GET_CASHBACK: {
     url: '/api/cashback',
     method: 'get',

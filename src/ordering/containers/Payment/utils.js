@@ -3,17 +3,22 @@ import qs from 'qs';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 import Utils from '../../../utils/utils';
+import paymentMasterImage from '../../../images/payment-mastercard.svg';
+import paymentVisaImage from '../../../images/payment-visa.svg';
 
 const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS } = Constants;
 
 const PAYMENT_NAME_COUNTRY_MAP = {
   MY: {
+    // To enable adyen online banking, remove StripeFPX and release AdyenFPX
     [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'StripeFPX',
+    // [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'AdyenFPX',
     // [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'CCPPMYOnlineBanking',
     [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'CCPPMYCreditCard',
     [PAYMENT_METHOD_LABELS.GRAB_PAY]: 'GrabPay',
     [PAYMENT_METHOD_LABELS.TNG_PAY]: 'CCPPTnGPay',
     [PAYMENT_METHOD_LABELS.BOOST_PAY]: 'Boost',
+    [PAYMENT_METHOD_LABELS.ADYEN_PAY]: 'Adyen',
   },
   TH: {
     [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'BeepTHOnlineBanking',
@@ -151,4 +156,37 @@ export const getPaymentRedirectAndWebHookUrl = business => {
     redirectURL,
     webhookURL,
   };
+};
+
+export const getCardLabel = cardType => {
+  let cardLabel = '';
+
+  switch (cardType.toLowerCase()) {
+    case 'mastercard':
+      cardLabel = 'Mastercard';
+      break;
+    case 'visa':
+      cardLabel = 'Visa';
+      break;
+    default:
+      cardLabel = '';
+  }
+
+  return cardLabel;
+};
+
+export const getCardIcon = cardType => {
+  let cardIcon = '';
+  switch (cardType.toLowerCase()) {
+    case 'mastercard':
+      cardIcon = paymentMasterImage;
+      break;
+    case 'visa':
+      cardIcon = paymentVisaImage;
+      break;
+    default:
+      cardIcon = '';
+  }
+
+  return cardIcon;
 };
