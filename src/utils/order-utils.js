@@ -51,38 +51,6 @@ export const filterDeliveryAvailableStores = (dateTime, stores) => {
   });
 };
 
-export const checkStoreIsOpened = (dateTime, store) => {
-  const { qrOrderingSettings } = store;
-  const {
-    enablePreOrder,
-    validDays,
-    validTimeFrom,
-    validTimeTo,
-    breakTimeFrom,
-    breakTimeTo,
-    vacations,
-    disableOnDemandOrder,
-  } = qrOrderingSettings;
-
-  if (enablePreOrder) {
-    return true;
-  }
-
-  return (
-    enablePreOrder ||
-    isAvailableOrderOnDemand({
-      businessUTCOffset,
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-      disableOnDemandOrder,
-    })
-  );
-};
-
 export const findNearlyStore = ({ lat, lng }, stores) => {
   let nearlyStore = {
     distance: 0,
