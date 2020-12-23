@@ -12,10 +12,7 @@ const { PROMOTION_ERROR_CODES, PROMO_TYPE } = Constants;
 const initialState = {
   promoCode: '',
   code: '',
-  error: {
-    code: '',
-    extraInfo: {},
-  },
+  code: '',
   validFrom: '',
   inProcess: false,
   promoType: '',
