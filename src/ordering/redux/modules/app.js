@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
+import _uniq from 'lodash/uniq';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
@@ -14,6 +15,7 @@ import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getAllStores } from '../../../redux/modules/entities/stores';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -542,4 +544,16 @@ export const getBusinessInfo = state => {
 
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
+});
+
+export const getBusinessDeliveryTypes = createSelector(getAllStores, allStores => {
+  const deliveryTypes = allStores.reduce(
+    (deliveryTypes,
+    store => {
+      return deliveryTypes.concat(store.fulfillmentOptions);
+    }),
+    []
+  );
+
+  return _uniq(deliveryTypes);
 });

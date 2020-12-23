@@ -1,8 +1,118 @@
 import * as timeLib from './time-lib';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { computeStraightDistance } from './geoUtils';
+import Constants from './constants';
+
+const { DELIVERY_METHOD } = Constants;
 
 dayjs.extend(utc);
+
+export const getAvailableOrderDateList = (currentDate, store) => {
+  const { qrOrderingSettings } = store;
+
+  return [
+    {
+      date: '',
+      isOpen: true,
+      isToday: true,
+    },
+  ];
+};
+
+export const getAvailableOrderTimeList = (deliveryType, store) => {
+  return ['08:00', '09:00', '10:00', '13:00', '14:00'];
+};
+
+export const filterDeliveryAvailableStores = (dateTime, stores) => {
+  return stores.filter(store => {
+    const { qrOrderingSettings, fulfillmentOptions } = store;
+    if (!qrOrderingSettings) {
+      return false;
+    }
+
+    if (!qrOrderingSettings.enableLiveOnline) {
+      return false;
+    }
+
+    const isSupportDelivery = fulfillmentOptions.some(type => type.toLowerCase() === DELIVERY_METHOD.DELIVERY);
+
+    if (!isSupportDelivery) {
+      return false;
+    }
+
+    const isStoreOpened = checkStoreIsOpened(dateTime, store);
+
+    if (!isStoreOpened) {
+      return false;
+    }
+
+    return true;
+  });
+};
+
+export const checkStoreIsOpened = (dateTime, store) => {
+  const { qrOrderingSettings } = store;
+  const {
+    enablePreOrder,
+    validDays,
+    validTimeFrom,
+    validTimeTo,
+    breakTimeFrom,
+    breakTimeTo,
+    vacations,
+    disableOnDemandOrder,
+  } = qrOrderingSettings;
+
+  if (enablePreOrder) {
+    return true;
+  }
+
+  return (
+    enablePreOrder ||
+    isAvailableOrderOnDemand({
+      businessUTCOffset,
+      validDays,
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      vacations,
+      disableOnDemandOrder,
+    })
+  );
+};
+
+export const findNearlyStore = ({ lat, lng }, stores) => {
+  let nearlyStore = {
+    distance: 0,
+    store: null,
+  };
+
+  stores.forEach(store => {
+    if (!store.location) {
+      return;
+    }
+    const { latitude, longitude } = store.location;
+
+    const distance = computeStraightDistance(
+      { lat, lng },
+      {
+        lat: latitude,
+        lng: longitude,
+      }
+    );
+
+    if (distance > nearlyStore.distance) {
+      nearlyStore = {
+        distance,
+        store,
+      };
+    }
+  });
+
+  return nearlyStore.store;
+};
 
 /**
  * check store whether it is open or not at given time
