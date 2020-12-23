@@ -31,7 +31,6 @@ const commonReducer = (state = initialState, action) => {
         promoCode: voucher.voucherCode,
         status: voucher.status,
         discount: voucher.value,
-        validFrom: new Date(voucher.validFrom),
         promoType: PROMO_TYPE.VOUCHER,
       };
     } else if (displayPromotions && displayPromotions.length) {

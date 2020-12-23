@@ -12,6 +12,10 @@ const { PROMOTION_ERROR_CODES, PROMO_TYPE } = Constants;
 const initialState = {
   promoCode: '',
   code: '',
+  error: {
+    code: '',
+    extraInfo: {},
+  },
   validFrom: '',
   inProcess: false,
   promoType: '',
@@ -152,11 +156,13 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_SUCCESS:
       return {
         ...state,
+        code: '',
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE:
       return {
         ...state,
+        code: action.response.code,
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_VOUCHER_REQUEST:
@@ -167,16 +173,15 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS:
       return {
         ...state,
-        code: action.response.code,
+        code: '',
         promoType: PROMO_TYPE.VOUCHER,
-        validFrom: new Date(action.response.validFrom),
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_PROMO_SUCCESS:
       return {
         ...state,
+        code: '',
         promoType: PROMO_TYPE.PROMOTION,
-        validFrom: new Date(action.response.validFrom),
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_PROMO_FAILED:
@@ -184,12 +189,12 @@ const reducer = (state = initialState, action) => {
         ...state,
         code: action.response.code,
         promoType: PROMO_TYPE.PROMOTION,
-        validFrom: new Date(action.response.validFrom),
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
       return {
         ...state,
+        code: action.response.code,
         inProcess: false,
       };
     case PROMOTION_TYPES.UPDATE_PROMOTION_CODE:
@@ -212,10 +217,6 @@ export default reducer;
 
 export function getPromoCode(state) {
   return state.promotion.promoCode;
-}
-
-export function getPromoValidFrom(state) {
-  return state.promotion.validFrom;
 }
 
 export function getCode(state) {

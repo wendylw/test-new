@@ -8,7 +8,6 @@ import {
   actions as promotionActionCreators,
   getPromoCode,
   getCode,
-  getPromoValidFrom,
   isAppliedSuccess,
   isAppliedError,
   isInProcess,
@@ -143,7 +142,6 @@ export default compose(
     state => {
       return {
         promoCode: getPromoCode(state),
-        validFrom: getPromoValidFrom(state),
         errorCode: getCode(state),
         isAppliedSuccess: isAppliedSuccess(state),
         isAppliedError: isAppliedError(state),
