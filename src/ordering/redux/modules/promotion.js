@@ -1,3 +1,4 @@
+import _isEmpty from 'lodash/isEmpty';
 import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
@@ -6,11 +7,11 @@ import { getPromotion } from '../../../redux/modules/entities/carts';
 import { actions as appActions } from './app';
 import i18next from 'i18next';
 import Utils from '../../../utils/utils';
-const { PROMOTION_APPLIED_STATUS, PROMO_TYPE } = Constants;
+const { PROMOTION_ERROR_CODES, PROMO_TYPE } = Constants;
 
 const initialState = {
   promoCode: '',
-  status: '',
+  code: '',
   validFrom: '',
   inProcess: false,
   promoType: '',
@@ -49,10 +50,7 @@ export const actions = {
           type: PROMOTION_TYPES.APPLY_PROMO_SUCCESS,
           response: result.response,
         });
-      } else if (
-        applyPromoResult.success === false &&
-        applyPromoResult.status !== PROMOTION_APPLIED_STATUS.NOT_EXISTED
-      ) {
+      } else if (applyPromoResult.success === false && applyPromoResult.code !== '60001') {
         await dispatch({
           type: PROMOTION_TYPES.APPLY_PROMO_FAILED,
           response: result.response,
@@ -169,16 +167,22 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS:
       return {
         ...state,
-        status: action.response.status,
+        code: action.response.code,
         promoType: PROMO_TYPE.VOUCHER,
         validFrom: new Date(action.response.validFrom),
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_PROMO_SUCCESS:
+      return {
+        ...state,
+        promoType: PROMO_TYPE.PROMOTION,
+        validFrom: new Date(action.response.validFrom),
+        inProcess: false,
+      };
     case PROMOTION_TYPES.APPLY_PROMO_FAILED:
       return {
         ...state,
-        status: action.response.status,
+        code: action.response.code,
         promoType: PROMO_TYPE.PROMOTION,
         validFrom: new Date(action.response.validFrom),
         inProcess: false,
@@ -192,7 +196,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         promoCode: action.promoCode,
-        status: '',
+        code: '',
       };
     case PROMOTION_TYPES.INITIAL_PROMOTION_CODE:
       return {
@@ -214,16 +218,16 @@ export function getPromoValidFrom(state) {
   return state.promotion.validFrom;
 }
 
-export function getStatus(state) {
-  return state.promotion.status;
+export function getCode(state) {
+  return state.promotion.code;
 }
 
 export function isAppliedSuccess(state) {
-  return state.promotion.status === PROMOTION_APPLIED_STATUS.VALID;
+  return _isEmpty(state.promotion.code);
 }
 
 export function isAppliedError(state) {
-  return state.promotion.status && state.promotion.status !== PROMOTION_APPLIED_STATUS.VALID;
+  return PROMOTION_ERROR_CODES[state.promotion.code];
 }
 
 export function isInProcess(state) {

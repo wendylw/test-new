@@ -7,7 +7,7 @@ import { bindActionCreators, compose } from 'redux';
 import {
   actions as promotionActionCreators,
   getPromoCode,
-  getStatus,
+  getCode,
   getPromoValidFrom,
   isAppliedSuccess,
   isAppliedError,
@@ -63,14 +63,13 @@ class Promotion extends Component {
   };
 
   getMessage = () => {
-    const { promoStatus, validFrom } = this.props;
-    if (!promoStatus) {
+    const { errorCode } = this.props;
+    if (!errorCode) {
       return '';
     }
 
     return getErrorMessageByPromoStatus({
-      status: promoStatus,
-      validFrom,
+      code: errorCode,
     });
   };
 
@@ -145,7 +144,7 @@ export default compose(
       return {
         promoCode: getPromoCode(state),
         validFrom: getPromoValidFrom(state),
-        promoStatus: getStatus(state),
+        errorCode: getCode(state),
         isAppliedSuccess: isAppliedSuccess(state),
         isAppliedError: isAppliedError(state),
         inProcess: isInProcess(state),

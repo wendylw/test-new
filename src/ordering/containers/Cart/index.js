@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
+import _isEmpty from 'lodash/isEmpty';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
 import { IconDelete, IconClose, IconLocalOffer } from '../../../components/Icons';
@@ -27,7 +28,6 @@ import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
-const { PROMOTION_APPLIED_STATUS } = Constants;
 class Cart extends Component {
   state = {
     expandBilling: true,
@@ -196,7 +196,7 @@ class Cart extends Component {
       return true;
     }
 
-    return promotion.status === PROMOTION_APPLIED_STATUS.VALID;
+    return _isEmpty(promotion.code);
   }
 
   handleGtmEventTracking = async callback => {

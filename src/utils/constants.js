@@ -323,23 +323,88 @@ const CONSUMERFLOW_STATUS = {
 };
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const PROMOTION_APPLIED_STATUS = {
-  VALID: 'valid',
-  // Voucher status
-  REDEEMED: 'redeemed',
-  NOT_MATCH_MINIMUM_PURCHASE: 'lessThanMinSpeed',
-  EXPIRED: 'expired',
-  NOT_START: 'beforeValid',
-  INVALID: 'invalid',
-  // Promotion status
-  NOT_AVAILABLE: 'not_available',
-  NOT_VALID: 'not_valid',
-  NOT_EXISTED: 'not_existed',
-  UNKNOWN_DISCOUNT_TYPE: 'unknown_discount_type',
-  REACH_MAX_CLAIM_COUNT: 'reach_max_claim_count',
-  REACH_CUSTOMER_CLAIM_COUNT_LIMIT: 'reach_customer_claim_count_limit',
-  REQUIRE_CUSTOMER: 'require_customer',
-  REQUIRE_FIRST_TIME_PURCHASE: 'require_first_time_purchase',
+const PROMOTION_ERROR_CODES = {
+  54406: {
+    desc: '54406FreePromotionNotMatchCondition',
+  },
+  54406: {
+    desc: '54406FreePromotionNotMatchCondition',
+  },
+  54407: {
+    desc: '54407NotMatchCondition',
+  },
+  54403: {
+    desc: '54403NotStartOrExpired',
+  },
+  54404: {
+    desc: '54404WeekdayNotMatch',
+  },
+  54405: {
+    desc: '54405TimeNotMatch',
+  },
+  54301: {
+    desc: '54301InvalidPromotionCode',
+  },
+  54410: {
+    desc: '54410DeletedPromotion',
+  },
+  54401: {
+    desc: '54401DeletedPromotion',
+  },
+  54408: {
+    desc: '54408RequireSameBusiness',
+  },
+  54409: {
+    desc: '54409StoreDoesNotSatisfy',
+  },
+  54411: {
+    desc: '54411RequireFirstTimePurchase',
+  },
+  54412: {
+    desc: '54412RequireCustomer',
+  },
+  54413: {
+    desc: '54413ReachCustomerClaimCountLimit',
+  },
+  54414: {
+    desc: '54414RequireFirstTimePurchase',
+  },
+  54415: {
+    desc: '54415NoSourceProperty',
+  },
+  54416: {
+    desc: '54416AppliedSourceDoesNotMatch',
+  },
+  54417: {
+    desc: '54417NotMatchMinimumSubtotal',
+  },
+  60002: {
+    desc: '60002NotActive',
+  },
+  60003: {
+    desc: '60003Expired',
+  },
+  60004: {
+    desc: '60004LessThanMinSpend',
+  },
+  60001: {
+    desc: '60001NotExisted',
+  },
+  60005: {
+    desc: '60005ChannelNotMatch',
+  },
+  60006: {
+    desc: '60006ApplyFailed',
+  },
+  60007: {
+    desc: '60007Forbidden',
+  },
+  60008: {
+    desc: '60008UpdateVoucherStatusFailed',
+  },
+  60009: {
+    desc: '60009VoucherHasBeenUsed',
+  },
 };
 
 const PREORDER_IMMEDIATE_TAG = {
@@ -425,7 +490,7 @@ export default {
   DELIVERY_METHOD,
   CONSUMERFLOW_STATUS,
   WEEK_DAYS_I18N_KEYS,
-  PROMOTION_APPLIED_STATUS,
+  PROMOTION_ERROR_CODES,
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
   ORDER_STATUS,
