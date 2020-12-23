@@ -130,6 +130,44 @@ export const isSameOrAfter = (time, compareTime) => {
 };
 
 /**
+ * round minute up to hour
+ * @param {string} time
+ * @returns {string} ceil time
+ */
+export const ceilToHour = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const { hour, minute } = parse(time);
+
+  const newHour = minute > 0 ? hour + 1 : hour;
+
+  return stringify({
+    hour: newHour,
+    minute: 0,
+  });
+};
+
+/**
+ * round minute to 0 15 30 45 60
+ * @param {string} time
+ * @returns {string} quarter time
+ */
+export const ceilToQuarter = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const { hour, minute } = parse(time);
+
+  const quarterMinutes = [0, 15, 30, 45, 60];
+
+  const quarter = quarterMinutes.find(m => m >= minute);
+
+  return stringify({
+    hour,
+    minute: quarter,
+  });
+};
+
+/**
  * indicates whether same or after the two supplied time
  * @param {string} time
  * @param {object} param1

@@ -15,6 +15,8 @@ import {
   isBetween,
   setDateTime,
   getTimeFromDayjs,
+  ceilToHour,
+  ceilToQuarter,
 } from './time-lib';
 import dayjs from 'dayjs';
 
@@ -253,7 +255,36 @@ describe('test getTimeFromDayjs function', () => {
     ${'2020-04-02T20:02:17+08:00'} | ${'20:02'}
     ${'2020-04-02T00:00:17+08:00'} | ${'00:00'}
     ${'2020-04-02T24:00:00+08:00'} | ${'00:00'}
-  `('return $expected when get time from $date', ({ time, date, expected }) => {
+  `('return $expected when get time from $date', ({ date, expected }) => {
     expect(getTimeFromDayjs(dayjs(date))).toBe(expected);
+  });
+});
+
+describe('test ceilToHour function', () => {
+  test.each`
+    time       | expected
+    ${'12:00'} | ${'12:00'}
+    ${'12:01'} | ${'13:00'}
+    ${'00:00'} | ${'00:00'}
+    ${'00:10'} | ${'01:00'}
+    ${'-1:10'} | ${'00:00'}
+    ${'-2:10'} | ${'-1:00'}
+  `(`return $expected when ceil $time`, ({ time, expected }) => {
+    expect(ceilToHour(time)).toBe(expected);
+  });
+});
+
+describe('test ceilToQuarter function', () => {
+  test.each`
+    time       | expected
+    ${'12:00'} | ${'12:00'}
+    ${'12:01'} | ${'12:15'}
+    ${'00:25'} | ${'00:30'}
+    ${'00:40'} | ${'00:45'}
+    ${'01:50'} | ${'02:00'}
+    ${'-1:10'} | ${'-1:15'}
+    ${'-2:50'} | ${'-1:00'}
+  `(`return $expected when quarter $time`, ({ time, expected }) => {
+    expect(ceilToQuarter(time)).toBe(expected);
   });
 });
