@@ -12,12 +12,12 @@ describe('test isAvailableOrderTime function', () => {
 });
 
 describe('test isInValidDays function', () => {
-  const fridayDate = '2020-12-04T00:00:00+08:00';
-  const sundayDate = '2020-11-29T00:00:00+08:00';
-  const saturdayDate = '2020-12-26T00:00:00+08:00';
+  const fridayDate = 5;
+  const sundayDate = 0;
+  const saturdayDate = 6;
 
   test.each`
-    date            | validDays             | expected
+    dayOfWeek       | validDays             | expected
     ${fridayDate}   | ${[1, 2, 3]}          | ${false}
     ${fridayDate}   | ${[6]}                | ${true}
     ${sundayDate}   | ${[3, 4, 5]}          | ${false}
@@ -26,39 +26,39 @@ describe('test isInValidDays function', () => {
     ${saturdayDate} | ${[1, 2, 3, 4, 5, 6]} | ${false}
     ${saturdayDate} | ${[]}                 | ${false}
     ${saturdayDate} | ${null}               | ${false}
-  `('return $expected, $date whether in $validDays', ({ date, validDays, expected }) => {
-    expect(isInValidDays(dayjs(date), validDays)).toBe(expected);
+  `('return $expected, $dayOfWeek whether in $validDays', ({ dayOfWeek, validDays, expected }) => {
+    expect(isInValidDays(dayOfWeek, validDays)).toBe(expected);
   });
 });
 
 describe('test isInValidTime function', () => {
   test.each`
-    date                           | validTimeFrom    | validTimeTo | expected
-    ${'2020-12-04T10:53:00+08:00'} | ${'10:00'}       | ${'18:00'}  | ${true}
-    ${'2020-12-04T10:00:00+08:00'} | ${'10:00'}       | ${'18:00'}  | ${true}
-    ${'2020-12-04T18:00:00+08:00'} | ${'10:00'}       | ${'18:00'}  | ${true}
-    ${'2020-12-04T18:12:00+08:00'} | ${'10:00'}       | ${'18:00'}  | ${false}
-    ${'2020-12-04T18:12:00+08:00'} | ${'invalidTime'} | ${'18:00'}  | ${false}
+    time       | validTimeFrom    | validTimeTo | expected
+    ${'10:53'} | ${'10:00'}       | ${'18:00'}  | ${true}
+    ${'10:00'} | ${'10:00'}       | ${'18:00'}  | ${true}
+    ${'18:00'} | ${'10:00'}       | ${'18:00'}  | ${true}
+    ${'18:12'} | ${'10:00'}       | ${'18:00'}  | ${false}
+    ${'18:12'} | ${'invalidTime'} | ${'18:00'}  | ${false}
   `(
-    'return $expected, $date whether in $validTimeFrom - $validTimeTo',
-    ({ date, validTimeFrom, validTimeTo, expected }) => {
-      expect(isInValidTime(dayjs(date), { validTimeFrom, validTimeTo })).toBe(expected);
+    'return $expected, $time whether in $validTimeFrom - $validTimeTo',
+    ({ time, validTimeFrom, validTimeTo, expected }) => {
+      expect(isInValidTime(time, { validTimeFrom, validTimeTo })).toBe(expected);
     }
   );
 });
 
 describe('test isInBreakTime function', () => {
   test.each`
-    date                           | breakTimeFrom    | breakTimeTo | expected
-    ${'2020-12-04T10:53:00+08:00'} | ${'10:00'}       | ${'18:00'}  | ${true}
-    ${'2020-12-04T10:00:00+08:00'} | ${'10:00'}       | ${'18:00'}  | ${true}
-    ${'2020-12-04T18:00:00+08:00'} | ${'10:00'}       | ${'18:00'}  | ${false}
-    ${'2020-12-04T18:12:00+08:00'} | ${'10:00'}       | ${'18:00'}  | ${false}
-    ${'2020-12-04T18:12:00+08:00'} | ${'invalidTime'} | ${'18:00'}  | ${false}
+    time       | breakTimeFrom    | breakTimeTo | expected
+    ${'10:53'} | ${'10:00'}       | ${'18:00'}  | ${true}
+    ${'10:00'} | ${'10:00'}       | ${'18:00'}  | ${true}
+    ${'18:00'} | ${'10:00'}       | ${'18:00'}  | ${false}
+    ${'18:12'} | ${'10:00'}       | ${'18:00'}  | ${false}
+    ${'18:12'} | ${'invalidTime'} | ${'18:00'}  | ${false}
   `(
-    'return $expected, $date whether in $breakTimeFrom - $breakTimeTo',
-    ({ date, breakTimeFrom, breakTimeTo, expected }) => {
-      expect(isInBreakTime(dayjs(date), { breakTimeFrom, breakTimeTo })).toBe(expected);
+    'return $expected, the $time whether in $breakTimeFrom - $breakTimeTo',
+    ({ time, breakTimeFrom, breakTimeTo, expected }) => {
+      expect(isInBreakTime(time, { breakTimeFrom, breakTimeTo })).toBe(expected);
     }
   );
 });

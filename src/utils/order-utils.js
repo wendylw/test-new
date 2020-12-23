@@ -1,30 +1,157 @@
 import * as timeLib from './time-lib';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { computeStraightDistance } from './geoUtils';
 import Constants from './constants';
+import _flow from 'lodash/flow';
 
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, SH_LOGISTICS_VALID_TIME } = Constants;
+
+const MAX_PRE_ORDER_DATE = 5;
 
 dayjs.extend(utc);
 
-export const getAvailableOrderDateList = (currentDate, store) => {
+/**
+ * get data list
+ * @param {Store} store
+ * @param {Dayjs} currentDate
+ * @returns {object[]} dateList
+ */
+export const getOrderDateList = (store, currentDate) => {
   const { qrOrderingSettings } = store;
+  const { validDays, vacations, enablePreOrder } = qrOrderingSettings;
 
-  return [
-    {
-      date: '',
-      isOpen: true,
-      isToday: true,
-    },
-  ];
+  const dateList = [];
+
+  for (let i = 0; i < MAX_PRE_ORDER_DATE; i++) {
+    const date = currentDate.add(i, 'day').startOf('day');
+    const isToday = i === 0;
+    const dayOfWeek = date.day();
+    const isOpen = isInValidDays(dayOfWeek, validDays) && !isInVacations(date, vacations);
+
+    if (isToday) {
+      dateList.push({
+        date,
+        isOpen,
+        isToday: true,
+      });
+    } else {
+      dateList.push({
+        date,
+        isOpen: enablePreOrder && isOpen,
+        isToday: false,
+      });
+    }
+  }
+
+  return dateList;
+};
+/**
+ * order time list
+ * @param {Store} store
+ * @param {string} deliveryType
+ * @returns {string[]} timeList
+ */
+export const getOrderTimeList = (store, deliveryType) => {
+  switch (deliveryType) {
+    case DELIVERY_METHOD.DELIVERY:
+      return getDeliveryOrderTimeList(store);
+    case DELIVERY_METHOD.PICKUP:
+      return getPickupOrderTimeList(store);
+    default:
+      throw [];
+  }
 };
 
-export const getAvailableOrderTimeList = (deliveryType, store) => {
-  return ['08:00', '09:00', '10:00', '13:00', '14:00'];
+/**
+ * delivery time list
+ * @param {Store} store
+ */
+export const getDeliveryOrderTimeList = store => {
+  const { qrOrderingSettings } = store;
+  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, useStorehubLogistics } = qrOrderingSettings;
+
+  // add 1 hour then ceil time
+  const preOrderValidTimeFrom = _flow([timeLib.add, timeLib.ceilToHour]).call(null, validTimeFrom, {
+    value: 1,
+    unit: 'hour',
+  });
+
+  // minus 1 hour
+  const preOrderValidTimeTo = timeLib.minus(validTimeTo, { value: 1, unit: 'hour' });
+
+  const logisticsValidTimeFrom =
+    useStorehubLogistics && timeLib.isBefore(preOrderValidTimeFrom, SH_LOGISTICS_VALID_TIME.FROM)
+      ? SH_LOGISTICS_VALID_TIME.FROM
+      : preOrderValidTimeFrom;
+
+  const logisticsValidTimeTo =
+    useStorehubLogistics && timeLib.isAfter(preOrderValidTimeTo, SH_LOGISTICS_VALID_TIME.TO)
+      ? SH_LOGISTICS_VALID_TIME.TO
+      : preOrderValidTimeTo;
+
+  const timeList = [];
+
+  for (
+    let time = logisticsValidTimeFrom;
+    timeLib.isSameOrBefore(time, logisticsValidTimeTo);
+    time = timeLib.add(time, {
+      value: 1,
+      unit: 'hour',
+    })
+  ) {
+    if (isInBreakTime(time, { breakTimeFrom, breakTimeTo })) {
+      continue;
+    }
+
+    timeList.push(time);
+  }
+
+  return timeList;
 };
 
-export const filterDeliveryAvailableStores = (dateTime, stores) => {
+/**
+ * pickup time list
+ * @param {Store} store
+ */
+export const getPickupOrderTimeList = store => {
+  const { qrOrderingSettings } = store;
+  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
+
+  const preOrderValidTimeFrom = _flow([timeLib.add, timeLib.ceilToQuarter]).call(null, validTimeFrom, {
+    value: 30,
+    unit: 'minute',
+  });
+
+  const preOrderValidTimeTo = validTimeTo;
+
+  const timeList = [];
+
+  for (
+    let time = preOrderValidTimeFrom;
+    timeLib.isSameOrBefore(time, preOrderValidTimeTo);
+    time = timeLib.add(time, {
+      value: 15,
+      unit: 'minute',
+    })
+  ) {
+    if (isInBreakTime(time, { breakTimeFrom, breakTimeTo })) {
+      continue;
+    }
+
+    timeList.push(time);
+  }
+
+  return timeList;
+};
+
+/**
+ * get delivery available stores
+ * @param {*} stores
+ * @param {*} dateTime
+ * @returns {Store[]}
+ */
+export const filterDeliveryAvailableStores = (stores, dateTime) => {
   return stores.filter(store => {
     const { qrOrderingSettings, fulfillmentOptions } = store;
     if (!qrOrderingSettings) {
@@ -51,7 +178,12 @@ export const filterDeliveryAvailableStores = (dateTime, stores) => {
   });
 };
 
-export const findNearlyStore = ({ lat, lng }, stores) => {
+/**
+ * find a store that nearly to specify geo location
+ * @param {*} stores
+ * @param {*} param1
+ */
+export const findNearlyStore = (stores, { lat, lng }) => {
   let nearlyStore = {
     distance: 0,
     store: null,
@@ -88,102 +220,116 @@ export const findNearlyStore = ({ lat, lng }, stores) => {
  * @param {Store} store
  * @returns {boolean}
  */
-export const checkStoreIsOpened = (dateTime, store) => {
+export const checkStoreIsOpened = (store, dateTime) => {
   if (!dateTime || !store) {
     return false;
   }
 
   const { qrOrderingSettings } = store;
-  const {
-    enablePreOrder,
-    validDays,
-    validTimeFrom,
-    validTimeTo,
-    breakTimeFrom,
-    breakTimeTo,
-    vacations,
-  } = qrOrderingSettings;
+  const { enablePreOrder } = qrOrderingSettings;
 
   if (enablePreOrder) {
     return true;
   }
 
-  return isAvailableOrderTime(dateTime, {
-    validDays,
-    validTimeFrom,
-    validTimeTo,
-    breakTimeFrom,
-    breakTimeTo,
-    vacations,
-  });
+  return isAvailableOrderTime(store, dateTime);
 };
 
 /**
  * check whether dateTime is available order time
+ * @param {Store} store
  * @param {Dayjs} dateTime
- * @param {object} param1
  * @returns {boolean}
  */
-export const isAvailableOrderTime = (
-  dateTime,
-  { validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations }
-) => {
+export const isAvailableOrderTime = (store, dateTime, deliveryType = null) => {
+  const {
+    validDays,
+    validTimeFrom: storeOpenTime,
+    validTimeTo: storeCloseTime,
+    breakTimeFrom,
+    breakTimeTo,
+    useStorehubLogistics,
+    vacations,
+  } = store.qrOrderingSettings;
+  const dayOfWeek = dateTime.day();
+  const time = timeLib.getTimeFromDayjs(dateTime);
+  const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
+
+  const logisticsValidTimeFrom =
+    useStorehubLogistics && timeLib.isBefore(storeOpenTime, SH_LOGISTICS_VALID_TIME.FROM)
+      ? SH_LOGISTICS_VALID_TIME.FROM
+      : storeOpenTime;
+
+  const logisticsValidTimeTo =
+    useStorehubLogistics && timeLib.isAfter(storeCloseTime, SH_LOGISTICS_VALID_TIME.TO)
+      ? SH_LOGISTICS_VALID_TIME.TO
+      : storeCloseTime;
+
+  const validTimeFrom = isDelivery ? logisticsValidTimeFrom : storeOpenTime;
+  const validTimeTo = isDelivery ? logisticsValidTimeTo : storeCloseTime;
+
   return (
-    isInValidDays(dateTime, validDays) &&
-    isInValidTime(dateTime, { validTimeFrom, validTimeTo }) &&
-    !isInBreakTime(dateTime, { breakTimeFrom, breakTimeTo }) &&
+    isInValidDays(dayOfWeek, validDays) &&
+    isInValidTime(time, { validTimeFrom, validTimeTo }) &&
+    !isInBreakTime(time, { breakTimeFrom, breakTimeTo }) &&
     !isInVacations(dateTime, vacations)
   );
 };
 
+export const isAvailableOnDemandOrderTime = (store, dateTime, deliveryType) => {
+  const { enablePreOrder, disableOnDemandOrder } = store.qrOrderingSettings;
+
+  // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
+  if (enablePreOrder && disableOnDemandOrder) {
+    return false;
+  }
+
+  return isAvailableOrderTime(store, dateTime, deliveryType);
+};
+
 /**
- * check whether dateTime is in valid days
- * @param {Dayjs} dateTime
+ * check whether dayOfWeek is in valid days
+ * @param {number} dayOfWeek
  * @param {number[]} validDays
  * @returns {boolean}
  */
-export const isInValidDays = (dateTime, validDays) => {
+export const isInValidDays = (dayOfWeek, validDays) => {
   if (!validDays) {
     return false;
   }
 
-  const day = dateTime.day();
   // validDays from api start from 1
-  return validDays.includes(day + 1);
+  return validDays.includes(dayOfWeek + 1);
 };
 
 /**
- * check whether dateTime is in valid time
- * @param {Dayjs} dateTime
+ * check whether time is in valid time
+ * @param {string} time
  * @param {Object} param1
  * @param {string} param1.validTimeFrom
  * @param {string} param1.validTimeTo
  * @returns {boolean}
  */
-export const isInValidTime = (dateTime, { validTimeFrom, validTimeTo }) => {
+export const isInValidTime = (time, { validTimeFrom, validTimeTo }) => {
   if (!timeLib.isValidTime(validTimeFrom) || !timeLib.isValidTime(validTimeTo)) {
     return false;
   }
-
-  const time = timeLib.getTimeFromDayjs(dateTime);
 
   return timeLib.isBetween(time, { minTime: validTimeFrom, maxTime: validTimeTo }, '[]');
 };
 
 /**
- * check whether dateTime is in break time
- * @param {Dayjs} dateTime
+ * check whether time is in break time
+ * @param {string} time
  * @param {Object} param1
  * @param {string} param1.breakTimeFrom
  * @param {string} param1.breakTimeTo
  * @returns {boolean}
  */
-export const isInBreakTime = (dateTime, { breakTimeFrom, breakTimeTo }) => {
+export const isInBreakTime = (time, { breakTimeFrom, breakTimeTo }) => {
   if (!timeLib.isValidTime(breakTimeFrom) || !timeLib.isValidTime(breakTimeTo)) {
     return false;
   }
-
-  const time = timeLib.getTimeFromDayjs(dateTime);
 
   return timeLib.isBetween(time, { minTime: breakTimeFrom, maxTime: breakTimeTo }, '[)');
 };

@@ -36,7 +36,7 @@ export const actions = {
     if (!storeId && isDelivery && deliveryAddress && deliveryAddress.coords) {
       const state = getState();
       const stores = getAllStores(state);
-      const store = findNearlyStore(deliveryAddress.coords, stores);
+      const store = findNearlyStore(stores, deliveryAddress.coords);
       if (store) {
         payload.storeId = store.id;
       }
@@ -122,6 +122,8 @@ const reducer = (state = initialState, action) => {
         ...state,
         currentDate: action.payload,
       };
+    default:
+      return state;
   }
 };
 

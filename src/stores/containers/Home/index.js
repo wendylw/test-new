@@ -71,7 +71,7 @@ class App extends Component {
 
     const currentTime = getBusinessDateTime(businessUTCOffset);
 
-    const isStoreOpened = store && checkStoreIsOpened(currentTime, store);
+    const isStoreOpened = store && checkStoreIsOpened(store, currentTime);
 
     // if store is closed,go straight to ordering page and let it display store is closed
     if (isStoreOpened) {

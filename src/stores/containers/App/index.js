@@ -140,7 +140,7 @@ class App extends Component {
     });
     stores = stores.filter(
       item =>
-        checkStoreIsOpened(currentTime, item) &&
+        checkStoreIsOpened(item, currentTime) &&
         item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1
     );
     let nearly;

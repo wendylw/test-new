@@ -109,7 +109,7 @@ class StoreList extends Component {
     const currentTime = getBusinessDateTime(businessUTCOffset);
 
     stores.forEach(store => {
-      store.isClose = !checkStoreIsOpened(currentTime, store);
+      store.isClose = !checkStoreIsOpened(store, currentTime);
     });
 
     this.setState({

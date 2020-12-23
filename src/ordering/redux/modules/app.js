@@ -15,7 +15,7 @@ import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getAllStores } from '../../../redux/modules/entities/stores';
+import { getAllStores, getStoreById } from '../../../redux/modules/entities/stores';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -557,3 +557,11 @@ export const getBusinessDeliveryTypes = createSelector(getAllStores, allStores =
 
   return _uniq(deliveryTypes);
 });
+
+export const getStoreId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'storeId', null));
+
+export const getStore = state => {
+  const storeId = getStoreId(state);
+
+  return getStoreById(state, storeId);
+};
