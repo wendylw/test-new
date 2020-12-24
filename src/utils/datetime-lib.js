@@ -11,6 +11,13 @@ export const standardizeLocale = (countryCode = 'MY') => {
   return standardizedLocaleMap[country.toUpperCase()] || 'EN';
 };
 
+// Returned time format is Dec 7, 2020
+export const formatTimeToDateString = (countryCode, time) => {
+  const options = { month: 'short', day: 'numeric', year: 'numeric' };
+
+  return new Intl.DateTimeFormat(standardizeLocale(countryCode), options).format(new Date(time));
+};
+
 export const getDateTimeFormatter = (countryCode, options) => {
   return new Intl.DateTimeFormat(standardizeLocale(countryCode), options);
 };

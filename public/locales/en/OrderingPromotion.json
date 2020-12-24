@@ -14,5 +14,18 @@
   "ReachedMaxClaimCount": "This promotion has exceeded the total claim limit",
   "ReachCustomerClaimCountLimit": "You've exceeded the claim limit of this promotion",
   "RequireCustomer": "Please login to use this promo code",
-  "RequireFirstTimePurchase": "This promotion is only applicable for new customer"
+  "RequireFirstTimePurchase": "This promotion is only applicable for new customer",
+  "PromoExpiredLabel": "Expired",
+  "PromoInvalidLabel": "Invalid",
+  "PromoRedeemedLabel": "Redeemed",
+  "PromoTitleAbsolute": "<0></0> off",
+  "PromoTitlePercentage": "{{amount}}% off",
+  "PromoTitleFreeShipping": "Free Shipping",
+  "Voucher": "Voucher",
+  "PromoValidUntil": "Valid until {{date}}",
+  "PromoValidFrom": "Valid from {{date}}",
+  "YourVouchers": "Your voucher(s)",
+  "InapplicableVouchers": "Inapplicable voucher(s)",
+  "PromoInvalid": "Sorry, the promo/voucher code is invalid",
+  "NoVouchersYet": "You don't have any vouchers yet"
 }
