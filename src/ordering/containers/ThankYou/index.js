@@ -1054,20 +1054,12 @@ export class ThankYou extends PureComponent {
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const pickupTime = formatPickupTime({
-      date: expectDeliveryDateFrom,
-      locale: onlineStoreInfo.country,
-      isPreOrder,
-    });
-
-    console.log(pickupTime);
-
-    let immediatePickUpTime = formatPickupTime({
-      date: new Date().getTime() + 1000 * 60 * 30,
+      dateList:
+        expectDeliveryDateFrom && isPreOrder
+          ? [new Date(expectDeliveryDateFrom)]
+          : [new Date(), new Date(new Date().getTime() + 1000 * 60 * 30)],
       locale: onlineStoreInfo.country,
     });
-    immediatePickUpTime = `${immediatePickUpTime.split(',')[0]},${
-      toDayDateMonth(new Date()) ? toDayDateMonth(new Date()).split(',')[1] : ''
-    }, ${immediatePickUpTime.split(',')[1]}`;
 
     return (
       <div className="padding-small">

@@ -184,23 +184,18 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY', separator = ',
   return !Boolean(part1) && !Boolean(part2) ? null : `${part1}${separator} ${part2}`;
 };
 
-export const formatPickupTime = ({ date, locale, isPreOrder = false, separator = ', ' }) => {
-  const orderTime = date ? new Date(date) : new Date();
-  const dateString = toDayDateMonth(orderTime, locale) ? toDayDateMonth(new Date()).split(',')[1] : '';
-  let timeRange = toNumericTime(orderTime, locale);
+export const formatPickupTime = ({ dateList, locale, separator = ', ' }) => {
+  const date = toDayDateMonth(dateList[0], locale) ? toDayDateMonth(new Date()).split(',')[1] : '';
+  let timeRange = dateList.join(' - ');
   let weekday;
 
-  if (orderTime.getDate() === new Date().getDate()) {
+  if (dateList[0].getDate() === new Date().getDate()) {
     weekday = i18next.t('Today');
   } else {
     weekday = i18next.t('Weekday');
   }
 
-  if (!isPreOrder) {
-    timeRange += ` - ${toNumericTime(new Date(date || new Date().getTime()) + 1000 * 60 * 30)}`;
-  }
-
-  return [weekday, dateString, timeRange].filter(item => Boolean(item)).join(separator);
+  return [weekday, date, timeRange].filter(item => Boolean(item)).join(separator);
 };
 
 export const addTime = (date = new Date(), timeToAdd, unit) => {
