@@ -5,7 +5,7 @@ import { computeStraightDistance } from './geoUtils';
 import Constants from './constants';
 import _flow from 'lodash/flow';
 
-const { DELIVERY_METHOD, SH_LOGISTICS_VALID_TIME } = Constants;
+const { DELIVERY_METHOD, SH_LOGISTICS_VALID_TIME, TIME_SLOT_NOW } = Constants;
 
 const MAX_PRE_ORDER_DATE = 5;
 
@@ -31,13 +31,13 @@ export const getOrderDateList = (store, currentDate) => {
 
     if (isToday) {
       dateList.push({
-        date,
+        date: date.format(),
         isOpen,
         isToday: true,
       });
     } else {
       dateList.push({
-        date,
+        date: date.format(),
         isOpen: enablePreOrder && isOpen,
         isToday: false,
       });
@@ -52,12 +52,12 @@ export const getOrderDateList = (store, currentDate) => {
  * @param {string} deliveryType
  * @returns {string[]} timeList
  */
-export const getOrderTimeList = (store, deliveryType) => {
+export const getPreOrderTimeList = (store, deliveryType) => {
   switch (deliveryType) {
     case DELIVERY_METHOD.DELIVERY:
-      return getDeliveryOrderTimeList(store);
+      return getDeliveryPreOrderTimeList(store);
     case DELIVERY_METHOD.PICKUP:
-      return getPickupOrderTimeList(store);
+      return getPickupPreOrderTimeList(store);
     default:
       throw [];
   }
@@ -67,34 +67,17 @@ export const getOrderTimeList = (store, deliveryType) => {
  * delivery time list
  * @param {Store} store
  */
-export const getDeliveryOrderTimeList = store => {
+export const getDeliveryPreOrderTimeList = store => {
   const { qrOrderingSettings } = store;
-  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, useStorehubLogistics } = qrOrderingSettings;
+  const { breakTimeFrom, breakTimeTo } = qrOrderingSettings;
 
-  // add 1 hour then ceil time
-  const preOrderValidTimeFrom = _flow([timeLib.add, timeLib.ceilToHour]).call(null, validTimeFrom, {
-    value: 1,
-    unit: 'hour',
-  });
-
-  // minus 1 hour
-  const preOrderValidTimeTo = timeLib.minus(validTimeTo, { value: 1, unit: 'hour' });
-
-  const logisticsValidTimeFrom =
-    useStorehubLogistics && timeLib.isBefore(preOrderValidTimeFrom, SH_LOGISTICS_VALID_TIME.FROM)
-      ? SH_LOGISTICS_VALID_TIME.FROM
-      : preOrderValidTimeFrom;
-
-  const logisticsValidTimeTo =
-    useStorehubLogistics && timeLib.isAfter(preOrderValidTimeTo, SH_LOGISTICS_VALID_TIME.TO)
-      ? SH_LOGISTICS_VALID_TIME.TO
-      : preOrderValidTimeTo;
+  const { validTimeFrom, validTimeTo } = getDeliveryPreOrderValidTimePeriod(store);
 
   const timeList = [];
 
   for (
-    let time = logisticsValidTimeFrom;
-    timeLib.isSameOrBefore(time, logisticsValidTimeTo);
+    let time = validTimeFrom;
+    timeLib.isSameOrBefore(time, validTimeTo);
     time = timeLib.add(time, {
       value: 1,
       unit: 'hour',
@@ -111,10 +94,61 @@ export const getDeliveryOrderTimeList = store => {
 };
 
 /**
+ *
+ * @param {Store} store
+ * @returns {object}
+ */
+export const getDeliveryPreOrderValidTimePeriod = store => {
+  const { validTimeFrom, validTimeTo, useStorehubLogistics } = store.qrOrderingSettings;
+  const addAndCeilToHour = _flow([timeLib.add, timeLib.ceilToHour]);
+  const minusAndFloorToHour = _flow([timeLib.minus, timeLib.floorToHour]);
+
+  // add 1 hour then ceil to hour, like 10:30 will get 12:00
+  const preOrderValidTimeFrom = addAndCeilToHour(validTimeFrom, {
+    value: 1,
+    unit: 'hour',
+  });
+
+  if (!useStorehubLogistics) {
+    return {
+      validTimeFrom: preOrderValidTimeFrom,
+      // minus 1 hour and floor hour, like 19:30 will get 18:00
+      validTimeTo: minusAndFloorToHour(validTimeTo, { value: 1, unit: 'hour' }),
+    };
+  }
+
+  const logisticsValidTimeFrom = timeLib.isBefore(preOrderValidTimeFrom, SH_LOGISTICS_VALID_TIME.FROM)
+    ? SH_LOGISTICS_VALID_TIME.FROM
+    : preOrderValidTimeFrom;
+  const logisticsValidTimeTo = timeLib.isAfter(validTimeTo, SH_LOGISTICS_VALID_TIME.TO)
+    ? SH_LOGISTICS_VALID_TIME.TO
+    : validTimeTo;
+
+  return {
+    validTimeFrom: logisticsValidTimeFrom,
+    // minus 1 hour and floor hour, like 19:30 will get 18:00
+    validTimeTo: minusAndFloorToHour(logisticsValidTimeTo, { value: 1, unit: 'hour' }),
+  };
+};
+
+export const getPickupPreOrderTimePeriod = store => {
+  const { validTimeFrom, validTimeTo } = store.qrOrderingSettings;
+  const addAndCeilToQuarter = _flow([timeLib.add, timeLib.ceilToQuarter]);
+
+  return {
+    validTimeFrom: addAndCeilToQuarter(validTimeFrom, {
+      value: 30,
+      unit: 'minute',
+    }),
+    validTimeTo: validTimeTo,
+  };
+};
+
+/**
  * pickup time list
  * @param {Store} store
  */
-export const getPickupOrderTimeList = store => {
+export const getPickupPreOrderTimeList = store => {
   const { qrOrderingSettings } = store;
   const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
 
@@ -135,7 +169,7 @@ export const getPickupOrderTimeList = store => {
       unit: 'minute',
     })
   ) {
-    if (isInBreakTime(time, { breakTimeFrom, breakTimeTo })) {
+    if (isInBreakTime(time, { breakTimeFrom, breakTimeTo }) || timeLib.isSame(time, breakTimeTo)) {
       continue;
     }
 
@@ -143,6 +177,28 @@ export const getPickupOrderTimeList = store => {
   }
 
   return timeList;
+};
+
+export const getDeliveryTodayTimeList = (store, currentDate) => {
+  const { disableTodayPreOrder, enablePreOrder } = store.qrOrderingSettings;
+  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(store, currentDate, DELIVERY_METHOD.DELIVERY);
+  const timeList = [];
+
+  if (isAvailableOnDemandOrder) {
+    timeList.push(TIME_SLOT_NOW);
+  }
+
+  if (!enablePreOrder || disableTodayPreOrder) {
+    return timeList;
+  }
+
+  const time = timeLib.getTimeFromDayjs(currentDate);
+  const availablePreOrderValidTimeFrom = timeLib.add(time, { value: 1, unit: 'hour' });
+  const deliveryTimeList = getDeliveryPreOrderTimeList(store);
+
+  const availableTimeList = deliveryTimeList.filter(time => timeLib.isAfter(time, availablePreOrderValidTimeFrom));
+
+  return timeList.concat(availableTimeList);
 };
 
 /**

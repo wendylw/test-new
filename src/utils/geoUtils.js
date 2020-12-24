@@ -2,8 +2,9 @@ import { intersection, findIndex } from 'lodash';
 import Utils from './utils';
 import { captureException } from '@sentry/react';
 import * as crossStorage from './cross-storage';
+import _get from 'lodash/get';
 
-const googleMaps = window.google.maps;
+const googleMaps = _get(window, 'google.maps', null);
 
 const latLng = ({ lat, lng }) => new googleMaps.LatLng(lat, lng);
 

@@ -148,6 +148,22 @@ export const ceilToHour = time => {
 };
 
 /**
+ * round minute floor to hour
+ * @param {string} time
+ * @returns {string} floor to hour time
+ */
+export const floorToHour = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const { hour } = parse(time);
+
+  return stringify({
+    hour: hour,
+    minute: 0,
+  });
+};
+
+/**
  * round minute to 0 15 30 45 60
  * @param {string} time
  * @returns {string} quarter time

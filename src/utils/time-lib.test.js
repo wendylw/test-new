@@ -17,6 +17,7 @@ import {
   getTimeFromDayjs,
   ceilToHour,
   ceilToQuarter,
+  floorToHour,
 } from './time-lib';
 import dayjs from 'dayjs';
 
@@ -271,6 +272,21 @@ describe('test ceilToHour function', () => {
     ${'-2:10'} | ${'-1:00'}
   `(`return $expected when ceil $time`, ({ time, expected }) => {
     expect(ceilToHour(time)).toBe(expected);
+  });
+});
+
+describe('test floorToHour function', () => {
+  test.each`
+    time       | expected
+    ${'12:00'} | ${'12:00'}
+    ${'12:11'} | ${'12:00'}
+    ${'00:00'} | ${'00:00'}
+    ${'00:10'} | ${'00:00'}
+    ${'00:50'} | ${'00:00'}
+    ${'-1:10'} | ${'-1:00'}
+    ${'-2:10'} | ${'-2:00'}
+  `(`return $expected when floor $time to hour`, ({ time, expected }) => {
+    expect(floorToHour(time)).toBe(expected);
   });
 });
 

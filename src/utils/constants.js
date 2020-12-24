@@ -399,6 +399,8 @@ const ADYEN_PAYMENT_TYPE = {
   PAY_WITH_SAVE_CARD: '3',
 };
 
+const TIME_SLOT_NOW = 'now';
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -436,4 +438,5 @@ export default {
   RESEND_OTP_TIME,
   SH_LOGISTICS_VALID_TIME,
   ADYEN_PAYMENT_TYPE,
+  TIME_SLOT_NOW,
 };
