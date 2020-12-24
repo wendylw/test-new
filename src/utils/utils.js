@@ -1,9 +1,10 @@
-import qs from 'qs';
+import qs, { parse } from 'qs';
 import Constants from './constants';
 import config from '../config';
 import { captureException } from '@sentry/react';
-const Utils = {};
 
+const { SH_LOGISTICS_VALID_TIME } = Constants;
+const Utils = {};
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
@@ -367,80 +368,21 @@ Utils.isTakeAwayType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
 };
 
-Utils.isValidTimeToOrder = ({ validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations, validDays }) => {
-  // ValidDays received from api side, sunday is 1, monday is two
-  // convert it to browser weekday format first, for which sunday is 0, monday is 1
-  // if (!(Array.isArray(validDays) && validDays.length)) {
-  //   return false;
-  // }
-  // const localValidDays = Array.from(validDays, v => v - 1);
-  // const weekInfo = new Date().getDay() % 7;
-  // const hourInfo = new Date().getHours();
-  // const minutesInfo = new Date().getMinutes();
-  // const timeFrom = validTimeFrom ? validTimeFrom.split(':') : ['00', '00'];
-  // const timeTo = validTimeTo ? validTimeTo.split(':') : ['23', '59'];
+Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
+  let logisticsValidTimeFrom = validTimeFrom;
+  let logisticsValidTimeTo = validTimeTo;
 
-  // const isClosed =
-  //   hourInfo < Number(timeFrom[0]) ||
-  //   hourInfo > Number(timeTo[0]) ||
-  //   (hourInfo === Number(timeFrom[0]) && minutesInfo < Number(timeFrom[1])) ||
-  //   (hourInfo === Number(timeTo[0]) && (minutesInfo > Number(timeTo[1]) || minutesInfo === Number(timeTo[1])));
+  // use storeHub Logistics valid time
+  if (useStorehubLogistics) {
+    logisticsValidTimeFrom =
+      SH_LOGISTICS_VALID_TIME.FROM > validTimeFrom ? SH_LOGISTICS_VALID_TIME.FROM : validTimeFrom;
+    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
+  }
 
-  // if (localValidDays && localValidDays.includes(weekInfo) && !isClosed) {
-  //   return true;
-  // } else {
-  //   return false;
-  // }
-
-  const zero = num => (num < 10 ? '0' + num : num + '');
-  const getDateStringFromTime = time => {
-    time = new Date(time);
-    return `${time.getFullYear()}${zero(time.getMonth() + 1)}${zero(time.getDate())}`;
+  return {
+    logisticsValidTimeFrom,
+    logisticsValidTimeTo,
   };
-  const getHourAndMinuteStringFromTime = time => {
-    time = new Date(time);
-    return `${zero(time.getHours())}:${zero(time.getMinutes())}`;
-  };
-
-  const isVacation = (list, date) => {
-    let isVacationDay = false;
-
-    for (let i = 0; i < list.length; i++) {
-      let item = list[i];
-      if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
-        return true;
-      }
-    }
-    return isVacationDay;
-  };
-
-  const currTime = getHourAndMinuteStringFromTime(new Date());
-  const week = new Date().getDay();
-  const currDate = getDateStringFromTime(new Date());
-  const vacationList = vacations
-    ? vacations.map(item => {
-        return {
-          vacationTimeFrom: item.vacationTimeFrom.split('/').join(''),
-          vacationTimeTo: item.vacationTimeTo.split('/').join(''),
-        };
-      })
-    : [];
-  const validDaysArray = Array.from(validDays || [], v => v - 1);
-
-  if (isVacation(vacationList, currDate)) return false;
-
-  if (!validDaysArray.includes(week)) return false;
-
-  if (currTime < validTimeFrom || currTime > validTimeTo) return false;
-
-  if (breakTimeFrom && breakTimeTo && currTime >= breakTimeFrom && currTime <= breakTimeTo) return false;
-
-  return true;
-};
-
-// get valid time list fron qrsetting
-Utils.getValidTimeList = (qrOrderingSettings, type = Utils.isPickUpType() ? 'pickup' : 'delivery') => {
-  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, validDays } = qrOrderingSettings;
 };
 
 // TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
@@ -462,7 +404,15 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     breakTimeFrom,
     breakTimeTo,
     vacations,
+    useStorehubLogistics,
   } = qrOrderingSettings || {};
+
+  const { logisticsValidTimeFrom, logisticsValidTimeTo } = Utils.getLogisticsValidTime({
+    validTimeFrom,
+    validTimeTo,
+    useStorehubLogistics,
+  });
+
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { rate, freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
   const deliveryFee = rate || 0;
@@ -474,6 +424,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
 
   return {
     deliveryFee,
+    useStorehubLogistics,
     minOrder,
     storeAddress,
     deliveryToAddress,
@@ -491,6 +442,8 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     breakTimeFrom,
     breakTimeTo,
     vacations,
+    logisticsValidTimeFrom,
+    logisticsValidTimeTo,
   };
 };
 
@@ -690,137 +643,6 @@ Utils.getContainerElementHeight = (headerEls, footerEl) => {
 };
 
 Utils.zero = num => (num < 10 ? '0' + num : num + '');
-Utils.getHourList = (validFrom, validTo, useSHLog, type, isToday) => {
-  const zero = num => (num < 10 ? '0' + num : num + '');
-  const timeString = time => zero(new Date(time).getHours()) + ':' + zero(new Date(time).getMinutes());
-
-  const SHlogTime = ['09:00', '21:00'];
-  if (type === 'delivery') {
-    let start = useSHLog ? (validFrom < SHlogTime[0] ? SHlogTime[0] : validFrom) : validFrom;
-
-    let hasonDemand = timeString(new Date()) > start ? 'now' : '';
-
-    validFrom =
-      validFrom.split(':')[1] === '00'
-        ? zero(+validFrom.split(':')[0] + 1) + ':00'
-        : zero(+validFrom.split(':')[0] + 2) + ':00';
-
-    validFrom = useSHLog ? (validFrom < SHlogTime[0] ? SHlogTime[0] : validFrom) : validFrom;
-    validTo = useSHLog ? (validTo > SHlogTime[1] ? SHlogTime[1] : validTo) : validTo;
-    validTo = validTo.split(':')[1] === '00' ? validTo : validTo.split(':')[0] + ':00';
-    validTo = zero(+validTo.split(':')[0] - 1) + ':00';
-    let timeList = [];
-    let pusher = validFrom;
-    timeList.push(pusher);
-    let loops = 0;
-    while (pusher !== validTo) {
-      loops++;
-      pusher = zero(+pusher.split(':')[0] + 1) + ':00';
-      timeList.push(pusher);
-      if (loops > 96) {
-        // safety code to avoid endless loop by 'pusher' > 'validTo', maxNumber 96 =  four 15minute per hour * 24 hour
-        break;
-      }
-    }
-    if (isToday) {
-      if (hasonDemand) {
-        let current = timeString(new Date());
-        current = zero(+current.split(':')[0] + 2) + ':00';
-        const index = timeList.indexOf(current);
-        timeList.unshift('now');
-        if (index !== -1) {
-          timeList.splice(1, index);
-          return timeList;
-        } else {
-          if (timeString(new Date()) >= zero(+validTo.split(':')[0] + 1) + ':00') {
-            return [];
-          } else {
-            timeList.length = 1;
-            return timeList;
-          }
-        }
-      } else {
-        return timeList;
-      }
-    } else {
-      return timeList;
-    }
-  } else {
-    let timeList = [];
-    let hasOnDemand = timeString(new Date()) >= validFrom ? 'now' : '';
-    let hour = validFrom.split(':')[0];
-    let minute = validFrom.split(':')[1];
-    hour = minute === '00' ? hour : zero(+hour + 1);
-    minute = minute === '00' ? '30' : '00';
-    validFrom = `${hour}:${minute}`;
-
-    hour = validTo.split(':')[0];
-    minute = validTo.split(':')[1];
-    hour = minute === '00' ? zero(+hour - 1) : hour;
-    minute = minute === '00' ? '30' : '00';
-    validTo = `${hour}:${minute}`;
-
-    let pusher = validFrom;
-    timeList.push(pusher);
-    let loops = 0;
-    while (pusher !== validTo) {
-      hour = +pusher.split(':')[0];
-      minute = +pusher.split(':')[1];
-      minute += 15;
-      minute = zero(minute === 60 ? 0 : minute);
-
-      hour = minute === '00' ? zero(hour + 1) : zero(hour);
-      pusher = `${hour}:${minute}`;
-      timeList.push(pusher);
-      loops++;
-      if (loops > 96) {
-        //  safety code to avoid endless loop by 'pusher' > 'validTo', maxNumber 96 =  four 15minute per hour * 24 hour
-        break;
-      }
-    }
-
-    if (isToday) {
-      if (hasOnDemand) {
-        let current = timeString(new Date());
-        hour = current.split(':')[0];
-        minute = current.split(':')[1];
-        if (minute >= '00' && minute <= '15') {
-          minute = '15';
-        } else if (minute > '15' && minute <= '30') {
-          minute = '30';
-        } else if (minute > '30' && minute <= '45') {
-          minute = '45';
-        } else if (minute > '45' && minute <= '60') {
-          minute = '60';
-        }
-
-        minute = +minute + 30;
-        if (minute >= 60) {
-          hour = zero(+hour + 1);
-          minute = zero(minute % 60);
-        }
-        current = `${hour}:${minute}`;
-        const index = timeList.indexOf(current);
-        timeList.unshift('now');
-        if (index !== -1) {
-          timeList.splice(1, index);
-          return timeList;
-        } else {
-          if (timeString(new Date()) >= validTo) {
-            return [];
-          } else {
-            timeList.length = 1;
-            return timeList;
-          }
-        }
-      } else {
-        return timeList;
-      }
-    } else {
-      return timeList;
-    }
-  }
-};
 
 // function to get query date for pre-order
 Utils.getFulfillDate = () => {

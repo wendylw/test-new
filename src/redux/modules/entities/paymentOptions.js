@@ -16,6 +16,13 @@ const initialState = {
       label: PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY,
       pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
     },
+    Adyen: {
+      key: 'Adyen',
+      logo: 'paymentCreditImage',
+      label: PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY,
+      pathname: ROUTER_PATHS.ORDERING_ADYEN_PAYMENT,
+      supportSaveCards: true,
+    },
     creditCard: {
       key: 'creditCard',
       logo: 'paymentCreditImage', // refer to imports in file PaymentLogo/index.js

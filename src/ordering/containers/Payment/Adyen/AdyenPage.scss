@@ -1,0 +1,148 @@
+@import "../../../../Variables.scss";
+
+//  Start overwrite adyen component style
+.adyen-checkout__input {
+  height: 56px;
+  border: 1px solid $gray-4;
+  border-radius: 4px 4px 0 0;
+  box-shadow: none;
+  padding: 0 16px;
+  caret-color: $gray-4;
+
+  &--focus,
+  &:hover,
+  &:active,
+  &:active:hover,
+  &:focus,
+  &:focus:hover,
+  &:hover {
+    border: 1px solid $gray-4;
+    box-shadow: none;
+  }
+
+  &--error,
+  &--error:hover,
+  &--invalid,
+  &--invalid:hover {
+    border-color: $status-red;
+  }
+}
+
+.adyen-checkout__field {
+  // Expire date and CVV
+  &-wrapper > &:first-child {
+    margin-right: 0px;
+  }
+
+  &-wrapper > &:first-child .adyen-checkout__input {
+    border-radius: 0 0 0 4px;
+  }
+
+  &-wrapper > &:nth-child(2) {
+    margin-left: 0;
+  }
+
+  &-wrapper > &:nth-child(2) .adyen-checkout__input {
+    border-radius: 0 0 4px 0;
+    border-left: none;
+  }
+
+  &--cardNumber {
+    margin-bottom: -1px;
+  }
+
+  // Error message position arrange
+  &--cardNumber .adyen-checkout__label {
+    position: relative;
+  }
+
+  &--cardNumber .adyen-checkout__error-text {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateY(-150%);
+  }
+}
+
+.adyen-checkout__card {
+  &__form .adyen-checkout__label__text {
+    display: none;
+  }
+  // Holder name related
+  &__holderName {
+    margin-top: 3.8vh;
+  }
+
+  &__holderName .adyen-checkout__input {
+    padding: 0 16px;
+    font-size: 1.285rem;
+    height: 56px;
+    border-radius: 4px;
+  }
+}
+
+.adyen-checkout__label {
+  &__text {
+    font-size: 1.285rem;
+    font-weight: 600;
+    padding: 16px 0;
+  }
+
+  &__text--error {
+    color: $main-color;
+  }
+
+  &--error {
+    color: $main-color;
+  }
+
+  &--focused &__text {
+    color: $main-color;
+  }
+}
+
+.adyen-checkout__spinner {
+  border-color: $status-orange;
+  border-top-color: transparent;
+}
+
+.adyen-checkout__error-text {
+  color: $status-red;
+  font-size: 1rem;
+}
+//  End overwrite adyen component style
+
+// Credit card save card part
+.payment-credit-card {
+  &-switch {
+    padding-top: 1.428rem;
+  }
+
+  &__save-switch {
+    color: $gray-2;
+  }
+
+  &__save-switch.active {
+    color: $main-color;
+  }
+
+  &__save-text {
+    color: $gray-2;
+
+    .payment-credit-card__link {
+      padding-left: 4px;
+    }
+  }
+
+  &__secure {
+    padding-bottom: 10px;
+  }
+
+  &__secure-image {
+    width: 25%;
+  }
+
+  &__secure-text {
+    padding-left: 0.571rem;
+  }
+}

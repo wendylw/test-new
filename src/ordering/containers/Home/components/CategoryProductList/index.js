@@ -97,18 +97,47 @@ class CategoryProductList extends Component {
     return gtmEventTracking(eventName, gtmTrackingData);
   };
 
-  handleShowProductDetail = async product => {
+  gotoLocationAndDatePage() {
+    const { search } = window.location;
+    const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
+      search: `${search}&callbackUrl=${callbackUrl}`,
+    });
+  }
+
+  isNeedToLocationAndDatePage() {
     const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+    const isDeliveryType = Utils.isDeliveryType();
+    const isPickupType = Utils.isPickUpType();
+    const storeId = config.storeId;
+    const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
+    const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
 
-    if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId || !search.h) {
-      const { search } = window.location;
-      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
+    // dine order no need goto location and date page
+    if (!isDeliveryType && !isPickupType) {
+      return false;
+    }
 
-      this.props.history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-        search: `${search}&callbackUrl=${callbackUrl}`,
-      });
+    if (!storeId) {
+      return true;
+    }
+
+    if (isDeliveryType && !deliveryAddress) {
+      return true;
+    }
+
+    if (!expectedDeliveryDate || !expectedDeliveryHour) {
+      return true;
+    }
+
+    return false;
+  }
+
+  handleShowProductDetail = async product => {
+    if (this.isNeedToLocationAndDatePage()) {
+      this.gotoLocationAndDatePage();
       return;
     }
 

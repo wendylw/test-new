@@ -17,12 +17,13 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+import { isAvailableOrderTime, getBusinessDateTime } from '../../../utils/order-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
-import { actions as appActionsCreators } from '../../redux/modules/app';
+import { actions as appActionsCreators, getBusinessUTCOffset } from '../../redux/modules/app';
 import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
@@ -38,6 +39,7 @@ import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
+import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import './OrderingHome.scss';
 
@@ -47,7 +49,7 @@ const localState = {
 
 const SCROLL_DEPTH_DENOMINATOR = 4;
 
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
 export class Home extends Component {
   constructor(props) {
     super(props);
@@ -59,8 +61,8 @@ export class Home extends Component {
       deliveryBar: false,
       alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
       callApiFinish: false,
-      enablePreOrderFroMulitpeStore: false,
-      isValidToOrderFromMulitpeStore: false,
+      enablePreOrderFroMultipleStore: false,
+      isValidToOrderFromMultipleStore: false,
       search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
       windowSize: windowSize(),
     };
@@ -131,8 +133,6 @@ export class Home extends Component {
       await this.setupDeliveryAddressByRedirectState();
     }
 
-    this.handleDeliveryTimeInSession();
-
     await homeActions.loadProductList();
 
     const pageRf = this.getPageRf();
@@ -144,19 +144,11 @@ export class Home extends Component {
 
     this.getStatusFromMultipleStore();
 
-    const { deliveryInfo: NextdeliveryInfo } = this.props;
-    const { enablePreOrder } = NextdeliveryInfo || {};
-    if (!enablePreOrder) {
-      Utils.setSessionVariable(
-        'expectedDeliveryHour',
-        JSON.stringify({
-          from: 'now',
-          to: 'now',
-        })
-      );
-    }
     this.checkRange();
     this.checkOrderTime();
+
+    // "checkDeliveryBar" function MUST call AFTER "checkOrderTime" function
+    this.checkDeliveryBar();
 
     this.setState({ windowSize: windowSize() });
 
@@ -164,6 +156,34 @@ export class Home extends Component {
       this.setState({ windowSize: windowSize() });
     });
   };
+
+  checkDeliveryBar() {
+    const isDeliveryType = Utils.isDeliveryType();
+    const isPickUpType = Utils.isPickUpType();
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
+    const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+    if (!isDeliveryType && !isPickUpType) {
+      this.setState({
+        deliveryBar: false,
+      });
+      return;
+    }
+
+    if (isDeliveryType) {
+      this.setState({
+        deliveryBar: Boolean(deliveryAddress && expectedDeliveryDate && expectedDeliveryHour),
+      });
+      return;
+    }
+
+    if (isPickUpType) {
+      this.setState({
+        deliveryBar: Boolean(expectedDeliveryDate && expectedDeliveryHour),
+      });
+      return;
+    }
+  }
 
   componentDidUpdate(prevProps, prevState) {
     const { deliveryInfo: prevDeliveryInfo } = prevProps;
@@ -187,53 +207,49 @@ export class Home extends Component {
     });
   }
 
-  checkMultipleStoreIsValidTimeToOrder = storeList => {
-    let isMultipleValidTimeToOrder = false;
-    for (let i = 0; i < storeList.length; i++) {
-      let item = storeList[i];
-      const { qrOrderingSettings } = item;
-
-      if (Utils.isValidTimeToOrder(qrOrderingSettings)) {
-        return true;
-      }
-    }
-
-    return isMultipleValidTimeToOrder;
-  };
-
-  checkMultipleStoreIsPreOrderEnabled = storeList => {
-    let isMultipleEnablePreOrder = false;
-    for (let i = 0; i < storeList.length; i++) {
-      let item = storeList[i];
-      const { qrOrderingSettings } = item;
-      const { enablePreOrder } = qrOrderingSettings || {};
-
-      if (enablePreOrder) {
-        return true;
-      }
-    }
-
-    return isMultipleEnablePreOrder;
-  };
-
   getStatusFromMultipleStore = () => {
-    const { allStore } = this.props;
-    let enablePreOrderFroMulitpeStore = false,
-      isValidToOrderFromMulitpeStore = false;
-    const { qrOrderingSettings } = allStore[0] || {};
-    const { enablePreOrder } = qrOrderingSettings || {};
+    const allStore = this.props.allStore || [];
+    const businessUTCOffset = this.props.businessUTCOffset;
 
-    if (allStore && allStore.length) {
-      enablePreOrderFroMulitpeStore =
-        allStore.length === 1 ? enablePreOrder : this.checkMultipleStoreIsPreOrderEnabled(allStore);
-      isValidToOrderFromMulitpeStore =
-        allStore.length === 1
-          ? Utils.isValidTimeToOrder(qrOrderingSettings)
-          : this.checkMultipleStoreIsValidTimeToOrder(allStore);
-    }
+    const currentTime = getBusinessDateTime(businessUTCOffset);
+
+    const enablePreOrderFroMultipleStore = allStore.some(store => {
+      const { qrOrderingSettings } = store;
+
+      return qrOrderingSettings.enablePreOrder;
+    });
+
+    const isValidToOrderFromMultipleStore = allStore.some(store => {
+      const { qrOrderingSettings } = store;
+      const {
+        validTimeFrom,
+        validTimeTo,
+        breakTimeFrom,
+        breakTimeTo,
+        vacations,
+        validDays,
+        disableOnDemandOrder,
+        enablePreOrder,
+      } = qrOrderingSettings;
+
+      // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
+      if (enablePreOrder && disableOnDemandOrder) {
+        return false;
+      }
+
+      return isAvailableOrderTime(currentTime, {
+        validTimeFrom,
+        validTimeTo,
+        breakTimeFrom,
+        breakTimeTo,
+        vacations,
+        validDays,
+      });
+    });
+
     this.setState({
-      enablePreOrderFroMulitpeStore,
-      isValidToOrderFromMulitpeStore,
+      enablePreOrderFroMultipleStore,
+      isValidToOrderFromMultipleStore,
       callApiFinish: true,
     });
   };
@@ -268,130 +284,106 @@ export class Home extends Component {
     }
   };
 
-  setDefaultDate = ({ validDays = [] }) => {
-    let defaultTime = new Date(); //TODO 应该用商家本地时间
-    if (!validDays.length) {
+  isAvailableOnDemandOrder = () => {
+    // if not select store return false
+    if (!config.storeId) {
+      return false;
+    }
+    const { deliveryInfo, businessUTCOffset } = this.props;
+    const { disableOnDemandOrder, enablePreOrder } = deliveryInfo;
+
+    // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
+    if (enablePreOrder && disableOnDemandOrder) {
+      return false;
+    }
+
+    const currentTime = getBusinessDateTime(businessUTCOffset);
+
+    return this.isAvailableTimeToOrder(currentTime);
+  };
+
+  isAvailableTimeToOrder = dateTime => {
+    // if not select store return false
+    if (!config.storeId) {
+      return false;
+    }
+
+    const isDeliveryType = Utils.isDeliveryType();
+
+    const { deliveryInfo } = this.props;
+    const {
+      validDays,
+      vacations,
+      breakTimeFrom,
+      breakTimeTo,
+      validTimeFrom,
+      validTimeTo,
+      logisticsValidTimeFrom,
+      logisticsValidTimeTo,
+    } = deliveryInfo;
+
+    const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
+    const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
+
+    const availableOrderTime = isAvailableOrderTime(dateTime, {
+      validDays,
+      validTimeFrom: orderValidTimeFrom,
+      validTimeTo: orderValidTimeTo,
+      vacations,
+      breakTimeFrom,
+      breakTimeTo,
+    });
+
+    return availableOrderTime;
+  };
+
+  checkOrderTime = async () => {
+    if (this.isExpectedDeliverTimeExpired()) {
+      Utils.removeExpectedDeliveryTime();
+    }
+
+    const isDeliveryType = Utils.isDeliveryType();
+    const isPickUpType = Utils.isPickUpType();
+    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+
+    const storeId = config.storeId;
+    const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
+    const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+
+    if (!storeId) {
       return;
     }
-    let times = 0;
-    const getDateStringFromTime = time => {
-      time = new Date(time);
-      return `${time.getFullYear()}${Utils.zero(time.getMonth() + 1)}${Utils.zero(time.getDate())}`;
-    };
-    const isVacation = (list, date) => {
-      let isVacationDay = false;
 
-      for (let i = 0; i < list.length; i++) {
-        let item = list[i];
-        if (date >= item.vacationTimeFrom && date <= item.vacationTimeTo) {
-          return true;
-        }
-      }
-      return isVacationDay;
-    };
-    const currentValidDays = Array.from(validDays, v => v - 1);
-
-    while (currentValidDays.indexOf(defaultTime.getDay()) === -1 || isVacation(getDateStringFromTime(defaultTime))) {
-      times++;
-      defaultTime.setDate(defaultTime.getDate() + 1);
-      if (times > 30) {
-        break;
-      }
+    if (isDeliveryType && !deliveryAddress) {
+      return;
     }
 
-    const currentTime = new Date(); //TODO 应该用商家本地时间
+    // have selected delivery time
+    if (expectedDeliveryDate && expectedDeliveryHour) {
+      return;
+    }
 
-    if (defaultTime.getMonth() === currentTime.getMonth() && defaultTime.getDate() === currentTime.getDate()) {
+    if (isDeliveryType || isPickUpType) {
+      const { businessUTCOffset } = this.props;
+      const isAvailableOnDemandOrder = this.isAvailableOnDemandOrder();
+
+      if (!isAvailableOnDemandOrder) {
+        return;
+      }
+
+      const currentTime = getBusinessDateTime(businessUTCOffset);
+
       Utils.setSessionVariable(
         'expectedDeliveryDate',
         JSON.stringify({
-          date: defaultTime.toISOString(),
+          date: currentTime.startOf('day').toISOString(),
           isOpen: true,
           isToday: true,
         })
       );
-    } else {
-      Utils.setSessionVariable(
-        'expectedDeliveryDate',
-        JSON.stringify({
-          date: defaultTime.toISOString(),
-          isOpen: true,
-          isToday: false,
-        })
-      );
-    }
-  };
+      const expectedDeliveryHour = isDeliveryType ? { from: 'now', to: 'now' } : { from: 'now' };
 
-  setDefaultHour = ({ validTimeFrom, validTimeTo, validDays, enablePreOrder, disableOnDemandOrder }) => {
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    let deliverDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate'));
-    if (deliverDate.isToday) {
-      const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, true);
-      if (timeList.length) {
-        let first = timeList[0];
-        let expectedDeliveryHour;
-        if (first === 'now') {
-          if (disableOnDemandOrder) {
-            first = timeList[1];
-            expectedDeliveryHour = {
-              from: first,
-              to: Utils.zero(+first.split(':')[0] + 1) + ':00',
-            };
-          } else {
-            expectedDeliveryHour = {
-              from: 'now',
-              to: 'now',
-            };
-          }
-        } else if (enablePreOrder) {
-          expectedDeliveryHour = {
-            from: first,
-            to: Utils.zero(+first.split(':')[0] + 1) + ':00',
-          };
-        }
-        Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
-      }
-    } else {
-      if (enablePreOrder) {
-        const timeList = Utils.getHourList(validTimeFrom, validTimeTo, false, search.type, false);
-        let first = timeList[0];
-        Utils.setSessionVariable(
-          'expectedDeliveryHour',
-          JSON.stringify({
-            from: first,
-            to: Utils.zero(+first.split(':')[0] + 1) + ':00',
-          })
-        );
-      } else {
-        Utils.setSessionVariable(
-          'expectedDeliveryHour',
-          JSON.stringify({
-            from: 'now',
-            to: 'now',
-          })
-        );
-      }
-    }
-  };
-
-  checkOrderTime = async () => {
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    if ((Utils.getSessionVariable('deliveryAddress') && Utils.isDeliveryType()) || (Utils.isPickUpType() && search.h)) {
-      const { businessInfo } = this.props;
-      const { qrOrderingSettings } = businessInfo || {};
-      // const { validTimeFrom, validTimeTo, validDays, enablePreOrder, disableOnDemandOrder } = qrOrderingSettings || {};
-
-      if (!Utils.getSessionVariable('expectedDeliveryDate')) {
-        // {"date":"2020-07-03T16:00:00.000Z","isOpen":true,"isToday":false}
-        this.setDefaultDate(qrOrderingSettings || {});
-      }
-      if (!Utils.getSessionVariable('expectedDeliveryHour')) {
-        this.setDefaultHour(qrOrderingSettings);
-      }
-
-      this.setState({
-        deliveryBar: true,
-      });
+      Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
     }
   };
 
@@ -427,25 +419,62 @@ export class Home extends Component {
     }
   };
 
-  // Remove user previously selected delivery/pickup time from session
-  // Just in case the previous one they select is delivery and the new one is pickup
-  // which will cause delivery/pickup time displayed in header incorrect
-  handleDeliveryTimeInSession = () => {
+  getPreviousDeliveryMethod = () => {
     const { hour = {} } = Utils.getExpectedDeliveryDateFromSession();
-    let previousDeliveryMethod = '';
 
     if (hour.from && hour.to) {
-      previousDeliveryMethod = Constants.DELIVERY_METHOD.DELIVERY;
-    } else if (hour.from && !hour.to) {
-      previousDeliveryMethod = Constants.DELIVERY_METHOD.PICKUP;
+      return Constants.DELIVERY_METHOD.DELIVERY;
     }
 
-    if (
-      (Utils.isPickUpType() && previousDeliveryMethod === Constants.DELIVERY_METHOD.DELIVERY) ||
-      (Utils.isDeliveryType() && previousDeliveryMethod === Constants.DELIVERY_METHOD.PICKUP)
-    ) {
-      Utils.removeExpectedDeliveryTime();
+    if (hour.from && !hour.to) {
+      return Constants.DELIVERY_METHOD.PICKUP;
     }
+
+    return null;
+  };
+
+  isExpectedDeliverTimeExpired = () => {
+    const { businessUTCOffset } = this.props;
+    const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
+    const deliverMethod = Utils.getOrderTypeFromUrl();
+    const previousDeliveryMethod = this.getPreviousDeliveryMethod();
+    const storeId = config.storeId;
+
+    if (!storeId) {
+      return true;
+    }
+
+    if (!date.date || !hour.from) {
+      return true;
+    }
+
+    // Remove user previously selected delivery/pickup time from session
+    // Just in case the previous one they select is delivery and the new one is pickup
+    // which will cause delivery/pickup time displayed in header incorrect
+    if (previousDeliveryMethod && previousDeliveryMethod !== deliverMethod) {
+      return true;
+    }
+
+    if (hour.from === PREORDER_IMMEDIATE_TAG.from && !this.isAvailableOnDemandOrder()) {
+      return true;
+    }
+
+    if (hour.from !== PREORDER_IMMEDIATE_TAG.from) {
+      const currentTime = getBusinessDateTime(businessUTCOffset);
+      const expectedDate = getBusinessDateTime(businessUTCOffset, new Date(date.date));
+
+      const expectedDeliveryTime = setDateTime(hour.from, expectedDate);
+
+      if (expectedDeliveryTime.isBefore(currentTime)) {
+        return true;
+      }
+
+      if (storeId && !this.isAvailableTimeToOrder(expectedDeliveryTime)) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   getBusinessCountry = () => {
@@ -651,25 +680,26 @@ export class Home extends Component {
 
   isPreOrderEnabled = () => {
     const { enablePreOrder } = this.props.deliveryInfo;
-    const { search, enablePreOrderFroMulitpeStore } = this.state;
-    const { h } = search;
+    const { enablePreOrderFroMultipleStore } = this.state;
+    const storeId = config.storeId;
 
-    return !h ? enablePreOrderFroMulitpeStore : !!enablePreOrder;
+    return !storeId ? enablePreOrderFroMultipleStore : !!enablePreOrder;
   };
 
   isValidTimeToOrder = () => {
-    const { deliveryInfo } = this.props;
-    const { search, isValidToOrderFromMulitpeStore } = this.state;
-    const { h } = search;
-    const { validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations } = deliveryInfo;
+    const { isValidToOrderFromMultipleStore } = this.state;
+    const storeId = config.storeId;
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
-    return !h
-      ? isValidToOrderFromMulitpeStore
-      : Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations });
+    // not select store
+    if (!storeId) {
+      return isValidToOrderFromMultipleStore;
+    }
+
+    return this.isAvailableOnDemandOrder();
   };
 
   renderHeaderChildren() {
@@ -954,6 +984,7 @@ export default compose(
         popUpModal: getPopUpModal(state),
         cartSummary: getCartSummary(state),
         allStore: getStoresList(state),
+        businessUTCOffset: getBusinessUTCOffset(state),
       };
     },
     dispatch => ({

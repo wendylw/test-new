@@ -11,12 +11,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import {
-  actions as homeActionCreators,
-  getOneStoreInfo,
-  getStoreHashCode,
-  isStoreClosed,
-} from '../../redux/modules/home';
+import { actions as homeActionCreators, getOneStoreInfo, getStoreHashCode } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
 import { getBusiness } from '../../../ordering/redux/modules/app';
@@ -62,7 +57,6 @@ class DeliveryMethods extends Component {
   }
 
   async handleVisitStore(methodName) {
-    // const { isStoreClosed } = this.props;
     const { store, homeActions } = this.props;
     await homeActions.getStoreHashData(store.id);
     const { hashCode } = this.props;
@@ -156,7 +150,6 @@ export default compose(
   connect(
     (state, ownProps) => ({
       hashCode: getStoreHashCode(state),
-      isStoreClosed: isStoreClosed(state),
       business: getBusiness(state),
       removePickUpMerchantList: getRemovedPickUpMerchantList(state),
       allBusinessInfo: getAllBusinesses(state),
