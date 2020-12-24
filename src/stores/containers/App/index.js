@@ -30,7 +30,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { getBusinessDateTime, checkStoreIsOpened } from '../../../utils/order-utils';
+import { getBusinessDateTime, checkStoreIsOpened } from '../../../utils/store-utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';

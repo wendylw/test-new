@@ -1,7 +1,7 @@
 import { LOCATION_AND_DATE } from '../types';
 import _get from 'lodash/get';
 import Constants from '../../../utils/constants';
-import { findNearlyStore, getBusinessDateTime } from '../../../utils/order-utils';
+import { findNearlyStore, getBusinessDateTime } from '../../../utils/store-utils';
 import { getStoreById, getAllStores } from '../../../redux/modules/entities/stores';
 import { getBusinessUTCOffset } from './app';
 import { actions as homeActions } from './home';

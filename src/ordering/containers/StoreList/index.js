@@ -16,7 +16,7 @@ import Tag from '../../../components/Tag';
 import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
-import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/order-utils';
+import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/store-utils';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (

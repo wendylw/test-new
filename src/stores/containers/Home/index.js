@@ -4,7 +4,7 @@ import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
-import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/order-utils';
+import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/store-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
