@@ -64,7 +64,17 @@ export const gtmSetUserProperties = ({ onlineStoreInfo, userInfo, store }) => {
   }
 
   window.dataLayer = window.dataLayer || [];
-  return window.dataLayer.push(Object.assign({}, onlineStoreInfoForGtm, userInfoForGtm, selectedStoreInfoForGtm));
+  window.dataLayer.push(
+    Object.assign(
+      {
+        event: 'initial',
+      },
+      onlineStoreInfoForGtm,
+      userInfoForGtm,
+      selectedStoreInfoForGtm
+    )
+  );
+  return;
 };
 
 export const gtmSetPageViewData = data => {

@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
+import _get from 'lodash/get';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
@@ -11,6 +13,7 @@ import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -530,3 +533,13 @@ export const getMerchantCountry = state => {
   return null;
 };
 export const getApiError = state => state.app.apiError;
+
+export const getBusinessInfo = state => {
+  const business = getBusiness(state);
+
+  return getBusinessByName(state, business) || {};
+};
+
+export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
+  return _get(businessInfo, 'timezoneOffset', 480);
+});
