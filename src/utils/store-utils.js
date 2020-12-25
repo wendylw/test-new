@@ -69,7 +69,11 @@ export const getPreOrderTimeList = (store, deliveryType) => {
  */
 export const getDeliveryPreOrderTimeList = store => {
   const { qrOrderingSettings } = store;
-  const { breakTimeFrom, breakTimeTo } = qrOrderingSettings;
+  const { breakTimeFrom, breakTimeTo, enablePreOrder } = qrOrderingSettings;
+
+  if (!enablePreOrder) {
+    return [];
+  }
 
   const { validTimeFrom, validTimeTo } = getDeliveryPreOrderValidTimePeriod(store);
 
@@ -150,7 +154,11 @@ export const getPickupPreOrderTimePeriod = store => {
  */
 export const getPickupPreOrderTimeList = store => {
   const { qrOrderingSettings } = store;
-  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
+  const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, enablePreOrder } = qrOrderingSettings;
+
+  if (!enablePreOrder) {
+    return [];
+  }
 
   const preOrderValidTimeFrom = _flow([timeLib.add, timeLib.ceilToQuarter]).call(null, validTimeFrom, {
     value: 30,
@@ -197,6 +205,28 @@ export const getDeliveryTodayTimeList = (store, currentDate) => {
   const deliveryTimeList = getDeliveryPreOrderTimeList(store);
 
   const availableTimeList = deliveryTimeList.filter(time => timeLib.isAfter(time, availablePreOrderValidTimeFrom));
+
+  return timeList.concat(availableTimeList);
+};
+
+export const getPickupTodayTimeList = (store, currentDate) => {
+  const { disableTodayPreOrder, enablePreOrder } = store.qrOrderingSettings;
+  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(store, currentDate, DELIVERY_METHOD.PICKUP);
+  const timeList = [];
+
+  if (isAvailableOnDemandOrder) {
+    timeList.push(TIME_SLOT_NOW);
+  }
+
+  if (!enablePreOrder || disableTodayPreOrder) {
+    return timeList;
+  }
+
+  const time = timeLib.getTimeFromDayjs(currentDate);
+  const availablePreOrderValidTimeFrom = timeLib.add(time, { value: 30, unit: 'minute' });
+  const pickupTimeList = getPickupPreOrderTimeList(store);
+
+  const availableTimeList = pickupTimeList.filter(time => timeLib.isAfter(time, availablePreOrderValidTimeFrom));
 
   return timeList.concat(availableTimeList);
 };
