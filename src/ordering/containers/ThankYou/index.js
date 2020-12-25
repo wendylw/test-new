@@ -1048,16 +1048,15 @@ export class ThankYou extends PureComponent {
 
     if (!order) return;
 
-    const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom } = order || {};
+    const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom, createdTime } = order || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const pickupTime = formatPickupTime({
-      dateList:
-        expectDeliveryDateFrom && isPreOrder
-          ? [new Date(expectDeliveryDateFrom)]
-          : [new Date(), new Date(new Date().getTime() + 1000 * 60 * 30)],
+      dateList: isPreOrder
+        ? [new Date(expectDeliveryDateFrom)]
+        : [new Date(createdTime), new Date(new Date(createdTime).getTime() + 1000 * 60 * 30)],
       locale: onlineStoreInfo.country,
     });
 

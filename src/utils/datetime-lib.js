@@ -192,17 +192,11 @@ export const formatToDeliveryTime = ({ date, hour, locale = 'MY', separator = ',
 };
 
 export const formatPickupTime = ({ dateList, locale, separator = ', ' }) => {
-  const date = toDayDateMonth(dateList[0], locale) ? toDayDateMonth(new Date()).split(',')[1] : '';
+  const isToday = dateList[0].getDate() === new Date().getDate();
+  let date = isToday ? i18next.t('Today') : toDayDateMonth(dateList[0], locale);
   let timeRange = dateList.map(time => toNumericTime(time, locale)).join(' - ');
-  let weekday;
 
-  if (dateList[0].getDate() === new Date().getDate()) {
-    weekday = i18next.t('Today');
-  } else {
-    weekday = i18next.t('Weekday');
-  }
-
-  return [weekday, date, timeRange].filter(item => Boolean(item)).join(separator);
+  return [date, timeRange].filter(item => Boolean(item)).join(separator);
 };
 
 export const addTime = (date = new Date(), timeToAdd, unit) => {
