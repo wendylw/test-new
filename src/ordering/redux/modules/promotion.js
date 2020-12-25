@@ -228,14 +228,12 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_REQUEST:
       return {
         ...state,
-        code: '',
         inProcess: true,
       };
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_SUCCESS:
     case PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS:
       return {
         ...state,
-        code: '',
         status: action.response.status || '',
         promoType: PROMO_TYPE.VOUCHER,
         validFrom: new Date(action.response.validFrom),
@@ -245,8 +243,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         promoCode: action.promoCode,
-        code: '',
-        inProcess: false,
         foundPromo: {},
         hasSearchedForPromo: false,
         selectedPromo: {},
@@ -266,7 +262,6 @@ const reducer = (state = initialState, action) => {
 
       return {
         ...state,
-        code: '',
         voucherList,
       };
     case PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS:
@@ -279,27 +274,22 @@ const reducer = (state = initialState, action) => {
 
       return {
         ...state,
-        code: '',
-        status: action.response.status || '',
         foundPromo,
         hasSearchedForPromo: true,
       };
     case PROMOTION_TYPES.UPDATE_SEARCH_MODE:
       return {
         ...state,
-        code: '',
         searchMode: action.isSearchingMode,
       };
     case PROMOTION_TYPES.SELECT_PROMO:
       return {
         ...state,
-        code: '',
         selectedPromo: action.promo,
       };
     case PROMOTION_TYPES.DESELECT_PROMO:
       return {
         ...state,
-        code: '',
         selectedPromo: {},
       };
     default:
