@@ -15,6 +15,7 @@ import {
   isAvailableOrderTime,
   isAvailableOnDemandOrderTime,
   checkStoreIsOpened,
+  isDateTimeSoldOut,
 } from './store-utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -26,29 +27,31 @@ dayjs.extend(utc);
 
 expect.extend({
   toArrayStartWith: (received, expectedStartArray) => {
-    const pass = _.isEqual(_.take(received, expectedStartArray.length), expectedStartArray);
+    const receivedStartArray = _.take(received, expectedStartArray.length);
+    const pass = _.isEqual(receivedStartArray, expectedStartArray);
     if (pass) {
       return {
-        message: () => `expected not to start with ${expectedStartArray}`,
+        message: () => `expected ${receivedStartArray} not to start with ${expectedStartArray}, `,
         pass: true,
       };
     } else {
       return {
-        message: () => `expected start with ${expectedStartArray}`,
+        message: () => `expected ${receivedStartArray} start with ${expectedStartArray}`,
         pass: false,
       };
     }
   },
   toArrayEndWith: (received, expectedEndArray) => {
-    const pass = _.isEqual(_.takeRight(received, expectedEndArray.length), expectedEndArray);
+    const receivedEndArray = _.takeRight(received, expectedEndArray.length);
+    const pass = _.isEqual(receivedEndArray, expectedEndArray);
     if (pass) {
       return {
-        message: () => `expected not to end with ${expectedEndArray}`,
+        message: () => `expected ${receivedEndArray} not to end with ${expectedEndArray}`,
         pass: true,
       };
     } else {
       return {
-        message: () => `expected end with ${expectedEndArray}`,
+        message: () => `expected ${receivedEndArray} end with ${expectedEndArray}`,
         pass: false,
       };
     }
@@ -93,6 +96,8 @@ const storeA = {
       },
     ],
     disableOnDemandOrder: false,
+    enablePerTimeSlotLimitForPreOrder: true,
+    maxPreOrdersPerTimeSlot: 1,
   },
 };
 
@@ -134,6 +139,8 @@ const storeB = {
       },
     ],
     disableOnDemandOrder: true,
+    enablePerTimeSlotLimitForPreOrder: true,
+    maxPreOrdersPerTimeSlot: 2,
   },
 };
 
@@ -170,12 +177,16 @@ const storeC = {
     breakTimeTo: '14:00',
     vacations: [],
     disableOnDemandOrder: true,
+    enablePerTimeSlotLimitForPreOrder: false,
+    maxPreOrdersPerTimeSlot: null,
   },
 };
 
+const MY_UTC_OFFSET = 480;
+
 describe('test getOrderDateList function', () => {
   test('check StoreA date list', () => {
-    const currentDate = dayjs('2020-12-11T10:02:17+08:00');
+    const currentDate = new Date('2020-12-11T10:02:17+08:00');
     const expectedDateList = [
       {
         date: '2020-12-11T00:00:00+08:00',
@@ -204,9 +215,13 @@ describe('test getOrderDateList function', () => {
       },
     ];
 
-    const dateList = getOrderDateList(storeA, currentDate);
+    const dateList = getOrderDateList(storeA, currentDate, MY_UTC_OFFSET);
     expectedDateList.forEach((expectedDate, index) => {
-      expect(dateList[index]).toEqual(expectedDate);
+      const date = dateList[index];
+
+      expect(dayjs(date.date).isSame(expectedDate.date, 'day')).toBeTruthy();
+      expect(date.isOpen).toBe(expectedDate.isOpen);
+      expect(date.isToday).toBe(expectedDate.isToday);
     });
   });
 
@@ -242,12 +257,16 @@ describe('test getOrderDateList function', () => {
 
     const dateList = getOrderDateList(storeB, currentDate);
     expectedDateList.forEach((expectedDate, index) => {
-      expect(dateList[index]).toEqual(expectedDate);
+      const date = dateList[index];
+
+      expect(dayjs(date.date).isSame(expectedDate.date, 'day')).toBeTruthy();
+      expect(date.isOpen).toBe(expectedDate.isOpen);
+      expect(date.isToday).toBe(expectedDate.isToday);
     });
   });
 
   test('check StoreC date list', () => {
-    const currentDate = dayjs('2020-12-11T10:02:17+08:00');
+    const currentDate = new Date('2020-12-11T10:02:17+08:00');
     const expectedDateList = [
       {
         date: '2020-12-11T00:00:00+08:00',
@@ -276,9 +295,13 @@ describe('test getOrderDateList function', () => {
       },
     ];
 
-    const dateList = getOrderDateList(storeC, currentDate);
+    const dateList = getOrderDateList(storeC, currentDate, MY_UTC_OFFSET);
     expectedDateList.forEach((expectedDate, index) => {
-      expect(dateList[index]).toEqual(expectedDate);
+      const date = dateList[index];
+
+      expect(dayjs(date.date).isSame(expectedDate.date, 'day')).toBeTruthy();
+      expect(date.isOpen).toBe(expectedDate.isOpen);
+      expect(date.isToday).toBe(expectedDate.isToday);
     });
   });
 });
@@ -356,20 +379,20 @@ describe('test getPickupPreOrderTimeList function', () => {
 
 describe('test getDeliveryTodayTimeList function', () => {
   test('check storeA today time list, available immediately', () => {
-    const currentTime = dayjs('2020-11-19T14:02:17+08:00');
+    const currentTime = new Date('2020-11-19T14:02:17+08:00');
     const expectedStartTimeList = [TIME_SLOT_NOW, '16:00'];
     const expectedEndTimeList = ['19:00', '20:00'];
-    const todayTimeList = getDeliveryTodayTimeList(storeA, currentTime);
+    const todayTimeList = getDeliveryTodayTimeList(storeA, currentTime, MY_UTC_OFFSET);
 
     expect(todayTimeList).toArrayStartWith(expectedStartTimeList);
     expect(todayTimeList).toArrayEndWith(expectedEndTimeList);
   });
 
   test('check storeA today time list, unavailable immediately', () => {
-    const currentTime = dayjs('2020-11-19T07:02:17+08:00');
+    const currentTime = new Date('2020-11-19T07:02:17+08:00');
     const expectedStartTimeList = ['09:00', '10:00'];
     const expectedEndTimeList = ['19:00', '20:00'];
-    const todayTimeList = getDeliveryTodayTimeList(storeA, currentTime);
+    const todayTimeList = getDeliveryTodayTimeList(storeA, currentTime, MY_UTC_OFFSET);
 
     expect(todayTimeList).toArrayStartWith(expectedStartTimeList);
     expect(todayTimeList).toArrayEndWith(expectedEndTimeList);
@@ -378,12 +401,12 @@ describe('test getDeliveryTodayTimeList function', () => {
 
 describe('test getPickupTodayTimeList function', () => {
   test('check storeA today time list, available immediately', () => {
-    const currentTime = dayjs('2020-11-19T14:02:17+08:00');
+    const currentTime = new Date('2020-11-19T14:02:17+08:00');
     const expectedStartTimeList = [TIME_SLOT_NOW, '14:45'];
     const expectedEndTimeList = ['22:15', '22:30'];
     const expectedNotExistTimeList = ['14:15', '14:30'];
 
-    const todayTimeList = getPickupTodayTimeList(storeA, currentTime);
+    const todayTimeList = getPickupTodayTimeList(storeA, currentTime, MY_UTC_OFFSET);
 
     expect(todayTimeList).toArrayStartWith(expectedStartTimeList);
     expect(todayTimeList).toArrayEndWith(expectedEndTimeList);
@@ -391,12 +414,12 @@ describe('test getPickupTodayTimeList function', () => {
   });
 
   test('check storeA today time list, unavailable immediately', () => {
-    const currentTime = dayjs('2020-11-19T05:02:17+08:00');
+    const currentTime = new Date('2020-11-19T05:02:17+08:00');
     const expectedStartTimeList = ['07:00', '07:15'];
     const expectedEndTimeList = ['22:15', '22:30'];
     const expectedNotExistTimeList = ['14:00'];
 
-    const todayTimeList = getPickupTodayTimeList(storeA, currentTime);
+    const todayTimeList = getPickupTodayTimeList(storeA, currentTime, MY_UTC_OFFSET);
 
     expect(todayTimeList).toArrayStartWith(expectedStartTimeList);
     expect(todayTimeList).toArrayEndWith(expectedEndTimeList);
@@ -456,28 +479,65 @@ describe('test getPreOrderTimeList function', () => {
 
 describe('test checkStoreIsOpened function', () => {
   test('check storeA is open in valid time', () => {
-    expect(checkStoreIsOpened(storeA, dayjs('2020-11-19T07:02:17+08:00'))).toBeTruthy();
-    expect(checkStoreIsOpened(storeA, dayjs('2020-11-19T03:02:17+08:00'))).toBeTruthy();
+    expect(checkStoreIsOpened(storeA, new Date('2020-11-19T07:02:17+08:00'), MY_UTC_OFFSET)).toBeTruthy();
+    expect(checkStoreIsOpened(storeA, new Date('2020-11-19T03:02:17+08:00'), MY_UTC_OFFSET)).toBeTruthy();
   });
 
   test('check storeB is open in valid time', () => {
-    expect(checkStoreIsOpened(storeB, dayjs('2020-11-19T07:02:17+08:00'))).toBeTruthy();
-    expect(checkStoreIsOpened(storeB, dayjs('2020-11-19T00:02:17+08:00'))).toBeTruthy();
+    expect(checkStoreIsOpened(storeB, new Date('2020-11-19T07:02:17+08:00'), MY_UTC_OFFSET)).toBeTruthy();
+    expect(checkStoreIsOpened(storeB, new Date('2020-11-19T00:02:17+08:00'), MY_UTC_OFFSET)).toBeTruthy();
   });
 
   test('check storeC is open in valid time', () => {
-    expect(checkStoreIsOpened(storeC, dayjs('2020-11-19T11:02:17+08:00'))).toBeTruthy();
-    expect(checkStoreIsOpened(storeC, dayjs('2020-11-19T13:02:17+08:00'))).toBeFalsy();
-    expect(checkStoreIsOpened(storeC, dayjs('2020-11-19T18:02:17+08:00'))).toBeTruthy();
+    expect(checkStoreIsOpened(storeC, new Date('2020-11-19T11:02:17+08:00'), MY_UTC_OFFSET)).toBeTruthy();
+    expect(checkStoreIsOpened(storeC, new Date('2020-11-19T13:02:17+08:00'), MY_UTC_OFFSET)).toBeFalsy();
+    expect(checkStoreIsOpened(storeC, new Date('2020-11-19T18:02:17+08:00'), MY_UTC_OFFSET)).toBeTruthy();
+  });
+});
+
+describe('test isDateTimeSoldOut function', () => {
+  test('check storeA is sold out in specify date time', () => {
+    const soldData = [
+      {
+        date: '2020-12-25T07:00:00.000Z',
+        count: 1,
+      },
+    ];
+    expect(isDateTimeSoldOut(storeA, soldData, new Date('2020-12-25T15:00:00+08:00'), MY_UTC_OFFSET)).toBeTruthy();
+    expect(isDateTimeSoldOut(storeA, soldData, new Date('2020-12-25T14:00:00+08:00'), MY_UTC_OFFSET)).toBeFalsy();
+  });
+
+  test('check storeB is sold out in specify date time', () => {
+    const soldData = [
+      {
+        date: '2020-12-25T07:00:00.000Z',
+        count: 1,
+      },
+    ];
+
+    expect(isDateTimeSoldOut(storeB, soldData, new Date('2020-12-25T15:00:00+08:00'), MY_UTC_OFFSET)).toBeFalsy();
+    expect(isDateTimeSoldOut(storeB, soldData, new Date('2020-12-25T14:00:00+08:00'), MY_UTC_OFFSET)).toBeFalsy();
+  });
+
+  test('check storeC is sold out in specify date time', () => {
+    const soldData = [
+      {
+        date: '2020-12-25T07:00:00.000Z',
+        count: 100,
+      },
+    ];
+
+    expect(isDateTimeSoldOut(storeC, soldData, new Date('2020-12-25T15:00:00+08:00'), MY_UTC_OFFSET)).toBeFalsy();
+    expect(isDateTimeSoldOut(storeC, soldData, new Date('2020-12-25T14:00:00+08:00'), MY_UTC_OFFSET)).toBeFalsy();
   });
 });
 
 describe('test isAvailableOrderTime function', () => {
   test('check storeA is available Order time', () => {
-    const currentTime = dayjs('2020-11-19T14:02:17+08:00');
-    const isAvailableOrder = isAvailableOrderTime(storeA, currentTime);
-    const isAvailablePickupOrder = isAvailableOrderTime(storeA, currentTime, DELIVERY_METHOD.PICKUP);
-    const isAvailableDeliveryOrder = isAvailableOrderTime(storeA, currentTime, DELIVERY_METHOD.DELIVERY);
+    const currentTime = new Date('2020-11-19T14:02:17+08:00');
+    const isAvailableOrder = isAvailableOrderTime(storeA, currentTime, MY_UTC_OFFSET);
+    const isAvailablePickupOrder = isAvailableOrderTime(storeA, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.PICKUP);
+    const isAvailableDeliveryOrder = isAvailableOrderTime(storeA, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.DELIVERY);
 
     expect(isAvailableOrder).toBeTruthy();
     expect(isAvailablePickupOrder).toBeTruthy();
@@ -485,10 +545,10 @@ describe('test isAvailableOrderTime function', () => {
   });
 
   test('check storeA is available Order time before SH logistics time', () => {
-    const currentTime = dayjs('2020-11-19T08:02:17+08:00');
-    const isAvailableOrder = isAvailableOrderTime(storeA, currentTime);
-    const isAvailablePickupOrder = isAvailableOrderTime(storeA, currentTime, DELIVERY_METHOD.PICKUP);
-    const isAvailableDeliveryOrder = isAvailableOrderTime(storeA, currentTime, DELIVERY_METHOD.DELIVERY);
+    const currentTime = new Date('2020-11-19T08:02:17+08:00');
+    const isAvailableOrder = isAvailableOrderTime(storeA, currentTime, MY_UTC_OFFSET);
+    const isAvailablePickupOrder = isAvailableOrderTime(storeA, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.PICKUP);
+    const isAvailableDeliveryOrder = isAvailableOrderTime(storeA, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.DELIVERY);
 
     expect(isAvailableOrder).toBeTruthy();
     expect(isAvailablePickupOrder).toBeTruthy();
@@ -496,10 +556,10 @@ describe('test isAvailableOrderTime function', () => {
   });
 
   test('check storeB is available Order time in break time', () => {
-    const currentTime = dayjs('2020-11-19T12:02:17+08:00');
-    const isAvailableOrder = isAvailableOrderTime(storeB, currentTime);
-    const isAvailablePickupOrder = isAvailableOrderTime(storeB, currentTime, DELIVERY_METHOD.PICKUP);
-    const isAvailableDeliveryOrder = isAvailableOrderTime(storeB, currentTime, DELIVERY_METHOD.DELIVERY);
+    const currentTime = new Date('2020-11-19T12:02:17+08:00');
+    const isAvailableOrder = isAvailableOrderTime(storeB, currentTime, MY_UTC_OFFSET);
+    const isAvailablePickupOrder = isAvailableOrderTime(storeB, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.PICKUP);
+    const isAvailableDeliveryOrder = isAvailableOrderTime(storeB, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.DELIVERY);
 
     expect(isAvailableOrder).toBeFalsy();
     expect(isAvailablePickupOrder).toBeFalsy();
@@ -507,10 +567,10 @@ describe('test isAvailableOrderTime function', () => {
   });
 
   test('check storeC is available Order time in store closed time', () => {
-    const currentTime = dayjs('2020-11-19T10:21:17+08:00');
-    const isAvailableOrder = isAvailableOrderTime(storeC, currentTime);
-    const isAvailablePickupOrder = isAvailableOrderTime(storeC, currentTime, DELIVERY_METHOD.PICKUP);
-    const isAvailableDeliveryOrder = isAvailableOrderTime(storeC, currentTime, DELIVERY_METHOD.DELIVERY);
+    const currentTime = new Date('2020-11-19T10:21:17+08:00');
+    const isAvailableOrder = isAvailableOrderTime(storeC, currentTime, MY_UTC_OFFSET);
+    const isAvailablePickupOrder = isAvailableOrderTime(storeC, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.PICKUP);
+    const isAvailableDeliveryOrder = isAvailableOrderTime(storeC, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.DELIVERY);
 
     expect(isAvailableOrder).toBeFalsy();
     expect(isAvailablePickupOrder).toBeFalsy();
@@ -520,27 +580,27 @@ describe('test isAvailableOrderTime function', () => {
 
 describe('test isAvailableOnDemandOrderTime function', () => {
   test('test StoreA is available on demand order time', () => {
-    const currentTime = dayjs('2020-11-19T10:21:17+08:00');
+    const currentTime = new Date('2020-11-19T10:21:17+08:00');
 
-    expect(isAvailableOnDemandOrderTime(storeA, currentTime)).toBeTruthy();
-    expect(isAvailableOnDemandOrderTime(storeA, currentTime, DELIVERY_METHOD.PICKUP)).toBeTruthy();
-    expect(isAvailableOnDemandOrderTime(storeA, currentTime, DELIVERY_METHOD.DELIVERY)).toBeTruthy();
+    expect(isAvailableOnDemandOrderTime(storeA, currentTime, MY_UTC_OFFSET)).toBeTruthy();
+    expect(isAvailableOnDemandOrderTime(storeA, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.PICKUP)).toBeTruthy();
+    expect(isAvailableOnDemandOrderTime(storeA, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.DELIVERY)).toBeTruthy();
   });
 
   test('test StoreB is available on demand order time', () => {
-    const currentTime = dayjs('2020-11-19T10:21:17+08:00');
+    const currentTime = new Date('2020-11-19T10:21:17+08:00');
 
-    expect(isAvailableOnDemandOrderTime(storeB, currentTime)).toBeFalsy();
-    expect(isAvailableOnDemandOrderTime(storeB, currentTime, DELIVERY_METHOD.PICKUP)).toBeFalsy();
-    expect(isAvailableOnDemandOrderTime(storeB, currentTime, DELIVERY_METHOD.DELIVERY)).toBeFalsy();
+    expect(isAvailableOnDemandOrderTime(storeB, currentTime, MY_UTC_OFFSET)).toBeFalsy();
+    expect(isAvailableOnDemandOrderTime(storeB, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.PICKUP)).toBeFalsy();
+    expect(isAvailableOnDemandOrderTime(storeB, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.DELIVERY)).toBeFalsy();
   });
 
   test('test StoreC is available on demand order time in break time', () => {
-    const currentTime = dayjs('2020-11-19T13:00:17+08:00');
+    const currentTime = new Date('2020-11-19T13:00:17+08:00');
 
-    expect(isAvailableOnDemandOrderTime(storeC, currentTime)).toBeFalsy();
-    expect(isAvailableOnDemandOrderTime(storeC, currentTime, DELIVERY_METHOD.PICKUP)).toBeFalsy();
-    expect(isAvailableOnDemandOrderTime(storeC, currentTime, DELIVERY_METHOD.DELIVERY)).toBeFalsy();
+    expect(isAvailableOnDemandOrderTime(storeC, currentTime, MY_UTC_OFFSET)).toBeFalsy();
+    expect(isAvailableOnDemandOrderTime(storeC, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.PICKUP)).toBeFalsy();
+    expect(isAvailableOnDemandOrderTime(storeC, currentTime, MY_UTC_OFFSET, DELIVERY_METHOD.DELIVERY)).toBeFalsy();
   });
 });
 
@@ -621,11 +681,11 @@ describe('test isInVacations function', () => {
 });
 
 describe('test getBusinessDateTime function', () => {
-  const currentTime = dayjs();
-
   test.skip.each`
     utcOffset | date                                    | expected
-    ${480}    | ${undefined}                            | ${currentTime.utcOffset(480).format()}
+    ${480} | ${undefined} | ${dayjs()
+  .utcOffset(480)
+  .format()}
     ${480}    | ${new Date('2020-12-15T16:23:12.000Z')} | ${'2020-12-16T00:23:12+08:00'}
     ${420}    | ${new Date('2020-12-15T10:55:55.000Z')} | ${'2020-12-15T17:55:55+07:00'}
     ${0}      | ${new Date('2020-12-15T16:00:00.000Z')} | ${'2020-12-15T16:00:00Z'}

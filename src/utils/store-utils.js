@@ -9,35 +9,39 @@ const { DELIVERY_METHOD, SH_LOGISTICS_VALID_TIME, TIME_SLOT_NOW } = Constants;
 
 const MAX_PRE_ORDER_DATE = 5;
 
+const UTC8_TIME_ZONE_OFFSET = 480;
+
 dayjs.extend(utc);
 
 /**
  * get data list
  * @param {Store} store
- * @param {Dayjs} currentDate
+ * @param {Date} currentDate
  * @returns {object[]} dateList
  */
-export const getOrderDateList = (store, currentDate) => {
+export const getOrderDateList = (store, currentDate, utcOffset = UTC8_TIME_ZONE_OFFSET) => {
   const { qrOrderingSettings } = store;
   const { validDays, vacations, enablePreOrder } = qrOrderingSettings;
+
+  const current = getBusinessDateTime(utcOffset, currentDate);
 
   const dateList = [];
 
   for (let i = 0; i < MAX_PRE_ORDER_DATE; i++) {
-    const date = currentDate.add(i, 'day').startOf('day');
+    const date = current.add(i, 'day').startOf('day');
     const isToday = i === 0;
     const dayOfWeek = date.day();
     const isOpen = isInValidDays(dayOfWeek, validDays) && !isInVacations(date, vacations);
 
     if (isToday) {
       dateList.push({
-        date: date.format(),
+        date: date.toISOString(),
         isOpen,
         isToday: true,
       });
     } else {
       dateList.push({
-        date: date.format(),
+        date: date.toISOString(),
         isOpen: enablePreOrder && isOpen,
         isToday: false,
       });
@@ -187,9 +191,14 @@ export const getPickupPreOrderTimeList = store => {
   return timeList;
 };
 
-export const getDeliveryTodayTimeList = (store, currentDate) => {
+export const getDeliveryTodayTimeList = (store, currentDate, utcOffset) => {
   const { disableTodayPreOrder, enablePreOrder } = store.qrOrderingSettings;
-  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(store, currentDate, DELIVERY_METHOD.DELIVERY);
+  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(
+    store,
+    currentDate,
+    utcOffset,
+    DELIVERY_METHOD.DELIVERY
+  );
   const timeList = [];
 
   if (isAvailableOnDemandOrder) {
@@ -200,7 +209,9 @@ export const getDeliveryTodayTimeList = (store, currentDate) => {
     return timeList;
   }
 
-  const time = timeLib.getTimeFromDayjs(currentDate);
+  const current = getBusinessDateTime(utcOffset, currentDate);
+
+  const time = timeLib.getTimeFromDayjs(current);
   const availablePreOrderValidTimeFrom = timeLib.add(time, { value: 1, unit: 'hour' });
   const deliveryTimeList = getDeliveryPreOrderTimeList(store);
 
@@ -209,9 +220,20 @@ export const getDeliveryTodayTimeList = (store, currentDate) => {
   return timeList.concat(availableTimeList);
 };
 
-export const getPickupTodayTimeList = (store, currentDate) => {
+export const getTodayTimeList = (store, { todayDate, deliveryType, utcOffset }) => {
+  switch (deliveryType) {
+    case DELIVERY_METHOD.PICKUP:
+      return getPickupTodayTimeList(store, todayDate, utcOffset);
+    case DELIVERY_METHOD.DELIVERY:
+      return getDeliveryTodayTimeList(store, todayDate, utcOffset);
+    default:
+      return [];
+  }
+};
+
+export const getPickupTodayTimeList = (store, currentDate, utcOffset) => {
   const { disableTodayPreOrder, enablePreOrder } = store.qrOrderingSettings;
-  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(store, currentDate, DELIVERY_METHOD.PICKUP);
+  const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(store, currentDate, utcOffset, DELIVERY_METHOD.PICKUP);
   const timeList = [];
 
   if (isAvailableOnDemandOrder) {
@@ -222,7 +244,9 @@ export const getPickupTodayTimeList = (store, currentDate) => {
     return timeList;
   }
 
-  const time = timeLib.getTimeFromDayjs(currentDate);
+  const current = getBusinessDateTime(utcOffset, currentDate);
+
+  const time = timeLib.getTimeFromDayjs(current);
   const availablePreOrderValidTimeFrom = timeLib.add(time, { value: 30, unit: 'minute' });
   const pickupTimeList = getPickupPreOrderTimeList(store);
 
@@ -234,10 +258,10 @@ export const getPickupTodayTimeList = (store, currentDate) => {
 /**
  * get delivery available stores
  * @param {*} stores
- * @param {*} dateTime
+ * @param {date} date
  * @returns {Store[]}
  */
-export const filterDeliveryAvailableStores = (stores, dateTime) => {
+export const filterDeliveryAvailableStores = (stores, date, utcOffset) => {
   return stores.filter(store => {
     const { qrOrderingSettings, fulfillmentOptions } = store;
     if (!qrOrderingSettings) {
@@ -254,7 +278,7 @@ export const filterDeliveryAvailableStores = (stores, dateTime) => {
       return false;
     }
 
-    const isStoreOpened = checkStoreIsOpened(dateTime, store);
+    const isStoreOpened = checkStoreIsOpened(store, date, utcOffset);
 
     if (!isStoreOpened) {
       return false;
@@ -302,12 +326,12 @@ export const findNearlyStore = (stores, { lat, lng }) => {
 
 /**
  * check store whether it is open or not at given time
- * @param {Dayjs} dateTime
+ * @param {Date} dateTime
  * @param {Store} store
  * @returns {boolean}
  */
-export const checkStoreIsOpened = (store, dateTime) => {
-  if (!dateTime || !store) {
+export const checkStoreIsOpened = (store, date, utcOffset) => {
+  if (!date || !store) {
     return false;
   }
 
@@ -318,16 +342,16 @@ export const checkStoreIsOpened = (store, dateTime) => {
     return true;
   }
 
-  return isAvailableOrderTime(store, dateTime);
+  return isAvailableOrderTime(store, date, utcOffset);
 };
 
 /**
  * check whether dateTime is available order time
  * @param {Store} store
- * @param {Dayjs} dateTime
+ * @param {Date} dateTime
  * @returns {boolean}
  */
-export const isAvailableOrderTime = (store, dateTime, deliveryType = null) => {
+export const isAvailableOrderTime = (store, date, utcOffset, deliveryType = null) => {
   const {
     validDays,
     validTimeFrom: storeOpenTime,
@@ -337,6 +361,8 @@ export const isAvailableOrderTime = (store, dateTime, deliveryType = null) => {
     useStorehubLogistics,
     vacations,
   } = store.qrOrderingSettings;
+  const dateTime = getBusinessDateTime(utcOffset, date);
+
   const dayOfWeek = dateTime.day();
   const time = timeLib.getTimeFromDayjs(dateTime);
   const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
@@ -362,7 +388,7 @@ export const isAvailableOrderTime = (store, dateTime, deliveryType = null) => {
   );
 };
 
-export const isAvailableOnDemandOrderTime = (store, dateTime, deliveryType) => {
+export const isAvailableOnDemandOrderTime = (store, date, utcOffset, deliveryType = null) => {
   const { enablePreOrder, disableOnDemandOrder } = store.qrOrderingSettings;
 
   // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
@@ -370,7 +396,7 @@ export const isAvailableOnDemandOrderTime = (store, dateTime, deliveryType) => {
     return false;
   }
 
-  return isAvailableOrderTime(store, dateTime, deliveryType);
+  return isAvailableOrderTime(store, date, utcOffset, deliveryType);
 };
 
 /**
@@ -443,12 +469,25 @@ export const isInVacations = (dateTime, vacations) => {
 };
 /**
  * return merchant current time
- * @param {number} businessUTCOffset  merchant time zone utc offset
+ * @param {number} utcOffset  merchant time zone utc offset
  * @param {Date} date date obj, default is today
  * @returns {Dayjs}
  */
-export const getBusinessDateTime = (businessUTCOffset, date = new Date()) => {
+export const getBusinessDateTime = (utcOffset, date = new Date()) => {
   // TODO: will add the merchant utc offset later
-  // return dayjs(date).utcOffset(businessUTCOffset);
+  // return dayjs(date).utcOffset(utcOffset);
   return dayjs(date);
+};
+
+export const isDateTimeSoldOut = (store, soldData, date, utcOffset) => {
+  const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = store.qrOrderingSettings;
+  if (!enablePerTimeSlotLimitForPreOrder) {
+    return false;
+  }
+
+  const dateTime = getBusinessDateTime(utcOffset, date);
+
+  const soldItem = soldData.find(item => dateTime.isSame(item.date, 'minute'));
+
+  return soldItem && soldItem.count >= maxPreOrdersPerTimeSlot;
 };

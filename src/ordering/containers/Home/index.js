@@ -212,7 +212,7 @@ export class Home extends Component {
     const allStore = this.props.allStore || [];
     const businessUTCOffset = this.props.businessUTCOffset;
 
-    const currentTime = getBusinessDateTime(businessUTCOffset);
+    const currentDate = new Date();
 
     const enablePreOrderFroMultipleStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
@@ -221,7 +221,7 @@ export class Home extends Component {
     });
 
     const isValidToOrderFromMultipleStore = allStore.some(store => {
-      return isAvailableOnDemandOrderTime(store, currentTime, deliveryType);
+      return isAvailableOnDemandOrderTime(store, currentDate, businessUTCOffset, deliveryType);
     });
 
     this.setState({
@@ -289,9 +289,14 @@ export class Home extends Component {
 
     if (isDeliveryType || isPickUpType) {
       const { businessUTCOffset } = this.props;
-      const currentTime = getBusinessDateTime(businessUTCOffset);
+      const currentDate = new Date();
 
-      const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(store, currentTime, deliveryType);
+      const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(
+        store,
+        currentDate,
+        businessUTCOffset,
+        deliveryType
+      );
 
       if (!isAvailableOnDemandOrder) {
         return;
@@ -300,7 +305,7 @@ export class Home extends Component {
       Utils.setSessionVariable(
         'expectedDeliveryDate',
         JSON.stringify({
-          date: currentTime.startOf('day').toISOString(),
+          date: currentDate.toISOString(),
           isOpen: true,
           isToday: true,
         })
@@ -362,7 +367,7 @@ export class Home extends Component {
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
     const deliverMethod = Utils.getOrderTypeFromUrl();
     const previousDeliveryMethod = this.getPreviousDeliveryMethod();
-    const currentTime = getBusinessDateTime(businessUTCOffset);
+    const currentDate = new Date();
 
     if (!store) {
       return true;
@@ -379,7 +384,10 @@ export class Home extends Component {
       return true;
     }
 
-    if (hour.from === PREORDER_IMMEDIATE_TAG.from && !isAvailableOnDemandOrderTime(store, currentTime, deliverMethod)) {
+    if (
+      hour.from === PREORDER_IMMEDIATE_TAG.from &&
+      !isAvailableOnDemandOrderTime(store, currentDate, businessUTCOffset, deliverMethod)
+    ) {
       return true;
     }
 
@@ -388,11 +396,11 @@ export class Home extends Component {
 
       const expectedDeliveryTime = setDateTime(hour.from, expectedDate);
 
-      if (expectedDeliveryTime.isBefore(currentTime)) {
+      if (expectedDeliveryTime.isBefore(currentDate)) {
         return true;
       }
 
-      if (!isAvailableOrderTime(store, expectedDeliveryTime, deliverMethod)) {
+      if (!isAvailableOrderTime(store, expectedDeliveryTime.toDate(), businessUTCOffset, deliverMethod)) {
         return true;
       }
     }
@@ -612,7 +620,7 @@ export class Home extends Component {
   isValidTimeToOrder = () => {
     const { isValidToOrderFromMultipleStore } = this.state;
     const { store, businessUTCOffset } = this.props;
-    const currentTime = getBusinessDateTime(businessUTCOffset);
+    const currentTime = new Date();
     const deliverMethod = Utils.getOrderTypeFromUrl();
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
@@ -624,7 +632,7 @@ export class Home extends Component {
       return isValidToOrderFromMultipleStore;
     }
 
-    return isAvailableOnDemandOrderTime(store, currentTime, deliverMethod);
+    return isAvailableOnDemandOrderTime(store, currentTime, businessUTCOffset, deliverMethod);
   };
 
   renderHeaderChildren() {
