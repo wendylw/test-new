@@ -6,6 +6,8 @@
   &__container {
     height: 100%;
     width: 100%;
+    padding-top: 0;
+    overflow-y: auto;
   }
 
   .header__title {
@@ -14,6 +16,76 @@
   }
 
   &__button-close {
-    max-height: 54px;
+    max-height: 40px;
+  }
+
+  &__input-container {
+    border-bottom: 6px solid $gray-5;
+    margin-bottom: 16px;
+  }
+}
+
+.ordering-promotion-list {
+  &__container:first-child {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.ordering-promo-item {
+  border: 1px solid rgba(151, 151, 151, 0.2);
+
+  &:first-child {
+    margin-top: 2.4vw;
+  }
+
+  &:not(.selected) .icon-checked {
+    opacity: 0;
+  }
+
+  &.selected {
+    border-color: $theme-color;
+  }
+
+  &.disabled &__title,
+  &.disabled &__text,
+  &.disabled &__icon-ticket {
+    opacity: 0.5;
+  }
+
+  &.disabled &__time {
+    opacity: 0.25;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__text,
+  &__time {
+    display: block;
+  }
+
+  &__icon-ticket {
+    padding: 2.4vw;
+    border-radius: 50%;
+    background-color: $theme-color;
+  }
+
+  &__tag {
+    display: inline-block;
+    min-width: 72px;
+  }
+}
+
+@media (min-width: 420px) {
+  .ordering-promo-item {
+    &:first-child {
+      margin-top: 8px;
+    }
+
+    &__icon-ticket {
+      padding: 8px;
+    }
   }
 }

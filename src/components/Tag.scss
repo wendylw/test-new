@@ -41,4 +41,8 @@
   &__default {
     background-color: $gray-2;
   }
+
+  &__outline {
+    border: 1px solid;
+  }
 }
