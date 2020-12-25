@@ -294,7 +294,7 @@ export function getPromoCode(state) {
   return state.promotion.promoCode;
 }
 
-export function getCode(state) {
+export function getPromoErrorCode(state) {
   return state.promotion.code;
 }
 

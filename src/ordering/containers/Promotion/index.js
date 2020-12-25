@@ -10,7 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import {
   actions as promotionActionCreators,
   getPromoCode,
-  getCode,
+  getPromoErrorCode,
   isAppliedSuccess,
   isAppliedError,
   isInProcess,
@@ -186,7 +186,7 @@ export default compose(
     state => {
       return {
         promoCode: getPromoCode(state),
-        errorCode: getCode(state),
+        errorCode: getPromoErrorCode(state),
         isAppliedSuccess: isAppliedSuccess(state),
         isAppliedError: isAppliedError(state),
         inProcess: isInProcess(state),
