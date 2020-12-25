@@ -36,3 +36,19 @@ export function getErrorMessageByPromoStatus({ status, validFrom }) {
       return i18next.t('OrderingPromotion:Invalid');
   }
 }
+
+export const getPromoStatusLabelText = ({ status, validFrom, validTo, expired }) => {
+  // Voucher status list: ['redeemed', 'pendingRedeem', 'unused']
+  switch (status) {
+    case PROMOTION_APPLIED_STATUS.EXPIRED:
+      return i18next.t('OrderingPromotion:PromoExpiredLabel');
+    case PROMOTION_APPLIED_STATUS.REDEEMED:
+      return i18next.t('OrderingPromotion:PromoRedeemedLabel');
+    default:
+      if (expired) return i18next.t('OrderingPromotion:PromoExpiredLabel');
+      if (new Date() < new Date(validFrom) || new Date() > new Date(validTo)) {
+        return i18next.t('OrderingPromotion:PromoInvalidLabel');
+      }
+      return '';
+  }
+};

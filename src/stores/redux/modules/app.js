@@ -1,9 +1,12 @@
 import { combineReducers } from 'redux';
+import _get from 'lodash/get';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
+import { createSelector } from 'reselect';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 export const initialState = {
   error: null, // network error
@@ -135,6 +138,7 @@ export default combineReducers({
 
 // selectors
 export const getBusiness = state => state.app.business;
+
 export const getRemovedPickUpMerchantList = state => state.app.removePickUpMerchantList;
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
@@ -142,3 +146,14 @@ export const getOnlineStoreInfo = state => {
 };
 export const getRequestInfo = state => state.app.requestInfo;
 export const getMessageModal = state => state.app.messageModal;
+
+export const getBusinessInfo = state => {
+  const business = getBusiness(state);
+
+  return getBusinessByName(state, business) || {};
+};
+
+export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
+  // default is UTC+8 offset
+  return _get(businessInfo, 'timezoneOffset', 480);
+});

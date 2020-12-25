@@ -27,8 +27,11 @@ const ROUTER_PATHS = {
   ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
+  ORDERING_ADYEN_PAYMENT: '/payment/adyen',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  ORDERING_ONLINE_SAVED_CARDS: '/payment/cards',
+  ORDERING_ONLINE_CVV: '/payment/cvv',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
   PROFILE: '/profile',
@@ -83,6 +86,7 @@ const PAYMENT_METHOD_LABELS = {
   TNG_PAY: 'TouchNGo',
   GCASH_PAY: 'GCash',
   LINE_PAY: 'Line',
+  ADYEN_PAY: 'Adyen',
 };
 
 const CREDIT_CARD_BRANDS = {
@@ -344,8 +348,14 @@ const PREORDER_IMMEDIATE_TAG = {
 };
 
 const PROMO_TYPE = {
-  PROMOTION: 'Promotion',
-  VOUCHER: 'Voucher',
+  PROMOTION: 'promotion',
+  VOUCHER: 'voucher',
+};
+
+const PROMOTIONS_TYPES = {
+  PERCENTAGE: 'percentage',
+  TAKE_AMOUNT_OFF: 'absolute',
+  FREE_SHIPPING: 'freeShipping',
 };
 
 const REPORT_DRIVER_REASON_CODE = {
@@ -383,6 +393,17 @@ const COLLECTIONS_TYPE = {
   BANNER: 'Banner',
   CAROUSEL: 'Carrousel',
 };
+// storeHub Logistics valid time period
+const SH_LOGISTICS_VALID_TIME = {
+  FROM: '09:00',
+  TO: '21:00',
+};
+
+const ADYEN_PAYMENT_TYPE = {
+  PAY_WITHOUT_SAVE_CARD: '1',
+  PAY_WITH_SAVED_CARD: '2',
+  PAY_WITH_SAVE_CARD: '3',
+};
 
 export default {
   OTP_CODE_SIZE,
@@ -413,10 +434,13 @@ export default {
   PROMOTION_APPLIED_STATUS,
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
+  PROMOTIONS_TYPES,
   ORDER_STATUS,
   REPORT_DRIVER_REASON_CODE,
   CREATE_ORDER_ERROR_CODES,
   COLLECTIONS_TYPE,
   ERROR_CODE_MAP,
   RESEND_OTP_TIME,
+  SH_LOGISTICS_VALID_TIME,
+  ADYEN_PAYMENT_TYPE,
 };

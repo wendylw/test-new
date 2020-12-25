@@ -27,6 +27,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../../
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getBusinessInfo } from '../../../redux/modules/cart';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import withDataAttributes from '../../../../components/withDataAttributes';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';
@@ -312,7 +313,7 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
         }}
       />
 
-      <footer className="payment-credit-card__footer footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+      <footer className=" payment-credit-card__footer payment-credit-card__footer-stripe footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
         <CreateOrderButton
           className="margin-top-bottom-smaller text-uppercase"
           history={history}
@@ -389,7 +390,8 @@ class Stripe extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business } = this.props;
+    const { onlineStoreInfo, currentOrder, business, businessInfo } = this.props;
+    const { planId } = businessInfo || {};
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment) {
@@ -406,6 +408,7 @@ class Stripe extends Component {
       redirectURL,
       webhookURL,
       paymentName: 'Stripe',
+      isInternal: String(planId || '').startsWith('internal'),
       paymentMethodId: '',
     };
   };
@@ -478,6 +481,7 @@ export default compose(
 
       return {
         business: getBusiness(state),
+        businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),

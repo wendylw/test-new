@@ -53,3 +53,27 @@
     opacity: 0;
   }
 }
+
+.link__non-underline {
+  text-decoration: none;
+  color: $gray-2;
+}
+
+.ordering-card-list {
+  &__image-container,
+  &__description {
+    display: inline-block;
+  }
+
+  &__image-container {
+    width: 30%;
+  }
+
+  &__image {
+    width: 80%;
+  }
+
+  &__description {
+    width: 70%;
+  }
+}

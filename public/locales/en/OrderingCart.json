@@ -1,5 +1,5 @@
 {
-  "OrderNotesPlaceholder": "Special Instructions E.g. Less rice, more garlic",
+  "OrderNotesPlaceholder": "Special Instructions(e.g. less rice, no peanuts please)",
   "ProductsInOrderText": "Order {{count}} Items",
   "InvalidPromoCode": "Invalid Promo/Voucher",
   "ProductSoldOutTitle": "We're sorry, some items are not available",

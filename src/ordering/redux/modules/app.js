@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
+import _get from 'lodash/get';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
@@ -11,6 +13,7 @@ import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -205,27 +208,6 @@ export const actions = {
       ...url.API_URLS.GET_CONSUMER_PROFILE(consumerId),
     },
   }),
-
-  createOrUpdateProfile: () => (dispatch, getState) => {
-    const state = getState();
-    const consumerId = state.user.consumerId;
-    const profile = state.user.profile;
-    return {
-      [API_REQUEST]: {
-        types: [
-          types.CREATE_OR_UPDATE_PROFILE_REQUEST,
-          types.CREATE_OR_UPDATE_PROFILE_SUCCESS,
-          types.CREATE_OR_UPDATE_PROFILE_FAILURE,
-        ],
-        ...url.API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId),
-        payload: {
-          firstName: profile.name,
-          email: profile.email,
-          birthday: profile.birthday,
-        },
-      },
-    };
-  },
 
   updateUser: (user = {}) => ({
     type: types.UPDATE_USER,
@@ -530,3 +512,13 @@ export const getMerchantCountry = state => {
   return null;
 };
 export const getApiError = state => state.app.apiError;
+
+export const getBusinessInfo = state => {
+  const business = getBusiness(state);
+
+  return getBusinessByName(state, business) || {};
+};
+
+export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
+  return _get(businessInfo, 'timezoneOffset', 480);
+});

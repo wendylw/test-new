@@ -26,7 +26,7 @@ export class TermsAndPrivacy extends React.Component {
           >
             Terms of Service
           </Link>
-          , and{' '}
+          and{' '}
           <Link
             className={buttonLinkClassList.join(' ')}
             target="_blank"

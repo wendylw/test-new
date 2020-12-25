@@ -6,7 +6,12 @@ import faviconImage from '../../../images/favicon.ico';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getPageError } from '../../../redux/modules/entities/error';
-import { actions as appActionCreators, getOnlineStoreInfo, getError } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getBusinessUTCOffset,
+  getError,
+} from '../../redux/modules/app';
 import {
   actions as storesActionsCreators,
   getDeliveryStatus,
@@ -25,11 +30,12 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import { getBusinessDateTime, checkStoreIsOpened } from '../../../utils/order-utils';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import qs from 'qs';
 import config from '../../../config';
-const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
+const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 class App extends Component {
   constructor(props) {
     super(props);
@@ -120,14 +126,10 @@ class App extends Component {
     }
   };
 
-  checkStoreIsClose = store => {
-    const { qrOrderingSettings } = store;
-    const { enablePreOrder } = qrOrderingSettings;
-
-    return !(enablePreOrder || Utils.isValidTimeToOrder(qrOrderingSettings));
-  };
-
   getNearlyStore = async (stores, type, deliveryAddress) => {
+    const { businessUTCOffset } = this.props;
+    const currentTime = getBusinessDateTime(businessUTCOffset);
+
     stores.forEach(item => {
       if (item.location) {
         item.distance = computeStraightDistance(deliveryAddress.coords, {
@@ -138,7 +140,8 @@ class App extends Component {
     });
     stores = stores.filter(
       item =>
-        !this.checkStoreIsClose(item) && item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1
+        checkStoreIsOpened(currentTime, item) &&
+        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1
     );
     let nearly;
     stores.forEach(item => {
@@ -278,6 +281,7 @@ export default connect(
     pageError: getPageError(state),
     storeHash: getStoreHashCode(state),
     deliveryRadius: getDeliveryRadius(state),
+    businessUTCOffset: getBusinessUTCOffset(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
