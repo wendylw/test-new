@@ -3,7 +3,7 @@ import i18next from 'i18next';
 
 const { PROMOTION_ERROR_CODES } = Constants;
 
-export function getErrorMessageByPromoStatus({ code, extraInfo }) {
+export function getErrorMessageByPromoCode({ code, extraInfo }) {
   const {} = extraInfo;
 
   if (PROMOTION_ERROR_CODES[code]) {
@@ -14,11 +14,11 @@ export function getErrorMessageByPromoStatus({ code, extraInfo }) {
 }
 
 export const getPromoStatusLabelText = ({ status, validFrom, validTo, expired }) => {
-  // Voucher status list: ['redeemed', 'pendingRedeem', 'unused']
+  // Voucher status list: ['expired', 'redeemed', 'pendingRedeem', 'unused']
   switch (status) {
-    case PROMOTION_APPLIED_STATUS.EXPIRED:
+    case VOUCHER_STATUS.EXPIRED:
       return i18next.t('OrderingPromotion:PromoExpiredLabel');
-    case PROMOTION_APPLIED_STATUS.REDEEMED:
+    case VOUCHER_STATUS.REDEEMED:
       return i18next.t('OrderingPromotion:PromoRedeemedLabel');
     default:
       if (expired) return i18next.t('OrderingPromotion:PromoExpiredLabel');

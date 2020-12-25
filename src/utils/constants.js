@@ -358,7 +358,7 @@ const PROMOTION_ERROR_CODES = {
     desc: '54409StoreDoesNotSatisfy',
   },
   54411: {
-    desc: '54411RequireFirstTimePurchase',
+    desc: '54411PromotionReachesMaxClaimCount',
   },
   54412: {
     desc: '54412RequireCustomer',
@@ -405,6 +405,11 @@ const PROMOTION_ERROR_CODES = {
   60009: {
     desc: '60009VoucherHasBeenUsed',
   },
+};
+
+const VOUCHER_STATUS = {
+  EXPIRED: 'expired',
+  REDEEMED: 'redeemed',
 };
 
 const PREORDER_IMMEDIATE_TAG = {
@@ -497,6 +502,7 @@ export default {
   CONSUMERFLOW_STATUS,
   WEEK_DAYS_I18N_KEYS,
   PROMOTION_ERROR_CODES,
+  VOUCHER_STATUS,
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
   PROMOTIONS_TYPES,

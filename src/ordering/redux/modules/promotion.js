@@ -12,8 +12,9 @@ const { PROMOTION_ERROR_CODES, PROMO_TYPE } = Constants;
 const initialState = {
   promoCode: '',
   code: '',
-  code: '',
+  status: '',
   validFrom: '',
+  validTo: '',
   inProcess: false,
   promoType: '',
   voucherList: {},
@@ -218,7 +219,7 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
       return {
         ...state,
-        status: action.response.status,
+        code: action.response.code,
         promoType: PROMO_TYPE.PROMOTION,
         validFrom: new Date(action.response.validFrom),
         inProcess: false,
@@ -227,6 +228,7 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_REQUEST:
       return {
         ...state,
+        code: '',
         inProcess: true,
       };
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_SUCCESS:
@@ -234,14 +236,16 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         code: '',
+        status: action.response.status || '',
         promoType: PROMO_TYPE.VOUCHER,
+        validFrom: new Date(action.response.validFrom),
         inProcess: false,
       };
     case PROMOTION_TYPES.UPDATE_PROMOTION_CODE:
       return {
         ...state,
         promoCode: action.promoCode,
-        code: action.response.code,
+        code: '',
         inProcess: false,
         foundPromo: {},
         hasSearchedForPromo: false,
@@ -276,13 +280,14 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         code: '',
+        status: action.response.status || '',
         foundPromo,
         hasSearchedForPromo: true,
       };
     case PROMOTION_TYPES.UPDATE_SEARCH_MODE:
       return {
         ...state,
-        code: action.response.code,
+        code: '',
         searchMode: action.isSearchingMode,
       };
     case PROMOTION_TYPES.SELECT_PROMO:
@@ -294,6 +299,7 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.DESELECT_PROMO:
       return {
         ...state,
+        code: '',
         selectedPromo: {},
       };
     default:

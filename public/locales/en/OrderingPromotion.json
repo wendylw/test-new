@@ -13,7 +13,7 @@
   "54401DeletedPromotion": "This promo code is invalid (Error: 54401)",
   "54408RequireSameBusiness": "This promo code is invalid (Error: 54408)",
   "54409StoreDoesNotSatisfy": "This promo code is invalid (Error: 54409)",
-  "54411RequireFirstTimePurchase": "This promo code has reached its maximum claim limit (Error: 54411)",
+  "54411PromotionReachesMaxClaimCount": "This promo code has reached its maximum claim limit (Error: 54411)",
   "54412RequireCustomer": "Please login again to use the promo code (Error: 54412)",
   "54413ReachCustomerClaimCountLimit": "This promo code has reached its maximum claim limit (Error: 54413)",
   "54414RequireFirstTimePurchase": "This promo code has reached its maximum claim limit (Error: 54414)",
@@ -30,7 +30,6 @@
   "60009VoucherHasBeenUsed": "This voucher has been redeemed",
   "60008UpdateVoucherStatusFailed": "This voucher is invalid (Error: UPDATE STATUS FAILED)",
   "60000InvalidPromotionOrVoucher": "This code is invalid",
-  "RequireFirstTimePurchase": "This promotion is only applicable for new customer",
   "PromoExpiredLabel": "Expired",
   "PromoRedeemedLabel": "Redeemed",
   "PromoInvalidLabel": "Invalid",
@@ -43,5 +42,5 @@
   "YourVouchers": "Your voucher(s)",
   "InapplicableVouchers": "Inapplicable voucher(s)",
   "PromoInvalid": "Sorry, the promo/voucher code is invalid",
-  "NoVouchersYet": "You don't have any vouchers yet",
+  "NoVouchersYet": "You don't have any vouchers yet"
 }
