@@ -215,7 +215,7 @@ describe('test getOrderDateList function', () => {
       },
     ];
 
-    const dateList = getOrderDateList(storeA, currentDate, MY_UTC_OFFSET);
+    const dateList = getOrderDateList(storeA, DELIVERY_METHOD.DELIVERY, currentDate, MY_UTC_OFFSET);
     expectedDateList.forEach((expectedDate, index) => {
       const date = dateList[index];
 
@@ -226,11 +226,11 @@ describe('test getOrderDateList function', () => {
   });
 
   test('check StoreB date list', () => {
-    const currentDate = dayjs('2020-11-19T14:02:17+08:00');
+    const currentDate = new Date('2020-11-19T14:02:17+08:00');
     const expectedDateList = [
       {
         date: '2020-11-19T00:00:00+08:00',
-        isOpen: true,
+        isOpen: false,
         isToday: true,
       },
       {
@@ -255,7 +255,7 @@ describe('test getOrderDateList function', () => {
       },
     ];
 
-    const dateList = getOrderDateList(storeB, currentDate);
+    const dateList = getOrderDateList(storeB, DELIVERY_METHOD.DELIVERY, currentDate, MY_UTC_OFFSET);
     expectedDateList.forEach((expectedDate, index) => {
       const date = dateList[index];
 
@@ -270,7 +270,7 @@ describe('test getOrderDateList function', () => {
     const expectedDateList = [
       {
         date: '2020-12-11T00:00:00+08:00',
-        isOpen: true,
+        isOpen: false,
         isToday: true,
       },
       {
@@ -295,7 +295,7 @@ describe('test getOrderDateList function', () => {
       },
     ];
 
-    const dateList = getOrderDateList(storeC, currentDate, MY_UTC_OFFSET);
+    const dateList = getOrderDateList(storeC, DELIVERY_METHOD.DELIVERY, currentDate, MY_UTC_OFFSET);
     expectedDateList.forEach((expectedDate, index) => {
       const date = dateList[index];
 
@@ -396,6 +396,13 @@ describe('test getDeliveryTodayTimeList function', () => {
 
     expect(todayTimeList).toArrayStartWith(expectedStartTimeList);
     expect(todayTimeList).toArrayEndWith(expectedEndTimeList);
+  });
+
+  test('check storeB today time list', () => {
+    const currentTime = new Date('2020-11-19T14:02:17+08:00');
+    const todayTimeList = getDeliveryTodayTimeList(storeB, currentTime, MY_UTC_OFFSET);
+
+    expect(todayTimeList.length === 0).toBeTruthy();
   });
 });
 

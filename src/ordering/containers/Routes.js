@@ -19,7 +19,7 @@ const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Onli
 const ThankYou = lazy(() => Utils.attemptLoad(() => import('./ThankYou')));
 const Sorry = lazy(() => Utils.attemptLoad(() => import('./Sorry')));
 const ErrorPage = lazy(() => Utils.attemptLoad(() => import('./Error')));
-const LocationAndDate = lazy(() => Utils.attemptLoad(() => import('./LocationAndDate')));
+const LocationAndDate = lazy(() => Utils.attemptLoad(() => import('./LocationAndDate/index_new')));
 const Promotion = lazy(() => Utils.attemptLoad(() => import('./Promotion')));
 const ReportDriver = lazy(() => Utils.attemptLoad(() => import('./ReportDriver')));
 const PageLogin = lazy(() => Utils.attemptLoad(() => import('./PageLogin')));

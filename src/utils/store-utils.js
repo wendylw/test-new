@@ -19,7 +19,7 @@ dayjs.extend(utc);
  * @param {Date} currentDate
  * @returns {object[]} dateList
  */
-export const getOrderDateList = (store, currentDate, utcOffset = UTC8_TIME_ZONE_OFFSET) => {
+export const getOrderDateList = (store, deliveryType, currentDate, utcOffset = UTC8_TIME_ZONE_OFFSET) => {
   const { qrOrderingSettings } = store;
   const { validDays, vacations, enablePreOrder } = qrOrderingSettings;
 
@@ -34,9 +34,15 @@ export const getOrderDateList = (store, currentDate, utcOffset = UTC8_TIME_ZONE_
     const isOpen = isInValidDays(dayOfWeek, validDays) && !isInVacations(date, vacations);
 
     if (isToday) {
+      const todayTimeList = getTodayTimeList(store, {
+        todayDate: currentDate,
+        deliveryType,
+        utcOffset,
+      });
+
       dateList.push({
         date: date.toISOString(),
-        isOpen,
+        isOpen: isOpen && todayTimeList.length > 0,
         isToday: true,
       });
     } else {
@@ -293,13 +299,15 @@ export const filterDeliveryAvailableStores = (stores, date, utcOffset) => {
  * @param {*} stores
  * @param {*} param1
  */
-export const findNearlyStore = (stores, { lat, lng }) => {
+export const findNearlyAvailableStore = (stores, { coords: { lat, lng }, currentDate, utcOffset }) => {
   let nearlyStore = {
     distance: 0,
     store: null,
   };
 
-  stores.forEach(store => {
+  const availableStores = filterDeliveryAvailableStores(stores, currentDate, utcOffset);
+
+  availableStores.forEach(store => {
     if (!store.location) {
       return;
     }

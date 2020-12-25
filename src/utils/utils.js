@@ -525,6 +525,17 @@ Utils.getDeliveryCoords = () => {
   }
 };
 
+Utils.getDeliveryAddress = () => {
+  try {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    return deliveryAddress;
+  } catch (e) {
+    console.error('Cannot get delivery address', e);
+    captureException(e);
+    return {};
+  }
+};
+
 Utils.isSiteApp = (domain = document.location.hostname) => {
   const domainList = (process.env.REACT_APP_QR_SCAN_DOMAINS || '')
     .split(',')

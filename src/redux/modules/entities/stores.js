@@ -1,3 +1,5 @@
+import { createSelector } from 'reselect';
+
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
@@ -26,7 +28,8 @@ export default reducer;
 
 // selectors
 
-export const getAllStores = (state) => state.entities.stores;
+export const getAllStores = state => state.entities.stores;
+
+export const getStores = createSelector(getAllStores, allStores => Object.values(allStores));
 
 export const getStoreById = (state, storeId) => getAllStores(state)[storeId];
-

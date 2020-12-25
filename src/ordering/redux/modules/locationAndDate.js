@@ -5,8 +5,8 @@ import * as storeUtils from '../../../utils/store-utils';
 import * as apiRequest from '../../../utils/request';
 import * as timeLib from '../../../utils/time-lib';
 import URL from '../../../utils/url';
-import { getStoreById, getAllStores } from '../../../redux/modules/entities/stores';
-import { getBusinessUTCOffset, getBusinessInfo } from './app';
+import { getStoreById, getStores } from '../../../redux/modules/entities/stores';
+import { actions as appActions, getBusinessUTCOffset, getBusinessInfo } from './app';
 import { actions as homeActions } from './home';
 
 import { createSelector } from 'reselect';
@@ -25,8 +25,7 @@ const initialState = {
 };
 
 export const actions = {
-  initialState: ({ deliveryType, storeId, deliveryAddress }) => async (dispatch, getState) => {
-    const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
+  initial: ({ deliveryType, storeId, deliveryAddress, deliveryCoords }) => async (dispatch, getState) => {
     const payload = {
       currentDate: new Date(),
       deliveryType,
@@ -36,20 +35,42 @@ export const actions = {
 
     await dispatch(homeActions.loadCoreStores());
 
-    // find nearly store by delivery address
-    if (!storeId && isDelivery && deliveryAddress && deliveryAddress.coords) {
-      const state = getState();
-      const stores = getAllStores(state);
-      const store = storeUtils.findNearlyStore(stores, deliveryAddress.coords);
-      if (store) {
-        payload.storeId = store.id;
-      }
+    const stores = getStores(getState());
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
+    if (payload.storeId) {
+      const store = getStoreById(getState(), payload.storeId);
+      const fulfillmentOptions = _get(store, 'fulfillmentOptions', []);
+
+      const isOpen = storeUtils.checkStoreIsOpened(store, payload.currentDate, businessUTCOffset);
+
+      const isFulfillment = fulfillmentOptions.some(option => option.toLowerCase() === deliveryType);
+
+      payload.storeId = isFulfillment && isOpen ? payload.storeId : null;
     }
 
-    return dispatch({
-      type: LOCATION_AND_DATE.INITIAL_STATE,
+    if (!payload.storeId && deliveryCoords && deliveryType === DELIVERY_METHOD.DELIVERY) {
+      const store = storeUtils.findNearlyAvailableStore(stores, {
+        coords: deliveryCoords,
+        currentDate: payload.currentDate,
+        utcOffset: businessUTCOffset,
+      });
+
+      payload.storeId = _get(store, 'id', null);
+    }
+
+    if (payload.storeId) {
+      await dispatch(appActions.loadCoreBusiness(payload.storeId));
+    }
+
+    dispatch({
+      type: LOCATION_AND_DATE.INITIAL,
       payload,
     });
+
+    const availableFirstDate = getFirstAvailableDate(getState());
+
+    dispatch(actions.selectedDateChanged(availableFirstDate));
   },
 
   deliveryTypeChanged: deliveryType => ({
@@ -73,10 +94,19 @@ export const actions = {
       payload: selectedDate,
     });
 
+    await dispatch(actions.loadTimeSlotSoldData());
+
+    const firstAvailableTime = getFirstAvailableTime(getState());
+    dispatch(actions.selectedTimeChanged(firstAvailableTime));
+  },
+
+  loadTimeSlotSoldData: () => async (dispatch, getState) => {
     try {
       const state = getState();
       const deliveryType = getDeliveryType(state);
       const store = getStore(state);
+      const selectedDate = getSelectedDate(state);
+
       if (!store.enablePerTimeSlotLimitForPreOrder) {
         return;
       }
@@ -112,7 +142,7 @@ export const actions = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case LOCATION_AND_DATE.INITIAL_STATE:
+    case LOCATION_AND_DATE.INITIAL:
       const { currentDate, deliveryType, storeId, deliveryAddress, disableSelectDeliveryType } = action.payload;
 
       return {
@@ -185,18 +215,23 @@ export const getStore = state => {
   }
 
   // some store data only get from businessInfo
-  const businessStore = _get(businessInfo, 'stores.0', null);
-  if (!businessStore || businessStore.id !== storeId) {
-    return Object.assign(store.qrOrderingSettings, {
+  const businessStores = _get(businessInfo, 'stores', []);
+  const businessStore = businessStores.find(businessStore => businessStore.id === storeId);
+
+  if (!businessStore) {
+    Object.assign(store.qrOrderingSettings, {
       enablePerTimeSlotLimitForPreOrder: false,
       maxPreOrdersPerTimeSlot: 0,
     });
+
+    return store;
   }
 
-  return Object.assign(store.qrOrderingSettings, {
+  Object.assign(store.qrOrderingSettings, {
     enablePerTimeSlotLimitForPreOrder: businessStore.qrOrderingSettings.enablePerTimeSlotLimitForPreOrder,
     maxPreOrdersPerTimeSlot: businessStore.qrOrderingSettings.maxPreOrdersPerTimeSlot,
   });
+  return store;
 };
 
 export const getDeliveryAddress = state => {
@@ -219,9 +254,11 @@ export const getTimeSlotSoldData = state => _get(state.locationAndDate, 'timeSlo
 
 export const getOrderDateList = createSelector(
   getStore,
+  getDeliveryType,
   getCurrentDate,
   getBusinessUTCOffset,
-  (store, currentDate, businessUTCOffset) => storeUtils.getOrderDateList(store, currentDate, businessUTCOffset)
+  (store, deliveryType, currentDate, businessUTCOffset) =>
+    storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset)
 );
 
 export const getAvailableTimeSlotList = createSelector(
@@ -232,7 +269,7 @@ export const getAvailableTimeSlotList = createSelector(
     }
     let timeList = [];
     if (selectedDate.isToday) {
-      timeList = storeUtils.getTodayTimeList(store, currentDate, deliveryType);
+      timeList = storeUtils.getTodayTimeList(store, { currentDate, deliveryType, utcOffset: businessUTCOffset });
     } else {
       timeList = storeUtils.getPreOrderTimeList(store, deliveryType);
     }
@@ -258,6 +295,12 @@ export const getAvailableTimeSlotList = createSelector(
       };
     });
   }
+);
+
+export const getFirstAvailableDate = createSelector(getOrderDateList, dateList => dateList.find(date => date.isOpen));
+
+export const getFirstAvailableTime = createSelector(getAvailableTimeSlotList, timeSlotList =>
+  timeSlotList.find(timeSlot => !timeSlot.soldOut)
 );
 
 export default reducer;
