@@ -3,7 +3,7 @@ import i18next from 'i18next';
 
 const { PROMOTION_ERROR_CODES } = Constants;
 
-export function getErrorMessageByPromoCode({ code, extraInfo }) {
+export function getErrorMessageByPromoErrorCode({ code, extraInfo }) {
   const {} = extraInfo;
 
   if (PROMOTION_ERROR_CODES[code]) {

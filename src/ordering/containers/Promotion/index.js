@@ -22,7 +22,7 @@ import {
 } from '../../redux/modules/promotion';
 import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import { withTranslation } from 'react-i18next';
-import { getErrorMessageByPromoCode } from './utils';
+import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
 import './OrderingPromotion.scss';
 
@@ -87,7 +87,7 @@ class Promotion extends Component {
       return '';
     }
 
-    return getErrorMessageByPromoCode({
+    return getErrorMessageByPromoErrorCode({
       code: errorCode,
     });
   };

@@ -21,7 +21,7 @@ import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness 
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
-import { getErrorMessageByPromoCode } from '../Promotion/utils';
+import { getErrorMessageByPromoErrorCode } from '../Promotion/utils';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
 import Url from '../../../utils/url';
@@ -230,7 +230,7 @@ class Cart extends Component {
       return '';
     }
 
-    return getErrorMessageByPromoCode(promotion);
+    return getErrorMessageByPromoErrorCode(promotion);
   };
 
   handleDismissPromotion = e => {
