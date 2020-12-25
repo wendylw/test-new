@@ -376,7 +376,8 @@ const PROMOTION_ERROR_CODES = {
     desc: '54416AppliedSourceDoesNotMatch',
   },
   54417: {
-    desc: '54417NotMatchMinimumSubtotal',
+    desc: '54417NotMatchMinSubtotalConsumingPromo',
+    i18nextArgus: i18nextArgus => i18nextArgus,
   },
   60002: {
     desc: '60002NotActive',
@@ -385,7 +386,8 @@ const PROMOTION_ERROR_CODES = {
     desc: '60003Expired',
   },
   60004: {
-    desc: '60004LessThanMinSpend',
+    desc: '60004LessThanMinSubtotalConsumingVoucher',
+    i18nextArgus: i18nextArgus => i18nextArgus,
   },
   60001: {
     desc: '60001NotExisted',

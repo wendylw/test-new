@@ -1,13 +1,17 @@
 import Constants from '../../../utils/constants';
 import i18next from 'i18next';
 
-const { PROMOTION_ERROR_CODES } = Constants;
+const { PROMOTION_ERROR_CODES, VOUCHER_STATUS } = Constants;
 
-export function getErrorMessageByPromoErrorCode({ code, extraInfo }) {
-  const {} = extraInfo;
+export function getErrorMessageByPromoErrorCode({ code, extraInfo, currency }) {
+  const { minSubtotalConsumingPromo } = extraInfo;
+  const i18nextArgus = { minSubtotalConsumingPromo: `${currency}${minSubtotalConsumingPromo}` };
 
   if (PROMOTION_ERROR_CODES[code]) {
-    return i18next.t(`OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`);
+    return i18next.t(
+      `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`,
+      PROMOTION_ERROR_CODES[code].i18nextArgus(i18nextArgus) || {}
+    );
   } else {
     return i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`);
   }

@@ -1,4 +1,3 @@
-import _isEmpty from 'lodash/isEmpty';
 import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
@@ -12,11 +11,7 @@ const { PROMOTION_ERROR_CODES, PROMO_TYPE } = Constants;
 const initialState = {
   promoCode: '',
   code: '',
-  status: '',
-  validFrom: '',
-  validTo: '',
   inProcess: false,
-  promoType: '',
   voucherList: {},
   isSearchMode: false, // when true, means in search mode, when user enter this page for the first time, display voucher list
   foundPromo: {},
@@ -220,8 +215,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         code: action.response.code,
-        promoType: PROMO_TYPE.PROMOTION,
-        validFrom: new Date(action.response.validFrom),
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_REQUEST:
@@ -234,9 +227,7 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS:
       return {
         ...state,
-        status: action.response.status || '',
-        promoType: PROMO_TYPE.VOUCHER,
-        validFrom: new Date(action.response.validFrom),
+        code: '200',
         inProcess: false,
       };
     case PROMOTION_TYPES.UPDATE_PROMOTION_CODE:
@@ -308,11 +299,11 @@ export function getCode(state) {
 }
 
 export function isAppliedSuccess(state) {
-  return _isEmpty(state.promotion.code);
+  return state.promotion.code === '200';
 }
 
 export function isAppliedError(state) {
-  return PROMOTION_ERROR_CODES[state.promotion.code];
+  return !!PROMOTION_ERROR_CODES[state.promotion.code];
 }
 
 export function isInProcess(state) {
