@@ -20,6 +20,10 @@ dayjs.extend(utc);
  * @returns {object[]} dateList
  */
 export const getOrderDateList = (store, deliveryType, currentDate, utcOffset = UTC8_TIME_ZONE_OFFSET) => {
+  if (!store) {
+    return [];
+  }
+
   const { qrOrderingSettings } = store;
   const { validDays, vacations, enablePreOrder } = qrOrderingSettings;
 
@@ -78,6 +82,10 @@ export const getPreOrderTimeList = (store, deliveryType) => {
  * @param {Store} store
  */
 export const getDeliveryPreOrderTimeList = store => {
+  if (!store) {
+    return [];
+  }
+
   const { qrOrderingSettings } = store;
   const { breakTimeFrom, breakTimeTo, enablePreOrder } = qrOrderingSettings;
 

@@ -12,7 +12,7 @@ import { actions as homeActions } from './home';
 import { createSelector } from 'reselect';
 
 const { API_URLS } = URL;
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, TIME_SLOT_NOW } = Constants;
 
 const initialState = {
   currentDate: null,
@@ -68,9 +68,13 @@ export const actions = {
       payload,
     });
 
-    const availableFirstDate = getFirstAvailableDate(getState());
+    const store = getStore(getState());
 
-    dispatch(actions.selectedDateChanged(availableFirstDate));
+    if (store) {
+      const availableFirstDate = getFirstAvailableDate(getState());
+
+      dispatch(actions.selectedDateChanged(availableFirstDate));
+    }
   },
 
   deliveryTypeChanged: deliveryType => ({
@@ -257,14 +261,19 @@ export const getOrderDateList = createSelector(
   getDeliveryType,
   getCurrentDate,
   getBusinessUTCOffset,
-  (store, deliveryType, currentDate, businessUTCOffset) =>
-    storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset)
+  (store, deliveryType, currentDate, businessUTCOffset) => {
+    if (!store) {
+      return [];
+    }
+
+    return storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
+  }
 );
 
 export const getAvailableTimeSlotList = createSelector(
   [getStore, getCurrentDate, getBusinessUTCOffset, getSelectedDate, getDeliveryType, getTimeSlotSoldData],
   (store, currentDate, businessUTCOffset, selectedDate, deliveryType, timeSlotSoldData) => {
-    if (!selectedDate.isOpen) {
+    if (!store || !selectedDate || !selectedDate.isOpen) {
       return [];
     }
     let timeList = [];
@@ -274,14 +283,28 @@ export const getAvailableTimeSlotList = createSelector(
       timeList = storeUtils.getPreOrderTimeList(store, deliveryType);
     }
 
+    const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
     const date = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(selectedDate.date));
 
     return timeList.map(time => {
+      if (time === TIME_SLOT_NOW) {
+        return isDelivery
+          ? {
+              soldOut: false,
+              from: TIME_SLOT_NOW,
+              to: TIME_SLOT_NOW,
+            }
+          : {
+              soldOut: false,
+              from: TIME_SLOT_NOW,
+            };
+      }
+
       const dateTime = timeLib.setDateTime(time, date);
 
       const soldOut = storeUtils.isDateTimeSoldOut(store, timeSlotSoldData, dateTime.toDate(), businessUTCOffset);
 
-      if (deliveryType === DELIVERY_METHOD.DELIVERY) {
+      if (isDelivery) {
         return {
           soldOut,
           from: time,
