@@ -292,3 +292,16 @@ export const getTimeFromDayjs = (date = dayjs()) => {
 
   return date.format('HH:mm');
 };
+
+/**
+ * format to 12 hour
+ * @param {*} time
+ * @returns {string}
+ */
+export const formatTo12hour = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const dateTime = setDateTime(time);
+
+  return dateTime.format('hh:mm A');
+};

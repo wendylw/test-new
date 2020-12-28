@@ -18,6 +18,7 @@ import {
   ceilToHour,
   ceilToQuarter,
   floorToHour,
+  formatTo12hour,
 } from './time-lib';
 import dayjs from 'dayjs';
 
@@ -302,5 +303,20 @@ describe('test ceilToQuarter function', () => {
     ${'-2:50'} | ${'-1:00'}
   `(`return $expected when quarter $time`, ({ time, expected }) => {
     expect(ceilToQuarter(time)).toBe(expected);
+  });
+});
+
+describe('test formatTo12hour function', () => {
+  test.each`
+    time       | expected
+    ${'12:00'} | ${'12:00 PM'}
+    ${'12:01'} | ${'12:01 PM'}
+    ${'00:25'} | ${'12:25 AM'}
+    ${'00:40'} | ${'12:40 AM'}
+    ${'01:50'} | ${'01:50 AM'}
+    ${'-1:10'} | ${'11:10 PM'}
+    ${'-2:50'} | ${'10:50 PM'}
+  `(`return $expected when format $time to 12 hour`, ({ time, expected }) => {
+    expect(formatTo12hour(time)).toBe(expected);
   });
 });

@@ -4,31 +4,41 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
+import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
+import { IconNext, IconSearch } from '../../../components/Icons';
 import {
   actions as locationAndDateActionCreator,
   getDeliveryType,
   getStoreId,
+  getDeliveryAddress,
+  getOrderDateList,
+  getSelectedDate,
+  getAvailableTimeSlotList,
+  getSelectedTime,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
+import * as storeUtils from '../../../utils/store-utils';
+import * as timeLib from '../../../utils/time-lib';
 import config from '../../../config';
 import { actions as homeActionCreators } from '../../redux/modules/home';
+import './OrderingLocationDate.scss';
 
-import { actions as appActionCreators } from '../../redux/modules/app';
+import { actions as appActionCreators, getBusinessDeliveryTypes, getBusinessUTCOffset } from '../../redux/modules/app';
 import DeliveryMethods from '../../../stores/containers/DeliveryMethods';
+import { Fragment } from 'react';
 
-const { DELIVERY_METHOD, ROUTER_PATHS } = Constants;
+const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW } = Constants;
 
 class LocationAndDate extends Component {
   headerEl = null;
+  footerEl = null;
 
   componentDidMount = async () => {
     const { actions } = this.props;
     const deliveryAddress = Utils.getDeliveryAddress();
     const deliveryType = (this.query.type || '').toLowerCase();
     this.ensureDeliveryType(deliveryType);
-
-    console.log('this.query', this.query);
 
     await actions.initial({
       deliveryType,
@@ -38,7 +48,7 @@ class LocationAndDate extends Component {
     });
 
     if (!this.props.storeId && deliveryType === DELIVERY_METHOD.PICKUP) {
-      this.goStoreList();
+      this.gotoStoreList();
     }
   };
 
@@ -46,7 +56,19 @@ class LocationAndDate extends Component {
     return qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
   }
 
-  goStoreList = () => {
+  get isDelivery() {
+    const { deliveryType } = this.props;
+
+    return deliveryType === DELIVERY_METHOD.DELIVERY;
+  }
+
+  get isPickup() {
+    const { deliveryType } = this.props;
+
+    return deliveryType === DELIVERY_METHOD.PICKUP;
+  }
+
+  gotoStoreList = () => {
     const { history } = this.props;
     const deliveryType = (this.query.type || '').toLowerCase();
 
@@ -83,8 +105,287 @@ class LocationAndDate extends Component {
     // TODO: will do it later
   };
 
-  render() {
+  checkIfCanContinue = () => {};
+
+  goToNext = () => {};
+
+  renderContinueButton = () => {
     const { t } = this.props;
+
+    return (
+      <footer
+        ref={ref => (this.footerEl = ref)}
+        className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
+      >
+        <button
+          className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+          data-testid="continue"
+          data-heap-name="ordering.location-and-date.continue-btn"
+          disabled={this.checkIfCanContinue()}
+          onClick={this.goToNext}
+        >
+          {t('Continue')}
+        </button>
+      </footer>
+    );
+  };
+
+  gotoLocationSearch = () => {};
+
+  handleDeliveryTypeChange = deliveryType => {};
+
+  renderDeliveryTypesSelector = () => {
+    const { t, deliveryType } = this.props;
+    const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
+    const isPickup = deliveryType === DELIVERY_METHOD.PICKUP;
+
+    return (
+      <ul className="flex flex-middle padding-normal">
+        <li
+          className={`location-date__delivery text-center padding-small text-size-big text-line-height-base text-weight-bolder ${
+            isDelivery ? 'active' : ''
+          }`}
+          onClick={() => this.handleDeliveryTypeChange(DELIVERY_METHOD.DELIVERY)}
+          data-heap-name="ordering.location-and-date.delivery"
+        >
+          {t('Delivery')}
+        </li>
+        <li
+          className={`location-date__pickup text-center padding-small text-size-big text-line-height-base text-weight-bolder ${
+            isPickup ? 'active' : ''
+          }`}
+          onClick={() => this.handleDeliveryTypeChange(DELIVERY_METHOD.PICKUP)}
+          data-heap-name="ordering.location-and-date.pickup"
+        >
+          {t('Pickup')}
+        </li>
+      </ul>
+    );
+  };
+
+  renderDeliveryTo = () => {
+    const { t, deliveryAddress } = this.props;
+
+    return (
+      <div className="padding-normal">
+        <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
+          {t('DeliverTo')}
+        </label>
+        <div
+          className="form__group flex flex-middle flex-space-between"
+          onClick={this.gotoLocationSearch}
+          data-heap-name="ordering.location-and-date.deliver-to"
+          data-testid="deliverTo"
+        >
+          {!deliveryAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
+          <p
+            className={`location-date__input form__input flex flex-middle text-size-big text-line-height-base text-omit__single-line ${
+              !deliveryAddress ? '' : 'padding-normal'
+            }`}
+          >
+            {deliveryAddress || t('WhereToDeliverFood')}
+          </p>
+          {deliveryAddress && <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />}
+        </div>
+      </div>
+    );
+  };
+
+  renderSelectedStore = () => {
+    const { t, store } = this.props;
+    const storeName = store && store.name;
+
+    return (
+      <div
+        className="padding-normal"
+        data-testid="deliverTo"
+        onClick={this.gotoStoreList}
+        data-heap-name="ordering.location-and-date.selected-store"
+      >
+        <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
+          {t('SelectedStore')}
+        </label>
+        <div className="form__group flex flex-middle flex-space-between">
+          <p className="location-date__input padding-normal text-size-big text-line-height-base text-omit__single-line">
+            {storeName}
+          </p>
+          <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />
+        </div>
+      </div>
+    );
+  };
+
+  handleSelectDeliveryDate = orderDate => {};
+
+  renderDeliveryDateItem = orderDate => {
+    const { selectedDate, businessUTCOffset } = this.props;
+
+    const dateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, orderDate.date);
+
+    const isSelected = dateDayjs.isSame(selectedDate.date);
+    const isToday = orderDate.isToday;
+    const isOpen = orderDate.isOpen;
+    const dayOfWeek = dateDayjs.day();
+    const dateOfMonth = dateDayjs.date();
+
+    return (
+      <li key={dateDayjs.format()}>
+        <button
+          className={`location-date__button-date button 
+          ${isSelected ? 'button__fill' : 'button__outline'}
+          padding-top-bottom-smaller padding-left-right-normal margin-left-right-small
+          ${isToday ? 'text-uppercase' : ''}`}
+          disabled={!isOpen}
+          data-testid="preOrderDate"
+          data-heap-name="ordering.location-and-date.date-item"
+          data-heap-is-today={isToday ? 'yes' : 'no'}
+          onClick={() => {
+            this.handleSelectDeliveryDate(orderDate);
+          }}
+        >
+          {isToday ? (
+            t('Today')
+          ) : (
+            <Fragment>
+              <span className="location-date__date-weekday text-weight-bolder">
+                {t(WEEK_DAYS_I18N_KEYS[dayOfWeek])}
+              </span>
+              <time className="text-size-big">{dateOfMonth}</time>
+            </Fragment>
+          )}
+        </button>
+      </li>
+    );
+  };
+
+  renderDeliveryDateSelector = () => {
+    const { t, orderDateList } = this.props;
+
+    return (
+      <div className="padding-small">
+        <label className="location-date__label padding-left-right-small margin-top-bottom-small text-size-big text-weight-bolder">
+          {this.isDelivery && t('DeliverOn')}
+          {this.isPickup && t('PickUpOn')}
+        </label>
+        <ul className="location-date__date flex flex-middle flex-space-between">
+          {orderDateList.map(orderDate => {
+            {
+              this.renderDeliveryDateItem(orderDate);
+            }
+          })}
+        </ul>
+      </div>
+    );
+  };
+
+  handleSelectDeliveryHourTime = timeItem => {};
+
+  renderDeliveryHourTimeItemLabel = timeItem => {
+    const { t } = this.props;
+    const isImmediate = timeItem.from === TIME_SLOT_NOW;
+
+    if (isImmediate) {
+      return t('Immediate');
+    }
+
+    const timeFrom = timeLib.formatTo12hour(timeItem.from);
+
+    if (this.isPickup) {
+      return `${timeFrom}`;
+    }
+
+    const timeTo = timeLib.formatTo12hour(timeItem.to);
+
+    return `${timeFrom} - ${timeTo}`;
+  };
+
+  renderDeliveryHourTimeItem = timeItem => {
+    const { t, selectedTime } = this.props;
+    const isImmediate = timeItem.from === TIME_SLOT_NOW;
+    const isSelected = selectedTime && selectedTime.from === timeItem.from;
+    const isSoldOut = timeItem.isSoldOut;
+
+    return (
+      <li key={timeItem.from} className="location-date__hour-item">
+        <button
+          className={`location-date__button-hour button button__block text-center text-size-big
+              ${isSelected ? 'selected text-weight-bolder' : ''}
+            `}
+          data-testid="preOrderHour"
+          data-heap-name="ordering.location-and-date.time-item"
+          data-heap-is-immediate={isImmediate ? 'yes' : 'no'}
+          disabled={isSoldOut}
+          onClick={() => {
+            this.handleSelectDeliveryHourTime(timeItem);
+          }}
+        >
+          {this.renderDeliveryHourTimeItemLabel(timeItem)}
+
+          {isSoldOut && <span className="text-uppercase"> {`(${t('SoldOut')})`}</span>}
+        </button>
+      </li>
+    );
+  };
+
+  renderDeliveryHourTimeSelector = () => {
+    const { availableTimeSlotList } = this.props;
+
+    return (
+      <div className="padding-top-bottom-normal">
+        <label className="location-date__label padding-left-right-normal margin-top-bottom-small text-size-big text-weight-bolder">
+          {this.isDelivery ? t('DeliveryTime') : t('PickupTime')}
+        </label>
+        <ul className="location-date__hour">
+          {availableTimeSlotList.map(timeItem => this.renderDeliveryHourTimeItem(timeItem))}
+        </ul>
+      </div>
+    );
+  };
+
+  renderDeliveryHelpText = () => {
+    const { t } = this.props;
+
+    return (
+      <div className="padding-normal">
+        <img src={beepLocationdateHint} alt="Delivery no address" />
+        <p className="location-date__help-text text-center text-size-big margin-top-bottom-normal">
+          {t('DeliveryHelpText')}
+        </p>
+      </div>
+    );
+  };
+
+  renderDeliveryContainer = () => {
+    const { t, deliveryAddress } = this.props;
+    return (
+      <Fragment>
+        {this.renderDeliveryTo()}
+
+        {deliveryAddress ? (
+          <Fragment>
+            {this.renderSelectedStore()}
+            {this.renderDeliveryDateSelector()}
+            {this.renderDeliveryHourTimeSelector()}
+          </Fragment>
+        ) : (
+          this.renderDeliveryHelpText()
+        )}
+      </Fragment>
+    );
+  };
+
+  renderPickupContainer = () => {
+    return (
+      <Fragment>
+        {this.renderSelectedStore()}
+        {this.renderDeliveryDateSelector()}
+        {this.renderDeliveryHourTimeSelector()}
+      </Fragment>
+    );
+  };
+
+  render() {
+    const { t, businessDeliveryTypes } = this.props;
 
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
@@ -97,6 +398,24 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
+        <div
+          className="location-date__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: Utils.containerHeight({
+              headerEls: [this.headerEl],
+              footerEls: [this.footerEl],
+            }),
+          }}
+        >
+          {businessDeliveryTypes.length > 1 && this.renderDeliveryTypesSelector()}
+
+          {this.isDelivery && this.renderDeliveryContainer()}
+          {this.isPickup && this.renderPickupContainer()}
+        </div>
+        {this.renderContinueButton()}
       </section>
     );
   }
@@ -108,6 +427,13 @@ export default compose(
     state => ({
       deliveryType: getDeliveryType(state),
       storeId: getStoreId(state),
+      deliveryAddress: getDeliveryAddress(state),
+      businessDeliveryTypes: getBusinessDeliveryTypes(state),
+      orderDateList: getOrderDateList(state),
+      selectedDate: getSelectedDate(state),
+      businessUTCOffset: getBusinessUTCOffset(state),
+      availableTimeSlotList: getAvailableTimeSlotList(state),
+      selectedTime: getSelectedTime(state),
     }),
 
     dispatch => ({

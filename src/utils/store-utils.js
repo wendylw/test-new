@@ -45,13 +45,13 @@ export const getOrderDateList = (store, deliveryType, currentDate, utcOffset = U
       });
 
       dateList.push({
-        date: date.toISOString(),
+        date: date.toDate(),
         isOpen: isOpen && todayTimeList.length > 0,
         isToday: true,
       });
     } else {
       dateList.push({
-        date: date.toISOString(),
+        date: date.toDate(),
         isOpen: enablePreOrder && isOpen,
         isToday: false,
       });

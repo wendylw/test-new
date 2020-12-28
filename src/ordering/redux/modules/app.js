@@ -15,7 +15,7 @@ import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { getAllStores, getStoreById } from '../../../redux/modules/entities/stores';
+import { getStores, getStoreById } from '../../../redux/modules/entities/stores';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -546,14 +546,10 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
   return _get(businessInfo, 'timezoneOffset', 480);
 });
 
-export const getBusinessDeliveryTypes = createSelector(getAllStores, allStores => {
-  const deliveryTypes = allStores.reduce(
-    (deliveryTypes,
-    store => {
-      return deliveryTypes.concat(store.fulfillmentOptions);
-    }),
-    []
-  );
+export const getBusinessDeliveryTypes = createSelector(getStores, stores => {
+  const deliveryTypes = stores.reduce((types, store) => {
+    return types.concat(store.fulfillmentOptions);
+  }, []);
 
   return _uniq(deliveryTypes);
 });

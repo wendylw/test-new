@@ -115,7 +115,7 @@ export const actions = {
         return;
       }
 
-      const { method, url } = API_URLS.GET_TIME_SLOT(deliveryType, selectedDate.date, store.id);
+      const { method, url } = API_URLS.GET_TIME_SLOT(deliveryType, selectedDate.date.toISOString(), store.id);
 
       const timeSlotSoldData = await apiRequest[method](url);
 
@@ -288,33 +288,21 @@ export const getAvailableTimeSlotList = createSelector(
 
     return timeList.map(time => {
       if (time === TIME_SLOT_NOW) {
-        return isDelivery
-          ? {
-              soldOut: false,
-              from: TIME_SLOT_NOW,
-              to: TIME_SLOT_NOW,
-            }
-          : {
-              soldOut: false,
-              from: TIME_SLOT_NOW,
-            };
+        return {
+          soldOut: false,
+          from: TIME_SLOT_NOW,
+          to: TIME_SLOT_NOW,
+        };
       }
 
       const dateTime = timeLib.setDateTime(time, date);
 
       const soldOut = storeUtils.isDateTimeSoldOut(store, timeSlotSoldData, dateTime.toDate(), businessUTCOffset);
 
-      if (isDelivery) {
-        return {
-          soldOut,
-          from: time,
-          to: timeLib.add(time, { value: 1, unit: 'hour' }),
-        };
-      }
-
       return {
         soldOut,
         from: time,
+        to: isDelivery ? timeLib.add(time, { value: 1, unit: 'hour' }) : time,
       };
     });
   }
