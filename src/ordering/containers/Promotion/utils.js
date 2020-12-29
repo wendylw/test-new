@@ -3,17 +3,9 @@ import i18next from 'i18next';
 
 const { PROMOTION_ERROR_CODES, VOUCHER_STATUS } = Constants;
 
-export function getErrorMessageByPromoErrorCode({ code, extraInfo = {}, currency = 'MYR' }) {
-  const { minSubtotalConsumingPromo } = extraInfo;
-  const i18nextArgus = minSubtotalConsumingPromo
-    ? { minSubtotalConsumingPromo: `${currency} ${Number(minSubtotalConsumingPromo).toFixed(2)}` }
-    : {};
-
+export function getErrorMessageByPromoErrorCode(code) {
   if (PROMOTION_ERROR_CODES[code]) {
-    return i18next.t(
-      `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`,
-      (PROMOTION_ERROR_CODES[code].i18nextArgus && PROMOTION_ERROR_CODES[code].i18nextArgus(i18nextArgus)) || {}
-    );
+    return i18next.t(`OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`);
   } else {
     return i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`);
   }

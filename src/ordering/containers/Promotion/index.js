@@ -88,19 +88,13 @@ class Promotion extends Component {
   };
 
   getMessage = () => {
-    const { appliedResult, currency } = this.props;
+    const { appliedResult } = this.props;
     if (!appliedResult || appliedResult.success) {
       return '';
     }
-    const { code, extraInfo } = appliedResult;
+    const { code } = appliedResult;
 
-    return getErrorMessageByPromoErrorCode({
-      code,
-      extraInfo: {
-        minSubtotalConsumingPromo: extraInfo.minSubtotalConsumingPromo || extraInfo.minSpend,
-      },
-      currency,
-    });
+    return getErrorMessageByPromoErrorCode(code);
   };
 
   render() {
@@ -209,7 +203,6 @@ export default compose(
         selectedPromo: getSelectedPromo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         appliedResult: getAppliedResult(state),
-        currency: getBusinessCurrency(state),
       };
     },
     dispatch => ({

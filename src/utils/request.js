@@ -7,12 +7,11 @@ const headers = new Headers({
 });
 
 class RequestError extends Error {
-  constructor(message, code, detail = null) {
+  constructor(message, code) {
     super();
 
     this.message = message;
     this.code = code;
-    this.detail = detail;
   }
 }
 
@@ -98,7 +97,7 @@ async function handleResponse(url, response) {
       .then(function(body) {
         const code = body.code || response.status;
 
-        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code, body));
+        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
       });
   }
 }

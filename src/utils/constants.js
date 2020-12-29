@@ -381,6 +381,7 @@ const PROMOTION_ERROR_CODES = {
   },
   60002: {
     desc: '60002NotActive',
+    i18nextArgus: i18nextArgus => i18nextArgus,
   },
   60003: {
     desc: '60003Expired',

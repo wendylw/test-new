@@ -213,14 +213,11 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE:
     case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
-      const extraInfo = _get(action, 'detail.extraInfo', null);
-
       return {
         ...state,
         appliedResult: {
           success: false,
           code: action.code,
-          extraInfo,
         },
         inProcess: false,
       };
@@ -236,7 +233,6 @@ const reducer = (state = initialState, action) => {
         ...state,
         appliedResult: {
           success: true,
-          extraInfo: null,
           code: '',
         },
         inProcess: false,
