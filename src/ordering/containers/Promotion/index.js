@@ -19,8 +19,14 @@ import {
   isPromoSearchMode,
   hasSearchedForPromo as userHasSearchedForPromo,
   getSelectedPromo,
+  getAppliedResult,
 } from '../../redux/modules/promotion';
-import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUser,
+  getOnlineStoreInfo,
+  getBusinessCurrency,
+} from '../../redux/modules/app';
 import { withTranslation } from 'react-i18next';
 import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
@@ -82,13 +88,18 @@ class Promotion extends Component {
   };
 
   getMessage = () => {
-    const { errorCode } = this.props;
-    if (!errorCode) {
+    const { appliedResult, currency } = this.props;
+    if (!appliedResult || appliedResult.success) {
       return '';
     }
+    const { code, extraInfo } = appliedResult;
 
     return getErrorMessageByPromoErrorCode({
-      code: errorCode,
+      code,
+      extraInfo: {
+        minSubtotalConsumingPromo: extraInfo.minSubtotalConsumingPromo || extraInfo.minSpend,
+      },
+      currency,
     });
   };
 
@@ -197,6 +208,8 @@ export default compose(
         hasSearchedForPromo: userHasSearchedForPromo(state),
         selectedPromo: getSelectedPromo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
+        appliedResult: getAppliedResult(state),
+        currency: getBusinessCurrency(state),
       };
     },
     dispatch => ({

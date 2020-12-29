@@ -6,11 +6,12 @@ import { getPromotion } from '../../../redux/modules/entities/carts';
 import { actions as appActions } from './app';
 import i18next from 'i18next';
 import Utils from '../../../utils/utils';
-const { PROMOTION_ERROR_CODES, PROMO_TYPE } = Constants;
+import _get from 'lodash/get';
+const { PROMO_TYPE } = Constants;
 
 const initialState = {
   promoCode: '',
-  code: '',
+  appliedResult: null,
   inProcess: false,
   voucherList: {},
   isSearchMode: false, // when true, means in search mode, when user enter this page for the first time, display voucher list
@@ -43,7 +44,7 @@ export const actions = {
         ],
         ...Url.API_URLS.APPLY_PROMOTION_CODE,
         payload: {
-          promoCode: selectedPromo.code,
+          promoId: selectedPromo.id,
           fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
           shippingType: Utils.getApiRequestShippingType(),
         },
@@ -212,9 +213,15 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE:
     case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
+      const extraInfo = _get(action, 'detail.extraInfo', null);
+
       return {
         ...state,
-        code: action.response.code,
+        appliedResult: {
+          success: false,
+          code: action.code,
+          extraInfo,
+        },
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_REQUEST:
@@ -227,7 +234,11 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS:
       return {
         ...state,
-        code: '200',
+        appliedResult: {
+          success: true,
+          extraInfo: null,
+          code: '',
+        },
         inProcess: false,
       };
     case PROMOTION_TYPES.UPDATE_PROMOTION_CODE:
@@ -237,6 +248,7 @@ const reducer = (state = initialState, action) => {
         foundPromo: {},
         hasSearchedForPromo: false,
         selectedPromo: {},
+        appliedResult: null,
       };
     case PROMOTION_TYPES.INITIAL_PROMOTION_CODE:
       return {
@@ -295,15 +307,19 @@ export function getPromoCode(state) {
 }
 
 export function getPromoErrorCode(state) {
-  return state.promotion.code;
+  return _get(state.promotion, 'appliedResult.code', '');
+}
+
+export function getAppliedResult(state) {
+  return _get(state.promotion, 'appliedResult', null);
 }
 
 export function isAppliedSuccess(state) {
-  return state.promotion.code === '200';
+  return _get(state.promotion, 'appliedResult.success', false);
 }
 
 export function isAppliedError(state) {
-  return !!PROMOTION_ERROR_CODES[state.promotion.code];
+  return _get(state.promotion, 'appliedResult.success', false);
 }
 
 export function isInProcess(state) {
