@@ -158,18 +158,29 @@ export const getDevicePositionInfo = (withCache = true) => {
 };
 
 export const migrateLegacyDeliveryAddress = async () => {
+  let localStorageLocationsItems, crossStorageLocationItems;
   try {
-    const localStorageLocations = JSON.parse(Utils.getLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES') || '[]');
-    const crossStorageLocations = JSON.parse(
+    localStorageLocationsItems = JSON.parse(Utils.getLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES') || '[]');
+  } catch (e) {
+    console.log(e);
+  }
+  try {
+    crossStorageLocationItems = JSON.parse(
       (await crossStorage.getItem('CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES')) || '[]'
     );
-    const locationItems = [...localStorageLocations, ...crossStorageLocations];
+  } catch (e) {
+    console.log(e);
+  }
+  try {
+    const locationItems = [...localStorageLocationsItems, ...crossStorageLocationItems];
     if (locationItems.length) {
       await post('/api/storage/setLocationHistory', locationItems);
     }
     await crossStorage.removeItem('CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES');
     Utils.removeLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES');
-  } catch {}
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const getHistoricalDeliveryAddresses = async () => {
