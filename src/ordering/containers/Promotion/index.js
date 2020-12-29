@@ -21,12 +21,7 @@ import {
   getSelectedPromo,
   getAppliedResult,
 } from '../../redux/modules/promotion';
-import {
-  actions as appActionCreators,
-  getUser,
-  getOnlineStoreInfo,
-  getBusinessCurrency,
-} from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import { withTranslation } from 'react-i18next';
 import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
