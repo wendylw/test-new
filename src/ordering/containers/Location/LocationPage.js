@@ -95,7 +95,6 @@ class LocationPage extends Component {
         latitude: placeInfo.coords.lat,
       },
     };
-    await setHistoricalDeliveryAddresses(placeInfo);
 
     let stores = await this.props.homeActions.loadCoreStores(address);
     stores = stores.responseGql.data.business.stores;
@@ -123,6 +122,7 @@ class LocationPage extends Component {
 
     Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
     Utils.setSessionVariable('deliveryAddressUpdate', true);
+    setHistoricalDeliveryAddresses(placeInfo);
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
       history.replace(callbackUrl);
