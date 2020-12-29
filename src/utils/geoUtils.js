@@ -157,35 +157,19 @@ export const getDevicePositionInfo = (withCache = true) => {
   return getPositionInfoBySource('device', withCache);
 };
 
-export const migrateHistoricalDeliveryAddress = async () => {
-  let oldAddresses = [];
-  const legacyKey = 'HISTORICAL_DELIVERY_ADDRESSES';
-  const oldAddressStr = Utils.getLocalStorageVariable(legacyKey);
-  if (!oldAddressStr) {
-    return;
-  }
-  if (oldAddressStr) {
-    try {
-      oldAddresses = JSON.parse(oldAddressStr);
-    } catch {
-      Utils.removeLocalStorageVariable(legacyKey);
-      return;
-    }
-  }
+export const migrateLegacyDeliveryAddress = async () => {
   try {
-    const newAddresses = await getHistoricalDeliveryAddresses();
-    const newAddressMap = {};
-    newAddresses.forEach(placeInfo => (newAddressMap[placeInfo.address] = true));
-    for (let i = 0; i < oldAddresses.length; i++) {
-      const placeInfo = oldAddresses[i];
-      if (!newAddressMap[placeInfo.address]) {
-        await setHistoricalDeliveryAddresses(placeInfo);
-      }
+    const localStorageLocations = JSON.parse(Utils.getLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES'));
+    const crossStorageLocations = JSON.parse(
+      (await crossStorage.getItem('CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES')) || '[]'
+    );
+    const locationItems = [...localStorageLocations, ...crossStorageLocations];
+    if (locationItems.length) {
+      await post('/api/storage/setLocationHistory', locationItems);
     }
-    Utils.removeLocalStorageVariable(legacyKey);
-  } catch (e) {
-    console.error(e.message);
-  }
+    await crossStorage.removeItem('CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES');
+    Utils.removeLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES');
+  } catch {}
 };
 
 export const getHistoricalDeliveryAddresses = async () => {
@@ -203,7 +187,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     const clonedPositionInfo = { ...positionInfo };
     // won't save distance, because use may choose another store.
     delete clonedPositionInfo.distance;
-    const result = await post('/api/storage/setLocationHistory', clonedPositionInfo);
+    await post('/api/storage/setLocationHistory', clonedPositionInfo);
   } catch (e) {
     console.error('failed to set historical delivery addresses', e);
   }
