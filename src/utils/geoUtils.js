@@ -2,6 +2,7 @@ import { intersection, findIndex } from 'lodash';
 import Utils from './utils';
 import { captureException } from '@sentry/react';
 import * as crossStorage from './cross-storage';
+import { get, post } from './request';
 
 const googleMaps = window.google.maps;
 
@@ -187,26 +188,11 @@ export const migrateHistoricalDeliveryAddress = async () => {
   }
 };
 
-const MAX_HISTORICAL_ADDRESS_COUNT = 5;
-const HISTORICAL_ADDRESS_KEY = 'CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES';
 export const getHistoricalDeliveryAddresses = async () => {
   try {
-    const storageStr = await crossStorage.getItem(HISTORICAL_ADDRESS_KEY);
-    if (!storageStr) {
-      return [];
-    }
-    const results = JSON.parse(storageStr);
-
-    // --Begin-- last version of cache doesn't have addressComponents field, we need it now
-    if (results && results.length && !results[0].addressComponents) {
-      await crossStorage.removeItem(HISTORICAL_ADDRESS_KEY);
-      return [];
-    }
-    // ---End--- last version of cache doesn't have addressComponents field, we need it now
-
+    const results = await get('/api/storage/getLocationHistory');
     return results;
   } catch (e) {
-    captureException(e);
     console.error('failed to get historical delivery addresses', e);
     return [];
   }
@@ -217,25 +203,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     const clonedPositionInfo = { ...positionInfo };
     // won't save distance, because use may choose another store.
     delete clonedPositionInfo.distance;
-    const storageStr = await crossStorage.getItem(HISTORICAL_ADDRESS_KEY);
-    let positionInfoList;
-    if (!storageStr) {
-      positionInfoList = [];
-    } else {
-      positionInfoList = JSON.parse(storageStr);
-    }
-    const foundIndex = findIndex(positionInfoList, existingPosition => {
-      return existingPosition.address === clonedPositionInfo.address;
-    });
-    // still use the new version if there is a same address
-    if (foundIndex >= 0) {
-      positionInfoList.splice(foundIndex, 1);
-    }
-    // make the newest address on the front.
-    positionInfoList.unshift(clonedPositionInfo);
-    // remove the oldest item, to prevent data size keeping growing.
-    positionInfoList.splice(MAX_HISTORICAL_ADDRESS_COUNT);
-    await crossStorage.setItem(HISTORICAL_ADDRESS_KEY, JSON.stringify(positionInfoList));
+    const result = await post('/api/storage/setLocationHistory', clonedPositionInfo);
   } catch (e) {
     console.error('failed to set historical delivery addresses', e);
   }

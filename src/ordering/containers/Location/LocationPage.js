@@ -95,6 +95,7 @@ class LocationPage extends Component {
         latitude: placeInfo.coords.lat,
       },
     };
+    await setHistoricalDeliveryAddresses(placeInfo);
 
     let stores = await this.props.homeActions.loadCoreStores(address);
     stores = stores.responseGql.data.business.stores;
@@ -128,7 +129,6 @@ class LocationPage extends Component {
     } else {
       history.go(-1);
     }
-    setHistoricalDeliveryAddresses(placeInfo);
   };
 
   handleBackClicked = () => {
