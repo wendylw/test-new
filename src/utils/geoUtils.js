@@ -159,7 +159,7 @@ export const getDevicePositionInfo = (withCache = true) => {
 
 export const migrateLegacyDeliveryAddress = async () => {
   try {
-    const localStorageLocations = JSON.parse(Utils.getLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES'));
+    const localStorageLocations = JSON.parse(Utils.getLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES') || '[]');
     const crossStorageLocations = JSON.parse(
       (await crossStorage.getItem('CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES')) || '[]'
     );
