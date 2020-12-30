@@ -97,8 +97,16 @@ export const actions = {
       type: LOCATION_AND_DATE.DELIVERY_DATE_CHANGED,
       payload: selectedDate,
     });
+    const store = getStore(getState());
+    const enablePerTimeSlotLimitForPreOrder = _get(
+      store,
+      'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder',
+      false
+    );
 
-    await dispatch(actions.loadTimeSlotSoldData());
+    if (enablePerTimeSlotLimitForPreOrder) {
+      await dispatch(actions.loadTimeSlotSoldData());
+    }
 
     const firstAvailableTime = getFirstAvailableTime(getState());
     dispatch(actions.selectedTimeChanged(firstAvailableTime));
@@ -110,10 +118,6 @@ export const actions = {
       const deliveryType = getDeliveryType(state);
       const store = getStore(state);
       const selectedDate = getSelectedDate(state);
-
-      if (!store.enablePerTimeSlotLimitForPreOrder) {
-        return;
-      }
 
       const { method, url } = API_URLS.GET_TIME_SLOT(deliveryType, selectedDate.date.toISOString(), store.id);
 

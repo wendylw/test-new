@@ -15,6 +15,7 @@ import {
   getSelectedDate,
   getAvailableTimeSlotList,
   getSelectedTime,
+  getStore,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -130,9 +131,25 @@ class LocationAndDate extends Component {
     );
   };
 
-  gotoLocationSearch = () => {};
+  gotoLocationSearch = () => {
+    const { deliveryType, history } = this.props;
+    const { pathname, search } = history.location;
 
-  handleDeliveryTypeChange = deliveryType => {};
+    const queryParams = {
+      type: deliveryType,
+      callbackUrl: `${pathname}${search}`,
+    };
+
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_LOCATION,
+      search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
+  handleDeliveryTypeChange = deliveryType => {
+    const { actions } = this.props;
+    actions.deliveryTypeChanged(deliveryType);
+  };
 
   renderDeliveryTypesSelector = () => {
     const { t, deliveryType } = this.props;
@@ -215,14 +232,17 @@ class LocationAndDate extends Component {
     );
   };
 
-  handleSelectDeliveryDate = orderDate => {};
+  handleSelectDeliveryDate = orderDate => {
+    const { actions } = this.props;
+    actions.selectedDateChanged(orderDate);
+  };
 
   renderDeliveryDateItem = orderDate => {
-    const { selectedDate, businessUTCOffset } = this.props;
+    const { t, selectedDate, businessUTCOffset } = this.props;
 
     const dateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, orderDate.date);
 
-    const isSelected = dateDayjs.isSame(selectedDate.date);
+    const isSelected = selectedDate ? dateDayjs.isSame(selectedDate.date) : false;
     const isToday = orderDate.isToday;
     const isOpen = orderDate.isOpen;
     const dayOfWeek = dateDayjs.day();
@@ -268,17 +288,17 @@ class LocationAndDate extends Component {
           {this.isPickup && t('PickUpOn')}
         </label>
         <ul className="location-date__date flex flex-middle flex-space-between">
-          {orderDateList.map(orderDate => {
-            {
-              this.renderDeliveryDateItem(orderDate);
-            }
-          })}
+          {orderDateList.map(orderDate => this.renderDeliveryDateItem(orderDate))}
         </ul>
       </div>
     );
   };
 
-  handleSelectDeliveryHourTime = timeItem => {};
+  handleSelectDeliveryHourTime = timeItem => {
+    const { actions } = this.props;
+
+    actions.selectedTimeChanged(timeItem);
+  };
 
   renderDeliveryHourTimeItemLabel = timeItem => {
     const { t } = this.props;
@@ -328,7 +348,7 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryHourTimeSelector = () => {
-    const { availableTimeSlotList } = this.props;
+    const { t, availableTimeSlotList } = this.props;
 
     return (
       <div className="padding-top-bottom-normal">
@@ -427,6 +447,7 @@ export default compose(
     state => ({
       deliveryType: getDeliveryType(state),
       storeId: getStoreId(state),
+      store: getStore(state),
       deliveryAddress: getDeliveryAddress(state),
       businessDeliveryTypes: getBusinessDeliveryTypes(state),
       orderDateList: getOrderDateList(state),

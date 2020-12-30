@@ -195,7 +195,15 @@ export const getPickupPreOrderTimeList = store => {
       unit: 'minute',
     })
   ) {
-    if (isInBreakTime(time, { breakTimeFrom, breakTimeTo }) || timeLib.isSame(time, breakTimeTo)) {
+    if (
+      isInBreakTime(time, { breakTimeFrom, breakTimeTo }) ||
+      (timeLib.isValidTime(breakTimeTo) && timeLib.isSame(time, breakTimeTo))
+    ) {
+      continue;
+    }
+
+    // remove 24:00
+    if (timeLib.isSame(time, '24:00')) {
       continue;
     }
 
