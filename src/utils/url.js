@@ -122,6 +122,21 @@ const API_URLS = {
     url: '/api/cart/applyVoucher',
     method: 'post',
   },
+  GET_VOUCHER_INFO: params => {
+    const { promoCode, business, consumerId } = params;
+
+    return {
+      url: `/api/consumers/${consumerId}/vouchers`,
+      params:
+        promoCode && business
+          ? {
+              search: promoCode,
+              business,
+            }
+          : {},
+      method: 'get',
+    };
+  },
   APPLY_PROMOTION_CODE: {
     url: '/api/cart/applyPromoCode',
     method: 'post',

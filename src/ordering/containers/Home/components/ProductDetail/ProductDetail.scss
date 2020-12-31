@@ -97,7 +97,12 @@
   }
 
   &__article {
+    padding-bottom: 2.4vw;
     overflow-y: auto;
+
+    * {
+      padding-bottom: 2.4vw;
+    }
   }
 
   &__variations,
@@ -130,5 +135,17 @@
 
   .add__button {
     width: 100%;
+  }
+}
+
+@media (min-width: 420px) {
+  .product-detail {
+    &__article {
+      padding-bottom: 8px;
+
+      * {
+        padding-bottom: 8px;
+      }
+    }
   }
 }

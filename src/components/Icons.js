@@ -318,3 +318,29 @@ export const IconAddAddress = props => (
     </svg>
   </i>
 );
+
+export const IconVoucherTicket = props => (
+  <i {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" enableBackground="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24">
+      <g>
+        <rect fill="none" height="24" width="24" x="0" />
+      </g>
+      <g>
+        <g>
+          <g>
+            <path d="M22,10V6c0-1.11-0.9-2-2-2H4C2.9,4,2.01,4.89,2.01,6v4C3.11,10,4,10.9,4,12s-0.89,2-2,2v4c0,1.1,0.9,2,2,2h16 c1.1,0,2-0.9,2-2v-4c-1.1,0-2-0.9-2-2S20.9,10,22,10z M13,17.5h-2v-2h2V17.5z M13,13h-2v-2h2V13z M13,8.5h-2v-2h2V8.5z" />
+          </g>
+        </g>
+      </g>
+    </svg>
+  </i>
+);
+
+export const IconWrappedClose = props => (
+  <i {...props}>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="24px" height="24px">
+      <path d="M0 0h24v24H0z" fill="none" />
+      <path d="M14.59 8L12 10.59 9.41 8 8 9.41 10.59 12 8 14.59 9.41 16 12 13.41 14.59 16 16 14.59 13.41 12 16 9.41 14.59 8zM12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+    </svg>
+  </i>
+);

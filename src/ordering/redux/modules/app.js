@@ -211,27 +211,6 @@ export const actions = {
     },
   }),
 
-  createOrUpdateProfile: () => (dispatch, getState) => {
-    const state = getState();
-    const consumerId = state.user.consumerId;
-    const profile = state.user.profile;
-    return {
-      [API_REQUEST]: {
-        types: [
-          types.CREATE_OR_UPDATE_PROFILE_REQUEST,
-          types.CREATE_OR_UPDATE_PROFILE_SUCCESS,
-          types.CREATE_OR_UPDATE_PROFILE_FAILURE,
-        ],
-        ...url.API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId),
-        payload: {
-          firstName: profile.name,
-          email: profile.email,
-          birthday: profile.birthday,
-        },
-      },
-    };
-  },
-
   updateUser: (user = {}) => ({
     type: types.UPDATE_USER,
     user,

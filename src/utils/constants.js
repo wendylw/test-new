@@ -348,8 +348,14 @@ const PREORDER_IMMEDIATE_TAG = {
 };
 
 const PROMO_TYPE = {
-  PROMOTION: 'Promotion',
-  VOUCHER: 'Voucher',
+  PROMOTION: 'promotion',
+  VOUCHER: 'voucher',
+};
+
+const PROMOTIONS_TYPES = {
+  PERCENTAGE: 'percentage',
+  TAKE_AMOUNT_OFF: 'absolute',
+  FREE_SHIPPING: 'freeShipping',
 };
 
 const REPORT_DRIVER_REASON_CODE = {
@@ -430,6 +436,7 @@ export default {
   PROMOTION_APPLIED_STATUS,
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
+  PROMOTIONS_TYPES,
   ORDER_STATUS,
   REPORT_DRIVER_REASON_CODE,
   CREATE_ORDER_ERROR_CODES,
