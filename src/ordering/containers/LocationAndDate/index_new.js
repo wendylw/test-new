@@ -6,6 +6,7 @@ import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
 import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 import { IconNext, IconSearch } from '../../../components/Icons';
+import _get from 'lodash/get';
 import {
   actions as locationAndDateActionCreator,
   getDeliveryType,
@@ -22,12 +23,13 @@ import Utils from '../../../utils/utils';
 import * as storeUtils from '../../../utils/store-utils';
 import * as timeLib from '../../../utils/time-lib';
 import config from '../../../config';
-import { actions as homeActionCreators } from '../../redux/modules/home';
+import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
 import './OrderingLocationDate.scss';
 
 import { actions as appActionCreators, getBusinessDeliveryTypes, getBusinessUTCOffset } from '../../redux/modules/app';
 import DeliveryMethods from '../../../stores/containers/DeliveryMethods';
 import { Fragment } from 'react';
+import dayjs from 'dayjs';
 
 const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW } = Constants;
 
@@ -103,10 +105,69 @@ class LocationAndDate extends Component {
   };
 
   handleBackClicked = () => {
-    // TODO: will do it later
+    const { history, location } = this.props;
+    const stateFrom = _get(location, 'state.from', null);
+    const callbackUrl = this.query.callbackUrl || '';
+    const from = stateFrom || this.query.from;
+
+    if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      return history.push({
+        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        search: window.location.search,
+        state: stateFrom ? { from: stateFrom } : null,
+      });
+    }
+
+    if (callbackUrl) {
+      return history.replace(callbackUrl);
+    }
+
+    return history.go(-1);
   };
 
-  checkIfCanContinue = () => {};
+  isContinueButtonDisabled = () => {
+    const { store, deliveryAddress, orderDateList, availableTimeSlotList, selectedDate, selectedTime } = this.props;
+
+    if (!store) {
+      return true;
+    }
+
+    if (this.isDelivery && !deliveryAddress) {
+      return true;
+    }
+
+    if (!selectedDate || !selectedTime) {
+      return true;
+    }
+
+    if (!selectedDate.isOpen) {
+      return true;
+    }
+
+    if (selectedTime.isSoldOut) {
+      return true;
+    }
+
+    const isInDateList = orderDateList.some(date => dayjs(date.date).isSame(selectedDate.date));
+
+    if (!isInDateList) {
+      return true;
+    }
+
+    const isInTimeList = availableTimeSlotList.some(time => {
+      if (time.from === TIME_SLOT_NOW) {
+        return selectedTime.from === TIME_SLOT_NOW;
+      }
+
+      return timeLib.isSame(time.from, selectedTime.from);
+    });
+
+    if (!isInTimeList) {
+      return true;
+    }
+
+    return false;
+  };
 
   goToNext = () => {};
 
@@ -122,7 +183,7 @@ class LocationAndDate extends Component {
           className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
           data-testid="continue"
           data-heap-name="ordering.location-and-date.continue-btn"
-          disabled={this.checkIfCanContinue()}
+          disabled={this.isContinueButtonDisabled()}
           onClick={this.goToNext}
         >
           {t('Continue')}
@@ -451,10 +512,11 @@ export default compose(
       deliveryAddress: getDeliveryAddress(state),
       businessDeliveryTypes: getBusinessDeliveryTypes(state),
       orderDateList: getOrderDateList(state),
-      selectedDate: getSelectedDate(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       availableTimeSlotList: getAvailableTimeSlotList(state),
+      selectedDate: getSelectedDate(state),
       selectedTime: getSelectedTime(state),
+      storeHashCode: getStoreHashCode(state),
     }),
 
     dispatch => ({
