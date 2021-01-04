@@ -97,6 +97,7 @@ export const actions = {
       type: LOCATION_AND_DATE.DELIVERY_DATE_CHANGED,
       payload: selectedDate,
     });
+
     const store = getStore(getState());
     const enablePerTimeSlotLimitForPreOrder = _get(
       store,
