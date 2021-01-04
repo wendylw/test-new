@@ -93,23 +93,28 @@ class App extends Component {
   }
 
   selectStore = storeId => {
-    const { enableDelivery } = this.props;
     gtmSetUserProperties({
       store: {
         id: storeId,
       },
     });
 
-    if (enableDelivery) {
-      this.gotoDelivery(storeId);
-    } else {
+    if (this.isDinePath()) {
       this.gotoDine(storeId);
+    } else {
+      this.gotoDelivery(storeId);
     }
   };
+
+  isDinePath() {
+    return this.props.match.path === Constants.ROUTER_PATHS.DINE;
+  }
+
   renderOfflineModal = () => {
     Utils.removeSessionVariable('creatOfflineStoreOrderName');
     return <OfflineStoreModal currentStoreName={this.state.creatOfflineStoreOrderName} enableLiveOnline={false} />;
   };
+
   render() {
     const { t, show, stores, onlineStoreInfo } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};
