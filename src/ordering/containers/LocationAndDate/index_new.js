@@ -169,7 +169,52 @@ class LocationAndDate extends Component {
     return false;
   };
 
-  goToNext = () => {};
+  goToNext = async () => {
+    const { selectedDate, selectedTime, homeActions, storeId, deliveryType, location, history } = this.props;
+    const expectedDate = {
+      date: selectedDate.date.toISOString(),
+      isOpen: selectedDate.isOpen,
+      isToday: selectedDate.isToday,
+    };
+    const expectedTime = this.isDelivery
+      ? {
+          from: selectedTime.from,
+          to: selectedTime.to,
+        }
+      : {
+          from: selectedTime.from,
+        };
+
+    Utils.setExpectedDeliveryTime({
+      date: expectedDate,
+      hour: expectedTime,
+    });
+
+    await homeActions.getStoreHashData(storeId);
+    const h = this.props.storeHashCode;
+
+    const isDeliveryTypeChange = this.query.type !== deliveryType;
+
+    // callbackUrl equals 'undefined' from customer page
+    const callbackUrl = this.query.callbackUrl === 'undefined' ? null : this.query.callbackUrl;
+    const from = _get(location, 'state.from', null);
+
+    if (callbackUrl || (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO && isDeliveryTypeChange)) {
+      const query = qs.stringify(
+        {
+          h,
+          type: deliveryType,
+        },
+        { addQueryPrefix: true }
+      );
+      const callbackPath = callbackUrl ? callbackUrl.split('?')[0] : '';
+
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${callbackPath}${query}`;
+      return;
+    }
+
+    return history.go(-1);
+  };
 
   renderContinueButton = () => {
     const { t } = this.props;
