@@ -93,13 +93,14 @@ class App extends Component {
   }
 
   selectStore = storeId => {
+    const { enableDelivery } = this.props;
     gtmSetUserProperties({
       store: {
         id: storeId,
       },
     });
 
-    if (this.isDinePath()) {
+    if (this.isDinePath() || !enableDelivery) {
       this.gotoDine(storeId);
     } else {
       this.gotoDelivery(storeId);
