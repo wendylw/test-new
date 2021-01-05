@@ -6,14 +6,13 @@ import { getPromotion } from '../../../redux/modules/entities/carts';
 import { actions as appActions } from './app';
 import i18next from 'i18next';
 import Utils from '../../../utils/utils';
-const { PROMOTION_APPLIED_STATUS, PROMO_TYPE } = Constants;
+import _get from 'lodash/get';
+const { PROMO_TYPE } = Constants;
 
 const initialState = {
   promoCode: '',
-  status: '',
-  validFrom: '',
+  appliedResult: null,
   inProcess: false,
-  promoType: '',
   voucherList: {},
   isSearchMode: false, // when true, means in search mode, when user enter this page for the first time, display voucher list
   foundPromo: {},
@@ -45,7 +44,7 @@ export const actions = {
         ],
         ...Url.API_URLS.APPLY_PROMOTION_CODE,
         payload: {
-          promoCode: selectedPromo.code,
+          promoId: selectedPromo.id,
           fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
           shippingType: Utils.getApiRequestShippingType(),
         },
@@ -216,9 +215,10 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
       return {
         ...state,
-        status: action.response.status,
-        promoType: PROMO_TYPE.PROMOTION,
-        validFrom: new Date(action.response.validFrom),
+        appliedResult: {
+          success: false,
+          code: action.code,
+        },
         inProcess: false,
       };
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_REQUEST:
@@ -231,19 +231,20 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS:
       return {
         ...state,
-        status: action.response.status,
-        promoType: PROMO_TYPE.VOUCHER,
-        validFrom: new Date(action.response.validFrom),
+        appliedResult: {
+          success: true,
+          code: '',
+        },
         inProcess: false,
       };
     case PROMOTION_TYPES.UPDATE_PROMOTION_CODE:
       return {
         ...state,
         promoCode: action.promoCode,
-        status: '',
         foundPromo: {},
         hasSearchedForPromo: false,
         selectedPromo: {},
+        appliedResult: null,
       };
     case PROMOTION_TYPES.INITIAL_PROMOTION_CODE:
       return {
@@ -301,20 +302,20 @@ export function getPromoCode(state) {
   return state.promotion.promoCode;
 }
 
-export function getPromoValidFrom(state) {
-  return state.promotion.validFrom;
+export function getPromoErrorCode(state) {
+  return _get(state.promotion, 'appliedResult.code', '');
 }
 
-export function getStatus(state) {
-  return state.promotion.status;
+export function getAppliedResult(state) {
+  return _get(state.promotion, 'appliedResult', null);
 }
 
 export function isAppliedSuccess(state) {
-  return state.promotion.status === PROMOTION_APPLIED_STATUS.VALID;
+  return _get(state.promotion, 'appliedResult.success', false);
 }
 
 export function isAppliedError(state) {
-  return state.promotion.status && state.promotion.status !== PROMOTION_APPLIED_STATUS.VALID;
+  return _get(state.promotion, 'appliedResult.success', false);
 }
 
 export function isInProcess(state) {
