@@ -65,8 +65,15 @@ const setCookie = async (req, res, next) => {
 
     const url = new URL(original, `http://${req.headers.host}`);
     const backendUrl = target + url.search;
+    const cookie = req.headers.cookie;
 
-    const response = await fetch(backendUrl);
+    debug(`${original} Cookie is ${cookie}`);
+
+    const response = await fetch(backendUrl, {
+      headers: {
+        Cookie: cookie,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`${backendUrl} response ${response.statusText} ${response.status}`);
