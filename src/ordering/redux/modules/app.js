@@ -522,3 +522,7 @@ export const getBusinessInfo = state => {
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
 });
+
+export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
+  return _get(onlineStoreInfo, 'currency', 'MYR');
+});
