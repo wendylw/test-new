@@ -73,6 +73,7 @@ class PageLogin extends React.Component {
   handleSubmitPhoneNumber(phone) {
     const { appActions, otpType } = this.props;
 
+    window.newrelic?.addPageAction('ordering.login.get-otp-start');
     appActions.getOtp({ phone, type: otpType });
     this.setState({ sendOtp: true });
   }
@@ -84,12 +85,14 @@ class PageLogin extends React.Component {
   async handleWebLogin(otp) {
     const { appActions } = this.props;
 
+    window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
 
     const { user } = this.props;
     const { accessToken, refreshToken } = user;
 
     if (accessToken && refreshToken) {
+      window.newrelic?.addPageAction('ordering.login.verify-otp-done');
       appActions.loginApp({
         accessToken,
         refreshToken,

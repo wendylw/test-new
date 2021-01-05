@@ -6,20 +6,34 @@ import { getPromotion } from '../../../redux/modules/entities/carts';
 import { actions as appActions } from './app';
 import i18next from 'i18next';
 import Utils from '../../../utils/utils';
-const { PROMOTION_APPLIED_STATUS, PROMO_TYPE } = Constants;
+import _get from 'lodash/get';
+const { PROMO_TYPE } = Constants;
 
 const initialState = {
   promoCode: '',
-  status: '',
-  validFrom: '',
+  appliedResult: null,
   inProcess: false,
-  promoType: '',
+  voucherList: {},
+  isSearchMode: false, // when true, means in search mode, when user enter this page for the first time, display voucher list
+  foundPromo: {},
+  hasSearchedForPromo: false,
+  selectedPromo: {},
 };
 
 export const actions = {
+  applyPromo: () => async (dispatch, getState) => {
+    const state = getState();
+    const { selectedPromo } = state.promotion;
+
+    if (selectedPromo.type === PROMO_TYPE.PROMOTION) {
+      await dispatch(actions.applyPromoCode());
+    } else {
+      await dispatch(actions.applyVoucher());
+    }
+  },
   applyPromoCode: () => async (dispatch, getState) => {
     const state = getState();
-    const promoCode = state.promotion.promoCode;
+    const { selectedPromo } = state.promotion;
 
     const result = await dispatch({
       [API_REQUEST]: {
@@ -30,43 +44,18 @@ export const actions = {
         ],
         ...Url.API_URLS.APPLY_PROMOTION_CODE,
         payload: {
-          promoCode,
+          promoId: selectedPromo.id,
           fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
           shippingType: Utils.getApiRequestShippingType(),
         },
       },
     });
 
-    if (result.type === PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE) {
-      await dispatch(actions.applyVoucher(promoCode));
-    }
-
-    if (result.type === PROMOTION_TYPES.APPLY_PROMOTION_CODE_SUCCESS) {
-      const { response: applyPromoResult = {} } = result;
-      // If success is false, then this promo exists but not valid for some reason
-      if (applyPromoResult.success === true) {
-        await dispatch({
-          type: PROMOTION_TYPES.APPLY_PROMO_SUCCESS,
-          response: result.response,
-        });
-      } else if (
-        applyPromoResult.success === false &&
-        applyPromoResult.status !== PROMOTION_APPLIED_STATUS.NOT_EXISTED
-      ) {
-        await dispatch({
-          type: PROMOTION_TYPES.APPLY_PROMO_FAILED,
-          response: result.response,
-        });
-      } else {
-        await dispatch(actions.applyVoucher(promoCode));
-      }
-    }
-
     return result;
   },
   applyVoucher: () => async (dispatch, getState) => {
     const state = getState();
-    const promoCode = state.promotion.promoCode;
+    const { selectedPromo } = state.promotion;
 
     const result = await dispatch({
       [API_REQUEST]: {
@@ -77,7 +66,7 @@ export const actions = {
         ],
         ...Url.API_URLS.APPLY_VOUCHER_CODE,
         payload: {
-          voucherCode: promoCode,
+          voucherCode: selectedPromo.code,
           fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
           shippingType: Utils.getApiRequestShippingType(),
         },
@@ -125,6 +114,10 @@ export const actions = {
       },
     });
 
+    if (result.type === PROMOTION_TYPES.DISMISS_PROMOTION_CODE_SUCCESS) {
+      dispatch(actions.resetPromotion());
+    }
+
     if (result.type === PROMOTION_TYPES.DISMISS_PROMOTION_CODE_FAILURE) {
       dispatch(
         appActions.showError({
@@ -135,69 +128,168 @@ export const actions = {
 
     return result;
   },
-  updatePromoCode: promoCode => ({
-    type: PROMOTION_TYPES.UPDATE_PROMOTION_CODE,
-    promoCode,
-  }),
-  initialPromotion: () => ({
+  updatePromoCode: promoCode => (dispatch, getState) => {
+    dispatch({
+      type: PROMOTION_TYPES.UPDATE_PROMOTION_CODE,
+      promoCode,
+    });
+  },
+  resetPromotion: () => ({
     type: PROMOTION_TYPES.INITIAL_PROMOTION_CODE,
   }),
+  fetchConsumerVoucherList: () => async (dispatch, getState) => {
+    const state = getState();
+    const consumerId = state.app.user.consumerId;
+
+    const result = await dispatch({
+      [API_REQUEST]: {
+        types: [
+          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_REQUEST,
+          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS,
+          PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_FAILURE,
+        ],
+        ...Url.API_URLS.GET_VOUCHER_INFO({
+          consumerId,
+        }),
+      },
+    });
+
+    return result;
+  },
+  getPromoInfo: () => async (dispatch, getState) => {
+    const state = getState();
+    const promoCode = state.promotion.promoCode;
+    const consumerId = state.app.user.consumerId;
+    const business = state.app.business;
+
+    await dispatch({
+      [API_REQUEST]: {
+        types: [
+          PROMOTION_TYPES.FETCH_PROMO_INFO_REQUEST,
+          PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS,
+          PROMOTION_TYPES.FETCH_PROMO_INFO_FAILURE,
+        ],
+        ...Url.API_URLS.GET_VOUCHER_INFO({
+          promoCode,
+          consumerId,
+          business,
+        }),
+      },
+    });
+  },
+  setSearchMode: isSearchingMode => async (dispatch, getState) => {
+    await dispatch({
+      type: PROMOTION_TYPES.UPDATE_SEARCH_MODE,
+      isSearchingMode,
+    });
+
+    // clear selected promo when change to search mode
+    const state = getState();
+    const { selectedPromo, promoCode } = state.promotion;
+
+    if (!promoCode && selectedPromo.id) {
+      dispatch(actions.selectPromo({}));
+    }
+  },
+  selectPromo: promo => (dispatch, getState) => {
+    const state = getState();
+    const { selectedPromo } = state.promotion;
+
+    // Double click will invert the selection
+    if (!promo || !promo.id || selectedPromo.id === promo.id) {
+      dispatch({
+        type: PROMOTION_TYPES.DESELECT_PROMO,
+      });
+    } else {
+      dispatch({
+        type: PROMOTION_TYPES.SELECT_PROMO,
+        promo: promo,
+      });
+    }
+  },
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case PROMOTION_TYPES.APPLY_PROMOTION_CODE_REQUEST:
-      return {
-        ...state,
-        inProcess: true,
-      };
-    case PROMOTION_TYPES.APPLY_PROMOTION_CODE_SUCCESS:
-      return {
-        ...state,
-        inProcess: false,
-      };
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE:
+    case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
       return {
         ...state,
+        appliedResult: {
+          success: false,
+          code: action.code,
+        },
         inProcess: false,
       };
+    case PROMOTION_TYPES.APPLY_PROMOTION_CODE_REQUEST:
     case PROMOTION_TYPES.APPLY_VOUCHER_REQUEST:
       return {
         ...state,
         inProcess: true,
       };
+    case PROMOTION_TYPES.APPLY_PROMOTION_CODE_SUCCESS:
     case PROMOTION_TYPES.APPLY_VOUCHER_SUCCESS:
       return {
         ...state,
-        status: action.response.status,
-        promoType: PROMO_TYPE.VOUCHER,
-        validFrom: new Date(action.response.validFrom),
-        inProcess: false,
-      };
-    case PROMOTION_TYPES.APPLY_PROMO_SUCCESS:
-    case PROMOTION_TYPES.APPLY_PROMO_FAILED:
-      return {
-        ...state,
-        status: action.response.status,
-        promoType: PROMO_TYPE.PROMOTION,
-        validFrom: new Date(action.response.validFrom),
-        inProcess: false,
-      };
-    case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
-      return {
-        ...state,
+        appliedResult: {
+          success: true,
+          code: '',
+        },
         inProcess: false,
       };
     case PROMOTION_TYPES.UPDATE_PROMOTION_CODE:
       return {
         ...state,
         promoCode: action.promoCode,
-        status: '',
+        foundPromo: {},
+        hasSearchedForPromo: false,
+        selectedPromo: {},
+        appliedResult: null,
       };
     case PROMOTION_TYPES.INITIAL_PROMOTION_CODE:
       return {
         ...state,
         ...initialState,
+      };
+    case PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS:
+      const vouchers = action.response;
+      const voucherList = {
+        availablePromos: vouchers.filter(voucher => !voucher.expired),
+        unavailablePromos: vouchers.filter(voucher => voucher.expired),
+        quantity: vouchers.length,
+      };
+
+      return {
+        ...state,
+        voucherList,
+      };
+    case PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS:
+      const promo = action.response;
+      const foundPromo = {
+        availablePromos: promo.filter(voucher => !voucher.expired),
+        unavailablePromos: promo.filter(voucher => voucher.expired),
+        quantity: promo.length,
+      };
+
+      return {
+        ...state,
+        foundPromo,
+        hasSearchedForPromo: true,
+      };
+    case PROMOTION_TYPES.UPDATE_SEARCH_MODE:
+      return {
+        ...state,
+        searchMode: action.isSearchingMode,
+      };
+    case PROMOTION_TYPES.SELECT_PROMO:
+      return {
+        ...state,
+        selectedPromo: action.promo,
+      };
+    case PROMOTION_TYPES.DESELECT_PROMO:
+      return {
+        ...state,
+        selectedPromo: {},
       };
     default:
       return state;
@@ -210,22 +302,42 @@ export function getPromoCode(state) {
   return state.promotion.promoCode;
 }
 
-export function getPromoValidFrom(state) {
-  return state.promotion.validFrom;
+export function getPromoErrorCode(state) {
+  return _get(state.promotion, 'appliedResult.code', '');
 }
 
-export function getStatus(state) {
-  return state.promotion.status;
+export function getAppliedResult(state) {
+  return _get(state.promotion, 'appliedResult', null);
 }
 
 export function isAppliedSuccess(state) {
-  return state.promotion.status === PROMOTION_APPLIED_STATUS.VALID;
+  return _get(state.promotion, 'appliedResult.success', false);
 }
 
 export function isAppliedError(state) {
-  return state.promotion.status && state.promotion.status !== PROMOTION_APPLIED_STATUS.VALID;
+  return _get(state.promotion, 'appliedResult.success', false);
 }
 
 export function isInProcess(state) {
   return state.promotion.inProcess;
+}
+
+export function getVoucherList(state) {
+  return state.promotion.voucherList;
+}
+
+export function getFoundPromotion(state) {
+  return state.promotion.foundPromo;
+}
+
+export function isPromoSearchMode(state) {
+  return state.promotion.searchMode;
+}
+
+export function hasSearchedForPromo(state) {
+  return state.promotion.hasSearchedForPromo;
+}
+
+export function getSelectedPromo(state) {
+  return state.promotion.selectedPromo;
 }

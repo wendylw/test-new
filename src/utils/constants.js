@@ -27,8 +27,11 @@ const ROUTER_PATHS = {
   ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
+  ORDERING_ADYEN_PAYMENT: '/payment/adyen',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
+  ORDERING_ONLINE_SAVED_CARDS: '/payment/cards',
+  ORDERING_ONLINE_CVV: '/payment/cvv',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
   PROFILE: '/profile',
@@ -83,6 +86,7 @@ const PAYMENT_METHOD_LABELS = {
   TNG_PAY: 'TouchNGo',
   GCASH_PAY: 'GCash',
   LINE_PAY: 'Line',
+  ADYEN_PAY: 'Adyen',
 };
 
 const CREDIT_CARD_BRANDS = {
@@ -319,23 +323,93 @@ const CONSUMERFLOW_STATUS = {
 };
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const PROMOTION_APPLIED_STATUS = {
-  VALID: 'valid',
-  // Voucher status
-  REDEEMED: 'redeemed',
-  NOT_MATCH_MINIMUM_PURCHASE: 'lessThanMinSpeed',
+const PROMOTION_ERROR_CODES = {
+  54406: {
+    desc: '54406FreePromotionNotMatchCondition',
+  },
+  54406: {
+    desc: '54406FreePromotionNotMatchCondition',
+  },
+  54407: {
+    desc: '54407NotMatchCondition',
+  },
+  54403: {
+    desc: '54403NotStartOrExpired',
+  },
+  54404: {
+    desc: '54404WeekdayNotMatch',
+  },
+  54405: {
+    desc: '54405TimeNotMatch',
+  },
+  54301: {
+    desc: '54301InvalidPromotionCode',
+  },
+  54410: {
+    desc: '54410DeletedPromotion',
+  },
+  54401: {
+    desc: '54401DeletedPromotion',
+  },
+  54408: {
+    desc: '54408RequireSameBusiness',
+  },
+  54409: {
+    desc: '54409StoreDoesNotSatisfy',
+  },
+  54411: {
+    desc: '54411PromotionReachesMaxClaimCount',
+  },
+  54412: {
+    desc: '54412RequireCustomer',
+  },
+  54413: {
+    desc: '54413ReachCustomerClaimCountLimit',
+  },
+  54414: {
+    desc: '54414RequireFirstTimePurchase',
+  },
+  54415: {
+    desc: '54415NoSourceProperty',
+  },
+  54416: {
+    desc: '54416AppliedSourceDoesNotMatch',
+  },
+  54417: {
+    desc: '54417NotMatchMinSubtotalConsumingPromo',
+  },
+  60002: {
+    desc: '60002NotActive',
+  },
+  60003: {
+    desc: '60003Expired',
+  },
+  60004: {
+    desc: '60004LessThanMinSubtotalConsumingVoucher',
+  },
+  60001: {
+    desc: '60001NotExisted',
+  },
+  60005: {
+    desc: '60005ChannelNotMatch',
+  },
+  60006: {
+    desc: '60006ApplyFailed',
+  },
+  60007: {
+    desc: '60007Forbidden',
+  },
+  60008: {
+    desc: '60008UpdateVoucherStatusFailed',
+  },
+  60009: {
+    desc: '60009VoucherHasBeenUsed',
+  },
+};
+
+const VOUCHER_STATUS = {
   EXPIRED: 'expired',
-  NOT_START: 'beforeValid',
-  INVALID: 'invalid',
-  // Promotion status
-  NOT_AVAILABLE: 'not_available',
-  NOT_VALID: 'not_valid',
-  NOT_EXISTED: 'not_existed',
-  UNKNOWN_DISCOUNT_TYPE: 'unknown_discount_type',
-  REACH_MAX_CLAIM_COUNT: 'reach_max_claim_count',
-  REACH_CUSTOMER_CLAIM_COUNT_LIMIT: 'reach_customer_claim_count_limit',
-  REQUIRE_CUSTOMER: 'require_customer',
-  REQUIRE_FIRST_TIME_PURCHASE: 'require_first_time_purchase',
+  REDEEMED: 'redeemed',
 };
 
 const PREORDER_IMMEDIATE_TAG = {
@@ -344,8 +418,14 @@ const PREORDER_IMMEDIATE_TAG = {
 };
 
 const PROMO_TYPE = {
-  PROMOTION: 'Promotion',
-  VOUCHER: 'Voucher',
+  PROMOTION: 'promotion',
+  VOUCHER: 'voucher',
+};
+
+const PROMOTIONS_TYPES = {
+  PERCENTAGE: 'percentage',
+  TAKE_AMOUNT_OFF: 'absolute',
+  FREE_SHIPPING: 'freeShipping',
 };
 
 const REPORT_DRIVER_REASON_CODE = {
@@ -383,6 +463,17 @@ const COLLECTIONS_TYPE = {
   BANNER: 'Banner',
   CAROUSEL: 'Carrousel',
 };
+// storeHub Logistics valid time period
+const SH_LOGISTICS_VALID_TIME = {
+  FROM: '09:00',
+  TO: '21:00',
+};
+
+const ADYEN_PAYMENT_TYPE = {
+  PAY_WITHOUT_SAVE_CARD: '1',
+  PAY_WITH_SAVED_CARD: '2',
+  PAY_WITH_SAVE_CARD: '3',
+};
 
 export default {
   OTP_CODE_SIZE,
@@ -410,13 +501,17 @@ export default {
   DELIVERY_METHOD,
   CONSUMERFLOW_STATUS,
   WEEK_DAYS_I18N_KEYS,
-  PROMOTION_APPLIED_STATUS,
+  PROMOTION_ERROR_CODES,
+  VOUCHER_STATUS,
   PREORDER_IMMEDIATE_TAG,
   PROMO_TYPE,
+  PROMOTIONS_TYPES,
   ORDER_STATUS,
   REPORT_DRIVER_REASON_CODE,
   CREATE_ORDER_ERROR_CODES,
   COLLECTIONS_TYPE,
   ERROR_CODE_MAP,
   RESEND_OTP_TIME,
+  SH_LOGISTICS_VALID_TIME,
+  ADYEN_PAYMENT_TYPE,
 };

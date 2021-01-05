@@ -6,9 +6,6 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getStoreById } from '../../../redux/modules/entities/stores';
 import { getBusiness } from './app';
-import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import Utils from '../../../utils/utils';
-import { captureException } from '@sentry/react';
 
 export const initialState = {
   storeHashCode: null,
@@ -148,24 +145,5 @@ export const getStoreHashCode = state => state.home.storeHashCode;
 export const getDeliveryRadius = state => state.home.deliveryRadius;
 
 export const showStores = state => !state.home.isFetching;
-
-export const isStoreClosed = state => {
-  try {
-    const businessInfo = getBusinessByName(state, getBusiness(state));
-    const {
-      validDays,
-      validTimeFrom,
-      validTimeTo,
-      breakTimeFrom,
-      breakTimeTo,
-      vacations,
-    } = businessInfo.qrOrderingSettings;
-    return !Utils.isValidTimeToOrder({ validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo, vacations }); // get negative status
-  } catch (e) {
-    captureException(e);
-    console.error(e);
-    return false;
-  }
-};
 
 export const getCurrentOrderMethod = state => state.home.currentOrderMethod;
