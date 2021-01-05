@@ -1056,7 +1056,7 @@ export class ThankYou extends PureComponent {
     const pickupTime = formatPickupTime({
       dateList: isPreOrder
         ? [new Date(expectDeliveryDateFrom)]
-        : [new Date(createdTime), new Date(new Date(createdTime).getTime() + 1000 * 60 * 30)],
+        : [new Date(new Date(createdTime).getTime() + 1000 * 60 * 30)],
       locale: onlineStoreInfo.country,
     });
 
