@@ -11,6 +11,7 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import { IconKeyArrowDown } from '../../../../components/Icons';
 import Constants from '../../../../utils/constants';
+import Utils from '../../../../utils/utils';
 import config from '../../../../config';
 
 import { connect } from 'react-redux';
@@ -76,6 +77,7 @@ class OnlineBanking extends Component {
       paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
       isInternal: String(planId || '').startsWith('internal'),
+      orderSource: Utils.getOrderSource(),
     };
   };
 

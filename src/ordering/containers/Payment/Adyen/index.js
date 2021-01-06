@@ -19,6 +19,7 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
 import AdyenSecurity from '../../../../../src/images/Adyen-PCI.png';
 import '../PaymentCreditCard.scss';
@@ -105,7 +106,7 @@ class AdyenPage extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, merchantCountry, user } = this.props;
+    const { onlineStoreInfo, currentOrder, business, businessInfo, merchantCountry, user } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ADYEN_PAY;
     const { state, browserInfo } = this.card;
     const { data: paymentMethod } = state;
@@ -116,6 +117,7 @@ class AdyenPage extends Component {
 
     const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
     const { saveCard } = this.state;
+    const { planId } = businessInfo || {};
 
     return {
       amount: currentOrder.total,
@@ -127,6 +129,8 @@ class AdyenPage extends Component {
       redirectURL,
       webhookURL,
       userId: user.consumerId,
+      isInternal: String(planId || '').startsWith('internal'),
+      orderSource: Utils.getOrderSource(),
       ...paymentMethod,
       type: saveCard
         ? Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVE_CARD
@@ -303,6 +307,7 @@ export default compose(
 
       return {
         business: getBusiness(state),
+        businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
