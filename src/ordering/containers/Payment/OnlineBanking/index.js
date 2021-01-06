@@ -57,7 +57,7 @@ class OnlineBanking extends Component {
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, business, businessInfo, merchantCountry } = this.props;
-    const { planId } = businessInfo || {};
+    const planId = _.toString(_.get(businessInfo, 'planId', ''));
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
     const { agentCode } = this.state;
 
@@ -76,7 +76,7 @@ class OnlineBanking extends Component {
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
-      isInternal: String(planId || '').startsWith('internal'),
+      isInternal: _.startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
     };
   };

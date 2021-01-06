@@ -391,7 +391,7 @@ class Stripe extends Component {
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, business, businessInfo } = this.props;
-    const { planId } = businessInfo || {};
+    const planId = _.toString(_.get(businessInfo, 'planId', ''));
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment) {
@@ -408,7 +408,7 @@ class Stripe extends Component {
       redirectURL,
       webhookURL,
       paymentName: 'Stripe',
-      isInternal: String(planId || '').startsWith('internal'),
+      isInternal: _.startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
       paymentMethodId: '',
     };

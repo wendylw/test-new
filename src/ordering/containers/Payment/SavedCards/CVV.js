@@ -133,7 +133,7 @@ class CardCVV extends Component {
     }
 
     const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
-    const { planId } = businessInfo || {};
+    const planId = _.toString(_.get(businessInfo, 'planId', ''));
 
     return {
       amount: currentOrder.total,
@@ -147,7 +147,7 @@ class CardCVV extends Component {
       encryptedSecurityCode: state.data.encryptedSecurityCode,
       type: Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVED_CARD,
       browserInfo,
-      isInternal: String(planId || '').startsWith('internal'),
+      isInternal: _.startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
     };
   };

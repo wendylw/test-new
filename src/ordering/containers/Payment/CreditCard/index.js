@@ -87,7 +87,7 @@ class CreditCard extends Component {
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
     const { card } = this.state;
     const { cardholderName } = card || {};
-    const { planId } = businessInfo || {};
+    const planId = _.toString(_.get(businessInfo, 'planId', ''));
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
       return null;
@@ -110,7 +110,7 @@ class CreditCard extends Component {
       expYearCardInfo,
       expMonthCardInfo,
       maskedCardInfo,
-      isInternal: String(planId || '').startsWith('internal'),
+      isInternal: _.startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
     };
   };

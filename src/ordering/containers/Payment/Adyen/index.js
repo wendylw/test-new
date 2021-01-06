@@ -117,7 +117,7 @@ class AdyenPage extends Component {
 
     const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
     const { saveCard } = this.state;
-    const { planId } = businessInfo || {};
+    const planId = _.toString(_.get(businessInfo, 'planId', ''));
 
     return {
       amount: currentOrder.total,
@@ -129,7 +129,7 @@ class AdyenPage extends Component {
       redirectURL,
       webhookURL,
       userId: user.consumerId,
-      isInternal: String(planId || '').startsWith('internal'),
+      isInternal: _.startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
       ...paymentMethod,
       type: saveCard

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
@@ -81,7 +82,7 @@ class Payment extends Component {
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, currentPayment, business, businessInfo, merchantCountry } = this.props;
-    const { planId } = businessInfo || {};
+    const planId = _.toString(_.get(businessInfo, 'planId', ''));
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || EXCLUDED_PAYMENTS.includes(currentPayment)) {
       return null;
@@ -97,7 +98,7 @@ class Payment extends Component {
       redirectURL: redirectURL,
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
-      isInternal: String(planId || '').startsWith('internal'),
+      isInternal: _.startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
     };
   };
