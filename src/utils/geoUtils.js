@@ -174,7 +174,7 @@ export const migrateLegacyDeliveryAddress = async () => {
   try {
     const locationItems = [...localStorageLocationsItems, ...crossStorageLocationItems];
     if (locationItems.length) {
-      await post('/api/storage/setLocationHistory', locationItems);
+      await post('/api/storage/location-history', locationItems);
     }
     await crossStorage.removeItem('CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES');
     Utils.removeLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES');
@@ -185,7 +185,7 @@ export const migrateLegacyDeliveryAddress = async () => {
 
 export const getHistoricalDeliveryAddresses = async () => {
   try {
-    const results = await get('/api/storage/getLocationHistory');
+    const results = await get('/api/storage/location-history');
     return results;
   } catch (e) {
     console.error('failed to get historical delivery addresses', e);
@@ -198,7 +198,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     const clonedPositionInfo = { ...positionInfo };
     // won't save distance, because use may choose another store.
     delete clonedPositionInfo.distance;
-    await post('/api/storage/setLocationHistory', clonedPositionInfo);
+    await post('/api/storage/location-history', clonedPositionInfo);
   } catch (e) {
     console.error('failed to set historical delivery addresses', e);
   }
