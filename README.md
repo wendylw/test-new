@@ -1,4 +1,4 @@
-# BEEP Project
+# BEEP
 
 <a name="abstraction"></a>
 ## Abstraction
@@ -225,3 +225,9 @@ yarn build && yarn analyze
 ```
 
 You will get a web page tool automatically opened for you.
+
+## Release Flow
+https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow
+
+## Test URL
+https://github.com/storehubnet/beep-v1-web/wiki/Test-URL

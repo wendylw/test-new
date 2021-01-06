@@ -65,6 +65,7 @@ class CartList extends Component {
       displayPrice,
       quantity,
       image,
+      originalDisplayPrice,
     } = cartItem;
 
     return (
@@ -79,6 +80,7 @@ class CartList extends Component {
         isLazyLoad={isList}
         soldOut={isCartItemSoldOut(cartItem)}
         decreaseDisabled={!Boolean(quantity)}
+        originalDisplayPrice={originalDisplayPrice}
         onDecrease={async () => {
           if (quantity === 1) {
             this.handleRemoveCartItem({
