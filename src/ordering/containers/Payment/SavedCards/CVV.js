@@ -3,6 +3,9 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
+import _get from 'lodash/get';
+import _toString from 'lodash/toString';
+import _startsWith from 'lodash/startsWith';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
 import CreateOrderButton from '../../../components/CreateOrderButton';
@@ -133,7 +136,7 @@ class CardCVV extends Component {
     }
 
     const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
-    const planId = _.toString(_.get(businessInfo, 'planId', ''));
+    const planId = _toString(_get(businessInfo, 'planId', ''));
 
     return {
       amount: currentOrder.total,
@@ -147,7 +150,7 @@ class CardCVV extends Component {
       encryptedSecurityCode: state.data.encryptedSecurityCode,
       type: Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVED_CARD,
       browserInfo,
-      isInternal: _.startsWith('internal', planId),
+      isInternal: _startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
     };
   };

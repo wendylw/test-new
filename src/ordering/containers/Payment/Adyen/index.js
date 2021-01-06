@@ -3,6 +3,9 @@ import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
+import _get from 'lodash/get';
+import _toString from 'lodash/toString';
+import _startsWith from 'lodash/startsWith';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
@@ -117,7 +120,7 @@ class AdyenPage extends Component {
 
     const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
     const { saveCard } = this.state;
-    const planId = _.toString(_.get(businessInfo, 'planId', ''));
+    const planId = _toString(_get(businessInfo, 'planId', ''));
 
     return {
       amount: currentOrder.total,
@@ -129,7 +132,7 @@ class AdyenPage extends Component {
       redirectURL,
       webhookURL,
       userId: user.consumerId,
-      isInternal: _.startsWith('internal', planId),
+      isInternal: _startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
       ...paymentMethod,
       type: saveCard

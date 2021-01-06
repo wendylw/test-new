@@ -11,6 +11,9 @@ import {
 } from '@stripe/react-stripe-js';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import _get from 'lodash/get';
+import _toString from 'lodash/toString';
+import _startsWith from 'lodash/startsWith';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
@@ -391,7 +394,7 @@ class Stripe extends Component {
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, business, businessInfo } = this.props;
-    const planId = _.toString(_.get(businessInfo, 'planId', ''));
+    const planId = _toString(_get(businessInfo, 'planId', ''));
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment) {
@@ -408,7 +411,7 @@ class Stripe extends Component {
       redirectURL,
       webhookURL,
       paymentName: 'Stripe',
-      isInternal: _.startsWith('internal', planId),
+      isInternal: _startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
       paymentMethodId: '',
     };

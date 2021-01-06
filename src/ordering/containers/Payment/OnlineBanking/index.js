@@ -2,6 +2,9 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import _find from 'lodash/find';
+import _get from 'lodash/get';
+import _toString from 'lodash/toString';
+import _startsWith from 'lodash/startsWith';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
@@ -57,7 +60,7 @@ class OnlineBanking extends Component {
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, business, businessInfo, merchantCountry } = this.props;
-    const planId = _.toString(_.get(businessInfo, 'planId', ''));
+    const planId = _toString(_get(businessInfo, 'planId', ''));
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
     const { agentCode } = this.state;
 
@@ -76,7 +79,7 @@ class OnlineBanking extends Component {
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
-      isInternal: _.startsWith('internal', planId),
+      isInternal: _startsWith('internal', planId),
       orderSource: Utils.getOrderSource(),
     };
   };
