@@ -27,7 +27,6 @@ import { actions as homeActionCreators, getStoreHashCode } from '../../redux/mod
 import './OrderingLocationDate.scss';
 
 import { actions as appActionCreators, getBusinessDeliveryTypes, getBusinessUTCOffset } from '../../redux/modules/app';
-import DeliveryMethods from '../../../stores/containers/DeliveryMethods';
 import { Fragment } from 'react';
 import dayjs from 'dayjs';
 
@@ -72,18 +71,22 @@ class LocationAndDate extends Component {
   }
 
   gotoStoreList = () => {
-    const { history } = this.props;
+    const { history, location } = this.props;
+    const { callbackUrl } = this.query;
+
     const deliveryType = (this.query.type || '').toLowerCase();
+    const from = _get(location, 'state.from', null);
 
     const searchParams = {
       h: this.query.h,
       storeid: this.props.storeId || this.query.storeid || config.storeId,
       type: deliveryType,
-      callbackUrl: encodeURIComponent(this.query.callbackUrl),
+      callbackUrl: encodeURIComponent(callbackUrl),
     };
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
+      state: from ? { from } : null,
       // don't encode, encode `h` will cause decrypt fail
       search: qs.stringify(searchParams, { addQueryPrefix: true, encode: false }),
     });
@@ -108,7 +111,7 @@ class LocationAndDate extends Component {
   handleBackClicked = () => {
     const { history, location } = this.props;
     const stateFrom = _get(location, 'state.from', null);
-    const callbackUrl = this.query.callbackUrl || '';
+    const callbackUrl = this.query.callbackUrl;
     const from = stateFrom || this.query.from;
 
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
@@ -156,8 +159,8 @@ class LocationAndDate extends Component {
     }
 
     const isInTimeList = availableTimeSlotList.some(time => {
-      if (time.from === TIME_SLOT_NOW) {
-        return selectedTime.from === TIME_SLOT_NOW;
+      if (time.from === TIME_SLOT_NOW || selectedTime.from === TIME_SLOT_NOW) {
+        return selectedTime.from === time.from;
       }
 
       return timeLib.isSame(time.from, selectedTime.from);
@@ -193,14 +196,25 @@ class LocationAndDate extends Component {
 
     await homeActions.getStoreHashData(storeId);
     const h = this.props.storeHashCode;
-
-    const isDeliveryTypeChange = this.query.type !== deliveryType;
-
-    // callbackUrl equals 'undefined' from customer page
-    const callbackUrl = this.query.callbackUrl === 'undefined' ? null : this.query.callbackUrl;
     const from = _get(location, 'state.from', null);
 
-    if (callbackUrl || (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO && isDeliveryTypeChange)) {
+    if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      const deliveryTypeHasChanged = this.query.type !== deliveryType;
+      const storeHasChanged = storeId !== config.storeId;
+
+      if (deliveryTypeHasChanged) {
+        this.gotoOrderingHomePage(deliveryType, h);
+        return;
+      }
+
+      if (storeHasChanged) {
+        this.gotoOrderingCartPage(deliveryType, h);
+        return;
+      }
+      return history.go(-1);
+    }
+
+    if (this.query.callbackUrl) {
       const query = qs.stringify(
         {
           h,
@@ -211,13 +225,47 @@ class LocationAndDate extends Component {
           encode: false, // encode `h` will cause decrypt fail
         }
       );
-      const callbackPath = callbackUrl ? callbackUrl.split('?')[0] : '';
+
+      // callbackUrl equals 'undefined' from customer page
+      const callbackUrl = this.query.callbackUrl === 'undefined' ? '/' : this.query.callbackUrl;
+
+      const callbackPath = callbackUrl.split('?')[0];
 
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${callbackPath}${query}`;
       return;
     }
 
     return history.go(-1);
+  };
+
+  gotoOrderingHomePage = (type, h) => {
+    const queryString = qs.stringify(
+      {
+        h,
+        type,
+      },
+      {
+        addQueryPrefix: true,
+        encode: false, // encode `h` will cause decrypt fail
+      }
+    );
+
+    window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${queryString}`;
+  };
+
+  gotoOrderingCartPage = (type, h) => {
+    const queryString = qs.stringify(
+      {
+        h,
+        type,
+      },
+      {
+        addQueryPrefix: true,
+        encode: false, // encode `h` will cause decrypt fail
+      }
+    );
+
+    window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}${queryString}`;
   };
 
   renderContinueButton = () => {
@@ -242,8 +290,9 @@ class LocationAndDate extends Component {
   };
 
   gotoLocationSearch = () => {
-    const { deliveryType, history } = this.props;
+    const { deliveryType, history, location } = this.props;
     const { pathname, search } = history.location;
+    const from = _get(location, 'state.from', null);
 
     const queryParams = {
       type: deliveryType,
@@ -253,6 +302,7 @@ class LocationAndDate extends Component {
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOCATION,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
+      state: from ? { from } : null,
     });
   };
 
@@ -571,6 +621,7 @@ export default compose(
     dispatch => ({
       actions: bindActionCreators(locationAndDateActionCreator, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(LocationAndDate);
