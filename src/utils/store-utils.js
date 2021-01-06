@@ -498,9 +498,7 @@ export const isInVacations = (dateTime, vacations) => {
  * @returns {Dayjs}
  */
 export const getBusinessDateTime = (utcOffset, date = new Date()) => {
-  // TODO: will add the merchant utc offset later
-  // return dayjs(date).utcOffset(utcOffset);
-  return dayjs(date);
+  return dayjs(date).utcOffset(utcOffset);
 };
 
 export const isDateTimeSoldOut = (store, soldData, date, utcOffset) => {
