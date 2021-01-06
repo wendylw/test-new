@@ -33,7 +33,7 @@ import Utils from '../../../utils/utils';
 import { findNearlyAvailableStore } from '../../../utils/store-utils';
 import qs from 'qs';
 import config from '../../../config';
-import { getBusinessDeliveryRadius } from '../../../ordering/redux/modules/app';
+import { getBusinessDeliveryRadius } from '../../redux/modules/app';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 class App extends Component {
@@ -116,7 +116,7 @@ class App extends Component {
       if (stores.length) {
         if (stores.length === 1) {
           await this.props.storesActions.getStoreHashData(stores[0].id);
-          window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.props.storeHash}&type=${type}`;
+          this.gotoOrderingHome(type, this.props.storeHash);
         } else {
           window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_STORE_LIST}?type=${type}`;
         }
