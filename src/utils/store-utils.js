@@ -513,3 +513,42 @@ export const isDateTimeSoldOut = (store, soldData, date, utcOffset) => {
 
   return soldItem && soldItem.count >= maxPreOrdersPerTimeSlot;
 };
+
+export const getAvailableTimeSlotList = (
+  store,
+  { currentDate, businessUTCOffset, selectedOrderDate, deliveryType, timeSlotSoldData }
+) => {
+  if (!store || !selectedOrderDate || !selectedOrderDate.isOpen) {
+    return [];
+  }
+
+  let timeList = [];
+  if (selectedOrderDate.isToday) {
+    timeList = getTodayTimeList(store, { currentDate, deliveryType, utcOffset: businessUTCOffset });
+  } else {
+    timeList = getPreOrderTimeList(store, deliveryType);
+  }
+
+  const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
+  const date = getBusinessDateTime(businessUTCOffset, new Date(selectedOrderDate.date));
+
+  return timeList.map(time => {
+    if (time === TIME_SLOT_NOW) {
+      return {
+        soldOut: false,
+        from: TIME_SLOT_NOW,
+        to: TIME_SLOT_NOW,
+      };
+    }
+
+    const dateTime = timeLib.setDateTime(time, date);
+
+    const soldOut = isDateTimeSoldOut(store, timeSlotSoldData, dateTime.toDate(), businessUTCOffset);
+
+    return {
+      soldOut,
+      from: time,
+      to: isDelivery ? timeLib.add(time, { value: 1, unit: 'hour' }) : time,
+    };
+  });
+};

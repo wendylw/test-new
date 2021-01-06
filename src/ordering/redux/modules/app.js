@@ -540,3 +540,7 @@ export const getStore = state => {
 
   return getStoreById(state, storeId);
 };
+
+export const getBusinessInfoStore = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'stores.0', null)
+);

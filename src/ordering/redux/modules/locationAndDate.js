@@ -6,14 +6,14 @@ import * as apiRequest from '../../../utils/request';
 import * as timeLib from '../../../utils/time-lib';
 import URL from '../../../utils/url';
 import { getStoreById, getStores } from '../../../redux/modules/entities/stores';
-import { actions as appActions, getBusinessUTCOffset, getBusinessInfo } from './app';
+import { actions as appActions, getBusinessUTCOffset, getBusinessInfo, getBusinessInfoStore } from './app';
 import { actions as homeActions } from './home';
 
 import { createSelector } from 'reselect';
 import dayjs from 'dayjs';
 
 const { API_URLS } = URL;
-const { DELIVERY_METHOD, TIME_SLOT_NOW } = Constants;
+const { DELIVERY_METHOD } = Constants;
 
 const initialState = {
   currentDate: null, // js Date Object
@@ -33,15 +33,15 @@ export const actions = {
     deliveryAddress,
     deliveryCoords,
     expectedDay,
-    expectedTimeFrom,
+    expectedFromTime,
   }) => async (dispatch, getState) => {
     const payload = {
       currentDate,
       deliveryType,
       storeId,
       deliveryAddress,
-      selectedDay: expectedDay,
-      selectedFromTime: expectedTimeFrom,
+      selectedDay: null,
+      selectedFromTime: null,
       timeSlotSoldData: [],
     };
 
@@ -71,8 +71,64 @@ export const actions = {
       payload.storeId = _get(store, 'id', null);
     }
 
-    if (payload.storeId) {
-      await dispatch(appActions.loadCoreBusiness(payload.storeId));
+    if (!payload.storeId) {
+      return dispatch({
+        type: LOCATION_AND_DATE.INITIAL,
+        payload,
+      });
+    }
+
+    await dispatch(appActions.loadCoreBusiness(payload.storeId));
+    const store = getBusinessInfoStore(getState());
+
+    if (store) {
+      const enablePerTimeSlotLimitForPreOrder = _get(
+        store,
+        'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder',
+        false
+      );
+
+      const orderDateList = storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
+      const expectedOrderDate =
+        expectedDay && orderDateList.find(orderDate => dayjs(orderDate.date).isSame(expectedDay));
+
+      // initial selectedDay
+      if (expectedOrderDate && expectedOrderDate.isOpen) {
+        payload.selectedDay = expectedOrderDate.date;
+      } else {
+        const firstOpenOrderDate = orderDateList.find(orderDate => orderDate.isOpen);
+        payload.selectedDay = firstOpenOrderDate ? firstOpenOrderDate.date : null;
+      }
+
+      if (enablePerTimeSlotLimitForPreOrder && payload.selectedDay) {
+        payload.timeSlotSoldData = await fetchTimeSlotSoldData({
+          deliveryType,
+          selectedDay: payload.selectedDay,
+          storeId: store.id,
+        });
+      }
+
+      // initial selectedFromTime
+      if (payload.selectedDay) {
+        const selectedOrderDate = orderDateList.find(orderDate => dayjs(orderDate.date).isSame(payload.selectedDay));
+        const availableTimeSlotList = storeUtils.getAvailableTimeSlotList(store, {
+          currentDate,
+          businessUTCOffset,
+          selectedOrderDate,
+          deliveryType,
+          timeSlotSoldData: payload.timeSlotSoldData,
+        });
+
+        const expectedTime =
+          expectedFromTime && availableTimeSlotList.find(time => timeLib.isSame(time, expectedFromTime));
+
+        if (expectedTime && !expectedTime.soldOut) {
+          payload.selectedFromTime = expectedTime.from;
+        } else {
+          const firstAvailableTime = availableTimeSlotList.find(time => !time.soldOut);
+          payload.selectedFromTime = firstAvailableTime ? firstAvailableTime.from : null;
+        }
+      }
     }
 
     dispatch({
@@ -154,9 +210,9 @@ const reducer = (state = initialState, action) => {
         deliveryType,
         storeId,
         deliveryAddress,
-        selectedDay: null,
-        selectedFromTime: null,
-        timeSlotSoldData: [],
+        selectedDay: action.payload.selectedDay,
+        selectedFromTime: action.payload.selectedFromTime,
+        timeSlotSoldData: action.payload.timeSlotSoldData,
       };
     case LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED:
       return {
@@ -295,37 +351,12 @@ export const getSelectedOrderDate = createSelector(getSelectedDay, getOrderDateL
 export const getAvailableTimeSlotList = createSelector(
   [getStore, getCurrentDate, getBusinessUTCOffset, getSelectedOrderDate, getDeliveryType, getTimeSlotSoldData],
   (store, currentDate, businessUTCOffset, selectedOrderDate, deliveryType, timeSlotSoldData) => {
-    if (!store || !selectedOrderDate || !selectedOrderDate.isOpen) {
-      return [];
-    }
-    let timeList = [];
-    if (selectedOrderDate.isToday) {
-      timeList = storeUtils.getTodayTimeList(store, { currentDate, deliveryType, utcOffset: businessUTCOffset });
-    } else {
-      timeList = storeUtils.getPreOrderTimeList(store, deliveryType);
-    }
-
-    const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
-    const date = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(selectedOrderDate.date));
-
-    return timeList.map(time => {
-      if (time === TIME_SLOT_NOW) {
-        return {
-          soldOut: false,
-          from: TIME_SLOT_NOW,
-          to: TIME_SLOT_NOW,
-        };
-      }
-
-      const dateTime = timeLib.setDateTime(time, date);
-
-      const soldOut = storeUtils.isDateTimeSoldOut(store, timeSlotSoldData, dateTime.toDate(), businessUTCOffset);
-
-      return {
-        soldOut,
-        from: time,
-        to: isDelivery ? timeLib.add(time, { value: 1, unit: 'hour' }) : time,
-      };
+    return storeUtils.getAvailableTimeSlotList(store, {
+      currentDate,
+      businessUTCOffset,
+      selectedOrderDate,
+      deliveryType,
+      timeSlotSoldData,
     });
   }
 );
@@ -345,10 +376,6 @@ export const getSelectedTime = createSelector(
     }
 
     return availableTimeSlotList.find(timeSlot => {
-      if (timeSlot.from === TIME_SLOT_NOW || selectedFromTime === TIME_SLOT_NOW) {
-        return timeSlot.from === selectedFromTime;
-      }
-
       return timeLib.isSame(timeSlot.from, selectedFromTime);
     });
   }

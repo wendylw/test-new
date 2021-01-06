@@ -44,7 +44,7 @@ class LocationAndDate extends Component {
     const expectedDeliveryDate = Utils.getExpectedDeliveryDateFromSession();
 
     const expectedDay = _get(expectedDeliveryDate, 'date.date', null);
-    const expectedTimeFrom = _get(expectedDeliveryDate, 'hour.from', null);
+    const expectedFromTime = _get(expectedDeliveryDate, 'hour.from', null);
 
     await actions.initial({
       currentDate: new Date(),
@@ -53,7 +53,7 @@ class LocationAndDate extends Component {
       deliveryAddress: deliveryAddress.address,
       deliveryCoords: deliveryAddress.coords,
       expectedDay,
-      expectedTimeFrom,
+      expectedFromTime,
     });
 
     if (!this.props.storeId && deliveryType === DELIVERY_METHOD.PICKUP) {
@@ -173,10 +173,6 @@ class LocationAndDate extends Component {
     }
 
     const isInTimeList = availableTimeSlotList.some(time => {
-      if (time.from === TIME_SLOT_NOW || selectedTime.from === TIME_SLOT_NOW) {
-        return selectedTime.from === time.from;
-      }
-
       return timeLib.isSame(time.from, selectedTime.from);
     });
 
