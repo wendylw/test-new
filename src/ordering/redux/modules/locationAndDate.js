@@ -10,27 +10,39 @@ import { actions as appActions, getBusinessUTCOffset, getBusinessInfo } from './
 import { actions as homeActions } from './home';
 
 import { createSelector } from 'reselect';
+import dayjs from 'dayjs';
 
 const { API_URLS } = URL;
 const { DELIVERY_METHOD, TIME_SLOT_NOW } = Constants;
 
 const initialState = {
-  currentDate: null,
+  currentDate: null, // js Date Object
   deliveryType: null,
   storeId: null,
   deliveryAddress: '',
-  selectedDate: null,
-  selectedTime: null,
+  selectedDay: null, // js Date Object
+  selectedFromTime: null, // from time, like 09:00
   timeSlotSoldData: [],
 };
 
 export const actions = {
-  initial: ({ deliveryType, storeId, deliveryAddress, deliveryCoords }) => async (dispatch, getState) => {
+  initial: ({
+    currentDate,
+    deliveryType,
+    storeId,
+    deliveryAddress,
+    deliveryCoords,
+    expectedDay,
+    expectedTimeFrom,
+  }) => async (dispatch, getState) => {
     const payload = {
-      currentDate: new Date(),
+      currentDate,
       deliveryType,
       storeId,
       deliveryAddress,
+      selectedDay: expectedDay,
+      selectedFromTime: expectedTimeFrom,
+      timeSlotSoldData: [],
     };
 
     await dispatch(homeActions.loadCoreStores());
@@ -67,14 +79,6 @@ export const actions = {
       type: LOCATION_AND_DATE.INITIAL,
       payload,
     });
-
-    const store = getStore(getState());
-
-    if (store) {
-      const availableFirstDate = getFirstAvailableDate(getState());
-
-      dispatch(actions.selectedDateChanged(availableFirstDate));
-    }
   },
 
   deliveryTypeChanged: deliveryType => ({
@@ -92,55 +96,45 @@ export const actions = {
     payload: deliveryAddress,
   }),
 
-  selectedDateChanged: selectedDate => async (dispatch, getState) => {
-    dispatch({
-      type: LOCATION_AND_DATE.DELIVERY_DATE_CHANGED,
-      payload: selectedDate,
-    });
+  selectedDayChanged: selectedDay => async (dispatch, getState) => {
+    const payload = {
+      selectedDay,
+      timeSlotSoldData: [],
+      selectedFromTime: null,
+    };
 
-    const store = getStore(getState());
-    const enablePerTimeSlotLimitForPreOrder = _get(
-      store,
-      'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder',
-      false
-    );
+    if (!selectedDay) {
+      return dispatch({
+        type: LOCATION_AND_DATE.SELECTED_DAY_CHANGE,
+        payload,
+      });
+    }
+
+    const state = getState();
+    const enablePerTimeSlotLimitForPreOrder = isStoreEnablePerTimeSlotLimitForPreOrder(state);
+    const deliveryType = getDeliveryType(state);
+    const storeId = getStoreId(state);
 
     if (enablePerTimeSlotLimitForPreOrder) {
-      await dispatch(actions.loadTimeSlotSoldData());
+      payload.timeSlotSoldData = await fetchTimeSlotSoldData({
+        deliveryType,
+        selectedDay,
+        storeId,
+      });
     }
 
     const firstAvailableTime = getFirstAvailableTime(getState());
-    dispatch(actions.selectedTimeChanged(firstAvailableTime));
+    payload.selectedFromTime = firstAvailableTime ? firstAvailableTime.from : null;
+
+    dispatch({
+      type: LOCATION_AND_DATE.SELECTED_DAY_CHANGE,
+      payload,
+    });
   },
 
-  loadTimeSlotSoldData: () => async (dispatch, getState) => {
-    try {
-      const state = getState();
-      const deliveryType = getDeliveryType(state);
-      const store = getStore(state);
-      const selectedDate = getSelectedDate(state);
-
-      const { method, url } = API_URLS.GET_TIME_SLOT(deliveryType, selectedDate.date.toISOString(), store.id);
-
-      const timeSlotSoldData = await apiRequest[method](url);
-
-      dispatch({
-        type: LOCATION_AND_DATE.TIME_SLOT_SOLD_DATA_LOADED,
-        payload: timeSlotSoldData,
-      });
-    } catch (e) {
-      console.log(e);
-
-      dispatch({
-        type: LOCATION_AND_DATE.TIME_SLOT_SOLD_DATA_LOADED,
-        payload: [],
-      });
-    }
-  },
-
-  selectedTimeChanged: selectedTime => ({
-    type: LOCATION_AND_DATE.DELIVERY_TIME_CHANGED,
-    payload: selectedTime,
+  selectedFromTimeChanged: selectedFromTime => ({
+    type: LOCATION_AND_DATE.SELECTED_FROM_TIME_CHANGED,
+    payload: selectedFromTime,
   }),
 
   currentDateChange: currentDate => ({
@@ -152,7 +146,7 @@ export const actions = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_AND_DATE.INITIAL:
-      const { currentDate, deliveryType, storeId, deliveryAddress, disableSelectDeliveryType } = action.payload;
+      const { currentDate, deliveryType, storeId, deliveryAddress } = action.payload;
 
       return {
         ...state,
@@ -160,7 +154,9 @@ const reducer = (state = initialState, action) => {
         deliveryType,
         storeId,
         deliveryAddress,
-        disableSelectDeliveryType,
+        selectedDay: null,
+        selectedFromTime: null,
+        timeSlotSoldData: [],
       };
     case LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED:
       return {
@@ -177,15 +173,19 @@ const reducer = (state = initialState, action) => {
         ...state,
         deliveryAddress: action.payload,
       };
-    case LOCATION_AND_DATE.DELIVERY_DATE_CHANGED:
+    case LOCATION_AND_DATE.SELECTED_DAY_CHANGE:
+      const { selectedDay, timeSlotSoldData, selectedFromTime } = action.payload;
+
       return {
         ...state,
-        selectedDate: action.payload,
+        selectedDay,
+        timeSlotSoldData,
+        selectedFromTime,
       };
-    case LOCATION_AND_DATE.DELIVERY_TIME_CHANGED:
+    case LOCATION_AND_DATE.SELECTED_FROM_TIME_CHANGED:
       return {
         ...state,
-        selectedTime: action.payload,
+        selectedFromTime: action.payload,
       };
     case LOCATION_AND_DATE.CURRENT_DATE_UPDATED:
       return {
@@ -204,6 +204,17 @@ const reducer = (state = initialState, action) => {
       };
     default:
       return state;
+  }
+};
+
+const fetchTimeSlotSoldData = async ({ deliveryType, selectedDay, storeId }) => {
+  try {
+    const { method, url } = API_URLS.GET_TIME_SLOT(deliveryType, selectedDay.toISOString(), storeId);
+    const timeSlotSoldData = await apiRequest[method](url);
+    return timeSlotSoldData;
+  } catch (e) {
+    console.error(e);
+    return [];
   }
 };
 
@@ -247,13 +258,9 @@ export const getDeliveryAddress = state => {
   return _get(state.locationAndDate, 'deliveryAddress', '');
 };
 
-export const getSelectedDate = state => {
-  return _get(state.locationAndDate, 'selectedDate', null);
-};
+export const getSelectedDay = state => _get(state.locationAndDate, 'selectedDay', null);
 
-export const getSelectedTime = state => {
-  return _get(state.locationAndDate, 'selectedTime', null);
-};
+export const getSelectedFromTime = state => _get(state.locationAndDate, 'selectedFromTime', null);
 
 export const getCurrentDate = state => {
   return _get(state.locationAndDate, 'currentDate', new Date());
@@ -275,21 +282,31 @@ export const getOrderDateList = createSelector(
   }
 );
 
+export const getSelectedOrderDate = createSelector(getSelectedDay, getOrderDateList, (selectedDay, orderDateList) => {
+  if (!selectedDay) {
+    return null;
+  }
+
+  return orderDateList.find(orderDate => {
+    return dayjs(selectedDay).isSame(orderDate.date);
+  });
+});
+
 export const getAvailableTimeSlotList = createSelector(
-  [getStore, getCurrentDate, getBusinessUTCOffset, getSelectedDate, getDeliveryType, getTimeSlotSoldData],
-  (store, currentDate, businessUTCOffset, selectedDate, deliveryType, timeSlotSoldData) => {
-    if (!store || !selectedDate || !selectedDate.isOpen) {
+  [getStore, getCurrentDate, getBusinessUTCOffset, getSelectedOrderDate, getDeliveryType, getTimeSlotSoldData],
+  (store, currentDate, businessUTCOffset, selectedOrderDate, deliveryType, timeSlotSoldData) => {
+    if (!store || !selectedOrderDate || !selectedOrderDate.isOpen) {
       return [];
     }
     let timeList = [];
-    if (selectedDate.isToday) {
+    if (selectedOrderDate.isToday) {
       timeList = storeUtils.getTodayTimeList(store, { currentDate, deliveryType, utcOffset: businessUTCOffset });
     } else {
       timeList = storeUtils.getPreOrderTimeList(store, deliveryType);
     }
 
     const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
-    const date = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(selectedDate.date));
+    const date = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(selectedOrderDate.date));
 
     return timeList.map(time => {
       if (time === TIME_SLOT_NOW) {
@@ -317,6 +334,28 @@ export const getFirstAvailableDate = createSelector(getOrderDateList, dateList =
 
 export const getFirstAvailableTime = createSelector(getAvailableTimeSlotList, timeSlotList =>
   timeSlotList.find(timeSlot => !timeSlot.soldOut)
+);
+
+export const getSelectedTime = createSelector(
+  getSelectedFromTime,
+  getAvailableTimeSlotList,
+  (selectedFromTime, availableTimeSlotList) => {
+    if (!selectedFromTime) {
+      return null;
+    }
+
+    return availableTimeSlotList.find(timeSlot => {
+      if (timeSlot.from === TIME_SLOT_NOW || selectedFromTime === TIME_SLOT_NOW) {
+        return timeSlot.from === selectedFromTime;
+      }
+
+      return timeLib.isSame(timeSlot.from, selectedFromTime);
+    });
+  }
+);
+
+export const isStoreEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, store =>
+  _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false)
 );
 
 export default reducer;

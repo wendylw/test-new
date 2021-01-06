@@ -13,7 +13,7 @@ import {
   getStoreId,
   getDeliveryAddress,
   getOrderDateList,
-  getSelectedDate,
+  getSelectedOrderDate,
   getAvailableTimeSlotList,
   getSelectedTime,
   getStore,
@@ -41,12 +41,19 @@ class LocationAndDate extends Component {
     const deliveryAddress = Utils.getDeliveryAddress();
     const deliveryType = (this.query.type || '').toLowerCase();
     this.ensureDeliveryType(deliveryType);
+    const expectedDeliveryDate = Utils.getExpectedDeliveryDateFromSession();
+
+    const expectedDay = _get(expectedDeliveryDate, 'date.date', null);
+    const expectedTimeFrom = _get(expectedDeliveryDate, 'hour.from', null);
 
     await actions.initial({
+      currentDate: new Date(),
       deliveryType,
       storeId: this.query.storeid || config.storeId,
       deliveryAddress: deliveryAddress.address,
       deliveryCoords: deliveryAddress.coords,
+      expectedDay,
+      expectedTimeFrom,
     });
 
     if (!this.props.storeId && deliveryType === DELIVERY_METHOD.PICKUP) {
@@ -130,7 +137,14 @@ class LocationAndDate extends Component {
   };
 
   isContinueButtonDisabled = () => {
-    const { store, deliveryAddress, orderDateList, availableTimeSlotList, selectedDate, selectedTime } = this.props;
+    const {
+      store,
+      deliveryAddress,
+      orderDateList,
+      availableTimeSlotList,
+      selectedOrderDate,
+      selectedTime,
+    } = this.props;
 
     if (!store) {
       return true;
@@ -140,11 +154,11 @@ class LocationAndDate extends Component {
       return true;
     }
 
-    if (!selectedDate || !selectedTime) {
+    if (!selectedOrderDate || !selectedTime) {
       return true;
     }
 
-    if (!selectedDate.isOpen) {
+    if (!selectedOrderDate.isOpen) {
       return true;
     }
 
@@ -152,7 +166,7 @@ class LocationAndDate extends Component {
       return true;
     }
 
-    const isInDateList = orderDateList.some(date => dayjs(date.date).isSame(selectedDate.date));
+    const isInDateList = orderDateList.some(date => dayjs(date.date).isSame(selectedOrderDate.date));
 
     if (!isInDateList) {
       return true;
@@ -174,11 +188,11 @@ class LocationAndDate extends Component {
   };
 
   goToNext = async () => {
-    const { selectedDate, selectedTime, homeActions, storeId, deliveryType, location, history } = this.props;
+    const { selectedOrderDate, selectedTime, homeActions, storeId, deliveryType, location, history } = this.props;
     const expectedDate = {
-      date: selectedDate.date.toISOString(),
-      isOpen: selectedDate.isOpen,
-      isToday: selectedDate.isToday,
+      date: selectedOrderDate.date.toISOString(),
+      isOpen: selectedOrderDate.isOpen,
+      isToday: selectedOrderDate.isToday,
     };
     const expectedTime = this.isDelivery
       ? {
@@ -394,15 +408,16 @@ class LocationAndDate extends Component {
 
   handleSelectDeliveryDate = orderDate => {
     const { actions } = this.props;
-    actions.selectedDateChanged(orderDate);
+
+    actions.selectedDayChanged(orderDate.date);
   };
 
   renderDeliveryDateItem = orderDate => {
-    const { t, selectedDate, businessUTCOffset } = this.props;
+    const { t, selectedOrderDate, businessUTCOffset } = this.props;
 
     const dateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, orderDate.date);
 
-    const isSelected = selectedDate ? dateDayjs.isSame(selectedDate.date) : false;
+    const isSelected = selectedOrderDate ? dateDayjs.isSame(selectedOrderDate.date) : false;
     const isToday = orderDate.isToday;
     const isOpen = orderDate.isOpen;
     const dayOfWeek = dateDayjs.day();
@@ -457,7 +472,7 @@ class LocationAndDate extends Component {
   handleSelectDeliveryHourTime = timeItem => {
     const { actions } = this.props;
 
-    actions.selectedTimeChanged(timeItem);
+    actions.selectedFromTimeChanged(timeItem ? timeItem.from : null);
   };
 
   renderDeliveryHourTimeItemLabel = timeItem => {
@@ -613,7 +628,7 @@ export default compose(
       orderDateList: getOrderDateList(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       availableTimeSlotList: getAvailableTimeSlotList(state),
-      selectedDate: getSelectedDate(state),
+      selectedOrderDate: getSelectedOrderDate(state),
       selectedTime: getSelectedTime(state),
       storeHashCode: getStoreHashCode(state),
     }),
