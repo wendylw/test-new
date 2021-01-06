@@ -317,7 +317,7 @@ export const filterDeliveryAvailableStores = (stores, date, utcOffset) => {
  */
 export const findNearlyAvailableStore = (stores, { coords: { lat, lng }, currentDate, utcOffset }) => {
   let nearlyStore = {
-    distance: 0,
+    distance: Infinity,
     store: null,
   };
 
@@ -337,7 +337,7 @@ export const findNearlyAvailableStore = (stores, { coords: { lat, lng }, current
       }
     );
 
-    if (distance > nearlyStore.distance) {
+    if (distance < nearlyStore.distance) {
       nearlyStore = {
         distance,
         store,
@@ -345,7 +345,7 @@ export const findNearlyAvailableStore = (stores, { coords: { lat, lng }, current
     }
   });
 
-  return nearlyStore.store;
+  return nearlyStore;
 };
 
 /**

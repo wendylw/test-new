@@ -358,7 +358,7 @@ describe('test getPickupPreOrderTimeList function', () => {
 
   test('check StoreB pre order time list', () => {
     const expectedStartTimeList = ['00:30'];
-    const expectedEndTimeList = ['24:00'];
+    const expectedEndTimeList = ['23:45'];
     const expectedNotExistTimeList = ['12:00', '12:15', '13:00'];
     const expectedExistTimeList = ['13:15', '23:30'];
 
@@ -688,7 +688,7 @@ describe('test isInVacations function', () => {
 });
 
 describe('test getBusinessDateTime function', () => {
-  test.skip.each`
+  test.each`
     utcOffset | date                                    | expected
     ${480} | ${undefined} | ${dayjs()
   .utcOffset(480)

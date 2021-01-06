@@ -289,11 +289,11 @@ export class Home extends Component {
 
     if (isDeliveryType || isPickUpType) {
       const { businessUTCOffset } = this.props;
-      const currentDate = new Date();
+      const currentDate = getBusinessDateTime(businessUTCOffset);
 
       const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(
         store,
-        currentDate,
+        currentDate.toDate(), // to js Date object
         businessUTCOffset,
         deliveryType
       );
@@ -305,7 +305,7 @@ export class Home extends Component {
       Utils.setSessionVariable(
         'expectedDeliveryDate',
         JSON.stringify({
-          date: currentDate.toISOString(),
+          date: currentDate.startOf('day').toISOString(),
           isOpen: true,
           isToday: true,
         })
