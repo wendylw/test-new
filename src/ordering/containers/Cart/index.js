@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
+import _isEmpty from 'lodash/isEmpty';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
 import { IconDelete, IconClose, IconLocalOffer } from '../../../components/Icons';
@@ -20,14 +21,12 @@ import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness 
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
-import { getErrorMessageByPromoStatus } from '../Promotion/utils';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
 import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
-const { PROMOTION_APPLIED_STATUS } = Constants;
 class Cart extends Component {
   state = {
     expandBilling: true,
@@ -190,15 +189,6 @@ class Cart extends Component {
     }, 100);
   };
 
-  isPromotionValid() {
-    const { promotion } = this.props;
-    if (!promotion) {
-      return true;
-    }
-
-    return promotion.status === PROMOTION_APPLIED_STATUS.VALID;
-  }
-
   handleGtmEventTracking = async callback => {
     const { shoppingCart, cartSummary } = this.props;
     const itemsInCart = shoppingCart.items.map(item => item.id);
@@ -223,15 +213,6 @@ class Cart extends Component {
     Utils.removeSessionVariable('additionalComments');
     this.setState({ additionalComments: null });
   }
-
-  getPromotionErrorMessage = () => {
-    const { promotion } = this.props;
-    if (!promotion) {
-      return '';
-    }
-
-    return getErrorMessageByPromoStatus(promotion);
-  };
 
   handleDismissPromotion = e => {
     this.dismissPromotion();
@@ -346,11 +327,6 @@ class Cart extends Component {
                     <IconClose className="icon icon__small" />
                   </button>
                 </div>
-                {Boolean(this.getPromotionErrorMessage()) ? (
-                  <p className="form__error-message margin-left-right-small text-omit__single-line text-weight-bolder">
-                    {this.getPromotionErrorMessage()}
-                  </p>
-                ) : null}
               </div>
             </span>
             <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
@@ -487,16 +463,6 @@ class Cart extends Component {
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
             onClick={() => {
-              if (!this.isPromotionValid()) {
-                this.props.appActions.showMessageModal({
-                  message: t('InvalidPromoCode'),
-                  description: this.getPromotionErrorMessage(),
-                  buttonText: t('Dismiss'),
-                });
-
-                return;
-              }
-
               this.setState({ isCreatingOrder: true });
 
               this.handleGtmEventTracking(async () => {

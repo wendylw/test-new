@@ -65,10 +65,13 @@ const setCookie = async (req, res, next) => {
 
     const url = new URL(original, `http://${req.headers.host}`);
     const backendUrl = target + url.search;
+    const cookie = req.headers.cookie;
+
+    debug(`${original} Cookie is ${cookie}`);
 
     const response = await fetch(backendUrl, {
       headers: {
-        cookie: req.headers.cookie,
+        Cookie: cookie,
       },
     });
 

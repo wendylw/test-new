@@ -10,8 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import {
   actions as promotionActionCreators,
   getPromoCode,
-  getStatus,
-  getPromoValidFrom,
+  getPromoErrorCode,
   isAppliedSuccess,
   isAppliedError,
   isInProcess,
@@ -20,10 +19,11 @@ import {
   isPromoSearchMode,
   hasSearchedForPromo as userHasSearchedForPromo,
   getSelectedPromo,
+  getAppliedResult,
 } from '../../redux/modules/promotion';
 import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import { withTranslation } from 'react-i18next';
-import { getErrorMessageByPromoStatus } from './utils';
+import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
 import './OrderingPromotion.scss';
 
@@ -83,15 +83,13 @@ class Promotion extends Component {
   };
 
   getMessage = () => {
-    const { promoStatus, validFrom } = this.props;
-    if (!promoStatus) {
+    const { appliedResult } = this.props;
+    if (!appliedResult || appliedResult.success) {
       return '';
     }
+    const { code } = appliedResult;
 
-    return getErrorMessageByPromoStatus({
-      status: promoStatus,
-      validFrom,
-    });
+    return getErrorMessageByPromoErrorCode(code);
   };
 
   render() {
@@ -188,8 +186,7 @@ export default compose(
     state => {
       return {
         promoCode: getPromoCode(state),
-        validFrom: getPromoValidFrom(state),
-        promoStatus: getStatus(state),
+        errorCode: getPromoErrorCode(state),
         isAppliedSuccess: isAppliedSuccess(state),
         isAppliedError: isAppliedError(state),
         inProcess: isInProcess(state),
@@ -200,6 +197,7 @@ export default compose(
         hasSearchedForPromo: userHasSearchedForPromo(state),
         selectedPromo: getSelectedPromo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
+        appliedResult: getAppliedResult(state),
       };
     },
     dispatch => ({
