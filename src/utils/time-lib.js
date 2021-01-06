@@ -100,7 +100,9 @@ export const isAfter = (time, compareTime) => {
  * @returns {boolean} result
  */
 export const isSame = (time, compareTime) => {
-  invariant(isValidTime(time) && isValidTime(compareTime), InvalidTimeErrorMessage);
+  if (!isValidTime(time) || !isValidTime(compareTime)) {
+    return time === compareTime;
+  }
 
   return getAmountOfMinutes(time) === getAmountOfMinutes(compareTime);
 };

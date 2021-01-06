@@ -142,6 +142,7 @@ describe('test isSame function', () => {
     ${'10:00'} | ${'12:00'}  | ${false}
     ${'10:00'} | ${'09:59'}  | ${false}
     ${'-1:00'} | ${'1:00'}   | ${false}
+    ${'now'}   | ${'now'}    | ${true}
   `('return $expected when $time is same $compareTime', ({ time, compareTime, expected }) => {
     expect(isSame(time, compareTime)).toBe(expected);
   });
