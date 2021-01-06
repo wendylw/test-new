@@ -540,7 +540,3 @@ export const getStore = state => {
 
   return getStoreById(state, storeId);
 };
-
-export const getBusinessDeliveryRadius = createSelector(getBusinessInfo, businessInfo => {
-  return _get(businessInfo, 'qrOrderingSettings.deliveryRadius', 0);
-});

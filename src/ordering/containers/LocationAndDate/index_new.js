@@ -79,12 +79,13 @@ class LocationAndDate extends Component {
       h: this.query.h,
       storeid: this.props.storeId || this.query.storeid || config.storeId,
       type: deliveryType,
-      callbackUrl: this.query.callbackUrl,
+      callbackUrl: encodeURIComponent(this.query.callbackUrl),
     };
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
-      search: qs.stringify(searchParams, { addQueryPrefix: true }),
+      // don't encode, encode `h` will cause decrypt fail
+      search: qs.stringify(searchParams, { addQueryPrefix: true, encode: false }),
     });
   };
 
@@ -205,7 +206,10 @@ class LocationAndDate extends Component {
           h,
           type: deliveryType,
         },
-        { addQueryPrefix: true }
+        {
+          addQueryPrefix: true,
+          encode: false, // encode `h` will cause decrypt fail
+        }
       );
       const callbackPath = callbackUrl ? callbackUrl.split('?')[0] : '';
 

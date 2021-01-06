@@ -169,6 +169,7 @@ class App extends Component {
       },
       {
         addQueryPrefix: true,
+        encode: false, // encode h will cause bff decrypt fail
       }
     );
     window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}${queryString}`;
