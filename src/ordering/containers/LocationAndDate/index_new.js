@@ -30,7 +30,7 @@ import { actions as appActionCreators, getBusinessDeliveryTypes, getBusinessUTCO
 import { Fragment } from 'react';
 import dayjs from 'dayjs';
 
-const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW } = Constants;
+const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRESS_RANGE } = Constants;
 
 class LocationAndDate extends Component {
   headerEl = null;
@@ -549,6 +549,21 @@ class LocationAndDate extends Component {
     );
   };
 
+  renderPickAt = () => {
+    const { t, store } = this.props;
+
+    const pickUpAddress = Utils.getValidAddress(store, ADDRESS_RANGE.COUNTRY);
+
+    return (
+      <div className="padding-normal">
+        <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
+          {t('PickupAt')}
+        </label>
+        <p className="text-line-height-base">{pickUpAddress}</p>
+      </div>
+    );
+  };
+
   renderDeliveryContainer = () => {
     const { t, deliveryAddress } = this.props;
     return (
@@ -572,6 +587,7 @@ class LocationAndDate extends Component {
     return (
       <Fragment>
         {this.renderSelectedStore()}
+        {this.renderPickAt()}
         {this.renderDeliveryDateSelector()}
         {this.renderDeliveryHourTimeSelector()}
       </Fragment>
