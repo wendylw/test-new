@@ -1,5 +1,5 @@
 import _isEqual from 'lodash/isEqual';
-import _includes from 'lodash/includes';
+import _startsWith from 'lodash/startsWith';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
@@ -199,7 +199,7 @@ class Payment extends Component {
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
     const currentUnavailablePayments = unavailablePaymentList.filter(unavailablePayment =>
-      _includes(unavailablePayment, merchantCountry)
+      _startsWith(unavailablePayment, merchantCountry)
     );
     const allPaymentsUnavailable = currentUnavailablePayments.length === payments.length;
 
