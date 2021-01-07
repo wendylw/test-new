@@ -82,11 +82,7 @@ export const actions = {
     const store = getStoreById(getState(), payload.storeId);
 
     if (store) {
-      const enablePerTimeSlotLimitForPreOrder = _get(
-        store,
-        'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder',
-        false
-      );
+      const enablePerTimeSlotLimitForPreOrder = storeUtils.isEnablePerTimeSlotLimitForPreOrder(store);
 
       const orderDateList = storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
       const expectedOrderDate =
@@ -137,10 +133,71 @@ export const actions = {
     });
   },
 
-  deliveryTypeChanged: deliveryType => ({
-    type: LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED,
-    payload: deliveryType,
-  }),
+  deliveryTypeChanged: deliveryType => async (dispatch, getState) => {
+    const payload = {
+      deliveryType,
+      selectedDay: null,
+      selectedFromTime: null,
+      timeSlotSoldData: [],
+    };
+
+    const state = getState();
+    const store = getStore(state);
+    const preSelectedDay = getSelectedDay(state);
+
+    if (!preSelectedDay || !store) {
+      return dispatch({
+        type: LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED,
+        payload,
+      });
+    }
+
+    const currentDate = getCurrentDate(state);
+    const businessUTCOffset = getBusinessUTCOffset(state);
+    const orderDateList = storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
+    const preSelectedOrderDate = orderDateList.find(orderDate => dayjs(orderDate.date).isSame(preSelectedDay));
+    const enablePerTimeSlotLimitForPreOrder = storeUtils.isEnablePerTimeSlotLimitForPreOrder(store);
+
+    if (preSelectedOrderDate && preSelectedOrderDate.isOpen) {
+      payload.selectedDay = preSelectedOrderDate.date;
+    } else {
+      const firstAvailableOrderDate = orderDateList.find(orderDate => orderDate.isOpen);
+      payload.selectedDay = firstAvailableOrderDate ? firstAvailableOrderDate.date : null;
+    }
+
+    if (!payload.selectedDay) {
+      return dispatch({
+        type: LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED,
+        payload,
+      });
+    }
+
+    if (enablePerTimeSlotLimitForPreOrder) {
+      payload.timeSlotSoldData = await fetchTimeSlotSoldData({
+        deliveryType,
+        selectedDay: payload.selectedDay,
+        storeId: store.id,
+      });
+    }
+
+    const selectedOrderDate = orderDateList.find(orderDate => dayjs(orderDate.date).isSame(payload.selectedDay));
+
+    const availableTimeSlotList = storeUtils.getAvailableTimeSlotList(store, {
+      currentDate,
+      businessUTCOffset,
+      selectedOrderDate,
+      deliveryType,
+      timeSlotSoldData: payload.timeSlotSoldData,
+    });
+
+    const firstAvailableTimeSlot = availableTimeSlotList.find(timeSlot => !timeSlot.soldOut);
+    payload.selectedFromTime = firstAvailableTimeSlot ? firstAvailableTimeSlot.from : null;
+
+    dispatch({
+      type: LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED,
+      payload,
+    });
+  },
 
   storeChanged: storeId => ({
     type: LOCATION_AND_DATE.STORE_CHANGED,
@@ -158,19 +215,18 @@ export const actions = {
       timeSlotSoldData: [],
       selectedFromTime: null,
     };
+    const state = getState();
+    const store = getStore(state);
 
-    if (!selectedDay) {
+    if (!selectedDay || !store) {
       return dispatch({
         type: LOCATION_AND_DATE.SELECTED_DAY_CHANGE,
         payload,
       });
     }
 
-    const state = getState();
-    const enablePerTimeSlotLimitForPreOrder = isStoreEnablePerTimeSlotLimitForPreOrder(state);
+    const enablePerTimeSlotLimitForPreOrder = storeUtils.isEnablePerTimeSlotLimitForPreOrder(store);
     const deliveryType = getDeliveryType(state);
-    const storeId = getStoreId(state);
-    const store = getStoreById(state, storeId);
     const currentDate = getCurrentDate(state);
     const businessUTCOffset = getBusinessUTCOffset(state);
     const orderDateList = storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
@@ -180,7 +236,7 @@ export const actions = {
       payload.timeSlotSoldData = await fetchTimeSlotSoldData({
         deliveryType,
         selectedDay,
-        storeId,
+        storeId: store.id,
       });
     }
 
@@ -229,7 +285,10 @@ const reducer = (state = initialState, action) => {
     case LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED:
       return {
         ...state,
-        deliveryType: action.payload,
+        deliveryType: action.payload.deliveryType,
+        selectedDay: action.payload.selectedDay,
+        selectedFromTime: action.payload.selectedFromTime,
+        timeSlotSoldData: action.payload.timeSlotSoldData,
       };
     case LOCATION_AND_DATE.STORE_CHANGED:
       return {
@@ -362,10 +421,6 @@ export const getSelectedTime = createSelector(
       return timeLib.isSame(timeSlot.from, selectedFromTime);
     });
   }
-);
-
-export const isStoreEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, store =>
-  _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false)
 );
 
 export default reducer;
