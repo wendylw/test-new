@@ -468,6 +468,10 @@ class LocationAndDate extends Component {
   handleSelectDeliveryHourTime = timeItem => {
     const { actions } = this.props;
 
+    if (timeItem && timeItem.soldOut) {
+      return;
+    }
+
     actions.selectedFromTimeChanged(timeItem ? timeItem.from : null);
   };
 
@@ -494,7 +498,7 @@ class LocationAndDate extends Component {
     const { t, selectedTime } = this.props;
     const isImmediate = timeItem.from === TIME_SLOT_NOW;
     const isSelected = selectedTime && selectedTime.from === timeItem.from;
-    const isSoldOut = timeItem.isSoldOut;
+    const isSoldOut = timeItem.soldOut;
 
     return (
       <li key={timeItem.from} className="location-date__hour-item">
@@ -505,7 +509,6 @@ class LocationAndDate extends Component {
           data-testid="preOrderHour"
           data-heap-name="ordering.location-and-date.time-item"
           data-heap-is-immediate={isImmediate ? 'yes' : 'no'}
-          disabled={isSoldOut}
           onClick={() => {
             this.handleSelectDeliveryHourTime(timeItem);
           }}

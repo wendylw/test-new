@@ -509,9 +509,15 @@ export const isDateTimeSoldOut = (store, soldData, date, utcOffset) => {
 
   const dateTime = getBusinessDateTime(utcOffset, date);
 
-  const soldItem = soldData.find(item => dateTime.isSame(item.date, 'minute'));
+  const soldItem = soldData.find(item =>
+    dateTime.isSame(getBusinessDateTime(utcOffset, new Date(item.timeSlotStartDate)), 'minute')
+  );
 
-  return soldItem && soldItem.count >= maxPreOrdersPerTimeSlot;
+  if (!soldItem) {
+    return false;
+  }
+
+  return soldItem.count >= maxPreOrdersPerTimeSlot;
 };
 
 export const getAvailableTimeSlotList = (

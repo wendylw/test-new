@@ -6,7 +6,7 @@ import * as apiRequest from '../../../utils/request';
 import * as timeLib from '../../../utils/time-lib';
 import URL from '../../../utils/url';
 import { getStoreById, getStores } from '../../../redux/modules/entities/stores';
-import { actions as appActions, getBusinessUTCOffset, getBusinessInfo, getBusinessInfoStore } from './app';
+import { actions as appActions, getBusinessUTCOffset } from './app';
 import { actions as homeActions } from './home';
 
 import { createSelector } from 'reselect';
@@ -79,7 +79,7 @@ export const actions = {
     }
 
     await dispatch(appActions.loadCoreBusiness(payload.storeId));
-    const store = getBusinessInfoStore(getState());
+    const store = getStoreById(getState(), payload.storeId);
 
     if (store) {
       const enablePerTimeSlotLimitForPreOrder = _get(
@@ -170,6 +170,11 @@ export const actions = {
     const enablePerTimeSlotLimitForPreOrder = isStoreEnablePerTimeSlotLimitForPreOrder(state);
     const deliveryType = getDeliveryType(state);
     const storeId = getStoreId(state);
+    const store = getStoreById(state, storeId);
+    const currentDate = getCurrentDate(state);
+    const businessUTCOffset = getBusinessUTCOffset(state);
+    const orderDateList = storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
+    const selectedOrderDate = orderDateList.find(orderDate => dayjs(selectedDay).isSame(orderDate.date));
 
     if (enablePerTimeSlotLimitForPreOrder) {
       payload.timeSlotSoldData = await fetchTimeSlotSoldData({
@@ -179,7 +184,14 @@ export const actions = {
       });
     }
 
-    const firstAvailableTime = getFirstAvailableTime(getState());
+    const timeSlotList = storeUtils.getAvailableTimeSlotList(store, {
+      currentDate,
+      businessUTCOffset,
+      selectedOrderDate,
+      deliveryType,
+      timeSlotSoldData: payload.timeSlotSoldData,
+    });
+    const firstAvailableTime = timeSlotList.find(timeSlot => !timeSlot.soldOut);
     payload.selectedFromTime = firstAvailableTime ? firstAvailableTime.from : null;
 
     dispatch({
@@ -284,30 +296,7 @@ export const getStoreId = state => {
 
 export const getStore = state => {
   const storeId = getStoreId(state);
-  const businessInfo = getBusinessInfo(state);
-  const store = getStoreById(state, storeId);
-  if (!store) {
-    return null;
-  }
-
-  // some store data only get from businessInfo
-  const businessStores = _get(businessInfo, 'stores', []);
-  const businessStore = businessStores.find(businessStore => businessStore.id === storeId);
-
-  if (!businessStore) {
-    Object.assign(store.qrOrderingSettings, {
-      enablePerTimeSlotLimitForPreOrder: false,
-      maxPreOrdersPerTimeSlot: 0,
-    });
-
-    return store;
-  }
-
-  Object.assign(store.qrOrderingSettings, {
-    enablePerTimeSlotLimitForPreOrder: businessStore.qrOrderingSettings.enablePerTimeSlotLimitForPreOrder,
-    maxPreOrdersPerTimeSlot: businessStore.qrOrderingSettings.maxPreOrdersPerTimeSlot,
-  });
-  return store;
+  return getStoreById(state, storeId);
 };
 
 export const getDeliveryAddress = state => {
@@ -359,12 +348,6 @@ export const getAvailableTimeSlotList = createSelector(
       timeSlotSoldData,
     });
   }
-);
-
-export const getFirstAvailableDate = createSelector(getOrderDateList, dateList => dateList.find(date => date.isOpen));
-
-export const getFirstAvailableTime = createSelector(getAvailableTimeSlotList, timeSlotList =>
-  timeSlotList.find(timeSlot => !timeSlot.soldOut)
 );
 
 export const getSelectedTime = createSelector(

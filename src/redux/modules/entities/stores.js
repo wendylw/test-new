@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import _get from 'lodash/get';
 
 const initialState = {};
 
@@ -9,10 +10,16 @@ const reducer = (state = initialState, action) => {
 
     if (business && business.stores) {
       const { stores } = business;
+      const businessUseStorehubLogistics = _get(business, 'qrOrderingSettings.useStorehubLogistics', false);
+
       const newStores = {};
 
       stores.forEach(s => {
         if (s.id) {
+          Object.assign(s.qrOrderingSettings, {
+            useStorehubLogistics: _get(s, 'qrOrderingSettings.useStorehubLogistics', businessUseStorehubLogistics),
+          });
+
           newStores[s.id] = s;
         }
       });
