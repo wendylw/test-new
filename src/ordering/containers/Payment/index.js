@@ -1,3 +1,4 @@
+import _isEqual from 'lodash/isEqual';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
@@ -196,19 +197,6 @@ class Payment extends Component {
     const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
-    const promptDom =
-      total >= minimumFpxTotal ? (
-        <p className="margin-top-bottom-smaller">{t('TemporarilyUnavailable')}</p>
-      ) : (
-        <p className="margin-top-bottom-smaller">
-          ({' '}
-          <Trans i18nKey="MinimumConsumption">
-            <span>Min</span>
-            <CurrencyNumber money={minimumFpxTotal} />
-          </Trans>{' '}
-          )
-        </p>
-      );
 
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
@@ -237,6 +225,19 @@ class Payment extends Component {
                 'ordering-payment__item flex flex-middle flex-space-between padding-small border__bottom-divider',
               ];
               const disabledPayment = unavailablePaymentList.find(p => p === `${merchantCountry}:${payment.key}`);
+              const promptDom =
+                total < minimumFpxTotal && _isEqual(`${merchantCountry}:${payment.key}`, 'MY:onlineBanking') ? (
+                  <p className="margin-top-bottom-smaller">
+                    ({' '}
+                    <Trans i18nKey="MinimumConsumption">
+                      <span>Min</span>
+                      <CurrencyNumber money={minimumFpxTotal} />
+                    </Trans>{' '}
+                    )
+                  </p>
+                ) : (
+                  <p className="margin-top-bottom-smaller">{t('TemporarilyUnavailable')}</p>
+                );
 
               if (!payment) {
                 return null;

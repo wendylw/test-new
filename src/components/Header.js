@@ -86,8 +86,6 @@ class Header extends Component {
       contentClassList.push(contentClassName);
     }
 
-    console.log(deliveryFee);
-
     return (
       <header
         ref={headerRef}
