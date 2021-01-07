@@ -20,6 +20,7 @@ const initialState = {
   deliveryType: null,
   storeId: null,
   deliveryAddress: '',
+  deliveryCoords: null,
   selectedDay: null, // js Date Object
   selectedFromTime: null, // from time, like 09:00
   timeSlotSoldData: [],
@@ -40,6 +41,7 @@ export const actions = {
       deliveryType,
       storeId,
       deliveryAddress,
+      deliveryCoords,
       selectedDay: null,
       selectedFromTime: null,
       timeSlotSoldData: [],
@@ -134,23 +136,57 @@ export const actions = {
   },
 
   deliveryTypeChanged: deliveryType => async (dispatch, getState) => {
+    const state = getState();
+    let store = getStore(state);
+
     const payload = {
       deliveryType,
       selectedDay: null,
       selectedFromTime: null,
       timeSlotSoldData: [],
+      storeId: _get(store, 'id', null),
     };
 
-    const state = getState();
-    const store = getStore(state);
-    const preSelectedDay = getSelectedDay(state);
-
-    if (!preSelectedDay || !store) {
+    if (!store) {
       return dispatch({
         type: LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED,
         payload,
       });
     }
+
+    const storeFulfillmentOptions = _get(store, 'fulfillmentOptions', []).map(item => item.toLowerCase());
+
+    // if store not support the delivery type
+    if (!storeFulfillmentOptions.includes(deliveryType)) {
+      const currentDate = getCurrentDate(state);
+      const stores = getStores(state);
+      const businessUTCOffset = getBusinessUTCOffset(state);
+      const deliveryCoords = getDeliveryCoords(state);
+
+      // re-find the nearestStore
+      if (deliveryType === DELIVERY_METHOD.DELIVERY && deliveryCoords) {
+        const { store: nearestStore } = storeUtils.findNearlyAvailableStore(stores, {
+          coords: deliveryCoords,
+          currentDate: currentDate,
+          utcOffset: businessUTCOffset,
+        });
+
+        payload.storeId = _get(nearestStore, 'id', null);
+      } else {
+        payload.storeId = null;
+      }
+    }
+
+    const preSelectedDay = getSelectedDay(state);
+
+    if (!preSelectedDay || !payload.storeId) {
+      return dispatch({
+        type: LOCATION_AND_DATE.DELIVERY_TYPE_CHANGED,
+        payload,
+      });
+    }
+
+    store = getStoreById(getState(), payload.storeId);
 
     const currentDate = getCurrentDate(state);
     const businessUTCOffset = getBusinessUTCOffset(state);
@@ -270,7 +306,7 @@ export const actions = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_AND_DATE.INITIAL:
-      const { currentDate, deliveryType, storeId, deliveryAddress } = action.payload;
+      const { currentDate, deliveryType, storeId, deliveryAddress, deliveryCoords } = action.payload;
 
       return {
         ...state,
@@ -278,6 +314,7 @@ const reducer = (state = initialState, action) => {
         deliveryType,
         storeId,
         deliveryAddress,
+        deliveryCoords,
         selectedDay: action.payload.selectedDay,
         selectedFromTime: action.payload.selectedFromTime,
         timeSlotSoldData: action.payload.timeSlotSoldData,
@@ -289,6 +326,7 @@ const reducer = (state = initialState, action) => {
         selectedDay: action.payload.selectedDay,
         selectedFromTime: action.payload.selectedFromTime,
         timeSlotSoldData: action.payload.timeSlotSoldData,
+        storeId: action.payload.storeId,
       };
     case LOCATION_AND_DATE.STORE_CHANGED:
       return {
@@ -361,6 +399,8 @@ export const getStore = state => {
 export const getDeliveryAddress = state => {
   return _get(state.locationAndDate, 'deliveryAddress', '');
 };
+
+export const getDeliveryCoords = state => _get(state.locationAndDate, 'deliveryCoords', null);
 
 export const getSelectedDay = state => _get(state.locationAndDate, 'selectedDay', null);
 

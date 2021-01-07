@@ -57,7 +57,7 @@ class LocationAndDate extends Component {
     });
 
     if (!this.props.storeId && deliveryType === DELIVERY_METHOD.PICKUP) {
-      this.gotoStoreList();
+      this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || config.storeId);
     }
   };
 
@@ -77,16 +77,15 @@ class LocationAndDate extends Component {
     return deliveryType === DELIVERY_METHOD.PICKUP;
   }
 
-  gotoStoreList = () => {
+  gotoStoreList = (deliveryType, storeId) => {
     const { history, location } = this.props;
     const { callbackUrl } = this.query;
 
-    const deliveryType = (this.query.type || '').toLowerCase();
     const from = _get(location, 'state.from', null);
 
     const searchParams = {
       h: this.query.h,
-      storeid: this.props.storeId || this.query.storeid || config.storeId,
+      storeid: storeId,
       type: deliveryType,
       callbackUrl: encodeURIComponent(callbackUrl),
     };
@@ -97,6 +96,12 @@ class LocationAndDate extends Component {
       // don't encode, encode `h` will cause decrypt fail
       search: qs.stringify(searchParams, { addQueryPrefix: true, encode: false }),
     });
+  };
+
+  handleGotoStoreListClick = () => {
+    const { deliveryType, storeId } = this.props;
+
+    this.gotoStoreList(deliveryType, storeId);
   };
 
   ensureDeliveryType = deliveryType => {
@@ -316,9 +321,13 @@ class LocationAndDate extends Component {
     });
   };
 
-  handleDeliveryTypeChange = deliveryType => {
+  handleDeliveryTypeChange = async deliveryType => {
     const { actions } = this.props;
-    actions.deliveryTypeChanged(deliveryType);
+    await actions.deliveryTypeChanged(deliveryType);
+
+    if (deliveryType === DELIVERY_METHOD.PICKUP && !this.props.store) {
+      return this.gotoStoreList(DELIVERY_METHOD.PICKUP, null);
+    }
   };
 
   renderDeliveryTypesSelector = () => {
@@ -386,7 +395,7 @@ class LocationAndDate extends Component {
       <div
         className="padding-normal"
         data-testid="deliverTo"
-        onClick={this.gotoStoreList}
+        onClick={this.handleGotoStoreListClick}
         data-heap-name="ordering.location-and-date.selected-store"
       >
         <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
@@ -552,7 +561,7 @@ class LocationAndDate extends Component {
   renderPickAt = () => {
     const { t, store } = this.props;
 
-    const pickUpAddress = Utils.getValidAddress(store, ADDRESS_RANGE.COUNTRY);
+    const pickUpAddress = store ? Utils.getValidAddress(store, ADDRESS_RANGE.COUNTRY) : '';
 
     return (
       <div className="padding-normal">
