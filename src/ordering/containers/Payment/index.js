@@ -1,4 +1,5 @@
 import _isEqual from 'lodash/isEqual';
+import _includes from 'lodash/includes';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
@@ -197,6 +198,10 @@ class Payment extends Component {
     const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
+    const currentUnavailablePayments = unavailablePaymentList.filter(unavailablePayment =>
+      _includes(unavailablePayment, merchantCountry)
+    );
+    const allPaymentsUnavailable = currentUnavailablePayments.length === payments.length;
 
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
@@ -286,7 +291,7 @@ class Payment extends Component {
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-testid="payNow"
             data-heap-name="ordering.payment.pay-btn"
-            disabled={payNowLoading}
+            disabled={payNowLoading || allPaymentsUnavailable}
             validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
             paymentName={getPaymentName(merchantCountry, currentPayment)}
