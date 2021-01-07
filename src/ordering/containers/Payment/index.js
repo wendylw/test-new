@@ -46,7 +46,7 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { history, payments, unavailablePaymentList, deliveryDetails, customerActions } = this.props;
+    const { history, payments, merchantCountry, unavailablePaymentList, deliveryDetails, customerActions } = this.props;
     const availablePayments = payments.filter(p => !unavailablePaymentList.includes(`${merchantCountry}:${p.key}`));
     const { addressId } = deliveryDetails || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -123,7 +123,7 @@ class Payment extends Component {
   };
 
   setCurrentPayment = ({ label, key }) => {
-    const { unavailablePaymentList } = this.props;
+    const { merchantCountry, unavailablePaymentList } = this.props;
     const disabledPayment = unavailablePaymentList.find(p => p === `${merchantCountry}:${key}`);
 
     if (!disabledPayment) {
