@@ -4,6 +4,7 @@ import utc from 'dayjs/plugin/utc';
 import { computeStraightDistance } from './geoUtils';
 import Constants from './constants';
 import _flow from 'lodash/flow';
+import _get from 'lodash/get';
 
 const { DELIVERY_METHOD, SH_LOGISTICS_VALID_TIME, TIME_SLOT_NOW } = Constants;
 
@@ -558,3 +559,6 @@ export const getAvailableTimeSlotList = (
     };
   });
 };
+
+export const isEnablePerTimeSlotLimitForPreOrder = store =>
+  _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false);
