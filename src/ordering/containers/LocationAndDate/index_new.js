@@ -17,6 +17,8 @@ import {
   getAvailableTimeSlotList,
   getSelectedTime,
   getStore,
+  getSelectedDay,
+  getSelectedFromTime,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -38,6 +40,8 @@ class LocationAndDate extends Component {
 
   componentDidMount = async () => {
     const { actions } = this.props;
+
+    const deliveryAddressUpdate = Utils.getSessionVariable('deliveryAddressUpdate');
     const deliveryAddress = Utils.getDeliveryAddress();
     const deliveryType = (this.query.type || '').toLowerCase();
     this.ensureDeliveryType(deliveryType);
@@ -45,16 +49,20 @@ class LocationAndDate extends Component {
 
     const expectedDay = _get(expectedDeliveryDate, 'date.date', null);
     const expectedFromTime = _get(expectedDeliveryDate, 'hour.from', null);
+    // if delivery address updated from location page, should trigger `initial action` find nearest store
+    const storeId = deliveryAddressUpdate && deliveryAddress.coords ? null : config.storeId;
 
     await actions.initial({
       currentDate: new Date(),
-      deliveryType,
-      storeId: this.query.storeid || config.storeId,
+      deliveryType: this.props.deliveryType || deliveryType,
+      storeId: this.query.storeid || storeId,
       deliveryAddress: deliveryAddress.address,
       deliveryCoords: deliveryAddress.coords,
-      expectedDay,
-      expectedFromTime,
+      expectedDay: this.props.selectedDay || expectedDay,
+      expectedFromTime: this.props.selectedFromTime || expectedFromTime,
     });
+
+    Utils.removeSessionVariable('deliveryAddressUpdate');
 
     if (!this.props.storeId && deliveryType === DELIVERY_METHOD.PICKUP) {
       this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || config.storeId);
@@ -87,14 +95,13 @@ class LocationAndDate extends Component {
       h: this.query.h,
       storeid: storeId,
       type: deliveryType,
-      callbackUrl: encodeURIComponent(callbackUrl),
+      callbackUrl,
     };
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_STORE_LIST,
       state: from ? { from } : null,
-      // don't encode, encode `h` will cause decrypt fail
-      search: qs.stringify(searchParams, { addQueryPrefix: true, encode: false }),
+      search: qs.stringify(searchParams, { addQueryPrefix: true }),
     });
   };
 
@@ -210,7 +217,7 @@ class LocationAndDate extends Component {
     });
 
     await homeActions.getStoreHashData(storeId);
-    const h = this.props.storeHashCode;
+    const h = decodeURIComponent(this.props.storeHashCode);
     const from = _get(location, 'state.from', null);
 
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
@@ -237,7 +244,6 @@ class LocationAndDate extends Component {
         },
         {
           addQueryPrefix: true,
-          encode: false, // encode `h` will cause decrypt fail
         }
       );
 
@@ -261,7 +267,6 @@ class LocationAndDate extends Component {
       },
       {
         addQueryPrefix: true,
-        encode: false, // encode `h` will cause decrypt fail
       }
     );
 
@@ -276,7 +281,6 @@ class LocationAndDate extends Component {
       },
       {
         addQueryPrefix: true,
-        encode: false, // encode `h` will cause decrypt fail
       }
     );
 
@@ -306,12 +310,22 @@ class LocationAndDate extends Component {
 
   gotoLocationSearch = () => {
     const { deliveryType, history, location } = this.props;
-    const { pathname, search } = history.location;
+    const { pathname } = history.location;
     const from = _get(location, 'state.from', null);
+
+    const callbackQueryString = qs.stringify(
+      {
+        type: deliveryType,
+        h: this.query.h,
+        callbackUrl: this.query.callbackUrl,
+      },
+      { addQueryPrefix: true }
+    );
 
     const queryParams = {
       type: deliveryType,
-      callbackUrl: `${pathname}${search}`,
+      h: this.query.h,
+      callbackUrl: `${pathname}${callbackQueryString}`,
     };
 
     history.push({
@@ -655,6 +669,8 @@ export default compose(
       selectedOrderDate: getSelectedOrderDate(state),
       selectedTime: getSelectedTime(state),
       storeHashCode: getStoreHashCode(state),
+      selectedDay: getSelectedDay(state),
+      selectedFromTime: getSelectedFromTime(state),
     }),
 
     dispatch => ({

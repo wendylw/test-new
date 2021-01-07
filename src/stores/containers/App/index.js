@@ -116,7 +116,7 @@ class App extends Component {
       if (stores.length) {
         if (stores.length === 1) {
           await this.props.storesActions.getStoreHashData(stores[0].id);
-          this.gotoOrderingHome(type, this.props.storeHash);
+          this.gotoOrderingHome(type, decodeURIComponent(this.props.storeHash));
         } else {
           window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_STORE_LIST}?type=${type}`;
         }
@@ -158,7 +158,7 @@ class App extends Component {
 
     await this.props.storesActions.getStoreHashData(store.id);
 
-    this.gotoOrderingHome(type, this.props.storeHash);
+    this.gotoOrderingHome(type, decodeURIComponent(this.props.storeHash));
   };
 
   gotoOrderingHome(type, h) {
@@ -169,7 +169,6 @@ class App extends Component {
       },
       {
         addQueryPrefix: true,
-        encode: false, // encode h will cause bff decrypt fail
       }
     );
     window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}${queryString}`;
