@@ -24,6 +24,7 @@ const initialState = {
   selectedDay: null, // js Date Object
   selectedFromTime: null, // from time, like 09:00
   timeSlotSoldData: [],
+  loading: false,
 };
 
 export const actions = {
@@ -44,7 +45,10 @@ export const actions = {
       deliveryCoords,
       selectedDay: null,
       selectedFromTime: null,
+      loading: false,
     };
+
+    dispatch(actions.showLoading(true));
 
     await dispatch(homeActions.loadCoreStores());
 
@@ -262,6 +266,11 @@ export const actions = {
     payload: currentDate,
   }),
 
+  showLoading: loading => ({
+    type: LOCATION_AND_DATE.SHOW_LOADING,
+    payload: loading,
+  }),
+
   loadTimeSlotSoldData: ({ deliveryType, selectedDay, storeId }) => async dispatch => {
     try {
       const { method, url } = API_URLS.GET_TIME_SLOT(deliveryType, selectedDay.toISOString(), storeId);
@@ -298,6 +307,7 @@ const reducer = (state = initialState, action) => {
         storeId,
         deliveryAddress,
         deliveryCoords,
+        loading: action.payload.loading,
         selectedDay: action.payload.selectedDay,
         selectedFromTime: action.payload.selectedFromTime,
       };
@@ -341,6 +351,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         timeSlotSoldData: action.payload,
+      };
+    case LOCATION_AND_DATE.SHOW_LOADING:
+      return {
+        ...state,
+        loading: action.payload,
       };
     default:
       return state;
@@ -465,5 +480,7 @@ export const getSelectedTime = createSelector(
     });
   }
 );
+
+export const isShowLoading = state => _get(state.locationAndDate, 'loading', false);
 
 export default reducer;

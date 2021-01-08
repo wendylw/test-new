@@ -4,6 +4,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
+import PageLoader from '../../../components/PageLoader';
 import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 import { IconNext, IconSearch } from '../../../components/Icons';
 import _get from 'lodash/get';
@@ -19,6 +20,7 @@ import {
   getStore,
   getSelectedDay,
   getSelectedFromTime,
+  isShowLoading,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -618,7 +620,7 @@ class LocationAndDate extends Component {
   };
 
   render() {
-    const { t, businessDeliveryTypes } = this.props;
+    const { t, businessDeliveryTypes, showLoading } = this.props;
 
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
@@ -631,24 +633,31 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
-        <div
-          className="location-date__container"
-          style={{
-            top: `${Utils.mainTop({
-              headerEls: [this.headerEl],
-            })}px`,
-            height: Utils.containerHeight({
-              headerEls: [this.headerEl],
-              footerEls: [this.footerEl],
-            }),
-          }}
-        >
-          {businessDeliveryTypes.length > 1 && this.renderDeliveryTypesSelector()}
+        {showLoading ? (
+          <PageLoader />
+        ) : (
+          <Fragment>
+            <div
+              className="location-date__container"
+              style={{
+                top: `${Utils.mainTop({
+                  headerEls: [this.headerEl],
+                })}px`,
+                height: Utils.containerHeight({
+                  headerEls: [this.headerEl],
+                  footerEls: [this.footerEl],
+                }),
+              }}
+            >
+              {businessDeliveryTypes.length > 1 && this.renderDeliveryTypesSelector()}
 
-          {this.isDelivery && this.renderDeliveryContainer()}
-          {this.isPickup && this.renderPickupContainer()}
-        </div>
-        {this.renderContinueButton()}
+              {this.isDelivery && this.renderDeliveryContainer()}
+              {this.isPickup && this.renderPickupContainer()}
+            </div>
+
+            {this.renderContinueButton()}
+          </Fragment>
+        )}
       </section>
     );
   }
@@ -671,6 +680,7 @@ export default compose(
       storeHashCode: getStoreHashCode(state),
       selectedDay: getSelectedDay(state),
       selectedFromTime: getSelectedFromTime(state),
+      showLoading: isShowLoading(state),
     }),
 
     dispatch => ({
