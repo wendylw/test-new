@@ -174,7 +174,7 @@ class LocationAndDate extends Component {
       return true;
     }
 
-    if (selectedTime.isSoldOut) {
+    if (selectedTime.soldOut) {
       return true;
     }
 
