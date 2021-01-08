@@ -1,3 +1,4 @@
+import _isEqual from 'lodash/isEqual';
 import { createSelector } from 'reselect';
 import { captureException } from '@sentry/react';
 
@@ -431,13 +432,11 @@ export const getBankList = state => state.payment.bankingList;
 
 export const getUnavailablePayments = state => {
   const { total } = getCartSummary(state);
+  const merchantCountry = getMerchantCountry(state);
   const unavailablePayments = getUnavailablePaymentList();
 
-  if (
-    total < parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL) &&
-    !unavailablePayments.includes('onlineBanking')
-  ) {
-    return [...unavailablePayments, 'onlineBanking'];
+  if (total < parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL) && _isEqual(merchantCountry, 'MY')) {
+    return [...unavailablePayments, 'MY:onlineBanking'];
   }
 
   return unavailablePayments;
