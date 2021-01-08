@@ -138,17 +138,17 @@ Get more from [Using Custom Workbox Service Workers with Create-React-App (witho
 <a name="i18n-json-style-guide"></a>
 ## I18N JSON File Style Guide
 
-JSON file name rules:
+### JSON file name rules:
     
-  1. Please use upper camel case (eg: OrderingHome)
+  * Please use upper camel case (eg: OrderingHome)
 
-Key name rules:
+### Key name rules:
     
   * Please use upper camel case no including underscores and spaces
   * Phrase remove spaces as key (eg: "OrderNow": "Order now")
   * Paragraphs use descriptive phrases as keys (eg: "ClaimedProcessingText": "You've earned more cashback! We'll add it once it's been processed.")
     
-Content rules:
+### Content rules:
     
   * Only the first letter can be capitalized for phrase, except for words like "OK" (eg: "OrderNow": "Order now")
   * Paragraphs have only the first letter of each sentence capitalized (eg: "ClaimedProcessingText": "You've earned more cashback! We'll add it once it's been processed.")
