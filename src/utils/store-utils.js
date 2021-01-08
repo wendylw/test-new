@@ -502,17 +502,15 @@ export const getBusinessDateTime = (utcOffset, date = new Date()) => {
   return dayjs(date).utcOffset(utcOffset);
 };
 
-export const isDateTimeSoldOut = (store, soldData, date, utcOffset) => {
+export const isDateTimeSoldOut = (store, soldData, selectedDate, utcOffset) => {
   const { enablePerTimeSlotLimitForPreOrder, maxPreOrdersPerTimeSlot } = store.qrOrderingSettings;
   if (!enablePerTimeSlotLimitForPreOrder) {
     return false;
   }
 
-  const dateTime = getBusinessDateTime(utcOffset, date);
+  const dateTime = getBusinessDateTime(utcOffset, selectedDate);
 
-  const soldItem = soldData.find(item =>
-    dateTime.isSame(getBusinessDateTime(utcOffset, new Date(item.timeSlotStartDate)), 'minute')
-  );
+  const soldItem = soldData.find(item => dateTime.isSame(getBusinessDateTime(utcOffset, item.date), 'minute'));
 
   if (!soldItem) {
     return false;
@@ -521,43 +519,60 @@ export const isDateTimeSoldOut = (store, soldData, date, utcOffset) => {
   return soldItem.count >= maxPreOrdersPerTimeSlot;
 };
 
-export const getAvailableTimeSlotList = (
+export const getSelectedOrderDateTimeList = (
   store,
-  { currentDate, businessUTCOffset, selectedOrderDate, deliveryType, timeSlotSoldData }
+  { selectedOrderDate, currentDate, deliveryType, businessUTCOffset }
 ) => {
   if (!store || !selectedOrderDate || !selectedOrderDate.isOpen) {
     return [];
   }
 
-  let timeList = [];
   if (selectedOrderDate.isToday) {
-    timeList = getTodayTimeList(store, { currentDate, deliveryType, utcOffset: businessUTCOffset });
-  } else {
-    timeList = getPreOrderTimeList(store, deliveryType);
+    return getTodayTimeList(store, { currentDate, deliveryType, utcOffset: businessUTCOffset });
   }
 
-  const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
-  const date = getBusinessDateTime(businessUTCOffset, new Date(selectedOrderDate.date));
+  return getPreOrderTimeList(store, deliveryType);
+};
 
-  return timeList.map(time => {
-    if (time === TIME_SLOT_NOW) {
-      return {
-        soldOut: false,
-        from: TIME_SLOT_NOW,
-        to: TIME_SLOT_NOW,
-      };
+export const getStoreAvailableDateAndTime = (
+  store,
+  { expectedDay, expectedFromTime, deliveryType, currentDate, businessUTCOffset }
+) => {
+  const result = {
+    orderDate: null,
+    fromTime: null,
+  };
+
+  if (!store) {
+    return result;
+  }
+
+  const orderDateList = getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
+  const expectedOrderDate = expectedDay && orderDateList.find(orderDate => dayjs(orderDate.date).isSame(expectedDay));
+
+  if (expectedOrderDate && expectedOrderDate.isOpen) {
+    result.orderDate = expectedOrderDate;
+  } else {
+    const firstOpenOrderDate = orderDateList.find(orderDate => orderDate.isOpen);
+    result.orderDate = firstOpenOrderDate;
+  }
+
+  if (result.orderDate) {
+    const selectedOrderDateTimeList = getSelectedOrderDateTimeList(store, {
+      currentDate,
+      businessUTCOffset,
+      selectedOrderDate: result.orderDate,
+      deliveryType,
+    });
+
+    if (selectedOrderDateTimeList.includes(expectedFromTime)) {
+      result.fromTime = expectedFromTime;
+    } else {
+      result.fromTime = _get(selectedOrderDateTimeList, 0, null);
     }
+  }
 
-    const dateTime = timeLib.setDateTime(time, date);
-
-    const soldOut = isDateTimeSoldOut(store, timeSlotSoldData, dateTime.toDate(), businessUTCOffset);
-
-    return {
-      soldOut,
-      from: time,
-      to: isDelivery ? timeLib.add(time, { value: 1, unit: 'hour' }) : time,
-    };
-  });
+  return result;
 };
 
 export const isEnablePerTimeSlotLimitForPreOrder = store =>
