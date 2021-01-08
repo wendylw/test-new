@@ -56,53 +56,54 @@ yarn
 <a name="usage"></a>
 ### Usage
 
-1. Start F&B && Loyalty
-    > 1. Set local domain
-    ```sh
-    (sudo) vim /etc/hosts (on Mac)
-    127.0.0.1 {business}.local.beep.test16.shub.us
-    ```
-    > 2. Update .env
-    Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. local domain)
-    > 3. Start project
-    #### Quickly start ordering using the test environment (Recommendation)
-    [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
-    1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
-    2. `cd frontend/ && yarn start`
-    3. Visiting URL: {business}.local.beep.test16.shub.us:3000
-    4. Set __s to local ordering page cookie from PROXY testing environment
-    5. Set deliveryAddress to local sessionStorage from PROXY testing environment
-    #### Start ordering on backend (Recommend to back-end developers)
-    1. Start mongo
-    2. Start redis `redis-server`
-    3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
-    4. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
-    5. `cd frontend/ && yarn build`
-    6. Update `backend/.env`
-    7. `cd backend/ && yarn start`
-    8. Visiting URL: {business}.local.beep.test16.shub.us:7000
-    #### Start ordering using local backend
-    1. Start mongo
-    2. Start redis `redis-server`
-    3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
-    4. Update `backend/.env`
-    5. `cd backend/ && yarn start`
-    6. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
-    7. `cd frontend/ && yarn start`
-    8. Visiting URL: {business}.local.beep.test16.shub.us:3000
+#### Start F&B && Loyalty
+  1. Set local domain
+  ```sh
+  (sudo) vim /etc/hosts (on Mac)
+  127.0.0.1 {business}.local.beep.test16.shub.us
+  ```
+  2. Update .env
+  Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. local domain)
+  3. Start project
+  * Quickly start ordering using the test environment (Recommendation)
+  [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
+  > 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
+  > 2. `cd frontend/ && yarn start`
+  > 3. Visiting URL: {business}.local.beep.test16.shub.us:3000
+  > 4. Set __s to local ordering page cookie from PROXY testing environment
+  > 5. Set deliveryAddress to local sessionStorage from PROXY testing environment
 
-2. Beep Entrance
-    > 1. Update .env
-      ```sh
-      REACT_APP_MERCHANT_STORE_URL=https://%business%.beep.test{11~19}.shub.us
-      REACT_APP_QR_SCAN_DOMAINS={business}.beepit.co,beepit.com,www.beepit.com
-      HOST={business}.beepit.co
-      ```
-    > 2. Start project
-    #### Start site
-    1. `cd frontend/ && yarn start`
-    2. Visiting Site URL: {business}.beepit.co
-    3. Visiting Scan Page URL: {business}.beepit.co/qrscan
+  * Start ordering on backend (Recommend to back-end developers)
+  > 1. Start mongo
+  > 2. Start redis `redis-server`
+  > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
+  > 4. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
+  > 5. `cd frontend/ && yarn build`
+  > 6. Update `backend/.env`
+  > 7. `cd backend/ && yarn start`
+  > 8. Visiting URL: {business}.local.beep.test16.shub.us:7000
+
+  * Start ordering using local backend
+  > 1. Start mongo
+  > 2. Start redis `redis-server`
+  > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
+  > 4. Update `backend/.env`
+  > 5. `cd backend/ && yarn start`
+  > 6. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
+  > 7. `cd frontend/ && yarn start`
+  > 8. Visiting URL: {business}.local.beep.test16.shub.us:3000
+
+#### Beep Entrance
+  1. Update .env
+    ```sh
+    REACT_APP_MERCHANT_STORE_URL=https://%business%.beep.test{11~19}.shub.us
+    REACT_APP_QR_SCAN_DOMAINS={business}.beepit.co,beepit.com,www.beepit.com
+    HOST={business}.beepit.co
+    ```
+  2. Start site
+  > 1. `cd frontend/ && yarn start`
+  > 2. Visiting Site URL: {business}.beepit.co
+  > 3. Visiting Scan Page URL: {business}.beepit.co/qrscan
 
 <a name="online-debug"></a>
 ### Online Debug (Source Map)
@@ -124,7 +125,6 @@ Update `aws_access_key_id` and `aws_secret_access_key`
     ```
 
 <a name="customize-workbox-service-workers"></a>
-
 ## Customize Workbox Service Workers
 
 Get more from [Using Custom Workbox Service Workers with Create-React-App (without ejecting)
