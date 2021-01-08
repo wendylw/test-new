@@ -67,7 +67,7 @@ yarn
 Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. local domain)
 
 3. Start project
-#### Quickly start ordering using the test environment (Recommendation)
+> Quickly start ordering using the test environment (Recommendation)
   [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
   > 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
   > 2. `cd frontend/ && yarn start`
@@ -75,7 +75,7 @@ Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. loc
   > 4. Set __s to local ordering page cookie from PROXY testing environment
   > 5. Set deliveryAddress to local sessionStorage from PROXY testing environment
 
-#### Start ordering on backend (Recommend to back-end developers)
+> Start ordering on backend (Recommend to back-end developers)
   > 1. Start mongo
   > 2. Start redis `redis-server`
   > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
@@ -85,7 +85,7 @@ Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. loc
   > 7. `cd backend/ && yarn start`
   > 8. Visiting URL: {business}.local.beep.test16.shub.us:7000
 
-#### Start ordering using local backend
+> Start ordering using local backend
   > 1. Start mongo
   > 2. Start redis `redis-server`
   > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
