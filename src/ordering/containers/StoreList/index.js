@@ -130,7 +130,7 @@ class StoreList extends Component {
         const { from } = state || {};
         let search = history.location.search;
 
-        if (this.state.search.callbackUrl) {
+        if (this.state.search.callbackUrl || from) {
           search = search.replace(/&?storeid=[^&]*/, '');
 
           this.props.history.replace({

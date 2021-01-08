@@ -89,7 +89,6 @@ class LocationAndDate extends Component {
 
   gotoStoreList = (deliveryType, storeId) => {
     const { history, location } = this.props;
-    const { callbackUrl } = this.query;
 
     const from = _get(location, 'state.from', null);
 
@@ -97,7 +96,7 @@ class LocationAndDate extends Component {
       h: this.query.h,
       storeid: storeId,
       type: deliveryType,
-      callbackUrl,
+      callbackUrl: this.query.callbackUrl,
     };
 
     history.push({
