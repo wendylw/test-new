@@ -422,7 +422,15 @@ export const getOrderDateList = createSelector(
       return [];
     }
 
-    return storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
+    const oderDateList = storeUtils.getOrderDateList(store, deliveryType, currentDate, businessUTCOffset);
+    const firstOrderDate = oderDateList[0];
+
+    // delete today option if it is closed
+    if (firstOrderDate && firstOrderDate.isToday && !firstOrderDate.isOpen) {
+      oderDateList.shift();
+    }
+
+    return oderDateList;
   }
 );
 
