@@ -49,8 +49,11 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 ```sh
 cd frontend/ && cp .env.example .env
 yarn
-cd ./backend && cp .env.example .env
+```
+```sh
+cd ./backend
 git submodule update --init -f
+cp .env.example .env
 yarn
 ```
 
