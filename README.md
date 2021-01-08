@@ -8,6 +8,7 @@
     1. [.ENV file](#env)
     2. [Installation](#installation)
     3. [Start F&B && Loyalty](#start-ordering-loyalty)
+    4. [Start Beep Entrance](#beep-entrance)
     4. [Online Debug](#online-debug)
 5. [Customize Workbox Service Workers](#customize-workbox-service-workers)
 6. [I18N JSON File Style Guide](#i18n-json-style-guide)
@@ -66,7 +67,7 @@ yarn
 Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. local domain)
 
 3. Start project
-* Quickly start ordering using the test environment (Recommendation)
+#### Quickly start ordering using the test environment (Recommendation)
 [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
 > 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
 > 2. `cd frontend/ && yarn start`
@@ -74,7 +75,7 @@ Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. loc
 > 4. Set __s to local ordering page cookie from PROXY testing environment
 > 5. Set deliveryAddress to local sessionStorage from PROXY testing environment
 
-* Start ordering on backend (Recommend to back-end developers)
+#### Start ordering on backend (Recommend to back-end developers)
 > 1. Start mongo
 > 2. Start redis `redis-server`
 > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
@@ -84,7 +85,7 @@ Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. loc
 > 7. `cd backend/ && yarn start`
 > 8. Visiting URL: {business}.local.beep.test16.shub.us:7000
 
-* Start ordering using local backend
+#### Start ordering using local backend
 > 1. Start mongo
 > 2. Start redis `redis-server`
 > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
@@ -94,17 +95,20 @@ Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. loc
 > 7. `cd frontend/ && yarn start`
 > 8. Visiting URL: {business}.local.beep.test16.shub.us:3000
 
-#### Beep Entrance
-  1. Update .env
-    ```sh
-    REACT_APP_MERCHANT_STORE_URL=https://%business%.beep.test{11~19}.shub.us
-    REACT_APP_QR_SCAN_DOMAINS={business}.beepit.co,beepit.com,www.beepit.com
-    HOST={business}.beepit.co
-    ```
-  2. Start site
-  > 1. `cd frontend/ && yarn start`
-  > 2. Visiting Site URL: {business}.beepit.co
-  > 3. Visiting Scan Page URL: {business}.beepit.co/qrscan
+<a name="beep-entrance"></a>
+### Beep Entrance
+
+1. Update .env
+  ```sh
+  REACT_APP_MERCHANT_STORE_URL=https://%business%.beep.test{11~19}.shub.us
+  REACT_APP_QR_SCAN_DOMAINS={business}.beepit.co,beepit.com,www.beepit.com
+  HOST={business}.beepit.co
+  ```
+
+2. Start site
+> 1. `cd frontend/ && yarn start`
+> 2. Visiting Site URL: {business}.beepit.co
+> 3. Visiting Scan Page URL: {business}.beepit.co/qrscan
 
 <a name="online-debug"></a>
 ### Online Debug (Source Map)
