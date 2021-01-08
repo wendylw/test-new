@@ -67,7 +67,7 @@ export const actions = {
     }
 
     if (!payload.storeId && deliveryCoords && deliveryType === DELIVERY_METHOD.DELIVERY) {
-      const { store } = storeUtils.findNearlyAvailableStore(stores, {
+      const { store } = storeUtils.findNearestAvailableStore(stores, {
         coords: deliveryCoords,
         currentDate: payload.currentDate,
         utcOffset: businessUTCOffset,
@@ -150,7 +150,7 @@ export const actions = {
 
       // re-find the nearestStore
       if (deliveryType === DELIVERY_METHOD.DELIVERY && deliveryCoords) {
-        const { store: nearestStore } = storeUtils.findNearlyAvailableStore(stores, {
+        const { store: nearestStore } = storeUtils.findNearestAvailableStore(stores, {
           coords: deliveryCoords,
           currentDate: currentDate,
           utcOffset: businessUTCOffset,

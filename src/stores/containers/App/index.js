@@ -30,7 +30,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { findNearlyAvailableStore } from '../../../utils/store-utils';
+import { findNearestAvailableStore } from '../../../utils/store-utils';
 import qs from 'qs';
 import config from '../../../config';
 import { getBusinessDeliveryRadius } from '../../redux/modules/app';
@@ -139,7 +139,7 @@ class App extends Component {
 
     const { businessUTCOffset, businessDeliveryRadius, stores } = this.props;
 
-    const { store, distance } = findNearlyAvailableStore(stores, {
+    const { store, distance } = findNearestAvailableStore(stores, {
       coords: deliveryAddress.coords,
       currentDate: new Date(),
       utcOffset: businessUTCOffset,

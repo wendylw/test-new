@@ -312,11 +312,11 @@ export const filterDeliveryAvailableStores = (stores, date, utcOffset) => {
 };
 
 /**
- * find a store that nearly to specify geo location
+ * find a store that nearest to specify geo location
  * @param {*} stores
  * @param {*} param1
  */
-export const findNearlyAvailableStore = (stores, { coords: { lat, lng }, currentDate, utcOffset }) => {
+export const findNearestAvailableStore = (stores, { coords: { lat, lng }, currentDate, utcOffset }) => {
   let nearlyStore = {
     distance: Infinity,
     store: null,
