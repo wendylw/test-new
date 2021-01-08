@@ -7,7 +7,7 @@
 3. [Get started](#get-started)
     1. [.ENV file](#env)
     2. [Installation](#installation)
-    3. [Usage](#usage)
+    3. [Start F&B && Loyalty](#start-ordering-loyalty)
     4. [Online Debug](#online-debug)
 5. [Customize Workbox Service Workers](#customize-workbox-service-workers)
 6. [I18N JSON File Style Guide](#i18n-json-style-guide)
@@ -53,45 +53,46 @@ git submodule update --init -f
 yarn
 ```
 
-<a name="usage"></a>
-### Usage
+<a name="start-ordering-loyalty"></a>
+### Start F&B && Loyalty
 
-#### Start F&B && Loyalty
-  1. Set local domain
-  ```sh
-  (sudo) vim /etc/hosts (on Mac)
-  127.0.0.1 {business}.local.beep.test16.shub.us
-  ```
-  2. Update .env
-  Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. local domain)
-  3. Start project
-  * Quickly start ordering using the test environment (Recommendation)
-  [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
-  > 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
-  > 2. `cd frontend/ && yarn start`
-  > 3. Visiting URL: {business}.local.beep.test16.shub.us:3000
-  > 4. Set __s to local ordering page cookie from PROXY testing environment
-  > 5. Set deliveryAddress to local sessionStorage from PROXY testing environment
+1. Set local domain
+```sh
+(sudo) vim /etc/hosts (on Mac)
+127.0.0.1 {business}.local.beep.test16.shub.us
+```
 
-  * Start ordering on backend (Recommend to back-end developers)
-  > 1. Start mongo
-  > 2. Start redis `redis-server`
-  > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
-  > 4. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
-  > 5. `cd frontend/ && yarn build`
-  > 6. Update `backend/.env`
-  > 7. `cd backend/ && yarn start`
-  > 8. Visiting URL: {business}.local.beep.test16.shub.us:7000
+2. Update .env
+Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. local domain)
 
-  * Start ordering using local backend
-  > 1. Start mongo
-  > 2. Start redis `redis-server`
-  > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
-  > 4. Update `backend/.env`
-  > 5. `cd backend/ && yarn start`
-  > 6. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
-  > 7. `cd frontend/ && yarn start`
-  > 8. Visiting URL: {business}.local.beep.test16.shub.us:3000
+3. Start project
+* Quickly start ordering using the test environment (Recommendation)
+[Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
+> 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
+> 2. `cd frontend/ && yarn start`
+> 3. Visiting URL: {business}.local.beep.test16.shub.us:3000
+> 4. Set __s to local ordering page cookie from PROXY testing environment
+> 5. Set deliveryAddress to local sessionStorage from PROXY testing environment
+
+* Start ordering on backend (Recommend to back-end developers)
+> 1. Start mongo
+> 2. Start redis `redis-server`
+> 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
+> 4. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
+> 5. `cd frontend/ && yarn build`
+> 6. Update `backend/.env`
+> 7. `cd backend/ && yarn start`
+> 8. Visiting URL: {business}.local.beep.test16.shub.us:7000
+
+* Start ordering using local backend
+> 1. Start mongo
+> 2. Start redis `redis-server`
+> 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
+> 4. Update `backend/.env`
+> 5. `cd backend/ && yarn start`
+> 6. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
+> 7. `cd frontend/ && yarn start`
+> 8. Visiting URL: {business}.local.beep.test16.shub.us:3000
 
 #### Beep Entrance
   1. Update .env
