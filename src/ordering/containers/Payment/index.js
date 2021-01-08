@@ -1,3 +1,5 @@
+import _isEqual from 'lodash/isEqual';
+import _startsWith from 'lodash/startsWith';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
@@ -46,8 +48,8 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { history, payments, unavailablePaymentList, deliveryDetails, customerActions } = this.props;
-    const availablePayments = payments.filter(p => !unavailablePaymentList.includes(p.key));
+    const { history, payments, merchantCountry, unavailablePaymentList, deliveryDetails, customerActions } = this.props;
+    const availablePayments = payments.filter(p => !unavailablePaymentList.includes(`${merchantCountry}:${p.key}`));
     const { addressId } = deliveryDetails || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
@@ -123,8 +125,8 @@ class Payment extends Component {
   };
 
   setCurrentPayment = ({ label, key }) => {
-    const { unavailablePaymentList } = this.props;
-    const disabledPayment = unavailablePaymentList.find(p => p === key);
+    const { merchantCountry, unavailablePaymentList } = this.props;
+    const disabledPayment = unavailablePaymentList.find(p => p === `${merchantCountry}:${key}`);
 
     if (!disabledPayment) {
       this.props.paymentActions.setCurrentPayment(label);
@@ -196,19 +198,10 @@ class Payment extends Component {
     const className = ['ordering-payment flex flex-column'];
     const paymentData = this.getPaymentEntryRequestData();
     const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
-    const promptDom =
-      total >= minimumFpxTotal ? (
-        <p className="margin-top-bottom-smaller">{t('TemporarilyUnavailable')}</p>
-      ) : (
-        <p className="margin-top-bottom-smaller">
-          ({' '}
-          <Trans i18nKey="MinimumConsumption">
-            <span>Min</span>
-            <CurrencyNumber money={minimumFpxTotal} />
-          </Trans>{' '}
-          )
-        </p>
-      );
+    const currentUnavailablePayments = unavailablePaymentList.filter(unavailablePayment =>
+      _startsWith(unavailablePayment, merchantCountry)
+    );
+    const allPaymentsUnavailable = currentUnavailablePayments.length === payments.length;
 
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
@@ -236,7 +229,20 @@ class Payment extends Component {
               const classList = [
                 'ordering-payment__item flex flex-middle flex-space-between padding-small border__bottom-divider',
               ];
-              const disabledPayment = unavailablePaymentList.find(p => p === payment.key);
+              const disabledPayment = unavailablePaymentList.find(p => p === `${merchantCountry}:${payment.key}`);
+              const promptDom =
+                total < minimumFpxTotal && _isEqual(`${merchantCountry}:${payment.key}`, 'MY:onlineBanking') ? (
+                  <p className="margin-top-bottom-smaller">
+                    ({' '}
+                    <Trans i18nKey="MinimumConsumption">
+                      <span>Min</span>
+                      <CurrencyNumber money={minimumFpxTotal} />
+                    </Trans>{' '}
+                    )
+                  </p>
+                ) : (
+                  <p className="margin-top-bottom-smaller">{t('TemporarilyUnavailable')}</p>
+                );
 
               if (!payment) {
                 return null;
@@ -285,7 +291,7 @@ class Payment extends Component {
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-testid="payNow"
             data-heap-name="ordering.payment.pay-btn"
-            disabled={payNowLoading}
+            disabled={payNowLoading || allPaymentsUnavailable}
             validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
             paymentName={getPaymentName(merchantCountry, currentPayment)}

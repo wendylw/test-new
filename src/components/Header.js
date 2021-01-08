@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import _isNumber from 'lodash/isNumber';
 import { IconLeftArrow, IconClose, IconMotorcycle, IconWallet } from './Icons';
 import Tag from './Tag';
 import Image from './Image';
@@ -14,10 +15,6 @@ import './Header.scss';
 class Header extends Component {
   renderLogoAndNavDom() {
     const { isStoreHome, isPage, logo, title, isValidTimeToOrder, enablePreOrder, navFunc } = this.props;
-
-    // if (Utils.isWebview()) {
-    //   return null;
-    // }
 
     const renderPageAction = () => {
       const isHomePageBack =
@@ -123,13 +120,10 @@ class Header extends Component {
               </div>
               {isDeliveryType || isPickUpType ? (
                 <ul className="store-info">
-                  {isDeliveryType ? (
+                  {isDeliveryType && _isNumber(deliveryFee) ? (
                     <li className="store-info__item">
                       <IconMotorcycle className="icon icon__smaller text-middle" />
-                      <CurrencyNumber
-                        className="store-info__text text-size-smaller text-middle"
-                        money={deliveryFee || 0}
-                      />
+                      <CurrencyNumber className="store-info__text text-size-smaller text-middle" money={deliveryFee} />
                     </li>
                   ) : null}
                   {enableCashback && cashbackRatePercentage ? (
@@ -184,7 +178,6 @@ Header.defaultProps = {
   enableCashback: false,
   title: '',
   storeAddress: '',
-  deliveryFee: 0,
   defaultLoyaltyRatio: 0,
   navFunc: () => {},
   onClickHandler: () => {},

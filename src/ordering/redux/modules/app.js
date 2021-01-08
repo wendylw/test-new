@@ -331,7 +331,7 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
-      if (error && error.code === 401) {
+      if (error && (error.code === 401 || error.code === '40000')) {
         return { ...state, isExpired: true, isFetching: false };
       }
 
@@ -540,3 +540,7 @@ export const getStore = state => {
 
   return getStoreById(state, storeId);
 };
+
+export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
+  return _get(onlineStoreInfo, 'currency', 'MYR');
+});

@@ -745,6 +745,20 @@ export class Home extends Component {
       : Utils.isDeliveryType() || (Utils.isPickUpType() && validTimeFrom && validTimeTo && callApiFinish);
   };
 
+  isRenderDeliveryFee = (enableConditionalFreeShipping, freeShippingMinAmount) => {
+    const adBarHeight = 30;
+    const { dScrollY } = this.state;
+    const { storeId } = config;
+
+    return (
+      enableConditionalFreeShipping &&
+      freeShippingMinAmount &&
+      Utils.isDeliveryType() &&
+      dScrollY < adBarHeight &&
+      storeId
+    );
+  };
+
   render() {
     const {
       categories,
@@ -781,7 +795,7 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
+        {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p
               ref={ref => (this.deliveryFeeEl = ref)}
