@@ -50,6 +50,7 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 cd frontend/ && cp .env.example .env
 yarn
 ```
+
 ```sh
 cd ./backend
 git submodule update --init -f
@@ -117,10 +118,10 @@ Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. loc
 ### Online Debug (Source Map)
 
 1. Setting aws keys
-```sh
-open ~/.aws/credentials
-```
-Update `aws_access_key_id` and `aws_secret_access_key`
+    ```sh
+    open ~/.aws/credentials
+    ```
+    Update `aws_access_key_id` and `aws_secret_access_key`
 
 2. Start source map 
     #### on testing environment
@@ -169,15 +170,15 @@ When you want to use html tag in translation, please use like:
 If you create a public component under `/frontend/src/components/`, please update the library in the style guide
 
 ### Start up the Style Guide locally
-> browser will automatically start on port `9009`
+  > browser will automatically start on port `9009`
 
-```shell script
-yarn storybook
-```  
+  ```shell script
+  yarn storybook
+  ```  
 ### Manually publish style guide
 
-```shell script
-cd ./frontend && yarn && yarn chromatic --project-token=ejo2it5a6d
+  ```shell script
+  cd ./frontend && yarn && yarn chromatic --project-token=ejo2it5a6d
 ```
 
 <a name="heap-tracking-code"></a>
