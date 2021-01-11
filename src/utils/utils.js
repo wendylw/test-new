@@ -804,4 +804,16 @@ Utils.getOpeningHours = function({
   return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
 };
 
+Utils.getOrderSource = () => {
+  let orderSource = '';
+  if (Utils.isWebview()) {
+    orderSource = 'BeepApp';
+  } else if (sessionStorage.getItem('orderSource')) {
+    orderSource = 'BeepSite';
+  } else {
+    orderSource = 'BeepStore';
+  }
+  return orderSource;
+};
+
 export default Utils;

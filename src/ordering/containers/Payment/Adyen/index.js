@@ -3,6 +3,9 @@ import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
+import _get from 'lodash/get';
+import _toString from 'lodash/toString';
+import _startsWith from 'lodash/startsWith';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
@@ -19,6 +22,7 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
 import AdyenSecurity from '../../../../../src/images/Adyen-PCI.png';
 import '../PaymentCreditCard.scss';
@@ -105,7 +109,7 @@ class AdyenPage extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, merchantCountry, user } = this.props;
+    const { onlineStoreInfo, currentOrder, business, businessInfo, merchantCountry, user } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ADYEN_PAY;
     const { state, browserInfo } = this.card;
     const { data: paymentMethod } = state;
@@ -116,6 +120,7 @@ class AdyenPage extends Component {
 
     const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
     const { saveCard } = this.state;
+    const planId = _toString(_get(businessInfo, 'planId', ''));
 
     return {
       amount: currentOrder.total,
@@ -127,6 +132,8 @@ class AdyenPage extends Component {
       redirectURL,
       webhookURL,
       userId: user.consumerId,
+      isInternal: _startsWith(planId, 'internal'),
+      orderSource: Utils.getOrderSource(),
       ...paymentMethod,
       type: saveCard
         ? Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVE_CARD
@@ -303,6 +310,7 @@ export default compose(
 
       return {
         business: getBusiness(state),
+        businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),

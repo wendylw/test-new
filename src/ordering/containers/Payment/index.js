@@ -8,6 +8,9 @@ import RedirectForm from './components/RedirectForm';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
+import _get from 'lodash/get';
+import _toString from 'lodash/toString';
+import _startsWith from 'lodash/startsWith';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -83,7 +86,7 @@ class Payment extends Component {
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, currentPayment, business, businessInfo, merchantCountry } = this.props;
-    const { planId } = businessInfo || {};
+    const planId = _toString(_get(businessInfo, 'planId', ''));
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || EXCLUDED_PAYMENTS.includes(currentPayment)) {
       return null;
@@ -99,7 +102,8 @@ class Payment extends Component {
       redirectURL: redirectURL,
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
-      isInternal: String(planId || '').startsWith('internal'),
+      isInternal: _startsWith(planId, 'internal'),
+      orderSource: Utils.getOrderSource(),
     };
   };
 
