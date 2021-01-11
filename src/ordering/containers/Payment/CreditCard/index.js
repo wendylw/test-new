@@ -2,9 +2,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import CurrencyNumber from '../../../components/CurrencyNumber';
@@ -90,7 +87,7 @@ class CreditCard extends Component {
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
     const { card } = this.state;
     const { cardholderName } = card || {};
-    const planId = _toString(_get(businessInfo, 'planId', ''));
+    const { planId } = businessInfo || {};
 
     if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
       return null;
@@ -113,8 +110,7 @@ class CreditCard extends Component {
       expYearCardInfo,
       expMonthCardInfo,
       maskedCardInfo,
-      isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      isInternal: String(planId || '').startsWith('internal'),
     };
   };
 

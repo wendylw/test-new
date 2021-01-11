@@ -2,9 +2,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import _find from 'lodash/find';
-import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
@@ -14,7 +11,6 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import { IconKeyArrowDown } from '../../../../components/Icons';
 import Constants from '../../../../utils/constants';
-import Utils from '../../../../utils/utils';
 import config from '../../../../config';
 
 import { connect } from 'react-redux';
@@ -60,7 +56,7 @@ class OnlineBanking extends Component {
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, business, businessInfo, merchantCountry } = this.props;
-    const planId = _toString(_get(businessInfo, 'planId', ''));
+    const { planId } = businessInfo || {};
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
     const { agentCode } = this.state;
 
@@ -79,8 +75,7 @@ class OnlineBanking extends Component {
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
-      isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      isInternal: String(planId || '').startsWith('internal'),
     };
   };
 
