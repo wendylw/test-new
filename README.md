@@ -14,8 +14,8 @@
 6. [I18N JSON File Style Guide](#i18n-json-style-guide)
 7. [Style Guide](#style-guide)
 8. [Analyzing bundle size](#analyzing-bundle-size)
-9. <a href="https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow" target="_blank">Release Flow</a>
-10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL){:target="_blank"}
+9. [Release Flow](https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow)
+10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>
 ## Abstraction
@@ -26,7 +26,7 @@ Beep project contains some products of StoreHub, they are
 2. Loyalty (Cashback)
 3. Beep Entrance (Site)
 
-Front end of this project is bootstrapped by [CRA (Create React App)](https://create-react-app.dev/docs/getting-started){:target="_blank"}.
+Front end of this project is bootstrapped by [CRA (Create React App)](https://create-react-app.dev/docs/getting-started).
 
 <a name="environments"></a>
 ## Environments
@@ -71,7 +71,7 @@ yarn
 Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. local domain)
 
 3. Start project
-> [Beep(F&B and Cashback) Setup](https://storehub.atlassian.net/wiki/spaces/DP/pages/141820051#id-%E6%96%B0%E6%89%8B%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%EF%BC%88%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%EF%BC%89---Beep(F&BandCashback)Setup){:target="_blank"}: Steps to start core api and ecommerce api
+> [Beep(F&B and Cashback) Setup](https://storehub.atlassian.net/wiki/spaces/DP/pages/141820051#id-%E6%96%B0%E6%89%8B%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%EF%BC%88%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%EF%BC%89---Beep(F&BandCashback)Setup): Steps to start core api and ecommerce api
 
 * Quickly start ordering using the test environment (Recommendation)
     [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
