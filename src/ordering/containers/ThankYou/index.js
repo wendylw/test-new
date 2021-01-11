@@ -1216,7 +1216,6 @@ export class ThankYou extends PureComponent {
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const isDineInType = Utils.isDineInType();
-    const isTakeaway = isDeliveryType || isPickUpType;
     let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
