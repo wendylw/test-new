@@ -1,5 +1,3 @@
-import _isEqual from 'lodash/isEqual';
-import _startsWith from 'lodash/startsWith';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
@@ -9,6 +7,7 @@ import CreateOrderButton from '../../components/CreateOrderButton';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 import _get from 'lodash/get';
+import _isEqual from 'lodash/isEqual';
 import _toString from 'lodash/toString';
 import _startsWith from 'lodash/startsWith';
 
