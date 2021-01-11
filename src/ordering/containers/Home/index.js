@@ -863,7 +863,7 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar />
+        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p
@@ -883,11 +883,11 @@ export class Home extends Component {
           className="ordering-home__container flex flex-top sticky-wrapper"
           style={{
             top: `${mainTop({
-              headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+              headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl, this.promotionEl],
             })}px`,
             height: `${windowSize.height -
               mainTop({
-                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl, this.promotionEl],
               }) -
               marginBottom({
                 footerEls: [this.footerEl],
