@@ -71,6 +71,8 @@ yarn
 Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. local domain)
 
 3. Start project
+> [Beep(F&B and Cashback) Setup](https://storehub.atlassian.net/wiki/spaces/DP/pages/141820051#id-%E6%96%B0%E6%89%8B%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%EF%BC%88%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%EF%BC%89---Beep(F&BandCashback)Setup): Start core api and ecommerce api can see the steps here
+ 
 * Quickly start ordering using the test environment (Recommendation)
     [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
     > 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
