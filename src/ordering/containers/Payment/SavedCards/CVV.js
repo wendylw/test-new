@@ -3,6 +3,9 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
+import _get from 'lodash/get';
+import _toString from 'lodash/toString';
+import _startsWith from 'lodash/startsWith';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
 import CreateOrderButton from '../../../components/CreateOrderButton';
@@ -17,6 +20,7 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getMerchantCountry } from '../../../redux/modules/app';
+import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentRedirectAndWebHookUrl, getCardLabel } from '../utils';
 import { getUser, getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import {
@@ -115,7 +119,15 @@ class CardCVV extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, user, selectedPaymentCard } = this.props;
+    const {
+      onlineStoreInfo,
+      currentOrder,
+      business,
+      businessInfo,
+      merchantCountry,
+      user,
+      selectedPaymentCard,
+    } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ADYEN_PAY;
     const { state, browserInfo } = this.card;
 
@@ -124,6 +136,7 @@ class CardCVV extends Component {
     }
 
     const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
+    const planId = _toString(_get(businessInfo, 'planId', ''));
 
     return {
       amount: currentOrder.total,
@@ -137,6 +150,8 @@ class CardCVV extends Component {
       encryptedSecurityCode: state.data.encryptedSecurityCode,
       type: Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVED_CARD,
       browserInfo,
+      isInternal: _startsWith(planId, 'internal'),
+      orderSource: Utils.getOrderSource(),
     };
   };
 
@@ -261,6 +276,7 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         user: getUser(state),
         business: getBusiness(state),
+        businessInfo: getBusinessInfo(state),
       };
     },
     dispatch => ({
