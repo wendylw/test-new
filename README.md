@@ -14,7 +14,7 @@
 6. [I18N JSON File Style Guide](#i18n-json-style-guide)
 7. [Style Guide](#style-guide)
 8. [Analyzing bundle size](#analyzing-bundle-size)
-9. [Release Flow](https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow){target="_blank"}
+9. <a href="https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow" target="_blank">Release Flow</a>
 10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL){:target="_blank"}
 
 <a name="abstraction"></a>
