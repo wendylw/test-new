@@ -1,5 +1,3 @@
-import { types } from '../../../ordering/redux/modules/app';
-
 const initialState = {
   deliveryAddressList: [],
 };

@@ -115,7 +115,7 @@ class CardCVV extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, merchantCountry, user, selectedPaymentCard } = this.props;
+    const { onlineStoreInfo, currentOrder, business, user, selectedPaymentCard } = this.props;
     const currentPayment = Constants.PAYMENT_METHOD_LABELS.ADYEN_PAY;
     const { state, browserInfo } = this.card;
 

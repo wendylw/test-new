@@ -8,8 +8,7 @@ import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
-import { actions as appActionCreators, getUser, getBusinessInfo, getOnlineStoreInfo } from '../../redux/modules/app';
-import Utils from '../../../utils/utils';
+import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
@@ -27,12 +26,12 @@ class Login extends React.Component {
     appActions.updateUser(user);
   }
 
-  handleSubmitPhoneNumber(phone) {
-    const { appActions, otpType } = this.props;
+  // handleSubmitPhoneNumber(phone) {
+  //   const { appActions, otpType } = this.props;
 
-    appActions.getOtp({ phone, type: otpType });
-    this.setState({ sendOtp: true });
-  }
+  //   appActions.getOtp({ phone, type: otpType });
+  //   this.setState({ sendOtp: true });
+  // }
 
   async handleSubmitPhoneNumber() {
     const { appActions, user } = this.props;

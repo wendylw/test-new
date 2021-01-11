@@ -148,10 +148,9 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { appActions, user, pageError, businessInfo, apiErrorMessage } = this.props;
+    const { appActions, user, pageError, businessInfo } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
     const { code } = prevProps.pageError || {};
-    const { code: errorCode } = apiErrorMessage;
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
