@@ -7,6 +7,7 @@ import Header from '../../../components/Header';
 
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
+import PromotionsBar from './components/PromotionsBar';
 import ProductDetail from './components/ProductDetail';
 import CartListAside from './components/CartListAside';
 import StoreInfoAside from './components/StoreInfoAside';
@@ -862,6 +863,7 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
+        <PromotionsBar />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p
