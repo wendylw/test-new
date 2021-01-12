@@ -22,8 +22,8 @@
     width: 85%;
   }
 
-  &__address-summary::marker {
-    display: none;
+  &__address-summary {
+    list-style: none;
   }
 
   &__address-summary,
