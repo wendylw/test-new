@@ -33,21 +33,6 @@ class PromotionBar extends Component {
         validDate: '31st Jan 2021',
         type: 'store',
       },
-      {
-        business: 'myteststore',
-        discountPercentage: '12%',
-        promoCode: 'AMOUNTOFF',
-        validDate: '31st Dec 2020',
-        type: 'store',
-      },
-      {
-        business: 'myteststore',
-        discountPercentage: '10%',
-        discountProductList: ['Christmas Bombo Box'],
-        promoCode: 'XMAS10',
-        validDate: '12th Jan 2021',
-        type: 'products',
-      },
     ];
     const defaultUniversalPromotion = {
       discountPercentage: '15%',
