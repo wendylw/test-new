@@ -1,5 +1,4 @@
 import { createSelector } from 'reselect';
-import _split from 'lodash/split';
 import Url from '../../../utils/url';
 import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
@@ -542,9 +541,3 @@ export const getProductItemMinHeight = state => state.home.domProperties.product
 export const getPopUpModal = state => state.home.popUpModal;
 
 export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;
-
-export const getStoreListWithPromotion = state => {
-  const storeList = process.env.REACT_APP_PROMOTION_STORES || '';
-
-  return _split(storeList, ',');
-};

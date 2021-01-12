@@ -854,6 +854,7 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
+    const { hasUniversalPromotion } = businessInfo || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -863,7 +864,7 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} />
+        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} hasUniversalPromotion={hasUniversalPromotion} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p

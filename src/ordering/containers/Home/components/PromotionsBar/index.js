@@ -1,124 +1,140 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _includes from 'lodash/includes';
-import _isEmpty from 'lodash/isEmpty';
 import _filter from 'lodash/filter';
 import { IconLocalOffer } from '../../../../../components/Icons';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../../../redux/modules/app';
-import { getStoreListWithPromotion } from '../../../../redux/modules/home';
 
 class PromotionBar extends Component {
-  getPromotionInfo(business, storeList) {
-    const hasPromotion = _filter(storeList, store => _includes(store));
-    const promotionList = {
-      idc: {
+  getPromotionInfo(business, hasUniversalPromotion) {
+    const promotionList = [
+      {
+        business: 'idc',
         discountPercentage: '84%',
         discountProductList: ['IDC Homemade Frozen Crispy Waffles'],
         promoCode: 'ONLYRM2',
         validDate: '31st Jan 2021',
+        type: 'products',
       },
-      sugarandi: {
+      {
+        business: 'sugarandi',
         discountPercentage: '10%',
         discountProductList: ['Christmas Bombo Box', 'Christmas Combo Box'],
         promoCode: 'XMAS10',
         validDate: '31st Jan 2021',
+        type: 'products',
       },
-      wokit: {
+      {
+        business: 'wokit',
         discountPercentage: '21%',
         promoCode: 'HELLO21',
         validDate: '31st Jan 2021',
+        type: 'store',
       },
-      myteststore: {
+      {
+        business: 'myteststore',
         discountPercentage: '12%',
-        discountProductList: ['zhe', 'wei-combo'],
+        promoCode: 'AMOUNTOFF',
+        validDate: '31st Dec 2020',
+        type: 'store',
+      },
+      {
+        business: 'myteststore',
+        discountPercentage: '10%',
+        discountProductList: ['Christmas Bombo Box'],
         promoCode: 'XMAS10',
-        validDate: '31st Jan 2021',
+        validDate: '12th Jan 2021',
+        type: 'products',
       },
-      mcm: {
-        discountPercentage: '21%',
-        promoCode: 'HELLO21',
-        validDate: '31st Jan 2021',
-      },
-      default: {
-        discountPercentage: '15%',
-        promoCode: 'STAYHOME15',
-        cappedValue: 'RM15',
-        consumptionAmount: 'RM30',
-      },
+    ];
+    const defaultUniversalPromotion = {
+      discountPercentage: '15%',
+      promoCode: 'STAYHOME15',
+      cappedValue: 'RM15',
+      consumptionAmount: 'RM30',
     };
+    const currentPromotions = _filter(promotionList, { business });
 
-    return hasPromotion ? promotionList[business] || promotionList.default : null;
+    if (hasUniversalPromotion) {
+      currentPromotions.push(defaultUniversalPromotion);
+    }
+
+    return currentPromotions;
   }
 
   render() {
-    const { promotionRef, business, storeListWithPromotion } = this.props;
-    const promotionInfo = this.getPromotionInfo(business, storeListWithPromotion);
+    const { promotionRef, business, hasUniversalPromotion } = this.props;
+    const promotionList = this.getPromotionInfo(business, hasUniversalPromotion);
 
-    if (_isEmpty(promotionInfo)) {
+    if (!promotionList.length) {
       return null;
     }
 
-    const {
-      discountPercentage,
-      discountProductList,
-      promoCode,
-      validDate,
-      cappedValue,
-      consumptionAmount,
-    } = promotionInfo;
-    const discountProducts = (discountProductList || []).join(', ');
-    const productsPromotionDescription = (
-      <Trans
-        i18nKey="ProductsPromotionDescription"
-        discountPercentage={discountPercentage}
-        discountProducts={discountProducts}
-        promoCode={promoCode}
-        validDate={validDate}
-      >
-        Get <strong>{discountPercentage}</strong> OFF for {discountProducts} with <strong>{promoCode}</strong>. Promo
-        Code is valid till {validDate}
-      </Trans>
-    );
-    const storePromotionDescription = (
-      <Trans
-        i18nKey="StorePromotionDescription"
-        discountPercentage={discountPercentage}
-        promoCode={promoCode}
-        validDate={validDate}
-      >
-        Get <strong>{discountPercentage}</strong> OFF with <strong>{promoCode}</strong>. Promo Code is valid till{' '}
-        {validDate}
-      </Trans>
-    );
-    const universalPromotionDescription = (
-      <Trans
-        i18nKey="UniversalPromotionDescription"
-        discountPercentage={discountPercentage}
-        promoCode={promoCode}
-        cappedValue={cappedValue}
-        consumptionAmount={consumptionAmount}
-      >
-        <strong>{discountPercentage}</strong> OFF with promo code <strong>{promoCode}</strong>
-        <br />
-        (capped at {cappedValue} with min. spend {consumptionAmount})
-      </Trans>
-    );
-    const description =
-      discountProductList && validDate
-        ? productsPromotionDescription
-        : discountProductList || validDate
-        ? storePromotionDescription
-        : universalPromotionDescription;
-
     return (
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
-        <li className="flex flex-top padding-small">
-          <IconLocalOffer className="icon icon__primary icon__smaller" />
-          <p className="margin-left-right-smaller text-line-height-base">{description}</p>
-        </li>
+        {promotionList.map(promo => {
+          const {
+            discountPercentage,
+            discountProductList,
+            promoCode,
+            validDate,
+            cappedValue,
+            consumptionAmount,
+          } = promo;
+          const discountProducts = (discountProductList || []).join(', ');
+          const productsPromotionDescription = (
+            <Trans
+              i18nKey="ProductsPromotionDescription"
+              discountPercentage={discountPercentage}
+              discountProducts={discountProducts}
+              promoCode={promoCode}
+              validDate={validDate}
+            >
+              Get <strong>{discountPercentage}</strong> OFF for {discountProducts} with <strong>{promoCode}</strong>.
+              Promo Code is valid till {validDate}
+            </Trans>
+          );
+          const storePromotionDescription = (
+            <Trans
+              i18nKey="StorePromotionDescription"
+              discountPercentage={discountPercentage}
+              promoCode={promoCode}
+              validDate={validDate}
+            >
+              Get <strong>{discountPercentage}</strong> OFF with <strong>{promoCode}</strong>. Promo Code is valid till{' '}
+              {validDate}
+            </Trans>
+          );
+          const universalPromotionDescription = (
+            <Trans
+              i18nKey="UniversalPromotionDescription"
+              discountPercentage={discountPercentage}
+              promoCode={promoCode}
+              cappedValue={cappedValue}
+              consumptionAmount={consumptionAmount}
+            >
+              <strong>{discountPercentage}</strong> OFF with promo code <strong>{promoCode}</strong>
+              <br />
+              (capped at {cappedValue} with min. spend {consumptionAmount})
+            </Trans>
+          );
+          let description = universalPromotionDescription;
+
+          if (discountProductList && validDate) {
+            description = productsPromotionDescription;
+          } else if (discountProductList || validDate) {
+            description = storePromotionDescription;
+          }
+
+          return (
+            <li className="flex flex-top padding-small">
+              <IconLocalOffer className="icon icon__primary icon__smaller" />
+              <p className="margin-left-right-smaller text-line-height-base">{description}</p>
+            </li>
+          );
+        })}
       </ul>
     );
   }
@@ -126,6 +142,11 @@ class PromotionBar extends Component {
 
 PromotionBar.propTypes = {
   promotionRef: PropTypes.any,
+  hasUniversalPromotion: PropTypes.bool,
+};
+
+PromotionBar.defaultProps = {
+  hasUniversalPromotion: false,
 };
 
 export default compose(
@@ -134,7 +155,6 @@ export default compose(
     state => {
       return {
         business: getBusiness(state),
-        storeListWithPromotion: getStoreListWithPromotion(state),
       };
     },
     dispatch => ({})

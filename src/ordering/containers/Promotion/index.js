@@ -83,13 +83,13 @@ class Promotion extends Component {
   };
 
   getMessage = () => {
-    const { appliedResult } = this.props;
+    const { appliedResult, onlineStoreInfo } = this.props;
     if (!appliedResult || appliedResult.success) {
       return '';
     }
     const { code, extraInfo } = appliedResult;
 
-    return getErrorMessageByPromoErrorCode(code, extraInfo);
+    return getErrorMessageByPromoErrorCode(code, extraInfo, onlineStoreInfo);
   };
 
   render() {
