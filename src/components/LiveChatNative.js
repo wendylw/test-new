@@ -9,12 +9,14 @@ class LiveChatNative extends Component {
     const message = `Order number: ${orderId}\nPhone number: ${phone}\nStore Name: ${storeName}`;
 
     if (Utils.isAndroidWebview()) {
-      window.androidInterface.startChat({
-        phoneNumber: phone,
-        name,
-        email,
-        message,
-      });
+      window.androidInterface.startChat(
+        JSON.stringify({
+          phoneNumber: phone,
+          name,
+          email,
+          message,
+        })
+      );
     }
 
     if (Utils.isIOSWebview()) {
