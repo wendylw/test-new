@@ -26,13 +26,6 @@ class Login extends React.Component {
     appActions.updateUser(user);
   }
 
-  // handleSubmitPhoneNumber(phone) {
-  //   const { appActions, otpType } = this.props;
-
-  //   appActions.getOtp({ phone, type: otpType });
-  //   this.setState({ sendOtp: true });
-  // }
-
   async handleSubmitPhoneNumber() {
     const { appActions, user } = this.props;
     const { phone } = user || {};
