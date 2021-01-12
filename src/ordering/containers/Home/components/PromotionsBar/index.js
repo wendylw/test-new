@@ -72,11 +72,11 @@ class PromotionBar extends Component {
       <Trans
         i18nKey="ProductsPromotionDescription"
         discountPercentage={discountPercentage}
-        discountProductList={(discountProductList || []).join(', ')}
+        discountProducts={(discountProductList || []).join(', ')}
         promoCode={promoCode}
         validDate={validDate}
       >
-        Get <strong>{discountPercentage}</strong> OFF for {discountProductList} with <strong>{promoCode}</strong>. Promo
+        Get <strong>{discountPercentage}</strong> OFF for {discountProducts} with <strong>{promoCode}</strong>. Promo
         Code is valid till {validDate}
       </Trans>
     );
