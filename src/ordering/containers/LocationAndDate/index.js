@@ -567,9 +567,9 @@ class LocationAndDate extends Component {
         !this.notVacation({ date: deliveryDate }) && (isOpen = false);
       }
 
-      // Hotfix_beep-Update-some-settins-for-merchants: store logistics will revert, comment is just temp.
+      // Hotfix_beep-Update-some-settins-for-merchants: store logistics and delivery type will revert, comment is just temp.
       if (
-        /* useStorehubLogistics &&*/ this.state.isDeliveryType &&
+        /* useStorehubLogistics && this.state.isDeliveryType &&*/
         storehubLogisticsBusinessHours[1] < this.validTimeTo
       ) {
         const isBeforeStoreClose = isNoLaterThan(
@@ -1052,19 +1052,17 @@ class LocationAndDate extends Component {
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
     const { qrOrderingSettings } = businessInfo || {};
-    // Hotfix_beep-Update-some-settins-for-merchants: store logistics will revert, comment is just temp.
-    const {
-      /* useStorehubLogistics */
-    } = qrOrderingSettings || {};
-    const limit = /* useStorehubLogistics && */ this.state.isDeliveryType;
+    const { useStorehubLogistics } = qrOrderingSettings || {};
+    const limit = useStorehubLogistics && this.state.isDeliveryType;
     const currentTime = new Date();
     const storeOpenTime = createTimeWithTimeString(
       limit && this.validTimeFrom < storehubLogisticsBusinessHours[0]
         ? storehubLogisticsBusinessHours[0]
         : this.validTimeFrom
     );
+    // Hotfix_beep-Update-some-settins-for-merchants: limit will revert, comment is just temp.
     const storeCloseTime = createTimeWithTimeString(
-      limit && this.validTimeTo > storehubLogisticsBusinessHours[1]
+      /*limit &&*/ this.validTimeTo > storehubLogisticsBusinessHours[1]
         ? storehubLogisticsBusinessHours[1]
         : this.validTimeTo
     );
