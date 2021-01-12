@@ -272,6 +272,20 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
     showModal: true,
   },
+  40025: {
+    title: 'ApiError:40025Title',
+    desc: 'ApiError:40025Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+    showModal: false,
+  },
+  40026: {
+    title: 'ApiError:40026Title',
+    desc: 'ApiError:40026Description',
+    redirectUrl: '',
+    buttonText: 'Common:Continue',
+    showModal: false,
+  },
   41000: {
     title: 'ApiError:41000Title',
     desc: 'ApiError:41000Description',
