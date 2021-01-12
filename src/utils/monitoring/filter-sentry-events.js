@@ -31,6 +31,8 @@ const isCrossStorageBug = (event, hint) => {
 };
 
 const isCrossStorageCloseBug = (event, hint) => {
+  // Some browsers doesn't support cross storage. This is a known issue and will be fixed soon. We
+  // turn off the log to prevent it taking the sentry quota.
   try {
     const err = event.exception.values[0];
     return /Closing client\. Could not access localStorage in hub/.test(err.value);
