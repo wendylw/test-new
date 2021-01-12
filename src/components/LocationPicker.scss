@@ -22,6 +22,10 @@
     width: 85%;
   }
 
+  &__address-summary::marker {
+    display: none;
+  }
+
   &__address-summary,
   &__address-title,
   &__address-detail,
