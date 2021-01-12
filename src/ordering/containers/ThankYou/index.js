@@ -7,6 +7,7 @@ import { bindActionCreators, compose } from 'redux';
 import Header from '../../../components/Header';
 import { IconAccessTime, IconPin } from '../../../components/Icons';
 import LiveChat from '../../../components/LiveChat';
+import LiveChatNative from '../../../components/LiveChatNative';
 import config from '../../../config';
 import beepAppDownloadBanner from '../../../images/beep-app-download.png';
 import logisticsGoget from '../../../images/beep-logistics-goget.png';
@@ -1209,10 +1210,13 @@ export class ThankYou extends PureComponent {
   }
 
   render() {
-    const { t, history, match, order, storeHashCode, user } = this.props;
+    const { t, history, match, order, storeHashCode, user, onlineStoreInfo } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [] } = order || {};
-    const { isWebview } = user || {};
+    const {
+      isWebview,
+      profile: { email },
+    } = user || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
@@ -1222,6 +1226,7 @@ export class ThankYou extends PureComponent {
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
     const { isHideTopArea } = this.state;
+    const { storeName } = onlineStoreInfo || {};
 
     if (isDeliveryType && this.isNowPaidPreOrder()) {
       orderInfo = this.renderPreOrderMessage();
@@ -1285,6 +1290,14 @@ export class ThankYou extends PureComponent {
               {!isDineInType ? (
                 !isWebview ? (
                   <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+                ) : window.liveChatAvailable ? (
+                  <LiveChatNative
+                    orderId={`${orderId}`}
+                    name={orderUserName}
+                    phone={orderUserPhone}
+                    email={email}
+                    storeName={storeName}
+                  />
                 ) : (
                   <button
                     className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"

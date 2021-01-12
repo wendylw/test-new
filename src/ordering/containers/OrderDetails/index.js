@@ -6,7 +6,8 @@ import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import LiveChat from '../../../components/LiveChat';
-import { getUser } from '../../redux/modules/app';
+import LiveChatNative from '../../../components/LiveChatNative';
+import { getUser, getOnlineStoreInfo } from '../../redux/modules/app';
 import Tag from '../../../components/Tag';
 import beepPreOrderSuccess from '../../../images/beep-pre-order-success.png';
 import {
@@ -233,11 +234,12 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, history, t, isUseStorehubLogistics, serviceCharge, user } = this.props;
+    const { order, history, t, isUseStorehubLogistics, serviceCharge, user, onlineStoreInfo } = this.props;
     const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [] } = order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
-    const { isWebview } = user;
+    const { isWebview, email } = user;
+    const { storeName } = onlineStoreInfo || {};
 
     let orderUserName = '';
     let orderUserPhone = '';
@@ -265,6 +267,14 @@ export class OrderDetails extends Component {
         >
           {!isWebview ? (
             <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+          ) : window.liveChatAvailable ? (
+            <LiveChatNative
+              orderId={`${orderId}`}
+              name={orderUserName}
+              phone={orderUserPhone}
+              email={email}
+              storeName={storeName}
+            />
           ) : (
             <button
               className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
@@ -347,6 +357,7 @@ export default compose(
       orderStatus: getOrderStatus(state),
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
