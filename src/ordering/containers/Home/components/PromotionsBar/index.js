@@ -68,11 +68,12 @@ class PromotionBar extends Component {
       cappedValue,
       consumptionAmount,
     } = promotionInfo;
+    const discountProducts = (discountProductList || []).join(', ');
     const productsPromotionDescription = (
       <Trans
         i18nKey="ProductsPromotionDescription"
         discountPercentage={discountPercentage}
-        discountProducts={(discountProductList || []).join(', ')}
+        discountProducts={discountProducts}
         promoCode={promoCode}
         validDate={validDate}
       >
