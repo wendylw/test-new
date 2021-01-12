@@ -3,9 +3,14 @@ import i18next from 'i18next';
 
 const { PROMOTION_ERROR_CODES, VOUCHER_STATUS } = Constants;
 
-export function getErrorMessageByPromoErrorCode(code) {
+export function getErrorMessageByPromoErrorCode(code, extraInfo) {
   if (PROMOTION_ERROR_CODES[code]) {
-    return i18next.t(`OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`);
+    const translationKey = `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`;
+    const minSubtotalConsumingPromo = extraInfo || {};
+
+    return PROMOTION_ERROR_CODES[code].desc === '54417NotMatchMinSubtotalConsumingPromo'
+      ? i18next.t(translationKey, { minSubtotalConsumingPromo })
+      : i18next.t(translationKey);
   } else {
     return i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`);
   }

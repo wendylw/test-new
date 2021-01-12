@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _isEmpty from 'lodash/isEmpty';
 import _includes from 'lodash/includes';
+import _isEmpty from 'lodash/isEmpty';
+import _filter from 'lodash/filter';
 import { IconLocalOffer } from '../../../../../components/Icons';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -11,7 +12,7 @@ import { getStoreListWithPromotion } from '../../../../redux/modules/home';
 
 class PromotionBar extends Component {
   getPromotionInfo(business, storeList) {
-    const hasPromotion = _includes(storeList, business);
+    const hasPromotion = _filter(storeList, store => _includes(store));
     const promotionList = {
       idc: {
         discountPercentage: '84%',

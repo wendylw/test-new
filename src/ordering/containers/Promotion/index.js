@@ -87,9 +87,9 @@ class Promotion extends Component {
     if (!appliedResult || appliedResult.success) {
       return '';
     }
-    const { code } = appliedResult;
+    const { code, extraInfo } = appliedResult;
 
-    return getErrorMessageByPromoErrorCode(code);
+    return getErrorMessageByPromoErrorCode(code, extraInfo);
   };
 
   render() {
