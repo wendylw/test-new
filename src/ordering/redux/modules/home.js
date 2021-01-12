@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect';
-import _isEmpty from 'lodash/isEmpty';
-import _isUndefined from 'lodash/isUndefined';
+import _split from 'lodash/split';
 import Url from '../../../utils/url';
 import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
@@ -545,7 +544,7 @@ export const getPopUpModal = state => state.home.popUpModal;
 export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;
 
 export const getStoreListWithPromotion = state => {
-  const storeList = process.env.REACT_APP_PROMOTION_STORES;
+  const storeList = process.env.REACT_APP_PROMOTION_STORES || '';
 
-  return _isUndefined(storeList) || _isEmpty(storeList) ? [] : storeList.split(',');
+  return _split(storeList, ',');
 };
