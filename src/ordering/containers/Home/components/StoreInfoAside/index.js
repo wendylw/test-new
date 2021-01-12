@@ -20,12 +20,16 @@ class StoreInfoAside extends Component {
       7: 'Sat',
       1: 'Sun',
     };
+    // Hotfix_beep-Update-some-settins-for-merchants: validTimeTo will revert, comment is just temp.
     const { t, validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = this.props;
     const formatBreakTimes = [Utils.formatHour(breakTimeFrom), Utils.formatHour(breakTimeTo)];
-    const formatValidTimes = [Utils.formatHour(validTimeFrom), Utils.formatHour(validTimeTo)];
+    const formatValidTimes = [
+      Utils.formatHour(validTimeFrom),
+      Utils.formatHour(validTimeTo > '19:00' ? '19:00' : validTimeTo),
+    ];
     const openingHours = Utils.getOpeningHours({
       validTimeFrom,
-      validTimeTo,
+      validTimeTo: validTimeTo > '19:00' ? '19:00' : validTimeTo,
       breakTimeFrom,
       breakTimeTo,
       formatBreakTimes,
