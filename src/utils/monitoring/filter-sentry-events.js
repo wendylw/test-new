@@ -30,6 +30,15 @@ const isCrossStorageBug = (event, hint) => {
   }
 };
 
+const isCrossStorageCloseBug = (event, hint) => {
+  try {
+    const err = event.exception.values[0];
+    return /Closing client\. Could not access localStorage in hub/.test(err.value);
+  } catch {
+    return false;
+  }
+};
+
 const isPromiseAllBug = (event, hint) => {
   // we are keeping receiving this Promise.all is not a function, but it seems that the clients are
   // very likely spiders (mostly from United States and Ireland). So just ignore the error.
@@ -57,6 +66,7 @@ const shouldFilter = (event, hint) => {
     return (
       isInfiniteScrollerBug(event, hint) ||
       isCrossStorageBug(event, hint) ||
+      isCrossStorageCloseBug(event, hint) ||
       isPromiseAllBug(event, hint) ||
       isBlockFrameBug(event, hint)
     );
