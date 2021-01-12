@@ -18,16 +18,6 @@ class StoreList extends Component {
     this.props.onStoreClicked(store);
   };
 
-  renderPromotionTag = promoTag => {
-    return (
-      <div className="store-card-list__tag-cover">
-        <div className="store-card-list__promo-tag">
-          <span className="padding-smaller text-size-small text-uppercase text-weight-bolder">{promoTag}</span>
-        </div>
-      </div>
-    );
-  };
-
   renderClosedStoreTag = enablePreOrder => {
     const { t } = this.props;
     return enablePreOrder ? (
@@ -65,7 +55,6 @@ class StoreList extends Component {
             enablePreOrder,
             cashbackRate,
             products,
-            promoTag,
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
 
@@ -83,7 +72,6 @@ class StoreList extends Component {
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
                 {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {promoTag && this.renderPromotionTag(promoTag)}
                 <Image
                   className="store-card-list__image card__image"
                   src={avatar}
