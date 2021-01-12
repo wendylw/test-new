@@ -376,8 +376,11 @@ Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistic
   if (useStorehubLogistics) {
     logisticsValidTimeFrom =
       SH_LOGISTICS_VALID_TIME.FROM > validTimeFrom ? SH_LOGISTICS_VALID_TIME.FROM : validTimeFrom;
-    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
+    // logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
   }
+
+  // The logisticsValidTimeTo will move in merchant of useStorehubLogistics, this validTimeTo is just temp variable
+  logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
 
   return {
     logisticsValidTimeFrom,

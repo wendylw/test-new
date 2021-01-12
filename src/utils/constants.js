@@ -463,7 +463,9 @@ const COLLECTIONS_TYPE = {
 // storeHub Logistics valid time period
 const SH_LOGISTICS_VALID_TIME = {
   FROM: '09:00',
-  TO: '21:00',
+  // TO: '21:00',
+  // The end time will revert to 21:00, 19:00 is just temp variable
+  TO: '19:00',
 };
 
 const ADYEN_PAYMENT_TYPE = {
