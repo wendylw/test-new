@@ -8,7 +8,7 @@ import { compose } from 'redux';
 import { getBusiness } from '../../../../redux/modules/app';
 
 class PromotionBar extends Component {
-  getPromotionInfo(business, hasUniversalPromotion) {
+  getPromotionInfo(business, onSHPromotion) {
     const promotionList = [
       {
         business: 'idc',
@@ -57,7 +57,7 @@ class PromotionBar extends Component {
     };
     const currentPromotions = _filter(promotionList, { business });
 
-    if (hasUniversalPromotion) {
+    if (onSHPromotion) {
       currentPromotions.push(defaultUniversalPromotion);
     }
 
@@ -65,8 +65,8 @@ class PromotionBar extends Component {
   }
 
   render() {
-    const { promotionRef, business, hasUniversalPromotion } = this.props;
-    const promotionList = this.getPromotionInfo(business, hasUniversalPromotion);
+    const { promotionRef, business, onSHPromotion } = this.props;
+    const promotionList = this.getPromotionInfo(business, onSHPromotion);
 
     if (!promotionList.length) {
       return null;
@@ -142,11 +142,11 @@ class PromotionBar extends Component {
 
 PromotionBar.propTypes = {
   promotionRef: PropTypes.any,
-  hasUniversalPromotion: PropTypes.bool,
+  onSHPromotion: PropTypes.bool,
 };
 
 PromotionBar.defaultProps = {
-  hasUniversalPromotion: false,
+  onSHPromotion: false,
 };
 
 export default compose(
