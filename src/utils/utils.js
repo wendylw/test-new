@@ -1,4 +1,4 @@
-import qs, { parse } from 'qs';
+import qs from 'qs';
 import Constants from './constants';
 import config from '../config';
 import { captureException } from '@sentry/react';

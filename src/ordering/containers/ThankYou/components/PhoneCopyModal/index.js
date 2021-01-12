@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Modal from '../../../../../components/Modal';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
 import '../../../../components/MessageModal/MessageModal.scss';
 export class PhoneCopyModal extends React.Component {
   handleClick = () => {

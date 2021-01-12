@@ -1,11 +1,26 @@
 import Constants from '../../../utils/constants';
+import Utils from '../../../utils/utils';
 import i18next from 'i18next';
 
 const { PROMOTION_ERROR_CODES, VOUCHER_STATUS } = Constants;
 
-export function getErrorMessageByPromoErrorCode(code) {
+export function getErrorMessageByPromoErrorCode(code, extraInfo, onlineStoreInfo) {
   if (PROMOTION_ERROR_CODES[code]) {
-    return i18next.t(`OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`);
+    const translationKey = `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`;
+    const { minSubtotalConsumingPromo } = extraInfo || {};
+    const { locale, currency, country } = onlineStoreInfo;
+    const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
+    let minSubtotal = !(locale && currency)
+      ? minSubtotalConsumingPromo
+      : Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(minSubtotalConsumingPromo));
+
+    if (country === 'MY' && isSafari) {
+      minSubtotal = minSubtotal.replace(/^(\D+)/, '$1 ');
+    }
+
+    return PROMOTION_ERROR_CODES[code].desc === '54417NotMatchMinSubtotalConsumingPromo'
+      ? i18next.t(translationKey, { minSubtotalConsumingPromo: minSubtotal })
+      : i18next.t(translationKey);
   } else {
     return i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`);
   }
