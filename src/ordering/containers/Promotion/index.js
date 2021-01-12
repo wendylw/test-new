@@ -89,8 +89,6 @@ class Promotion extends Component {
     }
     const { code, extraInfo } = appliedResult;
 
-    console.log(extraInfo);
-
     return getErrorMessageByPromoErrorCode(code, extraInfo, onlineStoreInfo);
   };
 
