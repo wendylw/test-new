@@ -7,7 +7,7 @@ const { PROMOTION_ERROR_CODES, VOUCHER_STATUS } = Constants;
 export function getErrorMessageByPromoErrorCode(code, extraInfo, onlineStoreInfo) {
   if (PROMOTION_ERROR_CODES[code]) {
     const translationKey = `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`;
-    const minSubtotalConsumingPromo = extraInfo || {};
+    const { minSubtotalConsumingPromo } = extraInfo || {};
     const { locale, currency, country } = onlineStoreInfo;
     const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
     let minSubtotal = !(locale && currency)
