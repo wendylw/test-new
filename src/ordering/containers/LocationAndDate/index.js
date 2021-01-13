@@ -1077,13 +1077,13 @@ class LocationAndDate extends Component {
         : this.validTimeFrom
     );
     // Hotfix_beep-Update-some-settins-for-merchants: limit will revert, comment is just temp.
-    const storeCloseTime = createTimeWithTimeString(
-      /*limit &&*/ (merchantCountry === 'MY' ? true : limit) && this.validTimeTo > storehubLogisticsBusinessHours[1]
-        ? merchantCountry === 'MY'
-          ? storehubLogisticsBusinessHours[2]
-          : storehubLogisticsBusinessHours[1]
-        : this.validTimeTo
-    );
+    const myTimeTo =
+      this.validTimeTo > storehubLogisticsBusinessHours[2] ? storehubLogisticsBusinessHours[2] : this.validTimeTo;
+    const othersTimeTo =
+      limit && this.validTimeTo > storehubLogisticsBusinessHours[1]
+        ? storehubLogisticsBusinessHours[1]
+        : this.validTimeTo;
+    const storeCloseTime = createTimeWithTimeString(merchantCountry === 'MY' ? myTimeTo : othersTimeTo);
     const validStartingTimeString = this.getValidStartingTimeString(getHourAndMinuteFromTime(currentTime));
     const fullTimeList = this.getHoursList();
 
