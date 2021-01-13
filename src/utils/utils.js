@@ -378,14 +378,12 @@ Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistic
   if (useStorehubLogistics) {
     logisticsValidTimeFrom =
       SH_LOGISTICS_VALID_TIME.FROM > validTimeFrom ? SH_LOGISTICS_VALID_TIME.FROM : validTimeFrom;
-    // logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
+    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
   }
 
   // Hotfix_beep-Update-some-settins-for-merchants: The logisticsValidTimeTo will move in merchant of useStorehubLogistics, this validTimeTo is just temp variable
   if (merchantCountry === 'MY') {
     logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.MY_TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.MY_TO : validTimeTo;
-  } else if (useStorehubLogistics) {
-    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
   }
 
   return {
