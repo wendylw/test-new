@@ -65,7 +65,6 @@ class Profile extends Component {
         this.setState({ error: false });
         clearTimeout(this.timeoutId);
       }, 3000);
-      console.log(e);
     }
   };
 
