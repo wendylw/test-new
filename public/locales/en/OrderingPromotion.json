@@ -19,7 +19,7 @@
   "54414RequireFirstTimePurchase": "This promo code has reached its maximum claim limit (Error: 54414)",
   "54415NoSourceProperty": "This promo code is invalid (Error: 54415)",
   "54416AppliedSourceDoesNotMatch": "This promo code is invalid (Error: 54416)",
-  "54417NotMatchMinSubtotalConsumingPromo": "Oops, you need to reach a minimum order amount of {{minSubtotalConsumingPromo}} to use this promo code. (Error: {54417})",
+  "54417NotMatchMinSubtotalConsumingPromo": "Oops, you need to reach a minimum order amount of {{minSubtotalConsumingPromo}} to use this promo code. (Error: 54417)",
   "60001NotExisted": "Invalid coupon",
   "60002NotActive": "This voucher code is invalid (Error: NOT ACTIVE)",
   "60003Expired": "This voucher code is invalid (Error: EXPIRED)",
