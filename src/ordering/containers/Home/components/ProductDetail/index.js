@@ -522,8 +522,6 @@ class ProductDetail extends Component {
       return null;
     }
 
-    console.log(increasingProductOnCat);
-
     return (
       <React.Fragment>
         <footer

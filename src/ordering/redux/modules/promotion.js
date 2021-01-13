@@ -213,7 +213,6 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case PROMOTION_TYPES.APPLY_PROMOTION_CODE_FAILURE:
     case PROMOTION_TYPES.APPLY_VOUCHER_FAILURE:
-      console.log(action);
       return {
         ...state,
         appliedResult: {
