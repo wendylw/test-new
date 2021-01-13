@@ -219,7 +219,7 @@ const reducer = (state = initialState, action) => {
         appliedResult: {
           success: false,
           code: action.code,
-          extraInfo: action.message,
+          extraInfo: action.extraInfo,
         },
         inProcess: false,
       };
