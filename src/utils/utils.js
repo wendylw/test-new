@@ -368,20 +368,25 @@ Utils.isTakeAwayType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
 };
 
-Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
+Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics, merchantCountry }) => {
   let logisticsValidTimeFrom = validTimeFrom;
   let logisticsValidTimeTo = validTimeTo;
 
   // use storeHub Logistics valid time
+
+  // Hotfix_beep-Update-some-settins-for-merchants: The logisticsValidTimeTo will move in merchant of useStorehubLogistics, this validTimeTo is just temp variable
   if (useStorehubLogistics) {
     logisticsValidTimeFrom =
       SH_LOGISTICS_VALID_TIME.FROM > validTimeFrom ? SH_LOGISTICS_VALID_TIME.FROM : validTimeFrom;
-    //Hotfix_beep-Update-some-settins-for-merchants:
     // logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
   }
 
   // Hotfix_beep-Update-some-settins-for-merchants: The logisticsValidTimeTo will move in merchant of useStorehubLogistics, this validTimeTo is just temp variable
-  logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
+  if (merchantCountry !== 'MY') {
+    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.TO : validTimeTo;
+  } else {
+    logisticsValidTimeTo = SH_LOGISTICS_VALID_TIME.MY_TO < validTimeTo ? SH_LOGISTICS_VALID_TIME.MY_TO : validTimeTo;
+  }
 
   return {
     logisticsValidTimeFrom,
@@ -392,8 +397,8 @@ Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistic
 // TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
 Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const originalInfo = allBusinessInfo[business] || {};
-  const { stores } = originalInfo || {};
-  const { qrOrderingSettings } = originalInfo || {};
+  // Hotfix_beep-Update-some-settins-for-merchants: country will remove, comment is just temp.
+  const { stores, country: merchantCountry, qrOrderingSettings } = originalInfo || {};
   const {
     defaultShippingZone,
     minimumConsumption,
@@ -415,6 +420,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     validTimeFrom,
     validTimeTo,
     useStorehubLogistics,
+    merchantCountry,
   });
 
   const { defaultShippingZoneMethod } = defaultShippingZone || {};

@@ -75,7 +75,12 @@ const isAfterTime = (time1, time2) => new Date(time1).valueOf < new Date(time2).
 
 const isNoLaterThan = (time1, time2) => new Date(time1).valueOf() <= new Date(time2).valueOf();
 
-const storehubLogisticsBusinessHours = [SH_LOGISTICS_VALID_TIME.FROM, SH_LOGISTICS_VALID_TIME.TO];
+// Hotfix_beep-Update-some-settins-for-merchants: The end time will revert to 21:00, 19:00 is just temp variable
+const storehubLogisticsBusinessHours = [
+  SH_LOGISTICS_VALID_TIME.FROM,
+  SH_LOGISTICS_VALID_TIME.TO,
+  SH_LOGISTICS_VALID_TIME.MY_TO,
+];
 
 class LocationAndDate extends Component {
   state = {
@@ -544,9 +549,9 @@ class LocationAndDate extends Component {
     const deliveryDates = [];
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
-    const { qrOrderingSettings } = businessInfo || {};
-    // Hotfix_beep-Update-some-settins-for-merchants: store logistics will revert, comment is just temp.
-    const { /*  useStorehubLogistics,*/ disableTodayPreOrder, disableOnDemandOrder, enablePreOrder } =
+    // Hotfix_beep-Update-some-settins-for-merchants: country will remove, comment is just temp.
+    const { country: merchantCountry, qrOrderingSettings } = businessInfo || {};
+    const { useStorehubLogistics, disableTodayPreOrder, disableOnDemandOrder, enablePreOrder } =
       qrOrderingSettings || {};
     for (let i = 0; i < 5; i++) {
       const currentTime = new Date();
@@ -569,7 +574,9 @@ class LocationAndDate extends Component {
 
       // Hotfix_beep-Update-some-settins-for-merchants: store logistics and delivery type will revert, comment is just temp.
       if (
-        /* useStorehubLogistics && this.state.isDeliveryType &&*/
+        merchantCountry !== 'MY' &&
+        useStorehubLogistics &&
+        this.state.isDeliveryType &&
         storehubLogisticsBusinessHours[1] < this.validTimeTo
       ) {
         const isBeforeStoreClose = isNoLaterThan(
@@ -578,7 +585,15 @@ class LocationAndDate extends Component {
         );
         isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isBeforeStoreClose && !i) continue;
+      } else if (merchantCountry === 'MY' && storehubLogisticsBusinessHours[2] < this.validTimeTo) {
+        const isBeforeStoreClose = isNoLaterThan(
+          currentTime,
+          this.createTimeWithTimeString(storehubLogisticsBusinessHours[2])
+        );
+        isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
+        if (!isBeforeStoreClose && !i) continue;
       }
+
       if (enablePreOrder) {
         if (disableTodayPreOrder && disableOnDemandOrder && !i) {
           continue;
@@ -1051,7 +1066,8 @@ class LocationAndDate extends Component {
     if (!selectedDate.isToday) return;
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
-    const { qrOrderingSettings } = businessInfo || {};
+    // Hotfix_beep-Update-some-settins-for-merchants: country will remove, comment is just temp.
+    const { country: merchantCountry, qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics } = qrOrderingSettings || {};
     const limit = useStorehubLogistics && this.state.isDeliveryType;
     const currentTime = new Date();
@@ -1062,8 +1078,10 @@ class LocationAndDate extends Component {
     );
     // Hotfix_beep-Update-some-settins-for-merchants: limit will revert, comment is just temp.
     const storeCloseTime = createTimeWithTimeString(
-      /*limit &&*/ this.validTimeTo > storehubLogisticsBusinessHours[1]
-        ? storehubLogisticsBusinessHours[1]
+      /*limit &&*/ (merchantCountry === 'MY' ? true : limit) && this.validTimeTo > storehubLogisticsBusinessHours[1]
+        ? merchantCountry === 'MY'
+          ? storehubLogisticsBusinessHours[2]
+          : storehubLogisticsBusinessHours[1]
         : this.validTimeTo
     );
     const validStartingTimeString = this.getValidStartingTimeString(getHourAndMinuteFromTime(currentTime));
@@ -1114,7 +1132,8 @@ class LocationAndDate extends Component {
     let timeList = [];
     const { business, allBusinessInfo } = this.props;
     const businessInfo = allBusinessInfo[business];
-    const { qrOrderingSettings } = businessInfo || {};
+    // Hotfix_beep-Update-some-settins-for-merchants: country will remove, comment is just temp.
+    const { country: merchantCountry, qrOrderingSettings } = businessInfo || {};
     const { useStorehubLogistics } = qrOrderingSettings || {};
 
     const { hour: startHour, minute: startMinute } = getHourAndMinuteFromString(
@@ -1126,8 +1145,12 @@ class LocationAndDate extends Component {
     );
     // Hotfix_beep-Update-some-settins-for-merchants: store logistics and delivery type will revert, comment is just temp.
     const { hour: endHour, minute: endMinute } = getHourAndMinuteFromString(
-      /* useStorehubLogistics && this.state.isDeliveryType &&*/ storehubLogisticsBusinessHours[1] < this.validTimeTo
-        ? storehubLogisticsBusinessHours[1]
+      (merchantCountry === 'MY' ? true : useStorehubLogistics && this.state.isDeliveryType) &&
+        (merchantCountry === 'MY' ? storehubLogisticsBusinessHours[2] : storehubLogisticsBusinessHours[1]) <
+          this.validTimeTo
+        ? merchantCountry === 'MY'
+          ? storehubLogisticsBusinessHours[2]
+          : storehubLogisticsBusinessHours[1]
         : this.validTimeTo
     );
     const startTime = new Date().setHours(startHour || 0, startMinute || 0, 0, 0);
