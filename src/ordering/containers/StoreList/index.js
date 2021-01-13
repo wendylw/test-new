@@ -154,19 +154,24 @@ class StoreList extends Component {
   };
 
   getOpeningHours = item => {
-    const { qrOrderingSettings } = item;
+    // Hotfix_beep-Update-some-settins-for-merchants: country will remove, comment is just temp.
+    const { country: merchantCountry, qrOrderingSettings } = item;
 
     if (!qrOrderingSettings) {
       return null;
     }
 
+    // Hotfix_beep-Update-some-settins-for-merchants: validTimeTo will revert, comment is just temp.
     const { validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
     const formatBreakTimes = [Utils.formatHour(breakTimeFrom), Utils.formatHour(breakTimeTo)];
-    const formatValidTimes = [Utils.formatHour(validTimeFrom), Utils.formatHour(validTimeTo)];
+    const formatValidTimes = [
+      Utils.formatHour(validTimeFrom),
+      Utils.formatHour(merchantCountry === 'Malay' && validTimeTo > '19:00' ? '19:00' : validTimeTo),
+    ];
 
     return Utils.getOpeningHours({
       validTimeFrom,
-      validTimeTo,
+      validTimeTo: merchantCountry === 'Malay' && validTimeTo > '19:00' ? '19:00' : validTimeTo,
       breakTimeFrom,
       breakTimeTo,
       formatBreakTimes,

@@ -461,9 +461,11 @@ const COLLECTIONS_TYPE = {
   CAROUSEL: 'Carrousel',
 };
 // storeHub Logistics valid time period
+// Hotfix_beep-Update-some-settins-for-merchants: The end time will revert to 21:00, 19:00 is just temp variable
 const SH_LOGISTICS_VALID_TIME = {
   FROM: '09:00',
   TO: '21:00',
+  MY_TO: '19:00',
 };
 
 const ADYEN_PAYMENT_TYPE = {

@@ -10,7 +10,7 @@ class StoreInfoAside extends Component {
     initDom: true,
   };
 
-  renderDeliveryHour = () => {
+  renderDeliveryHour = merchantCountry => {
     const weekInfo = {
       2: 'Mon',
       3: 'Tue',
@@ -20,12 +20,16 @@ class StoreInfoAside extends Component {
       7: 'Sat',
       1: 'Sun',
     };
+    // Hotfix_beep-Update-some-settins-for-merchants: validTimeTo will revert, comment is just temp.
     const { t, validDays, validTimeFrom, validTimeTo, breakTimeFrom, breakTimeTo } = this.props;
     const formatBreakTimes = [Utils.formatHour(breakTimeFrom), Utils.formatHour(breakTimeTo)];
-    const formatValidTimes = [Utils.formatHour(validTimeFrom), Utils.formatHour(validTimeTo)];
+    const formatValidTimes = [
+      Utils.formatHour(validTimeFrom),
+      Utils.formatHour(merchantCountry === 'MY' && validTimeTo > '19:00' ? '19:00' : validTimeTo),
+    ];
     const openingHours = Utils.getOpeningHours({
       validTimeFrom,
-      validTimeTo,
+      validTimeTo: merchantCountry === 'MY' && validTimeTo > '19:00' ? '19:00' : validTimeTo,
       breakTimeFrom,
       breakTimeTo,
       formatBreakTimes,
@@ -59,7 +63,7 @@ class StoreInfoAside extends Component {
       footerEl,
     } = this.props;
     const { initDom } = this.state;
-    const { stores, multipleStores } = businessInfo || {};
+    const { stores, country: merchantCountry, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = ['store-info-aside aside fixed-wrapper'];
 
@@ -127,7 +131,7 @@ class StoreInfoAside extends Component {
                 </a>
               ) : null}
               <h4 className="margin-top-bottom-normal text-weight-bolder text-opacity">{t('DeliveryHours')}</h4>
-              <ul>{this.renderDeliveryHour()}</ul>
+              <ul>{this.renderDeliveryHour(merchantCountry)}</ul>
             </summary>
           </div>
         </div>
