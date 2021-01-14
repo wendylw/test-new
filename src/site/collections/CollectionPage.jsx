@@ -147,7 +147,7 @@ class CollectionPage extends React.Component {
 }
 
 export default compose(
-  withPlaceInfo(),
+  withPlaceInfo({ fromIp: true }),
   withTranslation('SiteHome'),
   connect(
     state => ({
