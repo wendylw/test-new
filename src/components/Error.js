@@ -35,7 +35,7 @@ class Error extends React.Component {
             {title ? <h2 className="error__title text-center text-size-large">{title}</h2> : null}
             {description ? (
               <div className="error__description margin-small text-center">
-                <p className="text-size-big text-line-height-base">{description}</p>
+                <div className="text-size-big text-line-height-base">{description}</div>
               </div>
             ) : null}
           </div>
@@ -47,8 +47,8 @@ class Error extends React.Component {
 }
 
 Error.propTypes = {
-  title: PropTypes.string,
-  description: PropTypes.string,
+  title: PropTypes.node,
+  description: PropTypes.node,
 };
 
 Error.defaultProps = {
