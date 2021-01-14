@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import _isNil from 'lodash/isNil';
 import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
@@ -269,13 +270,15 @@ export class OrderDetails extends Component {
           {!isWebview ? (
             <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
           ) : window.liveChatAvailable ? (
-            <LiveChatNative
-              orderId={`${orderId}`}
-              name={orderUserName}
-              phone={orderUserPhone}
-              email={email}
-              storeName={orderStoreName}
-            />
+            _isNil(order) && (
+              <LiveChatNative
+                orderId={`${orderId}`}
+                name={orderUserName}
+                phone={orderUserPhone}
+                email={email}
+                storeName={orderStoreName}
+              />
+            )
           ) : (
             <button
               className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"

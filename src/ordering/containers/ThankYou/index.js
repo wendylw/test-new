@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import _isNil from 'lodash/isNil';
 import Header from '../../../components/Header';
 import { IconAccessTime, IconPin } from '../../../components/Icons';
 import LiveChat from '../../../components/LiveChat';
@@ -1291,13 +1292,15 @@ export class ThankYou extends PureComponent {
                 !isWebview ? (
                   <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
                 ) : window.liveChatAvailable ? (
-                  <LiveChatNative
-                    orderId={`${orderId}`}
-                    name={orderUserName}
-                    phone={orderUserPhone}
-                    email={email}
-                    storeName={orderStoreName}
-                  />
+                  _isNil(order) && (
+                    <LiveChatNative
+                      orderId={`${orderId}`}
+                      name={orderUserName}
+                      phone={orderUserPhone}
+                      email={email}
+                      storeName={orderStoreName}
+                    />
+                  )
                 ) : (
                   <button
                     className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
