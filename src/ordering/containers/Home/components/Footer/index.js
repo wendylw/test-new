@@ -81,6 +81,34 @@ export class Footer extends Component {
       }
     } else if (!isValidToken && isLogin) {
       await this.getKongTokenFromNative();
+      this.handleInvalidAppToken();
+    } else if (!isValidToken && !isLogin) {
+      this.handleInvalidAppToken();
+    }
+  };
+
+  handleInvalidAppToken = () => {
+    const appVersion = window.beepAppVersion;
+    if (Utils.isAndroidWebview()) {
+      if (appVersion > '1.0.1') {
+        window.androidInterface.tokenExpired('true');
+      } else {
+        window.androidInterface.tokenExpired();
+      }
+    }
+    if (Utils.isIOSWebview()) {
+      if (appVersion > '1.0.1') {
+        window.webkit.messageHandlers.shareAction.postMessage({
+          functionName: 'tokenExpired',
+          callbackName: 'sendToken',
+          isCheckout: 'true',
+        });
+      } else {
+        window.webkit.messageHandlers.shareAction.postMessage({
+          functionName: 'tokenExpired',
+          callbackName: 'sendToken',
+        });
+      }
     }
   };
 
