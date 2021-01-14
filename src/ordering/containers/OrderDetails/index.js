@@ -270,7 +270,7 @@ export class OrderDetails extends Component {
           {!isWebview ? (
             <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
           ) : window.liveChatAvailable ? (
-            _isNil(order) && (
+            !_isNil(order) && (
               <LiveChatNative
                 orderId={`${orderId}`}
                 name={orderUserName}
