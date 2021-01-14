@@ -1210,9 +1210,9 @@ export class ThankYou extends PureComponent {
   }
 
   render() {
-    const { t, history, match, order, storeHashCode, user, onlineStoreInfo } = this.props;
+    const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();
-    const { orderId, tableId, deliveryInformation = [] } = order || {};
+    const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
     const {
       isWebview,
       profile: { email },
@@ -1226,7 +1226,6 @@ export class ThankYou extends PureComponent {
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
     const { isHideTopArea } = this.state;
-    const { storeName } = onlineStoreInfo || {};
 
     if (isDeliveryType && this.isNowPaidPreOrder()) {
       orderInfo = this.renderPreOrderMessage();
@@ -1240,6 +1239,7 @@ export class ThankYou extends PureComponent {
       options.push(`type=${type}`);
     }
 
+    const orderStoreName = storeInfo?.name || '';
     let orderUserName = '';
     let orderUserPhone = '';
 
@@ -1296,7 +1296,7 @@ export class ThankYou extends PureComponent {
                     name={orderUserName}
                     phone={orderUserPhone}
                     email={email}
-                    storeName={storeName}
+                    storeName={orderStoreName}
                   />
                 ) : (
                   <button

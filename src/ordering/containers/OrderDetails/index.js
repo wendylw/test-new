@@ -7,7 +7,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import LiveChat from '../../../components/LiveChat';
 import LiveChatNative from '../../../components/LiveChatNative';
-import { getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import { getUser } from '../../redux/modules/app';
 import Tag from '../../../components/Tag';
 import beepPreOrderSuccess from '../../../images/beep-pre-order-success.png';
 import {
@@ -234,13 +234,14 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, history, t, isUseStorehubLogistics, serviceCharge, user, onlineStoreInfo } = this.props;
-    const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [] } = order || '';
+    const { order, history, t, isUseStorehubLogistics, serviceCharge, user } = this.props;
+    const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [], storeInfo } =
+      order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     const { isWebview, email } = user;
-    const { storeName } = onlineStoreInfo || {};
 
+    const orderStoreName = storeInfo?.name || '';
     let orderUserName = '';
     let orderUserPhone = '';
 
@@ -273,7 +274,7 @@ export class OrderDetails extends Component {
               name={orderUserName}
               phone={orderUserPhone}
               email={email}
-              storeName={storeName}
+              storeName={orderStoreName}
             />
           ) : (
             <button
@@ -357,7 +358,6 @@ export default compose(
       orderStatus: getOrderStatus(state),
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
-      onlineStoreInfo: getOnlineStoreInfo(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
