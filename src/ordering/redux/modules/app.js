@@ -387,9 +387,7 @@ const user = (state = initialState.user, action) => {
 };
 
 const error = (state = initialState.error, action) => {
-  const { type, code, message, response, responseGql } = action;
-  const result = response || (responseGql || {}).data;
-  const errorCode = code || (result || {}).code;
+  const { type, code, message } = action;
 
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
@@ -436,7 +434,7 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 };
 
 const apiError = (state = initialState.apiError, action) => {
-  const { type, code, message, response, responseGql } = action;
+  const { type, code, response, responseGql } = action;
   const result = response || (responseGql || {}).data;
   const errorCode = code || (result || {}).code;
   const { ERROR_CODE_MAP } = Constants;

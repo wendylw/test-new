@@ -1,7 +1,6 @@
 import React from 'react';
 import Tag from './Tag';
 import '../Common.scss';
-import { DocsStory } from '@storybook/addon-docs/dist/blocks';
 
 // See slots doc:
 // https://github.com/storybookjs/storybook/blob/master/addons/docs/docs/docspage.md#slot-values

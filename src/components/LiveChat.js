@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import _get from 'lodash/get';
-import _isUndefined from 'lodash/isUndefined';
 import './LiveChat.scss';
 import Utils from '../utils/utils';
 

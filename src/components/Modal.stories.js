@@ -3,7 +3,6 @@ import Modal from './Modal';
 import '../ordering/containers/Home/components/OfflineStoreModal/OfflineStoreModal.scss';
 import '../ordering/containers/Home/OrderingHome.scss';
 import '../Common.scss';
-import { action } from '@storybook/addon-actions';
 
 export default {
   title: 'Common/Modal',
