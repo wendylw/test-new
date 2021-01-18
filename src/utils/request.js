@@ -6,6 +6,7 @@ const headers = new Headers({
   'Content-Type': 'application/json',
 });
 
+const MAINTENANCE_PAGE_URL = process.env.REACT_APP_MAINTENANCE_PAGE_URL;
 class RequestError extends Error {
   constructor(message, code, extraInfo) {
     super();
@@ -24,6 +25,11 @@ function get(url, options = {}) {
     method: 'GET',
   })
     .then(response => {
+      // NOTE: to make the redirection work, the maintenance page must support CORS, and the Access-Control-Allow-Origin
+      // must be the same as the request's origin (cannot be *).
+      if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
+        window.location = response.url;
+      }
       return handleResponse(url, response);
     })
     .catch(error => {
@@ -33,7 +39,6 @@ function get(url, options = {}) {
 
 const fetchData = function(url, requestOptions) {
   const { method, data, options } = requestOptions;
-  const MAINTENANCE_PAGE_URL = process.env.REACT_APP_MAINTENANCE_PAGE_URL;
   return fetch(url, {
     method,
     headers: headers,
