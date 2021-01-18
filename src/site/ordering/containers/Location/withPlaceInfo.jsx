@@ -20,15 +20,18 @@ export default (source = {}, alwaysUpdate = false) => InnerComponent => {
   class withPlaceInfo extends React.Component {
     state = {
       placeInfoUpdated: false,
+      loadingPlaceInfo: false,
     };
     async componentDidMount() {
       const { location, setCurrentPlaceInfo } = this.props;
 
       if (!this.hasPlaceInfo || alwaysUpdate) {
+        this.setState({ loadingPlaceInfo: true });
         const { placeInfo, source } = await getPlaceInfo({
           ...getPlaceInfoOptions,
           location,
         });
+        this.setState({ loadingPlaceInfo: false });
         if (placeInfo) {
           setCurrentPlaceInfo(placeInfo, source);
         } else {
@@ -53,6 +56,10 @@ export default (source = {}, alwaysUpdate = false) => InnerComponent => {
     };
 
     render() {
+      if (this.state.loadingPlaceInfo) {
+        return <div className="loader theme"></div>;
+      }
+
       return (
         <>{this.hasPlaceInfo && (!alwaysUpdate || this.state.placeInfoUpdated) && <InnerComponent {...this.props} />}</>
       );

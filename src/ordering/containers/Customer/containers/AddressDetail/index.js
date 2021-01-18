@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Constants from '../../../../../utils/constants';
-import { IconChecked, IconNext } from '../../../../../components/Icons';
+import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../../../components/Header';
 import './AddressDetail.scss';

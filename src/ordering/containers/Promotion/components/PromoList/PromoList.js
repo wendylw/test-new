@@ -32,6 +32,7 @@ class PromoList extends Component {
         <ul>
           {promoList.map(promo => (
             <PromoItem
+              key={`promotion-${promo.id}`}
               promo={promo}
               isSelected={selectedPromo.id === promo.id}
               onSelectPromo={() => {

@@ -552,7 +552,7 @@ export class ThankYou extends PureComponent {
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
-    const { name, phone: storePhone } = storeInfo || {};
+    const { name /*phone: storePhone*/ } = storeInfo || {};
     let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
@@ -562,7 +562,6 @@ export class ThankYou extends PureComponent {
     };
     const { user, updatedStatus } = this.props;
     const { isWebview } = user;
-    const { isHideTopArea } = this.state;
 
     let currentStatusObj = {};
     // status = CONFIMRMED;
@@ -1222,7 +1221,6 @@ export class ThankYou extends PureComponent {
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const isDineInType = Utils.isDineInType();
-    const isTakeaway = isDeliveryType || isPickUpType;
     let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
