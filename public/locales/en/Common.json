@@ -188,6 +188,6 @@
   "ServiceCharge": "Service Charge",
   "ReportIssue": "Report Issue",
   "NeedHelp": "Need Help",
-  "CommonErrorMessage": "An error happens",
+  "CommonErrorMessage": "whoops, this page isn't available",
   "ErrorId": "Error ID: {{ id }}"
 }
