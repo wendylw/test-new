@@ -29,7 +29,7 @@ import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../u
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getUser, getBusinessUTCOffset } from '../../redux/modules/app';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import {
   actions as thankYouActionCreators,
@@ -44,6 +44,7 @@ import {
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import './OrderingThanks.scss';
+import * as storeUtils from '../../../utils/store-utils';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -1104,7 +1105,7 @@ export class ThankYou extends PureComponent {
   };
 
   renderPreOrderMessage = () => {
-    const { t, order } = this.props;
+    const { t, order, businessUTCOffset } = this.props;
 
     const { expectDeliveryDateFrom, expectDeliveryDateTo } = order;
     const deliveryInformation = this.getDeliveryInformation();
@@ -1114,6 +1115,8 @@ export class ThankYou extends PureComponent {
     }
 
     const { address } = deliveryInformation.address;
+    const expectFrom = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateFrom));
+    const expectTo = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateTo));
 
     return (
       <div className="padding-small">
@@ -1122,8 +1125,8 @@ export class ThankYou extends PureComponent {
         </h4>
         <p className="padding-top-bottom-smaller padding-left-right-small text-line-height-base text-opacity">
           {t('PreOrderDeliveryTimeDetails', {
-            day: toDayDateMonth(new Date(expectDeliveryDateFrom)),
-            dayAndTime: toNumericTimeRange(new Date(expectDeliveryDateFrom), new Date(expectDeliveryDateTo)),
+            day: expectFrom.format('dddd, MMMM DD'),
+            dayAndTime: `${expectFrom.format('hh:mm A')} - ${expectTo.format('hh:mm A')}`,
             deliveryTo: address,
           })}
         </p>
@@ -1394,6 +1397,7 @@ export default compose(
       receiptNumber: getReceiptNumber(state),
       updatedStatus: getLoadOrderStatus(state),
       riderLocations: getRiderLocations(state),
+      businessUTCOffset: getBusinessUTCOffset(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
