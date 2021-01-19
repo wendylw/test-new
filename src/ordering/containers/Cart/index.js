@@ -368,6 +368,7 @@ class Cart extends Component {
   };
 
   render() {
+    throw new Error('test error');
     const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
     const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
