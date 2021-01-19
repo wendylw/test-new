@@ -9,6 +9,7 @@ import ErrorComponent from './components/Error';
 import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
+import { gotoHome } from './utils/webview-utils';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
 
@@ -41,6 +42,14 @@ class Bootstrap extends Component {
       sentryId: eventId,
       errorMessage: error?.message,
     });
+  };
+
+  onErrorScreenBackToHomeButtonClick = () => {
+    if (Utils.isWebview()) {
+      gotoHome();
+    } else {
+      document.location.href = '/';
+    }
   };
 
   renderSitePages = () => {
@@ -100,7 +109,7 @@ class Bootstrap extends Component {
               <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
                 <button
                   className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-                  onClick={() => (document.location.href = '/')}
+                  onClick={this.onErrorScreenBackToHomeButtonClick}
                 >
                   {t('BackToHome')}
                 </button>
