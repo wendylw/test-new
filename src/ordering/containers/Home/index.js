@@ -156,9 +156,6 @@ export class Home extends Component {
     window.addEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
-    setTimeout(() => {
-      captureException(new Error('test error'));
-    });
   };
 
   checkDeliveryBar() {
