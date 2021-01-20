@@ -68,7 +68,7 @@ class PromoItem extends Component {
   };
 
   render() {
-    const { promo, isSelected, t, onSelectPromo } = this.props;
+    const { promo, isSelected, onSelectPromo } = this.props;
 
     return (
       <li

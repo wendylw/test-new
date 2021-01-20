@@ -187,7 +187,7 @@ export class OrderDetails extends Component {
 
             // remove items whose itemType is not null
             if (itemType) {
-              return;
+              return null;
             }
 
             return (

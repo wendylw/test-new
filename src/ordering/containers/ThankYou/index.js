@@ -25,9 +25,10 @@ import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import Constants from '../../../utils/constants';
-import { formatPickupAddress, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
+import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import { gotoHome } from '../../../utils/webview-utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
@@ -442,7 +443,7 @@ export class ThankYou extends PureComponent {
     return (
       <React.Fragment>
         <div className="card text-center padding-small margin-normal">
-          <label className="text-size-big padding-top-bottom-smallest text-uppercase text-weight-bolder">
+          <label className="text-size-big padding-top-bottom-small text-uppercase text-weight-bolder">
             {t('OrderNumber')}
           </label>
           <span
@@ -550,7 +551,7 @@ export class ThankYou extends PureComponent {
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
-    const { name, phone: storePhone } = storeInfo || {};
+    const { name /*phone: storePhone*/ } = storeInfo || {};
     let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
@@ -560,7 +561,6 @@ export class ThankYou extends PureComponent {
     };
     const { user, updatedStatus } = this.props;
     const { isWebview } = user;
-    const { isHideTopArea } = this.state;
 
     let currentStatusObj = {};
     // status = CONFIMRMED;
@@ -1048,13 +1048,15 @@ export class ThankYou extends PureComponent {
 
     if (!order) return;
 
-    const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom } = order || {};
+    const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom, createdTime } = order || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const pickupTime = formatPickupAddress({
-      date: expectDeliveryDateFrom,
+    const pickupTime = formatPickupTime({
+      dateList: isPreOrder
+        ? [new Date(expectDeliveryDateFrom)]
+        : [new Date(new Date(createdTime).getTime() + 1000 * 60 * 30)],
       locale: onlineStoreInfo.country,
     });
 
@@ -1064,7 +1066,7 @@ export class ThankYou extends PureComponent {
           <label className="margin-top-bottom-small text-size-big text-weight-bolder">{name}</label>
         </div>
 
-        {isPickUpType && isPreOrder ? (
+        {isPickUpType ? (
           <div className="padding-left-right-small">
             <h4 className="margin-top-bottom-small text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="flex flex-top padding-top-bottom-small">
@@ -1080,7 +1082,7 @@ export class ThankYou extends PureComponent {
           <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('DeliveringTo')}</h4>
         ) : null}
 
-        {isPickUpType && isPreOrder ? (
+        {isPickUpType ? (
           <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('PickupAt')}</h4>
         ) : null}
 
@@ -1196,7 +1198,7 @@ export class ThankYou extends PureComponent {
         'https://app.beepit.com/download/?utm_source=beep&utm_medium=tracking&utm_campaign=launch_campaign&utm_content=tracking_banner';
     }
     return (
-      <div className="margin-normal">
+      <div className="margin-normal ordering-thanks__download">
         <a href={link} data-heap-name="ordering.thank-you.download" target={client === 'PC' ? '_blank' : ''}>
           <p className="flex flex-center flex-middle">
             <img src={beepAppDownloadBanner} alt="Beep App Download" />
@@ -1215,7 +1217,6 @@ export class ThankYou extends PureComponent {
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const isDineInType = Utils.isDineInType();
-    const isTakeaway = isDeliveryType || isPickUpType;
     let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
@@ -1258,19 +1259,7 @@ export class ThankYou extends PureComponent {
               title={`#${orderId}`}
               navFunc={() => {
                 if (isWebview) {
-                  if (window.androidInterface) {
-                    window.androidInterface.gotoHome();
-                  } else if (window.webkit) {
-                    const version = window.beepAppVersion;
-
-                    if (version > '1.0.1') {
-                      window.webkit.messageHandlers.shareAction.postMessage({
-                        functionName: 'gotoHome',
-                      });
-                    } else {
-                      window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
-                    }
-                  }
+                  gotoHome();
                 } else {
                   // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
                   history.replace({

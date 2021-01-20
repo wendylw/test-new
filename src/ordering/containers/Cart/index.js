@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
-import _isEmpty from 'lodash/isEmpty';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
 import { IconDelete, IconClose, IconLocalOffer } from '../../../components/Icons';

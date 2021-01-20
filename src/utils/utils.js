@@ -1,4 +1,4 @@
-import qs, { parse } from 'qs';
+import qs from 'qs';
 import Constants from './constants';
 import config from '../config';
 import { captureException } from '@sentry/react';
@@ -388,8 +388,7 @@ Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistic
 // TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
 Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
   const originalInfo = allBusinessInfo[business] || {};
-  const { stores } = originalInfo || {};
-  const { qrOrderingSettings } = originalInfo || {};
+  const { stores, qrOrderingSettings } = originalInfo || {};
   const {
     defaultShippingZone,
     minimumConsumption,
@@ -802,6 +801,18 @@ Utils.getOpeningHours = function({
   }
 
   return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
+};
+
+Utils.getOrderSource = () => {
+  let orderSource = '';
+  if (Utils.isWebview()) {
+    orderSource = 'BeepApp';
+  } else if (sessionStorage.getItem('orderSource')) {
+    orderSource = 'BeepSite';
+  } else {
+    orderSource = 'BeepStore';
+  }
+  return orderSource;
 };
 
 export default Utils;

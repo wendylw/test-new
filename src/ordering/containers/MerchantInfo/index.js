@@ -46,7 +46,7 @@ export class MerchantInfo extends Component {
   render() {
     const { history, t, isUseStorehubLogistics, order, isWebView } = this.props;
     const { storeInfo } = order || {};
-    const { name, phone, street1 } = storeInfo || {};
+    const { name, phone } = storeInfo || {};
 
     return (
       <section className="ordering-merchant-info flex flex-column" data-heap-name="ordering.need-help.container">

@@ -574,6 +574,7 @@ class LocationAndDate extends Component {
         isValidTodayTime = validDays.includes(weekday) && isBeforeStoreClose;
         if (!isBeforeStoreClose && !i) continue;
       }
+
       if (enablePreOrder) {
         if (disableTodayPreOrder && disableOnDemandOrder && !i) {
           continue;

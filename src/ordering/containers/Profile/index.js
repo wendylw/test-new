@@ -1,19 +1,17 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { put } from '../../../utils/request';
-import { toISODateString } from '../../../utils/datetime-lib';
 import url from '../../../utils/url';
 import './Profile.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 
-import DayPicker from 'react-day-picker';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
+// import DayPicker from 'react-day-picker';
+// import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
 
 const { API_URLS } = url;
@@ -67,7 +65,6 @@ class Profile extends Component {
         this.setState({ error: false });
         clearTimeout(this.timeoutId);
       }, 3000);
-      console.log(e);
     }
   };
 

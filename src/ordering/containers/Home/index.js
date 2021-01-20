@@ -7,6 +7,7 @@ import Header from '../../../components/Header';
 
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
+import PromotionsBar from './components/PromotionsBar';
 import ProductDetail from './components/ProductDetail';
 import CartListAside from './components/CartListAside';
 import StoreInfoAside from './components/StoreInfoAside';
@@ -815,6 +816,20 @@ export class Home extends Component {
       : Utils.isDeliveryType() || (Utils.isPickUpType() && validTimeFrom && validTimeTo && callApiFinish);
   };
 
+  isRenderDeliveryFee = (enableConditionalFreeShipping, freeShippingMinAmount) => {
+    const adBarHeight = 30;
+    const { dScrollY } = this.state;
+    const { storeId } = config;
+
+    return (
+      enableConditionalFreeShipping &&
+      freeShippingMinAmount &&
+      Utils.isDeliveryType() &&
+      dScrollY < adBarHeight &&
+      storeId
+    );
+  };
+
   render() {
     const {
       categories,
@@ -842,6 +857,7 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
+    const { onSHPromotion } = businessInfo || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -851,7 +867,8 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        {enableConditionalFreeShipping && freeShippingMinAmount && Utils.isDeliveryType() ? (
+        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} onSHPromotion={onSHPromotion} />
+        {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p
               ref={ref => (this.deliveryFeeEl = ref)}
@@ -870,11 +887,11 @@ export class Home extends Component {
           className="ordering-home__container flex flex-top sticky-wrapper"
           style={{
             top: `${mainTop({
-              headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+              headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl, this.promotionEl],
             })}px`,
             height: `${windowSize.height -
               mainTop({
-                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
+                headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl, this.promotionEl],
               }) -
               marginBottom({
                 footerEls: [this.footerEl],
