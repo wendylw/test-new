@@ -28,6 +28,7 @@ import Constants from '../../../utils/constants';
 import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import { gotoHome } from '../../../utils/webview-utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { getOnlineStoreInfo, getUser, getBusinessUTCOffset } from '../../redux/modules/app';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
@@ -133,12 +134,14 @@ export class ThankYou extends PureComponent {
   }
 
   closeMap = () => {
+    const res = window.beepAppVersion;
+
     try {
       if (Utils.isAndroidWebview()) {
         window.androidInterface.closeMap();
       }
 
-      if (Utils.isIOSWebview()) {
+      if (Utils.isIOSWebview() && res > '1.0.1' && res !== '1.1.2') {
         window.webkit.messageHandlers.shareAction.postMessage({
           functionName: 'closeMap',
         });
@@ -206,7 +209,7 @@ export class ThankYou extends PureComponent {
 
         if (Utils.isIOSWebview() && lat && lng) {
           const res = window.beepAppVersion;
-          if (res > '1.0.1') {
+          if (res > '1.0.1' && res !== '1.1.2') {
             window.webkit.messageHandlers.shareAction.postMessage({
               functionName: 'updateHeaderOptionsAndShowMap',
               title,
@@ -1261,19 +1264,7 @@ export class ThankYou extends PureComponent {
               title={`#${orderId}`}
               navFunc={() => {
                 if (isWebview) {
-                  if (window.androidInterface) {
-                    window.androidInterface.gotoHome();
-                  } else if (window.webkit) {
-                    const version = window.beepAppVersion;
-
-                    if (version > '1.0.1') {
-                      window.webkit.messageHandlers.shareAction.postMessage({
-                        functionName: 'gotoHome',
-                      });
-                    } else {
-                      window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
-                    }
-                  }
+                  gotoHome();
                 } else {
                   // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
                   history.replace({

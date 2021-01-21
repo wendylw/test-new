@@ -4,6 +4,12 @@ import qs from 'qs';
 import Constants from './utils/constants';
 import Utils from './utils/utils';
 import NotFound from './NotFound';
+import { ErrorBoundary } from '@sentry/react';
+import ErrorComponent from './components/Error';
+import { Translation } from 'react-i18next';
+import i18n from './i18n';
+import './Bootstrap.scss';
+import { gotoHome } from './utils/webview-utils';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
 
@@ -22,6 +28,30 @@ const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import('./voucher')));
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Bootstrap extends Component {
+  handleError = (error, componentStack, eventId) => {
+    window.newrelic?.addPageAction('common.render-error', {
+      error: error?.message,
+      stack: error?.stack,
+      componentStack,
+      sentryId: eventId,
+      pathname: document.location.pathname,
+      host: document.location.host,
+      href: document.location.href,
+    });
+    window.heap?.track('common.render-error', {
+      sentryId: eventId,
+      errorMessage: error?.message,
+    });
+  };
+
+  onErrorScreenBackToHomeButtonClick = () => {
+    if (Utils.isWebview()) {
+      gotoHome();
+    } else {
+      document.location.href = '/';
+    }
+  };
+
   renderSitePages = () => {
     return (
       <Suspense fallback={<div className="loader theme full-page"></div>}>
@@ -70,8 +100,33 @@ class Bootstrap extends Component {
     );
   };
 
+  renderError = ({ eventId }) => {
+    return (
+      <Translation i18n={i18n}>
+        {t => (
+          <main className="fixed-wrapper fixed-wrapper__main bootstrap__render-error">
+            <ErrorComponent title={t('CommonErrorMessage')} description={t('ErrorId', { id: eventId })}>
+              <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+                <button
+                  className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+                  onClick={this.onErrorScreenBackToHomeButtonClick}
+                >
+                  {t('BackToHome')}
+                </button>
+              </footer>
+            </ErrorComponent>
+          </main>
+        )}
+      </Translation>
+    );
+  };
+
   render() {
-    return <Router>{Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}</Router>;
+    return (
+      <ErrorBoundary fallback={this.renderError} onError={this.handleError}>
+        <Router>{Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}</Router>
+      </ErrorBoundary>
+    );
   }
 }
 
