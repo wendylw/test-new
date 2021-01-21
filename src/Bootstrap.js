@@ -30,7 +30,7 @@ const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Bootstrap extends Component {
   componentDidMount() {
-    clevertap.pushEvent('Page visited from beep webview', { host: location.hostname });
+    clevertap.pushEvent('Page visited from beep webview', { host: window.location.hostname });
   }
 
   handleError = (error, componentStack, eventId) => {
