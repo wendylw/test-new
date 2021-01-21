@@ -568,6 +568,7 @@ export class Home extends Component {
   }
 
   getExpectedDeliveryTime = () => {
+    const { businessUTCOffset } = this.props;
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
     const locale = this.getBusinessCountry();
 
@@ -576,6 +577,7 @@ export class Home extends Component {
         date: date,
         hour: hour,
         locale,
+        businessUTCOffset,
         separator: ' .',
       });
     }

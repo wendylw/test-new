@@ -1,5 +1,4 @@
 import invariant from 'invariant';
-import { padZero } from './datetime-lib';
 import dayjs from 'dayjs';
 
 const InvalidTimeErrorMessage = 'Invalid time string format';
@@ -306,4 +305,17 @@ export const formatTo12hour = time => {
   const dateTime = setDateTime(time);
 
   return dateTime.format('hh:mm A');
+};
+
+/**
+ * pad zero
+ * @param {number} num
+ * @returns {string}
+ */
+export const padZero = num => {
+  const str = num.toString();
+  if (str.length === 1) {
+    return `0${str}`;
+  }
+  return str;
 };

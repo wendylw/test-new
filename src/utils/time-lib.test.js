@@ -19,6 +19,7 @@ import {
   ceilToQuarter,
   floorToHour,
   formatTo12hour,
+  padZero,
 } from './time-lib';
 import dayjs from 'dayjs';
 
@@ -319,5 +320,16 @@ describe('test formatTo12hour function', () => {
     ${'-2:50'} | ${'10:50 PM'}
   `(`return $expected when format $time to 12 hour`, ({ time, expected }) => {
     expect(formatTo12hour(time)).toBe(expected);
+  });
+});
+
+describe('test padZero function', () => {
+  test.each`
+    value | expected
+    ${0}  | ${'00'}
+    ${12} | ${'12'}
+    ${-1} | ${'-1'}
+  `(`return $expected when call padZero with $value`, ({ value, expected }) => {
+    expect(padZero(value)).toBe(expected);
   });
 });
