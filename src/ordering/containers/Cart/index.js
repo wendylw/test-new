@@ -77,7 +77,7 @@ class Cart extends Component {
 
     if (preProductsContainerHeight !== productsContainerHeight) {
       this.setState({
-        productsContainerHeight: productsContainerHeight,
+        productsContainerHeight,
       });
     }
   };
