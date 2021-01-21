@@ -35,3 +35,20 @@ export const pushEvent = (eventName, attributes) => {
     console.error(error);
   }
 };
+
+export const addUserInfo = userProfile => {
+  try {
+    if (!Utils.isWebview()) {
+      const { name, email } = userProfile;
+      window.clevertap?.profile.push({
+        Site: {
+          Name: name,
+          Email: email,
+        },
+      });
+    }
+  } catch (error) {
+    console.error('CleverTap encountered with error:');
+    console.error(error);
+  }
+};
