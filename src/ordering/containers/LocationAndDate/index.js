@@ -39,6 +39,7 @@ const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRE
 class LocationAndDate extends Component {
   headerEl = null;
   footerEl = null;
+  resetWillUnmount = false;
 
   componentDidMount = async () => {
     const { actions } = this.props;
@@ -70,6 +71,13 @@ class LocationAndDate extends Component {
       this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || config.storeId);
     }
   };
+
+  componentWillUnmount() {
+    if (this.resetWillUnmount) {
+      this.props.actions.reset();
+      this.resetWillUnmount = false;
+    }
+  }
 
   get query() {
     return qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
@@ -133,6 +141,8 @@ class LocationAndDate extends Component {
     const stateFrom = _get(location, 'state.from', null);
     const callbackUrl = this.query.callbackUrl;
     const from = stateFrom || this.query.from;
+    // reset redux store data once unmount
+    this.resetWillUnmount = true;
 
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       return history.push({
@@ -216,6 +226,8 @@ class LocationAndDate extends Component {
       date: expectedDate,
       hour: expectedTime,
     });
+    // reset redux store data once unmount
+    this.resetWillUnmount = true;
 
     await homeActions.getStoreHashData(storeId);
     const h = decodeURIComponent(this.props.storeHashCode);

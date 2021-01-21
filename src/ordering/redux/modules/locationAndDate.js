@@ -293,6 +293,10 @@ export const actions = {
       });
     }
   },
+
+  reset: () => ({
+    type: LOCATION_AND_DATE.RESET,
+  }),
 };
 
 const reducer = (state = initialState, action) => {
@@ -356,6 +360,10 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loading: action.payload,
+      };
+    case LOCATION_AND_DATE.RESET:
+      return {
+        ...initialState,
       };
     default:
       return state;
