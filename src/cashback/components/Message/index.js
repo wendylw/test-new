@@ -8,8 +8,8 @@ import TopMessage from '../TopMessage';
 import ClaimedMessage from '../ClaimedMessage';
 
 const MESSAGE_TYPES = {
-  PRIMARY: 'top-message--primary',
-  ERROR: 'top-message--error',
+  PRIMARY: 'primary',
+  ERROR: 'error',
 };
 
 const ERROR_STATUS = ['NotClaimed_Cancelled'];
