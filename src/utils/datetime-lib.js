@@ -170,6 +170,7 @@ export const formatToDeliveryTime = ({ date, hour, businessUTCOffset = 480, loca
   if (from === CONSTANTS.TIME_SLOT_NOW) return i18next.t('DeliverNow', { separator });
 
   const dateDayjs = dayjs(date.date).utcOffset(businessUTCOffset);
+  const currentDayjs = dayjs().utcOffset(businessUTCOffset);
   const fromDayjs = from ? timeLib.setDateTime(from, dateDayjs) : null;
   const toDayjs = to ? timeLib.setDateTime(to, dateDayjs) : null;
 
@@ -177,7 +178,8 @@ export const formatToDeliveryTime = ({ date, hour, businessUTCOffset = 480, loca
     return null;
   }
 
-  const dateString = fromDayjs.format('dddd, MMMM DD');
+  const isToday = currentDayjs.isSame(fromDayjs, 'day');
+  const dateString = isToday ? i18next.t('Today') : fromDayjs.format('dddd, MMMM DD');
   const fromTimeString = fromDayjs.format('hh:mm A');
   const toTimeString = toDayjs ? toDayjs.format('hh:mm A') : null;
   const timeString = toTimeString ? `${fromTimeString} - ${toTimeString}` : fromTimeString;
@@ -185,12 +187,19 @@ export const formatToDeliveryTime = ({ date, hour, businessUTCOffset = 480, loca
   return `${dateString}${separator} ${timeString}`;
 };
 
-export const formatPickupTime = ({ dateList, locale, separator = ', ' }) => {
-  const isToday = dateList[0].getDate() === new Date().getDate();
-  let date = isToday ? i18next.t('Today') : toDayDateMonth(dateList[0], locale);
-  let timeRange = dateList.map(time => toNumericTime(time, locale)).join(' - ');
+export const formatPickupTime = ({ date, locale, businessUTCOffset = 480, separator = ', ' }) => {
+  const dateDayjs = dayjs(date).utcOffset(businessUTCOffset);
+  const currentDayjs = dayjs().utcOffset(businessUTCOffset);
+  const isToday = currentDayjs.isSame(dateDayjs, 'day');
+  const timeString = dateDayjs.format('hh:mm A');
 
-  return [date, timeRange].filter(item => Boolean(item)).join(separator);
+  if (isToday) {
+    return `${i18next.t('Today')}${separator}${timeString}`;
+  }
+
+  const dateString = dateDayjs.format('dddd, MMMM DD');
+
+  return `${dateString}${separator}${timeString}`;
 };
 
 export const addTime = (date = new Date(), timeToAdd, unit) => {

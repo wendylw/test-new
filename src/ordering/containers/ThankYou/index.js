@@ -1046,7 +1046,7 @@ export class ThankYou extends PureComponent {
     const isPickUpType = Utils.isPickUpType();
     const isDeliveryType = Utils.isDeliveryType();
     const isDineInType = Utils.isDineInType();
-    const { t, order, onlineStoreInfo = {} } = this.props;
+    const { t, order, onlineStoreInfo = {}, businessUTCOffset } = this.props;
     const { isPreOrder } = order || {};
 
     if (!order) return;
@@ -1057,10 +1057,9 @@ export class ThankYou extends PureComponent {
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const pickupTime = formatPickupTime({
-      dateList: isPreOrder
-        ? [new Date(expectDeliveryDateFrom)]
-        : [new Date(new Date(createdTime).getTime() + 1000 * 60 * 30)],
+      date: isPreOrder ? new Date(expectDeliveryDateFrom) : new Date(new Date(createdTime).getTime() + 1000 * 60 * 30),
       locale: onlineStoreInfo.country,
+      businessUTCOffset,
     });
 
     return (
