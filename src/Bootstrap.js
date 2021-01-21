@@ -10,6 +10,7 @@ import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
 import { gotoHome } from './utils/webview-utils';
+import * as clevertap from './utils/clevertap';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
 
@@ -28,6 +29,10 @@ const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import('./voucher')));
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Bootstrap extends Component {
+  componentDidMount() {
+    clevertap.pushEvent('Page visited from beep webview');
+  }
+
   handleError = (error, componentStack, eventId) => {
     window.newrelic?.addPageAction('common.render-error', {
       error: error?.message,
