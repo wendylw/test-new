@@ -28,13 +28,13 @@ class Error extends React.Component {
     return (
       <section className="error flex flex-column" {...dataAttributes}>
         <div className="error__container">
-          <figure className="error__image-container margin-normal text-center">
+          <figure className="error__image-container margin-top-bottom-normal text-center">
             <img src={beepErrorImage} alt="Error found" />
           </figure>
           <div className="error__content padding-small margin-top-bottom-small">
             {title ? <h2 className="error__title text-center text-size-large">{title}</h2> : null}
             {description ? (
-              <div className="error__description margin-small text-center">
+              <div className="error__description margin-top-bottom-small text-center">
                 <div className="text-size-big text-line-height-base">{description}</div>
               </div>
             ) : null}
