@@ -32,6 +32,7 @@ import {
   getStorePageInfo,
 } from '../redux/modules/entities/storeCollections';
 import constants from '../../utils/constants';
+import * as CleverTap from '../../utils/clevertap';
 
 const { COLLECTIONS_TYPE } = constants;
 
@@ -55,6 +56,16 @@ class SearchPage extends React.Component {
   };
 
   onGoBack = () => {
+    const {
+      searchInfo: { keyword },
+    } = this.props;
+
+    if (!keyword) {
+      CleverTap.pushEvent('Empty Search - Click back');
+    } else {
+      CleverTap.pushEvent('Search - click back');
+    }
+
     this.props.history.push({
       pathname: '/home',
     });
@@ -66,6 +77,12 @@ class SearchPage extends React.Component {
   }, 700);
 
   handleSwitchTab = async shippingType => {
+    if (shippingType === 'delivery') {
+      CleverTap.pushEvent('Search - Click delivery tab');
+    } else {
+      CleverTap.pushEvent('Search - Click self pickup tab');
+    }
+
     this.props.searchActions.setPaginationInfo();
     this.props.searchActions.setShippingType(shippingType);
     await this.props.searchActions.getStoreList();
@@ -79,6 +96,7 @@ class SearchPage extends React.Component {
   };
 
   handleClearSearchText = () => {
+    CleverTap.pushEvent('Search - Click clear search field');
     this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
   };
 
@@ -172,7 +190,17 @@ class SearchPage extends React.Component {
                 hasMore={pageInfo.hasMore}
                 getScrollParent={() => this.sectionRef.current}
                 loadMoreStores={() => this.props.searchActions.getStoreList()}
-                onStoreClicked={store => this.backLeftPosition(store)}
+                onStoreClicked={(store, index) => {
+                  CleverTap.pushEvent('Search - Click search result', {
+                    keyword,
+                    'Store Name': store.name,
+                    'Store Rank': index,
+                    'Shipping Type': store.shippingType,
+                    'has promo': store.promoTag?.length > 0,
+                    cashback: `${Number(store.cashbackRate || 0) * 100}%`,
+                  });
+                  this.backLeftPosition(store);
+                }}
                 withInfiniteScroll
               />
             </StoreListAutoScroll>

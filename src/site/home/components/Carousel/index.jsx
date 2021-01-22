@@ -90,7 +90,7 @@ class Carousel extends Component {
                   'Store Rank': index,
                   'Shipping Type': shippingType,
                   'has promo': promoTag?.length > 0,
-                  'has cashback': cashbackRatePercentage > 10,
+                  cashback: `${Number(cashbackRate || 0) * 100}%`,
                 });
                 this.handleStoreClicked(store, shippingType);
               }}

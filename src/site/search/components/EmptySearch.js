@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
+import * as CleverTap from '../../../utils/clevertap';
 import './EmptySearch.scss';
 
 class EmptySearch extends Component {
-  handleClick = urlPath => () => {
+  handleClick = urlPath => {
     const { history } = this.props;
     history.push({ pathname: `/collections/${urlPath}`, state: { from: '/search' } });
   };
@@ -16,14 +17,20 @@ class EmptySearch extends Component {
       <div className="search-popular padding-top-bottom-normal">
         <h2 className={'padding-top-bottom-normal text-weight-bolder'}>{t('PopularCategories')}</h2>
         <div className={'search-popular__container flex flex-between'}>
-          {(populars || []).map(collection => {
+          {(populars || []).map((collection, index) => {
             const { name, urlPath } = collection || {};
 
             return (
               <span
                 key={urlPath}
                 className="search-popular__category padding-small"
-                onClick={this.handleClick(urlPath)}
+                onClick={() => {
+                  CleverTap.pushEvent('Empty Search - Click popular category', {
+                    'Collection Name': name,
+                    Rank: index,
+                  });
+                  this.handleClick(urlPath);
+                }}
                 data-heap-name="site.search.popular-categories"
               >
                 {name}
@@ -40,14 +47,20 @@ class EmptySearch extends Component {
 
     return (
       <div>
-        {(others || []).map(collection => {
+        {(others || []).map((collection, index) => {
           const { name, urlPath } = collection || {};
 
           return (
             <li
               key={urlPath}
               className="search-other__category padding-top-bottom-normal"
-              onClick={this.handleClick(urlPath)}
+              onClick={() => {
+                CleverTap.pushEvent('Empty Search - Click other category', {
+                  'Collection Name': name,
+                  Rank: index,
+                });
+                this.handleClick(urlPath);
+              }}
               data-heap-name="site.search.other-categories"
             >
               <span className="search-other__name">{name}</span>

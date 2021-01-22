@@ -136,7 +136,7 @@ class Home extends React.Component {
       'Store Rank': index,
       'Shipping Type': store.shippingType,
       'has promo': store.promoTag?.length > 0,
-      'has cashback': store.cashbackRate > 0,
+      cashback: `${Number(store.cashbackRate || 0) * 100}%`,
     });
 
     const { homeActions, currentPlaceInfo } = this.props;

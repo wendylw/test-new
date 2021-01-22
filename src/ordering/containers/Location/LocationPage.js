@@ -12,6 +12,7 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { connect } from 'react-redux';
+import * as CleverTap from '../../../utils/clevertap';
 
 import './OrderingLocation.scss';
 
@@ -132,6 +133,7 @@ class LocationPage extends Component {
   };
 
   handleBackClicked = () => {
+    CleverTap.pushEvent('Location Page - Click back');
     const { history } = this.props;
     history.go(-1);
   };

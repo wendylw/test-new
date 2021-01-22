@@ -12,6 +12,7 @@ import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
 import { captureException } from '@sentry/react';
+import * as CleverTap from '../utils/clevertap';
 
 class LocationPicker extends Component {
   static propTypes = {
@@ -137,6 +138,7 @@ class LocationPicker extends Component {
   }
 
   debounceSearchPlaces = debounce(async () => {
+    CleverTap.pushEvent('Location Page - Search for location');
     const { searchText, devicePositionInfo } = this.state;
     const { mode } = this.props;
     let { origin, country, radius } = this.props;
@@ -179,6 +181,7 @@ class LocationPicker extends Component {
   };
 
   clearSearchBox = () => {
+    CleverTap.pushEvent('Location Page - Click clear location search field');
     this.setState({ searchText: '' }, () => {
       this.debounceSearchPlaces();
     });
@@ -339,12 +342,17 @@ class LocationPicker extends Component {
 
     return (
       <div>
-        {searchResultList.map(searchResult => {
+        {searchResultList.map((searchResult, index) => {
           return (
             <div
               className="location-picker__result-item"
               key={searchResult.place_id}
-              onClick={() => this.selectPlace(searchResult)}
+              onClick={() => {
+                CleverTap.pushEvent('Location Page - Click location results', {
+                  Rank: index,
+                });
+                this.selectPlace(searchResult);
+              }}
               data-heap-name="common.location-picker.search-result-item"
             >
               {this.renderAddressItem(
