@@ -30,5 +30,9 @@
   "41000Title": "Time slot exceeded order limit (Error: {{error_code}})",
   "41000Description": "The selected time slot is no longer available. We have selected the next available time.",
   "41014Title": "No items in cart (Error: {{error_code}})",
-  "41014Description": "There are no items in your cart, please reorder again."
+  "41014Description": "There are no items in your cart, please reorder again.",
+  "40025Title": "Unable to access storage",
+  "40025Description": "Cookie is not available.",
+  "40026Title": "Unable to save data",
+  "40026Description": "Data should not be empty."
 }

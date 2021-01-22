@@ -135,12 +135,14 @@ export class ThankYou extends PureComponent {
   }
 
   closeMap = () => {
+    const res = window.beepAppVersion;
+
     try {
       if (Utils.isAndroidWebview()) {
         window.androidInterface.closeMap();
       }
 
-      if (Utils.isIOSWebview()) {
+      if (Utils.isIOSWebview() && res > '1.0.1' && res !== '1.1.2') {
         window.webkit.messageHandlers.shareAction.postMessage({
           functionName: 'closeMap',
         });
@@ -208,7 +210,7 @@ export class ThankYou extends PureComponent {
 
         if (Utils.isIOSWebview() && lat && lng) {
           const res = window.beepAppVersion;
-          if (res > '1.0.1') {
+          if (res > '1.0.1' && res !== '1.1.2') {
             window.webkit.messageHandlers.shareAction.postMessage({
               functionName: 'updateHeaderOptionsAndShowMap',
               title,

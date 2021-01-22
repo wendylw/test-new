@@ -138,7 +138,7 @@ class OtpModal extends React.Component {
             {isNewInput ? (
               <div
                 className={`otp-modal__group form__group flex flex-middle flex-space-between text-size-larger ${
-                  isError ? 'error' : ''
+                  isError ? 'otp-modal__form-group--error' : ''
                 }`}
               >
                 <input
