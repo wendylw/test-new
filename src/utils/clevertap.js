@@ -1,6 +1,8 @@
 import Utils from './utils';
 import config from '../config';
 
+const businessName = Utils.isSiteApp() ? 'beepit.com' : config.business;
+
 export const pushEvent = (eventName, attributes) => {
   try {
     if (Utils.isWebview()) {
@@ -10,7 +12,7 @@ export const pushEvent = (eventName, attributes) => {
           event: eventName,
           props: {
             ...attributes,
-            businessName: Utils.isSiteApp() ? 'beepit.com' : config.business,
+            businessName,
           },
         });
       }
@@ -20,14 +22,14 @@ export const pushEvent = (eventName, attributes) => {
           eventName,
           JSON.stringify({
             ...attributes,
-            businessName: Utils.isSiteApp() ? 'beepit.com' : config.business,
+            businessName,
           })
         );
       }
     } else {
       window.clevertap?.event.push(eventName, {
         ...attributes,
-        businessName: Utils.isSiteApp() ? 'beepit.com' : config.business,
+        businessName,
       });
     }
   } catch (error) {
@@ -36,14 +38,12 @@ export const pushEvent = (eventName, attributes) => {
   }
 };
 
-export const addUserInfo = userProfile => {
+export const onUserLogin = userProfileProps => {
   try {
     if (!Utils.isWebview()) {
-      const { name, email } = userProfile;
-      window.clevertap?.profile.push({
+      window.clevertap?.onUserLogin.push({
         Site: {
-          Name: name,
-          Email: email,
+          ...userProfileProps,
         },
       });
     }

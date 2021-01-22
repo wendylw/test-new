@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
+import * as CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
 
@@ -63,6 +64,13 @@ export const actions = {
         if (phone) {
           window.heap?.addUserProperties({ PhoneNumber: phone });
         }
+        CleverTap.onUserLogin({
+          Name: `${resp.user?.firstName} ${resp.user?.lastName}`,
+          Phone: resp.user?.phone,
+          Email: resp.user?.email,
+          Identity: resp.consumerId,
+          DOB: resp.user?.birthday,
+        });
       }
       return resp;
     }),
@@ -82,6 +90,13 @@ export const actions = {
         if (phone) {
           window.heap?.addUserProperties({ PhoneNumber: phone });
         }
+        CleverTap.onUserLogin({
+          Name: `${resp.user?.firstName} ${resp.user?.lastName}`,
+          Phone: resp.user?.phone,
+          Email: resp.user?.email,
+          Identity: resp.consumerId,
+          DOB: resp.user?.birthday,
+        });
       }
       return resp;
     }),
