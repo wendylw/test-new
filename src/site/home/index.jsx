@@ -8,6 +8,7 @@ import { IconSearch, IconScanner, IconLocation } from '../../components/Icons';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
 import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
+import * as CleverTap from '../../utils/clevertap';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';
@@ -105,6 +106,8 @@ class Home extends React.Component {
   };
 
   gotoLocationPage = () => {
+    CleverTap.pushEvent('Homepage - Click Location Bar');
+
     const { history, location, currentPlaceInfo } = this.props;
     const coords = currentPlaceInfo && currentPlaceInfo.coords;
 
@@ -118,6 +121,7 @@ class Home extends React.Component {
   };
 
   handleLoadSearchPage = () => {
+    CleverTap.pushEvent('Homepage - Click Search Bar');
     this.backLeftPosition();
     this.props.history.push({ pathname: '/search' });
   };
@@ -126,7 +130,15 @@ class Home extends React.Component {
     return this.props.homeActions.getStoreListNextPage();
   };
 
-  handleStoreSelected = async store => {
+  handleStoreSelected = async (store, index) => {
+    CleverTap.pushEvent('Homepage - Click Store Card', {
+      'Store Name': store.name,
+      'Store Rank': index,
+      'Shipping Type': store.shippingType,
+      'has promo': store.promoTag?.length > 0,
+      'has cashback': store.cashbackRate > 0,
+    });
+
     const { homeActions, currentPlaceInfo } = this.props;
 
     homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
@@ -134,6 +146,11 @@ class Home extends React.Component {
     // to backup whole redux state when click store item
     this.backupState();
     await submitStoreMenu({ deliveryAddress: currentPlaceInfo, store: store, source: document.location.href });
+  };
+
+  handleQRCodeClicked = () => {
+    CleverTap.pushEvent('Homepage - Click QR Scan');
+    this.backLeftPosition();
   };
 
   backLeftPosition = () => {
@@ -195,7 +212,7 @@ class Home extends React.Component {
           backLeftPosition={this.backLeftPosition}
         >
           <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
-            <IconScanner className="icon icon__primary" onClick={this.backLeftPosition} />
+            <IconScanner className="icon icon__primary" onClick={this.handleQRCodeClicked} />
           </Link>
         </DeliverToBar>
 

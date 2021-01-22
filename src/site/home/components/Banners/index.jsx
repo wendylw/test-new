@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import SwiperCore, { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from '../../../../components/Image';
+import * as CleverTap from '../../../../utils/clevertap';
 import 'swiper/swiper.scss';
 import './index.scss';
 
@@ -35,6 +36,10 @@ class Banners extends Component {
               <SwiperSlide
                 key={beepCollectionId}
                 onClick={() => {
+                  CleverTap.pushEvent('Homepage - Click Collection Banner', {
+                    'Collection Name': name,
+                    Rank: index,
+                  });
                   this.props.history.push({
                     pathname: `/collections/${urlPath}`,
                   });
