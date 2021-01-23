@@ -33,7 +33,7 @@ class Cart extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
     isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
-    productsContainerHeight: '0',
+    productsContainerHeight: '0px',
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -75,7 +75,7 @@ class Cart extends Component {
       footerEls: [this.footerEl, this.billingEl],
     });
 
-    if (preProductsContainerHeight !== productsContainerHeight) {
+    if (productsContainerHeight !== '0px' && preProductsContainerHeight !== productsContainerHeight) {
       this.setState({
         productsContainerHeight,
       });
