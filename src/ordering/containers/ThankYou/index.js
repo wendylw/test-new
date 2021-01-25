@@ -4,11 +4,9 @@ import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import _isNil from 'lodash/isNil';
 import Header from '../../../components/Header';
 import { IconAccessTime, IconPin } from '../../../components/Icons';
 import LiveChat from '../../../components/LiveChat';
-import LiveChatNative from '../../../components/LiveChatNative';
 import config from '../../../config';
 import beepAppDownloadBanner from '../../../images/beep-app-download.png';
 import logisticsGoget from '../../../images/beep-logistics-goget.png';
@@ -1215,11 +1213,8 @@ export class ThankYou extends PureComponent {
   render() {
     const { t, history, match, order, storeHashCode, user } = this.props;
     const date = new Date();
-    const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
-    const {
-      isWebview,
-      profile: { email },
-    } = user || {};
+    const { orderId, tableId, deliveryInformation = [] } = order || {};
+    const { isWebview } = user || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
@@ -1241,7 +1236,6 @@ export class ThankYou extends PureComponent {
       options.push(`type=${type}`);
     }
 
-    const orderStoreName = storeInfo?.name || '';
     let orderUserName = '';
     let orderUserPhone = '';
 
@@ -1280,16 +1274,6 @@ export class ThankYou extends PureComponent {
               {!isDineInType ? (
                 !isWebview ? (
                   <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
-                ) : window.liveChatAvailable ? (
-                  !_isNil(order) && (
-                    <LiveChatNative
-                      orderId={`${orderId}`}
-                      name={orderUserName}
-                      phone={orderUserPhone}
-                      email={email}
-                      storeName={orderStoreName}
-                    />
-                  )
                 ) : (
                   <button
                     className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
