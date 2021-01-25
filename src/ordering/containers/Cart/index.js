@@ -74,8 +74,10 @@ class Cart extends Component {
       headerEls: [this.headerEl],
       footerEls: [this.footerEl, this.billingEl],
     });
+    const preHeightNumber = Math.floor(preProductsContainerHeight.replace('px'));
+    const currentHeightNumber = Math.floor(productsContainerHeight.replace('px'));
 
-    if (productsContainerHeight !== '0px' && preProductsContainerHeight !== productsContainerHeight) {
+    if (productsContainerHeight > '0px' && currentHeightNumber - preHeightNumber >= 30) {
       this.setState({
         productsContainerHeight,
       });
