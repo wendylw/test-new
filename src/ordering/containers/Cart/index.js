@@ -79,7 +79,7 @@ class Cart extends Component {
     const preHeightNumber = _floor(_replace(preProductsContainerHeight, 'px', ''));
     const currentHeightNumber = _floor(_replace(productsContainerHeight, 'px', ''));
 
-    if (productsContainerHeight > '0px' && Math.abs(currentHeightNumber - preHeightNumber) !== 10) {
+    if (productsContainerHeight > '0px' && Math.abs(currentHeightNumber - preHeightNumber) > 10) {
       this.setState({
         productsContainerHeight,
       });
