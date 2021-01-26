@@ -83,15 +83,15 @@ class Carousel extends Component {
               data-heap-name="site.home.carousel.store-item"
               data-heap-store-name={name}
               onClick={() => {
-                CleverTap.pushEvent('Homepage - Click Carousel Store Card', {
-                  'Collection Name': collectionInfo.name,
-                  'Collection Rank': collectionInfo.index,
-                  'Store Name': name,
-                  'Store Rank': index,
-                  'Shipping Type': shippingType,
-                  'has promo': promoTag?.length > 0,
-                  cashback: `${Number(cashbackRate || 0) * 100}%`,
-                });
+                // CleverTap.pushEvent('Homepage - Click Carousel Store Card', {
+                //   'collection name': collectionInfo.name,
+                //   'collection rank': collectionInfo.index,
+                //   'store name': name,
+                //   'store rank': index,
+                //   'shipping type': shippingType,
+                //   'has promo': promoTag?.length > 0,
+                //   'cashback': `${Number(cashbackRate || 0) * 100}%`,
+                // });
                 this.handleStoreClicked(store, shippingType);
               }}
             >
@@ -156,10 +156,10 @@ class Carousel extends Component {
                   className="carousel__see-all flex flex-middle"
                   data-heap-name="site.home.carousel.see-all-btn"
                   onClick={() => {
-                    CleverTap.pushEvent('Homepage - Click Carousel See All', {
-                      'Collection Name': name,
-                      Rank: index,
-                    });
+                    // CleverTap.pushEvent('Homepage - Click Carousel See All', {
+                    //   'collection name': name,
+                    //   'rank': index + 1,
+                    // });
                     this.props.history.push({
                       pathname: `/collections/${urlPath}`,
                     });

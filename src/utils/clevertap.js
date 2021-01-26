@@ -12,7 +12,7 @@ export const pushEvent = (eventName, attributes) => {
           event: eventName,
           props: {
             ...attributes,
-            businessName,
+            'account name': businessName,
           },
         });
       }
@@ -22,19 +22,19 @@ export const pushEvent = (eventName, attributes) => {
           eventName,
           JSON.stringify({
             ...attributes,
-            businessName,
+            'account name': businessName,
           })
         );
       }
     } else {
       window.clevertap?.event.push(eventName, {
         ...attributes,
-        businessName,
+        'account name': businessName,
       });
     }
   } catch (error) {
-    console.error('CleverTap encountered with error:');
-    console.error(error);
+    console.warn('CleverTap encountered with error:');
+    console.warn(error);
   }
 };
 
@@ -48,7 +48,7 @@ export const onUserLogin = userProfileProps => {
       });
     }
   } catch (error) {
-    console.error('CleverTap encountered with error:');
-    console.error(error);
+    console.warn('CleverTap encountered with error:');
+    console.warn(error);
   }
 };

@@ -815,4 +815,34 @@ Utils.getOrderSource = () => {
   return orderSource;
 };
 
+Utils.getStoreInfoForCleverTap = ({ business, allBusinessInfo }) => {
+  const originalInfo = allBusinessInfo[business] || {};
+  const { qrOrderingSettings, defaultLoyaltyRatio, enableCashback, stores, country } = originalInfo || {};
+  const { defaultShippingZone, minimumConsumption } = qrOrderingSettings || {};
+  const { defaultShippingZoneMethod } = defaultShippingZone || {};
+  const { freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
+  const { id, name } = (stores && stores[0]) || {};
+
+  const cashbackRate = `${Math.floor(100 / defaultLoyaltyRatio)}%`;
+  const shippingType = Utils.getOrderTypeFromUrl() || 'unknown';
+
+  const res = {
+    'store name': name,
+    'store id': id,
+    'free delivery above': freeShippingMinAmount,
+    'shipping type': shippingType,
+    country: country,
+  };
+
+  if (enableCashback) {
+    res['cashback'] = cashbackRate;
+  }
+
+  if (enableConditionalFreeShipping) {
+    res['minimum order value'] = minimumConsumption;
+  }
+
+  return res;
+};
+
 export default Utils;

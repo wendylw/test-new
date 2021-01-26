@@ -513,9 +513,9 @@ class ProductDetail extends Component {
   };
 
   renderProductOperator() {
-    const { t, product } = this.props;
+    const { t, product = {}, onAddToCartClick } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
-    const { id: productId } = product || {};
+    const { id: productId } = product;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
     if (!product) {
@@ -566,6 +566,10 @@ class ProductDetail extends Component {
                   item.quantity = 1;
                 }
               });
+
+              if (onAddToCartClick) {
+                onAddToCartClick({ product });
+              }
 
               this.handleAddOrUpdateShoppingCartItem({
                 action: 'add',

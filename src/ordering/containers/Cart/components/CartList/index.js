@@ -9,8 +9,6 @@ import Constants from '../../../../../utils/constants';
 import constants from '../../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 
-import * as clevertap from '../../../../../utils/clevertap';
-
 const isCartItemSoldOut = cartItem => {
   const { markedSoldOut, variations } = cartItem;
 
@@ -84,10 +82,6 @@ class CartList extends Component {
         decreaseDisabled={!Boolean(quantity)}
         originalDisplayPrice={originalDisplayPrice}
         onDecrease={async () => {
-          clevertap.pushEvent('Item decrease', {
-            title,
-            productId,
-          });
           if (quantity === 1) {
             this.handleRemoveCartItem({
               productId,
@@ -107,10 +101,6 @@ class CartList extends Component {
           }
         }}
         onIncrease={() => {
-          clevertap.pushEvent('Item increase', {
-            title,
-            productId,
-          });
           this.handleGtmEventTracking(cartItem);
           this.handleAddOrUpdateShoppingCartItem({
             action: 'edit',

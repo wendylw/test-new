@@ -36,10 +36,10 @@ class Banners extends Component {
               <SwiperSlide
                 key={beepCollectionId}
                 onClick={() => {
-                  CleverTap.pushEvent('Homepage - Click Collection Banner', {
-                    'Collection Name': name,
-                    Rank: index,
-                  });
+                  // CleverTap.pushEvent('Homepage - Click Collection Banner', {
+                  //   'collection name': name,
+                  //   'rank': index + 1,
+                  // });
                   this.props.history.push({
                     pathname: `/collections/${urlPath}`,
                   });

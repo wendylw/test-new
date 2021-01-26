@@ -133,7 +133,7 @@ class LocationPage extends Component {
   };
 
   handleBackClicked = () => {
-    CleverTap.pushEvent('Location Page - Click back');
+    // CleverTap.pushEvent('Location Page - Click back');
     const { history } = this.props;
     history.go(-1);
   };

@@ -22,10 +22,10 @@ class CollectionCard extends React.Component {
               data-heap-name="site.home.collection-icon"
               data-heap-collection-name={name}
               onClick={() => {
-                CleverTap.pushEvent('Homepage - Click Collection Icon', {
-                  'Collection Name': name,
-                  Rank: index,
-                });
+                // CleverTap.pushEvent('Homepage - Click Collection Icon', {
+                //   'collection name': name,
+                //   'rank': index + 1,
+                // });
                 // concern to use location.href if icons fixed to the top
                 backLeftPosition();
                 this.props.history.push({
