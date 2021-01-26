@@ -2,9 +2,27 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { IconLeftArrow, IconClose } from './Icons';
 import withDataAttributes from './withDataAttributes';
+import * as dsBridge from '../utils/dsBridge-utils';
 import './Header.scss';
+import Utils from '../utils/utils';
 
 class HybridHeader extends Component {
+  componentDidMount() {
+    if (Utils.isWebview()) {
+      this.updateNativeHeader();
+    }
+  }
+
+  updateNativeHeader() {
+    dsBridge.updateNativeHeader();
+  }
+
+  componentDidUpdate() {
+    if (Utils.isWebview()) {
+      this.updateNativeHeader();
+    }
+  }
+
   renderRightContent() {
     const { rightContent } = this.props;
 
