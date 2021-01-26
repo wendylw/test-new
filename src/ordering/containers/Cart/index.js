@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
-import { IconDelete, IconClose, IconLocalOffer } from '../../../components/Icons';
+import { IconClose, IconLocalOffer } from '../../../components/Icons';
+import IconDeleteImage from '../../../images/icon-delete.svg';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
@@ -394,7 +395,7 @@ class Cart extends Component {
 
     return (
       <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -402,16 +403,15 @@ class Cart extends Component {
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={this.handleClickBack.bind(this)}
-        >
-          <button
-            className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
-            onClick={this.handleClearAll.bind(this)}
-            data-heap-name="ordering.cart.clear-btn"
-          >
-            <IconDelete className="icon icon__normal icon__error text-middle" />
-            <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
-          </button>
-        </Header>
+          rightContent={{
+            icon: IconDeleteImage,
+            text: t('ClearAll'),
+            style: {
+              color: '#fa4133',
+            },
+            onClick: this.handleClearAll.bind(this),
+          }}
+        ></HybridHeader>
         <div
           className="ordering-cart__container"
           style={{
