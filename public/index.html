@@ -53,14 +53,14 @@
     <!-- End Google Tag Manager -->
 
     <script type="text/javascript">
-      var clevertap = {event:[], profile:[], account:[], onUserLogin:[], notifications:[], privacy:[], region : 'sg1'};
+      var clevertap = {event:[], profile:[], account:[], onUserLogin:[], notifications:[], privacy:[], region: '%REACT_APP_CLEVER_TAP_SCRIPT_REGION%'};
       // replace with the CLEVERTAP_ACCOUNT_ID with the actual ACCOUNT ID value from your Dashboard -> Settings page
-      clevertap.account.push({"id": "TEST-988-947-5W6Z"});
+      clevertap.account.push({"id": "%REACT_APP_CLEVER_TAP_ID%"});
       (function () {
         var wzrk = document.createElement('script');
         wzrk.type = 'text/javascript';
         wzrk.async = true;
-        wzrk.src = ('https:' == document.location.protocol ? 'https://d2r1yp2w7bby2u.cloudfront.net' : 'http://static.clevertap.com') + '/js/a.js';
+        wzrk.src = 'https:' == document.location.protocol ? '%REACT_APP_CLEVER_TAP_SCRIPT_HTTPS_URL%' : '%REACT_APP_CLEVER_TAP_SCRIPT_HTTP_URL%';
         var s = document.getElementsByTagName('script')[0];
         s.parentNode.insertBefore(wzrk, s);
       })();
