@@ -67,6 +67,7 @@ HybridHeader.propTypes = {
   isPage: PropTypes.bool,
   title: PropTypes.string,
   navFunc: PropTypes.func,
+  rightContent: PropTypes.object,
 };
 
 HybridHeader.defaultProps = {
@@ -75,6 +76,7 @@ HybridHeader.defaultProps = {
   isPage: false,
   title: '',
   navFunc: () => {},
+  rightContent: null,
 };
 
 export const HybridHeaderComponent = HybridHeader;

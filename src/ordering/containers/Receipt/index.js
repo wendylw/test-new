@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Item from '../../../components/Item';
 import Billing from '../../components/Billing';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
@@ -113,15 +113,19 @@ export class ReceiptDetail extends Component {
 
     return (
       <section className="receipt flex flex-column" data-heap-name="ordering.receipt.container">
-        <Header
+        <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           title={t('ViewReceipt')}
           data-heap-name="ordering.receipt.header"
           navFunc={this.goBack}
-        >
-          <span className="flex__shrink-fixed text-opacity padding-left-right-small">{this.getHeaderContent()}</span>
-        </Header>
+          rightContent={{
+            text: this.getHeaderContent(),
+            style: {
+              opacity: 0.5,
+            },
+          }}
+        ></HybridHeader>
         <div className="receipt__container">
           <div className="receipt__number-container text-center padding-normal border__bottom-divider">
             <label className="receipt__number-label padding-top-bottom-small margin-top-bottom-small text-opacity text-uppercase">
