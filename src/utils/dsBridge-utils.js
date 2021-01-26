@@ -1,4 +1,4 @@
-import dsbridge from 'dsbridge';
+import dsBridge from 'dsbridge';
 
 export const updateNativeHeader = ({ left, middle, right }) => {
   dsBridge.call('updateNativeHeader', {});

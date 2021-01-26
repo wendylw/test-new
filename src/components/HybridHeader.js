@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { IconLeftArrow, IconClose } from './Icons';
 import withDataAttributes from './withDataAttributes';
-import * as dsBridge from '../utils/dsBridge-utils';
+import * as dsBridgeUtils from '../utils/dsBridge-utils';
 import './Header.scss';
 import Utils from '../utils/utils';
 
@@ -14,7 +14,7 @@ class HybridHeader extends Component {
   }
 
   updateNativeHeader() {
-    dsBridge.updateNativeHeader();
+    dsBridgeUtils.updateNativeHeader();
   }
 
   componentDidUpdate() {
