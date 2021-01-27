@@ -711,6 +711,7 @@ img {
     @extend .border-radius-base;
 
     border: 1px solid $gray-4;
+    height: auto;
     background-color: $white;
 
     &.error {
