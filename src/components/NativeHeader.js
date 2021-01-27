@@ -9,7 +9,49 @@ class NativeHeader extends Component {
   }
 
   updateNativeHeader() {
-    dsBridgeUtils.updateNativeHeader();
+    const { title, rightContent, navFunc } = this.props;
+    const headerParams = {
+      left: null,
+      center: null,
+      right: null,
+    };
+
+    headerParams.left = {
+      type: 'button',
+      id: 'headerBackButton',
+      iconRes: 'back',
+      events: {
+        onClick: () => {
+          navFunc && navFunc();
+        },
+      },
+    };
+
+    headerParams.center = {
+      type: 'text',
+      id: 'headerTile',
+      text: title,
+      textColor: '#303030',
+      alignment: 'left',
+    };
+
+    if (rightContent) {
+      const { icon, text, style, onClick } = rightContent;
+      headerParams.right = {
+        type: 'button',
+        id: 'headerRightButton',
+        iconUrl: icon,
+        text,
+        textColor: style.color || '#303030',
+        events: {
+          onClick: () => {
+            onClick && onClick();
+          },
+        },
+      };
+    }
+
+    dsBridgeUtils.updateNativeHeader(headerParams);
   }
 
   componentDidUpdate() {

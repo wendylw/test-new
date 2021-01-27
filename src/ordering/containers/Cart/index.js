@@ -401,7 +401,6 @@ class Cart extends Component {
           contentClassName="flex-middle"
           data-heap-name="ordering.cart.header"
           isPage={true}
-          isWebview={Utils.isWebview()}
           title={t('ProductsInOrderText', { count: count || 0 })}
           navFunc={this.handleClickBack.bind(this)}
           rightContent={{
