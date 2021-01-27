@@ -26,10 +26,10 @@
     margin-right: auto;
     max-width: 7.8em;
     overflow: hidden;
+  }
 
-    &.error {
-      border: 1px solid $status-red;
-    }
+  &__form-group--error {
+    border: 1px solid $status-red;
   }
 
   &__input {

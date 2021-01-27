@@ -59,7 +59,7 @@ class StoreInfoAside extends Component {
       footerEl,
     } = this.props;
     const { initDom } = this.state;
-    const { stores, country: merchantCountry, multipleStores } = businessInfo || {};
+    const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = ['store-info-aside aside fixed-wrapper'];
 
