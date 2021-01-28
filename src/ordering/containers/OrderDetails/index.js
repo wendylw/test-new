@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import _isNil from 'lodash/isNil';
 import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import LiveChat from '../../../components/LiveChat';
+import LiveChatNative from '../../../components/LiveChatNative';
 import { getUser } from '../../redux/modules/app';
 import Tag from '../../../components/Tag';
 import beepPreOrderSuccess from '../../../images/beep-pre-order-success.png';
@@ -234,11 +236,13 @@ export class OrderDetails extends Component {
 
   render() {
     const { order, history, t, isUseStorehubLogistics, serviceCharge, user } = this.props;
-    const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [] } = order || '';
+    const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [], storeInfo } =
+      order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
-    const { isWebview } = user;
+    const { isWebview, email } = user;
 
+    const orderStoreName = storeInfo?.name || '';
     let orderUserName = '';
     let orderUserPhone = '';
 
@@ -265,6 +269,16 @@ export class OrderDetails extends Component {
         >
           {!isWebview ? (
             <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+          ) : window.liveChatAvailable ? (
+            !_isNil(order) && (
+              <LiveChatNative
+                orderId={`${orderId}`}
+                name={orderUserName}
+                phone={orderUserPhone}
+                email={email}
+                storeName={orderStoreName}
+              />
+            )
           ) : (
             <button
               className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
