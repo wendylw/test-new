@@ -20,7 +20,7 @@ class NativeHeader extends Component {
       type: 'button',
       id: 'headerBackButton',
       iconRes: 'back',
-      events: {
+      eventHandlers: {
         onClick: () => {
           navFunc && navFunc();
         },
@@ -43,7 +43,7 @@ class NativeHeader extends Component {
         iconUrl: icon,
         text,
         textColor: style.color || '#303030',
-        events: {
+        eventHandlers: {
           onClick: () => {
             onClick && onClick();
           },
