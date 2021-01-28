@@ -8,7 +8,7 @@ class NativeHeader extends PureComponent {
   }
 
   updateNativeHeader() {
-    const { title, rightContent, navFunc } = this.props;
+    const { title, rightContent, navFunc, titleAlignment } = this.props;
     const headerParams = {
       left: null,
       center: null,
@@ -31,7 +31,7 @@ class NativeHeader extends PureComponent {
       id: 'headerTile',
       text: title,
       textColor: '#303030',
-      alignment: 'left',
+      alignment: titleAlignment,
     };
 
     if (rightContent) {
@@ -66,6 +66,7 @@ NativeHeader.propTypes = {
   style: PropTypes.object,
   isPage: PropTypes.bool,
   title: PropTypes.string,
+  titleAlignment: PropTypes.oneOf(['left', 'center', 'right']),
   navFunc: PropTypes.func,
   rightContent: PropTypes.object,
 };
@@ -74,6 +75,7 @@ NativeHeader.defaultProps = {
   style: {},
   isPage: false,
   title: '',
+  titleAlignment: 'left',
   navFunc: () => {},
   rightContent: null,
 };
