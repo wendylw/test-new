@@ -1,9 +1,8 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import * as dsBridgeUtils from '../utils/dsBridge-utils';
-import './Header.scss';
 
-class NativeHeader extends Component {
+class NativeHeader extends PureComponent {
   componentDidMount() {
     this.updateNativeHeader();
   }
