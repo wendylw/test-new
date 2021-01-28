@@ -5,7 +5,7 @@ import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -143,7 +143,7 @@ class PageLogin extends React.Component {
     return (
       <React.Fragment>
         <section className={classList.join(' ')} data-heap-name="ordering.login.container">
-          <Header
+          <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
             data-heap-name="ordering.login.header"

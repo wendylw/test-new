@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import { IconNext, IconSearch } from '../../../components/Icons';
 
 import Constants from '../../../utils/constants';
@@ -1455,7 +1455,7 @@ class LocationAndDate extends Component {
 
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"

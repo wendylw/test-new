@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import Constants from '../../../utils/constants';
 import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import { connect } from 'react-redux';
@@ -87,7 +87,7 @@ class Profile extends Component {
     const { name, email } = profile || {};
     return (
       <div className="profile flex flex-column">
-        <Header
+        <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           isPage={true}

@@ -9,7 +9,7 @@ import Constants from '../../../utils/constants';
 import PageLoader from '../../../components/PageLoader';
 import feedBackThankyou from '../../../images/feedback-thankyou.png';
 import { IconInsertPhoto } from '../../../components/Icons';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import Radio from '../../../components/Radio';
 import {
   actions as reportDriverActionCreators,
@@ -170,14 +170,14 @@ class ReportDriver extends Component {
     const { t } = this.props;
     return (
       <section className="ordering-report-thanks">
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.thank-you-header"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
-        ></Header>
+        ></HybridHeader>
         <div className="padding-normal">
           <div className="text-center padding-left-right-normal">
             <img className="ordering-report-thanks__image" alt="Thank your feedback" src={feedBackThankyou} />
@@ -290,14 +290,14 @@ class ReportDriver extends Component {
 
     return (
       <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.header"
           isPage={false}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
-        ></Header>
+        ></HybridHeader>
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
           <div className="card padding-small margin-normal">

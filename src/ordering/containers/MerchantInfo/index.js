@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import qs from 'qs';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import Constants from '../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -50,7 +50,7 @@ export class MerchantInfo extends Component {
 
     return (
       <section className="ordering-merchant-info flex flex-column" data-heap-name="ordering.need-help.container">
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.need-help.header"

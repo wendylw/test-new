@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -158,7 +158,7 @@ class AddressDetail extends Component {
 
     return (
       <div className="flex flex-column address-detail">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"

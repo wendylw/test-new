@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import { withTranslation } from 'react-i18next';
 import { IconAddAddress, IconBookmark, IconNext } from '../../../../../components/Icons';
 import Tag from '../../../../../components/Tag';
@@ -113,7 +113,7 @@ class AddressList extends Component {
     const { t } = this.props;
     return (
       <div>
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"

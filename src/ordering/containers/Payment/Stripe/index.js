@@ -15,7 +15,7 @@ import _get from 'lodash/get';
 import _toString from 'lodash/toString';
 import _startsWith from 'lodash/startsWith';
 import Loader from '../components/Loader';
-import Header from '../../../../components/Header';
+import HybridHeader from '../../../../components/HybridHeader';
 import Constants from '../../../../utils/constants';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
@@ -425,7 +425,7 @@ class Stripe extends Component {
         className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.payment.stripe.container"
       >
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"

@@ -6,7 +6,7 @@ import _get from 'lodash/get';
 import _toString from 'lodash/toString';
 import _startsWith from 'lodash/startsWith';
 import Loader from '../components/Loader';
-import Header from '../../../../components/Header';
+import HybridHeader from '../../../../components/HybridHeader';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import FormValidate from '../../../../utils/form-validate';
 import RedirectForm from '../components/RedirectForm';
@@ -521,7 +521,7 @@ class CreditCard extends Component {
         className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.payment.credit-card.container"
       >
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"

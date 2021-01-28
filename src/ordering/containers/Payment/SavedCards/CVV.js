@@ -6,7 +6,7 @@ import '@adyen/adyen-web/dist/adyen.css';
 import _get from 'lodash/get';
 import _toString from 'lodash/toString';
 import _startsWith from 'lodash/startsWith';
-import Header from '../../../../components/Header';
+import HybridHeader from '../../../../components/HybridHeader';
 import Constants from '../../../../utils/constants';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import CurrencyNumber from '../../../components/CurrencyNumber';
@@ -177,7 +177,7 @@ class CardCVV extends Component {
 
     return (
       <section className="payment-credit-card flex flex-column">
-        <Header
+        <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           isPage={true}

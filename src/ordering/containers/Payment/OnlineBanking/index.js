@@ -8,7 +8,7 @@ import _startsWith from 'lodash/startsWith';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
-import Header from '../../../../components/Header';
+import HybridHeader from '../../../../components/HybridHeader';
 import RedirectForm from '../components/RedirectForm';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
@@ -161,7 +161,7 @@ class OnlineBanking extends Component {
         className={`ordering-banking flex flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.payment.online-banking.container"
       >
-        <Header
+        <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.payment.online-banking.header"

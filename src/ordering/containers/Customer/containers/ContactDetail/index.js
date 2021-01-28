@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import Utils from '../../../../../utils/utils';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -45,7 +45,7 @@ class ContactDetail extends Component {
 
     return (
       <div className="contact-details flex flex-column">
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
