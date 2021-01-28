@@ -409,6 +409,9 @@ class Cart extends Component {
             style: {
               color: '#fa4133',
             },
+            attributes: {
+              'data-heap-name': 'ordering.cart.clear-btn',
+            },
             onClick: this.handleClearAll.bind(this),
           }}
         ></HybridHeader>

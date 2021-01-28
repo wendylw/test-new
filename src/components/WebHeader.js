@@ -12,10 +12,11 @@ class WebHeader extends Component {
       return null;
     }
 
-    const { icon, text, style, onClick } = rightContent;
+    const { icon, text, style, onClick, attributes = {} } = rightContent;
 
     return (
       <button
+        {...attributes}
         onClick={onClick}
         style={style}
         className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"

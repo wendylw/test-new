@@ -1,7 +1,7 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import RedirectForm from './components/RedirectForm';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import Constants from '../../../utils/constants';
@@ -208,7 +208,7 @@ class Payment extends Component {
 
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
