@@ -866,7 +866,7 @@ export class Home extends Component {
         {Utils.isWebview() && (
           <NativeHeader
             isPage={true}
-            title={onlineStoreInfo.storeName}
+            title={window.document.title}
             titleAlignment="center"
             navFunc={() => {
               window.close();

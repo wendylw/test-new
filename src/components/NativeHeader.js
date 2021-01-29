@@ -18,7 +18,7 @@ class NativeHeader extends PureComponent {
     headerParams.left = {
       type: 'button',
       id: 'headerBackButton',
-      iconRes: 'back',
+      iconRes: isPage ? 'back' : 'closed',
       eventHandlers: {
         onClick: () => {
           navFunc && navFunc();
