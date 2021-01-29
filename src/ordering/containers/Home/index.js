@@ -4,6 +4,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import Header from '../../../components/Header';
+import NativeHeader from '../../../components/NativeHeader';
 
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
@@ -862,6 +863,16 @@ export class Home extends Component {
 
     return (
       <section className="ordering-home flex flex-column">
+        {Utils.isWebview() && (
+          <NativeHeader
+            isPage={true}
+            title={onlineStoreInfo.storeName}
+            titleAlignment="center"
+            navFunc={() => {
+              window.close();
+            }}
+          />
+        )}
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
         <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} onSHPromotion={onSHPromotion} />
