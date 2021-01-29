@@ -15,6 +15,8 @@ export const updateNativeHeader = ({ left, center, right } = {}) => {
     }
   });
 
+  console.log(handlers);
+
   dsBridge.call('native_layout.nativeJSConfigLayout', [
     {
       area: 'header',
@@ -33,6 +35,8 @@ export const updateNativeHeader = ({ left, center, right } = {}) => {
 
       if (params && params.area === 'header') {
         const handler = handlers[params.id + params.event];
+        console.log('handler = ', handler);
+
         if (typeof handler === 'function') {
           handler.call(null, params.data);
         }
