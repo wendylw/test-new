@@ -8,7 +8,7 @@ class NativeHeader extends PureComponent {
   }
 
   updateNativeHeader() {
-    const { title, rightContent, navFunc, titleAlignment } = this.props;
+    const { title, rightContent, navFunc, titleAlignment, isPage } = this.props;
     const headerParams = {
       left: null,
       center: null,
