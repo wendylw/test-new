@@ -12,7 +12,9 @@ const isInfiniteScrollerBug = (event, hint) => {
     const err = event.exception.values[0];
     return (
       /null is not an object \(evaluating '\w+\.scrollHeight'\)/.test(err.value) &&
-      event.extra.arguments[0].type === 'scroll'
+      event.extra.arguments.length &&
+      event.extra.arguments[0].type &&
+      event.extra.arguments[0].target
     );
   } catch {
     return false;
