@@ -18,14 +18,6 @@ class PromotionBar extends Component {
         validDate: '31st Jan 2021',
         type: 'products',
       },
-      // {
-      //   business: 'sugarandi',
-      //   discountPercentage: '10%',
-      //   discountProductList: ['Christmas Bombo Box', 'Christmas Combo Box'],
-      //   promoCode: 'XMAS10',
-      //   validDate: '31st Jan 2021',
-      //   type: 'products',
-      // },
       {
         business: 'wokit',
         discountPercentage: '21%',
