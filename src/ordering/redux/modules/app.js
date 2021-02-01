@@ -95,13 +95,18 @@ export const actions = {
           if (phone) {
             window.heap?.addUserProperties({ PhoneNumber: phone });
           }
-          CleverTap.onUserLogin({
+          const userInfo = {
             Name: `${resp.user?.firstName} ${resp.user?.lastName}`,
             Phone: resp.user?.phone,
             Email: resp.user?.email,
             Identity: resp.consumerId,
-            DOB: new Date(resp.user?.birthday),
-          });
+          };
+
+          if (resp.user?.birthday) {
+            userInfo.DOB = new Date(resp.user?.birthday);
+          }
+
+          CleverTap.onUserLogin(userInfo);
         }
         return resp;
       }),
@@ -122,13 +127,18 @@ export const actions = {
           if (phone) {
             window.heap?.addUserProperties({ PhoneNumber: phone });
           }
-          CleverTap.onUserLogin({
+          const userInfo = {
             Name: `${resp.user?.firstName} ${resp.user?.lastName}`,
             Phone: resp.user?.phone,
             Email: resp.user?.email,
             Identity: resp.consumerId,
-            DOB: resp.user?.birthday,
-          });
+          };
+
+          if (resp.user?.birthday) {
+            userInfo.DOB = new Date(resp.user?.birthday);
+          }
+
+          CleverTap.onUserLogin(userInfo);
         }
         return resp;
       }),
@@ -170,6 +180,22 @@ export const actions = {
         if (resp.consumerId) {
           window.heap?.identify(resp.consumerId);
           window.heap?.addEventProperties({ LoggedIn: 'yes' });
+          if (resp.login) {
+            get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
+              const userInfo = {
+                Name: `${profile.firstName} ${profile.lastName}`,
+                Phone: profile.phone,
+                Email: profile.email,
+                Identity: resp.consumerId,
+              };
+
+              if (profile.birthday) {
+                userInfo.DOB = new Date(profile.birthday);
+              }
+
+              CleverTap.onUserLogin(userInfo);
+            });
+          }
         } else {
           window.heap?.resetIdentity();
           window.heap?.addEventProperties({ LoggedIn: 'no' });

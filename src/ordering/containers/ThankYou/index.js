@@ -5,6 +5,7 @@ import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import _isNil from 'lodash/isNil';
+import _get from 'lodash/get';
 import Header from '../../../components/Header';
 import { IconAccessTime, IconPin } from '../../../components/Icons';
 import LiveChat from '../../../components/LiveChat';
@@ -46,6 +47,7 @@ import {
 } from '../../redux/modules/thankYou';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
+import * as CleverTap from '../../../utils/clevertap';
 import './OrderingThanks.scss';
 
 // const { ORDER_STATUS } = Constants;
@@ -109,7 +111,7 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    this.loadOrder();
+    this.loadOrder().then(this.recordChargedEvent);
 
     this.setContainerHeight();
 
@@ -249,6 +251,56 @@ export class ThankYou extends PureComponent {
     } else {
       this.closeMap();
     }
+  };
+
+  recordChargedEvent = () => {
+    const { order, onlineStoreInfo } = this.props;
+
+    let totalQuantity = 0;
+    let totalDiscount = 0;
+
+    order.loyaltyDiscounts?.forEach(entry => {
+      totalDiscount += entry.displayDiscount;
+    });
+
+    order.displayPromotions?.forEach(entry => {
+      totalDiscount += entry.displayDiscount;
+    });
+
+    const itemsList =
+      order.items?.map(item => {
+        totalQuantity += item.quantity;
+        return {
+          Name: item.title,
+          Quantity: item.quantity,
+          Price: item.displayPrice,
+        };
+      }) || [];
+
+    const orderSourceType = Utils.getOrderSource();
+    const orderSource =
+      orderSourceType === 'BeepApp' ? 'App' : orderSourceType === 'BeepSite' ? 'beepit.com' : 'Store URL';
+
+    let preOrderPeriod = 0;
+    if (order.isPreOrder) {
+      preOrderPeriod = ((new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / 60) * 60 * 1000;
+    }
+
+    CleverTap.pushEvent('Charged', {
+      Currency: onlineStoreInfo.currency,
+      Amount: order.total,
+      'Total Quantity': totalQuantity,
+      'Total Discount': totalDiscount,
+      'Shipping Type': order.shippingType,
+      'Preorder Flag': order.isPreOrder,
+      'Delivery Instructions': _get(order, 'deliveryInformation[0].comments'),
+      'Payment Method': _get(order, 'paymentMethod[0]', ''),
+      'Store Name': _get(order, 'storeInfo.name', ''),
+      'Charged ID': order.orderId,
+      Items: itemsList,
+      'Order Source': orderSource,
+      'Pre-order Period': preOrderPeriod,
+    });
   };
 
   loadOrder = async () => {
