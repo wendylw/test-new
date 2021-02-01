@@ -283,7 +283,7 @@ export class ThankYou extends PureComponent {
 
     let preOrderPeriod = 0;
     if (order.isPreOrder) {
-      preOrderPeriod = ((new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / 60) * 60 * 1000;
+      preOrderPeriod = (new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / (60 * 60 * 1000);
     }
 
     CleverTap.pushEvent('Charged', {
