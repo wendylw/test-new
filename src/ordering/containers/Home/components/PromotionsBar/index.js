@@ -11,14 +11,6 @@ class PromotionBar extends Component {
   getPromotionInfo(business, onSHPromotion) {
     const promotionList = [
       {
-        business: 'idc',
-        discountPercentage: 'RM2',
-        discountProductList: ['IDC Homemade Frozen Crispy Waffles'],
-        promoCode: 'OFFRM2',
-        validDate: '31st Jan 2021',
-        type: 'products',
-      },
-      {
         business: 'wokit',
         discountPercentage: '21%',
         promoCode: 'HELLO21',
