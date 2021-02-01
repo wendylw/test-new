@@ -692,7 +692,7 @@ Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) => {
           // the promise will throw correct error for the first time, but will resolve an empty module next time, which makes
           // the entire module seems to be resolved, however it's actually not working. To avoid this kind of thing, we will
           // only deal with ChunkLoadError, which means the module cannot be loaded (mostly because of network issues).
-          if (error.name !== 'ChunkLoadError' || retriesLeft <= 1) {
+          if ((error.name !== 'ChunkLoadError' && error.code !== 'CSS_CHUNK_LOAD_FAILED') || retriesLeft <= 1) {
             reject(error);
           } else {
             Utils.attemptLoad(fn, retriesLeft - 1, interval).then(resolve, reject);
