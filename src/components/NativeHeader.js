@@ -1,6 +1,7 @@
 import { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import * as dsBridgeUtils from '../utils/dsBridge-utils';
+import _get from 'lodash/get';
 
 class NativeHeader extends PureComponent {
   componentDidMount() {
@@ -36,12 +37,14 @@ class NativeHeader extends PureComponent {
 
     if (rightContent) {
       const { icon, text, style, onClick } = rightContent;
+      const textColor = _get(style, 'color', '#303030');
+
       headerParams.right = {
         type: 'button',
         id: 'headerRightButton',
         iconUrl: icon,
         text,
-        textColor: style.color || '#303030',
+        textColor,
         eventHandlers: {
           onClick: () => {
             onClick && onClick();
