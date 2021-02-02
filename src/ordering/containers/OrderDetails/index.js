@@ -3,7 +3,9 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import _isNil from 'lodash/isNil';
-import Header from '../../../components/Header';
+import _get from 'lodash/get';
+import NativeHeader from '../../../components/NativeHeader';
+import WebHeader from '../../../components/WebHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import LiveChat from '../../../components/LiveChat';
@@ -25,6 +27,7 @@ import { IconNext } from '../../../components/Icons';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
+import * as dsBridgeUtils from '../../../utils/dsBridge-utils';
 
 const ShippingTypes = {
   dineIn: 'dine in',
@@ -234,62 +237,95 @@ export class OrderDetails extends Component {
     );
   }
 
-  render() {
-    const { order, history, t, isUseStorehubLogistics, serviceCharge, user } = this.props;
-    const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [], storeInfo } =
-      order || '';
-    const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
+  gotoThankyouPage = () => {
+    const { history } = this.props;
 
-    const { isWebview, email } = user;
+    history.replace({
+      pathname: Constants.ROUTER_PATHS.THANK_YOU,
+      search: window.location.search,
+    });
+  };
 
-    const orderStoreName = storeInfo?.name || '';
-    let orderUserName = '';
-    let orderUserPhone = '';
+  renderHeader() {
+    const { user, order, t } = this.props;
+    const isWebview = _get(user, 'isWebview', false);
+    const userEmail = _get(user, 'profile.email', '');
+    const orderId = _get(order, 'orderId', '');
+    const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
+    const orderUserName = _get(deliveryAddress, 'name', '');
+    const orderUserPhone = _get(deliveryAddress, 'phone', '');
+    const orderStoreName = _get(order, 'storeInfo.name', '');
 
-    if (deliveryInformation.length > 0) {
-      const { address } = deliveryInformation[0];
-      orderUserName = address.name;
-      orderUserPhone = address.phone;
+    if (isWebview) {
+      const rightContentOfLiveChat = !_isNil(order)
+        ? {
+            text: `${t('NeedHelp')}?`,
+            style: {
+              color: '#00b0ff',
+            },
+            onClick: () => {
+              dsBridgeUtils.startLiveChat({
+                orderId,
+                name: orderUserName,
+                phone: orderUserPhone,
+                email: userEmail,
+                storeName: orderStoreName,
+              });
+            },
+          }
+        : {};
+
+      const rightContentOfContactUs = {
+        text: t('ContactUs'),
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          this.handleVisitMerchantInfoPage();
+        },
+      };
+
+      const rightContent = window.liveChatAvailable ? rightContentOfLiveChat : rightContentOfContactUs;
+
+      return (
+        <NativeHeader
+          headerRef={ref => (this.headerEl = ref)}
+          isPage={true}
+          title={t('OrderDetails')}
+          navFunc={() => {
+            this.gotoThankyouPage();
+          }}
+          rightContent={rightContent}
+        />
+      );
     }
+
+    const rightContent = <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
+
+    return (
+      <WebHeader
+        headerRef={ref => (this.headerEl = ref)}
+        className="flex-middle"
+        isPage={true}
+        contentClassName="flex-middle"
+        data-heap-name="ordering.order-detail.header"
+        title={t('OrderDetails')}
+        navFunc={() => {
+          this.gotoThankyouPage();
+        }}
+        rightContent={rightContent}
+      />
+    );
+  }
+
+  render() {
+    const { order, t, isUseStorehubLogistics, serviceCharge } = this.props;
+    const { shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [] } = order || '';
+    const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
       <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
-        <Header
-          className="flex-middle"
-          contentClassName="flex-middle"
-          isPage={true}
-          data-heap-name="ordering.order-detail.header"
-          title={t('OrderDetails')}
-          navFunc={() =>
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.THANK_YOU,
-              search: window.location.search,
-            })
-          }
-        >
-          {!isWebview ? (
-            <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
-          ) : window.liveChatAvailable ? (
-            !_isNil(order) && (
-              <LiveChatNative
-                orderId={`${orderId}`}
-                name={orderUserName}
-                phone={orderUserPhone}
-                email={email}
-                storeName={orderStoreName}
-              />
-            )
-          ) : (
-            <button
-              className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
-              onClick={this.handleVisitMerchantInfoPage}
-              data-heap-name="ordering.order-detail.contact-us-btn"
-            >
-              <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
-            </button>
-          )}
-        </Header>
-
+        {this.renderHeader()}
         <div className="ordering-details__container">
           <div className="text-center">
             <img className="ordering-details__picture-succeed" src={beepPreOrderSuccess} alt="beep pre-order success" />
