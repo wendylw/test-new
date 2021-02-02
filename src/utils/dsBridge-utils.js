@@ -1,4 +1,5 @@
 import dsBridge from 'dsbridge';
+import Utils from './utils';
 
 // https://storehub.atlassian.net/wiki/spaces/TS/pages/1049886771/Specification+for+dsBridge+usage
 export const updateNativeHeader = ({ left, center, right } = {}) => {
@@ -44,4 +45,29 @@ export const updateNativeHeader = ({ left, center, right } = {}) => {
 
 export const registerNativeHeaderEvent = (eventName, func) => {
   dsBridge.register(eventName, func);
+};
+
+export const startLiveChat = ({ orderId, name, phone, email, storeName }) => {
+  const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
+  // TODO: will update to use dsBridge in the future
+  if (Utils.isAndroidWebview()) {
+    window.androidInterface.startChat(
+      JSON.stringify({
+        phoneNumber: phone,
+        name,
+        email,
+        message,
+      })
+    );
+  }
+
+  if (Utils.isIOSWebview()) {
+    window.webkit.messageHandlers.shareAction.postMessage({
+      functionName: 'startChat',
+      phoneNumber: phone,
+      name,
+      email,
+      message,
+    });
+  }
 };

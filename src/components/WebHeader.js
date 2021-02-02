@@ -12,6 +12,10 @@ class WebHeader extends Component {
       return null;
     }
 
+    if (React.isValidElement(rightContent)) {
+      return rightContent;
+    }
+
     const { icon, text, style, onClick, attributes = {} } = rightContent;
 
     return (
