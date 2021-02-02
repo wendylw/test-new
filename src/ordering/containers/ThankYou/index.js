@@ -8,10 +8,8 @@ import _isNil from 'lodash/isNil';
 import _get from 'lodash/get';
 import NativeHeader from '../../../components/NativeHeader';
 import WebHeader from '../../../components/WebHeader';
-import Header from '../../../components/Header';
 import { IconAccessTime, IconPin } from '../../../components/Icons';
 import LiveChat from '../../../components/LiveChat';
-import LiveChatNative from '../../../components/LiveChatNative';
 import config from '../../../config';
 import beepAppDownloadBanner from '../../../images/beep-app-download.png';
 import logisticsGoget from '../../../images/beep-logistics-goget.png';
@@ -1283,7 +1281,7 @@ export class ThankYou extends PureComponent {
       <WebHeader
         headerRef={ref => (this.headerEl = ref)}
         className="flex-middle border__bottom-divider"
-        isPage={!isWebview}
+        isPage={true}
         contentClassName="flex-middle"
         data-heap-name="ordering.thank-you.header"
         title={`#${orderId}`}

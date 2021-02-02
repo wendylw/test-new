@@ -9,7 +9,6 @@ import WebHeader from '../../../components/WebHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 import LiveChat from '../../../components/LiveChat';
-import LiveChatNative from '../../../components/LiveChatNative';
 import { getUser } from '../../redux/modules/app';
 import Tag from '../../../components/Tag';
 import beepPreOrderSuccess from '../../../images/beep-pre-order-success.png';
