@@ -122,7 +122,7 @@ export class ReceiptDetail extends Component {
           rightContent={{
             text: this.getHeaderContent(),
             style: {
-              opacity: 0.5,
+              color: '#8d90a1',
             },
           }}
         ></HybridHeader>
