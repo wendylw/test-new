@@ -7,7 +7,7 @@
 
   &__item {
     width: 48vw;
-    height: 56vw;
+    height: 63vw;
     margin-left: 12px;
     list-style-type: none;
     cursor: pointer;
@@ -25,7 +25,7 @@
   .carousel {
     &__item {
       width: 170px;
-      height: 206px;
+      height: 222px;
     }
 
     &__image-container {
@@ -98,5 +98,16 @@
   &__tags-text {
     max-width: 90%;
     color: $gray-6;
+  }
+
+  &__footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 2px 5px;
+  }
+
+  &__rating-text {
+    margin: 0 2px;
   }
 }

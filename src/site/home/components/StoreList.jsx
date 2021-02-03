@@ -7,6 +7,7 @@ import {
   /*IconMotorcycle,*/
   IconLocation,
   IconWallet,
+  IconStar,
 } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import MvpStorePlaceholderImage from '../../../images/mvp-store-placeholder.jpg';
@@ -66,6 +67,7 @@ class StoreList extends Component {
             cashbackRate,
             products,
             promoTag,
+            reviewInfo: { rating } = {},
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
 
@@ -108,16 +110,24 @@ class StoreList extends Component {
                   </div>
                 )}
                 <ul className="store-info">
+                  {rating && (
+                    <li className="store-info__item text-middle">
+                      <IconStar className="icon icon__primary icon__smaller text-middle" />
+                      <span className="store-info__text text-primary text-size-small text-middle text-weight-bolder text-line-height-base">
+                        {rating}
+                      </span>
+                    </li>
+                  )}
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
-                    <span className="store-info__text text-size-smaller text-middle">
+                    <span className="store-info__text text-size-small text-middle">
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
                 </ul>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
-                    <IconWallet className="icon icon__primary icon__smaller text-middle" />
+                    <IconWallet className="icon icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle text-capitalize">
                       {t('EnabledCashbackText', { cashbackRate: Math.round(cashbackRatePercentage * 100) / 100 })}
                     </span>
@@ -125,7 +135,7 @@ class StoreList extends Component {
                 ) : null}
                 {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
-                    <IconLocalOffer className="icon icon__primary icon__smaller text-middle" />
+                    <IconLocalOffer className="icon icon__smaller text-middle" />
                     <Trans i18nKey="MvpFreeDeliveryPrompt" minimumSpendForFreeDelivery={minimumSpendForFreeDelivery}>
                       <span className="store-info__text text-size-small text-middle">
                         Free Delivery above

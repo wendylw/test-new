@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { withRouter } from 'react-router-dom';
 import Image from '../../../../components/Image';
 import MvpStorePlaceholderImage from '../../../../images/mvp-store-placeholder.jpg';
-import { IconLocalOffer, IconWallet, IconNext } from '../../../../components/Icons';
+import { IconLocalOffer, IconWallet, IconNext, IconStar } from '../../../../components/Icons';
 import 'swiper/swiper.scss';
 import './index.scss';
 import { submitStoreMenu } from '../../utils';
@@ -71,6 +71,7 @@ class Carousel extends Component {
             enablePreOrder,
             cashbackRate,
             promoTag,
+            reviewInfo: { rating } = {},
           } = store || {};
 
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
@@ -106,21 +107,35 @@ class Carousel extends Component {
                 </h3>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
-                    <IconWallet className="icon icon__primary icon__smaller text-middle" />
-                    <span className="text-size-smaller text-middle text-capitalize">
+                    <IconWallet className="icon icon__smaller text-middle" />
+                    <span className="text-size-small text-middle text-capitalize">
                       {t('EnabledCashbackText', {
                         cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
                       })}
                     </span>
                   </div>
                 ) : null}
+                <div className="flex flex-middle">
+                  <IconLocalOffer className="icon icon__smaller text-middle" />
+                  <span className="text-size-small text-middle">{t('MvpFreeDeliveryPrompt')}</span>
+                </div>
                 {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
-                    <IconLocalOffer className="icon icon__primary icon__smaller text-middle" />
+                    <IconLocalOffer className="icon icon__smaller text-middle" />
                     <span className="text-size-small text-middle">{t('MvpFreeDeliveryPrompt')}</span>
                   </div>
                 ) : null}
               </summary>
+              <div className="carousel-list__footer">
+                {rating && (
+                  <div className="flex flex-middle flex-end">
+                    <IconStar className="icon icon__primary icon__smaller text-middle" />
+                    <span className="carousel-list__rating-text text-primary text-size-small text-middle text-weight-bolder text-line-height-base">
+                      {rating}
+                    </span>
+                  </div>
+                )}
+              </div>
             </SwiperSlide>
           );
         })}
