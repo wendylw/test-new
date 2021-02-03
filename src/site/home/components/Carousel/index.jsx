@@ -126,7 +126,7 @@ class Carousel extends Component {
                   </div>
                 ) : null}
               </summary>
-              <div className="carousel-list__footer">
+              <div className={`carousel-list__footer ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}>
                 {rating && (
                   <div className="flex flex-middle flex-end">
                     <IconStar className="icon icon__primary icon__smaller text-middle" />
