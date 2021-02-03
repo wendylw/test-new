@@ -118,10 +118,6 @@ class Carousel extends Component {
                     </span>
                   </div>
                 ) : null}
-                <div className="flex flex-middle">
-                  <IconLocalOffer className="icon icon__smaller text-middle" />
-                  <span className="text-size-small text-middle">{t('MvpFreeDeliveryPrompt')}</span>
-                </div>
                 {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__smaller text-middle" />
