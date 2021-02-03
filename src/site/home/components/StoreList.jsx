@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroller';
+import _get from 'lodash/get';
 import {
   IconLocalOffer,
   /*IconMotorcycle,*/
@@ -67,9 +68,11 @@ class StoreList extends Component {
             cashbackRate,
             products,
             promoTag,
-            reviewInfo: { rating } = {},
+            reviewInfo,
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
+
+          const rating = _get(reviewInfo, 'rating', '');
 
           return (
             <li

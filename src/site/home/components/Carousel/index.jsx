@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import SwiperCore, { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { withRouter } from 'react-router-dom';
+import _get from 'lodash/get';
 import Image from '../../../../components/Image';
 import MvpStorePlaceholderImage from '../../../../images/mvp-store-placeholder.jpg';
 import { IconLocalOffer, IconWallet, IconNext, IconStar } from '../../../../components/Icons';
@@ -71,8 +72,10 @@ class Carousel extends Component {
             enablePreOrder,
             cashbackRate,
             promoTag,
-            reviewInfo: { rating } = {},
+            reviewInfo,
           } = store || {};
+
+          const rating = _get(reviewInfo, 'rating', '');
 
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
 
