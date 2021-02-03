@@ -44,6 +44,7 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import './OrderingHome.scss';
+import { gotoHome } from '../../../utils/webview-utils';
 
 const localState = {
   blockScrollTop: 0,
@@ -869,7 +870,7 @@ export class Home extends Component {
             title={window.document.title}
             titleAlignment="center"
             navFunc={() => {
-              window.close();
+              gotoHome();
             }}
           />
         )}
