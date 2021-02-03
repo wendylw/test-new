@@ -246,7 +246,7 @@ export class OrderDetails extends Component {
   };
 
   renderHeader() {
-    const { user, order, t } = this.props;
+    const { user, order, t, history } = this.props;
     const isWebview = _get(user, 'isWebview', false);
     const userEmail = _get(user, 'profile.email', '');
     const orderId = _get(order, 'orderId', '');
@@ -292,7 +292,7 @@ export class OrderDetails extends Component {
           isPage={true}
           title={t('OrderDetails')}
           navFunc={() => {
-            this.gotoThankyouPage();
+            dsBridgeUtils.goBack();
           }}
           rightContent={rightContent}
         />

@@ -71,3 +71,10 @@ export const startLiveChat = ({ orderId, name, phone, email, storeName }) => {
     });
   }
 };
+
+export const goBack = () => {
+  // TODO: will update to use dsBridge in the future
+  if (Utils.isAndroidWebview()) {
+    window.androidInterface.dispatchGoBack();
+  }
+};
