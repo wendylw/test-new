@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
+import _floor from 'lodash/floor';
+import _replace from 'lodash/replace';
 import Billing from '../../components/Billing';
 import CartList from './components/CartList';
 import { IconDelete, IconClose, IconLocalOffer } from '../../../components/Icons';
@@ -33,7 +35,7 @@ class Cart extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
     isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
-    productsContainerHeight: '0',
+    productsContainerHeight: '0px',
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -74,10 +76,12 @@ class Cart extends Component {
       headerEls: [this.headerEl],
       footerEls: [this.footerEl, this.billingEl],
     });
+    const preHeightNumber = _floor(_replace(preProductsContainerHeight, 'px', ''));
+    const currentHeightNumber = _floor(_replace(productsContainerHeight, 'px', ''));
 
-    if (preProductsContainerHeight !== productsContainerHeight) {
+    if (productsContainerHeight > '0px' && Math.abs(currentHeightNumber - preHeightNumber) > 10) {
       this.setState({
-        productsContainerHeight: productsContainerHeight,
+        productsContainerHeight,
       });
     }
   };

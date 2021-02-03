@@ -9,31 +9,7 @@ import { getBusiness } from '../../../../redux/modules/app';
 
 class PromotionBar extends Component {
   getPromotionInfo(business, onSHPromotion) {
-    const promotionList = [
-      {
-        business: 'idc',
-        discountPercentage: 'RM2',
-        discountProductList: ['IDC Homemade Frozen Crispy Waffles'],
-        promoCode: 'OFFRM2',
-        validDate: '31st Jan 2021',
-        type: 'products',
-      },
-      {
-        business: 'sugarandi',
-        discountPercentage: '10%',
-        discountProductList: ['Christmas Bombo Box', 'Christmas Combo Box'],
-        promoCode: 'XMAS10',
-        validDate: '31st Jan 2021',
-        type: 'products',
-      },
-      {
-        business: 'wokit',
-        discountPercentage: '21%',
-        promoCode: 'HELLO21',
-        validDate: '31st Jan 2021',
-        type: 'store',
-      },
-    ];
+    const promotionList = [];
     const defaultUniversalPromotion = {
       discountPercentage: '15%',
       promoCode: 'STAYHOME15',
