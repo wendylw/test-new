@@ -872,7 +872,11 @@ export class ThankYou extends PureComponent {
             </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
               <p className="line-height-normal text-weight-bolder">
-                {useStorehubLogistics ? courier : t('DeliveryBy', { name: storeName })}
+                {useStorehubLogistics
+                  ? courier === 'onfleet'
+                    ? t('BeepFleet')
+                    : courier
+                  : t('DeliveryBy', { name: storeName })}
               </p>
               {
                 <span className="text-gray line-height-normal">
