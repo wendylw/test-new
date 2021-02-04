@@ -1,33 +1,40 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _filter from 'lodash/filter';
+import _concat from 'lodash/concat';
 import { IconLocalOffer } from '../../../../../components/Icons';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../../../redux/modules/app';
 
-class PromotionsBar extends Component {
-  getPromotionInfo(business, onSHPromotion) {
+class PromotionBar extends Component {
+  getPromotionInfo(business, storePromoTags) {
     const promotionList = [];
-    const defaultUniversalPromotion = {
-      discountPercentage: '15%',
-      promoCode: 'STAYHOME15',
-      cappedValue: 'RM15',
-      consumptionAmount: 'RM30',
+    const universalPromotion = {
+      STAYHOME15: {
+        discountPercentage: '15%',
+        promoCode: 'STAYHOME15',
+        cappedValue: 'RM15',
+        consumptionAmount: 'RM30',
+      },
+      FREE5KM: {
+        discount: 'RM5.50',
+        promoCode: 'FREE5KM',
+        consumptionAmount: 'RM50',
+      },
     };
     const currentPromotions = _filter(promotionList, { business });
 
-    if (onSHPromotion) {
-      currentPromotions.push(defaultUniversalPromotion);
-    }
-
-    return currentPromotions;
+    return _concat(
+      currentPromotions,
+      storePromoTags.map(promo => universalPromotion[promo])
+    );
   }
 
   render() {
-    const { promotionRef, business, onSHPromotion } = this.props;
-    const promotionList = this.getPromotionInfo(business, onSHPromotion);
+    const { promotionRef, business, storePromoTags } = this.props;
+    const promotionList = this.getPromotionInfo(business, storePromoTags);
 
     if (!promotionList.length) {
       return null;
@@ -38,6 +45,7 @@ class PromotionsBar extends Component {
         {promotionList.map(promo => {
           const {
             discountPercentage,
+            discount,
             discountProductList,
             promoCode,
             validDate,
@@ -71,7 +79,7 @@ class PromotionsBar extends Component {
           const universalPromotionDescription = (
             <Trans
               i18nKey="UniversalPromotionDescription"
-              discountPercentage={discountPercentage}
+              discount={discountPercentage}
               promoCode={promoCode}
               cappedValue={cappedValue}
               consumptionAmount={consumptionAmount}
@@ -81,12 +89,25 @@ class PromotionsBar extends Component {
               (capped at {cappedValue} with min. spend {consumptionAmount})
             </Trans>
           );
+          const deliveryPromotionDescription = (
+            <Trans
+              i18nKey="DeliveryPromotionDescription"
+              discount={discount}
+              promoCode={promoCode}
+              consumptionAmount={consumptionAmount}
+            >
+              <strong>{discount} OFF</strong> on delivery with promo code <strong>{promoCode}</strong> (with min. spend{' '}
+              {consumptionAmount})
+            </Trans>
+          );
           let description = universalPromotionDescription;
 
           if (discountProductList && validDate) {
             description = productsPromotionDescription;
           } else if (discountProductList || validDate) {
             description = storePromotionDescription;
+          } else if (discount && !cappedValue) {
+            description = deliveryPromotionDescription;
           }
 
           return (
@@ -103,11 +124,11 @@ class PromotionsBar extends Component {
 
 PromotionsBar.propTypes = {
   promotionRef: PropTypes.any,
-  onSHPromotion: PropTypes.bool,
+  storePromoTags: PropTypes.array,
 };
 
-PromotionsBar.defaultProps = {
-  onSHPromotion: false,
+PromotionBar.defaultProps = {
+  storePromoTags: [],
 };
 
 export default compose(
