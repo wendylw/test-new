@@ -1,5 +1,15 @@
 const initialState = {};
 
+function transferOnlineStoreName(onlineStoreInfo) {
+  // instead storeName with brandName
+  const { storeName, beepBrandName } = onlineStoreInfo;
+  const newOnlineStoreInfo = {
+    ...onlineStoreInfo,
+    storeName: beepBrandName || storeName,
+  };
+  return newOnlineStoreInfo;
+}
+
 const reducer = (state = initialState, action) => {
   const { responseGql } = action;
 
@@ -11,7 +21,7 @@ const reducer = (state = initialState, action) => {
     }
 
     // Only deal with response.data.onlineStoreInfo
-    return { ...state, [onlineStoreInfo.id]: onlineStoreInfo };
+    return { ...state, [onlineStoreInfo.id]: transferOnlineStoreName(onlineStoreInfo) };
   }
   return state;
 };

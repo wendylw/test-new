@@ -11,11 +11,11 @@ import LiveChat from '../../../components/LiveChat';
 import LiveChatNative from '../../../components/LiveChatNative';
 import config from '../../../config';
 import beepAppDownloadBanner from '../../../images/beep-app-download.png';
-import logisticsGoget from '../../../images/beep-logistics-goget.png';
-import logisticsGrab from '../../../images/beep-logistics-grab.png';
-import logisticsLalamove from '../../../images/beep-logistics-lalamove.png';
-import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.png';
-import beepLogo from '../../../images/beep-logo.svg';
+import logisticsGoget from '../../../images/beep-logistics-goget.jpg';
+import logisticsGrab from '../../../images/beep-logistics-grab.jpg';
+import logisticsLalamove from '../../../images/beep-logistics-lalamove.jpg';
+import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.jpg';
+import logisticBeepOnFleet from '../../../images/beep-logistics-on-fleet.jpg';
 import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
 import beepSuccessImage from '../../../images/beep-success.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
@@ -798,8 +798,10 @@ export class ThankYou extends PureComponent {
         return logisticsLalamove;
       case 'mrspeedy':
         return logisticsMrspeedy;
+      case 'onfleet':
+        return logisticBeepOnFleet;
       default:
-        return beepLogo;
+        return logisticBeepOnFleet;
     }
   };
 
@@ -870,7 +872,11 @@ export class ThankYou extends PureComponent {
             </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
               <p className="line-height-normal text-weight-bolder">
-                {useStorehubLogistics ? courier : t('DeliveryBy', { name: storeName })}
+                {useStorehubLogistics
+                  ? courier === 'onfleet'
+                    ? t('BeepFleet')
+                    : courier
+                  : t('DeliveryBy', { name: storeName })}
               </p>
               {
                 <span className="text-gray line-height-normal">
