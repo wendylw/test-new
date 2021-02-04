@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../../../redux/modules/app';
 
-class PromotionBar extends Component {
+class PromotionsBar extends Component {
   getPromotionInfo(business, onSHPromotion) {
     const promotionList = [];
     const defaultUniversalPromotion = {
@@ -101,12 +101,12 @@ class PromotionBar extends Component {
   }
 }
 
-PromotionBar.propTypes = {
+PromotionsBar.propTypes = {
   promotionRef: PropTypes.any,
   onSHPromotion: PropTypes.bool,
 };
 
-PromotionBar.defaultProps = {
+PromotionsBar.defaultProps = {
   onSHPromotion: false,
 };
 
@@ -120,4 +120,4 @@ export default compose(
     },
     dispatch => ({})
   )
-)(PromotionBar);
+)(PromotionsBar);
