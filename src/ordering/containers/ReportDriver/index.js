@@ -34,6 +34,8 @@ import {
 import { actions as appActionCreators } from '../../redux/modules/app';
 import { IconClose } from '../../../components/Icons';
 import './OrderingReportDriver.scss';
+import Utils from '../../../utils/utils';
+import * as dsBridgeUtils from '../../../utils/dsBridge-utils';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
@@ -53,12 +55,20 @@ class ReportDriver extends Component {
   }
 
   handleGoBack = () => {
-    this.gotoThankYourPage();
+    this.goBack();
   };
 
   handleDone = () => {
-    this.gotoThankYourPage();
+    this.goBack();
   };
+
+  goBack() {
+    if (Utils.isWebview()) {
+      dsBridgeUtils.goBack();
+    } else {
+      this.gotoThankYourPage();
+    }
+  }
 
   gotoThankYourPage = () => {
     const { receiptNumber, history } = this.props;
@@ -174,7 +184,7 @@ class ReportDriver extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.thank-you-header"
-          isPage={false}
+          isPage={true}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
         ></HybridHeader>
@@ -294,7 +304,7 @@ class ReportDriver extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.header"
-          isPage={false}
+          isPage={true}
           title={t('ReportDriver')}
           navFunc={this.handleGoBack}
         ></HybridHeader>

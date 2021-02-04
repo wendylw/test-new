@@ -1250,7 +1250,7 @@ export class ThankYou extends PureComponent {
       return (
         <NativeHeader
           headerRef={ref => (this.headerEl = ref)}
-          isPage={false}
+          isPage={true}
           title={`#${orderId}`}
           navFunc={() => {
             gotoHome();

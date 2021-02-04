@@ -54,7 +54,7 @@ export class MerchantInfo extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.need-help.header"
-          isPage={false}
+          isPage={true}
           title={t('ContactUs')}
           navFunc={() => {
             if (history.length > 1) {

@@ -866,7 +866,7 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {Utils.isWebview() && (
           <NativeHeader
-            isPage={false}
+            isPage={true}
             title={window.document.title}
             titleAlignment="center"
             navFunc={() => {
