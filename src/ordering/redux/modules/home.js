@@ -14,6 +14,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
 import { getBusiness } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getCoreStoreList } from '../../../redux/modules/entities/stores';
 // import { getBusinessInfo } from './cart';
 
 export const initialState = {
@@ -46,7 +47,6 @@ export const initialState = {
   },
   coreStore: {
     isFetching: false,
-    storeList: [],
     storeHashCode: '',
   },
 };
@@ -364,11 +364,9 @@ const coreStore = (state = initialState.coreStore, action) => {
     case types.FETCH_CORESTORES_REQUEST:
       return { ...state, isFetching: true };
     case types.FETCH_CORESTORES_SUCCESS:
-      const { stores } = action.responseGql.data.business;
       return {
         ...state,
         isFetching: false,
-        storeList: stores,
       };
     case types.FETCH_CORESTORES_FAILURE:
       return { ...state, isFetching: false };
@@ -411,7 +409,7 @@ export const getDeliveryInfo = state => {
 
 export const isFetched = state => state.home.shoppingCart.isFetched;
 
-export const getStoresList = state => state.home.coreStore.storeList;
+export const getStoresList = state => getCoreStoreList(state);
 
 export const getStoreHashCode = state => state.home.coreStore.storeHashCode;
 

@@ -51,6 +51,7 @@ class StoreList extends Component {
         {(stores || []).map((store, index) => {
           const {
             name,
+            storeDisplayName,
             avatar,
             deliveryFee,
             minimumSpendForFreeDelivery,
@@ -98,7 +99,7 @@ class StoreList extends Component {
                 }`}
               >
                 <h3 className="store-card-list__title text-size-bigger text-weight-bolder text-omit__single-line">
-                  {name}
+                  {storeDisplayName || name}
                 </h3>
                 {searchingTags.length > 0 && (
                   <div className="padding-left-right-smaller">
