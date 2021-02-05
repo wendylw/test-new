@@ -45,7 +45,7 @@ class PromotionsBar extends Component {
 
     return (
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
-        {promotionList.map(promo => {
+        {promotionList.map((promo, index) => {
           const {
             discountPercentage,
             discount,
@@ -114,7 +114,7 @@ class PromotionsBar extends Component {
           }
 
           return (
-            <li className="flex flex-top padding-small">
+            <li key={`promo-${promoCode}-${index}`} className="flex flex-top padding-small">
               <IconLocalOffer className="icon icon__primary icon__smaller" />
               <p className="margin-left-right-smaller text-line-height-base">{description}</p>
             </li>
