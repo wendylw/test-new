@@ -577,7 +577,7 @@ export class Home extends Component {
     }
 
     const isValidTimeToOrder = this.isValidTimeToOrder();
-    const { enablePreOrder, deliveryToAddress } = deliveryInfo;
+    const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
 
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
@@ -603,7 +603,7 @@ export class Home extends Component {
         deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
         data-heap-name="ordering.home.delivery-bar"
         className="ordering-home__deliver-to flex__shrink-fixed"
-        content={Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
+        content={Utils.isDeliveryType() ? savedAddressName || deliveryToAddress : pickupAddress}
         backIcon={
           <IconLeftArrow
             className="icon icon__big icon__default text-middle flex__shrink-fixed"

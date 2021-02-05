@@ -13,6 +13,7 @@ import {
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { getUserAddressList } from '../../../redux/modules/entities/users';
 import Utils from '../../../utils/utils';
+import webviewUtils from '../../../utils/webview-utils';
 
 const initialState = {
   deliveryDetails: {
@@ -189,22 +190,31 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
     const deliveryAddressList = action.response || {};
     const { preventUpdate } = action.context || {};
     const { longitude, latitude } = state.deliveryToLocation;
+    let findAvailableAddress;
 
-    const findAvailableAddress = (deliveryAddressList || []).find(
-      address =>
-        address.availableStatus &&
-        (address.addressName === state.addressName ||
-          computeStraightDistance(
-            {
-              lng: address.location.longitude,
-              lat: address.location.latitude,
-            },
-            {
-              lng: longitude,
-              lat: latitude,
-            }
-          ) <= 500)
-    );
+    // menu header show address name if native use saved address
+    if (webviewUtils.hasNativeSavedAddress()) {
+      const addressIdFromNative = sessionStorage.getItem('addressIdFromNative');
+      findAvailableAddress = (deliveryAddressList || []).find(
+        address => address.availableStatus && address._id === addressIdFromNative
+      );
+    } else {
+      findAvailableAddress = (deliveryAddressList || []).find(
+        address =>
+          address.availableStatus &&
+          (address.addressName === state.addressName ||
+            computeStraightDistance(
+              {
+                lng: address.location.longitude,
+                lat: address.location.latitude,
+              },
+              {
+                lng: longitude,
+                lat: latitude,
+              }
+            ) <= 500)
+      );
+    }
 
     if (findAvailableAddress && !preventUpdate) {
       const {
