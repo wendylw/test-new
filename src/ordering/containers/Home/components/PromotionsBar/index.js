@@ -26,10 +26,13 @@ class PromotionBar extends Component {
     };
     const currentPromotions = _filter(promotionList, { business });
 
-    return _concat(
-      currentPromotions,
-      storePromoTags.map(promo => universalPromotion[promo])
-    );
+    storePromoTags.forEach(promo => {
+      if (universalPromotion[promo]) {
+        currentPromotions.push(universalPromotion[promo]);
+      }
+    });
+
+    return currentPromotions;
   }
 
   render() {
