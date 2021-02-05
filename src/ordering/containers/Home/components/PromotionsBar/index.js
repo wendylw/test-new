@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import _filter from 'lodash/filter';
-import _concat from 'lodash/concat';
 import { IconLocalOffer } from '../../../../../components/Icons';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -19,8 +18,9 @@ class PromotionsBar extends Component {
         consumptionAmount: 'RM30',
       },
       FREE5KM: {
-        discount: 'RM5.50',
+        discount: 'Free Delivery',
         promoCode: 'FREE5KM',
+        cappedValue: 'RM6',
         consumptionAmount: 'RM50',
       },
     };
@@ -94,13 +94,13 @@ class PromotionsBar extends Component {
           );
           const deliveryPromotionDescription = (
             <Trans
-              i18nKey="DeliveryPromotionDescription"
+              i18nKey="FreeDeliveryPromotionDescription"
               discount={discount}
               promoCode={promoCode}
               consumptionAmount={consumptionAmount}
             >
-              <strong>{discount} OFF</strong> on delivery with promo code <strong>{promoCode}</strong> (with min. spend{' '}
-              {consumptionAmount})
+              <strong>{discount}</strong> with promo code <strong>{promoCode}</strong> (capped at {cappedValue} with
+              min. spend {consumptionAmount})
             </Trans>
           );
           let description = universalPromotionDescription;
@@ -109,7 +109,7 @@ class PromotionsBar extends Component {
             description = productsPromotionDescription;
           } else if (discountProductList || validDate) {
             description = storePromotionDescription;
-          } else if (discount && !cappedValue) {
+          } else if (discount && !discountPercentage) {
             description = deliveryPromotionDescription;
           }
 
