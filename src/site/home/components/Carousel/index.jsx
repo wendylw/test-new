@@ -46,7 +46,7 @@ class Carousel extends Component {
     );
   };
 
-  renderPromotionTag = promoTag => {
+  renderPromotionTags = promoTag => {
     return (
       <div className="store-card-list__tag-cover">
         <div className="store-card-list__promo-tag">
@@ -73,6 +73,7 @@ class Carousel extends Component {
             cashbackRate,
             promoTag,
             reviewInfo,
+            storePromoTags,
           } = store || {};
 
           const rating = _get(reviewInfo, 'rating', '');
@@ -91,7 +92,7 @@ class Carousel extends Component {
             >
               <div className="carousel__image-container">
                 {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {promoTag && this.renderPromotionTag(promoTag)}
+                {storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
                 <Image
                   className="carousel-store__image card__image"
                   src={avatar}
