@@ -99,8 +99,9 @@ class PromotionsBar extends Component {
               promoCode={promoCode}
               consumptionAmount={consumptionAmount}
             >
-              <strong>{discount}</strong> with promo code <strong>{promoCode}</strong> (capped at {cappedValue} with
-              min. spend {consumptionAmount})
+              <strong>{discount}</strong> with promo code <strong>{promoCode}</strong>
+              <br />
+              (capped at {cappedValue} with min. spend {consumptionAmount})
             </Trans>
           );
           let description = universalPromotionDescription;
