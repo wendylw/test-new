@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../../../redux/modules/app';
 
-class PromotionBar extends Component {
+class PromotionsBar extends Component {
   getPromotionInfo(business, storePromoTags) {
     const promotionList = [];
     const universalPromotion = {
@@ -130,7 +130,7 @@ PromotionsBar.propTypes = {
   storePromoTags: PropTypes.array,
 };
 
-PromotionBar.defaultProps = {
+PromotionsBar.defaultProps = {
   storePromoTags: [],
 };
 
