@@ -338,6 +338,11 @@ const CONSUMERFLOW_STATUS = {
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const PROMOTION_ERROR_CODES = {
+  /* temp promotion error code */
+  41003: {
+    desc: '41003UniversalPromotionError',
+  },
+  /* end of temp promotion error code */
   54406: {
     desc: '54406FreePromotionNotMatchCondition',
   },
