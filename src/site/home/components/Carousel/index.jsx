@@ -105,25 +105,23 @@ class Carousel extends Component {
                 <h3 className="carousel__item-title padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder text-line-height-base text-omit__single-line">
                   {name}
                 </h3>
-                <div className="carousel__item-info flex flex-middle padding-left-right-smaller">
+                <div className="carousel__item-info">
                   {enableCashback && cashbackRate ? (
-                    <>
+                    <div className="flex flex-middle padding-left-right-smaller">
                       <IconWallet className="icon icon__smaller" />
                       <span className="text-size-small text-capitalize">
                         {t('EnabledCashbackText', {
                           cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
                         })}
                       </span>
-                    </>
+                    </div>
                   ) : null}
-                </div>
 
-                <div className="carousel__item-info flex flex-middle padding-left-right-smaller">
                   {enableFreeShipping && deliveryFee ? (
-                    <>
+                    <div className="flex flex-middle padding-left-right-smaller">
                       <IconLocalOffer className="icon icon__smaller" />
                       <span className="text-size-small">{t('MvpFreeDeliveryPrompt')}</span>
-                    </>
+                    </div>
                   ) : null}
                 </div>
               </summary>
