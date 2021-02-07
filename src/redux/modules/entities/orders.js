@@ -1,19 +1,32 @@
 const initialState = {};
 
+function transferOrderName(order) {
+  const { storeInfo } = order;
+  const { name, beepBrandName, beepStoreNameLocationSuffix } = storeInfo || {};
+  const newOrder = {
+    ...order,
+    storeInfo: {
+      ...storeInfo,
+      name: beepBrandName && beepStoreNameLocationSuffix ? `${beepBrandName}-${beepStoreNameLocationSuffix}` : name,
+    },
+  };
+  return newOrder;
+}
+
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {
     const { data } = action.responseGql;
     if (data.orders) {
       const [order] = data.orders;
-      return { ...state, [order.orderId]: order };
+      return { ...state, [order.orderId]: transferOrderName(order) };
     } else if (data.order) {
       const { order } = data;
-      return { ...state, [order.orderId]: order };
+      return { ...state, [order.orderId]: transferOrderName(order) };
     }
   }
   if (action.response) {
     const order = action.response;
-    return { ...state, [order.orderId]: order };
+    return { ...state, [order.orderId]: transferOrderName(order) };
   }
   return state;
 };

@@ -21,36 +21,23 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
+import WebViewUtils, { getAppToken } from '../../../utils/webview-utils';
 
 const { ROUTER_PATHS } = Constants;
+let savedAddressRes;
 
 class App extends Component {
   constructor(props) {
     super(props);
-
-    if (Utils.isAndroidWebview()) {
-      try {
-        const res = window.androidInterface.getAddress();
-        this.setAppAddressToSession(JSON.parse(res));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    if (Utils.isIOSWebview()) {
-      try {
-        const res = window.prompt('getAddress');
-        console.log('res', JSON.parse(res));
-        this.setAppAddressToSession(JSON.parse(res));
-      } catch (e) {
-        console.error(e);
-      }
+    if (Utils.isWebview()) {
+      savedAddressRes = WebViewUtils.getAddressFromNative() || '';
+      this.handleNativeResponse(savedAddressRes);
     }
   }
   state = {};
 
-  setAppAddressToSession = res => {
-    if (!res) {
+  handleNativeResponse = savedAddressRes => {
+    if (!savedAddressRes) {
       return;
     }
 
@@ -59,9 +46,19 @@ class App extends Component {
       return;
     }
 
-    const { address, country, countryCode, lat, lng } = res;
+    const { address, country, countryCode, lat, lng, savedAddressId, addressName } = savedAddressRes;
+    if (savedAddressId) {
+      this.setAppAddressToSession(address, country, countryCode, lat, lng, addressName);
+      sessionStorage.setItem('addressIdFromNative', savedAddressId);
+    } else {
+      this.setAppAddressToSession(address, country, countryCode, lat, lng);
+    }
+  };
+
+  setAppAddressToSession = (address, country, countryCode, lat, lng, addressName) => {
     const addressInfo = {
-      address: address,
+      address,
+      addressName,
       addressComponents: {
         country: country,
         countryCode: countryCode,

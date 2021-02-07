@@ -52,7 +52,7 @@
   }
 
   &__image-container {
-    height: 24vh;
+    height: 34vh;
     overflow: hidden;
   }
 
@@ -74,9 +74,6 @@
 
   &__image .swiper-pagination-bullet-active {
     background: $theme-color;
-  }
-
-  &__info {
   }
 
   &__info-summary {

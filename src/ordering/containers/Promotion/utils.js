@@ -1,10 +1,11 @@
+import _isEmpty from 'lodash/isEmpty';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import i18next from 'i18next';
 
 const { PROMOTION_ERROR_CODES, VOUCHER_STATUS } = Constants;
 
-export function getErrorMessageByPromoErrorCode(code, extraInfo, onlineStoreInfo) {
+export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo) {
   if (PROMOTION_ERROR_CODES[code]) {
     const translationKey = `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`;
     const { minSubtotalConsumingPromo } = extraInfo || {};
@@ -22,7 +23,7 @@ export function getErrorMessageByPromoErrorCode(code, extraInfo, onlineStoreInfo
       ? i18next.t(translationKey, { minSubtotalConsumingPromo: minSubtotal })
       : i18next.t(translationKey);
   } else {
-    return i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`);
+    return _isEmpty(errorMessage) ? i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`) : errorMessage;
   }
 }
 

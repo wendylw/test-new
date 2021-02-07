@@ -150,9 +150,14 @@ const onlineStoreInfoReducer = (state = initialState.onlineStoreInfo, action) =>
 
   switch (type) {
     case TYPES.FETCH_ONLINESTOREINFO_SUCCESS:
+      const { storeName, beepBrandName } = responseGql.data.onlineStoreInfo;
+      const newOnlineStoreInfo = {
+        ...responseGql.data.onlineStoreInfo,
+        storeName: beepBrandName || storeName,
+      };
       return {
         ...state,
-        ...responseGql.data.onlineStoreInfo,
+        ...newOnlineStoreInfo,
       };
     default:
       return state;

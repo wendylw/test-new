@@ -508,7 +508,7 @@ export class Home extends Component {
     }
 
     const isValidTimeToOrder = this.isValidTimeToOrder();
-    const { enablePreOrder, deliveryToAddress } = deliveryInfo;
+    const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
 
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
@@ -534,7 +534,7 @@ export class Home extends Component {
         deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
         data-heap-name="ordering.home.delivery-bar"
         className="ordering-home__deliver-to flex__shrink-fixed"
-        content={Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
+        content={Utils.isDeliveryType() ? savedAddressName || deliveryToAddress : pickupAddress}
         backIcon={
           <IconLeftArrow
             className="icon icon__big icon__default text-middle flex__shrink-fixed"
@@ -789,7 +789,7 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
-    const { onSHPromotion } = businessInfo || {};
+    const { storePromoTags } = businessInfo || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -799,7 +799,7 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} onSHPromotion={onSHPromotion} />
+        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} storePromoTags={storePromoTags} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p
