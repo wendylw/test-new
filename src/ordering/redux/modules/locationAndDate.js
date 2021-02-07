@@ -5,7 +5,7 @@ import * as storeUtils from '../../../utils/store-utils';
 import * as apiRequest from '../../../utils/request';
 import * as timeLib from '../../../utils/time-lib';
 import URL from '../../../utils/url';
-import { getStoreById, getStores } from '../../../redux/modules/entities/stores';
+import { getStoreById, getCoreStoreList } from '../../../redux/modules/entities/stores';
 import { actions as appActions, getBusinessUTCOffset } from './app';
 import { actions as homeActions } from './home';
 
@@ -52,7 +52,7 @@ export const actions = {
 
     await dispatch(homeActions.loadCoreStores());
 
-    const stores = getStores(getState());
+    const stores = getCoreStoreList(getState());
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
     if (payload.storeId) {
@@ -144,7 +144,7 @@ export const actions = {
     // if store not support the delivery type
     if (!storeFulfillmentOptions.includes(deliveryType)) {
       const currentDate = getCurrentDate(state);
-      const stores = getStores(state);
+      const stores = getCoreStoreList(state);
       const businessUTCOffset = getBusinessUTCOffset(state);
       const deliveryCoords = getDeliveryCoords(state);
 
