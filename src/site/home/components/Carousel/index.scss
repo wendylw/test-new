@@ -12,7 +12,6 @@
 
   &__item {
     width: 48vw;
-    height: 63vw;
     list-style-type: none;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -34,7 +33,6 @@
 
     &__item {
       width: 170px;
-      height: 222px;
     }
 
     &__image-container {
@@ -90,6 +88,7 @@
   }
 
   &__title {
+    max-height: 1.5999rem;
     max-width: 100%;
     -webkit-line-clamp: 1;
   }
