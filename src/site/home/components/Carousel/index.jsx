@@ -46,7 +46,7 @@ class Carousel extends Component {
     );
   };
 
-  renderPromotionTag = promoTag => {
+  renderPromotionTags = promoTag => {
     return (
       <div className="store-card-list__tag-cover">
         <div className="store-card-list__promo-tag">
@@ -73,6 +73,7 @@ class Carousel extends Component {
             cashbackRate,
             promoTag,
             reviewInfo,
+            storePromoTags,
           } = store || {};
 
           const rating = _get(reviewInfo, 'rating', '');
@@ -89,7 +90,7 @@ class Carousel extends Component {
                 this.handleStoreClicked(store, shippingType);
               }}
             >
-              <summary className={`carousel-list__summary ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}>
+              <summary className={`carousel__item-summary ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}>
                 <div className="carousel__image-container">
                   {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
                   {promoTag && this.renderPromotionTag(promoTag)}
@@ -101,35 +102,40 @@ class Carousel extends Component {
                     alt={name}
                   />
                 </div>
-                <h3 className="carousel-list__title padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder text-line-height-base text-omit__single-line">
+                <h3 className="carousel__item-title padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder text-line-height-base text-omit__single-line">
                   {name}
                 </h3>
-                {enableCashback && cashbackRate ? (
-                  <div className="flex flex-middle padding-left-right-smaller">
-                    <IconWallet className="icon icon__smaller" />
-                    <span className="text-size-small text-capitalize">
-                      {t('EnabledCashbackText', {
-                        cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
-                      })}
-                    </span>
-                  </div>
-                ) : null}
-                {enableFreeShipping && deliveryFee ? (
-                  <div className="flex flex-middle padding-left-right-smaller">
-                    <IconLocalOffer className="icon icon__smaller" />
-                    <span className="text-size-small">{t('MvpFreeDeliveryPrompt')}</span>
-                  </div>
-                ) : null}
+                <div className="carousel__item-info flex flex-middle padding-left-right-smaller">
+                  {enableCashback && cashbackRate ? (
+                    <>
+                      <IconWallet className="icon icon__smaller" />
+                      <span className="text-size-small text-capitalize">
+                        {t('EnabledCashbackText', {
+                          cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
+                        })}
+                      </span>
+                    </>
+                  ) : null}
+                </div>
+
+                <div className="carousel__item-info flex flex-middle padding-left-right-smaller">
+                  {enableFreeShipping && deliveryFee ? (
+                    <>
+                      <IconLocalOffer className="icon icon__smaller" />
+                      <span className="text-size-small">{t('MvpFreeDeliveryPrompt')}</span>
+                    </>
+                  ) : null}
+                </div>
               </summary>
               <div
-                className={`carousel-list__footer padding-left-right-small ${
+                className={`carousel__item-footer padding-left-right-small ${
                   isOpen || enablePreOrder ? '' : 'text-opacity'
                 }`}
               >
                 {rating && (
                   <div className="flex flex-middle flex-end">
                     <IconStar className="icon icon__primary icon__smaller" />
-                    <span className="carousel-list__rating-text text-primary text-size-small text-weight-bolder text-line-height-base">
+                    <span className="carousel__item-rating-text text-primary text-size-small text-weight-bolder text-line-height-base">
                       {rating}
                     </span>
                   </div>
