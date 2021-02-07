@@ -1,6 +1,11 @@
 @import "../../../Variables";
 
 .carousel {
+  &__wrapper .swiper-wrapper {
+    margin-left: 1.4vw;
+    margin-right: 1.4vw;
+  }
+
   &__see-all {
     color: $theme-color;
   }
@@ -8,7 +13,6 @@
   &__item {
     width: 48vw;
     height: 63vw;
-    margin-left: 12px;
     list-style-type: none;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -23,6 +27,11 @@
 
 @media (min-width: 770px) {
   .carousel {
+    &__wrapper .swiper-wrapper {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+
     &__item {
       width: 170px;
       height: 222px;
@@ -41,11 +50,6 @@
 }
 
 .carousel-list {
-  &__summary {
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-
   &__loader {
     margin: 4vh auto;
   }
@@ -86,11 +90,6 @@
   }
 
   &__title {
-    margin: 4px;
-  }
-
-  &__title {
-    max-height: 24px;
     max-width: 100%;
     -webkit-line-clamp: 1;
   }
@@ -100,14 +99,8 @@
     color: $gray-6;
   }
 
-  &__footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 2px 5px;
-  }
-
   &__rating-text {
-    margin: 0 2px;
+    margin-left: 2px;
+    margin-right: 2px;
   }
 }

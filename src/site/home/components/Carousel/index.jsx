@@ -59,7 +59,7 @@ class Carousel extends Component {
   renderCarouselStores(stores, shippingType) {
     const { t } = this.props;
     return (
-      <Swiper className="margin-top-bottom-normal" slidesPerView={'auto'}>
+      <Swiper className="carousel__wrapper margin-top-bottom-normal" slidesPerView={'auto'}>
         {(stores || []).map(store => {
           const {
             name,
@@ -83,7 +83,7 @@ class Carousel extends Component {
           return (
             <SwiperSlide
               key={id}
-              className="carousel__item margin-top-bottom-smaller border-radius-large"
+              className="carousel__item margin-top-bottom-smaller margin-top-bottom-small border-radius-large flex flex-column flex-space-between"
               data-heap-name="site.home.carousel.store-item"
               data-heap-store-name={name}
               onClick={() => {
@@ -101,18 +101,14 @@ class Carousel extends Component {
                   alt={name}
                 />
               </div>
-              <summary
-                className={`carousel-list__summary padding-left-right-small ${
-                  isOpen || enablePreOrder ? '' : 'text-opacity'
-                }`}
-              >
-                <h3 className="carousel-list__title text-size-bigger text-weight-bolder text-omit__single-line">
+              <summary className={`carousel-list__summary ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}>
+                <h3 className="carousel-list__title padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder text-line-height-base text-omit__single-line">
                   {name}
                 </h3>
                 {enableCashback && cashbackRate ? (
-                  <div className="flex flex-middle">
-                    <IconWallet className="icon icon__smaller text-middle" />
-                    <span className="text-size-small text-middle text-capitalize">
+                  <div className="flex flex-middle padding-left-right-small">
+                    <IconWallet className="icon icon__smaller" />
+                    <span className="text-size-small text-capitalize">
                       {t('EnabledCashbackText', {
                         cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
                       })}
@@ -120,17 +116,21 @@ class Carousel extends Component {
                   </div>
                 ) : null}
                 {enableFreeShipping && deliveryFee ? (
-                  <div className="flex flex-middle">
-                    <IconLocalOffer className="icon icon__smaller text-middle" />
-                    <span className="text-size-small text-middle">{t('MvpFreeDeliveryPrompt')}</span>
+                  <div className="flex flex-middle padding-left-right-small">
+                    <IconLocalOffer className="icon icon__smaller" />
+                    <span className="text-size-small">{t('MvpFreeDeliveryPrompt')}</span>
                   </div>
                 ) : null}
               </summary>
-              <div className={`carousel-list__footer ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}>
+              <div
+                className={`carousel-list__footer padding-left-right-small ${
+                  isOpen || enablePreOrder ? '' : 'text-opacity'
+                }`}
+              >
                 {rating && (
                   <div className="flex flex-middle flex-end">
-                    <IconStar className="icon icon__primary icon__smaller text-middle" />
-                    <span className="carousel-list__rating-text text-primary text-size-small text-middle text-weight-bolder text-line-height-base">
+                    <IconStar className="icon icon__primary icon__smaller" />
+                    <span className="carousel-list__rating-text margin-top-bottom-smaller text-primary text-size-small text-weight-bolder text-line-height-base">
                       {rating}
                     </span>
                   </div>
