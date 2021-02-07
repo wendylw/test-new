@@ -41,11 +41,6 @@
 }
 
 .carousel-list {
-  &__summary {
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-
   &__loader {
     margin: 4vh auto;
   }
@@ -86,10 +81,6 @@
   }
 
   &__title {
-    margin: 4px;
-  }
-
-  &__title {
     max-height: 24px;
     max-width: 100%;
     -webkit-line-clamp: 1;
@@ -100,14 +91,8 @@
     color: $gray-6;
   }
 
-  &__footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 2px 5px;
-  }
-
   &__rating-text {
-    margin: 0 2px;
+    margin-left: 2px;
+    margin-right: 2px;
   }
 }

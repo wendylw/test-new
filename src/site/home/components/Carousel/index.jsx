@@ -106,13 +106,13 @@ class Carousel extends Component {
                   isOpen || enablePreOrder ? '' : 'text-opacity'
                 }`}
               >
-                <h3 className="carousel-list__title text-size-bigger text-weight-bolder text-omit__single-line">
+                <h3 className="carousel-list__title margin-top-bottom-smaller text-size-big text-weight-bolder text-line-height-base text-omit__single-line">
                   {name}
                 </h3>
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
-                    <IconWallet className="icon icon__smaller text-middle" />
-                    <span className="text-size-small text-middle text-capitalize">
+                    <IconWallet className="icon icon__smaller" />
+                    <span className="text-size-small text-capitalize">
                       {t('EnabledCashbackText', {
                         cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
                       })}
@@ -121,21 +121,21 @@ class Carousel extends Component {
                 ) : null}
                 {enableFreeShipping && deliveryFee ? (
                   <div className="flex flex-middle">
-                    <IconLocalOffer className="icon icon__smaller text-middle" />
-                    <span className="text-size-small text-middle">{t('MvpFreeDeliveryPrompt')}</span>
+                    <IconLocalOffer className="icon icon__smaller" />
+                    <span className="text-size-small">{t('MvpFreeDeliveryPrompt')}</span>
                   </div>
                 ) : null}
+                <div className={`carousel-list__footer ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}>
+                  {rating && (
+                    <div className="flex flex-middle flex-end">
+                      <IconStar className="icon icon__primary icon__smaller" />
+                      <span className="carousel-list__rating-text margin-top-bottom-smaller text-primary text-size-small text-weight-bolder text-line-height-base">
+                        {rating}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </summary>
-              <div className={`carousel-list__footer ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}>
-                {rating && (
-                  <div className="flex flex-middle flex-end">
-                    <IconStar className="icon icon__primary icon__smaller text-middle" />
-                    <span className="carousel-list__rating-text text-primary text-size-small text-middle text-weight-bolder text-line-height-base">
-                      {rating}
-                    </span>
-                  </div>
-                )}
-              </div>
             </SwiperSlide>
           );
         })}
