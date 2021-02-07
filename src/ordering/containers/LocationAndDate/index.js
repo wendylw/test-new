@@ -644,31 +644,30 @@ class LocationAndDate extends Component {
           title={this.getLocationDisplayTitle()}
           navFunc={this.handleBackClicked}
         />
-        {showLoading ? (
-          <PageLoader />
-        ) : (
-          <Fragment>
-            <div
-              className="location-date__container"
-              style={{
-                top: `${Utils.mainTop({
-                  headerEls: [this.headerEl],
-                })}px`,
-                height: Utils.containerHeight({
-                  headerEls: [this.headerEl],
-                  footerEls: [this.footerEl],
-                }),
-              }}
-            >
+        <div
+          className="location-date__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: Utils.containerHeight({
+              headerEls: [this.headerEl],
+              footerEls: [this.footerEl],
+            }),
+          }}
+        >
+          {showLoading ? (
+            <PageLoader />
+          ) : (
+            <Fragment>
               {businessDeliveryTypes.length > 1 && this.renderDeliveryTypesSelector()}
 
               {this.isDelivery && this.renderDeliveryContainer()}
               {this.isPickup && this.renderPickupContainer()}
-            </div>
-
-            {this.renderContinueButton()}
-          </Fragment>
-        )}
+            </Fragment>
+          )}
+        </div>
+        {this.renderContinueButton()}
       </section>
     );
   }
