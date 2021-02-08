@@ -68,7 +68,6 @@ class StoreList extends Component {
             enablePreOrder,
             cashbackRate,
             products,
-            promoTag,
             reviewInfo,
             storePromoTags,
           } = store || {};
@@ -125,7 +124,7 @@ class StoreList extends Component {
                   )}
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
-                    <span className="store-info__text text-size-small text-middle">
+                    <span className="store-info__text text-size-small text-middle text-line-height-base">
                       {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
                     </span>
                   </li>
@@ -133,7 +132,7 @@ class StoreList extends Component {
                 {enableCashback && cashbackRate ? (
                   <div className="flex flex-middle">
                     <IconWallet className="icon icon__smaller text-middle" />
-                    <span className="store-info__text text-size-small text-middle text-capitalize">
+                    <span className="store-info__text text-size-small text-middle text-line-height-base text-capitalize">
                       {t('EnabledCashbackText', { cashbackRate: Math.round(cashbackRatePercentage * 100) / 100 })}
                     </span>
                   </div>
@@ -142,7 +141,7 @@ class StoreList extends Component {
                   <div className="flex flex-middle">
                     <IconLocalOffer className="icon icon__smaller text-middle" />
                     <Trans i18nKey="MvpFreeDeliveryPrompt" minimumSpendForFreeDelivery={minimumSpendForFreeDelivery}>
-                      <span className="store-info__text text-size-small text-middle">
+                      <span className="store-info__text text-size-small text-middle text-line-height-base">
                         Free Delivery above
                         <CurrencyNumber
                           className="text-size-small"
