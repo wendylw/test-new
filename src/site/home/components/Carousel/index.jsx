@@ -71,7 +71,6 @@ class Carousel extends Component {
             enableCashback,
             enablePreOrder,
             cashbackRate,
-            storePromoTags,
             reviewInfo,
             promoTag,
           } = store || {};
@@ -90,23 +89,12 @@ class Carousel extends Component {
                 this.handleStoreClicked(store, shippingType);
               }}
             >
-              <div className="carousel__image-container">
-                {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {promoTag && this.renderPromotionTags(promoTag)}
-                <Image
-                  className="carousel-store__image card__image"
-                  src={avatar}
-                  scalingRatioIndex={1}
-                  placeholderImage={MvpStorePlaceholderImage}
-                  alt={name}
-                />
-              </div>
               <summary
                 className={`carousel__item-summary text-size-reset ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}
               >
                 <div className="carousel__image-container">
                   {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                  {storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
+                  {promoTag && this.renderPromotionTags(promoTag)}
                   <Image
                     className="carousel-store__image card__image"
                     src={avatar}
