@@ -87,7 +87,7 @@ class Carousel extends Component {
             >
               <div className="carousel__image-container">
                 {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
+                {storePromoTags && storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
                 <Image
                   className="carousel-store__image card__image"
                   src={avatar}

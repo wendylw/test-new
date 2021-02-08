@@ -84,7 +84,7 @@ class StoreList extends Component {
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
                 {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
+                {storePromoTags && storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
                 <Image
                   className="store-card-list__image card__image"
                   src={avatar}
@@ -112,7 +112,7 @@ class StoreList extends Component {
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
                     <span className="store-info__text text-size-smaller text-middle">
-                      {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
+                      {t('DistanceText', { distance: `~ ${(geoDistance || 0).toFixed(2)}` })}
                     </span>
                   </li>
                 </ul>
