@@ -73,6 +73,7 @@ class Carousel extends Component {
             cashbackRate,
             storePromoTags,
             reviewInfo,
+            promoTag,
           } = store || {};
 
           const rating = _get(reviewInfo, 'rating', '');
@@ -89,6 +90,17 @@ class Carousel extends Component {
                 this.handleStoreClicked(store, shippingType);
               }}
             >
+              <div className="carousel__image-container">
+                {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
+                {promoTag && this.renderPromotionTags(promoTag)}
+                <Image
+                  className="carousel-store__image card__image"
+                  src={avatar}
+                  scalingRatioIndex={1}
+                  placeholderImage={MvpStorePlaceholderImage}
+                  alt={name}
+                />
+              </div>
               <summary
                 className={`carousel__item-summary text-size-reset ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}
               >
