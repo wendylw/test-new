@@ -125,7 +125,7 @@ class StoreList extends Component {
                   <li className="store-info__item text-middle">
                     <IconLocation className="icon icon__smaller text-middle" />
                     <span className="store-info__text text-size-small text-middle text-line-height-base">
-                      {t('DistanceText', { distance: (geoDistance || 0).toFixed(2) })}
+                      {t('DistanceText', { distance: `~ ${(geoDistance || 0).toFixed(2)}` })}
                     </span>
                   </li>
                 </ul>
