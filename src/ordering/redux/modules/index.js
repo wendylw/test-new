@@ -8,6 +8,7 @@ import payment from './payment';
 import thankYou from './thankYou';
 import customer from './customer';
 import reportDriver from './reportDriver';
+import locationAndDate from './locationAndDate';
 
 const rootReducer = combineReducers({
   entities,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   thankYou,
   promotion,
   reportDriver,
+  locationAndDate,
 });
 
 export default rootReducer;
