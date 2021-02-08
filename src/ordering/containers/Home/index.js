@@ -803,7 +803,6 @@ export class Home extends Component {
           <NativeHeader
             isPage={true}
             title={window.document.title}
-            titleAlignment="center"
             navFunc={() => {
               gotoHome();
             }}
