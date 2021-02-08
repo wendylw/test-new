@@ -1,3 +1,6 @@
+import { createSelector } from 'reselect';
+import _get from 'lodash/get';
+
 const initialState = {};
 
 function transferStoreName(s) {
@@ -16,10 +19,16 @@ const reducer = (state = initialState, action) => {
 
     if (business && business.stores && !business.country) {
       const { stores } = business;
+      const businessUseStorehubLogistics = _get(business, 'qrOrderingSettings.useStorehubLogistics', false);
+
       const newStores = {};
 
       stores.forEach(s => {
         if (s.id) {
+          Object.assign(s.qrOrderingSettings, {
+            useStorehubLogistics: _get(s, 'qrOrderingSettings.useStorehubLogistics', businessUseStorehubLogistics),
+          });
+
           newStores[s.id] = transferStoreName(s);
         }
       });
@@ -35,7 +44,5 @@ export default reducer;
 // selectors
 
 export const getAllStores = state => state.entities.stores;
-
 export const getStoreById = (state, storeId) => getAllStores(state)[storeId];
-
 export const getCoreStoreList = state => Object.values(state.entities.stores);

@@ -4,7 +4,7 @@ import StoreList from './components/StoreList';
 import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
-import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/order-utils';
+import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/store-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -71,7 +71,7 @@ class App extends Component {
 
     const currentTime = getBusinessDateTime(businessUTCOffset);
 
-    const isStoreOpened = store && checkStoreIsOpened(currentTime, store);
+    const isStoreOpened = store && checkStoreIsOpened(store, currentTime);
 
     // if store is closed,go straight to ordering page and let it display store is closed
     if (isStoreOpened) {

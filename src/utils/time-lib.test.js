@@ -15,6 +15,11 @@ import {
   isBetween,
   setDateTime,
   getTimeFromDayjs,
+  ceilToHour,
+  ceilToQuarter,
+  floorToHour,
+  formatTo12hour,
+  padZero,
 } from './time-lib';
 import dayjs from 'dayjs';
 
@@ -138,6 +143,7 @@ describe('test isSame function', () => {
     ${'10:00'} | ${'12:00'}  | ${false}
     ${'10:00'} | ${'09:59'}  | ${false}
     ${'-1:00'} | ${'1:00'}   | ${false}
+    ${'now'}   | ${'now'}    | ${true}
   `('return $expected when $time is same $compareTime', ({ time, compareTime, expected }) => {
     expect(isSame(time, compareTime)).toBe(expected);
   });
@@ -253,7 +259,77 @@ describe('test getTimeFromDayjs function', () => {
     ${'2020-04-02T20:02:17+08:00'} | ${'20:02'}
     ${'2020-04-02T00:00:17+08:00'} | ${'00:00'}
     ${'2020-04-02T24:00:00+08:00'} | ${'00:00'}
-  `('return $expected when get time from $date', ({ time, date, expected }) => {
+  `('return $expected when get time from $date', ({ date, expected }) => {
     expect(getTimeFromDayjs(dayjs(date))).toBe(expected);
+  });
+});
+
+describe('test ceilToHour function', () => {
+  test.each`
+    time       | expected
+    ${'12:00'} | ${'12:00'}
+    ${'12:01'} | ${'13:00'}
+    ${'00:00'} | ${'00:00'}
+    ${'00:10'} | ${'01:00'}
+    ${'-1:10'} | ${'00:00'}
+    ${'-2:10'} | ${'-1:00'}
+  `(`return $expected when ceil $time`, ({ time, expected }) => {
+    expect(ceilToHour(time)).toBe(expected);
+  });
+});
+
+describe('test floorToHour function', () => {
+  test.each`
+    time       | expected
+    ${'12:00'} | ${'12:00'}
+    ${'12:11'} | ${'12:00'}
+    ${'00:00'} | ${'00:00'}
+    ${'00:10'} | ${'00:00'}
+    ${'00:50'} | ${'00:00'}
+    ${'-1:10'} | ${'-1:00'}
+    ${'-2:10'} | ${'-2:00'}
+  `(`return $expected when floor $time to hour`, ({ time, expected }) => {
+    expect(floorToHour(time)).toBe(expected);
+  });
+});
+
+describe('test ceilToQuarter function', () => {
+  test.each`
+    time       | expected
+    ${'12:00'} | ${'12:00'}
+    ${'12:01'} | ${'12:15'}
+    ${'00:25'} | ${'00:30'}
+    ${'00:40'} | ${'00:45'}
+    ${'01:50'} | ${'02:00'}
+    ${'-1:10'} | ${'-1:15'}
+    ${'-2:50'} | ${'-1:00'}
+  `(`return $expected when quarter $time`, ({ time, expected }) => {
+    expect(ceilToQuarter(time)).toBe(expected);
+  });
+});
+
+describe('test formatTo12hour function', () => {
+  test.each`
+    time       | expected
+    ${'12:00'} | ${'12:00 PM'}
+    ${'12:01'} | ${'12:01 PM'}
+    ${'00:25'} | ${'12:25 AM'}
+    ${'00:40'} | ${'12:40 AM'}
+    ${'01:50'} | ${'01:50 AM'}
+    ${'-1:10'} | ${'11:10 PM'}
+    ${'-2:50'} | ${'10:50 PM'}
+  `(`return $expected when format $time to 12 hour`, ({ time, expected }) => {
+    expect(formatTo12hour(time)).toBe(expected);
+  });
+});
+
+describe('test padZero function', () => {
+  test.each`
+    value | expected
+    ${0}  | ${'00'}
+    ${12} | ${'12'}
+    ${-1} | ${'-1'}
+  `(`return $expected when call padZero with $value`, ({ value, expected }) => {
+    expect(padZero(value)).toBe(expected);
   });
 });

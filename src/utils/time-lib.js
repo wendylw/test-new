@@ -1,5 +1,4 @@
 import invariant from 'invariant';
-import { padZero } from './datetime-lib';
 import dayjs from 'dayjs';
 
 const InvalidTimeErrorMessage = 'Invalid time string format';
@@ -100,7 +99,9 @@ export const isAfter = (time, compareTime) => {
  * @returns {boolean} result
  */
 export const isSame = (time, compareTime) => {
-  invariant(isValidTime(time) && isValidTime(compareTime), InvalidTimeErrorMessage);
+  if (!isValidTime(time) || !isValidTime(compareTime)) {
+    return time === compareTime;
+  }
 
   return getAmountOfMinutes(time) === getAmountOfMinutes(compareTime);
 };
@@ -127,6 +128,60 @@ export const isSameOrAfter = (time, compareTime) => {
   invariant(isValidTime(time) && isValidTime(compareTime), InvalidTimeErrorMessage);
 
   return isSame(time, compareTime) || isAfter(time, compareTime);
+};
+
+/**
+ * round minute up to hour
+ * @param {string} time
+ * @returns {string} ceil time
+ */
+export const ceilToHour = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const { hour, minute } = parse(time);
+
+  const newHour = minute > 0 ? hour + 1 : hour;
+
+  return stringify({
+    hour: newHour,
+    minute: 0,
+  });
+};
+
+/**
+ * round minute floor to hour
+ * @param {string} time
+ * @returns {string} floor to hour time
+ */
+export const floorToHour = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const { hour } = parse(time);
+
+  return stringify({
+    hour: hour,
+    minute: 0,
+  });
+};
+
+/**
+ * round minute to 0 15 30 45 60
+ * @param {string} time
+ * @returns {string} quarter time
+ */
+export const ceilToQuarter = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const { hour, minute } = parse(time);
+
+  const quarterMinutes = [0, 15, 30, 45, 60];
+
+  const quarter = quarterMinutes.find(m => m >= minute);
+
+  return stringify({
+    hour,
+    minute: quarter,
+  });
 };
 
 /**
@@ -237,4 +292,30 @@ export const getTimeFromDayjs = (date = dayjs()) => {
   invariant(dayjs.isDayjs(date), 'Not Dayjs object');
 
   return date.format('HH:mm');
+};
+
+/**
+ * format to 12 hour
+ * @param {*} time
+ * @returns {string}
+ */
+export const formatTo12hour = time => {
+  invariant(isValidTime(time), InvalidTimeErrorMessage);
+
+  const dateTime = setDateTime(time);
+
+  return dateTime.format('hh:mm A');
+};
+
+/**
+ * pad zero
+ * @param {number} num
+ * @returns {string}
+ */
+export const padZero = num => {
+  const str = num.toString();
+  if (str.length === 1) {
+    return `0${str}`;
+  }
+  return str;
 };
