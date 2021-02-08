@@ -185,7 +185,7 @@ export const actions = {
     );
   },
 
-  loadProductDetail: prod => dispatch => {
+  loadProductDetail: prod => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
