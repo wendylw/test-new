@@ -13,6 +13,7 @@ import {
 } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
 import './AddressList.scss';
+import webviewUtils from '../../../../../utils/webview-utils';
 
 class AddressList extends Component {
   componentDidMount() {
@@ -75,6 +76,13 @@ class AddressList extends Component {
                     deliveryToLocation: location,
                     deliveryToCity,
                   });
+                  if (webviewUtils.hasNativeSavedAddress()) {
+                    const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
+                    sessionStorage.setItem(
+                      'deliveryAddress',
+                      JSON.stringify({ ...deliveryAddress, addressName: addressName })
+                    );
+                  }
                   history.push({
                     pathname: '/customer',
                     search: window.location.search,

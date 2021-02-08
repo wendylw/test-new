@@ -2,13 +2,29 @@ import { APP_TYPES } from '../../../cashback/redux/types';
 
 const initialState = {};
 
+function transferBusinessStoreName(business) {
+  const { stores } = business;
+  const newStores = (stores || []).map(store => {
+    const { name, beepStoreNameLocationSuffix } = store || [];
+    return {
+      ...store,
+      name: beepStoreNameLocationSuffix || name,
+    };
+  });
+  const newBusiness = {
+    ...business,
+    stores: newStores,
+  };
+  return newBusiness;
+}
+
 const reducer = (state = initialState, action) => {
   if (action.responseGql) {
     const { data } = action.responseGql;
 
     if (data.business && data.business.country) {
       const { business } = data;
-      return { ...state, [business.name]: business, loaded: true };
+      return { ...state, [business.name]: transferBusinessStoreName(business), loaded: true };
     }
   } else if (action.type === APP_TYPES.FETCH_BUSINESS_SUCCESS) {
     const { name } = action.response;

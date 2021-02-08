@@ -19,13 +19,13 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
-import { isAvailableOrderTime, getBusinessDateTime } from '../../../utils/order-utils';
+import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
-import { actions as appActionsCreators, getBusinessUTCOffset } from '../../redux/modules/app';
+import { actions as appActionsCreators, getBusinessUTCOffset, getStore } from '../../redux/modules/app';
 import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
@@ -211,10 +211,11 @@ export class Home extends Component {
   }
 
   getStatusFromMultipleStore = () => {
+    const deliveryType = Utils.getOrderTypeFromUrl();
     const allStore = this.props.allStore || [];
     const businessUTCOffset = this.props.businessUTCOffset;
 
-    const currentTime = getBusinessDateTime(businessUTCOffset);
+    const currentDate = new Date();
 
     const enablePreOrderFroMultipleStore = allStore.some(store => {
       const { qrOrderingSettings } = store;
@@ -223,31 +224,7 @@ export class Home extends Component {
     });
 
     const isValidToOrderFromMultipleStore = allStore.some(store => {
-      const { qrOrderingSettings } = store;
-      const {
-        validTimeFrom,
-        validTimeTo,
-        breakTimeFrom,
-        breakTimeTo,
-        vacations,
-        validDays,
-        disableOnDemandOrder,
-        enablePreOrder,
-      } = qrOrderingSettings;
-
-      // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
-      if (enablePreOrder && disableOnDemandOrder) {
-        return false;
-      }
-
-      return isAvailableOrderTime(currentTime, {
-        validTimeFrom,
-        validTimeTo,
-        breakTimeFrom,
-        breakTimeTo,
-        vacations,
-        validDays,
-      });
+      return isAvailableOnDemandOrderTime(store, currentDate, businessUTCOffset, deliveryType);
     });
 
     this.setState({
@@ -287,73 +264,20 @@ export class Home extends Component {
     }
   };
 
-  isAvailableOnDemandOrder = () => {
-    // if not select store return false
-    if (!config.storeId) {
-      return false;
-    }
-    const { deliveryInfo, businessUTCOffset } = this.props;
-    const { disableOnDemandOrder, enablePreOrder } = deliveryInfo;
-
-    // TODO: disableOnDemandOrder only work when enablePreOrder is true,backend will fix it later
-    if (enablePreOrder && disableOnDemandOrder) {
-      return false;
-    }
-
-    const currentTime = getBusinessDateTime(businessUTCOffset);
-
-    return this.isAvailableTimeToOrder(currentTime);
-  };
-
-  isAvailableTimeToOrder = dateTime => {
-    // if not select store return false
-    if (!config.storeId) {
-      return false;
-    }
-
-    const isDeliveryType = Utils.isDeliveryType();
-
-    const { deliveryInfo } = this.props;
-    const {
-      validDays,
-      vacations,
-      breakTimeFrom,
-      breakTimeTo,
-      validTimeFrom,
-      validTimeTo,
-      logisticsValidTimeFrom,
-      logisticsValidTimeTo,
-    } = deliveryInfo;
-
-    const orderValidTimeFrom = isDeliveryType ? logisticsValidTimeFrom : validTimeFrom;
-    const orderValidTimeTo = isDeliveryType ? logisticsValidTimeTo : validTimeTo;
-
-    const availableOrderTime = isAvailableOrderTime(dateTime, {
-      validDays,
-      validTimeFrom: orderValidTimeFrom,
-      validTimeTo: orderValidTimeTo,
-      vacations,
-      breakTimeFrom,
-      breakTimeTo,
-    });
-
-    return availableOrderTime;
-  };
-
   checkOrderTime = async () => {
     if (this.isExpectedDeliverTimeExpired()) {
       Utils.removeExpectedDeliveryTime();
     }
-
+    const { store } = this.props;
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
+    const deliveryType = Utils.getOrderTypeFromUrl();
     const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
 
-    const storeId = config.storeId;
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
 
-    if (!storeId) {
+    if (!store) {
       return;
     }
 
@@ -368,18 +292,23 @@ export class Home extends Component {
 
     if (isDeliveryType || isPickUpType) {
       const { businessUTCOffset } = this.props;
-      const isAvailableOnDemandOrder = this.isAvailableOnDemandOrder();
+      const currentDate = getBusinessDateTime(businessUTCOffset);
+
+      const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(
+        store,
+        currentDate.toDate(), // to js Date object
+        businessUTCOffset,
+        deliveryType
+      );
 
       if (!isAvailableOnDemandOrder) {
         return;
       }
 
-      const currentTime = getBusinessDateTime(businessUTCOffset);
-
       Utils.setSessionVariable(
         'expectedDeliveryDate',
         JSON.stringify({
-          date: currentTime.startOf('day').toISOString(),
+          date: currentDate.startOf('day').toISOString(),
           isOpen: true,
           isToday: true,
         })
@@ -437,13 +366,13 @@ export class Home extends Component {
   };
 
   isExpectedDeliverTimeExpired = () => {
-    const { businessUTCOffset } = this.props;
+    const { businessUTCOffset, store } = this.props;
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
     const deliverMethod = Utils.getOrderTypeFromUrl();
     const previousDeliveryMethod = this.getPreviousDeliveryMethod();
-    const storeId = config.storeId;
+    const currentDate = new Date();
 
-    if (!storeId) {
+    if (!store) {
       return true;
     }
 
@@ -458,21 +387,23 @@ export class Home extends Component {
       return true;
     }
 
-    if (hour.from === PREORDER_IMMEDIATE_TAG.from && !this.isAvailableOnDemandOrder()) {
+    if (
+      hour.from === PREORDER_IMMEDIATE_TAG.from &&
+      !isAvailableOnDemandOrderTime(store, currentDate, businessUTCOffset, deliverMethod)
+    ) {
       return true;
     }
 
     if (hour.from !== PREORDER_IMMEDIATE_TAG.from) {
-      const currentTime = getBusinessDateTime(businessUTCOffset);
       const expectedDate = getBusinessDateTime(businessUTCOffset, new Date(date.date));
 
       const expectedDeliveryTime = setDateTime(hour.from, expectedDate);
 
-      if (expectedDeliveryTime.isBefore(currentTime)) {
+      if (expectedDeliveryTime.isBefore(currentDate)) {
         return true;
       }
 
-      if (storeId && !this.isAvailableTimeToOrder(expectedDeliveryTime)) {
+      if (!isAvailableOrderTime(store, expectedDeliveryTime.toDate(), businessUTCOffset, deliverMethod)) {
         return true;
       }
     }
@@ -579,7 +510,7 @@ export class Home extends Component {
     }
 
     const isValidTimeToOrder = this.isValidTimeToOrder();
-    const { enablePreOrder, deliveryToAddress } = deliveryInfo;
+    const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
 
     const fillInDeliverToAddress = () => {
       const { search } = window.location;
@@ -605,7 +536,7 @@ export class Home extends Component {
         deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
         data-heap-name="ordering.home.delivery-bar"
         className="ordering-home__deliver-to flex__shrink-fixed"
-        content={Utils.isDeliveryType() ? deliveryToAddress : pickupAddress}
+        content={Utils.isDeliveryType() ? savedAddressName || deliveryToAddress : pickupAddress}
         backIcon={
           <IconLeftArrow
             className="icon icon__big icon__default text-middle flex__shrink-fixed"
@@ -639,6 +570,7 @@ export class Home extends Component {
   }
 
   getExpectedDeliveryTime = () => {
+    const { businessUTCOffset } = this.props;
     const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
     const locale = this.getBusinessCountry();
 
@@ -647,6 +579,7 @@ export class Home extends Component {
         date: date,
         hour: hour,
         locale,
+        businessUTCOffset,
         separator: ' .',
       });
     }
@@ -691,18 +624,20 @@ export class Home extends Component {
 
   isValidTimeToOrder = () => {
     const { isValidToOrderFromMultipleStore } = this.state;
-    const storeId = config.storeId;
+    const { store, businessUTCOffset } = this.props;
+    const currentTime = new Date();
+    const deliverMethod = Utils.getOrderTypeFromUrl();
 
     if (!Utils.isDeliveryType() && !Utils.isPickUpType()) {
       return true;
     }
 
     // not select store
-    if (!storeId) {
+    if (!store) {
       return isValidToOrderFromMultipleStore;
     }
 
-    return this.isAvailableOnDemandOrder();
+    return isAvailableOnDemandOrderTime(store, currentTime, businessUTCOffset, deliverMethod);
   };
 
   renderHeaderChildren() {
@@ -856,7 +791,7 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
-    const { onSHPromotion } = businessInfo || {};
+    const { storePromoTags } = businessInfo || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -876,7 +811,7 @@ export class Home extends Component {
         )}
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} onSHPromotion={onSHPromotion} />
+        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} storePromoTags={storePromoTags} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p
@@ -1000,6 +935,7 @@ export default compose(
         cartSummary: getCartSummary(state),
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
+        store: getStore(state),
       };
     },
     dispatch => ({

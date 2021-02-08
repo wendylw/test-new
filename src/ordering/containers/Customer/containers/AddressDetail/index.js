@@ -15,6 +15,7 @@ import {
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
+import webviewUtils from '../../../../../utils/webview-utils';
 import qs from 'qs';
 
 const actions = {
@@ -121,6 +122,7 @@ class AddressDetail extends Component {
       comments: comments,
       location: coords,
       city: addressComponents && addressComponents.city ? addressComponents.city : '',
+      countryCode: addressComponents && addressComponents.countryCode ? addressComponents.countryCode : '',
     };
 
     let requestUrl;
@@ -144,6 +146,10 @@ class AddressDetail extends Component {
       deliveryToCity: addressComponents && addressComponents.city ? addressComponents.city : '',
     });
     customerActions.removeSavedAddressInfo();
+    if (webviewUtils.hasNativeSavedAddress()) {
+      const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
+      sessionStorage.setItem('deliveryAddress', JSON.stringify({ ...deliveryAddress, addressName: name }));
+    }
     if (response) {
       history.push({
         pathname: '/customer',

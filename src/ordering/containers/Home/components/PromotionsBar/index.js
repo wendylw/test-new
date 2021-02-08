@@ -7,51 +7,37 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getBusiness } from '../../../../redux/modules/app';
 
-class PromotionBar extends Component {
-  getPromotionInfo(business, onSHPromotion) {
-    const promotionList = [
-      {
-        business: 'idc',
-        discountPercentage: 'RM2',
-        discountProductList: ['IDC Homemade Frozen Crispy Waffles'],
-        promoCode: 'OFFRM2',
-        validDate: '31st Jan 2021',
-        type: 'products',
+class PromotionsBar extends Component {
+  getPromotionInfo(business, storePromoTags) {
+    const promotionList = [];
+    const universalPromotion = {
+      STAYHOME15: {
+        discountPercentage: '15%',
+        promoCode: 'STAYHOME15',
+        cappedValue: 'RM15',
+        consumptionAmount: 'RM30',
       },
-      {
-        business: 'sugarandi',
-        discountPercentage: '10%',
-        discountProductList: ['Christmas Bombo Box', 'Christmas Combo Box'],
-        promoCode: 'XMAS10',
-        validDate: '31st Jan 2021',
-        type: 'products',
+      FREE5KM: {
+        discount: 'Free Delivery',
+        promoCode: 'FREE5KM',
+        cappedValue: 'RM6',
+        consumptionAmount: 'RM50',
       },
-      {
-        business: 'wokit',
-        discountPercentage: '21%',
-        promoCode: 'HELLO21',
-        validDate: '31st Jan 2021',
-        type: 'store',
-      },
-    ];
-    const defaultUniversalPromotion = {
-      discountPercentage: '15%',
-      promoCode: 'STAYHOME15',
-      cappedValue: 'RM15',
-      consumptionAmount: 'RM30',
     };
     const currentPromotions = _filter(promotionList, { business });
 
-    if (onSHPromotion) {
-      currentPromotions.push(defaultUniversalPromotion);
-    }
+    storePromoTags.forEach(promo => {
+      if (universalPromotion[promo]) {
+        currentPromotions.push(universalPromotion[promo]);
+      }
+    });
 
     return currentPromotions;
   }
 
   render() {
-    const { promotionRef, business, onSHPromotion } = this.props;
-    const promotionList = this.getPromotionInfo(business, onSHPromotion);
+    const { promotionRef, business, storePromoTags } = this.props;
+    const promotionList = this.getPromotionInfo(business, storePromoTags);
 
     if (!promotionList.length) {
       return null;
@@ -59,9 +45,10 @@ class PromotionBar extends Component {
 
     return (
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
-        {promotionList.map(promo => {
+        {promotionList.map((promo, index) => {
           const {
             discountPercentage,
+            discount,
             discountProductList,
             promoCode,
             validDate,
@@ -95,12 +82,24 @@ class PromotionBar extends Component {
           const universalPromotionDescription = (
             <Trans
               i18nKey="UniversalPromotionDescription"
-              discountPercentage={discountPercentage}
+              discount={discountPercentage}
               promoCode={promoCode}
               cappedValue={cappedValue}
               consumptionAmount={consumptionAmount}
             >
               <strong>{discountPercentage}</strong> OFF with promo code <strong>{promoCode}</strong>
+              <br />
+              (capped at {cappedValue} with min. spend {consumptionAmount})
+            </Trans>
+          );
+          const deliveryPromotionDescription = (
+            <Trans
+              i18nKey="FreeDeliveryPromotionDescription"
+              discount={discount}
+              promoCode={promoCode}
+              consumptionAmount={consumptionAmount}
+            >
+              <strong>{discount}</strong> with promo code <strong>{promoCode}</strong>
               <br />
               (capped at {cappedValue} with min. spend {consumptionAmount})
             </Trans>
@@ -111,10 +110,12 @@ class PromotionBar extends Component {
             description = productsPromotionDescription;
           } else if (discountProductList || validDate) {
             description = storePromotionDescription;
+          } else if (discount && !discountPercentage) {
+            description = deliveryPromotionDescription;
           }
 
           return (
-            <li className="flex flex-top padding-small">
+            <li key={`promo-${promoCode}-${index}`} className="flex flex-top padding-small">
               <IconLocalOffer className="icon icon__primary icon__smaller" />
               <p className="margin-left-right-smaller text-line-height-base">{description}</p>
             </li>
@@ -125,13 +126,13 @@ class PromotionBar extends Component {
   }
 }
 
-PromotionBar.propTypes = {
+PromotionsBar.propTypes = {
   promotionRef: PropTypes.any,
-  onSHPromotion: PropTypes.bool,
+  storePromoTags: PropTypes.array,
 };
 
-PromotionBar.defaultProps = {
-  onSHPromotion: false,
+PromotionsBar.defaultProps = {
+  storePromoTags: [],
 };
 
 export default compose(
@@ -144,4 +145,4 @@ export default compose(
     },
     dispatch => ({})
   )
-)(PromotionBar);
+)(PromotionsBar);

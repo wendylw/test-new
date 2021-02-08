@@ -157,3 +157,7 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
   // default is UTC+8 offset
   return _get(businessInfo, 'timezoneOffset', 480);
 });
+
+export const getBusinessDeliveryRadius = createSelector(getBusinessInfo, businessInfo => {
+  return _get(businessInfo, 'qrOrderingSettings.deliveryRadius', 0);
+});

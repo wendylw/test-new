@@ -15,7 +15,7 @@ import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../..
 import CreateOrderButton from '../../components/CreateOrderButton';
 import AddressChangeModal from './components/AddressChangeModal';
 
-import { getBusiness, getUser, getRequestInfo } from '../../redux/modules/app';
+import { getBusiness, getUser, getRequestInfo, getBusinessUTCOffset } from '../../redux/modules/app';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
@@ -76,14 +76,12 @@ class Customer extends Component {
   };
 
   getDeliveryTime = () => {
-    const { t } = this.props;
+    const { businessUTCOffset } = this.props;
 
     const { date = {}, hour = {} } = Utils.getExpectedDeliveryDateFromSession();
 
     if (date.date && hour.from) {
-      return date.isToday && hour.from === PREORDER_IMMEDIATE_TAG.from
-        ? t('DeliverNow', { separator: ',' })
-        : formatToDeliveryTime({ date, hour, locale: this.getBusinessCountry() });
+      return formatToDeliveryTime({ date, hour, businessUTCOffset, locale: this.getBusinessCountry() });
     }
 
     return '';
@@ -434,6 +432,7 @@ export default compose(
       cartSummary: getCartSummary(state),
       requestInfo: getRequestInfo(state),
       error: getCustomerError(state),
+      businessUTCOffset: getBusinessUTCOffset(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

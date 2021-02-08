@@ -1,5 +1,11 @@
 import CONSTANTS from './constants';
 import i18next from 'i18next';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import * as timeLib from './time-lib';
+
+dayjs.extend(utc);
+
 export const standardizeLocale = (countryCode = 'MY') => {
   const standardizedLocaleMap = {
     MY: 'EN',
@@ -158,45 +164,42 @@ export const toISODateString = date => {
   return `${dateObj.getFullYear()}-${padZero(dateObj.getMonth() + 1)}-${padZero(dateObj.getDate())}`;
 };
 
-export const formatToDeliveryTime = ({ date, hour, locale = 'MY', separator = ',' }) => {
+export const formatToDeliveryTime = ({ date, hour, businessUTCOffset = 480, locale = 'MY', separator = ',' }) => {
   const { from, to } = hour || {};
 
-  if (from === CONSTANTS.PREORDER_IMMEDIATE_TAG.from) return i18next.t('DeliverNow', { separator });
+  if (from === CONSTANTS.TIME_SLOT_NOW) return i18next.t('DeliverNow', { separator });
 
-  const hourFrom = (from || '').split(':')[0];
-  const minuteFrom = (from || '').split(':')[1];
-  const workDate = new Date(date.date);
-  const workDateFrom = new Date(date.date);
+  const dateDayjs = dayjs(date.date).utcOffset(businessUTCOffset);
+  const currentDayjs = dayjs().utcOffset(businessUTCOffset);
+  const fromDayjs = from ? timeLib.setDateTime(from, dateDayjs) : null;
+  const toDayjs = to ? timeLib.setDateTime(to, dateDayjs) : null;
 
-  workDateFrom.setHours(hourFrom, minuteFrom, 0, 0);
-  let part1;
-
-  if (workDate.getDate() === new Date().getDate()) {
-    part1 = i18next.t('Today');
-  } else {
-    part1 = toDayDateMonth(workDate, locale);
+  if (!fromDayjs) {
+    return null;
   }
 
-  let part2 = toNumericTime(workDateFrom, locale);
+  const isToday = currentDayjs.isSame(fromDayjs, 'day');
+  const dateString = isToday ? i18next.t('Today') : fromDayjs.format('dddd, MMMM DD');
+  const fromTimeString = fromDayjs.format('hh:mm A');
+  const toTimeString = toDayjs ? toDayjs.format('hh:mm A') : null;
+  const timeString = toTimeString ? `${fromTimeString} - ${toTimeString}` : fromTimeString;
 
-  if (to) {
-    const hourTo = (to || '').split(':')[0];
-    const minuteTo = (to || '').split(':')[1];
-    const workDateTo = new Date(date.date);
-
-    workDateTo.setHours(hourTo, minuteTo, 0, 0);
-    part2 = toNumericTimeRange(workDateFrom, workDateTo, locale);
-  }
-
-  return !Boolean(part1) && !Boolean(part2) ? null : `${part1}${separator} ${part2}`;
+  return `${dateString}${separator} ${timeString}`;
 };
 
-export const formatPickupTime = ({ dateList, locale, separator = ', ' }) => {
-  const isToday = dateList[0].getDate() === new Date().getDate();
-  let date = isToday ? i18next.t('Today') : toDayDateMonth(dateList[0], locale);
-  let timeRange = dateList.map(time => toNumericTime(time, locale)).join(' - ');
+export const formatPickupTime = ({ date, locale, businessUTCOffset = 480, separator = ', ' }) => {
+  const dateDayjs = dayjs(date).utcOffset(businessUTCOffset);
+  const currentDayjs = dayjs().utcOffset(businessUTCOffset);
+  const isToday = currentDayjs.isSame(dateDayjs, 'day');
+  const timeString = dateDayjs.format('hh:mm A');
 
-  return [date, timeRange].filter(item => Boolean(item)).join(separator);
+  if (isToday) {
+    return `${i18next.t('Today')}${separator}${timeString}`;
+  }
+
+  const dateString = dateDayjs.format('dddd, MMMM DD');
+
+  return `${dateString}${separator}${timeString}`;
 };
 
 export const addTime = (date = new Date(), timeToAdd, unit) => {

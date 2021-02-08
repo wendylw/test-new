@@ -3,6 +3,7 @@
   "Apply": "Apply",
   "Success": "Apply Success",
   "EnterPromoCodeHere": "Enter Promo Code Here",
+  "41003UniversalPromotionError": "Promo code is applicable for delivery orders only",
   "54406FreePromotionNotMatchCondition": "This promo code is invalid (Error: 54406)",
   "54407NotMatchCondition": "This promo code is invalid (Error: 54407)",
   "54403NotStartOrExpired": "This promo code is invalid (Error: 54403)",
