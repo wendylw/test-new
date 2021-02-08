@@ -90,7 +90,9 @@ class Carousel extends Component {
                 this.handleStoreClicked(store, shippingType);
               }}
             >
-              <summary className={`carousel__item-summary ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}>
+              <summary
+                className={`carousel__item-summary text-size-reset ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}
+              >
                 <div className="carousel__image-container">
                   {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
                   {promoTag && this.renderPromotionTag(promoTag)}
@@ -109,7 +111,7 @@ class Carousel extends Component {
                   {enableCashback && cashbackRate ? (
                     <div className="flex flex-middle padding-left-right-smaller">
                       <IconWallet className="icon icon__smaller" />
-                      <span className="text-size-small text-capitalize">
+                      <span className="text-size-small text-line-height-base text-capitalize">
                         {t('EnabledCashbackText', {
                           cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
                         })}
@@ -120,7 +122,7 @@ class Carousel extends Component {
                   {enableFreeShipping && deliveryFee ? (
                     <div className="flex flex-middle padding-left-right-smaller">
                       <IconLocalOffer className="icon icon__smaller" />
-                      <span className="text-size-small">{t('MvpFreeDeliveryPrompt')}</span>
+                      <span className="text-size-small text-line-height-base">{t('MvpFreeDeliveryPrompt')}</span>
                     </div>
                   ) : null}
                 </div>
