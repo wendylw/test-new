@@ -12,7 +12,7 @@ import { getAllProducts } from '../../../redux/modules/entities/products';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
-import { getBusiness } from './app';
+import { getBusiness, getBusinessUTCOffset } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList } from '../../../redux/modules/entities/stores';
 // import { getBusinessInfo } from './cart';
@@ -67,13 +67,16 @@ export const actions = {
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
     let deliveryCoords;
     if (isDelivery) {
       deliveryCoords = Utils.getDeliveryCoords();
     }
-    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords));
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-    const fulfillDate = Utils.getFulfillDate().expectDeliveryDateFrom;
+    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
+
     const shippingType = Utils.getApiRequestShippingType();
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
@@ -105,6 +108,8 @@ export const actions = {
   loadShoppingCart: location => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
     if (isDigital) {
       await dispatch(generatorShoppingCartForVoucherOrdering());
       return;
@@ -114,7 +119,9 @@ export const actions = {
     if (isDelivery) {
       deliveryCoords = Utils.getDeliveryCoords();
     }
-    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords));
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords, fulfillDate));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -161,7 +168,10 @@ export const actions = {
     }
 
     if (prod.variations && prod.variations.length) {
-      return dispatch(fetchProductDetail({ productId: prod.id }));
+      const businessUTCOffset = getBusinessUTCOffset(getState());
+      const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+      return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
     }
 
     return dispatch(
@@ -176,7 +186,10 @@ export const actions = {
   },
 
   loadProductDetail: prod => dispatch => {
-    return dispatch(fetchProductDetail({ productId: prod.id }));
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
   },
 
   userConfirmPreOrder: () => ({
@@ -193,12 +206,12 @@ export const actions = {
   },
 };
 
-export const fetchShoppingCart = (isDeliveryType, deliveryCoords) => {
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
       //...Url.API_URLS.GET_CART,
-      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords),
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
     },
   };
 };
@@ -267,7 +280,6 @@ export const fetchProductDetail = variables => {
       endpoint,
       variables: {
         ...variables,
-        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
       },
     },
   };

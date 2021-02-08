@@ -3,7 +3,7 @@ import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getPromotion } from '../../../redux/modules/entities/carts';
-import { actions as appActions } from './app';
+import { actions as appActions, getBusinessUTCOffset } from './app';
 import i18next from 'i18next';
 import Utils from '../../../utils/utils';
 import _get from 'lodash/get';
@@ -34,6 +34,7 @@ export const actions = {
   applyPromoCode: () => async (dispatch, getState) => {
     const state = getState();
     const { selectedPromo } = state.promotion;
+    const businessUTCOffset = getBusinessUTCOffset(state);
 
     const result = await dispatch({
       [API_REQUEST]: {
@@ -45,7 +46,7 @@ export const actions = {
         ...Url.API_URLS.APPLY_PROMOTION_CODE,
         payload: {
           promoId: selectedPromo.id,
-          fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+          fulfillDate: Utils.getFulfillDate(businessUTCOffset),
           shippingType: Utils.getApiRequestShippingType(),
         },
       },
@@ -56,6 +57,7 @@ export const actions = {
   applyVoucher: () => async (dispatch, getState) => {
     const state = getState();
     const { selectedPromo } = state.promotion;
+    const businessUTCOffset = getBusinessUTCOffset(state);
 
     const result = await dispatch({
       [API_REQUEST]: {
@@ -67,7 +69,7 @@ export const actions = {
         ...Url.API_URLS.APPLY_VOUCHER_CODE,
         payload: {
           voucherCode: selectedPromo.code,
-          fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+          fulfillDate: Utils.getFulfillDate(businessUTCOffset),
           shippingType: Utils.getApiRequestShippingType(),
         },
       },
@@ -94,6 +96,7 @@ export const actions = {
         : promoType === PROMO_TYPE.VOUCHER
         ? 'DISMISS_VOUCHER_CODE'
         : '';
+    const businessUTCOffset = getBusinessUTCOffset(state);
 
     const result = await dispatch({
       [API_REQUEST]: {
@@ -107,7 +110,7 @@ export const actions = {
           voucherCode: promoCode,
           fulfillDate:
             dismissType === 'DISMISS_VOUCHER_CODE' || dismissType === 'DISMISS_PROMOTION_CODE'
-              ? Utils.getFulfillDate().expectDeliveryDateFrom
+              ? Utils.getFulfillDate(businessUTCOffset)
               : undefined,
           shippingType: dismissType === 'DISMISS_PROMOTION_CODE' ? Utils.getApiRequestShippingType() : undefined,
         },

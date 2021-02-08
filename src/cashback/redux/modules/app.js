@@ -53,7 +53,7 @@ export const actions = {
     requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
       accessToken,
       refreshToken,
-      fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      fulfillDate: Utils.getFulfillDate(),
       shippingType: Utils.getApiRequestShippingType(),
     }).then(resp => {
       if (resp && resp.consumerId) {
@@ -72,7 +72,7 @@ export const actions = {
     types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
     requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
       phone,
-      fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+      fulfillDate: Utils.getFulfillDate(),
       shippingType: Utils.getApiRequestShippingType(),
     }).then(resp => {
       if (resp && resp.consumerId) {

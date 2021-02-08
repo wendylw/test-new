@@ -80,13 +80,15 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  loginApp: ({ accessToken, refreshToken }) => dispatch =>
+  loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
     dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
         accessToken,
         refreshToken,
-        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
         shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
@@ -99,14 +101,17 @@ export const actions = {
         }
         return resp;
       }),
-    }),
+    });
+  },
 
-  phoneNumberLogin: ({ phone }) => dispatch =>
+  phoneNumberLogin: ({ phone }) => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
     dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
         phone,
-        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
         shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
@@ -119,7 +124,8 @@ export const actions = {
         }
         return resp;
       }),
-    }),
+    });
+  },
 
   resetOtpStatus: () => ({
     type: types.RESET_OTP_STATUS,
