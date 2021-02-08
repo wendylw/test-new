@@ -70,7 +70,7 @@ class Carousel extends Component {
             enableCashback,
             enablePreOrder,
             cashbackRate,
-            storePromoTags,
+            promoTag,
           } = store || {};
 
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
@@ -87,7 +87,7 @@ class Carousel extends Component {
             >
               <div className="carousel__image-container">
                 {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
+                {promoTag && this.renderPromotionTags(promoTag)}
                 <Image
                   className="carousel-store__image card__image"
                   src={avatar}

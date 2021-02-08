@@ -66,7 +66,7 @@ class StoreList extends Component {
             enablePreOrder,
             cashbackRate,
             products,
-            storePromoTags,
+            promoTag,
           } = store || {};
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
 
@@ -84,7 +84,7 @@ class StoreList extends Component {
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
                 {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
+                {promoTag && this.renderPromotionTags(promoTag)}
                 <Image
                   className="store-card-list__image card__image"
                   src={avatar}
