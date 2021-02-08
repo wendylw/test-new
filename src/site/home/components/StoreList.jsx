@@ -84,7 +84,7 @@ class StoreList extends Component {
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">
                 {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {storePromoTags && storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
+                {storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
                 <Image
                   className="store-card-list__image card__image"
                   src={avatar}
