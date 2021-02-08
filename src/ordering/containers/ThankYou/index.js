@@ -183,17 +183,22 @@ export class ThankYou extends PureComponent {
         if (Utils.isAndroidWebview() && lat && lng) {
           const res = window.beepAppVersion;
           if (res > '1.0.1') {
-            window.androidInterface.updateHeaderOptionsAndShowMap(
-              JSON.stringify({
-                title,
-                rightButtons: [
-                  {
-                    text,
-                    callbackName: 'contactUs',
-                  },
-                ],
-              })
-            );
+            if (res >= '1.6.0') {
+              window.androidInterface.openMap();
+            } else {
+              window.androidInterface.updateHeaderOptionsAndShowMap(
+                JSON.stringify({
+                  title,
+                  rightButtons: [
+                    {
+                      text,
+                      callbackName: 'contactUs',
+                    },
+                  ],
+                })
+              );
+            }
+
             window.androidInterface.updateStorePosition(storeLat, storeLng);
             window.androidInterface.updateHomePosition(deliveryLat, deliveryLng);
             window.androidInterface.updateRiderPosition(lat, lng);
