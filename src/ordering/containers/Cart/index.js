@@ -384,12 +384,14 @@ class Cart extends Component {
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
     // const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
     const buttonText = !isInvalidTotal ? (
-      t('PayNow')
+      <span key="pay-now">{t('PayNow')}</span>
     ) : (
-      <Trans i18nKey="MinimumConsumption">
-        <span className="text-weight-bolder">Min</span>
-        <CurrencyNumber className="text-weight-bolder" money={minTotal} />
-      </Trans>
+      <span key="min-total">
+        <Trans i18nKey="MinimumConsumption">
+          <span className="text-weight-bolder">Min</span>
+          <CurrencyNumber className="text-weight-bolder" money={minTotal} />
+        </Trans>
+      </span>
     );
 
     if (!(cartSummary && items)) {

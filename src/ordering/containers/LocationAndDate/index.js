@@ -491,8 +491,8 @@ class LocationAndDate extends Component {
     return (
       <div className="padding-small">
         <label className="location-date__label padding-left-right-small margin-top-bottom-small text-size-big text-weight-bolder">
-          {this.isDelivery && t('DeliverOn')}
-          {this.isPickup && t('PickUpOn')}
+          {this.isDelivery && <span key="deliver-on">{t('DeliverOn')}</span>}
+          {this.isPickup && <span key="pickup-on">{t('PickUpOn')}</span>}
         </label>
         <ul className="location-date__date flex flex-middle flex-space-between">
           {orderDateList.map(orderDate => this.renderDeliveryDateItem(orderDate))}
