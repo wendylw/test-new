@@ -338,6 +338,11 @@ const CONSUMERFLOW_STATUS = {
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const PROMOTION_ERROR_CODES = {
+  /* temp promotion error code */
+  41003: {
+    desc: '41003UniversalPromotionError',
+  },
+  /* end of temp promotion error code */
   54406: {
     desc: '54406FreePromotionNotMatchCondition',
   },
@@ -486,6 +491,8 @@ const ADYEN_PAYMENT_TYPE = {
   PAY_WITH_SAVE_CARD: '3',
 };
 
+const TIME_SLOT_NOW = 'now';
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -525,4 +532,5 @@ export default {
   RESEND_OTP_TIME,
   SH_LOGISTICS_VALID_TIME,
   ADYEN_PAYMENT_TYPE,
+  TIME_SLOT_NOW,
 };

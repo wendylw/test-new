@@ -30,6 +30,56 @@
     user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
   -->
     <script id="manifest-placeholder"></script>
+    <script>
+    (function () {
+      if (!Array.isArray) {
+        Array.isArray = function(arg) {
+          return Object.prototype.toString.call(arg) === '[object Array]';
+        };
+      }
+      if (Promise && !Promise.all) {
+        Promise.all = function (arr) {
+          return new Promise(function (resolve, reject) {
+            if (!Array.isArray(arr)) {
+              return reject(new TypeError("Promise.all accepts an array"));
+            }
+
+            var args = Array.prototype.slice.call(arr);
+            if (args.length === 0) return resolve([]);
+            var remaining = args.length;
+
+            function res(i, val) {
+              try {
+                if (val && (typeof val === "object" || typeof val === "function")) {
+                  var then = val.then;
+                  if (typeof then === "function") {
+                    then.call(
+                      val,
+                      function (val) {
+                        res(i, val);
+                      },
+                      reject
+                    );
+                    return;
+                  }
+                }
+                args[i] = val;
+                if (--remaining === 0) {
+                  resolve(args);
+                }
+              } catch (ex) {
+                reject(ex);
+              }
+            }
+
+            for (var i = 0; i < args.length; i++) {
+              res(i, args[i]);
+            }
+          });
+        };
+      }
+    })();
+    </script>
     <!--
     Notice the use of %PUBLIC_URL% in the tags above.
     It will be replaced with the URL of the `public` folder during the build.

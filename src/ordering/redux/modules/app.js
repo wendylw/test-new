@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
+import _uniq from 'lodash/uniq';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
@@ -15,6 +16,7 @@ import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -561,6 +563,22 @@ export const getBusinessInfo = state => {
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
 });
+
+export const getBusinessDeliveryTypes = createSelector(getCoreStoreList, stores => {
+  const deliveryTypes = stores.reduce((types, store) => {
+    return types.concat(store.fulfillmentOptions);
+  }, []);
+
+  return _uniq(deliveryTypes);
+});
+
+export const getStoreId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'storeId', null));
+
+export const getStore = state => {
+  const storeId = getStoreId(state);
+
+  return getStoreById(state, storeId);
+};
 
 export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
   return _get(onlineStoreInfo, 'currency', 'MYR');

@@ -219,6 +219,7 @@ const reducer = (state = initialState, action) => {
           success: false,
           code: action.code,
           extraInfo: action.extraInfo,
+          errorMessage: action.message,
         },
         inProcess: false,
       };

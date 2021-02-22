@@ -30,10 +30,10 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { getBusinessDateTime, checkStoreIsOpened } from '../../../utils/order-utils';
-import { computeStraightDistance } from '../../../utils/geoUtils';
+import { findNearestAvailableStore } from '../../../utils/store-utils';
 import qs from 'qs';
 import config from '../../../config';
+import { getBusinessDeliveryRadius } from '../../redux/modules/app';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 class App extends Component {
@@ -110,71 +110,69 @@ class App extends Component {
     }
 
     if (type.toLowerCase() === DELIVERY_METHOD.DELIVERY) {
-      this.checkDeliveryAddress(type);
+      this.checkDeliveryAddress();
     } else if (type.toLowerCase() === DELIVERY_METHOD.PICKUP) {
       let stores = this.props.stores;
       if (stores.length) {
         if (stores.length === 1) {
           await this.props.storesActions.getStoreHashData(stores[0].id);
-          window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}?h=${this.props.storeHash}&type=${type}`;
+          this.gotoOrderingHome(type, decodeURIComponent(this.props.storeHash));
         } else {
           window.location.href = `${window.location.origin}${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_STORE_LIST}?type=${type}`;
         }
       }
     } else {
-      this.checkDeliveryAddress(DELIVERY_METHOD.DELIVERY);
+      this.checkDeliveryAddress();
     }
   };
 
-  getNearlyStore = async (stores, type, deliveryAddress) => {
-    const { businessUTCOffset } = this.props;
-    const currentTime = getBusinessDateTime(businessUTCOffset);
+  checkDeliveryAddress = async () => {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const type = DELIVERY_METHOD.DELIVERY;
 
-    stores.forEach(item => {
-      if (item.location) {
-        item.distance = computeStraightDistance(deliveryAddress.coords, {
-          lat: item.location.latitude,
-          lng: item.location.longitude,
-        });
-      }
+    if (!deliveryAddress.coords) {
+      this.gotoOrderingHome(type);
+      return;
+    }
+
+    await this.props.storesActions.loadCoreBusiness();
+
+    const { businessUTCOffset, businessDeliveryRadius, stores } = this.props;
+
+    const { store, distance } = findNearestAvailableStore(stores, {
+      coords: deliveryAddress.coords,
+      currentDate: new Date(),
+      utcOffset: businessUTCOffset,
     });
-    stores = stores.filter(
-      item =>
-        checkStoreIsOpened(currentTime, item) &&
-        item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(type) !== -1
+
+    if (!store) {
+      this.gotoOrderingHome(type);
+      return;
+    }
+
+    if (distance / 1000 >= businessDeliveryRadius) {
+      Utils.setSessionVariable('outRange', businessDeliveryRadius);
+      this.gotoOrderingHome(type);
+      return;
+    }
+
+    await this.props.storesActions.getStoreHashData(store.id);
+
+    this.gotoOrderingHome(type, decodeURIComponent(this.props.storeHash));
+  };
+
+  gotoOrderingHome(type, h) {
+    const queryString = qs.stringify(
+      {
+        type,
+        h,
+      },
+      {
+        addQueryPrefix: true,
+      }
     );
-    let nearly;
-    stores.forEach(item => {
-      if (!nearly) {
-        nearly = item;
-      } else {
-        item.distance < nearly.distance && (nearly = item);
-      }
-    });
-    let res = await this.props.storesActions.loadCoreBusiness(nearly.id);
-    const deliveryRadius = res.responseGql.data.business.qrOrderingSettings.deliveryRadius;
-
-    if (nearly.distance / 1000 < deliveryRadius) {
-      return nearly;
-    } else {
-      Utils.setSessionVariable('outRange', deliveryRadius);
-      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?type=${type}`;
-    }
-  };
-
-  checkDeliveryAddress = async type => {
-    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
-    if (deliveryAddress) {
-      deliveryAddress = JSON.parse(deliveryAddress);
-      let stores = this.props.stores;
-      const nearly = await this.getNearlyStore(stores, type, deliveryAddress);
-
-      await this.props.storesActions.getStoreHashData(nearly.id);
-      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?h=${this.props.storeHash}&type=${type}`;
-    } else {
-      window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}?type=${type}`;
-    }
-  };
+    window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}${queryString}`;
+  }
 
   componentDidMount() {
     const { appActions, currentStoreId } = this.props;
@@ -282,6 +280,7 @@ export default connect(
     storeHash: getStoreHashCode(state),
     deliveryRadius: getDeliveryRadius(state),
     businessUTCOffset: getBusinessUTCOffset(state),
+    businessDeliveryRadius: getBusinessDeliveryRadius(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),

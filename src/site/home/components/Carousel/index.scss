@@ -1,17 +1,21 @@
 @import "../../../Variables";
 
 .carousel {
+  &__wrapper .swiper-wrapper {
+    margin-left: 1.4vw;
+    margin-right: 1.4vw;
+  }
+
   &__see-all {
     color: $theme-color;
   }
 
   &__item {
     width: 48vw;
-    height: 56vw;
-    margin-left: 12px;
     list-style-type: none;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
   }
 
   &__image-container {
@@ -19,13 +23,38 @@
     height: 32vw;
     overflow: hidden;
   }
+
+  &__item-title {
+    max-height: 1.5999rem;
+    width: 100%;
+    -webkit-line-clamp: 1;
+  }
+
+  &__item-info {
+    height: 44px;
+  }
+
+  &__item-footer {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    height: 22px;
+  }
+
+  &__item-rating-text {
+    margin-left: 2px;
+    margin-right: 2px;
+  }
 }
 
 @media (min-width: 770px) {
   .carousel {
+    &__wrapper .swiper-wrapper {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+
     &__item {
       width: 170px;
-      height: 206px;
     }
 
     &__image-container {
@@ -41,11 +70,6 @@
 }
 
 .carousel-list {
-  &__summary {
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-
   &__loader {
     margin: 4vh auto;
   }
@@ -83,20 +107,5 @@
   &__image {
     width: 100%;
     height: 100%;
-  }
-
-  &__title {
-    margin: 4px;
-  }
-
-  &__title {
-    max-height: 24px;
-    max-width: 100%;
-    -webkit-line-clamp: 1;
-  }
-
-  &__tags-text {
-    max-width: 90%;
-    color: $gray-6;
   }
 }

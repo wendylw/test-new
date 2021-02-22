@@ -581,10 +581,10 @@ class ProductDetail extends Component {
             }}
           >
             {increasingProductOnCat ? (
-              t('Processing')
+              <span key="Processing">{t('Processing')}</span>
             ) : (
               <React.Fragment>
-                {t('AddCart')} -
+                <span key="AddCart">{t('AddCart')} -</span>
                 <CurrencyNumber
                   className="padding-small text-weight-bolder flex__shrink-fixed"
                   money={Number(this.addCartDisplayPrice()) || 0}

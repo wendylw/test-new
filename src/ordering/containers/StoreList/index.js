@@ -16,7 +16,7 @@ import Tag from '../../../components/Tag';
 import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
-import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/order-utils';
+import { checkStoreIsOpened } from '../../../utils/store-utils';
 
 const { ADDRESS_RANGE } = Constants;
 const StoreListItem = props => (
@@ -106,10 +106,10 @@ class StoreList extends Component {
         item.fulfillmentOptions.map(citem => citem.toLowerCase()).indexOf(this.state.search.type.toLowerCase()) !== -1
     );
 
-    const currentTime = getBusinessDateTime(businessUTCOffset);
+    const currentTime = new Date();
 
     stores.forEach(store => {
-      store.isClose = !checkStoreIsOpened(currentTime, store);
+      store.isClose = !checkStoreIsOpened(store, currentTime, businessUTCOffset);
     });
 
     this.setState({
@@ -130,7 +130,7 @@ class StoreList extends Component {
         const { from } = state || {};
         let search = history.location.search;
 
-        if (this.state.search.callbackUrl) {
+        if (this.state.search.callbackUrl || from) {
           search = search.replace(/&?storeid=[^&]*/, '');
 
           this.props.history.replace({

@@ -12,11 +12,11 @@ import LiveChat from '../../../components/LiveChat';
 import LiveChatNative from '../../../components/LiveChatNative';
 import config from '../../../config';
 import beepAppDownloadBanner from '../../../images/beep-app-download.png';
-import logisticsGoget from '../../../images/beep-logistics-goget.png';
-import logisticsGrab from '../../../images/beep-logistics-grab.png';
-import logisticsLalamove from '../../../images/beep-logistics-lalamove.png';
-import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.png';
-import beepLogo from '../../../images/beep-logo.svg';
+import logisticsGoget from '../../../images/beep-logistics-goget.jpg';
+import logisticsGrab from '../../../images/beep-logistics-grab.jpg';
+import logisticsLalamove from '../../../images/beep-logistics-lalamove.jpg';
+import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.jpg';
+import logisticBeepOnFleet from '../../../images/beep-logistics-on-fleet.jpg';
 import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
 import beepSuccessImage from '../../../images/beep-success.png';
 import IconCelebration from '../../../images/icon-celebration.svg';
@@ -33,7 +33,7 @@ import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKIN
 import Utils from '../../../utils/utils';
 import { gotoHome } from '../../../utils/webview-utils';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { getOnlineStoreInfo, getUser } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getUser, getBusinessUTCOffset } from '../../redux/modules/app';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import {
   actions as thankYouActionCreators,
@@ -49,6 +49,7 @@ import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import * as CleverTap from '../../../utils/clevertap';
 import './OrderingThanks.scss';
+import * as storeUtils from '../../../utils/store-utils';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -850,8 +851,10 @@ export class ThankYou extends PureComponent {
         return logisticsLalamove;
       case 'mrspeedy':
         return logisticsMrspeedy;
+      case 'onfleet':
+        return logisticBeepOnFleet;
       default:
-        return beepLogo;
+        return logisticBeepOnFleet;
     }
   };
 
@@ -922,7 +925,11 @@ export class ThankYou extends PureComponent {
             </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
               <p className="line-height-normal text-weight-bolder">
-                {useStorehubLogistics ? courier : t('DeliveryBy', { name: storeName })}
+                {useStorehubLogistics
+                  ? courier === 'onfleet'
+                    ? t('BeepFleet')
+                    : courier
+                  : t('DeliveryBy', { name: storeName })}
               </p>
               {
                 <span className="text-gray line-height-normal">
@@ -1099,7 +1106,7 @@ export class ThankYou extends PureComponent {
     const isPickUpType = Utils.isPickUpType();
     const isDeliveryType = Utils.isDeliveryType();
     const isDineInType = Utils.isDineInType();
-    const { t, order, onlineStoreInfo = {} } = this.props;
+    const { t, order, onlineStoreInfo = {}, businessUTCOffset } = this.props;
     const { isPreOrder } = order || {};
 
     if (!order) return;
@@ -1110,10 +1117,9 @@ export class ThankYou extends PureComponent {
     const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const pickupTime = formatPickupTime({
-      dateList: isPreOrder
-        ? [new Date(expectDeliveryDateFrom)]
-        : [new Date(new Date(createdTime).getTime() + 1000 * 60 * 30)],
+      date: isPreOrder ? new Date(expectDeliveryDateFrom) : new Date(new Date(createdTime).getTime() + 1000 * 60 * 30),
       locale: onlineStoreInfo.country,
+      businessUTCOffset,
     });
 
     return (
@@ -1161,7 +1167,7 @@ export class ThankYou extends PureComponent {
   };
 
   renderPreOrderMessage = () => {
-    const { t, order } = this.props;
+    const { t, order, businessUTCOffset } = this.props;
 
     const { expectDeliveryDateFrom, expectDeliveryDateTo } = order;
     const deliveryInformation = this.getDeliveryInformation();
@@ -1171,6 +1177,8 @@ export class ThankYou extends PureComponent {
     }
 
     const { address } = deliveryInformation.address;
+    const expectFrom = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateFrom));
+    const expectTo = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateTo));
 
     return (
       <div className="padding-small">
@@ -1179,8 +1187,8 @@ export class ThankYou extends PureComponent {
         </h4>
         <p className="padding-top-bottom-smaller padding-left-right-small text-line-height-base text-opacity">
           {t('PreOrderDeliveryTimeDetails', {
-            day: toDayDateMonth(new Date(expectDeliveryDateFrom)),
-            dayAndTime: toNumericTimeRange(new Date(expectDeliveryDateFrom), new Date(expectDeliveryDateTo)),
+            day: expectFrom.format('dddd, MMMM DD'),
+            dayAndTime: `${expectFrom.format('hh:mm A')} - ${expectTo.format('hh:mm A')}`,
             deliveryTo: address,
           })}
         </p>
@@ -1453,6 +1461,7 @@ export default compose(
       receiptNumber: getReceiptNumber(state),
       updatedStatus: getLoadOrderStatus(state),
       riderLocations: getRiderLocations(state),
+      businessUTCOffset: getBusinessUTCOffset(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

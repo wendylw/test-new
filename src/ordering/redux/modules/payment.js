@@ -7,7 +7,14 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
-import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions, getMerchantCountry } from './app';
+import {
+  getBusiness,
+  getOnlineStoreInfo,
+  getRequestInfo,
+  actions as appActions,
+  getMerchantCountry,
+  getBusinessUTCOffset,
+} from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -18,6 +25,8 @@ import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOpt
 import { getPaymentList, getUnavailablePaymentList } from '../../containers/Payment/utils';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils';
+import * as storeUtils from '../../../utils/store-utils';
+import * as timeLib from '../../../utils/time-lib';
 
 const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES } = Constants;
 
@@ -97,21 +106,16 @@ export const actions = {
     }
 
     const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
-      const fromHour = hour1.split(':')[0];
-      const fromMinute = hour1.split(':')[1];
-      const d1 = new Date(dateValue);
-      let d2, toHour, toMinute;
+      const businessUTCOffset = getBusinessUTCOffset(getState());
 
-      if (hour2) {
-        d2 = new Date(dateValue);
-        toHour = hour2.split(':')[0];
-        toMinute = hour2.split(':')[1];
-        d2.setHours(Number(toHour), Number(toMinute), 0, 0);
-      }
-      d1.setHours(Number(fromHour), Number(fromMinute), 0, 0);
+      const businessDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(dateValue));
+      const fromDate = timeLib.setDateTime(hour1, businessDayjs);
+      const toDate = hour2 ? timeLib.setDateTime(hour2, businessDayjs) : null;
+
       return {
-        expectDeliveryDateFrom: d1.toISOString(),
-        expectDeliveryDateTo: d2 && d2.toISOString(),
+        // format to ISO8601, e.g. '2021-01-21T10:00:00+08:00'
+        expectDeliveryDateFrom: fromDate.format(),
+        expectDeliveryDateTo: toDate && toDate.format(),
       };
     };
 

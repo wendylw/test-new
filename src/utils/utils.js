@@ -419,7 +419,9 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
 
   const { phone } = (stores && stores[0]) || {};
   const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-  const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+  const { address: deliveryToAddress, addressName: savedAddressName } = JSON.parse(
+    Utils.getSessionVariable('deliveryAddress') || '{}'
+  );
 
   return {
     deliveryFee,
@@ -427,6 +429,7 @@ Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
     minOrder,
     storeAddress,
     deliveryToAddress,
+    savedAddressName,
     telephone: phone,
     validDays,
     validTimeFrom,
@@ -521,6 +524,17 @@ Utils.getDeliveryCoords = () => {
     console.error('Cannot get delivery coordinate', e);
     captureException(e);
     return undefined;
+  }
+};
+
+Utils.getDeliveryAddress = () => {
+  try {
+    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    return deliveryAddress;
+  } catch (e) {
+    console.error('Cannot get delivery address', e);
+    captureException(e);
+    return {};
   }
 };
 
@@ -692,7 +706,7 @@ Utils.attemptLoad = (fn, retriesLeft = 5, interval = 1500) => {
           // the promise will throw correct error for the first time, but will resolve an empty module next time, which makes
           // the entire module seems to be resolved, however it's actually not working. To avoid this kind of thing, we will
           // only deal with ChunkLoadError, which means the module cannot be loaded (mostly because of network issues).
-          if (error.name !== 'ChunkLoadError' || retriesLeft <= 1) {
+          if ((error.name !== 'ChunkLoadError' && error.code !== 'CSS_CHUNK_LOAD_FAILED') || retriesLeft <= 1) {
             reject(error);
           } else {
             Utils.attemptLoad(fn, retriesLeft - 1, interval).then(resolve, reject);
