@@ -80,7 +80,7 @@ class OnlineBanking extends Component {
       paymentName: getPaymentName(merchantCountry, currentPayment),
       agentCode,
       isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      source: Utils.getOrderSource(),
     };
   };
 

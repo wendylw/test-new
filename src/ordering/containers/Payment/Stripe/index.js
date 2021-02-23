@@ -412,7 +412,7 @@ class Stripe extends Component {
       webhookURL,
       paymentName: 'Stripe',
       isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      source: Utils.getOrderSource(),
       paymentMethodId: '',
     };
   };
