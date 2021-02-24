@@ -1,5 +1,4 @@
 import React from 'react';
-import withDataAttributes from './withDataAttributes';
 import './Header.scss';
 import WebHeader from './WebHeader';
 import NativeHeader from './NativeHeader';
@@ -12,4 +11,4 @@ function HybridHeader(props) {
   }
 }
 
-export default withDataAttributes(HybridHeader);
+export default HybridHeader;

@@ -1,21 +1,11 @@
 import dsBridge from 'dsbridge';
 import Utils from './utils';
+import _find from 'lodash/find';
+import _get from 'lodash/get';
+import _isFunction from 'lodash/isFunction';
 
 // https://storehub.atlassian.net/wiki/spaces/TS/pages/1049886771/Specification+for+dsBridge+usage
 export const updateNativeHeader = ({ left, center, right } = {}) => {
-  const handlers = {};
-
-  [left, center, right].forEach(item => {
-    if (item && item.eventHandlers) {
-      item.events = Object.keys(item.eventHandlers);
-      for (let event in item.eventHandlers) {
-        handlers[item.id + event] = item.eventHandlers[event];
-      }
-
-      delete item.eventHandlers;
-    }
-  });
-
   dsBridge.call('native_layout.nativeJSConfigLayout', [
     {
       area: 'header',
@@ -26,25 +16,25 @@ export const updateNativeHeader = ({ left, center, right } = {}) => {
       },
     },
   ]);
+};
 
+export const registerNativeHeaderEvents = events => {
   dsBridge.register('native_layout', {
     tag: 'native_layout',
     jsNativeEventDispatch: function(jsonEncodeParams) {
       const params = JSON.parse(jsonEncodeParams);
+      if (!params || params.area !== 'header') {
+        return;
+      }
 
-      if (params && params.area === 'header') {
-        const handler = handlers[params.id + params.event];
+      const event = _find(events, { type: params.event, targetId: params.id });
+      const handler = _get(event, 'handler', null);
 
-        if (typeof handler === 'function') {
-          handler.call(null, params.data);
-        }
+      if (_isFunction(handler)) {
+        handler.call(null, params.data);
       }
     },
   });
-};
-
-export const registerNativeHeaderEvent = (eventName, func) => {
-  dsBridge.register(eventName, func);
 };
 
 export const startLiveChat = ({ orderId, name, phone, email, storeName }) => {
