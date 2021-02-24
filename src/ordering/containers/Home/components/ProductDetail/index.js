@@ -715,7 +715,7 @@ class ProductDetail extends Component {
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
-    const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
+    const { t, onlineStoreInfo, product, viewAside, show, onToggle, hideCloseButton } = this.props;
     const { storeName } = onlineStoreInfo || {};
     const { id, _needMore, images, title, description } = product || {};
     const { resizeImage } = this.state;
@@ -740,11 +740,13 @@ class ProductDetail extends Component {
           }}
         >
           <div className="product-detail__wrapper">
-            <IconClose
-              className="product-detail__icon-close icon icon__normal margin-normal"
-              onClick={() => onToggle()}
-              data-heap-name="ordering.home.product-detail.back-btn"
-            />
+            {!hideCloseButton && (
+              <IconClose
+                className="product-detail__icon-close icon icon__normal margin-normal"
+                onClick={() => onToggle()}
+                data-heap-name="ordering.home.product-detail.back-btn"
+              />
+            )}
 
             <div className="product-detail__image-container flex__shrink-fixed">
               {images && images.length > 1 ? (
@@ -828,12 +830,14 @@ ProductDetail.propTypes = {
   viewAside: PropTypes.string,
   footerEl: PropTypes.any,
   onToggle: PropTypes.func,
+  hideCloseButton: PropTypes.bool,
 };
 
 ProductDetail.defaultProps = {
   show: false,
   viewAside: '',
   onToggle: () => {},
+  hideCloseButton: false,
 };
 
 export default compose(

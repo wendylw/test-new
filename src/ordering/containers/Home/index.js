@@ -792,6 +792,7 @@ export class Home extends Component {
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
     const { storePromoTags } = businessInfo || {};
+    const isWebview = Utils.isWebview();
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -799,11 +800,16 @@ export class Home extends Component {
 
     return (
       <section className="ordering-home flex flex-column">
-        {Utils.isWebview() && (
+        {isWebview && (
           <NativeHeader
             isPage={true}
             title={window.document.title}
             navFunc={() => {
+              if (viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL) {
+                this.handleToggleAside();
+                return;
+              }
+
               gotoHome();
             }}
           />
@@ -868,6 +874,7 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
+          hideCloseButton={isWebview}
         />
         {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
           <StoreInfoAside
