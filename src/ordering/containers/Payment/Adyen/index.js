@@ -133,7 +133,7 @@ class AdyenPage extends Component {
       webhookURL,
       userId: user.consumerId,
       isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      source: Utils.getOrderSource(),
       ...paymentMethod,
       type: saveCard
         ? Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVE_CARD

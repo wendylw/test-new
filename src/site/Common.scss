@@ -97,6 +97,10 @@ address {
   color: $status-green;
 }
 
+.text-primary {
+  color: $theme-color;
+}
+
 .text-size-reset {
   font-size: 0;
 }
@@ -891,7 +895,7 @@ img {
   }
 
   &__text {
-    margin: 0 5px;
+    margin: 0 2px;
   }
 }
 

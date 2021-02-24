@@ -102,7 +102,7 @@ class Payment extends Component {
       webhookURL: webhookURL,
       paymentName: getPaymentName(merchantCountry, currentPayment),
       isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      source: Utils.getOrderSource(),
     };
   };
 

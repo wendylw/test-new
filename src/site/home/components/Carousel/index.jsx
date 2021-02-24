@@ -3,9 +3,10 @@ import { withTranslation } from 'react-i18next';
 import SwiperCore, { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { withRouter } from 'react-router-dom';
+import _get from 'lodash/get';
 import Image from '../../../../components/Image';
 import MvpStorePlaceholderImage from '../../../../images/mvp-store-placeholder.jpg';
-import { IconLocalOffer, IconWallet, IconNext } from '../../../../components/Icons';
+import { IconLocalOffer, IconWallet, IconNext, IconStar } from '../../../../components/Icons';
 import 'swiper/swiper.scss';
 import './index.scss';
 import { submitStoreMenu } from '../../utils';
@@ -58,7 +59,7 @@ class Carousel extends Component {
   renderCarouselStores(stores, shippingType) {
     const { t } = this.props;
     return (
-      <Swiper className="margin-top-bottom-normal" slidesPerView={'auto'}>
+      <Swiper className="carousel__wrapper margin-top-bottom-normal" slidesPerView={'auto'}>
         {(stores || []).map(store => {
           const {
             name,
@@ -70,57 +71,75 @@ class Carousel extends Component {
             enableCashback,
             enablePreOrder,
             cashbackRate,
-            storePromoTags,
+            reviewInfo,
+            promoTag,
           } = store || {};
+
+          const rating = _get(reviewInfo, 'rating', '');
 
           const cashbackRatePercentage = (Number(cashbackRate) || 0) * 100;
 
           return (
             <SwiperSlide
               key={id}
-              className="carousel__item margin-top-bottom-smaller border-radius-large"
+              className="carousel__item margin-top-bottom-smaller margin-left-right-small border-radius-large flex flex-column flex-space-between"
               data-heap-name="site.home.carousel.store-item"
               data-heap-store-name={name}
               onClick={() => {
                 this.handleStoreClicked(store, shippingType);
               }}
             >
-              <div className="carousel__image-container">
-                {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
-                {storePromoTags[0] && this.renderPromotionTags(storePromoTags[0])}
-                <Image
-                  className="carousel-store__image card__image"
-                  src={avatar}
-                  scalingRatioIndex={1}
-                  placeholderImage={MvpStorePlaceholderImage}
-                  alt={name}
-                />
-              </div>
               <summary
-                className={`carousel-list__summary padding-left-right-small ${
+                className={`carousel__item-summary text-size-reset ${isOpen || enablePreOrder ? '' : 'text-opacity'}`}
+              >
+                <div className="carousel__image-container">
+                  {isOpen ? null : this.renderClosedStoreTag(enablePreOrder)}
+                  {promoTag && this.renderPromotionTags(promoTag)}
+                  <Image
+                    className="carousel-store__image card__image"
+                    src={avatar}
+                    scalingRatioIndex={1}
+                    placeholderImage={MvpStorePlaceholderImage}
+                    alt={name}
+                  />
+                </div>
+                <h3 className="carousel__item-title padding-left-right-small margin-top-bottom-smaller text-size-big text-weight-bolder text-line-height-base text-omit__single-line">
+                  {name}
+                </h3>
+                <div className="carousel__item-info">
+                  {enableCashback && cashbackRate ? (
+                    <div className="flex flex-middle padding-left-right-smaller">
+                      <IconWallet className="icon icon__smaller" />
+                      <span className="text-size-small text-line-height-base text-capitalize">
+                        {t('EnabledCashbackText', {
+                          cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
+                        })}
+                      </span>
+                    </div>
+                  ) : null}
+
+                  {enableFreeShipping && deliveryFee ? (
+                    <div className="flex flex-middle padding-left-right-smaller">
+                      <IconLocalOffer className="icon icon__smaller" />
+                      <span className="text-size-small text-line-height-base">{t('MvpFreeDeliveryPrompt')}</span>
+                    </div>
+                  ) : null}
+                </div>
+              </summary>
+              <div
+                className={`carousel__item-footer padding-left-right-small ${
                   isOpen || enablePreOrder ? '' : 'text-opacity'
                 }`}
               >
-                <h3 className="carousel-list__title text-size-bigger text-weight-bolder text-omit__single-line">
-                  {name}
-                </h3>
-                {enableCashback && cashbackRate ? (
-                  <div className="flex flex-middle">
-                    <IconWallet className="icon icon__primary icon__smaller text-middle" />
-                    <span className="text-size-smaller text-middle text-capitalize">
-                      {t('EnabledCashbackText', {
-                        cashbackRate: Math.round(cashbackRatePercentage * 100) / 100,
-                      })}
+                {rating && (
+                  <div className="flex flex-middle flex-end">
+                    <IconStar className="icon icon__primary icon__smaller" />
+                    <span className="carousel__item-rating-text text-primary text-size-small text-weight-bolder text-line-height-base">
+                      {rating}
                     </span>
                   </div>
-                ) : null}
-                {enableFreeShipping && deliveryFee ? (
-                  <div className="flex flex-middle">
-                    <IconLocalOffer className="icon icon__primary icon__smaller text-middle" />
-                    <span className="text-size-small text-middle">{t('MvpFreeDeliveryPrompt')}</span>
-                  </div>
-                ) : null}
-              </summary>
+                )}
+              </div>
             </SwiperSlide>
           );
         })}

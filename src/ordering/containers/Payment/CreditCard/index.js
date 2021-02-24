@@ -114,7 +114,7 @@ class CreditCard extends Component {
       expMonthCardInfo,
       maskedCardInfo,
       isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      source: Utils.getOrderSource(),
     };
   };
 

@@ -143,7 +143,7 @@ class CardCVV extends Component {
       type: Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVED_CARD,
       browserInfo,
       isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      source: Utils.getOrderSource(),
     };
   };
 
