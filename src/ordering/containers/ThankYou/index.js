@@ -271,7 +271,11 @@ export class ThankYou extends PureComponent {
     const itemsList =
       order.items?.map(item => {
         totalQuantity += item.quantity;
-        return `${item.title} | ${item.quantity} * ${onlineStoreInfo.currency} ${item.displayPrice}`;
+        return {
+          Name: item.title,
+          Quantity: item.quantity,
+          Price: item.displayPrice,
+        };
       }) || [];
 
     const orderSourceType = Utils.getOrderSource();
@@ -295,7 +299,7 @@ export class ThankYou extends PureComponent {
         'Payment Method': _get(order, 'paymentMethod[0]', ''),
         'Store Name': _get(order, 'storeInfo.name', ''),
         'Charged ID': order.orderId,
-        'Item List': `\r\n${itemsList.join('\r\n')}\r\n`,
+        Items: itemsList,
         'Order Source': orderSource,
         'Pre-order Period': preOrderPeriod,
       });
