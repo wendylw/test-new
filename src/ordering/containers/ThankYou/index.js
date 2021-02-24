@@ -295,7 +295,7 @@ export class ThankYou extends PureComponent {
         'Payment Method': _get(order, 'paymentMethod[0]', ''),
         'Store Name': _get(order, 'storeInfo.name', ''),
         'Charged ID': order.orderId,
-        Items: `\r\n${itemsList.join('\r\n')}\r\n`,
+        'Item List': `\r\n${itemsList.join('\r\n')}\r\n`,
         'Order Source': orderSource,
         'Pre-order Period': preOrderPeriod,
       });
