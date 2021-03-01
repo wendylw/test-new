@@ -54,6 +54,10 @@ class NativeHeader extends Component {
     this.registerEvents();
   }
 
+  componentWillUnmount() {
+    dsBridgeUtils.updateNativeHeaderToDefault();
+  }
+
   registerEvents() {
     dsBridgeUtils.registerNativeHeaderEvents([
       {

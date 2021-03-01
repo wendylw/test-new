@@ -18,6 +18,15 @@ export const updateNativeHeader = ({ left, center, right } = {}) => {
   ]);
 };
 
+export const updateNativeHeaderToDefault = () => {
+  dsBridge.call('native_layout.nativeJSConfigLayout', [
+    {
+      area: 'header',
+      data: null,
+    },
+  ]);
+};
+
 export const registerNativeHeaderEvents = events => {
   dsBridge.register('native_layout', {
     tag: 'native_layout',
