@@ -1,14 +1,16 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as dsBridgeUtils from '../utils/dsBridge-utils';
+import Utils from '../utils/utils';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 
-window.addEventListener('beforeunload', () => {
-  console.log('window.beforeunload');
-  dsBridgeUtils.updateNativeHeaderToDefault();
-});
+if (Utils.isWebview()) {
+  window.addEventListener('beforeunload', () => {
+    dsBridgeUtils.updateNativeHeaderToDefault();
+  });
+}
 
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;
