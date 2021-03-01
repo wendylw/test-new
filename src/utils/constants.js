@@ -491,6 +491,11 @@ const ADYEN_PAYMENT_TYPE = {
   PAY_WITH_SAVE_CARD: '3',
 };
 
+const WEB_VIEW_SOURCE = {
+  IOS: 'iOS',
+  Android: 'Android',
+};
+
 const TIME_SLOT_NOW = 'now';
 
 export default {
@@ -533,4 +538,5 @@ export default {
   SH_LOGISTICS_VALID_TIME,
   ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
+  WEB_VIEW_SOURCE,
 };

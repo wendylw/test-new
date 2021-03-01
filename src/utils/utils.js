@@ -8,7 +8,7 @@ import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 dayjs.extend(utc);
 
-const { SH_LOGISTICS_VALID_TIME } = Constants;
+const { SH_LOGISTICS_VALID_TIME, WEB_VIEW_SOURCE } = Constants;
 const Utils = {};
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
@@ -30,13 +30,11 @@ Utils.isWebview = function isWebview() {
 };
 
 Utils.isIOSWebview = function isIOSWebview() {
-  return Boolean(
-    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
-  );
+  return window.webViewSource === WEB_VIEW_SOURCE.IOS;
 };
 
 Utils.isAndroidWebview = function isAndroidWebview() {
-  return Boolean(window.androidInterface);
+  return Boolean(window.androidInterface) || window.webViewSource === WEB_VIEW_SOURCE.Android;
 };
 
 Utils.getQueryVariable = variable => {
