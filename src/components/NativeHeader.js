@@ -52,17 +52,24 @@ function getNativeHeaderParams(props) {
   return headerParams;
 }
 
+let updateNativeHeaderToDefaultTimer = null;
+
 class NativeHeader extends Component {
   prevNativeHeaderParams = null;
   nextNativeHeaderParams = getNativeHeaderParams(this.props);
 
   componentDidMount() {
+    clearTimeout(updateNativeHeaderToDefaultTimer);
+
     this.updateNativeHeader();
     this.registerEvents();
   }
 
   componentWillUnmount() {
-    dsBridgeUtils.updateNativeHeaderToDefault();
+    // after 1.5s will show the default native header
+    updateNativeHeaderToDefaultTimer = setTimeout(() => {
+      dsBridgeUtils.updateNativeHeaderToDefault();
+    }, 1500);
   }
 
   registerEvents() {
