@@ -7,7 +7,7 @@ import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 
 if (Utils.isWebview()) {
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener('unload', () => {
     dsBridgeUtils.updateNativeHeaderToDefault();
   });
 }
