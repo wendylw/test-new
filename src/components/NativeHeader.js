@@ -66,6 +66,8 @@ class NativeHeader extends Component {
   }
 
   componentWillUnmount() {
+    clearTimeout(updateNativeHeaderToDefaultTimer);
+
     // after 1.5s will show the default native header
     updateNativeHeaderToDefaultTimer = setTimeout(() => {
       dsBridgeUtils.updateNativeHeaderToDefault();
