@@ -5,6 +5,11 @@ import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 
+window.addEventListener('beforeunload', () => {
+  console.log('window.beforeunload');
+  dsBridgeUtils.updateNativeHeaderToDefault();
+});
+
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;
   const headerParams = {
