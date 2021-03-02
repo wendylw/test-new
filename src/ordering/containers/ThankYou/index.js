@@ -254,6 +254,7 @@ export class ThankYou extends PureComponent {
     }
   };
 
+  // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
   recordChargedEvent = () => {
     const { order, onlineStoreInfo } = this.props;
 
