@@ -30,7 +30,7 @@ import Constants from '../../../utils/constants';
 import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import { gotoHome } from '../../../utils/webview-utils';
+import DsbridgeContainer, { nativeMethods } from '../../../utils/dsbridge-methods';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { getOnlineStoreInfo, getUser, getBusinessUTCOffset } from '../../redux/modules/app';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
@@ -136,18 +136,8 @@ export class ThankYou extends PureComponent {
   }
 
   closeMap = () => {
-    const res = window.beepAppVersion;
-
     try {
-      if (Utils.isAndroidWebview()) {
-        window.androidInterface.closeMap();
-      }
-
-      if (Utils.isIOSWebview() && res > '1.0.1' && res !== '1.1.2') {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'closeMap',
-        });
-      }
+      DsbridgeContainer.callMethodFromNative(nativeMethods.closeMap);
     } catch (e) {}
     this.setState({
       isHideTopArea: false,
@@ -185,63 +175,11 @@ export class ThankYou extends PureComponent {
 
     if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
       try {
-        if (Utils.isAndroidWebview() && lat && lng) {
-          const res = window.beepAppVersion;
-          if (res > '1.0.1') {
-            window.androidInterface.updateHeaderOptionsAndShowMap(
-              JSON.stringify({
-                title,
-                rightButtons: [
-                  {
-                    text,
-                    callbackName: 'contactUs',
-                  },
-                ],
-              })
-            );
-            window.androidInterface.updateStorePosition(storeLat, storeLng);
-            window.androidInterface.updateHomePosition(deliveryLat, deliveryLng);
-            window.androidInterface.updateRiderPosition(lat, lng);
-            window.androidInterface.focusPositions(JSON.stringify(focusPositionList));
-            this.setState({
-              isHideTopArea: true,
-            });
-          }
-        }
-
-        if (Utils.isIOSWebview() && lat && lng) {
-          const res = window.beepAppVersion;
-          if (res > '1.0.1' && res !== '1.1.2') {
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateHeaderOptionsAndShowMap',
-              title,
-              rightButtons: [
-                {
-                  text,
-                  callbackName: 'contactUs',
-                },
-              ],
-            });
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateStorePosition',
-              lat: storeLat,
-              lng: storeLng,
-            });
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateHomePosition',
-              lat: deliveryLat,
-              lng: deliveryLng,
-            });
-            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'focusPositions',
-              positions: focusPositionList,
-            });
-            this.setState({
-              isHideTopArea: true,
-            });
-          }
-        }
+        DsbridgeContainer.callMethodFromNative(nativeMethods.updateHeaderOptionsAndShowMap(title, text));
+        DsbridgeContainer.callMethodFromNative(nativeMethods.updateStorePosition(storeLat, storeLng));
+        DsbridgeContainer.callMethodFromNative(nativeMethods.updateHomePosition(deliveryLat, deliveryLng));
+        DsbridgeContainer.callMethodFromNative(nativeMethods.updateRiderPosition(lat, lng));
+        DsbridgeContainer.callMethodFromNative(nativeMethods.focusPositions(focusPositionList));
       } catch (e) {
         this.setState({
           isHideTopArea: false,
@@ -1275,7 +1213,7 @@ export class ThankYou extends PureComponent {
               title={`#${orderId}`}
               navFunc={() => {
                 if (isWebview) {
-                  gotoHome();
+                  DsbridgeContainer.callMethodFromNative(nativeMethods.gotoHome);
                 } else {
                   // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
                   history.replace({

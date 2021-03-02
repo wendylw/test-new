@@ -21,17 +21,16 @@ Utils.getApiRequestShippingType = () => {
 };
 
 Utils.isWebview = function isWebview() {
-  return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
+  return window.webViewSource === 'iOS' || window.webViewSource === 'Android';
 };
 
+// still need to distinguish ios webview and android webview
 Utils.isIOSWebview = function isIOSWebview() {
-  return Boolean(
-    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
-  );
+  return window.webViewSource === 'iOS';
 };
 
 Utils.isAndroidWebview = function isAndroidWebview() {
-  return Boolean(window.androidInterface);
+  return window.webViewSource === 'Android';
 };
 
 Utils.getQueryVariable = variable => {
@@ -45,10 +44,6 @@ Utils.getQueryVariable = variable => {
   }
   return false;
 };
-
-// Utils.isWebview = function isWebview() {
-//   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
-// };
 
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;

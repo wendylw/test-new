@@ -20,12 +20,17 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import Utils from '../../../utils/utils';
-import { getAppLoginStatus, getAppToken } from '../utils';
+import { getAppToken, getAppLoginStatus } from '../../../utils/webview-utils';
+import DsbridgeContainer, { registeredMethods } from '../../../utils/dsbridge-methods';
 
 class App extends Component {
   constructor(props) {
     super(props);
-    window.sendToken = res => this.authTokens(res);
+    DsbridgeContainer.registerMethodToNative(
+      registeredMethods.onReceiveToken({
+        handler: async res => await this.authTokens(res),
+      })
+    );
   }
 
   authTokens = async res => {

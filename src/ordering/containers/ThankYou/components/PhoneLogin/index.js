@@ -18,7 +18,7 @@ import {
 } from '../../../../redux/modules/thankYou';
 
 import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
-import { getAppToken } from '../../../../../cashback/containers/utils';
+import { getAppToken } from '../../../../../utils/webview-utils';
 import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];

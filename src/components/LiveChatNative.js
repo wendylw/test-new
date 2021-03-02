@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Utils from '../utils/utils';
+import DsbridgeContainer, { nativeMethods } from '../utils/dsbridge-methods';
 import './LiveChat.scss';
 
 class LiveChatNative extends Component {
@@ -8,26 +8,7 @@ class LiveChatNative extends Component {
     const { orderId, name, phone, email, storeName } = this.props;
     const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
 
-    if (Utils.isAndroidWebview()) {
-      window.androidInterface.startChat(
-        JSON.stringify({
-          phoneNumber: phone,
-          name,
-          email,
-          message,
-        })
-      );
-    }
-
-    if (Utils.isIOSWebview()) {
-      window.webkit.messageHandlers.shareAction.postMessage({
-        functionName: 'startChat',
-        phoneNumber: phone,
-        name,
-        email,
-        message,
-      });
-    }
+    DsbridgeContainer.callMethodFromNative(nativeMethods.startChat(phone, name, email, message));
   };
 
   render() {

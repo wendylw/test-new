@@ -21,7 +21,7 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
-import WebViewUtils, { getAppToken } from '../../../utils/webview-utils';
+import DsbridgeContainer, { nativeMethods } from '../../../utils/dsbridge-methods';
 
 const { ROUTER_PATHS } = Constants;
 let savedAddressRes;
@@ -30,7 +30,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     if (Utils.isWebview()) {
-      savedAddressRes = WebViewUtils.getAddressFromNative() || '';
+      savedAddressRes = DsbridgeContainer.callMethodFromNative(nativeMethods.getAddress);
       this.handleNativeResponse(savedAddressRes);
     }
   }
