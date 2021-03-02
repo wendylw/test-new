@@ -76,10 +76,6 @@ const API_URLS = {
     url: '/api/login',
     method: 'post',
   },
-  PHONE_NUMBER_LOGIN: {
-    url: '/api/v2/login',
-    method: 'post',
-  },
   GET_TERMS_PRIVACY: {
     ur: '/api/privacy',
     method: 'get',

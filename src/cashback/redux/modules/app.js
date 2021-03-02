@@ -74,29 +74,6 @@ export const actions = {
     });
   },
 
-  phoneNumberLogin: ({ phone }) => (dispatch, getState) => {
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-
-    return dispatch({
-      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
-        phone,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-        shippingType: Utils.getApiRequestShippingType(),
-      }).then(resp => {
-        if (resp && resp.consumerId) {
-          window.heap?.identify(resp.consumerId);
-          window.heap?.addEventProperties({ LoggedIn: 'yes' });
-          const phone = Utils.getLocalStorageVariable('user.p');
-          if (phone) {
-            window.heap?.addUserProperties({ PhoneNumber: phone });
-          }
-        }
-        return resp;
-      }),
-    });
-  },
-
   resetOtpStatus: () => ({
     type: types.RESET_OTP_STATUS,
   }),
@@ -147,6 +124,10 @@ export const actions = {
   updateUser: (user = {}) => ({
     type: types.UPDATE_USER,
     user,
+  }),
+
+  updateOtpStatus: () => ({
+    type: types.UPDATE_OTP_STATUS,
   }),
 
   clearError: () => ({
@@ -242,6 +223,8 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
+    case types.UPDATE_OTP_STATUS:
+      return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
       return { ...state, isFetching: false, hasOtp: true };
     case types.CREATE_OTP_SUCCESS:

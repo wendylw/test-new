@@ -53,6 +53,9 @@ export const APP_TYPES = {
 
   // Update user
   UPDATE_USER: 'LOYALTY/APP/UPDATE_USER',
+
+  // UPDATE_OTP_STATUS
+  UPDATE_OTP_STATUS: 'LOYALTY/APP/UPDATE_OTP_STATUS',
 };
 
 export const HOME_TYPES = {
