@@ -117,41 +117,6 @@ export const actions = {
     });
   },
 
-  phoneNumberLogin: ({ phone }) => (dispatch, getState) => {
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-
-    dispatch({
-      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
-        phone,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-        shippingType: Utils.getApiRequestShippingType(),
-      }).then(resp => {
-        if (resp && resp.consumerId) {
-          window.heap?.identify(resp.consumerId);
-          window.heap?.addEventProperties({ LoggedIn: 'yes' });
-          const phone = Utils.getLocalStorageVariable('user.p');
-          if (phone) {
-            window.heap?.addUserProperties({ PhoneNumber: phone });
-          }
-          const userInfo = {
-            Name: `${resp.user?.firstName} ${resp.user?.lastName}`,
-            Phone: resp.user?.phone,
-            Email: resp.user?.email,
-            Identity: resp.consumerId,
-          };
-
-          if (resp.user?.birthday) {
-            userInfo.DOB = new Date(resp.user?.birthday);
-          }
-
-          CleverTap.onUserLogin(userInfo);
-        }
-        return resp;
-      }),
-    });
-  },
-
   resetOtpStatus: () => ({
     type: types.RESET_OTP_STATUS,
   }),
