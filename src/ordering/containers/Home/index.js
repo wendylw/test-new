@@ -142,10 +142,10 @@ export class Home extends Component {
 
     const pageRf = this.getPageRf();
 
-    // CleverTap.pushEvent('Menu Page - View page', { ...storeInfoForCleverTap });
+    // CleverTap.pushEvent('Menu Page - View page', storeInfoForCleverTap);
 
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
-      // CleverTap.pushEvent('Menu Page - Alcohol Counsent - Pop up', { ...storeInfoForCleverTap });
+      // CleverTap.pushEvent('Menu Page - Alcohol Counsent - Pop up', storeInfoForCleverTap);
 
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
@@ -520,7 +520,7 @@ export class Home extends Component {
     const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
 
     const fillInDeliverToAddress = () => {
-      // CleverTap.pushEvent('Menu Page - Click location & shipping details bar', { ...storeInfoForCleverTap });
+      // CleverTap.pushEvent('Menu Page - Click location & shipping details bar', storeInfoForCleverTap);
 
       const { search } = window.location;
       const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
@@ -723,7 +723,7 @@ export class Home extends Component {
         onClickHandler={
           isCanClickHandler
             ? asideName => {
-                // CleverTap.pushEvent('Menu Page - Click info button', { ...storeInfoForCleverTap });
+                // CleverTap.pushEvent('Menu Page - Click info button', storeInfoForCleverTap);
                 this.handleToggleAside(asideName);
               }
             : () => {}
@@ -746,9 +746,9 @@ export class Home extends Component {
     const { storeInfoForCleverTap } = this.props;
 
     // if (isAgeLegal) {
-    //   CleverTap.pushEvent('Menu Page - Alcohol Consent - Click yes', { ...storeInfoForCleverTap });
+    //   CleverTap.pushEvent('Menu Page - Alcohol Consent - Click yes', storeInfoForCleverTap);
     // } else {
-    //   CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', { ...storeInfoForCleverTap });
+    //   CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
     // }
     isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);

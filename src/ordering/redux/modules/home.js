@@ -3,7 +3,7 @@ import Url from '../../../utils/url';
 import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
-
+import * as StoreUtils from '../../../utils/store-utils';
 import { combineReducers } from 'redux';
 // import { computeDeliveryDistance } from '../../containers/Location/utils';
 import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
@@ -557,5 +557,5 @@ export const getStoreInfoForCleverTap = state => {
   const business = getBusiness(state);
   const allBusinessInfo = getAllBusinesses(state);
 
-  return Utils.getStoreInfoForCleverTap({ business, allBusinessInfo });
+  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo });
 };
