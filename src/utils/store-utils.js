@@ -2,6 +2,7 @@ import * as timeLib from './time-lib';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { computeStraightDistance } from './geoUtils';
+import Utils from './utils';
 import Constants from './constants';
 import _flow from 'lodash/flow';
 import _get from 'lodash/get';
