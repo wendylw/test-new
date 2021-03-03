@@ -1,5 +1,5 @@
+import Utils from './utils';
 import dsbridge from 'dsbridge';
-import _get from 'lodash/get';
 
 export const nativeMethods = {
   gotoHome: {
@@ -28,7 +28,7 @@ export const nativeMethods = {
         rightButtons: [
           {
             text,
-            callbackkName: 'contactUs',
+            callbackName: 'contactUs',
           },
         ],
       },
@@ -82,31 +82,61 @@ export const nativeMethods = {
   },
 };
 
-export const registeredMethods = {
-  onReceiveToken: event => {
-    const handler = _get(event, 'handler', null);
-    return {
-      name: 'onReceiveToken',
-      callback: handler,
-    };
-  },
+const dsRegReceiveTokenListener = ({ callback }) => {
+  dsbridge.registerAsyn('onReceiveToken', res => {
+    callback && typeof callback === 'function' && callback(res);
+  });
 };
 
-const DsbridgeContainer = {
-  callMethodFromNative: method => {
-    try {
-      const res = dsbridge.call(method.name, method.params);
-      return res;
-    } catch (error) {
-      console.log(error);
+const hasNativeSavedAddress = () => {
+  if (Utils.isWebview() && sessionStorage.getItem('addressIdFromNative')) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const getTokenFromNative = user => {
+  const { isExpired } = user || {};
+  if (isExpired) {
+    DsbridgeContainer.dsbridgeCall(nativeMethods.tokenExpired);
+  } else {
+    DsbridgeContainer.dsbridgeCall(nativeMethods.getToken);
+  }
+};
+
+const dsbridgeCall = method => {
+  const { name, params } = method || {};
+  if (dsbridge.hasNativeMethod(name, 'syn')) {
+    let result = dsbridge.call(name, params);
+    if (typeof result === 'undefined' || result === null) {
+      return;
     }
-  },
-
-  registerMethodToNative: ({ name, callback }) => {
-    dsbridge.registerAsyn(name, res => {
-      callback && typeof callback === 'function' && callback(res);
+    try {
+      return JSON.parse(result);
+    } catch (e) {
+      console.log(e);
+    }
+  } else if (dsbridge.hasNativeMethod(name, 'asyn')) {
+    var promise = new Promise(function(resolve, reject) {
+      dsbridge.call(name, params, function(result) {
+        try {
+          resolve(JSON.parse(result));
+        } catch (e) {
+          console.log(e);
+          reject(e);
+        }
+      });
     });
-  },
+    return promise;
+  } else {
+    throw new Error("Native side didn't have method: " + name);
+  }
 };
 
-export default DsbridgeContainer;
+export default {
+  dsbridgeCall,
+  dsRegReceiveTokenListener,
+  hasNativeSavedAddress,
+  getTokenFromNative,
+};

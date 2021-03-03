@@ -9,7 +9,7 @@ import ErrorComponent from './components/Error';
 import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
-import DsbridgeContainer, { nativeMethods } from './utils/dsbridge-methods';
+import DsbridgeUtils, { nativeMethods } from './utils/dsbridge-methods';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
 
@@ -46,7 +46,7 @@ class Bootstrap extends Component {
 
   onErrorScreenBackToHomeButtonClick = () => {
     if (Utils.isWebview()) {
-      DsbridgeContainer.callMethodFromNative(nativeMethods.gotoHome);
+      DsbridgeUtils.dsbridgeCall(nativeMethods.gotoHome);
     } else {
       document.location.href = '/';
     }

@@ -15,18 +15,13 @@ import { getAllBusinesses } from '../../../../../redux/modules/entities/business
 import Utils from '../../../../../utils/utils';
 import { del, get } from '../../../../../utils/request';
 import Url from '../../../../../utils/url';
-import DsbridgeContainer, { nativeMethods, registeredMethods } from '../../../../../utils/dsbridge-methods';
+import DsbridgeUtils, { nativeMethods } from '../../../../../utils/dsbridge-methods';
 
 export class Footer extends Component {
   constructor(props) {
     super(props);
     // 注册方法应该想办法放到最外层
-    // const sendTokenHandler = async res => await this.authTokens(res);
-    DsbridgeContainer.registerMethodToNative(
-      registeredMethods.onReceiveToken({
-        handler: async res => await this.authTokens(res),
-      })
-    );
+    DsbridgeUtils.dsRegReceiveTokenListener({ callback: async res => await this.authTokens(res) });
   }
 
   componentDidUpdate(prevProps) {
@@ -88,21 +83,21 @@ export class Footer extends Component {
         this.handleWebRedirect();
       }
     } else if (!isValidToken) {
-      console.error('native token is invalid');
+      console.log('native token is invalid');
       this.handleInvalidAppToken();
     }
   };
 
   handleInvalidAppToken = () => {
-    DsbridgeContainer.callMethodFromNative(nativeMethods.tokenExpired);
+    DsbridgeUtils.dsbridgeCall(nativeMethods.tokenExpired);
   };
 
   postAppMessage(user) {
     const { isExpired } = user || {};
     if (isExpired) {
-      DsbridgeContainer.callMethodFromNative(nativeMethods.tokenExpired);
+      DsbridgeUtils.dsbridgeCall(nativeMethods.tokenExpired);
     } else {
-      DsbridgeContainer.callMethodFromNative(nativeMethods.getToken);
+      DsbridgeUtils.dsbridgeCall(nativeMethods.getToken);
     }
   }
 

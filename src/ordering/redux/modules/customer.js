@@ -13,7 +13,7 @@ import {
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { getUserAddressList } from '../../../redux/modules/entities/users';
 import Utils from '../../../utils/utils';
-import webviewUtils from '../../../utils/webview-utils';
+import DsbridgeUtils from '../../../utils/dsbridge-methods';
 
 const initialState = {
   deliveryDetails: {
@@ -193,7 +193,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
     let findAvailableAddress;
 
     // menu header show address name if native use saved address
-    if (webviewUtils.hasNativeSavedAddress()) {
+    if (DsbridgeUtils.hasNativeSavedAddress()) {
       const addressIdFromNative = sessionStorage.getItem('addressIdFromNative');
       findAvailableAddress = (deliveryAddressList || []).find(
         address => address.availableStatus && address._id === addressIdFromNative

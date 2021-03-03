@@ -13,7 +13,7 @@ import {
 } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
 import './AddressList.scss';
-import webviewUtils from '../../../../../utils/webview-utils';
+import DsbridgeUtils from '../../../../../utils/dsbridge-methods';
 
 class AddressList extends Component {
   componentDidMount() {
@@ -76,7 +76,7 @@ class AddressList extends Component {
                     deliveryToLocation: location,
                     deliveryToCity,
                   });
-                  if (webviewUtils.hasNativeSavedAddress()) {
+                  if (DsbridgeUtils.hasNativeSavedAddress()) {
                     const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
                     sessionStorage.setItem(
                       'deliveryAddress',

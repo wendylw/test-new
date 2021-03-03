@@ -18,7 +18,7 @@ import {
 } from '../../../../redux/modules/thankYou';
 
 import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
-import { getAppToken } from '../../../../../utils/webview-utils';
+import DsbridgeUtils from '../../../../../utils/dsbridge-methods';
 import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
@@ -38,7 +38,7 @@ class PhoneLogin extends React.Component {
 
   constructor(props) {
     super(props);
-    window.sendToken = res => this.authTokens(res);
+    DsbridgeUtils.dsRegReceiveTokenListener({ callback: async res => await this.authTokens(res) });
   }
 
   authTokens = async res => {
@@ -73,7 +73,7 @@ class PhoneLogin extends React.Component {
     const { enableCashback } = businessInfo || {};
 
     if (!isLogin && isWebview) {
-      getAppToken(user);
+      DsbridgeUtils.getTokenFromNative(user);
     }
 
     if (enableCashback) {

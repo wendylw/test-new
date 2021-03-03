@@ -30,7 +30,7 @@ import Constants from '../../../utils/constants';
 import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
-import DsbridgeContainer, { nativeMethods } from '../../../utils/dsbridge-methods';
+import DsbridgeUtils, { nativeMethods } from '../../../utils/dsbridge-methods';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { getOnlineStoreInfo, getUser, getBusinessUTCOffset } from '../../redux/modules/app';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
@@ -137,7 +137,7 @@ export class ThankYou extends PureComponent {
 
   closeMap = () => {
     try {
-      DsbridgeContainer.callMethodFromNative(nativeMethods.closeMap);
+      DsbridgeUtils.dsbridgeCall(nativeMethods.closeMap);
     } catch (e) {}
     this.setState({
       isHideTopArea: false,
@@ -175,11 +175,11 @@ export class ThankYou extends PureComponent {
 
     if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
       try {
-        DsbridgeContainer.callMethodFromNative(nativeMethods.updateHeaderOptionsAndShowMap(title, text));
-        DsbridgeContainer.callMethodFromNative(nativeMethods.updateStorePosition(storeLat, storeLng));
-        DsbridgeContainer.callMethodFromNative(nativeMethods.updateHomePosition(deliveryLat, deliveryLng));
-        DsbridgeContainer.callMethodFromNative(nativeMethods.updateRiderPosition(lat, lng));
-        DsbridgeContainer.callMethodFromNative(nativeMethods.focusPositions(focusPositionList));
+        DsbridgeUtils.dsbridgeCall(nativeMethods.updateHeaderOptionsAndShowMap(title, text));
+        DsbridgeUtils.dsbridgeCall(nativeMethods.updateStorePosition(storeLat, storeLng));
+        DsbridgeUtils.dsbridgeCall(nativeMethods.updateHomePosition(deliveryLat, deliveryLng));
+        DsbridgeUtils.dsbridgeCall(nativeMethods.updateRiderPosition(lat, lng));
+        DsbridgeUtils.dsbridgeCall(nativeMethods.focusPositions(focusPositionList));
       } catch (e) {
         this.setState({
           isHideTopArea: false,
@@ -1213,7 +1213,7 @@ export class ThankYou extends PureComponent {
               title={`#${orderId}`}
               navFunc={() => {
                 if (isWebview) {
-                  DsbridgeContainer.callMethodFromNative(nativeMethods.gotoHome);
+                  DsbridgeUtils.dsbridgeCall(nativeMethods.gotoHome);
                 } else {
                   // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
                   history.replace({

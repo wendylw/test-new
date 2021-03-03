@@ -20,17 +20,12 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import Utils from '../../../utils/utils';
-import { getAppToken, getAppLoginStatus } from '../../../utils/webview-utils';
-import DsbridgeContainer, { registeredMethods } from '../../../utils/dsbridge-methods';
+import DsbridgeUtils, { nativeMethods } from '../../../utils/dsbridge-methods';
 
 class App extends Component {
   constructor(props) {
     super(props);
-    DsbridgeContainer.registerMethodToNative(
-      registeredMethods.onReceiveToken({
-        handler: async res => await this.authTokens(res),
-      })
-    );
+    DsbridgeUtils.dsRegReceiveTokenListener({ callback: async res => await this.authTokens(res) });
   }
 
   authTokens = async res => {
@@ -63,7 +58,7 @@ class App extends Component {
 
     const { user } = this.props;
     const { isLogin, isWebview } = user || {};
-    const appLogin = getAppLoginStatus();
+    const appLogin = DsbridgeUtils.dsbridgeCall(nativeMethods.getLoginStatus);
 
     if (isLogin) {
       appActions.loadCustomerProfile();
@@ -72,7 +67,7 @@ class App extends Component {
     // appLogin is true, isLogin is false
     if (isWebview) {
       if (appLogin && !isLogin) {
-        getAppToken(user);
+        DsbridgeUtils.getTokenFromNative(user);
       }
     }
   }
@@ -87,7 +82,7 @@ class App extends Component {
     }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      getAppToken(user);
+      DsbridgeUtils.getTokenFromNative(user);
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
@@ -131,7 +126,7 @@ class App extends Component {
   render() {
     const { user } = this.props;
     const { isWebview } = user || {};
-    const appLogin = getAppLoginStatus();
+    const appLogin = DsbridgeUtils.dsbridgeCall(nativeMethods.getLoginStatus);
 
     return !appLogin && isWebview ? <RequestLogin user={user} /> : this.renderMainContent();
   }

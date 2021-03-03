@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import DsbridgeContainer, { nativeMethods } from '../utils/dsbridge-methods';
+import DsbridgeUtils, { nativeMethods } from '../utils/dsbridge-methods';
 import './LiveChat.scss';
 
 class LiveChatNative extends Component {
@@ -8,7 +8,7 @@ class LiveChatNative extends Component {
     const { orderId, name, phone, email, storeName } = this.props;
     const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
 
-    DsbridgeContainer.callMethodFromNative(nativeMethods.startChat(phone, name, email, message));
+    DsbridgeUtils.dsbridgeCall(nativeMethods.startChat(phone, name, email, message));
   };
 
   render() {
