@@ -290,7 +290,7 @@ export class ThankYou extends PureComponent {
 
     if (document.referrer !== '' && sessionStorage.getItem('ct_logged') !== order.orderId) {
       CleverTap.pushEvent('Charged', {
-        Currency: onlineStoreInfo.currency,
+        Currency: onlineStoreInfo?.currency || '',
         Amount: order.total,
         'Total Quantity': totalQuantity,
         'Total Discount': totalDiscount,
