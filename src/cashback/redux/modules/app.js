@@ -70,13 +70,16 @@ export const actions = {
             window.heap?.addUserProperties({ PhoneNumber: phone });
           }
         }
-        CleverTap.onUserLogin({
+        const userInfo = {
           Name: `${resp.user?.firstName} ${resp.user?.lastName}`,
           Phone: resp.user?.phone,
           Email: resp.user?.email,
           Identity: resp.consumerId,
-          DOB: resp.user?.birthday,
-        });
+        };
+        if (resp.user?.birthday) {
+          userInfo.DOB = new Date(resp.user?.birthday);
+        }
+        CleverTap.onUserLogin(userInfo);
         return resp;
       }),
     });
