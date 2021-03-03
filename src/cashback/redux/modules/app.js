@@ -71,7 +71,7 @@ export const actions = {
           }
         }
         const userInfo = {
-          Name: `${resp.user?.firstName} ${resp.user?.lastName}`,
+          Name: resp.user?.firstName,
           Phone: resp.user?.phone,
           Email: resp.user?.email,
           Identity: resp.consumerId,
