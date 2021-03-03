@@ -6,7 +6,7 @@ import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
-import * as CleverTap from '../../../utils/clevertap';
+import CleverTap from '../../../utils/clevertap';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';

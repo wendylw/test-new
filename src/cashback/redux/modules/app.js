@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import _get from 'lodash/get';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
-import * as CleverTap from '../../../utils/clevertap';
+import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
 

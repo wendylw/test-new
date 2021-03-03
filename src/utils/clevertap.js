@@ -3,7 +3,7 @@ import config from '../config';
 
 const businessName = Utils.isSiteApp() ? 'beepit.com' : config.business;
 
-export const pushEvent = (eventName, attributes) => {
+const pushEvent = (eventName, attributes) => {
   try {
     if (Utils.isWebview()) {
       if (Utils.isIOSWebview()) {
@@ -38,7 +38,7 @@ export const pushEvent = (eventName, attributes) => {
   }
 };
 
-export const onUserLogin = userProfileProps => {
+const onUserLogin = userProfileProps => {
   try {
     if (!Utils.isWebview()) {
       window.clevertap?.onUserLogin.push({
@@ -51,4 +51,9 @@ export const onUserLogin = userProfileProps => {
     console.warn('CleverTap encountered with error:');
     console.warn(error);
   }
+};
+
+export default {
+  pushEvent,
+  onUserLogin,
 };

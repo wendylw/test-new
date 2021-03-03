@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
-import * as CleverTap from '../../../utils/clevertap';
+import CleverTap from '../../../utils/clevertap';
 import './EmptySearch.scss';
 
 class EmptySearch extends Component {

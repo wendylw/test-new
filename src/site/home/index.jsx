@@ -8,7 +8,7 @@ import { IconSearch, IconScanner, IconLocation } from '../../components/Icons';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
 import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
-import * as CleverTap from '../../utils/clevertap';
+import CleverTap from '../../utils/clevertap';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import { rootActionCreators } from '../redux/modules';

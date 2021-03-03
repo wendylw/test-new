@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import SwiperCore, { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from '../../../../components/Image';
-import * as CleverTap from '../../../../utils/clevertap';
+import CleverTap from '../../../../utils/clevertap';
 import 'swiper/swiper.scss';
 import './index.scss';
 

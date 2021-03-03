@@ -45,7 +45,7 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { getAllProductsKeys } from '../../../redux/modules/entities/products';
 import { captureException } from '@sentry/react';
-import * as CleverTap from '../../../utils/clevertap';
+import CleverTap from '../../../utils/clevertap';
 import './OrderingHome.scss';
 
 const localState = {

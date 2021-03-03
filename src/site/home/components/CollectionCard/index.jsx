@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import './index.scss';
 import { compose } from 'redux';
 import Image from '../../../../components/Image';
-import * as CleverTap from '../../../../utils/clevertap';
+import CleverTap from '../../../../utils/clevertap';
 
 class CollectionCard extends React.Component {
   render() {

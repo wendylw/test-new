@@ -12,7 +12,7 @@ import { IconGpsFixed, IconSearch, IconClose, IconBookmarks } from './Icons';
 import ErrorToast from './ErrorToast';
 import './LocationPicker.scss';
 import { captureException } from '@sentry/react';
-import * as CleverTap from '../utils/clevertap';
+import CleverTap from '../utils/clevertap';
 
 class LocationPicker extends Component {
   static propTypes = {

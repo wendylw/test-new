@@ -6,7 +6,7 @@ import LocationPicker, {
 import { withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../../../components/Icons';
 import { defaultLocations, getDefaultCoords } from './utils';
-import * as CleverTap from '../../../../utils/clevertap';
+import CleverTap from '../../../../utils/clevertap';
 
 class Location extends React.Component {
   state = {

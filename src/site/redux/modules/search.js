@@ -4,7 +4,7 @@ import Url from '../../../utils/url';
 import { getStoreById, storesActionCreators } from './entities/stores';
 import { getCurrentPlaceInfo } from './app';
 import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
-import * as CleverTap from '../../../utils/clevertap';
+import CleverTap from '../../../utils/clevertap';
 
 const defaultPageInfo = {
   page: 0,

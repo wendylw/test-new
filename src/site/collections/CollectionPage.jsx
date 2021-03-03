@@ -16,7 +16,7 @@ import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 import { collectionCardActionCreators, getCurrentCollection } from '../redux/modules/entities/storeCollections';
 import constants from '../../utils/constants';
-import * as CleverTap from '../../utils/clevertap';
+import CleverTap from '../../utils/clevertap';
 
 const { COLLECTIONS_TYPE } = constants;
 

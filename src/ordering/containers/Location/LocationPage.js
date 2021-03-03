@@ -12,7 +12,7 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { connect } from 'react-redux';
-import * as CleverTap from '../../../utils/clevertap';
+import CleverTap from '../../../utils/clevertap';
 
 import './OrderingLocation.scss';
 

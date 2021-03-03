@@ -47,7 +47,7 @@ import {
 } from '../../redux/modules/thankYou';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
-import * as CleverTap from '../../../utils/clevertap';
+import CleverTap from '../../../utils/clevertap';
 import './OrderingThanks.scss';
 import * as storeUtils from '../../../utils/store-utils';
 

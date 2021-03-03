@@ -11,7 +11,7 @@ import 'swiper/swiper.scss';
 import './index.scss';
 import { submitStoreMenu } from '../../utils';
 import Tag from '../../../../components/Tag';
-import * as CleverTap from '../../../../utils/clevertap';
+import CleverTap from '../../../../utils/clevertap';
 
 SwiperCore.use([Autoplay]);
 

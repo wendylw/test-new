@@ -32,7 +32,7 @@ import {
   getStorePageInfo,
 } from '../redux/modules/entities/storeCollections';
 import constants from '../../utils/constants';
-import * as CleverTap from '../../utils/clevertap';
+import CleverTap from '../../utils/clevertap';
 
 const { COLLECTIONS_TYPE } = constants;
 
