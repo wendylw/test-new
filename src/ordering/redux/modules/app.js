@@ -156,7 +156,7 @@ export const actions = {
           if (resp.login) {
             get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
               const userInfo = {
-                Name: `${profile.firstName} ${profile.lastName}`,
+                Name: profile.firstName,
                 Phone: profile.phone,
                 Email: profile.email,
                 Identity: resp.consumerId,
