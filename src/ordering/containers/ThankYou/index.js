@@ -7,6 +7,7 @@ import { bindActionCreators, compose } from 'redux';
 import _isNil from 'lodash/isNil';
 import _get from 'lodash/get';
 import Header from '../../../components/Header';
+import Image from '../../../components/Image';
 import { IconAccessTime, IconPin } from '../../../components/Icons';
 import LiveChat from '../../../components/LiveChat';
 import LiveChatNative from '../../../components/LiveChatNative';
@@ -28,7 +29,7 @@ import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import Constants from '../../../utils/constants';
-import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
+import { formatPickupTime } from '../../../utils/datetime-lib';
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
 import { gotoHome } from '../../../utils/webview-utils';
@@ -924,8 +925,12 @@ export class ThankYou extends PureComponent {
 
           <div className={`flex  flex-middle`}>
             <div className="ordering-thanks__rider-logo">
-              {useStorehubLogistics && <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />}
-              {!useStorehubLogistics && <img src={storeLogo} alt="store info" className="logo" />}
+              {useStorehubLogistics && (
+                <figure className="logo">
+                  <img src={this.getLogisticsLogo(courier)} alt="rider info" />
+                </figure>
+              )}
+              {!useStorehubLogistics && <Image src={storeLogo} alt="store info" className="logo" />}
             </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
               <p className="line-height-normal text-weight-bolder">
