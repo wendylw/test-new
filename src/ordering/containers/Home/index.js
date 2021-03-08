@@ -4,6 +4,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
 import _isNil from 'lodash/isNil';
+import _toLower from 'lodash/toLower';
 import Header from '../../../components/Header';
 
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
@@ -97,12 +98,21 @@ export class Home extends Component {
   };
 
   checkUrlType = () => {
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    const { type } = search;
+    const { history, location } = this.props;
 
-    if (!type) {
+    const search = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const type = _toLower(search.type);
+    const deliveryTypes = Object.values(DELIVERY_METHOD);
+
+    if (!type || !deliveryTypes.includes(type)) {
       window.location.href = window.location.origin;
+      return;
     }
+
+    search.type = type;
+    const path = `${location.pathname}${qs.stringify(search, { addQueryPrefix: true })}`;
+
+    history.replace(path, location.state);
   };
 
   // copied and modified from https://docs.heap.io/docs/scroll-tracking
