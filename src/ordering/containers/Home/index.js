@@ -134,7 +134,6 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    console.log('ordering componentDidMount');
     const { homeActions, deliveryInfo, appActions, storeInfoForCleverTap } = this.props;
 
     if (isSourceBeepitCom()) {
