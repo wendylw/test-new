@@ -73,10 +73,11 @@ export class Home extends Component {
       windowSize: windowSize(),
     };
 
+    this.checkUrlType();
+
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
-    this.checkUrlType();
   }
   deliveryEntryEl = null;
   headerEl = null;
@@ -141,6 +142,7 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
+    console.log('ordering componentDidMount');
     const { homeActions, deliveryInfo, appActions, storeInfoForCleverTap } = this.props;
 
     if (isSourceBeepitCom()) {
