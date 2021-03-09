@@ -36,7 +36,7 @@ class App extends Component {
       this.handleNativeResponse(savedAddressRes);
     }
 
-    // for temporary fix Beep-321, IOS Beep App will give the first letter capitalize `type` in query
+    // for temporarily fix Beep-321, IOS Beep App will give the first letter capitalize `type` in query
     // we will convert it to lower case by this function
     this.convertDeliveryTypeToLowerCase();
   }
