@@ -90,7 +90,7 @@ const isChargeEventStructureInvalid = (event, hint) => {
 const isDuplicateChargeId = (event, hint) => {
   try {
     const message = getErrorMessageFromHint(hint);
-    return /Duplicate Charged Id - Dropped\[object Object\]/.test(message);
+    return /Duplicate Charged Id/.test(message);
   } catch {
     return false;
   }
