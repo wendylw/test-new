@@ -23,6 +23,12 @@ class PromotionsBar extends Component {
         cappedValue: 'RM6',
         consumptionAmount: 'RM50',
       },
+      BEEPBEEP: {
+        discount: '20%',
+        promoCode: 'BEEPBEEP',
+        cappedValue: 'RM10',
+        consumptionAmount: 'RM30',
+      },
     };
     const currentPromotions = _filter(promotionList, { business });
 
