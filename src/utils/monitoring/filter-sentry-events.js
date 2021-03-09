@@ -78,6 +78,24 @@ const isSelectedDebugHandlerError = (event, hint) => {
   }
 };
 
+const isChargeEventStructureInvalid = (event, hint) => {
+  try {
+    const err = event.exception.values[0];
+    return /CleverTap error: 511: Charged event structure invalid\. Not sent\./.test(err.value);
+  } catch {
+    return false;
+  }
+};
+
+const isDuplicateChargeId = (event, hint) => {
+  try {
+    const err = event.exception.values[0];
+    return /Duplicate Charged Id - Dropped\[object Object\]/.test(err.value);
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -86,7 +104,9 @@ const shouldFilter = (event, hint) => {
       isCrossStorageCloseBug(event, hint) ||
       isPromiseAllBug(event, hint) ||
       isBlockFrameBug(event, hint) ||
-      isSelectedDebugHandlerError(event, hint)
+      isSelectedDebugHandlerError(event, hint) ||
+      isChargeEventStructureInvalid(event, hint) ||
+      isDuplicateChargeId(event, hint)
     );
   } catch {
     return false;
