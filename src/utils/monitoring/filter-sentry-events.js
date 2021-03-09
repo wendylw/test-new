@@ -81,7 +81,7 @@ const isSelectedDebugHandlerError = (event, hint) => {
 const isChargeEventStructureInvalid = (event, hint) => {
   try {
     const message = getErrorMessageFromHint(hint);
-    return /CleverTap error: 511: Charged event structure invalid\. Not sent\./.test(message);
+    return /Charged event structure invalid\. Not sent\./.test(message);
   } catch {
     return false;
   }
