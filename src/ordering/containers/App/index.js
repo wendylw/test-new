@@ -48,7 +48,7 @@ class App extends Component {
       return;
     }
 
-    search.type = search.type.toLocaleLowerCase();
+    search.type = search.type.toLowerCase();
 
     const path = `${location.pathname}${qs.stringify(search, { addQueryPrefix: true })}`;
 
