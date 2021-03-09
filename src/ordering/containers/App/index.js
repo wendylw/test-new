@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
+import qs from 'qs';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
@@ -33,8 +35,27 @@ class App extends Component {
       savedAddressRes = WebViewUtils.getAddressFromNative() || '';
       this.handleNativeResponse(savedAddressRes);
     }
+
+    // for temporarily fix Beep-321, IOS Beep App will give the first letter capitalize `type` in query
+    // we will convert it to lower case by this function
+    this.convertDeliveryTypeToLowerCase();
   }
   state = {};
+
+  convertDeliveryTypeToLowerCase() {
+    const { history, location } = this.props;
+
+    const search = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    if (!search.type) {
+      return;
+    }
+
+    search.type = search.type.toLowerCase();
+
+    const path = `${location.pathname}${qs.stringify(search, { addQueryPrefix: true })}`;
+
+    history.replace(path, location.state);
+  }
 
   handleNativeResponse = savedAddressRes => {
     if (!savedAddressRes) {
@@ -254,4 +275,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(App);
+)(withRouter(App));

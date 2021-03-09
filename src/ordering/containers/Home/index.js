@@ -72,10 +72,11 @@ export class Home extends Component {
       windowSize: windowSize(),
     };
 
+    this.checkUrlType();
+
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
-    this.checkUrlType();
   }
   deliveryEntryEl = null;
   headerEl = null;
@@ -97,10 +98,12 @@ export class Home extends Component {
   };
 
   checkUrlType = () => {
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    const { type } = search;
+    const { history } = this.props;
 
-    if (!type) {
+    const { type = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const deliveryTypes = Object.values(DELIVERY_METHOD);
+
+    if (!type || !deliveryTypes.includes(type)) {
       window.location.href = window.location.origin;
     }
   };

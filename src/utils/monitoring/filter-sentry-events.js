@@ -78,6 +78,24 @@ const isSelectedDebugHandlerError = (event, hint) => {
   }
 };
 
+const isChargeEventStructureInvalid = (event, hint) => {
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return /Charged event structure invalid\. Not sent\./.test(message);
+  } catch {
+    return false;
+  }
+};
+
+const isDuplicateChargeId = (event, hint) => {
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return /Duplicate Charged Id/.test(message);
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -86,7 +104,9 @@ const shouldFilter = (event, hint) => {
       isCrossStorageCloseBug(event, hint) ||
       isPromiseAllBug(event, hint) ||
       isBlockFrameBug(event, hint) ||
-      isSelectedDebugHandlerError(event, hint)
+      isSelectedDebugHandlerError(event, hint) ||
+      isChargeEventStructureInvalid(event, hint) ||
+      isDuplicateChargeId(event, hint)
     );
   } catch {
     return false;
