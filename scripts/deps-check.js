@@ -1,6 +1,5 @@
 /**
- * Help to find unexpected dependencies from a page. We will automatically exclude some common dependencies,
- * but you should still check the output (some dependencies are actual expected.)
+ * list the probably inappropriate dependencies from a page.
  */
 
 const fs = require('fs-extra');
