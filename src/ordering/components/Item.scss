@@ -1,4 +1,4 @@
-@import "../Variables.scss";
+@import "../../Variables.scss";
 
 .item {
   position: relative;
@@ -17,9 +17,6 @@
   &__image {
     width: 100%;
     height: 100%;
-  }
-
-  &__summary {
   }
 
   &__title {

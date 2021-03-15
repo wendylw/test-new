@@ -1,19 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import LazyLoad from 'react-lazyload';
-import withDataAttributes from './withDataAttributes';
-import Image from './Image';
-import Tag from './Tag';
+import withDataAttributes from '../../components/withDataAttributes';
 import './Item.scss';
 
-export class Item extends Component {
+class Item extends Component {
   renderImageEl() {
-    const { image, title, imageCover } = this.props;
+    const { image, imageCover } = this.props;
 
     return (
       <div className="item__image-container flex__shrink-fixed margin-small">
-        <Image className="item__image card__image" src={image} alt={title} />
+        {image}
         {imageCover}
       </div>
     );
@@ -159,7 +156,7 @@ export class Item extends Component {
 
 Item.propTypes = {
   className: PropTypes.string,
-  image: PropTypes.string,
+  image: PropTypes.element,
   imageCover: PropTypes.element,
   tag: PropTypes.element,
   title: PropTypes.string,
@@ -169,7 +166,7 @@ Item.propTypes = {
 };
 
 Item.defaultProps = {
-  image: '',
+  image: null,
   imageCover: null,
   tag: null,
   title: '',
@@ -177,5 +174,6 @@ Item.defaultProps = {
   details: null,
   handleClickItem: () => {},
 };
-export const ItemComponent = Item;
+
+export const ItemStoryComponent = Item;
 export default withDataAttributes(withTranslation()(Item));
