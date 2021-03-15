@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import Item from '../../../components/Item';
+import Item from '../../../components/Item.jsx';
 import Tag from '../../../components/Tag';
 import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';

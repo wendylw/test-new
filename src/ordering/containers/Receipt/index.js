@@ -2,7 +2,7 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Item from '../../../components/Item';
+import Item from '../../../components/Item.jsx';
 import Billing from '../../components/Billing';
 import Header from '../../../components/Header';
 import ItemOperator from '../../../components/ItemOperator';

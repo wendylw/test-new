@@ -20,6 +20,7 @@
   }
 
   &__summary {
+    width: 70.4vw;
   }
 
   &__title {
@@ -33,6 +34,10 @@
     line-clamp: 3;
     -webkit-line-clamp: 3;
   }
+
+  &__amount {
+    min-width: 24px;
+  }
 }
 
 @media (min-width: 770px) {
@@ -40,6 +45,10 @@
     &__image-container {
       width: 72px;
       height: 72px;
+    }
+
+    &__summary {
+      width: 100%;
     }
   }
 }

@@ -203,6 +203,13 @@ img {
     -webkit-flex-shrink: 0;
     flex-shrink: 0;
   }
+
+  &__fluid-content {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+  }
 }
 
 .flex-middle {
