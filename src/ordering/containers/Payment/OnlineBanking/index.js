@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import qs from 'qs';
 import React, { Component } from 'react';
-import _find from 'lodash/find';
 import _get from 'lodash/get';
 import _toString from 'lodash/toString';
 import _startsWith from 'lodash/startsWith';
@@ -22,11 +21,18 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { actions as paymentActionCreators, getCurrentOrderId, getBankList } from '../../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import {
+  actions as paymentsActionCreator,
+  getPaymentsPendingState,
+  getOnlineBankingOption,
+  getSelectedOnlineBanking,
+  getOnlineBankList,
+} from '../redux/payments';
 import { getBusinessInfo } from '../../../redux/modules/cart';
-import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
+import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import './OrderingBanking.scss';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
@@ -34,37 +40,47 @@ class OnlineBanking extends Component {
   order = {};
 
   state = {
-    agentCode: null,
     payNowLoading: false,
   };
 
   async componentDidMount() {
-    const { history, deliveryDetails, customerActions } = this.props;
+    const { deliveryDetails, customerActions, paymentsActions } = this.props;
     const { addressId } = deliveryDetails || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const type = Utils.getOrderTypeFromUrl();
 
     !addressId && (await customerActions.initDeliveryDetails(type));
-    this.updateBankList();
 
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
 
-    this.props.homeActions.loadShoppingCart(
+    await this.props.homeActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
           lng: deliveryToLocation.longitude,
         }
     );
+
+    /**
+     * Load all payment options action and except saved card list
+     */
+    paymentsActions.loadPaymentOptions();
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, businessInfo, merchantCountry } = this.props;
+    const {
+      onlineStoreInfo,
+      currentOrder,
+      business,
+      businessInfo,
+      currentPaymentOption,
+      currentOnlineBanking,
+    } = this.props;
+    const { paymentProvider } = currentPaymentOption;
+    const { agentCode } = currentOnlineBanking;
     const planId = _toString(_get(businessInfo, 'planId', ''));
-    const currentPayment = Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY;
-    const { agentCode } = this.state;
 
-    if (!onlineStoreInfo || !currentOrder || !currentPayment || !agentCode) {
+    if (!onlineStoreInfo || !currentOrder || !paymentProvider || !agentCode) {
       return null;
     }
 
@@ -77,54 +93,29 @@ class OnlineBanking extends Component {
       businessName: business,
       redirectURL: redirectURL,
       webhookURL: webhookURL,
-      paymentName: getPaymentName(merchantCountry, currentPayment),
+      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
+      paymentName: paymentProvider,
       agentCode,
       isInternal: _startsWith(planId, 'internal'),
       source: Utils.getOrderSource(),
     };
   };
 
-  updateBankList = async () => {
-    const { paymentActions, merchantCountry } = this.props;
+  handleSelectBank = e => {
+    const { paymentsActions, onlineBankingList, currentOnlineBanking } = this.props;
+    const currentAgentCode = e.target.value;
+    const { available } = onlineBankingList.find(banking => banking.agentCode === currentAgentCode);
+    const { agentCode } = currentOnlineBanking;
 
-    if (merchantCountry) {
-      await paymentActions.fetchBankList(merchantCountry);
-
-      const findBank = _find(this.props.bankingList, { agentCode: this.state.agentCode });
-      if (!findBank) {
-        this.initAgentCode(this.props.bankingList);
-      }
+    if (agentCode !== currentAgentCode && available) {
+      paymentsActions.updateOnlineBankingSelected(currentAgentCode);
     }
   };
-
-  componentDidUpdate = async preProps => {
-    if (preProps.merchantCountry !== this.props.merchantCountry) {
-      this.updateBankList();
-    }
-  };
-
-  initAgentCode(bankingList) {
-    if (bankingList && bankingList.length) {
-      this.setState({
-        agentCode: bankingList[0].agentCode,
-      });
-    } else {
-      this.setState({
-        agentCode: null,
-      });
-    }
-  }
-
-  handleSelectBank(e) {
-    this.setState({
-      agentCode: e.target.value,
-    });
-  }
 
   renderBankingList() {
-    const { bankingList } = this.props;
+    const { t, onlineBankingList } = this.props;
 
-    if (!bankingList || !bankingList.length) {
+    if (!onlineBankingList || !onlineBankingList.length) {
       return (
         <select className="ordering-banking__select form__select text-size-biggest" disabled>
           <option>Select one</option>
@@ -135,13 +126,19 @@ class OnlineBanking extends Component {
     return (
       <select
         className="ordering-banking__select form__select text-size-biggest"
-        onChange={this.handleSelectBank.bind(this)}
+        onChange={this.handleSelectBank}
         data-heap-name="ordering.payment.online-banking.bank-select"
       >
-        {bankingList.map((banking, key) => {
+        {onlineBankingList.map(banking => {
           return (
-            <option key={`banking-${key}`} value={banking.agentCode}>
+            <option
+              className="text-size-small"
+              disabled={!banking.available}
+              key={`banking-${banking.agentCode}`}
+              value={banking.agentCode}
+            >
               {banking.name}
+              {banking.available ? '' : ` (${t('TemporarilyUnavailable')})`}
             </option>
           );
         })}
@@ -150,10 +147,19 @@ class OnlineBanking extends Component {
   }
 
   render() {
-    const { t, match, history, bankingList, cartSummary, onlineStoreInfo, merchantCountry } = this.props;
+    const {
+      t,
+      match,
+      history,
+      cartSummary,
+      onlineStoreInfo,
+      pendingPaymentOptions,
+      currentPaymentOption,
+      currentOnlineBanking,
+    } = this.props;
     const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
-    const { agentCode, payNowLoading } = this.state;
+    const { payNowLoading } = this.state;
     const paymentData = this.getPaymentEntryRequestData();
 
     return (
@@ -189,14 +195,14 @@ class OnlineBanking extends Component {
               <div className="ordering-banking__group form__group">
                 <div
                   className={`ordering-banking__input form__input padding-left-right-normal ${
-                    payNowLoading && !agentCode ? 'error' : ''
+                    payNowLoading && !currentOnlineBanking.agentCode ? 'error' : ''
                   }`}
                 >
                   {this.renderBankingList()}
                   <IconKeyArrowDown className="ordering-banking__icon icon icon__normal" />
                 </div>
               </div>
-              {payNowLoading && !agentCode ? (
+              {payNowLoading && !currentOnlineBanking.agentCode ? (
                 <span className="form__error-message margin-top-bottom-small">{t('PleaseSelectABankToContinue')}</span>
               ) : null}
             </div>
@@ -220,7 +226,7 @@ class OnlineBanking extends Component {
                 payNowLoading: !!orderId,
               });
             }}
-            paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY)}
+            paymentName={currentPaymentOption.paymentProvider}
           >
             {payNowLoading ? (
               t('Processing')
@@ -243,7 +249,7 @@ class OnlineBanking extends Component {
           />
         ) : null}
 
-        <Loader className={'loading-cover opacity'} loaded={Boolean((bankingList || []).length)} />
+        <Loader className={'loading-cover opacity'} loaded={!pendingPaymentOptions} />
       </section>
     );
   }
@@ -256,17 +262,21 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
-        bankingList: getBankList(state),
+        onlineBankingList: getOnlineBankList(state),
+        pendingPaymentOptions: getPaymentsPendingState(state),
+        currentOnlineBanking: getSelectedOnlineBanking(state),
+        currentPaymentOption: getOnlineBankingOption(state),
+
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
+      paymentsActions: bindActionCreators(paymentsActionCreator, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
