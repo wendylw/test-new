@@ -76,4 +76,14 @@ export const goBack = () => {
   if (Utils.isAndroidWebview()) {
     window.androidInterface.dispatchGoBack();
   }
+
+  if (Utils.isIOSWebview()) {
+    dsBridge.call('beep.back');
+  }
+};
+
+export const gotoHome = () => {
+  if (Utils.isIOSWebview()) {
+    dsBridge.call('beep.gotohome');
+  }
 };

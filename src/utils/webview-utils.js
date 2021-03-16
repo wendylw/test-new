@@ -1,5 +1,5 @@
 import Utils from './utils';
-
+import * as dsBridgeUtils from './dsBridge-utils';
 export const gotoHome = () => {
   if (window.androidInterface) {
     window.androidInterface.gotoHome();
@@ -7,9 +7,7 @@ export const gotoHome = () => {
     const version = window.beepAppVersion;
 
     if (version > '1.0.1') {
-      window.webkit.messageHandlers.shareAction.postMessage({
-        functionName: 'gotoHome',
-      });
+      dsBridgeUtils.gotoHome();
     } else {
       window.webkit.messageHandlers.shareAction.postMessage('gotoHome');
     }
