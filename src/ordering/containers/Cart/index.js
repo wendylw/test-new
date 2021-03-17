@@ -19,7 +19,7 @@ import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modu
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
 import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
@@ -384,7 +384,9 @@ class Cart extends Component {
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
     // const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
     const buttonText = !isInvalidTotal ? (
-      <span key="pay-now">{t('PayNow')}</span>
+      <span className="text-weight-bolder" key="pay-now">
+        {t('PayNow')}
+      </span>
     ) : (
       <span key="min-total">
         <Trans i18nKey="MinimumConsumption">
@@ -519,7 +521,6 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       cartActions: bindActionCreators(cartActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })

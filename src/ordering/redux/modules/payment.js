@@ -1,5 +1,3 @@
-import _isEqual from 'lodash/isEqual';
-import { createSelector } from 'reselect';
 import { captureException } from '@sentry/react';
 
 import Url from '../../../utils/url';
@@ -7,23 +5,13 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
 import { getCartItemIds } from './home';
-import {
-  getBusiness,
-  getOnlineStoreInfo,
-  getRequestInfo,
-  actions as appActions,
-  getMerchantCountry,
-  getBusinessUTCOffset,
-} from './app';
+import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions, getBusinessUTCOffset } from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 import i18next from 'i18next';
-import { getAllPaymentOptions } from '../../../redux/modules/entities/paymentOptions';
-import { getPaymentList, getUnavailablePaymentList } from '../../containers/Payment/utils';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../voucher/utils';
 import * as storeUtils from '../../../utils/store-utils';
 import * as timeLib from '../../../utils/time-lib';
@@ -433,44 +421,3 @@ export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;
 export const getBraintreeToken = state => state.payment.braintreeToken;
 
 export const getBankList = state => state.payment.bankingList;
-
-export const getUnavailablePayments = state => {
-  const { total } = getCartSummary(state);
-  const merchantCountry = getMerchantCountry(state);
-  const unavailablePayments = getUnavailablePaymentList();
-
-  if (total < parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL) && _isEqual(merchantCountry, 'MY')) {
-    return [...unavailablePayments, 'MY:onlineBanking'];
-  }
-
-  return unavailablePayments;
-};
-
-export const getPayments = createSelector(
-  [getBusiness, getMerchantCountry, getAllPaymentOptions, getCartSummary],
-  (business, merchantCountry, paymentOptions, cartSummary) => {
-    if (!merchantCountry) {
-      return [];
-    }
-
-    const paymentList = getPaymentList(merchantCountry);
-
-    return paymentList
-      .map(paymentKey => paymentOptions[paymentKey])
-      .filter(payment => {
-        return true;
-      });
-  }
-);
-
-export const getDefaultPayment = state => {
-  try {
-    return getPayments(state)[0].label;
-  } catch (e) {
-    return '';
-  }
-};
-
-export const getCurrentPaymentInfo = createSelector([getCurrentPayment, getPayments], (currentPayment, payments) => {
-  return (payments || []).find(payment => payment.label === currentPayment);
-});
