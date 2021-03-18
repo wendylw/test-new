@@ -17,7 +17,7 @@ class Item extends Component {
   }
 
   renderContent() {
-    const { tag, title, variation, details } = this.props;
+    const { summaryTag, title, variation, details } = this.props;
 
     return (
       <div
@@ -25,7 +25,7 @@ class Item extends Component {
         data-testid="itemDetail"
       >
         <div className="item__summary-content">
-          {tag}
+          {summaryTag}
           <h3 className="item__title margin-top-bottom-smaller text-line-height-base text-omit__multiple-line text-weight-bolder">
             {title}
           </h3>
@@ -45,120 +45,23 @@ class Item extends Component {
 
   render() {
     const { children, className, dataAttributes, handleClickItem } = this.props;
-    const classList = ['item flex flex-top'];
+    const classList = ['item flex flex-top', ...(className ? [className] : [])];
 
     return (
-      <li className="" {...dataAttributes} onClick={() => handleClickItem()}>
+      <li className={classList.join(' ')} {...dataAttributes} onClick={() => handleClickItem()}>
         {this.renderImageEl()}
         {this.renderContent()}
         {children}
       </li>
     );
   }
-
-  //   render() {
-  //     const {
-  //       children,
-  //       className,
-  //       contentClassName,
-  //       image,
-  //       title,
-  //       variation,
-  //       detail,
-  //       operateItemDetail,
-  //       productDetailImageRef,
-  //       tagText,
-  //       dataAttributes,
-  //       isLazyLoad,
-  //       productItemMinHeight,
-  //       scrollContainer,
-  //     } = this.props;
-  //     const classList = ['item border__bottom-divider'];
-  //     const contentClassList = ['item__content flex padding-left-right-smaller padding-top-bottom-small'];
-
-  //     if (className) {
-  //       classList.push(className);
-  //     }
-
-  //     if (contentClassName) {
-  //       contentClassList.push(contentClassName);
-  //     }
-
-  //     if (isLazyLoad) {
-  //       return (
-  //         <LazyLoad offset={0} height={productItemMinHeight} scrollContainer={scrollContainer}>
-  //           <div className={classList.join(' ')} {...dataAttributes}>
-  //             <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
-  //               <div className="item__image-container flex__shrink-fixed margin-small">
-  //                 <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
-  //               </div>
-  //               <div
-  //                 className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smaller"
-  //                 data-testid="itemDetail"
-  //               >
-  //                 <div className="item__summary-content">
-  //                   {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
-  //                   <h3 className="item__title margin-top-bottom-smaller text-line-height-base text-omit__multiple-line text-weight-bolder">
-  //                     {title}
-  //                   </h3>
-  //                   {variation ? (
-  //                     <p
-  //                       className="item__description margin-top-bottom-small text-omit__multiple-line"
-  //                       data-testid="itemDetailSummary"
-  //                     >
-  //                       {variation}
-  //                     </p>
-  //                   ) : null}
-  //                 </div>
-  //                 {detail}
-  //               </div>
-  //             </div>
-
-  //             {children}
-  //           </div>
-  //         </LazyLoad>
-  //       );
-  //     }
-
-  //     return (
-  //       <div className={classList.join(' ')} {...dataAttributes}>
-  //         <div className={contentClassList.join(' ')} onClick={() => operateItemDetail()}>
-  //           <div className="item__image-container flex__shrink-fixed margin-small">
-  //             <Image ref={productDetailImageRef} className="item__image card__image" src={image} alt={title} />
-  //           </div>
-  //           <div
-  //             className="item__summary flex flex-column flex-space-between padding-smaller margin-top-bottom-smaller"
-  //             data-testid="itemDetail"
-  //           >
-  //             <div className="item__summary-content">
-  //               {tagText ? <Tag text={tagText} className="tag__small tag__primary text-size-smaller"></Tag> : null}
-  //               <h3 className="item__title margin-top-bottom-smaller text-omit__multiple-line text-weight-bolder">
-  //                 {title}
-  //               </h3>
-  //               {variation ? (
-  //                 <p
-  //                   className="item__description margin-top-bottom-small text-omit__multiple-line"
-  //                   data-testid="itemDetailSummary"
-  //                 >
-  //                   {variation}
-  //                 </p>
-  //               ) : null}
-  //             </div>
-  //             {detail}
-  //           </div>
-  //         </div>
-
-  //         {children}
-  //       </div>
-  //     );
-  //   }
 }
 
 Item.propTypes = {
   className: PropTypes.string,
   image: PropTypes.element,
   imageCover: PropTypes.element,
-  tag: PropTypes.element,
+  summaryTag: PropTypes.element,
   title: PropTypes.string,
   variation: PropTypes.string,
   details: PropTypes.element,
@@ -168,7 +71,7 @@ Item.propTypes = {
 Item.defaultProps = {
   image: null,
   imageCover: null,
-  tag: null,
+  summaryTag: null,
   title: '',
   variation: '',
   details: null,

@@ -1,72 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
-import ProductItem from '../../../components/ProductItem';
+import LazyLoad from 'react-lazyload';
 import { ScrollObservable } from '../../../../components/ScrollComponents';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionsCreator, getShoppingCart, getCategoryProductList } from '../../../redux/modules/home';
+import {
+  actions as homeActionsCreator,
+  getShoppingCart,
+  getCategoryProductList,
+  getProductItemMinHeight,
+} from '../../../redux/modules/home';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import Constants from '../../../../tils/constants';
-import { withRouter } from 'react-router-dom';
 import config from '../../../../config';
-import qs from 'qs';
 
 class ProductList extends Component {
-  prevCategory = null;
-
-  handleDecreaseProductInCart = async product => {
-    try {
-      const { shoppingCart, onShowCart } = this.props;
-      if (!product.canDecreaseQuantity) {
-        // set currentProduct
-        await this.props.homeActions.loadProductDetail(product);
-        onShowCart();
-      } else {
-        await this.props.homeActions.decreaseProductInCart(shoppingCart, product);
-        await this.props.homeActions.loadShoppingCart();
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  handleIncreaseProductInCart = async product => {
-    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-
-    if ((!deliveryAddress && Utils.isDeliveryType()) || !config.storeId || !search.h) {
-      const { search } = window.location;
-      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
-
-      this.props.history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-        search: `${search}&callbackUrl=${callbackUrl}`,
-      });
-      return;
-    }
-
-    const { onToggle } = this.props;
-
-    try {
-      await this.props.homeActions.increaseProductInCart(product);
-
-      if (product.variations && product.variations.length) {
-        onToggle('PRODUCT_DETAIL');
-
-        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, product);
-      } else {
-        this.handleGtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, product);
-      }
-
-      await this.props.homeActions.loadShoppingCart();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   handleGtmEventTracking = (eventName, data) => {
     if (!data) return;
     let gtmTrackingData = {};
@@ -161,8 +113,53 @@ class ProductList extends Component {
     await this.props.homeActions.loadShoppingCart();
   };
 
+  renderProductItemPrice(price, originalDisplayPrice) {
+    return (
+      <div>
+        {originalDisplayPrice ? (
+          <CurrencyNumber
+            className="product-item__price text-size-small text-line-through"
+            money={originalDisplayPrice}
+            numberOnly={true}
+          />
+        ) : null}
+        <CurrencyNumber
+          className={`product-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
+          money={price || 0}
+          numberOnly={true}
+        />
+      </div>
+    );
+  }
+
+  renderProductItemRightController(stockStatus, cartQuantity) {
+    const { t } = this.props;
+
+    if (['outOfStock', 'markSoldOut', 'unavailable'].includes(stockStatus)) {
+      return <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" />;
+    }
+
+    return (
+      <>
+        {cartQuantity > 0 ? (
+          <span className="product-item__selected  text-size-small">{t('Selected', { quantity: cartQuantity })}</span>
+        ) : null}
+      </>
+    );
+  }
+
+  renderProductItemContentTag(isFeaturedProduct) {
+    const { t } = this.props;
+
+    if (!isFeaturedProduct) {
+      return null;
+    }
+
+    return <Tag text={t('BestSeller')} className="tag__small tag__primary text-size-smaller" />;
+  }
+
   render() {
-    const { categories, style } = this.props;
+    const { categories, style, productItemMinHeight } = this.props;
 
     return (
       <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
@@ -174,29 +171,40 @@ class ProductList extends Component {
                   <label className="padding-left-right-small text-size-small">{category.name}</label>
                 </h2>
                 <div>
-                  {(category.products || []).map(product => (
-                    <ProductItem
-                      scrollContainer="#product-list"
-                      key={product.id}
-                      image={product.images[0]}
-                      title={product.title}
-                      price={product.displayPrice}
-                      originalDisplayPrice={product.originalDisplayPrice}
-                      cartQuantity={product.cartQuantity}
-                      soldOut={product.soldOut}
-                      decreaseDisabled={false}
-                      onDecrease={this.handleDecreaseProductInCart.bind(this, product)}
-                      onIncrease={this.handleIncreaseProductInCart.bind(this, product)}
-                      showProductDetail={this.handleShowProductDetail.bind(this, product, {
-                        name: category.name,
-                        index: categoryIndex,
-                      })}
-                      isFeaturedProduct={product.isFeaturedProduct}
-                      isValidTimeToOrder={this.props.isValidTimeToOrder}
-                      showOperator={false}
-                      data-heap-name="ordering.home.product-item"
-                    />
-                  ))}
+                  {(category.products || []).map(product => {
+                    const {
+                      variation,
+                      title,
+                      images,
+                      isFeaturedProduct,
+                      price,
+                      originalDisplayPrice,
+                      stockStatus,
+                      cartQuantity,
+                    } = product;
+
+                    return (
+                      <LazyLoad offset={0} height={productItemMinHeight} scrollContainer="#product-list">
+                        <Item
+                          data-heap-name="ordering.home.product-item"
+                          image={images[0]}
+                          imageCover={}
+                          summaryTag={this.renderProductItemContentTag(isFeaturedProduct)}
+                          title={title}
+                          variation={variation}
+                          details={this.renderProductItemPrice(price, originalDisplayPrice)}
+                          handleClickItem={() =>
+                            this.handleShowProductDetail(product, {
+                              name: category.name,
+                              index: categoryIndex,
+                            })
+                          }
+                        >
+                          {this.renderProductItemRightController(stockStatus, cartQuantity)}
+                        </Item>
+                      </LazyLoad>
+                    );
+                  })}
                 </div>
               </ScrollObservable>
             </li>
@@ -225,6 +233,7 @@ export default compose(
       return {
         shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),
+        productItemMinHeight: getProductItemMinHeight(state),
       };
     },
     dispatch => ({

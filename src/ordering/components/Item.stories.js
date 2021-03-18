@@ -12,7 +12,6 @@ export const Item = Template.bind({});
 Item.args = {
   className: 'flex-middle',
   title: 'DeliveryDetails',
-  contentClassName: 'flex-middle',
   variation: 'red, bigger',
   tagText: 'best sell',
   operateItemDetail: () => {},
