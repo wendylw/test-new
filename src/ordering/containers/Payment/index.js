@@ -1,4 +1,3 @@
-import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
@@ -29,7 +28,7 @@ import {
 } from './redux/payments';
 import Utils from '../../../utils/utils';
 import { getPaymentRedirectAndWebHookUrl } from './utils';
-import PaymentItem from './components/payment-item';
+import PaymentItem from './components/PaymentItem';
 import Loader from './components/Loader';
 import './OrderingPayment.scss';
 

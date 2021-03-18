@@ -3,13 +3,11 @@ import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import PropTypes from 'prop-types';
-import _includes from 'lodash/includes';
 import _values from 'lodash/values';
 import _every from 'lodash/every';
-import _keys from 'lodash/keys';
 
 import { actions as paymentsActionCreators, getSelectedPaymentOption } from '../redux/payments';
-import PaymentLogo from './payment-logo';
+import PaymentLogo from './PaymentLogo';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Radio from '../../../../components/Radio';
 

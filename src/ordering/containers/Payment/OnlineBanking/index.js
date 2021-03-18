@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/alt-text */
-import qs from 'qs';
 import React, { Component } from 'react';
 import _get from 'lodash/get';
 import _toString from 'lodash/toString';
