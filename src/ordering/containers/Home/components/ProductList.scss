@@ -1,4 +1,4 @@
-@import "../../../Variables.scss";
+@import "../../../../Variables.scss";
 
 .category {
   width: 75%;
@@ -22,13 +22,14 @@
     display: inline-block;
     margin: 3.8vw;
   }
+
   &__selected {
     position: absolute;
     right: 0;
     bottom: 0;
     display: inline-block;
-    margin-right: 3.8vw;
-    margin-bottom: 5.2vw;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
     color: $gray-2;
   }
 
@@ -43,8 +44,10 @@
     &__tag {
       margin: 12px;
     }
+
     &__selected {
-      margin: 16px;
+      padding-top: 1px;
+      padding-bottom: 1px;
     }
   }
 }

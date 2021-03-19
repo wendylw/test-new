@@ -2,15 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import withDataAttributes from '../../components/withDataAttributes';
+import Image from '../../components/Image';
 import './Item.scss';
 
 class Item extends Component {
   renderImageEl() {
-    const { image, imageCover } = this.props;
+    const { title, imageUrl, imageCover } = this.props;
 
     return (
       <div className="item__image-container flex__shrink-fixed margin-small">
-        {image}
+        <Image className="item__image card__image" src={imageUrl} alt={title} />
         {imageCover}
       </div>
     );
@@ -59,7 +60,7 @@ class Item extends Component {
 
 Item.propTypes = {
   className: PropTypes.string,
-  image: PropTypes.element,
+  imageUrl: PropTypes.element,
   imageCover: PropTypes.element,
   summaryTag: PropTypes.element,
   title: PropTypes.string,
@@ -69,7 +70,7 @@ Item.propTypes = {
 };
 
 Item.defaultProps = {
-  image: null,
+  imageUrl: null,
   imageCover: null,
   summaryTag: null,
   title: '',

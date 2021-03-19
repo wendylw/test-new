@@ -230,6 +230,12 @@ img {
   align-items: flex-end;
 }
 
+.flex-stretch {
+  -ms-flex-align: stretch;
+  -webkit-align-items: stretch;
+  align-items: stretch;
+}
+
 .flex-center {
   -ms-flex-pack: center;
   -webkit-justify-content: center;

@@ -10,10 +10,10 @@ import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../..
 import DeliverToBar from '../../../components/DeliverToBar';
 import PromotionsBar from './components/PromotionsBar';
 import ProductDetail from './components/ProductDetail';
-import CartListAside from './components/CartListAside';
+import CartListDrawer from './components/CartListDrawer';
 import StoreInfoAside from './components/StoreInfoAside';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
-import CategoryProductList from './components/CategoryProductList';
+import ProductList from './components/ProductList';
 import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
@@ -880,7 +880,7 @@ export class Home extends Component {
             //   this.cleverTapTrack('Menu Page - Click category');
             // }}
           />
-          <CategoryProductList
+          <ProductList
             style={{
               paddingBottom:
                 Utils.isSafari && Utils.getUserAgentInfo().isMobile
@@ -920,7 +920,7 @@ export class Home extends Component {
             // }}
           />
         </div>
-        <CartListAside
+        <CartListDrawer
           footerEl={this.footerEl}
           viewAside={viewAside}
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}

@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { getProductItemMinHeight } from '../../redux/modules/home';
 
-import './ProductItem.scss';
+// import './ProductItem.scss';
 
 export class ProductItem extends Component {
   render() {

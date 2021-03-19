@@ -4,6 +4,9 @@ import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import LazyLoad from 'react-lazyload';
 import { ScrollObservable } from '../../../../components/ScrollComponents';
+import Tag from '../../../../components/Tag';
+import Item from '../../../components/Item';
+import CurrencyNumber from '../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -15,8 +18,9 @@ import {
 } from '../../../redux/modules/home';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
-import Constants from '../../../../tils/constants';
+import Constants from '../../../../utils/constants';
 import config from '../../../../config';
+import './ProductList.scss';
 
 class ProductList extends Component {
   handleGtmEventTracking = (eventName, data) => {
@@ -135,14 +139,16 @@ class ProductList extends Component {
   renderProductItemRightController(stockStatus, cartQuantity) {
     const { t } = this.props;
 
-    if (['outOfStock', 'markSoldOut', 'unavailable'].includes(stockStatus)) {
+    if (['outOfStock', 'unavailable'].includes(stockStatus)) {
       return <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" />;
     }
 
     return (
       <>
         {cartQuantity > 0 ? (
-          <span className="product-item__selected  text-size-small">{t('Selected', { quantity: cartQuantity })}</span>
+          <span className="product-item__selected  text-size-small margin-small">
+            {t('Selected', { quantity: cartQuantity })}
+          </span>
         ) : null}
       </>
     );
@@ -186,9 +192,9 @@ class ProductList extends Component {
                     return (
                       <LazyLoad offset={0} height={productItemMinHeight} scrollContainer="#product-list">
                         <Item
+                          className="flex-stretch"
                           data-heap-name="ordering.home.product-item"
-                          image={images[0]}
-                          imageCover={}
+                          imageUrl={images[0]}
                           summaryTag={this.renderProductItemContentTag(isFeaturedProduct)}
                           title={title}
                           variation={variation}
