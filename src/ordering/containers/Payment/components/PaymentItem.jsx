@@ -9,7 +9,7 @@ import _every from 'lodash/every';
 import _keys from 'lodash/keys';
 
 import { actions as paymentsActionCreators, getSelectedPaymentOption } from '../redux/payments';
-import PaymentLogo from './payment-logo';
+import PaymentLogo from './PaymentLogo';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Radio from '../../../../components/Radio';
 
