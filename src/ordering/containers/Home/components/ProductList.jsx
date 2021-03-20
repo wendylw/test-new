@@ -179,6 +179,7 @@ class ProductList extends Component {
                 <div>
                   {(category.products || []).map(product => {
                     const {
+                      id,
                       variation,
                       title,
                       images,
@@ -190,7 +191,13 @@ class ProductList extends Component {
                     } = product;
 
                     return (
-                      <LazyLoad offset={0} height={productItemMinHeight} scrollContainer="#product-list">
+                      <LazyLoad
+                        key={`product-item-${id}`}
+                        offset={0}
+                        height={productItemMinHeight}
+                        scrollContainer="#product-list"
+                        classNamePrefix="li"
+                      >
                         <Item
                           className="flex-stretch"
                           data-heap-name="ordering.home.product-item"

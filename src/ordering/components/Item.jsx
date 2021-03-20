@@ -49,18 +49,18 @@ class Item extends Component {
     const classList = ['item flex flex-top', ...(className ? [className] : [])];
 
     return (
-      <li className={classList.join(' ')} {...dataAttributes} onClick={() => handleClickItem()}>
+      <div className={classList.join(' ')} {...dataAttributes} onClick={() => handleClickItem()}>
         {this.renderImageEl()}
         {this.renderContent()}
         {children}
-      </li>
+      </div>
     );
   }
 }
 
 Item.propTypes = {
   className: PropTypes.string,
-  imageUrl: PropTypes.element,
+  imageUrl: PropTypes.string,
   imageCover: PropTypes.element,
   summaryTag: PropTypes.element,
   title: PropTypes.string,
