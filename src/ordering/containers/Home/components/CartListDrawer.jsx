@@ -42,6 +42,10 @@ class CartListDrawer extends Component {
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventDate);
   };
 
+  getOutStockStatus(stockStatus) {
+    return ['outOfStock', 'unavailable'].includes(stockStatus);
+  }
+
   handleHideCartAside(e) {
     const { onToggle } = this.props;
 
@@ -123,12 +127,12 @@ class CartListDrawer extends Component {
   renderImageCover(stockStatus) {
     const { t } = this.props;
 
-    if (!['outOfStock', 'unavailable'].includes(stockStatus)) {
+    if (!this.getOutStockStatus(stockStatus)) {
       return null;
     }
 
     return (
-      <div className="cart-item__image-cover">
+      <div className="cart-item__image-cover flex flex-middle flex-center text-center text-line-height-base">
         <span className="text-uppercase">{t('SoldOut')}</span>
       </div>
     );
@@ -159,7 +163,7 @@ class CartListDrawer extends Component {
     const lowStockState = quantity > quantityOnHand;
     const classList = ['text-center', ...(lowStockState ? ['text-error'] : [])];
 
-    if (['outOfStock', 'unavailable'].includes(stockStatus)) {
+    if (this.getOutStockStatus(stockStatus)) {
       return (
         <button
           className="button padding-top-bottom-smaller padding-left-right-normal"
