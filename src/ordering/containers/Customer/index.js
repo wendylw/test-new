@@ -15,8 +15,13 @@ import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../..
 import CreateOrderButton from '../../components/CreateOrderButton';
 import AddressChangeModal from './components/AddressChangeModal';
 
-import { getBusiness, getUser, getRequestInfo, getBusinessUTCOffset } from '../../redux/modules/app';
-import { actions as homeActionCreators } from '../../redux/modules/home';
+import {
+  actions as appActionCreators,
+  getBusiness,
+  getUser,
+  getRequestInfo,
+  getBusinessUTCOffset,
+} from '../../redux/modules/app';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -32,7 +37,7 @@ class Customer extends Component {
   };
 
   async componentDidMount() {
-    const { history, homeActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
+    const { history, appActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
     const { addressId, deliveryToLocation } = deliveryDetails || {};
@@ -42,7 +47,7 @@ class Customer extends Component {
     //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
     !addressId && (await customerActions.initDeliveryDetails(type));
     !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
-    homeActions.loadShoppingCart(
+    appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -435,7 +440,7 @@ export default compose(
       businessUTCOffset: getBusinessUTCOffset(state),
     }),
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
