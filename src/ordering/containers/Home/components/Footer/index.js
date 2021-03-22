@@ -15,7 +15,7 @@ import { getAllBusinesses } from '../../../../../redux/modules/entities/business
 import Utils from '../../../../../utils/utils';
 import { del, get } from '../../../../../utils/request';
 import Url from '../../../../../utils/url';
-import DsbridgeUtils, { nativeMethods } from '../../../../../utils/dsbridge-methods';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
 
 export class Footer extends Component {
   constructor(props) {
@@ -89,15 +89,15 @@ export class Footer extends Component {
   };
 
   handleInvalidAppToken = () => {
-    DsbridgeUtils.dsbridgeCall(nativeMethods.tokenExpired);
+    DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
   };
 
   postAppMessage(user) {
     const { isExpired } = user || {};
     if (isExpired) {
-      DsbridgeUtils.dsbridgeCall(nativeMethods.tokenExpired);
+      DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
     } else {
-      DsbridgeUtils.dsbridgeCall(nativeMethods.getToken);
+      DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_ADDRESS);
     }
   }
 

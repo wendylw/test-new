@@ -1,27 +1,50 @@
 import Utils from './utils';
 import dsbridge from 'dsbridge';
 
-export const nativeMethods = {
-  gotoHome: {
-    name: 'gotoHome',
+export const NATIVE_METHODS = {
+  START_CHAT: (phone, name, email, message) => {
+    return {
+      module: 'beepModule',
+      name: 'startChat',
+      params: {
+        phoneNumber: phone,
+        name,
+        email,
+        message,
+      },
+    };
   },
-  getAddress: {
+  GET_ADDRESS: {
+    module: 'beepModule',
     name: 'getAddress',
   },
-  getLoginStatus: {
+  GOTO_HOME: {
+    module: 'routerModule',
+    name: 'gotoHome',
+  },
+  GET_LOGIN_STATUS: {
+    module: 'userModule',
     name: 'isLogin',
   },
-  getToken: {
+  GET_TOKEN: {
+    module: 'userModule',
     name: 'getToken',
   },
-  tokenExpired: {
+  TOKEN_EXPIRED: {
+    module: 'userModule',
     name: 'tokenExpired',
   },
-  closeMap: {
-    name: 'closeMap',
+  SHOW_MAP: {
+    module: 'mapModule',
+    name: 'showMap',
   },
-  updateHeaderOptionsAndShowMap: (title, text) => {
+  HIDE_MAP: {
+    module: 'mapModule',
+    name: 'hideMap',
+  },
+  UPDATE_HEADER_OPTIONS_AND_SHOW_MAP: (title, text) => {
     return {
+      module: 'mapModule',
       name: 'updateHeaderOptionsAndShowMap',
       params: {
         title,
@@ -34,26 +57,9 @@ export const nativeMethods = {
       },
     };
   },
-  updateStorePosition: (storeLat, storeLng) => {
+  UPDATE_RIDER_POSITION: (lat, lng) => {
     return {
-      name: 'updateStorePosition',
-      params: {
-        lat: storeLat,
-        lng: storeLng,
-      },
-    };
-  },
-  updateHomePosition: (deliveryLat, deliveryLng) => {
-    return {
-      name: 'updateHomePosition',
-      params: {
-        lat: deliveryLat,
-        lng: deliveryLng,
-      },
-    };
-  },
-  updateRiderPosition: (lat, lng) => {
-    return {
+      module: 'mapModule',
       name: 'updateRiderPosition',
       params: {
         lat: lat,
@@ -61,22 +67,32 @@ export const nativeMethods = {
       },
     };
   },
-  focusPositions: focusPositionList => {
+  UPDATE_HOME_POSITION: (deliveryLat, deliveryLng) => {
     return {
-      name: 'focusPositions',
+      module: 'mapModule',
+      name: 'updateHomePosition',
       params: {
-        positions: focusPositionList,
+        lat: deliveryLat,
+        lng: deliveryLng,
       },
     };
   },
-  startChat: (phone, name, email, message) => {
+  UPDATE_STORE_POSITION: (storeLat, storeLng) => {
     return {
-      name: 'startChat',
+      module: 'mapModule',
+      name: 'updateStorePosition',
       params: {
-        phoneNumber: phone,
-        name,
-        email,
-        message,
+        lat: storeLat,
+        lng: storeLng,
+      },
+    };
+  },
+  FOCUS_POSITIONS: focusPositionList => {
+    return {
+      module: 'mapModule',
+      name: 'focusPositions',
+      params: {
+        positions: focusPositionList,
       },
     };
   },
@@ -99,16 +115,16 @@ const hasNativeSavedAddress = () => {
 const getTokenFromNative = user => {
   const { isExpired } = user || {};
   if (isExpired) {
-    DsbridgeContainer.dsbridgeCall(nativeMethods.tokenExpired);
+    dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
   } else {
-    DsbridgeContainer.dsbridgeCall(nativeMethods.getToken);
+    dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
   }
 };
 
 const dsbridgeCall = method => {
-  const { name, params } = method || {};
-  if (dsbridge.hasNativeMethod(name, 'syn')) {
-    let result = dsbridge.call(name, params);
+  const { module, name, params } = method || {};
+  if (dsbridge.hasNativeMethod(`${module}.${name}`, 'syn')) {
+    let result = dsbridge.call(`${module}.${name}`, params);
     if (typeof result === 'undefined' || result === null) {
       return;
     }
@@ -117,9 +133,9 @@ const dsbridgeCall = method => {
     } catch (e) {
       console.log(e);
     }
-  } else if (dsbridge.hasNativeMethod(name, 'asyn')) {
+  } else if (dsbridge.hasNativeMethod(`${module}.${name}`, 'asyn')) {
     var promise = new Promise(function(resolve, reject) {
-      dsbridge.call(name, params, function(result) {
+      dsbridge.call(`${module}.${name}`, params, function(result) {
         try {
           resolve(JSON.parse(result));
         } catch (e) {

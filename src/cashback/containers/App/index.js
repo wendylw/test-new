@@ -20,7 +20,7 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import Utils from '../../../utils/utils';
-import DsbridgeUtils, { nativeMethods } from '../../../utils/dsbridge-methods';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
 
 class App extends Component {
   constructor(props) {
@@ -58,7 +58,7 @@ class App extends Component {
 
     const { user } = this.props;
     const { isLogin, isWebview } = user || {};
-    const appLogin = DsbridgeUtils.dsbridgeCall(nativeMethods.getLoginStatus);
+    const appLogin = DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_LOGIN_STATUS);
 
     if (isLogin) {
       appActions.loadCustomerProfile();
@@ -126,7 +126,7 @@ class App extends Component {
   render() {
     const { user } = this.props;
     const { isWebview } = user || {};
-    const appLogin = DsbridgeUtils.dsbridgeCall(nativeMethods.getLoginStatus);
+    const appLogin = DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_LOGIN_STATUS);
 
     return !appLogin && isWebview ? <RequestLogin user={user} /> : this.renderMainContent();
   }
