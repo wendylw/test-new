@@ -26,18 +26,6 @@ class CartListDrawer extends Component {
     await this.props.appActions.loadShoppingCart();
   };
 
-  handleClearAll = async () => {
-    const { viewAside } = this.props;
-
-    if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
-      await this.props.cartActions.clearAllByProducts(this.props.selectedProductCart.items);
-      this.props.appActions.loadShoppingCart();
-    } else {
-      await this.props.cartActions.clearAll();
-      this.props.appActions.loadShoppingCart();
-    }
-  };
-
   handleGtmEventTracking = product => {
     // In cart page, image count is always either 1 or 0
     const gtmEventDate = {
@@ -64,18 +52,36 @@ class CartListDrawer extends Component {
     onToggle();
   }
 
+  handleClearAll = async () => {
+    const { viewAside } = this.props;
+
+    if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
+      await this.props.cartActions.clearAllByProducts(this.props.selectedProductCart.items);
+      this.props.appActions.loadShoppingCart();
+    } else {
+      await this.props.cartActions.clearAll();
+      this.props.appActions.loadShoppingCart();
+    }
+  };
+
+  handleRemoveCartItem = cartItem => {
+    const { productId, variations } = cartItem;
+
+    this.props.appActions
+      .removeShoppingCartItem({
+        productId,
+        variations,
+      })
+      .then(() => {
+        this.props.appActions.loadShoppingCart();
+      });
+  };
+
   handleDecreaseCartItem = cartItem => {
     const { quantity, productId, variations } = cartItem;
 
     if (quantity === 1) {
-      this.props.appActions
-        .removeShoppingCartItem({
-          productId,
-          variations,
-        })
-        .then(() => {
-          this.props.appActions.loadShoppingCart();
-        });
+      this.handleRemoveCartItem(cartItem);
     } else {
       this.props.appActions
         .addOrUpdateShoppingCartItem({
@@ -150,21 +156,38 @@ class CartListDrawer extends Component {
   renderProductItemRightController(cartItem) {
     const { t } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
+    const lowStockState = quantity > quantityOnHand;
+    const classList = ['text-center', ...(lowStockState ? ['text-error'] : [])];
 
     if (['outOfStock', 'unavailable'].includes(stockStatus)) {
-      return <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" />;
+      return (
+        <button
+          className="button padding-top-bottom-smaller padding-left-right-normal"
+          onClick={this.handleRemoveCartItem(cartItem)}
+          data-testid="removeCartItem"
+          data-heap-name="ordering.home.mini-cart.remove-item-btn"
+        >
+          <IconDelete className="icon icon__small icon__error text-middle" />
+          <span className="text-middle text-error">{t('Remove')}</span>
+        </button>
+      );
     }
 
     return (
-      <ItemOperator
-        className="flex-middle"
-        data-heap-name="ordering.home.cart-item.item-operator"
-        quantity={quantity}
-        decreaseDisabled={!Boolean(quantity)}
-        increaseDisabled={quantity > quantityOnHand}
-        onDecrease={() => this.handleDecreaseCartItem(cartItem)}
-        onIncrease={() => this.handleIncreaseCartItem(cartItem)}
-      />
+      <div className={classList.join(' ')}>
+        <ItemOperator
+          className="flex-middle"
+          data-heap-name="ordering.home.mini-cart.item-operator"
+          quantity={quantity}
+          decreaseDisabled={!Boolean(quantity)}
+          increaseDisabled={lowStockState}
+          onDecrease={() => this.handleDecreaseCartItem(cartItem)}
+          onIncrease={() => this.handleIncreaseCartItem(cartItem)}
+        />
+        {stockStatus === 'lowStock' ? (
+          <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>
+        ) : null}
+      </div>
     );
   }
 
@@ -202,7 +225,7 @@ class CartListDrawer extends Component {
               <li key={`cart-item-${id}`}>
                 <Item
                   className="flex-top"
-                  data-heap-name="ordering.home.cart-item"
+                  data-heap-name="ordering.home.mini-cart.cart-item"
                   imageUrl={image}
                   imageCover={this.renderImageCover()}
                   title={title}
