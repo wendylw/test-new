@@ -17,8 +17,14 @@ import { getCartSummary, getPromotion } from '../../../redux/modules/entities/ca
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
-import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getUser,
+  getBusiness,
+  getShoppingCart,
+  getCurrentProduct,
+} from '../../redux/modules/app';
 import { getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
@@ -44,9 +50,9 @@ class Cart extends Component {
   }
 
   async componentDidMount() {
-    const { homeActions } = this.props;
+    const { appActionCreators } = this.props;
 
-    await homeActions.loadShoppingCart();
+    await appActionCreators.loadShoppingCart();
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
@@ -222,10 +228,10 @@ class Cart extends Component {
   };
 
   dismissPromotion = async () => {
-    const { promotionActions, homeActions } = this.props;
+    const { promotionActions, appActionCreators } = this.props;
 
     await promotionActions.dismissPromotion();
-    await homeActions.loadShoppingCart();
+    await appActionCreators.loadShoppingCart();
   };
 
   handleGotoPromotion = () => {
@@ -519,7 +525,6 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       cartActions: bindActionCreators(cartActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),

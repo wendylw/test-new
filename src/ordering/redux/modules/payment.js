@@ -4,7 +4,7 @@ import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
-import { getCartItemIds } from './home';
+import { getCartItemIds } from './app';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions, getBusinessUTCOffset } from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 

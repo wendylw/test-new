@@ -10,9 +10,9 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { actions as appActionsCreator, getShoppingCart } from '../../../redux/modules/app';
 import {
   actions as homeActionsCreator,
-  getShoppingCart,
   getCategoryProductList,
   getProductItemMinHeight,
 } from '../../../redux/modules/home';
@@ -114,10 +114,10 @@ class ProductList extends Component {
     }
 
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
-    await this.props.homeActions.loadShoppingCart();
+    await this.props.appActions.loadShoppingCart();
   };
 
-  renderProductItemPrice(price, originalDisplayPrice) {
+  renderProductItemPrice(displayPrice, originalDisplayPrice) {
     return (
       <div>
         {originalDisplayPrice ? (
@@ -129,7 +129,7 @@ class ProductList extends Component {
         ) : null}
         <CurrencyNumber
           className={`product-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
-          money={price || 0}
+          money={displayPrice || 0}
           numberOnly={true}
         />
       </div>
@@ -184,7 +184,7 @@ class ProductList extends Component {
                       title,
                       images,
                       isFeaturedProduct,
-                      price,
+                      displayPrice,
                       originalDisplayPrice,
                       stockStatus,
                       cartQuantity,
@@ -205,7 +205,7 @@ class ProductList extends Component {
                           summaryTag={this.renderProductItemContentTag(isFeaturedProduct)}
                           title={title}
                           variation={variation}
-                          details={this.renderProductItemPrice(price, originalDisplayPrice)}
+                          details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
                           handleClickItem={() =>
                             this.handleShowProductDetail(product, {
                               name: category.name,
@@ -250,6 +250,7 @@ export default compose(
       };
     },
     dispatch => ({
+      appActions: bindActionCreators(appActionsCreator, dispatch),
       homeActions: bindActionCreators(homeActionsCreator, dispatch),
     })
   )

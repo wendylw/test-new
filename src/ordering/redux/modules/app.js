@@ -4,6 +4,7 @@ import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
+import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import CleverTap from '../../../utils/clevertap';
@@ -15,12 +16,16 @@ import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
+import { getCartItemById } from '../../../redux/modules/entities/carts';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
+import { getCartSummary, getAllCartItems } from '../../../redux/modules/entities/carts';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
+
+export const types = APP_TYPES;
 
 export const initialState = {
   user: {
@@ -67,9 +72,101 @@ export const initialState = {
     tableId: config.table,
     storeId: config.storeId,
   },
+  currentProduct: {
+    id: '',
+    cartId: '',
+    isFetching: false,
+  },
+  shoppingCart: {
+    isFetching: false,
+    itemIds: [],
+    unavailableItemIds: [],
+  },
 };
 
-export const types = APP_TYPES;
+const fetchCoreBusiness = variables => ({
+  [FETCH_GRAPHQL]: {
+    types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
+    endpoint: Url.apiGql('CoreBusiness'),
+    variables,
+  },
+});
+
+const fetchCustomerProfile = consumerId => ({
+  [API_REQUEST]: {
+    types: [
+      types.FETCH_CUSTOMER_PROFILE_REQUEST,
+      types.FETCH_CUSTOMER_PROFILE_SUCCESS,
+      types.FETCH_CUSTOMER_PROFILE_FAILURE,
+    ],
+    ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
+  },
+});
+
+// generator a virtual shopping cart for Customer place a Voucher Order
+const generatorShoppingCartForVoucherOrdering = () => {
+  const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
+  const shoppingCart = VoucherUtils.generatorVirtualShoppingCart(orderingInfo.selectedVoucher);
+
+  return {
+    type: types.FETCH_SHOPPINGCART_SUCCESS,
+    response: shoppingCart,
+  };
+};
+
+const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
+  return {
+    [API_REQUEST]: {
+      types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
+      //...Url.API_URLS.GET_CART,
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
+    },
+  };
+};
+
+const fetchProductDetail = variables => {
+  const endpoint = Url.apiGql('ProductDetail');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
+      endpoint,
+      variables: {
+        ...variables,
+      },
+    },
+  };
+};
+
+// variables := { productId, variations }
+const removeShoppingCartItem = variables => {
+  const endpoint = Url.apiGql('RemoveShoppingCartItem');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.REMOVE_SHOPPINGCARTITEM_REQUEST,
+        types.REMOVE_SHOPPINGCARTITEM_SUCCESS,
+        types.REMOVE_SHOPPINGCARTITEM_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
+
+const addOrUpdateShoppingCartItem = variables => {
+  const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST,
+        types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS,
+        types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
 
 //action creators
 export const actions = {
@@ -254,26 +351,88 @@ export const actions = {
 
     return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
   },
+
+  // load shopping cart
+  loadShoppingCart: location => async (dispatch, getState) => {
+    const isDelivery = Utils.isDeliveryType();
+    const isDigital = Utils.isDigitalType();
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
+    if (isDigital) {
+      await dispatch(generatorShoppingCartForVoucherOrdering());
+      return;
+    }
+
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
+    }
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords, fulfillDate));
+  },
+
+  removeShoppingCartItem: variables => dispatch => {
+    return dispatch(removeShoppingCartItem(variables));
+  },
+
+  addOrUpdateShoppingCartItem: variables => dispatch => {
+    return dispatch(addOrUpdateShoppingCartItem(variables));
+  },
+
+  // decrease clicked on product item
+  decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
+    const cartItem = (shoppingCart.items || []).find(
+      item => item.productId === prod.id || item.parentProductId === prod.id
+    );
+
+    if (prod.cartQuantity === 1) {
+      return dispatch(
+        removeShoppingCartItem({
+          productId: cartItem.productId,
+          variations: cartItem.variations,
+        })
+      );
+    }
+    return dispatch(
+      addOrUpdateShoppingCartItem({
+        action: 'edit',
+        business: getBusiness(getState()),
+        productId: cartItem.productId,
+        quantity: prod.cartQuantity - 1,
+        variations: cartItem.variations || [],
+      })
+    );
+  },
+
+  // increase clicked on product item
+  increaseProductInCart: prod => (dispatch, getState) => {
+    const cartItem = (prod.cartItems || []).find(
+      item => item.productId === prod.id || item.parentProductId === prod.id
+    );
+
+    if (prod.variations && prod.variations.length && getState().app.currentProduct.id === prod.id) {
+      return;
+    }
+
+    if (prod.variations && prod.variations.length) {
+      const businessUTCOffset = getBusinessUTCOffset(getState());
+      const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+      return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
+    }
+
+    return dispatch(
+      addOrUpdateShoppingCartItem({
+        action: 'edit',
+        business: getBusiness(getState()),
+        productId: prod.id,
+        quantity: prod.cartQuantity + 1,
+        variations: prod.hasSingleChoice && prod.cartItems.length === 1 ? cartItem.variations : [],
+      })
+    );
+  },
 };
-
-const fetchCoreBusiness = variables => ({
-  [FETCH_GRAPHQL]: {
-    types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
-    endpoint: Url.apiGql('CoreBusiness'),
-    variables,
-  },
-});
-
-export const fetchCustomerProfile = consumerId => ({
-  [API_REQUEST]: {
-    types: [
-      types.FETCH_CUSTOMER_PROFILE_REQUEST,
-      types.FETCH_CUSTOMER_PROFILE_SUCCESS,
-      types.FETCH_CUSTOMER_PROFILE_FAILURE,
-    ],
-    ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
-  },
-});
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, fields, responseGql } = action;
@@ -496,6 +655,51 @@ const messageModal = (state = initialState.messageModal, action) => {
 
 const requestInfo = (state = initialState.requestInfo, action) => state;
 
+const shoppingCart = (state = initialState.shoppingCart, action) => {
+  if (action.responseGql) {
+    const { emptyShoppingCart } = action.responseGql.data || {};
+    if (emptyShoppingCart && emptyShoppingCart.success) {
+      return { ...state, isFetching: false, itemIds: [], unavailableItemIds: [] };
+    }
+  }
+
+  switch (action.type) {
+    case types.FETCH_SHOPPINGCART_REQUEST:
+      return { ...state, isFetching: true };
+    case types.FETCH_SHOPPINGCART_SUCCESS: {
+      const { items, unavailableItems } = action.response || {};
+
+      return {
+        ...state,
+        isFetching: false,
+        itemIds: items.map(item => item.id),
+        unavailableItemIds: unavailableItems.map(item => item.id),
+      };
+    }
+    case types.FETCH_SHOPPINGCART_FAILURE:
+      return { ...state, isFetching: false };
+    default:
+      return state;
+  }
+};
+
+const currentProduct = (state = initialState.currentProduct, action) => {
+  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
+    return { ...state, isFetching: true };
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
+    const { product } = action.responseGql.data;
+
+    return {
+      ...state,
+      isFetching: false,
+      id: product.id,
+    };
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
+    return { ...state, isFetching: false };
+  }
+  return state;
+};
+
 export default combineReducers({
   user,
   error,
@@ -504,6 +708,8 @@ export default combineReducers({
   onlineStoreInfo,
   requestInfo,
   apiError,
+  shoppingCart,
+  currentProduct,
 });
 
 // selectors
@@ -554,3 +760,49 @@ export const getStore = state => {
 export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
   return _get(onlineStoreInfo, 'currency', 'MYR');
 });
+
+export const getCurrentProduct = state => state.app.currentProduct;
+
+export const getCartItemIds = state => state.app.shoppingCart.itemIds;
+
+export const getCartUnavailableItemIds = state => state.app.shoppingCart.unavailableItemIds;
+
+export const getShoppingCart = createSelector(
+  [getCartSummary, getCartItemIds, getCartUnavailableItemIds, getAllCartItems],
+  (summary, itemIds, unavailableItemIds, carts) => {
+    return {
+      summary,
+      items: itemIds.map(id => carts[id]),
+      unavailableItems: unavailableItemIds.map(id => carts[id]),
+    };
+  }
+);
+
+// get cartItems of currentProduct
+export const getShoppingCartItemsByProducts = createSelector(
+  [getCartItemIds, getAllCartItems, getCurrentProduct],
+  (itemIds, carts, product) => {
+    const calcItems = itemIds
+      .map(id => carts[id])
+      .filter(x => x.productId === product.id || x.parentProductId === product.id);
+    const items = calcItems.map(x => {
+      return {
+        productId: x.productId,
+        variations: x.variations,
+      };
+    });
+    const count = calcItems.reduce((res, item) => {
+      res = res + item.quantity;
+      return res;
+    }, 0);
+
+    return {
+      items,
+      count,
+    };
+  }
+);
+
+export const getCartItemList = state => {
+  return state.app.shoppingCart.itemIds.map(id => getCartItemById(state, id));
+};

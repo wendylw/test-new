@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProductItem from '../../../../components/ProductItem';
 import { getProductById } from '../../../../../redux/modules/entities/products';
-import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/home';
+import { actions as appActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/app';
 import Constants from '../../../../../utils/constants';
 import constants from '../../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
@@ -27,14 +27,14 @@ const isCartItemSoldOut = cartItem => {
 
 class CartList extends Component {
   handleRemoveCartItem = variables => {
-    this.props.homeActions.removeShoppingCartItem(variables).then(() => {
-      this.props.homeActions.loadShoppingCart();
+    this.props.appActionCreators.removeShoppingCartItem(variables).then(() => {
+      this.props.appActionCreators.loadShoppingCart();
     });
   };
 
   handleAddOrUpdateShoppingCartItem = variables => {
-    this.props.homeActions.addOrUpdateShoppingCartItem(variables).then(() => {
-      this.props.homeActions.loadShoppingCart();
+    this.props.appActionCreators.addOrUpdateShoppingCartItem(variables).then(() => {
+      this.props.appActionCreators.loadShoppingCart();
     });
   };
 
@@ -170,6 +170,6 @@ export default connect(
     };
   },
   dispatch => ({
-    homeActions: bindActionCreators(homeActionCreators, dispatch),
+    appActionCreators: bindActionCreators(appActionCreators, dispatch),
   })
 )(CartList);

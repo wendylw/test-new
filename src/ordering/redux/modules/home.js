@@ -5,17 +5,14 @@ import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
 import * as StoreUtils from '../../../utils/store-utils';
 import { combineReducers } from 'redux';
-// import { computeDeliveryDistance } from '../../containers/Location/utils';
-import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
-import { getBusiness, getBusinessUTCOffset } from './app';
+import { getBusiness, getBusinessUTCOffset, getCartItemList } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList } from '../../../redux/modules/entities/stores';
-// import { getBusinessInfo } from './cart';
 
 export const initialState = {
   domProperties: {
@@ -24,16 +21,6 @@ export const initialState = {
       ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
         ? document.body.clientWidth || window.innerWidth
         : 414) * 0.26,
-  },
-  currentProduct: {
-    id: '',
-    cartId: '',
-    isFetching: false,
-  },
-  shoppingCart: {
-    isFetching: false,
-    itemIds: [],
-    unavailableItemIds: [],
   },
   onlineCategory: {
     isFetching: false,
@@ -157,34 +144,6 @@ export const actions = {
     );
   },
 
-  // increase clicked on product item
-  increaseProductInCart: prod => (dispatch, getState) => {
-    const cartItem = (prod.cartItems || []).find(
-      item => item.productId === prod.id || item.parentProductId === prod.id
-    );
-
-    if (prod.variations && prod.variations.length && getState().home.currentProduct.id === prod.id) {
-      return;
-    }
-
-    if (prod.variations && prod.variations.length) {
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-      const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-      return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
-    }
-
-    return dispatch(
-      addOrUpdateShoppingCartItem({
-        action: 'edit',
-        business: getBusiness(getState()),
-        productId: prod.id,
-        quantity: prod.cartQuantity + 1,
-        variations: prod.hasSingleChoice && prod.cartItems.length === 1 ? cartItem.variations : [],
-      })
-    );
-  },
-
   loadProductDetail: prod => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
@@ -290,51 +249,6 @@ const domProperties = (state = initialState.domProperties, action) => {
   return state;
 };
 
-const currentProduct = (state = initialState.currentProduct, action) => {
-  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
-    return { ...state, isFetching: true };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
-    const { product } = action.responseGql.data;
-
-    return {
-      ...state,
-      isFetching: false,
-      id: product.id,
-    };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
-    return { ...state, isFetching: false };
-  }
-  return state;
-};
-
-const shoppingCart = (state = initialState.shoppingCart, action) => {
-  if (action.responseGql) {
-    const { emptyShoppingCart } = action.responseGql.data || {};
-    if (emptyShoppingCart && emptyShoppingCart.success) {
-      return { ...state, isFetching: false, itemIds: [], unavailableItemIds: [] };
-    }
-  }
-
-  switch (action.type) {
-    case types.FETCH_SHOPPINGCART_REQUEST:
-      return { ...state, isFetching: true };
-    case types.FETCH_SHOPPINGCART_SUCCESS: {
-      const { items, unavailableItems } = action.response || {};
-
-      return {
-        ...state,
-        isFetching: false,
-        itemIds: items.map(item => item.id),
-        unavailableItemIds: unavailableItems.map(item => item.id),
-      };
-    }
-    case types.FETCH_SHOPPINGCART_FAILURE:
-      return { ...state, isFetching: false };
-    default:
-      return state;
-  }
-};
-
 const onlineCategory = (state = initialState.onlineCategory, action) => {
   switch (action.type) {
     case types.FETCH_ONLINECATEGORY_REQUEST:
@@ -402,8 +316,6 @@ const popUpModal = (state = initialState.popUpModal, action) => {
 
 export default combineReducers({
   domProperties,
-  currentProduct,
-  shoppingCart,
   onlineCategory,
   popUpModal,
   timeSlot,
@@ -419,56 +331,9 @@ export const getDeliveryInfo = state => {
   return Utils.getDeliveryInfo({ business, allBusinessInfo });
 };
 
-export const isFetched = state => state.home.shoppingCart.isFetched;
-
 export const getStoresList = state => getCoreStoreList(state);
 
 export const getStoreHashCode = state => state.home.coreStore.storeHashCode;
-
-export const getCartItemIds = state => state.home.shoppingCart.itemIds;
-
-export const getCartUnavailableItemIds = state => state.home.shoppingCart.unavailableItemIds;
-
-export const getShoppingCart = createSelector(
-  [getCartSummary, getCartItemIds, getCartUnavailableItemIds, getAllCartItems],
-  (summary, itemIds, unavailableItemIds, carts) => {
-    return {
-      summary,
-      items: itemIds.map(id => carts[id]),
-      unavailableItems: unavailableItemIds.map(id => carts[id]),
-    };
-  }
-);
-export const getCurrentProduct = state => state.home.currentProduct;
-
-// get cartItems of currentProduct
-export const getShoppingCartItemsByProducts = createSelector(
-  [getCartItemIds, getAllCartItems, getCurrentProduct],
-  (itemIds, carts, product) => {
-    const calcItems = itemIds
-      .map(id => carts[id])
-      .filter(x => x.productId === product.id || x.parentProductId === product.id);
-    const items = calcItems.map(x => {
-      return {
-        productId: x.productId,
-        variations: x.variations,
-      };
-    });
-    const count = calcItems.reduce((res, item) => {
-      res = res + item.quantity;
-      return res;
-    }, 0);
-
-    return {
-      items,
-      count,
-    };
-  }
-);
-
-export const getCartItemList = state => {
-  return state.home.shoppingCart.itemIds.map(id => getCartItemById(state, id));
-};
 
 export const getCategoryIds = state => state.home.onlineCategory.categoryIds;
 

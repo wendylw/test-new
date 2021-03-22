@@ -19,7 +19,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getProductById } from '../../../../../redux/modules/entities/products';
-import { actions as homeActionCreators, getCurrentProduct } from '../../../../redux/modules/home';
+import { actions as appActionCreators, getCurrentProduct } from '../../../../redux/modules/app';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import qs from 'qs';
 import { withRouter } from 'react-router-dom';
@@ -404,12 +405,12 @@ class ProductDetail extends Component {
   };
 
   handleAddOrUpdateShoppingCartItem = async variables => {
-    const { homeActions } = this.props;
+    const { appActions } = this.props;
 
     this.handleGtmEventTracking(variables);
 
-    await homeActions.addOrUpdateShoppingCartItem(variables);
-    await homeActions.loadShoppingCart();
+    await appActions.addOrUpdateShoppingCartItem(variables);
+    await appActions.loadShoppingCart();
 
     this.handleHideProductDetail();
   };
@@ -420,7 +421,7 @@ class ProductDetail extends Component {
   }
 
   handleDescriptionAddOrShowDescription = async product => {
-    const { onToggle, homeActions } = this.props;
+    const { onToggle, appActions, homeActions } = this.props;
     const { variations } = product;
 
     const { history } = this.props;
@@ -442,14 +443,14 @@ class ProductDetail extends Component {
     }
 
     if (!variations || !variations.length) {
-      await homeActions.addOrUpdateShoppingCartItem({
+      await appActions.addOrUpdateShoppingCartItem({
         action: 'add',
         business: config.business,
         productId: product.id,
         quantity: Constants.ADD_TO_CART_MIN_QUANTITY,
         variations: [],
       });
-      await homeActions.loadShoppingCart();
+      await appActions.loadShoppingCart();
       this.closeModal();
 
       return;
@@ -855,6 +856,7 @@ export default compose(
       };
     },
     dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
