@@ -250,7 +250,7 @@ class Home extends React.Component {
               className="offer-details__bar"
               data-heap-name="site.home.campaign-bar"
               target="_blank"
-              href="https://app.beepit.com/download/?utm_source=beep&utm_medium=homepage&utm_campaign=launch_campaign&utm_content=top_banner"
+              href="https://storehub.page.link/pzok"
               rel="noopener noreferrer"
             >
               <p className="flex flex-middle flex-center">
