@@ -1260,16 +1260,9 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    let link = '';
+    const link = 'https://storehub.page.link/c8Ci';
     const client = Utils.judgeClient();
-    if (client === 'iOS') {
-      link = 'https://apps.apple.com/my/app/beep-food-delivery/id1526807985';
-    } else if (client === 'Android') {
-      link = 'https://play.google.com/store/apps/details?id=com.storehub.beep';
-    } else {
-      link =
-        'https://app.beepit.com/download/?utm_source=beep&utm_medium=tracking&utm_campaign=launch_campaign&utm_content=tracking_banner';
-    }
+
     return (
       <div className="margin-normal ordering-thanks__download">
         <a href={link} data-heap-name="ordering.thank-you.download" target={client === 'PC' ? '_blank' : ''}>
