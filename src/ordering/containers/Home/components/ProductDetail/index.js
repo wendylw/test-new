@@ -731,11 +731,6 @@ class ProductDetail extends Component {
     const descriptionStr = { __html: description };
     const isHaveContent = Utils.removeHtmlTag(description);
 
-    console.log(show);
-    console.log(product);
-    console.log(id);
-    console.log(_needMore);
-
     if (show && product && id && !_needMore) {
       className.push('active cover');
     }

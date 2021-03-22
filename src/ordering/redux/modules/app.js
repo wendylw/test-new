@@ -388,57 +388,57 @@ export const actions = {
   },
 
   // decrease clicked on product item
-  decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
-    const cartItem = (shoppingCart.items || []).find(
-      item => item.productId === prod.id || item.parentProductId === prod.id
-    );
+  // decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
+  //   const cartItem = (shoppingCart.items || []).find(
+  //     item => item.productId === prod.id || item.parentProductId === prod.id
+  //   );
 
-    if (prod.cartQuantity === 1) {
-      return dispatch(
-        removeShoppingCartItem({
-          productId: cartItem.productId,
-          variations: cartItem.variations,
-        })
-      );
-    }
-    return dispatch(
-      addOrUpdateShoppingCartItem({
-        action: 'edit',
-        business: getBusiness(getState()),
-        productId: cartItem.productId,
-        quantity: prod.cartQuantity - 1,
-        variations: cartItem.variations || [],
-      })
-    );
-  },
+  //   if (prod.cartQuantity === 1) {
+  //     return dispatch(
+  //       removeShoppingCartItem({
+  //         productId: cartItem.productId,
+  //         variations: cartItem.variations,
+  //       })
+  //     );
+  //   }
+  //   return dispatch(
+  //     addOrUpdateShoppingCartItem({
+  //       action: 'edit',
+  //       business: getBusiness(getState()),
+  //       productId: cartItem.productId,
+  //       quantity: prod.cartQuantity - 1,
+  //       variations: cartItem.variations || [],
+  //     })
+  //   );
+  // },
 
   // increase clicked on product item
-  increaseProductInCart: prod => (dispatch, getState) => {
-    const cartItem = (prod.cartItems || []).find(
-      item => item.productId === prod.id || item.parentProductId === prod.id
-    );
+  // increaseProductInCart: prod => (dispatch, getState) => {
+  //   const cartItem = (prod.cartItems || []).find(
+  //     item => item.productId === prod.id || item.parentProductId === prod.id
+  //   );
 
-    if (prod.variations && prod.variations.length && getState().app.currentProduct.id === prod.id) {
-      return;
-    }
+  //   if (prod.variations && prod.variations.length && getState().app.currentProduct.id === prod.id) {
+  //     return;
+  //   }
 
-    if (prod.variations && prod.variations.length) {
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-      const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+  //   if (prod.variations && prod.variations.length) {
+  //     const businessUTCOffset = getBusinessUTCOffset(getState());
+  //     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-      return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
-    }
+  //     return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
+  //   }
 
-    return dispatch(
-      addOrUpdateShoppingCartItem({
-        action: 'edit',
-        business: getBusiness(getState()),
-        productId: prod.id,
-        quantity: prod.cartQuantity + 1,
-        variations: prod.hasSingleChoice && prod.cartItems.length === 1 ? cartItem.variations : [],
-      })
-    );
-  },
+  //   return dispatch(
+  //     addOrUpdateShoppingCartItem({
+  //       action: 'edit',
+  //       business: getBusiness(getState()),
+  //       productId: prod.id,
+  //       quantity: prod.cartQuantity + 1,
+  //       variations: prod.hasSingleChoice && prod.cartItems.length === 1 ? cartItem.variations : [],
+  //     })
+  //   );
+  // },
 };
 
 const user = (state = initialState.user, action) => {
