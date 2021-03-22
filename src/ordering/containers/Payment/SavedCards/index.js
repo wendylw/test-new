@@ -11,8 +11,7 @@ import Loader from '../components/Loader';
 
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getMerchantCountry, getUser } from '../../../redux/modules/app';
+import { actions as appActionCreators, getMerchantCountry, getUser } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCardList, getSelectedPaymentCard } from '../../../redux/modules/payment';
 import { getCardLabel, getCardIcon } from '../utils';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
@@ -63,7 +62,7 @@ class SavedCards extends Component {
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
 
-    await this.props.homeActions.loadShoppingCart(
+    await this.props.appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -222,7 +221,7 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
     }),
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })

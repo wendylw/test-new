@@ -23,7 +23,7 @@ import './CartListDrawer.scss';
 
 class CartListDrawer extends Component {
   componentDidMount = async () => {
-    await this.props.appActionCreators.loadShoppingCart();
+    await this.props.appActions.loadShoppingCart();
   };
 
   handleClearAll = async () => {
@@ -31,10 +31,10 @@ class CartListDrawer extends Component {
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
       await this.props.cartActions.clearAllByProducts(this.props.selectedProductCart.items);
-      this.props.appActionCreators.loadShoppingCart();
+      this.props.appActions.loadShoppingCart();
     } else {
       await this.props.cartActions.clearAll();
-      this.props.appActionCreators.loadShoppingCart();
+      this.props.appActions.loadShoppingCart();
     }
   };
 
@@ -68,16 +68,16 @@ class CartListDrawer extends Component {
     const { quantity, productId, variations } = cartItem;
 
     if (quantity === 1) {
-      this.props.appActionCreators
+      this.props.appActions
         .removeShoppingCartItem({
           productId,
           variations,
         })
         .then(() => {
-          this.props.appActionCreators.loadShoppingCart();
+          this.props.appActions.loadShoppingCart();
         });
     } else {
-      this.props.appActionCreators
+      this.props.appActions
         .addOrUpdateShoppingCartItem({
           action: 'edit',
           productId,
@@ -89,7 +89,7 @@ class CartListDrawer extends Component {
           })),
         })
         .then(() => {
-          this.props.appActionCreators.loadShoppingCart();
+          this.props.appActions.loadShoppingCart();
         });
     }
   };
@@ -110,7 +110,7 @@ class CartListDrawer extends Component {
         })),
       })
       .then(() => {
-        this.props.appActionCreators.loadShoppingCart();
+        this.props.appActions.loadShoppingCart();
       });
   };
 
@@ -293,7 +293,7 @@ export default compose(
       };
     },
     dispatch => ({
-      appActionCreators: bindActionCreators(appActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       cartActions: bindActionCreators(cartActionCreators, dispatch),
     })
   )

@@ -352,6 +352,13 @@ export const actions = {
     return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
   },
 
+  loadProductDetail: prod => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
+  },
+
   // load shopping cart
   loadShoppingCart: location => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();

@@ -91,66 +91,6 @@ export const actions = {
     },
   }),
 
-  // load shopping cart
-  loadShoppingCart: location => async (dispatch, getState) => {
-    const isDelivery = Utils.isDeliveryType();
-    const isDigital = Utils.isDigitalType();
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-
-    if (isDigital) {
-      await dispatch(generatorShoppingCartForVoucherOrdering());
-      return;
-    }
-
-    let deliveryCoords;
-    if (isDelivery) {
-      deliveryCoords = Utils.getDeliveryCoords();
-    }
-    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords, fulfillDate));
-  },
-
-  removeShoppingCartItem: variables => dispatch => {
-    return dispatch(removeShoppingCartItem(variables));
-  },
-
-  addOrUpdateShoppingCartItem: variables => dispatch => {
-    return dispatch(addOrUpdateShoppingCartItem(variables));
-  },
-
-  // decrease clicked on product item
-  decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
-    const cartItem = (shoppingCart.items || []).find(
-      item => item.productId === prod.id || item.parentProductId === prod.id
-    );
-
-    if (prod.cartQuantity === 1) {
-      return dispatch(
-        removeShoppingCartItem({
-          productId: cartItem.productId,
-          variations: cartItem.variations,
-        })
-      );
-    }
-    return dispatch(
-      addOrUpdateShoppingCartItem({
-        action: 'edit',
-        business: getBusiness(getState()),
-        productId: cartItem.productId,
-        quantity: prod.cartQuantity - 1,
-        variations: cartItem.variations || [],
-      })
-    );
-  },
-
-  loadProductDetail: prod => (dispatch, getState) => {
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-    return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
-  },
-
   userConfirmPreOrder: () => ({
     type: types.SET_PRE_ORDER_MODAL_CONFIRM,
   }),
@@ -175,17 +115,6 @@ export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) =
   };
 };
 
-// generator a virtual shopping cart for Customer place a Voucher Order
-export const generatorShoppingCartForVoucherOrdering = () => {
-  const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
-  const shoppingCart = VoucherUtils.generatorVirtualShoppingCart(orderingInfo.selectedVoucher);
-
-  return {
-    type: types.FETCH_SHOPPINGCART_SUCCESS,
-    response: shoppingCart,
-  };
-};
-
 export const fetchOnlineCategory = variables => {
   const endpoint = Url.apiGql('OnlineCategory');
   return {
@@ -197,49 +126,6 @@ export const fetchOnlineCategory = variables => {
       ],
       endpoint,
       variables,
-    },
-  };
-};
-// variables := { productId, variations }
-export const removeShoppingCartItem = variables => {
-  const endpoint = Url.apiGql('RemoveShoppingCartItem');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.REMOVE_SHOPPINGCARTITEM_REQUEST,
-        types.REMOVE_SHOPPINGCARTITEM_SUCCESS,
-        types.REMOVE_SHOPPINGCARTITEM_FAILURE,
-      ],
-      endpoint,
-      variables,
-    },
-  };
-};
-
-export const addOrUpdateShoppingCartItem = variables => {
-  const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST,
-        types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS,
-        types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE,
-      ],
-      endpoint,
-      variables,
-    },
-  };
-};
-
-export const fetchProductDetail = variables => {
-  const endpoint = Url.apiGql('ProductDetail');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
-      endpoint,
-      variables: {
-        ...variables,
-      },
     },
   };
 };

@@ -50,9 +50,9 @@ class Cart extends Component {
   }
 
   async componentDidMount() {
-    const { appActionCreators } = this.props;
+    const { appActions } = this.props;
 
-    await appActionCreators.loadShoppingCart();
+    await appActions.loadShoppingCart();
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
@@ -228,10 +228,10 @@ class Cart extends Component {
   };
 
   dismissPromotion = async () => {
-    const { promotionActions, appActionCreators } = this.props;
+    const { promotionActions, appActions } = this.props;
 
     await promotionActions.dismissPromotion();
-    await appActionCreators.loadShoppingCart();
+    await appActions.loadShoppingCart();
   };
 
   handleGotoPromotion = () => {

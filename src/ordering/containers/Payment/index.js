@@ -11,7 +11,6 @@ import _startsWith from 'lodash/startsWith';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { getDeliveryInfo } from '../../redux/modules/home';
@@ -50,7 +49,7 @@ class Payment extends Component {
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
 
-    await this.props.homeActions.loadShoppingCart(
+    await this.props.appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -277,7 +276,6 @@ export default compose(
     dispatch => ({
       paymentsActions: bindActionCreators(paymentsActionCreator, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })

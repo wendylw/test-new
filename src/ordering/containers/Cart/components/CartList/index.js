@@ -27,14 +27,14 @@ const isCartItemSoldOut = cartItem => {
 
 class CartList extends Component {
   handleRemoveCartItem = variables => {
-    this.props.appActionCreators.removeShoppingCartItem(variables).then(() => {
-      this.props.appActionCreators.loadShoppingCart();
+    this.props.appActions.removeShoppingCartItem(variables).then(() => {
+      this.props.appActions.loadShoppingCart();
     });
   };
 
   handleAddOrUpdateShoppingCartItem = variables => {
-    this.props.appActionCreators.addOrUpdateShoppingCartItem(variables).then(() => {
-      this.props.appActionCreators.loadShoppingCart();
+    this.props.appActions.addOrUpdateShoppingCartItem(variables).then(() => {
+      this.props.appActions.loadShoppingCart();
     });
   };
 
@@ -170,6 +170,6 @@ export default connect(
     };
   },
   dispatch => ({
-    appActionCreators: bindActionCreators(appActionCreators, dispatch),
+    appActions: bindActionCreators(appActionCreators, dispatch),
   })
 )(CartList);

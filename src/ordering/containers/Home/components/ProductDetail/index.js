@@ -421,7 +421,7 @@ class ProductDetail extends Component {
   }
 
   handleDescriptionAddOrShowDescription = async product => {
-    const { onToggle, appActions, homeActions } = this.props;
+    const { onToggle, appActions } = this.props;
     const { variations } = product;
 
     const { history } = this.props;
@@ -455,7 +455,7 @@ class ProductDetail extends Component {
 
       return;
     } else {
-      homeActions.loadProductDetail(product);
+      appActions.loadProductDetail(product);
     }
 
     this.setState({ resizedImage: true });
@@ -731,6 +731,11 @@ class ProductDetail extends Component {
     const descriptionStr = { __html: description };
     const isHaveContent = Utils.removeHtmlTag(description);
 
+    console.log(show);
+    console.log(product);
+    console.log(id);
+    console.log(_needMore);
+
     if (show && product && id && !_needMore) {
       className.push('active cover');
     }
@@ -857,7 +862,6 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
 )(withRouter(ProductDetail));
