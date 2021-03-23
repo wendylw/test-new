@@ -1,25 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation, Trans } from 'react-i18next';
-import { IconCart } from '../../../../../components/Icons';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-import Constants from '../../../../../utils/constants';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as cartActionCreators, getBusinessInfo } from '../../../../redux/modules/cart';
-import { actions as homeActionCreators, getCategoryProductList } from '../../../../redux/modules/home';
+import { withTranslation, Trans } from 'react-i18next';
+import Constants from '../../../../utils/constants';
+import { actions as homeActionCreators, getCategoryProductList } from '../../../redux/modules/home';
 import {
   actions as appActionCreators,
   getBusiness,
   getUser,
   getShoppingCart,
   getCartBilling,
-} from '../../../../redux/modules/app';
-import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
-import Utils from '../../../../../utils/utils';
-import { del, get } from '../../../../../utils/request';
-import Url from '../../../../../utils/url';
+  getBusinessInfo,
+} from '../../../redux/modules/app';
+import { getAllBusinesses } from '../../../../redux/modules/entities/businesses';
+import Utils from '../../../../utils/utils';
+import { del, get } from '../../../../utils/request';
+import Url from '../../../../utils/url';
+import { IconCart } from '../../../../components/Icons';
+import CurrencyNumber from '../../../components/CurrencyNumber';
+
 export class Footer extends Component {
   constructor(props) {
     super(props);
@@ -320,7 +320,6 @@ export default compose(
       };
     },
     dispatch => ({
-      cartActions: bindActionCreators(cartActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })

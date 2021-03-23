@@ -23,10 +23,16 @@ import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
-import { actions as appActionsCreators, getBusinessUTCOffset, getStore } from '../../redux/modules/app';
-import { getOnlineStoreInfo, getRequestInfo, getCartBilling } from '../../redux/modules/app';
+import {
+  actions as appActionsCreators,
+  getBusinessUTCOffset,
+  getStore,
+  getBusinessInfo,
+  getOnlineStoreInfo,
+  getRequestInfo,
+  getCartBilling,
+} from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
   actions as homeActionCreators,
@@ -1028,7 +1034,6 @@ export default compose(
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      cartActions: bindActionCreators(cartActionCreators, dispatch),
       storesActions: bindActionCreators(storesActionCreators, dispatch),
       appActions: bindActionCreators(appActionsCreators, dispatch),
     })
