@@ -1,7 +1,6 @@
-import { intersection, findIndex } from 'lodash';
+import { intersection } from 'lodash';
 import Utils from './utils';
 import { captureException } from '@sentry/react';
-import * as crossStorage from './cross-storage';
 import _get from 'lodash/get';
 import { get, post } from './request';
 
@@ -156,32 +155,6 @@ export const getPlacesFromCoordinates = coords => {
 // ```
 export const getDevicePositionInfo = (withCache = true) => {
   return getPositionInfoBySource('device', withCache);
-};
-
-export const migrateLegacyDeliveryAddress = async () => {
-  let localStorageLocationsItems, crossStorageLocationItems;
-  try {
-    localStorageLocationsItems = JSON.parse(Utils.getLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES') || '[]');
-  } catch (e) {
-    console.log(e);
-  }
-  try {
-    crossStorageLocationItems = JSON.parse(
-      (await crossStorage.getItem('CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES')) || '[]'
-    );
-  } catch (e) {
-    console.log(e);
-  }
-  try {
-    const locationItems = [...localStorageLocationsItems, ...crossStorageLocationItems];
-    if (locationItems.length) {
-      await post('/api/storage/location-history', locationItems);
-    }
-    await crossStorage.removeItem('CROSS_STORAGE_HISTORICAL_DELIVERY_ADDRESSES');
-    Utils.removeLocalStorageVariable('HISTORICAL_DELIVERY_ADDRESSES');
-  } catch (e) {
-    console.log(e);
-  }
 };
 
 export const getHistoricalDeliveryAddresses = async () => {
