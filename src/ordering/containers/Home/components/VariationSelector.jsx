@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import { variationOnProductType } from '../../../../../utils/propTypes';
+import { variationOnProductType } from '../../../../utils/propTypes';
+import ItemOperator from '../../../../components/ItemOperator';
+import Radio from '../../../../components/Radio';
+import CheckBox from '../../../../components/CheckBox';
+
 import './VariationSelector.scss';
-import ItemOperator from '../../../../../components/ItemOperator';
-import Radio from '../../../../../components/Radio';
-import CheckBox from '../../../../../components/CheckBox';
+
 export class VariationSelector extends Component {
   static propTypes = {
     variation: variationOnProductType,
