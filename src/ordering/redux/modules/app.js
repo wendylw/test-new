@@ -739,7 +739,7 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
-  currentProduct,
+  // currentProduct,
 });
 
 // selectors
