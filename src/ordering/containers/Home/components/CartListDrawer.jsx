@@ -221,12 +221,12 @@ class CartListDrawer extends Component {
           maxHeight: this.aside ? `${(this.aside.clientHeight || this.aside.offsetHeight) * 0.8}px` : '0',
         }}
       >
-        <ul data-heap-name="ordering.common.cart-list">
+        <ul data-heap-name="ordering.home.mini-cart.cart-list">
           {cartItems.map(cartItem => {
             const { id, title, variationTexts, displayPrice, image, originalDisplayPrice } = cartItem;
 
             return (
-              <li key={`cart-item-${id}`}>
+              <li key={`mini-cart-item-${id}`}>
                 <Item
                   className="flex-top"
                   data-heap-name="ordering.home.mini-cart.cart-item"
