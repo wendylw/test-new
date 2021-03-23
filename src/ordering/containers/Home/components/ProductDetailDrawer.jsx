@@ -25,7 +25,7 @@ import qs from 'qs';
 import { withRouter } from 'react-router-dom';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
-import './ProductDetailModal.scss';
+import './ProductDetailDrawer.scss';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',

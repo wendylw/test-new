@@ -9,7 +9,7 @@ import Header from '../../../components/Header';
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
 import PromotionsBar from './components/PromotionsBar';
-import ProductDetailModal from './components/ProductDetailModal';
+import ProductDetailDrawer from './components/ProductDetailDrawer';
 import CartListDrawer from './components/CartListDrawer';
 import StoreInfoAside from './components/StoreInfoAside';
 import CurrentCategoryBar from './components/CurrentCategoryBar';
@@ -924,7 +924,7 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
         />
-        <ProductDetailModal
+        <ProductDetailDrawer
           footerEl={this.footerEl}
           onlineStoreInfo={onlineStoreInfo}
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
