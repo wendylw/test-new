@@ -35,7 +35,7 @@ const EXCLUDED_KEYS = ['variationType'];
 
 SwiperCore.use([Autoplay, Pagination]);
 
-class ProductDetail extends Component {
+class ProductDetailDrawer extends Component {
   productEl = null;
   productDescriptionImage = null;
   productDetailImage = null;
@@ -831,14 +831,14 @@ class ProductDetail extends Component {
   }
 }
 
-ProductDetail.propTypes = {
+ProductDetailDrawer.propTypes = {
   show: PropTypes.bool,
   viewAside: PropTypes.string,
   footerEl: PropTypes.any,
   onToggle: PropTypes.func,
 };
 
-ProductDetail.defaultProps = {
+ProductDetailDrawer.defaultProps = {
   show: false,
   viewAside: '',
   onToggle: () => {},
@@ -858,4 +858,4 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
-)(withRouter(ProductDetail));
+)(withRouter(ProductDetailDrawer));
