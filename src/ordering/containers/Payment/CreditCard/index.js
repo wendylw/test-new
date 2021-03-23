@@ -17,12 +17,12 @@ import config from '../../../../config';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
+  getCartBilling,
 } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
@@ -395,11 +395,11 @@ class CreditCard extends Component {
   }
 
   renderForm() {
-    const { t, cartSummary } = this.props;
+    const { t, cartBilling } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
     const { cardholderName } = card || {};
     const cardNumber = card.formattedCardNumber;
-    const { total } = cartSummary || {};
+    const { total } = cartBilling || {};
 
     return (
       <form id="bank-2c2p-form" className="form">
@@ -516,9 +516,9 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary, merchantCountry } = this.props;
+    const { t, match, history, cartBilling, merchantCountry } = this.props;
     const { payNowLoading, domLoaded } = this.state;
-    const { total } = cartSummary || {};
+    const { total } = cartBilling || {};
     const paymentData = this.getPaymentEntryRequestData();
 
     return (
@@ -610,7 +610,7 @@ export default compose(
 
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),

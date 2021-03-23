@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 // import { getProductById } from '../../../../../redux/modules/entities/products';
-import { actions as appActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/app';
+import { actions as appActionCreators, getShoppingCart, getCurrentProduct } from '../../../redux/modules/app';
 import { getSelectedProductDetail } from '../../../redux/modules/cart';
-import Constants from '../../../../../utils/constants';
-import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
-import Item from '../../../../components/Item';
+import Constants from '../../../../utils/constants';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
+import CurrencyNumber from '../../../components/CurrencyNumber';
+import { IconDelete } from '../../../../components/Icons';
+import Item from '../../../components/Item';
+import ItemOperator from '../../../../components/ItemOperator';
 
 class CartList extends Component {
   handleGtmEventTracking = product => {
@@ -60,7 +63,7 @@ class CartList extends Component {
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
-      return handleRemoveCartItem(cartItem);
+      return this.handleRemoveCartItem(cartItem);
     }
 
     this.props.appActions

@@ -2,8 +2,7 @@ import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { getPromotion } from '../../../redux/modules/entities/carts';
-import { actions as appActions, getBusinessUTCOffset } from './app';
+import { actions as appActions, getBusinessUTCOffset, getCartBilling } from './app';
 import i18next from 'i18next';
 import Utils from '../../../utils/utils';
 import _get from 'lodash/get';
@@ -87,7 +86,7 @@ export const actions = {
   },
   dismissPromotion: () => async (dispatch, getState) => {
     const state = getState();
-    const promotion = getPromotion(state);
+    const { promotion } = getCartBilling(state) || {};
     const promoCode = promotion ? promotion.promoCode : '';
     const promoType = promotion ? promotion.promoType : '';
     const dismissType =

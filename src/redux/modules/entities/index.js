@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import paymentOptions from './paymentOptions';
-import carts from './carts';
+// import carts from './carts';
 import categories from './categories';
 import loyaltyHistories from './loyaltyHistories';
 import onlineStores from './onlineStores';
@@ -13,7 +13,7 @@ import users from './users';
 
 const rootReducer = combineReducers({
   paymentOptions,
-  carts,
+  // carts,
   categories,
   loyaltyHistories,
   onlineStores,

@@ -1,9 +1,11 @@
+import { combineReducers } from 'redux';
 import Url from '../../../utils/url';
 import { CART_TYPES } from '../types';
 import { getBusiness } from './app';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getProductById } from '../../../redux/modules/entities/products';
 
 const initialState = {
   pendingTransactionsIds: [],
@@ -121,8 +123,8 @@ export const getBusinessInfo = state => {
 
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
-export const getSelectedProductDetail = ({ app }) => {
-  const { selectedProduct } = app;
+export const getSelectedProductDetail = state => {
+  const { selectedProduct } = state.app;
 
   return getProductById(state, selectedProduct.id);
 };

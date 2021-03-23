@@ -13,7 +13,6 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getCartSummary, getPromotion } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
@@ -23,7 +22,8 @@ import {
   getUser,
   getBusiness,
   getShoppingCart,
-  getCurrentProduct,
+  // getCurrentProduct,
+  getCartBilling,
 } from '../../redux/modules/app';
 import { getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
@@ -199,12 +199,12 @@ class Cart extends Component {
   };
 
   handleGtmEventTracking = async callback => {
-    const { shoppingCart, cartSummary } = this.props;
+    const { shoppingCart, cartBilling } = this.props;
     const itemsInCart = shoppingCart.items.map(item => item.id);
     const gtmEventData = {
       product_id: itemsInCart,
-      cart_size: cartSummary.count,
-      cart_value_local: cartSummary.total,
+      cart_size: cartBilling.count,
+      cart_value_local: cartBilling.total,
     };
     gtmEventTracking(GTM_TRACKING_EVENTS.INITIATE_CHECKOUT, gtmEventData, callback);
   };
@@ -252,7 +252,8 @@ class Cart extends Component {
   };
 
   showShortPromoCode() {
-    const { promotion } = this.props;
+    const { cartBilling } = this.props;
+    const { promotion } = cartBilling || {};
     const SHOW_LENGTH = 10;
     // show like "Promo..."
     if (promotion && promotion.promoCode) {
@@ -315,7 +316,8 @@ class Cart extends Component {
   }
 
   renderPromotionItem() {
-    const { t, promotion } = this.props;
+    const { t, cartBilling } = this.props;
+    const { promotion } = cartBilling || {};
 
     return (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
@@ -378,12 +380,12 @@ class Cart extends Component {
   };
 
   render() {
-    const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
+    const { t, cartBilling, shoppingCart, businessInfo, user, history } = this.props;
     const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
-    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
+    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
     const { isLogin } = user || {};
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
@@ -402,7 +404,7 @@ class Cart extends Component {
       </span>
     );
 
-    if (!(cartSummary && items)) {
+    if (!(cartBilling && items)) {
       return null;
     }
 
@@ -511,8 +513,9 @@ export default compose(
       return {
         business: getBusiness(state),
         user: getUser(state),
-        cartSummary: getCartSummary(state),
-        promotion: getPromotion(state),
+        // cartBilling: getCartSummary(state),
+        cartBilling: getCartBilling(state),
+        // promotion: getPromotion(state),
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),

@@ -7,10 +7,15 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import { actions as cartActionCreators, getBusinessInfo } from '../../../../redux/modules/cart';
 import { actions as homeActionCreators, getCategoryProductList } from '../../../../redux/modules/home';
-import { actions as appActionCreators, getBusiness, getUser, getShoppingCart } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getBusiness,
+  getUser,
+  getShoppingCart,
+  getCartBilling,
+} from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import Utils from '../../../../../utils/utils';
 import { del, get } from '../../../../../utils/request';
@@ -198,7 +203,7 @@ export class Footer extends Component {
   render() {
     const {
       onClickCart,
-      cartSummary,
+      cartBilling,
       businessInfo,
       tableId,
       onToggle,
@@ -211,7 +216,7 @@ export class Footer extends Component {
     } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
-    const { count } = cartSummary || {};
+    const { count } = cartBilling || {};
     return (
       <footer
         ref={footerRef}
@@ -304,7 +309,8 @@ export default compose(
   connect(
     state => {
       return {
-        cartSummary: getCartSummary(state),
+        // cartBilling: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         businessInfo: getBusinessInfo(state),
         shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),

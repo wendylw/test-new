@@ -26,7 +26,7 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
 import { actions as appActionsCreators, getBusinessUTCOffset, getStore } from '../../redux/modules/app';
-import { getOnlineStoreInfo, getRequestInfo } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getRequestInfo, getCartBilling } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
   actions as homeActionCreators,
@@ -38,7 +38,6 @@ import {
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
@@ -683,7 +682,7 @@ export class Home extends Component {
     const {
       onlineStoreInfo,
       businessInfo,
-      cartSummary,
+      cartBilling,
       deliveryInfo,
       allStore,
       requestInfo,
@@ -695,7 +694,7 @@ export class Home extends Component {
     const isPickUpType = Utils.isPickUpType();
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
-    const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
+    const deliveryFee = cartBilling ? cartBilling.shippingFee : legacyDeliveryFee;
     const { tableId } = requestInfo || {};
 
     const { search } = this.state;
@@ -812,7 +811,6 @@ export class Home extends Component {
       requestInfo,
       history,
       freeDeliveryFee,
-      cartSummary,
       deliveryInfo,
       allProductsKeys,
       ...otherProps
@@ -1020,7 +1018,7 @@ export default compose(
         categories: getCategoryProductList(state),
         businessLoaded: getBusinessIsLoaded(state),
         popUpModal: getPopUpModal(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),

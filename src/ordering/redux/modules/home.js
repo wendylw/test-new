@@ -369,8 +369,8 @@ export const getStoreInfoForCleverTap = state => {
   return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo });
 };
 
-export const getSelectedProductDetail = ({ app }) => {
-  const { selectedProduct } = app;
+export const getSelectedProductDetail = state => {
+  const { selectedProduct } = state.app;
 
   return getProductById(state, selectedProduct.id);
 };

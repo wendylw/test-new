@@ -16,7 +16,6 @@ import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
-import { getCartItemById } from '../../../redux/modules/entities/carts';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getCartSummary, getAllCartItems } from '../../../redux/modules/entities/carts';
@@ -32,26 +31,28 @@ const CartModel = {
   isFetching: false,
   itemIds: [],
   unavailableItemIds: [],
-  count: 0,
-  discount: 0,
-  subtotal: 0,
-  total: 0,
-  tax: 0,
-  cashback: 0,
-  serviceCharge: 0,
-  shippingFee: 0,
-  promotion: {
-    promoCode: null,
+  billing: {
+    count: 0,
     discount: 0,
-    promoType: '',
-    status: '',
-  },
-  voucher: {
-    promoCode: null,
-    status: '',
-    discount: 0,
-    validFrom: null,
-    promoType: '',
+    subtotal: 0,
+    total: 0,
+    tax: 0,
+    cashback: 0,
+    serviceCharge: 0,
+    shippingFee: 0,
+    promotion: {
+      promoCode: null,
+      discount: 0,
+      promoType: '',
+      status: '',
+    },
+    voucher: {
+      promoCode: null,
+      status: '',
+      discount: 0,
+      validFrom: null,
+      promoType: '',
+    },
   },
 };
 
@@ -689,46 +690,44 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   if (action.responseGql) {
     const { emptyShoppingCart } = action.responseGql.data || {};
     if (emptyShoppingCart && emptyShoppingCart.success) {
-      return { ...state, isFetching: false, itemIds: [], unavailableItemIds: [] };
+      return { ...state, isFetching: false, status: 'fulfilled', items: [], unavailableItems: [] };
     }
   }
 
-  switch (action.type) {
-    case types.FETCH_SHOPPINGCART_REQUEST:
-      return { ...state, isFetching: true };
-    case types.FETCH_SHOPPINGCART_SUCCESS: {
-      const { items, unavailableItems } = action.response || {};
-
-      return {
-        ...state,
-        isFetching: false,
-        itemIds: items.map(item => item.id),
-        unavailableItemIds: unavailableItems.map(item => item.id),
-      };
-    }
-    case types.FETCH_SHOPPINGCART_FAILURE:
-      return { ...state, isFetching: false };
-    default:
-      return state;
-  }
-};
-
-const currentProduct = (state = initialState.currentProduct, action) => {
-  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
-    return { ...state, isFetching: true };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
-    const { product } = action.responseGql.data;
+  if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
+    return { ...state, isFetching: true, status: 'pending' };
+  } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
+    const { items, unavailableItems } = action.response || {};
 
     return {
       ...state,
       isFetching: false,
-      id: product.id,
+      items,
+      unavailableItems,
     };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
-    return { ...state, isFetching: false };
+  } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
+    return { ...state, isFetching: false, status: 'rejected' };
   }
+
   return state;
 };
+
+// const currentProduct = (state = initialState.currentProduct, action) => {
+//   if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
+//     return { ...state, isFetching: true };
+//   } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
+//     const { product } = action.responseGql.data;
+
+//     return {
+//       ...state,
+//       isFetching: false,
+//       id: product.id,
+//     };
+//   } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
+//     return { ...state, isFetching: false };
+//   }
+//   return state;
+// };
 
 export default combineReducers({
   user,
@@ -795,13 +794,15 @@ export const getCurrentProduct = state => state.app.currentProduct;
 
 export const getCartItemIds = state => state.app.shoppingCart.itemIds;
 
+export const getCartBilling = state => state.app.shoppingCart.billing;
+
 export const getCartUnavailableItemIds = state => state.app.shoppingCart.unavailableItemIds;
 
 export const getShoppingCart = createSelector(
-  [getCartSummary, getCartItemIds, getCartUnavailableItemIds, getAllCartItems],
-  (summary, itemIds, unavailableItemIds, carts) => {
+  [getCartBilling, getCartItemIds, getCartUnavailableItemIds],
+  (cartBilling, itemIds, unavailableItemIds, carts) => {
     return {
-      summary,
+      cartBilling,
       items: itemIds.map(id => carts[id]),
       unavailableItems: unavailableItemIds.map(id => carts[id]),
     };
@@ -834,5 +835,5 @@ export const getShoppingCartItemsByProducts = createSelector(
 );
 
 export const getCartItemList = state => {
-  return state.app.shoppingCart.itemIds.map(id => getCartItemById(state, id));
+  return state.app.shoppingCart.items;
 };

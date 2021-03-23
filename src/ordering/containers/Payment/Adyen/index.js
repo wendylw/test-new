@@ -17,7 +17,6 @@ import SwitchButton from '../../../../../src/components/SwitchButton';
 import Utils from '../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import {
   actions as appActionCreators,
@@ -25,6 +24,7 @@ import {
   getBusiness,
   getMerchantCountry,
   getUser,
+  getCartBilling,
 } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
@@ -190,8 +190,8 @@ class AdyenPage extends Component {
   };
 
   render() {
-    const { t, history, cartSummary } = this.props;
-    const { total } = cartSummary;
+    const { t, history, cartBilling } = this.props;
+    const { total } = cartBilling;
 
     return (
       <section className={`ordering-payment flex flex-column`} data-heap-name="ordering.payment.adyen.container">
@@ -335,7 +335,8 @@ export default compose(
         currentPaymentOption: getSelectedPaymentOption(state),
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartSummary: getCartSummary(state),
+        // cartBilling: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),

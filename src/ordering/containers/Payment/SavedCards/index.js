@@ -10,8 +10,7 @@ import CreateOrderButton from '../../../components/CreateOrderButton';
 import Loader from '../components/Loader';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { actions as appActionCreators, getMerchantCountry, getUser } from '../../../redux/modules/app';
+import { actions as appActionCreators, getMerchantCountry, getUser, getCartBilling } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCardList, getSelectedPaymentCard } from '../../../redux/modules/payment';
 import { getCardLabel, getCardIcon } from '../utils';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
@@ -145,8 +144,8 @@ class SavedCards extends Component {
   }
 
   render() {
-    const { t, history, cartSummary } = this.props;
-    const { total } = cartSummary;
+    const { t, history, cartBilling } = this.props;
+    const { total } = cartBilling;
 
     return (
       <section className={`ordering-payment flex flex-column`}>
@@ -213,7 +212,7 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => ({
-      cartSummary: getCartSummary(state),
+      cartBilling: getCartBilling(state),
       user: getUser(state),
       cardList: getCardList(state),
       selectedPaymentCard: getSelectedPaymentCard(state),

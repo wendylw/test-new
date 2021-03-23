@@ -24,7 +24,6 @@ import config from '../../../../config';
 import Utils from '../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import {
@@ -32,6 +31,7 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
+  getCartBilling,
 } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
@@ -94,8 +94,8 @@ const ErrorMessage = ({ children }) => (
   </span>
 );
 
-const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) => {
-  const { total } = cartSummary || {};
+const CheckoutForm = ({ t, renderRedirectForm, history, cartBilling, country }) => {
+  const { total } = cartBilling || {};
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -422,7 +422,7 @@ class Stripe extends Component {
   };
 
   render() {
-    const { t, match, history, cartSummary, merchantCountry } = this.props;
+    const { t, match, history, cartBilling, merchantCountry } = this.props;
 
     return (
       <section
@@ -457,7 +457,7 @@ class Stripe extends Component {
               t={t}
               history={history}
               country={merchantCountry}
-              cartSummary={cartSummary}
+              cartBilling={cartBilling}
               renderRedirectForm={paymentMethod => {
                 if (!paymentMethod) return null;
 
@@ -490,7 +490,7 @@ export default compose(
       return {
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),

@@ -4,10 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError } from '../../redux/modules/app';
+import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
 
@@ -41,14 +40,14 @@ class CreateOrderButton extends React.Component {
       paymentActions,
       user,
       requestInfo,
-      cartSummary,
+      cartBilling,
       afterCreateOrder,
       beforeCreateOrder,
       paymentName,
     } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
-    const { totalCashback } = cartSummary || {};
+    const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
 
@@ -157,7 +156,7 @@ export default compose(
         user: getUser(state),
         error: getError(state),
         requestInfo: getRequestInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
       };

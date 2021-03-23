@@ -4,13 +4,13 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators } from '../../../redux/modules/cart';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
 // import { getProductById } from '../../../../redux/modules/entities/products';
 import {
   actions as appActionCreators,
   getShoppingCartItemsByProducts,
   // getCurrentProduct,
   getShoppingCart,
+  getCartBilling,
 } from '../../../redux/modules/app';
 import { getSelectedProductDetail } from '../../../redux/modules/home';
 import Constants from '../../../../utils/constants';
@@ -247,8 +247,8 @@ class CartListDrawer extends Component {
   }
 
   render() {
-    const { t, show, cartSummary, viewAside, footerEl } = this.props;
-    let { count } = cartSummary || {};
+    const { t, show, cartBilling, viewAside, footerEl } = this.props;
+    let { count } = cartBilling || {};
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
       count = this.props.selectedProductCart.count;
@@ -314,7 +314,7 @@ export default compose(
       // const currentProductInfo = getCurrentProduct(state);
       return {
         shoppingCart: getShoppingCart(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         selectedProductCart: getShoppingCartItemsByProducts(state),
         // product: getProductById(state, currentProductInfo.id),
         selectedProduct: getSelectedProductDetail(state),

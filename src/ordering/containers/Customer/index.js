@@ -21,9 +21,9 @@ import {
   getUser,
   getRequestInfo,
   getBusinessUTCOffset,
+  getCartBilling,
 } from '../../redux/modules/app';
 import { getBusinessInfo } from '../../redux/modules/cart';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
 import './OrderingCustomer.scss';
@@ -57,11 +57,11 @@ class Customer extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { cartSummary } = this.props;
-    const { cartSummary: prevCartSummary } = prevProps;
-    const { shippingFee } = cartSummary || {};
+    const { cartBilling } = this.props;
+    const { cartBilling: prevCartBilling } = prevProps;
+    const { shippingFee } = cartBilling || {};
 
-    if (shippingFee && prevCartSummary.shippingFee && shippingFee !== prevCartSummary.shippingFee) {
+    if (shippingFee && prevCartBilling.shippingFee && shippingFee !== prevCartBilling.shippingFee) {
       this.setState({ addressChange: true });
     }
   }
@@ -149,8 +149,8 @@ class Customer extends Component {
   };
 
   visitPaymentPage = () => {
-    const { history, cartSummary } = this.props;
-    const { total } = cartSummary || {};
+    const { history, cartBilling } = this.props;
+    const { total } = cartBilling || {};
 
     if (total && !this.validateFields().showModal) {
       history.push({
@@ -291,16 +291,13 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartSummary, error } = this.props;
+    const { t, history, deliveryDetails, cartBilling, error } = this.props;
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(phone);
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
-    const { total, shippingFee } = cartSummary || {};
-
-    // console.log(shippingFee);
-    // console.log(addressChange);
+    const { total, shippingFee } = cartBilling || {};
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -434,7 +431,8 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       allBusinessInfo: getAllBusinesses(state),
       deliveryDetails: getDeliveryDetails(state),
-      cartSummary: getCartSummary(state),
+      // cartBilling: getCartSummary(state),
+      cartBilling: getCartBilling(state),
       requestInfo: getRequestInfo(state),
       error: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),

@@ -18,8 +18,12 @@ import config from '../../../../config';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { actions as appActionCreators, getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getBusiness,
+  getCartBilling,
+} from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import {
@@ -149,13 +153,13 @@ class OnlineBanking extends Component {
       t,
       match,
       history,
-      cartSummary,
+      cartBilling,
       onlineStoreInfo,
       pendingPaymentOptions,
       currentPaymentOption,
       currentOnlineBanking,
     } = this.props;
-    const { total } = cartSummary || {};
+    const { total } = cartBilling || {};
     const { logo } = onlineStoreInfo || {};
     const { payNowLoading } = this.state;
     const paymentData = this.getPaymentEntryRequestData();
@@ -267,7 +271,7 @@ export default compose(
 
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         deliveryDetails: getDeliveryDetails(state),

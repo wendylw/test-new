@@ -16,13 +16,12 @@ import config from '../../../../config';
 import Utils from '../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getMerchantCountry } from '../../../redux/modules/app';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentRedirectAndWebHookUrl, getCardLabel } from '../utils';
-import { getUser, getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
+import { getUser, getOnlineStoreInfo, getBusiness, getCartBilling } from '../../../redux/modules/app';
 import {
   actions as paymentActionCreators,
   getCardList,
@@ -169,8 +168,8 @@ class CardCVV extends Component {
   };
 
   render() {
-    const { t, history, cartSummary, selectedPaymentCard } = this.props;
-    const { total } = cartSummary;
+    const { t, history, cartBilling, selectedPaymentCard } = this.props;
+    const { total } = cartBilling;
     const { isAdyenCardLoaded, payNowLoading } = this.state;
 
     if (!selectedPaymentCard || !selectedPaymentCard.cardInfo) return null;
@@ -262,7 +261,7 @@ export default compose(
       return {
         merchantCountry: getMerchantCountry(state),
         cardList: getCardList(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         selectedPaymentCard: getSelectedPaymentCard(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
