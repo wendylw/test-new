@@ -93,10 +93,10 @@ const API_URLS = {
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
   }),
-  GET_PENDING_TRANSACTIONS: {
-    url: '/api/transactions/status/pending',
-    method: 'get',
-  },
+  // GET_PENDING_TRANSACTIONS: {
+  //   url: '/api/transactions/status/pending',
+  //   method: 'get',
+  // },
   PUT_TRANSACTIONS_STATUS: {
     url: '/api/transactions/status',
     method: 'put',

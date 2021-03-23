@@ -28,16 +28,16 @@ export const actions = {
     return dispatch(clearShopcartItemByProducts(products));
   },
 
-  loadPendingPaymentList: () => ({
-    [API_REQUEST]: {
-      types: [
-        types.FETCH_PENDING_TRANSACTIONS_REQUEST,
-        types.FETCH_PENDING_TRANSACTIONS_SUCCESS,
-        types.FETCH_PENDING_TRANSACTIONS_FAILURE,
-      ],
-      ...Url.API_URLS.GET_PENDING_TRANSACTIONS,
-    },
-  }),
+  // loadPendingPaymentList: () => ({
+  //   [API_REQUEST]: {
+  //     types: [
+  //       types.FETCH_PENDING_TRANSACTIONS_REQUEST,
+  //       types.FETCH_PENDING_TRANSACTIONS_SUCCESS,
+  //       types.FETCH_PENDING_TRANSACTIONS_FAILURE,
+  //     ],
+  //     ...Url.API_URLS.GET_PENDING_TRANSACTIONS,
+  //   },
+  // }),
 
   updateTransactionsStatus: ({ status, receiptNumbers }) => ({
     [API_REQUEST]: {
