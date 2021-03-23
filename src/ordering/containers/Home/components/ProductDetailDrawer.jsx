@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import _forEach from 'lodash/forEach';
 import _get from 'lodash/get';
 import { withTranslation } from 'react-i18next';
-import Swipe, { SwipeItem } from 'swipejs/react';
+// import Swipe, { SwipeItem } from 'swipejs/react';
 import Tag from '../../../../components/Tag';
 import Image from '../../../../components/Image';
 import VariationSelector from './VariationSelector';
@@ -601,92 +601,92 @@ class ProductDetailDrawer extends Component {
     );
   }
 
-  renderProductDescription() {
-    const { t, show, product, onlineStoreInfo } = this.props;
-    const { currentProductDescriptionImageIndex } = this.state;
-    const { images, title } = product || {};
-    const { storeName } = onlineStoreInfo || {};
-    const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
+  // renderProductDescription() {
+  //   const { t, show, product, onlineStoreInfo } = this.props;
+  //   const { currentProductDescriptionImageIndex } = this.state;
+  //   const { images, title } = product || {};
+  //   const { storeName } = onlineStoreInfo || {};
+  //   const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
 
-    if (show) {
-      className.push('product-description__hide');
-    }
+  //   if (show) {
+  //     className.push('product-description__hide');
+  //   }
 
-    return (
-      <div className={className.join(' ')}>
-        <div
-          ref={ref => (this.productDescriptionImage = ref)}
-          className="product-description__image-container flex__shrink-fixed"
-        >
-          {images && images.length > 1 ? (
-            <Swipe
-              ref={ref => (this.swipeEl = ref)}
-              continuous={images.length > 2 ? true : false}
-              callback={this.handleSwipeProductImage.bind(this)}
-            >
-              {images.map((imageItemUrl, key) => {
-                return (
-                  <SwipeItem key={`swipe-${key}`}>
-                    <Image
-                      className="product-description__single-image"
-                      src={imageItemUrl}
-                      scalingRatioIndex={2}
-                      alt={`${storeName} ${title}`}
-                    />
-                  </SwipeItem>
-                );
-              })}
-            </Swipe>
-          ) : (
-            <Image
-              className="product-description__single-image"
-              src={images && images.length ? images[0] : null}
-              scalingRatioIndex={2}
-              alt={`${storeName} ${title}`}
-            />
-          )}
-          {images && images.length > 1 ? (
-            <ul className="product-description__dot-list text-center padding-top-bottom-smaller">
-              {images.map((imageItemUrl, key) => {
-                const dotClassList = ['product-description__dot'];
+  //   return (
+  //     <div className={className.join(' ')}>
+  //       <div
+  //         ref={ref => (this.productDescriptionImage = ref)}
+  //         className="product-description__image-container flex__shrink-fixed"
+  //       >
+  //         {images && images.length > 1 ? (
+  //           <Swipe
+  //             ref={ref => (this.swipeEl = ref)}
+  //             continuous={images.length > 2 ? true : false}
+  //             callback={this.handleSwipeProductImage.bind(this)}
+  //           >
+  //             {images.map((imageItemUrl, key) => {
+  //               return (
+  //                 <SwipeItem key={`swipe-${key}`}>
+  //                   <Image
+  //                     className="product-description__single-image"
+  //                     src={imageItemUrl}
+  //                     scalingRatioIndex={2}
+  //                     alt={`${storeName} ${title}`}
+  //                   />
+  //                 </SwipeItem>
+  //               );
+  //             })}
+  //           </Swipe>
+  //         ) : (
+  //           <Image
+  //             className="product-description__single-image"
+  //             src={images && images.length ? images[0] : null}
+  //             scalingRatioIndex={2}
+  //             alt={`${storeName} ${title}`}
+  //           />
+  //         )}
+  //         {images && images.length > 1 ? (
+  //           <ul className="product-description__dot-list text-center padding-top-bottom-smaller">
+  //             {images.map((imageItemUrl, key) => {
+  //               const dotClassList = ['product-description__dot'];
 
-                if (key === currentProductDescriptionImageIndex) {
-                  dotClassList.push('active');
-                }
+  //               if (key === currentProductDescriptionImageIndex) {
+  //                 dotClassList.push('active');
+  //               }
 
-                return <li key={`swipe-${key}-dot`} className={dotClassList.join(' ')}></li>;
-              })}
-            </ul>
-          ) : null}
-        </div>
-        <div className="product-description__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
-          <summary className="product-description__info-summary flex flex-column flex-space-between">
-            <h2 className="product-description__info-title padding-small text-size-biggest text-weight-bolder ">
-              {title}
-            </h2>
-            <CurrencyNumber
-              className="padding-small text-size-big text-opacity text-weight-bolder"
-              money={this.getDisplayPrice()}
-            />
-          </summary>
+  //               return <li key={`swipe-${key}-dot`} className={dotClassList.join(' ')}></li>;
+  //             })}
+  //           </ul>
+  //         ) : null}
+  //       </div>
+  //       <div className="product-description__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
+  //         <summary className="product-description__info-summary flex flex-column flex-space-between">
+  //           <h2 className="product-description__info-title padding-small text-size-biggest text-weight-bolder ">
+  //             {title}
+  //           </h2>
+  //           <CurrencyNumber
+  //             className="padding-small text-size-big text-opacity text-weight-bolder"
+  //             money={this.getDisplayPrice()}
+  //           />
+  //         </summary>
 
-          {Utils.isProductSoldOut(product || {}) ? (
-            <Tag
-              text={t('SoldOut')}
-              className="product-description__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
-            />
-          ) : (
-            <ItemOperator
-              className="flex-middle flex__shrink-fixed margin-smaller"
-              decreaseDisabled={false}
-              data-heap-name="ordering.home.product-detail.item-adjuster"
-              onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
-            />
-          )}
-        </div>
-      </div>
-    );
-  }
+  //         {Utils.isProductSoldOut(product || {}) ? (
+  //           <Tag
+  //             text={t('SoldOut')}
+  //             className="product-description__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
+  //           />
+  //         ) : (
+  //           <ItemOperator
+  //             className="flex-middle flex__shrink-fixed margin-smaller"
+  //             decreaseDisabled={false}
+  //             data-heap-name="ordering.home.product-detail.item-adjuster"
+  //             onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
+  //           />
+  //         )}
+  //       </div>
+  //     </div>
+  //   );
+  // }
   renderOperatorButton = () => {
     const { product } = this.props;
     const { cartQuantity, minimumVariations } = this.state;
