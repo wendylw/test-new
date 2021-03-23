@@ -1,0 +1,90 @@
+import Url from '../../../../../../utils/url';
+import Constants from '../../../../../../utils/constants';
+
+const types = {
+  // fetch cashbackInfo
+  fetchCashbackInfoRequest: 'orderStatus/thankYou/fetchCashbackInfoRequest',
+  fetchCashbackInfoSuccess: 'orderStatus/thankYou/fetchCashbackInfoSuccess',
+  fetchCashbackInfoFailure: 'orderStatus/thankYou/fetchCashbackInfoFailure',
+  // create cashbackInfo
+  createCashbackInfoRequest: 'orderStatus/thankYou/createCashbackInfoRequest',
+  createCashbackInfoSuccess: 'orderStatus/thankYou/createCashbackInfoSuccess',
+  createCashbackInfoFailure: 'orderStatus/thankYou/createCashbackInfoFailure',
+  // fetch store hash
+  fetchStoreHashRequest: 'orderStatus/thankYou/fetchStoreHashRequest',
+  fetchStoreHashSuccess: 'orderStatus/thankYou/fetchStoreHashSuccess',
+  fetchStoreHashFailure: 'orderStatus/thankYou/fetchStoreHashFailure',
+  // fetch store has with table id
+  fetchStoreHashWithTableIdRequest: 'orderStatus/thankYou/fetchStoreHashWithTableIdRequest',
+  fetchStoreHashWithTableIdSuccess: 'orderStatus/thankYou/fetchStoreHashWithTableIdSuccess',
+  fetchStoreHashWithTableIdFailure: 'orderStatus/thankYou/fetchStoreHashWithTableIdFailure',
+};
+
+const initialState = {
+  thankYou: {
+    cashbackInfo: null /* included: isFetching, customerId, consumerId, status */,
+    storeHashCode: null,
+  },
+};
+
+export const reducer = (state = initialState.thankYou, action) => {
+  switch (action.type) {
+    case types.fetchCashbackInfoRequest:
+    case types.createCashbackInfoRequest:
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          isFetching: true,
+        },
+      };
+  }
+};
+
+export default reducer;
+
+export const actions = {
+  getCashbackInfo: receiptNumber => ({
+    [API_REQUEST]: {
+      types: [types.fetchCashbackInfoRequest, types.fetchCashbackInfoSuccess, types.fetchCashbackInfoFailure],
+      ...Url.API_URLS.GET_CASHBACK,
+      params: {
+        receiptNumber,
+        source: Constants.CASHBACK_SOURCE.QR_ORDERING,
+      },
+    },
+  }),
+
+  createCashbackInfo: ({ receiptNumber, phone, source }) => ({
+    [API_REQUEST]: {
+      types: [types.createCashbackInfoRequest, types.createCashbackInfoSuccess, types.createCashbackInfoFailure],
+      ...Url.API_URLS.POST_CASHBACK,
+      payload: {
+        receiptNumber,
+        phone,
+        source,
+      },
+    },
+  }),
+
+  getStoreHashData: storeId => ({
+    [API_REQUEST]: {
+      types: [types.fetchStoreHashRequest, types.fetchStoreHashSuccess, types.fetchStoreHashFailure],
+      ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
+    },
+  }),
+
+  getStoreHashDataWithTableId: ({ storeId, tableId }) => ({
+    [API_REQUEST]: {
+      types: [
+        types.fetchStoreHashWithTableIdRequest,
+        types.fetchStoreHashWithTableIdSuccess,
+        types.fetchStoreHashWithTableIdFailure,
+      ],
+      payload: {
+        tableId,
+      },
+      ...Url.API_URLS.POST_STORE_HASH_DATA(storeId),
+    },
+  }),
+};

@@ -10,6 +10,7 @@ import thankYou from './thankYou';
 import customer from './customer';
 import reportDriver from './reportDriver';
 import locationAndDate from './locationAndDate';
+import orderStatus from '../../containers/order-status/redux';
 
 const rootReducer = combineReducers({
   entities,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   promotion,
   reportDriver,
   locationAndDate,
+  orderStatus,
 });
 
 export default rootReducer;
