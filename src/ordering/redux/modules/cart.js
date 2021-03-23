@@ -124,7 +124,7 @@ export const getBusinessInfo = state => {
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
 export const getSelectedProductDetail = state => {
-  const { selectedProduct } = state.app;
+  const { selectedProduct } = state.cart;
 
   return getProductById(state, selectedProduct.id);
 };

@@ -22,7 +22,6 @@ import {
   getUser,
   getBusiness,
   getShoppingCart,
-  // getCurrentProduct,
   getCartBilling,
 } from '../../redux/modules/app';
 import { getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
@@ -513,9 +512,7 @@ export default compose(
       return {
         business: getBusiness(state),
         user: getUser(state),
-        // cartBilling: getCartSummary(state),
         cartBilling: getCartBilling(state),
-        // promotion: getPromotion(state),
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),

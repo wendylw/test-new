@@ -18,7 +18,6 @@ import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
-import { getCartSummary, getAllCartItems } from '../../../redux/modules/entities/carts';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -29,7 +28,7 @@ export const types = APP_TYPES;
 const CartModel = {
   status: 'pending',
   isFetching: false,
-  itemIds: [],
+  items: [],
   unavailableItemIds: [],
   billing: {
     count: 0,
@@ -792,30 +791,30 @@ export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStor
 
 export const getCurrentProduct = state => state.app.currentProduct;
 
-export const getCartItemIds = state => state.app.shoppingCart.itemIds;
+export const getCartItems = state => state.app.shoppingCart.items;
 
 export const getCartBilling = state => state.app.shoppingCart.billing;
 
-export const getCartUnavailableItemIds = state => state.app.shoppingCart.unavailableItemIds;
+export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
 export const getShoppingCart = createSelector(
-  [getCartBilling, getCartItemIds, getCartUnavailableItemIds],
-  (cartBilling, itemIds, unavailableItemIds, carts) => {
+  [getCartBilling, getCartItems, getCartUnavailableItems],
+  (cartBilling, items, unavailableItems) => {
     return {
       cartBilling,
-      items: itemIds.map(id => carts[id]),
-      unavailableItems: unavailableItemIds.map(id => carts[id]),
+      items,
+      unavailableItems,
     };
   }
 );
 
 // get cartItems of currentProduct
 export const getShoppingCartItemsByProducts = createSelector(
-  [getCartItemIds, getAllCartItems, getCurrentProduct],
-  (itemIds, carts, product) => {
-    const calcItems = itemIds
-      .map(id => carts[id])
-      .filter(x => x.productId === product.id || x.parentProductId === product.id);
+  [getCartItems, getCurrentProduct],
+  (cartItems, product) => {
+    const calcItems = cartItems.filter(
+      cartItem => cartItem.productId === product.id || cartItem.parentProductId === product.id
+    );
     const items = calcItems.map(x => {
       return {
         productId: x.productId,

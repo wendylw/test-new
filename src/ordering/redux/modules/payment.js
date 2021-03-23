@@ -4,7 +4,7 @@ import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
-import { getCartItemIds } from './app';
+import { getCartItems } from './app';
 import { getBusiness, getOnlineStoreInfo, getRequestInfo, actions as appActions, getBusinessUTCOffset } from './app';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
@@ -72,8 +72,8 @@ export const actions = {
     const isDigital = Utils.isDigitalType();
     if (isDigital) {
       const business = getBusiness(getState());
-      const cartItemIds = getCartItemIds(getState());
-      const productId = cartItemIds[0];
+      const cartItems = getCartItems(getState());
+      const productId = cartItems[0].id;
       const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
       const payload = {
         businessName: business,
@@ -114,7 +114,7 @@ export const actions = {
     const businessInfo = getBusinessByName(getState(), business);
     const { qrOrderingSettings = {} } = businessInfo || {};
     const { enablePreOrder } = qrOrderingSettings;
-    const shoppingCartIds = getCartItemIds(getState());
+    const cartItems = getCartItems(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
     const deliveryDetails = await fetchDeliveryDetails();
@@ -123,7 +123,7 @@ export const actions = {
     let variables = {
       business,
       storeId,
-      shoppingCartIds,
+      shoppingCartIds: cartItems.map(cartItem => cartItem.id),
       tableId,
       cashback,
       orderSource,
