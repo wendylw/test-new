@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import Item from '../../components/Item';
 import Billing from '../../components/Billing';
 import Header from '../../../components/Header';
-import ItemOperator from '../../../components/ItemOperator';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Constants from '../../../utils/constants';
 
@@ -83,23 +82,19 @@ export class ReceiptDetail extends Component {
 
           return (
             <Item
-              key={id}
-              image={image}
+              key={`receipt-item-${id}`}
+              className="flex-middle"
+              imageUrl={image}
               title={title}
               variation={(variationTexts || []).join(', ')}
-              detail={
+              details={
                 <CurrencyNumber
-                  className="price item__text text-weight-bolder"
+                  className="receipt-item__price text-weight-bolder"
                   money={displayPrice || unitPrice || 0}
                 />
               }
             >
-              <ItemOperator
-                className="flex-middle exhibit margin-normal padding-top-bottom-normal"
-                data-heap-name="ordering.receipt.item-operator"
-                quantity={quantity}
-                decreaseDisabled={quantity === 0}
-              />
+              <span className="text-size-small margin-small">{quantity}</span>
             </Item>
           );
         })}
