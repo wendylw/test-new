@@ -7,6 +7,12 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const initialState = {
   pendingTransactionsIds: [],
+  selectedProduct: {
+    id: '',
+    cartId: '',
+    isFetching: false,
+    status: 'fulfilled',
+  },
 };
 
 export const types = CART_TYPES;
@@ -70,8 +76,7 @@ export const emptyShoppingCart = () => {
   };
 };
 
-// reducers
-const reducer = (state = initialState, action) => {
+const pendingTransactionsIds = (state = initialState.pendingTransactionsIds, action) => {
   const { transactions } = action.response || {};
 
   switch (action.type) {
@@ -84,7 +89,29 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-export default reducer;
+const selectedProduct = (state = initialState.selectedProduct, action) => {
+  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
+    return { ...state, isFetching: true, status: 'pending' };
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
+    const { product } = action.responseGql.data;
+
+    return {
+      ...state,
+      isFetching: false,
+      status: 'fulfilled',
+      id: product.id,
+    };
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
+    return { ...state, isFetching: false, status: 'rejected' };
+  }
+
+  return state;
+};
+
+export default combineReducers({
+  pendingTransactionsIds,
+  selectedProduct,
+});
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
@@ -93,5 +120,11 @@ export const getBusinessInfo = state => {
 };
 
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
+
+export const getSelectedProductDetail = ({ app }) => {
+  const { selectedProduct } = app;
+
+  return getProductById(state, selectedProduct.id);
+};
 
 // selectors

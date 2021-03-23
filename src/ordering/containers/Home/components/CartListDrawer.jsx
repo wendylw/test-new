@@ -26,17 +26,17 @@ class CartListDrawer extends Component {
     await this.props.appActions.loadShoppingCart();
   };
 
-  handleGtmEventTracking = product => {
+  handleGtmEventTracking = selectedProduct => {
     // In cart list, image count is always either 1 or 0
     const gtmEventDate = {
-      product_name: product.title,
-      product_id: product.productId,
-      price_local: product.displayPrice,
-      variant: product.variations,
-      quantity: product.quantityOnHand,
-      product_type: product.inventoryType,
-      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
-      image_count: product.image || 0,
+      product_name: selectedProduct.title,
+      product_id: selectedProduct.productId,
+      price_local: selectedProduct.displayPrice,
+      variant: selectedProduct.variations,
+      quantity: selectedProduct.quantityOnHand,
+      product_type: selectedProduct.inventoryType,
+      Inventory: !!selectedProduct.markedSoldOut ? 'In stock' : 'Out of stock',
+      image_count: selectedProduct.image || 0,
     };
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventDate);
@@ -196,7 +196,7 @@ class CartListDrawer extends Component {
   }
 
   renderCartList() {
-    const { viewAside, product, shoppingCart } = this.props;
+    const { viewAside, selectedProduct, shoppingCart } = this.props;
     if (!shoppingCart || viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE) {
       return null;
     }
@@ -210,7 +210,7 @@ class CartListDrawer extends Component {
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
       cartItems = cartItems.filter(
-        cartItem => cartItem.productId === product.id || cartItem.parentProductId === product.id
+        cartItem => cartItem.productId === selectedProduct.id || cartItem.parentProductId === selectedProduct.id
       );
     }
 
@@ -317,7 +317,7 @@ export default compose(
         cartSummary: getCartSummary(state),
         selectedProductCart: getShoppingCartItemsByProducts(state),
         // product: getProductById(state, currentProductInfo.id),
-        product: getSelectedProductDetail(state),
+        selectedProduct: getSelectedProductDetail(state),
       };
     },
     dispatch => ({

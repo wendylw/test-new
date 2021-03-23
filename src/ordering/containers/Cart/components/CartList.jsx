@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getProductById } from '../../../../../redux/modules/entities/products';
+// import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as appActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/app';
+import { getSelectedProductDetail } from '../../../redux/modules/cart';
 import Constants from '../../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import Item from '../../../../components/Item';
@@ -210,10 +211,11 @@ CartList.defaultProps = {
 
 export default connect(
   state => {
-    const currentProductInfo = getCurrentProduct(state);
+    // const currentProductInfo = getCurrentProduct(state);
     return {
       shoppingCart: getShoppingCart(state),
-      product: getProductById(state, currentProductInfo.id),
+      // product: getProductById(state, currentProductInfo.id),
+      product: getSelectedProductDetail(state),
     };
   },
   dispatch => ({
