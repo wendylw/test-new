@@ -56,12 +56,15 @@ class CurrentCategoryBar extends PureComponent {
                         key={`category-${c.id}`}
                         className={classList.join(' ')}
                         data-heap-name="ordering.home.category-item"
-                        onClick={() =>
+                        onClick={() => {
+                          if (this.props.onCategoryClick) {
+                            this.props.onCategoryClick();
+                          }
                           scrollToSmoothly({
                             targetId: c.id,
                             containerId: 'product-list',
-                          })
-                        }
+                          });
+                        }}
                       >
                         <label className="category-nav__text">{c.name}</label>
                       </li>

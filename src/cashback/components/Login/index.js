@@ -12,7 +12,9 @@ import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
-  state = {};
+  state = {
+    sendOtp: false,
+  };
 
   handleCloseOtpModal() {
     const { appActions } = this.props;
@@ -26,12 +28,11 @@ class Login extends React.Component {
     appActions.updateUser(user);
   }
 
-  async handleSubmitPhoneNumber() {
-    const { appActions, user } = this.props;
-    const { phone } = user || {};
+  handleSubmitPhoneNumber(phone) {
+    const { appActions, otpType } = this.props;
 
-    // appActions.getOtp({ phone });
-    appActions.phoneNumberLogin({ phone });
+    appActions.getOtp({ phone, type: otpType });
+    this.setState({ sendOtp: true });
   }
 
   async handleWebLogin(otp) {
@@ -48,6 +49,10 @@ class Login extends React.Component {
         refreshToken,
       });
     }
+  }
+
+  updateOtpStatus() {
+    this.props.appActions.updateOtpStatus();
   }
 
   renderOtpModal() {
@@ -67,6 +72,7 @@ class Login extends React.Component {
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
+        updateOtpStatus={this.updateOtpStatus.bind(this)}
         isLoading={isFetching || isLogin}
       />
     );

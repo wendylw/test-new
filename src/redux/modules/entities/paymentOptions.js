@@ -12,7 +12,7 @@ const initialState = {
     },
     onlineBanking: {
       key: 'onlineBanking',
-      logo: 'paymentBankingImage', // refer to imports in file PaymentLogo/index.js
+      logo: 'paymentBankingImage', // refer to imports in file paymentLogo.jsx
       label: PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY,
       pathname: ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT,
     },
@@ -25,23 +25,23 @@ const initialState = {
     },
     creditCard: {
       key: 'creditCard',
-      logo: 'paymentCreditImage', // refer to imports in file PaymentLogo/index.js
+      logo: 'paymentCreditImage', // refer to imports in file paymentLogo.jsx
       label: PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY,
       pathname: ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT,
     },
     boost: {
       key: 'boost',
-      logo: 'paymentBoostImage', // refer to imports in file PaymentLogo/index.js
+      logo: 'paymentBoostImage', // refer to imports in file  paymentLogo.jsx
       label: PAYMENT_METHOD_LABELS.BOOST_PAY,
     },
     grabPay: {
       key: 'grabPay',
-      logo: 'paymentGrabImage', // refer to imports in file PaymentLogo/index.js
+      logo: 'paymentGrabImage', // refer to imports in file paymentLogo.jsx
       label: PAYMENT_METHOD_LABELS.GRAB_PAY,
     },
     TNG: {
       key: 'TNG',
-      logo: 'paymentTNGImage', // refer to imports in file PaymentLogo/index.js
+      logo: 'paymentTNGImage', // refer to imports in file  paymentLogo.jsx
       label: PAYMENT_METHOD_LABELS.TNG_PAY,
     },
     gcash: {

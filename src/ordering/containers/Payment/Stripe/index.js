@@ -374,9 +374,9 @@ class Stripe extends Component {
   };
 
   async componentDidMount() {
-    const { history, deliveryDetails, customerActions } = this.props;
+    const { deliveryDetails, customerActions } = this.props;
     const { addressId } = deliveryDetails || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const type = Utils.getOrderTypeFromUrl();
 
     !addressId && (await customerActions.initDeliveryDetails(type));
 
@@ -412,7 +412,7 @@ class Stripe extends Component {
       webhookURL,
       paymentName: 'Stripe',
       isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      source: Utils.getOrderSource(),
       paymentMethodId: '',
     };
   };

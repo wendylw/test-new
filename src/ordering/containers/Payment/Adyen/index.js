@@ -23,8 +23,10 @@ import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
-import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
+import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import AdyenSecurity from '../../../../../src/images/Adyen-PCI.png';
+import { getSelectedPaymentOption } from '../redux/payments';
 import '../PaymentCreditCard.scss';
 import './AdyenPage.scss';
 
@@ -37,11 +39,26 @@ class AdyenPage extends Component {
   };
   card = null;
 
-  componentDidMount() {
-    this.props.homeActions.loadShoppingCart();
+  componentDidMount = async () => {
+    const { deliveryDetails, customerActions } = this.props;
+    const { addressId } = deliveryDetails || {};
+    const type = Utils.getOrderTypeFromUrl();
+
+    !addressId && (await customerActions.initDeliveryDetails(type));
+
+    const { deliveryDetails: newDeliveryDetails } = this.props;
+    const { deliveryToLocation } = newDeliveryDetails || {};
+
+    await this.props.homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
 
     this.initAdyenCard();
-  }
+  };
 
   initAdyenCard = () => {
     const handleOnChange = (state, component) => {
@@ -109,12 +126,12 @@ class AdyenPage extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, businessInfo, merchantCountry, user } = this.props;
-    const currentPayment = Constants.PAYMENT_METHOD_LABELS.ADYEN_PAY;
+    const { onlineStoreInfo, currentOrder, business, businessInfo, user, currentPaymentOption } = this.props;
+    const { paymentProvider } = currentPaymentOption;
     const { state, browserInfo } = this.card;
     const { data: paymentMethod } = state;
 
-    if (!onlineStoreInfo || !currentOrder || !currentPayment || !paymentMethod || !user) {
+    if (!onlineStoreInfo || !currentOrder || !paymentProvider || !paymentMethod || !user) {
       return {};
     }
 
@@ -127,13 +144,14 @@ class AdyenPage extends Component {
       currency: onlineStoreInfo.currency,
       receiptNumber: currentOrder.orderId,
       businessName: business,
-      paymentName: getPaymentName(merchantCountry, currentPayment),
+      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
+      paymentName: paymentProvider,
       browserInfo: JSON.stringify(browserInfo || {}),
       redirectURL,
       webhookURL,
       userId: user.consumerId,
       isInternal: _startsWith(planId, 'internal'),
-      orderSource: Utils.getOrderSource(),
+      source: Utils.getOrderSource(),
       ...paymentMethod,
       type: saveCard
         ? Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVE_CARD
@@ -309,6 +327,7 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        currentPaymentOption: getSelectedPaymentOption(state),
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
@@ -316,11 +335,13 @@ export default compose(
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         user: getUser(state),
+        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(AdyenPage);

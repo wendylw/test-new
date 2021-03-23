@@ -4,9 +4,8 @@ const API_URLS = {
     url: '/api/cart',
     method: 'get',
   },
-  GET_CART_TYPE: (isDeliveryType, deliveryCoords) => {
+  GET_CART_TYPE: (isDeliveryType, deliveryCoords, fulfillDate) => {
     let CartObj = API_URLS.GET_CART;
-    const { expectDeliveryDateFrom } = Utils.getFulfillDate();
     const params = {
       shippingType: Utils.getApiRequestShippingType(),
     };
@@ -15,8 +14,8 @@ const API_URLS = {
       params.deliveryCoords = `${deliveryCoords.lat},${deliveryCoords.lng}`;
     }
 
-    if (expectDeliveryDateFrom) {
-      params.fulfillDate = expectDeliveryDateFrom;
+    if (fulfillDate) {
+      params.fulfillDate = fulfillDate;
     }
     CartObj.params = params;
     return CartObj;
@@ -75,10 +74,6 @@ const API_URLS = {
   },
   POST_LOGIN: {
     url: '/api/login',
-    method: 'post',
-  },
-  PHONE_NUMBER_LOGIN: {
-    url: '/api/v2/login',
     method: 'post',
   },
   GET_TERMS_PRIVACY: {

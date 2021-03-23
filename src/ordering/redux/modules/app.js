@@ -6,6 +6,7 @@ import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
+import CleverTap from '../../../utils/clevertap';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -80,13 +81,15 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  loginApp: ({ accessToken, refreshToken }) => dispatch =>
+  loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
     dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
         accessToken,
         refreshToken,
-        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
+        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
         shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
@@ -96,30 +99,23 @@ export const actions = {
           if (phone) {
             window.heap?.addUserProperties({ PhoneNumber: phone });
           }
-        }
-        return resp;
-      }),
-    }),
+          const userInfo = {
+            Name: resp.user?.firstName,
+            Phone: resp.user?.phone,
+            Email: resp.user?.email,
+            Identity: resp.consumerId,
+          };
 
-  phoneNumberLogin: ({ phone }) => dispatch =>
-    dispatch({
-      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      requestPromise: post(Url.API_URLS.PHONE_NUMBER_LOGIN.url, {
-        phone,
-        fulfillDate: Utils.getFulfillDate().expectDeliveryDateFrom,
-        shippingType: Utils.getApiRequestShippingType(),
-      }).then(resp => {
-        if (resp && resp.consumerId) {
-          window.heap?.identify(resp.consumerId);
-          window.heap?.addEventProperties({ LoggedIn: 'yes' });
-          const phone = Utils.getLocalStorageVariable('user.p');
-          if (phone) {
-            window.heap?.addUserProperties({ PhoneNumber: phone });
+          if (resp.user?.birthday) {
+            userInfo.DOB = new Date(resp.user?.birthday);
           }
+
+          CleverTap.onUserLogin(userInfo);
         }
         return resp;
       }),
-    }),
+    });
+  },
 
   resetOtpStatus: () => ({
     type: types.RESET_OTP_STATUS,
@@ -157,6 +153,22 @@ export const actions = {
         if (resp.consumerId) {
           window.heap?.identify(resp.consumerId);
           window.heap?.addEventProperties({ LoggedIn: 'yes' });
+          if (resp.login) {
+            get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
+              const userInfo = {
+                Name: profile.firstName,
+                Phone: profile.phone,
+                Email: profile.email,
+                Identity: resp.consumerId,
+              };
+
+              if (profile.birthday) {
+                userInfo.DOB = new Date(profile.birthday);
+              }
+
+              CleverTap.onUserLogin(userInfo);
+            });
+          }
         } else {
           window.heap?.resetIdentity();
           window.heap?.addEventProperties({ LoggedIn: 'no' });

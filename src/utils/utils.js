@@ -2,6 +2,11 @@ import qs from 'qs';
 import Constants from './constants';
 import config from '../config';
 import { captureException } from '@sentry/react';
+import _get from 'lodash/get';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import * as timeLib from './time-lib';
+dayjs.extend(utc);
 
 const { SH_LOGISTICS_VALID_TIME } = Constants;
 const Utils = {};
@@ -652,41 +657,27 @@ Utils.getContainerElementHeight = (headerEls, footerEl) => {
 
 Utils.zero = num => (num < 10 ? '0' + num : num + '');
 
-// function to get query date for pre-order
-Utils.getFulfillDate = () => {
-  const getExpectDeliveryDateInfo = (dateValue, hour1, hour2) => {
-    const fromHour = hour1.split(':')[0];
-    const fromMinute = hour1.split(':')[1];
-    const d1 = new Date(dateValue);
-    let d2, toHour, toMinute;
+Utils.getFulfillDate = (businessUTCOffset = 480) => {
+  try {
+    const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
+    const expectedDate = _get(date, 'date', null);
+    const expectedFromTime = _get(hour, 'from', null);
 
-    if (hour2) {
-      d2 = new Date(dateValue);
-      toHour = hour2.split(':')[0];
-      toMinute = hour2.split(':')[1];
-      d2.setHours(Number(toHour), Number(toMinute), 0, 0);
+    if (!expectedDate || !expectedFromTime) {
+      return null;
     }
-    d1.setHours(Number(fromHour), Number(fromMinute), 0, 0);
-    return {
-      expectDeliveryDateFrom: d1.toISOString(),
-      expectDeliveryDateTo: d2 && d2.toISOString(),
-    };
-  };
 
-  const expectedDeliveryHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour')) || {};
-  // => {"from":2,"to":3}
-  const expectedDeliveryDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate')) || {};
-  // => {"date":"2020-03-31T12:18:30.370Z","isOpen":true,"isToday":false}
+    if (expectedFromTime === Constants.TIME_SLOT_NOW) {
+      return null;
+    }
 
-  if (expectedDeliveryHour.from !== Constants.PREORDER_IMMEDIATE_TAG.from) {
-    return (
-      (expectedDeliveryDate.date &&
-        expectedDeliveryHour.from &&
-        getExpectDeliveryDateInfo(expectedDeliveryDate.date, expectedDeliveryHour.from, expectedDeliveryHour.to)) ||
-      {}
-    );
-  } else {
-    return {};
+    const expectedDayjs = dayjs(new Date(expectedDate)).utcOffset(businessUTCOffset);
+    const fulfillDayjs = timeLib.setDateTime(expectedFromTime, expectedDayjs);
+
+    return fulfillDayjs.toISOString();
+  } catch (e) {
+    console.error(e);
+    return null;
   }
 };
 

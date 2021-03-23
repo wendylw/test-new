@@ -23,63 +23,13 @@
     <meta name="twitter:image" content="__TWIITER_IMAGE__" />
     <meta name="twitter:description" content="__TWIITER_DESCRIPTION__" />
     <meta name="google-site-verification" content="ux-msEIAqigwlytxmevbW55bU3NbR9WGGFnIT-qZEO8" />
-    <meta name="facebook-domain-verification" content="sxetmkh4wntm742aenu6vuswbx7vsa" />
+    <meta name="facebook-domain-verification" content="__FACEBOOK_DOMAIN_VERIFICATION__" />
 
     <!--
     manifest.json provides metadata used when your web app is installed on a
     user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
   -->
     <script id="manifest-placeholder"></script>
-    <script>
-    (function () {
-      if (!Array.isArray) {
-        Array.isArray = function(arg) {
-          return Object.prototype.toString.call(arg) === '[object Array]';
-        };
-      }
-      if (Promise && !Promise.all) {
-        Promise.all = function (arr) {
-          return new Promise(function (resolve, reject) {
-            if (!Array.isArray(arr)) {
-              return reject(new TypeError("Promise.all accepts an array"));
-            }
-
-            var args = Array.prototype.slice.call(arr);
-            if (args.length === 0) return resolve([]);
-            var remaining = args.length;
-
-            function res(i, val) {
-              try {
-                if (val && (typeof val === "object" || typeof val === "function")) {
-                  var then = val.then;
-                  if (typeof then === "function") {
-                    then.call(
-                      val,
-                      function (val) {
-                        res(i, val);
-                      },
-                      reject
-                    );
-                    return;
-                  }
-                }
-                args[i] = val;
-                if (--remaining === 0) {
-                  resolve(args);
-                }
-              } catch (ex) {
-                reject(ex);
-              }
-            }
-
-            for (var i = 0; i < args.length; i++) {
-              res(i, args[i]);
-            }
-          });
-        };
-      }
-    })();
-    </script>
     <!--
     Notice the use of %PUBLIC_URL% in the tags above.
     It will be replaced with the URL of the `public` folder during the build.
@@ -102,7 +52,20 @@
     <script>(function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.crossorigin=""; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER_ID%');</script>
     <!-- End Google Tag Manager -->
 
-
+    <script type="text/javascript">
+      var clevertap = {event:[], profile:[], account:[], onUserLogin:[], notifications:[], privacy:[], region: '%REACT_APP_CLEVER_TAP_SCRIPT_REGION%'};
+      // replace with the CLEVERTAP_ACCOUNT_ID with the actual ACCOUNT ID value from your Dashboard -> Settings page
+      clevertap.account.push({"id": "%REACT_APP_CLEVER_TAP_ID%"});
+      clevertap.privacy.push({ useIP: true });
+      (function () {
+        var wzrk = document.createElement('script');
+        wzrk.type = 'text/javascript';
+        wzrk.async = true;
+        wzrk.src = 'https:' == document.location.protocol ? '%REACT_APP_CLEVER_TAP_SCRIPT_HTTPS_URL%' : '%REACT_APP_CLEVER_TAP_SCRIPT_HTTP_URL%';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wzrk, s);
+      })();
+    </script>
 
     <script type="text/javascript">
       window.heap = window.heap || [], heap.load = function (e, t) { window.heap.appid = e, window.heap.config = t = t || {}; var r = t.forceSSL || "https:" === document.location.protocol, a = document.createElement("script"); a.type = "text/javascript", a.async = !0, a.crossorigin="", a.src = (r ? "https:" : "http:") + "//cdn.heapanalytics.com/js/heap-" + e + ".js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n); for (var o = function (e) { return function () { heap.push([e].concat(Array.prototype.slice.call(arguments, 0))) } }, p = ["addEventProperties", "addUserProperties", "clearEventProperties", "identify", "resetIdentity", "removeEventProperty", "setEventProperties", "track", "unsetEventProperty"], c = 0; c < p.length; c++)heap[p[c]] = o(p[c]) };
@@ -189,15 +152,7 @@
         }
       })();
     </script>
-
-
-    <script>
-      // This code is trying to gain more information to debug on FB-1755
-      // https://developers.google.com/maps/documentation/javascript/events#auth-errors
-      function gm_authFailure() {
-        window.heap && window.heap.track('common.google-maps-auth-errors');
-      }
-    </script>
+ 
     <script>
       (function () {
         // fix FB-1755: Some browsers caches the google maps script for a long time, which makes the token expired.

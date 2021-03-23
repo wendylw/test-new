@@ -91,25 +91,6 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
         return expectedActionsCheck(actions.loginApp(reqParams), expectedActions);
       });
     });
-    describe('phoneNumberLogin', () => {
-      const reqParams = { phone: '18766668888' };
-      it(':Success', () => {
-        successMockFetch();
-        const expectedActions = [
-          { type: types.CREATE_LOGIN_REQUEST },
-          { type: types.CREATE_LOGIN_SUCCESS, response: commonSuccessData },
-        ];
-        return expectedActionsCheck(actions.phoneNumberLogin(reqParams), expectedActions);
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const expectedActions = [
-          { type: types.CREATE_LOGIN_REQUEST },
-          { type: types.CREATE_LOGIN_FAILURE, error: new RequestError(mockErrorMsg, mockErrorCode) },
-        ];
-        return expectedActionsCheck(actions.phoneNumberLogin(reqParams), expectedActions);
-      });
-    });
     describe('fetchOnlineStoreInfo', () => {
       it(':Success', () => {
         successMockFetch();

@@ -15,6 +15,7 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getMerchantCountry, getUser } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCardList, getSelectedPaymentCard } from '../../../redux/modules/payment';
 import { getCardLabel, getCardIcon } from '../utils';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import IconAddNew from '../../../../images/icon-add-new.svg';
 import '../PaymentCreditCard.scss';
 
@@ -53,10 +54,25 @@ class SavedCards extends Component {
   };
 
   componentDidMount = async () => {
-    this.props.homeActions.loadShoppingCart().then(res => {
-      this.setState({
-        isCartLoaded: true,
-      });
+    const { deliveryDetails, customerActions } = this.props;
+    const { addressId } = deliveryDetails || {};
+    const type = Utils.getOrderTypeFromUrl();
+
+    !addressId && (await customerActions.initDeliveryDetails(type));
+
+    const { deliveryDetails: newDeliveryDetails } = this.props;
+    const { deliveryToLocation } = newDeliveryDetails || {};
+
+    await this.props.homeActions.loadShoppingCart(
+      deliveryToLocation.latitude &&
+        deliveryToLocation.longitude && {
+          lat: deliveryToLocation.latitude,
+          lng: deliveryToLocation.longitude,
+        }
+    );
+
+    this.setState({
+      isCartLoaded: true,
     });
   };
 
@@ -203,10 +219,12 @@ export default compose(
       cardList: getCardList(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
       merchantCountry: getMerchantCountry(state),
+      deliveryDetails: getDeliveryDetails(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(SavedCards);

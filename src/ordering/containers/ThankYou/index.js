@@ -5,7 +5,9 @@ import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import _isNil from 'lodash/isNil';
+import _get from 'lodash/get';
 import Header from '../../../components/Header';
+import Image from '../../../components/Image';
 import { IconAccessTime, IconPin } from '../../../components/Icons';
 import LiveChat from '../../../components/LiveChat';
 import LiveChatNative from '../../../components/LiveChatNative';
@@ -27,7 +29,7 @@ import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
 import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
 import cashbackSuccessImage from '../../../images/succeed-animation.gif';
 import Constants from '../../../utils/constants';
-import { formatPickupTime, toDayDateMonth, toNumericTimeRange } from '../../../utils/datetime-lib';
+import { formatPickupTime } from '../../../utils/datetime-lib';
 import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
 import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
@@ -46,6 +48,7 @@ import {
 } from '../../redux/modules/thankYou';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
+import CleverTap from '../../../utils/clevertap';
 import './OrderingThanks.scss';
 import * as storeUtils from '../../../utils/store-utils';
 
@@ -110,7 +113,7 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    this.loadOrder();
+    this.loadOrder().then(this.recordChargedEvent);
 
     this.setContainerHeight();
 
@@ -187,6 +190,60 @@ export class ThankYou extends PureComponent {
       }
     } else {
       this.closeMap();
+    }
+  };
+
+  // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
+  recordChargedEvent = () => {
+    const { order, onlineStoreInfo } = this.props;
+
+    let totalQuantity = 0;
+    let totalDiscount = 0;
+
+    order.loyaltyDiscounts?.forEach(entry => {
+      totalDiscount += entry.displayDiscount;
+    });
+
+    order.displayPromotions?.forEach(entry => {
+      totalDiscount += entry.displayDiscount;
+    });
+
+    const itemsList =
+      order.items?.map(item => {
+        totalQuantity += item.quantity;
+        return {
+          Name: item.title,
+          Quantity: item.quantity,
+          Price: item.displayPrice,
+        };
+      }) || [];
+
+    const orderSourceType = Utils.getOrderSource();
+    const orderSource =
+      orderSourceType === 'BeepApp' ? 'App' : orderSourceType === 'BeepSite' ? 'beepit.com' : 'Store URL';
+
+    let preOrderPeriod = 0;
+    if (order.isPreOrder) {
+      preOrderPeriod = (new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / (60 * 60 * 1000);
+    }
+
+    if (document.referrer !== '' && sessionStorage.getItem('ct_logged') !== order.orderId) {
+      CleverTap.pushEvent('Charged', {
+        Currency: onlineStoreInfo?.currency || '',
+        Amount: order.total,
+        'Total Quantity': totalQuantity,
+        'Total Discount': totalDiscount,
+        'Shipping Type': order.shippingType,
+        'Preorder Flag': order.isPreOrder,
+        'Delivery Instructions': _get(order, 'deliveryInformation[0].comments'),
+        'Payment Method': _get(order, 'paymentMethod[0]', ''),
+        'Store Name': _get(order, 'storeInfo.name', ''),
+        'Charged ID': order.orderId,
+        Items: itemsList,
+        'Order Source': orderSource,
+        'Pre-order Period': preOrderPeriod,
+      });
+      sessionStorage.setItem('ct_logged', order.orderId);
     }
   };
 
@@ -806,8 +863,12 @@ export class ThankYou extends PureComponent {
 
           <div className={`flex  flex-middle`}>
             <div className="ordering-thanks__rider-logo">
-              {useStorehubLogistics && <img src={this.getLogisticsLogo(courier)} alt="rider info" className="logo" />}
-              {!useStorehubLogistics && <img src={storeLogo} alt="store info" className="logo" />}
+              {useStorehubLogistics && (
+                <figure className="logo">
+                  <img src={this.getLogisticsLogo(courier)} alt="rider info" />
+                </figure>
+              )}
+              {!useStorehubLogistics && <Image src={storeLogo} alt="store info" className="logo" />}
             </div>
             <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
               <p className="line-height-normal text-weight-bolder">
@@ -1137,16 +1198,9 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    let link = '';
+    const link = 'https://storehub.page.link/c8Ci';
     const client = Utils.judgeClient();
-    if (client === 'iOS') {
-      link = 'https://apps.apple.com/my/app/beep-food-delivery/id1526807985';
-    } else if (client === 'Android') {
-      link = 'https://play.google.com/store/apps/details?id=com.storehub.beep';
-    } else {
-      link =
-        'https://app.beepit.com/download/?utm_source=beep&utm_medium=tracking&utm_campaign=launch_campaign&utm_content=tracking_banner';
-    }
+
     return (
       <div className="margin-normal ordering-thanks__download">
         <a href={link} data-heap-name="ordering.thank-you.download" target={client === 'PC' ? '_blank' : ''}>

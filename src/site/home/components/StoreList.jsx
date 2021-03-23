@@ -16,8 +16,8 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import Tag from '../../../components/Tag';
 
 class StoreList extends Component {
-  handleStoreClicked = store => {
-    this.props.onStoreClicked(store);
+  handleStoreClicked = (store, index) => {
+    this.props.onStoreClicked(store, index);
   };
 
   renderPromotionTags = promoTag => {
@@ -84,7 +84,7 @@ class StoreList extends Component {
               data-heap-store-name={name}
               data-heap-store-index={index}
               onClick={() => {
-                this.handleStoreClicked(store);
+                this.handleStoreClicked(store, index);
               }}
             >
               <div className="store-card-list__image-container flex__shrink-fixed border-radius-large">

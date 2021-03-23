@@ -135,17 +135,26 @@ class CategoryProductList extends Component {
     return false;
   }
 
-  handleShowProductDetail = async product => {
+  handleShowProductDetail = async (product, categoryInfo) => {
     if (this.isNeedToLocationAndDatePage()) {
       this.gotoLocationAndDatePage();
       return;
     }
 
-    const { onToggle } = this.props;
+    const { onToggle, onProductClick, onProductView } = this.props;
+
+    if (onProductClick) {
+      onProductClick({ product, categoryInfo });
+    }
+
     const { responseGql = {} } = await this.props.homeActions.loadProductDetail(product);
     const { data: productDetail = {} } = responseGql;
 
     onToggle('PRODUCT_DETAIL');
+
+    if (onProductView) {
+      onProductView({ product, categoryInfo });
+    }
 
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
     await this.props.homeActions.loadShoppingCart();
@@ -157,7 +166,7 @@ class CategoryProductList extends Component {
     return (
       <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
         <ol className="category__list" data-heap-name="ordering.home.product-list">
-          {categories.map(category => (
+          {categories.map((category, categoryIndex) => (
             <li key={category.id} id={category.id}>
               <ScrollObservable targetId={category.id} key={category.id}>
                 <h2 className="category__header padding-top-bottom-small padding-left-right-smaller sticky-wrapper">
@@ -177,7 +186,10 @@ class CategoryProductList extends Component {
                       decreaseDisabled={false}
                       onDecrease={this.handleDecreaseProductInCart.bind(this, product)}
                       onIncrease={this.handleIncreaseProductInCart.bind(this, product)}
-                      showProductDetail={this.handleShowProductDetail.bind(this, product)}
+                      showProductDetail={this.handleShowProductDetail.bind(this, product, {
+                        name: category.name,
+                        index: categoryIndex,
+                      })}
                       isFeaturedProduct={product.isFeaturedProduct}
                       isValidTimeToOrder={this.props.isValidTimeToOrder}
                       showOperator={false}
