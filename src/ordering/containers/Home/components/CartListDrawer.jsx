@@ -5,19 +5,19 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators } from '../../../redux/modules/cart';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getProductById } from '../../../../redux/modules/entities/products';
+// import { getProductById } from '../../../../redux/modules/entities/products';
 import {
   actions as appActionCreators,
   getShoppingCartItemsByProducts,
-  getCurrentProduct,
+  // getCurrentProduct,
   getShoppingCart,
 } from '../../../redux/modules/app';
+import { getSelectedProductDetail } from '../../../redux/modules/home';
 import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { IconDelete, IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Item from '../../../components/Item';
-import Tag from '../../../../components/Tag';
 import ItemOperator from '../../../../components/ItemOperator';
 import './CartListDrawer.scss';
 
@@ -26,17 +26,17 @@ class CartListDrawer extends Component {
     await this.props.appActions.loadShoppingCart();
   };
 
-  handleGtmEventTracking = product => {
-    // In cart page, image count is always either 1 or 0
+  handleGtmEventTracking = selectedProduct => {
+    // In cart list, image count is always either 1 or 0
     const gtmEventDate = {
-      product_name: product.title,
-      product_id: product.productId,
-      price_local: product.displayPrice,
-      variant: product.variations,
-      quantity: product.quantityOnHand,
-      product_type: product.inventoryType,
-      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
-      image_count: product.image || 0,
+      product_name: selectedProduct.title,
+      product_id: selectedProduct.productId,
+      price_local: selectedProduct.displayPrice,
+      variant: selectedProduct.variations,
+      quantity: selectedProduct.quantityOnHand,
+      product_type: selectedProduct.inventoryType,
+      Inventory: !!selectedProduct.markedSoldOut ? 'In stock' : 'Out of stock',
+      image_count: selectedProduct.image || 0,
     };
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventDate);
@@ -196,7 +196,7 @@ class CartListDrawer extends Component {
   }
 
   renderCartList() {
-    const { viewAside, product, shoppingCart } = this.props;
+    const { viewAside, selectedProduct, shoppingCart } = this.props;
     if (!shoppingCart || viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE) {
       return null;
     }
@@ -210,7 +210,7 @@ class CartListDrawer extends Component {
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
       cartItems = cartItems.filter(
-        cartItem => cartItem.productId === product.id || cartItem.parentProductId === product.id
+        cartItem => cartItem.productId === selectedProduct.id || cartItem.parentProductId === selectedProduct.id
       );
     }
 
@@ -221,12 +221,12 @@ class CartListDrawer extends Component {
           maxHeight: this.aside ? `${(this.aside.clientHeight || this.aside.offsetHeight) * 0.8}px` : '0',
         }}
       >
-        <ul data-heap-name="ordering.common.cart-list">
+        <ul data-heap-name="ordering.home.mini-cart.cart-list">
           {cartItems.map(cartItem => {
             const { id, title, variationTexts, displayPrice, image, originalDisplayPrice } = cartItem;
 
             return (
-              <li key={`cart-item-${id}`}>
+              <li key={`mini-cart-item-${id}`}>
                 <Item
                   className="flex-top"
                   data-heap-name="ordering.home.mini-cart.cart-item"
@@ -311,12 +311,13 @@ export default compose(
   withTranslation(['OrderingHome']),
   connect(
     state => {
-      const currentProductInfo = getCurrentProduct(state);
+      // const currentProductInfo = getCurrentProduct(state);
       return {
         shoppingCart: getShoppingCart(state),
         cartSummary: getCartSummary(state),
         selectedProductCart: getShoppingCartItemsByProducts(state),
-        product: getProductById(state, currentProductInfo.id),
+        // product: getProductById(state, currentProductInfo.id),
+        selectedProduct: getSelectedProductDetail(state),
       };
     },
     dispatch => ({
