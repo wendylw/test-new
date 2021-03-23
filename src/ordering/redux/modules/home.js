@@ -1,12 +1,10 @@
 import { createSelector } from 'reselect';
 import Url from '../../../utils/url';
-import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
-import * as VoucherUtils from '../../../voucher/utils';
 import * as StoreUtils from '../../../utils/store-utils';
 import { combineReducers } from 'redux';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
-import { getAllProducts } from '../../../redux/modules/entities/products';
+import { getAllProducts, getProductById } from '../../../redux/modules/entities/products';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
@@ -36,19 +34,59 @@ export const initialState = {
     isFetching: false,
     storeHashCode: '',
   },
+  selectedProduct: {
+    id: '',
+    cartId: '',
+    isFetching: false,
+    status: 'fulfilled',
+  },
 };
 
-export const types = HOME_TYPES;
+const types = {
+  // fetch shoppingCart
+  FETCH_SHOPPINGCART_REQUEST: 'ORDERING/HOME/FETCH_SHOPPINGCART_REQUEST',
+  FETCH_SHOPPINGCART_SUCCESS: 'ORDERING/HOME/FETCH_SHOPPINGCART_SUCCESS',
+  FETCH_SHOPPINGCART_FAILURE: 'ORDERING/HOME/FETCH_SHOPPINGCART_FAILURE',
 
-types.FETCH_TIMESLOT_REQUEST = 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST';
-types.FETCH_TIMESLOT_SUCCESS = 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS';
-types.FETCH_TIMESLOT_FAILURE = 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE';
-types.FETCH_CORESTORES_REQUEST = 'STORES/HOME/FETCH_CORESTORES_REQUEST';
-types.FETCH_CORESTORES_SUCCESS = 'STORES/HOME/FETCH_CORESTORES_SUCCESS';
-types.FETCH_CORESTORES_FAILURE = 'STORES/HOME/FETCH_CORESTORES_FAILURE';
-types.FETCH_STORE_HASHCODE_REQUEST = 'STORES/HOME/FETCH_STORE_HASHCODE_REQUEST';
-types.FETCH_STORE_HASHCODE_SUCCESS = 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS';
-types.FETCH_STORE_HASHCODE_FAILURE = 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE';
+  // fetch onlineCategory
+  FETCH_ONLINECATEGORY_REQUEST: 'ORDERING/HOME/FETCH_ONLINECATEGORY_REQUEST',
+  FETCH_ONLINECATEGORY_SUCCESS: 'ORDERING/HOME/FETCH_ONLINECATEGORY_SUCCESS',
+  FETCH_ONLINECATEGORY_FAILURE: 'ORDERING/HOME/FETCH_ONLINECATEGORY_FAILURE',
+
+  // fetch productDetail
+  FETCH_PRODUCTDETAIL_REQUEST: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__REQUEST',
+  FETCH_PRODUCTDETAIL_SUCCESS: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__SUCCESS',
+  FETCH_PRODUCTDETAIL_FAILURE: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__FAILURE',
+
+  // mutable addOrUpdateShoppingCartItem
+  ADDORUPDATE_SHOPPINGCARTITEM_REQUEST: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_REQUEST',
+  ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS',
+  ADDORUPDATE_SHOPPINGCARTITEM_FAILURE: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_FAILURE',
+
+  // - or + on home page product item
+  DECREASE_PRODUCT_IN_CART: 'ORDERING/HOME/DECREASE_PRODUCT_IN_CART',
+  INCREASE_PRODUCT_IN_CART: 'ORDERING/HOME/INCREASE_PRODUCT_IN_CART',
+
+  SET_MENU_LAYOUT_TYPE: 'ORDERING/HOME/SET_MENU_TYPE',
+
+  SET_PRE_ORDER_MODAL_CONFIRM: 'ORDERING/HOME/SET_PRE_ORDER_MODAL_CONFIRM',
+
+  // time slot
+  FETCH_TIMESLOT_REQUEST: 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST',
+  FETCH_TIMESLOT_SUCCESS: 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS',
+  FETCH_TIMESLOT_FAILURE: 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE',
+
+  // core stores
+  FETCH_CORESTORES_REQUEST: 'STORES/HOME/FETCH_CORESTORES_REQUEST',
+  FETCH_CORESTORES_SUCCESS: 'STORES/HOME/FETCH_CORESTORES_SUCCESS',
+  FETCH_CORESTORES_FAILURE: 'STORES/HOME/FETCH_CORESTORES_FAILURE',
+
+  // store hash code
+  FETCH_STORE_HASHCODE_REQUEST: 'STORES/HOME/FETCH_STORE_HASHCODE_REQUEST',
+  FETCH_STORE_HASHCODE_SUCCESS: 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS',
+  FETCH_STORE_HASHCODE_FAILURE: 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE',
+};
+
 // actions
 export const actions = {
   // load product list group by category, and shopping cart
@@ -200,12 +238,32 @@ const popUpModal = (state = initialState.popUpModal, action) => {
   return state;
 };
 
+const selectedProduct = (state = initialState.selectedProduct, action) => {
+  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
+    return { ...state, isFetching: true, status: 'pending' };
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
+    const { product } = action.responseGql.data;
+
+    return {
+      ...state,
+      isFetching: false,
+      status: 'fulfilled',
+      id: product.id,
+    };
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
+    return { ...state, isFetching: false, status: 'rejected' };
+  }
+
+  return state;
+};
+
 export default combineReducers({
   domProperties,
   onlineCategory,
   popUpModal,
   timeSlot,
   coreStore,
+  selectedProduct,
 });
 
 // selectors
@@ -309,4 +367,10 @@ export const getStoreInfoForCleverTap = state => {
   const allBusinessInfo = getAllBusinesses(state);
 
   return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo });
+};
+
+export const getSelectedProductDetail = ({ app }) => {
+  const { selectedProduct } = app;
+
+  return getProductById(state, selectedProduct.id);
 };

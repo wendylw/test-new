@@ -516,7 +516,6 @@ export default compose(
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentProduct: getCurrentProduct(state),
         thankYouPageUrl: getThankYouPageUrl(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         allBusinessInfo: getAllBusinesses(state),

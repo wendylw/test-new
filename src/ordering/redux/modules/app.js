@@ -27,6 +27,34 @@ const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 export const types = APP_TYPES;
 
+const CartModel = {
+  status: 'pending',
+  isFetching: false,
+  itemIds: [],
+  unavailableItemIds: [],
+  count: 0,
+  discount: 0,
+  subtotal: 0,
+  total: 0,
+  tax: 0,
+  cashback: 0,
+  serviceCharge: 0,
+  shippingFee: 0,
+  promotion: {
+    promoCode: null,
+    discount: 0,
+    promoType: '',
+    status: '',
+  },
+  voucher: {
+    promoCode: null,
+    status: '',
+    discount: 0,
+    validFrom: null,
+    promoType: '',
+  },
+};
+
 export const initialState = {
   user: {
     showLoginPage: false,
@@ -77,11 +105,7 @@ export const initialState = {
     cartId: '',
     isFetching: false,
   },
-  shoppingCart: {
-    isFetching: false,
-    itemIds: [],
-    unavailableItemIds: [],
-  },
+  shoppingCart: CartModel,
 };
 
 const fetchCoreBusiness = variables => ({
@@ -118,7 +142,6 @@ const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      //...Url.API_URLS.GET_CART,
       ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
     },
   };

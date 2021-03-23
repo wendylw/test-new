@@ -8,6 +8,7 @@ import { actions as appActionCreators, getShoppingCart, getCurrentProduct } from
 import Constants from '../../../../../utils/constants';
 import constants from '../../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
+import Item from '../../../../components/Item';
 
 const isCartItemSoldOut = cartItem => {
   const { markedSoldOut, variations } = cartItem;

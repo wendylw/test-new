@@ -5,19 +5,19 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as cartActionCreators } from '../../../redux/modules/cart';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getProductById } from '../../../../redux/modules/entities/products';
+// import { getProductById } from '../../../../redux/modules/entities/products';
 import {
   actions as appActionCreators,
   getShoppingCartItemsByProducts,
-  getCurrentProduct,
+  // getCurrentProduct,
   getShoppingCart,
 } from '../../../redux/modules/app';
+import { getSelectedProductDetail } from '../../../redux/modules/home';
 import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { IconDelete, IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Item from '../../../components/Item';
-import Tag from '../../../../components/Tag';
 import ItemOperator from '../../../../components/ItemOperator';
 import './CartListDrawer.scss';
 
@@ -27,7 +27,7 @@ class CartListDrawer extends Component {
   };
 
   handleGtmEventTracking = product => {
-    // In cart page, image count is always either 1 or 0
+    // In cart list, image count is always either 1 or 0
     const gtmEventDate = {
       product_name: product.title,
       product_id: product.productId,
@@ -311,12 +311,13 @@ export default compose(
   withTranslation(['OrderingHome']),
   connect(
     state => {
-      const currentProductInfo = getCurrentProduct(state);
+      // const currentProductInfo = getCurrentProduct(state);
       return {
         shoppingCart: getShoppingCart(state),
         cartSummary: getCartSummary(state),
         selectedProductCart: getShoppingCartItemsByProducts(state),
-        product: getProductById(state, currentProductInfo.id),
+        // product: getProductById(state, currentProductInfo.id),
+        product: getSelectedProductDetail(state),
       };
     },
     dispatch => ({
