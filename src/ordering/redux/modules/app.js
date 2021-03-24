@@ -861,31 +861,6 @@ export const getShoppingCart = createSelector(
   }
 );
 
-// get cartItems of currentProduct
-// export const getShoppingCartItemsByProducts = createSelector(
-//   [getCartItems, getCurrentProduct],
-//   (cartItems, product) => {
-//     const calcItems = cartItems.filter(
-//       cartItem => cartItem.productId === product.id || cartItem.parentProductId === product.id
-//     );
-//     const items = calcItems.map(x => {
-//       return {
-//         productId: x.productId,
-//         variations: x.variations,
-//       };
-//     });
-//     const count = calcItems.reduce((res, item) => {
-//       res = res + item.quantity;
-//       return res;
-//     }, 0);
-
-//     return {
-//       items,
-//       count,
-//     };
-//   }
-// );
-
 export const getCartItemList = state => {
   return state.app.shoppingCart.items;
 };

@@ -3,12 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import {
-  actions as appActionCreators,
-  // getShoppingCartItemsByProducts,
-  getShoppingCart,
-  getCartBilling,
-} from '../../../redux/modules/app';
+import { actions as appActionCreators, getShoppingCart, getCartBilling } from '../../../redux/modules/app';
 import { getSelectedProductDetail } from '../../../redux/modules/home';
 import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
@@ -315,7 +310,6 @@ export default compose(
       return {
         shoppingCart: getShoppingCart(state),
         cartBilling: getCartBilling(state),
-        // selectedProductCart: getShoppingCartItemsByProducts(state),
         selectedProduct: getSelectedProductDetail(state),
       };
     },
