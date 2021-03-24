@@ -147,7 +147,6 @@ export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) =
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      //...Url.API_URLS.GET_CART,
       ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
     },
   };

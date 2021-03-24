@@ -191,19 +191,19 @@ const addOrUpdateShoppingCartItem = variables => {
   };
 };
 
-const clearShopcartItemByProducts = products => {
-  return {
-    [API_REQUEST]: {
-      types: [
-        types.CLEARALL_BY_PRODUCTS_REQUEST,
-        types.CLEARALL_BY_PRODUCTS_SUCCESS,
-        types.CLEARALL_BY_PRODUCTS_FAILURE,
-      ],
-      payload: products,
-      ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
-    },
-  };
-};
+// const clearShoppingCartItemByProducts = products => {
+//   return {
+//     [API_REQUEST]: {
+//       types: [
+//         types.CLEARALL_BY_PRODUCTS_REQUEST,
+//         types.CLEARALL_BY_PRODUCTS_SUCCESS,
+//         types.CLEARALL_BY_PRODUCTS_FAILURE,
+//       ],
+//       payload: products,
+//       ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
+//     },
+//   };
+// };
 
 export const emptyShoppingCart = () => {
   const endpoint = Url.apiGql('EmptyShoppingCart');
@@ -490,9 +490,9 @@ export const actions = {
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
   },
-  clearAllByProducts: products => dispatch => {
-    return dispatch(clearShopcartItemByProducts(products));
-  },
+  // clearAllByProducts: products => dispatch => {
+  //   return dispatch(clearShoppingCartItemByProducts(products));
+  // },
 };
 
 const user = (state = initialState.user, action) => {
@@ -714,7 +714,7 @@ const messageModal = (state = initialState.messageModal, action) => {
   }
 };
 
-const requestInfo = (state = initialState.requestInfo, action) => state;
+const requestInfo = (state = initialState.requestInfo) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
   // if (action.responseGql) {
@@ -725,17 +725,37 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   // }
 
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
-    return { ...state, isFetching: false, status: 'fulfilled', items: [], unavailableItems: [] };
+    return { ...state, ...CartModel, isFetching: false, status: 'fulfilled' };
   } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
     return { ...state, isFetching: true, status: 'pending' };
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
-    const { items, unavailableItems } = action.response || {};
+    const { items, unavailableItems, displayPromotions, voucher: voucherObject, ...billing } = action.response || {};
+    const displayPromotion = displayPromotions[0];
+    const promotion = {
+      promoCode: displayPromotion.promotionCode,
+      discount: displayPromotion.displayDiscount,
+      promoType: Constants.PROMO_TYPE.PROMOTION,
+      status: displayPromotion.status,
+    };
+    const voucher = {
+      promoCode: voucherObject.voucherCode,
+      status: voucherObject.status,
+      discount: voucherObject.value,
+      validFrom: new Date(voucherObject.validFrom),
+      promoType: Constants.PROMO_TYPE.VOUCHER,
+    };
 
     return {
       ...state,
       isFetching: false,
+      status: 'fulfilled',
       items,
       unavailableItems,
+      billing: {
+        ...billing,
+        promotion,
+        voucher,
+      },
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
     return { ...state, isFetching: false, status: 'reject' };
@@ -822,7 +842,7 @@ export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStor
   return _get(onlineStoreInfo, 'currency', 'MYR');
 });
 
-export const getCurrentProduct = state => state.app.currentProduct;
+// export const getCurrentProduct = state => state.app.currentProduct;
 
 export const getCartItems = state => state.app.shoppingCart.items;
 
@@ -842,29 +862,29 @@ export const getShoppingCart = createSelector(
 );
 
 // get cartItems of currentProduct
-export const getShoppingCartItemsByProducts = createSelector(
-  [getCartItems, getCurrentProduct],
-  (cartItems, product) => {
-    const calcItems = cartItems.filter(
-      cartItem => cartItem.productId === product.id || cartItem.parentProductId === product.id
-    );
-    const items = calcItems.map(x => {
-      return {
-        productId: x.productId,
-        variations: x.variations,
-      };
-    });
-    const count = calcItems.reduce((res, item) => {
-      res = res + item.quantity;
-      return res;
-    }, 0);
+// export const getShoppingCartItemsByProducts = createSelector(
+//   [getCartItems, getCurrentProduct],
+//   (cartItems, product) => {
+//     const calcItems = cartItems.filter(
+//       cartItem => cartItem.productId === product.id || cartItem.parentProductId === product.id
+//     );
+//     const items = calcItems.map(x => {
+//       return {
+//         productId: x.productId,
+//         variations: x.variations,
+//       };
+//     });
+//     const count = calcItems.reduce((res, item) => {
+//       res = res + item.quantity;
+//       return res;
+//     }, 0);
 
-    return {
-      items,
-      count,
-    };
-  }
-);
+//     return {
+//       items,
+//       count,
+//     };
+//   }
+// );
 
 export const getCartItemList = state => {
   return state.app.shoppingCart.items;

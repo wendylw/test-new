@@ -3,12 +3,9 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as cartActionCreators } from '../../../redux/modules/cart';
-// import { getProductById } from '../../../../redux/modules/entities/products';
 import {
   actions as appActionCreators,
-  getShoppingCartItemsByProducts,
-  // getCurrentProduct,
+  // getShoppingCartItemsByProducts,
   getShoppingCart,
   getCartBilling,
 } from '../../../redux/modules/app';
@@ -59,13 +56,16 @@ class CartListDrawer extends Component {
   handleClearAll = async () => {
     const { viewAside } = this.props;
 
-    if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
-      await this.props.cartActions.clearAllByProducts(this.props.selectedProductCart.items);
-      this.props.appActions.loadShoppingCart();
-    } else {
-      await this.props.cartActions.clearAll();
-      this.props.appActions.loadShoppingCart();
-    }
+    await this.props.appActions.clearAll();
+    this.props.appActions.loadShoppingCart();
+
+    // if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
+    //   await this.props.appActions.clearAllByProducts(this.props.selectedProductCart.items);
+    //   this.props.appActions.loadShoppingCart();
+    // } else {
+    //   await this.props.appActions.clearAll();
+    //   this.props.appActions.loadShoppingCart();
+    // }
   };
 
   handleRemoveCartItem = cartItem => {
@@ -108,7 +108,7 @@ class CartListDrawer extends Component {
     const { quantity, productId, variations } = cartItem;
 
     this.handleGtmEventTracking(cartItem);
-    this.props.appActionCreators
+    this.props.appActions
       .addOrUpdateShoppingCartItem({
         action: 'edit',
         productId,
@@ -197,6 +197,7 @@ class CartListDrawer extends Component {
 
   renderCartList() {
     const { viewAside, selectedProduct, shoppingCart } = this.props;
+
     if (!shoppingCart || viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE) {
       return null;
     }
@@ -206,7 +207,6 @@ class CartListDrawer extends Component {
       if (l.id > r.id) return 1;
       return 0;
     };
-    console.log('shoppingCart===>', shoppingCart);
     let cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
@@ -251,9 +251,9 @@ class CartListDrawer extends Component {
     const { t, show, cartBilling, viewAside, footerEl } = this.props;
     let { count } = cartBilling || {};
 
-    if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
-      count = this.props.selectedProductCart.count;
-    }
+    // if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
+    //   count = this.props.selectedProductCart.count;
+    // }
 
     const className = ['cart-list-aside aside fixed-wrapper'];
 
@@ -312,18 +312,15 @@ export default compose(
   withTranslation(['OrderingHome']),
   connect(
     state => {
-      // const currentProductInfo = getCurrentProduct(state);
       return {
         shoppingCart: getShoppingCart(state),
         cartBilling: getCartBilling(state),
-        selectedProductCart: getShoppingCartItemsByProducts(state),
-        // product: getProductById(state, currentProductInfo.id),
+        // selectedProductCart: getShoppingCartItemsByProducts(state),
         selectedProduct: getSelectedProductDetail(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      cartActions: bindActionCreators(cartActionCreators, dispatch),
     })
   )
 )(CartListDrawer);
