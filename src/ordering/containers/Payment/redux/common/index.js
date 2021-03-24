@@ -12,7 +12,7 @@ const { reducer, actions } = createSlice({
   name: 'payments/common',
   initialState,
   reducers: {
-    // TODO: use
+    // TODO: use createAsyncThunk
     loadPayments: state => {
       state.status = 'pending';
     },
