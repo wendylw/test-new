@@ -239,7 +239,7 @@ class Payment extends Component {
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Payment Method - click continue', {
                 ...storeInfoForCleverTap,
-                'payment method': currentPaymentOption.paymentName,
+                'payment method': currentPaymentOption?.paymentName,
               });
               this.handleBeforeCreateOrder();
             }}

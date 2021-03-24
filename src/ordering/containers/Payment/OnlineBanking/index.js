@@ -222,8 +222,8 @@ class OnlineBanking extends Component {
             beforeCreateOrder={() => {
               CleverTap.pushEvent('online banking - click continue', {
                 ...storeInfoForCleverTap,
-                'payment method': currentPaymentOption.paymentName,
-                'bank name': currentPaymentOption.paymentProvider,
+                'payment method': currentPaymentOption?.paymentName,
+                'bank name': currentPaymentOption?.paymentProvider,
               });
               this.setState({
                 payNowLoading: true,
