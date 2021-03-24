@@ -18,7 +18,8 @@ import SwiperCore, { Autoplay, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getProductById } from '../../../../redux/modules/entities/products';
+// import { getProductById } from '../../../../redux/modules/entities/products';
+import { getSelectedProductDetail } from '../../../redux/modules/home';
 import { actions as appActionCreators, getCurrentProduct } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import qs from 'qs';
@@ -848,10 +849,11 @@ export default compose(
   withTranslation(['OrderingHome']),
   connect(
     state => {
-      const currentProductInfo = getCurrentProduct(state);
+      // const currentProductInfo = getCurrentProduct(state);
 
       return {
-        product: getProductById(state, currentProductInfo.id),
+        // product: getProductById(state, currentProductInfo.id),
+        selectedProduct: getSelectedProductDetail(state),
       };
     },
     dispatch => ({

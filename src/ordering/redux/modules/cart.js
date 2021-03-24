@@ -21,12 +21,12 @@ export const types = CART_TYPES;
 
 // actions
 export const actions = {
-  clearAll: () => dispatch => {
-    return dispatch(emptyShoppingCart());
-  },
-  clearAllByProducts: products => dispatch => {
-    return dispatch(clearShopcartItemByProducts(products));
-  },
+  // clearAll: () => dispatch => {
+  //   return dispatch(emptyShoppingCart());
+  // },
+  // clearAllByProducts: products => dispatch => {
+  //   return dispatch(clearShopcartItemByProducts(products));
+  // },
 
   // loadPendingPaymentList: () => ({
   //   [API_REQUEST]: {
@@ -55,28 +55,28 @@ export const actions = {
   }),
 };
 
-const clearShopcartItemByProducts = products => {
-  return {
-    [API_REQUEST]: {
-      types: [
-        types.CLEARALL_BY_PRODUCTS_REQUEST,
-        types.CLEARALL_BY_PRODUCTS_SUCCESS,
-        types.CLEARALL_BY_PRODUCTS_FAILURE,
-      ],
-      payload: products,
-      ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
-    },
-  };
-};
-export const emptyShoppingCart = () => {
-  const endpoint = Url.apiGql('EmptyShoppingCart');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [types.CLEARALL_REQUEST, types.CLEARALL_SUCCESS, types.CLEARALL_FAILURE],
-      endpoint,
-    },
-  };
-};
+// const clearShopcartItemByProducts = products => {
+//   return {
+//     [API_REQUEST]: {
+//       types: [
+//         types.CLEARALL_BY_PRODUCTS_REQUEST,
+//         types.CLEARALL_BY_PRODUCTS_SUCCESS,
+//         types.CLEARALL_BY_PRODUCTS_FAILURE,
+//       ],
+//       payload: products,
+//       ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
+//     },
+//   };
+// };
+// export const emptyShoppingCart = () => {
+//   const endpoint = Url.apiGql('EmptyShoppingCart');
+//   return {
+//     [FETCH_GRAPHQL]: {
+//       types: [types.CLEARALL_REQUEST, types.CLEARALL_SUCCESS, types.CLEARALL_FAILURE],
+//       endpoint,
+//     },
+//   };
+// };
 
 const pendingTransactionsIds = (state = initialState.pendingTransactionsIds, action) => {
   const { transactions } = action.response || {};
@@ -104,7 +104,7 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
       id: product.id,
     };
   } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
-    return { ...state, isFetching: false, status: 'rejected' };
+    return { ...state, isFetching: false, status: 'reject' };
   }
 
   return state;
@@ -114,12 +114,6 @@ export default combineReducers({
   pendingTransactionsIds,
   selectedProduct,
 });
-
-export const getBusinessInfo = state => {
-  const business = getBusiness(state);
-
-  return getBusinessByName(state, business) || {};
-};
 
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 

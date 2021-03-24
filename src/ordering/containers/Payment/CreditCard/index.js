@@ -23,11 +23,11 @@ import {
   getBusiness,
   getMerchantCountry,
   getCartBilling,
+  getBusinessInfo,
 } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import { getSelectedPaymentOption } from '../redux/payments';
-import { getBusinessInfo } from '../../../redux/modules/cart';
 import {
   getPaymentName,
   getSupportCreditCardBrands,

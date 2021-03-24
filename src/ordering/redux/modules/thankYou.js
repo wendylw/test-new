@@ -205,6 +205,7 @@ export const getPromotion = state => {
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
+
   return getBusinessByName(state, business);
 };
 

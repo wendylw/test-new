@@ -15,9 +15,8 @@ import { actions as appActionCreators } from '../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { getDeliveryInfo } from '../../redux/modules/home';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../redux/modules/app';
+import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser, getBusinessInfo } from '../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId, getCardList } from '../../redux/modules/payment';
-import { getBusinessInfo } from '../../redux/modules/cart';
 import {
   actions as paymentsActionCreator,
   getPaymentsPendingState,

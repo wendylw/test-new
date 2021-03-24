@@ -251,7 +251,7 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
       id: product.id,
     };
   } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
-    return { ...state, isFetching: false, status: 'rejected' };
+    return { ...state, isFetching: false, status: 'reject' };
   }
 
   return state;

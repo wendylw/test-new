@@ -14,13 +14,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getUser,
   getBusiness,
+  getBusinessInfo,
   getShoppingCart,
   getCartBilling,
 } from '../../redux/modules/app';
@@ -209,7 +209,7 @@ class Cart extends Component {
   };
 
   handleClearAll = () => {
-    this.props.cartActions.clearAll().then(() => {
+    this.props.appActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
         search: window.location.search,
@@ -524,7 +524,6 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      cartActions: bindActionCreators(cartActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })

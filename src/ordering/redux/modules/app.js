@@ -29,7 +29,7 @@ const CartModel = {
   status: 'pending',
   isFetching: false,
   items: [],
-  unavailableItemIds: [],
+  unavailableItems: [],
   billing: {
     count: 0,
     discount: 0,
@@ -187,6 +187,30 @@ const addOrUpdateShoppingCartItem = variables => {
       ],
       endpoint,
       variables,
+    },
+  };
+};
+
+const clearShopcartItemByProducts = products => {
+  return {
+    [API_REQUEST]: {
+      types: [
+        types.CLEARALL_BY_PRODUCTS_REQUEST,
+        types.CLEARALL_BY_PRODUCTS_SUCCESS,
+        types.CLEARALL_BY_PRODUCTS_FAILURE,
+      ],
+      payload: products,
+      ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
+    },
+  };
+};
+
+export const emptyShoppingCart = () => {
+  const endpoint = Url.apiGql('EmptyShoppingCart');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [types.CLEARALL_REQUEST, types.CLEARALL_SUCCESS, types.CLEARALL_FAILURE],
+      endpoint,
     },
   };
 };
@@ -462,6 +486,13 @@ export const actions = {
   //     })
   //   );
   // },
+
+  clearAll: () => dispatch => {
+    return dispatch(emptyShoppingCart());
+  },
+  clearAllByProducts: products => dispatch => {
+    return dispatch(clearShopcartItemByProducts(products));
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -686,14 +717,16 @@ const messageModal = (state = initialState.messageModal, action) => {
 const requestInfo = (state = initialState.requestInfo, action) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
-  if (action.responseGql) {
-    const { emptyShoppingCart } = action.responseGql.data || {};
-    if (emptyShoppingCart && emptyShoppingCart.success) {
-      return { ...state, isFetching: false, status: 'fulfilled', items: [], unavailableItems: [] };
-    }
-  }
+  // if (action.responseGql) {
+  //   const { emptyShoppingCart } = action.responseGql.data || {};
+  //   if (emptyShoppingCart && emptyShoppingCart.success) {
+  //     return { ...state, isFetching: false, status: 'fulfilled', items: [], unavailableItems: [] };
+  //   }
+  // }
 
-  if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
+  if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
+    return { ...state, isFetching: false, status: 'fulfilled', items: [], unavailableItems: [] };
+  } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
     return { ...state, isFetching: true, status: 'pending' };
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
     const { items, unavailableItems } = action.response || {};
@@ -705,7 +738,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       unavailableItems,
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
-    return { ...state, isFetching: false, status: 'rejected' };
+    return { ...state, isFetching: false, status: 'reject' };
   }
 
   return state;

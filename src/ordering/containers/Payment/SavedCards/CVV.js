@@ -18,8 +18,7 @@ import Utils from '../../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getMerchantCountry } from '../../../redux/modules/app';
-import { getBusinessInfo } from '../../../redux/modules/cart';
+import { getMerchantCountry, getBusinessInfo } from '../../../redux/modules/app';
 import { getPaymentRedirectAndWebHookUrl, getCardLabel } from '../utils';
 import { getUser, getOnlineStoreInfo, getBusiness, getCartBilling } from '../../../redux/modules/app';
 import {

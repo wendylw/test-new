@@ -206,6 +206,7 @@ class CartListDrawer extends Component {
       if (l.id > r.id) return 1;
       return 0;
     };
+    console.log('shoppingCart===>', shoppingCart);
     let cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {

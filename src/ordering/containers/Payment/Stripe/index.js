@@ -32,9 +32,9 @@ import {
   getBusiness,
   getMerchantCountry,
   getCartBilling,
+  getBusinessInfo,
 } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
-import { getBusinessInfo } from '../../../redux/modules/cart';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import withDataAttributes from '../../../../components/withDataAttributes';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';

@@ -25,9 +25,9 @@ import {
   getMerchantCountry,
   getUser,
   getCartBilling,
+  getBusinessInfo,
 } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
-import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import AdyenSecurity from '../../../../../src/images/Adyen-PCI.png';
@@ -335,7 +335,6 @@ export default compose(
         currentPaymentOption: getSelectedPaymentOption(state),
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        // cartBilling: getCartSummary(state),
         cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),

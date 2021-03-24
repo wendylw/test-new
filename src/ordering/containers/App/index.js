@@ -11,8 +11,8 @@ import {
   getError,
   getUser,
   getApiError,
+  getBusinessInfo,
 } from '../../redux/modules/app';
-import { getBusinessInfo } from '../../redux/modules/cart';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
 import '../../../Common.scss';

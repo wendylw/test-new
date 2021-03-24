@@ -23,6 +23,7 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getCartBilling,
+  getBusinessInfo,
 } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
@@ -33,7 +34,6 @@ import {
   getSelectedOnlineBanking,
   getOnlineBankList,
 } from '../redux/payments';
-import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import './OrderingBanking.scss';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard

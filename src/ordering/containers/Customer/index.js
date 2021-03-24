@@ -22,8 +22,8 @@ import {
   getRequestInfo,
   getBusinessUTCOffset,
   getCartBilling,
+  getBusinessInfo,
 } from '../../redux/modules/app';
-import { getBusinessInfo } from '../../redux/modules/cart';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
 import './OrderingCustomer.scss';
