@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-// import { getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as appActionCreators, getShoppingCart, getCurrentProduct } from '../../../redux/modules/app';
 import { getSelectedProductDetail } from '../../../redux/modules/cart';
 import Constants from '../../../../utils/constants';
@@ -158,7 +157,7 @@ class CartList extends Component {
   }
 
   render() {
-    const { viewAside, product, shoppingCart, style } = this.props;
+    const { viewAside, selectedProduct, shoppingCart, style } = this.props;
     if (!shoppingCart || viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE) {
       return null;
     }
@@ -172,7 +171,7 @@ class CartList extends Component {
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
       cartItems = cartItems.filter(
-        cartItem => cartItem.productId === product.id || cartItem.parentProductId === product.id
+        cartItem => cartItem.productId === selectedProduct.id || cartItem.parentProductId === selectedProduct.id
       );
     }
 
@@ -214,11 +213,9 @@ CartList.defaultProps = {
 
 export default connect(
   state => {
-    // const currentProductInfo = getCurrentProduct(state);
     return {
       shoppingCart: getShoppingCart(state),
-      // product: getProductById(state, currentProductInfo.id),
-      product: getSelectedProductDetail(state),
+      selectedProduct: getSelectedProductDetail(state),
     };
   },
   dispatch => ({

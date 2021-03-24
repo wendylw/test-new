@@ -192,7 +192,6 @@ class ProductList extends Component {
                         offset={0}
                         height={productItemMinHeight}
                         scrollContainer="#product-list"
-                        classNamePrefix="li"
                       >
                         <Item
                           className="flex-stretch"

@@ -717,20 +717,15 @@ const messageModal = (state = initialState.messageModal, action) => {
 const requestInfo = (state = initialState.requestInfo) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
-  // if (action.responseGql) {
-  //   const { emptyShoppingCart } = action.responseGql.data || {};
-  //   if (emptyShoppingCart && emptyShoppingCart.success) {
-  //     return { ...state, isFetching: false, status: 'fulfilled', items: [], unavailableItems: [] };
-  //   }
-  // }
-
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
     return { ...state, ...CartModel, isFetching: false, status: 'fulfilled' };
   } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
     return { ...state, isFetching: true, status: 'pending' };
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
-    const { items, unavailableItems, displayPromotions, voucher: voucherObject, ...billing } = action.response || {};
+    const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...billing } =
+      action.response || {};
     const displayPromotion = displayPromotions[0];
+    const count = [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0);
     const promotion = {
       promoCode: displayPromotion.promotionCode,
       discount: displayPromotion.displayDiscount,
@@ -753,6 +748,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       unavailableItems,
       billing: {
         ...billing,
+        count,
         promotion,
         voucher,
       },

@@ -11,6 +11,7 @@ import config from '../../../config';
 import { getBusiness, getBusinessUTCOffset, getCartItemList } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList } from '../../../redux/modules/entities/stores';
+import { APP_TYPES } from '../types';
 
 export const initialState = {
   domProperties: {
@@ -52,11 +53,6 @@ const types = {
   FETCH_ONLINECATEGORY_REQUEST: 'ORDERING/HOME/FETCH_ONLINECATEGORY_REQUEST',
   FETCH_ONLINECATEGORY_SUCCESS: 'ORDERING/HOME/FETCH_ONLINECATEGORY_SUCCESS',
   FETCH_ONLINECATEGORY_FAILURE: 'ORDERING/HOME/FETCH_ONLINECATEGORY_FAILURE',
-
-  // fetch productDetail
-  FETCH_PRODUCTDETAIL_REQUEST: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__REQUEST',
-  FETCH_PRODUCTDETAIL_SUCCESS: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__SUCCESS',
-  FETCH_PRODUCTDETAIL_FAILURE: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__FAILURE',
 
   // mutable addOrUpdateShoppingCartItem
   ADDORUPDATE_SHOPPINGCARTITEM_REQUEST: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_REQUEST',
@@ -238,9 +234,11 @@ const popUpModal = (state = initialState.popUpModal, action) => {
 };
 
 const selectedProduct = (state = initialState.selectedProduct, action) => {
-  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
+  console.log(action.type);
+
+  if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_REQUEST) {
     return { ...state, isFetching: true, status: 'pending' };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
+  } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_SUCCESS) {
     const { product } = action.responseGql.data;
 
     return {
@@ -249,7 +247,7 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
       status: 'fulfilled',
       id: product.id,
     };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
+  } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_FAILURE) {
     return { ...state, isFetching: false, status: 'reject' };
   }
 
@@ -370,6 +368,8 @@ export const getStoreInfoForCleverTap = state => {
 
 export const getSelectedProductDetail = state => {
   const { selectedProduct } = state.home;
+
+  console.log(state.home.selectedProduct);
 
   return getProductById(state, selectedProduct.id);
 };

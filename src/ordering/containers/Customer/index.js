@@ -431,7 +431,6 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       allBusinessInfo: getAllBusinesses(state),
       deliveryDetails: getDeliveryDetails(state),
-      // cartBilling: getCartSummary(state),
       cartBilling: getCartBilling(state),
       requestInfo: getRequestInfo(state),
       error: getCustomerError(state),

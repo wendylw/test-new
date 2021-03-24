@@ -53,14 +53,6 @@ class CartListDrawer extends Component {
 
     await this.props.appActions.clearAll();
     this.props.appActions.loadShoppingCart();
-
-    // if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
-    //   await this.props.appActions.clearAllByProducts(this.props.selectedProductCart.items);
-    //   this.props.appActions.loadShoppingCart();
-    // } else {
-    //   await this.props.appActions.clearAll();
-    //   this.props.appActions.loadShoppingCart();
-    // }
   };
 
   handleRemoveCartItem = cartItem => {
@@ -243,12 +235,8 @@ class CartListDrawer extends Component {
   }
 
   render() {
-    const { t, show, cartBilling, viewAside, footerEl } = this.props;
+    const { t, show, cartBilling, footerEl } = this.props;
     let { count } = cartBilling || {};
-
-    // if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
-    //   count = this.props.selectedProductCart.count;
-    // }
 
     const className = ['cart-list-aside aside fixed-wrapper'];
 

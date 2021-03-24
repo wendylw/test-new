@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import _forEach from 'lodash/forEach';
 import _get from 'lodash/get';
 import { withTranslation } from 'react-i18next';
-// import Swipe, { SwipeItem } from 'swipejs/react';
 import Tag from '../../../../components/Tag';
 import Image from '../../../../components/Image';
 import VariationSelector from './VariationSelector';
@@ -18,11 +17,9 @@ import SwiperCore, { Autoplay, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-// import { getProductById } from '../../../../redux/modules/entities/products';
 import { getSelectedProductDetail } from '../../../redux/modules/home';
 import { actions as appActionCreators, getCurrentProduct } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
-import qs from 'qs';
 import { withRouter } from 'react-router-dom';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
@@ -57,9 +54,9 @@ class ProductDetailDrawer extends Component {
   };
 
   componentDidMount() {
-    const { product } = this.props;
+    const { selectedProduct } = this.props;
 
-    this.initVariationsByIdMap(product);
+    this.initVariationsByIdMap(selectedProduct);
 
     if (this.swipeEl) {
       this.swipeEl.stop();
@@ -68,16 +65,20 @@ class ProductDetailDrawer extends Component {
     this.initMinimumVariationList();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { show, product } = this.props;
-    const { variations, id } = product || {};
+  componentDidUpdate(prevProps) {
+    const { show, selectedProduct } = this.props;
+    const { variations, id } = selectedProduct || {};
 
     if (!id || !variations) {
       return;
     }
 
-    if ((!prevProps.product && id) || id !== prevProps.product.id || (show && prevProps.show !== show)) {
-      this.initVariationsByIdMap(product);
+    if (
+      (!prevProps.selectedProduct && id) ||
+      id !== prevProps.selectedProduct.id ||
+      (show && prevProps.show !== show)
+    ) {
+      this.initVariationsByIdMap(selectedProduct);
       this.initMinimumVariationList();
     }
 
@@ -142,8 +143,8 @@ class ProductDetailDrawer extends Component {
   }
 
   initMinimumVariationList() {
-    const { product } = this.props;
-    const { variations } = product || {};
+    const { selectedProduct } = this.props;
+    const { variations } = selectedProduct || {};
     var minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
 
     if (minimumVariations && minimumVariations.length) {
@@ -176,30 +177,30 @@ class ProductDetailDrawer extends Component {
   }
 
   getDisplayPrice() {
-    const { product } = this.props;
+    const { selectedProduct } = this.props;
     const { childrenProduct } = this.state;
 
     if (childrenProduct) {
       return childrenProduct.displayPrice + this.getTotalPriceDiff();
     }
 
-    if (product) {
-      return product.displayPrice + this.getTotalPriceDiff();
+    if (selectedProduct) {
+      return selectedProduct.displayPrice + this.getTotalPriceDiff();
     }
 
     return 0;
   }
 
   getOriginalDisplayPrice() {
-    const { product } = this.props;
+    const { selectedProduct } = this.props;
     const { childrenProduct } = this.state;
 
     if (childrenProduct && childrenProduct.originalDisplayPrice) {
       return childrenProduct.originalDisplayPrice + this.getTotalPriceDiff();
     }
 
-    if (product && product.originalDisplayPrice) {
-      return product.originalDisplayPrice + this.getTotalPriceDiff();
+    if (selectedProduct && selectedProduct.originalDisplayPrice) {
+      return selectedProduct.originalDisplayPrice + this.getTotalPriceDiff();
     }
 
     return null;
@@ -320,8 +321,8 @@ class ProductDetailDrawer extends Component {
   }
 
   getChildrenProductBySelectedVariations(selectedVariations) {
-    const { product } = this.props;
-    const childrenMap = _get(product, 'childrenMap', null);
+    const { selectedProduct } = this.props;
+    const childrenMap = _get(selectedProduct, 'childrenMap', null);
 
     if (!childrenMap) {
       return null;
@@ -351,7 +352,7 @@ class ProductDetailDrawer extends Component {
   };
 
   getChoiceVariations(type) {
-    const { variations } = this.props.product || {};
+    const { variations } = this.props.selectedProduct || {};
 
     return Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
   }
@@ -383,22 +384,22 @@ class ProductDetailDrawer extends Component {
   }
 
   handleGtmEventTracking = variables => {
-    const { product } = this.props;
-    let selectedProduct = product.childrenMap.find(child => child.childId === variables.productId);
+    const { selectedProduct } = this.props;
+    let childrenProduct = selectedProduct.childrenMap.find(child => child.childId === variables.productId);
 
-    if (!selectedProduct) {
-      selectedProduct = product;
+    if (!childrenProduct) {
+      childrenProduct = selectedProduct;
     }
 
     const gtmEventData = {
-      product_name: product.title,
+      product_name: selectedProduct.title,
       product_id: variables.productId,
-      price_local: selectedProduct.displayPrice,
+      price_local: childrenProduct.displayPrice,
       variant: variables.variations,
-      quantity: selectedProduct.quantityOnHand,
-      product_type: product.inventoryType,
-      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
-      image_count: (product.images && product.images.length) || 0,
+      quantity: childrenProduct.quantityOnHand,
+      product_type: selectedProduct.inventoryType,
+      Inventory: !!selectedProduct.markedSoldOut ? 'In stock' : 'Out of stock',
+      image_count: (selectedProduct.images && selectedProduct.images.length) || 0,
     };
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventData);
@@ -420,56 +421,9 @@ class ProductDetailDrawer extends Component {
     this.setState({ currentProductDescriptionImageIndex: index });
   }
 
-  handleDescriptionAddOrShowDescription = async product => {
-    const { onToggle, appActions } = this.props;
-    const { variations } = product;
-
-    const { history } = this.props;
-    const { storeId } = config;
-
-    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
-    const search = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const { h } = search;
-
-    if ((!deliveryAddress && Utils.isDeliveryType()) || !storeId || !h) {
-      const { search } = window.location;
-      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
-
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-        search: `${search}&callbackUrl=${callbackUrl}`,
-      });
-      return;
-    }
-
-    if (!variations || !variations.length) {
-      await appActions.addOrUpdateShoppingCartItem({
-        action: 'add',
-        business: config.business,
-        productId: product.id,
-        quantity: Constants.ADD_TO_CART_MIN_QUANTITY,
-        variations: [],
-      });
-      await appActions.loadShoppingCart();
-      this.closeModal();
-
-      return;
-    } else {
-      appActions.loadProductDetail(product);
-    }
-
-    this.setState({ resizedImage: true });
-
-    this.descriptionTimeOut = setTimeout(() => {
-      onToggle('PRODUCT_DETAIL');
-
-      clearTimeout(this.descriptionTimeOut);
-    }, 550);
-  };
-
   renderVariations() {
     const { show } = this.props;
-    const { variations } = this.props.product || {};
+    const { variations } = this.props.selectedProduct || {};
 
     if (!variations || !variations.length) {
       return null;
@@ -514,12 +468,12 @@ class ProductDetailDrawer extends Component {
   };
 
   renderProductOperator() {
-    const { t, product = {}, onAddToCartClick } = this.props;
+    const { t, selectedProduct = {}, onAddToCartClick } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
-    const { id: productId } = product;
+    const { id: productId } = selectedProduct;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
-    if (!product) {
+    if (!selectedProduct) {
       return null;
     }
 
@@ -534,7 +488,7 @@ class ProductDetailDrawer extends Component {
             disabled={
               increasingProductOnCat ||
               !this.isSubmitable() ||
-              Utils.isProductSoldOut(product || {}) ||
+              Utils.isProductSoldOut(selectedProduct || {}) ||
               (hasMinimumVariations && this.isInvalidMinimumVariations())
             }
             onClick={() => {
@@ -569,7 +523,7 @@ class ProductDetailDrawer extends Component {
               });
 
               if (onAddToCartClick) {
-                onAddToCartClick({ product });
+                onAddToCartClick({ selectedProduct });
               }
 
               this.handleAddOrUpdateShoppingCartItem({
@@ -602,94 +556,8 @@ class ProductDetailDrawer extends Component {
     );
   }
 
-  // renderProductDescription() {
-  //   const { t, show, product, onlineStoreInfo } = this.props;
-  //   const { currentProductDescriptionImageIndex } = this.state;
-  //   const { images, title } = product || {};
-  //   const { storeName } = onlineStoreInfo || {};
-  //   const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
-
-  //   if (show) {
-  //     className.push('product-description__hide');
-  //   }
-
-  //   return (
-  //     <div className={className.join(' ')}>
-  //       <div
-  //         ref={ref => (this.productDescriptionImage = ref)}
-  //         className="product-description__image-container flex__shrink-fixed"
-  //       >
-  //         {images && images.length > 1 ? (
-  //           <Swipe
-  //             ref={ref => (this.swipeEl = ref)}
-  //             continuous={images.length > 2 ? true : false}
-  //             callback={this.handleSwipeProductImage.bind(this)}
-  //           >
-  //             {images.map((imageItemUrl, key) => {
-  //               return (
-  //                 <SwipeItem key={`swipe-${key}`}>
-  //                   <Image
-  //                     className="product-description__single-image"
-  //                     src={imageItemUrl}
-  //                     scalingRatioIndex={2}
-  //                     alt={`${storeName} ${title}`}
-  //                   />
-  //                 </SwipeItem>
-  //               );
-  //             })}
-  //           </Swipe>
-  //         ) : (
-  //           <Image
-  //             className="product-description__single-image"
-  //             src={images && images.length ? images[0] : null}
-  //             scalingRatioIndex={2}
-  //             alt={`${storeName} ${title}`}
-  //           />
-  //         )}
-  //         {images && images.length > 1 ? (
-  //           <ul className="product-description__dot-list text-center padding-top-bottom-smaller">
-  //             {images.map((imageItemUrl, key) => {
-  //               const dotClassList = ['product-description__dot'];
-
-  //               if (key === currentProductDescriptionImageIndex) {
-  //                 dotClassList.push('active');
-  //               }
-
-  //               return <li key={`swipe-${key}-dot`} className={dotClassList.join(' ')}></li>;
-  //             })}
-  //           </ul>
-  //         ) : null}
-  //       </div>
-  //       <div className="product-description__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
-  //         <summary className="product-description__info-summary flex flex-column flex-space-between">
-  //           <h2 className="product-description__info-title padding-small text-size-biggest text-weight-bolder ">
-  //             {title}
-  //           </h2>
-  //           <CurrencyNumber
-  //             className="padding-small text-size-big text-opacity text-weight-bolder"
-  //             money={this.getDisplayPrice()}
-  //           />
-  //         </summary>
-
-  //         {Utils.isProductSoldOut(product || {}) ? (
-  //           <Tag
-  //             text={t('SoldOut')}
-  //             className="product-description__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
-  //           />
-  //         ) : (
-  //           <ItemOperator
-  //             className="flex-middle flex__shrink-fixed margin-smaller"
-  //             decreaseDisabled={false}
-  //             data-heap-name="ordering.home.product-detail.item-adjuster"
-  //             onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
-  //           />
-  //         )}
-  //       </div>
-  //     </div>
-  //   );
-  // }
   renderOperatorButton = () => {
-    const { product } = this.props;
+    const { selectedProduct } = this.props;
     const { cartQuantity, minimumVariations } = this.state;
 
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
@@ -716,7 +584,7 @@ class ProductDetailDrawer extends Component {
             }
             this.setState({ cartQuantity: cartQuantity + 1 });
           }}
-          increaseDisabled={Utils.isProductSoldOut(product || {})}
+          increaseDisabled={Utils.isProductSoldOut(selectedProduct || {})}
         />
       </div>
     );
@@ -724,14 +592,14 @@ class ProductDetailDrawer extends Component {
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
-    const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
+    const { t, onlineStoreInfo, selectedProduct, viewAside, show, onToggle } = this.props;
     const { storeName } = onlineStoreInfo || {};
-    const { id, _needMore, images, title, description } = product || {};
+    const { id, _needMore, images, title, description } = selectedProduct || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: description };
     const isHaveContent = Utils.removeHtmlTag(description);
 
-    if (show && product && id && !_needMore) {
+    if (show && selectedProduct && id && !_needMore) {
       className.push('active cover');
     }
 
@@ -804,7 +672,7 @@ class ProductDetailDrawer extends Component {
                     money={this.getDisplayPrice()}
                     numberOnly={true}
                   />
-                  {Utils.isProductSoldOut(product || {}) ? (
+                  {Utils.isProductSoldOut(selectedProduct || {}) ? (
                     <Tag
                       text={t('SoldOut')}
                       className="product-detail__info-tag tag tag__default margin-smaller text-size-big flex__shrink-fixed"
@@ -826,7 +694,6 @@ class ProductDetailDrawer extends Component {
           </div>
           {this.renderProductOperator()}
         </div>
-        {/* {this.renderProductDescription()} */}
       </aside>
     );
   }
@@ -849,10 +716,7 @@ export default compose(
   withTranslation(['OrderingHome']),
   connect(
     state => {
-      // const currentProductInfo = getCurrentProduct(state);
-
       return {
-        // product: getProductById(state, currentProductInfo.id),
         selectedProduct: getSelectedProductDetail(state),
       };
     },
