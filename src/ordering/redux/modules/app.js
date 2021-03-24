@@ -490,9 +490,6 @@ export const actions = {
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
   },
-  // clearAllByProducts: products => dispatch => {
-  //   return dispatch(clearShoppingCartItemByProducts(products));
-  // },
 };
 
 const user = (state = initialState.user, action) => {
