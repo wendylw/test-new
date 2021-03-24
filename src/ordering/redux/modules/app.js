@@ -15,8 +15,11 @@ import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
-import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
+
+import * as StoreUtils from '../../../utils/store-utils';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -105,6 +108,10 @@ export const actions = {
             Email: resp.user?.email,
             Identity: resp.consumerId,
           };
+
+          CleverTap.pushEvent('Login - login successful', {
+            'new user': resp.user?.isFirstLogin,
+          });
 
           if (resp.user?.birthday) {
             userInfo.DOB = new Date(resp.user?.birthday);
@@ -343,6 +350,7 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
+      CleverTap.pushEvent('Login - login failed');
       if (error && (error.code === 401 || error.code === '40000')) {
         return { ...state, isExpired: true, isFetching: false };
       }
@@ -554,3 +562,12 @@ export const getStore = state => {
 export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
   return _get(onlineStoreInfo, 'currency', 'MYR');
 });
+
+// This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
+export const getStoreInfoForCleverTap = state => {
+  const business = getBusiness(state);
+  const allBusinessInfo = getAllBusinesses(state);
+  const cartSummary = getCartSummary(state);
+
+  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
+};

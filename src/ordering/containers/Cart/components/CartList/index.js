@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProductItem from '../../../../components/ProductItem';
-import { getProductById } from '../../../../../redux/modules/entities/products';
+import { getAllProducts, getProductById } from '../../../../../redux/modules/entities/products';
 import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../../../redux/modules/home';
 import Constants from '../../../../../utils/constants';
 import constants from '../../../../../utils/constants';
@@ -55,7 +55,14 @@ class CartList extends Component {
   };
 
   generateProductItemView = cartItem => {
-    const { isList } = this.props;
+    const {
+      isList,
+      onIncreaseInCart,
+      onDecreaseInCart,
+      onIncreaseInCartListAside,
+      onDecreaseInCartListAside,
+      allProducts,
+    } = this.props;
     const {
       id,
       title,
@@ -67,6 +74,9 @@ class CartList extends Component {
       image,
       originalDisplayPrice,
     } = cartItem;
+
+    // cleverTap product data
+    const productItem = Object.values(allProducts).find(item => item.id === productId);
 
     return (
       <ProductItem
@@ -82,6 +92,8 @@ class CartList extends Component {
         decreaseDisabled={!Boolean(quantity)}
         originalDisplayPrice={originalDisplayPrice}
         onDecrease={async () => {
+          onDecreaseInCart && onDecreaseInCart(productItem);
+          onDecreaseInCartListAside && onDecreaseInCartListAside(productItem);
           if (quantity === 1) {
             this.handleRemoveCartItem({
               productId,
@@ -101,6 +113,8 @@ class CartList extends Component {
           }
         }}
         onIncrease={() => {
+          onIncreaseInCart && onIncreaseInCart(productItem);
+          onIncreaseInCartListAside && onIncreaseInCartListAside(productItem);
           this.handleGtmEventTracking(cartItem);
           this.handleAddOrUpdateShoppingCartItem({
             action: 'edit',
@@ -167,6 +181,7 @@ export default connect(
     return {
       shoppingCart: getShoppingCart(state),
       product: getProductById(state, currentProductInfo.id),
+      allProducts: getAllProducts(state),
     };
   },
   dispatch => ({

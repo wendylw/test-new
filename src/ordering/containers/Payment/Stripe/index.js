@@ -22,18 +22,24 @@ import CreateOrderButton from '../../../components/CreateOrderButton';
 import RedirectForm from '../components/RedirectForm';
 import config from '../../../../config';
 import Utils from '../../../../utils/utils';
+import CleverTap from '../../../../utils/clevertap';
 
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
+import {
+  getOnlineStoreInfo,
+  getBusiness,
+  getMerchantCountry,
+  getStoreInfoForCleverTap,
+} from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import withDataAttributes from '../../../../components/withDataAttributes';
-import { getPaymentRedirectAndWebHookUrl } from '../utils';
+import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
 import '../PaymentCreditCard.scss';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
@@ -90,7 +96,7 @@ const ErrorMessage = ({ children }) => (
   </span>
 );
 
-const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) => {
+const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country, storeInfoForCleverTap }) => {
   const { total } = cartSummary || {};
   const stripe = useStripe();
   const elements = useElements();
@@ -323,7 +329,11 @@ const CheckoutForm = ({ t, renderRedirectForm, history, cartSummary, country }) 
           buttonType="submit"
           data-heap-name="ordering.payment.stripe.pay-btn"
           disabled={processing || !stripe}
-          beforeCreateOrder={() => {
+          beforeCreateOrder={async () => {
+            CleverTap.pushEvent('Card Details - click continue', {
+              ...storeInfoForCleverTap,
+              'payment method': getPaymentName(country, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY),
+            });
             setProcessing(true);
             setIsFormTouched(true);
           }}
@@ -418,7 +428,7 @@ class Stripe extends Component {
   };
 
   render() {
-    const { t, match, history, cartSummary, merchantCountry } = this.props;
+    const { t, match, history, cartSummary, merchantCountry, storeInfoForCleverTap } = this.props;
 
     return (
       <section
@@ -433,6 +443,8 @@ class Stripe extends Component {
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
+            CleverTap.pushEvent('Card Details - click back arrow');
+
             history.replace({
               pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
               search: window.location.search,
@@ -454,6 +466,7 @@ class Stripe extends Component {
               history={history}
               country={merchantCountry}
               cartSummary={cartSummary}
+              storeInfoForCleverTap={storeInfoForCleverTap}
               renderRedirectForm={paymentMethod => {
                 if (!paymentMethod) return null;
 
@@ -491,6 +504,7 @@ export default compose(
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({

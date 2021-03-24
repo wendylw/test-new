@@ -579,15 +579,16 @@ export const getStoreAvailableDateAndTime = (
 export const isEnablePerTimeSlotLimitForPreOrder = store =>
   _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false);
 
-export const getStoreInfoForCleverTap = ({ business, allBusinessInfo }) => {
+export const getStoreInfoForCleverTap = ({ business, allBusinessInfo, cartSummary }) => {
   const originalInfo = allBusinessInfo[business] || {};
   const { qrOrderingSettings, defaultLoyaltyRatio, enableCashback, stores, country } = originalInfo || {};
   const { defaultShippingZone, minimumConsumption } = qrOrderingSettings || {};
   const { defaultShippingZoneMethod } = defaultShippingZone || {};
   const { freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
   const { id, name } = (stores && stores[0]) || {};
+  const { subtotal, count } = cartSummary || {};
 
-  const cashbackRate = `${Math.floor(100 / defaultLoyaltyRatio)}%`;
+  const cashbackRate = (1 / defaultLoyaltyRatio).toFixed(2);
   const shippingType = Utils.getOrderTypeFromUrl() || 'unknown';
 
   const res = {
@@ -604,6 +605,12 @@ export const getStoreInfoForCleverTap = ({ business, allBusinessInfo }) => {
 
   if (enableConditionalFreeShipping) {
     res['minimum order value'] = minimumConsumption;
+  }
+
+  if (cartSummary) {
+    res['cart items quantity'] = count;
+    res['cart amount'] = subtotal;
+    res['has met minimum order value'] = subtotal >= minimumConsumption ? true : false;
   }
 
   return res;
