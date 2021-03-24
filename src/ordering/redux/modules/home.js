@@ -369,7 +369,7 @@ export const getStoreInfoForCleverTap = state => {
 export const getSelectedProductDetail = state => {
   const { selectedProduct } = state.home;
 
-  console.log(state.home.selectedProduct);
-
   return getProductById(state, selectedProduct.id);
 };
+
+export const getProductItemRank = state => {};

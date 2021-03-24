@@ -207,6 +207,7 @@ export class Footer extends Component {
       businessInfo,
       tableId,
       onToggle,
+      onClickOrderNow,
       t,
       isValidTimeToOrder,
       isLiveOnline,
@@ -271,6 +272,7 @@ export class Footer extends Component {
               !isLiveOnline
             }
             onClick={() => {
+              onClickOrderNow();
               onToggle();
               this.handleRedirect();
             }}
@@ -292,6 +294,7 @@ Footer.propTypes = {
   tableId: PropTypes.string,
   onToggle: PropTypes.func,
   onClickCart: PropTypes.func,
+  onClickOrderNow: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
   enablePreOrder: PropTypes.bool,
   style: PropTypes.object,
@@ -300,6 +303,7 @@ Footer.propTypes = {
 Footer.defaultProps = {
   onToggle: () => {},
   onClickCart: () => {},
+  onClickOrderNow: () => {},
   isValidTimeToOrder: true,
   enablePreOrder: false,
 };

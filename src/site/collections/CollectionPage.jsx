@@ -31,17 +31,21 @@ class CollectionPage extends React.Component {
       await this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
     }
     const { currentCollection } = this.props;
-    const { shippingType, urlPath } = currentCollection;
+    const { shippingType, urlPath, name, beepCollectionId } = currentCollection;
     if (!checkStateRestoreStatus()) {
       const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
       this.props.collectionsActions.setShippingType(type);
       this.props.collectionsActions.resetPageInfo(type);
     }
     this.props.collectionsActions.getStoreList(urlPath);
+    CleverTap.pushEvent('Collection Page - View Collection Page', {
+      'collection name': name,
+      'collection id': beepCollectionId,
+    });
   };
 
   backToPreviousPage = () => {
-    // CleverTap.pushEvent('Collection Page - Click back');
+    CleverTap.pushEvent('Collection Page - Click back');
 
     const { history, location } = this.props;
     const pathname = (location.state && location.state.from) || '/home';
@@ -69,17 +73,17 @@ class CollectionPage extends React.Component {
 
   handleSwitchTab = shippingType => {
     const { urlPath, name, displayType } = this.props.currentCollection || {};
-    // if (shippingType === 'delivery') {
-    //   CleverTap.pushEvent('Collection Page - Click delivery tab', {
-    //     'collection name': name,
-    //     'collection type': displayType,
-    //   });
-    // } else {
-    //   CleverTap.pushEvent('Collection Page - Click self pickup tab', {
-    //     'collection name': name,
-    //     'collection type': displayType,
-    //   });
-    // }
+    if (shippingType === 'delivery') {
+      CleverTap.pushEvent('Collection Page - Click delivery tab', {
+        'collection name': name,
+        'collection type': displayType,
+      });
+    } else {
+      CleverTap.pushEvent('Collection Page - Click self pickup tab', {
+        'collection name': name,
+        'collection type': displayType,
+      });
+    }
 
     this.props.collectionsActions.setShippingType(shippingType);
     this.props.collectionsActions.resetPageInfo(shippingType);
@@ -133,15 +137,15 @@ class CollectionPage extends React.Component {
               this.props.collectionsActions.getStoreList(urlPath);
             }}
             onStoreClicked={(store, index) => {
-              // CleverTap.pushEvent('Collection Page - Click Store Card', {
-              //   'Collection Name': currentCollection.name,
-              //   'Collection Type': currentCollection.displayType,
-              //   'Store Name': store.name,
-              //   'Store Rank': index,
-              //   'Shipping Type': store.shippingType,
-              //   'has promo': store.promoTag?.length > 0,
-              //   'cashback': `${Number(store.cashbackRate || 0) * 100}%`,
-              // });
+              CleverTap.pushEvent('Collection Page - Click Store Card', {
+                'Collection Name': currentCollection.name,
+                'Collection Type': currentCollection.displayType,
+                'Store Name': store.name,
+                'Store Rank': index + 1,
+                'Shipping Type': store.shippingType,
+                'has promo': store.promoTag?.length > 0,
+                cashback: store.cashbackRate || 0,
+              });
               this.backLeftPosition(store);
             }}
             withInfiniteScroll

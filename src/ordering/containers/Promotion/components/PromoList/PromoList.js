@@ -14,7 +14,12 @@ import {
   hasSearchedForPromo as userHasSearchedForPromo,
   getSelectedPromo,
 } from '../../../../redux/modules/promotion';
-import { actions as appActionCreators, getOnlineStoreInfo } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getStoreInfoForCleverTap,
+} from '../../../../redux/modules/app';
+import CleverTap from '../../../../../utils/clevertap';
 
 class PromoList extends Component {
   componentDidMount() {
@@ -24,7 +29,7 @@ class PromoList extends Component {
   renderPromoList = (promoList, title) => {
     if (!promoList.length) return;
 
-    const { selectedPromo, onlineStoreInfo } = this.props;
+    const { selectedPromo, onlineStoreInfo, storeInfoForCleverTap } = this.props;
 
     return (
       <div className="ordering-promotion-list__container padding-top-bottom-smaller margin-top-bottom-smaller">
@@ -36,6 +41,7 @@ class PromoList extends Component {
               promo={promo}
               isSelected={selectedPromo.id === promo.id}
               onSelectPromo={() => {
+                CleverTap.pushEvent('Cart Page - select voucher', storeInfoForCleverTap);
                 this.props.promotionActions.selectPromo(promo);
               }}
               onlineStoreInfo={onlineStoreInfo}
@@ -126,6 +132,7 @@ export default compose(
         hasSearchedForPromo: userHasSearchedForPromo(state),
         selectedPromo: getSelectedPromo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({

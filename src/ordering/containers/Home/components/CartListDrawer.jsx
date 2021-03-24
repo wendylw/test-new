@@ -48,11 +48,15 @@ class CartListDrawer extends Component {
     onToggle();
   }
 
-  handleClearAll = async () => {
-    const { viewAside } = this.props;
+  handleClearCart = async () => {
+    const { appActions, cleverTapClearCart } = this.props;
 
-    await this.props.appActions.clearAll();
-    this.props.appActions.loadShoppingCart();
+    if (cleverTapClearCart) {
+      cleverTapClearCart();
+    }
+
+    await appActions.clearAll();
+    appActions.loadShoppingCart();
   };
 
   handleRemoveCartItem = cartItem => {
@@ -145,7 +149,7 @@ class CartListDrawer extends Component {
   }
 
   renderProductItemRightController(cartItem) {
-    const { t } = this.props;
+    const { t, cleverTapDecreaseCartItem, cleverTapIncreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
     const lowStockState = quantity > quantityOnHand;
     const classList = ['text-center', ...(lowStockState ? ['text-error'] : [])];
@@ -172,8 +176,20 @@ class CartListDrawer extends Component {
           quantity={quantity}
           decreaseDisabled={!Boolean(quantity)}
           increaseDisabled={lowStockState}
-          onDecrease={() => this.handleDecreaseCartItem(cartItem)}
-          onIncrease={() => this.handleIncreaseCartItem(cartItem)}
+          onDecrease={() => {
+            if (cleverTapDecreaseCartItem) {
+              cleverTapDecreaseCartItem();
+            }
+
+            this.handleDecreaseCartItem(cartItem);
+          }}
+          onIncrease={() => {
+            if (cleverTapIncreaseCartItem) {
+              cleverTapIncreaseCartItem();
+            }
+
+            this.handleIncreaseCartItem(cartItem);
+          }}
         />
         {stockStatus === 'lowStock' ? (
           <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>
@@ -264,7 +280,7 @@ class CartListDrawer extends Component {
             </div>
             <button
               className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
-              onClick={this.handleClearAll.bind(this)}
+              onClick={this.handleClearCart.bind(this)}
               data-testid="clearAll"
               data-heap-name="ordering.home.mini-cart.clear-btn"
             >

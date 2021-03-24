@@ -117,7 +117,7 @@ class CartList extends Component {
   }
 
   renderProductItemRightController(cartItem) {
-    const { t } = this.props;
+    const { t, cleverTapIncreaseCartItem, cleverTapDecreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
     const lowStockState = quantity > quantityOnHand;
     const classList = ['text-center', ...(lowStockState ? ['text-error'] : [])];
@@ -145,9 +145,19 @@ class CartList extends Component {
           decreaseDisabled={!Boolean(quantity)}
           increaseDisabled={lowStockState}
           onDecrease={() => {
+            if (cleverTapDecreaseCartItem) {
+              cleverTapDecreaseCartItem();
+            }
+
             this.handleDecreaseCartItem(cartItem);
           }}
-          onIncrease={() => this.handleIncreaseCartItem(cartItem)}
+          onIncrease={() => {
+            if (cleverTapIncreaseCartItem) {
+              cleverTapIncreaseCartItem();
+            }
+
+            this.handleIncreaseCartItem(cartItem);
+          }}
         />
         {stockStatus === 'lowStock' ? (
           <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>

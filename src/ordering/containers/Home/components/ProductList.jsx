@@ -94,10 +94,10 @@ class ProductList extends Component {
       return;
     }
 
-    const { onToggle, onProductClick, onProductView } = this.props;
+    const { onToggle, cleverTapOnProductItemClick, cleverTapOnProductView } = this.props;
 
-    if (onProductClick) {
-      onProductClick({ product, categoryInfo });
+    if (cleverTapOnProductItemClick) {
+      cleverTapOnProductItemClick({ product, categoryInfo });
     }
 
     const { responseGql = {} } = await this.props.appActions.loadProductDetail(product);
@@ -105,8 +105,8 @@ class ProductList extends Component {
 
     onToggle('PRODUCT_DETAIL');
 
-    if (onProductView) {
-      onProductView({ product, categoryInfo });
+    if (cleverTapOnProductView) {
+      cleverTapOnProductView({ product, categoryInfo });
     }
 
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);

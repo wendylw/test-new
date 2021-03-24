@@ -24,6 +24,7 @@ import {
   getBusiness,
   getCartBilling,
   getBusinessInfo,
+  getStoreInfoForCleverTap,
 } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
@@ -36,6 +37,7 @@ import {
 } from '../redux/payments';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import './OrderingBanking.scss';
+import CleverTap from '../../../../utils/clevertap';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -158,6 +160,7 @@ class OnlineBanking extends Component {
       pendingPaymentOptions,
       currentPaymentOption,
       currentOnlineBanking,
+      storeInfoForCleverTap,
     } = this.props;
     const { total } = cartBilling || {};
     const { logo } = onlineStoreInfo || {};
@@ -176,6 +179,7 @@ class OnlineBanking extends Component {
           isPage={true}
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
+            CleverTap.pushEvent('online banking - click back arrow');
             history.replace({
               pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
               search: window.location.search,
@@ -219,6 +223,11 @@ class OnlineBanking extends Component {
             data-heap-name="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={() => {
+              CleverTap.pushEvent('online banking - click continue', {
+                ...storeInfoForCleverTap,
+                'payment method': currentPaymentOption?.paymentName,
+                'bank name': currentPaymentOption?.paymentProvider,
+              });
               this.setState({
                 payNowLoading: true,
               });
@@ -275,6 +284,7 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
         deliveryDetails: getDeliveryDetails(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({

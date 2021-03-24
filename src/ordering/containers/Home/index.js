@@ -32,6 +32,7 @@ import {
   getOnlineStoreInfo,
   getRequestInfo,
   getCartBilling,
+  getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
@@ -40,7 +41,6 @@ import {
   getDeliveryInfo,
   getPopUpModal,
   getStoresList,
-  getStoreInfoForCleverTap,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
@@ -139,7 +139,7 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { homeActions, deliveryInfo, appActions, storeInfoForCleverTap } = this.props;
+    const { homeActions, deliveryInfo, appActions } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
@@ -150,15 +150,13 @@ export class Home extends Component {
 
     const pageRf = this.getPageRf();
 
-    // CleverTap.pushEvent('Menu Page - View page', storeInfoForCleverTap);
-
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
-      // CleverTap.pushEvent('Menu Page - Alcohol Counsent - Pop up', storeInfoForCleverTap);
-
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
 
     await Promise.all([appActions.loadCoreBusiness(), homeActions.loadCoreStores()]);
+
+    CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
     this.getStatusFromMultipleStore();
 
@@ -528,7 +526,7 @@ export class Home extends Component {
     const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
 
     const fillInDeliverToAddress = () => {
-      // CleverTap.pushEvent('Menu Page - Click location & shipping details bar', storeInfoForCleverTap);
+      CleverTap.pushEvent('Menu Page - Click location & shipping details bar', storeInfoForCleverTap);
 
       const { search } = window.location;
       const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
@@ -731,7 +729,7 @@ export class Home extends Component {
         onClickHandler={
           isCanClickHandler
             ? asideName => {
-                // CleverTap.pushEvent('Menu Page - Click info button', storeInfoForCleverTap);
+                CleverTap.pushEvent('Menu Page - Click info button', storeInfoForCleverTap);
                 this.handleToggleAside(asideName);
               }
             : () => {}
@@ -753,11 +751,13 @@ export class Home extends Component {
   handleLegalAge = isAgeLegal => {
     const { storeInfoForCleverTap } = this.props;
 
-    // if (isAgeLegal) {
-    //   CleverTap.pushEvent('Menu Page - Alcohol Consent - Click yes', storeInfoForCleverTap);
-    // } else {
-    //   CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
-    // }
+    CleverTap.pushEvent('Menu Page - Alcohol Counsent - Pop up', storeInfoForCleverTap);
+
+    if (isAgeLegal) {
+      CleverTap.pushEvent('Menu Page - Alcohol Consent - Click yes', storeInfoForCleverTap);
+    } else {
+      CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
+    }
     isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
@@ -803,10 +803,39 @@ export class Home extends Component {
     );
   };
 
-  // cleverTapTrack = (eventName, attributes) => {
-  //   const { storeInfoForCleverTap } = this.props;
-  //   CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
-  // };
+  cleverTapTrack = (eventName, attributes) => {
+    const { storeInfoForCleverTap } = this.props;
+    CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
+  };
+
+  cleverTapTrackForCart = (eventName, product, attributes) => {
+    const { categories, allProductsKeys, storeInfoForCleverTap } = this.props;
+    let categoryIndex = -1;
+    let categoryName = '';
+
+    const categoriesContent = Object.values(categories) || [];
+
+    categoriesContent.forEach((category, index) => {
+      if (category.products?.find(p => p.id === product.id)) {
+        categoryName = category.name;
+        categoryIndex = index;
+      }
+    });
+
+    CleverTap.pushEvent(eventName, {
+      'category name': categoryName,
+      'category rank': categoryIndex + 1,
+      'product name': product.title,
+      'product image url': product.images?.length > 0 ? product.images[0] : '',
+      'product rank': allProductsKeys.indexOf(product.id) + 1,
+      amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+      discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+      'is bestsellar': product.isFeaturedProduct,
+      'has picture': product.images?.length > 0,
+      ...storeInfoForCleverTap,
+      ...attributes,
+    });
+  };
 
   render() {
     const {
@@ -835,7 +864,8 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
-    const { storePromoTags } = businessInfo || {};
+    const { storePromoTags, qrOrderingSettings } = businessInfo || {};
+    const { minimumConsumption } = qrOrderingSettings || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -880,9 +910,9 @@ export class Home extends Component {
             containerId="product-list"
             categories={categories}
             viewAside={viewAside}
-            // onCategoryClick={() => {
-            //   this.cleverTapTrack('Menu Page - Click category');
-            // }}
+            onCategoryClick={() => {
+              this.cleverTapTrack('Menu Page - Click category');
+            }}
           />
           <ProductList
             style={{
@@ -896,32 +926,32 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
-            // onProductClick={({ product = {}, categoryInfo = {} }) => {
-            //   this.cleverTapTrack('Menu Page - Click product', {
-            //     'category name': categoryInfo.name,
-            //     'category rank': categoryInfo.index + 1,
-            //     'product name': product.title,
-            //     'product rank': allProductsKeys.indexOf(product.id) + 1,
-            //     'product image url': product.images?.length > 0 ? product.images[0] : '',
-            //     'amount': !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
-            //     'discountedprice': !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
-            //     'is bestsellar': product.isFeaturedProduct,
-            //     'has picture': product.images?.length > 0,
-            //   });
-            // }}
-            // onProductView={({ product = {}, categoryInfo = {} }) => {
-            //   this.cleverTapTrack('Menu Page - View products', {
-            //     'category name': categoryInfo.name,
-            //     'category rank': categoryInfo.index + 1,
-            //     'product name': product.title,
-            //     'product rank': allProductsKeys.indexOf(product.id) + 1,
-            //     'product image url': product.images?.length > 0 ? product.images[0] : '',
-            //     'amount': !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
-            //     'discountedprice': !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
-            //     'is bestsellar': product.isFeaturedProduct,
-            //     'has picture': product.images?.length > 0,
-            //   });
-            // }}
+            cleverTapOnProductItemClick={({ product = {}, categoryInfo = {} }) => {
+              this.cleverTapTrack('Menu Page - Click product', {
+                'category name': categoryInfo.name,
+                'category rank': categoryInfo.index + 1,
+                'product name': product.title,
+                'product rank': allProductsKeys.indexOf(product.id) + 1,
+                'product image url': product.images?.length > 0 ? product.images[0] : '',
+                amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+                discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+                'is bestsellar': product.isFeaturedProduct,
+                'has picture': product.images?.length > 0,
+              });
+            }}
+            cleverTapOnProductView={({ product = {}, categoryInfo = {} }) => {
+              this.cleverTapTrack('Menu Page - View products', {
+                'category name': categoryInfo.name,
+                'category rank': categoryInfo.index + 1,
+                'product name': product.title,
+                'product rank': allProductsKeys.indexOf(product.id) + 1,
+                'product image url': product.images?.length > 0 ? product.images[0] : '',
+                amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+                discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+                'is bestsellar': product.isFeaturedProduct,
+                'has picture': product.images?.length > 0,
+              });
+            }}
           />
         </div>
         <CartListDrawer
@@ -929,6 +959,15 @@ export class Home extends Component {
           viewAside={viewAside}
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
+          cleverTapClearCart={() => {
+            this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
+          }}
+          cleverTapIncreaseCartItem={() => {
+            this.cleverTapTrackForCart('Menu Page - Cart Preview - Increase quantity', product);
+          }}
+          cleverTapDecreaseCartItem={() => {
+            this.cleverTapTrackForCart('Menu Page - Cart Preview - Decrease quantity', product);
+          }}
         />
         <ProductDetailDrawer
           footerEl={this.footerEl}
@@ -936,31 +975,15 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
-          // onAddToCartClick={({ product = {} }) => {
-          //   let categoryIndex = -1;
-          //   let categoryName = '';
-
-          //   const categoriesContent = Object.values(categories) || [];
-
-          //   categoriesContent.forEach((category, index) => {
-          //     if (category.products?.find(p => p.id === product.id)) {
-          //       categoryName = category.name;
-          //       categoryIndex = index;
-          //     }
-          //   });
-
-          //   this.cleverTapTrack('Menu Page - Add to Cart', {
-          //     'category name': categoryName,
-          //     'category rank': categoryIndex + 1,
-          //     'product name': product.title,
-          //     'product rank': allProductsKeys.indexOf(product.id) + 1,
-          //     'product image url': product.images?.length > 0 ? product.images[0] : '',
-          //     'amount': !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
-          //     'discountedprice': !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
-          //     'is bestsellar': product.isFeaturedProduct,
-          //     'has picture': product.images?.length > 0,
-          //   })
-          // }}
+          cleverTapIncreaseInProductDetail={(product = {}) => {
+            this.cleverTapTrackForCart('Product details - Increase quantity', product);
+          }}
+          cleverTapDecreaseInProductDetail={(product = {}) => {
+            this.cleverTapTrackForCart('Product details - Decrease quantity', product);
+          }}
+          cleverTapOnAddToCartClick={({ product = {} }) => {
+            this.cleverTapTrackForCart('Menu Page - Add to Cart', product);
+          }}
         />
         {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
           <StoreInfoAside
@@ -997,7 +1020,13 @@ export class Home extends Component {
           footerRef={ref => (this.footerEl = ref)}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
-          onClickCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CART)}
+          onClickCart={() => {
+            this.cleverTapTrack('Menu Page - Click cart');
+            this.handleToggleAside(Constants.ASIDE_NAMES.CART);
+          }}
+          onClickOrderNow={() => {
+            this.cleverTapTrack('Menu Page - Click order now');
+          }}
           isValidTimeToOrder={this.isValidTimeToOrder()}
           history={history}
           isLiveOnline={enableLiveOnline}

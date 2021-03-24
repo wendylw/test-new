@@ -113,7 +113,7 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    this.loadOrder().then(this.recordChargedEvent);
+    this.loadOrder();
 
     this.setContainerHeight();
 
@@ -289,24 +289,21 @@ export class ThankYou extends PureComponent {
       preOrderPeriod = (new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / (60 * 60 * 1000);
     }
 
-    if (document.referrer !== '' && sessionStorage.getItem('ct_logged') !== order.orderId) {
-      CleverTap.pushEvent('Charged', {
-        Currency: onlineStoreInfo?.currency || '',
-        Amount: order.total,
-        'Total Quantity': totalQuantity,
-        'Total Discount': totalDiscount,
-        'Shipping Type': order.shippingType,
-        'Preorder Flag': order.isPreOrder,
-        'Delivery Instructions': _get(order, 'deliveryInformation[0].comments'),
-        'Payment Method': _get(order, 'paymentMethod[0]', ''),
-        'Store Name': _get(order, 'storeInfo.name', ''),
-        'Charged ID': order.orderId,
-        Items: itemsList,
-        'Order Source': orderSource,
-        'Pre-order Period': preOrderPeriod,
-      });
-      sessionStorage.setItem('ct_logged', order.orderId);
-    }
+    CleverTap.pushEvent('Charged', {
+      Currency: onlineStoreInfo?.currency || '',
+      Amount: order.total,
+      'Total Quantity': totalQuantity,
+      'Total Discount': totalDiscount,
+      'Shipping Type': order.shippingType,
+      'Preorder Flag': order.isPreOrder,
+      'Delivery Instructions': _get(order, 'deliveryInformation[0].comments'),
+      'Payment Method': _get(order, 'paymentMethod[0]', ''),
+      'Store Name': _get(order, 'storeInfo.name', ''),
+      'Charged ID': order.orderId,
+      Items: itemsList,
+      'Order Source': orderSource,
+      'Pre-order Period': preOrderPeriod,
+    });
   };
 
   loadOrder = async () => {
@@ -348,6 +345,7 @@ export class ThankYou extends PureComponent {
     }
     if (this.isSourceFromPayment(tySourceCookie) && this.props.order && onlineStoreInfo) {
       const orderInfo = this.props.order;
+      this.recordChargedEvent();
       this.handleGtmEventTracking({ order: orderInfo });
     }
 
