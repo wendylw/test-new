@@ -25,12 +25,12 @@ import { getOnlineStoreInfo, getBusiness } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import {
-  actions as paymentsActionCreator,
   getPaymentsPendingState,
   getOnlineBankingOption,
   getSelectedOnlineBanking,
   getOnlineBankList,
-} from '../redux/payments';
+} from '../redux/common/selectors';
+import * as paymentCommonThunks from '../redux/common/thunks';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import './OrderingBanking.scss';
@@ -276,7 +276,7 @@ export default compose(
       };
     },
     dispatch => ({
-      paymentsActions: bindActionCreators(paymentsActionCreator, dispatch),
+      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),

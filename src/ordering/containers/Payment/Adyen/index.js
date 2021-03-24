@@ -26,7 +26,7 @@ import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import AdyenSecurity from '../../../../../src/images/Adyen-PCI.png';
-import { getSelectedPaymentOption } from '../redux/payments';
+import { getSelectedPaymentOption } from '../redux/common/selectors';
 import '../PaymentCreditCard.scss';
 import './AdyenPage.scss';
 

@@ -5,7 +5,7 @@ import home from './home';
 import cart from './cart';
 import promotion from './promotion';
 import payment from './payment';
-import payments from '../../containers/Payment/redux/payments';
+import payments from '../../containers/Payment/redux';
 import thankYou from './thankYou';
 import customer from './customer';
 import reportDriver from './reportDriver';

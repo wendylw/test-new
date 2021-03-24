@@ -21,12 +21,12 @@ import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '..
 import { actions as paymentActionCreators, getCurrentOrderId, getCardList } from '../../redux/modules/payment';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import {
-  actions as paymentsActionCreator,
   getPaymentsPendingState,
   getAllPaymentsOptions,
   getSelectedPaymentOption,
   getAllOptionsUnavailableState,
-} from './redux/payments';
+} from './redux/common/selectors';
+import * as paymentCommonThunks from './redux/common/thunks';
 import Utils from '../../../utils/utils';
 import { getPaymentRedirectAndWebHookUrl } from './utils';
 import PaymentItem from './components/payment-item';
@@ -276,7 +276,7 @@ export default compose(
       };
     },
     dispatch => ({
-      paymentsActions: bindActionCreators(paymentsActionCreator, dispatch),
+      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),

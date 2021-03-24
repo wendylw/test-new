@@ -8,7 +8,8 @@ import _values from 'lodash/values';
 import _every from 'lodash/every';
 import _keys from 'lodash/keys';
 
-import { actions as paymentsActionCreators, getSelectedPaymentOption } from '../redux/payments';
+import { getSelectedPaymentOption } from '../redux/common/selectors';
+import * as paymentCommonThunks from '../redux/common/thunks';
 import PaymentLogo from './payment-logo';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Radio from '../../../../components/Radio';
@@ -122,7 +123,7 @@ export default compose(
       currentPaymentOption: getSelectedPaymentOption(state),
     }),
     dispatch => ({
-      paymentsActions: bindActionCreators(paymentsActionCreators, dispatch),
+      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
     })
   )
 )(PaymentItem);
