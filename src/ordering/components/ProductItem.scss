@@ -1,6 +1,6 @@
 @import "../../Variables.scss";
 
-.item {
+.product-item {
   position: relative;
   background-color: $white;
   list-style: none;
@@ -33,7 +33,7 @@
 }
 
 @media (min-width: 770px) {
-  .item {
+  .product-item {
     &__image-container {
       width: 72px;
       height: 72px;

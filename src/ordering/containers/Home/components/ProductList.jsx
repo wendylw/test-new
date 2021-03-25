@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import LazyLoad from 'react-lazyload';
 import { ScrollObservable } from '../../../../components/ScrollComponents';
 import Tag from '../../../../components/Tag';
-import Item from '../../../components/Item';
+import ProductItem from '../../../components/ProductItem';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
@@ -118,13 +118,13 @@ class ProductList extends Component {
       <div>
         {originalDisplayPrice ? (
           <CurrencyNumber
-            className="product-item__price text-size-small text-line-through"
+            className="text-size-small text-line-through"
             money={originalDisplayPrice}
             numberOnly={true}
           />
         ) : null}
         <CurrencyNumber
-          className={`product-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
+          className={originalDisplayPrice ? 'text-error' : ''}
           money={displayPrice || 0}
           numberOnly={true}
         />
@@ -193,7 +193,7 @@ class ProductList extends Component {
                         height={productItemMinHeight}
                         scrollContainer="#product-list"
                       >
-                        <Item
+                        <ProductItem
                           className="flex-stretch"
                           data-heap-name="ordering.home.product-item"
                           imageUrl={images[0]}
@@ -209,7 +209,7 @@ class ProductList extends Component {
                           }
                         >
                           {this.renderProductItemRightController(stockStatus, cartQuantity)}
-                        </Item>
+                        </ProductItem>
                       </LazyLoad>
                     );
                   })}

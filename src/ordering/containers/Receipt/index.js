@@ -2,7 +2,7 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Item from '../../components/Item';
+import ProductItem from '../../components/ProductItem';
 import Billing from '../../components/Billing';
 import Header from '../../../components/Header';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -81,7 +81,7 @@ export class ReceiptDetail extends Component {
           }
 
           return (
-            <Item
+            <ProductItem
               key={`receipt-item-${id}`}
               className="flex-middle"
               imageUrl={image}
@@ -95,7 +95,7 @@ export class ReceiptDetail extends Component {
               }
             >
               <span className="text-size-small margin-small">{quantity}</span>
-            </Item>
+            </ProductItem>
           );
         })}
       </div>
