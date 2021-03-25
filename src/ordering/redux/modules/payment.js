@@ -70,9 +70,10 @@ export const types = {
 export const actions = {
   createOrder: ({ cashback, shippingType }) => async (dispatch, getState) => {
     const isDigital = Utils.isDigitalType();
+    const cartItems = getCartItems(getState());
+
     if (isDigital) {
       const business = getBusiness(getState());
-      const cartItems = getCartItems(getState());
       const productId = cartItems[0].id;
       const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
       const payload = {
@@ -114,7 +115,6 @@ export const actions = {
     const businessInfo = getBusinessByName(getState(), business);
     const { qrOrderingSettings = {} } = businessInfo || {};
     const { enablePreOrder } = qrOrderingSettings;
-    const cartItems = getCartItems(getState());
     const additionalComments = Utils.getSessionVariable('additionalComments');
     const { storeId, tableId } = getRequestInfo(getState());
     const deliveryDetails = await fetchDeliveryDetails();
