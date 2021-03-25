@@ -2,25 +2,11 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
-import Footer from './components/Footer';
 import _isNil from 'lodash/isNil';
-import Header from '../../../components/Header';
-
-import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
-import DeliverToBar from '../../../components/DeliverToBar';
-import PromotionsBar from './components/PromotionsBar';
-import ProductDetailDrawer from './components/ProductDetailDrawer';
-import CartListDrawer from './components/CartListDrawer';
-import StoreInfoAside from './components/StoreInfoAside';
-import CurrentCategoryBar from './components/CurrentCategoryBar';
-import ProductList from './components/ProductList';
-import AlcoholModal from './components/AlcoholModal';
-import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
@@ -41,6 +27,7 @@ import {
   getDeliveryInfo,
   getPopUpModal,
   getStoresList,
+  getAllProductsIds,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
@@ -48,9 +35,20 @@ import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
-import { getAllProductsKeys } from '../../../redux/modules/entities/products';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
+import Header from '../../../components/Header';
+import Footer from './components/Footer';
+import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
+import DeliverToBar from '../../../components/DeliverToBar';
+import PromotionsBar from './components/PromotionsBar';
+import ProductDetailDrawer from './components/ProductDetailDrawer';
+import CartListDrawer from './components/CartListDrawer';
+import StoreInfoAside from './components/StoreInfoAside';
+import CurrentCategoryBar from './components/CurrentCategoryBar';
+import ProductList from './components/ProductList';
+import AlcoholModal from './components/AlcoholModal';
+import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 
 const localState = {
@@ -809,7 +807,7 @@ export class Home extends Component {
   };
 
   cleverTapTrackForCart = (eventName, product, attributes) => {
-    const { categories, allProductsKeys, storeInfoForCleverTap } = this.props;
+    const { categories, allProductsIds, storeInfoForCleverTap } = this.props;
     let categoryIndex = -1;
     let categoryName = '';
 
@@ -827,7 +825,7 @@ export class Home extends Component {
       'category rank': categoryIndex + 1,
       'product name': product.title,
       'product image url': product.images?.length > 0 ? product.images[0] : '',
-      'product rank': allProductsKeys.indexOf(product.id) + 1,
+      'product rank': allProductsIds.indexOf(product.id) + 1,
       amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
       discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
       'is bestsellar': product.isFeaturedProduct,
@@ -847,7 +845,7 @@ export class Home extends Component {
       history,
       freeDeliveryFee,
       deliveryInfo,
-      allProductsKeys,
+      allProductsIds,
       ...otherProps
     } = this.props;
     const {
@@ -865,7 +863,6 @@ export class Home extends Component {
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
     const { storePromoTags, qrOrderingSettings } = businessInfo || {};
-    const { minimumConsumption } = qrOrderingSettings || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -931,7 +928,7 @@ export class Home extends Component {
                 'category name': categoryInfo.name,
                 'category rank': categoryInfo.index + 1,
                 'product name': product.title,
-                'product rank': allProductsKeys.indexOf(product.id) + 1,
+                'product rank': allProductsIds.indexOf(product.id) + 1,
                 'product image url': product.images?.length > 0 ? product.images[0] : '',
                 amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
                 discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
@@ -944,7 +941,7 @@ export class Home extends Component {
                 'category name': categoryInfo.name,
                 'category rank': categoryInfo.index + 1,
                 'product name': product.title,
-                'product rank': allProductsKeys.indexOf(product.id) + 1,
+                'product rank': allProductsIds.indexOf(product.id) + 1,
                 'product image url': product.images?.length > 0 ? product.images[0] : '',
                 amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
                 discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
@@ -1057,7 +1054,7 @@ export default compose(
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        allProductsKeys: getAllProductsKeys(state),
+        allProductsIds: getAllProductsIds(state),
         store: getStore(state),
       };
     },

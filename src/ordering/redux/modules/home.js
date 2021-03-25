@@ -372,4 +372,11 @@ export const getSelectedProductDetail = state => {
   return getProductById(state, selectedProduct.id);
 };
 
-export const getProductItemRank = state => {};
+export const getAllProductsIds = createSelector(getAllProducts, allProducts => {
+  try {
+    const res = Object.keys(allProducts);
+    return res;
+  } catch (e) {
+    return [];
+  }
+});
