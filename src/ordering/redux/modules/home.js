@@ -139,7 +139,7 @@ export const actions = {
   },
 };
 
-export const fetchOnlineCategory = variables => {
+const fetchOnlineCategory = variables => {
   const endpoint = Url.apiGql('OnlineCategory');
   return {
     [FETCH_GRAPHQL]: {

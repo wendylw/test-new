@@ -19,6 +19,21 @@ const initialState = {
 
 export const types = CART_TYPES;
 
+const fetchOnlineCategory = variables => {
+  const endpoint = Url.apiGql('OnlineCategory');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.FETCH_ONLINECATEGORY_REQUEST,
+        types.FETCH_ONLINECATEGORY_SUCCESS,
+        types.FETCH_ONLINECATEGORY_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
+
 // actions
 export const actions = {
   updateTransactionsStatus: ({ status, receiptNumbers }) => ({
@@ -35,6 +50,24 @@ export const actions = {
       },
     },
   }),
+
+  // load product list group by category, and shopping cart
+  loadProductList: () => (dispatch, getState) => {
+    const isDelivery = Utils.isDeliveryType();
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
+    }
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
+
+    const shippingType = Utils.getApiRequestShippingType();
+
+    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+  },
 };
 
 const pendingTransactionsIds = (state = initialState.pendingTransactionsIds, action) => {
