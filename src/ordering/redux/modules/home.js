@@ -83,6 +83,21 @@ const types = {
   FETCH_STORE_HASHCODE_FAILURE: 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE',
 };
 
+const fetchOnlineCategory = variables => {
+  const endpoint = Url.apiGql('OnlineCategory');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.FETCH_ONLINECATEGORY_REQUEST,
+        types.FETCH_ONLINECATEGORY_SUCCESS,
+        types.FETCH_ONLINECATEGORY_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
+
 // actions
 export const actions = {
   // load product list group by category, and shopping cart
@@ -137,21 +152,6 @@ export const actions = {
       },
     });
   },
-};
-
-const fetchOnlineCategory = variables => {
-  const endpoint = Url.apiGql('OnlineCategory');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ONLINECATEGORY_REQUEST,
-        types.FETCH_ONLINECATEGORY_SUCCESS,
-        types.FETCH_ONLINECATEGORY_FAILURE,
-      ],
-      endpoint,
-      variables,
-    },
-  };
 };
 
 // reducers
