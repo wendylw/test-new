@@ -8,7 +8,7 @@ import { getAllProducts, getProductById } from '../../../redux/modules/entities/
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
-import { getBusiness, getBusinessUTCOffset, getCartItemList } from './app';
+import { getBusiness, getBusinessUTCOffset, getCartItemList, fetchShoppingCart } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList } from '../../../redux/modules/entities/stores';
 import { APP_TYPES } from '../types';
@@ -137,15 +137,6 @@ export const actions = {
       },
     });
   },
-};
-
-export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
-  return {
-    [API_REQUEST]: {
-      types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
-    },
-  };
 };
 
 export const fetchOnlineCategory = variables => {

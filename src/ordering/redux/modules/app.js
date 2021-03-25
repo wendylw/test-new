@@ -193,20 +193,6 @@ const addOrUpdateShoppingCartItem = variables => {
   };
 };
 
-// const clearShoppingCartItemByProducts = products => {
-//   return {
-//     [API_REQUEST]: {
-//       types: [
-//         types.CLEARALL_BY_PRODUCTS_REQUEST,
-//         types.CLEARALL_BY_PRODUCTS_SUCCESS,
-//         types.CLEARALL_BY_PRODUCTS_FAILURE,
-//       ],
-//       payload: products,
-//       ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
-//     },
-//   };
-// };
-
 export const emptyShoppingCart = () => {
   const endpoint = Url.apiGql('EmptyShoppingCart');
   return {
