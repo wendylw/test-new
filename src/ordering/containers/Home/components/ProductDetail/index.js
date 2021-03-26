@@ -688,7 +688,7 @@ class ProductDetail extends Component {
     );
   }
   renderOperatorButton = () => {
-    const { product } = this.props;
+    const { product, decreaseInProductDetail, increaseInProductDetail } = this.props;
     const { cartQuantity, minimumVariations } = this.state;
 
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
@@ -704,8 +704,12 @@ class ProductDetail extends Component {
           quantity={cartQuantity}
           from="productDetail"
           decreaseDisabled={cartQuantity <= 1}
-          onDecrease={() => this.setState({ cartQuantity: cartQuantity - 1 })}
+          onDecrease={() => {
+            decreaseInProductDetail(product);
+            this.setState({ cartQuantity: cartQuantity - 1 });
+          }}
           onIncrease={() => {
+            increaseInProductDetail(product);
             const disableVariationsId = this.isInvalidMinimumVariations();
 
             if (hasMinimumVariations && disableVariationsId) {

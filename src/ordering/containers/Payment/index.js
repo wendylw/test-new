@@ -13,7 +13,7 @@ import _startsWith from 'lodash/startsWith';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../redux/modules/home';
-import { actions as appActionCreators } from '../../redux/modules/app';
+import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { getDeliveryInfo } from '../../redux/modules/home';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
@@ -32,6 +32,7 @@ import { getPaymentRedirectAndWebHookUrl } from './utils';
 import PaymentItem from './components/payment-item';
 import Loader from './components/Loader';
 import './OrderingPayment.scss';
+import CleverTap from '../../../utils/clevertap';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -186,7 +187,14 @@ class Payment extends Component {
   }
 
   render() {
-    const { history, t, currentPaymentOption, areAllOptionsUnavailable, pendingPaymentOptions } = this.props;
+    const {
+      history,
+      t,
+      currentPaymentOption,
+      areAllOptionsUnavailable,
+      pendingPaymentOptions,
+      storeInfoForCleverTap,
+    } = this.props;
     const { payNowLoading, cartContainerHeight } = this.state;
     const paymentData = this.getPaymentEntryRequestData();
 
@@ -199,7 +207,10 @@ class Payment extends Component {
           data-heap-name="ordering.payment.header"
           isPage={true}
           title={t('SelectPayment')}
-          navFunc={this.handleClickBack}
+          navFunc={() => {
+            CleverTap.pushEvent('Payment Method - click back arrow');
+            this.handleClickBack();
+          }}
         />
 
         <div
@@ -225,7 +236,13 @@ class Payment extends Component {
             data-heap-name="ordering.payment.pay-btn"
             disabled={payNowLoading || areAllOptionsUnavailable}
             validCreateOrder={!currentPaymentOption || !currentPaymentOption.pathname}
-            beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+            beforeCreateOrder={() => {
+              CleverTap.pushEvent('Payment Method - click continue', {
+                ...storeInfoForCleverTap,
+                'payment method': currentPaymentOption?.paymentName,
+              });
+              this.handleBeforeCreateOrder();
+            }}
             paymentName={currentPaymentOption.paymentProvider}
             afterCreateOrder={orderId => {
               this.setState({
@@ -273,6 +290,7 @@ export default compose(
         deliveryDetails: getDeliveryDetails(state),
         cardList: getCardList(state),
         user: getUser(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({

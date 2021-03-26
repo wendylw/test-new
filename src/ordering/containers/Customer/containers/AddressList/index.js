@@ -5,7 +5,7 @@ import { IconAddAddress, IconBookmark, IconNext } from '../../../../../component
 import Tag from '../../../../../components/Tag';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { getRequestInfo, getUser } from '../../../../redux/modules/app';
+import { getRequestInfo, getUser, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import {
   actions as customerActionCreators,
   getDeliveryDetails,
@@ -14,6 +14,7 @@ import {
 import Utils from '../../../../../utils/utils';
 import './AddressList.scss';
 import webviewUtils from '../../../../../utils/webview-utils';
+import CleverTap from '../../../../../utils/clevertap';
 
 class AddressList extends Component {
   componentDidMount() {
@@ -27,7 +28,8 @@ class AddressList extends Component {
   }
 
   addNewAddress = () => {
-    const { history } = this.props;
+    const { history, storeInfoForCleverTap } = this.props;
+    CleverTap.pushEvent('Address list - click add new address', storeInfoForCleverTap);
     history.push({
       pathname: '/customer/addressDetail',
       search: window.location.search,
@@ -67,6 +69,9 @@ class AddressList extends Component {
           onClick={
             availableStatus
               ? () => {
+                  CleverTap.pushEvent('Address list - click existing address', {
+                    rank: index + 1,
+                  });
                   customerActions.patchDeliveryDetails({
                     addressId,
                     addressName,
@@ -127,7 +132,10 @@ class AddressList extends Component {
           contentClassName="flex-middle"
           isPage={true}
           title={t('DeliveryTo')}
-          navFunc={this.handleClickBack.bind(this)}
+          navFunc={() => {
+            CleverTap.pushEvent('Address list - click back arrow');
+            this.handleClickBack();
+          }}
         />
         <section
           className="address-list__container"
@@ -168,6 +176,7 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
       addressList: getDeliveryAddressList(state),
       requestInfo: getRequestInfo(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),

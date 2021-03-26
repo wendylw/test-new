@@ -72,6 +72,8 @@ class Home extends React.Component {
     if (source === 'ip') {
       this.getPlaceInfoByDevice();
     }
+
+    CleverTap.pushEvent('Home Page - view home page');
   };
 
   componentDidUpdate(prevProps) {
@@ -106,7 +108,7 @@ class Home extends React.Component {
   };
 
   gotoLocationPage = () => {
-    // CleverTap.pushEvent('Homepage - Click Location Bar');
+    CleverTap.pushEvent('Homepage - Click Location Bar');
 
     const { history, location, currentPlaceInfo } = this.props;
     const coords = currentPlaceInfo && currentPlaceInfo.coords;
@@ -121,7 +123,7 @@ class Home extends React.Component {
   };
 
   handleLoadSearchPage = () => {
-    // CleverTap.pushEvent('Homepage - Click Search Bar');
+    CleverTap.pushEvent('Homepage - Click Search Bar');
     this.backLeftPosition();
     this.props.history.push({ pathname: '/search' });
   };
@@ -131,13 +133,14 @@ class Home extends React.Component {
   };
 
   handleStoreSelected = async (store, index) => {
-    // CleverTap.pushEvent('Homepage - Click Store Card', {
-    //   'store name': store.name,
-    //   'store rank': index,
-    //   'shipping type': store.shippingType,
-    //   'has promo': store.promoTag?.length > 0,
-    //   'cashback': `${Number(store.cashbackRate || 0) * 100}%`,
-    // });
+    CleverTap.pushEvent('Homepage - Click Store Card', {
+      'store name': store.name,
+      'store rank': index + 1,
+      'shipping type': store.shippingType,
+      'has promo': store.promoTag?.length > 0,
+      cashback: store.cashbackRate || 0,
+      distance: store.geoDistance,
+    });
 
     const { homeActions, currentPlaceInfo } = this.props;
 
@@ -149,7 +152,7 @@ class Home extends React.Component {
   };
 
   handleQRCodeClicked = () => {
-    // CleverTap.pushEvent('Homepage - Click QR Scan');
+    CleverTap.pushEvent('Homepage - Click QR Scan');
     this.backLeftPosition();
   };
 
@@ -250,7 +253,7 @@ class Home extends React.Component {
               className="offer-details__bar"
               data-heap-name="site.home.campaign-bar"
               target="_blank"
-              href="https://app.beepit.com/download/?utm_source=beep&utm_medium=homepage&utm_campaign=launch_campaign&utm_content=top_banner"
+              href="https://storehub.page.link/pzok"
               rel="noopener noreferrer"
             >
               <p className="flex flex-middle flex-center">

@@ -47,9 +47,7 @@ const shouldForward = function(req) {
     const path = req.path;
 
     return (
-      req.method !== 'GET' ||
-      (mayProxy(path) && req.headers.accept && req.headers.accept.indexOf('text/html') === -1) ||
-      path.startsWith('/cross-storage')
+      req.method !== 'GET' || (mayProxy(path) && req.headers.accept && req.headers.accept.indexOf('text/html') === -1)
     );
   } catch (e) {
     console.error(e.message);

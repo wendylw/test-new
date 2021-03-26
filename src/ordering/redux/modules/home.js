@@ -551,11 +551,3 @@ export const getProductItemMinHeight = state => state.home.domProperties.product
 export const getPopUpModal = state => state.home.popUpModal;
 
 export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;
-
-// This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
-export const getStoreInfoForCleverTap = state => {
-  const business = getBusiness(state);
-  const allBusinessInfo = getAllBusinesses(state);
-
-  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo });
-};
