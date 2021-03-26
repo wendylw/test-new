@@ -5,7 +5,6 @@ import Constants from '../../../utils/constants';
 import { IconWrappedClose } from '../../../components/Icons';
 import Header from '../../../components/Header';
 import PromoList from './components/PromoList/PromoList';
-
 import { bindActionCreators, compose } from 'redux';
 import {
   actions as promotionActionCreators,
@@ -21,10 +20,16 @@ import {
   getSelectedPromo,
   getAppliedResult,
 } from '../../redux/modules/promotion';
-import { actions as appActionCreators, getUser, getOnlineStoreInfo } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUser,
+  getOnlineStoreInfo,
+  getStoreInfoForCleverTap,
+} from '../../redux/modules/app';
 import { withTranslation } from 'react-i18next';
 import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
+import CleverTap from '../../../utils/clevertap';
 import './OrderingPromotion.scss';
 
 class Promotion extends Component {
@@ -67,6 +72,7 @@ class Promotion extends Component {
       return false;
     }
 
+    CleverTap.pushEvent('Cart Page - apply promo');
     await this.props.promotionActions.applyPromo();
 
     if (this.props.isAppliedSuccess) {
@@ -76,10 +82,6 @@ class Promotion extends Component {
 
   handleSearchVoucher = searchingVoucher => {
     this.props.promotionActions.setSearchMode(searchingVoucher);
-  };
-
-  selectPromo = promo => {
-    this.props.promotionActions.selectPromo(promo);
   };
 
   getMessage = () => {
@@ -198,6 +200,7 @@ export default compose(
         selectedPromo: getSelectedPromo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         appliedResult: getAppliedResult(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({

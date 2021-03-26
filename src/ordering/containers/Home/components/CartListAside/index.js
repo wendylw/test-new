@@ -35,7 +35,16 @@ class CartListAside extends Component {
   }
 
   render() {
-    const { t, show, cartSummary, viewAside, footerEl } = this.props;
+    const {
+      t,
+      show,
+      cartSummary,
+      viewAside,
+      footerEl,
+      onIncreaseInCartListAside,
+      onDecreaseInCartListAside,
+      clearAllInCartListAside,
+    } = this.props;
     let { count } = cartSummary || {};
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
@@ -68,7 +77,10 @@ class CartListAside extends Component {
             </div>
             <button
               className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
-              onClick={this.handleClearAll.bind(this)}
+              onClick={() => {
+                clearAllInCartListAside();
+                this.handleClearAll();
+              }}
               data-testid="clearAll"
               data-heap-name="ordering.home.mini-cart.clear-btn"
             >
@@ -82,7 +94,12 @@ class CartListAside extends Component {
               maxHeight: this.aside ? `${(this.aside.clientHeight || this.aside.offsetHeight) * 0.8}px` : '0',
             }}
           >
-            <CartList isLazyLoad={false} viewAside={viewAside} />
+            <CartList
+              isLazyLoad={false}
+              viewAside={viewAside}
+              onIncreaseInCartListAside={onIncreaseInCartListAside}
+              onDecreaseInCartListAside={onDecreaseInCartListAside}
+            />
           </div>
         </div>
       </aside>

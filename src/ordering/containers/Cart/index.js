@@ -17,8 +17,19 @@ import { getCartSummary, getPromotion } from '../../../redux/modules/entities/ca
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
-import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
+import {
+  actions as homeActionCreators,
+  getShoppingCart,
+  getCurrentProduct,
+  getCategoryProductList,
+} from '../../redux/modules/home';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getUser,
+  getBusiness,
+  getStoreInfoForCleverTap,
+} from '../../redux/modules/app';
 import { getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
@@ -26,6 +37,9 @@ import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
 import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
+import CleverTap from '../../../utils/clevertap';
+import _isNil from 'lodash';
+import { getAllProductsKeys } from '../../../redux/modules/entities/products';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 class Cart extends Component {
@@ -93,6 +107,9 @@ class Cart extends Component {
     const { name, phone } = profile || {};
 
     if (!isLogin) {
+      CleverTap.pushEvent('Login - view login screen', {
+        'Screen Name': 'Cart Page',
+      });
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
@@ -229,8 +246,10 @@ class Cart extends Component {
   };
 
   handleGotoPromotion = () => {
-    const { user } = this.props;
+    const { user, storeInfoForCleverTap } = this.props;
     const { isLogin } = user || {};
+
+    CleverTap.pushEvent('Cart page - click add promo code/voucher', storeInfoForCleverTap);
 
     if (isLogin) {
       this.props.history.push({
@@ -238,6 +257,9 @@ class Cart extends Component {
         search: window.location.search,
       });
     } else {
+      CleverTap.pushEvent('Login - view login screen', {
+        'Screen Name': 'Cart Page',
+      });
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
@@ -261,6 +283,7 @@ class Cart extends Component {
   }
 
   AdditionalCommentsFocus = () => {
+    CleverTap.pushEvent('Cart page - click special instructions');
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
       const productContainer = document.querySelector('.ordering-cart__products-container');
@@ -371,8 +394,46 @@ class Cart extends Component {
     return false;
   };
 
+  cleverTapTrackForCart = (eventName, product, attributes) => {
+    const { categories, allProductsKeys, storeInfoForCleverTap } = this.props;
+    let categoryIndex = -1;
+    let categoryName = '';
+
+    const categoriesContent = Object.values(categories) || [];
+
+    categoriesContent.forEach((category, index) => {
+      if (category.products?.find(p => p.id === product.id)) {
+        categoryName = category.name;
+        categoryIndex = index;
+      }
+    });
+
+    CleverTap.pushEvent(eventName, {
+      'category name': categoryName,
+      'category rank': categoryIndex + 1,
+      'product name': product.title,
+      'product image url': product.images?.length > 0 ? product.images[0] : '',
+      'product rank': allProductsKeys.indexOf(product.id) + 1,
+      amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+      discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+      'is bestsellar': product.isFeaturedProduct,
+      'has picture': product.images?.length > 0,
+      ...storeInfoForCleverTap,
+      ...attributes,
+    });
+  };
+
   render() {
-    const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
+    const {
+      t,
+      cartSummary,
+      shoppingCart,
+      businessInfo,
+      user,
+      history,
+      storeInfoForCleverTap,
+      allProductsKeys,
+    } = this.props;
     const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
@@ -409,11 +470,17 @@ class Cart extends Component {
           data-heap-name="ordering.cart.header"
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}
-          navFunc={this.handleClickBack.bind(this)}
+          navFunc={() => {
+            CleverTap.pushEvent('Cart page - click back arrow', storeInfoForCleverTap);
+            this.handleClickBack();
+          }}
         >
           <button
             className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
-            onClick={this.handleClearAll.bind(this)}
+            onClick={() => {
+              CleverTap.pushEvent('Cart page - click clear all', storeInfoForCleverTap);
+              this.handleClearAll();
+            }}
             data-heap-name="ordering.cart.clear-btn"
           >
             <IconDelete className="icon icon__normal icon__error text-middle" />
@@ -435,7 +502,16 @@ class Cart extends Component {
               minHeight: productsContainerHeight,
             }}
           >
-            <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
+            <CartList
+              isLazyLoad={true}
+              shoppingCart={shoppingCart}
+              onIncreaseInCart={(product = {}) => {
+                this.cleverTapTrackForCart('Cart page - Increase quantity', product);
+              }}
+              onDecreaseInCart={(product = {}) => {
+                this.cleverTapTrackForCart('Cart page - Decrease quantity', product);
+              }}
+            />
             {this.renderAdditionalComments()}
           </div>
           <Billing
@@ -460,7 +536,10 @@ class Cart extends Component {
         >
           <button
             className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
-            onClick={this.handleClickBack.bind(this)}
+            onClick={() => {
+              CleverTap.pushEvent('Cart Page - click back button(bottom)');
+              this.handleClickBack();
+            }}
             data-heap-name="ordering.cart.back-btn"
           >
             {t('Back')}
@@ -470,8 +549,8 @@ class Cart extends Component {
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
             onClick={() => {
+              CleverTap.pushEvent('Cart Page - click pay now', storeInfoForCleverTap);
               this.setState({ isCreatingOrder: true });
-
               this.handleGtmEventTracking(async () => {
                 await this.handleClickContinue();
               });
@@ -515,6 +594,9 @@ export default compose(
         currentOrder: getOrderByOrderId(state, currentOrderId),
         allBusinessInfo: getAllBusinesses(state),
         deliveryDetails: getDeliveryDetails(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        allProductsKeys: getAllProductsKeys(state),
+        categories: getCategoryProductList(state),
       };
     },
     dispatch => ({

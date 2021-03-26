@@ -20,7 +20,12 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
+import {
+  getOnlineStoreInfo,
+  getBusiness,
+  getMerchantCountry,
+  getStoreInfoForCleverTap,
+} from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
 import { getSelectedPaymentOption } from '../redux/payments';
@@ -33,6 +38,7 @@ import {
 } from '../utils';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import '../PaymentCreditCard.scss';
+import CleverTap from '../../../../utils/clevertap';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
@@ -513,7 +519,7 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary, merchantCountry } = this.props;
+    const { t, match, history, cartSummary, merchantCountry, storeInfoForCleverTap } = this.props;
     const { payNowLoading, domLoaded } = this.state;
     const { total } = cartSummary || {};
     const paymentData = this.getPaymentEntryRequestData();
@@ -531,6 +537,7 @@ class CreditCard extends Component {
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
+            CleverTap.pushEvent('Card Details - click back arrow');
             history.replace({
               pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
               search: window.location.search,
@@ -560,7 +567,13 @@ class CreditCard extends Component {
             data-test-id="payMoney"
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
-            beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
+            beforeCreateOrder={() => {
+              CleverTap.pushEvent('Card Details - click continue', {
+                ...storeInfoForCleverTap,
+                'payment method': getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY),
+              });
+              this.handleBeforeCreateOrder();
+            }}
             validCreateOrder={Boolean(this.isFromComplete())}
             afterCreateOrder={orderId => {
               this.setState({
@@ -612,6 +625,7 @@ export default compose(
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({

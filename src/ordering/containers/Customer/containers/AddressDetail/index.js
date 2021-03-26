@@ -6,7 +6,7 @@ import Header from '../../../../../components/Header';
 import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { getUser } from '../../../../redux/modules/app';
+import { getUser, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import {
   actions as customerActionCreators,
   getDeliveryDetails,
@@ -17,6 +17,7 @@ import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import webviewUtils from '../../../../../utils/webview-utils';
 import qs from 'qs';
+import CleverTap from '../../../../../utils/clevertap';
 
 const actions = {
   EDIT: 'edit',
@@ -93,6 +94,8 @@ class AddressDetail extends Component {
     const { history, savedAddressInfo, customerActions } = this.props;
     const { type } = savedAddressInfo || {};
     const pathname = type === actions.ADD ? '/customer/addressList' : '/customer';
+
+    CleverTap.pushEvent('Address details - click back arrow');
     customerActions.removeSavedAddressInfo();
     history.push({
       pathname,
@@ -214,6 +217,8 @@ class AddressDetail extends Component {
                   `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
                 );
 
+                CleverTap.pushEvent('Address details - click location row');
+
                 history.push({
                   pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
                   search: `${search}&callbackUrl=${callbackUrl}`,
@@ -261,7 +266,10 @@ class AddressDetail extends Component {
           <button
             className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
             disabled={!name || !details || !address}
-            onClick={this.createOrUpdateAddress}
+            onClick={() => {
+              CleverTap.pushEvent('Address details - click save changes');
+              this.createOrUpdateAddress();
+            }}
           >
             {type === actions.EDIT ? t('SaveChanges') : t('AddAddress')}
           </button>
@@ -278,6 +286,7 @@ export default compose(
       user: getUser(state),
       deliveryDetails: getDeliveryDetails(state),
       savedAddressInfo: getSavedAddressInfo(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),

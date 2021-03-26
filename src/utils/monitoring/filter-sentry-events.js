@@ -21,28 +21,6 @@ const isInfiniteScrollerBug = (event, hint) => {
   }
 };
 
-const isCrossStorageBug = (event, hint) => {
-  // Some browsers doesn't support cross storage. This is a known issue and will be fixed soon. We
-  // turn off the log to prevent it taking the sentry quota.
-  try {
-    const message = getErrorMessageFromHint(hint);
-    return /CrossStorage/i.test(message);
-  } catch {
-    return false;
-  }
-};
-
-const isCrossStorageCloseBug = (event, hint) => {
-  // Some browsers doesn't support cross storage. This is a known issue and will be fixed soon. We
-  // turn off the log to prevent it taking the sentry quota.
-  try {
-    const err = event.exception.values[0];
-    return /Closing client\. Could not access localStorage in hub/.test(err.value);
-  } catch {
-    return false;
-  }
-};
-
 const isPromiseAllBug = (event, hint) => {
   // we are keeping receiving this Promise.all is not a function, but it seems that the clients are
   // very likely spiders (mostly from United States and Ireland). So just ignore the error.
@@ -100,8 +78,6 @@ const shouldFilter = (event, hint) => {
   try {
     return (
       isInfiniteScrollerBug(event, hint) ||
-      isCrossStorageBug(event, hint) ||
-      isCrossStorageCloseBug(event, hint) ||
       isPromiseAllBug(event, hint) ||
       isBlockFrameBug(event, hint) ||
       isSelectedDebugHandlerError(event, hint) ||

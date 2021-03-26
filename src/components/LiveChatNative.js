@@ -5,8 +5,12 @@ import './LiveChat.scss';
 
 class LiveChatNative extends Component {
   startChat = () => {
-    const { orderId, name, phone, email, storeName } = this.props;
+    const { orderId, name, phone, email, storeName, onClickLiveChat } = this.props;
     const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
+
+    if (onClickLiveChat) {
+      onClickLiveChat();
+    }
 
     if (Utils.isAndroidWebview()) {
       window.androidInterface.startChat(

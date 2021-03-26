@@ -13,7 +13,7 @@ class CollectionCard extends React.Component {
     return (
       <ul className="store-collections flex flex-space-between flex-middle">
         {collections.map((collection, index) => {
-          const { name, image, urlPath } = collection;
+          const { name, image, urlPath, beepCollectionId } = collection;
           return (
             <li
               key={urlPath}
@@ -22,10 +22,11 @@ class CollectionCard extends React.Component {
               data-heap-name="site.home.collection-icon"
               data-heap-collection-name={name}
               onClick={() => {
-                // CleverTap.pushEvent('Homepage - Click Collection Icon', {
-                //   'collection name': name,
-                //   'rank': index + 1,
-                // });
+                CleverTap.pushEvent('Homepage - Click Collection Icon', {
+                  'collection name': name,
+                  'collection id': beepCollectionId,
+                  rank: index + 1,
+                });
                 // concern to use location.href if icons fixed to the top
                 backLeftPosition();
                 this.props.history.push({
