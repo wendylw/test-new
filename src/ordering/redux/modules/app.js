@@ -103,11 +103,6 @@ export const initialState = {
     tableId: config.table,
     storeId: config.storeId,
   },
-  currentProduct: {
-    id: '',
-    cartId: '',
-    isFetching: false,
-  },
   shoppingCart: CartModel,
 };
 
@@ -441,59 +436,6 @@ export const actions = {
     return dispatch(addOrUpdateShoppingCartItem(variables));
   },
 
-  // decrease clicked on product item
-  // decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
-  //   const cartItem = (shoppingCart.items || []).find(
-  //     item => item.productId === prod.id || item.parentProductId === prod.id
-  //   );
-
-  //   if (prod.cartQuantity === 1) {
-  //     return dispatch(
-  //       removeShoppingCartItem({
-  //         productId: cartItem.productId,
-  //         variations: cartItem.variations,
-  //       })
-  //     );
-  //   }
-  //   return dispatch(
-  //     addOrUpdateShoppingCartItem({
-  //       action: 'edit',
-  //       business: getBusiness(getState()),
-  //       productId: cartItem.productId,
-  //       quantity: prod.cartQuantity - 1,
-  //       variations: cartItem.variations || [],
-  //     })
-  //   );
-  // },
-
-  // increase clicked on product item
-  // increaseProductInCart: prod => (dispatch, getState) => {
-  //   const cartItem = (prod.cartItems || []).find(
-  //     item => item.productId === prod.id || item.parentProductId === prod.id
-  //   );
-
-  //   if (prod.variations && prod.variations.length && getState().app.currentProduct.id === prod.id) {
-  //     return;
-  //   }
-
-  //   if (prod.variations && prod.variations.length) {
-  //     const businessUTCOffset = getBusinessUTCOffset(getState());
-  //     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-  //     return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
-  //   }
-
-  //   return dispatch(
-  //     addOrUpdateShoppingCartItem({
-  //       action: 'edit',
-  //       business: getBusiness(getState()),
-  //       productId: prod.id,
-  //       quantity: prod.cartQuantity + 1,
-  //       variations: prod.hasSingleChoice && prod.cartItems.length === 1 ? cartItem.variations : [],
-  //     })
-  //   );
-  // },
-
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
   },
@@ -765,23 +707,6 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   return state;
 };
 
-// const currentProduct = (state = initialState.currentProduct, action) => {
-//   if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
-//     return { ...state, isFetching: true };
-//   } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
-//     const { product } = action.responseGql.data;
-
-//     return {
-//       ...state,
-//       isFetching: false,
-//       id: product.id,
-//     };
-//   } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
-//     return { ...state, isFetching: false };
-//   }
-//   return state;
-// };
-
 export default combineReducers({
   user,
   error,
@@ -791,7 +716,6 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
-  // currentProduct,
 });
 
 // selectors
@@ -842,8 +766,6 @@ export const getStore = state => {
 export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
   return _get(onlineStoreInfo, 'currency', 'MYR');
 });
-
-// export const getCurrentProduct = state => state.app.currentProduct;
 
 export const getCartItems = state => state.app.shoppingCart.items;
 
