@@ -2,7 +2,9 @@ import { combineReducers } from 'redux';
 import Url from '../../../utils/url';
 import { CART_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { getProductById } from '../../../redux/modules/entities/products';
+import { getAllProducts, getProductById } from '../../../redux/modules/entities/products';
+import { getAllCategories } from '../../../redux/modules/entities/categories';
+import { getCartItemList } from './app';
 import { APP_TYPES } from '../types';
 
 const initialState = {
@@ -16,6 +18,21 @@ const initialState = {
 };
 
 export const types = CART_TYPES;
+
+const fetchOnlineCategory = variables => {
+  const endpoint = Url.apiGql('OnlineCategory');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.FETCH_ONLINECATEGORY_REQUEST,
+        types.FETCH_ONLINECATEGORY_SUCCESS,
+        types.FETCH_ONLINECATEGORY_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
 
 // actions
 export const actions = {
@@ -33,6 +50,24 @@ export const actions = {
       },
     },
   }),
+
+  // load product list group by category, and shopping cart
+  loadProductList: () => (dispatch, getState) => {
+    const isDelivery = Utils.isDeliveryType();
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
+    }
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
+
+    const shippingType = Utils.getApiRequestShippingType();
+
+    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+  },
 };
 
 const pendingTransactionsIds = (state = initialState.pendingTransactionsIds, action) => {
@@ -79,5 +114,88 @@ export const getSelectedProductDetail = state => {
 
   return getProductById(state, selectedProduct.id);
 };
+
+const mergeWithShoppingCart = (onlineCategory, carts) => {
+  if (!Array.isArray(onlineCategory)) {
+    return null;
+  }
+
+  const shoppingCartNewSet = {};
+
+  if (carts) {
+    (carts || []).forEach(item => {
+      const newItem = shoppingCartNewSet[item.parentProductId || item.productId] || {
+        quantity: 0,
+        ids: [],
+        products: [],
+      };
+
+      newItem.quantity += item.quantity;
+      newItem.ids.push(item.id);
+      newItem.products.push(item);
+
+      shoppingCartNewSet[item.parentProductId || item.productId] = newItem;
+    });
+  }
+
+  return onlineCategory.map(category => {
+    const { products } = category;
+
+    category.cartQuantity = 0;
+
+    products.forEach(function(product) {
+      product.variations = product.variations || [];
+      product.soldOut = Utils.isProductSoldOut(product || {});
+      product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
+      product.cartQuantity = 0;
+
+      const result = shoppingCartNewSet[product.id];
+
+      if (result) {
+        category.cartQuantity += result.quantity;
+        product.cartQuantity += result.quantity;
+        product.cartItemIds = result.ids;
+        product.cartItems = result.products;
+        product.canDecreaseQuantity = result.quantity > 0 && result.ids.length === 1;
+      }
+    });
+
+    return category;
+  });
+};
+
+export const getCategoryProductList = createSelector(
+  [getAllProducts, getAllCategories, getCartItemList],
+  (products, categories, carts) => {
+    if (!products || !categories || !Array.isArray(carts)) {
+      return [];
+    }
+
+    const newCategories = Object.values(categories)
+      .map(category => {
+        return {
+          ...category,
+          products: category.products.map(id => {
+            const product = JSON.parse(JSON.stringify(products[id]));
+            return {
+              ...product,
+            };
+          }),
+        };
+      })
+      .filter(c => c.products.length);
+
+    return mergeWithShoppingCart(newCategories, carts);
+  }
+);
+
+export const getAllProductsIds = createSelector(getAllProducts, allProducts => {
+  try {
+    const res = Object.keys(allProducts);
+    return res;
+  } catch (e) {
+    return [];
+  }
+});
 
 // selectors

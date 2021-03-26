@@ -666,7 +666,7 @@ class ProductDetailDrawer extends Component {
                 <div className="product-detail__price flex flex-column text-right flex-end">
                   {this.getOriginalDisplayPrice() && (
                     <CurrencyNumber
-                      className=" product-item__price text-line-through text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
+                      className="text-line-through text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
                       money={this.getOriginalDisplayPrice()}
                       numberOnly={true}
                     />

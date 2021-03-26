@@ -9,7 +9,7 @@ import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { IconDelete, IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import Item from '../../../components/Item';
+import ProductItem from '../../../components/ProductItem';
 import ItemOperator from '../../../../components/ItemOperator';
 import './CartListDrawer.scss';
 
@@ -123,7 +123,7 @@ class CartListDrawer extends Component {
     }
 
     return (
-      <div className="cart-item__image-cover flex flex-middle flex-center text-center text-line-height-base">
+      <div className="mini-cart__image-cover flex flex-middle flex-center text-center text-line-height-base">
         <span className="text-uppercase">{t('SoldOut')}</span>
       </div>
     );
@@ -134,13 +134,13 @@ class CartListDrawer extends Component {
       <div>
         {originalDisplayPrice ? (
           <CurrencyNumber
-            className="product-item__price text-size-small text-line-through"
+            className="mini-cart__price text-size-small text-line-through"
             money={originalDisplayPrice}
             numberOnly={true}
           />
         ) : null}
         <CurrencyNumber
-          className={`product-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
+          className={`mini-cart__price ${originalDisplayPrice ? 'text-error' : ''}`}
           money={price || 0}
           numberOnly={true}
         />
@@ -231,7 +231,7 @@ class CartListDrawer extends Component {
 
             return (
               <li key={`mini-cart-item-${id}`}>
-                <Item
+                <ProductItem
                   className="flex-top"
                   data-heap-name="ordering.home.mini-cart.cart-item"
                   imageUrl={image}
@@ -241,7 +241,7 @@ class CartListDrawer extends Component {
                   details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
                 >
                   {this.renderProductItemRightController(cartItem)}
-                </Item>
+                </ProductItem>
               </li>
             );
           })}

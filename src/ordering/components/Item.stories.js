@@ -1,15 +1,15 @@
 import React from 'react';
-import { ItemStoryComponent } from './Item';
+import { ItemStoryComponent } from './ProductItem';
 
 export default {
-  title: 'Ordering/Item',
+  title: 'Ordering/ProductItem',
   component: ItemStoryComponent,
 };
 
 const Template = args => <ItemStoryComponent {...args} />;
 
-export const Item = Template.bind({});
-Item.args = {
+export const ProductItem = Template.bind({});
+ProductItem.args = {
   className: 'flex-middle',
   imageCover: (
     <div className="cart-item__image-cover flex flex-middle flex-center text-center text-line-height-base">

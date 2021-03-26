@@ -12,10 +12,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
-import { getCategoryProductList } from '../../redux/modules/home';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
@@ -26,7 +23,7 @@ import {
   getCartBilling,
   getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
-import { getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { getCategoryProductList, getAllProductsIds } from '../../redux/modules/cart';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
@@ -35,7 +32,6 @@ import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
 import _isNil from 'lodash';
-import { getAllProductsKeys } from '../../../redux/modules/entities/products';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 class Cart extends Component {
@@ -393,7 +389,7 @@ class Cart extends Component {
   };
 
   cleverTapTrackForCart = (eventName, product, attributes) => {
-    const { categories, allProductsKeys, storeInfoForCleverTap } = this.props;
+    const { categories, allProductsIds, storeInfoForCleverTap } = this.props;
     let categoryIndex = -1;
     let categoryName = '';
 
@@ -411,7 +407,7 @@ class Cart extends Component {
       'category rank': categoryIndex + 1,
       'product name': product.title,
       'product image url': product.images?.length > 0 ? product.images[0] : '',
-      'product rank': allProductsKeys.indexOf(product.id) + 1,
+      'product rank': allProductsIds.indexOf(product.id) + 1,
       amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
       discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
       'is bestsellar': product.isFeaturedProduct,
@@ -430,7 +426,7 @@ class Cart extends Component {
       user,
       history,
       storeInfoForCleverTap,
-      allProductsKeys,
+      allProductsIds,
     } = this.props;
     const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
@@ -577,8 +573,6 @@ export default compose(
   withTranslation(['OrderingCart', 'OrderingPromotion']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         business: getBusiness(state),
         user: getUser(state),
@@ -586,12 +580,9 @@ export default compose(
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        thankYouPageUrl: getThankYouPageUrl(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
-        allBusinessInfo: getAllBusinesses(state),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        allProductsKeys: getAllProductsKeys(state),
+        allProductsIds: getAllProductsIds(state),
         categories: getCategoryProductList(state),
       };
     },

@@ -34,7 +34,6 @@ const CartModel = {
   items: [],
   unavailableItems: [],
   billing: {
-    count: 0,
     discount: 0,
     subtotal: 0,
     total: 0,
@@ -188,20 +187,6 @@ const addOrUpdateShoppingCartItem = variables => {
     },
   };
 };
-
-// const clearShoppingCartItemByProducts = products => {
-//   return {
-//     [API_REQUEST]: {
-//       types: [
-//         types.CLEARALL_BY_PRODUCTS_REQUEST,
-//         types.CLEARALL_BY_PRODUCTS_SUCCESS,
-//         types.CLEARALL_BY_PRODUCTS_FAILURE,
-//       ],
-//       payload: products,
-//       ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
-//     },
-//   };
-// };
 
 export const emptyShoppingCart = () => {
   const endpoint = Url.apiGql('EmptyShoppingCart');
@@ -669,10 +654,9 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
     return { ...state, isFetching: true, status: 'pending' };
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
-    const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...billing } =
+    const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...cartBilling } =
       action.response || {};
     const displayPromotion = displayPromotions[0];
-    const count = [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0);
     const promotion = {
       promoCode: displayPromotion.promotionCode,
       discount: displayPromotion.displayDiscount,
@@ -694,8 +678,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       items,
       unavailableItems,
       billing: {
-        ...billing,
-        count,
+        ...cartBilling,
         promotion,
         voucher,
       },
@@ -776,6 +759,8 @@ export const getCartUnavailableItems = state => state.app.shoppingCart.unavailab
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems],
   (cartBilling, items, unavailableItems) => {
+    cartBilling.count = [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0);
+
     return {
       cartBilling,
       items,

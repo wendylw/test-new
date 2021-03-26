@@ -8,7 +8,7 @@ import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import { IconDelete } from '../../../../components/Icons';
-import Item from '../../../components/Item';
+import ProductItem from '../../../components/ProductItem';
 import ItemOperator from '../../../../components/ItemOperator';
 
 class CartList extends Component {
@@ -102,13 +102,13 @@ class CartList extends Component {
       <div>
         {originalDisplayPrice ? (
           <CurrencyNumber
-            className="product-item__price text-size-small text-line-through"
+            className="cart-item__price text-size-small text-line-through"
             money={originalDisplayPrice}
             numberOnly={true}
           />
         ) : null}
         <CurrencyNumber
-          className={`product-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
+          className={`cart-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
           money={price || 0}
           numberOnly={true}
         />
@@ -192,7 +192,7 @@ class CartList extends Component {
 
           return (
             <li key={`mini-cart-item-${id}`}>
-              <Item
+              <ProductItem
                 className="flex-top"
                 data-heap-name="ordering.home.mini-cart.cart-item"
                 imageUrl={image}
@@ -202,7 +202,7 @@ class CartList extends Component {
                 details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
               >
                 {this.renderProductItemRightController(cartItem)}
-              </Item>
+              </ProductItem>
             </li>
           );
         })}
