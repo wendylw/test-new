@@ -15,13 +15,20 @@ import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../..
 import CreateOrderButton from '../../components/CreateOrderButton';
 import AddressChangeModal from './components/AddressChangeModal';
 
-import { getBusiness, getUser, getRequestInfo, getBusinessUTCOffset } from '../../redux/modules/app';
+import {
+  getBusiness,
+  getUser,
+  getRequestInfo,
+  getBusinessUTCOffset,
+  getStoreInfoForCleverTap,
+} from '../../redux/modules/app';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
 import './OrderingCustomer.scss';
+import CleverTap from '../../../utils/clevertap';
 
 const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 
@@ -160,7 +167,7 @@ class Customer extends Component {
       return null;
     }
 
-    const { t, businessInfo = {}, deliveryDetails } = this.props;
+    const { t, businessInfo = {}, deliveryDetails, storeInfoForCleverTap } = this.props;
     const { stores = [] } = businessInfo;
     const isDeliveryType = Utils.isDeliveryType();
     const { deliveryToAddress, addressDetails, deliveryComments, addressName } = deliveryDetails;
@@ -186,6 +193,9 @@ class Customer extends Component {
             >
               {isDeliveryType ? (
                 <Link
+                  onClick={() => {
+                    CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
+                  }}
                   to={{
                     pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
                     search: window.location.search,
@@ -232,6 +242,9 @@ class Customer extends Component {
           </div>
           {isDeliveryType && addressDetails && Boolean(addressName) ? (
             <Link
+              onClick={() => {
+                CleverTap.pushEvent('Checkout page - click edit address', storeInfoForCleverTap);
+              }}
               to={{
                 pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
                 search: window.location.search,
@@ -256,6 +269,9 @@ class Customer extends Component {
         {/* enf of Address Info of Delivery or Pickup */}
         {/* Time of Delivery or Pickup */}
         <Link
+          onClick={() => {
+            CleverTap.pushEvent('Checkout page - click change shipping details', storeInfoForCleverTap);
+          }}
           to={{
             pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
             search: window.location.search,
@@ -286,7 +302,7 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartSummary, error } = this.props;
+    const { t, history, deliveryDetails, cartSummary, error, storeInfoForCleverTap } = this.props;
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
@@ -307,6 +323,7 @@ class Customer extends Component {
           isPage={true}
           title={Utils.isDeliveryType() ? t('DeliveryCustomerPageTitle') : pageTitle}
           navFunc={() => {
+            CleverTap.pushEvent('Checkout page - click back arrow');
             history.push({
               pathname: ROUTER_PATHS.ORDERING_CART,
               search: window.location.search,
@@ -335,6 +352,9 @@ class Customer extends Component {
                 {t('ContactDetails')}
               </h4>
               <Link
+                onClick={() => {
+                  CleverTap.pushEvent('Checkout page - click change contact details', storeInfoForCleverTap);
+                }}
                 to={{
                   pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`,
                   search: window.location.search,
@@ -396,7 +416,10 @@ class Customer extends Component {
             data-heap-name="ordering.customer.continue-btn"
             disabled={processing}
             validCreateOrder={!total && !this.validateFields().showModal}
-            beforeCreateOrder={this.handleBeforeCreateOrder}
+            beforeCreateOrder={() => {
+              CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
+              this.handleBeforeCreateOrder();
+            }}
             afterCreateOrder={this.visitPaymentPage}
           >
             {processing ? t('Processing') : t('Continue')}
@@ -433,6 +456,7 @@ export default compose(
       requestInfo: getRequestInfo(state),
       error: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

@@ -67,7 +67,7 @@ class Location extends React.Component {
   };
 
   handleBackClicked = () => {
-    // CleverTap.pushEvent('Location Page - Click back');
+    CleverTap.pushEvent('Location Page - Click back');
     this.backToPreviousPage();
   };
 

@@ -19,12 +19,15 @@ import {
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
+  getBusinessInfo,
 } from '../../redux/modules/thankYou';
 import './OrderingDetails.scss';
 import { IconNext } from '../../../components/Icons';
+import { getStoreInfoForCleverTap } from '../../redux/modules/app';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
+import CleverTap from '../../../utils/clevertap';
 
 const ShippingTypes = {
   dineIn: 'dine in',
@@ -80,14 +83,38 @@ export class OrderDetails extends Component {
   };
 
   handleReportUnsafeDriver = () => {
+    const { order, businessInfo, storeInfoForCleverTap } = this.props;
+    const { paymentMethod, subtotal } = order || {};
+    const { qrOrderingSettings } = businessInfo || {};
+    const { minimumConsumption } = qrOrderingSettings || {};
     const queryParams = {
       receiptNumber: this.props.receiptNumber,
     };
+
+    CleverTap.pushEvent('Order Details - click report issue', {
+      ...storeInfoForCleverTap,
+      'cart items quantity': this.getCartItemsQuantity(),
+      'cart amount': subtotal,
+      'has met minimum order value': subtotal >= minimumConsumption ? true : false,
+      'payment method': paymentMethod && paymentMethod[0],
+    });
 
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
     });
+  };
+
+  getCartItemsQuantity = () => {
+    const { order } = this.props;
+    const { items } = order || {};
+    let count = 0;
+
+    items.forEach(item => {
+      const { quantity, itemType } = item || {};
+      count = !!itemType ? count : count + quantity;
+    });
+    return count;
   };
 
   renderReceiptInfo() {
@@ -235,12 +262,32 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, history, t, isUseStorehubLogistics, serviceCharge, user } = this.props;
-    const { orderId, shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [], storeInfo } =
-      order || '';
+    const {
+      order,
+      history,
+      t,
+      isUseStorehubLogistics,
+      serviceCharge,
+      user,
+      businessInfo,
+      storeInfoForCleverTap,
+    } = this.props;
+    const {
+      orderId,
+      shippingFee,
+      subtotal,
+      total,
+      tax,
+      loyaltyDiscounts,
+      deliveryInformation = [],
+      storeInfo,
+      paymentMethod,
+    } = order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     const { isWebview, email } = user;
+    const { qrOrderingSettings } = businessInfo || {};
+    const { minimumConsumption } = qrOrderingSettings || {};
 
     const orderStoreName = storeInfo?.name || '';
     let orderUserName = '';
@@ -260,15 +307,29 @@ export class OrderDetails extends Component {
           isPage={true}
           data-heap-name="ordering.order-detail.header"
           title={t('OrderDetails')}
-          navFunc={() =>
+          navFunc={() => {
+            CleverTap.pushEvent('Order details - click back arrow');
             history.replace({
               pathname: Constants.ROUTER_PATHS.THANK_YOU,
               search: window.location.search,
-            })
-          }
+            });
+          }}
         >
           {!isWebview ? (
-            <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
+            <LiveChat
+              orderId={`${orderId}`}
+              name={orderUserName}
+              phone={orderUserPhone}
+              onClickLiveChat={() => {
+                CleverTap.pushEvent('Order Details - click contact us', {
+                  ...storeInfoForCleverTap,
+                  'cart items quantity': this.getCartItemsQuantity(),
+                  'cart amount': subtotal,
+                  'has met minimum order value': subtotal >= minimumConsumption ? true : false,
+                  'payment method': paymentMethod && paymentMethod[0],
+                });
+              }}
+            />
           ) : window.liveChatAvailable ? (
             !_isNil(order) && (
               <LiveChatNative
@@ -277,6 +338,15 @@ export class OrderDetails extends Component {
                 phone={orderUserPhone}
                 email={email}
                 storeName={orderStoreName}
+                onClickLiveChat={() => {
+                  CleverTap.pushEvent('Order Details - click contact us', {
+                    ...storeInfoForCleverTap,
+                    'cart items quantity': this.getCartItemsQuantity(),
+                    'cart amount': subtotal,
+                    'has met minimum order value': subtotal >= minimumConsumption ? true : false,
+                    'payment method': paymentMethod && paymentMethod[0],
+                  });
+                }}
               />
             )
           ) : (
@@ -361,6 +431,8 @@ export default compose(
       orderStatus: getOrderStatus(state),
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      businessInfo: getBusinessInfo(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

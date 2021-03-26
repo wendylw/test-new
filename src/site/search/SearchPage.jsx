@@ -60,11 +60,11 @@ class SearchPage extends React.Component {
       searchInfo: { keyword },
     } = this.props;
 
-    // if (!keyword) {
-    //   CleverTap.pushEvent('Empty Search - Click back');
-    // } else {
-    //   CleverTap.pushEvent('Search - click back');
-    // }
+    if (!keyword) {
+      CleverTap.pushEvent('Empty Search - Click back');
+    } else {
+      CleverTap.pushEvent('Search - click back');
+    }
 
     this.props.history.push({
       pathname: '/home',
@@ -81,15 +81,15 @@ class SearchPage extends React.Component {
       searchInfo: { keyword },
     } = this.props;
 
-    // if (shippingType === 'delivery') {
-    //   CleverTap.pushEvent('Search - Click delivery tab', {
-    //     keyword,
-    //   });
-    // } else {
-    //   CleverTap.pushEvent('Search - Click self pickup tab', {
-    //     keyword,
-    //   });
-    // }
+    if (shippingType === 'delivery') {
+      CleverTap.pushEvent('Search - Click delivery tab', {
+        keyword,
+      });
+    } else {
+      CleverTap.pushEvent('Search - Click self pickup tab', {
+        keyword,
+      });
+    }
 
     this.props.searchActions.setPaginationInfo();
     this.props.searchActions.setShippingType(shippingType);
@@ -104,7 +104,7 @@ class SearchPage extends React.Component {
   };
 
   handleClearSearchText = () => {
-    // CleverTap.pushEvent('Search - Click clear search field');
+    CleverTap.pushEvent('Search - Click clear search field');
     this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
   };
 
@@ -199,14 +199,14 @@ class SearchPage extends React.Component {
                 getScrollParent={() => this.sectionRef.current}
                 loadMoreStores={() => this.props.searchActions.getStoreList()}
                 onStoreClicked={(store, index) => {
-                  // CleverTap.pushEvent('Search - Click search result', {
-                  //   'keyword': keyword,
-                  //   'store name': store.name,
-                  //   'store rank': index,
-                  //   'shipping type': store.shippingType,
-                  //   'has promo': store.promoTag?.length > 0,
-                  //   'cashback': `${Number(store.cashbackRate || 0) * 100}%`,
-                  // });
+                  CleverTap.pushEvent('Search - Click search result', {
+                    keyword: keyword,
+                    'store name': store.name,
+                    'store rank': index + 1,
+                    'shipping type': store.shippingType,
+                    'has promo': store.promoTag?.length > 0,
+                    cashback: store.cashbackRate || 0,
+                  });
                   this.backLeftPosition(store);
                 }}
                 withInfiniteScroll

@@ -25,10 +25,10 @@ class EmptySearch extends Component {
                 key={urlPath}
                 className="search-popular__category padding-small"
                 onClick={() => {
-                  // CleverTap.pushEvent('Empty Search - Click popular category', {
-                  //   'collection name': name,
-                  //   'rank': index + 1,
-                  // });
+                  CleverTap.pushEvent('Empty Search - Click popular category', {
+                    'collection name': name,
+                    rank: index + 1,
+                  });
                   this.handleClick(urlPath);
                 }}
                 data-heap-name="site.search.popular-categories"
@@ -55,10 +55,10 @@ class EmptySearch extends Component {
               key={urlPath}
               className="search-other__category padding-top-bottom-normal"
               onClick={() => {
-                // CleverTap.pushEvent('Empty Search - Click other category', {
-                //   'collection name': name,
-                //   'rank': index + 1,
-                // });
+                CleverTap.pushEvent('Empty Search - Click other category', {
+                  'collection name': name,
+                  rank: index + 1,
+                });
                 this.handleClick(urlPath);
               }}
               data-heap-name="site.search.other-categories"

@@ -11,6 +11,7 @@ import Utils from '../utils/utils';
 import { captureException } from '@sentry/react';
 import './OtpModal.scss';
 import TermsAndPrivacy from './TermsAndPrivacy';
+import CleverTap from '../utils/clevertap';
 
 // refer OTP: https://www.npmjs.com/package/react-otp-input
 class OtpModal extends React.Component {
@@ -176,6 +177,7 @@ class OtpModal extends React.Component {
               data-heap-name="common.otp-modal.resend-btn"
               disabled={!!currentOtpTime}
               onClick={() => {
+                CleverTap.pushEvent('Login - Resend OTP');
                 this.setState({ currentOtpTime: ResendOtpTime });
                 this.countDown(ResendOtpTime);
                 getOtp(phone);

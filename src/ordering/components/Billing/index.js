@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
 import Constants from '../../../utils/constants';
+import CleverTap from '../../../utils/clevertap';
 import './Billing.scss';
 export class Billing extends Component {
   renderServiceCharge() {
@@ -49,6 +50,10 @@ export class Billing extends Component {
 
   handleLogin = () => {
     const { history } = this.props;
+
+    CleverTap.pushEvent('Login - view login screen', {
+      'Screen Name': 'Cart Page',
+    });
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,

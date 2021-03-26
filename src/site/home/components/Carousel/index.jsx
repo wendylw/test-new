@@ -74,6 +74,7 @@ class Carousel extends Component {
             cashbackRate,
             reviewInfo,
             promoTag,
+            shippingType: storeShippingType,
           } = store || {};
 
           const rating = _get(reviewInfo, 'rating', '');
@@ -87,15 +88,15 @@ class Carousel extends Component {
               data-heap-name="site.home.carousel.store-item"
               data-heap-store-name={name}
               onClick={() => {
-                // CleverTap.pushEvent('Homepage - Click Carousel Store Card', {
-                //   'collection name': collectionInfo.name,
-                //   'collection rank': collectionInfo.index,
-                //   'store name': name,
-                //   'store rank': index,
-                //   'shipping type': shippingType,
-                //   'has promo': promoTag?.length > 0,
-                //   'cashback': `${Number(cashbackRate || 0) * 100}%`,
-                // });
+                CleverTap.pushEvent('Homepage - Click Carousel Store Card', {
+                  'collection name': collectionInfo.name,
+                  'collection rank': collectionInfo.index,
+                  'store name': name,
+                  'store rank': index + 1,
+                  'shipping type': storeShippingType,
+                  'has promo': promoTag?.length > 0,
+                  cashback: store.cashbackRate || 0,
+                });
                 this.handleStoreClicked(store, shippingType);
               }}
             >
@@ -175,10 +176,11 @@ class Carousel extends Component {
                   className="carousel__see-all flex flex-middle"
                   data-heap-name="site.home.carousel.see-all-btn"
                   onClick={() => {
-                    // CleverTap.pushEvent('Homepage - Click Carousel See All', {
-                    //   'collection name': name,
-                    //   'rank': index + 1,
-                    // });
+                    CleverTap.pushEvent('Homepage - Click Carousel See All', {
+                      'collection name': name,
+                      'collection id': beepCollectionId,
+                      rank: index + 1,
+                    });
                     this.props.history.push({
                       pathname: `/collections/${urlPath}`,
                     });
