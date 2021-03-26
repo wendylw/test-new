@@ -1,11 +1,10 @@
 import Utils from './utils';
 const API_URLS = {
-  GET_CART: {
-    url: '/api/cart',
-    method: 'get',
-  },
   GET_CART_TYPE: (isDeliveryType, deliveryCoords, fulfillDate) => {
-    let CartObj = API_URLS.GET_CART;
+    const CartObj = {
+      url: '/api/cart',
+      method: 'get',
+    };
     const params = {
       shippingType: Utils.getApiRequestShippingType(),
     };

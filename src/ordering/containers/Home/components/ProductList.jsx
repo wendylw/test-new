@@ -10,7 +10,7 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionsCreator, getShoppingCart } from '../../../redux/modules/app';
+import { actions as appActionsCreator } from '../../../redux/modules/app';
 import { getCategoryProductList, getProductItemMinHeight } from '../../../redux/modules/home';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
@@ -118,13 +118,13 @@ class ProductList extends Component {
       <div>
         {originalDisplayPrice ? (
           <CurrencyNumber
-            className="text-size-small text-line-through"
+            className="product-list-item__price text-size-small text-line-through"
             money={originalDisplayPrice}
             numberOnly={true}
           />
         ) : null}
         <CurrencyNumber
-          className={originalDisplayPrice ? 'text-error' : ''}
+          className={`product-list-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
           money={displayPrice || 0}
           numberOnly={true}
         />
@@ -136,13 +136,13 @@ class ProductList extends Component {
     const { t } = this.props;
 
     if (['outOfStock', 'unavailable'].includes(stockStatus)) {
-      return <Tag text={t('SoldOut')} className="product-item__tag tag tag__default text-size-big" />;
+      return <Tag text={t('SoldOut')} className="product-list-item__tag tag tag__default text-size-big" />;
     }
 
     return (
       <>
         {cartQuantity > 0 ? (
-          <span className="product-item__selected  text-size-small margin-small">
+          <span className="product-list-item__selected  text-size-small margin-small">
             {t('Selected', { quantity: cartQuantity })}
           </span>
         ) : null}
@@ -239,7 +239,6 @@ export default compose(
   connect(
     state => {
       return {
-        shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),
         productItemMinHeight: getProductItemMinHeight(state),
       };

@@ -39,6 +39,11 @@
     background-color: rgba(0, 0, 0, 0.35);
     white-space: pre-line;
   }
+
+  &__price:not(.text-error) {
+    display: block;
+    color: $gray-2;
+  }
 }
 
 @media (min-width: 420px) {

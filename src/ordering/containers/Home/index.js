@@ -806,6 +806,34 @@ export class Home extends Component {
     CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
   };
 
+  cleverTapTrackForProductItem = (eventName, product, attributes = {}) => {
+    const { categories, allProductsIds } = this.props;
+    let categoryIndex = -1;
+    let categoryName = '';
+
+    const categoriesContent = Object.values(categories) || [];
+
+    categoriesContent.forEach((category, index) => {
+      if (category.products?.find(p => p.id === product.id)) {
+        categoryName = category.name;
+        categoryIndex = index;
+      }
+    });
+
+    CleverTap.pushEvent(eventName, {
+      'category name': categoryName,
+      'category rank': categoryIndex + 1,
+      'product name': product.title,
+      'product image url': product.images?.length > 0 ? product.images[0] : '',
+      'product rank': allProductsIds.indexOf(product.id) + 1,
+      amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+      discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+      'is bestsellar': product.isFeaturedProduct,
+      'has picture': product.images?.length > 0,
+      ...attributes,
+    });
+  };
+
   cleverTapTrackForCart = (eventName, product, attributes) => {
     const { categories, allProductsIds, storeInfoForCleverTap } = this.props;
     let categoryIndex = -1;

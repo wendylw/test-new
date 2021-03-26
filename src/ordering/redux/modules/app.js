@@ -662,11 +662,13 @@ const messageModal = (state = initialState.messageModal, action) => {
 const requestInfo = (state = initialState.requestInfo) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
-  console.log(action.type === types.FETCH_SHOPPINGCART_SUCCESS);
-
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
+    console.log('items===>', 111);
+
     return { ...state, ...CartModel, isFetching: false, status: 'fulfilled' };
   } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
+    console.log('items===>', 222);
+
     return { ...state, isFetching: true, status: 'pending' };
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
     const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...cartBilling } =
@@ -686,6 +688,8 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       promoType: Constants.PROMO_TYPE.VOUCHER,
     };
 
+    console.log('items===>', items);
+
     return {
       ...state,
       isFetching: false,
@@ -699,6 +703,8 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       },
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
+    console.log('items===>', 333);
+
     return { ...state, isFetching: false, status: 'reject' };
   }
 

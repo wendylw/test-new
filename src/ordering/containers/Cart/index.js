@@ -407,7 +407,7 @@ class Cart extends Component {
       'category rank': categoryIndex + 1,
       'product name': product.title,
       'product image url': product.images?.length > 0 ? product.images[0] : '',
-      'product rank': allProductsIds.indexOf(product.id) + 1,
+      'product rank': allProductsIds.indexOf(product.productId) + 1,
       amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
       discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
       'is bestsellar': product.isFeaturedProduct,

@@ -320,8 +320,8 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 
 export const getCategoryProductList = createSelector(
   [getAllProducts, getAllCategories, getCartItemList],
-  (products, categories, carts) => {
-    if (!products || !categories || !Array.isArray(carts)) {
+  (allProducts, categories, carts) => {
+    if (!allProducts || !categories || !Array.isArray(carts)) {
       return [];
     }
 
@@ -329,9 +329,11 @@ export const getCategoryProductList = createSelector(
       .map(category => {
         return {
           ...category,
-          products: category.products.map(id => {
-            const product = JSON.parse(JSON.stringify(products[id]));
+          products: category.products.map((id, index) => {
+            const product = JSON.parse(JSON.stringify(allProducts[id]));
+
             return {
+              rank: index + 1,
               ...product,
             };
           }),

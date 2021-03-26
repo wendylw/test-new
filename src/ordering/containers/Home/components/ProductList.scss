@@ -14,7 +14,7 @@
   }
 }
 
-.product-item {
+.product-list-item {
   &__tag {
     position: absolute;
     right: 0;
@@ -40,7 +40,7 @@
 }
 
 @media (min-width: 420px) {
-  .product-item {
+  .product-list-item {
     &__tag {
       margin: 12px;
     }
