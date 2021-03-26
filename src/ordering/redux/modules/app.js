@@ -18,7 +18,7 @@ import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getAllProducts } from '../../../redux/modules/entities/products';
 
 import * as StoreUtils from '../../../utils/store-utils';
 
@@ -27,6 +27,19 @@ const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 export const types = APP_TYPES;
+
+const CartItemModel = {
+  id: null,
+  productId: null,
+  title: '',
+  variationTexts: [],
+  displayPrice: 0,
+  originalDisplayPrice: 0,
+  image: null,
+  stockStatus: '',
+  quantity: 0,
+  quantityOnHand: 0,
+};
 
 const CartModel = {
   status: 'pending',
@@ -649,6 +662,8 @@ const messageModal = (state = initialState.messageModal, action) => {
 const requestInfo = (state = initialState.requestInfo) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
+  console.log(action.type === types.FETCH_SHOPPINGCART_SUCCESS);
+
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
     return { ...state, ...CartModel, isFetching: false, status: 'fulfilled' };
   } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
@@ -675,8 +690,8 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       ...state,
       isFetching: false,
       status: 'fulfilled',
-      items,
-      unavailableItems,
+      items: items.map(item => ({ ...CartItemModel, ...item })),
+      unavailableItems: unavailableItems.map(unavailableItem => ({ ...CartItemModel, ...unavailableItem })),
       billing: {
         ...cartBilling,
         promotion,
@@ -757,14 +772,26 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
 export const getShoppingCart = createSelector(
-  [getCartBilling, getCartItems, getCartUnavailableItems],
-  (cartBilling, items, unavailableItems) => {
+  [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts],
+  (cartBilling, items, unavailableItems, allProducts) => {
     cartBilling.count = [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0);
 
     return {
       cartBilling,
-      items,
-      unavailableItems,
+      items: items.map(item => ({
+        isFeaturedProduct:
+          allProducts[item.productId] && allProducts[item.productId].isFeaturedProduct
+            ? allProducts[item.productId].isFeaturedProduct
+            : false,
+        ...item,
+      })),
+      unavailableItems: unavailableItems.map(item => ({
+        isFeaturedProduct:
+          allProducts[item.productId] && allProducts[item.productId].isFeaturedProduct
+            ? allProducts[item.productId].isFeaturedProduct
+            : false,
+        ...item,
+      })),
     };
   }
 );
