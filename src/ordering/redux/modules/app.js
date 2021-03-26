@@ -135,7 +135,7 @@ const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
@@ -777,7 +777,7 @@ export const getCartItemList = state => {
 export const getStoreInfoForCleverTap = state => {
   const business = getBusiness(state);
   const allBusinessInfo = getAllBusinesses(state);
-  const cartSummary = getCartSummary(state);
+  const { billing: cartBilling } = state.app.shoppingCart;
 
-  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
+  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartBilling });
 };

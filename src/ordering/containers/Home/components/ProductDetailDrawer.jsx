@@ -18,7 +18,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getSelectedProductDetail } from '../../../redux/modules/home';
-import { actions as appActionCreators, getCurrentProduct } from '../../../redux/modules/app';
+import { actions as appActionCreators } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';
 import 'swiper/swiper.scss';
@@ -574,11 +574,11 @@ class ProductDetailDrawer extends Component {
           from="productDetail"
           decreaseDisabled={cartQuantity <= 1}
           onDecrease={() => {
-            cleverTapDecreaseInProductDetail(product);
+            cleverTapDecreaseInProductDetail(selectedProduct);
             this.setState({ cartQuantity: cartQuantity - 1 });
           }}
           onIncrease={() => {
-            cleverTapIncreaseInProductDetail(product);
+            cleverTapIncreaseInProductDetail(selectedProduct);
             const disableVariationsId = this.isInvalidMinimumVariations();
 
             if (hasMinimumVariations && disableVariationsId) {

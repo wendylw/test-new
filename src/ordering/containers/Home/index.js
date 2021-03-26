@@ -862,7 +862,7 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
-    const { storePromoTags, qrOrderingSettings } = businessInfo || {};
+    const { storePromoTags } = businessInfo || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -959,10 +959,10 @@ export class Home extends Component {
           cleverTapClearCart={() => {
             this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
           }}
-          cleverTapIncreaseCartItem={() => {
+          cleverTapIncreaseCartItem={(product = {}) => {
             this.cleverTapTrackForCart('Menu Page - Cart Preview - Increase quantity', product);
           }}
-          cleverTapDecreaseCartItem={() => {
+          cleverTapDecreaseCartItem={(product = {}) => {
             this.cleverTapTrackForCart('Menu Page - Cart Preview - Decrease quantity', product);
           }}
         />
@@ -1017,11 +1017,11 @@ export class Home extends Component {
           footerRef={ref => (this.footerEl = ref)}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
-          onClickCart={() => {
+          cleverTapOnClickCart={() => {
             this.cleverTapTrack('Menu Page - Click cart');
             this.handleToggleAside(Constants.ASIDE_NAMES.CART);
           }}
-          onClickOrderNow={() => {
+          cleverTapOnClickOrderNow={() => {
             this.cleverTapTrack('Menu Page - Click order now');
           }}
           isValidTimeToOrder={this.isValidTimeToOrder()}

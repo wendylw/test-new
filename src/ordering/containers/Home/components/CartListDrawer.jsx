@@ -178,14 +178,14 @@ class CartListDrawer extends Component {
           increaseDisabled={lowStockState}
           onDecrease={() => {
             if (cleverTapDecreaseCartItem) {
-              cleverTapDecreaseCartItem();
+              cleverTapDecreaseCartItem(cartItem);
             }
 
             this.handleDecreaseCartItem(cartItem);
           }}
           onIncrease={() => {
             if (cleverTapIncreaseCartItem) {
-              cleverTapIncreaseCartItem();
+              cleverTapIncreaseCartItem(cartItem);
             }
 
             this.handleIncreaseCartItem(cartItem);
