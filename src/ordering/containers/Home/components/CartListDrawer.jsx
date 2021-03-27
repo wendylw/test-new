@@ -14,10 +14,6 @@ import ItemOperator from '../../../../components/ItemOperator';
 import './CartListDrawer.scss';
 
 class CartListDrawer extends Component {
-  componentDidMount = async () => {
-    await this.props.appActions.loadShoppingCart();
-  };
-
   handleGtmEventTracking = selectedProduct => {
     // In cart list, image count is always either 1 or 0
     const gtmEventDate = {
@@ -55,8 +51,7 @@ class CartListDrawer extends Component {
       cleverTapClearCart();
     }
 
-    await appActions.clearAll();
-    appActions.loadShoppingCart();
+    await appActions.clearAll().then(() => appActions.loadShoppingCart());
   };
 
   handleRemoveCartItem = cartItem => {
@@ -151,7 +146,7 @@ class CartListDrawer extends Component {
   renderProductItemRightController(cartItem) {
     const { t, cleverTapDecreaseCartItem, cleverTapIncreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
-    const lowStockState = quantity > quantityOnHand;
+    const lowStockState = stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand;
     const classList = ['text-center', ...(lowStockState ? ['text-error'] : [])];
 
     if (this.getOutStockStatus(stockStatus)) {

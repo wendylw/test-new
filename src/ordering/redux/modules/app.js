@@ -663,32 +663,32 @@ const requestInfo = (state = initialState.requestInfo) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
-    console.log('items===>', 111);
-
     return { ...state, ...CartModel, isFetching: false, status: 'fulfilled' };
   } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
-    console.log('items===>', 222);
-
     return { ...state, isFetching: true, status: 'pending' };
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
     const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...cartBilling } =
       action.response || {};
-    const displayPromotion = displayPromotions[0];
-    const promotion = {
-      promoCode: displayPromotion.promotionCode,
-      discount: displayPromotion.displayDiscount,
-      promoType: Constants.PROMO_TYPE.PROMOTION,
-      status: displayPromotion.status,
-    };
-    const voucher = {
-      promoCode: voucherObject.voucherCode,
-      status: voucherObject.status,
-      discount: voucherObject.value,
-      validFrom: new Date(voucherObject.validFrom),
-      promoType: Constants.PROMO_TYPE.VOUCHER,
-    };
+    const displayPromotion = displayPromotions[0] || voucherObject;
+    const voucher = voucherObject
+      ? {
+          promoCode: voucherObject.voucherCode,
+          status: voucherObject.status,
+          discount: voucherObject.value,
+          validFrom: new Date(voucherObject.validFrom),
+          promoType: Constants.PROMO_TYPE.VOUCHER,
+        }
+      : null;
+    let promotion = null;
 
-    console.log('items===>', items);
+    if (displayPromotion) {
+      promotion = {
+        promoCode: displayPromotion.promotionCode,
+        discount: displayPromotion.displayDiscount,
+        promoType: Constants.PROMO_TYPE.PROMOTION,
+        status: displayPromotion.status,
+      };
+    }
 
     return {
       ...state,
@@ -703,8 +703,6 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       },
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
-    console.log('items===>', 333);
-
     return { ...state, isFetching: false, status: 'reject' };
   }
 
