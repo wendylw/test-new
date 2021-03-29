@@ -35,12 +35,14 @@
   "OverDeliveryDistance": "Over Delivery Distance",
   "CreateOrderError": "Create Order Error",
   "SaveCard": "Save this card",
-  "SaveCardAuthorize": "I authorise Storehub Sdn Bhd to send instructions to the financial institution that issued my card to take payments from my card account in accordance with the terms of my agreement with you.",
+  "SaveCardAuthorize": "I authorise StoreHub Sdn Bhd to send instructions to the financial institution that issued my card to take payments from my card account in accordance with the terms of my agreement with you.",
   "SecurePaymentBy": "Secure payment by",
   "CvvConfirm": "After you confirm, card details from your saved card payment will be shared temporarily with this site.",
   "EnterCvcHint": "As a security measure, please enter the CVC for {{label}} **** {{maskNumber}}",
   "AddCreditCard": "Add a credit card",
+  "AddCreditCardTitle": "Add a Credit Card",
   "AddAndPay": "Add & pay",
   "CardEndingIn": "Ending in {{cardEnding}}",
-  "SecurityHint": "Our card payment service is under PCI compliance protection to protect and encrypt cardholder data transmissions. <1>Know more here</1>"
+  "SecurityHint": "Our card payment service is under PCI compliance protection to protect and encrypt cardholder data transmissions. <1>Know more here</1>",
+  "TimeOut": "Time Out"
 }
