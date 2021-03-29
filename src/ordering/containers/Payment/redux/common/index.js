@@ -9,36 +9,36 @@ const initialState = {
 };
 
 const { reducer, actions } = createSlice({
-  name: 'payments/common',
+  name: 'ORDERING/PAYMENTS/COMMON',
   initialState,
   reducers: {
     // TODO: use createAsyncThunk
-    loadPayments: state => {
+    loadPaymentsPending: state => {
       state.status = 'pending';
     },
     loadPaymentsSuccess: (state, { payload }) => {
-      if (payload.data) {
-        state.options = payload.data;
+      if (payload) {
+        state.options = payload;
         state.status = 'fulfilled';
       }
     },
     loadPaymentsFailed: (state, { payload }) => {
-      if (payload.error) {
-        state.error = payload.error;
+      if (payload) {
+        state.error = payload;
         state.status = 'reject';
       }
     },
-    loadSavedCards: state => {},
+    loadSavedCardsPending: state => {},
     loadSavedCardsSuccess: state => {},
     loadSavedCardsFailed: state => {},
     updatePaymentSelected: (state, { payload }) => {
-      if (payload.data) {
-        state.selectedOptionProvider = payload.data;
+      if (payload) {
+        state.selectedOptionProvider = payload;
       }
     },
     updateBankingSelected: (state, { payload }) => {
-      if (payload.data) {
-        state.selectedOnlineBankingAgentCode = payload.data;
+      if (payload) {
+        state.selectedOnlineBankingAgentCode = payload;
       }
     },
   },

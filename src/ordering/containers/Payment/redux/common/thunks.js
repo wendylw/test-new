@@ -4,10 +4,10 @@ import { get } from '../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../api-info';
 
 const {
-  loadPayments,
+  loadPaymentsPending,
   loadPaymentsSuccess,
   loadPaymentsFailed,
-  loadSavedCards: loadSavedCardsAction,
+  loadSavedCardsPending,
   loadSavedCardsSuccess,
   loadSavedCardsFailed,
   updatePaymentSelected,
@@ -123,7 +123,7 @@ export const loadPaymentOptions = () => async (dispatch, getState) => {
   const { total } = entities.carts.summary;
 
   try {
-    dispatch(loadPayments());
+    dispatch(loadPaymentsPending());
 
     const result = await get(API_INFO.getPayments().url);
 
@@ -151,13 +151,14 @@ export const loadPaymentOptions = () => async (dispatch, getState) => {
 
       return dispatch(updatePaymentSelected(selectedPaymentOption.paymentProvider || null));
     } else {
-      return dispatch(loadPaymentsFailed({ error: result.error || {} }));
+      return dispatch(loadPaymentsFailed(result.error || {}));
     }
   } catch (e) {
-    return dispatch(loadPaymentsFailed({ error: e || {} }));
+    return dispatch(loadPaymentsFailed(e || {}));
   }
 };
 
+// TODO: It's not necessary to have a thunk only to dispatch another action. We should remove it.
 export const updatePaymentOptionSelected = paymentProvider => dispatch => {
   return dispatch(updatePaymentSelected(paymentProvider || null));
 };
@@ -177,7 +178,7 @@ export const loadSavedCards = (userId, paymentProvider) => async (dispatch, getS
   }
 
   try {
-    dispatch(loadSavedCardsAction());
+    dispatch(loadSavedCardsPending());
 
     const { url, queryParams } = API_INFO.getSavedCardList(userId, paymentProvider);
 
@@ -185,9 +186,9 @@ export const loadSavedCards = (userId, paymentProvider) => async (dispatch, getS
 
     if (result.data) {
     } else {
-      return dispatch(loadSavedCardsFailed({ error: result.error || {} }));
+      return dispatch(loadSavedCardsFailed(result.error || {}));
     }
   } catch (e) {
-    return dispatch(loadSavedCardsFailed({ error: e || {} }));
+    return dispatch(loadSavedCardsFailed(e || {}));
   }
 };
