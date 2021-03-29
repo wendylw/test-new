@@ -35,7 +35,7 @@ import {
   getMerchantCountry,
   getStoreInfoForCleverTap,
 } from '../../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import withDataAttributes from '../../../../components/withDataAttributes';
@@ -509,7 +509,6 @@ export default compose(
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )

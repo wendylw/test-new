@@ -23,7 +23,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../../
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getStoreInfoForCleverTap } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getCurrentOrderId } from '../../../redux/modules/payment';
 import {
   getPaymentsPendingState,
   getOnlineBankingOption,
@@ -287,7 +287,6 @@ export default compose(
     dispatch => ({
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )

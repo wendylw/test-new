@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/alt-text */
-import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import _get from 'lodash/get';
@@ -27,7 +26,7 @@ import {
   getStoreInfoForCleverTap,
 } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getSelectedPaymentOption } from '../redux/common/selectors';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import {
@@ -630,7 +629,6 @@ export default compose(
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )

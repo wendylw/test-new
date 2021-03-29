@@ -12,7 +12,7 @@ import Loader from '../components/Loader';
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getMerchantCountry, getUser } from '../../../redux/modules/app';
+import { getUser } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCardList, getSelectedPaymentCard } from '../../../redux/modules/payment';
 import { getCardLabel, getCardIcon } from '../utils';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
@@ -218,7 +218,6 @@ export default compose(
       user: getUser(state),
       cardList: getCardList(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
-      merchantCountry: getMerchantCountry(state),
       deliveryDetails: getDeliveryDetails(state),
     }),
     dispatch => ({

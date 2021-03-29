@@ -20,8 +20,8 @@ import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getOnlineStoreInfo, getBusiness, getUser } from '../../../redux/modules/app';
+import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';
@@ -333,14 +333,12 @@ export default compose(
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        merchantCountry: getMerchantCountry(state),
         user: getUser(state),
         deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
