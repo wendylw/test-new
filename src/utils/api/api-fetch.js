@@ -12,7 +12,7 @@ const defaultHeaders = {
 };
 
 function convertOptions(options) {
-  const { payload, mode, method, headers, credentials = 'include', ...others } = options;
+  const { type = 'json', payload: data, mode, headers, credentials = 'include', ...others } = options;
   const composeHeaders = new Headers({
     ...defaultHeaders,
     ...headers,

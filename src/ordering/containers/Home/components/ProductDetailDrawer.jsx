@@ -556,6 +556,16 @@ class ProductDetailDrawer extends Component {
     );
   }
 
+  renderProductLowStock = () => {
+    const { t } = this.props;
+
+    return (
+      <div className="text-center">
+        <span className="text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand: 5 })}</span>
+      </div>
+    );
+  };
+
   renderOperatorButton = () => {
     const { selectedProduct, cleverTapDecreaseInProductDetail, cleverTapIncreaseInProductDetail } = this.props;
     const { cartQuantity, minimumVariations } = this.state;
@@ -564,7 +574,7 @@ class ProductDetailDrawer extends Component {
 
     return (
       <div
-        className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed border__top-divider"
+        className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed"
         ref={ref => (this.opeartoresEl = ref)}
       >
         <ItemOperator
@@ -694,6 +704,7 @@ class ProductDetailDrawer extends Component {
               </article>
             ) : null}
             {this.renderVariations()}
+            {this.renderProductLowStock()}
             {this.renderOperatorButton()}
           </div>
           {this.renderProductOperator()}

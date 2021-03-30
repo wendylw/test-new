@@ -154,9 +154,9 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
 };
 
 Utils.isProductSoldOut = product => {
-  const { markedSoldOut, variations } = product;
+  const { stockStatus, variations } = product;
 
-  if (markedSoldOut) {
+  if (stockStatus === 'outOfStock') {
     return true;
   }
 
