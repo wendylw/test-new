@@ -1,38 +1,58 @@
-import ky from 'ky';
-import _isNull from 'lodash/isNull';
-import _isUndefined from 'lodash/isUndefined';
-import { isHttpSuccess, assembleUrl, getClientSource } from './api-utils';
+import originalKy from 'ky';
+import { object } from 'prop-types';
+import { isHttpSuccess, getClientSource } from './api-utils';
 
-export const kyOrigin = ky.create({
+export const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
     beforeRequest: [req => req.headers.set('client', getClientSource())],
   },
+  credentials: 'include',
 });
 
-const defaultHeaders = {
-  Accept: 'application/json',
-  'Content-Type': 'application/json',
-  // Fixed IE cache request
-  Pragma: 'no-cache',
-  'Cache-Control': 'no-cache',
-};
+async function parseResponse(resp) {
+  let body;
+  const rawContentType = resp.headers.get('content-type');
+  if (!rawContentType) {
+    return resp;
+  }
+  const { type } = contentType.parse(rawContentType);
+  switch (type) {
+    case 'application/json':
+      body = await resp.json();
+      break;
+    case 'text/plain':
+    case 'text/html':
+      body = await resp.text();
+      break;
+    default:
+      console.warn(`Unexpected content type: ${type}, will respond with raw Response object.`);
+      body = resp;
+  }
+  return body;
+}
 
 function convertOptions(options) {
-  const { type = 'json', method, payload, mode, headers, credentials = 'include', ...others } = options;
-  const composeHeaders = new Headers({
-    ...defaultHeaders,
-    ...headers,
-  });
+  const { type = 'json', payload, headers, credentials, queryParams, ...others } = options;
   const currentOptions = {
     ...others,
-    headers: composeHeaders,
-    // include is general value. if api fetching need Cross-domain without cookie that the value needs set `omit`.
-    credentials,
   };
 
-  if (method === 'GET' || method === 'DELETE') {
-    return currentOptions;
+  if (headers) {
+    if (typeof headers !== 'object') {
+      throw new Error('headers should be an object');
+    }
+    // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
+    currentOptions.hooks.beforeRequest.unshift(req => {
+      Object.keys(headers).forEach(key => {
+        req.headers.set(key, headers[key]);
+      });
+    });
+  }
+
+  // include is general value. if api fetching need Cross-domain without cookie that the value needs set `omit`.
+  if (credentials) {
+    currentOptions.credentials = credentials;
   }
 
   if (type === 'json') {
@@ -40,104 +60,136 @@ function convertOptions(options) {
       console.warn(
         `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`
       );
-      others.body = payload;
+      currentOptions.body = payload;
     } else {
       others.json = payload;
     }
   } else {
-    others.body = payload;
+    currentOptions.body = payload;
   }
 
-  let body = '';
-
-  if (!_isNull(payload) && !_isUndefined(payload)) {
-    body = JSON.stringify(payload);
+  if (queryParams) {
+    currentOptions.searchParams = queryParams;
   }
 
-  return Object.assign({}, currentOptions, { body });
+  currentOptions.hooks = others.hooks || {};
+  currentOptions.hooks.beforeRequest = others.hooks.beforeRequest || [];
+
+  return currentOptions;
 }
 
 /**
- * @param {*} url
- * @param {*} opts : {payload:{}, headers:{}, mode: '', ...others}
+ * @param {string} url url for the request
+ * @param {object} opts : {type: '', payload: {}, headers: {}, credentials: '', queryParams, ...others}
+ * @param {any} options.payload data in request
+ * @param {object} options.queryParams query parameters in url
+ * @param {object} options.headers headers in request
  */
-function _fetch(url, opts) {
-  return fetch(url, opts)
-    .then(response => {
-      const isJsonData = response.headers.get('Content-Type').includes('application/json');
+async function _fetch(url, opts) {
+  try {
+    const resp = await ky(url, opts);
+    return await parseResponse(resp);
+  } catch (e) {
+    // const messages = ['Request failed!'];
+    // if (e.message) {
+    //   messages.push(`Error message: ${e.message}`);
+    // }
+    // if (e.response) {
+    //   const body = await parseResponse(e.response);
+    //   e.responseBody = body;
+    //   if (typeof body === 'string') {
+    //     messages.push('Response body:');
+    //     messages.push(body);
+    //   } else if (typeof body === 'object' && !(body instanceof window.Response)) {
+    //     messages.push('Response body:');
+    //     messages.push(JSON.stringify(body, null, 2));
+    //   }
+    // }
+    console.error('Request Failed! \n', e);
 
-      return new Promise(function(resolve, reject) {
-        if (response.status && isHttpSuccess(response.status)) {
-          if (isJsonData) {
-            resolve(response.json());
-          } else {
-            resolve(response.text());
-          }
-        } else {
-          const { code } = isJsonData ? response.json() : { code: '50000' };
+    let error = {};
 
-          reject({
-            code,
-            status: response.status,
-          });
-        }
-      });
-    })
-    .catch(e => {
-      if (process.env.NODE_ENV !== 'production') {
-        /* eslint-disable */
-        console.log(e);
-        /* eslint-enable */
-      }
+    if (typeof e === 'object' && e.code) {
+      error = e;
+    } else if (typeof e === 'string') {
+      error = {
+        code: '50000',
+        status: e.status,
+        message: e,
+      };
+    }
 
-      return Promise.reject(e);
-    });
+    throw error;
+  }
+
+  // return fetch(url, opts)
+  //   .then(response => {
+  //     const isJsonData = response.headers.get('Content-Type').includes('application/json');
+
+  //     return new Promise(function (resolve, reject) {
+  //       if (response.status && isHttpSuccess(response.status)) {
+  //         if (isJsonData) {
+  //           resolve(response.json());
+  //         } else {
+  //           resolve(response.text());
+  //         }
+  //       } else {
+  //         const { code } = isJsonData ? response.json() : { code: '50000' };
+
+  //         reject({
+  //           code,
+  //           status: response.status,
+  //         });
+  //       }
+  //     });
+  //   })
+  //   .catch(e => {
+  //     if (process.env.NODE_ENV !== 'production') {
+  //       /* eslint-disable */
+  //       console.log(e);
+  //       /* eslint-enable */
+  //     }
+
+  //     return Promise.reject(e);
+  //   });
 }
 
 export function get(url, options = {}) {
-  const { queryParams } = options;
-
   return _fetch(
-    assembleUrl(url, queryParams),
+    url,
     convertOptions({
       ...options,
-      method: 'GET',
+      method: 'get',
     })
   );
 }
 
 export function post(url, options = {}) {
-  const { queryParams } = options;
-
   return _fetch(
-    assembleUrl(url, queryParams),
+    url,
     convertOptions({
       ...options,
-      method: 'POST',
+      method: 'post',
     })
   );
 }
 
 export function put(url, options = {}) {
-  const { queryParams } = options;
-
   return _fetch(
-    assembleUrl(url, queryParams),
+    url,
     convertOptions({
       ...options,
-      method: 'PUT',
+      method: 'put',
     })
   );
 }
 
 export function del(url, options = {}) {
-  const { queryParams } = options;
-
   return _fetch(
-    assembleUrl(url, queryParams),
+    url,
     convertOptions({
       ...options,
-      method: 'DELETE',
+      method: 'delete',
     })
   );
 }
