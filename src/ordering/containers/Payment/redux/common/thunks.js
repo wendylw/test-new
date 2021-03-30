@@ -16,6 +16,7 @@ const {
 
 /* Model */
 const PAYMENTS_MAPPING = {
+  // Adyen is unavailable for now, so it is hidden
   Adyen: {
     key: 'CreditAndDebitCard',
     logo: 'paymentCreditImage',
@@ -91,7 +92,7 @@ const PaymentOptionModel = {
   available: false,
   pathname: null,
   agentCodes: [],
-  supportSaveCards: false,
+  supportSaveCard: false,
 };
 
 const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping) => {

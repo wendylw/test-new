@@ -24,7 +24,7 @@ export const initialState = {
   thankYouPageUrl: '',
   braintreeToken: '',
   bankingList: [],
-  selectedPaymentCard: {},
+  selectedPaymentCard: null,
   cardList: [],
 };
 
@@ -303,9 +303,13 @@ const reducer = (state = initialState, action) => {
       return state;
     }
     case types.FETCH_CARD_SUCCESS: {
-      const { paymentMethods = [] } = response || {};
+      const { paymentMethods } = response;
 
-      return { ...state, cardList: paymentMethods, selectedPaymentCard: paymentMethods[0] };
+      return {
+        ...state,
+        cardList: paymentMethods,
+        selectedPaymentCard: state.selectedPaymentCard || paymentMethods[0],
+      };
     }
     case types.SET_PAYMENT_CARD: {
       return { ...state, selectedPaymentCard: action.card };

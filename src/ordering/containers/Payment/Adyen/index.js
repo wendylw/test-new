@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
 import _toString from 'lodash/toString';
@@ -13,7 +13,6 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import RedirectForm from '../components/RedirectForm';
 import config from '../../../../config';
-import SwitchButton from '../../../../../src/components/SwitchButton';
 import Utils from '../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
@@ -23,13 +22,16 @@ import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getUser } from '../../../redux/modules/app';
 import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
+import SaveCardSwitch from '../components/CreditCard/SaveCardSwitch';
+import CreditCardSecureInfo from '../components/CreditCard/CreditCardSecureInfo';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getPaymentRedirectAndWebHookUrl } from '../utils';
-import AdyenSecurity from '../../../../../src/images/Adyen-PCI.png';
 import { getSelectedPaymentOption } from '../redux/common/selectors';
 import '../PaymentCreditCard.scss';
-import './AdyenPage.scss';
 
+/**
+ * TODO: Adyen is unavailable at long time, so we needn't maintenance this file for now
+ */
 class AdyenPage extends Component {
   state = {
     isAdyenCardLoaded: false,
@@ -185,7 +187,7 @@ class AdyenPage extends Component {
   };
 
   render() {
-    const { t, history, cartSummary } = this.props;
+    const { t, history, cartSummary, currentPaymentOption } = this.props;
     const { total } = cartSummary;
 
     return (
@@ -228,48 +230,16 @@ class AdyenPage extends Component {
               <div id="adyen-container" />
               {/* End of adyen card */}
 
-              <div className="padding-top-bottom-normal payment-credit-card__save">
-                <div
-                  className={`flex flex-middle flex-space-between payment-credit-card__save-switch ${this.state
-                    .saveCard && 'active'}`}
-                >
-                  <label className="text-size-bigger text-weight-bolder padding-top-bottom-normal">
-                    {t('SaveCard')}
-                  </label>
-                  <SwitchButton
-                    id="adyen-save-card"
-                    checked={this.state.saveCard}
-                    onChange={() => {
-                      this.setState(state => ({
-                        saveCard: !state.saveCard,
-                      }));
-                    }}
-                  />
-                </div>
-                <p className="text-line-height-normal payment-credit-card__save-text">{t('SaveCardAuthorize')}</p>
-              </div>
-              <div className="payment-credit-card__secure">
-                <div className="padding-top-bottom-normal">
-                  <label className="text-size-bigger text-weight-bolder">{t('SecurePaymentBy')}</label>
-                </div>
-                <div className="text-line-height-normal payment-credit-card__save-text flex flex-middle flex-space-between">
-                  <img src={AdyenSecurity} alt="pci" className="payment-credit-card__secure-image" />
-                  <p className="payment-credit-card__secure-text">
-                    <Trans i18nKey="OrderingPayment.SecurityHint">
-                      Our card payment service is under PCI compliance protection to protect and encrypt cardholder data
-                      transmissions.
-                      <a
-                        className="text-weight-bolder link__non-underline payment-credit-card__link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href="https://www.adyen.com/platform/certifications"
-                      >
-                        Know more here
-                      </a>
-                    </Trans>
-                  </p>
-                </div>
-              </div>
+              <SaveCardSwitch
+                value={this.state.saveCard}
+                onChange={value => {
+                  this.setState({
+                    saveCard: value,
+                  });
+                }}
+              />
+
+              <CreditCardSecureInfo paymentProvider={currentPaymentOption.paymentProvider} />
             </div>
             <Loader className={'loading-cover opacity'} loaded={!this.state.payNowLoading} />
           </form>

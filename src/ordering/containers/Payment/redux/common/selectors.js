@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import _some from 'lodash/some';
 import _every from 'lodash/every';
 
+export const getSelectedPaymentProvider = ({ payments }) => payments.common.selectedOptionProvider;
 export const getPaymentsPendingState = ({ payments }) => payments.common.status === 'pending';
 
 export const getAllPaymentsOptions = ({ payments, entities }) => {

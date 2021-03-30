@@ -8,52 +8,106 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import Radio from '../../../../components/Radio';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import Loader from '../components/Loader';
+import _get from 'lodash/get';
 
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getUser } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCardList, getSelectedPaymentCard } from '../../../redux/modules/payment';
-import { getCardLabel, getCardIcon } from '../utils';
+import {
+  getSelectedPaymentOption,
+  getSelectedPaymentProvider,
+  actions as paymentsActionCreators,
+} from '../redux/payments';
+import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../utils';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import IconAddNew from '../../../../images/icon-add-new.svg';
 import '../PaymentCreditCard.scss';
 
+const { PAYMENT_PROVIDERS } = Constants;
 class SavedCards extends Component {
   state = {
-    isCartLoaded: false,
+    // TODO: Move whole state to redux store in Payment 2.0
+    showLoading: false,
   };
-  card = null;
 
-  componentWillMount = async () => {
-    // Fetch card list here
-    const { cardList, history, user, appActions, selectedPaymentCard } = this.props;
+  willUnmount = false;
 
-    if (!selectedPaymentCard || !selectedPaymentCard.cardToken) {
-      if (!cardList || !cardList.length) {
-        // Better find another way to ensure user is logged in already, like ensureLoggedin
-        if (!user) await appActions.loadCustomerProfile();
-
-        const { user: userInfo } = this.props;
-        await this.props.paymentActions.fetchSavedCard({
-          userId: userInfo.consumerId,
-          paymentName: 'Adyen',
-        });
-
-        const { cardList: savedCardList } = this.props;
-
-        if (!savedCardList || !savedCardList.length)
-          history.push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_ADYEN_PAYMENT,
-            search: window.location.search,
-          });
-      } else {
-        this.props.paymentActions.setPaymentCard(cardList[0]);
-      }
+  ensurePaymentProvider = async () => {
+    const { paymentProvider, paymentsActions } = this.props;
+    // refresh page will lost state
+    if (!paymentProvider) {
+      await paymentsActions.loadPaymentOptions();
+      // currently only Stripe support save card
+      paymentsActions.updatePaymentOptionSelected(PAYMENT_PROVIDERS.STRIPE);
     }
   };
 
   componentDidMount = async () => {
+    try {
+      this.setState({
+        showLoading: true,
+      });
+
+      const { user, appActions } = this.props;
+      if (!user) await appActions.loadCustomerProfile();
+      await this.ensurePaymentProvider();
+
+      const { paymentProvider, paymentOption, history, cardList } = this.props;
+      const supportSaveCard = _get(paymentOption, 'supportSaveCard', false);
+
+      if (!supportSaveCard) {
+        history.replace({
+          pathname: getCreditCardFormPathname(paymentProvider),
+          search: window.location.search,
+        });
+        return;
+      }
+
+      if (!cardList || !cardList.length) {
+        await this.loadCardList();
+      }
+
+      const { cardList: loadedCardList } = this.props;
+      if (!loadedCardList || !loadedCardList.length) {
+        history.replace({
+          pathname: getCreditCardFormPathname(paymentProvider),
+          search: window.location.search,
+        });
+        return;
+      }
+
+      await this.loadShoppingCart();
+    } catch (error) {
+      // TODO: Handle this error in Payment 2.0
+      console.error(error);
+    } finally {
+      // Resolve React Warning: perform a set state after component unmounted
+      if (this.willUnmount) {
+        return;
+      }
+
+      this.setState({
+        showLoading: false,
+      });
+    }
+  };
+
+  componentWillUnmount() {
+    this.willUnmount = true;
+  }
+
+  loadCardList = async () => {
+    const { user: userInfo, paymentProvider, paymentActions } = this.props;
+
+    return paymentActions.fetchSavedCard({
+      userId: userInfo.consumerId,
+      paymentName: paymentProvider,
+    });
+  };
+
+  loadShoppingCart = async () => {
     const { deliveryDetails, customerActions } = this.props;
     const { addressId } = deliveryDetails || {};
     const type = Utils.getOrderTypeFromUrl();
@@ -70,10 +124,6 @@ class SavedCards extends Component {
           lng: deliveryToLocation.longitude,
         }
     );
-
-    this.setState({
-      isCartLoaded: true,
-    });
   };
 
   setPaymentCard = card => {
@@ -81,10 +131,10 @@ class SavedCards extends Component {
   };
 
   renderCardList() {
-    const { t, history, cardList, selectedPaymentCard } = this.props;
+    const { t, history, cardList, selectedPaymentCard, paymentProvider } = this.props;
 
     return (
-      <div className="payment-card-list__container">
+      <div className="payment-card-list__container padding-top-bottom-normal">
         <ul className="payment-card-list__items">
           {cardList.map(card => {
             const { cardInfo, cardToken } = card;
@@ -122,9 +172,8 @@ class SavedCards extends Component {
           <li
             className="ordering-payment__card flex flex-middle flex-space-between padding-small border__bottom-divider"
             onClick={async () => {
-              await this.props.paymentActions.setPaymentCard({});
               history.push({
-                pathname: Constants.ROUTER_PATHS.ORDERING_ADYEN_PAYMENT,
+                pathname: getCreditCardFormPathname(paymentProvider, true),
                 search: window.location.search,
               });
             }}
@@ -146,13 +195,14 @@ class SavedCards extends Component {
   }
 
   render() {
-    const { t, history, cartSummary } = this.props;
+    const { t, history, cartSummary, selectedPaymentCard } = this.props;
     const { total } = cartSummary;
+    const cardToken = _get(selectedPaymentCard, 'cardToken', null);
 
     return (
       <section className={`ordering-payment flex flex-column`}>
         <Header
-          className="flex-middle border__bottom-divider"
+          className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
           title={t('PayViaCard')}
@@ -162,7 +212,7 @@ class SavedCards extends Component {
           }}
         />
         <div
-          className="ordering-payment__container padding-top-bottom-normal"
+          className="ordering-payment__container"
           style={{
             top: `${Utils.mainTop({
               headerEls: [this.headerEl],
@@ -173,12 +223,15 @@ class SavedCards extends Component {
             }),
           }}
         >
-          <div className="text-center padding-top-bottom-normal">
-            <CurrencyNumber className="text-size-large text-weight-bolder" money={total || 0} />
+          <div className="text-center padding-top-bottom-normal margin-top-bottom-normal">
+            <CurrencyNumber
+              className="payment-credit-card__title text-size-large text-weight-bolder"
+              money={total || 0}
+            />
           </div>
           {this.renderCardList()}
 
-          <Loader className={'loading-cover opacity'} loaded={this.state.isCartLoaded} />
+          <Loader className={'loading-cover opacity'} loaded={!this.state.showLoading} />
         </div>
         <footer
           ref={ref => (this.footerEl = ref)}
@@ -188,7 +241,7 @@ class SavedCards extends Component {
             className="margin-top-bottom-smaller"
             history={history}
             buttonType="submit"
-            disabled={false}
+            disabled={!cardToken}
             beforeCreateOrder={async () => {
               history.push({
                 pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_CVV,
@@ -219,11 +272,14 @@ export default compose(
       cardList: getCardList(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
       deliveryDetails: getDeliveryDetails(state),
+      paymentOption: getSelectedPaymentOption(state),
+      paymentProvider: getSelectedPaymentProvider(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
+      paymentsActions: bindActionCreators(paymentsActionCreators, dispatch),
     })
   )
 )(SavedCards);

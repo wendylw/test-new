@@ -27,6 +27,7 @@ const ROUTER_PATHS = {
   ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
+  ORDERING_STRIPE_PAYMENT_SAVE: '/payment/stripe/save',
   ORDERING_ADYEN_PAYMENT: '/payment/adyen',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
@@ -87,6 +88,20 @@ const PAYMENT_METHOD_LABELS = {
   GCASH_PAY: 'GCash',
   LINE_PAY: 'Line',
   ADYEN_PAY: 'Adyen',
+};
+
+const PAYMENT_PROVIDERS = {
+  STRIPE: 'Stripe',
+  ADYEN: 'Adyen',
+  STRIPE_FPX: 'StripeFPX',
+  CCPP_TNG_PAY: 'CCPPTnGPay',
+  BOOST: 'Boost',
+  GRAB_PAY: 'GrabPay',
+  BEEP_TH_CREDIT_CARD: 'BeepTHCreditCard',
+  BEEP_TH_ONLINE_BANKING: 'BeepTHOnlineBanking',
+  BEEP_TH_LINE_PAY: 'BeepTHLinePay',
+  BEEP_PH_CREDIT_CARD: 'BeepPHCreditCard',
+  BEEP_PH_CCPP_GCASH: 'BeepPHCCPPGcash',
 };
 
 const CREDIT_CARD_BRANDS = {
@@ -491,6 +506,11 @@ const ADYEN_PAYMENT_TYPE = {
   PAY_WITH_SAVE_CARD: '3',
 };
 
+const PAYMENT_API_PAYMENT_OPTIONS = {
+  SAVE_CARD: 'saveCard',
+  TOKENIZATION: 'tokenization',
+};
+
 const TIME_SLOT_NOW = 'now';
 
 export default {
@@ -501,6 +521,7 @@ export default {
   ROUTER_PATHS,
   CASHBACK_SOURCE,
   PAYMENT_METHOD_LABELS,
+  PAYMENT_PROVIDERS,
   CREDIT_CARD_BRANDS,
   HOME_ASIDE_NAMES,
   ADDRESS_RANGE,
@@ -533,4 +554,5 @@ export default {
   SH_LOGISTICS_VALID_TIME,
   ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
+  PAYMENT_API_PAYMENT_OPTIONS,
 };
