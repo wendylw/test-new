@@ -16,7 +16,6 @@ import Utils from '../../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentRedirectAndWebHookUrl, getCardLabel } from '../utils';
 import {
   actions as appActionCreators,
@@ -25,7 +24,6 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getBusinessInfo,
-  getMerchantCountry,
   getCartBilling,
 } from '../../../redux/modules/app';
 import {

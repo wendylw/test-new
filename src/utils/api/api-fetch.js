@@ -3,6 +3,13 @@ import _isNull from 'lodash/isNull';
 import _isUndefined from 'lodash/isUndefined';
 import { isHttpSuccess, assembleUrl } from './api-utils';
 
+export const kyOrigin = ky.create({
+  hooks: {
+    // Update headers when consumer enter beep from different client
+    beforeRequest: [req => req.headers.set('client', 'fetch')],
+  },
+});
+
 const defaultHeaders = {
   Accept: 'application/json',
   'Content-Type': 'application/json',
@@ -12,7 +19,7 @@ const defaultHeaders = {
 };
 
 function convertOptions(options) {
-  const { type = 'json', payload: data, mode, headers, credentials = 'include', ...others } = options;
+  const { type = 'json', method, payload: data, mode, headers, credentials = 'include', ...others } = options;
   const composeHeaders = new Headers({
     ...defaultHeaders,
     ...headers,
@@ -30,8 +37,8 @@ function convertOptions(options) {
 
   let body = '';
 
-  if (!_isNull(payload) && !_isUndefined(payload)) {
-    body = JSON.stringify(payload);
+  if (!_isNull(data) && !_isUndefined(data)) {
+    body = JSON.stringify(data);
   }
 
   return Object.assign({}, currentOptions, { body });

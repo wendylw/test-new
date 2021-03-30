@@ -14,6 +14,18 @@ export const API_INFO = {
   }),
 };
 
+// export function clientSource() {
+//   headerClient = 'web';
+
+//   if (Utils.isAndroidWebview()) {
+//     headerClient = 'Android';
+//   } else if (Utils.isIOSWebview()) {
+//     headerClient = 'iOS';
+//   }
+
+//   return headerClient;
+// }
+
 export function isHttpSuccess(status) {
   if (status < 400) {
     return true;
