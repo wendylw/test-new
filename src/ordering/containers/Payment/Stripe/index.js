@@ -1,28 +1,16 @@
-import qs from 'qs';
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import {
-  CardNumberElement,
-  CardExpiryElement,
-  CardCvcElement,
-  Elements,
-  useElements,
-  useStripe,
-} from '@stripe/react-stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
 import _toString from 'lodash/toString';
 import _startsWith from 'lodash/startsWith';
-import Loader from '../components/Loader';
-import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
-import CurrencyNumber from '../../../components/CurrencyNumber';
-import CreateOrderButton from '../../../components/CreateOrderButton';
+
 import RedirectForm from '../components/RedirectForm';
 import config from '../../../../config';
 import Utils from '../../../../utils/utils';
-import CleverTap from '../../../../utils/clevertap';
 
 import { bindActionCreators, compose } from 'redux';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
@@ -32,382 +20,70 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
+  getStoreInfoForCleverTap,
+  getUser,
   getCartBilling,
   getBusinessInfo,
-  getStoreInfoForCleverTap,
 } from '../../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
-import PaymentCardBrands from '../components/PaymentCardBrands';
-import withDataAttributes from '../../../../components/withDataAttributes';
-import { getPaymentName, getPaymentRedirectAndWebHookUrl } from '../utils';
+import { getCurrentOrderId } from '../../../redux/modules/payment';
+import {
+  actions as paymentsActionCreators,
+  getSelectedPaymentOption,
+  getSelectedPaymentProvider,
+} from '../redux/payments';
+import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import '../PaymentCreditCard.scss';
+import CheckoutForm from './CheckoutForm';
 
+const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS, ROUTER_PATHS } = Constants;
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
 const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
 const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '');
 
-const Field = withDataAttributes(
-  ({
-    t,
-    label,
-    formClassName,
-    inputClassName,
-    id,
-    type,
-    placeholder,
-    required,
-    autoComplete,
-    isNotNameComplete,
-    isFormTouched,
-    value,
-    onChange,
-    dataAttributes,
-  }) => (
-    <div className={formClassName}>
-      <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
-        <label htmlFor={id} className="text-size-bigger text-weight-bolder">
-          {label}
-        </label>
-        {isFormTouched && isNotNameComplete ? (
-          <span className="form__error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
-        ) : null}
-      </div>
-      <div className="form__group">
-        <input
-          className={inputClassName}
-          id={id}
-          type={type}
-          placeholder={placeholder}
-          required={required}
-          autoComplete={autoComplete}
-          value={value}
-          onChange={onChange}
-          {...dataAttributes}
-        />
-      </div>
-    </div>
-  )
-);
-
-const ErrorMessage = ({ children }) => (
-  <span className="form__error-message padding-left-right-normal margin-top-bottom-small" role="alert">
-    {children}
-  </span>
-);
-
-const CheckoutForm = ({ t, renderRedirectForm, history, cartBilling, country, storeInfoForCleverTap }) => {
-  const { total } = cartBilling || {};
-  const stripe = useStripe();
-  const elements = useElements();
-  const [error, setError] = useState(null);
-  const [cardBrand, setCardBrand] = useState('');
-  const [cardNumberDomLoaded, setCardNumberDom] = useState(false);
-  const [cardExpiryDomLoaded, setCardExpiryDom] = useState(false);
-  const [cardCVCDomLoaded, setCardCVCDom] = useState(false);
-  const [cardNumberComplete, setCardNumberComplete] = useState(false);
-  const [cardExpiryComplete, setCardExpiryComplete] = useState(false);
-  const [cardCvcComplete, setCardCvcComplete] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  const [isFormTouched, setIsFormTouched] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(null);
-  const [billingDetails, setBillingDetails] = useState({
-    // email: '',
-    // phone: '',
-    name: '',
-  });
-  const cardComplete = cardNumberComplete && cardExpiryComplete && cardCvcComplete;
-
-  if (typeof renderRedirectForm !== 'function') {
-    throw new Error('Error: getRedirectFrom should be a function');
-  }
-
-  const handleSubmit = async event => {
-    event.preventDefault();
-
-    if (!stripe || !elements) {
-      // Stripe.js has not loaded yet. Make sure to disable
-      // form submission until Stripe.js has loaded.
-      return;
-    }
-
-    if (error) {
-      elements.getElement('card').focus();
-      return;
-    }
-
-    if (cardComplete) {
-      setProcessing(true);
-    }
-  };
-
-  const isNotCardComplete = !cardNumberComplete && !cardExpiryComplete && !cardCvcComplete;
-
-  const isNotNameComplete = !Boolean(billingDetails.name);
-
-  const renderFieldErrorMessage = () => {
-    if (error.code === 'invalid_number') {
-      return t('CardNumberInvalidMessage');
-    } else if (error.code === 'incomplete_number') {
-      return t('CardNumberStringIncompleteMessage');
-    } else if (error.code === 'incomplete_expiry') {
-      return t('CardExpiryIncompleteMessage');
-    } else if (error.code === 'incomplete_cvc') {
-      return t('CardCVCIncompleteMessage');
-    }
-  };
-
-  // 'onfocus', (e ) => e.target.checkValidity()
-  const isFormComplete = cardNumberComplete && cardExpiryComplete && cardCvcComplete && billingDetails.name;
-
-  return (
-    <form className="form" onSubmit={handleSubmit}>
-      <div className="text-center padding-top-bottom-normal">
-        <CurrencyNumber className="text-size-large text-weight-bolder" money={total || 0} />
-      </div>
-      <div className="padding-left-right-normal">
-        <div className="flex flex-middle flex-space-between padding-top-bottom-normal">
-          <label className="text-size-bigger text-weight-bolder">{t('CardInformation')}</label>
-          {isFormTouched && isNotCardComplete ? (
-            <span className="form__error-message text-weight-bolder text-uppercase">{t('RequiredMessage')}</span>
-          ) : null}
-        </div>
-        <div
-          className={`payment-credit-card__group-card-number padding-left-right-normal form__group ${
-            (isFormTouched && isNotCardComplete) ||
-            (error && (error.code === 'invalid_number' || error.code === 'incomplete_number'))
-              ? ' error'
-              : ''
-          }`}
-          data-heap-name="ordering.payment.stripe.card-number-wrapper"
-        >
-          <CardNumberElement
-            options={{
-              style: {
-                base: {
-                  lineHeight: '54px',
-                  color: '#303030',
-                  fontSize: '1.4285rem',
-                  fontSmoothing: 'antialiased',
-                  ':-webkit-autofill': {
-                    color: '#dededf',
-                  },
-                  '::placeholder': {
-                    color: '#dededf',
-                  },
-                },
-                invalid: {
-                  color: '#fa4133',
-                },
-              },
-            }}
-            onChange={e => {
-              setError(e.error);
-              // Card brand. Can be American Express, Diners Club, Discover, JCB, MasterCard, UnionPay, Visa, or Unknown.
-              // The card brand of the card number being entered.
-              // Can be one of visa, mastercard, amex, discover, diners, jcb, unionpay, or unknown.
-              setCardBrand(e.brand);
-              setCardNumberComplete(e.complete);
-            }}
-            onReady={e => {
-              setCardNumberDom(true);
-            }}
-          />
-          <PaymentCardBrands country={country} brand={cardBrand} vendor={PaymentCardBrands.VENDOR_STRIPE} />
-        </div>
-
-        <div className="flex flex-middle">
-          <div
-            className="payment-credit-card__group-left-bottom form__group padding-left-right-normal"
-            data-heap-name="ordering.payment.stripe.valid-date-wrapper"
-            style={{
-              width: '50%',
-              borderColor:
-                (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_expiry')
-                  ? '#fa4133'
-                  : '#dededf',
-            }}
-          >
-            <CardExpiryElement
-              options={{
-                style: {
-                  base: {
-                    lineHeight: '54px',
-                    color: '#303030',
-                    fontSize: '1.4285rem',
-                    fontSmoothing: 'antialiased',
-                    ':-webkit-autofill': {
-                      color: '#dededf',
-                    },
-                    '::placeholder': {
-                      color: '#dededf',
-                    },
-                  },
-                  invalid: {
-                    color: '#fa4133',
-                  },
-                },
-              }}
-              onChange={e => {
-                setError(e.error);
-                setCardExpiryComplete(e.complete);
-              }}
-              onReady={e => {
-                setCardExpiryDom(true);
-              }}
-            />
-          </div>
-          <div
-            className="payment-credit-card__group-right-bottom form__group padding-left-right-normal"
-            style={{
-              width: '50%',
-              borderWidth: error && error.code === 'incomplete_cvc' ? '1px' : '1px 1px 1px 0',
-              borderColor:
-                (isFormTouched && isNotCardComplete) || (error && error.code === 'incomplete_cvc')
-                  ? '#fa4133'
-                  : '#dededf',
-            }}
-            data-heap-name="ordering.payment.stripe.cvc-wrapper"
-          >
-            <CardCvcElement
-              options={{
-                style: {
-                  base: {
-                    lineHeight: '54px',
-                    color: '#303030',
-                    fontSize: '1.4285rem',
-                    fontSmoothing: 'antialiased',
-                    ':-webkit-autofill': {
-                      color: '#dededf',
-                    },
-                    '::placeholder': {
-                      color: '#dededf',
-                    },
-                  },
-                  invalid: {
-                    color: '#fa4133',
-                  },
-                },
-              }}
-              onChange={e => {
-                setError(e.error);
-                setCardCvcComplete(e.complete);
-              }}
-              onReady={e => {
-                setCardCVCDom(true);
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      {error && <ErrorMessage>{renderFieldErrorMessage()}</ErrorMessage>}
-
-      <Field
-        t={t}
-        label={t('NameOnCard')}
-        formClassName="padding-normal"
-        inputClassName={`payment-credit-card__input form__input padding-left-right-normal text-size-biggest ${
-          isFormTouched && isNotCardComplete ? ' error' : ''
-        }`}
-        id="name"
-        type="text"
-        required
-        autoComplete="name"
-        data-heap-name="ordering.payment.stripe.holder-name"
-        value={billingDetails.name}
-        isNotNameComplete={isNotNameComplete}
-        isFormTouched={isFormTouched}
-        onChange={e => {
-          setBillingDetails({ ...billingDetails, name: e.target.value });
-        }}
-      />
-
-      <footer className=" payment-credit-card__footer payment-credit-card__footer-stripe footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
-        <CreateOrderButton
-          className="margin-top-bottom-smaller text-uppercase"
-          history={history}
-          buttonType="submit"
-          data-heap-name="ordering.payment.stripe.pay-btn"
-          disabled={processing || !stripe}
-          beforeCreateOrder={async () => {
-            CleverTap.pushEvent('Card Details - click continue', {
-              ...storeInfoForCleverTap,
-              'payment method': getPaymentName(country, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY),
-            });
-            setProcessing(true);
-            setIsFormTouched(true);
-          }}
-          validCreateOrder={Boolean(isFormComplete)}
-          afterCreateOrder={async orderId => {
-            const payload = await stripe.createPaymentMethod({
-              type: 'card',
-              card: elements.getElement(CardNumberElement),
-              billing_details: billingDetails,
-            });
-
-            setProcessing(!!orderId);
-
-            if (payload.error) {
-              setError(payload.error);
-            } else {
-              setPaymentMethod(payload.paymentMethod);
-            }
-          }}
-          paymentName={'Stripe'}
-        >
-          {processing ? (
-            t('Processing')
-          ) : (
-            <CurrencyNumber
-              className="text-center text-weight-bolder text-uppercase"
-              addonBefore={t('Pay')}
-              money={total || 0}
-            />
-          )}
-        </CreateOrderButton>
-      </footer>
-
-      {paymentMethod ? renderRedirectForm(paymentMethod) : null}
-
-      <Loader
-        className={'loading-cover opacity'}
-        loaded={cardNumberDomLoaded && cardExpiryDomLoaded && cardCVCDomLoaded}
-      />
-    </form>
-  );
-};
-
+// React Stripe.js reference: https://stripe.com/docs/stripe-js/react
 class Stripe extends Component {
-  state = {
-    payNowLoading: false,
-    domLoaded: false,
-  };
-
   async componentDidMount() {
-    const { deliveryDetails, customerActions } = this.props;
-    const { addressId } = deliveryDetails || {};
-    const type = Utils.getOrderTypeFromUrl();
+    try {
+      await this.ensurePaymentProvider();
 
-    !addressId && (await customerActions.initDeliveryDetails(type));
+      const { deliveryDetails, customerActions } = this.props;
+      const { addressId } = deliveryDetails || {};
+      const type = Utils.getOrderTypeFromUrl();
 
-    const { deliveryDetails: newDeliveryDetails } = this.props;
-    const { deliveryToLocation } = newDeliveryDetails || {};
+      !addressId && (await customerActions.initDeliveryDetails(type));
 
-    this.props.appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
+      const { deliveryDetails: newDeliveryDetails } = this.props;
+      const { deliveryToLocation } = newDeliveryDetails || {};
+
+      this.props.appActions.loadShoppingCart(
+        deliveryToLocation.latitude &&
+          deliveryToLocation.longitude && {
+            lat: deliveryToLocation.latitude,
+            lng: deliveryToLocation.longitude,
+          }
+      );
+    } catch (error) {
+      // TODO: handle this error in Payment 2.0
+      console.error(error);
+    }
   }
+
+  ensurePaymentProvider = async () => {
+    const { paymentProvider, paymentsActions } = this.props;
+    // refresh page will lost state
+    if (!paymentProvider) {
+      await paymentsActions.loadPaymentOptions();
+
+      paymentsActions.updatePaymentOptionSelected(PAYMENT_PROVIDERS.STRIPE);
+    }
+  };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, businessInfo } = this.props;
+    const { onlineStoreInfo, currentOrder, business, businessInfo, user } = this.props;
     const planId = _toString(_get(businessInfo, 'planId', ''));
-    const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
 
-    if (!onlineStoreInfo || !currentOrder || !currentPayment) {
+    if (!onlineStoreInfo || !currentOrder) {
       return null;
     }
 
@@ -420,72 +96,62 @@ class Stripe extends Component {
       businessName: business,
       redirectURL,
       webhookURL,
-      paymentName: 'Stripe',
+      paymentName: PAYMENT_PROVIDERS.STRIPE,
       isInternal: _startsWith(planId, 'internal'),
       source: Utils.getOrderSource(),
+      paymentOption: null,
       paymentMethodId: '',
+      userId: user.consumerId,
     };
   };
 
   render() {
-    const { t, match, history, cartBilling, merchantCountry, storeInfoForCleverTap } = this.props;
+    const {
+      t,
+      match,
+      history,
+      cartBilling,
+      merchantCountry,
+      selectedPaymentOption,
+      storeInfoForCleverTap,
+      appActions,
+    } = this.props;
+    const supportSaveCard = _get(selectedPaymentOption, 'supportSaveCard', false);
+    const isAddCardPath = ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE === history.location.pathname;
 
     return (
-      <section
-        className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
-        data-heap-name="ordering.payment.stripe.container"
-      >
-        <Header
-          headerRef={ref => (this.headerEl = ref)}
-          className="flex-middle border__bottom-divider"
-          contentClassName="flex-middle"
-          data-heap-name="ordering.payment.stripe.header"
-          isPage={true}
-          title={t('PayViaCard')}
-          navFunc={() => {
-            CleverTap.pushEvent('Card Details - click back arrow');
+      <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
+        <CheckoutForm
+          showMessageModal={appActions.showMessageModal}
+          match={match}
+          t={t}
+          history={history}
+          isAddCardPath={isAddCardPath}
+          country={merchantCountry}
+          cartSummary={cartBilling}
+          storeInfoForCleverTap={storeInfoForCleverTap}
+          supportSaveCard={supportSaveCard}
+          renderRedirectForm={(paymentMethod, saveCard) => {
+            if (!paymentMethod) return null;
 
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
-              search: window.location.search,
-            });
+            const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
+            if (supportSaveCard && saveCard) {
+              requestData.paymentOption = PAYMENT_API_PAYMENT_OPTIONS.SAVE_CARD;
+            }
+
+            const { receiptNumber } = requestData;
+
+            return requestData && receiptNumber ? (
+              <RedirectForm
+                key="stripe-payment-redirect-form"
+                action={config.storeHubPaymentEntryURL}
+                method="POST"
+                data={requestData}
+              />
+            ) : null;
           }}
         />
-
-        <div
-          className="payment-credit-card__container padding-top-bottom-normal"
-          style={{
-            height: Utils.containerHeight({
-              headerEls: [this.headerEl],
-            }),
-          }}
-        >
-          <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
-            <CheckoutForm
-              t={t}
-              history={history}
-              country={merchantCountry}
-              cartBilling={cartBilling}
-              storeInfoForCleverTap={storeInfoForCleverTap}
-              renderRedirectForm={paymentMethod => {
-                if (!paymentMethod) return null;
-
-                const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
-                const { receiptNumber } = requestData;
-
-                return requestData && receiptNumber ? (
-                  <RedirectForm
-                    key="stripe-payment-redirect-form"
-                    action={config.storeHubPaymentEntryURL}
-                    method="POST"
-                    data={requestData}
-                  />
-                ) : null;
-              }}
-            />
-          </Elements>
-        </div>
-      </section>
+      </Elements>
     );
   }
 }
@@ -504,13 +170,16 @@ export default compose(
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
+        user: getUser(state),
+        paymentProvider: getSelectedPaymentProvider(state),
+        selectedPaymentOption: getSelectedPaymentOption(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
+      paymentsActions: bindActionCreators(paymentsActionCreators, dispatch),
     })
   )
 )(Stripe);

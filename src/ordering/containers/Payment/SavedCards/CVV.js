@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import AdyenCheckout from '@adyen/adyen-web';
-import '@adyen/adyen-web/dist/adyen.css';
 import _get from 'lodash/get';
 import _toString from 'lodash/toString';
 import _startsWith from 'lodash/startsWith';
@@ -18,110 +16,78 @@ import Utils from '../../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getMerchantCountry, getBusinessInfo } from '../../../redux/modules/app';
+import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentRedirectAndWebHookUrl, getCardLabel } from '../utils';
-import { getUser, getOnlineStoreInfo, getBusiness, getCartBilling } from '../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUser,
+  getMerchantCountry,
+  getOnlineStoreInfo,
+  getBusiness,
+  getBusinessInfo,
+  getMerchantCountry,
+  getCartBilling,
+} from '../../../redux/modules/app';
 import {
   actions as paymentActionCreators,
   getCardList,
   getCurrentOrderId,
   getSelectedPaymentCard,
 } from '../../../redux/modules/payment';
+import StripeCVV from './components/StripeCVV';
 import '../PaymentCreditCard.scss';
 import './CVV.scss';
+import { STRIPE_LOAD_TIME_OUT } from '../Stripe/constants';
 
 class CardCVV extends Component {
   state = {
+    // TODO: Move whole state to redux store in Payment 2.0
     payNowLoading: false,
-    isAdyenCardLoaded: false,
+    isCvvComponentReady: false,
     isCvvValid: false,
     submitToPayment: false,
+    cvcToken: null,
   };
-  card = null;
+  timeoutId = null;
+  headerEl = null;
+  footerEl = null;
+  cvcInputRef = React.createRef();
 
   componentDidMount() {
     const { selectedPaymentCard, history } = this.props;
 
     if (!selectedPaymentCard || !selectedPaymentCard.cardToken) {
-      history.replace({
-        pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
-        search: window.location.search,
-      });
+      history.goBack();
       return;
     }
 
-    this.initAdyenCard();
+    this.timeoutId = setTimeout(this.handleLoadTimeout, STRIPE_LOAD_TIME_OUT);
   }
 
-  initAdyenCard = () => {
-    const handleOnChange = (state, component) => {
-      const { state: CardComponentState } = component;
-      const isCvvValid = CardComponentState.valid.encryptedSecurityCode;
-      if (this.state.isCvvValid !== isCvvValid) {
-        this.setState({
-          isCvvValid: isCvvValid,
-        });
-      }
-    };
+  componentWillUnmount() {
+    clearTimeout(this.timeoutId);
+  }
 
-    const configuration = {
-      environment: process.env.REACT_APP_ADYEN_PAYMENT_ENV, // Change this value to live env when go prod. Use test. When you're ready to accept live payments, change the value to one of our live environments.
-      clientKey: process.env.REACT_APP_ADYEN_PAYMENT_CLIENTKEY,
-      onChange: handleOnChange,
-      translations: {
-        'en-US': {
-          'creditCard.cvcField.placeholder': 'CVC',
-        },
-      },
-    };
+  handleLoadTimeout = () => {
+    if (this.state.isCvvComponentReady) {
+      return;
+    }
+    const { t, history, showMessageModal } = this.props;
 
-    const checkout = new AdyenCheckout(configuration);
+    console.error('Load Stripe time out');
 
-    this.card = checkout
-      .create('card', {
-        type: 'card',
-        brands: ['mc', 'visa'],
-        showPayButton: false,
-        hasHolderName: false,
-        showBrandIcon: true,
-        styles: {
-          base: {
-            padding: '0',
-            lineHeight: '54px',
-            fontSmoothing: 'antialiased',
-            fontSize: '1.25rem',
-            outline: 'none',
-            color: '#303030',
-          },
-          placeholder: {
-            color: '#dededf',
-          },
-          validated: {
-            outline: 'none',
-          },
-        },
-        onError: error => {},
-        onChange: handleOnChange,
-        onFieldValid: () => {},
-        onSubmit: (state, component) => {
-          return false;
-        },
-        onValid: () => {},
-        onLoad: () => {
-          this.setState({
-            isAdyenCardLoaded: true,
-          });
-        },
-      })
-      .mount('#adyen-cvv');
+    showMessageModal({
+      message: t('TimeOut'),
+      description: t('ConnectionIssue'),
+    });
+
+    history.goBack();
   };
 
   getPaymentEntryRequestData = () => {
     const { onlineStoreInfo, currentOrder, business, businessInfo, user, selectedPaymentCard } = this.props;
-    const currentPayment = Constants.PAYMENT_METHOD_LABELS.ADYEN_PAY;
-    const { state, browserInfo } = this.card;
 
-    if (!onlineStoreInfo || !currentOrder || !currentPayment || !user || !state.data.encryptedSecurityCode) {
+    if (!onlineStoreInfo || !currentOrder || !user) {
       return {};
     }
 
@@ -136,20 +102,47 @@ class CardCVV extends Component {
       webhookURL,
       userId: user.consumerId,
       cardToken: selectedPaymentCard.cardToken,
-      paymentName: 'Adyen', // Check if can get from function
-      encryptedSecurityCode: state.data.encryptedSecurityCode,
-      type: Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVED_CARD,
-      browserInfo,
+      paymentName: Constants.PAYMENT_PROVIDERS.STRIPE,
+      paymentOption: Constants.PAYMENT_API_PAYMENT_OPTIONS.TOKENIZATION,
       isInternal: _startsWith(planId, 'internal'),
       source: Utils.getOrderSource(),
+      cvcToken: this.state.cvcToken,
     };
   };
+
+  handleOrderBeforeCreate = async () => {
+    this.setState({
+      payNowLoading: true,
+    });
+
+    const result = await this.cvcInputRef.current.getCvcToken();
+    const cvcToken = _get(result, 'token.id', null);
+    const errorCode = _get(result, 'error.code', null);
+
+    this.setState(
+      {
+        cvcToken,
+        isCvvValid: !errorCode,
+      },
+      () => {
+        this.setState({
+          payNowLoading: this.isValidCreateOrder,
+        });
+      }
+    );
+  };
+
+  get isValidCreateOrder() {
+    const { cvcToken, isCvvValid } = this.state;
+
+    return cvcToken && isCvvValid;
+  }
 
   renderRedirectForm = () => {
     const { currentOrder } = this.props;
 
     if (!currentOrder) return null;
-    if (!this.card || !this.state.isCvvValid || !this.state.submitToPayment) return null;
+    if (!this.state.submitToPayment) return null;
 
     const requestData = { ...this.getPaymentEntryRequestData() };
     const { receiptNumber } = requestData;
@@ -157,7 +150,7 @@ class CardCVV extends Component {
     return (
       receiptNumber && (
         <RedirectForm
-          key="adyen-payment-redirect-form"
+          key="stripe-payment-redirect-form"
           action={config.storeHubPaymentEntryURL}
           method="POST"
           data={requestData}
@@ -166,25 +159,40 @@ class CardCVV extends Component {
     );
   };
 
+  handleCvvComponentOnReady = () => {
+    this.setState({
+      isCvvComponentReady: true,
+    });
+  };
+
+  handleCvvCodeChange = result => {
+    const complete = _get(result, 'complete', false);
+    const errorCode = _get(result, 'error.code', null);
+
+    this.setState({
+      isCvvValid: complete && !errorCode,
+    });
+  };
+
   render() {
-    const { t, history, cartBilling, selectedPaymentCard } = this.props;
+    const { t, history, cartBilling, selectedPaymentCard, merchantCountry } = this.props;
     const { total } = cartBilling;
-    const { isAdyenCardLoaded, payNowLoading } = this.state;
+    const { isCvvComponentReady, payNowLoading, isCvvValid } = this.state;
 
     if (!selectedPaymentCard || !selectedPaymentCard.cardInfo) return null;
 
     return (
       <section className="payment-credit-card flex flex-column">
         <Header
+          headerEl={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           isPage={true}
           title={t('PayViaCard')}
           navFunc={() => {
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
-              search: window.location.search,
-            });
+            history.goBack();
           }}
         />
         <div
@@ -209,32 +217,32 @@ class CardCVV extends Component {
               </h3>
               <p className="margin-top-bottom-normal text-line-height-base">{t('CvvConfirm')}</p>
             </div>
-            <div id="adyen-cvv"></div>
+            <StripeCVV
+              onChange={this.handleCvvCodeChange}
+              onReady={this.handleCvvComponentOnReady}
+              ref={this.cvcInputRef}
+              merchantCountry={merchantCountry}
+            />
           </div>
-          <Loader className={'loading-cover opacity'} loaded={!isAdyenCardLoaded || !payNowLoading} />
+          <Loader className={'loading-cover opacity'} loaded={isCvvComponentReady && !payNowLoading} />
         </div>
-        <footer className="payment-credit-card__footer flex__shrink-fixed footer padding-top-bottom-small padding-left-right-normal">
+        <footer
+          ref={ref => {
+            this.footerEl = ref;
+          }}
+          className="payment-credit-card__footer flex__shrink-fixed footer padding-top-bottom-small padding-left-right-normal"
+        >
           <CreateOrderButton
             className="margin-top-bottom-smaller"
             history={history}
             buttonType="submit"
-            disabled={!this.state.isAdyenCardLoaded} // Disable this button until dom is ready
-            beforeCreateOrder={() => {
-              if (!this.state.isCvvValid) {
-                // Trigger card submit to utilize adyen component verification
-                this.card.submit();
-                return;
-              }
-
-              this.setState({
-                payNowLoading: true,
-              });
-            }}
-            validCreateOrder={Boolean(this.card && this.state.isCvvValid)}
-            afterCreateOrder={() => {
+            disabled={!isCvvComponentReady || !isCvvValid || payNowLoading}
+            beforeCreateOrder={this.handleOrderBeforeCreate}
+            validCreateOrder={this.isValidCreateOrder}
+            afterCreateOrder={orderId => {
               this.setState({
                 submitToPayment: true,
-                payNowLoading: false,
+                payNowLoading: !!orderId,
               });
             }}
           >
@@ -270,6 +278,7 @@ export default compose(
       };
     },
     dispatch => ({
+      showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
     })

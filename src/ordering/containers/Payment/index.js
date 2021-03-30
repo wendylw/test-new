@@ -31,13 +31,15 @@ import Loader from './components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../utils/clevertap';
 
-const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
+const { ROUTER_PATHS, DELIVERY_METHOD, PAYMENT_PROVIDERS } = Constants;
 
 class Payment extends Component {
   state = {
     payNowLoading: false,
     cartContainerHeight: '100%',
   };
+
+  willUnmount = false;
 
   componentDidMount = async () => {
     const { deliveryDetails, customerActions, paymentsActions } = this.props;
@@ -74,6 +76,10 @@ class Payment extends Component {
         cartContainerHeight: containerHeight,
       });
     }
+  }
+
+  componentWillUnmount() {
+    this.willUnmount = true;
   }
 
   getPaymentEntryRequestData = () => {
@@ -136,39 +142,41 @@ class Payment extends Component {
       });
     }
 
-    // Check if is credit pay, if credit pay, should check if go to saved page or
-    if (currentPaymentOption && currentPaymentOption.supportSaveCards) {
-      await this.props.paymentActions.fetchSavedCard({
-        userId: user.consumerId,
-        paymentName: currentPaymentOption.paymentProvider,
+    if (!currentPaymentOption || !currentPaymentOption.paymentProvider) {
+      return;
+    }
+
+    const { supportSaveCard, pathname, paymentProvider } = currentPaymentOption;
+
+    // currently only Stripe payment support save cards
+    if (paymentProvider === PAYMENT_PROVIDERS.STRIPE && supportSaveCard) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
+        search: window.location.search,
       });
-
-      const { cardList } = this.props;
-
-      if (cardList && cardList.length) {
-        history.push({
-          pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
-          search: window.location.search,
-        });
-        return;
-      } else {
-        history.push({
-          pathname: Constants.ROUTER_PATHS.ORDERING_ADYEN_PAYMENT,
-          search: window.location.search,
-        });
-        return;
-      }
+      return;
     }
 
     // redirect to customized payment page when the payment contains pathname of page router
-    if (currentPaymentOption && currentPaymentOption.pathname) {
+    if (pathname) {
       history.push({
-        pathname: currentPaymentOption.pathname,
+        pathname: pathname,
         search: window.location.search,
       });
 
       return;
     }
+  };
+
+  handleAfterCreateOrder = orderId => {
+    // Resolve React Warning: perform a set state after component unmounted
+    if (this.willUnmount) {
+      return;
+    }
+
+    this.setState({
+      payNowLoading: !!orderId,
+    });
   };
 
   renderPaymentList() {
@@ -241,11 +249,7 @@ class Payment extends Component {
               this.handleBeforeCreateOrder();
             }}
             paymentName={currentPaymentOption.paymentProvider}
-            afterCreateOrder={orderId => {
-              this.setState({
-                payNowLoading: !!orderId,
-              });
-            }}
+            afterCreateOrder={this.handleAfterCreateOrder}
           >
             {payNowLoading ? t('Processing') : t('Continue')}
           </CreateOrderButton>

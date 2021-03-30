@@ -9,6 +9,7 @@ import { API_INFO } from '../api-info';
 
 /* Model */
 const PAYMENTS_MAPPING = {
+  // Adyen is unavailable for now, so it is hidden
   Adyen: {
     key: 'CreditAndDebitCard',
     logo: 'paymentCreditImage',
@@ -84,7 +85,7 @@ const PaymentOptionModel = {
   available: false,
   pathname: null,
   agentCodes: [],
-  supportSaveCards: false,
+  supportSaveCard: false,
 };
 
 const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping) => {
@@ -314,6 +315,7 @@ export default combineReducers({
 /* end of reducer */
 
 /* selector */
+export const getSelectedPaymentProvider = ({ payments }) => payments.common.selectedOptionProvider;
 export const getPaymentsPendingState = ({ payments }) => payments.common.status === 'pending';
 
 export const getAllPaymentsOptions = ({ payments, entities }) => {

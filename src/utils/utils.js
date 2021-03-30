@@ -816,4 +816,16 @@ Utils.getOrderSource = () => {
   return orderSource;
 };
 
+Utils.getHeaderClient = () => {
+  let headerClient = '';
+  if (Utils.isAndroidWebview()) {
+    headerClient = 'Android';
+  } else if (Utils.isIOSWebview()) {
+    headerClient = 'iOS';
+  } else {
+    headerClient = 'web';
+  }
+  return headerClient;
+};
+
 export default Utils;
