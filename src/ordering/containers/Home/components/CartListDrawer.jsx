@@ -146,8 +146,8 @@ class CartListDrawer extends Component {
   renderProductItemRightController(cartItem) {
     const { t, cleverTapDecreaseCartItem, cleverTapIncreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
-    const lowStockState = stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand;
-    const classList = ['text-center', ...(lowStockState ? ['text-error'] : [])];
+    const inventoryShortage = stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand;
+    const classList = ['text-center', ...(inventoryShortage ? ['text-error'] : [])];
 
     if (this.getOutStockStatus(stockStatus)) {
       return (
@@ -170,7 +170,7 @@ class CartListDrawer extends Component {
           data-heap-name="ordering.home.mini-cart.item-operator"
           quantity={quantity}
           decreaseDisabled={!Boolean(quantity)}
-          increaseDisabled={lowStockState}
+          increaseDisabled={inventoryShortage}
           onDecrease={() => {
             if (cleverTapDecreaseCartItem) {
               cleverTapDecreaseCartItem(cartItem);
@@ -186,7 +186,7 @@ class CartListDrawer extends Component {
             this.handleIncreaseCartItem(cartItem);
           }}
         />
-        {stockStatus === 'lowStock' ? (
+        {inventoryShortage || stockStatus === 'lowStock' ? (
           <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>
         ) : null}
       </div>

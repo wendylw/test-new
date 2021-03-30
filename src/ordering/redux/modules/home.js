@@ -225,8 +225,6 @@ const popUpModal = (state = initialState.popUpModal, action) => {
 };
 
 const selectedProduct = (state = initialState.selectedProduct, action) => {
-  console.log(action.type);
-
   if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_REQUEST) {
     return { ...state, isFetching: true, status: 'pending' };
   } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_SUCCESS) {
