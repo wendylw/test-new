@@ -103,8 +103,13 @@
     "rules": {
       "no-unused-expressions": [
         "off"
-      ]
-    }
+      ],
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn"
+    },
+    "plugins": [
+      "react-hooks"
+    ]
   },
   "browserslist": [
     ">0.2%",

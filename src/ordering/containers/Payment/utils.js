@@ -6,7 +6,7 @@ import Utils from '../../../utils/utils';
 import paymentMasterImage from '../../../images/payment-mastercard.svg';
 import paymentVisaImage from '../../../images/payment-visa.svg';
 
-const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS } = Constants;
+const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS, ROUTER_PATHS, PAYMENT_PROVIDERS } = Constants;
 
 const PAYMENT_NAME_COUNTRY_MAP = {
   MY: {
@@ -172,4 +172,22 @@ export const getCardIcon = cardType => {
   }
 
   return cardIcon;
+};
+
+export const getCreditCardFormPathname = (paymentProvider, saveCard = false) => {
+  switch (paymentProvider) {
+    case PAYMENT_PROVIDERS.ADYEN:
+      return ROUTER_PATHS.ORDERING_ADYEN_PAYMENT;
+
+    case PAYMENT_PROVIDERS.STRIPE:
+      return saveCard ? ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE : ROUTER_PATHS.ORDERING_STRIPE_PAYMENT;
+
+    case PAYMENT_PROVIDERS.BEEP_TH_CREDIT_CARD:
+    case PAYMENT_PROVIDERS.BEEP_PH_CREDIT_CARD:
+      return ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT;
+
+    default:
+      console.error(`Wrong paymentProvider(${paymentProvider}) for CreditCard, will back to Payment page`);
+      return ROUTER_PATHS.ORDERING_PAYMENT;
+  }
 };
