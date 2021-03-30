@@ -200,8 +200,8 @@ const loadSavedCardsFailed = error => ({
 
 export const actions = {
   loadPaymentOptions: () => async (dispatch, getState) => {
-    const { entities } = getState();
-    const { total } = entities.carts.summary;
+    const { app } = getState();
+    const { total } = app.shoppingCart.billing;
 
     try {
       dispatch(loadPayments());
@@ -318,8 +318,8 @@ export default combineReducers({
 export const getSelectedPaymentProvider = ({ payments }) => payments.common.selectedOptionProvider;
 export const getPaymentsPendingState = ({ payments }) => payments.common.status === 'pending';
 
-export const getAllPaymentsOptions = ({ payments, entities }) => {
-  const { total } = entities.carts.summary;
+export const getAllPaymentsOptions = ({ payments, app }) => {
+  const { total } = app.shoppingCart.billing;
 
   return payments.common.options.map(originalOption => {
     const option = { ...originalOption };

@@ -14,17 +14,28 @@ export const API_INFO = {
   }),
 };
 
-// export function clientSource() {
-//   headerClient = 'web';
+export function getClientSource() {
+  const isIOS = Boolean(
+    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
+  );
+  const isAndroid = Boolean(window.androidInterface);
+  const source = {
+    name: 'web',
+    web: !isIOS && !isAndroid,
+    ios: isIOS,
+    android: isAndroid,
+  };
 
-//   if (Utils.isAndroidWebview()) {
-//     headerClient = 'Android';
-//   } else if (Utils.isIOSWebview()) {
-//     headerClient = 'iOS';
-//   }
+  if (isIOS) {
+    source.name = 'iOS';
+  }
 
-//   return headerClient;
-// }
+  if (isAndroid) {
+    source.name = 'Android';
+  }
+
+  return source;
+}
 
 export function isHttpSuccess(status) {
   if (status < 400) {

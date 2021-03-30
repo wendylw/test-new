@@ -25,24 +25,6 @@ Utils.getApiRequestShippingType = () => {
   return type ? Utils.mapString2camelCase(type) : undefined;
 };
 
-Utils.clientSourceObject = function clientSourceObject() {
-  const isIOS = Boolean(
-    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
-  );
-  const isAndroid = Boolean(window.androidInterface);
-  const source = {
-    name: 'web',
-    web: true,
-    ios: false,
-    android: Boolean(window.androidInterface),
-  };
-
-  if (isIOS) {
-    source.name = 'ios';
-    source.web = false;
-  }
-};
-
 Utils.isWebview = function isWebview() {
   return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
 };

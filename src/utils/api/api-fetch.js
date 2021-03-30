@@ -1,12 +1,12 @@
 import ky from 'ky';
 import _isNull from 'lodash/isNull';
 import _isUndefined from 'lodash/isUndefined';
-import { isHttpSuccess, assembleUrl } from './api-utils';
+import { isHttpSuccess, assembleUrl, getClientSource } from './api-utils';
 
 export const kyOrigin = ky.create({
   hooks: {
     // Update headers when consumer enter beep from different client
-    beforeRequest: [req => req.headers.set('client', 'fetch')],
+    beforeRequest: [req => req.headers.set('client', getClientSource())],
   },
 });
 
@@ -19,7 +19,7 @@ const defaultHeaders = {
 };
 
 function convertOptions(options) {
-  const { type = 'json', method, payload: data, mode, headers, credentials = 'include', ...others } = options;
+  const { type = 'json', method, payload, mode, headers, credentials = 'include', ...others } = options;
   const composeHeaders = new Headers({
     ...defaultHeaders,
     ...headers,
@@ -35,10 +35,23 @@ function convertOptions(options) {
     return currentOptions;
   }
 
+  if (type === 'json') {
+    if (payload && typeof payload !== 'object') {
+      console.warn(
+        `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`
+      );
+      others.body = payload;
+    } else {
+      others.json = payload;
+    }
+  } else {
+    others.body = payload;
+  }
+
   let body = '';
 
-  if (!_isNull(data) && !_isUndefined(data)) {
-    body = JSON.stringify(data);
+  if (!_isNull(payload) && !_isUndefined(payload)) {
+    body = JSON.stringify(payload);
   }
 
   return Object.assign({}, currentOptions, { body });
