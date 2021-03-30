@@ -15,11 +15,8 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getUser } from '../../../redux/modules/app';
 import { actions as paymentActionCreators, getCardList, getSelectedPaymentCard } from '../../../redux/modules/payment';
-import {
-  getSelectedPaymentOption,
-  getSelectedPaymentProvider,
-  actions as paymentsActionCreators,
-} from '../redux/payments';
+import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../redux/common/selectors';
+import * as paymentCommonThunks from '../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../utils';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import IconAddNew from '../../../../images/icon-add-new.svg';
@@ -279,7 +276,7 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
-      paymentsActions: bindActionCreators(paymentsActionCreators, dispatch),
+      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
     })
   )
 )(SavedCards);
