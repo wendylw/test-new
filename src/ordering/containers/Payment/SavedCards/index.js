@@ -14,7 +14,8 @@ import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getUser } from '../../../redux/modules/app';
-import { actions as paymentActionCreators, getCardList, getSelectedPaymentCard } from '../../../redux/modules/payment';
+import { getCardList, getSelectedPaymentCard } from './redux/selectors';
+import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
 import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../redux/common/selectors';
 import * as paymentCommonThunks from '../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../utils';
@@ -32,12 +33,12 @@ class SavedCards extends Component {
   willUnmount = false;
 
   ensurePaymentProvider = async () => {
-    const { paymentProvider, paymentsActions } = this.props;
+    const { paymentProvider, loadPaymentOptions, updatePaymentOptionSelected } = this.props;
     // refresh page will lost state
     if (!paymentProvider) {
-      await paymentsActions.loadPaymentOptions();
+      await loadPaymentOptions();
       // currently only Stripe support save card
-      paymentsActions.updatePaymentOptionSelected(PAYMENT_PROVIDERS.STRIPE);
+      updatePaymentOptionSelected(PAYMENT_PROVIDERS.STRIPE);
     }
   };
 
@@ -55,6 +56,7 @@ class SavedCards extends Component {
       const supportSaveCard = _get(paymentOption, 'supportSaveCard', false);
 
       if (!supportSaveCard) {
+        debugger;
         history.replace({
           pathname: getCreditCardFormPathname(paymentProvider),
           search: window.location.search,
@@ -96,9 +98,9 @@ class SavedCards extends Component {
   }
 
   loadCardList = async () => {
-    const { user: userInfo, paymentProvider, paymentActions } = this.props;
+    const { user: userInfo, paymentProvider, fetchSavedCard } = this.props;
 
-    return paymentActions.fetchSavedCard({
+    return fetchSavedCard({
       userId: userInfo.consumerId,
       paymentName: paymentProvider,
     });
@@ -124,7 +126,7 @@ class SavedCards extends Component {
   };
 
   setPaymentCard = card => {
-    this.props.paymentActions.setPaymentCard(card);
+    this.props.setPaymentCard(card);
   };
 
   renderCardList() {
@@ -272,11 +274,13 @@ export default compose(
       paymentOption: getSelectedPaymentOption(state),
       paymentProvider: getSelectedPaymentProvider(state),
     }),
-    dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
-      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
-    })
+    {
+      homeActions: homeActionCreators,
+      customerActions: customerActionCreators,
+      updatePaymentOptionSelected: paymentCommonThunks.updatePaymentOptionSelected,
+      loadPaymentOptions: paymentCommonThunks.loadPaymentOptions,
+      fetchSavedCard: savedCardsThunks.fetchSavedCard,
+      setPaymentCard: savedCardsActions.setPaymentCard,
+    }
   )
 )(SavedCards);

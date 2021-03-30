@@ -18,7 +18,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../red
 import { getDeliveryInfo } from '../../redux/modules/home';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentOrderId, getCardList } from '../../redux/modules/payment';
+import { actions as paymentActionCreators, getCurrentOrderId } from '../../redux/modules/payment';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import {
   getPaymentsPendingState,
@@ -292,7 +292,6 @@ export default compose(
         currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
-        cardList: getCardList(state),
         user: getUser(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };

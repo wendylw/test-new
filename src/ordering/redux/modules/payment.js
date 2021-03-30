@@ -22,10 +22,6 @@ export const initialState = {
   currentPayment: '',
   orderId: '',
   thankYouPageUrl: '',
-  braintreeToken: '',
-  bankingList: [],
-  selectedPaymentCard: null,
-  cardList: [],
 };
 
 export const types = {
@@ -33,17 +29,6 @@ export const types = {
   CREATEORDER_REQUEST: 'ORDERING/PAYMENT/CREATEORDER_REQUEST',
   CREATEORDER_SUCCESS: 'ORDERING/PAYMENT/CREATEORDER_SUCCESS',
   CREATEORDER_FAILURE: 'ORDERING/PAYMENT/CREATEORDER_FAILURE',
-
-  // get saved card list
-  FETCH_CARD_REQUEST: 'ORDERING/PAYMENT/FETCH_CARD_REQUEST',
-  FETCH_CARD_SUCCESS: 'ORDERING/PAYMENT/FETCH_CARD_SUCCESS',
-  FETCH_CARD_FAILURE: 'ORDERING/PAYMENT/FETCH_CARD_FAILURE',
-
-  // set payment card
-  SET_PAYMENT_CARD: 'ORDERING/PAYMENTT/SET_PAYMENT_CARD',
-
-  // get online banking merchant list
-  FETCH_ONLINE_BANKING_MERCHANT_LIST: 'ORDERING/PAYMENT/FETCH_ONLINE_BANKING_MERCHANT_LIST',
 };
 
 // action creators
@@ -232,19 +217,6 @@ export const actions = {
 
     return result;
   },
-
-  fetchSavedCard: params => ({
-    [API_REQUEST]: {
-      types: [types.FETCH_CARD_REQUEST, types.FETCH_CARD_SUCCESS, types.FETCH_CARD_FAILURE],
-      ...Url.API_URLS.GET_SAVED_CARD(params.userId),
-      params: { provider: params.paymentName },
-    },
-  }),
-
-  setPaymentCard: card => ({
-    type: types.SET_PAYMENT_CARD,
-    card,
-  }),
 };
 
 const getOrderSource = () => {
@@ -302,18 +274,6 @@ const reducer = (state = initialState, action) => {
 
       return state;
     }
-    case types.FETCH_CARD_SUCCESS: {
-      const { paymentMethods } = response;
-
-      return {
-        ...state,
-        cardList: paymentMethods,
-        selectedPaymentCard: state.selectedPaymentCard || paymentMethods[0],
-      };
-    }
-    case types.SET_PAYMENT_CARD: {
-      return { ...state, selectedPaymentCard: action.card };
-    }
     default:
       return state;
   }
@@ -324,9 +284,5 @@ export default reducer;
 // selectors
 
 export const getCurrentOrderId = state => state.payment.orderId;
-
-export const getCardList = state => state.payment.cardList;
-
-export const getSelectedPaymentCard = state => state.payment.selectedPaymentCard;
 
 export const getThankYouPageUrl = state => state.payment.thankYouPageUrl;

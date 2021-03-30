@@ -26,12 +26,8 @@ import {
   getMerchantCountry,
   actions as appActionCreators,
 } from '../../../redux/modules/app';
-import {
-  actions as paymentActionCreators,
-  getCardList,
-  getCurrentOrderId,
-  getSelectedPaymentCard,
-} from '../../../redux/modules/payment';
+import { getCurrentOrderId } from '../../../redux/modules/payment';
+import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import StripeCVV from './components/StripeCVV';
 import '../PaymentCreditCard.scss';
 import './CVV.scss';
@@ -278,7 +274,6 @@ export default compose(
     dispatch => ({
       showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
     })
   )
 )(CardCVV);
