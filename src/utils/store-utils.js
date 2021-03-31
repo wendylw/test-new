@@ -588,7 +588,7 @@ export const getStoreInfoForCleverTap = ({ business, allBusinessInfo, cartSummar
   const { id, name } = (stores && stores[0]) || {};
   const { subtotal, count } = cartSummary || {};
 
-  const cashbackRate = (1 / defaultLoyaltyRatio).toFixed(2);
+  const cashbackRate = Math.floor((1 / defaultLoyaltyRatio) * 100) / 100;
   const shippingType = Utils.getOrderTypeFromUrl() || 'unknown';
 
   const res = {

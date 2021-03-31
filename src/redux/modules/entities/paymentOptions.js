@@ -21,7 +21,7 @@ const initialState = {
       logo: 'paymentCreditImage',
       label: PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY,
       pathname: ROUTER_PATHS.ORDERING_ADYEN_PAYMENT,
-      supportSaveCards: true,
+      supportSaveCard: true,
     },
     creditCard: {
       key: 'creditCard',
