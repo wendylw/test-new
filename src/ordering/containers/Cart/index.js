@@ -23,7 +23,12 @@ import {
   getCartBilling,
   getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
-import { getCategoryProductList, getAllProductsIds } from '../../redux/modules/cart';
+import {
+  actions as cartActionCreators,
+  getCategoryProductList,
+  getAllProductsIds,
+  getCheckingInventoryPendingState,
+} from '../../redux/modules/cart';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
@@ -37,7 +42,6 @@ const originHeight = document.documentElement.clientHeight || document.body.clie
 class Cart extends Component {
   state = {
     expandBilling: true,
-    isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
     isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
@@ -58,10 +62,6 @@ class Cart extends Component {
     this.handleResizeEvent();
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
-  }
-
-  componentWillUnmount() {
-    this.setState({ isCreatingOrder: false });
   }
 
   setCartContainerHeight = preContainerHeight => {
@@ -93,10 +93,17 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, customerActions, deliveryDetails } = this.props;
+    const { user, history, cartActions, customerActions, deliveryDetails } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
     const { name, phone } = profile || {};
+
+    const { status } = await cartActions.checkCartInventory();
+
+    if (status === 'reject') {
+      // TODO: Error Action
+      return;
+    }
 
     if (!isLogin) {
       CleverTap.pushEvent('Login - view login screen', {
@@ -426,9 +433,9 @@ class Cart extends Component {
       user,
       history,
       storeInfoForCleverTap,
-      allProductsIds,
+      pendingCheckingInventory,
     } = this.props;
-    const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
+    const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -544,15 +551,14 @@ class Cart extends Component {
             data-heap-name="ordering.cart.pay-btn"
             onClick={() => {
               CleverTap.pushEvent('Cart Page - click pay now', storeInfoForCleverTap);
-              this.setState({ isCreatingOrder: true });
               this.handleGtmEventTracking(async () => {
                 await this.handleClickContinue();
               });
             }}
-            disabled={!items || !items.length || isInvalidTotal || isCreatingOrder}
+            disabled={!items || !items.length || isInvalidTotal || pendingCheckingInventory}
           >
-            {isCreatingOrder ? t('Processing') : isInvalidTotal && `*`}
-            {!isCreatingOrder && buttonText}
+            {pendingCheckingInventory ? t('Processing') : isInvalidTotal && `*`}
+            {!pendingCheckingInventory && buttonText}
           </button>
         </footer>
         <ProductSoldOutModal
@@ -574,6 +580,8 @@ export default compose(
   connect(
     state => {
       return {
+        pendingCheckingInventory: getCheckingInventoryPendingState(state),
+
         business: getBusiness(state),
         user: getUser(state),
         cartBilling: getCartBilling(state),
@@ -588,6 +596,7 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      cartActions: bindActionCreators(cartActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })

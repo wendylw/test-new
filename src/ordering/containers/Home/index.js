@@ -951,7 +951,7 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
-            cleverTapOnProductItemClick={({ product = {}, categoryInfo = {} }) => {
+            onClickProductItem={({ product = {}, categoryInfo = {} }) => {
               this.cleverTapTrack('Menu Page - Click product', {
                 'category name': categoryInfo.name,
                 'category rank': categoryInfo.index + 1,
@@ -964,7 +964,7 @@ export class Home extends Component {
                 'has picture': product.images?.length > 0,
               });
             }}
-            cleverTapOnProductView={({ product = {}, categoryInfo = {} }) => {
+            onProductDetailShown={({ product = {}, categoryInfo = {} }) => {
               this.cleverTapTrack('Menu Page - View products', {
                 'category name': categoryInfo.name,
                 'category rank': categoryInfo.index + 1,

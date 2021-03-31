@@ -107,7 +107,7 @@ export const actions = {
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
   },
 
-  checkInventory: () => async (dispatch, getState) => {
+  checkCartInventory: () => async (dispatch, getState) => {
     const state = getState();
     const businessUTCOffset = getBusinessUTCOffset(state);
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
@@ -122,9 +122,13 @@ export const actions = {
 
       await get(url, { queryParams });
 
-      return dispatch(checkInventorySuccess());
+      dispatch(checkInventorySuccess());
+
+      return { status: 'fulfilled' };
     } catch (e) {
-      return dispatch(checkInventoryFailed(e || {}));
+      dispatch(checkInventoryFailed(e || {}));
+
+      return { status: 'reject' };
     }
   },
 };
@@ -185,6 +189,7 @@ export default combineReducers({
   cartInventory,
 });
 
+// selectors
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
 export const getSelectedProductDetail = state => {
@@ -276,4 +281,4 @@ export const getAllProductsIds = createSelector(getAllProducts, allProducts => {
   }
 });
 
-// selectors
+export const getCheckingInventoryPendingState = ({ cart }) => cart.cartInventory.status === 'pending';
