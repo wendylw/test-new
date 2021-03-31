@@ -269,7 +269,7 @@ class Cart extends Component {
 
   showShortPromoCode() {
     const { promotion } = this.props;
-    const SHOW_LENGTH = 10;
+    const SHOW_LENGTH = 5;
     // show like "Promo..."
     if (promotion && promotion.promoCode) {
       if (promotion.promoCode.length > SHOW_LENGTH) {
@@ -338,23 +338,19 @@ class Cart extends Component {
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
         {promotion ? (
           <React.Fragment>
-            <span className="flex flex-middle flex-space-between padding-left-right-small text-weight-bolder">
-              <IconLocalOffer className="icon icon__small icon__primary text-middle" />
-              <div>
-                <div className="flex flex-middle text-omit__single-line">
-                  <span className="margin-left-right-small text-size-big text-weight-bolder">
-                    {t(promotion.promoType)} ({this.showShortPromoCode()})
-                  </span>
-                  <button
-                    onClick={this.handleDismissPromotion}
-                    className="button"
-                    data-heap-name="ordering.cart.dismiss-promo"
-                  >
-                    <IconClose className="icon icon__small" />
-                  </button>
-                </div>
-              </div>
-            </span>
+            <div className="cart-promotion__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
+              <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+              <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
+                {t(promotion.promoType)} ({this.showShortPromoCode()})
+              </span>
+              <button
+                onClick={this.handleDismissPromotion}
+                className="button flex__shrink-fixed"
+                data-heap-name="ordering.cart.dismiss-promo"
+              >
+                <IconClose className="icon icon__small" />
+              </button>
+            </div>
             <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
               {'-'} <CurrencyNumber className="text-size-big text-weight-bolder" money={promotion.discount} />
             </div>
@@ -365,7 +361,7 @@ class Cart extends Component {
             onClick={this.handleGotoPromotion}
             data-heap-name="ordering.cart.add-promo"
           >
-            <IconLocalOffer className="icon icon__small icon__primary text-middle" />
+            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
             <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
           </button>
         )}

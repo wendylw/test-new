@@ -409,6 +409,9 @@ const PROMOTION_ERROR_CODES = {
   54417: {
     desc: '54417NotMatchMinSubtotalConsumingPromo',
   },
+  54418: {
+    desc: '54418NotMatchAppliedClientType',
+  },
   60002: {
     desc: '60002NotActive',
   },
@@ -513,6 +516,12 @@ const PAYMENT_API_PAYMENT_OPTIONS = {
 
 const TIME_SLOT_NOW = 'now';
 
+const CLIENTS = {
+  WEB: 'web',
+  IOS: 'iOS',
+  ANDROID: 'Android',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -555,4 +564,5 @@ export default {
   ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
   PAYMENT_API_PAYMENT_OPTIONS,
+  CLIENTS,
 };
