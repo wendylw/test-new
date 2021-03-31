@@ -18,7 +18,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../red
 import { getDeliveryInfo } from '../../redux/modules/home';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getCurrentOrderId } from '../../redux/modules/payment';
+import { getCurrentOrderId } from '../../redux/modules/payment';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import {
   getPaymentsPendingState,
@@ -298,7 +298,6 @@ export default compose(
     },
     dispatch => ({
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),

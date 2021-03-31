@@ -10,7 +10,7 @@ import CreateOrderButton from '../../../components/CreateOrderButton';
 import Loader from '../components/Loader';
 import _get from 'lodash/get';
 
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getUser } from '../../../redux/modules/app';
