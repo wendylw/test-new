@@ -22,7 +22,7 @@ async function parseResponse(resp) {
   } else if (['text/plain', 'text/html'].includes(rawContentType)) {
     body = await resp.text();
   } else {
-    console.warn(`Unexpected content type: ${type}, will respond with raw Response object.`);
+    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
   }
 
   return body;
