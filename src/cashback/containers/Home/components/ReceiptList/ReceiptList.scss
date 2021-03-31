@@ -20,7 +20,7 @@
 
   &__content {
     overflow: hidden;
-    max-height: 140px;
+    max-height: 0;
 
     &.full {
       max-height: 100%;

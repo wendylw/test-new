@@ -6,6 +6,7 @@ import { IconInfo } from '../../../components/Icons';
 import ReceiptList from './components/ReceiptList';
 import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import DownloadBanner from '../../../components/DownloadBanner';
 
 import qs from 'qs';
 
@@ -16,6 +17,8 @@ import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } fro
 import { actions as homeActionCreators, getCashbackHistorySummary } from '../../redux/modules/home';
 import './LoyaltyHome.scss';
 
+const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
+const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
 class PageLoyalty extends React.Component {
   state = {
     showModal: false,
@@ -94,6 +97,9 @@ class PageLoyalty extends React.Component {
             buttonText={t('HowToUseCashback')}
           />
         </article>
+        <div className="loyalty-home__download-banner">
+          <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />
+        </div>
         <ReceiptList history={history} />
       </section>
     ) : (
