@@ -56,7 +56,6 @@ class SavedCards extends Component {
       const supportSaveCard = _get(paymentOption, 'supportSaveCard', false);
 
       if (!supportSaveCard) {
-        debugger;
         history.replace({
           pathname: getCreditCardFormPathname(paymentProvider),
           search: window.location.search,

@@ -152,11 +152,9 @@ export const loadPaymentOptions = () => async (dispatch, getState) => {
 
       return dispatch(updatePaymentSelected(selectedPaymentOption.paymentProvider || null));
     } else {
-      debugger;
       return dispatch(loadPaymentsFailed(result.error || {}));
     }
   } catch (e) {
-    debugger;
     return dispatch(loadPaymentsFailed(e || {}));
   }
 };
