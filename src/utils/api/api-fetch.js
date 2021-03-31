@@ -11,24 +11,21 @@ export const ky = originalKy.create({
 });
 
 async function parseResponse(resp) {
-  let body;
   const rawContentType = resp.headers.get('content-type');
+  let body = resp;
+
   if (!rawContentType) {
-    return resp;
+    return body;
   }
-  const { type } = contentType.parse(rawContentType);
-  switch (type) {
-    case 'application/json':
-      body = await resp.json();
-      break;
-    case 'text/plain':
-    case 'text/html':
-      body = await resp.text();
-      break;
-    default:
-      console.warn(`Unexpected content type: ${type}, will respond with raw Response object.`);
-      body = resp;
+
+  if (rawContentType.includes('application/json')) {
+    body = await resp.json();
+  } else if (['text/plain', 'text/html'].includes(rawContentType)) {
+    body = await resp.text();
+  } else {
+    console.warn(`Unexpected content type: ${type}, will respond with raw Response object.`);
   }
+
   return body;
 }
 
@@ -88,28 +85,14 @@ function convertOptions(options) {
 async function _fetch(url, opts) {
   try {
     const resp = await ky(url, opts);
+
     return await parseResponse(resp);
   } catch (e) {
-    // const messages = ['Request failed!'];
-    // if (e.message) {
-    //   messages.push(`Error message: ${e.message}`);
-    // }
-    // if (e.response) {
-    //   const body = await parseResponse(e.response);
-    //   e.responseBody = body;
-    //   if (typeof body === 'string') {
-    //     messages.push('Response body:');
-    //     messages.push(body);
-    //   } else if (typeof body === 'object' && !(body instanceof window.Response)) {
-    //     messages.push('Response body:');
-    //     messages.push(JSON.stringify(body, null, 2));
-    //   }
-    // }
     console.error('Request Failed! \n', e);
 
     let error = {};
 
-    if (typeof e === 'object' && e.code) {
+    if (typeof e === 'object') {
       error = e;
     } else if (typeof e === 'string') {
       error = {
@@ -121,37 +104,6 @@ async function _fetch(url, opts) {
 
     throw error;
   }
-
-  // return fetch(url, opts)
-  //   .then(response => {
-  //     const isJsonData = response.headers.get('Content-Type').includes('application/json');
-
-  //     return new Promise(function (resolve, reject) {
-  //       if (response.status && isHttpSuccess(response.status)) {
-  //         if (isJsonData) {
-  //           resolve(response.json());
-  //         } else {
-  //           resolve(response.text());
-  //         }
-  //       } else {
-  //         const { code } = isJsonData ? response.json() : { code: '50000' };
-
-  //         reject({
-  //           code,
-  //           status: response.status,
-  //         });
-  //       }
-  //     });
-  //   })
-  //   .catch(e => {
-  //     if (process.env.NODE_ENV !== 'production') {
-  //       /* eslint-disable */
-  //       console.log(e);
-  //       /* eslint-enable */
-  //     }
-
-  //     return Promise.reject(e);
-  //   });
 }
 
 export function get(url, options = {}) {
