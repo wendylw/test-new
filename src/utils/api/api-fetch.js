@@ -19,7 +19,7 @@ async function parseResponse(resp) {
 
   if (rawContentType.includes('application/json')) {
     body = await resp.json();
-  } else if (['text/plain', 'text/html'].includes(rawContentType)) {
+  } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
     body = await resp.text();
   } else {
     console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
@@ -29,7 +29,8 @@ async function parseResponse(resp) {
 }
 
 function convertOptions(options) {
-  const { type = 'json', payload, headers, credentials, queryParams, ...others } = options;
+  // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
+  const { type = 'json', payload, headers, queryParams, ...others } = options;
   const currentOptions = {
     ...others,
   };
@@ -44,11 +45,6 @@ function convertOptions(options) {
         req.headers.set(key, headers[key]);
       });
     });
-  }
-
-  // include is general value. if api fetching need Cross-domain without cookie that the value needs set `omit`.
-  if (credentials) {
-    currentOptions.credentials = credentials;
   }
 
   if (type === 'json') {
@@ -76,7 +72,7 @@ function convertOptions(options) {
 
 /**
  * @param {string} url url for the request
- * @param {object} opts : {type: '', payload: {}, headers: {}, credentials: '', queryParams, ...others}
+ * @param {object} opts : {type: '', payload: {}, headers: {}, queryParams, ...others: {credentials: ''}}
  * @param {any} options.payload data in request
  * @param {object} options.queryParams query parameters in url
  * @param {object} options.headers headers in request
@@ -87,8 +83,6 @@ async function _fetch(url, opts) {
 
     return await parseResponse(resp);
   } catch (e) {
-    console.error('Request Failed! \n', e);
-
     let error = {};
 
     if (typeof e === 'object') {

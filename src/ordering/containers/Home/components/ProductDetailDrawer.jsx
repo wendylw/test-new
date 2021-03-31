@@ -557,7 +557,9 @@ class ProductDetailDrawer extends Component {
   }
 
   renderProductLowStock = () => {
-    const { t } = this.props;
+    const { t, selectedProduct } = this.props;
+
+    console.log(selectedProduct);
 
     return (
       <div className="text-center">

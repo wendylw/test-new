@@ -146,7 +146,9 @@ class CartListDrawer extends Component {
   renderProductItemRightController(cartItem) {
     const { t, cleverTapDecreaseCartItem, cleverTapIncreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
-    const inventoryShortage = stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand;
+    const inventoryShortage = Boolean(
+      stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand
+    );
     const classList = ['text-center', ...(inventoryShortage ? ['text-error'] : [])];
 
     if (this.getOutStockStatus(stockStatus)) {
