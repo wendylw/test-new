@@ -36,11 +36,3 @@ export function getClientSource() {
 
   return source;
 }
-
-export function isHttpSuccess(status) {
-  if (status < 400) {
-    return true;
-  }
-
-  return false;
-}
