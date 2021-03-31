@@ -10,7 +10,7 @@ import CreateOrderButton from '../../../components/CreateOrderButton';
 import Loader from '../components/Loader';
 import _get from 'lodash/get';
 
-import { compose } from 'redux';
+import { compose, bindActionCreators } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getUser } from '../../../redux/modules/app';
@@ -273,13 +273,13 @@ export default compose(
       paymentOption: getSelectedPaymentOption(state),
       paymentProvider: getSelectedPaymentProvider(state),
     }),
-    {
-      homeActions: homeActionCreators,
-      customerActions: customerActionCreators,
-      updatePaymentOptionSelected: paymentCommonThunks.updatePaymentOptionSelected,
-      loadPaymentOptions: paymentCommonThunks.loadPaymentOptions,
-      fetchSavedCard: savedCardsThunks.fetchSavedCard,
-      setPaymentCard: savedCardsActions.setPaymentCard,
-    }
+    dispatch => ({
+      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      customerActions: bindActionCreators(customerActionCreators, dispatch),
+      updatePaymentOptionSelected: bindActionCreators(paymentCommonThunks.updatePaymentOptionSelected, dispatch),
+      loadPaymentOptions: bindActionCreators(paymentCommonThunks.loadPaymentOptions, dispatch),
+      fetchSavedCard: bindActionCreators(savedCardsThunks.fetchSavedCard, dispatch),
+      setPaymentCard: bindActionCreators(savedCardsActions.setPaymentCard, dispatch),
+    })
   )
 )(SavedCards);
