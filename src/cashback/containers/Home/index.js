@@ -16,9 +16,11 @@ import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistorySummary } from '../../redux/modules/home';
 import './LoyaltyHome.scss';
+import Utils from '../../../utils/utils';
 
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
 const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
+const isWebview = Utils.isWebview();
 class PageLoyalty extends React.Component {
   state = {
     showModal: false,
@@ -97,9 +99,11 @@ class PageLoyalty extends React.Component {
             buttonText={t('HowToUseCashback')}
           />
         </article>
-        <div className="loyalty-home__download-banner">
-          <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />
-        </div>
+        {!isWebview && (
+          <div className="loyalty-home__download-banner">
+            <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />
+          </div>
+        )}
         <ReceiptList history={history} />
       </section>
     ) : (
