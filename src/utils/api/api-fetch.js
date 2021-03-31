@@ -109,21 +109,29 @@ export function get(url, options = {}) {
   );
 }
 
-export function post(url, options = {}) {
+/**
+ * @param {object} payload : data in request. if payload is empty but options is required, pls set payload as `undefined`
+ */
+export function post(url, payload, options = {}) {
   return _fetch(
     url,
     convertOptions({
       ...options,
+      payload,
       method: 'post',
     })
   );
 }
 
-export function put(url, options = {}) {
+/**
+ * @param {object} payload : data in request. if payload is empty but options is required, pls set payload as `undefined`
+ */
+export function put(url, payload, options = {}) {
   return _fetch(
     url,
     convertOptions({
       ...options,
+      payload,
       method: 'put',
     })
   );
