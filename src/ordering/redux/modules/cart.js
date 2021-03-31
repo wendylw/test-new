@@ -3,6 +3,8 @@ import { createSelector } from 'reselect';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
+import { API_INFO } from '../../../utils/api/api-utils';
+import { get } from '../../../utils/api/api-fetch';
 import { CART_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
@@ -18,6 +20,10 @@ const initialState = {
     cartId: '',
     isFetching: false,
     status: 'fulfilled',
+  },
+  cartInventory: {
+    status: 'pending',
+    error: {},
   },
 };
 
@@ -39,6 +45,34 @@ const fetchOnlineCategory = variables => {
 };
 
 // actions
+const cartActionTypes = {
+  checkInventory: 'cart/checkInventory',
+  checkInventorySuccess: 'cart/checkInventorySuccess',
+  checkInventoryFailed: 'cart/checkInventoryFailed',
+};
+
+const checkInventory = () => ({
+  type: cartActionTypes.checkInventory,
+  payload: {
+    status: 'pending',
+  },
+});
+
+const checkInventorySuccess = () => ({
+  type: cartActionTypes.checkInventorySuccess,
+  payload: {
+    status: 'fulfilled',
+  },
+});
+
+const checkInventoryFailed = error => ({
+  type: cartActionTypes.checkInventoryFailed,
+  payload: {
+    error,
+    status: 'reject',
+  },
+});
+
 export const actions = {
   updateTransactionsStatus: ({ status, receiptNumbers }) => ({
     [API_REQUEST]: {
@@ -71,6 +105,27 @@ export const actions = {
     const shippingType = Utils.getApiRequestShippingType();
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+  },
+
+  checkInventory: () => async (dispatch, getState) => {
+    const state = getState();
+    const businessUTCOffset = getBusinessUTCOffset(state);
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+    const { app } = state;
+    const { items: cartItems } = app.shoppingCart;
+    const cartItemIds = cartItems.map(item => item.id);
+    const shippingType = Utils.getApiRequestShippingType();
+    const { url, queryParams } = API_INFO.getCartInventoryState(fulfillDate, cartItemIds, shippingType);
+
+    try {
+      dispatch(checkInventory());
+
+      await get(url, { queryParams });
+
+      return dispatch(checkInventorySuccess());
+    } catch (e) {
+      return dispatch(checkInventoryFailed(e || {}));
+    }
   },
 };
 
@@ -106,9 +161,28 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
   return state;
 };
 
+const cartInventory = (state = initialState.cartInventory, action) => {
+  const { type, payload, error } = action;
+
+  if (type === cartActionTypes.checkInventory) {
+    state = Object.assign({}, state, payload);
+  } else if (type === cartActionTypes.checkInventorySuccess) {
+    state = Object.assign({}, state, payload);
+  } else if (type === cartActionTypes.checkInventoryFailed) {
+    state = Object.assign({}, state, {
+      status: payload.status,
+      result: payload.result,
+      error: payload.error,
+    });
+  }
+
+  return state;
+};
+
 export default combineReducers({
   pendingTransactionsIds,
   selectedProduct,
+  cartInventory,
 });
 
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;

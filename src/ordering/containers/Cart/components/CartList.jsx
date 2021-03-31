@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as appActionCreators, getShoppingCart, getCurrentProduct } from '../../../redux/modules/app';
+import { actions as appActionCreators, getShoppingCart } from '../../../redux/modules/app';
 import { getSelectedProductDetail } from '../../../redux/modules/cart';
 import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
