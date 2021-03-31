@@ -1,6 +1,5 @@
 import originalKy from 'ky';
-import { object } from 'prop-types';
-import { isHttpSuccess, getClientSource } from './api-utils';
+import { getClientSource } from './api-utils';
 
 export const ky = originalKy.create({
   hooks: {
