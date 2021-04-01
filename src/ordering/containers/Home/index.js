@@ -801,37 +801,24 @@ export class Home extends Component {
     );
   };
 
-  cleverTapTrack = (eventName, attributes) => {
-    const { storeInfoForCleverTap } = this.props;
-    CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
-  };
-
-  cleverTapTrackForProductItem = (eventName, product, attributes = {}) => {
-    const { categories, allProductsIds } = this.props;
-    let categoryIndex = -1;
-    let categoryName = '';
-
-    const categoriesContent = Object.values(categories) || [];
-
-    categoriesContent.forEach((category, index) => {
-      if (category.products?.find(p => p.id === product.id)) {
-        categoryName = category.name;
-        categoryIndex = index;
-      }
-    });
-
-    CleverTap.pushEvent(eventName, {
-      'category name': categoryName,
-      'category rank': categoryIndex + 1,
+  formatCleverTapAttributes(product) {
+    return {
+      'category name': product.categoryName,
+      'category rank': product.categoryRank,
       'product name': product.title,
+      'product rank': product.rank,
       'product image url': product.images?.length > 0 ? product.images[0] : '',
-      'product rank': allProductsIds.indexOf(product.id) + 1,
       amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
       discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
       'is bestsellar': product.isFeaturedProduct,
       'has picture': product.images?.length > 0,
-      ...attributes,
-    });
+    };
+  }
+
+  cleverTapTrack = (eventName, attributes = {}) => {
+    const { storeInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
   };
 
   cleverTapTrackForCart = (eventName, product, attributes) => {
@@ -951,31 +938,11 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
-            onClickProductItem={({ product = {}, categoryInfo = {} }) => {
-              this.cleverTapTrack('Menu Page - Click product', {
-                'category name': categoryInfo.name,
-                'category rank': categoryInfo.index + 1,
-                'product name': product.title,
-                'product rank': allProductsIds.indexOf(product.id) + 1,
-                'product image url': product.images?.length > 0 ? product.images[0] : '',
-                amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
-                discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
-                'is bestsellar': product.isFeaturedProduct,
-                'has picture': product.images?.length > 0,
-              });
+            onClickProductItem={({ product = {} }) => {
+              this.cleverTapTrack('Menu Page - Click product', this.formatCleverTapAttributes(product));
             }}
-            onProductDetailShown={({ product = {}, categoryInfo = {} }) => {
-              this.cleverTapTrack('Menu Page - View products', {
-                'category name': categoryInfo.name,
-                'category rank': categoryInfo.index + 1,
-                'product name': product.title,
-                'product rank': allProductsIds.indexOf(product.id) + 1,
-                'product image url': product.images?.length > 0 ? product.images[0] : '',
-                amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
-                discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
-                'is bestsellar': product.isFeaturedProduct,
-                'has picture': product.images?.length > 0,
-              });
+            onProductDetailShown={({ product = {} }) => {
+              this.cleverTapTrack('Menu Page - View products', this.formatCleverTapAttributes(product));
             }}
           />
         </div>
@@ -984,13 +951,13 @@ export class Home extends Component {
           viewAside={viewAside}
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
-          cleverTapClearCart={() => {
+          onClearCart={() => {
             this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
           }}
-          cleverTapIncreaseCartItem={(product = {}) => {
+          onIncreaseCartItem={(product = {}) => {
             this.cleverTapTrackForCart('Menu Page - Cart Preview - Increase quantity', product);
           }}
-          cleverTapDecreaseCartItem={(product = {}) => {
+          onDecreaseCartItem={(product = {}) => {
             this.cleverTapTrackForCart('Menu Page - Cart Preview - Decrease quantity', product);
           }}
         />
@@ -1000,14 +967,14 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
-          cleverTapIncreaseInProductDetail={(product = {}) => {
-            this.cleverTapTrackForCart('Product details - Increase quantity', product);
+          onIncreaseProductDetailItem={(product = {}) => {
+            this.cleverTapTrack('Product details - Increase quantity', product);
           }}
-          cleverTapDecreaseInProductDetail={(product = {}) => {
-            this.cleverTapTrackForCart('Product details - Decrease quantity', product);
+          onDncreaseProductDetailItem={(product = {}) => {
+            this.cleverTapTrack('Product details - Decrease quantity', product);
           }}
-          cleverTapOnAddToCartClick={({ product = {} }) => {
-            this.cleverTapTrackForCart('Menu Page - Add to Cart', product);
+          onUpdateCartOnProductDetail={({ product = {} }) => {
+            this.cleverTapTrack('Menu Page - Add to Cart', product);
           }}
         />
         {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
@@ -1045,11 +1012,11 @@ export class Home extends Component {
           footerRef={ref => (this.footerEl = ref)}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
-          cleverTapOnClickCart={() => {
+          onShownCartListDrawer={() => {
             this.cleverTapTrack('Menu Page - Click cart');
             this.handleToggleAside(Constants.ASIDE_NAMES.CART);
           }}
-          cleverTapOnClickOrderNow={() => {
+          onClickOrderNowButton={() => {
             this.cleverTapTrack('Menu Page - Click order now');
           }}
           isValidTimeToOrder={this.isValidTimeToOrder()}

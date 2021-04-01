@@ -506,10 +506,10 @@ class Cart extends Component {
             <CartList
               isLazyLoad={true}
               shoppingCart={shoppingCart}
-              cleverTapIncreaseCartItem={(product = {}) => {
+              onIncreaseCartItem={(product = {}) => {
                 this.cleverTapTrackForCart('Cart page - Increase quantity', product);
               }}
-              cleverTapDecreaseCartItem={(product = {}) => {
+              onDecreaseCartItem={(product = {}) => {
                 this.cleverTapTrackForCart('Cart page - Decrease quantity', product);
               }}
             />

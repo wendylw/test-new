@@ -324,13 +324,15 @@ export const getCategoryProductList = createSelector(
     }
 
     const newCategories = Object.values(categories)
-      .map(category => {
+      .map((category, categoryId) => {
         return {
           ...category,
           products: category.products.map((id, index) => {
             const product = JSON.parse(JSON.stringify(allProducts[id]));
 
             return {
+              categoryName: category.name,
+              categoryRank: categoryId + 1,
               rank: index + 1,
               ...product,
             };
@@ -358,9 +360,25 @@ export const getStoreInfoForCleverTap = state => {
 };
 
 export const getSelectedProductDetail = state => {
-  const { selectedProduct } = state.home;
+  const { home, entities } = state;
+  const { selectedProduct } = home;
+  const { categories } = entities;
+  const categoriesKeys = Object.keys(categories) || [];
+  const selectedProductObject = getProductById(state, selectedProduct.id) || {};
+  let categoryName = '';
+  let categoryRank = '';
 
-  return getProductById(state, selectedProduct.id);
+  categoriesKeys.forEach((key, index) => {
+    if ((categories[key].products || []).find(productId => productId === selectedProductObject.id)) {
+      categoryName = categories[key].name;
+      categoryRank = index + 1;
+    }
+  });
+
+  return Object.assign({}, selectedProductObject, {
+    categoryName,
+    categoryRank,
+  });
 };
 
 export const getAllProductsIds = createSelector(getAllProducts, allProducts => {

@@ -45,10 +45,10 @@ class CartListDrawer extends Component {
   }
 
   handleClearCart = async () => {
-    const { appActions, cleverTapClearCart } = this.props;
+    const { appActions, onClearCart } = this.props;
 
-    if (cleverTapClearCart) {
-      cleverTapClearCart();
+    if (onClearCart) {
+      onClearCart();
     }
 
     await appActions.clearAll().then(() => appActions.loadShoppingCart());
@@ -144,7 +144,7 @@ class CartListDrawer extends Component {
   }
 
   renderProductItemRightController(cartItem) {
-    const { t, cleverTapDecreaseCartItem, cleverTapIncreaseCartItem } = this.props;
+    const { t, onDecreaseCartItem, onIncreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
     const inventoryShortage = Boolean(
       stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand
@@ -174,15 +174,15 @@ class CartListDrawer extends Component {
           decreaseDisabled={!Boolean(quantity)}
           increaseDisabled={inventoryShortage}
           onDecrease={() => {
-            if (cleverTapDecreaseCartItem) {
-              cleverTapDecreaseCartItem(cartItem);
+            if (onDecreaseCartItem) {
+              onDecreaseCartItem(cartItem);
             }
 
             this.handleDecreaseCartItem(cartItem);
           }}
           onIncrease={() => {
-            if (cleverTapIncreaseCartItem) {
-              cleverTapIncreaseCartItem(cartItem);
+            if (onIncreaseCartItem) {
+              onIncreaseCartItem(cartItem);
             }
 
             this.handleIncreaseCartItem(cartItem);

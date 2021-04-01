@@ -88,7 +88,7 @@ class ProductList extends Component {
     return false;
   }
 
-  handleShowProductDetail = async (product, categoryInfo) => {
+  handleShowProductDetail = async product => {
     if (this.isNeedToLocationAndDatePage()) {
       this.gotoLocationAndDatePage();
       return;
@@ -97,7 +97,7 @@ class ProductList extends Component {
     const { onToggle, onClickProductItem, onProductDetailShown } = this.props;
 
     if (onClickProductItem) {
-      onClickProductItem({ product, categoryInfo });
+      onClickProductItem(product);
     }
 
     const { responseGql = {} } = await this.props.appActions.loadProductDetail(product);
@@ -106,7 +106,7 @@ class ProductList extends Component {
     onToggle('PRODUCT_DETAIL');
 
     if (onProductDetailShown) {
-      onProductDetailShown({ product, categoryInfo });
+      onProductDetailShown(product);
     }
 
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
@@ -166,7 +166,7 @@ class ProductList extends Component {
     return (
       <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
         <ol className="category__list" data-heap-name="ordering.home.product-list">
-          {categories.map((category, categoryIndex) => (
+          {categories.map(category => (
             <li key={category.id} id={category.id}>
               <ScrollObservable targetId={category.id} key={category.id}>
                 <h2 className="category__header padding-top-bottom-small padding-left-right-smaller sticky-wrapper">
@@ -201,12 +201,7 @@ class ProductList extends Component {
                           title={title}
                           variation={variation}
                           details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
-                          handleClickItem={() =>
-                            this.handleShowProductDetail(product, {
-                              name: category.name,
-                              index: categoryIndex,
-                            })
-                          }
+                          handleClickItem={() => this.handleShowProductDetail(product)}
                         >
                           {this.renderProductItemRightController(stockStatus, cartQuantity)}
                         </ProductItem>

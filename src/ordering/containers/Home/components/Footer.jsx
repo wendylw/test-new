@@ -202,12 +202,12 @@ export class Footer extends Component {
 
   render() {
     const {
-      cleverTapOnClickCart,
+      onShownCartListDrawer,
       cartBilling,
       businessInfo,
       tableId,
       onToggle,
-      cleverTapOnClickOrderNow,
+      onClickOrderNowButton,
       t,
       isValidTimeToOrder,
       isLiveOnline,
@@ -228,7 +228,7 @@ export class Footer extends Component {
         <button
           className="button button__block text-left margin-top-bottom-smaller margin-left-right-small flex flex-middle"
           data-heap-name="ordering.home.footer.cart-btn"
-          onClick={cleverTapOnClickCart}
+          onClick={onShownCartListDrawer}
         >
           <div className="home-cart__icon-container text-middle">
             <IconCart className={`home-cart__icon-cart icon icon__white ${count !== 0 ? 'non-empty' : ''}`} />
@@ -272,7 +272,7 @@ export class Footer extends Component {
               !isLiveOnline
             }
             onClick={() => {
-              cleverTapOnClickOrderNow();
+              onClickOrderNowButton();
               onToggle();
               this.handleRedirect();
             }}
@@ -293,8 +293,8 @@ Footer.propTypes = {
   footerRef: PropTypes.any,
   tableId: PropTypes.string,
   onToggle: PropTypes.func,
-  cleverTapOnClickCart: PropTypes.func,
-  cleverTapOnClickOrderNow: PropTypes.func,
+  onShownCartListDrawer: PropTypes.func,
+  onClickOrderNowButton: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
   enablePreOrder: PropTypes.bool,
   style: PropTypes.object,
@@ -302,8 +302,8 @@ Footer.propTypes = {
 
 Footer.defaultProps = {
   onToggle: () => {},
-  cleverTapOnClickCart: () => {},
-  cleverTapOnClickOrderNow: () => {},
+  onShownCartListDrawer: () => {},
+  onClickOrderNowButton: () => {},
   isValidTimeToOrder: true,
   enablePreOrder: false,
 };

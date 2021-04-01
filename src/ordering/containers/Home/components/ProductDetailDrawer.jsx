@@ -468,7 +468,7 @@ class ProductDetailDrawer extends Component {
   };
 
   renderProductOperator() {
-    const { t, selectedProduct = {}, cleverTapOnAddToCartClick } = this.props;
+    const { t, selectedProduct = {}, onUpdateCartOnProductDetail } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
     const { id: productId } = selectedProduct;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
@@ -522,8 +522,8 @@ class ProductDetailDrawer extends Component {
                 }
               });
 
-              if (cleverTapOnAddToCartClick) {
-                cleverTapOnAddToCartClick({ selectedProduct });
+              if (onUpdateCartOnProductDetail) {
+                onUpdateCartOnProductDetail({ selectedProduct });
               }
 
               this.handleAddOrUpdateShoppingCartItem({
@@ -559,8 +559,6 @@ class ProductDetailDrawer extends Component {
   renderProductLowStock = () => {
     const { t, selectedProduct } = this.props;
 
-    console.log(selectedProduct);
-
     return (
       <div className="text-center">
         <span className="text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand: 5 })}</span>
@@ -569,7 +567,7 @@ class ProductDetailDrawer extends Component {
   };
 
   renderOperatorButton = () => {
-    const { selectedProduct, cleverTapDecreaseInProductDetail, cleverTapIncreaseInProductDetail } = this.props;
+    const { selectedProduct, onDncreaseProductDetailItem, onIncreaseProductDetailItem } = this.props;
     const { cartQuantity, minimumVariations } = this.state;
 
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
@@ -586,11 +584,11 @@ class ProductDetailDrawer extends Component {
           from="productDetail"
           decreaseDisabled={cartQuantity <= 1}
           onDecrease={() => {
-            cleverTapDecreaseInProductDetail(selectedProduct);
+            onDncreaseProductDetailItem(selectedProduct);
             this.setState({ cartQuantity: cartQuantity - 1 });
           }}
           onIncrease={() => {
-            cleverTapIncreaseInProductDetail(selectedProduct);
+            onIncreaseProductDetailItem(selectedProduct);
             const disableVariationsId = this.isInvalidMinimumVariations();
 
             if (hasMinimumVariations && disableVariationsId) {
