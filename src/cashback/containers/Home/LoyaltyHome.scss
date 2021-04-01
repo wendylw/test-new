@@ -24,4 +24,9 @@
     display: inline-block;
     color: $white;
   }
+
+  &__download-banner {
+    position: fixed;
+    bottom: 90px;
+  }
 }
