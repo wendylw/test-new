@@ -523,7 +523,7 @@ class ProductDetailDrawer extends Component {
               });
 
               if (onUpdateCartOnProductDetail) {
-                onUpdateCartOnProductDetail({ selectedProduct });
+                onUpdateCartOnProductDetail(selectedProduct);
               }
 
               this.handleAddOrUpdateShoppingCartItem({

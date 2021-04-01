@@ -955,10 +955,10 @@ export class Home extends Component {
             this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
           }}
           onIncreaseCartItem={(product = {}) => {
-            this.cleverTapTrackForCart('Menu Page - Cart Preview - Increase quantity', product);
+            this.cleverTapTrack('Menu Page - Cart Preview - Increase quantity', product);
           }}
           onDecreaseCartItem={(product = {}) => {
-            this.cleverTapTrackForCart('Menu Page - Cart Preview - Decrease quantity', product);
+            this.cleverTapTrack('Menu Page - Cart Preview - Decrease quantity', product);
           }}
         />
         <ProductDetailDrawer
@@ -973,7 +973,7 @@ export class Home extends Component {
           onDncreaseProductDetailItem={(product = {}) => {
             this.cleverTapTrack('Product details - Decrease quantity', product);
           }}
-          onUpdateCartOnProductDetail={({ product = {} }) => {
+          onUpdateCartOnProductDetail={(product = {}) => {
             this.cleverTapTrack('Menu Page - Add to Cart', product);
           }}
         />

@@ -19,6 +19,7 @@ import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
+import { getAllCategories } from '../../../redux/modules/entities/categories';
 
 import * as StoreUtils from '../../../utils/store-utils';
 
@@ -589,7 +590,7 @@ const error = (state = initialState.error, action) => {
   return state;
 };
 
-const business = (state = initialState.business, action) => state;
+const business = (state = initialState.business) => state;
 
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   const { type, responseGql } = action;
@@ -776,25 +777,48 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
 export const getShoppingCart = createSelector(
-  [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts],
-  (cartBilling, items, unavailableItems, allProducts) => {
+  [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
+  (cartBilling, items, unavailableItems, allProducts, categories) => {
+    const categoriesKeys = Object.keys(categories) || [];
+    const allProductIds = Object.keys(allProducts) || [];
+    const categoryInfo = function(selectedProductObject) {
+      let categoryName = '';
+      let categoryRank = '';
+
+      categoriesKeys.forEach((key, index) => {
+        if ((categories[key].products || []).find(productId => productId === selectedProductObject.productId)) {
+          categoryName = categories[key].name;
+          categoryRank = index + 1;
+        }
+      });
+
+      return {
+        categoryName,
+        categoryRank,
+      };
+    };
+
     cartBilling.count = [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0);
 
     return {
       cartBilling,
       items: items.map(item => ({
+        ...item,
+        ...categoryInfo(item),
+        rank: allProductIds.findIndex(id => id === item.productId) + 1,
         isFeaturedProduct:
           allProducts[item.productId] && allProducts[item.productId].isFeaturedProduct
             ? allProducts[item.productId].isFeaturedProduct
             : false,
-        ...item,
       })),
-      unavailableItems: unavailableItems.map(item => ({
+      unavailableItems: unavailableItems.map(unavailableItem => ({
+        ...unavailableItem,
+        ...categoryInfo(unavailableItem),
+        rank: allProductIds.findIndex(id => id === unavailableItem.productId) + 1,
         isFeaturedProduct:
-          allProducts[item.productId] && allProducts[item.productId].isFeaturedProduct
-            ? allProducts[item.productId].isFeaturedProduct
+          allProducts[unavailableItem.productId] && allProducts[unavailableItem.productId].isFeaturedProduct
+            ? allProducts[unavailableItem.productId].isFeaturedProduct
             : false,
-        ...item,
       })),
     };
   }
