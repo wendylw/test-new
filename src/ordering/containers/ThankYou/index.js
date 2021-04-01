@@ -48,6 +48,7 @@ import {
 } from '../../redux/modules/thankYou';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
+import DownloadBanner from '../../../components/DownloadBanner';
 import CleverTap from '../../../utils/clevertap';
 import './OrderingThanks.scss';
 import * as storeUtils from '../../../utils/store-utils';
@@ -56,6 +57,10 @@ import * as storeUtils from '../../../utils/store-utils';
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
 // const FINALLY = [DELIVERED, CANCELLED, PICKED_UP];
 const ANIMATION_TIME = 3600;
+const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
+const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
+const otherText = 'Download the Beep app to track your Order History!';
+const otherLink = 'https://dl.beepit.com/kVmT';
 
 export class ThankYou extends PureComponent {
   constructor(props) {
@@ -1258,16 +1263,13 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    const link = 'https://storehub.page.link/c8Ci';
-    const client = Utils.judgeClient();
-
     return (
-      <div className="margin-normal ordering-thanks__download">
-        <a href={link} data-heap-name="ordering.thank-you.download" target={client === 'PC' ? '_blank' : ''}>
-          <p className="flex flex-center flex-middle">
-            <img src={beepAppDownloadBanner} alt="Beep App Download" />
-          </p>
-        </a>
+      <div className="ordering-thanks__download">
+        {Utils.isDeliveryType() || Utils.isPickUpType() ? (
+          <DownloadBanner link={deliveryAndPickupLink} text={deliveryAndPickupText} />
+        ) : (
+          <DownloadBanner link={otherLink} text={otherText} />
+        )}
       </div>
     );
   }
