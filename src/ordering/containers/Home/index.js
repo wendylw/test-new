@@ -821,35 +821,6 @@ export class Home extends Component {
     CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
   };
 
-  cleverTapTrackForCart = (eventName, product, attributes) => {
-    const { categories, allProductsIds, storeInfoForCleverTap } = this.props;
-    let categoryIndex = -1;
-    let categoryName = '';
-
-    const categoriesContent = Object.values(categories) || [];
-
-    categoriesContent.forEach((category, index) => {
-      if (category.products?.find(p => p.id === product.id)) {
-        categoryName = category.name;
-        categoryIndex = index;
-      }
-    });
-
-    CleverTap.pushEvent(eventName, {
-      'category name': categoryName,
-      'category rank': categoryIndex + 1,
-      'product name': product.title,
-      'product image url': product.images?.length > 0 ? product.images[0] : '',
-      'product rank': allProductsIds.indexOf(product.id) + 1,
-      amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
-      discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
-      'is bestsellar': product.isFeaturedProduct,
-      'has picture': product.images?.length > 0,
-      ...storeInfoForCleverTap,
-      ...attributes,
-    });
-  };
-
   render() {
     const {
       categories,
@@ -860,7 +831,6 @@ export class Home extends Component {
       history,
       freeDeliveryFee,
       deliveryInfo,
-      allProductsIds,
       ...otherProps
     } = this.props;
     const {
@@ -955,10 +925,16 @@ export class Home extends Component {
             this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
           }}
           onIncreaseCartItem={(product = {}) => {
-            this.cleverTapTrack('Menu Page - Cart Preview - Increase quantity', product);
+            this.cleverTapTrack(
+              'Menu Page - Cart Preview - Increase quantity',
+              this.formatCleverTapAttributes(product)
+            );
           }}
           onDecreaseCartItem={(product = {}) => {
-            this.cleverTapTrack('Menu Page - Cart Preview - Decrease quantity', product);
+            this.cleverTapTrack(
+              'Menu Page - Cart Preview - Decrease quantity',
+              this.formatCleverTapAttributes(product)
+            );
           }}
         />
         <ProductDetailDrawer
@@ -968,13 +944,13 @@ export class Home extends Component {
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
           onIncreaseProductDetailItem={(product = {}) => {
-            this.cleverTapTrack('Product details - Increase quantity', product);
+            this.cleverTapTrack('Product details - Increase quantity', this.formatCleverTapAttributes(product));
           }}
           onDncreaseProductDetailItem={(product = {}) => {
-            this.cleverTapTrack('Product details - Decrease quantity', product);
+            this.cleverTapTrack('Product details - Decrease quantity', this.formatCleverTapAttributes(product));
           }}
           onUpdateCartOnProductDetail={(product = {}) => {
-            this.cleverTapTrack('Menu Page - Add to Cart', product);
+            this.cleverTapTrack('Menu Page - Add to Cart', this.formatCleverTapAttributes(product));
           }}
         />
         {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
