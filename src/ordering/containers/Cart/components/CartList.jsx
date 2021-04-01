@@ -146,14 +146,14 @@ class CartList extends Component {
           increaseDisabled={lowStockState}
           onDecrease={() => {
             if (onDecreaseCartItem) {
-              onDecreaseCartItem();
+              onDecreaseCartItem(cartItem);
             }
 
             this.handleDecreaseCartItem(cartItem);
           }}
           onIncrease={() => {
             if (onIncreaseCartItem) {
-              onIncreaseCartItem();
+              onIncreaseCartItem(cartItem);
             }
 
             this.handleIncreaseCartItem(cartItem);

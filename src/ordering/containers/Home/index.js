@@ -27,7 +27,6 @@ import {
   getDeliveryInfo,
   getPopUpModal,
   getStoresList,
-  getAllProductsIds,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
@@ -1025,7 +1024,6 @@ export default compose(
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        allProductsIds: getAllProductsIds(state),
         store: getStore(state),
       };
     },

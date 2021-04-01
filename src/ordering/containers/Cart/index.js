@@ -395,33 +395,24 @@ class Cart extends Component {
     return false;
   };
 
-  cleverTapTrackForCart = (eventName, product, attributes) => {
-    const { categories, allProductsIds, storeInfoForCleverTap } = this.props;
-    let categoryIndex = -1;
-    let categoryName = '';
-
-    const categoriesContent = Object.values(categories) || [];
-
-    categoriesContent.forEach((category, index) => {
-      if (category.products?.find(p => p.id === product.id)) {
-        categoryName = category.name;
-        categoryIndex = index;
-      }
-    });
-
-    CleverTap.pushEvent(eventName, {
-      'category name': categoryName,
-      'category rank': categoryIndex + 1,
+  formatCleverTapAttributes(product) {
+    return {
+      'category name': product.categoryName,
+      'category rank': product.categoryRank,
       'product name': product.title,
+      'product rank': product.rank,
       'product image url': product.images?.length > 0 ? product.images[0] : '',
-      'product rank': allProductsIds.indexOf(product.productId) + 1,
       amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
       discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
       'is bestsellar': product.isFeaturedProduct,
       'has picture': product.images?.length > 0,
-      ...storeInfoForCleverTap,
-      ...attributes,
-    });
+    };
+  }
+
+  cleverTapTrack = (eventName, attributes = {}) => {
+    const { storeInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
   };
 
   render() {
@@ -507,10 +498,10 @@ class Cart extends Component {
               isLazyLoad={true}
               shoppingCart={shoppingCart}
               onIncreaseCartItem={(product = {}) => {
-                this.cleverTapTrackForCart('Cart page - Increase quantity', product);
+                this.cleverTapTrack('Cart page - Increase quantity', this.formatCleverTapAttributes(product));
               }}
               onDecreaseCartItem={(product = {}) => {
-                this.cleverTapTrackForCart('Cart page - Decrease quantity', product);
+                this.cleverTapTrack('Cart page - Decrease quantity', this.formatCleverTapAttributes(product));
               }}
             />
             {this.renderAdditionalComments()}

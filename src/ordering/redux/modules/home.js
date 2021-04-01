@@ -380,12 +380,3 @@ export const getSelectedProductDetail = state => {
     categoryRank,
   });
 };
-
-export const getAllProductsIds = createSelector(getAllProducts, allProducts => {
-  try {
-    const res = Object.keys(allProducts);
-    return res;
-  } catch (e) {
-    return [];
-  }
-});
