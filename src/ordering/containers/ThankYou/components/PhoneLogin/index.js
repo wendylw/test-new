@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
-import PhoneView from '../../../../../components/PhoneView';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 import qs from 'qs';

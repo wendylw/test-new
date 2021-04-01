@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
 import './PhoneViewContainer.scss';
@@ -23,8 +24,9 @@ class PhoneViewContainer extends React.Component {
 
   handleUpdatePhoneNumber(phone) {
     const { updatePhoneNumber } = this.props;
+    const { number } = (phone && parsePhoneNumberFromString(phone)) || {};
 
-    updatePhoneNumber({ phone: phone || '' });
+    updatePhoneNumber({ phone: number || '' });
   }
 
   handleUpdateCountry(country) {
