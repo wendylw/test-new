@@ -1,5 +1,6 @@
 import Url from '../../../../../../utils/url';
 import Constants from '../../../../../../utils/constants';
+import { API_REQUEST } from '../../../../redux/middlewares/api';
 
 const types = {
   // fetch cashbackInfo
@@ -38,6 +39,54 @@ export const reducer = (state = initialState.thankYou, action) => {
           isFetching: true,
         },
       };
+    case types.fetchCashbackInfoFailure:
+    case types.createCashbackInfoFailure:
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          isFetching: false,
+        },
+      };
+    case types.fetchCashbackInfoSuccess: {
+      const { response } = action;
+
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          ...response,
+          isFetching: false,
+          createdCashbackInfo: false,
+        },
+      };
+    }
+    case types.createCashbackInfoSuccess: {
+      const { response } = action;
+      return {
+        ...state,
+        cashbackInfo: {
+          ...state.cashbackInfo,
+          ...response,
+          isFetching: false,
+          createdCashbackInfo: true,
+        },
+      };
+    }
+    case types.fetchStoreHashSuccess: {
+      const { response } = action;
+      const { redirectTo } = response || {};
+
+      return { ...state, storeHashCode: redirectTo };
+    }
+    case types.fetchStoreHashWithTableIdSuccess: {
+      const { response } = actions;
+      const { hex } = response || {};
+
+      return { ...state, storeHashCode: hex };
+    }
+    default:
+      return state;
   }
 };
 

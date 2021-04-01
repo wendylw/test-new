@@ -23,7 +23,6 @@ const initialState = {
   common: {
     receiptNumber: Utils.getQueryString('receiptNumber'),
     order: null,
-    riderLocations: null,
   },
 };
 
@@ -54,10 +53,10 @@ export const reducer = (state = initialState.common, action) => {
 
       return {
         ...state,
-        riderLocations,
         order: {
           ...state.order,
           status,
+          riderLocations,
         },
       };
     default:
@@ -70,11 +69,11 @@ export default reducer;
 // selectors
 export const getOrder = state => state.orderStatus.common.order;
 
-export const getRiderLocations = state => state.orderStatus.common.riderLocations;
-
 export const getReceiptNumber = state => state.orderStatus.common.receiptNumber;
 
 export const getOrderStatus = createSelector(getOrder, order => _get(order, 'status', null));
+
+export const getRiderLocations = createSelector(getOrder, order => _get(order, 'riderLocations', null));
 
 export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)
