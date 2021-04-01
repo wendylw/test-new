@@ -137,3 +137,8 @@ export const actions = {
     },
   }),
 };
+
+// selectors
+export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCode;
+
+export const getCashbackInfo = state => state.orderStatus.thankYou.cashbackInfo;
