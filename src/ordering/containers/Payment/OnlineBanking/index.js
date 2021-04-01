@@ -188,7 +188,6 @@ class OnlineBanking extends Component {
         />
 
         <div className="ordering-banking__container padding-top-bottom-normal">
-          <Image className="ordering-banking__logo logo logo__bigger margin-normal" src={logo} />
           <div className="text-center padding-top-bottom-normal">
             <CurrencyNumber className="text-center text-size-large text-weight-bolder" money={total || 0} />
           </div>
