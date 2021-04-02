@@ -21,7 +21,7 @@ const Sorry = lazy(() => Utils.attemptLoad(() => import('./order-status/containe
 const ErrorPage = lazy(() => Utils.attemptLoad(() => import('./Error')));
 const LocationAndDate = lazy(() => Utils.attemptLoad(() => import('./LocationAndDate')));
 const Promotion = lazy(() => Utils.attemptLoad(() => import('./Promotion')));
-const ReportDriver = lazy(() => Utils.attemptLoad(() => import('./ReportDriver')));
+const ReportDriver = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ReportDriver')));
 const PageLogin = lazy(() => Utils.attemptLoad(() => import('./PageLogin')));
 const StoreList = lazy(() => Utils.attemptLoad(() => import('./StoreList')));
 const Profile = lazy(() => Utils.attemptLoad(() => import('./Profile')));
