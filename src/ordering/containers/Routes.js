@@ -11,7 +11,7 @@ import OrderDetails from './OrderDetails';
 import NotFound from '../../NotFound';
 
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
-const Receipt = lazy(() => Utils.attemptLoad(() => import('./Receipt')));
+const Receipt = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/Receipt')));
 const StripePayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Stripe')));
 const AdyenPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Adyen')));
 const CreditCard = lazy(() => Utils.attemptLoad(() => import('./Payment/CreditCard')));
