@@ -28,9 +28,6 @@ const { reducer, actions } = createSlice({
         state.status = 'reject';
       }
     },
-    loadSavedCardsPending: state => {},
-    loadSavedCardsSuccess: state => {},
-    loadSavedCardsFailed: state => {},
     updatePaymentSelected: (state, { payload }) => {
       if (payload) {
         state.selectedOptionProvider = payload;
