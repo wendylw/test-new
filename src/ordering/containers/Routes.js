@@ -16,7 +16,7 @@ const StripePayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Strip
 const AdyenPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Adyen')));
 const CreditCard = lazy(() => Utils.attemptLoad(() => import('./Payment/CreditCard')));
 const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/OnlineBanking')));
-const ThankYou = lazy(() => Utils.attemptLoad(() => import('./ThankYou')));
+const ThankYou = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ThankYou')));
 const Sorry = lazy(() => Utils.attemptLoad(() => import('./Sorry')));
 const ErrorPage = lazy(() => Utils.attemptLoad(() => import('./Error')));
 const LocationAndDate = lazy(() => Utils.attemptLoad(() => import('./LocationAndDate')));

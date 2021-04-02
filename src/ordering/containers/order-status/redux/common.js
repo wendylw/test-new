@@ -73,6 +73,8 @@ export const getReceiptNumber = state => state.orderStatus.common.receiptNumber;
 
 export const getOrderStatus = createSelector(getOrder, order => _get(order, 'status', null));
 
+export const getLoadOrderStatus = createSelector(getOrder, order => _get(order, 'status', null));
+
 export const getRiderLocations = createSelector(getOrder, order => _get(order, 'riderLocations', null));
 
 export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
