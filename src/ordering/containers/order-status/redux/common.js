@@ -99,3 +99,10 @@ export const getPromotion = createSelector(getOrder, order => {
     return null;
   }
 });
+
+export const getOrderItems = createSelector(getOrder, order => _get(order, 'items', []));
+
+export const getServiceCharge = createSelector(getOrderItems, items => {
+  const serviceChargeItem = items.find(item => item.itemType === 'ServiceCharge');
+  return _get(serviceChargeItem, 'displayPrice', 0);
+});

@@ -7,7 +7,7 @@ import Payment from './Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
 import MerchantInfo from './MerchantInfo';
-import OrderDetails from './OrderDetails';
+import OrderDetails from './order-status/containers/OrderDetail';
 import NotFound from '../../NotFound';
 
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
