@@ -6,8 +6,8 @@ import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import Header from '../../../../../components/Header';
 import DownloadBanner from '../../../../../components/DownloadBanner';
+import Header from '../../../../../components/Header';
 import { IconAccessTime, IconPin } from '../../../../../components/Icons';
 import Image from '../../../../../components/Image';
 import LiveChat from '../../../../../components/LiveChat';
@@ -41,18 +41,18 @@ import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import { gotoHome } from '../../../../../utils/webview-utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import { getBusinessUTCOffset, getOnlineStoreInfo, getUser, getBusinessInfo } from '../../../../redux/modules/app';
+import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import {
   actions as orderStatusActionCreators,
+  getOrder,
+  getOrderStatus,
   getReceiptNumber,
   getRiderLocations,
-  getOrder,
-  getLoadOrderStatus,
 } from '../../redux/common';
-import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import './OrderingThanks.scss';
+import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -169,7 +169,7 @@ export class ThankYou extends PureComponent {
     //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
-    const { updatedStatus, riderLocations = [] } = this.props;
+    const { orderStatus, riderLocations = [] } = this.props;
     const [lat = null, lng = null] = riderLocations || [];
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
     const { PICKUP } = CONSUMERFLOW_STATUS;
@@ -192,7 +192,7 @@ export class ThankYou extends PureComponent {
       },
     ];
 
-    if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
+    if (orderStatus === PICKUP && Utils.isDeliveryType()) {
       try {
         if (Utils.isAndroidWebview() && lat && lng) {
           const res = window.beepAppVersion;
@@ -625,7 +625,7 @@ export class ThankYou extends PureComponent {
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
     };
-    const { user, updatedStatus } = this.props;
+    const { user, orderStatus } = this.props;
     const { isWebview } = user;
 
     let currentStatusObj = {};
@@ -707,7 +707,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        {this.isRenderImage(isWebview, updatedStatus, CONSUMERFLOW_STATUS) && (
+        {this.isRenderImage(isWebview, orderStatus, CONSUMERFLOW_STATUS) && (
           <img
             className="ordering-thanks__image padding-normal margin-normal"
             src={currentStatusObj.bannerImage}
@@ -1462,7 +1462,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
-      updatedStatus: getLoadOrderStatus(state),
+      orderStatus: getOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
     }),
