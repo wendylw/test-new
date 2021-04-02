@@ -22,7 +22,7 @@ const initialState = {
     status: 'fulfilled',
   },
   cartInventory: {
-    status: 'pending',
+    status: '',
     error: {},
   },
 };
