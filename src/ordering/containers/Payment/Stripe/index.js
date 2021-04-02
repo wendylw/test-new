@@ -13,7 +13,6 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { actions as appActionCreators } from '../../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import {
   getOnlineStoreInfo,
   getBusiness,
@@ -21,7 +20,6 @@ import {
   getStoreInfoForCleverTap,
   getUser,
 } from '../../../redux/modules/app';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../redux/common/selectors';
 import * as paymentCommonThunks from '../redux/common/thunks';
 import { getBusinessInfo } from '../../../redux/modules/cart';
@@ -120,14 +118,11 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
         user: getUser(state),

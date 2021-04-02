@@ -21,8 +21,6 @@ import {
   getMerchantCountry,
   getStoreInfoForCleverTap,
 } from '../../../redux/modules/app';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getSelectedPaymentOption } from '../redux/common/selectors';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
@@ -579,8 +577,6 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         currentPaymentOption: getSelectedPaymentOption(state),
 
@@ -588,7 +584,6 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),

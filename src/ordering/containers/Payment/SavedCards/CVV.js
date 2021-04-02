@@ -12,7 +12,6 @@ import Utils from '../../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import { getCardLabel } from '../utils';
 import {
@@ -22,7 +21,6 @@ import {
   getMerchantCountry,
   actions as appActionCreators,
 } from '../../../redux/modules/app';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import StripeCVV from './components/StripeCVV';
 import '../PaymentCreditCard.scss';
@@ -218,13 +216,10 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         merchantCountry: getMerchantCountry(state),
         cardList: getCardList(state),
         cartSummary: getCartSummary(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         selectedPaymentCard: getSelectedPaymentCard(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         user: getUser(state),

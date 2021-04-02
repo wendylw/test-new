@@ -16,8 +16,6 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getStoreInfoForCleverTap } from '../../../redux/modules/app';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import {
   getPaymentsPendingState,
   getOnlineBankingOption,
@@ -229,8 +227,6 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         onlineBankingList: getOnlineBankList(state),
         pendingPaymentOptions: getPaymentsPendingState(state),
@@ -241,7 +237,6 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };

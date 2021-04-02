@@ -13,9 +13,7 @@ import Utils from '../../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getUser } from '../../../redux/modules/app';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import SaveCardSwitch from '../components/CreditCard/SaveCardSwitch';
 import CreditCardSecureInfo from '../components/CreditCard/CreditCardSecureInfo';
@@ -254,15 +252,12 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         currentPaymentOption: getSelectedPaymentOption(state),
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         user: getUser(state),
         deliveryDetails: getDeliveryDetails(state),
       };
