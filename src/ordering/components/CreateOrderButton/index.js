@@ -5,9 +5,7 @@ import { bindActionCreators, compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
 import { getUser, getRequestInfo, getError } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
 import { createOrder, gotoPayment } from '../../containers/Payment/redux/common/thunks';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
@@ -39,7 +37,6 @@ class CreateOrderButton extends React.Component {
   handleCreateOrder = async () => {
     const {
       history,
-      paymentActions,
       createOrder,
       user,
       requestInfo,
@@ -78,7 +75,6 @@ class CreateOrderButton extends React.Component {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
-      // await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
       const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
         paymentName: paymentName || 'N/A',
@@ -161,19 +157,14 @@ export default compose(
   withDataAttributes,
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         user: getUser(state),
         error: getError(state),
         requestInfo: getRequestInfo(state),
         cartSummary: getCartSummary(state),
-        thankYouPageUrl: getThankYouPageUrl(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
       };
     },
     dispatch => ({
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       createOrder: bindActionCreators(createOrder, dispatch),
       gotoPayment: bindActionCreators(gotoPayment, dispatch),
     })
