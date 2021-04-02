@@ -1,6 +1,6 @@
 import Url from '../../../../../../utils/url';
 import Constants from '../../../../../../utils/constants';
-import { API_REQUEST } from '../../../../redux/middlewares/api';
+import { API_REQUEST } from '../../../../../../redux/middlewares/api';
 
 const types = {
   // fetch cashbackInfo
