@@ -44,7 +44,6 @@ class CreateOrderButton extends React.Component {
       afterCreateOrder,
       beforeCreateOrder,
       paymentName,
-      paymentExtraData,
       gotoPayment,
     } = this.props;
     const { isLogin } = user || {};
@@ -103,7 +102,9 @@ class CreateOrderButton extends React.Component {
     }
 
     if (currentOrder) {
-      gotoPayment(currentOrder, paymentExtraData);
+      // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
+      // paymentExtraData could be changed after beforeCreateOrder is executed.
+      gotoPayment(currentOrder, this.props.paymentExtraData);
     }
   };
 

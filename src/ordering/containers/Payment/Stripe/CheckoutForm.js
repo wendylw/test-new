@@ -76,10 +76,6 @@ function CheckoutForm({
   const headerRef = useRef(null);
   const footerRef = useRef(null);
 
-  if (typeof renderRedirectForm !== 'function') {
-    throw new Error('Error: getRedirectFrom should be a function');
-  }
-
   const cardComplete = cardNumber.complete && cardExpiry.complete && cardCvc.complete && cardHolderName.value;
   const hasEmpty = [cardNumber, cardExpiry, cardCvc, cardHolderName].some(item => item.empty);
   const showCardInfoRequiredLabel = [cardNumber, cardExpiry, cardCvc].some(card => card.isTouched && card.empty);
@@ -154,10 +150,11 @@ function CheckoutForm({
 
   const title = isAddCardPath ? t('AddCreditCardTitle') : t('PayViaCard');
 
-  const finalPaymentExtraData = { ...paymentExtraData, paymentMethod };
-  if (supportSaveCard && saveCard) {
-    finalPaymentExtraData.paymentOption = PAYMENT_API_PAYMENT_OPTIONS.SAVE_CARD;
-  }
+  const finalPaymentExtraData = {
+    ...paymentExtraData,
+    paymentMethodId: paymentMethod ? paymentMethod.id : '',
+    paymentOption: supportSaveCard && saveCard ? PAYMENT_API_PAYMENT_OPTIONS.SAVE_CARD : null,
+  };
 
   return (
     <section
