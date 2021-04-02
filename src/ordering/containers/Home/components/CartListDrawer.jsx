@@ -147,7 +147,7 @@ class CartListDrawer extends Component {
     const { t, onDecreaseCartItem, onIncreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
     const inventoryShortage = Boolean(
-      stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand
+      stockStatus !== 'notTrackInventory' && quantityOnHand && quantity >= quantityOnHand
     );
     const classList = ['text-center', ...(inventoryShortage ? ['text-error'] : [])];
 

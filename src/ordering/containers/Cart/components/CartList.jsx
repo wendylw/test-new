@@ -119,8 +119,10 @@ class CartList extends Component {
   renderProductItemRightController(cartItem) {
     const { t, onIncreaseCartItem, onDecreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
-    const lowStockState = quantity > quantityOnHand;
-    const classList = ['text-center', ...(lowStockState ? ['text-error'] : [])];
+    const inventoryShortage = Boolean(
+      stockStatus !== 'notTrackInventory' && quantityOnHand && quantity >= quantityOnHand
+    );
+    const classList = ['text-center', ...(inventoryShortage ? ['text-error'] : [])];
 
     if (this.getOutStockStatus(stockStatus)) {
       return (
@@ -143,7 +145,7 @@ class CartList extends Component {
           data-heap-name="ordering.home.mini-cart.item-operator"
           quantity={quantity}
           decreaseDisabled={!Boolean(quantity)}
-          increaseDisabled={lowStockState}
+          increaseDisabled={inventoryShortage}
           onDecrease={() => {
             if (onDecreaseCartItem) {
               onDecreaseCartItem(cartItem);

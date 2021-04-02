@@ -305,6 +305,10 @@ class ProductDetailDrawer extends Component {
     const newVariation = this.getNewVariationsByIdMap(variation, option);
     let newMap = variationsByIdMap;
 
+    console.log(variationsByIdMap);
+    console.log(variation);
+    console.log(this.state.childrenProduct);
+
     if (!newMap[variation.id] || newMap[variation.id].variationType === VARIATION_TYPES.SINGLE_CHOICE) {
       newMap = Object.assign({}, newMap, newVariation);
     } else {
@@ -352,9 +356,51 @@ class ProductDetailDrawer extends Component {
   };
 
   getChoiceVariations(type) {
-    const { variations } = this.props.selectedProduct || {};
+    const { variations = [], childrenMap = [] } = this.props.selectedProduct || {};
+    const outOfStockChildProducts = childrenMap.filter(product => product.stockStatus === 'outOfStock');
+    const outOfStockVariations = Object.values(
+      outOfStockChildProducts.map(outOfStockProduct => outOfStockProduct.variationValues)
+    );
+    const derivedVariations = [];
+
+    variations.map(variation => {
+      // outOfStockChildProducts.map(outOfStockProduct => outOfStockProduct.var)
+      variation.id;
+    });
+
+    // const variationIds = variations.map(variation => variation.id);
+    // let outOfStockVariationIds = [];
+
+    // childrenMap.forEach(childrenProduct => {
+    //   const { variationValues, stockStatus } = childrenProduct || {};
+
+    //   if (stockStatus === 'outOfStock') {
+    //     const outOfStockValues = variationValues.filter(value => variationIds.includes(value.variationId)) || [];
+
+    //     outOfStockVariationIds = [...outOfStockVariationIds, ...outOfStockValues.map(value => value.variationId)];
+    //   }
+    // });
+
+    // console.log('outOfStockVariationIds', outOfStockVariationIds);
+    console.log('variations', variations);
+    console.log('outOfStockVariations', outOfStockVariations);
 
     return Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
+  }
+
+  getShortageInventoryState(selectedProduct, childrenProduct, cartQuantity) {
+    const selectedProductLowStock = Boolean(
+      selectedProduct.stockStatus !== 'notTrackInventory' &&
+        selectedProduct.quantityOnHand &&
+        cartQuantity > selectedProduct.quantityOnHand
+    );
+    const childrenProductLowStock = Boolean(
+      childrenProduct.stockStatus !== 'notTrackInventory' &&
+        childrenProduct.quantityOnHand &&
+        cartQuantity > childrenProduct.quantityOnHand
+    );
+
+    return selectedProductLowStock || childrenProductLowStock;
   }
 
   closeModal() {
@@ -432,6 +478,8 @@ class ProductDetailDrawer extends Component {
     const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
     const multipleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.MULTIPLE_CHOICE);
 
+    // console.log(singleChoiceVariations);
+
     return (
       <div className="product-detail__variations">
         <ol className="">
@@ -472,6 +520,7 @@ class ProductDetailDrawer extends Component {
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
     const { id: productId } = selectedProduct;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
+    const lowStockStatus = this.getShortageInventoryState(selectedProduct || {}, childrenProduct || {}, cartQuantity);
 
     if (!selectedProduct) {
       return null;
@@ -489,6 +538,7 @@ class ProductDetailDrawer extends Component {
               increasingProductOnCat ||
               !this.isSubmitable() ||
               Utils.isProductSoldOut(selectedProduct || {}) ||
+              lowStockStatus ||
               (hasMinimumVariations && this.isInvalidMinimumVariations())
             }
             onClick={() => {
@@ -558,17 +608,28 @@ class ProductDetailDrawer extends Component {
 
   renderProductLowStock = () => {
     const { t, selectedProduct } = this.props;
+    const { cartQuantity, childrenProduct } = this.state;
+    const { quantityOnHand } = selectedProduct || {};
+    const { quantityOnHand: childrenProductQuantityOnHand } = childrenProduct || {};
+    const lowStockStatus = this.getShortageInventoryState(selectedProduct || {}, childrenProduct || {}, cartQuantity);
+
+    if (!lowStockStatus) {
+      return null;
+    }
 
     return (
       <div className="text-center">
-        <span className="text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand: 5 })}</span>
+        <span className="text-weight-bolder">
+          {t('LowStockProductQuantity', { quantityOnHand: childrenProductQuantityOnHand || quantityOnHand })}
+        </span>
       </div>
     );
   };
 
   renderOperatorButton = () => {
     const { selectedProduct, onDncreaseProductDetailItem, onIncreaseProductDetailItem } = this.props;
-    const { cartQuantity, minimumVariations } = this.state;
+    const { cartQuantity, minimumVariations, childrenProduct } = this.state;
+    const lowStockStatus = this.getShortageInventoryState(selectedProduct || {}, childrenProduct || {}, cartQuantity);
 
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
@@ -583,6 +644,7 @@ class ProductDetailDrawer extends Component {
           quantity={cartQuantity}
           from="productDetail"
           decreaseDisabled={cartQuantity <= 1}
+          increaseDisabled={Utils.isProductSoldOut(selectedProduct || {}) || lowStockStatus}
           onDecrease={() => {
             onDncreaseProductDetailItem(selectedProduct);
             this.setState({ cartQuantity: cartQuantity - 1 });
@@ -598,7 +660,6 @@ class ProductDetailDrawer extends Component {
             }
             this.setState({ cartQuantity: cartQuantity + 1 });
           }}
-          increaseDisabled={Utils.isProductSoldOut(selectedProduct || {})}
         />
       </div>
     );
