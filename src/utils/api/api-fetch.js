@@ -33,7 +33,7 @@ function convertOptions(options) {
     body = JSON.stringify(payload);
   }
 
-  return Object.assign({}, currentOptions, { body });
+  return Object.assign({}, { ...currentOptions, method }, { body });
 }
 
 /**
@@ -45,7 +45,7 @@ function _fetch(url, opts) {
     .then(response => {
       const isJsonData = response.headers.get('Content-Type').includes('application/json');
 
-      return new Promise(function(resolve, reject) {
+      return new Promise(async function(resolve, reject) {
         if (response.status && isHttpSuccess(response.status)) {
           if (isJsonData) {
             resolve(response.json());
@@ -53,7 +53,7 @@ function _fetch(url, opts) {
             resolve(response.text());
           }
         } else {
-          const { code } = isJsonData ? response.json() : { code: '50000' };
+          const { code } = isJsonData ? await response.json() : { code: '50000' };
 
           reject({
             code,

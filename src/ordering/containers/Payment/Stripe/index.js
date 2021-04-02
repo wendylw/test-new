@@ -4,12 +4,8 @@ import { Elements } from '@stripe/react-stripe-js';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 import Constants from '../../../../utils/constants';
 
-import RedirectForm from '../components/RedirectForm';
-import config from '../../../../config';
 import Utils from '../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
@@ -29,11 +25,10 @@ import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../redux/common/selectors';
 import * as paymentCommonThunks from '../redux/common/thunks';
 import { getBusinessInfo } from '../../../redux/modules/cart';
-import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import '../PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';
 
-const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS, ROUTER_PATHS } = Constants;
+const { PAYMENT_PROVIDERS, ROUTER_PATHS } = Constants;
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
 const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
@@ -78,25 +73,10 @@ class Stripe extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, businessInfo, user } = this.props;
-    const planId = _toString(_get(businessInfo, 'planId', ''));
-
-    if (!onlineStoreInfo || !currentOrder) {
-      return null;
-    }
-
-    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
+    const { user } = this.props;
 
     return {
-      amount: currentOrder.total,
-      currency: onlineStoreInfo.currency,
-      receiptNumber: currentOrder.orderId,
-      businessName: business,
-      redirectURL,
-      webhookURL,
       paymentName: PAYMENT_PROVIDERS.STRIPE,
-      isInternal: _startsWith(planId, 'internal'),
-      source: Utils.getOrderSource(),
       paymentOption: null,
       paymentMethodId: '',
       userId: user.consumerId,
@@ -129,25 +109,7 @@ class Stripe extends Component {
           cartSummary={cartSummary}
           storeInfoForCleverTap={storeInfoForCleverTap}
           supportSaveCard={supportSaveCard}
-          renderRedirectForm={(paymentMethod, saveCard) => {
-            if (!paymentMethod) return null;
-
-            const requestData = { ...this.getPaymentEntryRequestData(), paymentMethodId: paymentMethod.id };
-            if (supportSaveCard && saveCard) {
-              requestData.paymentOption = PAYMENT_API_PAYMENT_OPTIONS.SAVE_CARD;
-            }
-
-            const { receiptNumber } = requestData;
-
-            return requestData && receiptNumber ? (
-              <RedirectForm
-                key="stripe-payment-redirect-form"
-                action={config.storeHubPaymentEntryURL}
-                method="POST"
-                data={requestData}
-              />
-            ) : null;
-          }}
+          paymentExtraData={this.getPaymentEntryRequestData()}
         />
       </Elements>
     );

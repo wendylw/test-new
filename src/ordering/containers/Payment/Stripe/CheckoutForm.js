@@ -16,12 +16,11 @@ import Constants from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
 import { STRIPE_LOAD_TIME_OUT } from './constants';
 
-const { PAYMENT_PROVIDERS } = Constants;
+const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS } = Constants;
 
 function CheckoutForm({
   showMessageModal,
   t,
-  renderRedirectForm,
   history,
   cartSummary,
   country,
@@ -29,6 +28,7 @@ function CheckoutForm({
   supportSaveCard,
   storeInfoForCleverTap,
   isAddCardPath,
+  paymentExtraData,
 }) {
   const { total } = cartSummary || {};
   const stripe = useStripe();
@@ -153,6 +153,11 @@ function CheckoutForm({
   }, []);
 
   const title = isAddCardPath ? t('AddCreditCardTitle') : t('PayViaCard');
+
+  const finalPaymentExtraData = { ...paymentExtraData, paymentMethod };
+  if (supportSaveCard && saveCard) {
+    finalPaymentExtraData.paymentOption = PAYMENT_API_PAYMENT_OPTIONS.SAVE_CARD;
+  }
 
   return (
     <section
@@ -395,8 +400,6 @@ function CheckoutForm({
             </div>
           )}
 
-          {paymentMethod ? renderRedirectForm(paymentMethod, saveCard) : null}
-
           <Loader className={'loading-cover opacity'} loaded={isReady} />
         </div>
       </div>
@@ -414,6 +417,7 @@ function CheckoutForm({
           validCreateOrder={!!paymentMethod}
           afterCreateOrder={handleAfterCreateOrder}
           paymentName={'Stripe'}
+          paymentExtraData={finalPaymentExtraData}
         >
           {processing ? (
             t('Processing')

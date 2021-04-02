@@ -86,27 +86,12 @@ class Payment extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPaymentOption, business, businessInfo } = this.props;
-    const { paymentProvider, pathname } = currentPaymentOption;
-    const planId = _toString(_get(businessInfo, 'planId', ''));
-
-    if (!onlineStoreInfo || !currentOrder || !paymentProvider || pathname) {
-      return null;
-    }
-
-    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
+    const { currentPaymentOption } = this.props;
+    const { paymentProvider } = currentPaymentOption;
 
     return {
-      amount: currentOrder.total,
-      currency: onlineStoreInfo.currency,
-      receiptNumber: currentOrder.orderId,
-      businessName: business,
-      redirectURL: redirectURL,
-      webhookURL: webhookURL,
       // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
       paymentName: paymentProvider,
-      isInternal: _startsWith(planId, 'internal'),
-      source: Utils.getOrderSource(),
     };
   };
 
@@ -204,7 +189,6 @@ class Payment extends Component {
       storeInfoForCleverTap,
     } = this.props;
     const { payNowLoading, cartContainerHeight } = this.state;
-    const paymentData = this.getPaymentEntryRequestData();
 
     return (
       <section className="ordering-payment flex flex-column" data-heap-name="ordering.payment.container">
@@ -253,19 +237,11 @@ class Payment extends Component {
             }}
             paymentName={currentPaymentOption.paymentProvider}
             afterCreateOrder={this.handleAfterCreateOrder}
+            paymentExtraData={this.getPaymentEntryRequestData()}
           >
             {payNowLoading ? t('Processing') : t('Continue')}
           </CreateOrderButton>
         </footer>
-
-        {paymentData ? (
-          <RedirectForm
-            ref={ref => (this.form = ref)}
-            action={config.storeHubPaymentEntryURL}
-            method="POST"
-            data={paymentData}
-          />
-        ) : null}
 
         <Loader className={'loading-cover opacity'} loaded={!pendingPaymentOptions} />
       </section>
