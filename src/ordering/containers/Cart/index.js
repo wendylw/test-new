@@ -101,7 +101,6 @@ class Cart extends Component {
     const { status } = await cartActions.checkCartInventory();
 
     if (status === 'reject') {
-      // TODO: Error Action
       return;
     }
 

@@ -315,6 +315,11 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Reorder',
     showModal: true,
   },
+  54012: {
+    title: 'ApiError:54012Title',
+    desc: 'ApiError:54012Description',
+    buttonText: 'Common:OK',
+  },
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';

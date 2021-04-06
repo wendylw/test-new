@@ -34,5 +34,7 @@
   "40025Title": "Unable to access storage",
   "40025Description": "Cookie is not available.",
   "40026Title": "Unable to save data",
-  "40026Description": "Data should not be empty."
+  "40026Description": "Data should not be empty.",
+  "54012Title": "Out of Stock",
+  "54012Description": "One or more items in your cart are currently out of stock. Please edit your cart and checkout again."
 }

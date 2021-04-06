@@ -338,6 +338,11 @@ export const actions = {
     type: types.CLEAR_ERROR,
   }),
 
+  updateApiError: code => ({
+    type: types.UPDATE_API_ERROR,
+    code,
+  }),
+
   showMessageModal: ({ message, description, buttonText = '' }) => ({
     type: types.SET_MESSAGE_INFO,
     message,
