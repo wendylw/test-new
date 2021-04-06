@@ -125,7 +125,7 @@ class ProductDetailDrawer extends Component {
 
     product.variations.forEach(variation => {
       if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
-        const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
+        const defaultOption = variation.optionValues.find(o => !(o.markedSoldOut || o.stockStatus === 'outOfStock'));
 
         if (defaultOption) {
           newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, defaultOption));
@@ -431,6 +431,14 @@ class ProductDetailDrawer extends Component {
       childrenProduct = selectedProduct;
     }
 
+    const stockStatusMapping = {
+      outOfStock: 'out of stock',
+      inStock: 'in stock',
+      lowStock: 'low stock',
+      unavailable: 'unavailable',
+      notTrackInventory: 'not track Inventory',
+    };
+
     const gtmEventData = {
       product_name: selectedProduct.title,
       product_id: variables.productId,
@@ -438,7 +446,7 @@ class ProductDetailDrawer extends Component {
       variant: variables.variations,
       quantity: childrenProduct.quantityOnHand,
       product_type: selectedProduct.inventoryType,
-      Inventory: !!selectedProduct.markedSoldOut ? 'In stock' : 'Out of stock',
+      Inventory: stockStatusMapping[selectedProduct.stockStatus] || stockStatusMapping.inStock,
       image_count: (selectedProduct.images && selectedProduct.images.length) || 0,
     };
 

@@ -15,6 +15,14 @@ import './CartListDrawer.scss';
 
 class CartListDrawer extends Component {
   handleGtmEventTracking = selectedProduct => {
+    const stockStatusMapping = {
+      outOfStock: 'out of stock',
+      inStock: 'in stock',
+      lowStock: 'low stock',
+      unavailable: 'unavailable',
+      notTrackInventory: 'not track Inventory',
+    };
+
     // In cart list, image count is always either 1 or 0
     const gtmEventDate = {
       product_name: selectedProduct.title,
@@ -23,7 +31,7 @@ class CartListDrawer extends Component {
       variant: selectedProduct.variations,
       quantity: selectedProduct.quantityOnHand,
       product_type: selectedProduct.inventoryType,
-      Inventory: !!selectedProduct.markedSoldOut ? 'In stock' : 'Out of stock',
+      Inventory: stockStatusMapping[selectedProduct.stockStatus] || stockStatusMapping.inStock,
       image_count: selectedProduct.image || 0,
     };
 

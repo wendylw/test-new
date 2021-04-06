@@ -13,6 +13,14 @@ import ItemOperator from '../../../../components/ItemOperator';
 
 class CartList extends Component {
   handleGtmEventTracking = product => {
+    const stockStatusMapping = {
+      outOfStock: 'out of stock',
+      inStock: 'in stock',
+      lowStock: 'low stock',
+      unavailable: 'unavailable',
+      notTrackInventory: 'not track Inventory',
+    };
+
     // In cart page, image count is always either 1 or 0
     const gtmEventDate = {
       product_name: product.title,
@@ -21,7 +29,7 @@ class CartList extends Component {
       variant: product.variations,
       quantity: product.quantityOnHand,
       product_type: product.inventoryType,
-      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
+      Inventory: stockStatusMapping[product.stockStatus] || stockStatusMapping.inStock,
       image_count: product.image || 0,
     };
 

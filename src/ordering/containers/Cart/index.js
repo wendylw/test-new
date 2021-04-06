@@ -374,27 +374,6 @@ class Cart extends Component {
     );
   }
 
-  checkCartItemSoldOut = (shoppingCart = {}) => {
-    const { unavailableItems = [], items = [] } = shoppingCart;
-    const cartList = [...unavailableItems, ...items];
-
-    for (let i = 0; i < cartList.length; i++) {
-      const cartItem = cartList[i];
-      const { markedSoldOut, variations } = cartItem;
-
-      if (markedSoldOut) {
-        return true;
-      }
-
-      if (Array.isArray(variations) && variations.length > 0) {
-        if (variations.find(variation => variation.markedSoldOut)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
   formatCleverTapAttributes(product) {
     return {
       'category name': product.categoryName,
@@ -435,7 +414,6 @@ class Cart extends Component {
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-    // const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
     const buttonText = !isInvalidTotal ? (
       <span className="text-weight-bolder" key="pay-now">
         {t('PayNow')}

@@ -21,14 +21,23 @@ import './ProductList.scss';
 class ProductList extends Component {
   handleGtmEventTracking = (eventName, data) => {
     if (!data) return;
+
+    const stockStatusMapping = {
+      outOfStock: 'out of stock',
+      inStock: 'in stock',
+      lowStock: 'low stock',
+      unavailable: 'unavailable',
+      notTrackInventory: 'not track Inventory',
+    };
     let gtmTrackingData = {};
+
     if (eventName === GTM_TRACKING_EVENTS.VIEW_PRODUCT) {
       gtmTrackingData = {
         product_name: data.title,
         product_id: data.id,
         price_local: data.displayPrice,
         product_type: data.inventoryType,
-        Inventory: !!data.markedSoldOut ? 'In stock' : 'Out of stock',
+        Inventory: stockStatusMapping[data.stockStatus] || stockStatusMapping.inStock,
         image_count: (data.images && data.images.length) || 0,
         product_description: data.description,
       };
@@ -42,7 +51,7 @@ class ProductList extends Component {
         variant: data.variations,
         quantity: data.quantityOnHand,
         product_type: data.inventoryType,
-        Inventory: !!data.soldOut ? 'In stock' : 'Out of stock',
+        Inventory: stockStatusMapping[data.stockStatus] || stockStatusMapping.inStock,
         image_count: (data.images && data.images.length) || 0,
       };
     }
