@@ -172,7 +172,7 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
 };
 
 const cartInventory = (state = initialState.cartInventory, action) => {
-  const { type, payload, error } = action;
+  const { type, payload } = action;
 
   if (type === cartActionTypes.checkInventory) {
     state = Object.assign({}, state, payload);
@@ -181,7 +181,6 @@ const cartInventory = (state = initialState.cartInventory, action) => {
   } else if (type === cartActionTypes.checkInventoryFailed) {
     state = Object.assign({}, state, {
       status: payload.status,
-      result: payload.result,
       error: payload.error,
     });
   }
