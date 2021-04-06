@@ -1,14 +1,8 @@
-import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../components/Header';
-import RedirectForm from './components/RedirectForm';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import Constants from '../../../utils/constants';
-import config from '../../../config';
-import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -16,9 +10,7 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { getDeliveryInfo } from '../../redux/modules/home';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../redux/modules/app';
-import { getCurrentOrderId } from '../../redux/modules/payment';
 import { getBusinessInfo } from '../../redux/modules/cart';
 import {
   getPaymentsPendingState,
@@ -28,7 +20,6 @@ import {
 } from './redux/common/selectors';
 import * as paymentCommonThunks from './redux/common/thunks';
 import Utils from '../../../utils/utils';
-import { getPaymentRedirectAndWebHookUrl } from './utils';
 import PaymentItem from './components/payment-item';
 import Loader from './components/Loader';
 import './OrderingPayment.scss';
@@ -86,27 +77,12 @@ class Payment extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPaymentOption, business, businessInfo } = this.props;
-    const { paymentProvider, pathname } = currentPaymentOption;
-    const planId = _toString(_get(businessInfo, 'planId', ''));
-
-    if (!onlineStoreInfo || !currentOrder || !paymentProvider || pathname) {
-      return null;
-    }
-
-    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
+    const { currentPaymentOption } = this.props;
+    const { paymentProvider } = currentPaymentOption;
 
     return {
-      amount: currentOrder.total,
-      currency: onlineStoreInfo.currency,
-      receiptNumber: currentOrder.orderId,
-      businessName: business,
-      redirectURL: redirectURL,
-      webhookURL: webhookURL,
       // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
       paymentName: paymentProvider,
-      isInternal: _startsWith(planId, 'internal'),
-      source: Utils.getOrderSource(),
     };
   };
 
@@ -204,7 +180,6 @@ class Payment extends Component {
       storeInfoForCleverTap,
     } = this.props;
     const { payNowLoading, cartContainerHeight } = this.state;
-    const paymentData = this.getPaymentEntryRequestData();
 
     return (
       <section className="ordering-payment flex flex-column" data-heap-name="ordering.payment.container">
@@ -253,19 +228,11 @@ class Payment extends Component {
             }}
             paymentName={currentPaymentOption.paymentProvider}
             afterCreateOrder={this.handleAfterCreateOrder}
+            paymentExtraData={this.getPaymentEntryRequestData()}
           >
             {payNowLoading ? t('Processing') : t('Continue')}
           </CreateOrderButton>
         </footer>
-
-        {paymentData ? (
-          <RedirectForm
-            ref={ref => (this.form = ref)}
-            action={config.storeHubPaymentEntryURL}
-            method="POST"
-            data={paymentData}
-          />
-        ) : null}
 
         <Loader className={'loading-cover opacity'} loaded={!pendingPaymentOptions} />
       </section>
@@ -277,8 +244,6 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         pendingPaymentOptions: getPaymentsPendingState(state),
         allPaymentOptions: getAllPaymentsOptions(state),
@@ -289,7 +254,6 @@ export default compose(
         business: getBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         businessInfo: getBusinessInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
         user: getUser(state),

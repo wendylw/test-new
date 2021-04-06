@@ -16,12 +16,11 @@ import Constants from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
 import { STRIPE_LOAD_TIME_OUT } from './constants';
 
-const { PAYMENT_PROVIDERS } = Constants;
+const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS } = Constants;
 
 function CheckoutForm({
   showMessageModal,
   t,
-  renderRedirectForm,
   history,
   cartSummary,
   country,
@@ -29,6 +28,7 @@ function CheckoutForm({
   supportSaveCard,
   storeInfoForCleverTap,
   isAddCardPath,
+  paymentExtraData,
 }) {
   const { total } = cartSummary || {};
   const stripe = useStripe();
@@ -75,10 +75,6 @@ function CheckoutForm({
 
   const headerRef = useRef(null);
   const footerRef = useRef(null);
-
-  if (typeof renderRedirectForm !== 'function') {
-    throw new Error('Error: getRedirectFrom should be a function');
-  }
 
   const cardComplete = cardNumber.complete && cardExpiry.complete && cardCvc.complete && cardHolderName.value;
   const hasEmpty = [cardNumber, cardExpiry, cardCvc, cardHolderName].some(item => item.empty);
@@ -153,6 +149,12 @@ function CheckoutForm({
   }, []);
 
   const title = isAddCardPath ? t('AddCreditCardTitle') : t('PayViaCard');
+
+  const finalPaymentExtraData = {
+    ...paymentExtraData,
+    paymentMethodId: paymentMethod ? paymentMethod.id : '',
+    paymentOption: supportSaveCard && saveCard ? PAYMENT_API_PAYMENT_OPTIONS.SAVE_CARD : null,
+  };
 
   return (
     <section
@@ -395,8 +397,6 @@ function CheckoutForm({
             </div>
           )}
 
-          {paymentMethod ? renderRedirectForm(paymentMethod, saveCard) : null}
-
           <Loader className={'loading-cover opacity'} loaded={isReady} />
         </div>
       </div>
@@ -414,6 +414,7 @@ function CheckoutForm({
           validCreateOrder={!!paymentMethod}
           afterCreateOrder={handleAfterCreateOrder}
           paymentName={'Stripe'}
+          paymentExtraData={finalPaymentExtraData}
         >
           {processing ? (
             t('Processing')

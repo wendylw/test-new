@@ -1,20 +1,14 @@
 /* eslint-disable jsx-a11y/alt-text */
-import qs from 'qs';
 import React, { Component } from 'react';
-import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 import { withTranslation } from 'react-i18next';
 import Loader from '../components/Loader';
 import Image from '../../../../components/Image';
 import Header from '../../../../components/Header';
-import RedirectForm from '../components/RedirectForm';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import { IconKeyArrowDown } from '../../../../components/Icons';
 import Constants from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
-import config from '../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -22,8 +16,6 @@ import { actions as homeActionCreators } from '../../../redux/modules/home';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getStoreInfoForCleverTap } from '../../../redux/modules/app';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import {
   getPaymentsPendingState,
   getOnlineBankingOption,
@@ -32,7 +24,6 @@ import {
 } from '../redux/common/selectors';
 import * as paymentCommonThunks from '../redux/common/thunks';
 import { getBusinessInfo } from '../../../redux/modules/cart';
-import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import './OrderingBanking.scss';
 import CleverTap from '../../../../utils/clevertap';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -69,36 +60,14 @@ class OnlineBanking extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const {
-      onlineStoreInfo,
-      currentOrder,
-      business,
-      businessInfo,
-      currentPaymentOption,
-      currentOnlineBanking,
-    } = this.props;
+    const { currentPaymentOption, currentOnlineBanking } = this.props;
     const { paymentProvider } = currentPaymentOption;
     const { agentCode } = currentOnlineBanking;
-    const planId = _toString(_get(businessInfo, 'planId', ''));
-
-    if (!onlineStoreInfo || !currentOrder || !paymentProvider || !agentCode) {
-      return null;
-    }
-
-    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
 
     return {
-      amount: currentOrder.total,
-      currency: onlineStoreInfo.currency,
-      receiptNumber: currentOrder.orderId,
-      businessName: business,
-      redirectURL: redirectURL,
-      webhookURL: webhookURL,
       // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
       paymentName: paymentProvider,
       agentCode,
-      isInternal: _startsWith(planId, 'internal'),
-      source: Utils.getOrderSource(),
     };
   };
 
@@ -162,7 +131,6 @@ class OnlineBanking extends Component {
     const { total } = cartSummary || {};
     const { logo } = onlineStoreInfo || {};
     const { payNowLoading } = this.state;
-    const paymentData = this.getPaymentEntryRequestData();
 
     return (
       <section
@@ -235,6 +203,7 @@ class OnlineBanking extends Component {
               });
             }}
             paymentName={currentPaymentOption.paymentProvider}
+            paymentExtraData={this.getPaymentEntryRequestData()}
           >
             {payNowLoading ? (
               t('Processing')
@@ -248,15 +217,6 @@ class OnlineBanking extends Component {
           </CreateOrderButton>
         </footer>
 
-        {payNowLoading && paymentData ? (
-          <RedirectForm
-            ref={ref => (this.form = ref)}
-            action={config.storeHubPaymentEntryURL}
-            method="POST"
-            data={paymentData}
-          />
-        ) : null}
-
         <Loader className={'loading-cover opacity'} loaded={!pendingPaymentOptions} />
       </section>
     );
@@ -267,8 +227,6 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         onlineBankingList: getOnlineBankList(state),
         pendingPaymentOptions: getPaymentsPendingState(state),
@@ -279,7 +237,6 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };

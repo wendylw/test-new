@@ -1,15 +1,12 @@
-import { actions } from './';
+import { actions } from '..';
 import _findIndex from 'lodash/findIndex';
-import { get } from '../../../../../utils/api/api-fetch';
-import { API_INFO } from '../../api-info';
+import { get } from '../../../../../../utils/api/api-fetch';
+import { API_INFO } from '../../../api-info';
 
 const {
   loadPaymentsPending,
   loadPaymentsSuccess,
   loadPaymentsFailed,
-  loadSavedCardsPending,
-  loadSavedCardsSuccess,
-  loadSavedCardsFailed,
   updatePaymentSelected,
   updateBankingSelected,
 } = actions;
@@ -168,28 +165,4 @@ export const updateOnlineBankingSelected = agentCode => dispatch => {
   return dispatch(updateBankingSelected(agentCode || null));
 };
 
-export const loadSavedCards = (userId, paymentProvider) => async (dispatch, getState) => {
-  const { payments } = getState();
-
-  if (payments.savedCardList) {
-    /* eslint-disable */
-    console.log('Payment credit card list is cached already.');
-    /* eslint-enable */
-    return;
-  }
-
-  try {
-    dispatch(loadSavedCardsPending());
-
-    const { url, queryParams } = API_INFO.getSavedCardList(userId, paymentProvider);
-
-    const result = await get(url, queryParams);
-
-    if (result.data) {
-    } else {
-      return dispatch(loadSavedCardsFailed(result.error || {}));
-    }
-  } catch (e) {
-    return dispatch(loadSavedCardsFailed(e || {}));
-  }
-};
+export { createOrder, gotoPayment } from './create-order';

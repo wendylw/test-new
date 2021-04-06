@@ -9,7 +9,7 @@ const initialState = {
 };
 
 const { reducer, actions } = createSlice({
-  name: 'ORDERING/PAYMENTS/COMMON',
+  name: 'ordering/payments/common',
   initialState,
   reducers: {
     // TODO: use createAsyncThunk
@@ -28,9 +28,6 @@ const { reducer, actions } = createSlice({
         state.status = 'reject';
       }
     },
-    loadSavedCardsPending: state => {},
-    loadSavedCardsSuccess: state => {},
-    loadSavedCardsFailed: state => {},
     updatePaymentSelected: (state, { payload }) => {
       if (payload) {
         state.selectedOptionProvider = payload;

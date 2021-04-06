@@ -3,29 +3,21 @@ import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../components/CreateOrderButton';
-import RedirectForm from '../components/RedirectForm';
-import config from '../../../../config';
 import Utils from '../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getUser } from '../../../redux/modules/app';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import SaveCardSwitch from '../components/CreditCard/SaveCardSwitch';
 import CreditCardSecureInfo from '../components/CreditCard/CreditCardSecureInfo';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
-import { getPaymentRedirectAndWebHookUrl } from '../utils';
 import { getSelectedPaymentOption } from '../redux/common/selectors';
 import '../PaymentCreditCard.scss';
 
@@ -128,56 +120,23 @@ class AdyenPage extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, businessInfo, user, currentPaymentOption } = this.props;
+    const { user, currentPaymentOption } = this.props;
     const { paymentProvider } = currentPaymentOption;
     const { state, browserInfo } = this.card;
     const { data: paymentMethod } = state;
 
-    if (!onlineStoreInfo || !currentOrder || !paymentProvider || !paymentMethod || !user) {
-      return {};
-    }
-
-    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
     const { saveCard } = this.state;
-    const planId = _toString(_get(businessInfo, 'planId', ''));
 
     return {
-      amount: currentOrder.total,
-      currency: onlineStoreInfo.currency,
-      receiptNumber: currentOrder.orderId,
-      businessName: business,
       // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
       paymentName: paymentProvider,
       browserInfo: JSON.stringify(browserInfo || {}),
-      redirectURL,
-      webhookURL,
       userId: user.consumerId,
-      isInternal: _startsWith(planId, 'internal'),
-      source: Utils.getOrderSource(),
       ...paymentMethod,
       type: saveCard
         ? Constants.ADYEN_PAYMENT_TYPE.PAY_WITH_SAVE_CARD
         : Constants.ADYEN_PAYMENT_TYPE.PAY_WITHOUT_SAVE_CARD,
     };
-  };
-
-  renderRedirectForm = () => {
-    const { currentOrder } = this.props;
-
-    if (!currentOrder) return null;
-    if (!this.card || !this.state.isCardValid || !this.state.submitToPayment) return null;
-
-    const requestData = { ...this.getPaymentEntryRequestData() };
-    const { receiptNumber, browserInfo } = requestData;
-
-    return receiptNumber && browserInfo ? (
-      <RedirectForm
-        key="adyen-payment-redirect-form"
-        action={config.storeHubPaymentEntryURL}
-        method="POST"
-        data={requestData}
-      />
-    ) : null;
   };
 
   handleSubmit = e => {
@@ -275,6 +234,7 @@ class AdyenPage extends Component {
                 payNowLoading: false,
               });
             }}
+            paymentExtraData={this.getPaymentEntryRequestData()}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"
@@ -283,8 +243,6 @@ class AdyenPage extends Component {
             />
           </CreateOrderButton>
         </footer>
-
-        {this.renderRedirectForm()}
       </section>
     );
   }
@@ -294,15 +252,12 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         currentPaymentOption: getSelectedPaymentOption(state),
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         user: getUser(state),
         deliveryDetails: getDeliveryDetails(state),
       };

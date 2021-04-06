@@ -2,23 +2,18 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 import Header from '../../../../components/Header';
 import Constants from '../../../../utils/constants';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import RedirectForm from '../components/RedirectForm';
 import Loader from '../components/Loader';
-import config from '../../../../config';
 import Utils from '../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
 import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { getBusinessInfo } from '../../../redux/modules/cart';
-import { getPaymentRedirectAndWebHookUrl, getCardLabel } from '../utils';
+import { getCardLabel } from '../utils';
 import {
   getUser,
   getOnlineStoreInfo,
@@ -26,7 +21,6 @@ import {
   getMerchantCountry,
   actions as appActionCreators,
 } from '../../../redux/modules/app';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import StripeCVV from './components/StripeCVV';
 import '../PaymentCreditCard.scss';
@@ -79,27 +73,13 @@ class CardCVV extends Component {
   };
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, businessInfo, user, selectedPaymentCard } = this.props;
-
-    if (!onlineStoreInfo || !currentOrder || !user) {
-      return {};
-    }
-
-    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
-    const planId = _toString(_get(businessInfo, 'planId', ''));
+    const { user, selectedPaymentCard } = this.props;
 
     return {
-      amount: currentOrder.total,
-      currency: onlineStoreInfo.currency,
-      receiptNumber: currentOrder.orderId,
-      redirectURL,
-      webhookURL,
       userId: user.consumerId,
       cardToken: selectedPaymentCard.cardToken,
       paymentName: Constants.PAYMENT_PROVIDERS.STRIPE,
       paymentOption: Constants.PAYMENT_API_PAYMENT_OPTIONS.TOKENIZATION,
-      isInternal: _startsWith(planId, 'internal'),
-      source: Utils.getOrderSource(),
       cvcToken: this.state.cvcToken,
     };
   };
@@ -131,27 +111,6 @@ class CardCVV extends Component {
 
     return cvcToken && isCvvValid;
   }
-
-  renderRedirectForm = () => {
-    const { currentOrder } = this.props;
-
-    if (!currentOrder) return null;
-    if (!this.state.submitToPayment) return null;
-
-    const requestData = { ...this.getPaymentEntryRequestData() };
-    const { receiptNumber } = requestData;
-
-    return (
-      receiptNumber && (
-        <RedirectForm
-          key="stripe-payment-redirect-form"
-          action={config.storeHubPaymentEntryURL}
-          method="POST"
-          data={requestData}
-        />
-      )
-    );
-  };
 
   handleCvvComponentOnReady = () => {
     this.setState({
@@ -239,6 +198,7 @@ class CardCVV extends Component {
                 payNowLoading: !!orderId,
               });
             }}
+            paymentExtraData={this.getPaymentEntryRequestData()}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"
@@ -247,7 +207,6 @@ class CardCVV extends Component {
             />
           </CreateOrderButton>
         </footer>
-        {this.renderRedirectForm()}
       </section>
     );
   }
@@ -257,13 +216,10 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         merchantCountry: getMerchantCountry(state),
         cardList: getCardList(state),
         cartSummary: getCartSummary(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         selectedPaymentCard: getSelectedPaymentCard(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         user: getUser(state),

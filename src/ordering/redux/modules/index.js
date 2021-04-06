@@ -4,7 +4,6 @@ import app from './app';
 import home from './home';
 import cart from './cart';
 import promotion from './promotion';
-import payment from './payment';
 import payments from '../../containers/Payment/redux';
 import thankYou from './thankYou';
 import customer from './customer';
@@ -17,7 +16,6 @@ const rootReducer = combineReducers({
   home,
   cart,
   customer,
-  payment,
   payments,
   thankYou,
   promotion,

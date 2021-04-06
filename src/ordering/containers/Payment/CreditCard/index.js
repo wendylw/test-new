@@ -1,14 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 import Loader from '../components/Loader';
 import Header from '../../../../components/Header';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import FormValidate from '../../../../utils/form-validate';
-import RedirectForm from '../components/RedirectForm';
 import CreateOrderButton from '../../../components/CreateOrderButton';
 import Constants from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
@@ -25,16 +21,9 @@ import {
   getMerchantCountry,
   getStoreInfoForCleverTap,
 } from '../../../redux/modules/app';
-import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
-import { getCurrentOrderId } from '../../../redux/modules/payment';
 import { getSelectedPaymentOption } from '../redux/common/selectors';
 import { getBusinessInfo } from '../../../redux/modules/cart';
-import {
-  getPaymentName,
-  getSupportCreditCardBrands,
-  creditCardDetector,
-  getPaymentRedirectAndWebHookUrl,
-} from '../utils';
+import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
 import PaymentCardBrands from '../components/PaymentCardBrands';
 import '../PaymentCreditCard.scss';
 import CleverTap from '../../../../utils/clevertap';
@@ -92,26 +81,14 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, businessInfo, currentPaymentOption } = this.props;
+    const { currentPaymentOption } = this.props;
     const { paymentProvider } = currentPaymentOption;
     const { card } = this.state;
     const { cardholderName } = card || {};
-    const planId = _toString(_get(businessInfo, 'planId', ''));
 
-    if (!onlineStoreInfo || !currentOrder || !paymentProvider || !cardholderName || !window.encryptedCardData) {
-      return null;
-    }
-
-    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
     const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData;
 
     return {
-      amount: currentOrder.total,
-      currency: onlineStoreInfo.currency,
-      receiptNumber: currentOrder.orderId,
-      businessName: business,
-      redirectURL,
-      webhookURL,
       payActionWay: 1,
       // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
       paymentName: paymentProvider,
@@ -120,8 +97,6 @@ class CreditCard extends Component {
       expYearCardInfo,
       expMonthCardInfo,
       maskedCardInfo,
-      isInternal: _startsWith(planId, 'internal'),
-      source: Utils.getOrderSource(),
     };
   };
 
@@ -521,7 +496,6 @@ class CreditCard extends Component {
     const { t, match, history, cartSummary, merchantCountry, storeInfoForCleverTap } = this.props;
     const { payNowLoading, domLoaded } = this.state;
     const { total } = cartSummary || {};
-    const paymentData = this.getPaymentEntryRequestData();
 
     return (
       <section
@@ -580,6 +554,7 @@ class CreditCard extends Component {
               });
             }}
             paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY)}
+            paymentExtraData={this.getPaymentEntryRequestData()}
           >
             {payNowLoading ? (
               t('Processing')
@@ -592,16 +567,6 @@ class CreditCard extends Component {
             )}
           </CreateOrderButton>
         </footer>
-
-        {paymentData ? (
-          <RedirectForm
-            ref={ref => (this.form = ref)}
-            action={config.storeHubPaymentEntryURL}
-            method="POST"
-            data={paymentData}
-          />
-        ) : null}
-
         <Loader className="loading-cover opacity" loaded={domLoaded} />
       </section>
     );
@@ -612,8 +577,6 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         currentPaymentOption: getSelectedPaymentOption(state),
 
@@ -621,7 +584,6 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
