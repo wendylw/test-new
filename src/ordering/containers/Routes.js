@@ -6,8 +6,6 @@ import Cart from './Cart';
 import Payment from './Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
-import MerchantInfo from './order-status/containers/MerchantInfo';
-import OrderDetails from './order-status/containers/OrderDetails';
 import NotFound from '../../NotFound';
 
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
@@ -30,6 +28,8 @@ const AddressDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/cont
 const ContactDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/ContactDetail')));
 const SavedCards = lazy(() => Utils.attemptLoad(() => import('./Payment/SavedCards')));
 const CardCvv = lazy(() => Utils.attemptLoad(() => import('./Payment/SavedCards/CVV')));
+const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
+const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
 
 const { ROUTER_PATHS } = Constants;
 
