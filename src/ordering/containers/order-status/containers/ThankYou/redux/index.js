@@ -22,13 +22,11 @@ const types = {
 };
 
 const initialState = {
-  thankYou: {
-    cashbackInfo: null /* included: isFetching, customerId, consumerId, status */,
-    storeHashCode: null,
-  },
+  cashbackInfo: null /* included: isFetching, customerId, consumerId, status */,
+  storeHashCode: null,
 };
 
-export const reducer = (state = initialState.thankYou, action) => {
+export const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.fetchCashbackInfoRequest:
     case types.createCashbackInfoRequest:

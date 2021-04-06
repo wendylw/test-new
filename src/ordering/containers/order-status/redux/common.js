@@ -20,10 +20,8 @@ const types = {
 };
 
 const initialState = {
-  common: {
-    receiptNumber: Utils.getQueryString('receiptNumber'),
-    order: null,
-  },
+  receiptNumber: Utils.getQueryString('receiptNumber'),
+  order: null,
 };
 
 export const actions = {
@@ -42,7 +40,7 @@ export const actions = {
   }),
 };
 
-export const reducer = (state = initialState.common, action) => {
+export const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.fetchOrderSuccess:
       const order = _get(action, 'responseGql.data.order', null);
