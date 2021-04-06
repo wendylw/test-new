@@ -9,7 +9,7 @@ const initialState = {
 };
 
 const { reducer, actions } = createSlice({
-  name: 'ORDERING/PAYMENTS/COMMON',
+  name: 'ordering/payments/common',
   initialState,
   reducers: {
     // TODO: use createAsyncThunk

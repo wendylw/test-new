@@ -3,7 +3,7 @@ import { get } from '../../../../../utils/api/api-fetch';
 import Url from '../../../../../utils/url';
 
 const thunks = {
-  fetchSavedCard: createAsyncThunk('FETCH_SAVED_CARD', async ({ userId, paymentName }) => {
+  fetchSavedCard: createAsyncThunk('ordering/payments/savedCards/fetchSavedCard', async ({ userId, paymentName }) => {
     return get(Url.API_URLS.GET_SAVED_CARD(userId).url, { queryParams: { provider: paymentName } });
   }),
 };
@@ -14,7 +14,7 @@ const initialState = {
 };
 
 const { reducer, actions } = createSlice({
-  name: 'ORDERING/PAYMENTS/SAVED_CARDS',
+  name: 'ordering/payments/savedCards',
   initialState,
   reducers: {
     setPaymentCard: (state, { payload }) => {
