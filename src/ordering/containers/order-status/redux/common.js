@@ -10,13 +10,13 @@ const { PROMO_TYPE } = Constants;
 
 const types = {
   // fetch order
-  fetchOrderRequest: 'orderStatus/fetchOrderRequest',
-  fetchOrderSuccess: 'orderStatus/fetchOrderSuccess',
-  fetchOrderFailure: 'orderStatus/fetchOrderFailure',
+  fetchOrderRequest: 'ordering/orderStatus/fetchOrderRequest',
+  fetchOrderSuccess: 'ordering/orderStatus/fetchOrderSuccess',
+  fetchOrderFailure: 'ordering/orderStatus/fetchOrderFailure',
   // fetch order status
-  fetchOrderStatusRequest: 'orderStatus/fetchOrderStatusRequest',
-  fetchOrderStatusSuccess: 'orderStatus/fetchOrderStatusSuccess',
-  fetchOrderStatusFailure: 'orderStatus/fetchOrderStatusFailure',
+  fetchOrderStatusRequest: 'ordering/orderStatus/fetchOrderStatusRequest',
+  fetchOrderStatusSuccess: 'ordering/orderStatus/fetchOrderStatusSuccess',
+  fetchOrderStatusFailure: 'ordering/orderStatus/fetchOrderStatusFailure',
 };
 
 const initialState = {

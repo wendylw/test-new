@@ -28,7 +28,7 @@ export const initialState = {
 };
 
 export const thunks = {
-  submitReport: createAsyncThunk('orderStatus/reportDriver/submitReport', async (data, thunkAPI) => {
+  submitReport: createAsyncThunk('ordering/orderStatus/reportDriver/submitReport', async (data, thunkAPI) => {
     const { getState, dispatch } = thunkAPI;
     const state = getState();
     const actions = reportDriverSlice.actions;
@@ -86,7 +86,7 @@ export const thunks = {
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
     }
   }),
-  fetchReport: createAsyncThunk('orderStatus/reportDriver/fetchReport', (data, thunkAPI) => {
+  fetchReport: createAsyncThunk('ordering/orderStatus/reportDriver/fetchReport', (data, thunkAPI) => {
     const { getState } = thunkAPI;
     const state = getState();
     const receiptNumber = getReceiptNumber(state);
@@ -100,7 +100,7 @@ export const thunks = {
 };
 
 export const reportDriverSlice = createSlice({
-  name: 'reportDriver',
+  name: 'ordering/orderStatus/reportDriver',
   initialState,
   reducers: {
     updateInputNotes(state, { payload }) {

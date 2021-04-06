@@ -4,21 +4,21 @@ import { API_REQUEST } from '../../../../../../redux/middlewares/api';
 
 const types = {
   // fetch cashbackInfo
-  fetchCashbackInfoRequest: 'orderStatus/thankYou/fetchCashbackInfoRequest',
-  fetchCashbackInfoSuccess: 'orderStatus/thankYou/fetchCashbackInfoSuccess',
-  fetchCashbackInfoFailure: 'orderStatus/thankYou/fetchCashbackInfoFailure',
+  fetchCashbackInfoRequest: 'ordering/orderStatus/thankYou/fetchCashbackInfoRequest',
+  fetchCashbackInfoSuccess: 'ordering/orderStatus/thankYou/fetchCashbackInfoSuccess',
+  fetchCashbackInfoFailure: 'ordering/orderStatus/thankYou/fetchCashbackInfoFailure',
   // create cashbackInfo
-  createCashbackInfoRequest: 'orderStatus/thankYou/createCashbackInfoRequest',
-  createCashbackInfoSuccess: 'orderStatus/thankYou/createCashbackInfoSuccess',
-  createCashbackInfoFailure: 'orderStatus/thankYou/createCashbackInfoFailure',
+  createCashbackInfoRequest: 'ordering/orderStatus/thankYou/createCashbackInfoRequest',
+  createCashbackInfoSuccess: 'ordering/orderStatus/thankYou/createCashbackInfoSuccess',
+  createCashbackInfoFailure: 'ordering/orderStatus/thankYou/createCashbackInfoFailure',
   // fetch store hash
-  fetchStoreHashRequest: 'orderStatus/thankYou/fetchStoreHashRequest',
-  fetchStoreHashSuccess: 'orderStatus/thankYou/fetchStoreHashSuccess',
-  fetchStoreHashFailure: 'orderStatus/thankYou/fetchStoreHashFailure',
+  fetchStoreHashRequest: 'ordering/orderStatus/thankYou/fetchStoreHashRequest',
+  fetchStoreHashSuccess: 'ordering/orderStatus/thankYou/fetchStoreHashSuccess',
+  fetchStoreHashFailure: 'ordering/orderStatus/thankYou/fetchStoreHashFailure',
   // fetch store has with table id
-  fetchStoreHashWithTableIdRequest: 'orderStatus/thankYou/fetchStoreHashWithTableIdRequest',
-  fetchStoreHashWithTableIdSuccess: 'orderStatus/thankYou/fetchStoreHashWithTableIdSuccess',
-  fetchStoreHashWithTableIdFailure: 'orderStatus/thankYou/fetchStoreHashWithTableIdFailure',
+  fetchStoreHashWithTableIdRequest: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdRequest',
+  fetchStoreHashWithTableIdSuccess: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdSuccess',
+  fetchStoreHashWithTableIdFailure: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdFailure',
 };
 
 const initialState = {
