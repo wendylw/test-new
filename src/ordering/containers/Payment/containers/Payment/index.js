@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../components/Header';
-import CreateOrderButton from '../../components/CreateOrderButton';
-import Constants from '../../../utils/constants';
+import Header from '../../../../../components/Header';
+import CreateOrderButton from '../../../../components/CreateOrderButton';
+import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../redux/modules/home';
-import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../redux/modules/app';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
-import { getDeliveryInfo } from '../../redux/modules/home';
-import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../redux/modules/app';
-import { getBusinessInfo } from '../../redux/modules/cart';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
+import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
+import { getDeliveryInfo } from '../../../../redux/modules/home';
+import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../../../redux/modules/app';
+import { getBusinessInfo } from '../../../../redux/modules/cart';
 import {
   getPaymentsPendingState,
   getAllPaymentsOptions,
   getSelectedPaymentOption,
   getAllOptionsUnavailableState,
-} from './redux/common/selectors';
-import * as paymentCommonThunks from './redux/common/thunks';
-import Utils from '../../../utils/utils';
-import PaymentItem from './components/payment-item';
-import Loader from './components/Loader';
+} from '../../redux/common/selectors';
+import * as paymentCommonThunks from '../../redux/common/thunks';
+import Utils from '../../../../../utils/utils';
+import PaymentItem from '../../components/payment-item';
+import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
-import CleverTap from '../../../utils/clevertap';
+import CleverTap from '../../../../../utils/clevertap';
 
 const { ROUTER_PATHS, DELIVERY_METHOD, PAYMENT_PROVIDERS } = Constants;
 

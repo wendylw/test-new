@@ -4,26 +4,26 @@ import { Elements } from '@stripe/react-stripe-js';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
-import Constants from '../../../../utils/constants';
+import Constants from '../../../../../utils/constants';
 
-import Utils from '../../../../utils/utils';
+import Utils from '../../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { actions as appActionCreators } from '../../../redux/modules/app';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
+import { getCartSummary } from '../../../../../redux/modules/entities/carts';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
+import { actions as appActionCreators } from '../../../../redux/modules/app';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
   getStoreInfoForCleverTap,
   getUser,
-} from '../../../redux/modules/app';
-import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../redux/common/selectors';
-import * as paymentCommonThunks from '../redux/common/thunks';
-import { getBusinessInfo } from '../../../redux/modules/cart';
-import '../PaymentCreditCard.scss';
+} from '../../../../redux/modules/app';
+import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../../redux/common/selectors';
+import * as paymentCommonThunks from '../../redux/common/thunks';
+import { getBusinessInfo } from '../../../../redux/modules/cart';
+import '../../styles/PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';
 
 const { PAYMENT_PROVIDERS, ROUTER_PATHS } = Constants;

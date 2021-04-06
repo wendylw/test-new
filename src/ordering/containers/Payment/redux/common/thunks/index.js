@@ -1,7 +1,7 @@
 import { actions } from '..';
 import _findIndex from 'lodash/findIndex';
 import { get } from '../../../../../../utils/api/api-fetch';
-import { API_INFO } from '../../../api-info';
+import { API_INFO } from './api-info';
 
 const {
   loadPaymentsPending,

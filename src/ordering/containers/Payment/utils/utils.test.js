@@ -1,7 +1,7 @@
-import { creditCardDetector } from './utils';
-import Constants from '../../../utils/constants';
+import { creditCardDetector } from '.';
+import Constants from '../../../../utils/constants';
 
-const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS } = Constants;
+const { CREDIT_CARD_BRANDS } = Constants;
 
 describe('utils.creditCardDetector', () => {
   it('creditCardDetector: not digital', () => {

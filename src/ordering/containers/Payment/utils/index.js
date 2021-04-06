@@ -1,10 +1,10 @@
 import _get from 'lodash/get';
 import qs from 'qs';
-import Constants from '../../../utils/constants';
-import config from '../../../config';
-import Utils from '../../../utils/utils';
-import paymentMasterImage from '../../../images/payment-mastercard.svg';
-import paymentVisaImage from '../../../images/payment-visa.svg';
+import Constants from '../../../../utils/constants';
+import config from '../../../../config';
+import Utils from '../../../../utils/utils';
+import paymentMasterImage from '../../../../images/payment-mastercard.svg';
+import paymentVisaImage from '../../../../images/payment-visa.svg';
 
 const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS, ROUTER_PATHS, PAYMENT_PROVIDERS } = Constants;
 

@@ -3,23 +3,23 @@ import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import Loader from '../components/Loader';
-import Header from '../../../../components/Header';
-import Constants from '../../../../utils/constants';
-import CurrencyNumber from '../../../components/CurrencyNumber';
-import CreateOrderButton from '../../../components/CreateOrderButton';
-import Utils from '../../../../utils/utils';
+import Loader from '../../components/Loader';
+import Header from '../../../../../components/Header';
+import Constants from '../../../../../utils/constants';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import CreateOrderButton from '../../../../components/CreateOrderButton';
+import Utils from '../../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getOnlineStoreInfo, getBusiness, getUser } from '../../../redux/modules/app';
-import { getBusinessInfo } from '../../../redux/modules/cart';
-import SaveCardSwitch from '../components/CreditCard/SaveCardSwitch';
-import CreditCardSecureInfo from '../components/CreditCard/CreditCardSecureInfo';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
-import { getSelectedPaymentOption } from '../redux/common/selectors';
-import '../PaymentCreditCard.scss';
+import { getCartSummary } from '../../../../../redux/modules/entities/carts';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
+import { getOnlineStoreInfo, getBusiness, getUser } from '../../../../redux/modules/app';
+import { getBusinessInfo } from '../../../../redux/modules/cart';
+import SaveCardSwitch from '../../components/CreditCard/SaveCardSwitch';
+import CreditCardSecureInfo from '../../components/CreditCard/CreditCardSecureInfo';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
+import { getSelectedPaymentOption } from '../../redux/common/selectors';
+import '../../styles/PaymentCreditCard.scss';
 
 /**
  * TODO: Adyen is unavailable at long time, so we needn't maintenance this file for now

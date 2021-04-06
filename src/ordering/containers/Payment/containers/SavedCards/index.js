@@ -1,27 +1,27 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import Header from '../../../../components/Header';
-import Constants from '../../../../utils/constants';
-import Utils from '../../../../utils/utils';
-import CurrencyNumber from '../../../components/CurrencyNumber';
-import Radio from '../../../../components/Radio';
-import CreateOrderButton from '../../../components/CreateOrderButton';
-import Loader from '../components/Loader';
+import Header from '../../../../../components/Header';
+import Constants from '../../../../../utils/constants';
+import Utils from '../../../../../utils/utils';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import Radio from '../../../../../components/Radio';
+import CreateOrderButton from '../../../../components/CreateOrderButton';
+import Loader from '../../components/Loader';
 import _get from 'lodash/get';
 
 import { compose, bindActionCreators } from 'redux';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getUser } from '../../../redux/modules/app';
+import { getCartSummary } from '../../../../../redux/modules/entities/carts';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
+import { getUser } from '../../../../redux/modules/app';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
-import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../redux/common/selectors';
-import * as paymentCommonThunks from '../redux/common/thunks';
-import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../utils';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
-import IconAddNew from '../../../../images/icon-add-new.svg';
-import '../PaymentCreditCard.scss';
+import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../../redux/common/selectors';
+import * as paymentCommonThunks from '../../redux/common/thunks';
+import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
+import IconAddNew from '../../../../../images/icon-add-new.svg';
+import '../../styles/PaymentCreditCard.scss';
 
 const { PAYMENT_PROVIDERS } = Constants;
 class SavedCards extends Component {

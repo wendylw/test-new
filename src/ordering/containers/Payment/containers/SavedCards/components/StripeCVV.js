@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, forwardRef, useState, Fragment } from 'react';
 import { Elements, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import CVCCardImage from '../../../../../images/cvc-card.png';
+import CVCCardImage from '../../../../../../images/cvc-card.png';
 import _isFunction from 'lodash/isFunction';
 import _get from 'lodash/get';
 

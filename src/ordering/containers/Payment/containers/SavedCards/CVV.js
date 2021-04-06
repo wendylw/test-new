@@ -2,28 +2,28 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
-import Header from '../../../../components/Header';
-import Constants from '../../../../utils/constants';
-import CreateOrderButton from '../../../components/CreateOrderButton';
-import CurrencyNumber from '../../../components/CurrencyNumber';
-import Loader from '../components/Loader';
-import Utils from '../../../../utils/utils';
+import Header from '../../../../../components/Header';
+import Constants from '../../../../../utils/constants';
+import CreateOrderButton from '../../../../components/CreateOrderButton';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import Loader from '../../components/Loader';
+import Utils from '../../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getBusinessInfo } from '../../../redux/modules/cart';
-import { getCardLabel } from '../utils';
+import { getCartSummary } from '../../../../../redux/modules/entities/carts';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
+import { getBusinessInfo } from '../../../../redux/modules/cart';
+import { getCardLabel } from '../../utils';
 import {
   getUser,
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
   actions as appActionCreators,
-} from '../../../redux/modules/app';
+} from '../../../../redux/modules/app';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import StripeCVV from './components/StripeCVV';
-import '../PaymentCreditCard.scss';
+import '../../styles/PaymentCreditCard.scss';
 import './CVV.scss';
 import { STRIPE_LOAD_TIME_OUT } from '../Stripe/constants';
 

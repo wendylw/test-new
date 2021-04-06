@@ -1,32 +1,32 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Loader from '../components/Loader';
-import Header from '../../../../components/Header';
-import CurrencyNumber from '../../../components/CurrencyNumber';
-import FormValidate from '../../../../utils/form-validate';
-import CreateOrderButton from '../../../components/CreateOrderButton';
-import Constants from '../../../../utils/constants';
-import Utils from '../../../../utils/utils';
-import config from '../../../../config';
+import Loader from '../../components/Loader';
+import Header from '../../../../../components/Header';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import FormValidate from '../../../../../utils/form-validate';
+import CreateOrderButton from '../../../../components/CreateOrderButton';
+import Constants from '../../../../../utils/constants';
+import Utils from '../../../../../utils/utils';
+import config from '../../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
+import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
   getStoreInfoForCleverTap,
-} from '../../../redux/modules/app';
-import { getSelectedPaymentOption } from '../redux/common/selectors';
-import { getBusinessInfo } from '../../../redux/modules/cart';
-import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../utils';
-import PaymentCardBrands from '../components/PaymentCardBrands';
-import '../PaymentCreditCard.scss';
-import CleverTap from '../../../../utils/clevertap';
+} from '../../../../redux/modules/app';
+import { getSelectedPaymentOption } from '../../redux/common/selectors';
+import { getBusinessInfo } from '../../../../redux/modules/cart';
+import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
+import PaymentCardBrands from '../../components/PaymentCardBrands';
+import '../../styles/PaymentCreditCard.scss';
+import CleverTap from '../../../../../utils/clevertap';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {

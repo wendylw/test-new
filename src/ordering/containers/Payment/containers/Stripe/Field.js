@@ -1,5 +1,5 @@
 import React from 'react';
-import withDataAttributes from '../../../../components/withDataAttributes';
+import withDataAttributes from '../../../../../components/withDataAttributes';
 
 const Field = withDataAttributes(
   ({

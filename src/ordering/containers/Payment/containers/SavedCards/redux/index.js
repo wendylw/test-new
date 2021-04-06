@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { get } from '../../../../../utils/api/api-fetch';
-import Url from '../../../../../utils/url';
+import { get } from '../../../../../../utils/api/api-fetch';
+import Url from '../../../../../../utils/url';
 
 const thunks = {
   fetchSavedCard: createAsyncThunk('ordering/payments/savedCards/fetchSavedCard', async ({ userId, paymentName }) => {

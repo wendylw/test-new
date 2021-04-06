@@ -1,31 +1,31 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Loader from '../components/Loader';
-import Image from '../../../../components/Image';
-import Header from '../../../../components/Header';
-import CurrencyNumber from '../../../components/CurrencyNumber';
-import CreateOrderButton from '../../../components/CreateOrderButton';
-import { IconKeyArrowDown } from '../../../../components/Icons';
-import Constants from '../../../../utils/constants';
-import Utils from '../../../../utils/utils';
+import Loader from '../../components/Loader';
+import Image from '../../../../../components/Image';
+import Header from '../../../../../components/Header';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import CreateOrderButton from '../../../../components/CreateOrderButton';
+import { IconKeyArrowDown } from '../../../../../components/Icons';
+import Constants from '../../../../../utils/constants';
+import Utils from '../../../../../utils/utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../../redux/modules/home';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../redux/modules/customer';
-import { getCartSummary } from '../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness, getStoreInfoForCleverTap } from '../../../redux/modules/app';
+import { actions as homeActionCreators } from '../../../../redux/modules/home';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
+import { getCartSummary } from '../../../../../redux/modules/entities/carts';
+import { getOnlineStoreInfo, getBusiness, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import {
   getPaymentsPendingState,
   getOnlineBankingOption,
   getSelectedOnlineBanking,
   getOnlineBankList,
-} from '../redux/common/selectors';
-import * as paymentCommonThunks from '../redux/common/thunks';
-import { getBusinessInfo } from '../../../redux/modules/cart';
+} from '../../redux/common/selectors';
+import * as paymentCommonThunks from '../../redux/common/thunks';
+import { getBusinessInfo } from '../../../../redux/modules/cart';
 import './OrderingBanking.scss';
-import CleverTap from '../../../../utils/clevertap';
+import CleverTap from '../../../../../utils/clevertap';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
