@@ -6,7 +6,7 @@ import Cart from './Cart';
 import Payment from './Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
-import MerchantInfo from './MerchantInfo';
+import MerchantInfo from './order-status/containers/MerchantInfo';
 import OrderDetails from './order-status/containers/OrderDetail';
 import NotFound from '../../NotFound';
 
