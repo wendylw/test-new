@@ -358,15 +358,41 @@ class ProductDetailDrawer extends Component {
   getChoiceVariations(type) {
     const { variations = [], childrenMap = [] } = this.props.selectedProduct || {};
     const outOfStockChildProducts = childrenMap.filter(product => product.stockStatus === 'outOfStock');
-    const outOfStockVariations = Object.values(
-      outOfStockChildProducts.map(outOfStockProduct => outOfStockProduct.variationValues)
-    );
-    const derivedVariations = [];
+    let outOfStockValues = [];
+    let derivedVariations = Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
 
-    variations.map(variation => {
-      // outOfStockChildProducts.map(outOfStockProduct => outOfStockProduct.var)
-      variation.id;
-    });
+    // outOfStockChildProducts.forEach(childProduct => {
+    //   outOfStockValues = [...outOfStockValues, ...childProduct.variationValues]
+    // });
+
+    // derivedVariations = derivedVariations.map(variation => {
+    //   if (outOfStockValues.find(outOfStockValue => outOfStockValue.variationId === variation.id)) {
+    //     variation.optionValues = variation.optionValues.map(option => {
+    //       if (outOfStockValues.includes(outOfStockValue => outOfStockValue.value === option.value)) {
+    //         option.stockStatus = 'outOfStock';
+    //       }
+
+    //       return option;
+    //     })
+    //   }
+    // });
+
+    // console.log(derivedVariations.map(variation => {
+    //   if (outOfStockValues.find(outOfStockValue => outOfStockValue.variationId === variation.id)) {
+    //     variation.optionValues = variation.optionValues.map(option => {
+    //       if (outOfStockValues.includes(outOfStockValue => outOfStockValue.value === option.value)) {
+    //         option.stockStatus = 'outOfStock';
+    //       }
+
+    //       return option;
+    //     })
+    //   }
+    // }));
+
+    // variations.map(variation => {
+    //   // outOfStockChildProducts.map(outOfStockProduct => outOfStockProduct.var)
+    //   variation.id;
+    // });
 
     // const variationIds = variations.map(variation => variation.id);
     // let outOfStockVariationIds = [];
@@ -382,8 +408,7 @@ class ProductDetailDrawer extends Component {
     // });
 
     // console.log('outOfStockVariationIds', outOfStockVariationIds);
-    console.log('variations', variations);
-    console.log('outOfStockVariations', outOfStockVariations);
+    console.log('outOfStockValues', outOfStockValues);
 
     return Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
   }
