@@ -3,10 +3,8 @@ import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import PropTypes from 'prop-types';
-import _includes from 'lodash/includes';
 import _values from 'lodash/values';
 import _every from 'lodash/every';
-import _keys from 'lodash/keys';
 
 import { getSelectedPaymentOption } from '../redux/common/selectors';
 import * as paymentCommonThunks from '../redux/common/thunks';
