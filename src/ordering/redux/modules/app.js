@@ -338,10 +338,14 @@ export const actions = {
     type: types.CLEAR_ERROR,
   }),
 
-  updateApiError: code => ({
-    type: types.UPDATE_API_ERROR,
-    code,
-  }),
+  updateApiError: code => dispatch => {
+    console.log(code);
+
+    return dispatch({
+      type: types.UPDATE_API_ERROR,
+      code,
+    });
+  },
 
   showMessageModal: ({ message, description, buttonText = '' }) => ({
     type: types.SET_MESSAGE_INFO,
@@ -635,7 +639,7 @@ const apiError = (state = initialState.apiError, action) => {
     };
   }
 
-  if (error) {
+  if (error || type === types.UPDATE_API_ERROR) {
     return {
       ...state,
       show: error.showModal,

@@ -10,13 +10,7 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getAllProducts, getProductById } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
-import {
-  actions as appActions,
-  getBusinessUTCOffset,
-  getCartItemList,
-  fetchShoppingCart,
-  getShoppingCart,
-} from './app';
+import { actions as appActions, getBusinessUTCOffset, getCartItemList, fetchShoppingCart } from './app';
 import { APP_TYPES } from '../types';
 
 const initialState = {
@@ -126,9 +120,6 @@ export const actions = {
     try {
       dispatch(checkInventory());
 
-      console.log(url);
-      console.log(queryParams);
-
       await get(url, { queryParams });
 
       dispatch(checkInventorySuccess());
@@ -136,9 +127,12 @@ export const actions = {
       return { status: 'fulfilled' };
     } catch (e) {
       dispatch(checkInventoryFailed(e));
-
-      appActions.loadShoppingCart();
-      appActions.updateApiError(e.code);
+      dispatch({
+        type: APP_TYPES.UPDATE_API_ERROR,
+        code: e.code,
+        status: e.status,
+        message: e.message,
+      });
 
       return { status: 'reject' };
     }

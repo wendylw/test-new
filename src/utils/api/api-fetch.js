@@ -35,6 +35,26 @@ function convertOptions(options) {
     ...others,
   };
 
+  if (type === 'json') {
+    if (payload && typeof payload !== 'object') {
+      console.warn(
+        `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`
+      );
+      currentOptions.body = payload;
+    } else {
+      currentOptions.json = payload;
+    }
+  } else {
+    currentOptions.body = payload;
+  }
+
+  if (queryParams) {
+    currentOptions.searchParams = queryParams;
+  }
+
+  currentOptions.hooks = currentOptions.hooks || {};
+  currentOptions.hooks.beforeRequest = currentOptions.hooks.beforeRequest || [];
+
   if (headers) {
     if (typeof headers !== 'object') {
       throw new Error('headers should be an object');
@@ -46,26 +66,6 @@ function convertOptions(options) {
       });
     });
   }
-
-  if (type === 'json') {
-    if (payload && typeof payload !== 'object') {
-      console.warn(
-        `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`
-      );
-      currentOptions.body = payload;
-    } else {
-      others.json = payload;
-    }
-  } else {
-    currentOptions.body = payload;
-  }
-
-  if (queryParams) {
-    currentOptions.searchParams = queryParams;
-  }
-
-  currentOptions.hooks = others.hooks || {};
-  currentOptions.hooks.beforeRequest = others.hooks.beforeRequest || [];
 
   return currentOptions;
 }
@@ -85,14 +85,18 @@ async function _fetch(url, opts) {
   } catch (e) {
     let error = {};
 
-    if (typeof e === 'object') {
-      error = e;
-    } else if (typeof e === 'string') {
-      error = {
-        code: '50000',
-        status: e.status,
-        message: e,
-      };
+    if (e.response) {
+      const body = await parseResponse(e.response);
+
+      if (typeof body === 'object' && body.code) {
+        error = body;
+      } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
+        error = {
+          code: '50000',
+          status: e.status,
+          message: typeof body === 'string' ? body : JSON.stringify(body),
+        };
+      }
     }
 
     throw error;

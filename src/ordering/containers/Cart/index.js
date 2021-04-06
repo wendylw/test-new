@@ -93,7 +93,7 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, cartActions, customerActions, deliveryDetails } = this.props;
+    const { user, history, appActions, cartActions, customerActions, deliveryDetails } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
     const { name, phone } = profile || {};
@@ -101,6 +101,8 @@ class Cart extends Component {
     const { status } = await cartActions.checkCartInventory();
 
     if (status === 'reject') {
+      appActions.loadShoppingCart();
+
       return;
     }
 
