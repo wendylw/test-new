@@ -6,9 +6,7 @@ import cart from './cart';
 import promotion from './promotion';
 import payment from './payment';
 import payments from '../../containers/Payment/redux/payments';
-import thankYou from './thankYou';
 import customer from './customer';
-import reportDriver from './reportDriver';
 import locationAndDate from './locationAndDate';
 import orderStatus from '../../containers/order-status/redux';
 
@@ -20,9 +18,7 @@ const rootReducer = combineReducers({
   customer,
   payment,
   payments,
-  thankYou,
   promotion,
-  reportDriver,
   locationAndDate,
   orderStatus,
 });
