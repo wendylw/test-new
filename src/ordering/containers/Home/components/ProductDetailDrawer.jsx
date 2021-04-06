@@ -361,56 +361,25 @@ class ProductDetailDrawer extends Component {
     let outOfStockValues = [];
     let derivedVariations = Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
 
-    // outOfStockChildProducts.forEach(childProduct => {
-    //   outOfStockValues = [...outOfStockValues, ...childProduct.variationValues]
-    // });
+    outOfStockChildProducts.forEach(childProduct => {
+      outOfStockValues = [...outOfStockValues, ...childProduct.variationValues];
+    });
 
-    // derivedVariations = derivedVariations.map(variation => {
-    //   if (outOfStockValues.find(outOfStockValue => outOfStockValue.variationId === variation.id)) {
-    //     variation.optionValues = variation.optionValues.map(option => {
-    //       if (outOfStockValues.includes(outOfStockValue => outOfStockValue.value === option.value)) {
-    //         option.stockStatus = 'outOfStock';
-    //       }
+    derivedVariations = derivedVariations.map(variation => {
+      if (outOfStockValues.find(outOfStockValue => outOfStockValue.variationId === variation.id)) {
+        variation.optionValues = variation.optionValues.map(option => {
+          if (outOfStockValues.find(outOfStockValue => outOfStockValue.value === option.value)) {
+            option.stockStatus = 'outOfStock';
+          }
 
-    //       return option;
-    //     })
-    //   }
-    // });
+          return option;
+        });
+      }
 
-    // console.log(derivedVariations.map(variation => {
-    //   if (outOfStockValues.find(outOfStockValue => outOfStockValue.variationId === variation.id)) {
-    //     variation.optionValues = variation.optionValues.map(option => {
-    //       if (outOfStockValues.includes(outOfStockValue => outOfStockValue.value === option.value)) {
-    //         option.stockStatus = 'outOfStock';
-    //       }
+      return variation;
+    });
 
-    //       return option;
-    //     })
-    //   }
-    // }));
-
-    // variations.map(variation => {
-    //   // outOfStockChildProducts.map(outOfStockProduct => outOfStockProduct.var)
-    //   variation.id;
-    // });
-
-    // const variationIds = variations.map(variation => variation.id);
-    // let outOfStockVariationIds = [];
-
-    // childrenMap.forEach(childrenProduct => {
-    //   const { variationValues, stockStatus } = childrenProduct || {};
-
-    //   if (stockStatus === 'outOfStock') {
-    //     const outOfStockValues = variationValues.filter(value => variationIds.includes(value.variationId)) || [];
-
-    //     outOfStockVariationIds = [...outOfStockVariationIds, ...outOfStockValues.map(value => value.variationId)];
-    //   }
-    // });
-
-    // console.log('outOfStockVariationIds', outOfStockVariationIds);
-    console.log('outOfStockValues', outOfStockValues);
-
-    return Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
+    return derivedVariations;
   }
 
   getShortageInventoryState(selectedProduct, childrenProduct, cartQuantity) {
