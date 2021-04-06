@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
 import { getUser, getRequestInfo, getError } from '../../redux/modules/app';
@@ -165,9 +165,9 @@ export default compose(
         cartSummary: getCartSummary(state),
       };
     },
-    dispatch => ({
-      createOrder: bindActionCreators(createOrder, dispatch),
-      gotoPayment: bindActionCreators(gotoPayment, dispatch),
-    })
+    {
+      createOrder,
+      gotoPayment,
+    }
   )
 )(CreateOrderButton);
