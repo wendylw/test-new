@@ -169,7 +169,7 @@ class CartList extends Component {
             this.handleIncreaseCartItem(cartItem);
           }}
         />
-        {stockStatus === 'lowStock' ? (
+        {stockStatus === 'lowStock' || inventoryShortage ? (
           <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>
         ) : null}
       </div>

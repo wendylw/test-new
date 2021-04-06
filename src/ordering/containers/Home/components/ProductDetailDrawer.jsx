@@ -522,7 +522,11 @@ class ProductDetailDrawer extends Component {
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
     const { id: productId } = selectedProduct;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
-    const lowStockStatus = this.getShortageInventoryState(selectedProduct || {}, childrenProduct || {}, cartQuantity);
+    const inventoryShortage = this.getShortageInventoryState(
+      selectedProduct || {},
+      childrenProduct || {},
+      cartQuantity
+    );
 
     if (!selectedProduct) {
       return null;
@@ -540,7 +544,7 @@ class ProductDetailDrawer extends Component {
               increasingProductOnCat ||
               !this.isSubmitable() ||
               Utils.isProductSoldOut(selectedProduct || {}) ||
-              lowStockStatus ||
+              inventoryShortage ||
               (hasMinimumVariations && this.isInvalidMinimumVariations())
             }
             onClick={() => {
@@ -611,16 +615,21 @@ class ProductDetailDrawer extends Component {
   renderProductLowStock = () => {
     const { t, selectedProduct } = this.props;
     const { cartQuantity, childrenProduct } = this.state;
-    const { quantityOnHand } = selectedProduct || {};
-    const { quantityOnHand: childrenProductQuantityOnHand } = childrenProduct || {};
-    const lowStockStatus = this.getShortageInventoryState(selectedProduct || {}, childrenProduct || {}, cartQuantity);
+    const { quantityOnHand, stockStatus } = selectedProduct || {};
+    const { quantityOnHand: childrenProductQuantityOnHand, stockStatus: childProductStockStatus } =
+      childrenProduct || {};
+    const inventoryShortage = this.getShortageInventoryState(
+      selectedProduct || {},
+      childrenProduct || {},
+      cartQuantity
+    );
 
-    if (!lowStockStatus) {
+    if (!(inventoryShortage || stockStatus === 'lowStock' || childProductStockStatus == 'lowStock')) {
       return null;
     }
 
     return (
-      <div className="text-center">
+      <div className="product-detail__low-stock-prompt padding-normal text-center text-error">
         <span className="text-weight-bolder">
           {t('LowStockProductQuantity', { quantityOnHand: childrenProductQuantityOnHand || quantityOnHand })}
         </span>
@@ -631,7 +640,11 @@ class ProductDetailDrawer extends Component {
   renderOperatorButton = () => {
     const { selectedProduct, onDncreaseProductDetailItem, onIncreaseProductDetailItem } = this.props;
     const { cartQuantity, minimumVariations, childrenProduct } = this.state;
-    const lowStockStatus = this.getShortageInventoryState(selectedProduct || {}, childrenProduct || {}, cartQuantity);
+    const inventoryShortage = this.getShortageInventoryState(
+      selectedProduct || {},
+      childrenProduct || {},
+      cartQuantity
+    );
 
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
@@ -646,7 +659,7 @@ class ProductDetailDrawer extends Component {
           quantity={cartQuantity}
           from="productDetail"
           decreaseDisabled={cartQuantity <= 1}
-          increaseDisabled={Utils.isProductSoldOut(selectedProduct || {}) || lowStockStatus}
+          increaseDisabled={Utils.isProductSoldOut(selectedProduct || {}) || inventoryShortage}
           onDecrease={() => {
             onDncreaseProductDetailItem(selectedProduct);
             this.setState({ cartQuantity: cartQuantity - 1 });
