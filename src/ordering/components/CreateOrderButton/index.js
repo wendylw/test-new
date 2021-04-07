@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
 import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
+import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
 
@@ -37,19 +36,21 @@ class CreateOrderButton extends React.Component {
   handleCreateOrder = async () => {
     const {
       history,
-      paymentActions,
+      createOrder,
       user,
       requestInfo,
       cartBilling,
       afterCreateOrder,
       beforeCreateOrder,
       paymentName,
+      gotoPayment,
     } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
+    let currentOrder;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
@@ -72,12 +73,13 @@ class CreateOrderButton extends React.Component {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
-      await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+      const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
         paymentName: paymentName || 'N/A',
       });
 
-      const { currentOrder /*error*/ } = this.props;
+      const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
+      currentOrder = order;
       const { orderId } = currentOrder || {};
 
       newOrderId = orderId;
@@ -86,8 +88,6 @@ class CreateOrderButton extends React.Component {
         Utils.removeSessionVariable('additionalComments');
         Utils.removeSessionVariable('deliveryComments');
       }
-
-      const { thankYouPageUrl } = this.props;
 
       if (thankYouPageUrl) {
         window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
@@ -98,6 +98,12 @@ class CreateOrderButton extends React.Component {
 
     if (afterCreateOrder) {
       afterCreateOrder(newOrderId);
+    }
+
+    if (currentOrder) {
+      // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
+      // paymentExtraData could be changed after beforeCreateOrder is executed.
+      gotoPayment(currentOrder, this.props.paymentExtraData);
     }
   };
 
@@ -134,6 +140,7 @@ CreateOrderButton.propTypes = {
   beforeCreateOrder: PropTypes.func,
   afterCreateOrder: PropTypes.func,
   paymentName: PropTypes.string,
+  paymentExtraData: PropTypes.object,
 };
 
 CreateOrderButton.defaultProps = {
@@ -150,19 +157,16 @@ export default compose(
   withDataAttributes,
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         user: getUser(state),
         error: getError(state),
         requestInfo: getRequestInfo(state),
         cartBilling: getCartBilling(state),
-        thankYouPageUrl: getThankYouPageUrl(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
       };
     },
-    dispatch => ({
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-    })
+    {
+      createOrder,
+      gotoPayment,
+    }
   )
 )(CreateOrderButton);
