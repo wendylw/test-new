@@ -3,13 +3,7 @@ import _findIndex from 'lodash/findIndex';
 import { get } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from './api-info';
 
-const {
-  loadPaymentsPending,
-  loadPaymentsSuccess,
-  loadPaymentsFailed,
-  updatePaymentSelected,
-  // updateBankingSelected,
-} = actions;
+const { loadPaymentsPending, loadPaymentsSuccess, loadPaymentsFailed, updatePaymentSelected } = actions;
 
 /* Model */
 const PAYMENTS_MAPPING = {
