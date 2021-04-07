@@ -5,7 +5,7 @@ import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
 import { getUser, getRequestInfo, getError } from '../../redux/modules/app';
-import { createOrder, gotoPayment } from '../../containers/Payment/redux/common/thunks';
+import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import { getCartSummary } from '../../../redux/modules/entities/carts';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';

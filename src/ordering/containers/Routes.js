@@ -3,16 +3,16 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 import Utils from '../../utils/utils';
 import Home from './Home';
 import Cart from './Cart';
-import Payment from './Payment/containers/Payment';
+import Payment from './payments/containers/Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
 import NotFound from '../../NotFound';
 
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
-const StripePayment = lazy(() => Utils.attemptLoad(() => import('./Payment/containers/Stripe')));
-const AdyenPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/containers/Adyen')));
-const CreditCard = lazy(() => Utils.attemptLoad(() => import('./Payment/containers/CreditCard')));
-const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/containers/OnlineBanking')));
+const StripePayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/Stripe')));
+const AdyenPayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/Adyen')));
+const CreditCard = lazy(() => Utils.attemptLoad(() => import('./payments/containers/CreditCard')));
+const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/OnlineBanking')));
 const Receipt = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/Receipt')));
 const ThankYou = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ThankYou')));
 const Sorry = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/Sorry')));
@@ -26,8 +26,8 @@ const Profile = lazy(() => Utils.attemptLoad(() => import('./Profile')));
 const AddressList = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressList')));
 const AddressDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressDetail')));
 const ContactDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/ContactDetail')));
-const SavedCards = lazy(() => Utils.attemptLoad(() => import('./Payment/containers/SavedCards')));
-const CardCvv = lazy(() => Utils.attemptLoad(() => import('./Payment/containers/SavedCards/CVV')));
+const SavedCards = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards')));
+const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards/CVV')));
 const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
 const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
 

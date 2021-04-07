@@ -4,7 +4,7 @@ import app from './app';
 import home from './home';
 import cart from './cart';
 import promotion from './promotion';
-import payments from '../../containers/Payment/redux';
+import payments from '../../containers/payments/redux';
 import customer from './customer';
 import locationAndDate from './locationAndDate';
 import orderStatus from '../../containers/order-status/redux';
