@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
-import { ERROR_CODE_MAP } from '../../../utils/constants';
+import Constants from '../../../utils/constants';
 import { API_INFO } from '../../../utils/api/api-utils';
 import { get } from '../../../utils/api/api-fetch';
 import { CART_TYPES } from '../types';
@@ -127,7 +127,7 @@ export const actions = {
 
       return { status: 'fulfilled' };
     } catch (e) {
-      const error = ERROR_CODE_MAP[e.code] || ERROR_CODE_MAP[40002];
+      const error = Constants.ERROR_CODE_MAP[e.code] || Constants.ERROR_CODE_MAP[40002];
 
       dispatch(checkInventoryFailed(e));
       dispatch({
