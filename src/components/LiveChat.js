@@ -165,7 +165,7 @@ class LiveChat extends Component {
   };
 
   render() {
-    const { t, onClickLiveChat } = this.props;
+    const { t } = this.props;
     const { waitingZendeskScript } = this.state;
 
     return (
