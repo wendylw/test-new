@@ -24,7 +24,7 @@ import {
 } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
 import Utils from '../../../../../utils/utils';
-import PaymentItem from '../../components/payment-item';
+import PaymentItem from '../../components/PaymentItem';
 import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
