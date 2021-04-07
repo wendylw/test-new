@@ -1,23 +1,20 @@
-import React from 'react';
-import { BrowserRouter, Link } from 'react-router-dom';
-import { withTranslation } from 'react-i18next';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-
 import qs from 'qs';
-import Utils from '../../../../../utils/utils';
-import Constants from '../../../../../utils/constants';
-
+import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import { getAppToken } from '../../../../../../../cashback/containers/utils';
+import succeedAnimationGif from '../../../../../../../images/succeed-animation.gif';
+import Constants from '../../../../../../../utils/constants';
+import Utils from '../../../../../../../utils/utils';
+import CurrencyNumber from '../../../../../../components/CurrencyNumber';
 import {
-  actions as thankYouActionCreators,
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getUser,
   getBusinessInfo,
-  getCashbackInfo,
-} from '../../../../redux/modules/thankYou';
-
-import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
-import { getAppToken } from '../../../../../cashback/containers/utils';
+} from '../../../../../../redux/modules/app';
+import { actions as thankYouActionCreators, getCashbackInfo } from '../../redux';
 import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];

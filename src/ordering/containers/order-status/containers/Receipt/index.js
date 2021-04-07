@@ -2,32 +2,27 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Item from '../../../components/Item';
-import Billing from '../../components/Billing';
-import Header from '../../../components/Header';
-import ItemOperator from '../../../components/ItemOperator';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import Constants from '../../../utils/constants';
+import Item from '../../../../../components/Item';
+import Billing from '../../../../components/Billing';
+import Header from '../../../../../components/Header';
+import ItemOperator from '../../../../../components/ItemOperator';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import {
-  actions as thankYouActionCreators,
-  getOrder,
-  getBusinessInfo,
-  getPromotion,
-} from '../../redux/modules/thankYou';
-import { getUser } from '../../redux/modules/app';
-import Utils from '../../../utils/utils';
+import { compose } from 'redux';
+import { actions as orderStatusActionCreators, getOrder, getPromotion } from '../../redux/common';
+import { getUser, getBusinessInfo } from '../../../../redux/modules/app';
+import Utils from '../../../../../utils/utils';
 import './Receipt.scss';
 
 const { DELIVERY_METHOD } = Constants;
 export class ReceiptDetail extends Component {
   componentWillMount() {
-    const { history, thankYouActions } = this.props;
+    const { history, loadOrder } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    thankYouActions.loadOrder(receiptNumber);
+    loadOrder(receiptNumber);
   }
 
   getSpendCashback() {
@@ -163,8 +158,8 @@ export default compose(
       order: getOrder(state),
       promotion: getPromotion(state),
     }),
-    dispatch => ({
-      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
-    })
+    {
+      loadOrder: orderStatusActionCreators.loadOrder,
+    }
   )
 )(ReceiptDetail);

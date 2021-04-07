@@ -1,59 +1,60 @@
 import { captureException } from '@sentry/react';
+import _get from 'lodash/get';
+import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import _isNil from 'lodash/isNil';
-import _get from 'lodash/get';
-import Header from '../../../components/Header';
-import Image from '../../../components/Image';
-import { IconAccessTime, IconPin } from '../../../components/Icons';
-import LiveChat from '../../../components/LiveChat';
-import LiveChatNative from '../../../components/LiveChatNative';
-import config from '../../../config';
-import beepAppDownloadBanner from '../../../images/beep-app-download.png';
-import logisticsGoget from '../../../images/beep-logistics-goget.jpg';
-import logisticsGrab from '../../../images/beep-logistics-grab.jpg';
-import logisticsLalamove from '../../../images/beep-logistics-lalamove.jpg';
-import logisticsMrspeedy from '../../../images/beep-logistics-rspeedy.jpg';
-import logisticBeepOnFleet from '../../../images/beep-logistics-on-fleet.jpg';
-import beepPreOrderSuccessImage from '../../../images/beep-pre-order-success.png';
-import beepSuccessImage from '../../../images/beep-success.png';
-import IconCelebration from '../../../images/icon-celebration.svg';
-import beepOrderStatusAccepted from '../../../images/order-status-accepted.gif';
-import beepOrderStatusCancelled from '../../../images/order-status-cancelled.png';
-import beepOrderStatusConfirmed from '../../../images/order-status-confirmed.gif';
-import beepOrderStatusDelivered from '../../../images/order-status-delivered.gif';
-import beepOrderStatusPaid from '../../../images/order-status-paid.gif';
-import beepOrderStatusPickedUp from '../../../images/order-status-pickedup.gif';
-import cashbackSuccessImage from '../../../images/succeed-animation.gif';
-import Constants from '../../../utils/constants';
-import { formatPickupTime } from '../../../utils/datetime-lib';
-import { gtmEventTracking, gtmSetPageViewData, gtmSetUserProperties, GTM_TRACKING_EVENTS } from '../../../utils/gtm';
-import Utils from '../../../utils/utils';
-import { gotoHome } from '../../../utils/webview-utils';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import { getOnlineStoreInfo, getUser, getBusinessUTCOffset } from '../../redux/modules/app';
-import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
+import DownloadBanner from '../../../../../components/DownloadBanner';
+import Header from '../../../../../components/Header';
+import { IconAccessTime, IconPin } from '../../../../../components/Icons';
+import Image from '../../../../../components/Image';
+import LiveChat from '../../../../../components/LiveChat';
+import LiveChatNative from '../../../../../components/LiveChatNative';
+import config from '../../../../../config';
+import logisticsGoget from '../../../../../images/beep-logistics-goget.jpg';
+import logisticsGrab from '../../../../../images/beep-logistics-grab.jpg';
+import logisticsLalamove from '../../../../../images/beep-logistics-lalamove.jpg';
+import logisticBeepOnFleet from '../../../../../images/beep-logistics-on-fleet.jpg';
+import logisticsMrspeedy from '../../../../../images/beep-logistics-rspeedy.jpg';
+import beepPreOrderSuccessImage from '../../../../../images/beep-pre-order-success.png';
+import beepSuccessImage from '../../../../../images/beep-success.png';
+import IconCelebration from '../../../../../images/icon-celebration.svg';
+import beepOrderStatusAccepted from '../../../../../images/order-status-accepted.gif';
+import beepOrderStatusCancelled from '../../../../../images/order-status-cancelled.png';
+import beepOrderStatusConfirmed from '../../../../../images/order-status-confirmed.gif';
+import beepOrderStatusDelivered from '../../../../../images/order-status-delivered.gif';
+import beepOrderStatusPaid from '../../../../../images/order-status-paid.gif';
+import beepOrderStatusPickedUp from '../../../../../images/order-status-pickedup.gif';
+import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
+import CleverTap from '../../../../../utils/clevertap';
+import Constants from '../../../../../utils/constants';
+import { formatPickupTime } from '../../../../../utils/datetime-lib';
 import {
-  actions as thankYouActionCreators,
-  getBusinessInfo,
-  getCashbackInfo,
-  getLoadOrderStatus,
+  gtmEventTracking,
+  gtmSetPageViewData,
+  gtmSetUserProperties,
+  GTM_TRACKING_EVENTS,
+} from '../../../../../utils/gtm';
+import * as storeUtils from '../../../../../utils/store-utils';
+import Utils from '../../../../../utils/utils';
+import { gotoHome } from '../../../../../utils/webview-utils';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import {
+  actions as orderStatusActionCreators,
   getOrder,
+  getOrderStatus,
   getReceiptNumber,
   getRiderLocations,
-  getStoreHashCode,
-} from '../../redux/modules/thankYou';
+} from '../../redux/common';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
-import DownloadBanner from '../../../components/DownloadBanner';
-import CleverTap from '../../../utils/clevertap';
 import './OrderingThanks.scss';
-import * as storeUtils from '../../../utils/store-utils';
+import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
 
-// const { ORDER_STATUS } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
 // const FINALLY = [DELIVERED, CANCELLED, PICKED_UP];
 const ANIMATION_TIME = 3600;
@@ -168,7 +169,7 @@ export class ThankYou extends PureComponent {
     //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
-    const { updatedStatus, riderLocations = [] } = this.props;
+    const { orderStatus, riderLocations = [] } = this.props;
     const [lat = null, lng = null] = riderLocations || [];
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
     const { PICKUP } = CONSUMERFLOW_STATUS;
@@ -191,7 +192,7 @@ export class ThankYou extends PureComponent {
       },
     ];
 
-    if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
+    if (orderStatus === PICKUP && Utils.isDeliveryType()) {
       try {
         if (Utils.isAndroidWebview() && lat && lng) {
           const res = window.beepAppVersion;
@@ -312,12 +313,12 @@ export class ThankYou extends PureComponent {
   };
 
   loadOrder = async () => {
-    const { thankYouActions, receiptNumber } = this.props;
+    const { orderStatusActions, receiptNumber } = this.props;
 
-    await thankYouActions.loadOrder(receiptNumber);
+    await orderStatusActions.loadOrder(receiptNumber);
 
     if (Utils.isDeliveryType() || Utils.isPickUpType()) {
-      await thankYouActions.loadOrderStatus(receiptNumber);
+      await orderStatusActions.loadOrderStatus(receiptNumber);
 
       this.updateAppLocationAndStatus();
     }
@@ -449,7 +450,7 @@ export class ThankYou extends PureComponent {
     const { order } = this.props;
     const { status } = order || {};
 
-    return !CAN_REPORT_STATUS_LIST.includes(status);
+    return !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(status);
   };
 
   handleReportUnsafeDriver = () => {
@@ -624,7 +625,7 @@ export class ThankYou extends PureComponent {
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
     };
-    const { user, updatedStatus } = this.props;
+    const { user, orderStatus } = this.props;
     const { isWebview } = user;
 
     let currentStatusObj = {};
@@ -706,7 +707,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        {this.isRenderImage(isWebview, updatedStatus, CONSUMERFLOW_STATUS) && (
+        {this.isRenderImage(isWebview, orderStatus, CONSUMERFLOW_STATUS) && (
           <img
             className="ordering-thanks__image padding-normal margin-normal"
             src={currentStatusObj.bannerImage}
@@ -889,7 +890,7 @@ export class ThankYou extends PureComponent {
     order = {}
   ) => {
     const { status } = currentStatusObj;
-    const { deliveredTime } = order;
+    const { deliveredTime } = order || {};
     const { t, onlineStoreInfo = {} } = this.props;
     const { name: storeName, phone: storePhone } = storeInfo;
     const { logo: storeLogo } = onlineStoreInfo;
@@ -1461,12 +1462,13 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
-      updatedStatus: getLoadOrderStatus(state),
+      orderStatus: getOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+      orderStatusActions: bindActionCreators(orderStatusActionCreators, dispatch),
     })
   )
 )(ThankYou);

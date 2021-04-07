@@ -1,33 +1,32 @@
+import _isNil from 'lodash/isNil';
+import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import _isNil from 'lodash/isNil';
-import Header from '../../../components/Header';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import Constants from '../../../utils/constants';
-import LiveChat from '../../../components/LiveChat';
-import LiveChatNative from '../../../components/LiveChatNative';
-import { getUser } from '../../redux/modules/app';
-import Tag from '../../../components/Tag';
-import beepPreOrderSuccess from '../../../images/beep-pre-order-success.png';
+import { compose } from 'redux';
+import Header from '../../../../../components/Header';
+import { IconNext } from '../../../../../components/Icons';
+import LiveChat from '../../../../../components/LiveChat';
+import LiveChatNative from '../../../../../components/LiveChatNative';
+import Tag from '../../../../../components/Tag';
+import beepPreOrderSuccess from '../../../../../images/beep-pre-order-success.png';
+import CleverTap from '../../../../../utils/clevertap';
+import Constants from '../../../../../utils/constants';
+import Utils from '../../../../../utils/utils';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
 import {
-  actions as thankYouActionCreators,
+  actions as orderStatusActionCreators,
   getIsUseStorehubLogistics,
   getOrder,
   getOrderStatus,
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
-  getBusinessInfo,
-} from '../../redux/modules/thankYou';
+} from '../../redux/common';
 import './OrderingDetails.scss';
-import { IconNext } from '../../../components/Icons';
-import { getStoreInfoForCleverTap } from '../../redux/modules/app';
-import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
-import qs from 'qs';
-import Utils from '../../../utils/utils';
-import CleverTap from '../../../utils/clevertap';
+
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 const ShippingTypes = {
   dineIn: 'dine in',
@@ -40,9 +39,9 @@ export class OrderDetails extends Component {
   state = {};
 
   componentDidMount() {
-    const { thankYouActions } = this.props;
+    const { loadOrder } = this.props;
 
-    thankYouActions.loadOrder(this.getReceiptNumber());
+    loadOrder(this.getReceiptNumber());
   }
 
   getReceiptNumber = () => {
@@ -79,7 +78,7 @@ export class OrderDetails extends Component {
   isReportUnsafeDriverButtonDisabled = () => {
     const { orderStatus } = this.props;
 
-    return !CAN_REPORT_STATUS_LIST.includes(orderStatus);
+    return !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus);
   };
 
   handleReportUnsafeDriver = () => {
@@ -434,8 +433,8 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
-    dispatch => ({
-      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
-    })
+    {
+      loadOrder: orderStatusActionCreators.loadOrder,
+    }
   )
 )(OrderDetails);

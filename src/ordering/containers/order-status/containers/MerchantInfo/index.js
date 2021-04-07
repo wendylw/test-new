@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import qs from 'qs';
-import Header from '../../../components/Header';
-import Constants from '../../../utils/constants';
+import Header from '../../../../../components/Header';
+import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import { IconNext } from '../../../components/Icons';
-import Utils from '../../../utils/utils';
+import { compose } from 'redux';
+import { IconNext } from '../../../../../components/Icons';
+import Utils from '../../../../../utils/utils';
 import {
-  actions as thankYouActionCreators,
+  actions as commonActionCreators,
   getReceiptNumber,
-  getWebViewStatus,
   getOrderStatus,
   getIsUseStorehubLogistics,
   getOrder,
-} from '../../redux/modules/thankYou';
+} from '../../redux/common';
 
-import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import './OrderingMerchantInfo.scss';
+
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 export class MerchantInfo extends Component {
   componentDidMount() {
-    const { thankYouActions, receiptNumber } = this.props;
+    const { loadOrder, receiptNumber } = this.props;
 
-    thankYouActions.loadOrder(receiptNumber);
+    loadOrder(receiptNumber);
   }
 
   handleReportUnsafeDriver = () => {
@@ -40,13 +40,14 @@ export class MerchantInfo extends Component {
   isReportUnsafeDriverButtonDisabled = () => {
     const { orderStatus } = this.props;
 
-    return !CAN_REPORT_STATUS_LIST.includes(orderStatus);
+    return !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus);
   };
 
   render() {
-    const { history, t, isUseStorehubLogistics, order, isWebView } = this.props;
+    const { history, t, isUseStorehubLogistics, order } = this.props;
     const { storeInfo } = order || {};
     const { name, phone } = storeInfo || {};
+    const isWebView = Utils.isWebview();
 
     return (
       <section className="ordering-merchant-info flex flex-column" data-heap-name="ordering.need-help.container">
@@ -125,11 +126,10 @@ export default compose(
       receiptNumber: getReceiptNumber(state),
       orderStatus: getOrderStatus(state),
       order: getOrder(state),
-      isWebView: getWebViewStatus(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
     }),
-    dispatch => ({
-      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
-    })
+    {
+      loadOrder: commonActionCreators.loadOrder,
+    }
   )
 )(MerchantInfo);

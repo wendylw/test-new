@@ -3,16 +3,16 @@ import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 
 import { connect } from 'react-redux';
-import { compose, bindActionCreators } from 'redux';
+import { compose } from 'redux';
 
-import Constants from '../../../utils/constants';
-import PageLoader from '../../../components/PageLoader';
-import feedBackThankyou from '../../../images/feedback-thankyou.png';
-import { IconInsertPhoto } from '../../../components/Icons';
-import Header from '../../../components/Header';
-import Radio from '../../../components/Radio';
+import Constants from '../../../../../utils/constants';
+import PageLoader from '../../../../../components/PageLoader';
+import feedBackThankyou from '../../../../../images/feedback-thankyou.png';
+import { IconInsertPhoto } from '../../../../../components/Icons';
+import Header from '../../../../../components/Header';
+import Radio from '../../../../../components/Radio';
+import { actions as reportDriverActionCreators, thunks as reportDriverThunks } from './redux';
 import {
-  actions as reportDriverActionCreators,
   getInputNotes,
   getSelectedReasonCode,
   getSelectedReasonFields,
@@ -20,36 +20,33 @@ import {
   getShowPageLoader,
   getUploadPhotoUrl,
   getUploadPhotoFile,
-  SUBMIT_STATUS,
-  CAN_REPORT_STATUS_LIST,
-  REPORT_DRIVER_FIELD_NAMES,
-  REPORT_DRIVER_REASONS,
-} from '../../redux/modules/reportDriver';
+} from './redux/selectors';
+import { SUBMIT_STATUS, REPORT_DRIVER_FIELD_NAMES, REPORT_DRIVER_REASONS } from './constants';
 import {
-  actions as thankyouActionCreators,
+  actions as commonActionCreators,
   getIsUseStorehubLogistics,
   getOrderStatus,
   getReceiptNumber,
-} from '../../redux/modules/thankYou';
-import { actions as appActionCreators } from '../../redux/modules/app';
-import { IconClose } from '../../../components/Icons';
+} from '../../redux/common';
+import { actions as appActionCreators } from '../../../../redux/modules/app';
+import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
-const { REPORT_DRIVER_REASON_CODE } = Constants;
+const { REPORT_DRIVER_REASON_CODE, AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 class ReportDriver extends Component {
   componentDidMount() {
-    const { receiptNumber, thankyouActions, reportDriverActions } = this.props;
+    const { receiptNumber, loadOrder, fetchReport } = this.props;
 
-    thankyouActions.loadOrder(receiptNumber);
-    reportDriverActions.fetchReport();
+    loadOrder(receiptNumber);
+    fetchReport();
   }
 
   componentWillUnmount() {
     // release the file reference
-    this.props.reportDriverActions.removeUploadPhotoFile();
+    this.props.removeUploadPhotoFile();
   }
 
   handleGoBack = () => {
@@ -76,13 +73,13 @@ class ReportDriver extends Component {
   handleNotesChange = e => {
     const notes = e.target.value.slice(0, NOTE_MAX_LENGTH);
 
-    this.props.reportDriverActions.updateInputNotes(notes);
+    this.props.updateInputNotes(notes);
   };
 
   isOrderCanReportDriver = () => {
     const { orderStatus, isUseStorehubLogistics } = this.props;
 
-    return CAN_REPORT_STATUS_LIST.includes(orderStatus) && isUseStorehubLogistics;
+    return AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus) && isUseStorehubLogistics;
   };
 
   isInputNotesEmpty() {
@@ -129,7 +126,7 @@ class ReportDriver extends Component {
     const file = e.target.files[0];
 
     if (file.size > UPLOAD_FILE_MAX_SIZE) {
-      this.props.appActions.showError({
+      this.props.showError({
         message: this.props.t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) }),
       });
       // clear the select file
@@ -137,19 +134,19 @@ class ReportDriver extends Component {
       return;
     }
 
-    this.props.reportDriverActions.setUploadPhotoFile(file);
+    this.props.setUploadPhotoFile(file);
   };
 
   handleRemoveUploadPhoto = () => {
-    this.props.reportDriverActions.removeUploadPhotoFile();
+    this.props.removeUploadPhotoFile();
   };
 
   handleSubmit = async () => {
-    await this.props.reportDriverActions.submitReport();
+    await this.props.submitReport();
   };
 
   handleSelectReason = reasonCode => {
-    this.props.reportDriverActions.selectReasonCode(reasonCode);
+    this.props.selectReasonCode(reasonCode);
   };
 
   renderSubmitButtonContent = () => {
@@ -382,10 +379,17 @@ export default compose(
       uploadPhotoFile: getUploadPhotoFile(state),
       uploadPhotoUrl: getUploadPhotoUrl(state),
     }),
-    dispatch => ({
-      reportDriverActions: bindActionCreators(reportDriverActionCreators, dispatch),
-      thankyouActions: bindActionCreators(thankyouActionCreators, dispatch),
-      appActions: bindActionCreators(appActionCreators, dispatch),
-    })
+    {
+      updateInputNotes: reportDriverActionCreators.updateInputNotes,
+      setUploadPhotoFile: reportDriverActionCreators.setUploadPhotoFile,
+      removeUploadPhotoFile: reportDriverActionCreators.removeUploadPhotoFile,
+      setUploadPhotoFileLocation: reportDriverActionCreators.setUploadPhotoFileLocation,
+      selectReasonCode: reportDriverActionCreators.selectReasonCode,
+      updateSubmitStatus: reportDriverActionCreators.updateSubmitStatus,
+      fetchReport: reportDriverThunks.fetchReport,
+      submitReport: reportDriverThunks.submitReport,
+      loadOrder: commonActionCreators.loadOrder,
+      showError: appActionCreators.showError,
+    }
   )
 )(ReportDriver);
