@@ -319,6 +319,7 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:54012Title',
     desc: 'ApiError:54012Description',
     buttonText: 'Common:OK',
+    showModal: true,
   },
 };
 

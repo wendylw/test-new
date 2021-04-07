@@ -19,11 +19,12 @@ import { getBusinessByName } from '../../../../../../redux/modules/entities/busi
 
 import { fetchDeliveryDetails } from '../../../../Customer/utils';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
-import { post } from '../../../../../../utils/api/api-fetch';
+import { get, post } from '../../../../../../utils/api/api-fetch';
+import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
 
-const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES } = Constants;
+const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, ERROR_CODE_MAP } = Constants;
 
 export const createOrder = ({ cashback, shippingType }) => async (dispatch, getState) => {
   const isDigital = Utils.isDigitalType();
@@ -165,7 +166,23 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       },
     } = resp;
-    return { order, redirectUrl };
+    let timeOut = null;
+
+    async function checkCreatedOrderStatus() {
+      const { status } = (await createOrderStatusRequest(order.id)) || {};
+
+      if (status && status === 'created') {
+        clearTimeout(timeOut);
+
+        timeOut = setTimeout(checkCreatedOrderStatus(), 3000);
+      } else if ((status && status === 'failed') || status === 'cancelled') {
+        return dispatch(appActions.updateApiError(ERROR_CODE_MAP[54012]));
+      } else {
+        return { order, redirectUrl };
+      }
+    }
+
+    checkCreatedOrderStatus();
   } catch (error) {
     let errorMessage = '';
 
@@ -234,6 +251,12 @@ const createVoucherOrderRequest = async payload => {
 const createOrderRequest = async payload => {
   const endpoint = Url.apiGql('CreateOrder');
   return post(endpoint, { payload });
+};
+
+const createOrderStatusRequest = async orderId => {
+  const { url } = API_INFO.getOrderStatus(orderId);
+
+  return get(url);
 };
 
 export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) => {
