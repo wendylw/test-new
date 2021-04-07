@@ -3,7 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   options: [],
   selectedOptionProvider: null,
-  selectedOnlineBankingAgentCode: null,
   status: '',
   error: {},
 };
@@ -31,11 +30,6 @@ const { reducer, actions } = createSlice({
     updatePaymentSelected: (state, { payload }) => {
       if (payload) {
         state.selectedOptionProvider = payload;
-      }
-    },
-    updateBankingSelected: (state, { payload }) => {
-      if (payload) {
-        state.selectedOnlineBankingAgentCode = payload;
       }
     },
   },

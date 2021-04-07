@@ -19,6 +19,7 @@ import SaveCardSwitch from '../../components/CreditCard/SaveCardSwitch';
 import CreditCardSecureInfo from '../../components/CreditCard/CreditCardSecureInfo';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import { getSelectedPaymentOption } from '../../redux/common/selectors';
+import { loadPaymentOptions } from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 
 /**
@@ -34,7 +35,7 @@ class AdyenPage extends Component {
   card = null;
 
   componentDidMount = async () => {
-    const { deliveryDetails, customerActions } = this.props;
+    const { deliveryDetails, customerActions, loadPaymentOptions } = this.props;
     const { addressId } = deliveryDetails || {};
     const type = Utils.getOrderTypeFromUrl();
 
@@ -52,6 +53,7 @@ class AdyenPage extends Component {
     );
 
     this.initAdyenCard();
+    loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
   };
 
   initAdyenCard = () => {
@@ -265,6 +267,7 @@ export default compose(
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
+      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
     })
   )
 )(AdyenPage);

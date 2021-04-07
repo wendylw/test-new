@@ -16,13 +16,10 @@ import { actions as homeActionCreators } from '../../../../redux/modules/home';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
-import {
-  getPaymentsPendingState,
-  getOnlineBankingOption,
-  getSelectedOnlineBanking,
-  getOnlineBankList,
-} from '../../redux/common/selectors';
-import * as paymentCommonThunks from '../../redux/common/thunks';
+import { getPaymentsPendingState, getSelectedPaymentOption, getOnlineBankList } from '../../redux/common/selectors';
+import { loadPaymentOptions } from '../../redux/common/thunks';
+import { actions } from './redux';
+import { getSelectedOnlineBanking } from './redux/selectors';
 import { getBusinessInfo } from '../../../../redux/modules/cart';
 import './OrderingBanking.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -36,7 +33,7 @@ class OnlineBanking extends Component {
   };
 
   async componentDidMount() {
-    const { deliveryDetails, customerActions, paymentsActions } = this.props;
+    const { deliveryDetails, customerActions, loadPaymentOptions } = this.props;
     const { addressId } = deliveryDetails || {};
     const type = Utils.getOrderTypeFromUrl();
 
@@ -56,7 +53,7 @@ class OnlineBanking extends Component {
     /**
      * Load all payment options action and except saved card list
      */
-    paymentsActions.loadPaymentOptions();
+    loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
   }
 
   getPaymentEntryRequestData = () => {
@@ -72,13 +69,13 @@ class OnlineBanking extends Component {
   };
 
   handleSelectBank = e => {
-    const { paymentsActions, onlineBankingList, currentOnlineBanking } = this.props;
+    const { updateBankingSelected, onlineBankingList, currentOnlineBanking } = this.props;
     const currentAgentCode = e.target.value;
     const { available } = onlineBankingList.find(banking => banking.agentCode === currentAgentCode);
     const { agentCode } = currentOnlineBanking;
 
     if (agentCode !== currentAgentCode && available) {
-      paymentsActions.updateOnlineBankingSelected(currentAgentCode);
+      updateBankingSelected(currentAgentCode);
     }
   };
 
@@ -231,7 +228,7 @@ export default compose(
         onlineBankingList: getOnlineBankList(state),
         pendingPaymentOptions: getPaymentsPendingState(state),
         currentOnlineBanking: getSelectedOnlineBanking(state),
-        currentPaymentOption: getOnlineBankingOption(state),
+        currentPaymentOption: getSelectedPaymentOption(state),
 
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
@@ -242,9 +239,10 @@ export default compose(
       };
     },
     dispatch => ({
-      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
+      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      updateBankingSelected: bindActionCreators(actions.updateBankingSelected, dispatch),
     })
   )
 )(OnlineBanking);

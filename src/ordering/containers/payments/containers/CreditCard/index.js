@@ -23,6 +23,7 @@ import {
 } from '../../../../redux/modules/app';
 import { getSelectedPaymentOption } from '../../redux/common/selectors';
 import { getBusinessInfo } from '../../../../redux/modules/cart';
+import { loadPaymentOptions } from '../../redux/common/thunks';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
 import PaymentCardBrands from '../../components/PaymentCardBrands';
 import '../../styles/PaymentCreditCard.scss';
@@ -62,7 +63,7 @@ class CreditCard extends Component {
 
     this.setState({ domLoaded: true });
 
-    const { deliveryDetails, customerActions } = this.props;
+    const { deliveryDetails, customerActions, loadPaymentOptions } = this.props;
     const { addressId } = deliveryDetails || {};
     const type = Utils.getOrderTypeFromUrl();
 
@@ -78,6 +79,7 @@ class CreditCard extends Component {
           lng: deliveryToLocation.longitude,
         }
     );
+    loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
   }
 
   getPaymentEntryRequestData = () => {
@@ -592,6 +594,7 @@ export default compose(
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
+      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
     })
   )
 )(CreditCard);
