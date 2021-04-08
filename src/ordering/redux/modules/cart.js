@@ -197,7 +197,6 @@ export default combineReducers({
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
 export const getSelectedProductDetail = state => {
-  console.log(state);
   const { selectedProduct } = state.cart;
 
   return getProductById(state, selectedProduct.id);
