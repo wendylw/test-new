@@ -116,7 +116,7 @@ export const actions = {
     const { items: cartItems } = app.shoppingCart;
     const cartItemIds = cartItems.map(item => item.id);
     const shippingType = Utils.getApiRequestShippingType();
-    const { url, queryParams } = API_INFO.getCartInventoryState(fulfillDate, cartItemIds, shippingType);
+    const { url, queryParams } = API_INFO.getCartInventoryState(fulfillDate || '', cartItemIds, shippingType);
 
     try {
       dispatch(checkInventory());

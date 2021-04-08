@@ -4,9 +4,10 @@ export const API_INFO = {
   getStores: (businessName, storeId) => ({
     url: `/api/stores/${businessName}${storeId ? `/${storeId}` : ''}`,
   }),
-  getCartInventoryState: (fulfillDate, cartItemIds, shippingType) => ({
+  getCartInventoryState: (cartItemIds, shippingType, fulfillDate) => ({
     url: '/api/cart/checkInventory',
     queryParams: {
+      /** fulfillDate must be a string */
       fulfillDate,
       cartItemIds,
       shippingType,
