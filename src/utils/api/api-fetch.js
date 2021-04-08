@@ -4,11 +4,11 @@ import { getClientSource } from './api-utils';
 export const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
-    beforeRequest: [req => req.headers.set('client', getClientSource())],
+    beforeRequest: [req => req.headers.set('client', getClientSource().name)],
     retry: {
-      limit: 2,
+      limit: 1,
       methods: ['get'],
-      statusCodes: ['401', '403', '400', '500'],
+      statusCodes: ['200'],
     },
   },
   credentials: 'include',

@@ -23,8 +23,51 @@ import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
-
+import { APP_TYPES } from '../../../../../redux/types';
 const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, ERROR_CODE_MAP } = Constants;
+
+const POLLING_INTERVAL = 3000;
+
+const pollingOrderStatus = (callback, orderId, timeout) => {
+  if (timeout <= 0) {
+    callback({ code: '500' }, null);
+  }
+
+  createOrderStatusRequest(orderId).then(
+    order => {
+      const { status } = order;
+
+      if (status && status === 'created') {
+        setTimeout(() => pollingOrderStatus(callback, orderId, timeout - POLLING_INTERVAL), POLLING_INTERVAL);
+      } else {
+        if (!['created', 'failed', 'cancelled'].includes(status)) {
+          callback(null, order);
+        } else {
+          callback({ code: '54012' }, order);
+        }
+      }
+    },
+    () => {
+      setTimeout(() => pollingOrderStatus(callback, orderId, timeout - POLLING_INTERVAL), POLLING_INTERVAL);
+    }
+  );
+};
+
+const checkCreatedOrderStatus = orderId => {
+  return new Promise(async (resolve, reject) => {
+    pollingOrderStatus(
+      (error, order) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(order);
+        }
+      },
+      orderId,
+      30 * 1000
+    );
+  });
+};
 
 export const createOrder = ({ cashback, shippingType }) => async (dispatch, getState) => {
   const isDigital = Utils.isDigitalType();
@@ -166,23 +209,20 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       },
     } = resp;
-    let timeOut = null;
 
-    async function checkCreatedOrderStatus() {
-      const { status } = (await createOrderStatusRequest(order.orderId)) || {};
+    try {
+      await checkCreatedOrderStatus(order.orderId);
 
-      if (status && status === 'created') {
-        clearTimeout(timeOut);
-
-        timeOut = setTimeout(checkCreatedOrderStatus(), 3000);
-      } else if ((status && status === 'failed') || status === 'cancelled') {
-        return dispatch(appActions.updateApiError(ERROR_CODE_MAP[54012]));
-      } else {
-        return { order, redirectUrl };
-      }
+      return {
+        order,
+        redirectUrl,
+      };
+    } catch (error) {
+      dispatch({
+        type: APP_TYPES.UPDATE_API_ERROR,
+        error: ERROR_CODE_MAP(error.code),
+      });
     }
-
-    checkCreatedOrderStatus();
   } catch (error) {
     let errorMessage = '';
 

@@ -102,7 +102,7 @@ class Cart extends Component {
     const { status } = await cartActions.checkCartInventory();
 
     if (status === 'reject') {
-      appActions.loadShoppingCart();
+      await appActions.loadShoppingCart();
 
       return;
     }
@@ -523,6 +523,7 @@ class Cart extends Component {
             onClick={() => {
               CleverTap.pushEvent('Cart Page - click pay now', storeInfoForCleverTap);
               this.handleGtmEventTracking(async () => {
+                debugger;
                 await this.handleClickContinue();
               });
             }}
