@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { actions as appActionCreators, getShoppingCart } from '../../../redux/modules/app';
+import { bindActionCreators, compose } from 'redux';
+import { withTranslation } from 'react-i18next';
+import { actions as appActionCreators } from '../../../redux/modules/app';
 import { getSelectedProductDetail } from '../../../redux/modules/cart';
 import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
@@ -231,14 +232,16 @@ CartList.defaultProps = {
   style: {},
 };
 
-export default connect(
-  state => {
-    return {
-      shoppingCart: getShoppingCart(state),
-      selectedProduct: getSelectedProductDetail(state),
-    };
-  },
-  dispatch => ({
-    appActions: bindActionCreators(appActionCreators, dispatch),
-  })
+export default compose(
+  withTranslation(),
+  connect(
+    state => {
+      return {
+        selectedProduct: getSelectedProductDetail(state),
+      };
+    },
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
+  )
 )(CartList);
