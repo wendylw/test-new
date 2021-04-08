@@ -169,7 +169,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     let timeOut = null;
 
     async function checkCreatedOrderStatus() {
-      const { status } = (await createOrderStatusRequest(order.id)) || {};
+      const { status } = (await createOrderStatusRequest(order.orderId)) || {};
 
       if (status && status === 'created') {
         clearTimeout(timeOut);
