@@ -25,7 +25,7 @@ import * as paymentCommonThunks from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';
 
-const { PAYMENT_PROVIDERS, ROUTER_PATHS } = Constants;
+const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
 const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
@@ -63,9 +63,7 @@ class Stripe extends Component {
     const { paymentProvider, paymentsActions } = this.props;
     // refresh page will lost state
     if (!paymentProvider) {
-      await paymentsActions.loadPaymentOptions();
-
-      paymentsActions.updatePaymentOptionSelected(PAYMENT_PROVIDERS.STRIPE);
+      await paymentsActions.loadPaymentOptions(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
     }
   };
 

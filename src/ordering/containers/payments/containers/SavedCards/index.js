@@ -21,7 +21,7 @@ import * as paymentCommonThunks from '../../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
 import '../../styles/PaymentCreditCard.scss';
 
-const { PAYMENT_PROVIDERS } = Constants;
+const { PAYMENT_METHOD_LABELS } = Constants;
 class SavedCards extends Component {
   state = {
     // TODO: Move whole state to redux store in Payment 2.0
@@ -31,12 +31,10 @@ class SavedCards extends Component {
   willUnmount = false;
 
   ensurePaymentProvider = async () => {
-    const { paymentProvider, loadPaymentOptions, updatePaymentOptionSelected } = this.props;
+    const { paymentProvider, loadPaymentOptions } = this.props;
     // refresh page will lost state
     if (!paymentProvider) {
-      await loadPaymentOptions();
-      // currently only Stripe support save card
-      updatePaymentOptionSelected(PAYMENT_PROVIDERS.STRIPE);
+      await loadPaymentOptions(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
     }
   };
 
@@ -274,7 +272,6 @@ export default compose(
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
-      updatePaymentOptionSelected: bindActionCreators(paymentCommonThunks.updatePaymentOptionSelected, dispatch),
       loadPaymentOptions: bindActionCreators(paymentCommonThunks.loadPaymentOptions, dispatch),
       fetchSavedCard: bindActionCreators(savedCardsThunks.fetchSavedCard, dispatch),
       setPaymentCard: bindActionCreators(savedCardsActions.setPaymentCard, dispatch),

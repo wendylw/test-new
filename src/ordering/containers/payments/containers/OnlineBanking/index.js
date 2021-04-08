@@ -21,13 +21,10 @@ import {
   getBusinessInfo,
   getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
-import {
-  getPaymentsPendingState,
-  getOnlineBankingOption,
-  getSelectedOnlineBanking,
-  getOnlineBankList,
-} from '../../redux/common/selectors';
-import * as paymentCommonThunks from '../../redux/common/thunks';
+import { getPaymentsPendingState, getSelectedPaymentOption, getOnlineBankList } from '../../redux/common/selectors';
+import { loadPaymentOptions } from '../../redux/common/thunks';
+import { actions } from './redux';
+import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';
 import CleverTap from '../../../../../utils/clevertap';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -60,7 +57,7 @@ class OnlineBanking extends Component {
     /**
      * Load all payment options action and except saved card list
      */
-    loadPaymentOptions();
+    loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
   }
 
   getPaymentEntryRequestData = () => {
@@ -76,13 +73,13 @@ class OnlineBanking extends Component {
   };
 
   handleSelectBank = e => {
-    const { updateOnlineBankingSelected, onlineBankingList, currentOnlineBanking } = this.props;
+    const { updateBankingSelected, onlineBankingList, currentOnlineBanking } = this.props;
     const currentAgentCode = e.target.value;
     const { available } = onlineBankingList.find(banking => banking.agentCode === currentAgentCode);
     const { agentCode } = currentOnlineBanking;
 
     if (agentCode !== currentAgentCode && available) {
-      updateOnlineBankingSelected(currentAgentCode);
+      updateBankingSelected(currentAgentCode);
     }
   };
 
@@ -234,7 +231,7 @@ export default compose(
         onlineBankingList: getOnlineBankList(state),
         pendingPaymentOptions: getPaymentsPendingState(state),
         currentOnlineBanking: getSelectedOnlineBanking(state),
-        currentPaymentOption: getOnlineBankingOption(state),
+        currentPaymentOption: getSelectedPaymentOption(state),
 
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
@@ -245,10 +242,10 @@ export default compose(
       };
     },
     dispatch => ({
-      updatePaymentOptionSelected: bindActionCreators(paymentCommonThunks.updatePaymentOptionSelected, dispatch),
-      loadPaymentOptions: bindActionCreators(paymentCommonThunks.loadPaymentOptions, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
+      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      updateBankingSelected: bindActionCreators(actions.updateBankingSelected, dispatch),
     })
   )
 )(OnlineBanking);

@@ -3,13 +3,7 @@ import _findIndex from 'lodash/findIndex';
 import { get } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from './api-info';
 
-const {
-  loadPaymentsPending,
-  loadPaymentsSuccess,
-  loadPaymentsFailed,
-  updatePaymentSelected,
-  updateBankingSelected,
-} = actions;
+const { loadPaymentsPending, loadPaymentsSuccess, loadPaymentsFailed, updatePaymentSelected } = actions;
 
 /* Model */
 const PAYMENTS_MAPPING = {
@@ -103,7 +97,7 @@ const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping
 const OnlineBankModel = {
   id: null,
   available: false,
-  agentName: '',
+  name: '',
   agentCode: '',
 };
 
@@ -116,7 +110,7 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) => {
 };
 /* end of Model */
 
-export const loadPaymentOptions = () => async (dispatch, getState) => {
+export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispatch, getState) => {
   const { entities } = getState();
   const { total } = entities.carts.summary;
 
@@ -129,7 +123,10 @@ export const loadPaymentOptions = () => async (dispatch, getState) => {
       const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
       const selectedPaymentOption =
         paymentOptions.find(
-          option => option.available && (!option.minAmount || (option.minAmount && total >= option.minAmount))
+          option =>
+            (selectedPaymentMethod ? option.key === selectedPaymentMethod : true) &&
+            option.available &&
+            (!option.minAmount || (option.minAmount && total >= option.minAmount))
         ) || {};
       const onlineBankingIndex = _findIndex(paymentOptions, payment => payment.key === 'OnlineBanking');
 
@@ -138,11 +135,6 @@ export const loadPaymentOptions = () => async (dispatch, getState) => {
           paymentOptions[onlineBankingIndex].agentCodes || [],
           OnlineBankModel
         );
-
-        const selectedOnlineBanking =
-          paymentOptions[onlineBankingIndex].agentCodes.find(banking => banking.agentCode) || {};
-
-        dispatch(updateBankingSelected(selectedOnlineBanking.agentCode || null));
       }
 
       dispatch(loadPaymentsSuccess(paymentOptions || []));
@@ -159,10 +151,6 @@ export const loadPaymentOptions = () => async (dispatch, getState) => {
 // TODO: It's not necessary to have a thunk only to dispatch another action. We should remove it.
 export const updatePaymentOptionSelected = paymentProvider => dispatch => {
   return dispatch(updatePaymentSelected(paymentProvider || null));
-};
-
-export const updateOnlineBankingSelected = agentCode => dispatch => {
-  return dispatch(updateBankingSelected(agentCode || null));
 };
 
 export { createOrder, gotoPayment } from './create-order';
