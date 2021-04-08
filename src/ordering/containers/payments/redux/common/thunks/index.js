@@ -2,6 +2,7 @@ import { actions } from '..';
 import _findIndex from 'lodash/findIndex';
 import { get } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from './api-info';
+import { getCartBilling } from '../../../../../redux/modules/app';
 
 const { loadPaymentsPending, loadPaymentsSuccess, loadPaymentsFailed, updatePaymentSelected } = actions;
 
@@ -111,8 +112,7 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) => {
 /* end of Model */
 
 export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispatch, getState) => {
-  const { entities } = getState();
-  const { total } = entities.carts.summary;
+  const { total } = getCartBilling(getState());
 
   try {
     dispatch(loadPaymentsPending());
