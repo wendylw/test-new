@@ -245,12 +245,12 @@ const getOrderSource = () => {
 };
 
 const createVoucherOrderRequest = async payload => {
-  return post(Url.API_URLS.CREATE_VOUCHER_ORDER.url, { payload });
+  return post(Url.API_URLS.CREATE_VOUCHER_ORDER.url, payload);
 };
 
 const createOrderRequest = async payload => {
   const endpoint = Url.apiGql('CreateOrder');
-  return post(endpoint, { payload });
+  return post(endpoint, payload);
 };
 
 const createOrderStatusRequest = async orderId => {

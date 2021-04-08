@@ -12,9 +12,9 @@ export const API_INFO = {
       cartItemIds,
       shippingType,
     },
-    getOrderStatus: orderId => ({
-      url: `/api/transactions/${orderId}/status`,
-    }),
+  }),
+  getOrderStatus: orderId => ({
+    url: `/api/transactions/${orderId}/status`,
   }),
 };
 
