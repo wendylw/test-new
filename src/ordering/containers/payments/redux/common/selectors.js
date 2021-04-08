@@ -33,19 +33,6 @@ export const getSelectedPaymentOption = ({ payments }) => {
   return selectedPaymentOption || {};
 };
 
-export const getOnlineBankingOption = ({ payments }) => {
-  return payments.common.options.find(option => option.key === 'OnlineBanking') || {};
-};
-
-export const getSelectedOnlineBanking = ({ payments }) => {
-  const { agentCodes = [] } = payments.common.options.find(option => option.key === 'OnlineBanking') || {};
-  const selectedOnlineBanking = agentCodes.find(
-    banking => banking.agentCode === payments.common.selectedOnlineBankingAgentCode
-  );
-
-  return selectedOnlineBanking || {};
-};
-
 export const getOnlineBankList = ({ payments }) => {
   const onlineBankingObject = payments.common.options.find(option => option.key === 'OnlineBanking') || {};
 
