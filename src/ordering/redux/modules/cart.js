@@ -127,12 +127,10 @@ export const actions = {
 
       return { status: 'fulfilled' };
     } catch (e) {
-      const error = Constants.ERROR_CODE_MAP[e.code] || Constants.ERROR_CODE_MAP[40002];
-
       dispatch(checkInventoryFailed(e));
       dispatch({
         type: APP_TYPES.UPDATE_API_ERROR,
-        ...error,
+        code: e.code || 40002,
       });
 
       return { status: 'reject' };
