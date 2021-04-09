@@ -24,7 +24,7 @@ import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
 import { APP_TYPES } from '../../../../../redux/types';
-const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, ERROR_CODE_MAP } = Constants;
+const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, ERROR_CODE_MAP, ROUTER_PATHS } = Constants;
 
 const POLLING_INTERVAL = 3000;
 
