@@ -24,26 +24,31 @@ import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
 import { APP_TYPES } from '../../../../../redux/types';
-const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, ERROR_CODE_MAP, ROUTER_PATHS } = Constants;
+const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, REQUEST_ERROR_KEYS, ERROR_CODE_MAP, ROUTER_PATHS } = Constants;
 
 const POLLING_INTERVAL = 3000;
 
 const pollingOrderStatus = (callback, orderId, timeout) => {
   if (timeout <= 0) {
     callback({ code: '500' }, null);
+    return;
   }
 
   createOrderStatusRequest(orderId).then(
     order => {
-      const { status } = order;
+      let { status } = order;
+
+      status = 'created';
 
       if (status && status === 'created') {
         setTimeout(() => pollingOrderStatus(callback, orderId, timeout - POLLING_INTERVAL), POLLING_INTERVAL);
       } else {
         if (!['created', 'failed', 'cancelled'].includes(status)) {
           callback(null, order);
+          return;
         } else {
           callback({ code: '54012' }, order);
+          return;
         }
       }
     },
@@ -218,13 +223,20 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       };
     } catch (error) {
+      const errorMappingObject = ERROR_CODE_MAP(error.code);
+
       dispatch({
-        type: APP_TYPES.UPDATE_API_ERROR,
-        error: {
-          ...ERROR_CODE_MAP(error.code),
-          redirectUrl:
-            ERROR_CODE_MAP(error.code).redirectUrl || `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
-        },
+        type: errorMappingObject ? APP_TYPES.UPDATE_API_ERROR : APP_TYPES.SHOW_ERROR,
+        error: errorMappingObject
+          ? {
+              ...ERROR_CODE_MAP(error.code),
+              redirectUrl:
+                ERROR_CODE_MAP(error.code).redirectUrl || `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+            }
+          : {
+              ...error,
+              message: REQUEST_ERROR_KEYS[error.code],
+            },
       });
     }
   } catch (error) {

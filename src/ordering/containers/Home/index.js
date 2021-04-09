@@ -37,7 +37,7 @@ import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
 import Header from '../../../components/Header';
-import Footer from './components/Footer';
+import Footer from './components/Footer.jsx';
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
 import PromotionsBar from './components/PromotionsBar';

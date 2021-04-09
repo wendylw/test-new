@@ -3,7 +3,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import Billing from '../../components/Billing';
-import CartList from './components/CartList';
+import CartList from './components/CartList.jsx';
 import { IconDelete, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
@@ -523,7 +523,6 @@ class Cart extends Component {
             onClick={() => {
               CleverTap.pushEvent('Cart Page - click pay now', storeInfoForCleverTap);
               this.handleGtmEventTracking(async () => {
-                debugger;
                 await this.handleClickContinue();
               });
             }}
