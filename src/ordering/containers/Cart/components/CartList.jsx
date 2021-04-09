@@ -85,7 +85,7 @@ class CartList extends Component {
     const { quantity } = cartItem;
 
     this.handleGtmEventTracking(cartItem);
-    this.props.appActionCreators
+    this.props.appActions
       .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity + 1))
       .then(() => {
         this.props.appActions.loadShoppingCart();

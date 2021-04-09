@@ -852,8 +852,6 @@ export class Home extends Component {
       return null;
     }
 
-    console.log(enableLiveOnline);
-
     return (
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
