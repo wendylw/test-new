@@ -8,6 +8,7 @@ import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/m
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
+import '../Loader.scss';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -116,15 +117,31 @@ class CreateOrderButton extends React.Component {
     }
 
     return (
-      <button
-        className={classList.join(' ')}
-        type={buttonType}
-        disabled={disabled}
-        onClick={this.handleCreateOrder.bind(this)}
-        {...dataAttributes}
-      >
-        {children}
-      </button>
+      <>
+        <button
+          className={classList.join(' ')}
+          type={buttonType}
+          disabled={disabled}
+          onClick={this.handleCreateOrder.bind(this)}
+          {...dataAttributes}
+        >
+          {children}
+        </button>
+        <div
+          style={{
+            position: 'fixed',
+            left: '0',
+            top: '0',
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          <div className="prompt-loader border-radius-large">
+            <i className="circle-loader"></i>
+            <span className="text-size-smaller">locking inventory</span>
+          </div>
+        </div>
+      </>
     );
   }
 }

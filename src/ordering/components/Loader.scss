@@ -1,0 +1,27 @@
+@import "../../Variables.scss";
+
+@keyframes circle-loader-animation {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.circle-loader {
+  display: inline-block;
+  margin: 1em;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: 2px solid $gray-3;
+  animation: circle-loader-animation 1s linear infinite;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+
+.prompt-loader {
+  display: inline-block;
+  background-color: $gray-6;
+}
