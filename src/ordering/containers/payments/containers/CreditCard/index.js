@@ -557,6 +557,7 @@ class CreditCard extends Component {
             }}
             paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY)}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            loaderText={t('Processing')}
           >
             {payNowLoading ? (
               t('Processing')

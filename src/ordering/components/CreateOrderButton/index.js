@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/modules/app';
+import { getUser, getRequestInfo, getError, getCartBilling, types } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
@@ -109,7 +109,7 @@ class CreateOrderButton extends React.Component {
   };
 
   render() {
-    const { children, className, buttonType, disabled, dataAttributes } = this.props;
+    const { children, className, buttonType, disabled, dataAttributes, loaderText } = this.props;
     const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
@@ -127,18 +127,14 @@ class CreateOrderButton extends React.Component {
         >
           {children}
         </button>
-        <div
-          style={{
-            position: 'fixed',
-            left: '0',
-            top: '0',
-            width: '100%',
-            height: '100%',
-          }}
-        >
-          <div className="prompt-loader border-radius-large">
-            <i className="circle-loader"></i>
-            <span className="prompt-loader__text text-size-smaller">locking inventory</span>
+        <div className="page-loader flex flex-middle flex-center">
+          <div className="prompt-loader padding-small border-radius-large text-center flex flex-middle flex-center">
+            <div className="prompt-loader__content">
+              <i className="circle-loader margin-smaller"></i>
+              {loaderText ? (
+                <span className="prompt-loader__text margin-top-bottom-smaller text-size-smaller">{loaderText}</span>
+              ) : null}
+            </div>
           </div>
         </div>
       </>
@@ -158,6 +154,7 @@ CreateOrderButton.propTypes = {
   afterCreateOrder: PropTypes.func,
   paymentName: PropTypes.string,
   paymentExtraData: PropTypes.object,
+  loaderText: PropTypes.string,
 };
 
 CreateOrderButton.defaultProps = {

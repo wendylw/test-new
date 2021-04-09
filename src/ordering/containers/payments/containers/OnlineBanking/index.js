@@ -204,6 +204,7 @@ class OnlineBanking extends Component {
             }}
             paymentName={currentPaymentOption.paymentProvider}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            loaderText={t('Processing')}
           >
             {payNowLoading ? (
               t('Processing')

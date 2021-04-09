@@ -418,6 +418,7 @@ class Customer extends Component {
               this.handleBeforeCreateOrder();
             }}
             afterCreateOrder={this.visitPaymentPage}
+            loaderText={t('Processing')}
           >
             {processing ? t('Processing') : t('Continue')}
           </CreateOrderButton>

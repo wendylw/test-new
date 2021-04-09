@@ -244,6 +244,7 @@ class SavedCards extends Component {
             }}
             validCreateOrder={false}
             afterCreateOrder={() => {}}
+            loaderText={t('Processing')}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"
