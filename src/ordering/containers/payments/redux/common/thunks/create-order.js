@@ -220,7 +220,11 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     } catch (error) {
       dispatch({
         type: APP_TYPES.UPDATE_API_ERROR,
-        error: ERROR_CODE_MAP(error.code),
+        error: {
+          ...ERROR_CODE_MAP(error.code),
+          redirectUrl:
+            ERROR_CODE_MAP(error.code).redirectUrl || `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+        },
       });
     }
   } catch (error) {
