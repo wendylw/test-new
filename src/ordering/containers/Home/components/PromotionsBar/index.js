@@ -30,7 +30,7 @@ class PromotionsBar extends Component {
         consumptionAmount: 'RM30',
       },
       BERSAMA: {
-        discount: '20%',
+        discountPercentage: '20%',
         promoCode: 'BERSAMA',
         cappedValue: 'RM10',
         consumptionAmount: 'RM50',
