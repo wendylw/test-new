@@ -138,7 +138,7 @@ class CreateOrderButton extends React.Component {
         >
           <div className="prompt-loader border-radius-large">
             <i className="circle-loader"></i>
-            <span className="text-size-smaller">locking inventory</span>
+            <span className="prompt-loader__text text-size-smaller">locking inventory</span>
           </div>
         </div>
       </>
