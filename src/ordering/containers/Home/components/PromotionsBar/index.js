@@ -29,6 +29,12 @@ class PromotionsBar extends Component {
         cappedValue: 'RM10',
         consumptionAmount: 'RM30',
       },
+      BERSAMA: {
+        discount: '20%',
+        promoCode: 'BERSAMA',
+        cappedValue: 'RM10',
+        consumptionAmount: 'RM50',
+      },
     };
     const currentPromotions = _filter(promotionList, { business });
 
