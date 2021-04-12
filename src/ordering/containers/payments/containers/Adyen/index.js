@@ -241,7 +241,7 @@ class AdyenPage extends Component {
               });
             }}
             paymentExtraData={this.getPaymentEntryRequestData()}
-            processing={payNowLoading}
+            processing={this.state.payNowLoading}
             loaderText={t('Processing')}
           >
             <CurrencyNumber
