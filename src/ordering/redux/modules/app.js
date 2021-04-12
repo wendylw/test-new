@@ -679,19 +679,17 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
     const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...cartBilling } =
       action.response || {};
-    const displayPromotion = displayPromotions[0] || voucherObject;
-    const voucher = voucherObject
-      ? {
-          promoCode: voucherObject.voucherCode,
-          status: voucherObject.status,
-          discount: voucherObject.value,
-          validFrom: new Date(voucherObject.validFrom),
-          promoType: Constants.PROMO_TYPE.VOUCHER,
-        }
-      : null;
     let promotion = null;
-
-    if (displayPromotion) {
+    if (voucherObject) {
+      promotion = {
+        promoCode: voucherObject.voucherCode,
+        status: voucherObject.status,
+        discount: voucherObject.value,
+        validFrom: new Date(voucherObject.validFrom),
+        promoType: Constants.PROMO_TYPE.VOUCHER,
+      };
+    } else if (displayPromotions && displayPromotions.length) {
+      const displayPromotion = displayPromotions[0];
       promotion = {
         promoCode: displayPromotion.promotionCode,
         discount: displayPromotion.displayDiscount,
@@ -709,7 +707,6 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       billing: {
         ...cartBilling,
         promotion,
-        voucher,
       },
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
