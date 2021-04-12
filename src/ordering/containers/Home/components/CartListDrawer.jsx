@@ -232,7 +232,7 @@ class CartListDrawer extends Component {
       >
         <ul data-heap-name="ordering.home.mini-cart.cart-list">
           {cartItems.map(cartItem => {
-            const { id, title, variationTexts, displayPrice, image, originalDisplayPrice } = cartItem;
+            const { id, title, variationTexts, displayPrice, image, originalDisplayPrice, stockStatus } = cartItem;
 
             return (
               <li key={`mini-cart-item-${id}`}>
@@ -240,7 +240,7 @@ class CartListDrawer extends Component {
                   className="flex-top"
                   data-heap-name="ordering.home.mini-cart.cart-item"
                   imageUrl={image}
-                  imageCover={this.renderImageCover()}
+                  imageCover={this.renderImageCover(stockStatus)}
                   title={title}
                   variation={(variationTexts || []).join(', ')}
                   details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}

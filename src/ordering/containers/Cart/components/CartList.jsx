@@ -99,6 +99,8 @@ class CartList extends Component {
       return null;
     }
 
+    console.log(this.getOutStockStatus(stockStatus));
+
     return (
       <div className="cart-item__image-cover flex flex-middle flex-center text-center text-line-height-base">
         <span className="text-uppercase">{t('SoldOut')}</span>
@@ -199,7 +201,7 @@ class CartList extends Component {
     return (
       <ul style={style} data-heap-name="ordering.cart.cart-list">
         {cartItems.map(cartItem => {
-          const { id, title, variationTexts, displayPrice, image, originalDisplayPrice } = cartItem;
+          const { id, title, variationTexts, displayPrice, image, originalDisplayPrice, stockStatus } = cartItem;
 
           return (
             <li key={`mini-cart-item-${id}`}>
@@ -207,7 +209,7 @@ class CartList extends Component {
                 className="flex-top"
                 data-heap-name="ordering.home.mini-cart.cart-item"
                 imageUrl={image}
-                imageCover={this.renderImageCover()}
+                imageCover={this.renderImageCover(stockStatus)}
                 title={title}
                 variation={(variationTexts || []).join(', ')}
                 details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
