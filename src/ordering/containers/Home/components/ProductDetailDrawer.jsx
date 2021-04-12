@@ -382,16 +382,20 @@ class ProductDetailDrawer extends Component {
     return derivedVariations;
   }
 
-  getShortageInventoryState(selectedProduct, childrenProduct, cartQuantity) {
+  getShortageInventoryState(selectedProduct, childrenProduct, cartQuantity, disabledEqualStock = true) {
     const selectedProductLowStock = Boolean(
       selectedProduct.stockStatus !== 'notTrackInventory' &&
         selectedProduct.quantityOnHand &&
-        cartQuantity > selectedProduct.quantityOnHand
+        (disabledEqualStock
+          ? cartQuantity >= selectedProduct.quantityOnHand
+          : cartQuantity > selectedProduct.quantityOnHand)
     );
     const childrenProductLowStock = Boolean(
       childrenProduct.stockStatus !== 'notTrackInventory' &&
         childrenProduct.quantityOnHand &&
-        cartQuantity > childrenProduct.quantityOnHand
+        (disabledEqualStock
+          ? cartQuantity >= childrenProduct.quantityOnHand
+          : cartQuantity > selectedProduct.quantityOnHand)
     );
 
     return selectedProductLowStock || childrenProductLowStock;
@@ -525,7 +529,8 @@ class ProductDetailDrawer extends Component {
     const inventoryShortage = this.getShortageInventoryState(
       selectedProduct || {},
       childrenProduct || {},
-      cartQuantity
+      cartQuantity,
+      false
     );
 
     if (!selectedProduct) {
