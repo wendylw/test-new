@@ -127,7 +127,7 @@ class CreateOrderButton extends React.Component {
         >
           {children}
         </button>
-        {disabled ? (
+        {processing ? (
           <div className="page-loader flex flex-middle flex-center">
             <div className="prompt-loader padding-small border-radius-large text-center flex flex-middle flex-center">
               <div className="prompt-loader__content">
@@ -156,6 +156,7 @@ CreateOrderButton.propTypes = {
   afterCreateOrder: PropTypes.func,
   paymentName: PropTypes.string,
   paymentExtraData: PropTypes.object,
+  processing: PropTypes.bool,
   loaderText: PropTypes.string,
 };
 
@@ -165,6 +166,7 @@ CreateOrderButton.defaultProps = {
   isPromotionValid: true,
   disabled: true,
   sentOtp: false,
+  processing: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };

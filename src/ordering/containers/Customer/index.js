@@ -419,6 +419,7 @@ class Customer extends Component {
             }}
             afterCreateOrder={this.visitPaymentPage}
             loaderText={t('Processing')}
+            processing={processing}
           >
             {processing ? t('Processing') : t('Continue')}
           </CreateOrderButton>

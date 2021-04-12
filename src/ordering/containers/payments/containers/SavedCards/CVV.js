@@ -198,6 +198,7 @@ class CardCVV extends Component {
               });
             }}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            processing={payNowLoading}
             loaderText={t('Processing')}
           >
             <CurrencyNumber

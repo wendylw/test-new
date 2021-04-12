@@ -244,6 +244,7 @@ class SavedCards extends Component {
             }}
             validCreateOrder={false}
             afterCreateOrder={() => {}}
+            processing={false}
             loaderText={t('Processing')}
           >
             <CurrencyNumber

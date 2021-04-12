@@ -233,6 +233,7 @@ class Payment extends Component {
             paymentName={currentPaymentOption.paymentProvider}
             afterCreateOrder={this.handleAfterCreateOrder}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            processing={payNowLoading}
             loaderText={t('Processing')}
           >
             {payNowLoading ? t('Processing') : t('Continue')}
