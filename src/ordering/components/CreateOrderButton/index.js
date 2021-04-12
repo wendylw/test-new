@@ -109,7 +109,7 @@ class CreateOrderButton extends React.Component {
   };
 
   render() {
-    const { children, className, buttonType, disabled, dataAttributes, loaderText } = this.props;
+    const { children, className, buttonType, disabled, dataAttributes, loaderText, processing } = this.props;
     const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
