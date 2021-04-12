@@ -163,7 +163,7 @@ class CartListDrawer extends Component {
       return (
         <button
           className="button padding-top-bottom-smaller padding-left-right-normal"
-          onClick={this.handleRemoveCartItem(cartItem)}
+          onClick={() => this.handleRemoveCartItem(cartItem)}
           data-testid="removeCartItem"
           data-heap-name="ordering.home.mini-cart.remove-item-btn"
         >
@@ -285,7 +285,7 @@ class CartListDrawer extends Component {
             </div>
             <button
               className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
-              onClick={this.handleClearCart.bind(this)}
+              onClick={this.handleClearCart}
               data-testid="clearAll"
               data-heap-name="ordering.home.mini-cart.clear-btn"
             >

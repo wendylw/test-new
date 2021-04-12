@@ -137,7 +137,7 @@ class CartList extends Component {
       return (
         <button
           className="button padding-top-bottom-smaller padding-left-right-normal"
-          onClick={this.handleRemoveCartItem(cartItem)}
+          onClick={() => this.handleRemoveCartItem(cartItem)}
           data-testid="removeCartItem"
           data-heap-name="ordering.home.mini-cart.remove-item-btn"
         >

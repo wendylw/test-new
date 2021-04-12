@@ -228,8 +228,6 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         error: errorMappingObject
           ? {
               ...ERROR_CODE_MAP[error.code],
-              redirectUrl:
-                ERROR_CODE_MAP[error.code].redirectUrl || `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
             }
           : {
               ...error,
@@ -272,7 +270,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         errorMessage = 'OrderingPayment:StoreIsOnVacation';
         break;
       default:
-        console.error(`Unexpected error on creating order: ${error.toString()}`);
+        console.error(`Unexpected error on creating order: ${JSON.stringify(error)}`);
         errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
         break;
     }
