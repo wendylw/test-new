@@ -49,9 +49,14 @@ const pollingOrderStatus = (callback, orderId, timeout) => {
         }
       }
     },
-    () => {
-      callback({ code: 'LockInventorySyncError' }, null);
-      return;
+    e => {
+      if (typeof e !== 'object' || !e.code) {
+        callback({ code: 'LockInventorySyncError' }, null);
+        return;
+      } else {
+        callback(e, null);
+        return;
+      }
     }
   );
 };
