@@ -7,6 +7,10 @@
     background-color: $main-color;
   }
 
+  &__article {
+    flex: 1;
+  }
+
   &__location {
     color: $white;
   }
@@ -23,10 +27,5 @@
   &__money-currency {
     display: inline-block;
     color: $white;
-  }
-
-  &__download-banner {
-    position: fixed;
-    bottom: 90px;
   }
 }

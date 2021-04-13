@@ -71,7 +71,7 @@ function CheckoutForm({
   const [cardCVCDomLoaded, setCardCVCDom] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
-  const [saveCard, setSaveCard] = useState(true);
+  const [saveCard, setSaveCard] = useState(supportSaveCard);
 
   const headerRef = useRef(null);
   const footerRef = useRef(null);
@@ -119,6 +119,10 @@ function CheckoutForm({
         'payment method': getPaymentName(country, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY),
       });
 
+      if (saveCard) {
+        CleverTap.pushEvent('saved cards - click add new card');
+      }
+
       if (!cardComplete) {
         return;
       }
@@ -142,7 +146,7 @@ function CheckoutForm({
       setError(error);
       setProcessing(false);
     }
-  }, [storeInfoForCleverTap, country, cardComplete, stripe, elements, cardHolderName.value]);
+  }, [storeInfoForCleverTap, country, cardComplete, stripe, elements, cardHolderName.value, saveCard]);
 
   const handleAfterCreateOrder = useCallback(async orderId => {
     setProcessing(!!orderId);
@@ -392,7 +396,13 @@ function CheckoutForm({
 
           {supportSaveCard && (
             <div className="padding-left-right-normal">
-              <SaveCardSwitch value={saveCard} onChange={v => setSaveCard(v)} />
+              <SaveCardSwitch
+                value={saveCard}
+                onChange={v => {
+                  CleverTap.pushEvent('saved cards - click saved card');
+                  setSaveCard(v);
+                }}
+              />
               <CreditCardSecureInfo paymentProvider={PAYMENT_PROVIDERS.STRIPE} />
             </div>
           )}
