@@ -338,15 +338,6 @@ export const actions = {
     type: types.CLEAR_ERROR,
   }),
 
-  updateApiError: code => dispatch => {
-    console.log(code);
-
-    return dispatch({
-      type: types.UPDATE_API_ERROR,
-      code,
-    });
-  },
-
   showMessageModal: ({ message, description, buttonText = '' }) => ({
     type: types.SET_MESSAGE_INFO,
     message,
@@ -621,8 +612,8 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 };
 
 const apiError = (state = initialState.apiError, action) => {
-  const { type, code, response, responseGql } = action;
-  const result = response || (responseGql || {}).data;
+  const { type, code, response, responseGql, payload } = action;
+  const result = response || (responseGql || {}).data || payload;
   const errorCode = code || (result || {}).code;
   const { ERROR_CODE_MAP } = Constants;
   const error = ERROR_CODE_MAP[errorCode];
@@ -639,7 +630,7 @@ const apiError = (state = initialState.apiError, action) => {
     };
   }
 
-  if (error || type === types.UPDATE_API_ERROR) {
+  if (error) {
     return {
       ...state,
       show: error.showModal,

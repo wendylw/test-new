@@ -128,10 +128,6 @@ export const actions = {
       return { status: 'fulfilled' };
     } catch (e) {
       dispatch(checkInventoryFailed(e));
-      dispatch({
-        type: APP_TYPES.UPDATE_API_ERROR,
-        code: e.code || 40002,
-      });
 
       return { status: 'reject' };
     }

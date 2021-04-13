@@ -223,8 +223,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     } catch (error) {
       const errorMappingObject = ERROR_CODE_MAP(error.code);
 
-      dispatch({
-        type: errorMappingObject ? APP_TYPES.UPDATE_API_ERROR : APP_TYPES.SHOW_ERROR,
+      throw {
         error: errorMappingObject
           ? {
               ...ERROR_CODE_MAP[error.code],
@@ -233,7 +232,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
               ...error,
               message: REQUEST_ERROR_KEYS[error.code],
             },
-      });
+      };
     }
   } catch (error) {
     let errorMessage = '';
