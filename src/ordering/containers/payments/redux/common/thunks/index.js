@@ -2,6 +2,7 @@ import { actions } from '..';
 import _findIndex from 'lodash/findIndex';
 import { get } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from './api-info';
+import { getUser } from '../../../../../redux/modules/app';
 
 const { loadPaymentsPending, loadPaymentsSuccess, loadPaymentsFailed, updatePaymentSelected } = actions;
 
@@ -86,10 +87,12 @@ const PaymentOptionModel = {
   supportSaveCard: false,
 };
 
-const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping) => {
+const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping, disableSaveCard) => {
   return data.map(currentOption => {
     const option = { ...paymentOptionModel, ...paymentsMapping[currentOption.paymentProvider], ...currentOption };
-
+    if (disableSaveCard) {
+      option.supportSaveCard = false;
+    }
     return option;
   });
 };
@@ -114,13 +117,15 @@ export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispa
   const { entities } = getState();
   const { total } = entities.carts.summary;
 
+  const isLogin = !!getUser(getState());
+
   try {
     dispatch(loadPaymentsPending());
 
     const result = await get(API_INFO.getPayments().url);
 
     if (result.data) {
-      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
+      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING, !isLogin);
       const selectedPaymentOption =
         paymentOptions.find(
           option =>
