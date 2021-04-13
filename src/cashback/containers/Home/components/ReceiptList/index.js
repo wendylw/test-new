@@ -119,10 +119,10 @@ class RecentActivities extends React.Component {
 
     return (
       <div
-        className={`receipt-list ${this.state.fullScreen ? 'full' : ''}`}
+        className={`receipt-list ${this.state.fullScreen ? 'receipt-list--full' : ''}`}
         data-heap-name="cashback.home.receipt-list.container"
       >
-        <aside className="absolute-wrapper receipt-list__container padding-left-right-small">
+        <aside className="receipt-list__container padding-left-right-small">
           <i
             className="receipt-list__slide-button padding-small"
             onClick={this.toggleFullScreen.bind(this)}
@@ -135,7 +135,11 @@ class RecentActivities extends React.Component {
           >
             {t('Receipts')}
           </h3>
-          <div className={`receipt-list__content padding-left-right-small ${this.state.fullScreen ? 'full' : ''}`}>
+          <div
+            className={`receipt-list__content padding-left-right-small ${
+              this.state.fullScreen ? 'receipt-list__content--full' : ''
+            }`}
+          >
             {this.renderLogList()}
           </div>
         </aside>

@@ -1,28 +1,31 @@
 @import "../../../../../Variables";
 
 .receipt-list {
+  width: 100%;
+  max-height: 25%;
+  overflow-y: auto;
   bottom: 0;
   left: 0;
 
-  &__container {
-    @extend .receipt-list;
+  &--full {
+    max-height: 100%;
+    position: absolute;
+  }
 
+  &__container {
     width: 100%;
     border-radius: 12px 12px 0 0;
     background-color: $white;
   }
 
-  &.full &__container {
-    top: 0;
-    z-index: 100;
+  &--full &__container {
     border-radius: 0;
   }
 
   &__content {
     overflow: hidden;
-    max-height: 0;
 
-    &.full {
+    &--full {
       max-height: 100%;
       overflow: auto;
       padding-bottom: 72px;
