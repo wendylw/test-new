@@ -329,15 +329,15 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:OK',
     showModal: true,
   },
-  LockInventoryTimeOut: {
-    title: 'ApiError:LockInventoryTimeOutTitle',
-    desc: 'ApiError:LockInventoryTimeOutDescription',
+  80000: {
+    title: 'ApiError:80000Title',
+    desc: 'ApiError:80000Description',
     buttonText: 'Common:OK',
     showModal: true,
   },
-  LockInventorySyncError: {
-    title: 'ApiError:LockInventorySyncErrorTitle',
-    desc: 'ApiError:LockInventorySyncErrorDescription',
+  80001: {
+    title: 'ApiError:80001Title',
+    desc: 'ApiError:80001Description',
     buttonText: 'Common:OK',
     showModal: true,
   },

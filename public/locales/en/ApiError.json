@@ -39,8 +39,8 @@
   "54012Description": "One or more items in your cart are currently out of stock. Please edit your cart and checkout again (Error: 54012).",
   "54013Title": "Out of Stock",
   "54013Description": "One or more items in your cart are currently out of stock. Please edit your cart and checkout again (Error: 54013).",
-  "LockInventoryTimeOutTitle": "Inventory Sync Timeout",
-  "LockInventoryTimeOutDescription": "Please try again",
-  "LockInventorySyncErrorTitle": "Inventory Sync Error",
-  "LockInventorySyncErrorDescription": "Please try again"
+  "80000Title": "Inventory Sync Error",
+  "80000Description": "Please try again",
+  "80001Title": "Inventory Sync Timeout",
+  "80001Description": "Please try again"
 }

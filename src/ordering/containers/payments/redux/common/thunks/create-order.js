@@ -29,7 +29,7 @@ const POLLING_INTERVAL = 3000;
 
 const pollingOrderStatus = (callback, orderId, timeout) => {
   if (timeout <= 0) {
-    callback({ code: 'LockInventoryTimeOut' }, null);
+    callback({ code: '80001' }, null);
     return;
   }
 
@@ -51,7 +51,7 @@ const pollingOrderStatus = (callback, orderId, timeout) => {
     },
     e => {
       if (typeof e !== 'object' || !e.code) {
-        callback({ code: 'LockInventorySyncError' }, null);
+        callback({ code: '80000' }, null);
         return;
       } else {
         callback(e, null);
