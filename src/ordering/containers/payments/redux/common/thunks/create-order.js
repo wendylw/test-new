@@ -35,7 +35,9 @@ const pollingOrderStatus = (callback, orderId, timeout) => {
 
   createOrderStatusRequest(orderId).then(
     order => {
-      const { status } = order;
+      let { status } = order;
+
+      status = 'created';
 
       if (status && status === 'created') {
         setTimeout(() => pollingOrderStatus(callback, orderId, timeout - POLLING_INTERVAL), POLLING_INTERVAL);
@@ -226,8 +228,9 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       };
     } catch (error) {
-      const errorMappingObject = ERROR_CODE_MAP(error.code)
+      const errorMappingObject = ERROR_CODE_MAP[error.code]
         ? {
+            ...error,
             ...ERROR_CODE_MAP[error.code],
           }
         : {
