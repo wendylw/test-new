@@ -322,6 +322,25 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:OK',
     showModal: true,
   },
+  54013: {
+    title: 'ApiError:54013Title',
+    desc: 'ApiError:54013Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  LockInventoryTimeOut: {
+    title: 'ApiError:LockInventoryTimeOutTitle',
+    desc: 'ApiError:LockInventoryTimeOutDescription',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  LockInventorySyncError: {
+    title: 'ApiError:LockInventorySyncErrorTitle',
+    desc: 'ApiError:LockInventorySyncErrorDescription',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';

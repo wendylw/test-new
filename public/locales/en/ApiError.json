@@ -36,5 +36,11 @@
   "40026Title": "Unable to save data",
   "40026Description": "Data should not be empty.",
   "54012Title": "Out of Stock",
-  "54012Description": "One or more items in your cart are currently out of stock. Please edit your cart and checkout again."
+  "54012Description": "One or more items in your cart are currently out of stock. Please edit your cart and checkout again (Error: 54012).",
+  "54013Title": "Out of Stock",
+  "54013Description": "One or more items in your cart are currently out of stock. Please edit your cart and checkout again (Error: 54013).",
+  "LockInventoryTimeOutTitle": "Inventory Sync Timeout",
+  "LockInventoryTimeOutDescription": "Please try again",
+  "LockInventorySyncErrorTitle": "Inventory Sync Error",
+  "LockInventorySyncErrorDescription": "Please try again"
 }

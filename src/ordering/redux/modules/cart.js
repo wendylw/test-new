@@ -3,7 +3,6 @@ import { createSelector } from 'reselect';
 import config from '../../../config';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
-import Constants from '../../../utils/constants';
 import { API_INFO } from '../../../utils/api/api-utils';
 import { get } from '../../../utils/api/api-fetch';
 import { CART_TYPES } from '../types';

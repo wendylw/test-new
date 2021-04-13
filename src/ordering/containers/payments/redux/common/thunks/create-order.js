@@ -23,14 +23,13 @@ import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
-import { APP_TYPES } from '../../../../../redux/types';
-const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, REQUEST_ERROR_KEYS, ERROR_CODE_MAP, ROUTER_PATHS } = Constants;
+const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, REQUEST_ERROR_KEYS, ERROR_CODE_MAP } = Constants;
 
 const POLLING_INTERVAL = 3000;
 
 const pollingOrderStatus = (callback, orderId, timeout) => {
   if (timeout <= 0) {
-    callback({ code: '500' }, null);
+    callback({ code: 'LockInventoryTimeOut' }, null);
     return;
   }
 
@@ -51,7 +50,8 @@ const pollingOrderStatus = (callback, orderId, timeout) => {
       }
     },
     () => {
-      setTimeout(() => pollingOrderStatus(callback, orderId, timeout - POLLING_INTERVAL), POLLING_INTERVAL);
+      callback({ code: 'LockInventorySyncError' }, null);
+      return;
     }
   );
 };
