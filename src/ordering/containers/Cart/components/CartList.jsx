@@ -99,8 +99,6 @@ class CartList extends Component {
       return null;
     }
 
-    console.log(this.getOutStockStatus(stockStatus));
-
     return (
       <div className="cart-item__image-cover flex flex-middle flex-center text-center text-line-height-base">
         <span className="text-uppercase">{t('SoldOut')}</span>
