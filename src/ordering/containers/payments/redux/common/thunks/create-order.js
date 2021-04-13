@@ -35,9 +35,7 @@ const pollingOrderStatus = (callback, orderId, timeout) => {
 
   createOrderStatusRequest(orderId).then(
     order => {
-      let { status } = order;
-
-      status = 'created';
+      const { status } = order;
 
       if (status && status === 'created') {
         setTimeout(() => pollingOrderStatus(callback, orderId, timeout - POLLING_INTERVAL), POLLING_INTERVAL);
