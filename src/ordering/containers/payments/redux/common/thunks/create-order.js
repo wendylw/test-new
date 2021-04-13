@@ -221,18 +221,16 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       };
     } catch (error) {
-      const errorMappingObject = ERROR_CODE_MAP(error.code);
+      const errorMappingObject = ERROR_CODE_MAP(error.code)
+        ? {
+            ...ERROR_CODE_MAP[error.code],
+          }
+        : {
+            ...error,
+            message: REQUEST_ERROR_KEYS[error.code],
+          };
 
-      throw {
-        error: errorMappingObject
-          ? {
-              ...ERROR_CODE_MAP[error.code],
-            }
-          : {
-              ...error,
-              message: REQUEST_ERROR_KEYS[error.code],
-            },
-      };
+      throw errorMappingObject;
     }
   } catch (error) {
     let errorMessage = '';
