@@ -858,20 +858,19 @@ export class Home extends Component {
         {this.renderHeader()}
         <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} storePromoTags={storePromoTags} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
-          <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
-            <p
-              ref={ref => (this.deliveryFeeEl = ref)}
-              className="ordering-home__delivery-fee padding-small text-center sticky-wrapper"
-              style={{
-                top: `${(this.headerEl ? this.headerEl.clientHeight : 0) +
-                  (this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight : 0)}px`,
-              }}
-            >
+          <p
+            ref={ref => (this.deliveryFeeEl = ref)}
+            className="ordering-home__delivery-fee padding-small text-center sticky-wrapper"
+            style={{
+              top: `${(this.headerEl ? this.headerEl.clientHeight : 0) +
+                (this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight : 0)}px`,
+            }}
+          >
+            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
-            </p>
-          </Trans>
+            </Trans>
+          </p>
         ) : null}
-
         <div
           className="ordering-home__container flex flex-top sticky-wrapper"
           style={{

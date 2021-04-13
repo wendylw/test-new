@@ -104,7 +104,7 @@
   "AddNoteToDriverOrMerchantPlaceholderExample": "e.g. meet at lobby (optional)",
   "AddAddressDetailsPlaceholder": "House/floor/unit no.",
   "DeliveryFee": "Delivery Fee",
-  "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
+  "FreeDeliveryPrompt": "Free Delivery with <1></1> & above",
   "SearchRestaurantPlaceholder": "Search for restaurant, dishes, cuisines",
   "NearbyRestaurants": "Restaurants Delivering Nearby",
   "DistanceText": "{{distance}} km",
