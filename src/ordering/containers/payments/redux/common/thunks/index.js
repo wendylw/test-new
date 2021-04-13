@@ -117,7 +117,7 @@ export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispa
   const { entities } = getState();
   const { total } = entities.carts.summary;
 
-  const isLogin = !!getUser(getState());
+  const user = getUser(getState());
 
   try {
     dispatch(loadPaymentsPending());
@@ -125,7 +125,7 @@ export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispa
     const result = await get(API_INFO.getPayments().url);
 
     if (result.data) {
-      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING, !isLogin);
+      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING, !user);
       const selectedPaymentOption =
         paymentOptions.find(
           option =>
