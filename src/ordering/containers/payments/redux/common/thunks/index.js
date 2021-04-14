@@ -87,12 +87,9 @@ const PaymentOptionModel = {
   supportSaveCard: false,
 };
 
-const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping, disableSaveCard) => {
+const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping) => {
   return data.map(currentOption => {
     const option = { ...paymentOptionModel, ...paymentsMapping[currentOption.paymentProvider], ...currentOption };
-    if (disableSaveCard) {
-      option.supportSaveCard = false;
-    }
     return option;
   });
 };
@@ -117,15 +114,13 @@ export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispa
   const { entities } = getState();
   const { total } = entities.carts.summary;
 
-  const { isLogin } = getUser(getState());
-
   try {
     dispatch(loadPaymentsPending());
 
     const result = await get(API_INFO.getPayments().url);
 
     if (result.data) {
-      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING, !isLogin);
+      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
       const selectedPaymentOption =
         paymentOptions.find(
           option =>
