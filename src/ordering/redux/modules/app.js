@@ -613,7 +613,8 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 
 const apiError = (state = initialState.apiError, action) => {
   const { type, code, response, responseGql, payload } = action;
-  const result = response || (responseGql || {}).data || payload;
+  const { error: payloadError } = payload || {};
+  const result = response || (responseGql || {}).data || payloadError;
   const errorCode = code || (result || {}).code;
   const { ERROR_CODE_MAP } = Constants;
   const error = ERROR_CODE_MAP[errorCode];
