@@ -114,11 +114,12 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    if (!user || !user.consumerId) {
+    if (!Utils.isDigitalType() && !user.consumerId) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
       });
+      return;
     }
 
     if (!currentPaymentOption || !currentPaymentOption.paymentProvider) {
