@@ -17,6 +17,7 @@ import {
   getAllPaymentsOptions,
   getSelectedPaymentOption,
   getAllOptionsUnavailableState,
+  getSelectedPaymentOptionSupportSaveCard,
 } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
 import Utils from '../../../../../utils/utils';
@@ -108,27 +109,28 @@ class Payment extends Component {
   };
 
   handleBeforeCreateOrder = async () => {
-    const { history, currentPaymentOption, user } = this.props;
+    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user } = this.props;
 
     this.setState({
       payNowLoading: true,
     });
 
-    if (!user || !user.consumerId) {
+    if (!Utils.isDigitalType() && !user.consumerId) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
       });
+      return;
     }
 
     if (!currentPaymentOption || !currentPaymentOption.paymentProvider) {
       return;
     }
 
-    const { supportSaveCard, pathname, paymentProvider } = currentPaymentOption;
+    const { pathname, paymentProvider } = currentPaymentOption;
 
     // currently only Stripe payment support save cards
-    if (paymentProvider === PAYMENT_PROVIDERS.STRIPE && supportSaveCard) {
+    if (paymentProvider === PAYMENT_PROVIDERS.STRIPE && currentPaymentSupportSaveCard) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
         search: window.location.search,
@@ -248,6 +250,7 @@ export default compose(
         pendingPaymentOptions: getPaymentsPendingState(state),
         allPaymentOptions: getAllPaymentsOptions(state),
         currentPaymentOption: getSelectedPaymentOption(state),
+        currentPaymentSupportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
         areAllOptionsUnavailable: getAllOptionsUnavailableState(state),
 
         deliveryInfo: getDeliveryInfo(state),
