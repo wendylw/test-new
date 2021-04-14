@@ -385,14 +385,14 @@ class ProductDetailDrawer extends Component {
   getShortageInventoryState(selectedProduct, childrenProduct, cartQuantity, disabledEqualStock = true) {
     const selectedProductLowStock = Boolean(
       selectedProduct.stockStatus !== 'notTrackInventory' &&
-        selectedProduct.quantityOnHand &&
+        selectedProduct.quantityOnHand > 0 &&
         (disabledEqualStock
           ? cartQuantity >= selectedProduct.quantityOnHand
           : cartQuantity > selectedProduct.quantityOnHand)
     );
     const childrenProductLowStock = Boolean(
       childrenProduct.stockStatus !== 'notTrackInventory' &&
-        childrenProduct.quantityOnHand &&
+        childrenProduct.quantityOnHand > 0 &&
         (disabledEqualStock
           ? cartQuantity >= childrenProduct.quantityOnHand
           : cartQuantity > selectedProduct.quantityOnHand)
