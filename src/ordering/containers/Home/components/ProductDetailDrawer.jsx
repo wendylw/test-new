@@ -305,10 +305,6 @@ class ProductDetailDrawer extends Component {
     const newVariation = this.getNewVariationsByIdMap(variation, option);
     let newMap = variationsByIdMap;
 
-    console.log(variationsByIdMap);
-    console.log(variation);
-    console.log(this.state.childrenProduct);
-
     if (!newMap[variation.id] || newMap[variation.id].variationType === VARIATION_TYPES.SINGLE_CHOICE) {
       newMap = Object.assign({}, newMap, newVariation);
     } else {
@@ -483,8 +479,6 @@ class ProductDetailDrawer extends Component {
 
     const singleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.SINGLE_CHOICE);
     const multipleChoiceVariations = this.getChoiceVariations(VARIATION_TYPES.MULTIPLE_CHOICE);
-
-    // console.log(singleChoiceVariations);
 
     return (
       <div className="product-detail__variations">
