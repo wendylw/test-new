@@ -176,7 +176,7 @@ class CardCVV extends Component {
               merchantCountry={merchantCountry}
             />
           </div>
-          <Loader className={'loading-cover opacity'} loaded={isCvvComponentReady && !payNowLoading} />
+          <Loader className={'loading-cover opacity'} loaded={isCvvComponentReady} />
         </div>
         <footer
           ref={ref => {
