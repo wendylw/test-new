@@ -47,6 +47,11 @@
 }
 
 .cart-promotion {
+  &__promotion-content {
+    flex: 1;
+    overflow: hidden;
+  }
+
   &__button-acquisition {
     max-height: 50px;
   }

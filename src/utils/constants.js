@@ -435,6 +435,9 @@ const PROMOTION_ERROR_CODES = {
   54417: {
     desc: '54417NotMatchMinSubtotalConsumingPromo',
   },
+  54418: {
+    desc: '54418NotMatchAppliedClientType',
+  },
   60002: {
     desc: '60002NotActive',
   },
@@ -540,6 +543,11 @@ const PAYMENT_API_PAYMENT_OPTIONS = {
 const TIME_SLOT_NOW = 'now';
 
 export const AVAILABLE_REPORT_DRIVER_ORDER_STATUSES = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
+const CLIENTS = {
+  WEB: 'web',
+  IOS: 'iOS',
+  ANDROID: 'Android',
+};
 
 export default {
   OTP_CODE_SIZE,
@@ -584,4 +592,5 @@ export default {
   TIME_SLOT_NOW,
   PAYMENT_API_PAYMENT_OPTIONS,
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
+  CLIENTS,
 };
