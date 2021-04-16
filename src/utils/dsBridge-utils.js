@@ -46,29 +46,37 @@ export const registerNativeHeaderEvents = events => {
   });
 };
 
+// export const startLiveChat = ({ orderId, name, phone, email, storeName }) => {
+//   const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
+//   // TODO: will update to use dsBridge in the future
+//   if (Utils.isAndroidWebview()) {
+//     window.androidInterface.startChat(
+//       JSON.stringify({
+//         phoneNumber: phone,
+//         name,
+//         email,
+//         message,
+//       })
+//     );
+//   }
+
+//   if (Utils.isIOSWebview()) {
+//     window.webkit.messageHandlers.shareAction.postMessage({
+//       functionName: 'startChat',
+//       phoneNumber: phone,
+//       name,
+//       email,
+//       message,
+//     });
+//   }
+// };
+
 export const startLiveChat = ({ orderId, name, phone, email, storeName }) => {
   const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
-  // TODO: will update to use dsBridge in the future
-  if (Utils.isAndroidWebview()) {
-    window.androidInterface.startChat(
-      JSON.stringify({
-        phoneNumber: phone,
-        name,
-        email,
-        message,
-      })
-    );
-  }
-
-  if (Utils.isIOSWebview()) {
-    window.webkit.messageHandlers.shareAction.postMessage({
-      functionName: 'startChat',
-      phoneNumber: phone,
-      name,
-      email,
-      message,
-    });
-  }
+  dsBridge.call('callNative', {
+    function: 'beep_module_start_chat',
+    data: { phoneNumber: phone, name, email, message },
+  });
 };
 
 export const goBack = () => {

@@ -1287,7 +1287,20 @@ export class ThankYou extends PureComponent {
     const rightContent = isDineInType ? (
       rightContentOfTableId
     ) : (
-      <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />
+      <LiveChat
+        orderId={orderId}
+        name={orderUserName}
+        phone={orderUserPhone}
+        onClick={() => {
+          dsBridgeUtils.startLiveChat({
+            orderId,
+            name: orderUserName,
+            phone: orderUserPhone,
+            email: userEmail,
+            storeName: orderStoreName,
+          });
+        }}
+      />
     );
 
     return (
