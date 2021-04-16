@@ -15,6 +15,7 @@ import { getAllBusinesses } from '../../../../../redux/modules/entities/business
 import Utils from '../../../../../utils/utils';
 import { del, get } from '../../../../../utils/request';
 import Url from '../../../../../utils/url';
+import dsbridge from 'dsbridge';
 export class Footer extends Component {
   constructor(props) {
     super(props);
@@ -157,11 +158,31 @@ export class Footer extends Component {
     }
   }
 
+  postAppMessage2 = () => {
+    const { appActions, user } = this.props;
+    const { isLogin } = user || {};
+    dsbridge.call('callNative', { function: 'user_module_get_token' }, async function(res) {
+      const { access_token, refresh_token } = JSON.parse(res);
+      if (!isLogin) {
+        await appActions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+        const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
+        if (login) {
+          this.handleWebRedirect();
+        }
+      } else {
+        this.handleWebRedirect();
+      }
+    });
+  };
+
   handleRedirect = () => {
     const { user } = this.props;
     const { isWebview } = user || {};
     if (isWebview) {
-      this.postAppMessage(user);
+      this.postAppMessage2();
     } else {
       this.handleWebRedirect();
     }
