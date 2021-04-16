@@ -163,7 +163,7 @@ export class Footer extends Component {
     const { isLogin } = user || {};
     dsbridge.call('callNative', { function: 'user_module_get_token' }, async function(res) {
       console.log('res', JSON.stringify(res));
-      const { code, message, data } = res;
+      const { code, message, data } = JSON.parse(res);
       const { access_token, refresh_token } = data;
       if (!isLogin) {
         await appActions.loginApp({
