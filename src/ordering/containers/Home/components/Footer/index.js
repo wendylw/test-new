@@ -162,7 +162,8 @@ export class Footer extends Component {
     const { appActions, user } = this.props;
     const { isLogin } = user || {};
     dsbridge.call('callNative', { function: 'user_module_get_token' }, async function(res) {
-      const { access_token, refresh_token } = JSON.parse(res);
+      const { code, message, data } = JSON.parse(res);
+      const { access_token, refresh_token } = data;
       if (!isLogin) {
         await appActions.loginApp({
           accessToken: access_token,
@@ -179,13 +180,7 @@ export class Footer extends Component {
   };
 
   handleRedirect = () => {
-    const { user } = this.props;
-    const { isWebview } = user || {};
-    if (isWebview) {
-      this.postAppMessage2();
-    } else {
-      this.handleWebRedirect();
-    }
+    this.postAppMessage2();
   };
 
   handleWebRedirect = () => {
