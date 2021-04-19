@@ -43,7 +43,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     } catch {
       const message = i18next.t('OrderingPayment:PlaceOrderFailedDescription');
       dispatch(
-        appActions.showError({
+        appActions.showMessageModal({
           message,
         })
       );
@@ -207,8 +207,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     }
 
     dispatch(
-      appActions.showError({
-        code: Number(error.code),
+      appActions.showMessageModal({
         message: i18next.t(errorMessage),
       })
     );

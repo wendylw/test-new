@@ -77,7 +77,7 @@ export const actions = {
 
     if (result.type === PROMOTION_TYPES.APPLY_VOUCHER_FAILURE) {
       dispatch(
-        appActions.showError({
+        appActions.showMessageModal({
           message: i18next.t('ConnectionIssue'),
         })
       );
@@ -123,7 +123,7 @@ export const actions = {
 
     if (result.type === PROMOTION_TYPES.DISMISS_PROMOTION_CODE_FAILURE) {
       dispatch(
-        appActions.showError({
+        appActions.showMessageModal({
           message: i18next.t('ConnectionIssue'),
         })
       );

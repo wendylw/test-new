@@ -190,16 +190,6 @@ export const actions = {
     prompt,
   }),
 
-  showError: ({ message, code = 500 }) => ({
-    type: types.SHOW_ERROR,
-    message,
-    code,
-  }),
-
-  clearError: () => ({
-    type: types.CLEAR_ERROR,
-  }),
-
   showMessageModal: ({ message, description, buttonText = '' }) => ({
     type: types.SET_MESSAGE_INFO,
     message,
