@@ -105,8 +105,8 @@ export const actions = {
           const userInfo = {
             Name: resp.user?.firstName,
             Phone: resp.user?.phone,
-            Email: resp.user?.email,
             Identity: resp.consumerId,
+            ...(resp.user?.email ? { Email: resp.user?.email } : {}),
           };
 
           CleverTap.pushEvent('Login - login successful', {
