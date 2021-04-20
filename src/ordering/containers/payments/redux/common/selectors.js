@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import _some from 'lodash/some';
 import _every from 'lodash/every';
-import { getCartBilling } from '../../../../redux/modules/app';
+import { getUser, getCartBilling } from '../../../../redux/modules/app';
 
 export const getSelectedPaymentProvider = ({ payments }) => payments.common.selectedOptionProvider;
 export const getPaymentsPendingState = ({ payments }) => payments.common.status === 'pending';
@@ -38,6 +38,15 @@ export const getSelectedPaymentOption = ({ payments }) => {
 
   return selectedPaymentOption || {};
 };
+
+export const getSelectedPaymentOptionSupportSaveCard = createSelector(
+  getUser,
+  getSelectedPaymentOption,
+  (user, selectedPaymentOption) => {
+    const { isLogin } = user;
+    return isLogin ? selectedPaymentOption.supportSaveCard : false;
+  }
+);
 
 export const getOnlineBankList = ({ payments }) => {
   const onlineBankingObject = payments.common.options.find(option => option.key === 'OnlineBanking') || {};

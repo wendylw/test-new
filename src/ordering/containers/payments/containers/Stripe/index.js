@@ -20,7 +20,11 @@ import {
   getCartBilling,
   getBusinessInfo,
 } from '../../../../redux/modules/app';
-import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../../redux/common/selectors';
+import {
+  getSelectedPaymentOption,
+  getSelectedPaymentOptionSupportSaveCard,
+  getSelectedPaymentProvider,
+} from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';
@@ -85,11 +89,10 @@ class Stripe extends Component {
       history,
       cartBilling,
       merchantCountry,
-      selectedPaymentOption,
+      supportSaveCard,
       storeInfoForCleverTap,
       appActions,
     } = this.props;
-    const supportSaveCard = _get(selectedPaymentOption, 'supportSaveCard', false);
     const isAddCardPath = ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE === history.location.pathname;
 
     return (
@@ -124,7 +127,7 @@ export default compose(
         deliveryDetails: getDeliveryDetails(state),
         user: getUser(state),
         paymentProvider: getSelectedPaymentProvider(state),
-        selectedPaymentOption: getSelectedPaymentOption(state),
+        supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },

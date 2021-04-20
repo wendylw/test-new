@@ -90,7 +90,6 @@ const PaymentOptionModel = {
 const preprocessPaymentOptions = (data = [], paymentOptionModel, paymentsMapping) => {
   return data.map(currentOption => {
     const option = { ...paymentOptionModel, ...paymentsMapping[currentOption.paymentProvider], ...currentOption };
-
     return option;
   });
 };

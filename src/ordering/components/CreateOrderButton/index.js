@@ -17,8 +17,10 @@ class CreateOrderButton extends React.Component {
     const { user } = prevProps;
     const { isFetching } = user || {};
 
-    if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
-      this.visitLoginPage();
+    if (!Utils.isDigitalType()) {
+      if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
+        this.visitLoginPage();
+      }
     }
   }
 

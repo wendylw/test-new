@@ -16,7 +16,7 @@ import { getDeliveryDetails, actions as customerActionCreators } from '../../../
 import IconAddNew from '../../../../../images/icon-add-new.svg';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
-import { getSelectedPaymentOption, getSelectedPaymentProvider } from '../../redux/common/selectors';
+import { getSelectedPaymentOptionSupportSaveCard, getSelectedPaymentProvider } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
 import '../../styles/PaymentCreditCard.scss';
@@ -48,8 +48,7 @@ class SavedCards extends Component {
       if (!user) await appActions.loadCustomerProfile();
       await this.ensurePaymentProvider();
 
-      const { paymentProvider, paymentOption, history, cardList } = this.props;
-      const supportSaveCard = _get(paymentOption, 'supportSaveCard', false);
+      const { paymentProvider, history, cardList, supportSaveCard } = this.props;
 
       if (!supportSaveCard) {
         history.replace({
@@ -268,7 +267,7 @@ export default compose(
       cardList: getCardList(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
       deliveryDetails: getDeliveryDetails(state),
-      paymentOption: getSelectedPaymentOption(state),
+      supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
       paymentProvider: getSelectedPaymentProvider(state),
     }),
     dispatch => ({

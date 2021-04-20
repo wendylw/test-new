@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { get } from '../../../../../../utils/api/api-fetch';
 import Url from '../../../../../../utils/url';
+import _first from 'lodash/first';
 
 const thunks = {
   fetchSavedCard: createAsyncThunk('ordering/payments/savedCards/fetchSavedCard', async ({ userId, paymentName }) => {
@@ -24,6 +25,7 @@ const { reducer, actions } = createSlice({
   extraReducers: {
     [thunks.fetchSavedCard.fulfilled.type]: (state, { payload }) => {
       state.cardList = payload.paymentMethods;
+      state.selectedPaymentCard = state.selectedPaymentCard || _first(state.cardList);
     },
   },
 });

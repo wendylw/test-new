@@ -126,7 +126,7 @@ class ReportDriver extends Component {
     const file = e.target.files[0];
 
     if (file.size > UPLOAD_FILE_MAX_SIZE) {
-      this.props.showError({
+      this.props.showMessageModal({
         message: this.props.t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) }),
       });
       // clear the select file
@@ -389,7 +389,7 @@ export default compose(
       fetchReport: reportDriverThunks.fetchReport,
       submitReport: reportDriverThunks.submitReport,
       loadOrder: commonActionCreators.loadOrder,
-      showError: appActionCreators.showError,
+      showMessageModal: appActionCreators.showMessageModal,
     }
   )
 )(ReportDriver);

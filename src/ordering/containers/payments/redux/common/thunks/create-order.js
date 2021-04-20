@@ -93,13 +93,19 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     try {
       const order = await createVoucherOrderRequest(payload);
       return { order };
-    } catch {
-      const message = i18next.t('OrderingPayment:PlaceOrderFailedDescription');
-      dispatch(
-        appActions.showError({
-          message,
-        })
-      );
+    } catch (error) {
+      if (error.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
+      } else {
+        dispatch(
+          appActions.showMessageModal({
+            message: i18next.t('OrderingPayment:PlaceOrderFailedDescription'),
+          })
+        );
+      }
     }
     return;
   }
@@ -226,64 +232,21 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       };
     } catch (error) {
-      const errorMappingObject = ERROR_CODE_MAP[error.code]
-        ? {
-            ...error,
-            ...ERROR_CODE_MAP[error.code],
-          }
-        : {
-            ...error,
-            message: REQUEST_ERROR_KEYS[error.code],
-          };
-
-      throw errorMappingObject;
+      throw error;
     }
   } catch (error) {
-    let errorMessage = '';
-
-    switch (Number(error.code)) {
-      case CREATE_ORDER_ERROR_CODES.PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT:
-        errorMessage = 'OrderingPayment:PromotionExceededTotalClaimLimit';
-        break;
-      case CREATE_ORDER_ERROR_CODES.PROMOTION_INVALID:
-        errorMessage = 'OrderingPayment:PromotionInvalid';
-        break;
-      case CREATE_ORDER_ERROR_CODES.NO_PERMISSION:
-        errorMessage = 'OrderingPayment:NoPermission';
-        break;
-      case CREATE_ORDER_ERROR_CODES.NO_STORE:
-        errorMessage = 'OrderingPayment:NoStore';
-        break;
-      case CREATE_ORDER_ERROR_CODES.NO_STORE_LOCATION:
-        errorMessage = 'OrderingPayment:NoStoreLocation';
-        break;
-      case CREATE_ORDER_ERROR_CODES.NO_DELIVERY_LOCATION:
-        errorMessage = 'OrderingPayment:NoDeliveryLocation';
-        break;
-      case CREATE_ORDER_ERROR_CODES.OVER_DELIVERY_DISTANCE:
-        errorMessage = 'OrderingPayment:OverDeliveryDistance';
-        break;
-      case CREATE_ORDER_ERROR_CODES.CREATE_ORDER_ERROR:
-        errorMessage = 'OrderingPayment:CreateOrderError';
-        break;
-      case CREATE_ORDER_ERROR_CODES.CONTACT_DETAIL_INVALID:
-        errorMessage = 'OrderingPayment:ContactDetailInvalid';
-        break;
-      case CREATE_ORDER_ERROR_CODES.STORE_IS_ON_VACATION:
-        errorMessage = 'OrderingPayment:StoreIsOnVacation';
-        break;
-      default:
-        console.error(`Unexpected error on creating order: ${JSON.stringify(error)}`);
-        errorMessage = 'OrderingPayment:PlaceOrderFailedDescription';
-        break;
+    if (error.code) {
+      // TODO: This type is actually not used, because apiError does not respect action type,
+      // which is a bad practice, we will fix it in the future, for now we just keep a useless
+      // action type.
+      dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
+    } else {
+      dispatch(
+        appActions.showMessageModal({
+          message: i18next.t('OrderingPayment:PlaceOrderFailedDescription'),
+        })
+      );
     }
-
-    dispatch(
-      appActions.showError({
-        code: Number(error.code),
-        message: i18next.t(errorMessage),
-      })
-    );
   }
 };
 

@@ -61,7 +61,7 @@ export const thunks = {
         } catch (e) {
           console.error(e);
           dispatch(
-            appActions.showError({
+            appActions.showMessageModal({
               message: i18next.t('ConnectionIssue'),
             })
           );
@@ -79,7 +79,7 @@ export const thunks = {
     } catch (e) {
       console.error(e);
       dispatch(
-        appActions.showError({
+        appActions.showMessageModal({
           message: i18next.t('ConnectionIssue'),
         })
       );
