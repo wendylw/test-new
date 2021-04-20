@@ -23,7 +23,7 @@ import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
-const { DELIVERY_METHOD, CREATE_ORDER_ERROR_CODES, REQUEST_ERROR_KEYS, ERROR_CODE_MAP } = Constants;
+const { DELIVERY_METHOD } = Constants;
 
 const POLLING_INTERVAL = 3000;
 
