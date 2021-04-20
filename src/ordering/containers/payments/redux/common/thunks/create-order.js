@@ -23,7 +23,7 @@ import { post } from '../../../../../../utils/api/api-fetch';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
 
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, ERROR_CODE_MAP } = Constants;
 
 export const createOrder = ({ cashback, shippingType }) => async (dispatch, getState) => {
   const isDigital = Utils.isDigitalType();
@@ -177,7 +177,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       // TODO: This type is actually not used, because apiError does not respect action type,
       // which is a bad practice, we will fix it in the future, for now we just keep a useless
       // action type.
-      dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
+      dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error, ...ERROR_CODE_MAP[error.code] });
     } else {
       dispatch(
         appActions.showMessageModal({
