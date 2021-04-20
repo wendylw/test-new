@@ -177,7 +177,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       // TODO: This type is actually not used, because apiError does not respect action type,
       // which is a bad practice, we will fix it in the future, for now we just keep a useless
       // action type.
-      dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error, ...ERROR_CODE_MAP[error.code] });
+      dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
     } else {
       dispatch(
         appActions.showMessageModal({
