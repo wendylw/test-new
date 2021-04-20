@@ -864,8 +864,8 @@ export class Home extends Component {
       breakTimeTo,
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
-    const { tableId } = requestInfo || {};
-    const { storePromoTags, qrOrderingSettings } = businessInfo || {};
+    const { tableId, shippingType } = requestInfo || {};
+    const { promotions, qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
 
     if (!onlineStoreInfo || !categories) {
@@ -876,7 +876,11 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} storePromoTags={storePromoTags} />
+        <PromotionsBar
+          promotionRef={ref => (this.promotionEl = ref)}
+          promotions={promotions}
+          shippingType={shippingType}
+        />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
             <p

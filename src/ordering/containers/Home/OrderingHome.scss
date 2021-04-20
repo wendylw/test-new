@@ -149,6 +149,12 @@ $gray-nav-item-text: #707070;
   }
 }
 
+.promotions-bar {
+  &__link {
+    color: $main-color;
+  }
+}
+
 @media (min-width: 770px) {
   .ordering-home {
     &__deliver-to + &__header::before {

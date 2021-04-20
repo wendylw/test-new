@@ -22,8 +22,16 @@
   "AddCart": "add to cart",
   "Unavailable": "Unavailable",
   "Processing": "Processing",
-  "ProductsPromotionDescription": "Get <1>{{discountPercentage}}<1/> OFF for {{discountProductList}} with <2>{{promoCode}}<2/>. Promo Code is valid till {{validDate}}",
-  "StorePromotionDescription": "Get <1>{{discountPercentage}}<1/> OFF with <2>{{promoCode}}<2/>. Promo Code is valid till {{validDate}}",
-  "UniversalPromotionDescription": "<1>{{discountPercentage}}<1/> OFF with promo code <2>{{promoCode}}<2/><3/>(capped at {{cappedValue}} with min. spend {{consumptionAmount}})",
-  "FreeDeliveryPromotionDescription": "<1>{{discount}}<1/> with promo code <2>{{promoCode}}<2/><3/>(capped at {{cappedValue}} with min. order {{consumptionAmount}})"
+  "ProductsPromotionDescription": "Get <1>{{discountValue}}<1/> OFF for {{discountProductList}} with <2>{{promotionCode}}<2/>. Promo Code is valid till {{validDate}}",
+  "StorePromotionDescription": "Get <1>{{discountValue}}<1/> OFF with <2>{{promotionCode}}<2/>. Promo Code is valid till {{validDate}}",
+  "PromotionDescription": "<1></1> OFF with promo code <2>{{promotionCode}}<2/>",
+  "PromotionPrompt": "capped at <1></1> with min. spend <2></2>",
+  "PromotionOnlyInAppPrompt": "capped at <1></1> with min. spend <2></2>, <3>Beep app</3> only",
+  "PromotionOnlyMinOrderAmountPrompt": "min. spend <1></1>",
+  "PromotionOnlyMinOrderAmountOnlyInAppPrompt": "min. spend <1></1>, <2>Beep app</2> only",
+  "PromotionOnlyMaxDiscountAmountPrompt": "capped at <1></1>",
+  "PromotionOnlyMaxDiscountAmountOnlyInAppPrompt": "capped at <1></1>, <2>Beep app</a> only",
+  "FreeDeliveryPromotionDescription": "<1>{{freeDelivery}}</1> with promo code <2>{{promotionCode}}<2/>",
+  "FreeDelivery": "Free Delivery",
+  "OnlyInBeepAppPrompt": "<1>Beep app</1> only"
 }
