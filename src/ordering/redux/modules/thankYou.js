@@ -234,3 +234,5 @@ export const getServiceCharge = state => {
   const serviceChargeItem = (items || []).find(item => item.itemType === 'ServiceCharge');
   return serviceChargeItem && serviceChargeItem.displayPrice;
 };
+
+export const getOrderDelayReason = createSelector(getOrder, order => _get(order, 'delayReason', null));

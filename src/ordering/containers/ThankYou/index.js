@@ -45,6 +45,7 @@ import {
   getReceiptNumber,
   getRiderLocations,
   getStoreHashCode,
+  getOrderDelayReason,
 } from '../../redux/modules/thankYou';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
@@ -52,6 +53,7 @@ import DownloadBanner from '../../../components/DownloadBanner';
 import CleverTap from '../../../utils/clevertap';
 import './OrderingThanks.scss';
 import * as storeUtils from '../../../utils/store-utils';
+import OrderDelayMessage from './components/OrderDelayMessage';
 
 // const { ORDER_STATUS } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -467,6 +469,16 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  renderOrderDelayMessage = () => {
+    const { orderDelayReason } = this.props;
+
+    if (!orderDelayReason) {
+      return null;
+    }
+
+    return <OrderDelayMessage orderDelayReason={orderDelayReason} />;
+  };
+
   renderCashbackUI = cashback => {
     const { t, cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
@@ -713,6 +725,7 @@ export class ThankYou extends PureComponent {
             alt="Beep Success"
           />
         )}
+        {this.renderOrderDelayMessage()}
         {currentStatusObj.status === 'cancelled' ? (
           <div className="card text-center margin-normal flex">
             <div className="padding-small text-left">
@@ -1464,6 +1477,7 @@ export default compose(
       updatedStatus: getLoadOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
+      orderDelayReason: getOrderDelayReason(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
