@@ -174,20 +174,10 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     return { order, redirectUrl };
   } catch (error) {
     if (error.code) {
-      let errorObj = error;
-      // TODO: This is an legacy problem that we have to handle separately for now, otherwise when
-      // we encounter the 40008 error, we will not be able to display the error correctly in error
-      // page. We will provide more reasonable issue handling logic in error handling refactor.
-      if (error.code === '40008') {
-        errorObj = {
-          code: 40008,
-          message: i18next.t('OrderingPayment:NoDeliveryLocation'),
-        };
-      }
       // TODO: This type is actually not used, because apiError does not respect action type,
       // which is a bad practice, we will fix it in the future, for now we just keep a useless
       // action type.
-      dispatch({ type: 'ordering/payments/common/createOrderFailure', ...errorObj });
+      dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
     } else {
       dispatch(
         appActions.showMessageModal({
