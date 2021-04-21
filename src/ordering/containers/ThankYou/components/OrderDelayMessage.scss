@@ -8,8 +8,10 @@
   &__content {
     padding-top: 5.79vw;
   }
+}
 
-  @media (min-width: 420px) {
+@media (min-width: 420px) {
+  .order-delay-message {
     &__content {
       padding-top: 26px;
     }
