@@ -23,7 +23,7 @@ import { post } from '../../../../../../utils/api/api-fetch';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
 
-const { DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD, ERROR_CODE_MAP } = Constants;
 
 export const createOrder = ({ cashback, shippingType }) => async (dispatch, getState) => {
   const isDigital = Utils.isDigitalType();
