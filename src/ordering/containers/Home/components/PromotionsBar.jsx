@@ -74,7 +74,7 @@ class PromotionsBar extends Component {
       case PROMOTIONS_TYPES.PERCENTAGE:
         return (
           <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
-            <span className="text-weight-bolder">{discountValue}%</span> OFF with promo code{' '}
+            <span className="text-weight-bolder">{`${discountValue}%`}</span> OFF with promo code{' '}
             <strong>{promotionCode}</strong>
           </Trans>
         );
@@ -159,14 +159,14 @@ class PromotionsBar extends Component {
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
         {promotions.map((promo, index) => {
           const { appliedSources, discountProductList, promotionCode, validDate } = promo;
+          const description = this.renderPromotionText(promo);
 
           if (shippingType && !appliedSources.find(source => SHIPPING_TYPES_MAPPING[shippingType] === source)) {
             return null;
           }
 
-          const description = this.renderPromotionText(promo);
           const prompt =
-            discountProductList || validDate ? null : (
+            discountProductList || validDate || !this.renderPromotionPromptText(promo) ? null : (
               <>
                 <br /> ({this.renderPromotionPromptText(promo)})
               </>

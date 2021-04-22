@@ -44,7 +44,6 @@ export const initialState = {
   requestInfo: {
     tableId: config.table,
     storeId: config.storeId,
-    shippingType: Utils.getApiRequestShippingType(),
   },
 };
 
