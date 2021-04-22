@@ -1,122 +1,157 @@
-import _isNull from 'lodash/isNull';
-import _isUndefined from 'lodash/isUndefined';
-import { isHttpSuccess, assembleUrl } from './api-utils';
+import originalKy from 'ky';
+import { getClientSource } from './api-utils';
 
-const defaultHeaders = {
-  Accept: 'application/json',
-  'Content-Type': 'application/json',
-  // Fixed IE cache request
-  Pragma: 'no-cache',
-  'Cache-Control': 'no-cache',
-};
+export const ky = originalKy.create({
+  hooks: {
+    // Update headers when consumer enter beep from different client
+    beforeRequest: [req => req.headers.set('client', getClientSource().name)],
+    retry: {
+      limit: 1,
+      methods: ['get'],
+      statusCodes: ['200'],
+    },
+  },
+  credentials: 'include',
+});
+
+async function parseResponse(resp) {
+  const rawContentType = resp.headers.get('content-type');
+  let body = resp;
+
+  if (!rawContentType) {
+    return body;
+  }
+
+  if (rawContentType.includes('application/json')) {
+    body = await resp.json();
+  } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
+    body = await resp.text();
+  } else {
+    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
+  }
+
+  return body;
+}
 
 function convertOptions(options) {
-  const { payload, mode, method, headers, credentials = 'include', ...others } = options;
-  const composeHeaders = new Headers({
-    ...defaultHeaders,
-    ...headers,
-  });
+  // include is general credential value. if api fetching need Cross-domain without cookie that the value needs set `omit` in others.
+  const { type = 'json', payload, headers, queryParams, ...others } = options;
   const currentOptions = {
     ...others,
-    headers: composeHeaders,
-    // include is general value. if api fetching need Cross-domain without cookie that the value needs set `omit`.
-    credentials,
   };
 
-  if (method === 'GET' || method === 'DELETE') {
-    return currentOptions;
+  if (type === 'json') {
+    if (payload && typeof payload !== 'object') {
+      console.warn(
+        `Server only accepts array or object for json request. You provide "${typeof payload}". Won't send as json.`
+      );
+      currentOptions.body = payload;
+    } else {
+      currentOptions.json = payload;
+    }
+  } else {
+    currentOptions.body = payload;
   }
 
-  let body = '';
-
-  if (!_isNull(payload) && !_isUndefined(payload)) {
-    body = JSON.stringify(payload);
+  if (queryParams) {
+    currentOptions.searchParams = queryParams;
   }
 
-  return Object.assign({}, currentOptions, { body });
+  currentOptions.hooks = currentOptions.hooks || {};
+  currentOptions.hooks.beforeRequest = currentOptions.hooks.beforeRequest || [];
+
+  if (headers) {
+    if (typeof headers !== 'object') {
+      throw new Error('headers should be an object');
+    }
+    // adding headers should be at the front of the hooks, so that other hooks have chance to modify the headers.
+    currentOptions.hooks.beforeRequest.unshift(req => {
+      Object.keys(headers).forEach(key => {
+        req.headers.set(key, headers[key]);
+      });
+    });
+  }
+
+  return currentOptions;
 }
 
 /**
- * @param {*} url
- * @param {*} opts : {payload:{}, headers:{}, mode: '', ...others}
+ * @param {string} url url for the request
+ * @param {object} opts : {type: '', payload: {}, headers: {}, queryParams, ...others: {credentials: ''}}
+ * @param {any} options.payload data in request
+ * @param {object} options.queryParams query parameters in url
+ * @param {object} options.headers headers in request
  */
-function _fetch(url, opts) {
-  return fetch(url, opts)
-    .then(response => {
-      const isJsonData = response.headers.get('Content-Type').includes('application/json');
+async function _fetch(url, opts) {
+  try {
+    const resp = await ky(url, opts);
 
-      return new Promise(function(resolve, reject) {
-        if (response.status && isHttpSuccess(response.status)) {
-          if (isJsonData) {
-            resolve(response.json());
-          } else {
-            resolve(response.text());
-          }
-        } else {
-          const { code } = isJsonData ? response.json() : { code: '50000' };
+    return await parseResponse(resp);
+  } catch (e) {
+    let error = {};
 
-          reject({
-            code,
-            status: response.status,
-          });
-        }
-      });
-    })
-    .catch(e => {
-      if (process.env.NODE_ENV !== 'production') {
-        /* eslint-disable */
-        console.log(e);
-        /* eslint-enable */
+    if (e.response) {
+      const body = await parseResponse(e.response);
+
+      if (typeof body === 'object' && body.code) {
+        error = body;
+      } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
+        error = {
+          code: '50000',
+          status: e.status,
+          message: typeof body === 'string' ? body : JSON.stringify(body),
+        };
       }
+    }
 
-      return Promise.reject(e);
-    });
+    throw error;
+  }
 }
 
 export function get(url, options = {}) {
-  const { queryParams } = options;
-
   return _fetch(
-    assembleUrl(url, queryParams),
+    url,
     convertOptions({
       ...options,
-      method: 'GET',
+      method: 'get',
     })
   );
 }
 
-export function post(url, options = {}) {
-  const { queryParams } = options;
-
+/**
+ * @param {object} payload : data in request. if payload is empty but options is required, pls set payload as `undefined`
+ */
+export function post(url, payload, options = {}) {
   return _fetch(
-    assembleUrl(url, queryParams),
+    url,
     convertOptions({
       ...options,
-      method: 'POST',
+      payload,
+      method: 'post',
     })
   );
 }
 
-export function put(url, options = {}) {
-  const { queryParams } = options;
-
+/**
+ * @param {object} payload : data in request. if payload is empty but options is required, pls set payload as `undefined`
+ */
+export function put(url, payload, options = {}) {
   return _fetch(
-    assembleUrl(url, queryParams),
+    url,
     convertOptions({
       ...options,
-      method: 'PUT',
+      payload,
+      method: 'put',
     })
   );
 }
 
 export function del(url, options = {}) {
-  const { queryParams } = options;
-
   return _fetch(
-    assembleUrl(url, queryParams),
+    url,
     convertOptions({
       ...options,
-      method: 'DELETE',
+      method: 'delete',
     })
   );
 }

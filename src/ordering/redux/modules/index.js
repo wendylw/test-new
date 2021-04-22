@@ -4,12 +4,10 @@ import app from './app';
 import home from './home';
 import cart from './cart';
 import promotion from './promotion';
-import payment from './payment';
-import payments from '../../containers/Payment/redux/payments';
-import thankYou from './thankYou';
+import payments from '../../containers/payments/redux';
 import customer from './customer';
-import reportDriver from './reportDriver';
 import locationAndDate from './locationAndDate';
+import orderStatus from '../../containers/order-status/redux';
 
 const rootReducer = combineReducers({
   entities,
@@ -17,12 +15,10 @@ const rootReducer = combineReducers({
   home,
   cart,
   customer,
-  payment,
   payments,
-  thankYou,
   promotion,
-  reportDriver,
   locationAndDate,
+  orderStatus,
 });
 
 export default rootReducer;

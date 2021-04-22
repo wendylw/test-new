@@ -2,9 +2,7 @@ import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { getPromotion } from '../../../redux/modules/entities/carts';
-import { actions as appActions, getBusinessUTCOffset } from './app';
-import i18next from 'i18next';
+import { getBusinessUTCOffset, getCartBilling } from './app';
 import Utils from '../../../utils/utils';
 import _get from 'lodash/get';
 const { PROMO_TYPE } = Constants;
@@ -75,19 +73,11 @@ export const actions = {
       },
     });
 
-    if (result.type === PROMOTION_TYPES.APPLY_VOUCHER_FAILURE) {
-      dispatch(
-        appActions.showError({
-          message: i18next.t('ConnectionIssue'),
-        })
-      );
-    }
-
     return result;
   },
   dismissPromotion: () => async (dispatch, getState) => {
     const state = getState();
-    const promotion = getPromotion(state);
+    const { promotion } = getCartBilling(state) || {};
     const promoCode = promotion ? promotion.promoCode : '';
     const promoType = promotion ? promotion.promoType : '';
     const dismissType =
@@ -119,14 +109,6 @@ export const actions = {
 
     if (result.type === PROMOTION_TYPES.DISMISS_PROMOTION_CODE_SUCCESS) {
       dispatch(actions.resetPromotion());
-    }
-
-    if (result.type === PROMOTION_TYPES.DISMISS_PROMOTION_CODE_FAILURE) {
-      dispatch(
-        appActions.showError({
-          message: i18next.t('ConnectionIssue'),
-        })
-      );
     }
 
     return result;

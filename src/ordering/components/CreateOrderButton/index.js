@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError } from '../../redux/modules/app';
-import { actions as paymentActionCreators, getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
+import { getUser, getRequestInfo, getError, getCartBilling, types } from '../../redux/modules/app';
+import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
+import '../Loader.scss';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -18,8 +17,10 @@ class CreateOrderButton extends React.Component {
     const { user } = prevProps;
     const { isFetching } = user || {};
 
-    if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
-      this.visitLoginPage();
+    if (!Utils.isDigitalType()) {
+      if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
+        this.visitLoginPage();
+      }
     }
   }
 
@@ -38,19 +39,21 @@ class CreateOrderButton extends React.Component {
   handleCreateOrder = async () => {
     const {
       history,
-      paymentActions,
+      createOrder,
       user,
       requestInfo,
-      cartSummary,
+      cartBilling,
       afterCreateOrder,
       beforeCreateOrder,
       paymentName,
+      gotoPayment,
     } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
-    const { totalCashback } = cartSummary || {};
+    const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
+    let currentOrder;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
@@ -73,12 +76,13 @@ class CreateOrderButton extends React.Component {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
-      await paymentActions.createOrder({ cashback: totalCashback, shippingType: type });
+      const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
         paymentName: paymentName || 'N/A',
       });
 
-      const { currentOrder /*error*/ } = this.props;
+      const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
+      currentOrder = order;
       const { orderId } = currentOrder || {};
 
       newOrderId = orderId;
@@ -87,8 +91,6 @@ class CreateOrderButton extends React.Component {
         Utils.removeSessionVariable('additionalComments');
         Utils.removeSessionVariable('deliveryComments');
       }
-
-      const { thankYouPageUrl } = this.props;
 
       if (thankYouPageUrl) {
         window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
@@ -100,10 +102,16 @@ class CreateOrderButton extends React.Component {
     if (afterCreateOrder) {
       afterCreateOrder(newOrderId);
     }
+
+    if (currentOrder) {
+      // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
+      // paymentExtraData could be changed after beforeCreateOrder is executed.
+      gotoPayment(currentOrder, this.props.paymentExtraData);
+    }
   };
 
   render() {
-    const { children, className, buttonType, disabled, dataAttributes } = this.props;
+    const { children, className, buttonType, disabled, dataAttributes, loaderText, processing } = this.props;
     const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
@@ -111,15 +119,29 @@ class CreateOrderButton extends React.Component {
     }
 
     return (
-      <button
-        className={classList.join(' ')}
-        type={buttonType}
-        disabled={disabled}
-        onClick={this.handleCreateOrder.bind(this)}
-        {...dataAttributes}
-      >
-        {children}
-      </button>
+      <>
+        <button
+          className={classList.join(' ')}
+          type={buttonType}
+          disabled={disabled}
+          onClick={this.handleCreateOrder.bind(this)}
+          {...dataAttributes}
+        >
+          {children}
+        </button>
+        {processing ? (
+          <div className="page-loader flex flex-middle flex-center">
+            <div className="prompt-loader padding-small border-radius-large text-center flex flex-middle flex-center">
+              <div className="prompt-loader__content">
+                <i className="circle-loader margin-smaller"></i>
+                {loaderText ? (
+                  <span className="prompt-loader__text margin-top-bottom-smaller text-size-smaller">{loaderText}</span>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </>
     );
   }
 }
@@ -135,6 +157,9 @@ CreateOrderButton.propTypes = {
   beforeCreateOrder: PropTypes.func,
   afterCreateOrder: PropTypes.func,
   paymentName: PropTypes.string,
+  paymentExtraData: PropTypes.object,
+  processing: PropTypes.bool,
+  loaderText: PropTypes.string,
 };
 
 CreateOrderButton.defaultProps = {
@@ -143,6 +168,7 @@ CreateOrderButton.defaultProps = {
   isPromotionValid: true,
   disabled: true,
   sentOtp: false,
+  processing: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };
@@ -151,19 +177,16 @@ export default compose(
   withDataAttributes,
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
         user: getUser(state),
         error: getError(state),
         requestInfo: getRequestInfo(state),
-        cartSummary: getCartSummary(state),
-        thankYouPageUrl: getThankYouPageUrl(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
+        cartBilling: getCartBilling(state),
       };
     },
-    dispatch => ({
-      paymentActions: bindActionCreators(paymentActionCreators, dispatch),
-    })
+    {
+      createOrder,
+      gotoPayment,
+    }
   )
 )(CreateOrderButton);
