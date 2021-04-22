@@ -1,0 +1,38 @@
+@import "../../../../../Variables.scss";
+
+.cart-list-aside {
+  height: auto;
+
+  &__container {
+    bottom: 0;
+  }
+
+  &__operation {
+    top: 0;
+    transform: translateY(-100%);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: $white;
+  }
+
+  &__icon-cart {
+    fill: $theme-blue;
+  }
+
+  &__list-container {
+    overflow-y: auto;
+  }
+
+  &__item-number {
+    color: $gray-2;
+  }
+}
+
+@media (min-width: 420px) {
+  .cart-list-aside {
+    .item {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+  }
+}

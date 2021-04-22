@@ -1,79 +1,36 @@
-import { combineReducers } from 'redux';
-import { createSelector } from 'reselect';
-import config from '../../../config';
 import Url from '../../../utils/url';
-import Utils from '../../../utils/utils';
-import { API_INFO } from '../../../utils/api/api-utils';
-import { get } from '../../../utils/api/api-fetch';
 import { CART_TYPES } from '../types';
+import { getBusiness } from './app';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { getAllProducts, getProductById } from '../../../redux/modules/entities/products';
-import { getAllCategories } from '../../../redux/modules/entities/categories';
-import { getBusinessUTCOffset, getCartItemList, fetchShoppingCart } from './app';
-import { APP_TYPES } from '../types';
+import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 
 const initialState = {
   pendingTransactionsIds: [],
-  selectedProduct: {
-    id: '',
-    cartId: '',
-    isFetching: false,
-    status: 'fulfilled',
-  },
-  cartInventory: {
-    status: '',
-    error: {},
-  },
 };
 
 export const types = CART_TYPES;
 
-const fetchOnlineCategory = variables => {
-  const endpoint = Url.apiGql('OnlineCategory');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ONLINECATEGORY_REQUEST,
-        types.FETCH_ONLINECATEGORY_SUCCESS,
-        types.FETCH_ONLINECATEGORY_FAILURE,
-      ],
-      endpoint,
-      variables,
-    },
-  };
-};
-
 // actions
-const cartActionTypes = {
-  checkInventory: 'cart/checkInventory',
-  checkInventorySuccess: 'cart/checkInventorySuccess',
-  checkInventoryFailed: 'cart/checkInventoryFailed',
-};
-
-const checkInventory = () => ({
-  type: cartActionTypes.checkInventory,
-  payload: {
-    status: 'pending',
-  },
-});
-
-const checkInventorySuccess = () => ({
-  type: cartActionTypes.checkInventorySuccess,
-  payload: {
-    status: 'fulfilled',
-  },
-});
-
-const checkInventoryFailed = error => ({
-  type: cartActionTypes.checkInventoryFailed,
-  payload: {
-    error,
-    status: 'reject',
-  },
-});
-
 export const actions = {
+  clearAll: () => dispatch => {
+    return dispatch(emptyShoppingCart());
+  },
+  clearAllByProducts: products => dispatch => {
+    return dispatch(clearShopcartItemByProducts(products));
+  },
+
+  loadPendingPaymentList: () => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_PENDING_TRANSACTIONS_REQUEST,
+        types.FETCH_PENDING_TRANSACTIONS_SUCCESS,
+        types.FETCH_PENDING_TRANSACTIONS_FAILURE,
+      ],
+      ...Url.API_URLS.GET_PENDING_TRANSACTIONS,
+    },
+  }),
+
   updateTransactionsStatus: ({ status, receiptNumbers }) => ({
     [API_REQUEST]: {
       types: [
@@ -88,52 +45,33 @@ export const actions = {
       },
     },
   }),
-
-  // load product list group by category, and shopping cart
-  loadProductList: () => (dispatch, getState) => {
-    const isDelivery = Utils.isDeliveryType();
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-
-    let deliveryCoords;
-    if (isDelivery) {
-      deliveryCoords = Utils.getDeliveryCoords();
-    }
-    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
-
-    const shippingType = Utils.getApiRequestShippingType();
-
-    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
-  },
-
-  checkCartInventory: () => async (dispatch, getState) => {
-    const state = getState();
-    const businessUTCOffset = getBusinessUTCOffset(state);
-    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-    const { app } = state;
-    const { items: cartItems } = app.shoppingCart;
-    const cartItemIds = cartItems.map(item => item.id);
-    const shippingType = Utils.getApiRequestShippingType();
-    const { url, queryParams } = API_INFO.getCartInventoryState(cartItemIds, shippingType, fulfillDate || '');
-
-    try {
-      dispatch(checkInventory());
-
-      await get(url, { queryParams });
-
-      dispatch(checkInventorySuccess());
-
-      return { status: 'fulfilled' };
-    } catch (e) {
-      dispatch(checkInventoryFailed(e));
-
-      return { status: 'reject' };
-    }
-  },
 };
 
-const pendingTransactionsIds = (state = initialState.pendingTransactionsIds, action) => {
+const clearShopcartItemByProducts = products => {
+  return {
+    [API_REQUEST]: {
+      types: [
+        types.CLEARALL_BY_PRODUCTS_REQUEST,
+        types.CLEARALL_BY_PRODUCTS_SUCCESS,
+        types.CLEARALL_BY_PRODUCTS_FAILURE,
+      ],
+      payload: products,
+      ...Url.API_URLS.DELETE_CARTITEMS_BY_PRODUCTS,
+    },
+  };
+};
+export const emptyShoppingCart = () => {
+  const endpoint = Url.apiGql('EmptyShoppingCart');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [types.CLEARALL_REQUEST, types.CLEARALL_SUCCESS, types.CLEARALL_FAILURE],
+      endpoint,
+    },
+  };
+};
+
+// reducers
+const reducer = (state = initialState, action) => {
   const { transactions } = action.response || {};
 
   switch (action.type) {
@@ -146,138 +84,14 @@ const pendingTransactionsIds = (state = initialState.pendingTransactionsIds, act
   }
 };
 
-const selectedProduct = (state = initialState.selectedProduct, action) => {
-  if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_REQUEST) {
-    return { ...state, isFetching: true, status: 'pending' };
-  } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_SUCCESS) {
-    const { product } = action.responseGql.data;
+export default reducer;
 
-    return {
-      ...state,
-      isFetching: false,
-      status: 'fulfilled',
-      id: product.id,
-    };
-  } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_FAILURE) {
-    return { ...state, isFetching: false, status: 'reject' };
-  }
+export const getBusinessInfo = state => {
+  const business = getBusiness(state);
 
-  return state;
+  return getBusinessByName(state, business) || {};
 };
 
-const cartInventory = (state = initialState.cartInventory, action) => {
-  const { type, payload } = action;
-
-  if (type === cartActionTypes.checkInventory) {
-    state = Object.assign({}, state, payload);
-  } else if (type === cartActionTypes.checkInventorySuccess) {
-    state = Object.assign({}, state, payload);
-  } else if (type === cartActionTypes.checkInventoryFailed) {
-    state = Object.assign({}, state, {
-      status: payload.status,
-      error: payload.error,
-    });
-  }
-
-  return state;
-};
-
-export default combineReducers({
-  pendingTransactionsIds,
-  selectedProduct,
-  cartInventory,
-});
-
-// selectors
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
-export const getSelectedProductDetail = state => {
-  const { selectedProduct } = state.cart;
-
-  return getProductById(state, selectedProduct.id);
-};
-
-const mergeWithShoppingCart = (onlineCategory, carts) => {
-  if (!Array.isArray(onlineCategory)) {
-    return null;
-  }
-
-  const shoppingCartNewSet = {};
-
-  if (carts) {
-    (carts || []).forEach(item => {
-      const newItem = shoppingCartNewSet[item.parentProductId || item.productId] || {
-        quantity: 0,
-        ids: [],
-        products: [],
-      };
-
-      newItem.quantity += item.quantity;
-      newItem.ids.push(item.id);
-      newItem.products.push(item);
-
-      shoppingCartNewSet[item.parentProductId || item.productId] = newItem;
-    });
-  }
-
-  return onlineCategory.map(category => {
-    const { products } = category;
-
-    category.cartQuantity = 0;
-
-    products.forEach(function(product) {
-      product.variations = product.variations || [];
-      product.soldOut = Utils.isProductSoldOut(product || {});
-      product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
-      product.cartQuantity = 0;
-
-      const result = shoppingCartNewSet[product.id];
-
-      if (result) {
-        category.cartQuantity += result.quantity;
-        product.cartQuantity += result.quantity;
-        product.cartItemIds = result.ids;
-        product.cartItems = result.products;
-        product.canDecreaseQuantity = result.quantity > 0 && result.ids.length === 1;
-      }
-    });
-
-    return category;
-  });
-};
-
-export const getCategoryProductList = createSelector(
-  [getAllProducts, getAllCategories, getCartItemList],
-  (products, categories, carts) => {
-    if (!products || !categories || !Array.isArray(carts)) {
-      return [];
-    }
-
-    const newCategories = Object.values(categories)
-      .map(category => {
-        return {
-          ...category,
-          products: category.products.map(id => {
-            const product = JSON.parse(JSON.stringify(products[id]));
-            return {
-              ...product,
-            };
-          }),
-        };
-      })
-      .filter(c => c.products.length);
-
-    return mergeWithShoppingCart(newCategories, carts);
-  }
-);
-
-export const getAllProductsIds = createSelector(getAllProducts, allProducts => {
-  try {
-    const res = Object.keys(allProducts);
-    return res;
-  } catch (e) {
-    return [];
-  }
-});
-
-export const getCheckingInventoryPendingState = ({ cart }) => cart.cartInventory.status === 'pending';
+// selectors

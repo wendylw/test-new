@@ -210,13 +210,6 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
     showModal: true,
   },
-  40008: {
-    title: 'ApiError:40008Title',
-    desc: 'ApiError:40008Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
-    buttonText: 'Common:Continue',
-    showModal: true,
-  },
   40009: {
     title: 'ApiError:40009Title',
     desc: 'ApiError:40009Description',
@@ -320,32 +313,6 @@ const ERROR_CODE_MAP = {
     desc: 'ApiError:41014Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`,
     buttonText: 'Common:Reorder',
-    showModal: true,
-  },
-  54012: {
-    title: 'ApiError:54012Title',
-    desc: 'ApiError:54012Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
-    buttonText: 'Common:OK',
-    showModal: true,
-  },
-  54013: {
-    title: 'ApiError:54013Title',
-    desc: 'ApiError:54013Description',
-    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
-    buttonText: 'Common:OK',
-    showModal: true,
-  },
-  80000: {
-    title: 'ApiError:80000Title',
-    desc: 'ApiError:80000Description',
-    buttonText: 'Common:OK',
-    showModal: true,
-  },
-  80001: {
-    title: 'ApiError:80001Title',
-    desc: 'ApiError:80001Description',
-    buttonText: 'Common:OK',
     showModal: true,
   },
 };
@@ -549,7 +516,6 @@ const PAYMENT_API_PAYMENT_OPTIONS = {
 
 const TIME_SLOT_NOW = 'now';
 
-export const AVAILABLE_REPORT_DRIVER_ORDER_STATUSES = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
 const CLIENTS = {
   WEB: 'web',
   IOS: 'iOS',
@@ -598,6 +564,5 @@ export default {
   ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
   PAYMENT_API_PAYMENT_OPTIONS,
-  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
   CLIENTS,
 };

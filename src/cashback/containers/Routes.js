@@ -1,7 +1,7 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
 import Utils from '../../utils/utils';
-import NotFound from '../../containers/NotFound';
+import NotFound from '../../NotFound';
 
 const RecentActivities = lazy(() => Utils.attemptLoad(() => import('./Home/components/RecentActivities')));
 const Claim = lazy(() => Utils.attemptLoad(() => import('./Claim')));

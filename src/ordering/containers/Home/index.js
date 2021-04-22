@@ -2,22 +2,35 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
+import Footer from './components/Footer';
 import _isNil from 'lodash/isNil';
+import Header from '../../../components/Header';
+
+import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
+import DeliverToBar from '../../../components/DeliverToBar';
+import PromotionsBar from './components/PromotionsBar';
+import ProductDetail from './components/ProductDetail';
+import CartListAside from './components/CartListAside';
+import StoreInfoAside from './components/StoreInfoAside';
+import CurrentCategoryBar from './components/CurrentCategoryBar';
+import CategoryProductList from './components/CategoryProductList';
+import AlcoholModal from './components/AlcoholModal';
+import OfflineStoreModal from './components/OfflineStoreModal';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
+
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
 import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
   getStore,
-  getBusinessInfo,
   getOnlineStoreInfo,
   getRequestInfo,
-  getCartBilling,
   getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
@@ -30,24 +43,14 @@ import {
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
+import { getCartSummary } from '../../../redux/modules/entities/carts';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
+import { getAllProductsKeys } from '../../../redux/modules/entities/products';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
-import Header from '../../../components/Header';
-import Footer from './components/Footer.jsx';
-import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
-import DeliverToBar from '../../../components/DeliverToBar';
-import PromotionsBar from './components/PromotionsBar';
-import ProductDetailDrawer from './components/ProductDetailDrawer';
-import CartListDrawer from './components/CartListDrawer';
-import StoreInfoAside from './components/StoreInfoAside';
-import CurrentCategoryBar from './components/CurrentCategoryBar';
-import ProductList from './components/ProductList';
-import AlcoholModal from './components/AlcoholModal';
-import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 
 const localState = {
@@ -683,7 +686,7 @@ export class Home extends Component {
     const {
       onlineStoreInfo,
       businessInfo,
-      cartBilling,
+      cartSummary,
       deliveryInfo,
       allStore,
       requestInfo,
@@ -695,7 +698,7 @@ export class Home extends Component {
     const isPickUpType = Utils.isPickUpType();
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
-    const deliveryFee = cartBilling ? cartBilling.shippingFee : legacyDeliveryFee;
+    const deliveryFee = cartSummary ? cartSummary.shippingFee : legacyDeliveryFee;
     const { tableId } = requestInfo || {};
 
     const { search } = this.state;
@@ -800,24 +803,38 @@ export class Home extends Component {
     );
   };
 
-  formatCleverTapAttributes(product) {
-    return {
-      'category name': product.categoryName,
-      'category rank': product.categoryRank,
+  cleverTapTrack = (eventName, attributes) => {
+    const { storeInfoForCleverTap } = this.props;
+    CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
+  };
+
+  cleverTapTrackForCart = (eventName, product, attributes) => {
+    const { categories, allProductsKeys, storeInfoForCleverTap } = this.props;
+    let categoryIndex = -1;
+    let categoryName = '';
+
+    const categoriesContent = Object.values(categories) || [];
+
+    categoriesContent.forEach((category, index) => {
+      if (category.products?.find(p => p.id === product.id)) {
+        categoryName = category.name;
+        categoryIndex = index;
+      }
+    });
+
+    CleverTap.pushEvent(eventName, {
+      'category name': categoryName,
+      'category rank': categoryIndex + 1,
       'product name': product.title,
-      'product rank': product.rank,
       'product image url': product.images?.length > 0 ? product.images[0] : '',
+      'product rank': allProductsKeys.indexOf(product.id) + 1,
       amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
       discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
       'is bestsellar': product.isFeaturedProduct,
       'has picture': product.images?.length > 0,
-    };
-  }
-
-  cleverTapTrack = (eventName, attributes = {}) => {
-    const { storeInfoForCleverTap } = this.props;
-
-    CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
+      ...storeInfoForCleverTap,
+      ...attributes,
+    });
   };
 
   render() {
@@ -829,7 +846,9 @@ export class Home extends Component {
       requestInfo,
       history,
       freeDeliveryFee,
+      cartSummary,
       deliveryInfo,
+      allProductsKeys,
       ...otherProps
     } = this.props;
     const {
@@ -846,7 +865,8 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId } = requestInfo || {};
-    const { storePromoTags } = businessInfo || {};
+    const { storePromoTags, qrOrderingSettings } = businessInfo || {};
+    const { minimumConsumption } = qrOrderingSettings || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -858,19 +878,20 @@ export class Home extends Component {
         {this.renderHeader()}
         <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} storePromoTags={storePromoTags} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
-          <p
-            ref={ref => (this.deliveryFeeEl = ref)}
-            className="ordering-home__delivery-fee padding-small text-center sticky-wrapper"
-            style={{
-              top: `${(this.headerEl ? this.headerEl.clientHeight : 0) +
-                (this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight : 0)}px`,
-            }}
-          >
-            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+          <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+            <p
+              ref={ref => (this.deliveryFeeEl = ref)}
+              className="ordering-home__delivery-fee padding-small text-center sticky-wrapper"
+              style={{
+                top: `${(this.headerEl ? this.headerEl.clientHeight : 0) +
+                  (this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight : 0)}px`,
+              }}
+            >
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
-            </Trans>
-          </p>
+            </p>
+          </Trans>
         ) : null}
+
         <div
           className="ordering-home__container flex flex-top sticky-wrapper"
           style={{
@@ -894,7 +915,7 @@ export class Home extends Component {
               this.cleverTapTrack('Menu Page - Click category');
             }}
           />
-          <ProductList
+          <CategoryProductList
             style={{
               paddingBottom:
                 Utils.isSafari && Utils.getUserAgentInfo().isMobile
@@ -906,49 +927,63 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
-            onClickProductItem={({ product = {} }) => {
-              this.cleverTapTrack('Menu Page - Click product', this.formatCleverTapAttributes(product));
+            onProductClick={({ product = {}, categoryInfo = {} }) => {
+              this.cleverTapTrack('Menu Page - Click product', {
+                'category name': categoryInfo.name,
+                'category rank': categoryInfo.index + 1,
+                'product name': product.title,
+                'product rank': allProductsKeys.indexOf(product.id) + 1,
+                'product image url': product.images?.length > 0 ? product.images[0] : '',
+                amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+                discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+                'is bestsellar': product.isFeaturedProduct,
+                'has picture': product.images?.length > 0,
+              });
             }}
-            onProductDetailShown={({ product = {} }) => {
-              this.cleverTapTrack('Menu Page - View products', this.formatCleverTapAttributes(product));
+            onProductView={({ product = {}, categoryInfo = {} }) => {
+              this.cleverTapTrack('Menu Page - View products', {
+                'category name': categoryInfo.name,
+                'category rank': categoryInfo.index + 1,
+                'product name': product.title,
+                'product rank': allProductsKeys.indexOf(product.id) + 1,
+                'product image url': product.images?.length > 0 ? product.images[0] : '',
+                amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+                discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+                'is bestsellar': product.isFeaturedProduct,
+                'has picture': product.images?.length > 0,
+              });
             }}
           />
         </div>
-        <CartListDrawer
+        <CartListAside
           footerEl={this.footerEl}
           viewAside={viewAside}
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
-          onClearCart={() => {
+          clearAllInCartListAside={() => {
             this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
           }}
-          onIncreaseCartItem={(product = {}) => {
-            this.cleverTapTrack(
-              'Menu Page - Cart Preview - Increase quantity',
-              this.formatCleverTapAttributes(product)
-            );
+          onIncreaseInCartListAside={(product = {}) => {
+            this.cleverTapTrackForCart('Menu Page - Cart Preview - Increase quantity', product);
           }}
-          onDecreaseCartItem={(product = {}) => {
-            this.cleverTapTrack(
-              'Menu Page - Cart Preview - Decrease quantity',
-              this.formatCleverTapAttributes(product)
-            );
+          onDecreaseInCartListAside={(product = {}) => {
+            this.cleverTapTrackForCart('Menu Page - Cart Preview - Decrease quantity', product);
           }}
         />
-        <ProductDetailDrawer
+        <ProductDetail
           footerEl={this.footerEl}
           onlineStoreInfo={onlineStoreInfo}
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
-          onIncreaseProductDetailItem={(product = {}) => {
-            this.cleverTapTrack('Product details - Increase quantity', this.formatCleverTapAttributes(product));
+          increaseInProductDetail={(product = {}) => {
+            this.cleverTapTrackForCart('Product details - Increase quantity', product);
           }}
-          onDncreaseProductDetailItem={(product = {}) => {
-            this.cleverTapTrack('Product details - Decrease quantity', this.formatCleverTapAttributes(product));
+          decreaseInProductDetail={(product = {}) => {
+            this.cleverTapTrackForCart('Product details - Decrease quantity', product);
           }}
-          onUpdateCartOnProductDetail={(product = {}) => {
-            this.cleverTapTrack('Menu Page - Add to Cart', this.formatCleverTapAttributes(product));
+          onAddToCartClick={({ product = {} }) => {
+            this.cleverTapTrackForCart('Menu Page - Add to Cart', product);
           }}
         />
         {this.isRenderDetailModal(validTimeFrom, validTimeTo, callApiFinish) && (
@@ -986,11 +1021,11 @@ export class Home extends Component {
           footerRef={ref => (this.footerEl = ref)}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
-          onShownCartListDrawer={() => {
+          onClickCart={() => {
             this.cleverTapTrack('Menu Page - Click cart');
             this.handleToggleAside(Constants.ASIDE_NAMES.CART);
           }}
-          onClickOrderNowButton={() => {
+          onClickOrderNow={() => {
             this.cleverTapTrack('Menu Page - Click order now');
           }}
           isValidTimeToOrder={this.isValidTimeToOrder()}
@@ -1019,15 +1054,17 @@ export default compose(
         categories: getCategoryProductList(state),
         businessLoaded: getBusinessIsLoaded(state),
         popUpModal: getPopUpModal(state),
-        cartBilling: getCartBilling(state),
+        cartSummary: getCartSummary(state),
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        allProductsKeys: getAllProductsKeys(state),
         store: getStore(state),
       };
     },
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      cartActions: bindActionCreators(cartActionCreators, dispatch),
       storesActions: bindActionCreators(storesActionCreators, dispatch),
       appActions: bindActionCreators(appActionsCreators, dispatch),
     })

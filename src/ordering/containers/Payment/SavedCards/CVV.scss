@@ -1,0 +1,68 @@
+@import "../../../../Variables.scss";
+
+//  Overwrite adyen component style
+#adyen-cvv .adyen-checkout__field {
+  &--cardNumber,
+  &--expiryDate {
+    display: none;
+  }
+
+  &--securityCode {
+    width: 100%;
+    margin-left: 0;
+
+    .adyen-checkout__label__text {
+      display: none;
+    }
+
+    .adyen-checkout__input {
+      border: 1px solid $gray-4;
+      border-radius: 4px;
+    }
+
+    .adyen-checkout__input.adyen-checkout__input--error {
+      border-color: $status-red;
+    }
+  }
+
+  &-wrapper > &:nth-child(2) {
+    margin-left: 0;
+  }
+
+  .adyen-checkout__card__cvc__input {
+    height: 56px;
+    padding-left: 3.8vw;
+  }
+
+  .adyen-checkout__card__cvc__hint__wrapper {
+    margin-right: 3.8vw;
+  }
+}
+
+.adyen-checkout__spinner {
+  border-color: $status-orange;
+  border-top-color: transparent;
+}
+
+.adyen-checkout__error-text {
+  color: $status-red;
+  font-size: 1rem;
+}
+
+.stripe-cvc-input-wrapper {
+  border: 1px solid $gray-4;
+  padding: 0 16px;
+  position: relative;
+  border-radius: 4px;
+
+  .stripe-cvc-card-image {
+    position: absolute;
+    right: 12px;
+    top: 0;
+    width: 34px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

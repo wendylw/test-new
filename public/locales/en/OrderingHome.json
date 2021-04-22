@@ -21,6 +21,7 @@
   "Selected": "{{quantity}} Selected",
   "AddCart": "add to cart",
   "Unavailable": "Unavailable",
+  "Processing": "Processing",
   "ProductsPromotionDescription": "Get <1>{{discountPercentage}}<1/> OFF for {{discountProductList}} with <2>{{promoCode}}<2/>. Promo Code is valid till {{validDate}}",
   "StorePromotionDescription": "Get <1>{{discountPercentage}}<1/> OFF with <2>{{promoCode}}<2/>. Promo Code is valid till {{validDate}}",
   "UniversalPromotionDescription": "<1>{{discountPercentage}}<1/> OFF with promo code <2>{{promoCode}}<2/><3/>(capped at {{cappedValue}} with min. spend {{consumptionAmount}})",

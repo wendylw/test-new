@@ -203,13 +203,6 @@ img {
     -webkit-flex-shrink: 0;
     flex-shrink: 0;
   }
-
-  &__fluid-content {
-    -webkit-box-flex: 1;
-    -ms-flex: 1;
-    -webkit-flex: 1;
-    flex: 1;
-  }
 }
 
 .flex-middle {
@@ -228,12 +221,6 @@ img {
   -ms-flex-align: end;
   -webkit-align-items: flex-end;
   align-items: flex-end;
-}
-
-.flex-stretch {
-  -ms-flex-align: stretch;
-  -webkit-align-items: stretch;
-  align-items: stretch;
 }
 
 .flex-center {

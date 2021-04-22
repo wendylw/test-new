@@ -8,7 +8,7 @@ export const gtmEventTracking = (eventName, data, callback) => {
       return window.dataLayer.push({
         ...data,
         event: eventName,
-        eventCallback: id => (id === process.env.REACT_APP_GOOGLE_TAG_MANAGER_ID ? callback() : null),
+        eventCallback: callback,
         eventTimeout: 2000,
       });
     } else {

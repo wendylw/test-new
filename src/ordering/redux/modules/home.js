@@ -1,17 +1,21 @@
 import { createSelector } from 'reselect';
 import Url from '../../../utils/url';
+import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
+import * as VoucherUtils from '../../../voucher/utils';
 import * as StoreUtils from '../../../utils/store-utils';
 import { combineReducers } from 'redux';
+// import { computeDeliveryDistance } from '../../containers/Location/utils';
+import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
-import { getAllProducts, getProductById } from '../../../redux/modules/entities/products';
+import { getAllProducts } from '../../../redux/modules/entities/products';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
-import { getBusiness, getBusinessUTCOffset, getCartItemList, fetchShoppingCart } from './app';
+import { getBusiness, getBusinessUTCOffset } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList } from '../../../redux/modules/entities/stores';
-import { APP_TYPES } from '../types';
+// import { getBusinessInfo } from './cart';
 
 export const initialState = {
   domProperties: {
@@ -20,6 +24,16 @@ export const initialState = {
       ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
         ? document.body.clientWidth || window.innerWidth
         : 414) * 0.26,
+  },
+  currentProduct: {
+    id: '',
+    cartId: '',
+    isFetching: false,
+  },
+  shoppingCart: {
+    isFetching: false,
+    itemIds: [],
+    unavailableItemIds: [],
   },
   onlineCategory: {
     isFetching: false,
@@ -35,69 +49,19 @@ export const initialState = {
     isFetching: false,
     storeHashCode: '',
   },
-  selectedProduct: {
-    id: '',
-    cartId: '',
-    isFetching: false,
-    status: 'fulfilled',
-  },
 };
 
-const types = {
-  // fetch shoppingCart
-  // FETCH_SHOPPINGCART_REQUEST: 'ORDERING/HOME/FETCH_SHOPPINGCART_REQUEST',
-  // FETCH_SHOPPINGCART_SUCCESS: 'ORDERING/HOME/FETCH_SHOPPINGCART_SUCCESS',
-  // FETCH_SHOPPINGCART_FAILURE: 'ORDERING/HOME/FETCH_SHOPPINGCART_FAILURE',
+export const types = HOME_TYPES;
 
-  // fetch onlineCategory
-  FETCH_ONLINECATEGORY_REQUEST: 'ORDERING/HOME/FETCH_ONLINECATEGORY_REQUEST',
-  FETCH_ONLINECATEGORY_SUCCESS: 'ORDERING/HOME/FETCH_ONLINECATEGORY_SUCCESS',
-  FETCH_ONLINECATEGORY_FAILURE: 'ORDERING/HOME/FETCH_ONLINECATEGORY_FAILURE',
-
-  // mutable addOrUpdateShoppingCartItem
-  ADDORUPDATE_SHOPPINGCARTITEM_REQUEST: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_REQUEST',
-  ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS',
-  ADDORUPDATE_SHOPPINGCARTITEM_FAILURE: 'ORDERING/HOME/ADDORUPDATE_SHOPPINGCARTITEM_FAILURE',
-
-  // - or + on home page product item
-  DECREASE_PRODUCT_IN_CART: 'ORDERING/HOME/DECREASE_PRODUCT_IN_CART',
-  INCREASE_PRODUCT_IN_CART: 'ORDERING/HOME/INCREASE_PRODUCT_IN_CART',
-
-  SET_MENU_LAYOUT_TYPE: 'ORDERING/HOME/SET_MENU_TYPE',
-
-  SET_PRE_ORDER_MODAL_CONFIRM: 'ORDERING/HOME/SET_PRE_ORDER_MODAL_CONFIRM',
-
-  // time slot
-  FETCH_TIMESLOT_REQUEST: 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST',
-  FETCH_TIMESLOT_SUCCESS: 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS',
-  FETCH_TIMESLOT_FAILURE: 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE',
-
-  // core stores
-  FETCH_CORESTORES_REQUEST: 'STORES/HOME/FETCH_CORESTORES_REQUEST',
-  FETCH_CORESTORES_SUCCESS: 'STORES/HOME/FETCH_CORESTORES_SUCCESS',
-  FETCH_CORESTORES_FAILURE: 'STORES/HOME/FETCH_CORESTORES_FAILURE',
-
-  // store hash code
-  FETCH_STORE_HASHCODE_REQUEST: 'STORES/HOME/FETCH_STORE_HASHCODE_REQUEST',
-  FETCH_STORE_HASHCODE_SUCCESS: 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS',
-  FETCH_STORE_HASHCODE_FAILURE: 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE',
-};
-
-const fetchOnlineCategory = variables => {
-  const endpoint = Url.apiGql('OnlineCategory');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ONLINECATEGORY_REQUEST,
-        types.FETCH_ONLINECATEGORY_SUCCESS,
-        types.FETCH_ONLINECATEGORY_FAILURE,
-      ],
-      endpoint,
-      variables,
-    },
-  };
-};
-
+types.FETCH_TIMESLOT_REQUEST = 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST';
+types.FETCH_TIMESLOT_SUCCESS = 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS';
+types.FETCH_TIMESLOT_FAILURE = 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE';
+types.FETCH_CORESTORES_REQUEST = 'STORES/HOME/FETCH_CORESTORES_REQUEST';
+types.FETCH_CORESTORES_SUCCESS = 'STORES/HOME/FETCH_CORESTORES_SUCCESS';
+types.FETCH_CORESTORES_FAILURE = 'STORES/HOME/FETCH_CORESTORES_FAILURE';
+types.FETCH_STORE_HASHCODE_REQUEST = 'STORES/HOME/FETCH_STORE_HASHCODE_REQUEST';
+types.FETCH_STORE_HASHCODE_SUCCESS = 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS';
+types.FETCH_STORE_HASHCODE_FAILURE = 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE';
 // actions
 export const actions = {
   // load product list group by category, and shopping cart
@@ -140,6 +104,94 @@ export const actions = {
     },
   }),
 
+  // load shopping cart
+  loadShoppingCart: location => async (dispatch, getState) => {
+    const isDelivery = Utils.isDeliveryType();
+    const isDigital = Utils.isDigitalType();
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
+    if (isDigital) {
+      await dispatch(generatorShoppingCartForVoucherOrdering());
+      return;
+    }
+
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
+    }
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords, fulfillDate));
+  },
+
+  removeShoppingCartItem: variables => dispatch => {
+    return dispatch(removeShoppingCartItem(variables));
+  },
+
+  addOrUpdateShoppingCartItem: variables => dispatch => {
+    return dispatch(addOrUpdateShoppingCartItem(variables));
+  },
+
+  // decrease clicked on product item
+  decreaseProductInCart: (shoppingCart, prod) => (dispatch, getState) => {
+    const cartItem = (shoppingCart.items || []).find(
+      item => item.productId === prod.id || item.parentProductId === prod.id
+    );
+
+    if (prod.cartQuantity === 1) {
+      return dispatch(
+        removeShoppingCartItem({
+          productId: cartItem.productId,
+          variations: cartItem.variations,
+        })
+      );
+    }
+    return dispatch(
+      addOrUpdateShoppingCartItem({
+        action: 'edit',
+        business: getBusiness(getState()),
+        productId: cartItem.productId,
+        quantity: prod.cartQuantity - 1,
+        variations: cartItem.variations || [],
+      })
+    );
+  },
+
+  // increase clicked on product item
+  increaseProductInCart: prod => (dispatch, getState) => {
+    const cartItem = (prod.cartItems || []).find(
+      item => item.productId === prod.id || item.parentProductId === prod.id
+    );
+
+    if (prod.variations && prod.variations.length && getState().home.currentProduct.id === prod.id) {
+      return;
+    }
+
+    if (prod.variations && prod.variations.length) {
+      const businessUTCOffset = getBusinessUTCOffset(getState());
+      const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+      return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
+    }
+
+    return dispatch(
+      addOrUpdateShoppingCartItem({
+        action: 'edit',
+        business: getBusiness(getState()),
+        productId: prod.id,
+        quantity: prod.cartQuantity + 1,
+        variations: prod.hasSingleChoice && prod.cartItems.length === 1 ? cartItem.variations : [],
+      })
+    );
+  },
+
+  loadProductDetail: prod => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
+  },
+
   userConfirmPreOrder: () => ({
     type: types.SET_PRE_ORDER_MODAL_CONFIRM,
   }),
@@ -154,9 +206,133 @@ export const actions = {
   },
 };
 
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
+  return {
+    [API_REQUEST]: {
+      types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
+      //...Url.API_URLS.GET_CART,
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
+    },
+  };
+};
+
+// generator a virtual shopping cart for Customer place a Voucher Order
+export const generatorShoppingCartForVoucherOrdering = () => {
+  const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
+  const shoppingCart = VoucherUtils.generatorVirtualShoppingCart(orderingInfo.selectedVoucher);
+
+  return {
+    type: types.FETCH_SHOPPINGCART_SUCCESS,
+    response: shoppingCart,
+  };
+};
+
+export const fetchOnlineCategory = variables => {
+  const endpoint = Url.apiGql('OnlineCategory');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.FETCH_ONLINECATEGORY_REQUEST,
+        types.FETCH_ONLINECATEGORY_SUCCESS,
+        types.FETCH_ONLINECATEGORY_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
+// variables := { productId, variations }
+export const removeShoppingCartItem = variables => {
+  const endpoint = Url.apiGql('RemoveShoppingCartItem');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.REMOVE_SHOPPINGCARTITEM_REQUEST,
+        types.REMOVE_SHOPPINGCARTITEM_SUCCESS,
+        types.REMOVE_SHOPPINGCARTITEM_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
+
+export const addOrUpdateShoppingCartItem = variables => {
+  const endpoint = Url.apiGql('AddOrUpdateShoppingCartItem');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST,
+        types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS,
+        types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
+
+export const fetchProductDetail = variables => {
+  const endpoint = Url.apiGql('ProductDetail');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
+      endpoint,
+      variables: {
+        ...variables,
+      },
+    },
+  };
+};
+
 // reducers
 const domProperties = (state = initialState.domProperties, action) => {
   return state;
+};
+
+const currentProduct = (state = initialState.currentProduct, action) => {
+  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
+    return { ...state, isFetching: true };
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
+    const { product } = action.responseGql.data;
+
+    return {
+      ...state,
+      isFetching: false,
+      id: product.id,
+    };
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
+    return { ...state, isFetching: false };
+  }
+  return state;
+};
+
+const shoppingCart = (state = initialState.shoppingCart, action) => {
+  if (action.responseGql) {
+    const { emptyShoppingCart } = action.responseGql.data || {};
+    if (emptyShoppingCart && emptyShoppingCart.success) {
+      return { ...state, isFetching: false, itemIds: [], unavailableItemIds: [] };
+    }
+  }
+
+  switch (action.type) {
+    case types.FETCH_SHOPPINGCART_REQUEST:
+      return { ...state, isFetching: true };
+    case types.FETCH_SHOPPINGCART_SUCCESS: {
+      const { items, unavailableItems } = action.response || {};
+
+      return {
+        ...state,
+        isFetching: false,
+        itemIds: items.map(item => item.id),
+        unavailableItemIds: unavailableItems.map(item => item.id),
+      };
+    }
+    case types.FETCH_SHOPPINGCART_FAILURE:
+      return { ...state, isFetching: false };
+    default:
+      return state;
+  }
 };
 
 const onlineCategory = (state = initialState.onlineCategory, action) => {
@@ -224,32 +400,14 @@ const popUpModal = (state = initialState.popUpModal, action) => {
   return state;
 };
 
-const selectedProduct = (state = initialState.selectedProduct, action) => {
-  if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_REQUEST) {
-    return { ...state, isFetching: true, status: 'pending' };
-  } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_SUCCESS) {
-    const { product } = action.responseGql.data;
-
-    return {
-      ...state,
-      isFetching: false,
-      status: 'fulfilled',
-      id: product.id,
-    };
-  } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_FAILURE) {
-    return { ...state, isFetching: false, status: 'reject' };
-  }
-
-  return state;
-};
-
 export default combineReducers({
   domProperties,
+  currentProduct,
+  shoppingCart,
   onlineCategory,
   popUpModal,
   timeSlot,
   coreStore,
-  selectedProduct,
 });
 
 // selectors
@@ -261,9 +419,56 @@ export const getDeliveryInfo = state => {
   return Utils.getDeliveryInfo({ business, allBusinessInfo });
 };
 
+export const isFetched = state => state.home.shoppingCart.isFetched;
+
 export const getStoresList = state => getCoreStoreList(state);
 
 export const getStoreHashCode = state => state.home.coreStore.storeHashCode;
+
+export const getCartItemIds = state => state.home.shoppingCart.itemIds;
+
+export const getCartUnavailableItemIds = state => state.home.shoppingCart.unavailableItemIds;
+
+export const getShoppingCart = createSelector(
+  [getCartSummary, getCartItemIds, getCartUnavailableItemIds, getAllCartItems],
+  (summary, itemIds, unavailableItemIds, carts) => {
+    return {
+      summary,
+      items: itemIds.map(id => carts[id]),
+      unavailableItems: unavailableItemIds.map(id => carts[id]),
+    };
+  }
+);
+export const getCurrentProduct = state => state.home.currentProduct;
+
+// get cartItems of currentProduct
+export const getShoppingCartItemsByProducts = createSelector(
+  [getCartItemIds, getAllCartItems, getCurrentProduct],
+  (itemIds, carts, product) => {
+    const calcItems = itemIds
+      .map(id => carts[id])
+      .filter(x => x.productId === product.id || x.parentProductId === product.id);
+    const items = calcItems.map(x => {
+      return {
+        productId: x.productId,
+        variations: x.variations,
+      };
+    });
+    const count = calcItems.reduce((res, item) => {
+      res = res + item.quantity;
+      return res;
+    }, 0);
+
+    return {
+      items,
+      count,
+    };
+  }
+);
+
+export const getCartItemList = state => {
+  return state.home.shoppingCart.itemIds.map(id => getCartItemById(state, id));
+};
 
 export const getCategoryIds = state => state.home.onlineCategory.categoryIds;
 
@@ -318,22 +523,18 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 
 export const getCategoryProductList = createSelector(
   [getAllProducts, getAllCategories, getCartItemList],
-  (allProducts, categories, carts) => {
-    if (!allProducts || !categories || !Array.isArray(carts)) {
+  (products, categories, carts) => {
+    if (!products || !categories || !Array.isArray(carts)) {
       return [];
     }
 
     const newCategories = Object.values(categories)
-      .map((category, categoryId) => {
+      .map(category => {
         return {
           ...category,
-          products: category.products.map((id, index) => {
-            const product = JSON.parse(JSON.stringify(allProducts[id]));
-
+          products: category.products.map(id => {
+            const product = JSON.parse(JSON.stringify(products[id]));
             return {
-              categoryName: category.name,
-              categoryRank: categoryId + 1,
-              rank: index + 1,
               ...product,
             };
           }),
@@ -350,33 +551,3 @@ export const getProductItemMinHeight = state => state.home.domProperties.product
 export const getPopUpModal = state => state.home.popUpModal;
 
 export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;
-
-// This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
-export const getStoreInfoForCleverTap = state => {
-  const business = getBusiness(state);
-  const allBusinessInfo = getAllBusinesses(state);
-
-  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo });
-};
-
-export const getSelectedProductDetail = state => {
-  const { home, entities } = state;
-  const { selectedProduct } = home;
-  const { categories } = entities;
-  const categoriesKeys = Object.keys(categories) || [];
-  const selectedProductObject = getProductById(state, selectedProduct.id) || {};
-  let categoryName = '';
-  let categoryRank = '';
-
-  categoriesKeys.forEach((key, index) => {
-    if ((categories[key].products || []).find(productId => productId === selectedProductObject.id)) {
-      categoryName = categories[key].name;
-      categoryRank = index + 1;
-    }
-  });
-
-  return Object.assign({}, selectedProductObject, {
-    categoryName,
-    categoryRank,
-  });
-};

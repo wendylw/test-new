@@ -8,9 +8,9 @@ class Modal extends Component {
     show: typeof this.props.show === 'boolean' ? this.props.show : false,
   };
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.show !== this.props.show) {
-      this.setState({ show: this.props.show });
+  componentWillReceiveProps(nextProps) {
+    if (this.props.show !== nextProps.show) {
+      this.setState({ show: nextProps.show });
     }
   }
 

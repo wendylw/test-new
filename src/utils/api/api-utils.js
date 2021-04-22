@@ -4,39 +4,35 @@ export const API_INFO = {
   getStores: (businessName, storeId) => ({
     url: `/api/stores/${businessName}${storeId ? `/${storeId}` : ''}`,
   }),
-  getCartInventoryState: (cartItemIds, shippingType, fulfillDate) => ({
-    url: '/api/cart/checkInventory',
-    queryParams: {
-      /** fulfillDate must be a string */
-      fulfillDate,
-      cartItemIds,
-      shippingType,
-    },
-  }),
-  getOrderStatus: orderId => ({
-    url: `/api/transactions/${orderId}/status`,
-  }),
 };
 
-export function getClientSource() {
-  const isIOS = Boolean(
-    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
-  );
-  const isAndroid = Boolean(window.androidInterface);
-  const source = {
-    name: 'web',
-    web: !isIOS && !isAndroid,
-    ios: isIOS,
-    android: isAndroid,
-  };
-
-  if (isIOS) {
-    source.name = 'iOS';
+export function isHttpSuccess(status) {
+  if (status < 400) {
+    return true;
   }
 
-  if (isAndroid) {
-    source.name = 'Android';
+  return false;
+}
+
+export function assembleUrl(url, queryParams) {
+  let result = url;
+
+  try {
+    if (queryParams && _isObject(queryParams)) {
+      let query = Object.keys(queryParams)
+        .filter(key => queryParams[key])
+        .map(key => `${key}=${queryParams[key]}`)
+        .join('&');
+
+      result = `${url}?${query}`;
+    }
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      /* eslint-disable */
+      console.error(`url: '${url}'`, e);
+      /* eslint-enable */
+    }
   }
 
-  return source;
+  return result;
 }

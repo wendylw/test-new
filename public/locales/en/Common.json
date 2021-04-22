@@ -4,12 +4,10 @@
   "OK": "OK",
   "Open": "Open",
   "Close": "Close",
-  "Remove": "Remove",
   "PreOrder": "Pre-Order",
   "Continue": "Continue",
   "Edit": "Edit",
   "Sorry": "Sorry",
-  "Processing": "Processing",
   "BackToHome": "Back to home",
   "Save": "Save",
   "Free": "Free",
@@ -104,7 +102,7 @@
   "AddNoteToDriverOrMerchantPlaceholderExample": "e.g. meet at lobby (optional)",
   "AddAddressDetailsPlaceholder": "House/floor/unit no.",
   "DeliveryFee": "Delivery Fee",
-  "FreeDeliveryPrompt": "Free Delivery with <1></1> & above",
+  "FreeDeliveryPrompt": "<0>Free Delivery with <1>{{freeShippingMinAmount}}</1> & above</0>",
   "SearchRestaurantPlaceholder": "Search for restaurant, dishes, cuisines",
   "NearbyRestaurants": "Restaurants Delivering Nearby",
   "DistanceText": "{{distance}} km",
@@ -191,6 +189,5 @@
   "ReportIssue": "Report Issue",
   "NeedHelp": "Need Help",
   "CommonErrorMessage": "Whoops, this page isn't available",
-  "ErrorId": "Error ID: {{ id }}",
-  "LowStockProductQuantity": "only {{quantityOnHand}} left"
+  "ErrorId": "Error ID: {{ id }}"
 }

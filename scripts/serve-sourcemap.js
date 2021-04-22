@@ -4,9 +4,6 @@
  *
  * Usage:
  *  > yarn serve:sourcemap --bucket beep-v2-web [--region ap-southeast-1 --port 8080 --proxy http://localhost:7890]
- * 
- * bucket possible values:
- * beep-v2-pro / beep-v2-staging / beep-v2-alpha / beep-v2-web
  *
  * @string bucket (required)
  * @string region (optional, default: '')

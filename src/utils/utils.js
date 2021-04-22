@@ -51,6 +51,10 @@ Utils.getQueryVariable = variable => {
   return false;
 };
 
+// Utils.isWebview = function isWebview() {
+//   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
+// };
+
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;
   return function newFn(...args) {
@@ -154,9 +158,9 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
 };
 
 Utils.isProductSoldOut = product => {
-  const { stockStatus, variations } = product;
+  const { markedSoldOut, variations } = product;
 
-  if (stockStatus === 'outOfStock') {
+  if (markedSoldOut) {
     return true;
   }
 
