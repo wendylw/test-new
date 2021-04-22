@@ -4,7 +4,9 @@ import _filter from 'lodash/filter';
 import { IconLocalOffer } from '../../../../components/Icons';
 import { withTranslation, Trans } from 'react-i18next';
 import CurrencyNumber from '../../../components/CurrencyNumber';
+import Constants from '../../../../utils/constants';
 
+const { PROMOTIONS_TYPES } = Constants;
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
 const SHIPPING_TYPES_MAPPING = {
   pickup: 5,
@@ -51,7 +53,7 @@ class PromotionsBar extends Component {
     }
 
     switch (discountType) {
-      case 'freeShipping':
+      case PROMOTIONS_TYPES.FREE_SHIPPING:
         return (
           <Trans
             i18nKey="FreeDeliveryPromotionDescription"
@@ -62,14 +64,14 @@ class PromotionsBar extends Component {
             <strong>{promotionCode}</strong>
           </Trans>
         );
-      case 'absolute':
+      case PROMOTIONS_TYPES.TAKE_AMOUNT_OFF:
         return (
           <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
             <CurrencyNumber className="text-weight-bolder" money={discountValue} /> OFF with promo code{' '}
             <strong>{promotionCode}</strong>
           </Trans>
         );
-      case 'percentage':
+      case PROMOTIONS_TYPES.PERCENTAGE:
         return (
           <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
             <span className="text-weight-bolder">{discountValue}%</span> OFF with promo code{' '}
