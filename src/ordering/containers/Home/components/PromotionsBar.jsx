@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import _filter from 'lodash/filter';
 import { IconLocalOffer } from '../../../../components/Icons';
 import { withTranslation, Trans } from 'react-i18next';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
@@ -12,7 +10,7 @@ const SHIPPING_TYPES_MAPPING = {
   pickup: 5,
   delivery: 6,
   takeaway: 7,
-  'dine-in': 8,
+  dineIn: 8,
 };
 
 class PromotionsBar extends Component {
@@ -20,38 +18,75 @@ class PromotionsBar extends Component {
     return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app';
   }
 
-  renderPromotionText(discountType, discountValue, promotionCode) {
+  renderPromotionText(promotion) {
     const { t } = this.props;
-    let discountValueEl = <span className="text-weight-bolder">{discountValue}</span>;
+    const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
+    const discountProducts = (discountProductList || []).join(', ');
 
-    if (discountType === 'freeShipping') {
+    if (discountProductList && validDate) {
       return (
         <Trans
-          i18nKey="FreeDeliveryPromotionDescription"
-          freeDelivery={t('FreeDelivery')}
+          i18nKey="ProductsPromotionDescription"
+          discountValue={discountValue}
+          discountProducts={discountProducts}
           promotionCode={promotionCode}
+          validDate={validDate}
         >
-          <span className="text-weight-bolder">{t('FreeDelivery')}</span> with promo code{' '}
-          <strong>{promotionCode}</strong>
+          Get <strong>{discountValue}</strong> OFF for {discountProducts} with <strong>{promotionCode}</strong>. Promo
+          Code is valid till {validDate}
+        </Trans>
+      );
+    } else if (discountProductList || validDate) {
+      return (
+        <Trans
+          i18nKey="StorePromotionDescription"
+          discountValue={discountValue}
+          promotionCode={promotionCode}
+          validDate={validDate}
+        >
+          Get <strong>{discountValue}</strong> OFF with <strong>{promotionCode}</strong>. Promo Code is valid till{' '}
+          {validDate}
         </Trans>
       );
     }
 
-    if (discountType === 'absolute') {
-      discountValueEl = <CurrencyNumber className="text-weight-bolder" money={discountValue} />;
-    } else if (discountType === 'percentage') {
-      discountValueEl = <span className="text-weight-bolder">{discountValue}%</span>;
+    switch (discountType) {
+      case 'freeShipping':
+        return (
+          <Trans
+            i18nKey="FreeDeliveryPromotionDescription"
+            freeDelivery={t('FreeDelivery')}
+            promotionCode={promotionCode}
+          >
+            <span className="text-weight-bolder">{t('FreeDelivery')}</span> with promo code{' '}
+            <strong>{promotionCode}</strong>
+          </Trans>
+        );
+      case 'absolute':
+        return (
+          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
+            <CurrencyNumber className="text-weight-bolder" money={discountValue} /> OFF with promo code{' '}
+            <strong>{promotionCode}</strong>
+          </Trans>
+        );
+      case 'percentage':
+        return (
+          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
+            <span className="text-weight-bolder">{discountValue}%</span> OFF with promo code{' '}
+            <strong>{promotionCode}</strong>
+          </Trans>
+        );
+      default:
+        return (
+          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
+            <span className="text-weight-bolder">{discountValue}</span> OFF with promo code{' '}
+            <strong>{promotionCode}</strong>
+          </Trans>
+        );
     }
-
-    return (
-      <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
-        {discountValueEl} OFF with promo code <strong>{promotionCode}</strong>
-      </Trans>
-    );
   }
 
   renderPromotionPromptText(promotion) {
-    const { t } = this.props;
     const { appliedClientTypes, maxDiscountAmount, minOrderAmountCondition } = promotion;
     const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
     const minOrderAmountConditionEl = <CurrencyNumber money={minOrderAmountCondition || 0} />;
@@ -121,49 +156,19 @@ class PromotionsBar extends Component {
     return (
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
         {promotions.map((promo, index) => {
-          const { discountType, discountValue, appliedSources, discountProductList, promotionCode, validDate } = promo;
-          const discountProducts = (discountProductList || []).join(', ');
-          const productsPromotionDescription = (
-            <Trans
-              i18nKey="ProductsPromotionDescription"
-              discountValue={discountValue}
-              discountProducts={discountProducts}
-              promotionCode={promotionCode}
-              validDate={validDate}
-            >
-              Get <strong>{discountValue}</strong> OFF for {discountProducts} with <strong>{promotionCode}</strong>.
-              Promo Code is valid till {validDate}
-            </Trans>
-          );
-          const storePromotionDescription = (
-            <Trans
-              i18nKey="StorePromotionDescription"
-              discountValue={discountValue}
-              promotionCode={promotionCode}
-              validDate={validDate}
-            >
-              Get <strong>{discountValue}</strong> OFF with <strong>{promotionCode}</strong>. Promo Code is valid till{' '}
-              {validDate}
-            </Trans>
-          );
-          let description = this.renderPromotionText(discountType, discountValue, promotionCode);
-          let prompt = null;
-
-          if (discountProductList && validDate) {
-            description = productsPromotionDescription;
-          } else if (discountProductList || validDate) {
-            description = storePromotionDescription;
-          } else {
-            prompt = (
-              <>
-                <br /> ({this.renderPromotionPromptText(promo)})
-              </>
-            );
-          }
+          const { appliedSources, discountProductList, promotionCode, validDate } = promo;
 
           if (shippingType && !appliedSources.find(source => SHIPPING_TYPES_MAPPING[shippingType] === source)) {
             return null;
           }
+
+          const description = this.renderPromotionText(promo);
+          const prompt =
+            discountProductList || validDate ? null : (
+              <>
+                <br /> ({this.renderPromotionPromptText(promo)})
+              </>
+            );
 
           return (
             <li key={`promo-${promotionCode}-${index}`} className="flex flex-top padding-small">
@@ -190,10 +195,4 @@ PromotionsBar.defaultProps = {
   promotions: [],
 };
 
-export default compose(
-  withTranslation(['OrderingHome']),
-  connect(
-    state => {},
-    dispatch => ({})
-  )
-)(PromotionsBar);
+export default withTranslation('OrderingHome')(PromotionsBar);
