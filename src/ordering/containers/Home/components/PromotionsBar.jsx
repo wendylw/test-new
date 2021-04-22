@@ -188,7 +188,12 @@ class PromotionsBar extends Component {
 }
 
 PromotionsBar.propTypes = {
-  promotionRef: PropTypes.any,
+  promotionRef: PropTypes.oneOfType([
+    // Either a function
+    PropTypes.func,
+    // Or the instance of a DOM native element (see the note about SSR)
+    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+  ]),
   promotions: PropTypes.array,
   shippingType: PropTypes.string,
 };
