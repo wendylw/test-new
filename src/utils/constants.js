@@ -280,13 +280,6 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
     showModal: true,
   },
-  40024: {
-    title: 'ApiError:40024Title',
-    desc: 'ApiError:40024Description',
-    redirectUrl: '',
-    buttonText: 'Common:Continue',
-    showModal: true,
-  },
   40025: {
     title: 'ApiError:40025Title',
     desc: 'ApiError:40025Description',
