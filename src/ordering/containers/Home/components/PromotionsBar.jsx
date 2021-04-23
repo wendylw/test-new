@@ -89,12 +89,12 @@ class PromotionsBar extends Component {
   }
 
   renderPromotionPromptText(promotion) {
-    const { appliedClientTypes, maxDiscountAmount, minOrderAmountCondition } = promotion;
+    const { appliedClientTypes, maxDiscountAmount, minOrderAmount } = promotion;
     const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
-    const minOrderAmountConditionEl = <CurrencyNumber money={minOrderAmountCondition || 0} />;
+    const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
     const onlyInApp = this.getPromotionOnlyInAppState(appliedClientTypes);
 
-    if (!maxDiscountAmount && !minOrderAmountCondition) {
+    if (!maxDiscountAmount && !minOrderAmount) {
       return onlyInApp ? (
         <Trans i18nKey="OnlyInBeepAppPrompt">
           <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
@@ -105,21 +105,21 @@ class PromotionsBar extends Component {
       ) : null;
     }
 
-    if (!maxDiscountAmount && minOrderAmountCondition) {
+    if (!maxDiscountAmount && minOrderAmount) {
       return onlyInApp ? (
         <Trans i18nKey="PromotionOnlyMinOrderAmountOnlyInAppPrompt">
-          min. spend {minOrderAmountConditionEl},{' '}
+          min. spend {minOrderAmountEl},{' '}
           <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
             Beep app
           </a>{' '}
           only
         </Trans>
       ) : (
-        <Trans i18nKey="PromotionOnlyMinOrderAmountPrompt">min. spend {minOrderAmountConditionEl}</Trans>
+        <Trans i18nKey="PromotionOnlyMinOrderAmountPrompt">min. spend {minOrderAmountEl}</Trans>
       );
     }
 
-    if (maxDiscountAmount && !minOrderAmountCondition) {
+    if (maxDiscountAmount && !minOrderAmount) {
       return onlyInApp ? (
         <Trans i18nKey="PromotionOnlyMaxDiscountAmountOnlyInAppPrompt">
           capped at {maxDiscountAmountEl},{' '}
@@ -135,7 +135,7 @@ class PromotionsBar extends Component {
 
     return onlyInApp ? (
       <Trans i18nKey="PromotionOnlyInAppPrompt">
-        capped at {maxDiscountAmountEl} with min. spend {minOrderAmountConditionEl},{' '}
+        capped at {maxDiscountAmountEl} with min. spend {minOrderAmountEl},{' '}
         <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
           Beep app
         </a>{' '}
@@ -143,7 +143,7 @@ class PromotionsBar extends Component {
       </Trans>
     ) : (
       <Trans i18nKey="PromotionPrompt">
-        capped at {maxDiscountAmountEl} with min. spend {minOrderAmountConditionEl}
+        capped at {maxDiscountAmountEl} with min. spend {minOrderAmountEl}
       </Trans>
     );
   }
