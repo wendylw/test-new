@@ -150,7 +150,11 @@ class LiveChat extends Component {
   };
 
   handleBtnClicked = () => {
-    const { waitingZendeskScript } = this.state;
+    const { onClickLiveChat, waitingZendeskScript } = this.state;
+
+    if (onClickLiveChat) {
+      onClickLiveChat();
+    }
 
     if (!waitingZendeskScript) {
       window.zE('webWidget', 'toggle');
@@ -161,7 +165,7 @@ class LiveChat extends Component {
   };
 
   render() {
-    const { t, onClickLiveChat } = this.props;
+    const { t } = this.props;
     const { waitingZendeskScript } = this.state;
 
     return (
@@ -169,12 +173,7 @@ class LiveChat extends Component {
         className={`button live-chat flex flex-middle flex__shrink-fixed padding-left-right-small padding-top-bottom-normal ${
           waitingZendeskScript ? 'text-opacity' : ''
         }`}
-        onClick={() => {
-          if (onClickLiveChat) {
-            onClickLiveChat();
-          }
-          this.handleBtnClicked();
-        }}
+        onClick={this.handleBtnClicked}
       >
         {waitingZendeskScript && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
         <div className="live-chat__loading-text margin-left-right-smaller">{`${t('NeedHelp')}?`}</div>
