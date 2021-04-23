@@ -105,9 +105,9 @@ export class Footer extends Component {
   postAppMessage2 = () => {
     const { appActions, user } = this.props;
     const { isLogin } = user || {};
-    dsbridge.call('callNativeAsync', { function: 'user_module_get_token' }, async res => {
+    dsbridge.call('callNativeAsync', { function: 'userModule-getToken' }, async res => {
       console.log('res', JSON.stringify(res));
-      const { code, message, data } = JSON.parse(res);
+      const { code, data } = JSON.parse(res);
       const { access_token, refresh_token } = data;
       if (!isLogin) {
         await appActions.loginApp({

@@ -191,7 +191,7 @@ class Payment extends Component {
     const paymentData = this.getPaymentEntryRequestData();
 
     return (
-      <section className={className.join(' ')} data-heap-name="ordering.payment.container">
+      <section className="ordering-payment flex flex-column" data-heap-name="ordering.payment.container">
         <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"

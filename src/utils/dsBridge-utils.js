@@ -1,4 +1,5 @@
 import dsBridge from 'dsbridge';
+import DsbridgeUtils, { NATIVE_METHODS } from './dsbridge-methods';
 import Utils from './utils';
 import _find from 'lodash/find';
 import _get from 'lodash/get';
@@ -6,45 +7,86 @@ import _isFunction from 'lodash/isFunction';
 
 // https://storehub.atlassian.net/wiki/spaces/TS/pages/1049886771/Specification+for+dsBridge+usage
 export const updateNativeHeader = ({ left, center, right } = {}) => {
-  dsBridge.call('native_layout.nativeJSConfigLayout', [
-    {
-      area: 'header',
-      data: {
-        left: left ? [left] : [],
-        center: center ? [center] : [],
-        right: right ? [right] : [],
-      },
-    },
-  ]);
+  let data = {
+    left: left ? [left] : [],
+    center: center ? [center] : [],
+    right: right ? [right] : [],
+  };
+  DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.NATIVE_LAYOUT('header', data));
+
+  // dsBridge.call('nativeLayoutModule-nativeJsConfigLayout', [
+  //   {
+  //     area: 'header',
+  //     data: {
+  //       left: left ? [left] : [],
+  //       center: center ? [center] : [],
+  //       right: right ? [right] : [],
+  //     },
+  //   },
+  // ]);
 };
 
 export const updateNativeHeaderToDefault = () => {
-  dsBridge.call('native_layout.nativeJSConfigLayout', [
-    {
-      area: 'header',
-      data: null,
-    },
-  ]);
+  DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.NATIVE_LAYOUT('header', null));
+  // dsBridge.call('nativeLayoutModule-nativeJsConfigLayout', [
+  //   {
+  //     area: 'header',
+  //     data: null,
+  //   },
+  // ]);
 };
 
-export const registerNativeHeaderEvents = events => {
-  dsBridge.register('native_layout', {
-    tag: 'native_layout',
-    jsNativeEventDispatch: function(jsonEncodeParams) {
-      const params = JSON.parse(jsonEncodeParams);
-      if (!params || params.area !== 'header') {
-        return;
-      }
-
-      const event = _find(events, { type: params.event, targetId: params.id });
-      const handler = _get(event, 'handler', null);
-
-      if (_isFunction(handler)) {
-        handler.call(null, params.data);
-      }
-    },
+export const registerFunc = data => {
+  dsBridge.register('callWebView', function(res) {
+    console.log('register res', JSON.stringify(res));
+    const { method, params } = JSON.parse(res);
+    dispatchNativeEvent(method, params, data);
   });
 };
+
+export const dispatchNativeEvent = (method, params, data) => {
+  console.log('dispatch params', method, params, data);
+  switch (method) {
+    case 'nativeLayoutModule_jsNativeEventDispatch':
+      this.registerNativeHeaderEvents(params, data);
+      break;
+    default:
+      return;
+  }
+};
+
+export const registerNativeHeaderEvents = (params, events) => {
+  // const params = JSON.parse(jsonEncodeParams);
+  if (!params || params.area !== 'header') {
+    return;
+  }
+
+  const event = _find(events, { type: params.event, targetId: params.id });
+  const handler = _get(event, 'handler', null);
+
+  if (_isFunction(handler)) {
+    handler.call(null, params.data);
+  }
+};
+
+// export const registerNativeHeaderEvents = events => {
+//   dsBridge.register('native_layout', {
+//     tag: 'native_layout',
+//     jsNativeEventDispatch: function(jsonEncodeParams) {
+//       const params = JSON.parse(jsonEncodeParams);
+//       if (!params || params.area !== 'header') {
+//         return;
+//       }
+
+//       const event = _find(events, { type: params.event, targetId: params.id });
+//       const handler = _get(event, 'handler', null);
+
+//       if (_isFunction(handler)) {
+//         handler.call(null, params.data);
+//       }
+//     },
+//   });
+// };
 
 // export const startLiveChat = ({ orderId, name, phone, email, storeName }) => {
 //   const message = `Order number: ${orderId}\nStore Name: ${storeName}`;

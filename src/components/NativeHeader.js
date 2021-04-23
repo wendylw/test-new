@@ -62,7 +62,7 @@ class NativeHeader extends Component {
   }
 
   registerEvents() {
-    dsBridgeUtils.registerNativeHeaderEvents([
+    dsBridgeUtils.registerFunc([
       {
         type: 'onClick',
         targetId: 'headerBackButton',

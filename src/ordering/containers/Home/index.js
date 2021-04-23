@@ -48,7 +48,7 @@ import { getAllProductsKeys } from '../../../redux/modules/entities/products';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
 import './OrderingHome.scss';
-import { gotoHome } from '../../../utils/webview-utils';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
 
 const localState = {
   blockScrollTop: 0,
@@ -852,7 +852,7 @@ export class Home extends Component {
                 return;
               }
 
-              gotoHome();
+              DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GOTO_HOME);
             }}
           />
         )}

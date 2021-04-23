@@ -1262,7 +1262,7 @@ export class ThankYou extends PureComponent {
           isPage={true}
           title={`#${orderId}`}
           navFunc={() => {
-            gotoHome();
+            DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GOTO_HOME);
           }}
           rightContent={rightContent}
         />

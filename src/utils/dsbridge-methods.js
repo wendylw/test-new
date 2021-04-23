@@ -4,8 +4,8 @@ import dsbridge from 'dsbridge';
 export const NATIVE_METHODS = {
   START_CHAT: (phone, name, email, message) => {
     return {
-      method: 'beep_module-start_chat',
-      data: {
+      method: 'beepModule-startChat',
+      params: {
         phoneNumber: phone,
         name,
         email,
@@ -15,37 +15,37 @@ export const NATIVE_METHODS = {
     };
   },
   GET_ADDRESS: {
-    method: 'beep_module-get_address',
+    method: 'beepModule-getAddress',
     call: 'sync',
   },
   GOTO_HOME: {
-    method: 'router_module-close_webview',
+    method: 'routerModule-closeWebview',
     call: 'sync',
   },
   GET_LOGIN_STATUS: {
-    method: 'user_module-is_login',
+    method: 'userModule-isLogin',
     call: 'sync',
   },
   GET_TOKEN: {
-    method: 'user_module-get_token',
+    method: 'userModule-getToken',
     call: 'async',
   },
   TOKEN_EXPIRED: {
-    method: 'user_module-token_expired',
+    method: 'userModule-tokenExpired',
     call: 'sync',
   },
   SHOW_MAP: {
-    method: 'map_module-show_map',
+    method: 'mapModule-showMap',
     call: 'sync',
   },
   HIDE_MAP: {
-    method: 'map_module-hide_map',
+    method: 'mapModule-hideMap',
     call: 'sync',
   },
   UPDATE_HEADER_OPTIONS_AND_SHOW_MAP: (title, text) => {
     return {
-      method: 'map_module-update_header_options_and_show_map',
-      data: {
+      method: 'mapModule-updateHeaderOptionsAndShowMap',
+      params: {
         title,
         rightButtons: [
           {
@@ -59,8 +59,8 @@ export const NATIVE_METHODS = {
   },
   UPDATE_RIDER_POSITION: (lat, lng) => {
     return {
-      method: 'map_module-update_rider_position',
-      data: {
+      method: 'mapModule-updateRiderPosition',
+      params: {
         lat: lat,
         lng: lng,
       },
@@ -69,8 +69,8 @@ export const NATIVE_METHODS = {
   },
   UPDATE_HOME_POSITION: (deliveryLat, deliveryLng) => {
     return {
-      method: 'map_module-update_home_position',
-      data: {
+      method: 'mapModule-updateHomePosition',
+      params: {
         lat: deliveryLat,
         lng: deliveryLng,
       },
@@ -79,8 +79,8 @@ export const NATIVE_METHODS = {
   },
   UPDATE_STORE_POSITION: (storeLat, storeLng) => {
     return {
-      method: 'map_module-update_store_position',
-      data: {
+      method: 'mapModule-updateStorePosition',
+      params: {
         lat: storeLat,
         lng: storeLng,
       },
@@ -89,9 +89,19 @@ export const NATIVE_METHODS = {
   },
   FOCUS_POSITIONS: focusPositionList => {
     return {
-      method: 'map_module-focus_positions',
-      data: {
+      method: 'mapModule-focusPositions',
+      params: {
         positions: focusPositionList,
+      },
+      call: 'sync',
+    };
+  },
+  NATIVE_LAYOUT: (area, data) => {
+    return {
+      method: 'nativeLayoutModule-nativeJsConfigLayout',
+      params: {
+        area: area,
+        data: data,
       },
       call: 'sync',
     };
@@ -122,12 +132,12 @@ const getTokenFromNative = user => {
 };
 
 const dsbridgeCall = nativeMethod => {
-  const { method, data, call } = nativeMethod || {};
+  const { method, params, call } = nativeMethod || {};
   const { data: hasNativeMethod } = JSON.parse(
-    dsbridge.call('callNative', { method: 'beep_module-has_native_method', data: method })
+    dsbridge.call('callNative', { method: 'beepModule-hasNativeMethod', params: { methodName: method } })
   );
   if (hasNativeMethod && call === 'sync') {
-    let result = dsbridge.call('callNative', { method, data });
+    let result = dsbridge.call('callNative', { method, params });
     if (typeof result === 'undefined' || result === null) {
       return;
     }
@@ -138,7 +148,7 @@ const dsbridgeCall = nativeMethod => {
     }
   } else if (hasNativeMethod && call === 'async') {
     var promise = new Promise(function(resolve, reject) {
-      dsbridge.call('callNativeAsync', { method, data }, function(result) {
+      dsbridge.call('callNativeAsync', { method, params }, function(result) {
         try {
           resolve(JSON.parse(result));
         } catch (e) {
