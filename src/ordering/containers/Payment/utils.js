@@ -35,23 +35,6 @@ export function getPaymentName(country, paymentLabel) {
   return _get(PAYMENT_NAME_COUNTRY_MAP, `${country}.${paymentLabel}`, null);
 }
 
-const PAYMENT_LIST_COUNTRY_MAP = {
-  MY: process.env.REACT_APP_PAYMENT_LIST_MY,
-  TH: process.env.REACT_APP_PAYMENT_LIST_TH,
-  PH: process.env.REACT_APP_PAYMENT_LIST_PH,
-  SG: process.env.REACT_APP_PAYMENT_LIST_SG,
-};
-
-export function getPaymentList(country) {
-  const payments = _get(PAYMENT_LIST_COUNTRY_MAP, country, null);
-  return payments ? payments.split(',') : [];
-}
-
-export function getUnavailablePaymentList() {
-  const unavailablePayments = process.env.REACT_APP_PAYMENT_UNAVAILABLE_LIST;
-  return unavailablePayments ? unavailablePayments.split(',') : [];
-}
-
 // support credit card brands country map
 const CREDIT_CARD_BRANDS_COUNTRY_MAP = {
   MY: [CREDIT_CARD_BRANDS.VISA, CREDIT_CARD_BRANDS.MASTER_CARD],

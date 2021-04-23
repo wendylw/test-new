@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import Footer from './components/Footer';
+import _isNil from 'lodash/isNil';
 import Header from '../../../components/Header';
 import NativeHeader from '../../../components/NativeHeader';
 
@@ -34,6 +35,7 @@ import {
   getDeliveryInfo,
   getPopUpModal,
   getStoresList,
+  getStoreInfoForCleverTap,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
@@ -42,7 +44,9 @@ import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
+import { getAllProductsKeys } from '../../../redux/modules/entities/products';
 import { captureException } from '@sentry/react';
+import CleverTap from '../../../utils/clevertap';
 import './OrderingHome.scss';
 import { gotoHome } from '../../../utils/webview-utils';
 
@@ -70,10 +74,11 @@ export class Home extends Component {
       windowSize: windowSize(),
     };
 
+    this.checkUrlType();
+
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
-    this.checkUrlType();
   }
   deliveryEntryEl = null;
   headerEl = null;
@@ -95,10 +100,12 @@ export class Home extends Component {
   };
 
   checkUrlType = () => {
-    const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    const { type } = search;
+    const { history } = this.props;
 
-    if (!type) {
+    const { type = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const deliveryTypes = Object.values(DELIVERY_METHOD);
+
+    if (!type || !deliveryTypes.includes(type)) {
       window.location.href = window.location.origin;
     }
   };
@@ -129,7 +136,7 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { homeActions, deliveryInfo, appActions } = this.props;
+    const { homeActions, deliveryInfo, appActions, storeInfoForCleverTap } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
@@ -139,7 +146,12 @@ export class Home extends Component {
     await homeActions.loadProductList();
 
     const pageRf = this.getPageRf();
+
+    // CleverTap.pushEvent('Menu Page - View page', storeInfoForCleverTap);
+
     if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
+      // CleverTap.pushEvent('Menu Page - Alcohol Counsent - Pop up', storeInfoForCleverTap);
+
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
 
@@ -497,7 +509,7 @@ export class Home extends Component {
   }
 
   renderDeliverToBar() {
-    const { history, deliveryInfo } = this.props;
+    const { history, deliveryInfo, storeInfoForCleverTap } = this.props;
 
     // table ordering situation
     if (!deliveryInfo || (!Utils.isDeliveryType() && !Utils.isPickUpType())) {
@@ -513,6 +525,8 @@ export class Home extends Component {
     const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
 
     const fillInDeliverToAddress = () => {
+      // CleverTap.pushEvent('Menu Page - Click location & shipping details bar', storeInfoForCleverTap);
+
       const { search } = window.location;
       const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
 
@@ -668,7 +682,15 @@ export class Home extends Component {
   }
 
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartSummary, deliveryInfo, allStore, requestInfo } = this.props;
+    const {
+      onlineStoreInfo,
+      businessInfo,
+      cartSummary,
+      deliveryInfo,
+      allStore,
+      requestInfo,
+      storeInfoForCleverTap,
+    } = this.props;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const isDeliveryType = Utils.isDeliveryType();
@@ -703,7 +725,14 @@ export class Home extends Component {
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
         title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
-        onClickHandler={isCanClickHandler ? this.handleToggleAside.bind(this) : () => {}}
+        onClickHandler={
+          isCanClickHandler
+            ? asideName => {
+                // CleverTap.pushEvent('Menu Page - Click info button', storeInfoForCleverTap);
+                this.handleToggleAside(asideName);
+              }
+            : () => {}
+        }
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -719,6 +748,13 @@ export class Home extends Component {
   }
 
   handleLegalAge = isAgeLegal => {
+    const { storeInfoForCleverTap } = this.props;
+
+    // if (isAgeLegal) {
+    //   CleverTap.pushEvent('Menu Page - Alcohol Consent - Click yes', storeInfoForCleverTap);
+    // } else {
+    //   CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
+    // }
     isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
     this.setAlcoholModalState(!isAgeLegal);
   };
@@ -764,6 +800,11 @@ export class Home extends Component {
     );
   };
 
+  // cleverTapTrack = (eventName, attributes) => {
+  //   const { storeInfoForCleverTap } = this.props;
+  //   CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
+  // };
+
   render() {
     const {
       categories,
@@ -775,6 +816,7 @@ export class Home extends Component {
       freeDeliveryFee,
       cartSummary,
       deliveryInfo,
+      allProductsKeys,
       ...otherProps
     } = this.props;
     const {
@@ -847,7 +889,14 @@ export class Home extends Component {
               })}px`,
           }}
         >
-          <CurrentCategoryBar containerId="product-list" categories={categories} viewAside={viewAside} />
+          <CurrentCategoryBar
+            containerId="product-list"
+            categories={categories}
+            viewAside={viewAside}
+            // onCategoryClick={() => {
+            //   this.cleverTapTrack('Menu Page - Click category');
+            // }}
+          />
           <CategoryProductList
             style={{
               paddingBottom:
@@ -860,6 +909,32 @@ export class Home extends Component {
             onToggle={this.handleToggleAside.bind(this)}
             onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
+            // onProductClick={({ product = {}, categoryInfo = {} }) => {
+            //   this.cleverTapTrack('Menu Page - Click product', {
+            //     'category name': categoryInfo.name,
+            //     'category rank': categoryInfo.index + 1,
+            //     'product name': product.title,
+            //     'product rank': allProductsKeys.indexOf(product.id) + 1,
+            //     'product image url': product.images?.length > 0 ? product.images[0] : '',
+            //     'amount': !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+            //     'discountedprice': !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+            //     'is bestsellar': product.isFeaturedProduct,
+            //     'has picture': product.images?.length > 0,
+            //   });
+            // }}
+            // onProductView={({ product = {}, categoryInfo = {} }) => {
+            //   this.cleverTapTrack('Menu Page - View products', {
+            //     'category name': categoryInfo.name,
+            //     'category rank': categoryInfo.index + 1,
+            //     'product name': product.title,
+            //     'product rank': allProductsKeys.indexOf(product.id) + 1,
+            //     'product image url': product.images?.length > 0 ? product.images[0] : '',
+            //     'amount': !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+            //     'discountedprice': !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+            //     'is bestsellar': product.isFeaturedProduct,
+            //     'has picture': product.images?.length > 0,
+            //   });
+            // }}
           />
         </div>
         <CartListAside
@@ -941,6 +1016,8 @@ export default compose(
         cartSummary: getCartSummary(state),
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        allProductsKeys: getAllProductsKeys(state),
         store: getStore(state),
       };
     },

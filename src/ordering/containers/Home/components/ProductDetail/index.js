@@ -513,9 +513,9 @@ class ProductDetail extends Component {
   };
 
   renderProductOperator() {
-    const { t, product } = this.props;
+    const { t, product = {}, onAddToCartClick } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
-    const { id: productId } = product || {};
+    const { id: productId } = product;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
     if (!product) {
@@ -567,6 +567,10 @@ class ProductDetail extends Component {
                 }
               });
 
+              if (onAddToCartClick) {
+                onAddToCartClick({ product });
+              }
+
               this.handleAddOrUpdateShoppingCartItem({
                 action: 'add',
                 business: config.business,
@@ -577,10 +581,14 @@ class ProductDetail extends Component {
             }}
           >
             {increasingProductOnCat ? (
-              <span key="Processing">{t('Processing')}</span>
+              <span className="text-weight-bolder" key="Processing">
+                {t('Processing')}
+              </span>
             ) : (
               <React.Fragment>
-                <span key="AddCart">{t('AddCart')} -</span>
+                <span className="text-weight-bolder" key="AddCart">
+                  {t('AddCart')} -
+                </span>
                 <CurrencyNumber
                   className="padding-small text-weight-bolder flex__shrink-fixed"
                   money={Number(this.addCartDisplayPrice()) || 0}

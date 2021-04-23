@@ -1,13 +1,12 @@
 import qs from 'qs';
 import React, { Component } from 'react';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../components/HybridHeader';
 import RedirectForm from './components/RedirectForm';
 import CreateOrderButton from '../../components/CreateOrderButton';
 import Constants from '../../../utils/constants';
 import config from '../../../config';
 import _get from 'lodash/get';
-import _isEqual from 'lodash/isEqual';
 import _toString from 'lodash/toString';
 import _startsWith from 'lodash/startsWith';
 
@@ -17,31 +16,24 @@ import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators } from '../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../redux/modules/customer';
 import { getDeliveryInfo } from '../../redux/modules/home';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../redux/modules/app';
-import {
-  actions as paymentActionCreators,
-  getCurrentPayment,
-  getCurrentOrderId,
-  getPayments,
-  getDefaultPayment,
-  getCurrentPaymentInfo,
-  getUnavailablePayments,
-  getCardList,
-} from '../../redux/modules/payment';
-import Utils from '../../../utils/utils';
-import { getPaymentName, getPaymentRedirectAndWebHookUrl } from './utils';
-import Loader from './components/Loader';
-import PaymentLogo from './components/PaymentLogo';
-import CurrencyNumber from '../../components/CurrencyNumber';
-import Radio from '../../../components/Radio';
+import { actions as paymentActionCreators, getCurrentOrderId, getCardList } from '../../redux/modules/payment';
 import { getBusinessInfo } from '../../redux/modules/cart';
+import {
+  actions as paymentsActionCreator,
+  getPaymentsPendingState,
+  getAllPaymentsOptions,
+  getSelectedPaymentOption,
+  getAllOptionsUnavailableState,
+} from './redux/payments';
+import Utils from '../../../utils/utils';
+import { getPaymentRedirectAndWebHookUrl } from './utils';
+import PaymentItem from './components/payment-item';
+import Loader from './components/Loader';
 import './OrderingPayment.scss';
 
-const { PAYMENT_METHOD_LABELS, ROUTER_PATHS, DELIVERY_METHOD } = Constants;
-
-const EXCLUDED_PAYMENTS = [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY, PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY];
+const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Payment extends Component {
   state = {
@@ -50,13 +42,11 @@ class Payment extends Component {
   };
 
   componentDidMount = async () => {
-    const { history, payments, merchantCountry, unavailablePaymentList, deliveryDetails, customerActions } = this.props;
-    const availablePayments = payments.filter(p => !unavailablePaymentList.includes(`${merchantCountry}:${p.key}`));
+    const { deliveryDetails, customerActions, paymentsActions } = this.props;
     const { addressId } = deliveryDetails || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const type = Utils.getOrderTypeFromUrl();
 
     !addressId && (await customerActions.initDeliveryDetails(type));
-    this.props.paymentActions.setCurrentPayment(availablePayments[0].label);
 
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
@@ -68,6 +58,11 @@ class Payment extends Component {
           lng: deliveryToLocation.longitude,
         }
     );
+
+    /**
+     * Load all payment options action and except saved card list
+     */
+    paymentsActions.loadPaymentOptions();
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -84,10 +79,11 @@ class Payment extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, currentPayment, business, businessInfo, merchantCountry } = this.props;
+    const { onlineStoreInfo, currentOrder, currentPaymentOption, business, businessInfo } = this.props;
+    const { paymentProvider, pathname } = currentPaymentOption;
     const planId = _toString(_get(businessInfo, 'planId', ''));
 
-    if (!onlineStoreInfo || !currentOrder || !currentPayment || EXCLUDED_PAYMENTS.includes(currentPayment)) {
+    if (!onlineStoreInfo || !currentOrder || !paymentProvider || pathname) {
       return null;
     }
 
@@ -100,7 +96,8 @@ class Payment extends Component {
       businessName: business,
       redirectURL: redirectURL,
       webhookURL: webhookURL,
-      paymentName: getPaymentName(merchantCountry, currentPayment),
+      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
+      paymentName: paymentProvider,
       isInternal: _startsWith(planId, 'internal'),
       source: Utils.getOrderSource(),
     };
@@ -127,17 +124,8 @@ class Payment extends Component {
     }
   };
 
-  setCurrentPayment = ({ label, key }) => {
-    const { merchantCountry, unavailablePaymentList } = this.props;
-    const disabledPayment = unavailablePaymentList.find(p => p === `${merchantCountry}:${key}`);
-
-    if (!disabledPayment) {
-      this.props.paymentActions.setCurrentPayment(label);
-    }
-  };
-
   handleBeforeCreateOrder = async () => {
-    const { history, currentPaymentInfo, user } = this.props;
+    const { history, currentPaymentOption, user } = this.props;
 
     this.setState({
       payNowLoading: true,
@@ -151,10 +139,10 @@ class Payment extends Component {
     }
 
     // Check if is credit pay, if credit pay, should check if go to saved page or
-    if (currentPaymentInfo && currentPaymentInfo.supportSaveCards) {
+    if (currentPaymentOption && currentPaymentOption.supportSaveCards) {
       await this.props.paymentActions.fetchSavedCard({
         userId: user.consumerId,
-        paymentName: currentPaymentInfo.key,
+        paymentName: currentPaymentOption.paymentProvider,
       });
 
       const { cardList } = this.props;
@@ -175,9 +163,9 @@ class Payment extends Component {
     }
 
     // redirect to customized payment page when the payment contains pathname of page router
-    if (currentPaymentInfo && currentPaymentInfo.pathname) {
+    if (currentPaymentOption && currentPaymentOption.pathname) {
       history.push({
-        pathname: currentPaymentInfo.pathname,
+        pathname: currentPaymentOption.pathname,
         search: window.location.search,
       });
 
@@ -185,26 +173,22 @@ class Payment extends Component {
     }
   };
 
-  render() {
-    const {
-      history,
-      t,
-      currentPayment,
-      payments,
-      unavailablePaymentList,
-      cartSummary,
-      currentPaymentInfo,
-      merchantCountry,
-    } = this.props;
-    const { total } = cartSummary || {};
-    const { payNowLoading, cartContainerHeight } = this.state;
-    const className = ['ordering-payment flex flex-column'];
-    const paymentData = this.getPaymentEntryRequestData();
-    const minimumFpxTotal = parseFloat(process.env.REACT_APP_PAYMENT_FPX_THRESHOLD_TOTAL);
-    const currentUnavailablePayments = unavailablePaymentList.filter(unavailablePayment =>
-      _startsWith(unavailablePayment, merchantCountry)
+  renderPaymentList() {
+    const { allPaymentOptions } = this.props;
+
+    return (
+      <ul>
+        {allPaymentOptions.map(option => {
+          return <PaymentItem key={option.key} option={option} />;
+        })}
+      </ul>
     );
-    const allPaymentsUnavailable = currentUnavailablePayments.length === payments.length;
+  }
+
+  render() {
+    const { history, t, currentPaymentOption, areAllOptionsUnavailable, pendingPaymentOptions } = this.props;
+    const { payNowLoading, cartContainerHeight } = this.state;
+    const paymentData = this.getPaymentEntryRequestData();
 
     return (
       <section className={className.join(' ')} data-heap-name="ordering.payment.container">
@@ -227,62 +211,7 @@ class Payment extends Component {
             height: cartContainerHeight,
           }}
         >
-          <ul>
-            {payments.map(payment => {
-              const classList = [
-                'ordering-payment__item flex flex-middle flex-space-between padding-small border__bottom-divider',
-              ];
-              const disabledPayment = unavailablePaymentList.find(p => p === `${merchantCountry}:${payment.key}`);
-              const promptDom =
-                total < minimumFpxTotal && _isEqual(`${merchantCountry}:${payment.key}`, 'MY:onlineBanking') ? (
-                  <p className="margin-top-bottom-smaller">
-                    ({' '}
-                    <Trans i18nKey="MinimumConsumption">
-                      <span>Min</span>
-                      <CurrencyNumber money={minimumFpxTotal} />
-                    </Trans>{' '}
-                    )
-                  </p>
-                ) : (
-                  <p className="margin-top-bottom-smaller">{t('TemporarilyUnavailable')}</p>
-                );
-
-              if (!payment) {
-                return null;
-              }
-
-              if (disabledPayment) {
-                classList.push('disabled');
-              }
-
-              return (
-                <li
-                  key={payment.label}
-                  className={classList.join(' ')}
-                  data-testid="paymentSelector"
-                  data-heap-name="ordering.payment.payment-item"
-                  data-heap-payment-name={payment.label}
-                  onClick={() => this.setCurrentPayment(payment)}
-                >
-                  <div className="ordering-payment__item-content">
-                    <figure className="ordering-payment__image-container text-middle margin-small">
-                      <PaymentLogo payment={payment} />
-                    </figure>
-                    <div className="ordering-payment__description text-middle padding-left-right-normal">
-                      <label className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
-                        {t(payment.label)}
-                      </label>
-                      {payment.label === PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY ? (
-                        <p className="ordering-payment__prompt">{`${t('Visa')}, ${t('MasterCard')}`}</p>
-                      ) : null}
-                      {disabledPayment ? promptDom : null}
-                    </div>
-                  </div>
-                  <Radio className="margin-left-right-small" checked={currentPayment === payment.label} />
-                </li>
-              );
-            })}
-          </ul>
+          {this.renderPaymentList()}
         </div>
 
         <footer
@@ -294,10 +223,10 @@ class Payment extends Component {
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-testid="payNow"
             data-heap-name="ordering.payment.pay-btn"
-            disabled={payNowLoading || allPaymentsUnavailable}
-            validCreateOrder={!currentPaymentInfo || !currentPaymentInfo.pathname}
+            disabled={payNowLoading || areAllOptionsUnavailable}
+            validCreateOrder={!currentPaymentOption || !currentPaymentOption.pathname}
             beforeCreateOrder={this.handleBeforeCreateOrder.bind(this)}
-            paymentName={getPaymentName(merchantCountry, currentPayment)}
+            paymentName={currentPaymentOption.paymentProvider}
             afterCreateOrder={orderId => {
               this.setState({
                 payNowLoading: !!orderId,
@@ -316,19 +245,12 @@ class Payment extends Component {
             data={paymentData}
           />
         ) : null}
+
+        <Loader className={'loading-cover opacity'} loaded={!pendingPaymentOptions} />
       </section>
     );
   }
 }
-
-// to use container to make Payment initialization based on payments from a country
-const PaymentContainer = props => {
-  if (!props.merchantCountry) {
-    return <Loader className={'loading-cover opacity'} />;
-  }
-
-  return <Payment {...props} />;
-};
 
 export default compose(
   withTranslation(['OrderingPayment']),
@@ -337,16 +259,16 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        pendingPaymentOptions: getPaymentsPendingState(state),
+        allPaymentOptions: getAllPaymentsOptions(state),
+        currentPaymentOption: getSelectedPaymentOption(state),
+        areAllOptionsUnavailable: getAllOptionsUnavailableState(state),
+
         deliveryInfo: getDeliveryInfo(state),
-        payments: getPayments(state),
-        currentPayment: getCurrentPayment(state) || getDefaultPayment(state),
-        currentPaymentInfo: getCurrentPaymentInfo(state),
         business: getBusiness(state),
-        cartSummary: getCartSummary(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         businessInfo: getBusinessInfo(state),
         currentOrder: getOrderByOrderId(state, currentOrderId),
-        unavailablePaymentList: getUnavailablePayments(state),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
         cardList: getCardList(state),
@@ -354,10 +276,11 @@ export default compose(
       };
     },
     dispatch => ({
+      paymentsActions: bindActionCreators(paymentsActionCreator, dispatch),
       paymentActions: bindActionCreators(paymentActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
-)(PaymentContainer);
+)(Payment);

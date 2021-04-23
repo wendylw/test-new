@@ -16,10 +16,13 @@ import Utils from '../../../../../utils/utils';
 import { del, get } from '../../../../../utils/request';
 import Url from '../../../../../utils/url';
 import dsbridge from 'dsbridge';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
+
 export class Footer extends Component {
   constructor(props) {
     super(props);
-    window.sendToken = async res => await this.authTokens(res);
+    // 注册方法应该想办法放到最外层
+    DsbridgeUtils.dsRegReceiveTokenListener({ callback: async res => await this.authTokens(res) });
   }
 
   componentDidUpdate(prevProps) {
@@ -81,80 +84,21 @@ export class Footer extends Component {
         this.handleWebRedirect();
       }
     } else if (!isValidToken) {
-      console.error('native token is invalid');
+      console.log('native token is invalid');
       this.handleInvalidAppToken();
     }
   };
 
   handleInvalidAppToken = () => {
-    const appVersion = window.beepAppVersion;
-    if (Utils.isAndroidWebview()) {
-      if (appVersion > '1.0.1') {
-        window.androidInterface.tokenExpired('true');
-      } else {
-        window.androidInterface.tokenExpired();
-      }
-    }
-    if (Utils.isIOSWebview()) {
-      if (appVersion > '1.0.1') {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'tokenExpired',
-          callbackName: 'sendToken',
-          isCheckout: 'true',
-        });
-      } else {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'tokenExpired',
-          callbackName: 'sendToken',
-        });
-      }
-    }
+    DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
   };
 
   postAppMessage(user) {
     const { isExpired } = user || {};
-    const appVersion = window.beepAppVersion;
-    if (Utils.isAndroidWebview() && isExpired) {
-      if (appVersion > '1.0.1') {
-        window.androidInterface.tokenExpired('true');
-      } else {
-        window.androidInterface.tokenExpired();
-      }
-    }
-    if (Utils.isAndroidWebview() && !isExpired) {
-      if (appVersion > '1.0.1') {
-        window.androidInterface.getToken('true');
-      } else {
-        window.androidInterface.getToken();
-      }
-    }
-    if (Utils.isIOSWebview() && isExpired) {
-      if (appVersion > '1.0.1') {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'tokenExpired',
-          callbackName: 'sendToken',
-          isCheckout: 'true',
-        });
-      } else {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'tokenExpired',
-          callbackName: 'sendToken',
-        });
-      }
-    }
-    if (Utils.isIOSWebview() && !isExpired) {
-      if (appVersion > '1.0.1') {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'getToken',
-          callbackName: 'sendToken',
-          isCheckout: 'true',
-        });
-      } else {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'getToken',
-          callbackName: 'sendToken',
-        });
-      }
+    if (isExpired) {
+      DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
+    } else {
+      DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_ADDRESS);
     }
   }
 

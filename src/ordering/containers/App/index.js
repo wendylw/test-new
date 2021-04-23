@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
+import qs from 'qs';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
@@ -21,7 +23,7 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
-import WebViewUtils, { getAppToken } from '../../../utils/webview-utils';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
 
 const { ROUTER_PATHS } = Constants;
 let savedAddressRes;
@@ -30,11 +32,30 @@ class App extends Component {
   constructor(props) {
     super(props);
     if (Utils.isWebview()) {
-      savedAddressRes = WebViewUtils.getAddressFromNative() || '';
+      savedAddressRes = DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_ADDRESS);
       this.handleNativeResponse(savedAddressRes);
     }
+
+    // for temporarily fix Beep-321, IOS Beep App will give the first letter capitalize `type` in query
+    // we will convert it to lower case by this function
+    this.convertDeliveryTypeToLowerCase();
   }
   state = {};
+
+  convertDeliveryTypeToLowerCase() {
+    const { history, location } = this.props;
+
+    const search = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    if (!search.type) {
+      return;
+    }
+
+    search.type = search.type.toLowerCase();
+
+    const path = `${location.pathname}${qs.stringify(search, { addQueryPrefix: true })}`;
+
+    history.replace(path, location.state);
+  }
 
   handleNativeResponse = savedAddressRes => {
     if (!savedAddressRes) {
@@ -254,4 +275,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(App);
+)(withRouter(App));

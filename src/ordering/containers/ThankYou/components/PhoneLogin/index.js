@@ -18,7 +18,7 @@ import {
 } from '../../../../redux/modules/thankYou';
 
 import succeedAnimationGif from '../../../../../images/succeed-animation.gif';
-import { getAppToken } from '../../../../../cashback/containers/utils';
+import DsbridgeUtils from '../../../../../utils/dsbridge-methods';
 import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
@@ -38,7 +38,7 @@ class PhoneLogin extends React.Component {
 
   constructor(props) {
     super(props);
-    window.sendToken = res => this.authTokens(res);
+    DsbridgeUtils.dsRegReceiveTokenListener({ callback: async res => await this.authTokens(res) });
   }
 
   authTokens = async res => {
@@ -73,7 +73,7 @@ class PhoneLogin extends React.Component {
     const { enableCashback } = businessInfo || {};
 
     if (!isLogin && isWebview) {
-      getAppToken(user);
+      DsbridgeUtils.getTokenFromNative(user);
     }
 
     if (enableCashback) {
@@ -217,14 +217,6 @@ class PhoneLogin extends React.Component {
     this.setState({ phone });
   }
 
-  handleSubmitPhoneNumber() {
-    const { appActions } = this.props;
-    const { phone } = this.state;
-
-    // appActions.getOtp({ phone }); use when otp will fixed
-    appActions.phoneNumberLogin({ phone });
-  }
-
   renderCurrencyNumber() {
     const { cashbackInfo } = this.props;
     const { cashback } = cashbackInfo || {};
@@ -234,59 +226,6 @@ class PhoneLogin extends React.Component {
     }
 
     return <CurrencyNumber className="text-weight-bolder" money={Math.abs(cashback || 0)} />;
-  }
-
-  renderPhoneView() {
-    const { t, user, onlineStoreInfo } = this.props;
-    const { phone } = this.state;
-    const { isFetching, isWebview, isLogin, customerId } = user || {};
-    const { country } = onlineStoreInfo || {};
-
-    if (isLogin) {
-      return null;
-    }
-
-    if (!isLogin) {
-      return (
-        <PhoneView
-          phone={phone}
-          country={country}
-          setPhone={this.handleUpdatePhoneNumber.bind(this)}
-          submitPhoneNumber={this.handleSubmitPhoneNumber.bind(this)}
-          isLoading={isFetching}
-          buttonText={t('Continue')}
-        />
-      );
-    }
-
-    if (!customerId && !isWebview) {
-      return null;
-    }
-
-    if (!isWebview) {
-      return (
-        <BrowserRouter basename="/">
-          <Link
-            className="button button__block button__fill text-weight-bolder text-uppercase"
-            to={`${Constants.ROUTER_PATHS.CASHBACK_BASE}${Constants.ROUTER_PATHS.CASHBACK_HOME}?customerId=${customerId}`}
-            data-heap-name="ordering.thank-you.phone-login.check-balance-link"
-            target="_blank"
-          >
-            {t('CheckMyBalance')}
-          </Link>
-        </BrowserRouter>
-      );
-    }
-
-    return (
-      <button
-        className="button button__block button__fill text-weight-bolder text-uppercase"
-        data-heap-name="ordering.thank-you.phone-login.check-balance-btn"
-        onClick={() => {} /* this.handlePostLoyaltyPageMessage.bind(this) */}
-      >
-        {t('CheckMyBalance')}
-      </button>
-    );
   }
 
   render() {
@@ -303,8 +242,6 @@ class PhoneLogin extends React.Component {
 
     return (
       <div className="phone-login padding-normal" data-heap-name="ordering.thank-you.phone-login.container">
-        {/* <label className="text-size-big">{this.getMessage() || ''}</label> */}
-        {/* {this.renderPhoneView()} */}
         <div
           className={`ordering-thanks__card-prompt-congratulation absolute-wrapper ${
             showCelebration && customerId ? 'active' : ''

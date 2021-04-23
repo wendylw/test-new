@@ -20,12 +20,12 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import Utils from '../../../utils/utils';
-import { getAppLoginStatus, getAppToken } from '../utils';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
 
 class App extends Component {
   constructor(props) {
     super(props);
-    window.sendToken = res => this.authTokens(res);
+    DsbridgeUtils.dsRegReceiveTokenListener({ callback: async res => await this.authTokens(res) });
   }
 
   authTokens = async res => {
@@ -58,7 +58,7 @@ class App extends Component {
 
     const { user } = this.props;
     const { isLogin, isWebview } = user || {};
-    const appLogin = getAppLoginStatus();
+    const appLogin = DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_LOGIN_STATUS);
 
     if (isLogin) {
       appActions.loadCustomerProfile();
@@ -67,7 +67,7 @@ class App extends Component {
     // appLogin is true, isLogin is false
     if (isWebview) {
       if (appLogin && !isLogin) {
-        getAppToken(user);
+        DsbridgeUtils.getTokenFromNative(user);
       }
     }
   }
@@ -82,7 +82,7 @@ class App extends Component {
     }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      getAppToken(user);
+      DsbridgeUtils.getTokenFromNative(user);
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
@@ -126,7 +126,7 @@ class App extends Component {
   render() {
     const { user } = this.props;
     const { isWebview } = user || {};
-    const appLogin = getAppLoginStatus();
+    const appLogin = DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_LOGIN_STATUS);
 
     return !appLogin && isWebview ? <RequestLogin user={user} /> : this.renderMainContent();
   }

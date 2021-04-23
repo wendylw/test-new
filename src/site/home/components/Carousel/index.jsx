@@ -11,6 +11,7 @@ import 'swiper/swiper.scss';
 import './index.scss';
 import { submitStoreMenu } from '../../utils';
 import Tag from '../../../../components/Tag';
+import CleverTap from '../../../../utils/clevertap';
 
 SwiperCore.use([Autoplay]);
 
@@ -56,11 +57,11 @@ class Carousel extends Component {
     );
   };
 
-  renderCarouselStores(stores, shippingType) {
+  renderCarouselStores(stores, shippingType, collectionInfo) {
     const { t } = this.props;
     return (
       <Swiper className="carousel__wrapper margin-top-bottom-normal" slidesPerView={'auto'}>
-        {(stores || []).map(store => {
+        {(stores || []).map((store, index) => {
           const {
             name,
             avatar,
@@ -86,6 +87,15 @@ class Carousel extends Component {
               data-heap-name="site.home.carousel.store-item"
               data-heap-store-name={name}
               onClick={() => {
+                // CleverTap.pushEvent('Homepage - Click Carousel Store Card', {
+                //   'collection name': collectionInfo.name,
+                //   'collection rank': collectionInfo.index,
+                //   'store name': name,
+                //   'store rank': index,
+                //   'shipping type': shippingType,
+                //   'has promo': promoTag?.length > 0,
+                //   'cashback': `${Number(cashbackRate || 0) * 100}%`,
+                // });
                 this.handleStoreClicked(store, shippingType);
               }}
             >
@@ -151,7 +161,7 @@ class Carousel extends Component {
     const { collections, t } = this.props;
     return (
       <div className="margin-top-bottom-normal">
-        {(collections || []).map(item => {
+        {(collections || []).map((item, index) => {
           const { name, stores, urlPath, beepCollectionId, shippingType } = item;
           return (
             <section
@@ -165,6 +175,10 @@ class Carousel extends Component {
                   className="carousel__see-all flex flex-middle"
                   data-heap-name="site.home.carousel.see-all-btn"
                   onClick={() => {
+                    // CleverTap.pushEvent('Homepage - Click Carousel See All', {
+                    //   'collection name': name,
+                    //   'rank': index + 1,
+                    // });
                     this.props.history.push({
                       pathname: `/collections/${urlPath}`,
                     });
@@ -174,7 +188,11 @@ class Carousel extends Component {
                   <IconNext className="icon icon__primary" />
                 </span>
               </div>
-              {stores && this.renderCarouselStores(stores, shippingType)}
+              {stores &&
+                this.renderCarouselStores(stores, shippingType, {
+                  name,
+                  index,
+                })}
             </section>
           );
         })}

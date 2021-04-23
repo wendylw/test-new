@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import './index.scss';
 import { compose } from 'redux';
 import Image from '../../../../components/Image';
+import CleverTap from '../../../../utils/clevertap';
 
 class CollectionCard extends React.Component {
   render() {
@@ -11,7 +12,7 @@ class CollectionCard extends React.Component {
 
     return (
       <ul className="store-collections flex flex-space-between flex-middle">
-        {collections.map(collection => {
+        {collections.map((collection, index) => {
           const { name, image, urlPath } = collection;
           return (
             <li
@@ -21,6 +22,10 @@ class CollectionCard extends React.Component {
               data-heap-name="site.home.collection-icon"
               data-heap-collection-name={name}
               onClick={() => {
+                // CleverTap.pushEvent('Homepage - Click Collection Icon', {
+                //   'collection name': name,
+                //   'rank': index + 1,
+                // });
                 // concern to use location.href if icons fixed to the top
                 backLeftPosition();
                 this.props.history.push({

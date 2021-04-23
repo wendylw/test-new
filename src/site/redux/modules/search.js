@@ -4,6 +4,7 @@ import Url from '../../../utils/url';
 import { getStoreById, storesActionCreators } from './entities/stores';
 import { getCurrentPlaceInfo } from './app';
 import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
+import CleverTap from '../../../utils/clevertap';
 
 const defaultPageInfo = {
   page: 0,
@@ -84,6 +85,10 @@ const fetchStoreList = (page, pageSize, shippingType) => (dispatch, getState) =>
       if (response && Array.isArray(response.stores)) {
         window.heap?.track('site.search.store-list.load-page', { Page: page, Keyword: keyword.toLowerCase() });
         if (page === 0) {
+          // CleverTap.pushEvent('Search - Perform search', {
+          //   keyword,
+          //   'has results': response.stores.length > 0,
+          // });
           if (response.stores.length) {
             window.heap?.track('site.search.store-list.has-search-result', { Keyword: keyword.toLowerCase() });
           } else {

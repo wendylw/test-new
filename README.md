@@ -13,6 +13,7 @@
 5. [Customize Workbox Service Workers](#customize-workbox-service-workers)
 6. [I18N JSON File Style Guide](#i18n-json-style-guide)
 7. [Style Guide](#style-guide)
+8. [Heap tracking code](#heap-tracking-code)
 8. [Analyzing bundle size](#analyzing-bundle-size)
 9. [Release Flow](https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow)
 10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
@@ -125,7 +126,7 @@ Update to `HOST={business}.local.beep.test16.shub.us` on `frontend/.env` (1. loc
     ```
     Update `aws_access_key_id` and `aws_secret_access_key`
 
-2. Start source map 
+2. Start source map
     #### on testing environment
     ```sh
     yarn serve:sourcemap --bucket beep-v2-web
@@ -145,17 +146,17 @@ Get more from [Using Custom Workbox Service Workers with Create-React-App (witho
 ## I18N JSON File Style Guide
 
 ### JSON file name rules:
-    
+
   * Please use upper camel case (eg: OrderingHome)
 
 ### Key name rules:
-    
+
   * Please use upper camel case no including underscores and spaces
   * Phrase remove spaces as key (eg: "OrderNow": "Order now")
   * Paragraphs use descriptive phrases as keys (eg: "ClaimedProcessingText": "You've earned more cashback! We'll add it once it's been processed.")
-    
+
 ### Content rules:
-    
+
   * Only the first letter can be capitalized for phrase, except for words like "OK" (eg: "OrderNow": "Order now")
   * Paragraphs have only the first letter of each sentence capitalized (eg: "ClaimedProcessingText": "You've earned more cashback! We'll add it once it's been processed.")
   * Follow English written rules
@@ -176,7 +177,7 @@ If you create a public component under `/frontend/src/components/`, please updat
 
   ```shell script
   yarn storybook
-  ```  
+  ```
 ### Manually publish style guide
 
   ```shell script
@@ -194,5 +195,3 @@ Refer to: [Heap name convention](https://storehub.atlassian.net/wiki/spaces/SHFE
 ```shell script
 yarn build && yarn analyze
 ```
-
-You will get a web page tool automatically opened for you.

@@ -2,6 +2,7 @@ import * as timeLib from './time-lib';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { computeStraightDistance } from './geoUtils';
+import Utils from './utils';
 import Constants from './constants';
 import _flow from 'lodash/flow';
 import _get from 'lodash/get';
@@ -577,3 +578,33 @@ export const getStoreAvailableDateAndTime = (
 
 export const isEnablePerTimeSlotLimitForPreOrder = store =>
   _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false);
+
+export const getStoreInfoForCleverTap = ({ business, allBusinessInfo }) => {
+  const originalInfo = allBusinessInfo[business] || {};
+  const { qrOrderingSettings, defaultLoyaltyRatio, enableCashback, stores, country } = originalInfo || {};
+  const { defaultShippingZone, minimumConsumption } = qrOrderingSettings || {};
+  const { defaultShippingZoneMethod } = defaultShippingZone || {};
+  const { freeShippingMinAmount, enableConditionalFreeShipping } = defaultShippingZoneMethod || {};
+  const { id, name } = (stores && stores[0]) || {};
+
+  const cashbackRate = `${Math.floor(100 / defaultLoyaltyRatio)}%`;
+  const shippingType = Utils.getOrderTypeFromUrl() || 'unknown';
+
+  const res = {
+    'store name': name,
+    'store id': id,
+    'free delivery above': freeShippingMinAmount,
+    'shipping type': shippingType,
+    country: country,
+  };
+
+  if (enableCashback) {
+    res['cashback'] = cashbackRate;
+  }
+
+  if (enableConditionalFreeShipping) {
+    res['minimum order value'] = minimumConsumption;
+  }
+
+  return res;
+};

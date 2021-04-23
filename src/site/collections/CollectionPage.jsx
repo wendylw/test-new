@@ -16,6 +16,7 @@ import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 import { collectionCardActionCreators, getCurrentCollection } from '../redux/modules/entities/storeCollections';
 import constants from '../../utils/constants';
+import CleverTap from '../../utils/clevertap';
 
 const { COLLECTIONS_TYPE } = constants;
 
@@ -40,6 +41,8 @@ class CollectionPage extends React.Component {
   };
 
   backToPreviousPage = () => {
+    // CleverTap.pushEvent('Collection Page - Click back');
+
     const { history, location } = this.props;
     const pathname = (location.state && location.state.from) || '/home';
 
@@ -65,7 +68,19 @@ class CollectionPage extends React.Component {
   };
 
   handleSwitchTab = shippingType => {
-    const { urlPath } = this.props.currentCollection || {};
+    const { urlPath, name, displayType } = this.props.currentCollection || {};
+    // if (shippingType === 'delivery') {
+    //   CleverTap.pushEvent('Collection Page - Click delivery tab', {
+    //     'collection name': name,
+    //     'collection type': displayType,
+    //   });
+    // } else {
+    //   CleverTap.pushEvent('Collection Page - Click self pickup tab', {
+    //     'collection name': name,
+    //     'collection type': displayType,
+    //   });
+    // }
+
     this.props.collectionsActions.setShippingType(shippingType);
     this.props.collectionsActions.resetPageInfo(shippingType);
     this.props.collectionsActions.getStoreList(urlPath);
@@ -117,7 +132,18 @@ class CollectionPage extends React.Component {
             loadMoreStores={() => {
               this.props.collectionsActions.getStoreList(urlPath);
             }}
-            onStoreClicked={store => this.backLeftPosition(store)}
+            onStoreClicked={(store, index) => {
+              // CleverTap.pushEvent('Collection Page - Click Store Card', {
+              //   'Collection Name': currentCollection.name,
+              //   'Collection Type': currentCollection.displayType,
+              //   'Store Name': store.name,
+              //   'Store Rank': index,
+              //   'Shipping Type': store.shippingType,
+              //   'has promo': store.promoTag?.length > 0,
+              //   'cashback': `${Number(store.cashbackRate || 0) * 100}%`,
+              // });
+              this.backLeftPosition(store);
+            }}
             withInfiniteScroll
           />
         </StoreListAutoScroll>

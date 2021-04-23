@@ -23,6 +23,7 @@ import { getCartSummary } from '../../../../redux/modules/entities/carts';
 import { getOnlineStoreInfo, getBusiness, getMerchantCountry } from '../../../redux/modules/app';
 import { getOrderByOrderId } from '../../../../redux/modules/entities/orders';
 import { actions as paymentActionCreators, getCurrentOrderId } from '../../../redux/modules/payment';
+import { getSelectedPaymentOption } from '../redux/payments';
 import { getBusinessInfo } from '../../../redux/modules/cart';
 import {
   getPaymentName,
@@ -67,9 +68,9 @@ class CreditCard extends Component {
 
     this.setState({ domLoaded: true });
 
-    const { history, deliveryDetails, customerActions } = this.props;
+    const { deliveryDetails, customerActions } = this.props;
     const { addressId } = deliveryDetails || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const type = Utils.getOrderTypeFromUrl();
 
     !addressId && (await customerActions.initDeliveryDetails(type));
 
@@ -86,13 +87,13 @@ class CreditCard extends Component {
   }
 
   getPaymentEntryRequestData = () => {
-    const { onlineStoreInfo, currentOrder, business, merchantCountry, businessInfo } = this.props;
-    const currentPayment = Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY;
+    const { onlineStoreInfo, currentOrder, business, businessInfo, currentPaymentOption } = this.props;
+    const { paymentProvider } = currentPaymentOption;
     const { card } = this.state;
     const { cardholderName } = card || {};
     const planId = _toString(_get(businessInfo, 'planId', ''));
 
-    if (!onlineStoreInfo || !currentOrder || !currentPayment || !cardholderName || !window.encryptedCardData) {
+    if (!onlineStoreInfo || !currentOrder || !paymentProvider || !cardholderName || !window.encryptedCardData) {
       return null;
     }
 
@@ -107,7 +108,8 @@ class CreditCard extends Component {
       redirectURL,
       webhookURL,
       payActionWay: 1,
-      paymentName: getPaymentName(merchantCountry, currentPayment),
+      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
+      paymentName: paymentProvider,
       cardholderName,
       encryptedCardInfo,
       expYearCardInfo,
@@ -601,6 +603,8 @@ export default compose(
       const currentOrderId = getCurrentOrderId(state);
 
       return {
+        currentPaymentOption: getSelectedPaymentOption(state),
+
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
         cartSummary: getCartSummary(state),

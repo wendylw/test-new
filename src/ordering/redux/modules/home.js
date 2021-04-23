@@ -3,7 +3,7 @@ import Url from '../../../utils/url';
 import { HOME_TYPES } from '../types';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
-
+import * as StoreUtils from '../../../utils/store-utils';
 import { combineReducers } from 'redux';
 // import { computeDeliveryDistance } from '../../containers/Location/utils';
 import { getCartSummary, getAllCartItems, getCartItemById } from '../../../redux/modules/entities/carts';
@@ -551,3 +551,11 @@ export const getProductItemMinHeight = state => state.home.domProperties.product
 export const getPopUpModal = state => state.home.popUpModal;
 
 export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;
+
+// This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
+export const getStoreInfoForCleverTap = state => {
+  const business = getBusiness(state);
+  const allBusinessInfo = getAllBusinesses(state);
+
+  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo });
+};

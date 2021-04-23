@@ -53,3 +53,12 @@ export default reducer;
 export const getAllProducts = state => state.entities.products;
 
 export const getProductById = (state, id) => state.entities.products[id];
+
+export const getAllProductsKeys = state => {
+  try {
+    const res = Object.keys(state.entities.products);
+    return res;
+  } catch (e) {
+    return [];
+  }
+};

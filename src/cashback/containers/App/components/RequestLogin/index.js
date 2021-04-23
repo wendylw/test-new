@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import { getAppToken } from '../../../utils';
+import DsbridgeUtils from '../../../../../utils/dsbridge-methods';
 import beepLoginImage from './images/login.svg';
 import './RequestLogin.scss';
 
 class RequestLogin extends Component {
   handleClick = () => {
     const { user } = this.props;
-    getAppToken(user);
+    DsbridgeUtils.getTokenFromNative(user);
   };
 
   render() {
