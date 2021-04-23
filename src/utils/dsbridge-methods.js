@@ -134,7 +134,7 @@ const getTokenFromNative = user => {
 const dsbridgeCall = nativeMethod => {
   const { method, params, call } = nativeMethod || {};
   const { data: hasNativeMethod } = JSON.parse(
-    dsbridge.call('callNative', { method: 'beepModule-hasNativeMethod', params: { methodName: method } })
+    dsbridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
   );
   if (hasNativeMethod && call === 'sync') {
     let result = dsbridge.call('callNative', { method, params });
