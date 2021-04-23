@@ -1,8 +1,17 @@
+@import "../../../../Variables.scss";
+
+// size in design
+$design-icon-size: 32px;
+$design-icon-margin-bottom: -16px;
+
+$icon-size: ($design-icon-size / $font-size-base) * 1rem;
+$icon-margin-bottom: ($design-icon-margin-bottom / $font-size-base) * 1rem;
+
 .order-delay-message {
   &__icon {
     display: block;
-    width: 2.29rem;
-    margin: 0 auto -1.14rem;
+    width: $icon-size;
+    margin: 0 auto $icon-margin-bottom;
   }
 
   &__content {
