@@ -20,6 +20,10 @@ class PromotionsBar extends Component {
     return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app';
   }
 
+  getPromotionDisappearInAppState(appliedClientTypes, inApp) {
+    return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'web' && inApp;
+  }
+
   renderPromotionText(promotion) {
     const { t } = this.props;
     const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
@@ -158,10 +162,14 @@ class PromotionsBar extends Component {
     return (
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
         {promotions.map((promo, index) => {
-          const { appliedSources, discountProductList, promotionCode, validDate } = promo;
+          const { appliedSources, discountProductList, promotionCode, validDate, appliedClientTypes, inApp } = promo;
           const description = this.renderPromotionText(promo);
+          const disappearPromotionInApp = this.getPromotionDisappearInAppState(appliedClientTypes, inApp);
 
-          if (shippingType && !appliedSources.find(source => SHIPPING_TYPES_MAPPING[shippingType] === source)) {
+          if (
+            (shippingType && !appliedSources.find(source => SHIPPING_TYPES_MAPPING[shippingType] === source)) ||
+            disappearPromotionInApp
+          ) {
             return null;
           }
 
@@ -196,10 +204,12 @@ PromotionsBar.propTypes = {
   ]),
   promotions: PropTypes.array,
   shippingType: PropTypes.string,
+  inApp: PropTypes.bool,
 };
 
 PromotionsBar.defaultProps = {
   promotions: [],
+  inApp: false,
 };
 
 export default withTranslation('OrderingHome')(PromotionsBar);

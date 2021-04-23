@@ -32,6 +32,7 @@ import {
   getOnlineStoreInfo,
   getRequestInfo,
   getStoreInfoForCleverTap,
+  getUser,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
@@ -839,6 +840,7 @@ export class Home extends Component {
 
   render() {
     const {
+      user,
       categories,
       onlineStoreInfo,
       businessInfo,
@@ -865,8 +867,7 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId, shippingType } = requestInfo || {};
-    const { promotions, qrOrderingSettings } = businessInfo || {};
-    const { minimumConsumption } = qrOrderingSettings || {};
+    const { promotions } = businessInfo || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -880,6 +881,7 @@ export class Home extends Component {
           promotionRef={ref => (this.promotionEl = ref)}
           promotions={promotions}
           shippingType={shippingType}
+          inApp={user.isWebview}
         />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
@@ -1051,6 +1053,7 @@ export default compose(
   connect(
     state => {
       return {
+        user: getUser(state),
         deliveryInfo: getDeliveryInfo(state),
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
