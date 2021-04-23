@@ -153,7 +153,7 @@ class PromotionsBar extends Component {
   }
 
   render() {
-    const { promotionRef, promotions, shippingType } = this.props;
+    const { promotionRef, promotions, shippingType, inApp } = this.props;
 
     if (!promotions.length) {
       return null;
@@ -162,7 +162,7 @@ class PromotionsBar extends Component {
     return (
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
         {promotions.map((promo, index) => {
-          const { appliedSources, discountProductList, promotionCode, validDate, appliedClientTypes, inApp } = promo;
+          const { appliedSources, discountProductList, promotionCode, validDate, appliedClientTypes } = promo;
           const description = this.renderPromotionText(promo);
           const disappearPromotionInApp = this.getPromotionDisappearInAppState(appliedClientTypes, inApp);
 
