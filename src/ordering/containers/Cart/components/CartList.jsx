@@ -129,8 +129,10 @@ class CartList extends Component {
     const { t, onIncreaseCartItem, onDecreaseCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
     const inventoryShortage = Boolean(
-      stockStatus !== 'notTrackInventory' && quantityOnHand && quantity >= quantityOnHand
+      stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand
     );
+    const quantityEqualStock = quantityOnHand && quantity === quantityOnHand;
+    const disabledIncreaseQuantity = inventoryShortage || quantityEqualStock;
     const classList = ['text-center', ...(inventoryShortage ? ['text-error'] : [])];
 
     if (this.getOutStockStatus(stockStatus)) {
@@ -154,7 +156,7 @@ class CartList extends Component {
           data-heap-name="ordering.home.mini-cart.item-operator"
           quantity={quantity}
           decreaseDisabled={!Boolean(quantity)}
-          increaseDisabled={inventoryShortage}
+          increaseDisabled={disabledIncreaseQuantity}
           onDecrease={() => {
             if (onDecreaseCartItem) {
               onDecreaseCartItem(cartItem);
@@ -170,7 +172,7 @@ class CartList extends Component {
             this.handleIncreaseCartItem(cartItem);
           }}
         />
-        {stockStatus === 'lowStock' || inventoryShortage ? (
+        {stockStatus === 'lowStock' || disabledIncreaseQuantity ? (
           <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>
         ) : null}
       </div>
