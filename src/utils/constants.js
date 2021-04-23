@@ -210,6 +210,13 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
     showModal: true,
   },
+  40008: {
+    title: 'ApiError:40008Title',
+    desc: 'ApiError:40008Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
   40009: {
     title: 'ApiError:40009Title',
     desc: 'ApiError:40009Description',
