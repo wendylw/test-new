@@ -6,15 +6,14 @@ import { withTranslation, Trans } from 'react-i18next';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Constants from '../../../../utils/constants';
 
-const { PROMOTIONS_TYPES } = Constants;
+const { PROMOTIONS_TYPES, DELIVERY_METHOD } = Constants;
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
 const SHIPPING_TYPES_MAPPING = {
-  pickup: 5,
-  delivery: 6,
-  takeaway: 7,
-  dineIn: 8,
+  [DELIVERY_METHOD.PICKUP]: 5,
+  [DELIVERY_METHOD.DELIVERY]: 6,
+  [DELIVERY_METHOD.TAKE_AWAY]: 7,
+  [DELIVERY_METHOD.DINE_IN]: 8,
 };
-
 class PromotionsBar extends Component {
   getPromotionOnlyInAppState(appliedClientTypes) {
     return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app';
