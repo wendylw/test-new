@@ -170,7 +170,7 @@ class PromotionsBar extends Component {
           const disappearPromotionInApp = this.getPromotionDisappearInAppState(appliedClientTypes, inApp);
 
           if (
-            (shippingType && !appliedSources.find(source => SHIPPING_TYPES_MAPPING[shippingType] === source)) ||
+            (shippingType && !appliedSources.includes(SHIPPING_TYPES_MAPPING[shippingType])) ||
             disappearPromotionInApp
           ) {
             return null;
