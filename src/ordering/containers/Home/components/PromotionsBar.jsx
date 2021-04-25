@@ -15,8 +15,8 @@ const SHIPPING_TYPES_MAPPING = {
   [DELIVERY_METHOD.DINE_IN]: 8,
 };
 class PromotionsBar extends Component {
-  getPromotionOnlyInAppState(appliedClientTypes) {
-    return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app';
+  getPromotionOnlyInAppState(appliedClientTypes, inApp) {
+    return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
   }
 
   getPromotionDisappearInAppState(appliedClientTypes, inApp) {
@@ -91,15 +91,16 @@ class PromotionsBar extends Component {
     }
   }
 
-  renderPromotionPromptText(promotion) {
+  renderPromotionPromptText(promotion, inApp) {
     const { discountProductList, validDate, appliedClientTypes, maxDiscountAmount, minOrderAmount } = promotion;
-    const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
-    const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
-    const onlyInApp = this.getPromotionOnlyInAppState(appliedClientTypes);
 
     if (discountProductList || validDate) {
       return null;
     }
+
+    const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
+    const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
+    const onlyInApp = this.getPromotionOnlyInAppState(appliedClientTypes, inApp);
 
     if (!maxDiscountAmount && !minOrderAmount) {
       return onlyInApp ? (
@@ -166,8 +167,6 @@ class PromotionsBar extends Component {
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
         {promotions.map((promo, index) => {
           const { appliedSources, promotionCode, appliedClientTypes } = promo;
-          const description = this.renderPromotionText(promo);
-          const prompt = this.renderPromotionPromptText(promo);
           const disappearPromotionInApp = this.getPromotionDisappearInAppState(appliedClientTypes, inApp);
 
           if (
@@ -177,11 +176,13 @@ class PromotionsBar extends Component {
             return null;
           }
 
+          const prompt = this.renderPromotionPromptText(promo, inApp);
+
           return (
             <li key={`promo-${promotionCode}-${index}`} className="flex flex-top padding-small">
               <IconLocalOffer className="icon icon__primary icon__smaller" />
               <p className="margin-left-right-smaller text-line-height-base">
-                {description}
+                {this.renderPromotionText(promo)}
                 {prompt ? (
                   <>
                     <br /> {prompt}
@@ -204,7 +205,7 @@ PromotionsBar.propTypes = {
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
   ]),
   promotions: PropTypes.array,
-  shippingType: PropTypes.string,
+  shippingType: PropTypes.oneOfType(Object.values(DELIVERY_METHOD)),
   inApp: PropTypes.bool,
 };
 
