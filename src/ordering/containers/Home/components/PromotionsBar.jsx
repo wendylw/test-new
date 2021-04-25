@@ -42,7 +42,7 @@ class PromotionsBar extends Component {
           Code is valid till {validDate}
         </Trans>
       );
-    } else if (discountProductList || validDate) {
+    } else if (!discountProductList && validDate) {
       return (
         <Trans
           i18nKey="StorePromotionDescription"
@@ -93,10 +93,14 @@ class PromotionsBar extends Component {
   }
 
   renderPromotionPromptText(promotion) {
-    const { appliedClientTypes, maxDiscountAmount, minOrderAmount } = promotion;
+    const { discountProductList, validDate, appliedClientTypes, maxDiscountAmount, minOrderAmount } = promotion;
     const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
     const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
     const onlyInApp = this.getPromotionOnlyInAppState(appliedClientTypes);
+
+    if (discountProductList || validDate) {
+      return null;
+    }
 
     if (!maxDiscountAmount && !minOrderAmount) {
       return onlyInApp ? (
@@ -162,8 +166,9 @@ class PromotionsBar extends Component {
     return (
       <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
         {promotions.map((promo, index) => {
-          const { appliedSources, discountProductList, promotionCode, validDate, appliedClientTypes } = promo;
+          const { appliedSources, promotionCode, appliedClientTypes } = promo;
           const description = this.renderPromotionText(promo);
+          const prompt = this.renderPromotionPromptText(promo);
           const disappearPromotionInApp = this.getPromotionDisappearInAppState(appliedClientTypes, inApp);
 
           if (
@@ -173,19 +178,16 @@ class PromotionsBar extends Component {
             return null;
           }
 
-          const prompt =
-            discountProductList || validDate || !this.renderPromotionPromptText(promo) ? null : (
-              <>
-                <br /> ({this.renderPromotionPromptText(promo)})
-              </>
-            );
-
           return (
             <li key={`promo-${promotionCode}-${index}`} className="flex flex-top padding-small">
               <IconLocalOffer className="icon icon__primary icon__smaller" />
               <p className="margin-left-right-smaller text-line-height-base">
                 {description}
-                {prompt}
+                {prompt ? (
+                  <>
+                    <br /> {prompt}
+                  </>
+                ) : null}
               </p>
             </li>
           );
