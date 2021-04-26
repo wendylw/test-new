@@ -50,7 +50,7 @@ export const dispatchNativeEvent = (method, params, data) => {
   console.log('dispatch params', method, params, data);
   switch (method) {
     case 'nativeLayoutModule_jsNativeEventDispatch':
-      this.registerNativeHeaderEvents(params, data);
+      registerNativeHeaderEvents(params, data);
       break;
     default:
       return;
