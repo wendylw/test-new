@@ -102,12 +102,13 @@ export class Footer extends Component {
     }
   }
 
-  postAppMessage2 = () => {
+  postAppMessage2 = async () => {
     const { appActions, user } = this.props;
     const { isLogin } = user || {};
-    dsbridge.call('callNativeAsync', { function: 'userModule-getToken' }, async res => {
+    const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
+    res.then(async response => {
       console.log('res', JSON.stringify(res));
-      const { code, data } = JSON.parse(res);
+      const { code, data } = response;
       const { access_token, refresh_token } = data;
       if (!isLogin) {
         await appActions.loginApp({
@@ -122,6 +123,24 @@ export class Footer extends Component {
         this.handleWebRedirect();
       }
     });
+
+    // dsbridge.call('callNativeAsync', { method: 'userModule-getToken' }, async res => {
+    //   console.log('res', JSON.stringify(res));
+    //   const { code, data } = JSON.parse(res);
+    //   const { access_token, refresh_token } = data;
+    //   if (!isLogin) {
+    //     await appActions.loginApp({
+    //       accessToken: access_token,
+    //       refreshToken: refresh_token,
+    //     });
+    //     const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
+    //     if (login) {
+    //       this.handleWebRedirect();
+    //     }
+    //   } else {
+    //     this.handleWebRedirect();
+    //   }
+    // });
   };
 
   handleRedirect = () => {
