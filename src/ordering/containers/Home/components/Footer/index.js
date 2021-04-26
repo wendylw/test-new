@@ -191,6 +191,7 @@ export class Footer extends Component {
       footerRef,
       style,
     } = this.props;
+    console.log('isLiveOnline', isLiveOnline);
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartSummary || {};
