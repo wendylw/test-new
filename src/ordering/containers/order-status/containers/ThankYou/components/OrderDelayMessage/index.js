@@ -2,7 +2,7 @@ import React from 'react';
 import { ORDER_DELAY_REASON_CODES } from '../../constants';
 import _get from 'lodash/get';
 import { useTranslation } from 'react-i18next';
-import RamadanIcon from '../../../../../images/order-delay-ramadan.svg';
+import RamadanIcon from '../../../../../../../images/order-delay-ramadan.svg';
 import '../OrderDelayMessage.scss';
 
 const orderDelayMessageConfigMap = {
