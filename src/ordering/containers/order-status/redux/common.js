@@ -75,6 +75,8 @@ export const getLoadOrderStatus = createSelector(getOrder, order => _get(order, 
 
 export const getRiderLocations = createSelector(getOrder, order => _get(order, 'riderLocations', null));
 
+export const getOrderDelayReason = createSelector(getOrder, order => _get(order, 'delayReason', null));
+
 export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)
 );
