@@ -138,11 +138,12 @@ const dsbridgeCall = nativeMethod => {
   );
   if (hasNativeMethod && call === 'sync') {
     let result = dsbridge.call('callNative', { method, params });
-    if (typeof result === 'undefined' || result === null) {
+    let { code, data, message } = JSON.parse(result);
+    if (typeof data === 'undefined' || data === null) {
       return;
     }
     try {
-      return JSON.parse(result);
+      return data;
     } catch (e) {
       console.log(e);
     }
