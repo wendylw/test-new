@@ -38,7 +38,8 @@ export const updateNativeHeaderToDefault = () => {
 
 export const registerFunc = data => {
   dsBridge.register('callWebView', function(res) {
-    console.log('register res', JSON.stringify(res));
+    console.log('register res', res);
+    // console.log('register res', JSON.stringify(res));
     const { method, params } = JSON.parse(res);
     dispatchNativeEvent(method, params, data);
   });
@@ -116,8 +117,8 @@ export const registerNativeHeaderEvents = (params, events) => {
 export const startLiveChat = ({ orderId, name, phone, email, storeName }) => {
   const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
   dsBridge.call('callNative', {
-    function: 'beep_module_start_chat',
-    data: { phoneNumber: phone, name, email, message },
+    method: 'beepModule-',
+    params: { phoneNumber: phone, name, email, message },
   });
 };
 
