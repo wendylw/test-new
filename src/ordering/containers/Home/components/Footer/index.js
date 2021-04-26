@@ -107,9 +107,8 @@ export class Footer extends Component {
     const { isLogin } = user || {};
     const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
     res.then(async response => {
-      console.log('res', JSON.stringify(res));
-      const { code, data } = response;
-      const { access_token, refresh_token } = data;
+      console.log('res', response);
+      const { access_token, refresh_token } = response;
       if (!isLogin) {
         await appActions.loginApp({
           accessToken: access_token,

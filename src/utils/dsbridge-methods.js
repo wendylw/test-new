@@ -19,7 +19,7 @@ export const NATIVE_METHODS = {
     call: 'sync',
   },
   GOTO_HOME: {
-    method: 'routerModule-closeWebview',
+    method: 'routerModule-closeWebView',
     call: 'sync',
   },
   GET_LOGIN_STATUS: {
@@ -150,8 +150,9 @@ const dsbridgeCall = nativeMethod => {
   } else if (hasNativeMethod && call === 'async') {
     var promise = new Promise(function(resolve, reject) {
       dsbridge.call('callNativeAsync', { method, params }, function(result) {
+        let { code, data, message } = JSON.parse(result);
         try {
-          resolve(JSON.parse(result));
+          resolve(data);
         } catch (e) {
           console.log(e);
           reject(e);
