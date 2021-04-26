@@ -8,7 +8,7 @@ import '../OrderDelayMessage.scss';
 const orderDelayMessageConfigMap = {
   [ORDER_DELAY_REASON_CODES.RAMADAN]: {
     icon: RamadanIcon,
-    content_transKey: 'OrderDelayReason_ramadan',
+    content_transKey: 'OrderDelayReasonRamadan',
   },
 };
 
