@@ -42,6 +42,7 @@ export const registerFunc = data => {
     // console.log('register res', JSON.stringify(res));
     const { method, params } = JSON.parse(res);
     dispatchNativeEvent(method, params, data);
+    return { code: '00000' };
   });
 };
 
