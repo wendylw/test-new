@@ -32,7 +32,7 @@ export const NATIVE_METHODS = {
   },
   TOKEN_EXPIRED: {
     method: 'userModule-tokenExpired',
-    call: 'sync',
+    call: 'async',
   },
   SHOW_MAP: {
     method: 'mapModule-showMap',

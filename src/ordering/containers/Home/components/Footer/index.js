@@ -19,21 +19,15 @@ import dsbridge from 'dsbridge';
 import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
 
 export class Footer extends Component {
-  constructor(props) {
-    super(props);
-    // 注册方法应该想办法放到最外层
-    DsbridgeUtils.dsRegReceiveTokenListener({ callback: async res => await this.authTokens(res) });
-  }
-
-  componentDidUpdate(prevProps) {
+  componentDidUpdate = async prevProps => {
     const { user } = this.props;
     const { isExpired, isWebview } = user || {};
 
     // token过期重新发postMessage
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      this.postAppMessage(user);
+      await this.tokenExpired();
     }
-  }
+  };
 
   getDisplayPrice() {
     const { shoppingCart } = this.props;
@@ -93,14 +87,25 @@ export class Footer extends Component {
     DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
   };
 
-  postAppMessage(user) {
-    const { isExpired } = user || {};
-    if (isExpired) {
-      DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
+  tokenExpired = async () => {
+    const { appActions, user } = this.props;
+    const { isLogin } = user || {};
+    const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
+    console.log('expired res', res);
+    const { access_token, refresh_token } = res;
+    if (!isLogin) {
+      await appActions.loginApp({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      });
+      const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
+      if (login) {
+        this.handleWebRedirect();
+      }
     } else {
-      DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_ADDRESS);
+      this.handleWebRedirect();
     }
-  }
+  };
 
   postAppMessage2 = async () => {
     const { appActions, user } = this.props;
