@@ -106,22 +106,20 @@ export class Footer extends Component {
     const { appActions, user } = this.props;
     const { isLogin } = user || {};
     const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
-    res.then(async response => {
-      console.log('res', response);
-      const { access_token, refresh_token } = response;
-      if (!isLogin) {
-        await appActions.loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        });
-        const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
-        if (login) {
-          this.handleWebRedirect();
-        }
-      } else {
+    console.log('res', res);
+    const { access_token, refresh_token } = res;
+    if (!isLogin) {
+      await appActions.loginApp({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      });
+      const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
+      if (login) {
         this.handleWebRedirect();
       }
-    });
+    } else {
+      this.handleWebRedirect();
+    }
 
     // dsbridge.call('callNativeAsync', { method: 'userModule-getToken' }, async res => {
     //   console.log('res', JSON.stringify(res));
