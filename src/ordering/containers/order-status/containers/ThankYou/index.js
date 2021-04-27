@@ -58,6 +58,7 @@ import {
   getStoreHashCode,
   getOrderCancellationButtonVisible,
 } from './redux/index';
+import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -1472,6 +1473,8 @@ export class ThankYou extends PureComponent {
             });
           }}
         />
+
+        <OrderCancellationReasonsAside />
       </section>
     );
   }
