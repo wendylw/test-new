@@ -263,13 +263,15 @@ export class OrderDetails extends Component {
               color: '#00b0ff',
             },
             onClick: () => {
-              dsBridgeUtils.startLiveChat({
-                orderId,
-                name: orderUserName,
-                phone: orderUserPhone,
-                email: userEmail,
-                storeName: orderStoreName,
-              });
+              DsbridgeUtils.dsbridgeCall(
+                NATIVE_METHODS.START_CHAT({
+                  orderId,
+                  name: orderUserName,
+                  phone: orderUserPhone,
+                  email: userEmail,
+                  storeName: orderStoreName,
+                })
+              );
             },
           }
         : {};

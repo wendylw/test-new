@@ -15,7 +15,6 @@ import { getAllBusinesses } from '../../../../../redux/modules/entities/business
 import Utils from '../../../../../utils/utils';
 import { del, get } from '../../../../../utils/request';
 import Url from '../../../../../utils/url';
-import dsbridge from 'dsbridge';
 import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
 
 export class Footer extends Component {
@@ -40,52 +39,6 @@ export class Footer extends Component {
 
     return totalPrice;
   }
-
-  authTokens = async res => {
-    if (res) {
-      if (Utils.isIOSWebview()) {
-        await this.loginBeepApp(res);
-      } else if (Utils.isAndroidWebview()) {
-        const data = JSON.parse(res) || {};
-        await this.loginBeepApp(data);
-      }
-    }
-  };
-
-  getLoginOrNot = async () => {
-    const res = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
-    const { login } = res;
-    return login;
-  };
-
-  getKongTokenFromNative = async () => {
-    await del(Url.API_URLS.LOGOUT.url);
-  };
-
-  loginBeepApp = async res => {
-    const { appActions } = this.props;
-    let isLogin = await this.getLoginOrNot();
-    let isValidToken = Boolean(res.access_token && res.refresh_token);
-    if (isValidToken && isLogin) {
-      this.handleWebRedirect();
-    } else if (isValidToken && !isLogin) {
-      await appActions.loginApp({
-        accessToken: res.access_token,
-        refreshToken: res.refresh_token,
-      });
-      isLogin = await this.getLoginOrNot();
-      if (isLogin) {
-        this.handleWebRedirect();
-      }
-    } else if (!isValidToken) {
-      console.log('native token is invalid');
-      this.handleInvalidAppToken();
-    }
-  };
-
-  handleInvalidAppToken = () => {
-    DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
-  };
 
   tokenExpired = async () => {
     const { appActions, user } = this.props;

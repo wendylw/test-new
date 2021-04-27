@@ -2,7 +2,8 @@ import Utils from './utils';
 import dsbridge from 'dsbridge';
 
 export const NATIVE_METHODS = {
-  START_CHAT: (phone, name, email, message) => {
+  START_CHAT: ({ orderId, phone, name, email, storeName }) => {
+    const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
     return {
       method: 'beepModule-startChat',
       params: {

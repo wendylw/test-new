@@ -1233,13 +1233,15 @@ export class ThankYou extends PureComponent {
               color: '#00b0ff',
             },
             onClick: () => {
-              dsBridgeUtils.startLiveChat({
-                orderId,
-                name: orderUserName,
-                phone: orderUserPhone,
-                email: userEmail,
-                storeName: orderStoreName,
-              });
+              DsbridgeUtils.dsbridgeCall(
+                NATIVE_METHODS.START_CHAT({
+                  orderId,
+                  name: orderUserName,
+                  phone: orderUserPhone,
+                  email: userEmail,
+                  storeName: orderStoreName,
+                })
+              );
             },
           }
         : {};
@@ -1288,13 +1290,15 @@ export class ThankYou extends PureComponent {
         name={orderUserName}
         phone={orderUserPhone}
         onClick={() => {
-          dsBridgeUtils.startLiveChat({
-            orderId,
-            name: orderUserName,
-            phone: orderUserPhone,
-            email: userEmail,
-            storeName: orderStoreName,
-          });
+          DsbridgeUtils.dsbridgeCall(
+            NATIVE_METHODS.START_CHAT({
+              orderId,
+              name: orderUserName,
+              phone: orderUserPhone,
+              email: userEmail,
+              storeName: orderStoreName,
+            })
+          );
         }}
       />
     );
