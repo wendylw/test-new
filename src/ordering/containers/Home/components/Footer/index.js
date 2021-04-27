@@ -43,6 +43,7 @@ export class Footer extends Component {
   tokenExpired = async () => {
     const { appActions, user } = this.props;
     const { isLogin } = user || {};
+    console.log('go token expired');
     const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
     console.log('expired res', res);
     const { access_token, refresh_token } = res;
