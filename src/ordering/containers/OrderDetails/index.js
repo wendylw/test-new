@@ -26,7 +26,6 @@ import { IconNext } from '../../../components/Icons';
 import { CAN_REPORT_STATUS_LIST } from '../../redux/modules/reportDriver';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import * as dsBridgeUtils from '../../../utils/dsBridge-utils';
 import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
 
 const ShippingTypes = {
@@ -295,7 +294,7 @@ export class OrderDetails extends Component {
           isPage={true}
           title={t('OrderDetails')}
           navFunc={() => {
-            dsBridgeUtils.goBack();
+            DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GO_BACK);
           }}
           rightContent={rightContent}
         />

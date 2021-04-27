@@ -23,6 +23,10 @@ export const NATIVE_METHODS = {
     method: 'routerModule-closeWebView',
     call: 'sync',
   },
+  GO_BACK: {
+    method: 'routerModule-back',
+    call: 'sync',
+  },
   GET_LOGIN_STATUS: {
     method: 'userModule-isLogin',
     call: 'sync',

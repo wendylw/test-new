@@ -35,7 +35,7 @@ import { actions as appActionCreators } from '../../redux/modules/app';
 import { IconClose } from '../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../utils/utils';
-import * as dsBridgeUtils from '../../../utils/dsBridge-utils';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
@@ -64,7 +64,7 @@ class ReportDriver extends Component {
 
   goBack() {
     if (Utils.isWebview()) {
-      dsBridgeUtils.goBack();
+      DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GO_BACK);
     } else {
       this.gotoThankYourPage();
     }
