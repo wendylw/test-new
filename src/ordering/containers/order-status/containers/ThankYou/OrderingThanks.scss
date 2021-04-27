@@ -144,6 +144,10 @@ $total-text-size: 1.7142rem;
     color: $status-blue;
     border-radius: 0;
     min-height: 56px;
+
+    &.cancellation-button {
+      color: #fd7a70;
+    }
   }
 
   &__footer {

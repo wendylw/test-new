@@ -52,7 +52,12 @@ import {
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import './OrderingThanks.scss';
-import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
+import {
+  actions as thankYouActionCreators,
+  getCashbackInfo,
+  getStoreHashCode,
+  getOrderCancellationButtonVisible,
+} from './redux/index';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -438,6 +443,8 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  handleOrderCancellation = () => {};
+
   handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
     history.push({
@@ -573,6 +580,21 @@ export class ThankYou extends PureComponent {
         data-heap-name="ordering.thank-you.view-detail-btn"
       >
         {t('SeeDetails')}
+      </button>
+    );
+  }
+
+  renderCancellationButton() {
+    const { t } = this.props;
+
+    return (
+      <button
+        className="ordering-thanks__button-card-link cancellation-button button button__block text-weight-bolder text-uppercase"
+        onClick={this.handleOrderCancellation}
+        data-testid="thanks__cancellation-button"
+        data-heap-name="ordering.thank-you.cancellation-button"
+      >
+        {t('CancelOrder')}
       </button>
     );
   }
@@ -1276,7 +1298,7 @@ export class ThankYou extends PureComponent {
   }
 
   render() {
-    const { t, history, match, order, storeHashCode, user } = this.props;
+    const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
     const {
@@ -1415,7 +1437,11 @@ export class ThankYou extends PureComponent {
 
               <div className="card">
                 {orderInfo}
+
                 {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
+
+                {orderCancellationButtonVisible && this.renderCancellationButton()}
+
                 <PhoneLogin hideMessage={true} history={history} />
               </div>
             </div>
@@ -1465,6 +1491,7 @@ export default compose(
       orderStatus: getOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
+      orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

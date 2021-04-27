@@ -1,6 +1,10 @@
 import Url from '../../../../../../utils/url';
 import Constants from '../../../../../../utils/constants';
 import { API_REQUEST } from '../../../../../../redux/middlewares/api';
+import { createSelector } from 'reselect';
+import { getOrderStatus, getIsOnDemandOrder, getIsUseStorehubLogistics } from '../../../redux/common';
+
+const { ORDER_STATUS } = Constants;
 
 const types = {
   // fetch cashbackInfo
@@ -140,3 +144,11 @@ export const actions = {
 export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCode;
 
 export const getCashbackInfo = state => state.orderStatus.thankYou.cashbackInfo;
+
+export const getOrderCancellationButtonVisible = createSelector(
+  getOrderStatus,
+  getIsOnDemandOrder,
+  getIsUseStorehubLogistics,
+  (orderStatus, isOnDemandOrder, isUseStorehubLogistics) =>
+    [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus) && isOnDemandOrder && isUseStorehubLogistics
+);

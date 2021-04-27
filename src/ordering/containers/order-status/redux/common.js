@@ -79,6 +79,10 @@ export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)
 );
 
+export const getIsPreOrder = createSelector(getOrder, order => _get(order, 'isPreOrder', false));
+
+export const getIsOnDemandOrder = createSelector(getIsPreOrder, isPreOrder => !isPreOrder);
+
 export const getPromotion = createSelector(getOrder, order => {
   if (order && order.appliedVoucher) {
     return {
