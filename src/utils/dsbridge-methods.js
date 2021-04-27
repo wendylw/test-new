@@ -43,21 +43,6 @@ export const NATIVE_METHODS = {
     method: 'mapModule-hideMap',
     call: 'sync',
   },
-  UPDATE_HEADER_OPTIONS_AND_SHOW_MAP: (title, text) => {
-    return {
-      method: 'mapModule-updateHeaderOptionsAndShowMap',
-      params: {
-        title,
-        rightButtons: [
-          {
-            text,
-            callbackName: 'contactUs',
-          },
-        ],
-      },
-      call: 'sync',
-    };
-  },
   UPDATE_RIDER_POSITION: (lat, lng) => {
     return {
       method: 'mapModule-updateRiderPosition',

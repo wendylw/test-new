@@ -172,7 +172,7 @@ export class ThankYou extends PureComponent {
 
     if (updatedStatus === PICKUP && Utils.isDeliveryType()) {
       try {
-        DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.UPDATE_HEADER_OPTIONS_AND_SHOW_MAP(title, text));
+        DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.SHOW_MAP);
         DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.UPDATE_STORE_POSITION(storeLat, storeLng));
         DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.UPDATE_HOME_POSITION(deliveryLat, deliveryLng));
         DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.UPDATE_RIDER_POSITION(lat, lng));
