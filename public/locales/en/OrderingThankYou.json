@@ -50,5 +50,12 @@
   "CopyDriverDescription": "Driver's contact number (+{{phone}}) has been copied to your clipboard",
   "CopyTitle": "Contact number copied",
   "Ok": "Ok",
-  "CancelOrder": "Cancel Order"
+  "CancelOrder": "Cancel Order",
+  "PleaseSelectCancellationReason": "Please select cancellation reason",
+  "DeliveryTimeIsTooLong": "Delivery time is too long",
+  "MerchantCalledToCancel": "Merchant called to cancel",
+  "WrongDeliveryInformation": "Wrong delivery information",
+  "OrderedWrongItem": "Ordered wrong item",
+  "ChangeOfMind": "Change of mind",
+  "Others": "Others"
 }

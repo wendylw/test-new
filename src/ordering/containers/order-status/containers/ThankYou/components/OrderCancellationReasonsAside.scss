@@ -1,4 +1,14 @@
+@import "../../../../../../Variables.scss";
+
 .order-cancellation-reasons-aside {
+  height: auto;
+
   &__container {
+    bottom: 0;
+  }
+
+  &__content-wrapper {
+    border-top: 1px solid $gray-4;
+    border-bottom: 1px solid $gray-4;
   }
 }
