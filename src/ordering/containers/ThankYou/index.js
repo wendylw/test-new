@@ -50,7 +50,6 @@ import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import CleverTap from '../../../utils/clevertap';
 import './OrderingThanks.scss';
-import * as dsBridgeUtils from '../../../utils/dsBridge-utils';
 import * as storeUtils from '../../../utils/store-utils';
 
 // const { ORDER_STATUS } = Constants;
@@ -1261,7 +1260,7 @@ export class ThankYou extends PureComponent {
       return (
         <NativeHeader
           headerRef={ref => (this.headerEl = ref)}
-          isPage={true}
+          isPage={false}
           title={`#${orderId}`}
           navFunc={() => {
             DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GOTO_HOME);
@@ -1285,22 +1284,7 @@ export class ThankYou extends PureComponent {
     const rightContent = isDineInType ? (
       rightContentOfTableId
     ) : (
-      <LiveChat
-        orderId={orderId}
-        name={orderUserName}
-        phone={orderUserPhone}
-        onClick={() => {
-          DsbridgeUtils.dsbridgeCall(
-            NATIVE_METHODS.START_CHAT({
-              orderId,
-              name: orderUserName,
-              phone: orderUserPhone,
-              email: userEmail,
-              storeName: orderStoreName,
-            })
-          );
-        }}
-      />
+      <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />
     );
 
     return (
