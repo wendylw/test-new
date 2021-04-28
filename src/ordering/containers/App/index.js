@@ -204,10 +204,6 @@ class App extends Component {
     }
   }
 
-  handleClearError = () => {
-    this.props.appActions.clearError();
-  };
-
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
   };

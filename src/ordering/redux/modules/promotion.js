@@ -75,14 +75,6 @@ export const actions = {
       },
     });
 
-    if (result.type === PROMOTION_TYPES.APPLY_VOUCHER_FAILURE) {
-      dispatch(
-        appActions.showError({
-          message: i18next.t('ConnectionIssue'),
-        })
-      );
-    }
-
     return result;
   },
   dismissPromotion: () => async (dispatch, getState) => {
@@ -119,14 +111,6 @@ export const actions = {
 
     if (result.type === PROMOTION_TYPES.DISMISS_PROMOTION_CODE_SUCCESS) {
       dispatch(actions.resetPromotion());
-    }
-
-    if (result.type === PROMOTION_TYPES.DISMISS_PROMOTION_CODE_FAILURE) {
-      dispatch(
-        appActions.showError({
-          message: i18next.t('ConnectionIssue'),
-        })
-      );
     }
 
     return result;

@@ -7,6 +7,8 @@
   "40002Description": "An error occurred while verifying your details. Please try again.",
   "40003Title": "Verification Failed (Error: {{error_code}})",
   "40003Description": "An error occurred while verifying your details. Please try again.",
+  "40008Title": "Incomplete delivery info (Error: {{error_code}})",
+  "40008Description": "Please complete your delivery information and try again.",
   "40009Title": "Out of Range (Error: {{error_code}})",
   "40009Description": "The delivery address is out of range, please key in your address again.",
   "40012Title": "Verification Failed (Error: {{error_code}})",

@@ -12,25 +12,11 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCartSummary, getPromotion } from '../../../redux/modules/entities/carts';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
 import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
-import {
-  actions as homeActionCreators,
-  getShoppingCart,
-  getCurrentProduct,
-  getCategoryProductList,
-} from '../../redux/modules/home';
-import {
-  actions as appActionCreators,
-  getOnlineStoreInfo,
-  getUser,
-  getBusiness,
-  getStoreInfoForCleverTap,
-} from '../../redux/modules/app';
-import { getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import { actions as homeActionCreators, getShoppingCart, getCategoryProductList } from '../../redux/modules/home';
+import { actions as appActionCreators, getUser, getStoreInfoForCleverTap } from '../../redux/modules/app';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
@@ -420,16 +406,7 @@ class Cart extends Component {
   };
 
   render() {
-    const {
-      t,
-      cartSummary,
-      shoppingCart,
-      businessInfo,
-      user,
-      history,
-      storeInfoForCleverTap,
-      allProductsKeys,
-    } = this.props;
+    const { t, cartSummary, shoppingCart, businessInfo, user, history, storeInfoForCleverTap } = this.props;
     const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
@@ -575,20 +552,12 @@ export default compose(
   withTranslation(['OrderingCart', 'OrderingPromotion']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
-        business: getBusiness(state),
         user: getUser(state),
         cartSummary: getCartSummary(state),
         promotion: getPromotion(state),
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        currentProduct: getCurrentProduct(state),
-        thankYouPageUrl: getThankYouPageUrl(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
-        allBusinessInfo: getAllBusinesses(state),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         allProductsKeys: getAllProductsKeys(state),
