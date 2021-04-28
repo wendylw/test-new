@@ -24,7 +24,7 @@ export class Footer extends Component {
 
     // token过期重新发postMessage
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      await this.tokenExpired();
+      await this.postAppMessage();
     }
   };
 
@@ -40,31 +40,38 @@ export class Footer extends Component {
     return totalPrice;
   }
 
-  tokenExpired = async () => {
-    const { appActions, user } = this.props;
-    const { isLogin } = user || {};
-    console.log('go token expired');
-    const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
-    console.log('expired res', res);
-    const { access_token, refresh_token } = res;
-    if (!isLogin) {
-      await appActions.loginApp({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      });
-      const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
-      if (login) {
-        this.handleWebRedirect();
-      }
-    } else {
-      this.handleWebRedirect();
-    }
-  };
+  // tokenExpired = async () => {
+  //   const { appActions, user } = this.props;
+  //   const { isLogin } = user || {};
+  //   console.log('go token expired');
+  //   const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
+  //   console.log('expired res', res);
+  //   const { access_token, refresh_token } = res;
+  //   if (!isLogin) {
+  //     await appActions.loginApp({
+  //       accessToken: access_token,
+  //       refreshToken: refresh_token,
+  //     });
+  //     const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
+  //     if (login) {
+  //       this.handleWebRedirect();
+  //     }
+  //   } else {
+  //     this.handleWebRedirect();
+  //   }
+  // };
 
-  postAppMessage2 = async () => {
+  postAppMessage = async () => {
     const { appActions, user } = this.props;
-    const { isLogin } = user || {};
-    const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
+    const { isLogin, isExpired } = user || {};
+
+    let res;
+    if (isExpired) {
+      res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
+    } else {
+      res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
+    }
+    // const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
     console.log('res', res);
     const { access_token, refresh_token } = res;
     if (!isLogin) {
@@ -100,7 +107,13 @@ export class Footer extends Component {
   };
 
   handleRedirect = () => {
-    this.postAppMessage2();
+    const { user } = this.props;
+    const { isWebview } = user || {};
+    if (isWebview) {
+      this.postAppMessage();
+    } else {
+      this.handleWebRedirect();
+    }
   };
 
   handleWebRedirect = () => {
