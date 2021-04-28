@@ -1,6 +1,7 @@
 import _isNull from 'lodash/isNull';
 import _isUndefined from 'lodash/isUndefined';
 import { isHttpSuccess, assembleUrl } from './api-utils';
+import Utils from '../utils';
 
 const defaultHeaders = {
   Accept: 'application/json',
@@ -8,6 +9,7 @@ const defaultHeaders = {
   // Fixed IE cache request
   Pragma: 'no-cache',
   'Cache-Control': 'no-cache',
+  client: Utils.getHeaderClient(),
 };
 
 function convertOptions(options) {
