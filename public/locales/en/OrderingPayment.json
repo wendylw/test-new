@@ -44,6 +44,5 @@
   "AddAndPay": "Add & pay",
   "CardEndingIn": "Ending in {{cardEnding}}",
   "SecurityHint": "Our card payment service is under PCI compliance protection to protect and encrypt cardholder data transmissions. <1>Know more here</1>",
-  "TimeOut": "Time Out",
-  "OrderDelayReasonRamadan": "During this holy month of Ramadan, finding a rider may take longer than usual."
+  "TimeOut": "Time Out"
 }

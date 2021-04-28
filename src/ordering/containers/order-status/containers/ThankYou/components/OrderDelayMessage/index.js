@@ -13,7 +13,7 @@ const orderDelayMessageConfigMap = {
 };
 
 function OrderDelayMessage({ orderDelayReason }) {
-  const { t } = useTranslation('OrderingPayment');
+  const { t } = useTranslation('OrderingThankYou');
 
   const orderDelayMessageConfig = _get(orderDelayMessageConfigMap, orderDelayReason, null);
 
