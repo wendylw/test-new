@@ -13,18 +13,19 @@ import { actions as homeActionCreators, getShoppingCart, getCategoryProductList 
 import { actions as appActionCreators, getBusiness, getUser } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import Utils from '../../../../../utils/utils';
-import { del, get } from '../../../../../utils/request';
-import Url from '../../../../../utils/url';
 import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
 
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
     const { user } = this.props;
-    const { isExpired, isWebview } = user || {};
+    const { isExpired, isWebview, isLogin } = user || {};
 
     // token过期重新发postMessage
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       await this.postAppMessage();
+    }
+    if (isLogin && prevProps.user.isLogin !== isLogin && isWebview) {
+      this.handleWebRedirect();
     }
   };
 
@@ -40,51 +41,25 @@ export class Footer extends Component {
     return totalPrice;
   }
 
-  // tokenExpired = async () => {
-  //   const { appActions, user } = this.props;
-  //   const { isLogin } = user || {};
-  //   console.log('go token expired');
-  //   const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
-  //   console.log('expired res', res);
-  //   const { access_token, refresh_token } = res;
-  //   if (!isLogin) {
-  //     await appActions.loginApp({
-  //       accessToken: access_token,
-  //       refreshToken: refresh_token,
-  //     });
-  //     const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
-  //     if (login) {
-  //       this.handleWebRedirect();
-  //     }
-  //   } else {
-  //     this.handleWebRedirect();
-  //   }
-  // };
-
   postAppMessage = async () => {
     const { appActions, user } = this.props;
     const { isLogin, isExpired } = user || {};
 
-    let res;
-    if (isExpired) {
-      res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
-    } else {
-      res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
-    }
-    // const res = await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
-    console.log('res', res);
-    const { access_token, refresh_token } = res;
-    if (!isLogin) {
-      await appActions.loginApp({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      });
-      const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
-      if (login) {
-        this.handleWebRedirect();
-      }
-    } else {
+    if (isLogin) {
       this.handleWebRedirect();
+    } else {
+      let res = isExpired
+        ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED)
+        : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
+      if (res === null || res === 'undefined') {
+        console.log('native token is invalid');
+      } else {
+        const { access_token, refresh_token } = res;
+        await appActions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      }
     }
 
     // dsbridge.call('callNativeAsync', { method: 'userModule-getToken' }, async res => {

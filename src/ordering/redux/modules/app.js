@@ -341,6 +341,7 @@ const user = (state = initialState.user, action) => {
         isLogin: login,
         consumerId,
         isFetching: false,
+        isExpired: false,
       };
     case types.CREATE_LOGIN_FAILURE:
       if (error && (error.code === 401 || error.code === '40000')) {
