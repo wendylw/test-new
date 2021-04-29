@@ -93,6 +93,7 @@ export class ThankYou extends PureComponent {
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
+      showOrderCancellationReasonAside: false,
     };
     this.injectFun();
   }
@@ -444,7 +445,11 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  handleOrderCancellation = () => {};
+  handleOrderCancellation = () => {
+    this.setState({
+      showOrderCancellationReasonAside: true,
+    });
+  };
 
   handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
@@ -1298,6 +1303,12 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  handleHideOrderCancellationAside = () => {
+    this.setState({
+      showOrderCancellationReasonAside: false,
+    });
+  };
+
   render() {
     const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible } = this.props;
     const date = new Date();
@@ -1474,7 +1485,10 @@ export class ThankYou extends PureComponent {
           }}
         />
 
-        <OrderCancellationReasonsAside />
+        <OrderCancellationReasonsAside
+          show={this.state.showOrderCancellationReasonAside}
+          onHide={this.handleHideOrderCancellationAside}
+        />
       </section>
     );
   }

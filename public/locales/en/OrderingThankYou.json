@@ -57,5 +57,7 @@
   "WrongDeliveryInformation": "Wrong delivery information",
   "OrderedWrongItem": "Ordered wrong item",
   "ChangeOfMind": "Change of mind",
-  "Others": "Others"
+  "Others": "Others",
+  "PleaseSpecifyReason": "Please specify reason (required)",
+  "LimitCharacters": "{{inputLength}}/{{maxLength}} characters"
 }

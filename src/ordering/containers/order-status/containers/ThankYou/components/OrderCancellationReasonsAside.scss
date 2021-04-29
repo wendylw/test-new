@@ -1,6 +1,6 @@
 @import "../../../../../../Variables.scss";
 
-.order-cancellation-reasons-aside {
+.order-cancellation-reasons {
   height: auto;
 
   &__container {
@@ -10,5 +10,14 @@
   &__content-wrapper {
     border-top: 1px solid $gray-4;
     border-bottom: 1px solid $gray-4;
+  }
+
+  &__specify-reason {
+    overflow: hidden;
+
+    textarea {
+      border: none;
+      width: 100%;
+    }
   }
 }
