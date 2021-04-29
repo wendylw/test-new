@@ -74,7 +74,7 @@ export const thunks = {
     }
 
     try {
-      await ApiFetch.post(Url.API_URLS.CREATE_FEED_BACK.url, { payload });
+      await ApiFetch.post(Url.API_URLS.CREATE_FEED_BACK.url, payload);
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.SUBMITTED));
     } catch (e) {
       console.error(e);

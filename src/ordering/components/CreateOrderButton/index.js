@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError } from '../../redux/modules/app';
+import { getUser, getRequestInfo, getError, getCartBilling, types } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
+import '../Loader.scss';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -42,7 +42,7 @@ class CreateOrderButton extends React.Component {
       createOrder,
       user,
       requestInfo,
-      cartSummary,
+      cartBilling,
       afterCreateOrder,
       beforeCreateOrder,
       paymentName,
@@ -50,7 +50,7 @@ class CreateOrderButton extends React.Component {
     } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
-    const { totalCashback } = cartSummary || {};
+    const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
     let currentOrder;
@@ -111,7 +111,7 @@ class CreateOrderButton extends React.Component {
   };
 
   render() {
-    const { children, className, buttonType, disabled, dataAttributes } = this.props;
+    const { children, className, buttonType, disabled, dataAttributes, loaderText, processing } = this.props;
     const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
@@ -119,15 +119,29 @@ class CreateOrderButton extends React.Component {
     }
 
     return (
-      <button
-        className={classList.join(' ')}
-        type={buttonType}
-        disabled={disabled}
-        onClick={this.handleCreateOrder.bind(this)}
-        {...dataAttributes}
-      >
-        {children}
-      </button>
+      <>
+        <button
+          className={classList.join(' ')}
+          type={buttonType}
+          disabled={disabled}
+          onClick={this.handleCreateOrder.bind(this)}
+          {...dataAttributes}
+        >
+          {children}
+        </button>
+        {processing ? (
+          <div className="page-loader flex flex-middle flex-center">
+            <div className="prompt-loader padding-small border-radius-large text-center flex flex-middle flex-center">
+              <div className="prompt-loader__content">
+                <i className="circle-loader margin-smaller"></i>
+                {loaderText ? (
+                  <span className="prompt-loader__text margin-top-bottom-smaller text-size-smaller">{loaderText}</span>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </>
     );
   }
 }
@@ -144,6 +158,8 @@ CreateOrderButton.propTypes = {
   afterCreateOrder: PropTypes.func,
   paymentName: PropTypes.string,
   paymentExtraData: PropTypes.object,
+  processing: PropTypes.bool,
+  loaderText: PropTypes.string,
 };
 
 CreateOrderButton.defaultProps = {
@@ -152,6 +168,7 @@ CreateOrderButton.defaultProps = {
   isPromotionValid: true,
   disabled: true,
   sentOtp: false,
+  processing: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };
@@ -164,7 +181,7 @@ export default compose(
         user: getUser(state),
         error: getError(state),
         requestInfo: getRequestInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
       };
     },
     {

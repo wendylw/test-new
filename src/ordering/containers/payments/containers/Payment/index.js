@@ -6,12 +6,16 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../../../redux/modules/home';
 import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import { getDeliveryInfo } from '../../../../redux/modules/home';
-import { getOnlineStoreInfo, getBusiness, getMerchantCountry, getUser } from '../../../../redux/modules/app';
-import { getBusinessInfo } from '../../../../redux/modules/cart';
+import {
+  getOnlineStoreInfo,
+  getBusiness,
+  getMerchantCountry,
+  getBusinessInfo,
+  getUser,
+} from '../../../../redux/modules/app';
 import {
   getPaymentsPendingState,
   getAllPaymentsOptions,
@@ -21,7 +25,7 @@ import {
 } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
 import Utils from '../../../../../utils/utils';
-import PaymentItem from '../../components/payment-item';
+import PaymentItem from '../../components/PaymentItem';
 import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -46,7 +50,7 @@ class Payment extends Component {
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
 
-    await this.props.homeActions.loadShoppingCart(
+    await this.props.appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -231,6 +235,8 @@ class Payment extends Component {
             paymentName={currentPaymentOption.paymentProvider}
             afterCreateOrder={this.handleAfterCreateOrder}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            processing={payNowLoading}
+            loaderText={t('Processing')}
           >
             {payNowLoading ? t('Processing') : t('Continue')}
           </CreateOrderButton>
@@ -265,7 +271,6 @@ export default compose(
     },
     dispatch => ({
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
