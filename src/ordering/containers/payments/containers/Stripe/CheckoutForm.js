@@ -425,6 +425,8 @@ function CheckoutForm({
           afterCreateOrder={handleAfterCreateOrder}
           paymentName={'Stripe'}
           paymentExtraData={finalPaymentExtraData}
+          processing={processing}
+          loaderText={t('Processing')}
         >
           {processing ? (
             t('Processing')

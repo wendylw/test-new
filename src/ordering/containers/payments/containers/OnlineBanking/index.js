@@ -12,15 +12,19 @@ import Utils from '../../../../../utils/utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../../../redux/modules/home';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
-import { getCartSummary } from '../../../../../redux/modules/entities/carts';
-import { getOnlineStoreInfo, getBusiness, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getBusiness,
+  getCartBilling,
+  getBusinessInfo,
+  getStoreInfoForCleverTap,
+} from '../../../../redux/modules/app';
 import { getPaymentsPendingState, getSelectedPaymentOption, getOnlineBankList } from '../../redux/common/selectors';
 import { loadPaymentOptions } from '../../redux/common/thunks';
 import { actions } from './redux';
 import { getSelectedOnlineBanking } from './redux/selectors';
-import { getBusinessInfo } from '../../../../redux/modules/cart';
 import './OrderingBanking.scss';
 import CleverTap from '../../../../../utils/clevertap';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -42,7 +46,7 @@ class OnlineBanking extends Component {
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
 
-    await this.props.homeActions.loadShoppingCart(
+    await this.props.appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -118,14 +122,14 @@ class OnlineBanking extends Component {
       t,
       match,
       history,
-      cartSummary,
+      cartBilling,
       onlineStoreInfo,
       pendingPaymentOptions,
       currentPaymentOption,
       currentOnlineBanking,
       storeInfoForCleverTap,
     } = this.props;
-    const { total } = cartSummary || {};
+    const { total } = cartBilling || {};
     const { logo } = onlineStoreInfo || {};
     const { payNowLoading } = this.state;
 
@@ -150,7 +154,6 @@ class OnlineBanking extends Component {
         />
 
         <div className="ordering-banking__container padding-top-bottom-normal">
-          <Image className="ordering-banking__logo logo logo__bigger margin-normal" src={logo} />
           <div className="text-center padding-top-bottom-normal">
             <CurrencyNumber className="text-center text-size-large text-weight-bolder" money={total || 0} />
           </div>
@@ -201,6 +204,8 @@ class OnlineBanking extends Component {
             }}
             paymentName={currentPaymentOption.paymentProvider}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            processing={payNowLoading}
+            loaderText={t('Processing')}
           >
             {payNowLoading ? (
               t('Processing')
@@ -232,14 +237,14 @@ export default compose(
 
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
       updateBankingSelected: bindActionCreators(actions.updateBankingSelected, dispatch),

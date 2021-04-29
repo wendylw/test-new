@@ -4,28 +4,26 @@ import ReactDOM from 'react-dom';
 import _forEach from 'lodash/forEach';
 import _get from 'lodash/get';
 import { withTranslation } from 'react-i18next';
-import Swipe, { SwipeItem } from 'swipejs/react';
-import Tag from '../../../../../components/Tag';
-import Image from '../../../../../components/Image';
-import VariationSelector from '../VariationSelector';
-import { IconClose } from '../../../../../components/Icons';
-import ItemOperator from '../../../../../components/ItemOperator';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-import config from '../../../../../config';
-import Utils from '../../../../../utils/utils';
-import Constants from '../../../../../utils/constants';
+import Tag from '../../../../components/Tag';
+import Image from '../../../../components/Image';
+import VariationSelector from './VariationSelector';
+import { IconClose } from '../../../../components/Icons';
+import ItemOperator from '../../../../components/ItemOperator';
+import CurrencyNumber from '../../../components/CurrencyNumber';
+import config from '../../../../config';
+import Utils from '../../../../utils/utils';
+import Constants from '../../../../utils/constants';
 import SwiperCore, { Autoplay, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getProductById } from '../../../../../redux/modules/entities/products';
-import { actions as homeActionCreators, getCurrentProduct } from '../../../../redux/modules/home';
-import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
-import qs from 'qs';
+import { getSelectedProductDetail } from '../../../redux/modules/home';
+import { actions as appActionCreators } from '../../../redux/modules/app';
+import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
-import './ProductDetail.scss';
+import './ProductDetailDrawer.scss';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -35,7 +33,7 @@ const EXCLUDED_KEYS = ['variationType'];
 
 SwiperCore.use([Autoplay, Pagination]);
 
-class ProductDetail extends Component {
+class ProductDetailDrawer extends Component {
   productEl = null;
   productDescriptionImage = null;
   productDetailImage = null;
@@ -56,9 +54,9 @@ class ProductDetail extends Component {
   };
 
   componentDidMount() {
-    const { product } = this.props;
+    const { selectedProduct } = this.props;
 
-    this.initVariationsByIdMap(product);
+    this.initVariationsByIdMap(selectedProduct);
 
     if (this.swipeEl) {
       this.swipeEl.stop();
@@ -67,16 +65,20 @@ class ProductDetail extends Component {
     this.initMinimumVariationList();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { show, product } = this.props;
-    const { variations, id } = product || {};
+  componentDidUpdate(prevProps) {
+    const { show, selectedProduct } = this.props;
+    const { variations, id } = selectedProduct || {};
 
     if (!id || !variations) {
       return;
     }
 
-    if ((!prevProps.product && id) || id !== prevProps.product.id || (show && prevProps.show !== show)) {
-      this.initVariationsByIdMap(product);
+    if (
+      (!prevProps.selectedProduct && id) ||
+      id !== prevProps.selectedProduct.id ||
+      (show && prevProps.show !== show)
+    ) {
+      this.initVariationsByIdMap(selectedProduct);
       this.initMinimumVariationList();
     }
 
@@ -123,7 +125,7 @@ class ProductDetail extends Component {
 
     product.variations.forEach(variation => {
       if (variation.optionValues.length && variation.variationType === VARIATION_TYPES.SINGLE_CHOICE) {
-        const defaultOption = variation.optionValues.find(o => !o.markedSoldOut);
+        const defaultOption = variation.optionValues.find(o => !(o.markedSoldOut || o.stockStatus === 'outOfStock'));
 
         if (defaultOption) {
           newMap = Object.assign({}, newMap, this.getNewVariationsByIdMap(variation, defaultOption));
@@ -141,8 +143,8 @@ class ProductDetail extends Component {
   }
 
   initMinimumVariationList() {
-    const { product } = this.props;
-    const { variations } = product || {};
+    const { selectedProduct } = this.props;
+    const { variations } = selectedProduct || {};
     var minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
 
     if (minimumVariations && minimumVariations.length) {
@@ -175,30 +177,30 @@ class ProductDetail extends Component {
   }
 
   getDisplayPrice() {
-    const { product } = this.props;
+    const { selectedProduct } = this.props;
     const { childrenProduct } = this.state;
 
     if (childrenProduct) {
       return childrenProduct.displayPrice + this.getTotalPriceDiff();
     }
 
-    if (product) {
-      return product.displayPrice + this.getTotalPriceDiff();
+    if (selectedProduct) {
+      return selectedProduct.displayPrice + this.getTotalPriceDiff();
     }
 
     return 0;
   }
 
   getOriginalDisplayPrice() {
-    const { product } = this.props;
+    const { selectedProduct } = this.props;
     const { childrenProduct } = this.state;
 
     if (childrenProduct && childrenProduct.originalDisplayPrice) {
       return childrenProduct.originalDisplayPrice + this.getTotalPriceDiff();
     }
 
-    if (product && product.originalDisplayPrice) {
-      return product.originalDisplayPrice + this.getTotalPriceDiff();
+    if (selectedProduct && selectedProduct.originalDisplayPrice) {
+      return selectedProduct.originalDisplayPrice + this.getTotalPriceDiff();
     }
 
     return null;
@@ -319,8 +321,8 @@ class ProductDetail extends Component {
   }
 
   getChildrenProductBySelectedVariations(selectedVariations) {
-    const { product } = this.props;
-    const childrenMap = _get(product, 'childrenMap', null);
+    const { selectedProduct } = this.props;
+    const childrenMap = _get(selectedProduct, 'childrenMap', null);
 
     if (!childrenMap) {
       return null;
@@ -350,9 +352,49 @@ class ProductDetail extends Component {
   };
 
   getChoiceVariations(type) {
-    const { variations } = this.props.product || {};
+    const { variations = [], childrenMap = [] } = this.props.selectedProduct || {};
+    const outOfStockChildProducts = childrenMap.filter(product => product.stockStatus === 'outOfStock');
+    let outOfStockValues = [];
+    let derivedVariations = Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
 
-    return Array.isArray(variations) ? variations.filter(v => v.variationType === type) : [];
+    outOfStockChildProducts.forEach(childProduct => {
+      outOfStockValues = [...outOfStockValues, ...childProduct.variationValues];
+    });
+
+    derivedVariations = derivedVariations.map(variation => {
+      if (outOfStockValues.find(outOfStockValue => outOfStockValue.variationId === variation.id)) {
+        variation.optionValues = variation.optionValues.map(option => {
+          if (outOfStockValues.find(outOfStockValue => outOfStockValue.value === option.value)) {
+            option.stockStatus = 'outOfStock';
+          }
+
+          return option;
+        });
+      }
+
+      return variation;
+    });
+
+    return derivedVariations;
+  }
+
+  getShortageInventoryState(selectedProduct, childrenProduct, cartQuantity, disabledEqualStock = true) {
+    const selectedProductLowStock = Boolean(
+      selectedProduct.stockStatus !== 'notTrackInventory' &&
+        selectedProduct.quantityOnHand > 0 &&
+        (disabledEqualStock
+          ? cartQuantity >= selectedProduct.quantityOnHand
+          : cartQuantity > selectedProduct.quantityOnHand)
+    );
+    const childrenProductLowStock = Boolean(
+      childrenProduct.stockStatus !== 'notTrackInventory' &&
+        childrenProduct.quantityOnHand > 0 &&
+        (disabledEqualStock
+          ? cartQuantity >= childrenProduct.quantityOnHand
+          : cartQuantity > selectedProduct.quantityOnHand)
+    );
+
+    return selectedProductLowStock || childrenProductLowStock;
   }
 
   closeModal() {
@@ -382,34 +424,42 @@ class ProductDetail extends Component {
   }
 
   handleGtmEventTracking = variables => {
-    const { product } = this.props;
-    let selectedProduct = product.childrenMap.find(child => child.childId === variables.productId);
+    const { selectedProduct } = this.props;
+    let childrenProduct = selectedProduct.childrenMap.find(child => child.childId === variables.productId);
 
-    if (!selectedProduct) {
-      selectedProduct = product;
+    if (!childrenProduct) {
+      childrenProduct = selectedProduct;
     }
 
+    const stockStatusMapping = {
+      outOfStock: 'out of stock',
+      inStock: 'in stock',
+      lowStock: 'low stock',
+      unavailable: 'unavailable',
+      notTrackInventory: 'not track Inventory',
+    };
+
     const gtmEventData = {
-      product_name: product.title,
+      product_name: selectedProduct.title,
       product_id: variables.productId,
-      price_local: selectedProduct.displayPrice,
+      price_local: childrenProduct.displayPrice,
       variant: variables.variations,
-      quantity: selectedProduct.quantityOnHand,
-      product_type: product.inventoryType,
-      Inventory: !!product.markedSoldOut ? 'In stock' : 'Out of stock',
-      image_count: (product.images && product.images.length) || 0,
+      quantity: childrenProduct.quantityOnHand,
+      product_type: selectedProduct.inventoryType,
+      Inventory: stockStatusMapping[selectedProduct.stockStatus] || stockStatusMapping.inStock,
+      image_count: (selectedProduct.images && selectedProduct.images.length) || 0,
     };
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventData);
   };
 
   handleAddOrUpdateShoppingCartItem = async variables => {
-    const { homeActions } = this.props;
+    const { appActions } = this.props;
 
     this.handleGtmEventTracking(variables);
 
-    await homeActions.addOrUpdateShoppingCartItem(variables);
-    await homeActions.loadShoppingCart();
+    await appActions.addOrUpdateShoppingCartItem(variables);
+    await appActions.loadShoppingCart();
 
     this.handleHideProductDetail();
   };
@@ -419,56 +469,9 @@ class ProductDetail extends Component {
     this.setState({ currentProductDescriptionImageIndex: index });
   }
 
-  handleDescriptionAddOrShowDescription = async product => {
-    const { onToggle, homeActions } = this.props;
-    const { variations } = product;
-
-    const { history } = this.props;
-    const { storeId } = config;
-
-    let deliveryAddress = Utils.getSessionVariable('deliveryAddress');
-    const search = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const { h } = search;
-
-    if ((!deliveryAddress && Utils.isDeliveryType()) || !storeId || !h) {
-      const { search } = window.location;
-      const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_HOME}${search}`);
-
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-        search: `${search}&callbackUrl=${callbackUrl}`,
-      });
-      return;
-    }
-
-    if (!variations || !variations.length) {
-      await homeActions.addOrUpdateShoppingCartItem({
-        action: 'add',
-        business: config.business,
-        productId: product.id,
-        quantity: Constants.ADD_TO_CART_MIN_QUANTITY,
-        variations: [],
-      });
-      await homeActions.loadShoppingCart();
-      this.closeModal();
-
-      return;
-    } else {
-      homeActions.loadProductDetail(product);
-    }
-
-    this.setState({ resizedImage: true });
-
-    this.descriptionTimeOut = setTimeout(() => {
-      onToggle('PRODUCT_DETAIL');
-
-      clearTimeout(this.descriptionTimeOut);
-    }, 550);
-  };
-
   renderVariations() {
     const { show } = this.props;
-    const { variations } = this.props.product || {};
+    const { variations } = this.props.selectedProduct || {};
 
     if (!variations || !variations.length) {
       return null;
@@ -513,12 +516,18 @@ class ProductDetail extends Component {
   };
 
   renderProductOperator() {
-    const { t, product = {}, onAddToCartClick } = this.props;
+    const { t, selectedProduct = {}, onUpdateCartOnProductDetail } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
-    const { id: productId } = product;
+    const { id: productId } = selectedProduct;
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
+    const inventoryShortage = this.getShortageInventoryState(
+      selectedProduct || {},
+      childrenProduct || {},
+      cartQuantity,
+      false
+    );
 
-    if (!product) {
+    if (!selectedProduct) {
       return null;
     }
 
@@ -533,7 +542,8 @@ class ProductDetail extends Component {
             disabled={
               increasingProductOnCat ||
               !this.isSubmitable() ||
-              Utils.isProductSoldOut(product || {}) ||
+              Utils.isProductSoldOut(selectedProduct || {}) ||
+              inventoryShortage ||
               (hasMinimumVariations && this.isInvalidMinimumVariations())
             }
             onClick={() => {
@@ -567,8 +577,8 @@ class ProductDetail extends Component {
                 }
               });
 
-              if (onAddToCartClick) {
-                onAddToCartClick({ product });
+              if (onUpdateCartOnProductDetail) {
+                onUpdateCartOnProductDetail(selectedProduct);
               }
 
               this.handleAddOrUpdateShoppingCartItem({
@@ -601,101 +611,45 @@ class ProductDetail extends Component {
     );
   }
 
-  renderProductDescription() {
-    const { t, show, product, onlineStoreInfo } = this.props;
-    const { currentProductDescriptionImageIndex } = this.state;
-    const { images, title } = product || {};
-    const { storeName } = onlineStoreInfo || {};
-    const className = ['product-description__container aside__content absolute-wrapper flex flex-column'];
+  renderProductLowStock = () => {
+    const { t, selectedProduct } = this.props;
+    const { cartQuantity, childrenProduct } = this.state;
+    const { quantityOnHand, stockStatus } = selectedProduct || {};
+    const { quantityOnHand: childrenProductQuantityOnHand, stockStatus: childProductStockStatus } =
+      childrenProduct || {};
+    const inventoryShortage = this.getShortageInventoryState(
+      selectedProduct || {},
+      childrenProduct || {},
+      cartQuantity
+    );
 
-    if (show) {
-      className.push('product-description__hide');
+    if (!(inventoryShortage || stockStatus === 'lowStock' || childProductStockStatus == 'lowStock')) {
+      return null;
     }
 
     return (
-      <div className={className.join(' ')}>
-        <div
-          ref={ref => (this.productDescriptionImage = ref)}
-          className="product-description__image-container flex__shrink-fixed"
-        >
-          {images && images.length > 1 ? (
-            <Swipe
-              ref={ref => (this.swipeEl = ref)}
-              continuous={images.length > 2 ? true : false}
-              callback={this.handleSwipeProductImage.bind(this)}
-            >
-              {images.map((imageItemUrl, key) => {
-                return (
-                  <SwipeItem key={`swipe-${key}`}>
-                    <Image
-                      className="product-description__single-image"
-                      src={imageItemUrl}
-                      scalingRatioIndex={2}
-                      alt={`${storeName} ${title}`}
-                    />
-                  </SwipeItem>
-                );
-              })}
-            </Swipe>
-          ) : (
-            <Image
-              className="product-description__single-image"
-              src={images && images.length ? images[0] : null}
-              scalingRatioIndex={2}
-              alt={`${storeName} ${title}`}
-            />
-          )}
-          {images && images.length > 1 ? (
-            <ul className="product-description__dot-list text-center padding-top-bottom-smaller">
-              {images.map((imageItemUrl, key) => {
-                const dotClassList = ['product-description__dot'];
-
-                if (key === currentProductDescriptionImageIndex) {
-                  dotClassList.push('active');
-                }
-
-                return <li key={`swipe-${key}-dot`} className={dotClassList.join(' ')}></li>;
-              })}
-            </ul>
-          ) : null}
-        </div>
-        <div className="product-description__info flex flex-top flex-space-between flex__shrink-fixed padding-small border__bottom-divider">
-          <summary className="product-description__info-summary flex flex-column flex-space-between">
-            <h2 className="product-description__info-title padding-small text-size-biggest text-weight-bolder ">
-              {title}
-            </h2>
-            <CurrencyNumber
-              className="padding-small text-size-big text-opacity text-weight-bolder"
-              money={this.getDisplayPrice()}
-            />
-          </summary>
-
-          {Utils.isProductSoldOut(product || {}) ? (
-            <Tag
-              text={t('SoldOut')}
-              className="product-description__info-tag tag tag__default margin-normal text-size-big flex__shrink-fixed"
-            />
-          ) : (
-            <ItemOperator
-              className="flex-middle flex__shrink-fixed margin-smaller"
-              decreaseDisabled={false}
-              data-heap-name="ordering.home.product-detail.item-adjuster"
-              onIncrease={this.handleDescriptionAddOrShowDescription.bind(this, product)}
-            />
-          )}
-        </div>
+      <div className="product-detail__low-stock-prompt padding-normal text-center text-error">
+        <span className="text-weight-bolder">
+          {t('LowStockProductQuantity', { quantityOnHand: childrenProductQuantityOnHand || quantityOnHand })}
+        </span>
       </div>
     );
-  }
+  };
+
   renderOperatorButton = () => {
-    const { product, decreaseInProductDetail, increaseInProductDetail } = this.props;
-    const { cartQuantity, minimumVariations } = this.state;
+    const { selectedProduct, onDncreaseProductDetailItem, onIncreaseProductDetailItem } = this.props;
+    const { cartQuantity, minimumVariations, childrenProduct } = this.state;
+    const inventoryShortage = this.getShortageInventoryState(
+      selectedProduct || {},
+      childrenProduct || {},
+      cartQuantity
+    );
 
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
 
     return (
       <div
-        className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed border__top-divider"
+        className="product-detail__operators  padding-normal flex flex-center flex__shrink-fixed"
         ref={ref => (this.opeartoresEl = ref)}
       >
         <ItemOperator
@@ -704,12 +658,13 @@ class ProductDetail extends Component {
           quantity={cartQuantity}
           from="productDetail"
           decreaseDisabled={cartQuantity <= 1}
+          increaseDisabled={Utils.isProductSoldOut(selectedProduct || {}) || inventoryShortage}
           onDecrease={() => {
-            decreaseInProductDetail(product);
+            onDncreaseProductDetailItem(selectedProduct);
             this.setState({ cartQuantity: cartQuantity - 1 });
           }}
           onIncrease={() => {
-            increaseInProductDetail(product);
+            onIncreaseProductDetailItem(selectedProduct);
             const disableVariationsId = this.isInvalidMinimumVariations();
 
             if (hasMinimumVariations && disableVariationsId) {
@@ -719,7 +674,6 @@ class ProductDetail extends Component {
             }
             this.setState({ cartQuantity: cartQuantity + 1 });
           }}
-          increaseDisabled={Utils.isProductSoldOut(product || {})}
         />
       </div>
     );
@@ -727,14 +681,14 @@ class ProductDetail extends Component {
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
-    const { t, onlineStoreInfo, product, viewAside, show, onToggle } = this.props;
+    const { t, onlineStoreInfo, selectedProduct, viewAside, show, onToggle } = this.props;
     const { storeName } = onlineStoreInfo || {};
-    const { id, _needMore, images, title, description } = product || {};
+    const { id, _needMore, images, title, description } = selectedProduct || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: description };
     const isHaveContent = Utils.removeHtmlTag(description);
 
-    if (show && product && id && !_needMore) {
+    if (show && selectedProduct && id && !_needMore) {
       className.push('active cover');
     }
 
@@ -797,7 +751,7 @@ class ProductDetail extends Component {
                 <div className="product-detail__price flex flex-column text-right flex-end">
                   {this.getOriginalDisplayPrice() && (
                     <CurrencyNumber
-                      className=" product-item__price text-line-through text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
+                      className="text-line-through text-weight-bolder flex__shrink-fixed margin-left-right-smaller"
                       money={this.getOriginalDisplayPrice()}
                       numberOnly={true}
                     />
@@ -807,7 +761,7 @@ class ProductDetail extends Component {
                     money={this.getDisplayPrice()}
                     numberOnly={true}
                   />
-                  {Utils.isProductSoldOut(product || {}) ? (
+                  {Utils.isProductSoldOut(selectedProduct || {}) ? (
                     <Tag
                       text={t('SoldOut')}
                       className="product-detail__info-tag tag tag__default margin-smaller text-size-big flex__shrink-fixed"
@@ -825,24 +779,24 @@ class ProductDetail extends Component {
               </article>
             ) : null}
             {this.renderVariations()}
+            {this.renderProductLowStock()}
             {this.renderOperatorButton()}
           </div>
           {this.renderProductOperator()}
         </div>
-        {/* {this.renderProductDescription()} */}
       </aside>
     );
   }
 }
 
-ProductDetail.propTypes = {
+ProductDetailDrawer.propTypes = {
   show: PropTypes.bool,
   viewAside: PropTypes.string,
   footerEl: PropTypes.any,
   onToggle: PropTypes.func,
 };
 
-ProductDetail.defaultProps = {
+ProductDetailDrawer.defaultProps = {
   show: false,
   viewAside: '',
   onToggle: () => {},
@@ -852,14 +806,12 @@ export default compose(
   withTranslation(['OrderingHome']),
   connect(
     state => {
-      const currentProductInfo = getCurrentProduct(state);
-
       return {
-        product: getProductById(state, currentProductInfo.id),
+        selectedProduct: getSelectedProductDetail(state),
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
-)(withRouter(ProductDetail));
+)(withRouter(ProductDetailDrawer));

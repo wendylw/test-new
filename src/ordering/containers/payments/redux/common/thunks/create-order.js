@@ -7,7 +7,7 @@ import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 
-import { getCartItemIds } from '../../../../../redux/modules/home';
+import { getCartItems } from '../../../../../redux/modules/app';
 import {
   getBusiness,
   getOnlineStoreInfo,
@@ -19,18 +19,71 @@ import { getBusinessByName } from '../../../../../../redux/modules/entities/busi
 
 import { fetchDeliveryDetails } from '../../../../Customer/utils';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
-import { post } from '../../../../../../utils/api/api-fetch';
+import { get, post } from '../../../../../../utils/api/api-fetch';
+import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
+const { DELIVERY_METHOD } = Constants;
 
-const { DELIVERY_METHOD, ERROR_CODE_MAP } = Constants;
+const POLLING_INTERVAL = 3000;
+
+const pollingOrderStatus = (callback, orderId, timeout) => {
+  if (timeout <= 0) {
+    callback({ code: '80001' }, null);
+    return;
+  }
+
+  createOrderStatusRequest(orderId).then(
+    order => {
+      const { status } = order;
+
+      if (status && status === 'created') {
+        setTimeout(() => pollingOrderStatus(callback, orderId, timeout - POLLING_INTERVAL), POLLING_INTERVAL);
+      } else {
+        if (!['created', 'failed', 'cancelled'].includes(status)) {
+          callback(null, order);
+          return;
+        } else {
+          callback({ code: '54012' }, order);
+          return;
+        }
+      }
+    },
+    e => {
+      if (typeof e !== 'object' || !e.code) {
+        callback({ code: '80000' }, null);
+        return;
+      } else {
+        callback(e, null);
+        return;
+      }
+    }
+  );
+};
+
+const checkCreatedOrderStatus = orderId => {
+  return new Promise(async (resolve, reject) => {
+    pollingOrderStatus(
+      (error, order) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(order);
+        }
+      },
+      orderId,
+      30 * 1000
+    );
+  });
+};
 
 export const createOrder = ({ cashback, shippingType }) => async (dispatch, getState) => {
   const isDigital = Utils.isDigitalType();
+  const cartItems = getCartItems(getState());
+
   if (isDigital) {
     const business = getBusiness(getState());
-    const cartItemIds = getCartItemIds(getState());
-    const productId = cartItemIds[0];
+    const productId = cartItems[0].id;
     const voucherOrderingInfo = getVoucherOrderingInfoFromSessionStorage();
     const payload = {
       businessName: business,
@@ -78,7 +131,6 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   const businessInfo = getBusinessByName(getState(), business);
   const { qrOrderingSettings = {} } = businessInfo || {};
   const { enablePreOrder } = qrOrderingSettings;
-  const shoppingCartIds = getCartItemIds(getState());
   const additionalComments = Utils.getSessionVariable('additionalComments');
   const { storeId, tableId } = getRequestInfo(getState());
   const deliveryDetails = await fetchDeliveryDetails();
@@ -87,7 +139,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   let variables = {
     business,
     storeId,
-    shoppingCartIds,
+    shoppingCartIds: cartItems.map(cartItem => cartItem.id),
     tableId,
     cashback,
     orderSource,
@@ -171,7 +223,17 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       },
     } = resp;
-    return { order, redirectUrl };
+
+    try {
+      await checkCreatedOrderStatus(order.orderId);
+
+      return {
+        order,
+        redirectUrl,
+      };
+    } catch (error) {
+      throw error;
+    }
   } catch (error) {
     if (error.code) {
       // TODO: This type is actually not used, because apiError does not respect action type,
@@ -201,12 +263,18 @@ const getOrderSource = () => {
 };
 
 const createVoucherOrderRequest = async payload => {
-  return post(Url.API_URLS.CREATE_VOUCHER_ORDER.url, { payload });
+  return post(Url.API_URLS.CREATE_VOUCHER_ORDER.url, payload);
 };
 
 const createOrderRequest = async payload => {
   const endpoint = Url.apiGql('CreateOrder');
-  return post(endpoint, { payload });
+  return post(endpoint, payload);
+};
+
+const createOrderStatusRequest = async orderId => {
+  const { url } = API_INFO.getOrderStatus(orderId);
+
+  return get(url);
 };
 
 export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) => {

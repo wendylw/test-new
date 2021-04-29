@@ -84,9 +84,9 @@ export class MerchantInfo extends Component {
                 {t('ContactInfo')}
               </summary>
               {isWebView ? (
-                <span className="item__text gray-font-opacity">{phone}</span>
+                <span className="gray-font-opacity">{phone}</span>
               ) : (
-                <a className="item__text link link__non-underline link__block" href={`tel:${phone}`}>
+                <a className="link link__non-underline link__block" href={`tel:${phone}`}>
                   {phone}
                 </a>
               )}

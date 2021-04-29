@@ -8,7 +8,7 @@ import _every from 'lodash/every';
 
 import { getSelectedPaymentOption } from '../redux/common/selectors';
 import * as paymentCommonThunks from '../redux/common/thunks';
-import PaymentLogo from './payment-logo';
+import PaymentLogo from './PaymentLogo';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Radio from '../../../../components/Radio';
 
