@@ -2,7 +2,6 @@ import homeReducers, { initialState, getShoppingCart } from './home';
 import rootReducer from './index';
 import { HOME_TYPES as types } from '../types';
 import { getReducerNewState, configureMiddlewareStore, expectedActionsCheck } from '../../../utils/testHelper';
-
 import {
   isFetched,
   getCartItemIds,

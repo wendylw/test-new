@@ -9,16 +9,16 @@ import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../../redux/modules/home';
-import { actions as appActionCreators } from '../../../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import {
+  actions as appActionCreators,
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
   getStoreInfoForCleverTap,
   getUser,
+  getCartBilling,
+  getBusinessInfo,
 } from '../../../../redux/modules/app';
 import {
   getSelectedPaymentOption,
@@ -26,7 +26,6 @@ import {
   getSelectedPaymentProvider,
 } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
-import { getBusinessInfo } from '../../../../redux/modules/cart';
 import '../../styles/PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';
 
@@ -51,7 +50,7 @@ class Stripe extends Component {
       const { deliveryDetails: newDeliveryDetails } = this.props;
       const { deliveryToLocation } = newDeliveryDetails || {};
 
-      this.props.homeActions.loadShoppingCart(
+      this.props.appActions.loadShoppingCart(
         deliveryToLocation.latitude &&
           deliveryToLocation.longitude && {
             lat: deliveryToLocation.latitude,
@@ -88,24 +87,24 @@ class Stripe extends Component {
       t,
       match,
       history,
-      cartSummary,
+      cartBilling,
       merchantCountry,
       supportSaveCard,
       storeInfoForCleverTap,
-      showMessageModal,
+      appActions,
     } = this.props;
     const isAddCardPath = ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE === history.location.pathname;
 
     return (
       <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
         <CheckoutForm
-          showMessageModal={showMessageModal}
+          showMessageModal={appActions.showMessageModal}
           match={match}
           t={t}
           history={history}
           isAddCardPath={isAddCardPath}
           country={merchantCountry}
-          cartSummary={cartSummary}
+          cartSummary={cartBilling}
           storeInfoForCleverTap={storeInfoForCleverTap}
           supportSaveCard={supportSaveCard}
           paymentExtraData={this.getPaymentEntryRequestData()}
@@ -122,7 +121,7 @@ export default compose(
       return {
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
@@ -133,8 +132,7 @@ export default compose(
       };
     },
     dispatch => ({
-      showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
     })

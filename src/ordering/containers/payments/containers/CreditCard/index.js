@@ -12,17 +12,17 @@ import config from '../../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../../../redux/modules/home';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
-import { getCartSummary } from '../../../../../redux/modules/entities/carts';
 import {
+  actions as appActionCreators,
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
+  getCartBilling,
+  getBusinessInfo,
   getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
 import { getSelectedPaymentOption } from '../../redux/common/selectors';
-import { getBusinessInfo } from '../../../../redux/modules/cart';
 import { loadPaymentOptions } from '../../redux/common/thunks';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
 import PaymentCardBrands from '../../components/PaymentCardBrands';
@@ -72,7 +72,7 @@ class CreditCard extends Component {
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
 
-    this.props.homeActions.loadShoppingCart(
+    this.props.appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -376,11 +376,11 @@ class CreditCard extends Component {
   }
 
   renderForm() {
-    const { t, cartSummary } = this.props;
+    const { t, cartBilling } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
     const { cardholderName } = card || {};
     const cardNumber = card.formattedCardNumber;
-    const { total } = cartSummary || {};
+    const { total } = cartBilling || {};
 
     return (
       <form id="bank-2c2p-form" className="form">
@@ -497,9 +497,9 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartSummary, merchantCountry, storeInfoForCleverTap } = this.props;
+    const { t, match, history, cartBilling, merchantCountry, storeInfoForCleverTap } = this.props;
     const { payNowLoading, domLoaded } = this.state;
-    const { total } = cartSummary || {};
+    const { total } = cartBilling || {};
 
     return (
       <section
@@ -559,6 +559,8 @@ class CreditCard extends Component {
             }}
             paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY)}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            processing={payNowLoading}
+            loaderText={t('Processing')}
           >
             {payNowLoading ? (
               t('Processing')
@@ -586,7 +588,7 @@ export default compose(
 
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         merchantCountry: getMerchantCountry(state),
         deliveryDetails: getDeliveryDetails(state),
@@ -594,7 +596,7 @@ export default compose(
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
     })

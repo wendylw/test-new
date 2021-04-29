@@ -1,21 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation, Trans } from 'react-i18next';
-import { IconCart } from '../../../../../components/Icons';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-import Constants from '../../../../../utils/constants';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../../redux/modules/entities/carts';
-import { actions as cartActionCreators, getBusinessInfo } from '../../../../redux/modules/cart';
-import { actions as homeActionCreators, getShoppingCart, getCategoryProductList } from '../../../../redux/modules/home';
-import { actions as appActionCreators, getBusiness, getUser } from '../../../../redux/modules/app';
-import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
-import Utils from '../../../../../utils/utils';
-import { del, get } from '../../../../../utils/request';
-import Url from '../../../../../utils/url';
-import CleverTap from '../../../../../utils/clevertap';
+import { withTranslation, Trans } from 'react-i18next';
+import Constants from '../../../../utils/constants';
+import { actions as homeActionCreators, getCategoryProductList } from '../../../redux/modules/home';
+import {
+  actions as appActionCreators,
+  getBusiness,
+  getUser,
+  getShoppingCart,
+  getCartBilling,
+  getBusinessInfo,
+} from '../../../redux/modules/app';
+import { getAllBusinesses } from '../../../../redux/modules/entities/businesses';
+import Utils from '../../../../utils/utils';
+import { del, get } from '../../../../utils/request';
+import Url from '../../../../utils/url';
+import { IconCart } from '../../../../components/Icons';
+import CurrencyNumber from '../../../components/CurrencyNumber';
+
 export class Footer extends Component {
   constructor(props) {
     super(props);
@@ -198,12 +202,12 @@ export class Footer extends Component {
 
   render() {
     const {
-      onClickCart,
-      cartSummary,
+      onShownCartListDrawer,
+      cartBilling,
       businessInfo,
       tableId,
       onToggle,
-      onClickOrderNow,
+      onClickOrderNowButton,
       t,
       isValidTimeToOrder,
       isLiveOnline,
@@ -213,7 +217,7 @@ export class Footer extends Component {
     } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
-    const { count } = cartSummary || {};
+    const { count } = cartBilling || {};
     return (
       <footer
         ref={footerRef}
@@ -224,7 +228,7 @@ export class Footer extends Component {
         <button
           className="button button__block text-left margin-top-bottom-smaller margin-left-right-small flex flex-middle"
           data-heap-name="ordering.home.footer.cart-btn"
-          onClick={onClickCart}
+          onClick={onShownCartListDrawer}
         >
           <div className="home-cart__icon-container text-middle">
             <IconCart className={`home-cart__icon-cart icon icon__white ${count !== 0 ? 'non-empty' : ''}`} />
@@ -268,7 +272,7 @@ export class Footer extends Component {
               !isLiveOnline
             }
             onClick={() => {
-              onClickOrderNow();
+              onClickOrderNowButton();
               onToggle();
               this.handleRedirect();
             }}
@@ -289,8 +293,8 @@ Footer.propTypes = {
   footerRef: PropTypes.any,
   tableId: PropTypes.string,
   onToggle: PropTypes.func,
-  onClickCart: PropTypes.func,
-  onClickOrderNow: PropTypes.func,
+  onShownCartListDrawer: PropTypes.func,
+  onClickOrderNowButton: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
   enablePreOrder: PropTypes.bool,
   style: PropTypes.object,
@@ -298,8 +302,8 @@ Footer.propTypes = {
 
 Footer.defaultProps = {
   onToggle: () => {},
-  onClickCart: () => {},
-  onClickOrderNow: () => {},
+  onShownCartListDrawer: () => {},
+  onClickOrderNowButton: () => {},
   isValidTimeToOrder: true,
   enablePreOrder: false,
 };
@@ -309,7 +313,8 @@ export default compose(
   connect(
     state => {
       return {
-        cartSummary: getCartSummary(state),
+        // cartBilling: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         businessInfo: getBusinessInfo(state),
         shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),
@@ -319,7 +324,6 @@ export default compose(
       };
     },
     dispatch => ({
-      cartActions: bindActionCreators(cartActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })

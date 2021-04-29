@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import { variationOnProductType } from '../../../../../utils/propTypes';
+import { variationOnProductType } from '../../../../utils/propTypes';
+import ItemOperator from '../../../../components/ItemOperator';
+import Radio from '../../../../components/Radio';
+import CheckBox from '../../../../components/CheckBox';
+
 import './VariationSelector.scss';
-import ItemOperator from '../../../../../components/ItemOperator';
-import Radio from '../../../../../components/Radio';
-import CheckBox from '../../../../../components/CheckBox';
+
 export class VariationSelector extends Component {
   static propTypes = {
     variation: variationOnProductType,
@@ -37,13 +39,17 @@ export class VariationSelector extends Component {
     }
   }
 
+  getOutOfStockStatus(markedSoldOut, stockStatus) {
+    return markedSoldOut || stockStatus === 'outOfStock';
+  }
+
   selectDefault() {
     if (!this.isSingleChoice()) {
       return;
     }
 
     const { optionValues } = this.props.variation;
-    const selectedOptionValue = optionValues.filter(v => !v.markedSoldOut)[0];
+    const selectedOptionValue = optionValues.filter(v => !this.getOutOfStockStatus(v.markedSoldOut, v.stockStatus))[0];
 
     if (selectedOptionValue) {
       this.setState({
@@ -85,11 +91,11 @@ export class VariationSelector extends Component {
       }));
   }
 
-  handleSelectedOption(option, isMultipleAndEnableQuantity, isMaxed, markedSoldOut) {
+  handleSelectedOption(option, isMultipleAndEnableQuantity, isMaxed, outOfStockState) {
     const { id } = option;
     const { variation } = this.props;
 
-    if (isMultipleAndEnableQuantity || (isMaxed && !this.state.selected[id]) || markedSoldOut) return;
+    if (isMultipleAndEnableQuantity || (isMaxed && !this.state.selected[id]) || outOfStockState) return;
 
     this.setState({
       selected: {
@@ -215,14 +221,15 @@ export class VariationSelector extends Component {
         </div>
         <ul className="variation-selector__list margin-top-bottom-smaller" data-test_id={variation.variationType}>
           {(variation.optionValues || []).map(option => {
-            const { id, value, markedSoldOut, priceDiff } = option;
+            const { id, value, markedSoldOut, stockStatus, priceDiff } = option;
+            const outOfStockState = this.getOutOfStockStatus(markedSoldOut, stockStatus);
 
             let selectedOptionFunc = this.handleSelectedOption.bind(
               this,
               option,
               this.isMultipleChoice() && enableQuantity,
               isRequireMax && quantity >= maxSelectionAmount,
-              markedSoldOut
+              outOfStockState
             );
 
             return (
@@ -231,7 +238,7 @@ export class VariationSelector extends Component {
                 className={`${
                   this.isMultipleChoice() && enableQuantity ? 'pr-0' : ''
                 } variation-selector__item flex-space-between flex-middle margin-top-bottom-smaller padding-top-bottom-small flex `}
-                style={{ opacity: markedSoldOut ? '0.35' : '1' }}
+                style={{ opacity: outOfStockState ? '0.35' : '1' }}
                 onClick={selectedOptionFunc}
                 data-heap-name="common.variation-item"
               >
@@ -241,7 +248,7 @@ export class VariationSelector extends Component {
                   } text-line-height-base margin-left-right-smaller flex flex-column flex-center padding-left-right-normal`}
                 >
                   <span>{value}</span>
-                  {markedSoldOut ? (
+                  {outOfStockState ? (
                     <span className="margin-top-bottom-smaller">{t('Unavailable')}</span>
                   ) : priceDiff ? (
                     <span className="margin-top-bottom-smaller text-weight-bolder">+{priceDiff.toFixed(2)}</span>
@@ -265,7 +272,7 @@ export class VariationSelector extends Component {
                       decreaseDisabled={!optionQuantity[option.id]}
                       onDecrease={() => this.decreaseHandle(option)}
                       onIncrease={() => this.increaseHandle(option)}
-                      increaseDisabled={(isRequireMax && quantity >= maxSelectionAmount) || markedSoldOut}
+                      increaseDisabled={(isRequireMax && quantity >= maxSelectionAmount) || outOfStockState}
                     />
                   )}
                 </div>
