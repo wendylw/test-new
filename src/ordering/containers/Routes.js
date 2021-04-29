@@ -6,7 +6,7 @@ import Cart from './Cart';
 import Payment from './payments/containers/Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
-import NotFound from '../../NotFound';
+import NotFound from '../../containers/NotFound';
 
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
 const StripePayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/Stripe')));

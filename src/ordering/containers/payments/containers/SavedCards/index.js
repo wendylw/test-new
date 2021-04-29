@@ -10,17 +10,15 @@ import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Loader from '../../components/Loader';
 import _get from 'lodash/get';
 
-import { compose, bindActionCreators } from 'redux';
-import { getCartSummary } from '../../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../../redux/modules/home';
-import { getUser } from '../../../../redux/modules/app';
+import { bindActionCreators, compose } from 'redux';
+import { actions as appActionCreators, getUser, getCartBilling } from '../../../../redux/modules/app';
+import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
+import IconAddNew from '../../../../../images/icon-add-new.svg';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
 import { getSelectedPaymentOptionSupportSaveCard, getSelectedPaymentProvider } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
-import IconAddNew from '../../../../../images/icon-add-new.svg';
 import '../../styles/PaymentCreditCard.scss';
 
 const { PAYMENT_METHOD_LABELS } = Constants;
@@ -112,7 +110,7 @@ class SavedCards extends Component {
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
 
-    await this.props.homeActions.loadShoppingCart(
+    await this.props.appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -190,8 +188,8 @@ class SavedCards extends Component {
   }
 
   render() {
-    const { t, history, cartSummary, selectedPaymentCard } = this.props;
-    const { total } = cartSummary;
+    const { t, history, cartBilling, selectedPaymentCard } = this.props;
+    const { total } = cartBilling;
     const cardToken = _get(selectedPaymentCard, 'cardToken', null);
 
     return (
@@ -245,6 +243,8 @@ class SavedCards extends Component {
             }}
             validCreateOrder={false}
             afterCreateOrder={() => {}}
+            processing={false}
+            loaderText={t('Processing')}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"
@@ -262,7 +262,7 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => ({
-      cartSummary: getCartSummary(state),
+      cartBilling: getCartBilling(state),
       user: getUser(state),
       cardList: getCardList(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
@@ -271,7 +271,7 @@ export default compose(
       paymentProvider: getSelectedPaymentProvider(state),
     }),
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(paymentCommonThunks.loadPaymentOptions, dispatch),
       fetchSavedCard: bindActionCreators(savedCardsThunks.fetchSavedCard, dispatch),

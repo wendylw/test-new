@@ -10,16 +10,15 @@ import Loader from '../../components/Loader';
 import Utils from '../../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../../redux/modules/home';
-import { getBusinessInfo } from '../../../../redux/modules/cart';
 import { getCardLabel } from '../../utils';
 import {
+  actions as appActionCreators,
   getUser,
   getOnlineStoreInfo,
   getBusiness,
+  getBusinessInfo,
+  getCartBilling,
   getMerchantCountry,
-  actions as appActionCreators,
 } from '../../../../redux/modules/app';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import StripeCVV from './components/StripeCVV';
@@ -128,8 +127,8 @@ class CardCVV extends Component {
   };
 
   render() {
-    const { t, history, cartSummary, selectedPaymentCard, merchantCountry } = this.props;
-    const { total } = cartSummary;
+    const { t, history, cartBilling, selectedPaymentCard, merchantCountry } = this.props;
+    const { total } = cartBilling;
     const { isCvvComponentReady, payNowLoading, isCvvValid } = this.state;
 
     if (!selectedPaymentCard || !selectedPaymentCard.cardInfo) return null;
@@ -177,7 +176,7 @@ class CardCVV extends Component {
               merchantCountry={merchantCountry}
             />
           </div>
-          <Loader className={'loading-cover opacity'} loaded={isCvvComponentReady && !payNowLoading} />
+          <Loader className={'loading-cover opacity'} loaded={isCvvComponentReady} />
         </div>
         <footer
           ref={ref => {
@@ -199,6 +198,8 @@ class CardCVV extends Component {
               });
             }}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            processing={payNowLoading}
+            loaderText={t('Processing')}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"
@@ -219,7 +220,7 @@ export default compose(
       return {
         merchantCountry: getMerchantCountry(state),
         cardList: getCardList(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         selectedPaymentCard: getSelectedPaymentCard(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         user: getUser(state),
@@ -229,7 +230,6 @@ export default compose(
     },
     dispatch => ({
       showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
 )(CardCVV);

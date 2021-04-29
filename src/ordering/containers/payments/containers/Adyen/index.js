@@ -11,10 +11,14 @@ import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Utils from '../../../../../utils/utils';
 
 import { bindActionCreators, compose } from 'redux';
-import { getCartSummary } from '../../../../../redux/modules/entities/carts';
-import { actions as homeActionCreators } from '../../../../redux/modules/home';
-import { getOnlineStoreInfo, getBusiness, getUser } from '../../../../redux/modules/app';
-import { getBusinessInfo } from '../../../../redux/modules/cart';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getBusiness,
+  getCartBilling,
+  getBusinessInfo,
+  getUser,
+} from '../../../../redux/modules/app';
 import SaveCardSwitch from '../../components/CreditCard/SaveCardSwitch';
 import CreditCardSecureInfo from '../../components/CreditCard/CreditCardSecureInfo';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
@@ -44,7 +48,7 @@ class AdyenPage extends Component {
     const { deliveryDetails: newDeliveryDetails } = this.props;
     const { deliveryToLocation } = newDeliveryDetails || {};
 
-    await this.props.homeActions.loadShoppingCart(
+    await this.props.appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -148,8 +152,8 @@ class AdyenPage extends Component {
   };
 
   render() {
-    const { t, history, cartSummary, currentPaymentOption } = this.props;
-    const { total } = cartSummary;
+    const { t, history, cartBilling, currentPaymentOption } = this.props;
+    const { total } = cartBilling;
 
     return (
       <section className={`ordering-payment flex flex-column`} data-heap-name="ordering.payment.adyen.container">
@@ -237,6 +241,8 @@ class AdyenPage extends Component {
               });
             }}
             paymentExtraData={this.getPaymentEntryRequestData()}
+            processing={this.state.payNowLoading}
+            loaderText={t('Processing')}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"
@@ -258,14 +264,14 @@ export default compose(
         currentPaymentOption: getSelectedPaymentOption(state),
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartSummary: getCartSummary(state),
+        cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         user: getUser(state),
         deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
     })

@@ -1,7 +1,7 @@
 import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
 import Utils from '../../utils/utils';
-import NotFound from '../../NotFound';
+import NotFound from '../../containers/NotFound';
 import Constants from '../../utils/constants';
 import Home from './Home';
 import Contact from './Contact';

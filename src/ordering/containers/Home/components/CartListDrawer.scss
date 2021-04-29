@@ -1,4 +1,4 @@
-@import "../../../../../Variables.scss";
+@import "../../../../Variables.scss";
 
 .cart-list-aside {
   height: auto;
@@ -24,6 +24,24 @@
   }
 
   &__item-number {
+    color: $gray-2;
+  }
+}
+
+.mini-cart {
+  &__image-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: $white;
+    background-color: rgba(0, 0, 0, 0.35);
+    white-space: pre-line;
+  }
+
+  &__price:not(.text-error) {
+    display: block;
     color: $gray-2;
   }
 }
