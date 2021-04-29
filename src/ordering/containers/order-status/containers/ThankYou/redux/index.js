@@ -145,7 +145,7 @@ export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCod
 
 export const getCashbackInfo = state => state.orderStatus.thankYou.cashbackInfo;
 
-export const getOrderCancellationButtonVisible = createSelector(
+export const getOrderCancellationAvailable = createSelector(
   getOrderStatus,
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,

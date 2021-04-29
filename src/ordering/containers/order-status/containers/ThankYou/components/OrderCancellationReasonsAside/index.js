@@ -70,7 +70,7 @@ function OrderCancellationReasonsAside({ show, onHide }) {
         <div className="order-cancellation-reasons__title text-size-big padding-normal">
           {t('PleaseSelectCancellationReason')}
         </div>
-        <div class="order-cancellation-reasons__content-wrapper padding-normal">
+        <div className="order-cancellation-reasons__content-wrapper padding-normal">
           <ul className="order-cancellation-reasons__content margin-left-right-small">
             {orderCancellationReasons.map(reason => (
               <li

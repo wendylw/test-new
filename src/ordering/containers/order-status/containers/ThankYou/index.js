@@ -56,7 +56,7 @@ import {
   actions as thankYouActionCreators,
   getCashbackInfo,
   getStoreHashCode,
-  getOrderCancellationButtonVisible,
+  getOrderCancellationAvailable,
 } from './redux/index';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 
@@ -590,15 +590,15 @@ export class ThankYou extends PureComponent {
     );
   }
 
-  renderCancellationButton() {
+  renderOrderCancellationButton() {
     const { t } = this.props;
 
     return (
       <button
-        className="ordering-thanks__button-card-link cancellation-button button button__block text-weight-bolder text-uppercase"
+        className="ordering-thanks__order-cancellation-button cancellation-button button button__block text-weight-bolder text-uppercase"
         onClick={this.handleOrderCancellation}
-        data-testid="thanks__cancellation-button"
-        data-heap-name="ordering.thank-you.cancellation-button"
+        data-testid="thanks__order-cancellation-button"
+        data-heap-name="ordering.thank-you.order-cancellation-button"
       >
         {t('CancelOrder')}
       </button>
@@ -1310,7 +1310,7 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible } = this.props;
+    const { t, history, match, order, storeHashCode, user, orderCancellationAvailable } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
     const {
@@ -1452,7 +1452,7 @@ export class ThankYou extends PureComponent {
 
                 {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
 
-                {orderCancellationButtonVisible && this.renderCancellationButton()}
+                {orderCancellationAvailable && this.renderOrderCancellationButton()}
 
                 <PhoneLogin hideMessage={true} history={history} />
               </div>
@@ -1508,7 +1508,7 @@ export default compose(
       orderStatus: getOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
-      orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
+      orderCancellationAvailable: getOrderCancellationAvailable(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
