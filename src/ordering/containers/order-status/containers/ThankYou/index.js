@@ -445,7 +445,7 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  handleOrderCancellation = () => {
+  handleShowOrderCancellationReasonAside = () => {
     this.setState({
       showOrderCancellationReasonAside: true,
     });
@@ -596,7 +596,7 @@ export class ThankYou extends PureComponent {
     return (
       <button
         className="ordering-thanks__order-cancellation-button cancellation-button button button__block text-weight-bolder text-uppercase"
-        onClick={this.handleOrderCancellation}
+        onClick={this.handleShowOrderCancellationReasonAside}
         data-testid="thanks__order-cancellation-button"
         data-heap-name="ordering.thank-you.order-cancellation-button"
       >
@@ -1303,6 +1303,20 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  handleOrderCancellation = async ({ reason, detail }) => {
+    const { receiptNumber, orderStatusActions } = this.props;
+
+    await orderStatusActions.cancelOrder({
+      orderId: receiptNumber,
+      reason,
+      detail,
+    });
+
+    this.setState({
+      showOrderCancellationReasonAside: false,
+    });
+  };
+
   handleHideOrderCancellationAside = () => {
     this.setState({
       showOrderCancellationReasonAside: false,
@@ -1488,6 +1502,7 @@ export class ThankYou extends PureComponent {
         <OrderCancellationReasonsAside
           show={this.state.showOrderCancellationReasonAside}
           onHide={this.handleHideOrderCancellationAside}
+          onCancelOrder={this.handleOrderCancellation}
         />
       </section>
     );

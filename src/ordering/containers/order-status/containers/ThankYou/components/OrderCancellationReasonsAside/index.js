@@ -4,6 +4,8 @@ import Radio from '../../../../../../../components/Radio';
 import { ORDER_CANCELLATION_REASONS } from '../../constants';
 import _isFunction from 'lodash/isFunction';
 import '../OrderCancellationReasonsAside.scss';
+import { useSelector } from 'react-redux';
+import { getCancelOrderStatus } from '../../../../redux/common';
 
 const orderCancellationReasons = [
   {
@@ -30,16 +32,28 @@ const orderCancellationReasons = [
 
 const SPECIFY_REASON_MAX_LENGTH = 140;
 
-function OrderCancellationReasonsAside({ show, onHide }) {
+function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
   const { t } = useTranslation('OrderingThankYou');
   const [selectedReason, setSelectedReason] = useState(null);
   const [specifyReason, setSpecifyReason] = useState('');
+  const cancelOrderStatus = useSelector(getCancelOrderStatus);
+
+  const orderCancellationProcessing = cancelOrderStatus === 'pending';
+
+  const requireSpecifyReason = selectedReason === ORDER_CANCELLATION_REASONS.OTHERS;
+
+  const cancelButtonDisabled =
+    !selectedReason || (requireSpecifyReason && !specifyReason) || orderCancellationProcessing;
 
   const handleReasonChange = useCallback(
     reason => {
+      if (orderCancellationProcessing) {
+        return;
+      }
+
       setSelectedReason(reason.value);
     },
-    [setSelectedReason]
+    [orderCancellationProcessing]
   );
 
   const handleSpecifyReasonInput = useCallback(
@@ -51,18 +65,30 @@ function OrderCancellationReasonsAside({ show, onHide }) {
 
   const handleOnHide = useCallback(
     event => {
+      if (orderCancellationProcessing) {
+        return;
+      }
+
       if (event && event.target !== event.currentTarget) {
         return;
       }
 
       _isFunction(onHide) && onHide();
     },
-    [onHide]
+    [onHide, orderCancellationProcessing]
   );
 
-  const requireSpecifyReason = selectedReason === ORDER_CANCELLATION_REASONS.OTHERS;
+  const handleOrderCancellation = useCallback(() => {
+    if (orderCancellationProcessing) {
+      return;
+    }
 
-  const cancelButtonDisabled = !selectedReason || (requireSpecifyReason && !specifyReason);
+    _isFunction(onCancelOrder) &&
+      onCancelOrder({
+        reason: selectedReason,
+        detail: requireSpecifyReason ? specifyReason : '',
+      });
+  }, [onCancelOrder, orderCancellationProcessing, requireSpecifyReason, selectedReason, specifyReason]);
 
   return (
     <aside className={`order-cancellation-reasons aside fixed-wrapper ${show ? 'active' : ''}`} onClick={handleOnHide}>
@@ -79,7 +105,11 @@ function OrderCancellationReasonsAside({ show, onHide }) {
                 key={reason.value}
               >
                 <div>{t(reason.displayNameTransKey)}</div>
-                <Radio name="orderCancellationReason" checked={selectedReason === reason.value} />
+                <Radio
+                  disabled={orderCancellationProcessing}
+                  name="orderCancellationReason"
+                  checked={selectedReason === reason.value}
+                />
               </li>
             ))}
           </ul>
@@ -93,6 +123,7 @@ function OrderCancellationReasonsAside({ show, onHide }) {
                 placeholder={t('PleaseSpecifyReason')}
                 row={5}
                 maxLength={SPECIFY_REASON_MAX_LENGTH}
+                readOnly={orderCancellationProcessing}
               ></textarea>
 
               <p className="text-size-small text-right padding-small text-opacity">
@@ -104,10 +135,11 @@ function OrderCancellationReasonsAside({ show, onHide }) {
 
         <div className="order-cancellation-reasons__button-wrapper padding-normal margin-left-right-small">
           <button
+            onClick={handleOrderCancellation}
             disabled={cancelButtonDisabled}
             className="button button__fill button__block text-weight-bolder text-uppercase"
           >
-            {t('CancelOrder')}
+            {orderCancellationProcessing ? t('Processing') : t('CancelOrder')}
           </button>
         </div>
       </div>
