@@ -86,7 +86,7 @@ function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
     _isFunction(onCancelOrder) &&
       onCancelOrder({
         reason: selectedReason,
-        detail: requireSpecifyReason ? specifyReason : '',
+        detail: requireSpecifyReason ? specifyReason : null,
       });
   }, [onCancelOrder, orderCancellationProcessing, requireSpecifyReason, selectedReason, specifyReason]);
 
