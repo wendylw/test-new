@@ -84,7 +84,7 @@ $total-text-size: 1.7142rem;
     overflow: hidden;
     -webkit-animation: dots steps(4, end) 2s infinite;
     animation: dots steps(4, end) 2s infinite;
-    width: 0px;
+    width: 0;
   }
 
   &__paid &__title-dots::after {
@@ -92,7 +92,7 @@ $total-text-size: 1.7142rem;
     overflow: hidden;
     -webkit-animation: dotsMore steps(6, end) 3s infinite;
     animation: dotsMore steps(6, end) 3s infinite;
-    width: 0px;
+    width: 0;
   }
 
   &__description {
@@ -100,12 +100,17 @@ $total-text-size: 1.7142rem;
   }
 
   &__link-status {
-    letter-spacing: 1.25px;
+    letter-spacing: 2px;
+  }
+
+  &__pickup-number-title {
+    display: block;
+    color: $new-grey-1-1;
   }
 
   &__pickup-number {
     display: block;
-    color: $gray-2;
+    letter-spacing: 1px;
   }
 
   &__card-prompt {

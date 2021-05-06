@@ -51,8 +51,8 @@ import {
 } from '../../redux/common';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
-import './OrderingThanks.scss';
 import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
+import './OrderingThanks.scss';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -500,6 +500,31 @@ export class ThankYou extends PureComponent {
     );
   };
 
+  renderTableId(isDineInType) {
+    const { t, order } = this.props;
+    const { tableId } = order || {};
+
+    if (!isDineInType || !tableId) {
+      return null;
+    }
+
+    return (
+      <React.Fragment>
+        <div className="card text-center padding-small margin-normal">
+          <label className="ordering-thanks__table-number-title margin-top-bottom-small text-line-height-base">
+            {t('TableNumber')}
+          </label>
+          <span
+            className="ordering-thanks__table-number margin-top-bottom-small text-size-huge"
+            data-testid="thanks__table-number"
+          >
+            {tableId}
+          </span>
+        </div>
+      </React.Fragment>
+    );
+  }
+
   renderPickupInfo() {
     const { t, order, businessInfo, cashbackInfo } = this.props;
     const { pickUpId } = order || {};
@@ -509,11 +534,11 @@ export class ThankYou extends PureComponent {
     return (
       <React.Fragment>
         <div className="card text-center padding-small margin-normal">
-          <label className="text-size-big padding-top-bottom-small text-uppercase text-weight-bolder">
+          <label className="ordering-thanks__pickup-number-title margin-top-bottom-small text-line-height-base">
             {t('OrderNumber')}
           </label>
           <span
-            className="ordering-thanks__pickup-number margin-top-bottom-smaller text-size-huge text-weight-bolder"
+            className="ordering-thanks__pickup-number margin-top-bottom-small text-size-huge"
             data-testid="thanks__pickup-number"
           >
             {pickUpId}
@@ -1362,11 +1387,12 @@ export class ThankYou extends PureComponent {
                     <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
                   </button>
                 )
-              ) : (
+              ) : null}
+              {/* (
                 <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
                   {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
                 </div>
-              )}
+              )} */}
             </Header>
           )}
           <div
@@ -1407,6 +1433,7 @@ export class ThankYou extends PureComponent {
                 </span>
               </p>
             )}
+            {this.renderTableId(isDineInType)}
             {isDeliveryType || isDineInType ? null : this.renderPickupInfo()}
             {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
