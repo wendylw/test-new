@@ -1435,6 +1435,7 @@ export class ThankYou extends PureComponent {
                     })}px`,
                     height: Utils.containerHeight({
                       headerEls: [this.headerEl],
+                      footerEls: [this.footerEl],
                     }),
                   }
                 : {}
