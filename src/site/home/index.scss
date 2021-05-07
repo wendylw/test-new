@@ -99,12 +99,10 @@
   }
 
   &__promo-tag {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: absolute;
     left: 0;
     bottom: 0;
+    display: block;
     width: 100%;
     background-color: $status-green;
   }

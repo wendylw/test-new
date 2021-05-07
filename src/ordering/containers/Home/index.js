@@ -845,8 +845,8 @@ export class Home extends Component {
       breakTimeTo,
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
-    const { tableId } = requestInfo || {};
-    const { storePromoTags } = businessInfo || {};
+    const { tableId, shippingType } = requestInfo || {};
+    const { promotions } = businessInfo || {};
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -856,7 +856,12 @@ export class Home extends Component {
       <section className="ordering-home flex flex-column">
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar promotionRef={ref => (this.promotionEl = ref)} storePromoTags={storePromoTags} />
+        <PromotionsBar
+          promotionRef={ref => (this.promotionEl = ref)}
+          promotions={promotions}
+          shippingType={shippingType}
+          inApp={Utils.isWebview()}
+        />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <p
             ref={ref => (this.deliveryFeeEl = ref)}

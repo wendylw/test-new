@@ -19,7 +19,7 @@
   "54413ReachCustomerClaimCountLimit": "This promotion cannot be used because you've reach the claim limit (Error: 54413)",
   "54414RequireFirstTimePurchase": "This promotion cannot be used because it is only applicable for first purchase (Error: 54414)",
   "54415NoSourceProperty": "This promo code is invalid (Error: 54415)",
-  "54416AppliedSourceDoesNotMatch": "This promotion cannot be used. Please check with the seller for more info (Error: 54416)",
+  "54416AppliedSourceDoesNotMatch": "This promotion is only for {{supportedChannel}} order (Error: 54416)",
   "54417NotMatchMinSubtotalConsumingPromo": "This promotion cannot be used because the minimum order value is not matched ({{minSubtotalConsumingPromo}}) (Error: 54417)",
   "54418NotMatchAppliedClientType": "This promotion can only be use on {{supportClient}} (Error: 54418)",
   "60001NotExisted": "This voucher code does not exist",
