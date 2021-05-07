@@ -665,8 +665,6 @@ export class ThankYou extends PureComponent {
       customer: 'CustomerCancelledDescription',
       unknown: 'UnknownCancelledDescription',
     };
-    const { user, orderStatus } = this.props;
-    const { isWebview } = user;
 
     let currentStatusObj = {};
     // status = CONFIRMED;
@@ -680,7 +678,6 @@ export class ThankYou extends PureComponent {
         },
         firstNote: t('OrderReceived'),
         secondNote: t('OrderReceivedDescription'),
-        bannerImage: isPreOrder ? beepPreOrderSuccessImage : beepOrderStatusPaid,
       };
     }
 
@@ -693,7 +690,6 @@ export class ThankYou extends PureComponent {
         },
         firstNote: t('MerchantAccepted'),
         secondNote: t('FindingRider'),
-        bannerImage: beepOrderStatusAccepted,
       };
     }
 
@@ -706,7 +702,6 @@ export class ThankYou extends PureComponent {
         },
         firstNote: t('PendingPickUp'),
         secondNote: t('RiderAssigned'),
-        bannerImage: beepOrderStatusConfirmed,
       };
     }
 
@@ -719,7 +714,6 @@ export class ThankYou extends PureComponent {
         },
         firstNote: t('RiderPickUp'),
         secondNote: t('TrackYourOrder'),
-        bannerImage: beepOrderStatusPickedUp,
       };
     }
 
@@ -731,15 +725,14 @@ export class ThankYou extends PureComponent {
         },
         firstNote: t('OrderDelivered'),
         secondNote: t('OrderDeliveredDescription'),
-        bannerImage: beepOrderStatusDelivered,
       };
     }
 
     if (status === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
-        descriptionKey: cancelledDescriptionKey[cancelOperator || 'unknown'],
-        bannerImage: beepOrderStatusCancelled,
+        descriptionKey: cancelledDescriptionKey[cancelOperator],
+        // bannerImage: beepOrderStatusCancelled,
       };
     }
 
