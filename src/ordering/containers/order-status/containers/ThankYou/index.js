@@ -49,10 +49,12 @@ import {
   getOrderStatus,
   getReceiptNumber,
   getRiderLocations,
+  getOrderDelayReason,
 } from '../../redux/common';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
+import OrderDelayMessage from './components/OrderDelayMessage';
 import './OrderingThanks.scss';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
@@ -467,6 +469,16 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  renderOrderDelayMessage = () => {
+    const { orderDelayReason } = this.props;
+
+    if (!orderDelayReason) {
+      return null;
+    }
+
+    return <OrderDelayMessage orderDelayReason={orderDelayReason} />;
+  };
+
   renderCashbackUI = cashback => {
     const { t, cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
@@ -630,14 +642,14 @@ export class ThankYou extends PureComponent {
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     t,
-    ORDER_STATUS,
+    CONSUMERFLOW_STATUS,
     cashbackInfo,
     businessInfo,
     deliveryInformation,
     cancelOperator,
     order,
   }) {
-    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIRMED, LOGISTICS_PICKED_UP, CANCELLED, DELIVERED } = ORDER_STATUS;
+    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
@@ -649,9 +661,11 @@ export class ThankYou extends PureComponent {
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
     };
+    const { user, orderStatus } = this.props;
+    const { isWebview } = user;
 
     let currentStatusObj = {};
-    // status = CONFIRMED;
+    // status = CONFIMRMED;
     // useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
@@ -678,7 +692,7 @@ export class ThankYou extends PureComponent {
     }
 
     /** logistic confirmed and confirmed */
-    if (status === CONFIRMED || status === LOGISTIC_CONFIRMED) {
+    if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
         status: 'confirmed',
         style: {
@@ -690,7 +704,7 @@ export class ThankYou extends PureComponent {
     }
 
     /** pickup status */
-    if (status === LOGISTICS_PICKED_UP) {
+    if (status === PICKUP) {
       currentStatusObj = {
         status: 'riderPickUp',
         style: {
@@ -716,7 +730,6 @@ export class ThankYou extends PureComponent {
       currentStatusObj = {
         status: 'cancelled',
         descriptionKey: cancelledDescriptionKey[cancelOperator],
-        // bannerImage: beepOrderStatusCancelled,
       };
     }
 
@@ -724,10 +737,34 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
-            currentStatusObj.status !== 'paid') ||
-          !isShowProgress ? null : (
+        {this.renderOrderDelayMessage()}
+        {currentStatusObj.status === 'cancelled' ? (
           <div className="card text-center margin-normal flex">
+            <div className="padding-small text-left">
+              <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
+                <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
+                  {{ storeName: name }}
+                  <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />
+                </h4>
+              </Trans>
+            </div>
+          </div>
+        ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
+          <div className="card text-center margin-normal flex">
+            {/*<div className="ordering-thanks__progress padding-top-bottom-small ">*/}
+            {/*  /!*{*!/*/}
+            {/*  /!*  <img*!/*/}
+            {/*  /!*    src={*!/*/}
+            {/*  /!*      currentStatusObj.status === 'paid'*!/*/}
+            {/*  /!*        ? beepOrderPaid*!/*/}
+            {/*  /!*        : currentStatusObj.status === 'accepted'*!/*/}
+            {/*  /!*        ? beepOrderAccepted*!/*/}
+            {/*  /!*        : beepOrderConfirmed*!/*/}
+            {/*  /!*    }*!/*/}
+            {/*  /!*    alt=""*!/*/}
+            {/*  /!*  />*!/*/}
+            {/*  /!*}*!/*/}
+            {/*</div>*/}
             <div className="padding-small text-left">
               {currentStatusObj.status === 'paid' ? (
                 <React.Fragment>
@@ -1436,6 +1473,7 @@ export default compose(
       orderStatus: getOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
+      orderDelayReason: getOrderDelayReason(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

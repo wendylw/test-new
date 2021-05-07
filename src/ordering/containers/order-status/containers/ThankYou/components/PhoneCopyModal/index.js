@@ -22,7 +22,7 @@ export class PhoneCopyModal extends React.Component {
             className="button button__fill button__block text-weight-bolder text-uppercase"
             onClick={this.handleClick}
           >
-            {t('Ok')}
+            {t('OK')}
           </button>
         </Modal.Footer>
       </Modal>
@@ -44,4 +44,4 @@ PhoneCopyModal.defaultProps = {
   phoneCopyContent: '',
 };
 
-export default compose(withTranslation('OrderingThankYou'))(PhoneCopyModal);
+export default compose(withTranslation())(PhoneCopyModal);
