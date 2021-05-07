@@ -19,7 +19,6 @@ import logisticsLalamove from '../../../../../images/beep-logistics-lalamove.jpg
 import logisticBeepOnFleet from '../../../../../images/beep-logistics-on-fleet.jpg';
 import logisticsMrspeedy from '../../../../../images/beep-logistics-rspeedy.jpg';
 import beepPreOrderSuccessImage from '../../../../../images/beep-pre-order-success.png';
-import beepSuccessImage from '../../../../../images/beep-success.png';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
 import beepOrderStatusAccepted from '../../../../../images/order-status-accepted.gif';
 import beepOrderStatusCancelled from '../../../../../images/order-status-cancelled.png';
@@ -55,8 +54,6 @@ import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } 
 import './OrderingThanks.scss';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
-// const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
-// const FINALLY = [DELIVERED, CANCELLED, PICKED_UP];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -171,8 +168,8 @@ export class ThankYou extends PureComponent {
 
     const { orderStatus, riderLocations = [] } = this.props;
     const [lat = null, lng = null] = riderLocations || [];
-    const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
-    const { PICKUP } = CONSUMERFLOW_STATUS;
+    const ORDER_STATUS = Constants.ORDER_STATUS;
+    const { LOGISTICS_PICKED_UP } = ORDER_STATUS;
     const { order = {}, t } = this.props;
     const { orderId, storeInfo = {}, deliveryInformation = [] } = order;
     const { location = {} } = storeInfo;
@@ -192,7 +189,7 @@ export class ThankYou extends PureComponent {
       },
     ];
 
-    if (orderStatus === PICKUP && Utils.isDeliveryType()) {
+    if (orderStatus === LOGISTICS_PICKED_UP && Utils.isDeliveryType()) {
       try {
         if (Utils.isAndroidWebview() && lat && lng) {
           const res = window.beepAppVersion;
@@ -622,23 +619,23 @@ export class ThankYou extends PureComponent {
     }, ANIMATION_TIME);
   };
 
-  isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS) => {
-    const { PICKUP } = CONSUMERFLOW_STATUS;
+  isRenderImage = (isWebview, status, ORDER_STATUS) => {
+    const { LOGISTICS_PICKED_UP } = ORDER_STATUS;
     const { isHideTopArea } = this.state;
 
-    return !(isWebview && isHideTopArea && status === PICKUP && Utils.isDeliveryType());
+    return !(isWebview && isHideTopArea && status === LOGISTICS_PICKED_UP && Utils.isDeliveryType());
   };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     t,
-    CONSUMERFLOW_STATUS,
+    ORDER_STATUS,
     cashbackInfo,
     businessInfo,
     deliveryInformation,
     cancelOperator,
     order,
   }) {
-    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
+    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIRMED, LOGISTICS_PICKED_UP, CANCELLED, DELIVERED } = ORDER_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
@@ -654,7 +651,7 @@ export class ThankYou extends PureComponent {
     const { isWebview } = user;
 
     let currentStatusObj = {};
-    // status = CONFIMRMED;
+    // status = CONFIRMED;
     // useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
@@ -683,7 +680,7 @@ export class ThankYou extends PureComponent {
     }
 
     /** logistic confirmed and confirmed */
-    if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
+    if (status === CONFIRMED || status === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
         status: 'confirmed',
         style: {
@@ -696,7 +693,7 @@ export class ThankYou extends PureComponent {
     }
 
     /** pickup status */
-    if (status === PICKUP) {
+    if (status === LOGISTICS_PICKED_UP) {
       currentStatusObj = {
         status: 'riderPickUp',
         style: {
@@ -732,9 +729,9 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        {this.isRenderImage(isWebview, orderStatus, CONSUMERFLOW_STATUS) && (
+        {this.isRenderImage(isWebview, orderStatus, ORDER_STATUS) && (
           <img
-            className="ordering-thanks__image padding-normal margin-normal"
+            className="ordering-thanks__image padding-normal margin-small"
             src={currentStatusObj.bannerImage}
             alt="Beep Success"
           />
@@ -1246,20 +1243,20 @@ export class ThankYou extends PureComponent {
   renderDeliveryImageAndTimeLine() {
     const { t, order, cashbackInfo, businessInfo } = this.props;
     const { status, deliveryInformation, cancelOperator } = order || {};
-    const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
+    const ORDER_STATUS = Constants.ORDER_STATUS;
 
     return (
       <React.Fragment>
         {this.isNowPaidPreOrder() ? (
           <img
-            className="ordering-thanks__image padding-normal"
+            className="ordering-thanks__image padding-left-right-normal"
             src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
             alt="Beep Success"
           />
         ) : (
           this.renderConsumerStatusFlow({
             t,
-            CONSUMERFLOW_STATUS,
+            ORDER_STATUS,
             cashbackInfo,
             businessInfo,
             deliveryInformation,
@@ -1289,6 +1286,13 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
+    const { user } = this.props;
+    const { isWebview } = user || {};
+
+    if (isWebview) {
+      return null;
+    }
+
     return (
       <div className="ordering-thanks__download">
         {Utils.isDeliveryType() || Utils.isPickUpType() ? (
@@ -1388,11 +1392,6 @@ export class ThankYou extends PureComponent {
                   </button>
                 )
               ) : null}
-              {/* (
-                <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
-                  {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
-                </div>
-              )} */}
             </Header>
           )}
           <div
@@ -1410,13 +1409,13 @@ export class ThankYou extends PureComponent {
                 : {}
             }
           >
-            {!isWebview && this.renderDownloadBanner()}
+            {this.renderDownloadBanner()}
             {isDeliveryType ? (
               this.renderDeliveryImageAndTimeLine()
             ) : (
               <img
-                className="ordering-thanks__image padding-normal"
-                src={isDineInType ? beepSuccessImage : beepPreOrderSuccessImage}
+                className="ordering-thanks__image padding-left-right-normal"
+                src={beepPreOrderSuccessImage}
                 alt="Beep Success"
               />
             )}
