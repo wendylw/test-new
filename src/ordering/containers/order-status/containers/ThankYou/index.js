@@ -652,6 +652,7 @@ export class ThankYou extends PureComponent {
       ist: 'ISTCancelledDescription',
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
+      customer: 'CustomerCancelledDescription',
     };
     const { user, orderStatus } = this.props;
     const { isWebview } = user;
@@ -744,10 +745,10 @@ export class ThankYou extends PureComponent {
         )}
         {currentStatusObj.status === 'cancelled' ? (
           <div className="card text-center margin-normal flex">
-            <div className="padding-small text-left">
-              <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
-                <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
-                  {{ storeName: name }}
+            <div className="padding-normal">
+              <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou">
+                <h4 className="padding-left-right-smaller text-size-big text-line-height-base">
+                  <span className="text-size-big text-weight-bolder">{{ storeName: name }}</span>
                   <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />
                 </h4>
               </Trans>
