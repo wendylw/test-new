@@ -7,7 +7,6 @@ import { compose } from 'redux';
 import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
 import Tag from '../../../../../components/Tag';
-import beepPreOrderSuccess from '../../../../../images/beep-pre-order-success.png';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
@@ -368,9 +367,6 @@ export class OrderDetails extends Component {
           rightContent={this.getRightContentOfHeader()}
         />
         <div className="ordering-details__container">
-          <div className="text-center">
-            <img className="ordering-details__picture-succeed" src={beepPreOrderSuccess} alt="beep pre-order success" />
-          </div>
           <div className="card padding-top-bottom-small padding-left-right-normal margin-normal">
             {this.renderBaseInfo()}
             {this.renderReceiptInfo()}

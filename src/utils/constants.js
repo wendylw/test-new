@@ -422,15 +422,6 @@ const DELIVERY_METHOD = {
   DIGITAL: 'digital',
 };
 
-const CONSUMERFLOW_STATUS = {
-  PAID: 'paid',
-  ACCEPTED: 'accepted',
-  LOGISTIC_CONFIRMED: 'logisticsConfirmed',
-  CONFIMRMED: 'confirmed',
-  DELIVERED: 'delivered',
-  PICKUP: 'pickedUp',
-  CANCELLED: 'cancelled',
-};
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const PROMOTION_ERROR_CODES = {
@@ -577,7 +568,7 @@ const ORDER_STATUS = {
   LOGISTICS_CONFIRMED: 'logisticsConfirmed',
   CONFIRMED: 'confirmed',
   DELIVERED: 'delivered',
-  PICKED_UP: 'pickedUp',
+  LOGISTICS_PICKED_UP: 'pickedUp',
 };
 
 const COLLECTIONS_TYPE = {
@@ -661,7 +652,6 @@ export default {
   LANGUAGES,
   ASIDE_NAMES,
   DELIVERY_METHOD,
-  CONSUMERFLOW_STATUS,
   WEEK_DAYS_I18N_KEYS,
   PROMOTION_ERROR_CODES,
   VOUCHER_STATUS,

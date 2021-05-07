@@ -99,13 +99,14 @@ $total-text-size: 1.7142rem;
     margin-right: 5px;
   }
 
-  &__link-status {
-    letter-spacing: 1.25px;
+  &__pickup-number-title {
+    display: block;
+    color: $new-grey-1-1;
   }
 
   &__pickup-number {
     display: block;
-    color: $gray-2;
+    letter-spacing: 0.05em;
   }
 
   &__card-prompt {
