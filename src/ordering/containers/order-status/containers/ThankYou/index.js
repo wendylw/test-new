@@ -651,7 +651,7 @@ export class ThankYou extends PureComponent {
     order,
     shippingType,
   }) {
-    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIRMED, LOGISTICS_PICKED_UP, CANCELLED, DELIVERED } = ORDER_STATUS;
+    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = ORDER_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
@@ -740,6 +740,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
+        {this.renderOrderDelayMessage()}
         {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
             currentStatusObj.status !== 'paid') ||
           !isShowProgress ? null : (
