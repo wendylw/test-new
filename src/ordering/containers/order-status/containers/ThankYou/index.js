@@ -9,6 +9,9 @@ import DownloadBanner from '../../../../../components/DownloadBanner';
 import { IconAccessTime, IconPin } from '../../../../../components/Icons';
 import Image from '../../../../../components/Image';
 import LiveChat from '../../../../../components/LiveChat';
+import LiveChatNative from '../../../../../components/LiveChatNative';
+import OrderStatusDescription from './components/OrderStatusDescription';
+
 import config from '../../../../../config';
 import logisticsGoget from '../../../../../images/beep-logistics-goget.jpg';
 import logisticsGrab from '../../../../../images/beep-logistics-grab.jpg';
@@ -22,7 +25,7 @@ import beepOrderStatusCancelled from '../../../../../images/order-status-cancell
 import beepOrderStatusConfirmed from '../../../../../images/order-status-confirmed.gif';
 import beepOrderStatusDelivered from '../../../../../images/order-status-delivered.gif';
 import beepOrderStatusPaid from '../../../../../images/order-status-paid.gif';
-import beepOrderStatusPickedUp from '../../../../../images/order-status-pickedup.gif';
+import beepOrderStatusPickedUp from '../../../../../images/order-status-picked-up.gif';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from './utils';
@@ -172,11 +175,7 @@ export class ThankYou extends PureComponent {
       },
     ];
 
-<<<<<<< HEAD
-    if (orderStatus === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY) {
-=======
     if (orderStatus === LOGISTICS_PICKED_UP && Utils.isDeliveryType()) {
->>>>>>> 5b4f039f4 (FB-2698: Update order status name)
       try {
         NativeMethods.showMap();
         NativeMethods.updateStorePosition(storeLat, storeLng);
@@ -748,41 +747,10 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        {this.isRenderImage(isWebview, orderStatus, ORDER_STATUS) && (
-          <img
-            className="ordering-thanks__image padding-normal margin-small"
-            src={currentStatusObj.bannerImage}
-            alt="Beep Success"
-          />
-        )}
-        {this.renderOrderDelayMessage()}
-        {currentStatusObj.status === 'cancelled' ? (
+        {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
+            currentStatusObj.status !== 'paid') ||
+          !isShowProgress ? null : (
           <div className="card text-center margin-normal flex">
-            <div className="padding-normal">
-              <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou">
-                <h4 className="padding-left-right-smaller text-size-big text-line-height-base">
-                  <span className="text-size-big text-weight-bolder">{{ storeName: name }}</span>
-                  <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />
-                </h4>
-              </Trans>
-            </div>
-          </div>
-        ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
-          <div className="card text-center margin-normal flex">
-            {/*<div className="ordering-thanks__progress padding-top-bottom-small ">*/}
-            {/*  /!*{*!/*/}
-            {/*  /!*  <img*!/*/}
-            {/*  /!*    src={*!/*/}
-            {/*  /!*      currentStatusObj.status === 'paid'*!/*/}
-            {/*  /!*        ? beepOrderPaid*!/*/}
-            {/*  /!*        : currentStatusObj.status === 'accepted'*!/*/}
-            {/*  /!*        ? beepOrderAccepted*!/*/}
-            {/*  /!*        : beepOrderConfirmed*!/*/}
-            {/*  /!*    }*!/*/}
-            {/*  /!*    alt=""*!/*/}
-            {/*  /!*  />*!/*/}
-            {/*  /!*}*!/*/}
-            {/*</div>*/}
             <div className="padding-small text-left">
               {currentStatusObj.status === 'paid' ? (
                 <React.Fragment>
@@ -1260,45 +1228,22 @@ export class ThankYou extends PureComponent {
     return deliveryInformation[0];
   };
 
-  renderDeliveryImageAndTimeLine() {
-    const {
-      t,
-      order,
-      cashbackInfo,
-      businessInfo,
-      shippingType,
-      pendingUpdateShippingTypeStatus,
-      updatableToSelfPickupStatus,
-    } = this.props;
-    const { status, deliveryInformation, cancelOperator } = order || {};
+  renderDeliveryTimeLine() {
+    const { t, order, cashbackInfo, businessInfo } = this.props;
+    const { deliveryInformation, cancelOperator } = order || {};
     const ORDER_STATUS = Constants.ORDER_STATUS;
 
     return (
       <React.Fragment>
-        {this.isNowPaidPreOrder() ? (
-          <img
-            className="ordering-thanks__image padding-left-right-normal"
-            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
-            alt="Beep Success"
-          />
-        ) : (
-          this.renderConsumerStatusFlow({
-            t,
-            ORDER_STATUS,
-            cashbackInfo,
-            businessInfo,
-            deliveryInformation,
-            cancelOperator,
-            order,
-            shippingType,
-          })
-        )}
-        <SelfPickup
-          processing={pendingUpdateShippingTypeStatus}
-          updatableToSelfPickupStatus={updatableToSelfPickupStatus}
-          onClickSelfPickupButton={this.handleClickSelfPickupButton}
-          onChangeToSelfPickup={this.handleChangeToSelfPickup}
-        />
+        {this.renderConsumerStatusFlow({
+          t,
+          ORDER_STATUS,
+          cashbackInfo,
+          businessInfo,
+          deliveryInformation,
+          cancelOperator,
+          order,
+        })}
       </React.Fragment>
     );
   }
@@ -1339,95 +1284,22 @@ export class ThankYou extends PureComponent {
     );
   }
 
-  handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
-
-    if (!isOrderCancellable) {
-      this.showRiderHasFoundMessageModal();
-      return;
-    }
-
-    await cancelOrder({
-      orderId: receiptNumber,
-      reason,
-      detail,
-    });
-
-    updateCancellationReasonVisibleState(false);
-  };
-
-  handleHideOrderCancellationReasonAside = () => {
-    this.props.updateCancellationReasonVisibleState(false);
-  };
-
-  getRightContentOfHeader() {
-    const { user, order, shippingType, t } = this.props;
-    const isWebview = Utils.isWebview();
-    const userEmail = _get(user, 'profile.email', '');
-    const orderId = _get(order, 'orderId', '');
-    const tableId = _get(order, 'tableId', '');
-    const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
-    const orderUserName = _get(deliveryAddress, 'name', '');
-    const orderUserPhone = _get(deliveryAddress, 'phone', '');
-    const orderStoreName = _get(order, 'storeInfo.name', '');
-    const isDineInType = shippingType === DELIVERY_METHOD.DINE_IN;
-
-    if (!order) {
-      return null;
-    }
-
-    const rightContentOfTableId = {
-      text: tableId ? t('TableIdText', { tableId }) : '',
-      style: {
-        color: '#8d90a1',
-      },
-      attributes: {
-        'data-testid': 'thanks__self-pickup',
-      },
-    };
-
-    if (isDineInType) {
-      return rightContentOfTableId;
-    }
-
-    if (isWebview) {
-      const rightContentOfNativeLiveChat = {
-        text: `${t('NeedHelp')}?`,
-        style: {
-          color: '#00b0ff',
-        },
-        onClick: () => {
-          NativeMethods.startChat({
-            orderId,
-            name: orderUserName,
-            phone: orderUserPhone,
-            email: userEmail,
-            storeName: orderStoreName,
-          });
-        },
-      };
-
-      const rightContentOfContactUs = {
-        text: t('ContactUs'),
-        style: {
-          color: '#00b0ff',
-        },
-        onClick: () => {
-          this.handleVisitMerchantInfoPage();
-        },
-      };
-
-      return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
-    }
-
-    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
-  }
-
-  handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history } = this.props;
-    const isWebview = Utils.isWebview();
-    const tableId = _get(order, 'tableId', '');
+  render() {
+    const { t, history, match, order, storeHashCode, user, orderStatus } = this.props;
+    const date = new Date();
+    const { orderId, tableId, deliveryInformation = [], storeInfo, total, isPreOrder, cancelOperator } = order || {};
+    const {
+      isWebview,
+      profile: { email },
+    } = user || {};
+    const { name: storeName } = storeInfo || {};
     const type = Utils.getOrderTypeFromUrl();
+    const isDeliveryType = Utils.isDeliveryType();
+    const isPickUpType = Utils.isPickUpType();
+    const isDineInType = Utils.isDineInType();
+    let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
+    const options = [`h=${storeHashCode}`];
+    const { isHideTopArea } = this.state;
 
     if (isWebview) {
       NativeMethods.closeWebView();
@@ -1451,7 +1323,7 @@ export class ThankYou extends PureComponent {
     });
 
     return;
-  };
+  }
 
   render() {
     const {
@@ -1546,32 +1418,40 @@ export class ThankYou extends PureComponent {
             }
           >
             {this.renderDownloadBanner()}
-            {isDeliveryType ? (
-              this.renderDeliveryImageAndTimeLine()
-            ) : (
-              <img
-                className="ordering-thanks__image padding-left-right-normal"
-                src={beepPreOrderSuccessImage}
-                alt="Beep Success"
-              />
-            )}
-            {shippingType === DELIVERY_METHOD.DELIVERY ? null : (
-              <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">
-                {t('ThankYou')}!
-              </h2>
-            )}
-            {shippingType !== DELIVERY_METHOD.PICKUP && shippingType !== DELIVERY_METHOD.DINE_IN ? null : (
-              <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
-                {shippingType === DELIVERY_METHOD.PICKUP ? `${pickupDescription} ` : `${t('PrepareOrderDescription')} `}
-                <span role="img" aria-label="Goofy">
-                  😋
-                </span>
-              </p>
-            )}
-            {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.DINE_IN
-              ? null
-              : this.renderPickupInfo()}
-            {shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
+
+            <OrderStatusDescription
+              status={orderStatus}
+              shippingType={type}
+              storeName={storeName}
+              cancelOperator={cancelOperator}
+              cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
+              isPreOrder={isPreOrder}
+            />
+            {isDeliveryType ? this.renderDeliveryTimeLine() : null
+            // (
+            //   <img
+            //     className="ordering-thanks__image padding-left-right-normal"
+            //     src={beepPreOrderSuccessImage}
+            //     alt="Beep Success"
+            //   />
+            // )}
+            // {isDeliveryType ? null : (
+            //   <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">
+            //     {t('ThankYou')}!
+            //   </h2>
+            // )}
+            // {isDeliveryType || (!isPickUpType && !isDineInType) ? null : (
+            //   <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
+            //     {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
+            //     <span role="img" aria-label="Goofy">
+            //       😋
+            //     </span>
+            //   </p>
+            // )
+            }
+            {this.renderTableId(isDineInType)}
+            {isDeliveryType || isDineInType ? null : this.renderPickupInfo()}
+            {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
             <div className="padding-top-bottom-small margin-normal">
               {this.renderDetailTitle({ isPreOrder, shippingType })}
