@@ -23,11 +23,16 @@ const types = {
   fetchStoreHashWithTableIdRequest: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdRequest',
   fetchStoreHashWithTableIdSuccess: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdSuccess',
   fetchStoreHashWithTableIdFailure: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdFailure',
+
+  // order cancellation reason aside
+  showOrderCancellationReasonAside: 'ordering/orderStatus/thankYou/showOrderCancellationReasonAside',
+  hideOrderCancellationReasonAside: 'ordering/orderStatus/thankYou/hideOrderCancellationReasonAside',
 };
 
 const initialState = {
   cashbackInfo: null /* included: isFetching, customerId, consumerId, status */,
   storeHashCode: null,
+  orderCancellationReasonAsideVisible: false,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -87,6 +92,16 @@ export const reducer = (state = initialState, action) => {
 
       return { ...state, storeHashCode: hex };
     }
+    case types.showOrderCancellationReasonAside:
+      return {
+        ...state,
+        orderCancellationReasonAsideVisible: true,
+      };
+    case types.hideOrderCancellationReasonAside:
+      return {
+        ...state,
+        orderCancellationReasonAsideVisible: false,
+      };
     default:
       return state;
   }
@@ -138,6 +153,12 @@ export const actions = {
       ...Url.API_URLS.POST_STORE_HASH_DATA(storeId),
     },
   }),
+  showOrderCancellationReasonAside: () => ({
+    type: types.showOrderCancellationReasonAside,
+  }),
+  hideOrderCancellationReasonAside: () => ({
+    type: types.hideOrderCancellationReasonAside,
+  }),
 };
 
 // selectors
@@ -145,7 +166,10 @@ export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCod
 
 export const getCashbackInfo = state => state.orderStatus.thankYou.cashbackInfo;
 
-export const getOrderCancellationAvailable = createSelector(
+export const getOrderCancellationReasonAsideVisible = state =>
+  state.orderStatus.thankYou.orderCancellationReasonAsideVisible;
+
+export const getIsOrderCancellable = createSelector(
   getOrderStatus,
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,

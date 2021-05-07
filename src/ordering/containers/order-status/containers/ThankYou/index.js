@@ -56,7 +56,8 @@ import {
   actions as thankYouActionCreators,
   getCashbackInfo,
   getStoreHashCode,
-  getOrderCancellationAvailable,
+  getIsOrderCancellable,
+  getOrderCancellationReasonAsideVisible,
 } from './redux/index';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 
@@ -93,7 +94,6 @@ export class ThankYou extends PureComponent {
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
-      showOrderCancellationReasonAside: false,
     };
     this.injectFun();
   }
@@ -445,12 +445,10 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  handleShowOrderCancellationReasonAside = () => {
-    this.setState({
-      showOrderCancellationReasonAside: true,
-    });
+  handleOrderCancellationButtonClick = () => {
+    const { order, businessInfo, thankYouActions } = this.props;
 
-    const { order, businessInfo } = this.props;
+    thankYouActions.showOrderCancellationReasonAside();
 
     CleverTap.pushEvent('Thank you Page - Cancel Order', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -607,7 +605,7 @@ export class ThankYou extends PureComponent {
     return (
       <button
         className="ordering-thanks__order-cancellation-button cancellation-button button button__block text-weight-bolder text-uppercase"
-        onClick={this.handleShowOrderCancellationReasonAside}
+        onClick={this.handleOrderCancellationButtonClick}
         data-testid="thanks__order-cancellation-button"
         data-heap-name="ordering.thank-you.order-cancellation-button"
       >
@@ -1316,7 +1314,7 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, orderStatusActions } = this.props;
+    const { receiptNumber, orderStatusActions, thankYouActions } = this.props;
 
     await orderStatusActions.cancelOrder({
       orderId: receiptNumber,
@@ -1324,21 +1322,17 @@ export class ThankYou extends PureComponent {
       detail,
     });
 
-    this.setState({
-      showOrderCancellationReasonAside: false,
-    });
+    thankYouActions.hideOrderCancellationReasonAside();
 
     CleverTap.pushEvent('Thank you Page - Cancel Reason', { reason });
   };
 
-  handleHideOrderCancellationAside = () => {
-    this.setState({
-      showOrderCancellationReasonAside: false,
-    });
+  handleHideOrderCancellationReasonAside = () => {
+    this.props.thankYouActions.hideOrderCancellationReasonAside();
   };
 
   render() {
-    const { t, history, match, order, storeHashCode, user, orderCancellationAvailable } = this.props;
+    const { t, history, match, order, storeHashCode, user, isOrderCancellable } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
     const {
@@ -1480,7 +1474,7 @@ export class ThankYou extends PureComponent {
 
                 {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
 
-                {orderCancellationAvailable && this.renderOrderCancellationButton()}
+                {isOrderCancellable && this.renderOrderCancellationButton()}
 
                 <PhoneLogin hideMessage={true} history={history} />
               </div>
@@ -1514,8 +1508,8 @@ export class ThankYou extends PureComponent {
         />
 
         <OrderCancellationReasonsAside
-          show={this.state.showOrderCancellationReasonAside}
-          onHide={this.handleHideOrderCancellationAside}
+          show={this.props.orderCancellationReasonAsideVisible}
+          onHide={this.handleHideOrderCancellationReasonAside}
           onCancelOrder={this.handleOrderCancellation}
         />
       </section>
@@ -1537,7 +1531,8 @@ export default compose(
       orderStatus: getOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
-      orderCancellationAvailable: getOrderCancellationAvailable(state),
+      isOrderCancellable: getIsOrderCancellable(state),
+      orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
