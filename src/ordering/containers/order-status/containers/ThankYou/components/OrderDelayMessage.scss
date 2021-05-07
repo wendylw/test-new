@@ -1,0 +1,28 @@
+@import "../../../../../../Variables.scss";
+
+// size in design
+$design-icon-size: 32px;
+$design-icon-margin-bottom: -16px;
+
+$icon-size: ($design-icon-size / $font-size-base) * 1rem;
+$icon-margin-bottom: ($design-icon-margin-bottom / $font-size-base) * 1rem;
+
+.order-delay-message {
+  &__icon {
+    display: block;
+    width: $icon-size;
+    margin: 0 auto $icon-margin-bottom;
+  }
+
+  &__content {
+    padding-top: 5.79vw;
+  }
+}
+
+@media (min-width: 420px) {
+  .order-delay-message {
+    &__content {
+      padding-top: 26px;
+    }
+  }
+}
