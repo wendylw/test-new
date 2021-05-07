@@ -449,6 +449,17 @@ export class ThankYou extends PureComponent {
     this.setState({
       showOrderCancellationReasonAside: true,
     });
+
+    const { order, businessInfo } = this.props;
+
+    CleverTap.pushEvent('Thank you Page - Cancel Order', {
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      // TODO: pending order api add paidTime field
+      'time from order paid': _get(order, 'paidTime', ''),
+      'order amount': _get(order, 'total', ''),
+      country: _get(businessInfo, 'country', ''),
+    });
   };
 
   handleVisitMerchantInfoPage = () => {
@@ -1316,6 +1327,8 @@ export class ThankYou extends PureComponent {
     this.setState({
       showOrderCancellationReasonAside: false,
     });
+
+    CleverTap.pushEvent('Thank you Page - Cancel Reason', { reason });
   };
 
   handleHideOrderCancellationAside = () => {
