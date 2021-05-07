@@ -1427,28 +1427,7 @@ export class ThankYou extends PureComponent {
               cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
               isPreOrder={isPreOrder}
             />
-            {isDeliveryType ? this.renderDeliveryTimeLine() : null
-            // (
-            //   <img
-            //     className="ordering-thanks__image padding-left-right-normal"
-            //     src={beepPreOrderSuccessImage}
-            //     alt="Beep Success"
-            //   />
-            // )}
-            // {isDeliveryType ? null : (
-            //   <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">
-            //     {t('ThankYou')}!
-            //   </h2>
-            // )}
-            // {isDeliveryType || (!isPickUpType && !isDineInType) ? null : (
-            //   <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
-            //     {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
-            //     <span role="img" aria-label="Goofy">
-            //       😋
-            //     </span>
-            //   </p>
-            // )
-            }
+            {isDeliveryType ? this.renderDeliveryTimeLine() : null}
             {this.renderTableId(isDineInType)}
             {isDeliveryType || isDineInType ? null : this.renderPickupInfo()}
             {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
