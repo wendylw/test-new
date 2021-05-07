@@ -642,14 +642,14 @@ export class ThankYou extends PureComponent {
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
     t,
-    CONSUMERFLOW_STATUS,
+    ORDER_STATUS,
     cashbackInfo,
     businessInfo,
     deliveryInformation,
     cancelOperator,
     order,
   }) {
-    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
+    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = ORDER_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
@@ -738,18 +738,9 @@ export class ThankYou extends PureComponent {
     return (
       <React.Fragment>
         {this.renderOrderDelayMessage()}
-        {currentStatusObj.status === 'cancelled' ? (
-          <div className="card text-center margin-normal flex">
-            <div className="padding-small text-left">
-              <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
-                <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
-                  {{ storeName: name }}
-                  <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />
-                </h4>
-              </Trans>
-            </div>
-          </div>
-        ) : (!useStorehubLogistics && currentStatusObj.status !== 'paid') || !isShowProgress ? null : (
+        {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
+            currentStatusObj.status !== 'paid') ||
+          !isShowProgress ? null : (
           <div className="card text-center margin-normal flex">
             {/*<div className="ordering-thanks__progress padding-top-bottom-small ">*/}
             {/*  /!*{*!/*/}
