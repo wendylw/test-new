@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _filter from 'lodash/filter';
-import { IconLocalOffer } from '../../../../components/Icons';
+import { IconLocalOffer } from '../../../../../components/Icons';
 import { withTranslation, Trans } from 'react-i18next';
-import CurrencyNumber from '../../../components/CurrencyNumber';
-import Constants from '../../../../utils/constants';
+import CurrencyNumber from '../../../../components/CurrencyNumber';
+import Constants from '../../../../../utils/constants';
+import PromotionText from './components/PromotionText';
+import '../PromotionsBar.scss';
 
 const { PROMOTIONS_TYPES, DELIVERY_METHOD } = Constants;
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
@@ -164,7 +165,10 @@ class PromotionsBar extends Component {
     }
 
     return (
-      <ul ref={promotionRef} className="border__top-divider border__bottom-divider">
+      <ul
+        ref={promotionRef}
+        className="promotions-bar__container border__top-divider border__bottom-divider padding-smaller"
+      >
         {promotions.map((promo, index) => {
           const { appliedSources, promotionCode, appliedClientTypes } = promo;
           const disappearPromotionInApp = this.getPromotionDisappearInAppState(appliedClientTypes, inApp);
@@ -176,18 +180,13 @@ class PromotionsBar extends Component {
             return null;
           }
 
-          const prompt = this.renderPromotionPromptText(promo, inApp);
+          // const prompt = this.renderPromotionPromptText(promo, inApp);
 
           return (
-            <li key={`promo-${promotionCode}-${index}`} className="flex flex-top padding-small">
+            <li key={`promo-${promotionCode}-${index}`} className="flex flex-middle">
               <IconLocalOffer className="icon icon__primary icon__smaller" />
-              <p className="margin-left-right-smaller text-line-height-base">
-                {this.renderPromotionText(promo)}
-                {prompt ? (
-                  <>
-                    <br /> ({prompt})
-                  </>
-                ) : null}
+              <p className="text-line-height-base text-omit__single-line">
+                <PromotionText promotion={promo} />
               </p>
             </li>
           );
@@ -205,7 +204,7 @@ PromotionsBar.propTypes = {
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
   ]),
   promotions: PropTypes.array,
-  shippingType: PropTypes.oneOfType(Object.values(DELIVERY_METHOD)),
+  shippingType: PropTypes.oneOf(Object.values(DELIVERY_METHOD)),
   inApp: PropTypes.bool,
 };
 
