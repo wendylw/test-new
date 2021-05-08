@@ -5,6 +5,7 @@ import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
 import PromotionText from './components/PromotionText';
 import PromotionPrompt from './components/PromotionPrompt';
+import PromotionDetails from './components/PromotionDetails';
 import '../PromotionsBar.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -64,26 +65,29 @@ class PromotionsBar extends PureComponent {
     const { inApp, t } = this.props;
 
     return (
-      <ul className="promotions-bar__multiple padding-smaller">
-        {promotions.map((promo, index) => {
-          const { promotionCode } = promo;
+      <div className="promotions-bar__multiple padding-smaller">
+        <ul className="promotions-bar__list">
+          {promotions.map((promo, index) => {
+            const { promotionCode } = promo;
 
-          const promptEl = <PromotionPrompt promotion={promo} inApp={inApp} />;
+            const promptEl = <PromotionPrompt promotion={promo} inApp={inApp} />;
 
-          return (
-            <li key={`promo-${promotionCode}-${index}`} className="flex flex-middle">
-              <IconLocalOffer className="icon icon__primary icon__smaller" />
-              <p className="text-line-height-base text-omit__single-line">
-                <PromotionText promotion={promo} />
-                {promptEl && <>&nbsp;({promptEl})</>}
-              </p>
-            </li>
-          );
-        })}
+            return (
+              <li key={`promo-${promotionCode}-${index}`} className="flex flex-middle">
+                <IconLocalOffer className="icon icon__primary icon__smaller" />
+                <p className="text-line-height-base text-omit__single-line">
+                  <PromotionText promotion={promo} />
+                  {promptEl && <>&nbsp;({promptEl})</>}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
         <button className="promotions-bar__view-more-button button button__link text-size-small padding-small">
           {t('ViewPromo')}
         </button>
-      </ul>
+        <PromotionDetails />
+      </div>
     );
   }
 

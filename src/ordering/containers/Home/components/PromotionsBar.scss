@@ -3,6 +3,9 @@
 .promotions-bar {
   &__multiple {
     position: relative;
+  }
+
+  &__list {
     padding-right: 25vw;
   }
 
@@ -16,7 +19,7 @@
 
 @media (min-width: 420px) {
   .promotions-bar {
-    &__multiple {
+    &__list {
       padding-right: 104px;
     }
   }
