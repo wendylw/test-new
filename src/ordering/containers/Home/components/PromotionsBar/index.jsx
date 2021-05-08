@@ -18,6 +18,10 @@ const SHIPPING_TYPES_MAPPING = {
 
 const PROMOTIONS_MAX_DISPLAY_COUNT = 2;
 class PromotionsBar extends PureComponent {
+  state = {
+    detailsVisible: false,
+  };
+
   getPromotionDisappearInAppState(appliedClientTypes, inApp) {
     return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'web' && inApp;
   }
@@ -61,19 +65,29 @@ class PromotionsBar extends PureComponent {
     );
   }
 
+  handleViewDetails = () => {
+    this.setState({
+      detailsVisible: true,
+    });
+  };
+
+  handleHideDetails = () => {
+    this.setState({
+      detailsVisible: false,
+    });
+  };
+
   renderMultiple(promotions) {
     const { inApp, t } = this.props;
 
     return (
       <div className="promotions-bar__multiple padding-smaller">
         <ul className="promotions-bar__list">
-          {promotions.map((promo, index) => {
-            const { promotionCode } = promo;
-
+          {promotions.slice(0, PROMOTIONS_MAX_DISPLAY_COUNT).map((promo, index) => {
             const promptEl = <PromotionPrompt promotion={promo} inApp={inApp} />;
 
             return (
-              <li key={`promo-${promotionCode}-${index}`} className="flex flex-middle">
+              <li key={promo.id} className="flex flex-middle">
                 <IconLocalOffer className="icon icon__primary icon__smaller" />
                 <p className="text-line-height-base text-omit__single-line">
                   <PromotionText promotion={promo} />
@@ -83,10 +97,14 @@ class PromotionsBar extends PureComponent {
             );
           })}
         </ul>
-        <button className="promotions-bar__view-more-button button button__link text-size-small padding-small">
+        <button
+          onClick={this.handleViewDetails}
+          className="promotions-bar__view-more-button button button__link text-size-small padding-small"
+        >
           {t('ViewPromo')}
         </button>
-        <PromotionDetails />
+
+        <PromotionDetails onHide={this.handleHideDetails} show={this.state.detailsVisible} promotions={promotions} />
       </div>
     );
   }
@@ -104,9 +122,7 @@ class PromotionsBar extends PureComponent {
 
     return (
       <section ref={promotionRef} className="promotions-bar__container border__top-divider border__bottom-divider">
-        {isMultiple
-          ? this.renderMultiple(visiblePromotions.slice(0, PROMOTIONS_MAX_DISPLAY_COUNT))
-          : this.renderSingle(visiblePromotions[0])}
+        {isMultiple ? this.renderMultiple(visiblePromotions) : this.renderSingle(visiblePromotions[0])}
       </section>
     );
   }
