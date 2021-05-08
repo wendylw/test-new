@@ -14,10 +14,11 @@ function PromotionText({ promotion }) {
   const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
   const discountProducts = (discountProductList || []).join(', ');
 
+  // TODO: All <Trans> are not work because of wrong use, it will be fixed when we need the translation for TH
+
   if (discountProductList && validDate) {
     return (
       <Trans
-        t={t}
         i18nKey="ProductsPromotionDescription"
         discountValue={discountValue}
         discountProducts={discountProducts}
@@ -33,7 +34,6 @@ function PromotionText({ promotion }) {
   if (!discountProductList && validDate) {
     return (
       <Trans
-        t={t}
         i18nKey="StorePromotionDescription"
         discountValue={discountValue}
         promotionCode={promotionCode}
@@ -49,7 +49,6 @@ function PromotionText({ promotion }) {
     case PROMOTIONS_TYPES.FREE_SHIPPING:
       return (
         <Trans
-          t={t}
           i18nKey="FreeDeliveryPromotionDescription"
           freeDelivery={t('FreeDelivery')}
           promotionCode={promotionCode}
@@ -60,21 +59,21 @@ function PromotionText({ promotion }) {
       );
     case PROMOTIONS_TYPES.TAKE_AMOUNT_OFF:
       return (
-        <Trans t={t} i18nKey="PromotionDescription" promotionCode={promotionCode}>
+        <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
           <CurrencyNumber className="text-weight-bolder" money={discountValue} /> OFF with promo code{' '}
           <strong>{promotionCode}</strong>
         </Trans>
       );
     case PROMOTIONS_TYPES.PERCENTAGE:
       return (
-        <Trans t={t} i18nKey="PromotionDescription" promotionCode={promotionCode}>
+        <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
           <span className="text-weight-bolder">{`${discountValue}%`}</span> OFF with promo code{' '}
           <strong>{promotionCode}</strong>
         </Trans>
       );
     default:
       return (
-        <Trans t={t} i18nKey="PromotionDescription" promotionCode={promotionCode}>
+        <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
           <span className="text-weight-bolder">{discountValue}</span> OFF with promo code{' '}
           <strong>{promotionCode}</strong>
         </Trans>
