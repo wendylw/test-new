@@ -1,197 +1,102 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { IconLocalOffer } from '../../../../../components/Icons';
-import { withTranslation, Trans } from 'react-i18next';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
+import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
 import PromotionText from './components/PromotionText';
+import PromotionPrompt from './components/PromotionPrompt';
 import '../PromotionsBar.scss';
 
-const { PROMOTIONS_TYPES, DELIVERY_METHOD } = Constants;
-const appDownloadLink = 'https://dl.beepit.com/ocNj';
+const { DELIVERY_METHOD } = Constants;
 const SHIPPING_TYPES_MAPPING = {
   [DELIVERY_METHOD.PICKUP]: 5,
   [DELIVERY_METHOD.DELIVERY]: 6,
   [DELIVERY_METHOD.TAKE_AWAY]: 7,
   [DELIVERY_METHOD.DINE_IN]: 8,
 };
-class PromotionsBar extends Component {
-  getPromotionOnlyInAppState(appliedClientTypes, inApp) {
-    return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
-  }
-
+class PromotionsBar extends PureComponent {
   getPromotionDisappearInAppState(appliedClientTypes, inApp) {
     return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'web' && inApp;
   }
 
-  renderPromotionText(promotion) {
-    const { t } = this.props;
-    const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
-    const discountProducts = (discountProductList || []).join(', ');
+  checkPromotionVisible = promotion => {
+    const { shippingType, inApp } = this.props;
+    const { appliedSources, appliedClientTypes } = promotion;
 
-    if (discountProductList && validDate) {
-      return (
-        <Trans
-          i18nKey="ProductsPromotionDescription"
-          discountValue={discountValue}
-          discountProducts={discountProducts}
-          promotionCode={promotionCode}
-          validDate={validDate}
-        >
-          Get <strong>{discountValue}</strong> OFF for {discountProducts} with <strong>{promotionCode}</strong>. Promo
-          Code is valid till {validDate}
-        </Trans>
-      );
-    } else if (!discountProductList && validDate) {
-      return (
-        <Trans
-          i18nKey="StorePromotionDescription"
-          discountValue={discountValue}
-          promotionCode={promotionCode}
-          validDate={validDate}
-        >
-          Get <strong>{discountValue}</strong> OFF with <strong>{promotionCode}</strong>. Promo Code is valid till{' '}
-          {validDate}
-        </Trans>
-      );
+    const source = SHIPPING_TYPES_MAPPING[shippingType || DELIVERY_METHOD.DELIVERY];
+
+    if (!appliedSources.includes(source)) {
+      return false;
     }
 
-    switch (discountType) {
-      case PROMOTIONS_TYPES.FREE_SHIPPING:
-        return (
-          <Trans
-            i18nKey="FreeDeliveryPromotionDescription"
-            freeDelivery={t('FreeDelivery')}
-            promotionCode={promotionCode}
-          >
-            <span className="text-weight-bolder">{t('FreeDelivery')}</span> with promo code{' '}
-            <strong>{promotionCode}</strong>
-          </Trans>
-        );
-      case PROMOTIONS_TYPES.TAKE_AMOUNT_OFF:
-        return (
-          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
-            <CurrencyNumber className="text-weight-bolder" money={discountValue} /> OFF with promo code{' '}
-            <strong>{promotionCode}</strong>
-          </Trans>
-        );
-      case PROMOTIONS_TYPES.PERCENTAGE:
-        return (
-          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
-            <span className="text-weight-bolder">{`${discountValue}%`}</span> OFF with promo code{' '}
-            <strong>{promotionCode}</strong>
-          </Trans>
-        );
-      default:
-        return (
-          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
-            <span className="text-weight-bolder">{discountValue}</span> OFF with promo code{' '}
-            <strong>{promotionCode}</strong>
-          </Trans>
-        );
-    }
-  }
+    const onlyWebAvailable = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'web';
 
-  renderPromotionPromptText(promotion, inApp) {
-    const { discountProductList, validDate, appliedClientTypes, maxDiscountAmount, minOrderAmount } = promotion;
-
-    if (discountProductList || validDate) {
-      return null;
+    if (inApp && onlyWebAvailable) {
+      return false;
     }
 
-    const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
-    const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
-    const showBeepAppOnlyText = this.getPromotionOnlyInAppState(appliedClientTypes, inApp);
+    return true;
+  };
 
-    if (!maxDiscountAmount && !minOrderAmount) {
-      return showBeepAppOnlyText ? (
-        <Trans i18nKey="OnlyInBeepAppPrompt">
-          <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
-            Beep app
-          </a>{' '}
-          only
-        </Trans>
-      ) : null;
-    }
+  renderSingle(promotion) {
+    const { inApp } = this.props;
 
-    if (!maxDiscountAmount && minOrderAmount) {
-      return showBeepAppOnlyText ? (
-        <Trans i18nKey="PromotionOnlyMinOrderAmountOnlyInAppPrompt">
-          min. spend {minOrderAmountEl},{' '}
-          <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
-            Beep app
-          </a>{' '}
-          only
-        </Trans>
-      ) : (
-        <Trans i18nKey="PromotionOnlyMinOrderAmountPrompt">min. spend {minOrderAmountEl}</Trans>
-      );
-    }
+    const promptEl = <PromotionPrompt promotion={promotion} inApp={inApp} />;
 
-    if (maxDiscountAmount && !minOrderAmount) {
-      return showBeepAppOnlyText ? (
-        <Trans i18nKey="PromotionOnlyMaxDiscountAmountOnlyInAppPrompt">
-          capped at {maxDiscountAmountEl},{' '}
-          <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
-            Beep app
-          </a>{' '}
-          only
-        </Trans>
-      ) : (
-        <Trans i18nKey="PromotionOnlyMaxDiscountAmountPrompt">capped at {maxDiscountAmountEl}</Trans>
-      );
-    }
-
-    return showBeepAppOnlyText ? (
-      <Trans i18nKey="PromotionOnlyInAppPrompt">
-        capped at {maxDiscountAmountEl} with min. spend {minOrderAmountEl},{' '}
-        <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
-          Beep app
-        </a>{' '}
-        only
-      </Trans>
-    ) : (
-      <Trans i18nKey="PromotionPrompt">
-        capped at {maxDiscountAmountEl} with min. spend {minOrderAmountEl}
-      </Trans>
+    return (
+      <div className="flex flex-top padding-small">
+        <IconLocalOffer className="icon icon__primary icon__smaller" />
+        <p className="margin-left-right-smaller text-line-height-base">
+          <PromotionText promotion={promotion} />
+          {promptEl && (
+            <>
+              <br /> ({promptEl})
+            </>
+          )}
+        </p>
+      </div>
     );
   }
 
-  render() {
-    const { promotionRef, promotions, shippingType, inApp } = this.props;
-
-    if (!promotions.length) {
-      return null;
-    }
+  renderMultiple(promotions) {
+    const { inApp } = this.props;
 
     return (
-      <ul
-        ref={promotionRef}
-        className="promotions-bar__container border__top-divider border__bottom-divider padding-smaller"
-      >
+      <ul className="promotions-bar__multiple padding-smaller">
         {promotions.map((promo, index) => {
-          const { appliedSources, promotionCode, appliedClientTypes } = promo;
-          const disappearPromotionInApp = this.getPromotionDisappearInAppState(appliedClientTypes, inApp);
+          const { promotionCode } = promo;
 
-          if (
-            !appliedSources.includes(SHIPPING_TYPES_MAPPING[shippingType || DELIVERY_METHOD.DELIVERY]) ||
-            disappearPromotionInApp
-          ) {
-            return null;
-          }
-
-          // const prompt = this.renderPromotionPromptText(promo, inApp);
+          const promptEl = <PromotionPrompt promotion={promo} inApp={inApp} />;
 
           return (
             <li key={`promo-${promotionCode}-${index}`} className="flex flex-middle">
               <IconLocalOffer className="icon icon__primary icon__smaller" />
               <p className="text-line-height-base text-omit__single-line">
                 <PromotionText promotion={promo} />
+                {promptEl && <>&nbsp;({promptEl})</>}
               </p>
             </li>
           );
         })}
       </ul>
+    );
+  }
+
+  render() {
+    const { promotionRef, promotions } = this.props;
+
+    const visiblePromotions = promotions.filter(this.checkPromotionVisible);
+
+    if (!visiblePromotions.length) {
+      return null;
+    }
+
+    const isMultiple = visiblePromotions.length > 1;
+
+    return (
+      <section ref={promotionRef} className="promotions-bar__container border__top-divider border__bottom-divider">
+        {isMultiple ? this.renderMultiple(visiblePromotions) : this.renderSingle(visiblePromotions[0])}
+      </section>
     );
   }
 }
