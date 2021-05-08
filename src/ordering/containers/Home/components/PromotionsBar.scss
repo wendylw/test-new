@@ -3,7 +3,7 @@
 .promotions-bar {
   &__multiple {
     position: relative;
-    padding-right: 20vw;
+    padding-right: 25vw;
   }
 
   &__view-more-button {
@@ -11,5 +11,13 @@
     color: $status-blue;
     right: 0;
     bottom: 0;
+  }
+}
+
+@media (min-width: 420px) {
+  .promotions-bar {
+    &__multiple {
+      padding-right: 104px;
+    }
   }
 }

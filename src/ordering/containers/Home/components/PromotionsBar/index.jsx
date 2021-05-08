@@ -65,7 +65,7 @@ class PromotionsBar extends PureComponent {
 
     return (
       <ul className="promotions-bar__multiple padding-smaller">
-        {promotions.slice(PROMOTIONS_MAX_DISPLAY_COUNT - 1).map((promo, index) => {
+        {promotions.map((promo, index) => {
           const { promotionCode } = promo;
 
           const promptEl = <PromotionPrompt promotion={promo} inApp={inApp} />;
@@ -100,7 +100,9 @@ class PromotionsBar extends PureComponent {
 
     return (
       <section ref={promotionRef} className="promotions-bar__container border__top-divider border__bottom-divider">
-        {isMultiple ? this.renderMultiple(visiblePromotions) : this.renderSingle(visiblePromotions[0])}
+        {isMultiple
+          ? this.renderMultiple(visiblePromotions.slice(0, PROMOTIONS_MAX_DISPLAY_COUNT))
+          : this.renderSingle(visiblePromotions[0])}
       </section>
     );
   }
