@@ -1,5 +1,15 @@
+@import "../../../../Variables.scss";
+
 .promotions-bar {
   &__multiple {
+    position: relative;
     padding-right: 20vw;
+  }
+
+  &__view-more-button {
+    position: absolute;
+    color: $status-blue;
+    right: 0;
+    bottom: 0;
   }
 }

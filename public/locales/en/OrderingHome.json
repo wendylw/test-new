@@ -33,5 +33,6 @@
   "PromotionOnlyMaxDiscountAmountOnlyInAppPrompt": "capped at <1></1>, <2>Beep app</a> only",
   "FreeDeliveryPromotionDescription": "<1>{{freeDelivery}}</1> with promo code <2>{{promotionCode}}<2/>",
   "FreeDelivery": "Free Delivery",
-  "OnlyInBeepAppPrompt": "<1>Beep app</1> only"
+  "OnlyInBeepAppPrompt": "<1>Beep app</1> only",
+  "ViewPromo": "View Promo"
 }

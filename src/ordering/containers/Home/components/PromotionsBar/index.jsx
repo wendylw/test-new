@@ -14,6 +14,8 @@ const SHIPPING_TYPES_MAPPING = {
   [DELIVERY_METHOD.TAKE_AWAY]: 7,
   [DELIVERY_METHOD.DINE_IN]: 8,
 };
+
+const PROMOTIONS_MAX_DISPLAY_COUNT = 2;
 class PromotionsBar extends PureComponent {
   getPromotionDisappearInAppState(appliedClientTypes, inApp) {
     return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'web' && inApp;
@@ -59,11 +61,11 @@ class PromotionsBar extends PureComponent {
   }
 
   renderMultiple(promotions) {
-    const { inApp } = this.props;
+    const { inApp, t } = this.props;
 
     return (
       <ul className="promotions-bar__multiple padding-smaller">
-        {promotions.map((promo, index) => {
+        {promotions.slice(PROMOTIONS_MAX_DISPLAY_COUNT - 1).map((promo, index) => {
           const { promotionCode } = promo;
 
           const promptEl = <PromotionPrompt promotion={promo} inApp={inApp} />;
@@ -78,6 +80,9 @@ class PromotionsBar extends PureComponent {
             </li>
           );
         })}
+        <button className="promotions-bar__view-more-button button button__link text-size-small padding-small">
+          {t('ViewPromo')}
+        </button>
       </ul>
     );
   }
