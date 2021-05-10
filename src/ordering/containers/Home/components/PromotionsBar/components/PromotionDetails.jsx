@@ -1,10 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Header from '../../../../../../components/Header';
-import PromotionText from './PromotionText';
-import PromotionPrompt from './PromotionPrompt';
+import PromotionContent from './PromotionContent';
 
-function PromotionDetails({ onHide, promotions, show }) {
+function PromotionDetails({ onHide, promotions, show, inApp }) {
   const { t } = useTranslation('OrderingHome');
 
   return (
@@ -19,16 +18,9 @@ function PromotionDetails({ onHide, promotions, show }) {
         />
         <ul className="promotions-bar__details-content padding-normal">
           {promotions.map(promo => {
-            const prompt = <PromotionPrompt promotion={promo} />;
-
             return (
               <li key={promo.id} className="padding-normal text-line-height-base">
-                <PromotionText promotion={promo} />
-                {prompt && (
-                  <>
-                    <br /> ({prompt})
-                  </>
-                )}
+                <PromotionContent promotion={promo} inApp={inApp} />
               </li>
             );
           })}

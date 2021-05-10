@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { IconLocalOffer } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
-import PromotionText from './components/PromotionText';
-import PromotionPrompt from './components/PromotionPrompt';
+import PromotionContent from './components/PromotionContent';
 import PromotionDetails from './components/PromotionDetails';
 import '../PromotionsBar.scss';
 
@@ -48,18 +47,11 @@ class PromotionsBar extends PureComponent {
   renderSingle(promotion) {
     const { inApp } = this.props;
 
-    const promptEl = <PromotionPrompt promotion={promotion} inApp={inApp} />;
-
     return (
       <div className="flex flex-top padding-small">
         <IconLocalOffer className="icon icon__primary icon__smaller" />
         <p className="margin-left-right-smaller text-line-height-base">
-          <PromotionText promotion={promotion} />
-          {promptEl && (
-            <>
-              <br /> ({promptEl})
-            </>
-          )}
+          <PromotionContent inApp={inApp} promotion={promotion} />
         </p>
       </div>
     );
@@ -83,19 +75,14 @@ class PromotionsBar extends PureComponent {
     return (
       <div className="promotions-bar__multiple padding-smaller">
         <ul className="promotions-bar__list">
-          {promotions.slice(0, PROMOTIONS_MAX_DISPLAY_COUNT).map((promo, index) => {
-            const promptEl = <PromotionPrompt promotion={promo} inApp={inApp} />;
-
-            return (
-              <li key={promo.id} className="flex flex-middle">
-                <IconLocalOffer className="icon icon__primary icon__smaller" />
-                <p className="text-line-height-base text-omit__single-line">
-                  <PromotionText promotion={promo} />
-                  {promptEl && <>&nbsp;({promptEl})</>}
-                </p>
-              </li>
-            );
-          })}
+          {promotions.slice(0, PROMOTIONS_MAX_DISPLAY_COUNT).map(promo => (
+            <li key={promo.id} className="flex flex-middle">
+              <IconLocalOffer className="icon icon__primary icon__smaller" />
+              <p className="text-line-height-base text-omit__single-line">
+                <PromotionContent singleLine={true} inApp={inApp} promotion={promo} />
+              </p>
+            </li>
+          ))}
         </ul>
         <button
           onClick={this.handleViewDetails}
@@ -104,7 +91,12 @@ class PromotionsBar extends PureComponent {
           {t('ViewPromo')}
         </button>
 
-        <PromotionDetails onHide={this.handleHideDetails} show={this.state.detailsVisible} promotions={promotions} />
+        <PromotionDetails
+          onHide={this.handleHideDetails}
+          show={this.state.detailsVisible}
+          promotions={promotions}
+          inApp={inApp}
+        />
       </div>
     );
   }
