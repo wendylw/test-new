@@ -756,7 +756,7 @@ export class ThankYou extends PureComponent {
             {/*  /!*  />*!/*/}
             {/*  /!*}*!/*/}
             {/*</div>*/}
-            <div className="padding-small text-left">
+            <div className="padding-small margin-left-right-smaller text-left">
               {currentStatusObj.status === 'paid' ? (
                 <React.Fragment>
                   <h4
