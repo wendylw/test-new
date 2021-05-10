@@ -82,8 +82,8 @@ export const actions = {
 
         dispatch(
           appActions.showMessageModal({
-            // TODO: Pending PM give error message
-            message: i18next.t('cancelOrderFailure'),
+            message: i18next.t('OrderingThankYou:CancellationError'),
+            description: i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'),
           })
         );
       }
