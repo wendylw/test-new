@@ -14,6 +14,14 @@ function PromotionText({ promotion }) {
   const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
   const discountProducts = (discountProductList || []).join(', ');
 
+  if (promotionCode === 'FREEDEL') {
+    return (
+      <>
+        Use <strong>FREEDEL</strong> to enjoy Free Delivery for your first 5KM
+      </>
+    );
+  }
+
   // TODO: All <Trans> are not work because of wrong use, it will be fixed when we need the translation for TH
 
   if (discountProductList && validDate) {
