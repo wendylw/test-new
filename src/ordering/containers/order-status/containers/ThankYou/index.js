@@ -745,7 +745,21 @@ export class ThankYou extends PureComponent {
             currentStatusObj.status !== 'paid') ||
           !isShowProgress ? null : (
           <div className="card text-center margin-normal flex">
-            <div className="padding-small text-left">
+            {/*<div className="ordering-thanks__progress padding-top-bottom-small ">*/}
+            {/*  /!*{*!/*/}
+            {/*  /!*  <img*!/*/}
+            {/*  /!*    src={*!/*/}
+            {/*  /!*      currentStatusObj.status === 'paid'*!/*/}
+            {/*  /!*        ? beepOrderPaid*!/*/}
+            {/*  /!*        : currentStatusObj.status === 'accepted'*!/*/}
+            {/*  /!*        ? beepOrderAccepted*!/*/}
+            {/*  /!*        : beepOrderConfirmed*!/*/}
+            {/*  /!*    }*!/*/}
+            {/*  /!*    alt=""*!/*/}
+            {/*  /!*  />*!/*/}
+            {/*  /!*}*!/*/}
+            {/*</div>*/}
+            <div className="padding-small margin-left-right-smaller text-left">
               {currentStatusObj.status === 'paid' ? (
                 <React.Fragment>
                   <h4
