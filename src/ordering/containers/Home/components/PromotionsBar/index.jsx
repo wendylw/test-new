@@ -21,10 +21,6 @@ class PromotionsBar extends PureComponent {
     detailsVisible: false,
   };
 
-  getPromotionDisappearInAppState(appliedClientTypes, inApp) {
-    return appliedClientTypes.length === 1 && appliedClientTypes[0] === 'web' && inApp;
-  }
-
   checkPromotionVisible = promotion => {
     const { shippingType, inApp } = this.props;
     const { appliedSources, appliedClientTypes } = promotion;
@@ -35,9 +31,7 @@ class PromotionsBar extends PureComponent {
       return false;
     }
 
-    const onlyWebAvailable = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'web';
-
-    if (inApp && onlyWebAvailable) {
+    if (inApp && !appliedClientTypes.includes('app')) {
       return false;
     }
 
