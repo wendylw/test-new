@@ -660,15 +660,11 @@ export class ThankYou extends PureComponent {
     const { isWebview } = user;
 
     let currentStatusObj = {};
-    // status = CONFIRMED;
-    // useStorehubLogistics = false;
+
     /** paid status */
     if (status === PAID) {
       currentStatusObj = {
         status: 'paid',
-        style: {
-          width: '25%',
-        },
         firstNote: t('OrderReceived'),
         secondNote: t('OrderReceivedDescription'),
       };
@@ -678,9 +674,6 @@ export class ThankYou extends PureComponent {
     if (status === ACCEPTED) {
       currentStatusObj = {
         status: 'accepted',
-        style: {
-          width: '50%',
-        },
         firstNote: t('MerchantAccepted'),
         secondNote: t('FindingRider'),
       };
@@ -690,9 +683,6 @@ export class ThankYou extends PureComponent {
     if (status === CONFIRMED || status === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
         status: 'confirmed',
-        style: {
-          width: '75%',
-        },
         firstNote: t('PendingPickUp'),
         secondNote: t('RiderAssigned'),
       };
@@ -702,9 +692,6 @@ export class ThankYou extends PureComponent {
     if (status === PICKUP) {
       currentStatusObj = {
         status: 'riderPickUp',
-        style: {
-          width: '100%',
-        },
         firstNote: t('RiderPickUp'),
         secondNote: t('TrackYourOrder'),
       };
@@ -713,9 +700,6 @@ export class ThankYou extends PureComponent {
     if (status === DELIVERED) {
       currentStatusObj = {
         status: 'delivered',
-        style: {
-          width: '100%',
-        },
         firstNote: t('OrderDelivered'),
         secondNote: t('OrderDeliveredDescription'),
       };
@@ -733,7 +717,7 @@ export class ThankYou extends PureComponent {
     return (
       <React.Fragment>
         {this.renderOrderDelayMessage()}
-        <LogisticsProcessing deliveryInformation={deliveryInformation} order={order} />
+        <LogisticsProcessing useStorehubLogistics={useStorehubLogistics} orderStatus={orderStatus} />
         {/* {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
           currentStatusObj.status !== 'paid') ||
           !isShowProgress ? null : (
