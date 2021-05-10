@@ -1,6 +1,10 @@
 @import "../../../../Variables.scss";
 
 .promotions-bar {
+  &__link {
+    color: $main-color;
+  }
+
   &__multiple {
     position: relative;
   }
