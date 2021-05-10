@@ -26,9 +26,15 @@ class PromotionContent extends PureComponent {
       const discountProducts = (discountProductList || []).join(', ');
 
       return (
-        <Trans t={t} i18nKey="ProductsPromotionDescription">
-          Get <strong>{{ discountValue }}</strong> OFF for {{ discountProducts }} with{' '}
-          <strong>{{ promotionCode }}</strong>. Promo Code is valid till {{ validDate }}
+        <Trans
+          i18nKey="ProductsPromotionDescription"
+          discountValue={discountValue}
+          discountProducts={discountProducts}
+          promotionCode={promotionCode}
+          validDate={validDate}
+        >
+          Get <strong>{discountValue}</strong> OFF for {discountProducts} with <strong>{promotionCode}</strong>. Promo
+          Code is valid till {validDate}
         </Trans>
       );
     }
