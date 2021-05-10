@@ -2,18 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
+import { IconAccessTime } from '../../../../../../components/Icons';
 import Constants from '../../../../../../utils/constants';
 
 const { ORDER_STATUS } = Constants;
+// const LOGISTIC_PROCESSING_MAPPING = {
+//   [ORDER_STATUS.PAID]:
+// };
 
-function LogisticsProcessing({ t, ORDER_STATUS, deliveryInformation, order }) {
-  const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, DELIVERED } = ORDER_STATUS;
+function LogisticsProcessing({ t, deliveryInformation, order }) {
   let { status } = order || {};
   let { useStorehubLogistics } = deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
 
   let currentStatusObj = {};
   /** paid status */
-  if (status === PAID) {
+  if (status === ORDER_STATUS.PAID) {
     currentStatusObj = {
       status: 'paid',
       style: {
@@ -25,7 +28,7 @@ function LogisticsProcessing({ t, ORDER_STATUS, deliveryInformation, order }) {
   }
 
   /** accepted status */
-  if (status === ACCEPTED) {
+  if (status === ORDER_STATUS.ACCEPTED) {
     currentStatusObj = {
       status: 'accepted',
       style: {
@@ -37,7 +40,7 @@ function LogisticsProcessing({ t, ORDER_STATUS, deliveryInformation, order }) {
   }
 
   /** logistic confirmed and confirmed */
-  if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
+  if (status === ORDER_STATUS.CONFIRMED || status === ORDER_STATUS.LOGISTIC_CONFIRMED) {
     currentStatusObj = {
       status: 'confirmed',
       style: {
@@ -49,7 +52,7 @@ function LogisticsProcessing({ t, ORDER_STATUS, deliveryInformation, order }) {
   }
 
   /** pickup status */
-  if (status === PICKUP) {
+  if (status === ORDER_STATUS.LOGISTICS_PICKED_UP) {
     currentStatusObj = {
       status: 'riderPickUp',
       style: {
@@ -60,7 +63,7 @@ function LogisticsProcessing({ t, ORDER_STATUS, deliveryInformation, order }) {
     };
   }
 
-  if (status === DELIVERED) {
+  if (status === ORDER_STATUS.DELIVERED) {
     currentStatusObj = {
       status: 'delivered',
       style: {
@@ -125,7 +128,7 @@ function LogisticsProcessing({ t, ORDER_STATUS, deliveryInformation, order }) {
                 className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
                   currentStatusObj.status === 'confirmed'
                     ? 'text-black'
-                    : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
+                    : 'padding-top-bottom-smaller ordering-thanks__progress-title text-gray'
                 }`}
               >
                 {status === 'paid' ? (

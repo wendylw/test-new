@@ -13,6 +13,7 @@ import Image from '../../../../../components/Image';
 import LiveChat from '../../../../../components/LiveChat';
 import LiveChatNative from '../../../../../components/LiveChatNative';
 import OrderStatusDescription from './components/OrderStatusDescription';
+import LogisticsProcessing from './components/LogisticsProcessing';
 
 import config from '../../../../../config';
 import logisticsGoget from '../../../../../images/beep-logistics-goget.jpg';
@@ -22,12 +23,6 @@ import logisticBeepOnFleet from '../../../../../images/beep-logistics-on-fleet.j
 import logisticsMrspeedy from '../../../../../images/beep-logistics-rspeedy.jpg';
 import beepPreOrderSuccessImage from '../../../../../images/beep-pre-order-success.png';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
-import beepOrderStatusAccepted from '../../../../../images/order-status-accepted.gif';
-import beepOrderStatusCancelled from '../../../../../images/order-status-cancelled.png';
-import beepOrderStatusConfirmed from '../../../../../images/order-status-confirmed.gif';
-import beepOrderStatusDelivered from '../../../../../images/order-status-delivered.gif';
-import beepOrderStatusPaid from '../../../../../images/order-status-paid.gif';
-import beepOrderStatusPickedUp from '../../../../../images/order-status-picked-up.gif';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
@@ -649,7 +644,7 @@ export class ThankYou extends PureComponent {
     cancelOperator,
     order,
   }) {
-    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = ORDER_STATUS;
+    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIRMED, PICKUP, CANCELLED, DELIVERED } = ORDER_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { total, storeInfo, status, isPreOrder } = order || {};
@@ -665,7 +660,7 @@ export class ThankYou extends PureComponent {
     const { isWebview } = user;
 
     let currentStatusObj = {};
-    // status = CONFIMRMED;
+    // status = CONFIRMED;
     // useStorehubLogistics = false;
     /** paid status */
     if (status === PAID) {
@@ -692,7 +687,7 @@ export class ThankYou extends PureComponent {
     }
 
     /** logistic confirmed and confirmed */
-    if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
+    if (status === CONFIRMED || status === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
         status: 'confirmed',
         style: {
@@ -733,29 +728,16 @@ export class ThankYou extends PureComponent {
       };
     }
 
-    const isShowProgress = ['paid', 'accepted', 'confirmed'].includes(currentStatusObj.status);
+    // const isShowProgress = ['paid', 'accepted', 'confirmed'].includes(currentStatusObj.status);
 
     return (
       <React.Fragment>
         {this.renderOrderDelayMessage()}
-        {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
-            currentStatusObj.status !== 'paid') ||
+        <LogisticsProcessing deliveryInformation={deliveryInformation} order={order} />
+        {/* {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
+          currentStatusObj.status !== 'paid') ||
           !isShowProgress ? null : (
           <div className="card text-center margin-normal flex">
-            {/*<div className="ordering-thanks__progress padding-top-bottom-small ">*/}
-            {/*  /!*{*!/*/}
-            {/*  /!*  <img*!/*/}
-            {/*  /!*    src={*!/*/}
-            {/*  /!*      currentStatusObj.status === 'paid'*!/*/}
-            {/*  /!*        ? beepOrderPaid*!/*/}
-            {/*  /!*        : currentStatusObj.status === 'accepted'*!/*/}
-            {/*  /!*        ? beepOrderAccepted*!/*/}
-            {/*  /!*        : beepOrderConfirmed*!/*/}
-            {/*  /!*    }*!/*/}
-            {/*  /!*    alt=""*!/*/}
-            {/*  /!*  />*!/*/}
-            {/*  /!*}*!/*/}
-            {/*</div>*/}
             <div className="padding-small margin-left-right-smaller text-left">
               {currentStatusObj.status === 'paid' ? (
                 <React.Fragment>
@@ -800,11 +782,10 @@ export class ThankYou extends PureComponent {
                 </React.Fragment>
               ) : (
                 <div
-                  className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
-                    currentStatusObj.status === 'confirmed'
-                      ? 'text-black'
-                      : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
-                  }`}
+                  className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${currentStatusObj.status === 'confirmed'
+                    ? 'text-black'
+                    : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
+                    }`}
                 >
                   {status === 'paid' ? (
                     <i className="ordering-thanks__next ordering-thanks__next-heigher"></i>
@@ -843,7 +824,7 @@ export class ThankYou extends PureComponent {
               )}
             </div>
           </div>
-        )}
+        )} */}
         {currentStatusObj.status === 'confirmed' ||
         currentStatusObj.status === 'riderPickUp' ||
         currentStatusObj.status === 'delivered' ||
