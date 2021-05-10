@@ -48,7 +48,7 @@ class PromotionsBar extends PureComponent {
     const { inApp } = this.props;
 
     return (
-      <div className="flex flex-top padding-small">
+      <div className="flex flex-middle padding-small">
         <IconLocalOffer className="icon icon__primary icon__smaller" />
         <p className="margin-left-right-smaller text-line-height-base">
           <PromotionContent inApp={inApp} promotion={promotion} />
@@ -73,31 +73,32 @@ class PromotionsBar extends PureComponent {
     const { inApp, t } = this.props;
 
     return (
-      <div className="promotions-bar__multiple padding-smaller">
-        <ul className="promotions-bar__list">
-          {promotions.slice(0, PROMOTIONS_MAX_DISPLAY_COUNT).map(promo => (
-            <li key={promo.id} className="flex flex-middle">
-              <IconLocalOffer className="icon icon__primary icon__smaller" />
-              <p className="text-line-height-base text-omit__single-line">
-                <PromotionContent singleLine={true} inApp={inApp} promotion={promo} />
-              </p>
-            </li>
-          ))}
-        </ul>
-        <button
-          onClick={this.handleViewDetails}
-          className="promotions-bar__view-more-button button button__link text-size-small padding-small"
-        >
-          {t('ViewPromo')}
-        </button>
-
+      <React.Fragment>
+        <div className="flex flex-bottom padding-smaller">
+          <ul className="promotions-bar__list">
+            {promotions.slice(0, PROMOTIONS_MAX_DISPLAY_COUNT).map(promo => (
+              <li key={promo.id} className="flex flex-middle padding-smaller">
+                <IconLocalOffer className="icon icon__primary icon__smaller" />
+                <p className="text-line-height-base text-omit__single-line">
+                  <PromotionContent singleLine={true} inApp={inApp} promotion={promo} />
+                </p>
+              </li>
+            ))}
+          </ul>
+          <button
+            onClick={this.handleViewDetails}
+            className="promotions-bar__view-more-button button button__link text-size-small padding-smaller"
+          >
+            {t('ViewPromo')}
+          </button>
+        </div>
         <PromotionDetails
           onHide={this.handleHideDetails}
           show={this.state.detailsVisible}
           promotions={promotions}
           inApp={inApp}
         />
-      </div>
+      </React.Fragment>
     );
   }
 

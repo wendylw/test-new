@@ -10,43 +10,27 @@
   }
 
   &__list {
-    padding-right: 25vw;
+    flex: 1;
+    width: 80%;
   }
 
   &__view-more-button {
-    position: absolute;
     color: $status-blue;
-    right: 0;
-    bottom: 0;
   }
 
-  &__details.cover {
-    z-index: 101;
+  &__details.active {
+    z-index: 200;
   }
 
   &__details-container {
     height: 100%;
-    overflow-y: auto;
-    bottom: 0;
     border-radius: 0;
-    position: relative;
+    overflow-y: auto;
   }
 
   &__details-content {
-    li {
-      border-bottom: 1px solid $gray-4;
-
-      &:last-child {
-        border-bottom: none;
-      }
-    }
-  }
-}
-
-@media (min-width: 420px) {
-  .promotions-bar {
-    &__list {
-      padding-right: 104px;
+    li:last-child {
+      border-bottom: none;
     }
   }
 }
