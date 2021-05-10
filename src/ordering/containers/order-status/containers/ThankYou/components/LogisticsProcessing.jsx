@@ -64,6 +64,7 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
 
   return (
     <React.Fragment>
+      <i className="logistics-processing__icon"></i>
       {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics && currentStatusObj.status !== 'paid') ||
         !isShowProgress ? null : (
         <div className="card text-center margin-normal flex">
