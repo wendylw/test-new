@@ -12,8 +12,8 @@ function PromotionText({ promotion }) {
   }
 
   const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
-  const discountProducts = (discountProductList || []).join(', ');
 
+  // Hard code promotion
   if (promotionCode === 'FREEDEL') {
     return (
       <>
@@ -25,6 +25,8 @@ function PromotionText({ promotion }) {
   // TODO: All <Trans> are not work because of wrong use, it will be fixed when we need the translation for TH
 
   if (discountProductList && validDate) {
+    const discountProducts = (discountProductList || []).join(', ');
+
     return (
       <Trans
         i18nKey="ProductsPromotionDescription"
