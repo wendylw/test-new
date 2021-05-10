@@ -44,7 +44,7 @@ class PromotionsBar extends PureComponent {
     return (
       <div className="flex flex-middle padding-small">
         <IconLocalOffer className="icon icon__primary icon__smaller" />
-        <p className="margin-left-right-smaller text-line-height-base">
+        <p className="margin-left-right-smaller text-line-height-base padding-left-right-smaller">
           <PromotionContent inApp={inApp} promotion={promotion} />
         </p>
       </div>
@@ -68,12 +68,12 @@ class PromotionsBar extends PureComponent {
 
     return (
       <React.Fragment>
-        <div className="flex flex-bottom padding-smaller">
-          <ul className="promotions-bar__list">
+        <div className="flex flex-bottom padding-left-right-smaller">
+          <ul className="promotions-bar__list padding-top-bottom-small padding-left-right-smaller">
             {promotions.slice(0, PROMOTIONS_MAX_DISPLAY_COUNT).map(promo => (
-              <li key={promo.id} className="flex flex-middle padding-smaller">
+              <li key={promo.id} className="flex flex-middle">
                 <IconLocalOffer className="icon icon__primary icon__smaller" />
-                <p className="text-line-height-base text-omit__single-line">
+                <p className="text-line-height-base text-omit__single-line padding-left-right-smaller">
                   <PromotionContent singleLine={true} inApp={inApp} promotion={promo} />
                 </p>
               </li>
@@ -81,7 +81,7 @@ class PromotionsBar extends PureComponent {
           </ul>
           <button
             onClick={this.handleViewDetails}
-            className="promotions-bar__view-more-button button button__link text-size-small padding-smaller"
+            className="promotions-bar__view-more-button button button__link text-size-small padding-small"
           >
             {t('ViewPromo')}
           </button>
