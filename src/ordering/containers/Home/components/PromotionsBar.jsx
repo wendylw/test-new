@@ -28,6 +28,14 @@ class PromotionsBar extends Component {
     const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
     const discountProducts = (discountProductList || []).join(', ');
 
+    if (promotionCode === 'FREEDEL') {
+      return (
+        <>
+          Use <strong>FREEDEL</strong> to enjoy Free Delivery for your first 5KM
+        </>
+      );
+    }
+
     if (discountProductList && validDate) {
       return (
         <Trans
