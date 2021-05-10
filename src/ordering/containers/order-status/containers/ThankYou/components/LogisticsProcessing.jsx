@@ -6,71 +6,57 @@ import { IconAccessTime } from '../../../../../../components/Icons';
 import Constants from '../../../../../../utils/constants';
 
 const { ORDER_STATUS } = Constants;
-// const LOGISTIC_PROCESSING_MAPPING = {
-//   [ORDER_STATUS.PAID]:
-// };
+const LOGISTIC_PROCESSING_MAPPING = {
+  [ORDER_STATUS.PAID]: {
+    activeTitleKey: 'OrderReceived',
+    completeTitleKey: 'Confirmed',
+    descriptionKey: 'OrderReceivedDescription',
+  },
+  [ORDER_STATUS.ACCEPTED]: {
+    activeTitleKey: 'MerchantAccepted',
+    completeTitleKey: 'Rider Found',
+    descriptionKey: 'FindingRider',
+  },
+  [ORDER_STATUS.CONFIRMED]: {
+    activeTitleKey: 'PendingPickUp',
+    descriptionKey: 'RiderAssigned',
+  },
+  [ORDER_STATUS.LOGISTIC_CONFIRMED]: {
+    activeTitleKey: 'PendingPickUp',
+    descriptionKey: 'RiderAssigned',
+  },
+};
 
-function LogisticsProcessing({ t, deliveryInformation, order }) {
-  let { status } = order || {};
-  let { useStorehubLogistics } = deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
+function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
+  if (!LOGISTIC_PROCESSING_MAPPING[orderStatus]) {
+    return null;
+  }
 
   let currentStatusObj = {};
   /** paid status */
-  if (status === ORDER_STATUS.PAID) {
+  if (orderStatus === ORDER_STATUS.PAID) {
     currentStatusObj = {
       status: 'paid',
-      style: {
-        width: '25%',
-      },
       firstNote: t('OrderReceived'),
       secondNote: t('OrderReceivedDescription'),
     };
   }
 
   /** accepted status */
-  if (status === ORDER_STATUS.ACCEPTED) {
+  if (orderStatus === ORDER_STATUS.ACCEPTED) {
     currentStatusObj = {
       status: 'accepted',
-      style: {
-        width: '50%',
-      },
       firstNote: t('MerchantAccepted'),
       secondNote: t('FindingRider'),
     };
   }
 
   /** logistic confirmed and confirmed */
-  if (status === ORDER_STATUS.CONFIRMED || status === ORDER_STATUS.LOGISTIC_CONFIRMED) {
+  if (orderStatus === ORDER_STATUS.CONFIRMED || orderStatus === ORDER_STATUS.LOGISTIC_CONFIRMED) {
     currentStatusObj = {
       status: 'confirmed',
-      style: {
-        width: '75%',
-      },
       firstNote: t('PendingPickUp'),
       secondNote: t('RiderAssigned'),
-    };
-  }
-
-  /** pickup status */
-  if (status === ORDER_STATUS.LOGISTICS_PICKED_UP) {
-    currentStatusObj = {
-      status: 'riderPickUp',
-      style: {
-        width: '100%',
-      },
-      firstNote: t('RiderPickUp'),
-      secondNote: t('TrackYourOrder'),
-    };
-  }
-
-  if (status === ORDER_STATUS.DELIVERED) {
-    currentStatusObj = {
-      status: 'delivered',
-      style: {
-        width: '100%',
-      },
-      firstNote: t('OrderDelivered'),
-      secondNote: t('OrderDeliveredDescription'),
     };
   }
 
@@ -131,7 +117,7 @@ function LogisticsProcessing({ t, deliveryInformation, order }) {
                     : 'padding-top-bottom-smaller ordering-thanks__progress-title text-gray'
                 }`}
               >
-                {status === 'paid' ? (
+                {orderStatus === 'paid' ? (
                   <i className="ordering-thanks__next ordering-thanks__next-heigher"></i>
                 ) : (
                   <i className="ordering-thanks__prev"></i>
@@ -161,7 +147,9 @@ function LogisticsProcessing({ t, deliveryInformation, order }) {
             ) : (
               <div className="flex flex-middle padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
                 <i
-                  className={`ordering-thanks__next ${status === 'accepted' ? 'ordering-thanks__next-heigher' : ''}`}
+                  className={`ordering-thanks__next ${
+                    orderStatus === 'accepted' ? 'ordering-thanks__next-heigher' : ''
+                  }`}
                 ></i>
                 <span className="padding-left-right-normal margin-left-right-smaller">{t('PendingPickUp')}</span>
               </div>
