@@ -2,9 +2,14 @@ import Url from '../../../../../../utils/url';
 import Constants from '../../../../../../utils/constants';
 import { API_REQUEST } from '../../../../../../redux/middlewares/api';
 import { createSelector } from 'reselect';
-import { getOrderStatus, getIsOnDemandOrder, getIsUseStorehubLogistics } from '../../../redux/common';
+import {
+  getOrderStatus,
+  getIsOnDemandOrder,
+  getIsUseStorehubLogistics,
+  getOrderShippingType,
+} from '../../../redux/common';
 
-const { ORDER_STATUS } = Constants;
+const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
 const types = {
   // fetch cashbackInfo
@@ -171,8 +176,20 @@ export const getOrderCancellationReasonAsideVisible = state =>
 
 export const getIsOrderCancellable = createSelector(
   getOrderStatus,
+  getOrderShippingType,
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,
-  (orderStatus, isOnDemandOrder, isUseStorehubLogistics) =>
-    [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus) && isOnDemandOrder && isUseStorehubLogistics
+  (orderStatus, shippingType, isOnDemandOrder, isUseStorehubLogistics) =>
+    isOnDemandOrder &&
+    shippingType === DELIVERY_METHOD.DELIVERY &&
+    isUseStorehubLogistics &&
+    [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus)
+);
+
+export const getOrderCancellationButtonVisible = createSelector(
+  getOrderShippingType,
+  getIsOnDemandOrder,
+  getIsUseStorehubLogistics,
+  (shippingType, isOnDemandOrder, isUseStorehubLogistics) =>
+    isOnDemandOrder && shippingType === DELIVERY_METHOD.DELIVERY && isUseStorehubLogistics
 );

@@ -61,5 +61,8 @@
   "Others": "Others",
   "PleaseSpecifyReason": "Please specify reason (required)",
   "LimitCharacters": "{{inputLength}}/{{maxLength}} characters",
-  "OrderDelayReasonRamadan": "During this holy month of Ramadan, finding a rider may take longer than usual."
+  "OrderDelayReasonRamadan": "During this holy month of Ramadan, finding a rider may take longer than usual.",
+  "YourFoodIsOnTheWay": "Your food is on the way!",
+  "OrderCannotBeCancelledAsARiderFound": "Order cannot be cancelled as a rider is already picking up your meal.",
+  "GotIt": "GOT IT"
 }

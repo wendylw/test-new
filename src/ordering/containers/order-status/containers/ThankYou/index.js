@@ -59,7 +59,9 @@ import {
   getStoreHashCode,
   getIsOrderCancellable,
   getOrderCancellationReasonAsideVisible,
+  getOrderCancellationButtonVisible,
 } from './redux/index';
+import { actions as appActionCreators } from '../../../../redux/modules/app';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 
@@ -448,7 +450,17 @@ export class ThankYou extends PureComponent {
   };
 
   handleOrderCancellationButtonClick = () => {
-    const { order, businessInfo, thankYouActions } = this.props;
+    const { t, order, businessInfo, thankYouActions, showMessageModal, isOrderCancellable } = this.props;
+
+    if (!isOrderCancellable) {
+      showMessageModal({
+        message: t('YourFoodIsOnTheWay'),
+        description: t('OrderCannotBeCancelledAsARiderFound'),
+        buttonText: t('GotIt'),
+      });
+
+      return;
+    }
 
     thankYouActions.showOrderCancellationReasonAside();
 
@@ -612,11 +624,13 @@ export class ThankYou extends PureComponent {
   }
 
   renderOrderCancellationButton() {
-    const { t } = this.props;
+    const { t, isOrderCancellable } = this.props;
 
     return (
       <button
-        className="ordering-thanks__order-cancellation-button cancellation-button button button__block text-weight-bolder text-uppercase"
+        className={`ordering-thanks__order-cancellation-button ${
+          isOrderCancellable ? '' : 'uncancellable'
+        } button button__block text-weight-bolder text-uppercase`}
         onClick={this.handleOrderCancellationButtonClick}
         data-testid="thanks__order-cancellation-button"
         data-heap-name="ordering.thank-you.order-cancellation-button"
@@ -1345,7 +1359,7 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, storeHashCode, user, isOrderCancellable } = this.props;
+    const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
     const {
@@ -1488,7 +1502,7 @@ export class ThankYou extends PureComponent {
 
                 {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
 
-                {isOrderCancellable && this.renderOrderCancellationButton()}
+                {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
 
                 <PhoneLogin hideMessage={true} history={history} />
               </div>
@@ -1548,10 +1562,12 @@ export default compose(
       isOrderCancellable: getIsOrderCancellable(state),
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       orderDelayReason: getOrderDelayReason(state),
+      orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
       orderStatusActions: bindActionCreators(orderStatusActionCreators, dispatch),
+      showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
     })
   )
 )(ThankYou);

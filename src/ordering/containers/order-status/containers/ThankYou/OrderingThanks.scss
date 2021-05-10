@@ -151,6 +151,10 @@ $total-text-size: 1.7142rem;
     color: $status-red;
     border-radius: 0;
     min-height: 56px;
+
+    &.uncancellable {
+      color: $gray-2;
+    }
   }
 
   &__footer {
