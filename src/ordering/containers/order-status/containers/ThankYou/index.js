@@ -647,8 +647,7 @@ export class ThankYou extends PureComponent {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIRMED, PICKUP, CANCELLED, DELIVERED } = ORDER_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    let { total, storeInfo, status, isPreOrder } = order || {};
-    const { name /*phone: storePhone*/ } = storeInfo || {};
+    let { storeInfo, status, isPreOrder } = order || {};
     let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const cancelledDescriptionKey = {
@@ -657,7 +656,6 @@ export class ThankYou extends PureComponent {
       merchant: 'MerchantCancelledDescription',
     };
     const { user, orderStatus } = this.props;
-    const { isWebview } = user;
 
     let currentStatusObj = {};
 

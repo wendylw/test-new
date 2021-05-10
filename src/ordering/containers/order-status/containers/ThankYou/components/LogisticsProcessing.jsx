@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import { IconAccessTime } from '../../../../../../components/Icons';
 import Constants from '../../../../../../utils/constants';
+import './LogisticsProcessing.scss';
 
 const { ORDER_STATUS } = Constants;
 const LOGISTIC_PROCESSING_MAPPING = {
@@ -11,11 +12,17 @@ const LOGISTIC_PROCESSING_MAPPING = {
     activeTitleKey: 'OrderReceived',
     completeTitleKey: 'Confirmed',
     descriptionKey: 'OrderReceivedDescription',
+    descriptionImage: (
+      <span className="margin-left-right-smaller" role="img" aria-label="Goofy">
+        😋
+      </span>
+    ),
   },
   [ORDER_STATUS.ACCEPTED]: {
     activeTitleKey: 'MerchantAccepted',
-    completeTitleKey: 'Rider Found',
+    completeTitleKey: 'RiderFound',
     descriptionKey: 'FindingRider',
+    descriptionIcon: <IconAccessTime className="icon icon__smaller icon__default" />,
   },
   [ORDER_STATUS.CONFIRMED]: {
     activeTitleKey: 'PendingPickUp',
@@ -28,137 +35,52 @@ const LOGISTIC_PROCESSING_MAPPING = {
 };
 
 function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
-  if (!LOGISTIC_PROCESSING_MAPPING[orderStatus]) {
+  if (!LOGISTIC_PROCESSING_MAPPING[orderStatus] || (!useStorehubLogistics && orderStatus !== ORDER_STATUS.PAID)) {
     return null;
   }
 
-  let currentStatusObj = {};
-  /** paid status */
-  if (orderStatus === ORDER_STATUS.PAID) {
-    currentStatusObj = {
-      status: 'paid',
-      firstNote: t('OrderReceived'),
-      secondNote: t('OrderReceivedDescription'),
-    };
-  }
-
-  /** accepted status */
-  if (orderStatus === ORDER_STATUS.ACCEPTED) {
-    currentStatusObj = {
-      status: 'accepted',
-      firstNote: t('MerchantAccepted'),
-      secondNote: t('FindingRider'),
-    };
-  }
-
-  /** logistic confirmed and confirmed */
-  if (orderStatus === ORDER_STATUS.CONFIRMED || orderStatus === ORDER_STATUS.LOGISTIC_CONFIRMED) {
-    currentStatusObj = {
-      status: 'confirmed',
-      firstNote: t('PendingPickUp'),
-      secondNote: t('RiderAssigned'),
-    };
-  }
-
-  const isShowProgress = ['paid', 'accepted', 'confirmed'].includes(currentStatusObj.status);
+  const processingList = Object.keys(LOGISTIC_PROCESSING_MAPPING);
+  const currentStatusIndex = processingList.findIndex(step => step === orderStatus);
+  const currentStepIndex = currentStatusIndex > 2 ? 2 : currentStatusIndex;
 
   return (
-    <React.Fragment>
-      <i className="logistics-processing__icon"></i>
-      {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics && currentStatusObj.status !== 'paid') ||
-        !isShowProgress ? null : (
-        <div className="card text-center margin-normal flex">
-          <div className="padding-small margin-left-right-smaller text-left">
-            {currentStatusObj.status === 'paid' ? (
-              <React.Fragment>
-                <h4
-                  className={`flex flex-middle text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
-                >
-                  <i className="ordering-thanks__active "></i>
-                  <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                    {currentStatusObj.firstNote}
-                  </span>
-                </h4>
-                <div className="flex flex-middle line-height-normal text-gray padding-left-right-normal">
-                  <p className="ordering-thanks__description text-size-big padding-left-right-normal margin-left-right-smaller">
-                    <span className="padding-left-right-smaller">{currentStatusObj.secondNote}</span>
-                    <span role="img" aria-label="Goofy">
-                      😋
-                    </span>
-                  </p>
-                </div>
-              </React.Fragment>
-            ) : (
-              <div className="line-height-normal text-black padding-left-right-small flex flex-middle">
-                <i className="ordering-thanks__prev"></i>
-                <span className="padding-left-right-normal margin-left-right-smaller">{t('Confirmed')}</span>
-              </div>
-            )}
+    <div className="card padding-normal margin-normal">
+      <ul>
+        {processingList.map((step, index) => {
+          if (index === processingList.length - 1) {
+            return null;
+          }
 
-            {currentStatusObj.status === 'accepted' ? (
-              <React.Fragment>
-                <h4 className="flex flex-middle ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
-                  <i className="ordering-thanks__active"></i>
-                  <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                    {currentStatusObj.firstNote}
-                  </span>
-                </h4>
-                <div className="flex flex-middle text-gray padding-left-right-normal margin-left-right-normal">
-                  <div className="margin-left-right-smaller flex flex-middle">
-                    <IconAccessTime className="icon icon__small icon__default" />
-                    <span className="">{currentStatusObj.secondNote}</span>
-                  </div>
-                </div>
-              </React.Fragment>
-            ) : (
-              <div
-                className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${
-                  currentStatusObj.status === 'confirmed'
-                    ? 'text-black'
-                    : 'padding-top-bottom-smaller ordering-thanks__progress-title text-gray'
-                }`}
-              >
-                {orderStatus === 'paid' ? (
-                  <i className="ordering-thanks__next ordering-thanks__next-heigher"></i>
-                ) : (
-                  <i className="ordering-thanks__prev"></i>
-                )}
-                <span className="padding-left-right-normal margin-left-right-smaller">
-                  {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
-                </span>
-              </div>
-            )}
+          const itemClassList = ['logistics-processing__step padding-left-right-normal'];
+          const titleClassList = ['logistics-processing__step-title padding-left-right-normal text-line-height-base'];
 
-            {currentStatusObj.status === 'confirmed' ? (
-              <React.Fragment>
-                <h4
-                  className={`flex flex-middle  ordering-thanks__progress-title   padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
-                >
-                  <i className="ordering-thanks__active"></i>
-                  <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                    {currentStatusObj.firstNote}
-                  </span>
-                </h4>
-                <div className="flex flex-middle text-gray line-height-normal padding-left-right-normal margin-left-right-smaller">
-                  <span className="padding-left-right-normal margin-left-right-smaller">
-                    {currentStatusObj.secondNote}
-                  </span>
+          if (index < currentStepIndex) {
+            itemClassList.push('logistics-processing__step--complete');
+          } else if (index === currentStepIndex) {
+            itemClassList.push('logistics-processing__step--active');
+            titleClassList.push('text-weight-bolder');
+          }
+
+          return (
+            <li className={itemClassList.join(' ')} key={`beep-logistics-${step}-status`}>
+              <i className="logistics-processing__icon"></i>
+              <h4 className={titleClassList.join(' ')}>
+                {currentStepIndex <= index
+                  ? t(LOGISTIC_PROCESSING_MAPPING[step].activeTitleKey)
+                  : t(LOGISTIC_PROCESSING_MAPPING[step].completeTitleKey)}
+              </h4>
+              {currentStepIndex === index ? (
+                <div className="logistics-processing__step-description flex flex-middle padding-left-right-normal">
+                  {LOGISTIC_PROCESSING_MAPPING[step].descriptionIcon || null}
+                  <span>{t(LOGISTIC_PROCESSING_MAPPING[step].descriptionKey)}</span>
+                  {LOGISTIC_PROCESSING_MAPPING[step].descriptionImage || null}
                 </div>
-              </React.Fragment>
-            ) : (
-              <div className="flex flex-middle padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
-                <i
-                  className={`ordering-thanks__next ${
-                    orderStatus === 'accepted' ? 'ordering-thanks__next-heigher' : ''
-                  }`}
-                ></i>
-                <span className="padding-left-right-normal margin-left-right-smaller">{t('PendingPickUp')}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </React.Fragment>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

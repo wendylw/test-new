@@ -1,2 +1,104 @@
+@import "../../../../../../Variables.scss";
+
 .logistics-processing {
+  &__step {
+    position: relative;
+    padding-left: 11px;
+    padding-bottom: 2.4vw + 1.4vw;
+    margin-left: 11px;
+  }
+
+  &__step::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    margin: 5px 0 0 -1px;
+    width: 1px;
+    height: 100%;
+    background-color: $gray-4;
+  }
+
+  &__step--complete::before {
+    background-color: $theme-color;
+  }
+
+  &__step:last-child {
+    padding-bottom: 0;
+  }
+
+  &__step:last-child::before {
+    background-color: transparent;
+  }
+
+  &__icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: inline-block;
+    margin: 5px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background-color: $gray-4;
+
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+  }
+
+  &__step--active &__icon,
+  &__step--complete &__icon {
+    background-color: $theme-color;
+  }
+
+  &__icon-background {
+    content: "";
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    display: inline-block;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    opacity: 0.3;
+  }
+
+  &__icon::after {
+    @extend .logistics-processing__icon-background;
+  }
+
+  &__step--active &__icon::after {
+    background-color: $theme-color;
+  }
+
+  &__step-title {
+    line-height: 21px;
+  }
+
+  &__step-description {
+    color: $new-grey-1-1;
+
+    .icon__smaller {
+      margin-left: -1.4vw;
+    }
+  }
+}
+
+@media (min-width: 420px) {
+  .logistics-processing {
+    &__step {
+      padding-bottom: 8px + 4px;
+    }
+
+    &__step-description {
+      color: $new-grey-1-1;
+
+      .icon__smaller {
+        margin-left: -4px;
+      }
+    }
+  }
 }
