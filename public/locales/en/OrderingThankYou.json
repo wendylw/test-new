@@ -60,5 +60,6 @@
   "ChangeOfMind": "Change of mind",
   "Others": "Others",
   "PleaseSpecifyReason": "Please specify reason (required)",
-  "LimitCharacters": "{{inputLength}}/{{maxLength}} characters"
+  "LimitCharacters": "{{inputLength}}/{{maxLength}} characters",
+  "OrderDelayReasonRamadan": "During this holy month of Ramadan, finding a rider may take longer than usual."
 }
