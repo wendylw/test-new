@@ -1,0 +1,8 @@
+@import "../../../../../../Variables.scss";
+
+.self-pickup {
+  &__title {
+    font-size: $font-size-biggest;
+    color: $theme-color;
+  }
+}

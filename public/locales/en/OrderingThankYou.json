@@ -49,5 +49,8 @@
   "CopyStoreDescription": "Store's contact number (+{{phone}}) has been copied to your clipboard",
   "CopyDriverDescription": "Driver's contact number (+{{phone}}) has been copied to your clipboard",
   "CopyTitle": "Contact number copied",
-  "OrderDelayReasonRamadan": "During this holy month of Ramadan, finding a rider may take longer than usual."
+  "OrderDelayReasonRamadan": "During this holy month of Ramadan, finding a rider may take longer than usual.",
+  "SelfPickUpTitle": "Don't want to wait",
+  "SelfPickUpDescription": "Skip the delivery queue by switching to self-pickup and get your delivery fee refunded!",
+  "SwitchToSelfPickUp": "Switch to self-pickup"
 }
