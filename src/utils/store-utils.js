@@ -216,7 +216,7 @@ export const getPickupPreOrderTimeList = store => {
 };
 
 export const getDeliveryTodayTimeList = (store, currentDate, utcOffset) => {
-  const { disableTodayPreOrder, enablePreOrder } = store.qrOrderingSettings;
+  const { disableTodayPreOrder, disableTodayDeliveryPreOrder, enablePreOrder } = store.qrOrderingSettings;
   const isAvailableOnDemandOrder = isAvailableOnDemandOrderTime(
     store,
     currentDate,
@@ -229,7 +229,7 @@ export const getDeliveryTodayTimeList = (store, currentDate, utcOffset) => {
     timeList.push(TIME_SLOT_NOW);
   }
 
-  if (!enablePreOrder || disableTodayPreOrder) {
+  if (!enablePreOrder || disableTodayPreOrder || disableTodayDeliveryPreOrder) {
     return timeList;
   }
 
