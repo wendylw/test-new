@@ -49,6 +49,7 @@ import {
   getReceiptNumber,
   getRiderLocations,
   getOrderDelayReason,
+  getIsOrderCancellable,
 } from '../../redux/common';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
@@ -57,7 +58,6 @@ import {
   actions as thankYouActionCreators,
   getCashbackInfo,
   getStoreHashCode,
-  getIsOrderCancellable,
   getOrderCancellationReasonAsideVisible,
   getOrderCancellationButtonVisible,
 } from './redux/index';
@@ -449,16 +449,21 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  showRiderHasFoundMessageModal() {
+    const { showMessageModal, t } = this.props;
+
+    showMessageModal({
+      message: t('YourFoodIsOnTheWay'),
+      description: t('OrderCannotBeCancelledAsARiderFound'),
+      buttonText: t('GotIt'),
+    });
+  }
+
   handleOrderCancellationButtonClick = () => {
-    const { t, order, businessInfo, thankYouActions, showMessageModal, isOrderCancellable } = this.props;
+    const { order, businessInfo, thankYouActions, isOrderCancellable } = this.props;
 
     if (!isOrderCancellable) {
-      showMessageModal({
-        message: t('YourFoodIsOnTheWay'),
-        description: t('OrderCannotBeCancelledAsARiderFound'),
-        buttonText: t('GotIt'),
-      });
-
+      this.showRiderHasFoundMessageModal();
       return;
     }
 
@@ -1341,27 +1346,39 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, orderStatusActions, thankYouActions, order, businessInfo } = this.props;
+    const { receiptNumber, orderStatusActions, thankYouActions, businessInfo, isOrderCancellable } = this.props;
 
-    const result = await orderStatusActions.cancelOrder({
-      orderId: receiptNumber,
-      reason,
-      detail,
-    });
+    try {
+      if (!isOrderCancellable) {
+        this.showRiderHasFoundMessageModal();
+        return;
+      }
 
-    thankYouActions.hideOrderCancellationReasonAside();
-
-    if (result === 'fulfilled') {
-      CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
-        'store name': _get(order, 'storeInfo.name', ''),
-        'store id': _get(order, 'storeId', ''),
-        // TODO: pending order api add paidTime field
-        'time from order paid': _get(order, 'paidTime', ''),
-        'order amount': _get(order, 'total', ''),
-        country: _get(businessInfo, 'country', ''),
-        'Reason for cancellation': reason,
-        otherReasonSpecification: detail,
+      const result = await orderStatusActions.cancelOrder({
+        orderId: receiptNumber,
+        reason,
+        detail,
       });
+
+      if (result === 'fulfilled') {
+        await this.loadOrder();
+        const { order } = this.props;
+
+        CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
+          'store name': _get(order, 'storeInfo.name', ''),
+          'store id': _get(order, 'storeId', ''),
+          // TODO: pending order api add paidTime field
+          'time from order paid': _get(order, 'paidTime', ''),
+          'order amount': _get(order, 'total', ''),
+          country: _get(businessInfo, 'country', ''),
+          'Reason for cancellation': reason,
+          otherReasonSpecification: detail,
+        });
+      }
+    } catch (error) {
+      console.error('handleOrderCancellation error', error);
+    } finally {
+      thankYouActions.hideOrderCancellationReasonAside();
     }
   };
 

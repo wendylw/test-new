@@ -54,14 +54,13 @@ export const actions = {
         type: types.cancelOrderRequest,
       });
 
-      const { data: order } = await ApiFetch.put(endPoint, {
+      await ApiFetch.put(endPoint, {
         reason,
         detail,
       });
 
       dispatch({
         type: types.cancelOrderSuccess,
-        payload: order,
       });
     } catch (error) {
       dispatch({
@@ -119,7 +118,6 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         cancelOrderStatus: 'fulfilled',
-        order: action.payload,
       };
     case types.cancelOrderFailure:
       return {
@@ -157,6 +155,8 @@ export const getIsPreOrder = createSelector(getOrder, order => _get(order, 'isPr
 export const getIsOnDemandOrder = createSelector(getIsPreOrder, isPreOrder => !isPreOrder);
 
 export const getCancelOrderStatus = state => state.orderStatus.common.cancelOrderStatus;
+
+export const getIsOrderCancellable = createSelector(getOrder, order => _get(order, 'isCancellable', false));
 
 export const getPromotion = createSelector(getOrder, order => {
   if (order && order.appliedVoucher) {

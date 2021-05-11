@@ -8,6 +8,7 @@ import {
   getIsUseStorehubLogistics,
   getOrderShippingType,
 } from '../../../redux/common';
+import { getMerchantCountry } from '../../../../../redux/modules/app';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -174,24 +175,15 @@ export const getCashbackInfo = state => state.orderStatus.thankYou.cashbackInfo;
 export const getOrderCancellationReasonAsideVisible = state =>
   state.orderStatus.thankYou.orderCancellationReasonAsideVisible;
 
-export const getIsOrderCancellable = createSelector(
-  getOrderStatus,
-  getOrderShippingType,
-  getIsOnDemandOrder,
-  getIsUseStorehubLogistics,
-  (orderStatus, shippingType, isOnDemandOrder, isUseStorehubLogistics) =>
-    isOnDemandOrder &&
-    shippingType === DELIVERY_METHOD.DELIVERY &&
-    isUseStorehubLogistics &&
-    [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus)
-);
-
 export const getOrderCancellationButtonVisible = createSelector(
+  getMerchantCountry,
   getOrderStatus,
   getOrderShippingType,
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,
-  (orderStatus, shippingType, isOnDemandOrder, isUseStorehubLogistics) =>
+  (merchantCountry, orderStatus, shippingType, isOnDemandOrder, isUseStorehubLogistics) =>
+    // only support MY for now
+    merchantCountry === 'MY' &&
     isOnDemandOrder &&
     shippingType === DELIVERY_METHOD.DELIVERY &&
     isUseStorehubLogistics &&
