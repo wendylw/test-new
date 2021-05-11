@@ -154,6 +154,7 @@ $total-text-size: 1.7142rem;
 
     &.button__link-disabled {
       color: $gray-2;
+      pointer-events: auto;
     }
   }
 
