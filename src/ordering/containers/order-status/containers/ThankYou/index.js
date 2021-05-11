@@ -464,7 +464,7 @@ export class ThankYou extends PureComponent {
 
     thankYouActions.showOrderCancellationReasonAside();
 
-    CleverTap.pushEvent('Thank you Page - Cancel Order', {
+    CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),
       // TODO: pending order api add paidTime field
@@ -1352,7 +1352,7 @@ export class ThankYou extends PureComponent {
     thankYouActions.hideOrderCancellationReasonAside();
 
     if (result === 'fulfilled') {
-      CleverTap.pushEvent('Thank you Page - Cancel Reason', {
+      CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
         'store name': _get(order, 'storeInfo.name', ''),
         'store id': _get(order, 'storeId', ''),
         // TODO: pending order api add paidTime field
