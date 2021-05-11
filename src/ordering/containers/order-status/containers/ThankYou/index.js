@@ -40,6 +40,7 @@ import {
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import { gotoHome } from '../../../../../utils/webview-utils';
+import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import {
@@ -472,8 +473,7 @@ export class ThankYou extends PureComponent {
     CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),
-      // TODO: pending order api add paidTime field
-      'time from order paid': _get(order, 'paidTime', ''),
+      'time from order paid': this.getTimeFromOrderPaid() || '',
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
@@ -693,6 +693,7 @@ export class ThankYou extends PureComponent {
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
       customer: 'CustomerCancelledDescription',
+      unknown: 'UnknownCancelledDescription',
     };
     const { user, orderStatus } = this.props;
     const { isWebview } = user;
@@ -767,7 +768,7 @@ export class ThankYou extends PureComponent {
     if (status === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
-        descriptionKey: cancelledDescriptionKey[cancelOperator],
+        descriptionKey: cancelledDescriptionKey[cancelOperator || 'unknown'],
         bannerImage: beepOrderStatusCancelled,
       };
     }
@@ -1345,8 +1346,27 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  getTimeFromOrderPaid() {
+    try {
+      const { order } = this.props;
+      const paidTime = _get(order, 'paidTime', null);
+
+      if (!paidTime) {
+        return null;
+      }
+
+      const milliseconds = getDifferenceInMilliseconds(new Date(), new Date(paidTime));
+
+      const minutes = milliseconds / (1000 * 60);
+
+      return minutes.toFixed(2);
+    } catch (error) {
+      return null;
+    }
+  }
+
   handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, orderStatusActions, thankYouActions, businessInfo, isOrderCancellable } = this.props;
+    const { receiptNumber, orderStatusActions, thankYouActions, businessInfo, isOrderCancellable, order } = this.props;
 
     try {
       if (!isOrderCancellable) {
@@ -1361,19 +1381,17 @@ export class ThankYou extends PureComponent {
       });
 
       if (result === 'fulfilled') {
-        await this.loadOrder();
-        const { order } = this.props;
-
         CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
           'store name': _get(order, 'storeInfo.name', ''),
           'store id': _get(order, 'storeId', ''),
-          // TODO: pending order api add paidTime field
-          'time from order paid': _get(order, 'paidTime', ''),
+          'time from order paid': this.getTimeFromOrderPaid() || '',
           'order amount': _get(order, 'total', ''),
           country: _get(businessInfo, 'country', ''),
           'Reason for cancellation': reason,
           otherReasonSpecification: detail,
         });
+
+        window.location.reload();
       }
     } catch (error) {
       console.error('handleOrderCancellation error', error);

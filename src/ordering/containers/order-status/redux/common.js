@@ -88,7 +88,7 @@ export const actions = {
       }
     }
 
-    return getState().cancelOrderStatus;
+    return getCancelOrderStatus(getState());
   },
 };
 
