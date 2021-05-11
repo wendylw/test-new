@@ -629,7 +629,7 @@ export class ThankYou extends PureComponent {
     return (
       <button
         className={`ordering-thanks__order-cancellation-button ${
-          isOrderCancellable ? '' : 'uncancellable'
+          isOrderCancellable ? '' : 'button__link-disabled'
         } button button__block text-weight-bolder text-uppercase`}
         onClick={this.handleOrderCancellationButtonClick}
         data-testid="thanks__order-cancellation-button"
@@ -1341,9 +1341,9 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, orderStatusActions, thankYouActions } = this.props;
+    const { receiptNumber, orderStatusActions, thankYouActions, order, businessInfo } = this.props;
 
-    await orderStatusActions.cancelOrder({
+    const result = await orderStatusActions.cancelOrder({
       orderId: receiptNumber,
       reason,
       detail,
@@ -1351,7 +1351,18 @@ export class ThankYou extends PureComponent {
 
     thankYouActions.hideOrderCancellationReasonAside();
 
-    CleverTap.pushEvent('Thank you Page - Cancel Reason', { reason });
+    if (result === 'fulfilled') {
+      CleverTap.pushEvent('Thank you Page - Cancel Reason', {
+        'store name': _get(order, 'storeInfo.name', ''),
+        'store id': _get(order, 'storeId', ''),
+        // TODO: pending order api add paidTime field
+        'time from order paid': _get(order, 'paidTime', ''),
+        'order amount': _get(order, 'total', ''),
+        country: _get(businessInfo, 'country', ''),
+        'Reason for cancellation': reason,
+        otherReasonSpecification: detail,
+      });
+    }
   };
 
   handleHideOrderCancellationReasonAside = () => {

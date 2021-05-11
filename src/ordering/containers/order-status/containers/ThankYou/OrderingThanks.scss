@@ -152,7 +152,7 @@ $total-text-size: 1.7142rem;
     border-radius: 0;
     min-height: 56px;
 
-    &.uncancellable {
+    &.button__link-disabled {
       color: $gray-2;
     }
   }
