@@ -1,4 +1,3 @@
-import { check } from 'yargs';
 import { toNumericTime, toNumericTimeRange, toDayDateMonth, getDifferenceInMilliseconds } from './datetime-lib';
 
 describe('utils/datetime-lib', () => {
