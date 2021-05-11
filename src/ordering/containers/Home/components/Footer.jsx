@@ -85,7 +85,6 @@ export class Footer extends Component {
         this.handleWebRedirect();
       }
     } else if (!isValidToken) {
-      console.error('native token is invalid');
       this.handleInvalidAppToken();
     }
   };
