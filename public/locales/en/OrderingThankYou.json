@@ -66,5 +66,5 @@
   "OrderCannotBeCancelledAsARiderFound": "Order cannot be cancelled as a rider is already picking up your meal.",
   "GotIt": "GOT IT",
   "CancellationError": "Cancellation Error",
-  "SomethingWentWrongWhenCancelingYourOrder": "Something went wrong when canceling your order. Please try again."
+  "SomethingWentWrongWhenCancelingYourOrder": "Something went wrong while cancelling your order. Please check your connection and try again."
 }
