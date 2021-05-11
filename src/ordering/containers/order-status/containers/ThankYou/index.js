@@ -55,7 +55,7 @@ import PhoneLogin from './components/PhoneLogin';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
 import OrderDelayMessage from './components/OrderDelayMessage';
-import SelfPickUp from './components/SelfPickUp';
+import SelfPickup from './components/SelfPickup';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -859,7 +859,7 @@ export class ThankYou extends PureComponent {
               order
             )
           : null}
-        <SelfPickUp />
+        <SelfPickup />
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
