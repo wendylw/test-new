@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 
-import Loader from '../../../../../components/Loader';
+import PageProcessingLoader from '../../../../../components/PageProcessingLoader';
 import Modal from '../../../../../../components/Modal';
 import './SelfPickup.scss';
 
-function SelfPickup({ t, processing, onChangeSelfPickup }) {
+function SelfPickup({ t, processing, onChangeToSelfPickup }) {
   const [selfPickUpInfo, setSelfPickUpInfo] = useState({
     showModal: false,
   });
@@ -51,25 +51,27 @@ function SelfPickup({ t, processing, onChangeSelfPickup }) {
           </button>
           <button
             className="self-pickup__modal-fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
-            onClick={() => onChangeSelfPickup}
+            onClick={() => onChangeToSelfPickup}
           >
             {t('SelfPickUpPromptConfirmedText')}
           </button>
         </Modal.Footer>
       </Modal>
-      <Loader processing={processing} loaderText={t('Processing')} />
+      {processing ? <PageProcessingLoader processing={processing} loaderText={t('Processing')} /> : null}
     </section>
   );
 }
 
 SelfPickup.propTypes = {
   processing: PropTypes.bool,
-  onChangeSelfPickup: PropTypes.func,
+  onClickSelfPickupButton: PropTypes.func,
+  onChangeToSelfPickup: PropTypes.func,
 };
 
 SelfPickup.defaultProps = {
   processing: false,
-  onChangeSelfPickup: () => {},
+  onClickSelfPickupButton: () => {},
+  onChangeToSelfPickup: () => {},
 };
 
 export default compose(withTranslation('OrderingThankYou'))(SelfPickup);

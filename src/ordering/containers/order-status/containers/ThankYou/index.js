@@ -471,6 +471,14 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  handleClickSelfPickupButton = () => {
+    CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Not Confirmed)', {});
+  };
+
+  handleChangeToSelfPickup = () => {
+    CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {});
+  };
+
   renderOrderDelayMessage = () => {
     const { orderDelayReason } = this.props;
 
@@ -859,7 +867,11 @@ export class ThankYou extends PureComponent {
               order
             )
           : null}
-        <SelfPickup />
+        <SelfPickup
+          onClickSelfPickupButton={() => this.handleClickSelfPickupButton}
+          onChangeToSelfPickup={() => this.handleChangeToSelfPickup}
+          processing={false}
+        />
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
