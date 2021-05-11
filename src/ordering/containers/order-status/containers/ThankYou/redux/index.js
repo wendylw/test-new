@@ -187,9 +187,19 @@ export const getIsOrderCancellable = createSelector(
 );
 
 export const getOrderCancellationButtonVisible = createSelector(
+  getOrderStatus,
   getOrderShippingType,
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,
-  (shippingType, isOnDemandOrder, isUseStorehubLogistics) =>
-    isOnDemandOrder && shippingType === DELIVERY_METHOD.DELIVERY && isUseStorehubLogistics
+  (orderStatus, shippingType, isOnDemandOrder, isUseStorehubLogistics) =>
+    isOnDemandOrder &&
+    shippingType === DELIVERY_METHOD.DELIVERY &&
+    isUseStorehubLogistics &&
+    [
+      ORDER_STATUS.PAID,
+      ORDER_STATUS.ACCEPTED,
+      ORDER_STATUS.LOGISTICS_CONFIRMED,
+      ORDER_STATUS.CONFIRMED,
+      ORDER_STATUS.PICKED_UP,
+    ].includes(orderStatus)
 );
