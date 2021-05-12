@@ -72,10 +72,12 @@ class Promotion extends Component {
       return false;
     }
 
-    CleverTap.pushEvent('Cart Page - apply promo');
     await this.props.promotionActions.applyPromo();
 
     if (this.props.isAppliedSuccess) {
+      CleverTap.pushEvent('Cart Page - apply promo', {
+        'promo/voucher applied': this.props.promoCode,
+      });
       this.gotoCartPage();
     }
   };
