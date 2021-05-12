@@ -9,8 +9,8 @@ import { getCancelOrderStatus } from '../../../../redux/common';
 
 const orderCancellationReasons = [
   {
-    value: ORDER_CANCELLATION_REASONS.TOO_LONG_DELIVERY_TIME,
-    displayNameTransKey: 'DeliveryTimeIsTooLong',
+    value: ORDER_CANCELLATION_REASONS.TAKING_TOO_LONG_TO_FIND_RIDER,
+    displayNameTransKey: 'TakingTooLongToFindRider',
   },
   {
     value: ORDER_CANCELLATION_REASONS.MERCHANT_CALLED_TO_CANCEL,
