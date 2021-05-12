@@ -25,6 +25,10 @@ const orderCancellationReasons = [
     displayNameTransKey: 'OrderedWrongItem',
   },
   {
+    value: ORDER_CANCELLATION_REASONS.CHANGE_OF_MIND,
+    displayNameTransKey: 'ChangeOfMind',
+  },
+  {
     value: ORDER_CANCELLATION_REASONS.OTHERS,
     displayNameTransKey: 'Others',
   },
