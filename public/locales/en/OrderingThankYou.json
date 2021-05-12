@@ -54,7 +54,7 @@
   "Ok": "Ok",
   "CancelOrder": "Cancel Order",
   "PleaseSelectCancellationReason": "Please select cancellation reason",
-  "DeliveryTimeIsTooLong": "Delivery time is too long",
+  "TakingTooLongToFindRider": "Taking too long to find rider",
   "MerchantCalledToCancel": "Merchant called to cancel",
   "WrongDeliveryInformation": "Wrong delivery information",
   "OrderedWrongItem": "Ordered wrong item",
