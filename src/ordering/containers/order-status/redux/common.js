@@ -5,6 +5,9 @@ import Constants from '../../../../utils/constants';
 import { API_REQUEST } from '../../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../../redux/middlewares/apiGql';
 import { createSelector } from 'reselect';
+import * as ApiFetch from '../../../../utils/api/api-fetch';
+import { actions as appActions } from '../../../redux/modules/app';
+import i18next from 'i18next';
 
 const { PROMO_TYPE } = Constants;
 
@@ -17,11 +20,16 @@ const types = {
   fetchOrderStatusRequest: 'ordering/orderStatus/fetchOrderStatusRequest',
   fetchOrderStatusSuccess: 'ordering/orderStatus/fetchOrderStatusSuccess',
   fetchOrderStatusFailure: 'ordering/orderStatus/fetchOrderStatusFailure',
+  // cancel order
+  cancelOrderRequest: 'ordering/orderStatus/cancelOrderRequest',
+  cancelOrderSuccess: 'ordering/orderStatus/cancelOrderSuccess',
+  cancelOrderFailure: 'ordering/orderStatus/cancelOrderFailure',
 };
 
 const initialState = {
   receiptNumber: Utils.getQueryString('receiptNumber'),
   order: null,
+  cancelOrderStatus: null, // pending || fulfilled || rejected
 };
 
 export const actions = {
@@ -38,6 +46,50 @@ export const actions = {
       ...Url.API_URLS.GET_ORDER_STATUS({ orderId }),
     },
   }),
+  cancelOrder: ({ orderId, reason, detail }) => async (dispatch, getState) => {
+    try {
+      const { url: endPoint } = Url.API_URLS.CANCEL_ORDER(orderId);
+
+      dispatch({
+        type: types.cancelOrderRequest,
+      });
+
+      await ApiFetch.put(endPoint, {
+        reason,
+        detail,
+      });
+
+      dispatch({
+        type: types.cancelOrderSuccess,
+      });
+    } catch (error) {
+      dispatch({
+        type: types.cancelOrderFailure,
+        error,
+      });
+
+      if (error.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch({
+          type: 'ordering/app/showApiErrorModal',
+          ...error,
+        });
+      } else {
+        console.error('Cancel order error: ', error);
+
+        dispatch(
+          appActions.showMessageModal({
+            message: i18next.t('OrderingThankYou:CancellationError'),
+            description: i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'),
+          })
+        );
+      }
+    }
+
+    return getCancelOrderStatus(getState());
+  },
 };
 
 export const reducer = (state = initialState, action) => {
@@ -56,6 +108,21 @@ export const reducer = (state = initialState, action) => {
           status,
           riderLocations,
         },
+      };
+    case types.cancelOrderRequest:
+      return {
+        ...state,
+        cancelOrderStatus: 'pending',
+      };
+    case types.cancelOrderSuccess:
+      return {
+        ...state,
+        cancelOrderStatus: 'fulfilled',
+      };
+    case types.cancelOrderFailure:
+      return {
+        ...state,
+        cancelOrderStatus: 'rejected',
       };
     default:
       return state;
@@ -77,9 +144,19 @@ export const getRiderLocations = createSelector(getOrder, order => _get(order, '
 
 export const getOrderDelayReason = createSelector(getOrder, order => _get(order, 'delayReason', null));
 
+export const getOrderShippingType = createSelector(getOrder, order => _get(order, 'shippingType', null));
+
 export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)
 );
+
+export const getIsPreOrder = createSelector(getOrder, order => _get(order, 'isPreOrder', false));
+
+export const getIsOnDemandOrder = createSelector(getIsPreOrder, isPreOrder => !isPreOrder);
+
+export const getCancelOrderStatus = state => state.orderStatus.common.cancelOrderStatus;
+
+export const getIsOrderCancellable = createSelector(getOrder, order => _get(order, 'isCancellable', false));
 
 export const getPromotion = createSelector(getOrder, order => {
   if (order && order.appliedVoucher) {

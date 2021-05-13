@@ -74,6 +74,17 @@ const isDuplicateChargeId = (event, hint) => {
   }
 };
 
+const isTokenExpired = (event, hint) => {
+  // this issue always happened in ordering menu page because the tokens passed by app side would
+  // expired in a short time
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return /Token Expired/.test(message);
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -82,7 +93,8 @@ const shouldFilter = (event, hint) => {
       isBlockFrameBug(event, hint) ||
       isSelectedDebugHandlerError(event, hint) ||
       isChargeEventStructureInvalid(event, hint) ||
-      isDuplicateChargeId(event, hint)
+      isDuplicateChargeId(event, hint) ||
+      isTokenExpired(event, hint)
     );
   } catch {
     return false;

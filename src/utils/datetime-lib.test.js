@@ -1,4 +1,4 @@
-import { toNumericTime, toNumericTimeRange, toDayDateMonth } from './datetime-lib';
+import { toNumericTime, toNumericTimeRange, toDayDateMonth, getDifferenceInMilliseconds } from './datetime-lib';
 
 describe('utils/datetime-lib', () => {
   it('toNumericTime', () => {
@@ -22,5 +22,13 @@ describe('utils/datetime-lib', () => {
     };
     check('2020-03-29T00:00:00+08:00', 'Sunday, March 29');
     check('2020-04-01T00:00:00+08:00', 'Wednesday, April 1');
+  });
+
+  it('getDifferenceInMilliseconds', () => {
+    const result = getDifferenceInMilliseconds(
+      new Date(2014, 6, 2, 12, 30, 21, 700),
+      new Date(2014, 6, 2, 12, 30, 20, 600)
+    );
+    expect(result).toBe(1100);
   });
 });

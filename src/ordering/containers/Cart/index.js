@@ -407,7 +407,8 @@ class Cart extends Component {
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
-    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
+    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee, promotion } = cartBilling || {};
+    const { promoCode } = promotion || {};
     const { isLogin } = user || {};
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
@@ -517,7 +518,10 @@ class Cart extends Component {
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
             onClick={() => {
-              CleverTap.pushEvent('Cart Page - click pay now', storeInfoForCleverTap);
+              CleverTap.pushEvent('Cart Page - click pay now', {
+                ...storeInfoForCleverTap,
+                'promo/voucher applied': promoCode || '',
+              });
               this.handleGtmEventTracking(async () => {
                 await this.handleClickContinue();
               });
