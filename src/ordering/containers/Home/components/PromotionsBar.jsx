@@ -193,7 +193,7 @@ class PromotionsBar extends Component {
                 {this.renderPromotionText(promo)}
                 {prompt ? (
                   <>
-                    <br /> ({prompt})
+                    {promotionCode === 'FREEDEL' ? <>&nbsp;</> : <br />}({prompt})
                   </>
                 ) : null}
               </p>
