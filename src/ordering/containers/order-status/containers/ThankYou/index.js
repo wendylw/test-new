@@ -40,6 +40,7 @@ import {
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import { gotoHome } from '../../../../../utils/webview-utils';
+import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
 import {
@@ -49,11 +50,20 @@ import {
   getReceiptNumber,
   getRiderLocations,
   getOrderDelayReason,
+  getIsOrderCancellable,
 } from '../../redux/common';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import './OrderingThanks.scss';
-import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
+import {
+  actions as thankYouActionCreators,
+  getCashbackInfo,
+  getStoreHashCode,
+  getOrderCancellationReasonAsideVisible,
+  getOrderCancellationButtonVisible,
+} from './redux/index';
+import { actions as appActionCreators } from '../../../../redux/modules/app';
+import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 
@@ -441,6 +451,35 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  showRiderHasFoundMessageModal() {
+    const { showMessageModal, t } = this.props;
+
+    showMessageModal({
+      message: t('YourFoodIsOnTheWay'),
+      description: t('OrderCannotBeCancelledAsARiderFound'),
+      buttonText: t('GotIt'),
+    });
+  }
+
+  handleOrderCancellationButtonClick = () => {
+    const { order, businessInfo, thankYouActions, isOrderCancellable } = this.props;
+
+    if (!isOrderCancellable) {
+      this.showRiderHasFoundMessageModal();
+      return;
+    }
+
+    thankYouActions.showOrderCancellationReasonAside();
+
+    CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'time from order paid': this.getTimeFromOrderPaid() || '',
+      'order amount': _get(order, 'total', ''),
+      country: _get(businessInfo, 'country', ''),
+    });
+  };
+
   handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
     history.push({
@@ -598,6 +637,23 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  renderOrderCancellationButton() {
+    const { t, isOrderCancellable } = this.props;
+
+    return (
+      <button
+        className={`ordering-thanks__order-cancellation-button ${
+          isOrderCancellable ? '' : 'button__link-disabled'
+        } button button__block text-weight-bolder text-uppercase`}
+        onClick={this.handleOrderCancellationButtonClick}
+        data-testid="thanks__order-cancellation-button"
+        data-heap-name="ordering.thank-you.order-cancellation-button"
+      >
+        {t('CancelOrder')}
+      </button>
+    );
+  }
+
   getLogsInfoByStatus = (statusUpdateLogs, statusType) => {
     //const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
     const targetInfo =
@@ -645,6 +701,8 @@ export class ThankYou extends PureComponent {
       ist: 'ISTCancelledDescription',
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
+      customer: 'CustomerCancelledDescription',
+      unknown: 'UnknownCancelledDescription',
     };
     const { user, orderStatus } = this.props;
     const { isWebview } = user;
@@ -719,7 +777,7 @@ export class ThankYou extends PureComponent {
     if (status === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
-        descriptionKey: cancelledDescriptionKey[cancelOperator],
+        descriptionKey: cancelledDescriptionKey[cancelOperator || 'unknown'],
         bannerImage: beepOrderStatusCancelled,
       };
     }
@@ -738,10 +796,10 @@ export class ThankYou extends PureComponent {
         {this.renderOrderDelayMessage()}
         {currentStatusObj.status === 'cancelled' ? (
           <div className="card text-center margin-normal flex">
-            <div className="padding-small text-left">
-              <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou" storeName={name}>
-                <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
-                  {{ storeName: name }}
+            <div className="padding-normal">
+              <Trans i18nKey={currentStatusObj.descriptionKey} ns="OrderingThankYou">
+                <h4 className="padding-left-right-smaller text-size-big text-line-height-base">
+                  <span className="text-size-big text-weight-bolder">{{ storeName: name }}</span>
                   <CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />
                 </h4>
               </Trans>
@@ -1302,8 +1360,66 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  getTimeFromOrderPaid() {
+    try {
+      const { order } = this.props;
+      const paidTime = _get(order, 'paidTime', null);
+
+      if (!paidTime) {
+        return null;
+      }
+
+      const milliseconds = getDifferenceInMilliseconds(new Date(), new Date(paidTime));
+
+      const minutes = milliseconds / (1000 * 60);
+
+      return minutes.toFixed(2);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  handleOrderCancellation = async ({ reason, detail }) => {
+    const { receiptNumber, orderStatusActions, thankYouActions, businessInfo, isOrderCancellable, order } = this.props;
+
+    try {
+      if (!isOrderCancellable) {
+        this.showRiderHasFoundMessageModal();
+        return;
+      }
+
+      const result = await orderStatusActions.cancelOrder({
+        orderId: receiptNumber,
+        reason,
+        detail,
+      });
+
+      if (result === 'fulfilled') {
+        CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
+          'store name': _get(order, 'storeInfo.name', ''),
+          'store id': _get(order, 'storeId', ''),
+          'time from order paid': this.getTimeFromOrderPaid() || '',
+          'order amount': _get(order, 'total', ''),
+          country: _get(businessInfo, 'country', ''),
+          'Reason for cancellation': reason,
+          otherReasonSpecification: detail,
+        });
+
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('handleOrderCancellation error', error);
+    } finally {
+      thankYouActions.hideOrderCancellationReasonAside();
+    }
+  };
+
+  handleHideOrderCancellationReasonAside = () => {
+    this.props.thankYouActions.hideOrderCancellationReasonAside();
+  };
+
   render() {
-    const { t, history, match, order, storeHashCode, user } = this.props;
+    const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
     const {
@@ -1406,6 +1522,7 @@ export class ThankYou extends PureComponent {
                     })}px`,
                     height: Utils.containerHeight({
                       headerEls: [this.headerEl],
+                      footerEls: [this.footerEl],
                     }),
                   }
                 : {}
@@ -1442,7 +1559,11 @@ export class ThankYou extends PureComponent {
 
               <div className="card">
                 {orderInfo}
+
                 {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
+
+                {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
+
                 <PhoneLogin hideMessage={true} history={history} />
               </div>
             </div>
@@ -1473,6 +1594,12 @@ export class ThankYou extends PureComponent {
             });
           }}
         />
+
+        <OrderCancellationReasonsAside
+          show={this.props.orderCancellationReasonAsideVisible}
+          onHide={this.handleHideOrderCancellationReasonAside}
+          onCancelOrder={this.handleOrderCancellation}
+        />
       </section>
     );
   }
@@ -1492,11 +1619,15 @@ export default compose(
       orderStatus: getOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
+      isOrderCancellable: getIsOrderCancellable(state),
+      orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       orderDelayReason: getOrderDelayReason(state),
+      orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
       orderStatusActions: bindActionCreators(orderStatusActionCreators, dispatch),
+      showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
     })
   )
 )(ThankYou);

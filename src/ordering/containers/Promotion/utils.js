@@ -9,7 +9,7 @@ export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, o
   if (PROMOTION_ERROR_CODES[code]) {
     const translationKey = `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`;
 
-    if(code === '54416') {
+    if (code === '54416') {
       const { supportedChannel } = extraInfo || {};
       return i18next.t(translationKey, { supportedChannel });
     }
