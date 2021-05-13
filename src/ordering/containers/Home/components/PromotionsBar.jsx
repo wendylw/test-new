@@ -28,6 +28,7 @@ class PromotionsBar extends Component {
     const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
     const discountProducts = (discountProductList || []).join(', ');
 
+    /* 注意！！！！：这只是临时PM决定的临时解决方案，绝对绝对绝对不能有第二次，如果有请提醒PM更换翻译文字长度，或者提供更通用的解决方案，这么可笑的处理并非作者本意 */
     if (promotionCode === 'FREEDEL') {
       return (
         <>
@@ -193,6 +194,7 @@ class PromotionsBar extends Component {
                 {this.renderPromotionText(promo)}
                 {prompt ? (
                   <>
+                    {/* 注意！！！！：这只是临时PM决定的临时解决方案，绝对绝对绝对不能有第二次，如果有请提醒PM更换翻译文字长度，或者提供更通用的解决方案，这么可笑的处理并非作者本意 */}
                     {promotionCode === 'FREEDEL' ? <>&nbsp;</> : <br />}({prompt})
                   </>
                 ) : null}
