@@ -6,8 +6,6 @@ import CurrencyNumber from '../../../../../components/CurrencyNumber';
 const { PROMOTIONS_TYPES } = Constants;
 
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
-// TODO: All <Trans> are not work in this component because of wrong use
-
 class PromotionContent extends PureComponent {
   getPromotionText() {
     const { promotion, t } = this.props;
@@ -27,29 +25,22 @@ class PromotionContent extends PureComponent {
 
       return (
         <Trans
+          t={t}
           i18nKey="ProductsPromotionDescription"
-          discountValue={discountValue}
-          discountProducts={discountProducts}
-          promotionCode={promotionCode}
-          validDate={validDate}
-        >
-          Get <strong>{discountValue}</strong> OFF for {discountProducts} with <strong>{promotionCode}</strong>. Promo
-          Code is valid till {validDate}
-        </Trans>
+          values={{ discountProducts, promotionCode, validDate }}
+          components={[<CurrencyNumber className="text-weight-bolder" money={discountValue} />, <strong />]}
+        />
       );
     }
 
     if (!discountProductList && validDate) {
       return (
         <Trans
+          t={t}
           i18nKey="StorePromotionDescription"
-          discountValue={discountValue}
-          promotionCode={promotionCode}
-          validDate={validDate}
-        >
-          Get <strong>{discountValue}</strong> OFF with <strong>{promotionCode}</strong>. Promo Code is valid till{' '}
-          {validDate}
-        </Trans>
+          values={{ promotionCode, validDate }}
+          components={[<CurrencyNumber className="text-weight-bolder" money={discountValue} />, <strong />]}
+        />
       );
     }
 
@@ -57,40 +48,44 @@ class PromotionContent extends PureComponent {
       case PROMOTIONS_TYPES.FREE_SHIPPING:
         return (
           <Trans
+            t={t}
             i18nKey="FreeDeliveryPromotionDescription"
-            freeDelivery={t('FreeDelivery')}
-            promotionCode={promotionCode}
-          >
-            <span className="text-weight-bolder">{t('FreeDelivery')}</span> with promo code{' '}
-            <strong>{promotionCode}</strong>
-          </Trans>
+            values={{ promotionCode }}
+            components={[<span className="text-weight-bolder" />, <strong />]}
+          />
         );
       case PROMOTIONS_TYPES.TAKE_AMOUNT_OFF:
         return (
-          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
-            <CurrencyNumber className="text-weight-bolder" money={discountValue} /> OFF with promo code{' '}
-            <strong>{promotionCode}</strong>
-          </Trans>
+          <Trans
+            t={t}
+            i18nKey="TakeAmountOffPromotionDescription"
+            values={{ promotionCode }}
+            components={[<CurrencyNumber className="text-weight-bolder" money={discountValue} />, <strong />]}
+          />
         );
       case PROMOTIONS_TYPES.PERCENTAGE:
         return (
-          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
-            <span className="text-weight-bolder">{`${discountValue}%`}</span> OFF with promo code{' '}
-            <strong>{promotionCode}</strong>
-          </Trans>
+          <Trans
+            t={t}
+            i18nKey="PercentagePromotionDescription"
+            values={{ promotionCode, discountValue }}
+            components={[<span className="text-weight-bolder" />, <strong />]}
+          />
         );
       default:
         return (
-          <Trans i18nKey="PromotionDescription" promotionCode={promotionCode}>
-            <span className="text-weight-bolder">{discountValue}</span> OFF with promo code{' '}
-            <strong>{promotionCode}</strong>
-          </Trans>
+          <Trans
+            t={t}
+            i18nKey="PromotionDescription"
+            values={{ promotionCode, discountValue }}
+            components={[<span className="text-weight-bolder" />, <strong />]}
+          />
         );
     }
   }
 
   getPromotionPrompt() {
-    const { promotion, inApp } = this.props;
+    const { promotion, inApp, t } = this.props;
     const { discountProductList, validDate, appliedClientTypes, maxDiscountAmount, minOrderAmount } = promotion;
 
     if (discountProductList || validDate) {
@@ -99,60 +94,51 @@ class PromotionContent extends PureComponent {
 
     const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
     const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
+    const appDownloadLinkEl = (
+      // eslint-disable-next-line jsx-a11y/anchor-has-content
+      <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink} />
+    );
 
     const showBeepAppOnlyText = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
 
     if (!maxDiscountAmount && !minOrderAmount) {
       return showBeepAppOnlyText ? (
-        <Trans i18nKey="OnlyInBeepAppPrompt">
-          <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
-            Beep app
-          </a>{' '}
-          only
-        </Trans>
+        <Trans t={t} i18nKey="OnlyInBeepAppPrompt" components={[appDownloadLinkEl]} />
       ) : null;
     }
 
     if (!maxDiscountAmount && minOrderAmount) {
       return showBeepAppOnlyText ? (
-        <Trans i18nKey="PromotionOnlyMinOrderAmountOnlyInAppPrompt">
-          min. spend {minOrderAmountEl},{' '}
-          <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
-            Beep app
-          </a>{' '}
-          only
-        </Trans>
+        <Trans
+          t={t}
+          i18nKey="PromotionOnlyMinOrderAmountOnlyInAppPrompt"
+          components={[minOrderAmountEl, appDownloadLinkEl]}
+        />
       ) : (
-        <Trans i18nKey="PromotionOnlyMinOrderAmountPrompt">min. spend {minOrderAmountEl}</Trans>
+        <Trans t={t} i18nKey="PromotionOnlyMinOrderAmountPrompt" components={[minOrderAmountEl]} />
       );
     }
 
     if (maxDiscountAmount && !minOrderAmount) {
       return showBeepAppOnlyText ? (
-        <Trans i18nKey="PromotionOnlyMaxDiscountAmountOnlyInAppPrompt">
-          capped at {maxDiscountAmountEl},{' '}
-          <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
-            Beep app
-          </a>{' '}
-          only
-        </Trans>
+        <Trans
+          t={t}
+          i18nKey="PromotionOnlyMaxDiscountAmountOnlyInAppPrompt"
+          components={[maxDiscountAmountEl, appDownloadLinkEl]}
+        />
       ) : (
-        <Trans i18nKey="PromotionOnlyMaxDiscountAmountPrompt">capped at {maxDiscountAmountEl}</Trans>
+        <Trans t={t} i18nKey="PromotionOnlyMaxDiscountAmountPrompt" components={[maxDiscountAmountEl]} />
       );
     }
 
     return showBeepAppOnlyText ? (
-      <Trans i18nKey="PromotionOnlyInAppPrompt">
-        capped at {maxDiscountAmountEl} with min. spend {minOrderAmountEl},{' '}
-        <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink}>
-          Beep app
-        </a>{' '}
-        only
-      </Trans>
+      <Trans
+        t={t}
+        i18nKey="PromotionOnlyInAppPrompt"
+        components={[maxDiscountAmountEl, minOrderAmountEl, appDownloadLinkEl]}
+      />
     ) : (
-      <Trans i18nKey="PromotionPrompt">
-        capped at {maxDiscountAmountEl} with min. spend {minOrderAmountEl}
-      </Trans>
+      <Trans t={t} i18nKey="PromotionPrompt" components={[maxDiscountAmountEl, minOrderAmountEl]} />
     );
   }
 
