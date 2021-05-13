@@ -51,6 +51,7 @@ import {
   getRiderLocations,
   getOrderDelayReason,
   getIsOrderCancellable,
+  getOrderShippingType,
 } from '../../redux/common';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
@@ -67,7 +68,7 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
 // const FINALLY = [DELIVERED, CANCELLED, PICKED_UP];
 const ANIMATION_TIME = 3600;
@@ -114,7 +115,7 @@ export class ThankYou extends PureComponent {
 
   pollOrderStatusTimer = null;
 
-  componentDidMount() {
+  componentDidMount = async () => {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
@@ -132,14 +133,16 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    this.loadOrder();
+    await this.loadOrder();
+
+    const { shippingType } = this.props;
 
     this.setContainerHeight();
 
-    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
+    if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
       this.pollOrderStatus();
     }
-  }
+  };
 
   setContainerHeight() {
     const { isHideTopArea } = this.state;
@@ -182,7 +185,7 @@ export class ThankYou extends PureComponent {
     //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
-    const { orderStatus, riderLocations = [] } = this.props;
+    const { orderStatus, riderLocations = [], shippingType } = this.props;
     const [lat = null, lng = null] = riderLocations || [];
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
     const { PICKUP } = CONSUMERFLOW_STATUS;
@@ -205,7 +208,7 @@ export class ThankYou extends PureComponent {
       },
     ];
 
-    if (orderStatus === PICKUP && Utils.isDeliveryType()) {
+    if (orderStatus === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY) {
       try {
         if (Utils.isAndroidWebview() && lat && lng) {
           const res = window.beepAppVersion;
@@ -330,7 +333,9 @@ export class ThankYou extends PureComponent {
 
     await orderStatusActions.loadOrder(receiptNumber);
 
-    if (Utils.isDeliveryType() || Utils.isPickUpType()) {
+    const { shippingType } = this.props;
+
+    if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
       await orderStatusActions.loadOrderStatus(receiptNumber);
 
       this.updateAppLocationAndStatus();
@@ -351,10 +356,10 @@ export class ThankYou extends PureComponent {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const { storeId } = this.props.order || {};
-    const { onlineStoreInfo, user } = this.props;
+    const { onlineStoreInfo, user, shippingType } = this.props;
 
     if (storeId && prevStoreId !== storeId) {
-      Utils.isDineInType()
+      shippingType === DELIVERY_METHOD.DINE_IN
         ? this.props.thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
         : this.props.thankYouActions.getStoreHashData(storeId);
     }
@@ -674,11 +679,11 @@ export class ThankYou extends PureComponent {
     }, ANIMATION_TIME);
   };
 
-  isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS) => {
+  isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS, shippingType) => {
     const { PICKUP } = CONSUMERFLOW_STATUS;
     const { isHideTopArea } = this.state;
 
-    return !(isWebview && isHideTopArea && status === PICKUP && Utils.isDeliveryType());
+    return !(isWebview && isHideTopArea && status === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY);
   };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
@@ -689,6 +694,7 @@ export class ThankYou extends PureComponent {
     deliveryInformation,
     cancelOperator,
     order,
+    shippingType,
   }) {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
@@ -786,7 +792,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <React.Fragment>
-        {this.isRenderImage(isWebview, orderStatus, CONSUMERFLOW_STATUS) && (
+        {this.isRenderImage(isWebview, orderStatus, CONSUMERFLOW_STATUS, shippingType) && (
           <img
             className="ordering-thanks__image padding-normal margin-normal"
             src={currentStatusObj.bannerImage}
@@ -1201,10 +1207,7 @@ export class ThankYou extends PureComponent {
   /* eslint-enable jsx-a11y/anchor-is-valid */
 
   renderStoreInfo = () => {
-    const isPickUpType = Utils.isPickUpType();
-    const isDeliveryType = Utils.isDeliveryType();
-    const isDineInType = Utils.isDineInType();
-    const { t, order, onlineStoreInfo = {}, businessUTCOffset } = this.props;
+    const { t, order, onlineStoreInfo = {}, businessUTCOffset, shippingType } = this.props;
     const { isPreOrder } = order || {};
 
     if (!order) return;
@@ -1226,7 +1229,7 @@ export class ThankYou extends PureComponent {
           <label className="margin-top-bottom-small text-size-big text-weight-bolder">{name}</label>
         </div>
 
-        {isPickUpType ? (
+        {shippingType === DELIVERY_METHOD.PICKUP ? (
           <div className="padding-left-right-small">
             <h4 className="margin-top-bottom-small text-weight-bolder">{t('PickUpOn')}</h4>
             <p className="flex flex-top padding-top-bottom-small">
@@ -1238,18 +1241,20 @@ export class ThankYou extends PureComponent {
           </div>
         ) : null}
 
-        {isDeliveryType ? (
+        {shippingType === DELIVERY_METHOD.DELIVERY ? (
           <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('DeliveringTo')}</h4>
         ) : null}
 
-        {isPickUpType ? (
+        {shippingType === DELIVERY_METHOD.PICKUP ? (
           <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('PickupAt')}</h4>
         ) : null}
 
         <p className="padding-left-right-small flex flex-top padding-top-bottom-small">
           <IconPin className="icon icon__small icon__primary" />
           <span className="ordering-thanks__address padding-top-bottom-smaller padding-left-right-small text-line-height-base">
-            {!isDineInType && !isDeliveryType ? storeAddress : deliveryAddress}
+            {shippingType !== DELIVERY_METHOD.DINE_IN && shippingType !== DELIVERY_METHOD.DELIVERY
+              ? storeAddress
+              : deliveryAddress}
           </span>
         </p>
 
@@ -1304,7 +1309,7 @@ export class ThankYou extends PureComponent {
   };
 
   renderDeliveryImageAndTimeLine() {
-    const { t, order, cashbackInfo, businessInfo } = this.props;
+    const { t, order, cashbackInfo, businessInfo, shippingType } = this.props;
     const { status, deliveryInformation, cancelOperator } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
@@ -1325,6 +1330,7 @@ export class ThankYou extends PureComponent {
             deliveryInformation,
             cancelOperator,
             order,
+            shipping,
           })
         )}
       </React.Fragment>
@@ -1337,21 +1343,23 @@ export class ThankYou extends PureComponent {
     return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
   }
 
-  renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType }) {
-    if (isPreOrder && isDeliveryType) return null;
+  renderDetailTitle({ isPreOrder, shippingType }) {
+    if (isPreOrder && shippingType === DELIVERY_METHOD.DELIVERY) return null;
     const { t } = this.props;
 
     return (
       <h4 className="margin-top-bottom-small text-uppercase text-weight-bolder text-size-big">
-        {isPreOrder && isPickUpType ? t('PickUpDetails') : t('OrderDetails')}
+        {isPreOrder && shippingType === DELIVERY_METHOD.PICKUP ? t('PickUpDetails') : t('OrderDetails')}
       </h4>
     );
   }
 
   renderDownloadBanner() {
+    const { shippingType } = this.props;
+
     return (
       <div className="ordering-thanks__download">
-        {Utils.isDeliveryType() || Utils.isPickUpType() ? (
+        {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP ? (
           <DownloadBanner link={deliveryAndPickupLink} text={deliveryAndPickupText} />
         ) : (
           <DownloadBanner link={otherLink} text={otherText} />
@@ -1419,7 +1427,7 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible } = this.props;
+    const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible, shippingType } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
     const {
@@ -1427,15 +1435,12 @@ export class ThankYou extends PureComponent {
       profile: { email },
     } = user || {};
     const type = Utils.getOrderTypeFromUrl();
-    const isDeliveryType = Utils.isDeliveryType();
-    const isPickUpType = Utils.isPickUpType();
-    const isDineInType = Utils.isDineInType();
-    let orderInfo = !isDineInType ? this.renderStoreInfo() : null;
+    let orderInfo = shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderStoreInfo() : null;
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
     const { isHideTopArea } = this.state;
 
-    if (isDeliveryType && this.isNowPaidPreOrder()) {
+    if (shippingType === DELIVERY_METHOD.DELIVERY && this.isNowPaidPreOrder()) {
       orderInfo = this.renderPreOrderMessage();
     }
 
@@ -1483,7 +1488,7 @@ export class ThankYou extends PureComponent {
                 }
               }}
             >
-              {!isDineInType ? (
+              {shippingType !== DELIVERY_METHOD.DELIVERY ? (
                 !isWebview ? (
                   <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
                 ) : window.liveChatAvailable ? (
@@ -1529,38 +1534,43 @@ export class ThankYou extends PureComponent {
             }
           >
             {!isWebview && this.renderDownloadBanner()}
-            {isDeliveryType ? (
+            {shippingType === DELIVERY_METHOD.DELIVERY ? (
               this.renderDeliveryImageAndTimeLine()
             ) : (
               <img
                 className="ordering-thanks__image padding-normal"
-                src={isDineInType ? beepSuccessImage : beepPreOrderSuccessImage}
+                src={shippingType === DELIVERY_METHOD.DINE_IN ? beepSuccessImage : beepPreOrderSuccessImage}
                 alt="Beep Success"
               />
             )}
-            {isDeliveryType ? null : (
+            {shippingType === DELIVERY_METHOD.DELIVERY ? null : (
               <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">
                 {t('ThankYou')}!
               </h2>
             )}
-            {isDeliveryType || (!isPickUpType && !isDineInType) ? null : (
+            {shippingType === DELIVERY_METHOD.DELIVERY ||
+            (shippingType !== DELIVERY_METHOD.PICKUP && shippingType !== DELIVERY_METHOD.DINE_IN) ? null : (
               <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
-                {isPickUpType ? `${t('ThankYouForPickingUpForUS')} ` : `${t('PrepareOrderDescription')} `}
+                {shippingType === DELIVERY_METHOD.PICKUP
+                  ? `${t('ThankYouForPickingUpForUS')} `
+                  : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
                   😋
                 </span>
               </p>
             )}
-            {isDeliveryType || isDineInType ? null : this.renderPickupInfo()}
-            {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
+            {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.DINE_IN
+              ? null
+              : this.renderPickupInfo()}
+            {shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
             <div className="padding-top-bottom-small margin-normal">
-              {this.renderDetailTitle({ isPreOrder, isPickUpType, isDeliveryType })}
+              {this.renderDetailTitle({ isPreOrder, shippingType })}
 
               <div className="card">
                 {orderInfo}
 
-                {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
+                {shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderViewDetail() : this.renderNeedReceipt()}
 
                 {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
 
@@ -1623,6 +1633,7 @@ export default compose(
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       orderDelayReason: getOrderDelayReason(state),
       orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
+      shippingType: getOrderShippingType(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),

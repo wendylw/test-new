@@ -9,7 +9,7 @@ import * as ApiFetch from '../../../../utils/api/api-fetch';
 import { actions as appActions } from '../../../redux/modules/app';
 import i18next from 'i18next';
 
-const { PROMO_TYPE } = Constants;
+const { PROMO_TYPE, DELIVERY_METHOD } = Constants;
 
 const types = {
   // fetch order
@@ -96,6 +96,10 @@ export const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.fetchOrderSuccess:
       const order = _get(action, 'responseGql.data.order', null);
+
+      if (order && order.shippingType === 'dineIn') {
+        order.shippingType = DELIVERY_METHOD.DINE_IN;
+      }
 
       return { ...state, order };
     case types.fetchOrderStatusSuccess:
