@@ -1330,7 +1330,7 @@ export class ThankYou extends PureComponent {
             deliveryInformation,
             cancelOperator,
             order,
-            shipping,
+            shippingType,
           })
         )}
       </React.Fragment>
