@@ -1488,7 +1488,7 @@ export class ThankYou extends PureComponent {
                 }
               }}
             >
-              {shippingType !== DELIVERY_METHOD.DELIVERY ? (
+              {shippingType && shippingType !== DELIVERY_METHOD.DINE_IN ? (
                 !isWebview ? (
                   <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
                 ) : window.liveChatAvailable ? (
