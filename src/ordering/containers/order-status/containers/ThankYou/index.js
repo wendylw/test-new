@@ -1548,8 +1548,7 @@ export class ThankYou extends PureComponent {
                 {t('ThankYou')}!
               </h2>
             )}
-            {shippingType === DELIVERY_METHOD.DELIVERY ||
-            (shippingType !== DELIVERY_METHOD.PICKUP && shippingType !== DELIVERY_METHOD.DINE_IN) ? null : (
+            {shippingType !== DELIVERY_METHOD.PICKUP && shippingType !== DELIVERY_METHOD.DINE_IN ? null : (
               <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
                 {shippingType === DELIVERY_METHOD.PICKUP
                   ? `${t('ThankYouForPickingUpForUS')} `
