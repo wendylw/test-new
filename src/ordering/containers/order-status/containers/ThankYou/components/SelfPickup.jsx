@@ -8,15 +8,10 @@ import Modal from '../../../../../../components/Modal';
 import './SelfPickup.scss';
 
 function SelfPickup({ t, processing, onChangeToSelfPickup }) {
-  const [selfPickUpInfo, setSelfPickUpInfo] = useState({
-    showModal: false,
-  });
+  const [modalDisplayState, setModalDisplayState] = useState(false);
 
   const handleToggleModal = status => {
-    setSelfPickUpInfo({
-      ...selfPickUpInfo,
-      showModal: status,
-    });
+    setModalDisplayState(status);
   };
 
   return (
@@ -33,7 +28,7 @@ function SelfPickup({ t, processing, onChangeToSelfPickup }) {
           {t('SwitchToSelfPickUp')}
         </button>
       </div>
-      <Modal className="self-pickup__modal" show={selfPickUpInfo.showModal}>
+      <Modal className="self-pickup__modal" show={modalDisplayState}>
         <Modal.Body className="text-center padding-small">
           <h2 className="padding-small text-size-biggest text-line-height-base text-weight-bolder">
             {t('SwitchToSelfPickUp')}
