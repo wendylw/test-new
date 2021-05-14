@@ -11,15 +11,6 @@ class PromotionContent extends PureComponent {
     const { promotion, t } = this.props;
     const { discountType, discountValue, promotionCode, discountProductList, validDate } = promotion;
 
-    // Hard code promotion
-    if (promotionCode === 'FREEDEL') {
-      return (
-        <>
-          Use <strong>FREEDEL</strong> to enjoy Free Delivery for your first 5KM
-        </>
-      );
-    }
-
     if (discountProductList && validDate) {
       const discountProducts = (discountProductList || []).join(', ');
 
@@ -148,8 +139,19 @@ class PromotionContent extends PureComponent {
       return null;
     }
 
-    const promotionText = this.getPromotionText();
     const promotionPrompt = this.getPromotionPrompt();
+
+    // 注意！！！！：这只是临时PM决定的临时解决方案，绝对绝对绝对不能有第二次，如果有请提醒PM更换翻译文字长度，或者提供更通用的解决方案，这么可笑的处理并非作者本意
+    if (promotion.promotionCode === 'FREEDEL') {
+      return (
+        <>
+          Use <strong>FREEDEL</strong> to enjoy Free Delivery for your first 5KM
+          {promotionPrompt && <>&nbsp;({promotionPrompt})</>}
+        </>
+      );
+    }
+
+    const promotionText = this.getPromotionText();
 
     return (
       <>
