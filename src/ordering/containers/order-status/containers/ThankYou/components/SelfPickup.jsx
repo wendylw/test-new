@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
@@ -10,9 +10,9 @@ import './SelfPickup.scss';
 function SelfPickup({ t, processing, onChangeToSelfPickup }) {
   const [modalDisplayState, setModalDisplayState] = useState(false);
 
-  const handleToggleModal = status => {
+  const handleToggleModal = useCallback(status => {
     setModalDisplayState(status);
-  };
+  }, []);
 
   return (
     <section className="self-pickup">
