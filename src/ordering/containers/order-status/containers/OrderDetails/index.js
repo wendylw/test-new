@@ -433,8 +433,8 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
-    dispatch => ({
-      loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
-    })
+    {
+      loadOrder: savedOrderStatusCommonThunks.loadOrder,
+    }
   )
 )(OrderDetails);

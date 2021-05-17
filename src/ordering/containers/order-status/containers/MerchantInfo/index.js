@@ -123,8 +123,8 @@ export default compose(
       order: getOrder(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
     }),
-    dispatch => ({
-      loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
-    })
+    {
+      loadOrder: savedOrderStatusCommonThunks.loadOrder,
+    }
   )
 )(MerchantInfo);

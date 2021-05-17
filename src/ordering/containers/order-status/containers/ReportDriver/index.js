@@ -375,7 +375,7 @@ export default compose(
       uploadPhotoFile: getUploadPhotoFile(state),
       uploadPhotoUrl: getUploadPhotoUrl(state),
     }),
-    dispatch => ({
+    {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,
       setUploadPhotoFile: reportDriverActionCreators.setUploadPhotoFile,
       removeUploadPhotoFile: reportDriverActionCreators.removeUploadPhotoFile,
@@ -384,8 +384,8 @@ export default compose(
       updateSubmitStatus: reportDriverActionCreators.updateSubmitStatus,
       fetchReport: reportDriverThunks.fetchReport,
       submitReport: reportDriverThunks.submitReport,
-      loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
+      loadOrder: savedOrderStatusCommonThunks.loadOrder,
       showMessageModal: appActionCreators.showMessageModal,
-    })
+    }
   )
 )(ReportDriver);

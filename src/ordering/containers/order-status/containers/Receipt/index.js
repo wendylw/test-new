@@ -154,8 +154,8 @@ export default compose(
       order: getOrder(state),
       promotion: getPromotion(state),
     }),
-    dispatch => ({
-      loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
-    })
+    {
+      loadOrder: savedOrderStatusCommonThunks.loadOrder,
+    }
   )
 )(ReceiptDetail);
