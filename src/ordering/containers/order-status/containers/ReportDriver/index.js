@@ -3,7 +3,7 @@ import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 
 import Constants from '../../../../../utils/constants';
 import PageLoader from '../../../../../components/PageLoader';

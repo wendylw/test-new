@@ -32,7 +32,7 @@ const thunks = {
       const updateResult = await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
 
       if (updateResult.success) {
-        const result = await post(API_INFO.getOrderDetail().url, { orderId });
+        const result = await thunks.loadOrder(orderId);
 
         if (result.order && result.order.shippingType === 'dineIn') {
           result.order.shippingType = DELIVERY_METHOD.DINE_IN;

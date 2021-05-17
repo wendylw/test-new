@@ -9,7 +9,7 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import { thunks as savedOrderStatusCommonThunks } from '../../redux/common';
 import { getOrder, getPromotion } from '../../redux/selector';
 import { getUser, getBusinessInfo } from '../../../../redux/modules/app';
