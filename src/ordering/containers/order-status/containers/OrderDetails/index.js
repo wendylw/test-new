@@ -15,7 +15,7 @@ import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
-import { thunks as savedOrderStatusCommonThunks } from '../../redux/common';
+import { loadOrder } from '../../redux/thunks';
 import {
   getIsUseStorehubLogistics,
   getOrder,
@@ -434,7 +434,7 @@ export default compose(
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     {
-      loadOrder: savedOrderStatusCommonThunks.loadOrder,
+      loadOrder,
     }
   )
 )(OrderDetails);

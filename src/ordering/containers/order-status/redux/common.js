@@ -1,50 +1,6 @@
-import _get from 'lodash/get';
 import Utils from '../../../../utils/utils';
-import Constants from '../../../../utils/constants';
-import { actions as appActions } from '../../../redux/modules/app';
-import i18next from 'i18next';
-
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { get, post, put } from '../../../../utils/api/api-fetch';
-import { API_INFO } from './api-info';
-
-const { DELIVERY_METHOD } = Constants;
-
-const thunks = {
-  cancelOrder: createAsyncThunk('ordering/orderStatus/common/cancelOrder', async (orderId, reason, detail) => {
-    return put(API_INFO.cancelOrder(orderId).url, { reason, detail });
-  }),
-  loadOrder: createAsyncThunk('ordering/orderStatus/common/fetchOrder', async orderId => {
-    const result = await post(API_INFO.getOrderDetail().url, { orderId });
-
-    if (result.order && result.order.shippingType === 'dineIn') {
-      result.order.shippingType = DELIVERY_METHOD.DINE_IN;
-    }
-
-    return result;
-  }),
-  loadOrderStatus: createAsyncThunk('ordering/orderStatus/common/fetchOrderStatus', async orderId => {
-    return get(API_INFO.getOrderStatus(orderId).url);
-  }),
-  updateOrderShippingType: createAsyncThunk(
-    'ordering/orderStatus/common/updateOrderShippingType',
-    async (orderId, shippingType) => {
-      const updateResult = await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
-
-      if (updateResult.success) {
-        const result = await thunks.loadOrder(orderId);
-
-        if (result.order && result.order.shippingType === 'dineIn') {
-          result.order.shippingType = DELIVERY_METHOD.DINE_IN;
-        }
-
-        return result;
-      }
-
-      return updateResult;
-    }
-  ),
-};
+import { createSlice } from '@reduxjs/toolkit';
+import { cancelOrder, loadOrder, loadOrderStatus, updateOrderShippingType } from './thunks';
 
 const initialState = {
   receiptNumber: Utils.getQueryString('receiptNumber'),
@@ -54,58 +10,56 @@ const initialState = {
   error: null,
 };
 
-const { reducer, actions } = createSlice({
+export const { reducer, actions } = createSlice({
   name: 'ordering/orderStatus/common',
   initialState,
   reducers: {},
   extraReducers: {
-    [thunks.cancelOrder.pending.type]: state => {
+    [cancelOrder.pending.type]: state => {
       state.cancelOrderStatus = 'pending';
     },
-    [thunks.cancelOrder.fulfilled.type]: (state, { payload }) => {
+    [cancelOrder.fulfilled.type]: (state, { payload }) => {
       state.order = payload.order;
       state.cancelOrderStatus = 'fulfilled';
     },
-    [thunks.cancelOrder.rejected.type]: (state, { error }) => {
+    [cancelOrder.rejected.type]: (state, { error }) => {
       state.error = error;
       state.cancelOrderStatus = 'rejected';
     },
-    [thunks.loadOrder.pending.type]: state => {
+    [loadOrder.pending.type]: state => {
       state.updateOrderStatus = 'pending';
     },
-    [thunks.loadOrder.fulfilled.type]: (state, { payload }) => {
+    [loadOrder.fulfilled.type]: (state, { payload }) => {
       state.order = payload.order;
       state.updateOrderStatus = 'fulfilled';
     },
-    [thunks.loadOrder.rejected.type]: (state, { error }) => {
+    [loadOrder.rejected.type]: (state, { error }) => {
       state.error = error;
       state.updateOrderStatus = 'rejected';
     },
-    [thunks.loadOrderStatus.fulfilled.type]: (state, { payload }) => {
+    [loadOrderStatus.fulfilled.type]: (state, { payload }) => {
       state.order = {
         ...state.order,
         status: payload.status,
         riderLocations: payload.riderLocations,
       };
     },
-    [thunks.loadOrderStatus.rejected.type]: (state, { error }) => {
+    [loadOrderStatus.rejected.type]: (state, { error }) => {
       state.error = error;
     },
-    [thunks.updateOrderShippingType.pending.type]: state => {
+    [updateOrderShippingType.pending.type]: state => {
       state.updateOrderStatus = 'pending';
     },
-    [thunks.updateOrderShippingType.fulfilled.type]: (state, { payload }) => {
+    [updateOrderShippingType.fulfilled.type]: (state, { payload }) => {
       state.order = payload.order;
       state.updateOrderStatus = 'fulfilled';
     },
-    [thunks.updateOrderShippingType.rejected.type]: (state, { error }) => {
+    [updateOrderShippingType.rejected.type]: (state, { error }) => {
       state.error = error;
       state.updateOrderStatus = 'rejected';
     },
   },
 });
-
-export { actions, thunks };
 
 // export const actions = {
 // loadOrder: orderId => ({
@@ -166,5 +120,3 @@ export { actions, thunks };
 //     return getCancelOrderStatus(getState());
 //   },
 // };
-
-export default reducer;

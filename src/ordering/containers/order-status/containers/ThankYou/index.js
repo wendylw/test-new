@@ -43,7 +43,7 @@ import { gotoHome } from '../../../../../utils/webview-utils';
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
-import { thunks as savedOrderStatusCommonThunks } from '../../redux/common';
+import { cancelOrder, loadOrder, loadOrderStatus, updateOrderShippingType } from '../../redux/thunks';
 import {
   getOrder,
   getOrderStatus,
@@ -516,11 +516,27 @@ export class ThankYou extends PureComponent {
   };
 
   handleClickSelfPickupButton = () => {
-    CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Not Confirmed)', {});
+    const { order, businessInfo } = this.props;
+
+    CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Not Confirmed)', {
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'time from order paid': this.getTimeFromOrderPaid() || '',
+      'order amount': _get(order, 'total', ''),
+      country: _get(businessInfo, 'country', ''),
+    });
   };
 
   handleChangeToSelfPickup = () => {
-    CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {});
+    const { order, businessInfo } = this.props;
+
+    CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'time from order paid': this.getTimeFromOrderPaid() || '',
+      'order amount': _get(order, 'total', ''),
+      country: _get(businessInfo, 'country', ''),
+    });
   };
 
   renderOrderDelayMessage = () => {
@@ -1636,9 +1652,10 @@ export default compose(
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
-      loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
-      loadOrderStatus: bindActionCreators(savedOrderStatusCommonThunks.loadOrderStatus, dispatch),
-      cancelOrder: bindActionCreators(savedOrderStatusCommonThunks.cancelOrder, dispatch),
+      cancelOrder: bindActionCreators(cancelOrder, dispatch),
+      loadOrder: bindActionCreators(loadOrder, dispatch),
+      loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
+      updateOrderShippingType: bindActionCreators(updateOrderShippingType, dispatch),
       showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
     })
   )
