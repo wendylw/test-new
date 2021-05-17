@@ -35,12 +35,8 @@ export const updateOrderShippingType = createAsyncThunk(
     const updateResult = await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
 
     if (updateResult.success) {
-      const result = await loadOrder(orderId);
-
-      return result;
+      await loadOrder(orderId);
     }
-
-    return updateResult;
   }
 );
 

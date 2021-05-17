@@ -56,13 +56,13 @@ import {
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import './OrderingThanks.scss';
+import { actions as thankYouActionCreators } from './redux/index';
 import {
-  actions as thankYouActionCreators,
   getCashbackInfo,
   getStoreHashCode,
   getOrderCancellationReasonAsideVisible,
   getOrderCancellationButtonVisible,
-} from './redux/index';
+} from './redux/selector';
 import { actions as appActionCreators } from '../../../../redux/modules/app';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';

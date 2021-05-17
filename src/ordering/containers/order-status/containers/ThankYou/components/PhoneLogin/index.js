@@ -14,7 +14,8 @@ import {
   getUser,
   getBusinessInfo,
 } from '../../../../../../redux/modules/app';
-import { actions as thankYouActionCreators, getCashbackInfo } from '../../redux';
+import { actions as thankYouActionCreators } from '../../redux';
+import { getCashbackInfo } from '../../redux/selector';
 import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
