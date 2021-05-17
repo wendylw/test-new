@@ -1,11 +1,6 @@
 import _get from 'lodash/get';
-import Url from '../../../../utils/url';
 import Utils from '../../../../utils/utils';
 import Constants from '../../../../utils/constants';
-// import { API_REQUEST } from '../../../../redux/middlewares/api';
-// import { FETCH_GRAPHQL } from '../../../../redux/middlewares/apiGql';
-import { createSelector } from 'reselect';
-import * as ApiFetch from '../../../../utils/api/api-fetch';
 import { actions as appActions } from '../../../redux/modules/app';
 import i18next from 'i18next';
 
@@ -13,7 +8,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { get, post, put } from '../../../../utils/api/api-fetch';
 import { API_INFO } from './api-info';
 
-const { PROMO_TYPE, DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD } = Constants;
 
 const thunks = {
   cancelOrder: createAsyncThunk('ordering/orderStatus/common/cancelOrder', async (orderId, reason, detail) => {
@@ -205,98 +200,4 @@ export { actions, thunks };
 //   },
 // };
 
-// export const reducer = (state = initialState, action) => {
-//   switch (action.type) {
-// case types.fetchOrderSuccess:
-//   const order = _get(action, 'responseGql.data.order', null);
-
-//   if (order && order.shippingType === 'dineIn') {
-//     order.shippingType = DELIVERY_METHOD.DINE_IN;
-//   }
-
-//   return { ...state, order };
-// case types.fetchOrderStatusSuccess:
-//   const { status, riderLocations } = action.response;
-
-//   return {
-//     ...state,
-//     order: {
-//       ...state.order,
-//       status,
-//       riderLocations,
-//     },
-//   };
-//     case types.cancelOrderRequest:
-//       return {
-//         ...state,
-//         cancelOrderStatus: 'pending',
-//       };
-//     case types.cancelOrderSuccess:
-//       return {
-//         ...state,
-//         cancelOrderStatus: 'fulfilled',
-//       };
-//     case types.cancelOrderFailure:
-//       return {
-//         ...state,
-//         cancelOrderStatus: 'rejected',
-//       };
-//     default:
-//       return state;
-//   }
-// };
-
 export default reducer;
-
-// selectors
-// export const getOrder = state => state.orderStatus.common.order;
-
-// export const getReceiptNumber = state => state.orderStatus.common.receiptNumber;
-
-// export const getOrderStatus = createSelector(getOrder, order => _get(order, 'status', null));
-
-// export const getLoadOrderStatus = createSelector(getOrder, order => _get(order, 'status', null));
-
-// export const getRiderLocations = createSelector(getOrder, order => _get(order, 'riderLocations', null));
-
-// export const getOrderDelayReason = createSelector(getOrder, order => _get(order, 'delayReason', null));
-
-// export const getOrderShippingType = createSelector(getOrder, order => _get(order, 'shippingType', null));
-
-// export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
-//   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)
-// );
-
-// export const getIsPreOrder = createSelector(getOrder, order => _get(order, 'isPreOrder', false));
-
-// export const getIsOnDemandOrder = createSelector(getIsPreOrder, isPreOrder => !isPreOrder);
-
-// export const getCancelOrderStatus = state => state.orderStatus.common.cancelOrderStatus;
-
-// export const getIsOrderCancellable = createSelector(getOrder, order => _get(order, 'isCancellable', false));
-
-// export const getPromotion = createSelector(getOrder, order => {
-//   if (order && order.appliedVoucher) {
-//     return {
-//       promoCode: order.appliedVoucher.voucherCode,
-//       discount: order.appliedVoucher.value,
-//       promoType: PROMO_TYPE.VOUCHER,
-//     };
-//   } else if (order && order.displayPromotions && order.displayPromotions.length) {
-//     const appliedPromo = order.displayPromotions[0];
-//     return {
-//       promoCode: appliedPromo.promotionCode,
-//       discount: appliedPromo.displayDiscount,
-//       promoType: PROMO_TYPE.PROMOTION,
-//     };
-//   } else {
-//     return null;
-//   }
-// });
-
-// export const getOrderItems = createSelector(getOrder, order => _get(order, 'items', []));
-
-// export const getServiceCharge = createSelector(getOrderItems, items => {
-//   const serviceChargeItem = items.find(item => item.itemType === 'ServiceCharge');
-//   return _get(serviceChargeItem, 'displayPrice', 0);
-// });

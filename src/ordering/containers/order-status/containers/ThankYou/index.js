@@ -43,7 +43,7 @@ import { gotoHome } from '../../../../../utils/webview-utils';
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
-import { actions as orderStatusActionCreators } from '../../redux/common';
+import { thunks as savedOrderStatusCommonThunks } from '../../redux/common';
 import {
   getOrder,
   getOrderStatus,
@@ -329,14 +329,14 @@ export class ThankYou extends PureComponent {
   };
 
   loadOrder = async () => {
-    const { orderStatusActions, receiptNumber } = this.props;
+    const { loadOrder, loadOrderStatus, receiptNumber } = this.props;
 
-    await orderStatusActions.loadOrder(receiptNumber);
+    await loadOrder(receiptNumber);
 
     const { shippingType } = this.props;
 
     if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
-      await orderStatusActions.loadOrderStatus(receiptNumber);
+      await loadOrderStatus(receiptNumber);
 
       this.updateAppLocationAndStatus();
     }
@@ -1636,7 +1636,9 @@ export default compose(
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
-      orderStatusActions: bindActionCreators(orderStatusActionCreators, dispatch),
+      loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
+      loadOrderStatus: bindActionCreators(savedOrderStatusCommonThunks.loadOrderStatus, dispatch),
+      cancelOrder: bindActionCreators(savedOrderStatusCommonThunks.cancelOrder, dispatch),
       showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
     })
   )
