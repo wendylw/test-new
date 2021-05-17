@@ -23,7 +23,9 @@ async function parseResponse(resp) {
   }
 
   if (rawContentType.includes('application/json')) {
-    body = await resp.json();
+    const respBody = await resp.json();
+
+    body = respBody.data || respBody;
   } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
     body = await resp.text();
   } else {
@@ -142,6 +144,20 @@ export function put(url, payload, options = {}) {
       ...options,
       payload,
       method: 'put',
+    })
+  );
+}
+
+/**
+ * @param {object} payload : data in request. if payload is empty but options is required, pls set payload as `undefined`
+ */
+export function patch(url, payload, options = {}) {
+  return _fetch(
+    url,
+    convertOptions({
+      ...options,
+      payload,
+      method: 'patch',
     })
   );
 }

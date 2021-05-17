@@ -16,7 +16,7 @@ export const API_INFO = {
   getOrderStatus: orderId => ({
     url: `/api/transactions/${orderId}/status`,
   }),
-  postOrderShippingType: orderId => ({
+  updateOrderShippingType: orderId => ({
     url: `/api/transactions/${orderId}/change-shipping-type`,
   }),
 };

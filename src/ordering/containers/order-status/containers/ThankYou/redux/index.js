@@ -7,7 +7,7 @@ import {
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,
   getOrderShippingType,
-} from '../../../redux/common';
+} from '../../../redux/selector';
 import { getMerchantCountry } from '../../../../../redux/modules/app';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;

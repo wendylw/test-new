@@ -15,15 +15,15 @@ import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
+import { actions as orderStatusActionCreators } from '../../redux/common';
 import {
-  actions as orderStatusActionCreators,
   getIsUseStorehubLogistics,
   getOrder,
   getOrderStatus,
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
-} from '../../redux/common';
+} from '../../redux/selector';
 import './OrderingDetails.scss';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;

@@ -8,7 +8,7 @@ import {
   getUploadPhotoFile,
   getUploadPhotoLocation,
 } from './selectors';
-import { getReceiptNumber } from '../../../redux/common';
+import { getReceiptNumber } from '../../../redux/selector';
 import * as ApiFetch from '../../../../../../utils/api/api-fetch';
 import { uploadReportDriverPhoto } from '../../../../../../utils/aws-s3';
 import { actions as appActions } from '../../../../../redux/modules/app';

@@ -7,13 +7,8 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { IconNext } from '../../../../../components/Icons';
 import Utils from '../../../../../utils/utils';
-import {
-  actions as commonActionCreators,
-  getReceiptNumber,
-  getOrderStatus,
-  getIsUseStorehubLogistics,
-  getOrder,
-} from '../../redux/common';
+import { actions as commonActionCreators } from '../../redux/common';
+import { getReceiptNumber, getOrderStatus, getIsUseStorehubLogistics, getOrder } from '../../redux/selector';
 
 import './OrderingMerchantInfo.scss';
 

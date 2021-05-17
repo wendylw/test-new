@@ -43,8 +43,8 @@ import { gotoHome } from '../../../../../utils/webview-utils';
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import { actions as orderStatusActionCreators } from '../../redux/common';
 import {
-  actions as orderStatusActionCreators,
   getOrder,
   getOrderStatus,
   getReceiptNumber,
@@ -52,7 +52,7 @@ import {
   getOrderDelayReason,
   getIsOrderCancellable,
   getOrderShippingType,
-} from '../../redux/common';
+} from '../../redux/selector';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import './OrderingThanks.scss';
