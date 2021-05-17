@@ -44,39 +44,6 @@ const thunks = {
       return updateResult;
     }
   ),
-  updateOrderShippingType: createAsyncThunk(
-    'ordering/orderStatus/common/updateOrderShippingType',
-    async (orderId, shippingType) => {
-      const updateResult = await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
-
-      if (updateResult.success) {
-        const result = await post(API_INFO.getOrderDetail().url, { orderId });
-
-        if (result.order && result.order.shippingType === 'dineIn') {
-          result.order.shippingType = DELIVERY_METHOD.DINE_IN;
-        }
-
-        return result;
-      }
-
-      return updateResult;
-    }
-  ),
-};
-
-const types = {
-  // fetch order
-  // fetchOrderRequest: 'ordering/orderStatus/fetchOrderRequest',
-  // fetchOrderSuccess: 'ordering/orderStatus/fetchOrderSuccess',
-  // fetchOrderFailure: 'ordering/orderStatus/fetchOrderFailure',
-  // fetch order status
-  // fetchOrderStatusRequest: 'ordering/orderStatus/fetchOrderStatusRequest',
-  // fetchOrderStatusSuccess: 'ordering/orderStatus/fetchOrderStatusSuccess',
-  // fetchOrderStatusFailure: 'ordering/orderStatus/fetchOrderStatusFailure',
-  // cancel order
-  cancelOrderRequest: 'ordering/orderStatus/cancelOrderRequest',
-  cancelOrderSuccess: 'ordering/orderStatus/cancelOrderSuccess',
-  cancelOrderFailure: 'ordering/orderStatus/cancelOrderFailure',
 };
 
 const initialState = {
