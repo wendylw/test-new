@@ -3,7 +3,7 @@ import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import Header from '../../../../../components/Header';
 import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
@@ -433,8 +433,8 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
-    {
+    dispatch => ({
       loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
-    }
+    })
   )
 )(OrderDetails);

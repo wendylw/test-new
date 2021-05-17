@@ -3,7 +3,7 @@ import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 
 import Constants from '../../../../../utils/constants';
 import PageLoader from '../../../../../components/PageLoader';
@@ -375,7 +375,7 @@ export default compose(
       uploadPhotoFile: getUploadPhotoFile(state),
       uploadPhotoUrl: getUploadPhotoUrl(state),
     }),
-    {
+    dispatch => ({
       updateInputNotes: reportDriverActionCreators.updateInputNotes,
       setUploadPhotoFile: reportDriverActionCreators.setUploadPhotoFile,
       removeUploadPhotoFile: reportDriverActionCreators.removeUploadPhotoFile,
@@ -386,6 +386,6 @@ export default compose(
       submitReport: reportDriverThunks.submitReport,
       loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
       showMessageModal: appActionCreators.showMessageModal,
-    }
+    })
   )
 )(ReportDriver);
