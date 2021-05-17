@@ -11,7 +11,11 @@ const { DELIVERY_METHOD } = Constants;
 export const cancelOrder = createAsyncThunk(
   'ordering/orderStatus/common/cancelOrder',
   async (orderId, reason, detail) => {
-    return put(API_INFO.cancelOrder(orderId).url, { reason, detail });
+    const result = await put(API_INFO.cancelOrder(orderId).url, { reason, detail });
+
+    if (result.success) {
+      return 'fulfilled';
+    }
   }
 );
 
