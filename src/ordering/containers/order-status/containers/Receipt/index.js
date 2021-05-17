@@ -10,7 +10,7 @@ import Constants from '../../../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { actions as orderStatusActionCreators } from '../../redux/common';
+import { thunks as savedOrderStatusCommonThunks } from '../../redux/common';
 import { getOrder, getPromotion } from '../../redux/selector';
 import { getUser, getBusinessInfo } from '../../../../redux/modules/app';
 import Utils from '../../../../../utils/utils';
@@ -155,7 +155,7 @@ export default compose(
       promotion: getPromotion(state),
     }),
     {
-      loadOrder: orderStatusActionCreators.loadOrder,
+      loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
     }
   )
 )(ReceiptDetail);

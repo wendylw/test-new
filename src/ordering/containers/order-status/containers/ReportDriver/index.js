@@ -22,7 +22,7 @@ import {
   getUploadPhotoFile,
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_FIELD_NAMES, REPORT_DRIVER_REASONS } from './constants';
-import { actions as commonActionCreators } from '../../redux/common';
+import { thunks as savedOrderStatusCommonThunks } from '../../redux/common';
 import { getIsUseStorehubLogistics, getOrderStatus, getReceiptNumber } from '../../redux/selector';
 import { actions as appActionCreators } from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
@@ -384,7 +384,7 @@ export default compose(
       updateSubmitStatus: reportDriverActionCreators.updateSubmitStatus,
       fetchReport: reportDriverThunks.fetchReport,
       submitReport: reportDriverThunks.submitReport,
-      loadOrder: commonActionCreators.loadOrder,
+      loadOrder: bindActionCreators(savedOrderStatusCommonThunks.loadOrder, dispatch),
       showMessageModal: appActionCreators.showMessageModal,
     }
   )
