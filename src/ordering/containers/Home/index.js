@@ -820,6 +820,10 @@ export class Home extends Component {
     CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
   };
 
+  getPromotionsBarRef = ref => {
+    this.promotionEl = ref;
+  };
+
   render() {
     const {
       categories,
@@ -857,7 +861,7 @@ export class Home extends Component {
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
         <PromotionsBar
-          promotionRef={ref => (this.promotionEl = ref)}
+          promotionRef={this.getPromotionsBarRef}
           promotions={promotions}
           shippingType={shippingType}
           inApp={Utils.isWebview()}
