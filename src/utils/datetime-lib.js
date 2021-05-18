@@ -2,6 +2,7 @@ import CONSTANTS from './constants';
 import i18next from 'i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import invariant from 'invariant';
 import * as timeLib from './time-lib';
 
 dayjs.extend(utc);
@@ -246,4 +247,10 @@ export const isSameTime = (time1, time2, unitToCheck = []) => {
   }
 
   return true;
+};
+
+export const getDifferenceInMilliseconds = (dateLeft, dateRight) => {
+  invariant(isValidDate(dateLeft) && isValidDate(dateRight), 'invalid date object');
+
+  return dateLeft.getTime() - dateRight.getTime();
 };

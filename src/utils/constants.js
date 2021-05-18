@@ -348,6 +348,30 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:OK',
     showModal: true,
   },
+  41016: {
+    title: 'ApiError:41016Title',
+    desc: 'ApiError:41016Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  41017: {
+    title: 'ApiError:41017Title',
+    desc: 'ApiError:41017Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  54023: {
+    title: 'ApiError:54023Title',
+    desc: 'ApiError:54023Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  54028: {
+    title: 'ApiError:54028Title',
+    desc: 'ApiError:54028Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';

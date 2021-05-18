@@ -147,6 +147,18 @@ $total-text-size: 1.7142rem;
     min-height: 56px;
   }
 
+  &__order-cancellation-button {
+    border-top: 1px solid $gray-4;
+    color: $status-red;
+    border-radius: 0;
+    min-height: 56px;
+
+    &.button__link-disabled {
+      color: $gray-2;
+      pointer-events: auto;
+    }
+  }
+
   &__footer {
     bottom: 0;
   }

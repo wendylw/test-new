@@ -36,8 +36,15 @@ import {
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import { gotoHome } from '../../../../../utils/webview-utils';
+import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getBusinessInfo,
+  getBusinessUTCOffset,
+  getOnlineStoreInfo,
+  getUser,
+} from '../../../../redux/modules/app';
 import {
   actions as orderStatusActionCreators,
   getOrder,
@@ -45,10 +52,18 @@ import {
   getReceiptNumber,
   getRiderLocations,
   getOrderDelayReason,
+  getIsOrderCancellable,
 } from '../../redux/common';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
-import { actions as thankYouActionCreators, getCashbackInfo, getStoreHashCode } from './redux/index';
+import {
+  actions as thankYouActionCreators,
+  getCashbackInfo,
+  getStoreHashCode,
+  getOrderCancellationReasonAsideVisible,
+  getOrderCancellationButtonVisible,
+} from './redux/index';
+import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import './OrderingThanks.scss';
 
@@ -434,6 +449,35 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  showRiderHasFoundMessageModal() {
+    const { showMessageModal, t } = this.props;
+
+    showMessageModal({
+      message: t('YourFoodIsOnTheWay'),
+      description: t('OrderCannotBeCancelledAsARiderFound'),
+      buttonText: t('GotIt'),
+    });
+  }
+
+  handleOrderCancellationButtonClick = () => {
+    const { order, businessInfo, thankYouActions, isOrderCancellable } = this.props;
+
+    if (!isOrderCancellable) {
+      this.showRiderHasFoundMessageModal();
+      return;
+    }
+
+    thankYouActions.showOrderCancellationReasonAside();
+
+    CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'time from order paid': this.getTimeFromOrderPaid() || '',
+      'order amount': _get(order, 'total', ''),
+      country: _get(businessInfo, 'country', ''),
+    });
+  };
+
   handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
     history.push({
@@ -608,6 +652,23 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  renderOrderCancellationButton() {
+    const { t, isOrderCancellable } = this.props;
+
+    return (
+      <button
+        className={`ordering-thanks__order-cancellation-button ${
+          isOrderCancellable ? '' : 'button__link-disabled'
+        } button button__block text-weight-bolder text-uppercase`}
+        onClick={this.handleOrderCancellationButtonClick}
+        data-testid="thanks__order-cancellation-button"
+        data-heap-name="ordering.thank-you.order-cancellation-button"
+      >
+        {t('CancelOrder')}
+      </button>
+    );
+  }
+
   getLogsInfoByStatus = (statusUpdateLogs, statusType) => {
     //const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
     const targetInfo =
@@ -654,6 +715,8 @@ export class ThankYou extends PureComponent {
       ist: 'ISTCancelledDescription',
       auto_cancelled: 'AutoCancelledDescription',
       merchant: 'MerchantCancelledDescription',
+      customer: 'CustomerCancelledDescription',
+      unknown: 'UnknownCancelledDescription',
     };
     const { user, orderStatus } = this.props;
 
@@ -706,7 +769,7 @@ export class ThankYou extends PureComponent {
     if (status === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
-        descriptionKey: cancelledDescriptionKey[cancelOperator],
+        descriptionKey: cancelledDescriptionKey[cancelOperator || 'unknown'],
       };
     }
 
@@ -721,92 +784,93 @@ export class ThankYou extends PureComponent {
           !isShowProgress ? null : (
           <div className="card text-center margin-normal flex">
             <div className="padding-small margin-left-right-smaller text-left">
-              {currentStatusObj.status === 'paid' ? (
-                <React.Fragment>
-                  <h4
-                    className={`flex flex-middle text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
-                  >
-                    <i className="ordering-thanks__active "></i>
-                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                      {currentStatusObj.firstNote}
-                    </span>
-                  </h4>
-                  <div className="flex flex-middle line-height-normal text-gray padding-left-right-normal">
-                    <p className="ordering-thanks__description text-size-big padding-left-right-normal margin-left-right-smaller">
-                      <span className="padding-left-right-smaller">{currentStatusObj.secondNote}</span>
-                      <span role="img" aria-label="Goofy">
-                        😋
+          {currentStatusObj.status === 'paid' ? (
+            <React.Fragment>
+              <h4
+                className={`flex flex-middle text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
+              >
+                <i className="ordering-thanks__active "></i>
+                <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                  {currentStatusObj.firstNote}
+                </span>
+              </h4>
+              <div className="flex flex-middle line-height-normal text-gray padding-left-right-normal">
+                <p className="ordering-thanks__description text-size-big padding-left-right-normal margin-left-right-smaller">
+                  <span className="padding-left-right-smaller">{currentStatusObj.secondNote}</span>
+                  <span role="img" aria-label="Goofy">
+                    😋
                       </span>
-                    </p>
-                  </div>
-                </React.Fragment>
-              ) : (
-                <div className="line-height-normal text-black padding-left-right-small flex flex-middle">
-                  <i className="ordering-thanks__prev"></i>
-                  <span className="padding-left-right-normal margin-left-right-smaller">{t('Confirmed')}</span>
-                </div>
-              )}
-
-              {currentStatusObj.status === 'accepted' ? (
-                <React.Fragment>
-                  <h4 className="flex flex-middle ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
-                    <i className="ordering-thanks__active"></i>
-                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                      {currentStatusObj.firstNote}
-                    </span>
-                  </h4>
-                  <div className="flex flex-middle text-gray padding-left-right-normal margin-left-right-normal">
-                    <div className="margin-left-right-smaller flex flex-middle">
-                      <IconAccessTime className="icon icon__small icon__default" />
-                      <span className="">{currentStatusObj.secondNote}</span>
-                    </div>
-                  </div>
-                </React.Fragment>
-              ) : (
-                <div
-                  className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${currentStatusObj.status === 'confirmed'
-                    ? 'text-black'
-                    : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
-                    }`}
-                >
-                  {status === 'paid' ? (
-                    <i className="ordering-thanks__next ordering-thanks__next-heigher"></i>
-                  ) : (
-                    <i className="ordering-thanks__prev"></i>
-                  )}
-                  <span className="padding-left-right-normal margin-left-right-smaller">
-                    {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
-                  </span>
-                </div>
-              )}
-
-              {currentStatusObj.status === 'confirmed' ? (
-                <React.Fragment>
-                  <h4
-                    className={`flex flex-middle  ordering-thanks__progress-title   padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
-                  >
-                    <i className="ordering-thanks__active"></i>
-                    <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                      {currentStatusObj.firstNote}
-                    </span>
-                  </h4>
-                  <div className="flex flex-middle text-gray line-height-normal padding-left-right-normal margin-left-right-smaller">
-                    <span className="padding-left-right-normal margin-left-right-smaller">
-                      {currentStatusObj.secondNote}
-                    </span>
-                  </div>
-                </React.Fragment>
-              ) : (
-                <div className="flex flex-middle padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
-                  <i
-                    className={`ordering-thanks__next ${status === 'accepted' ? 'ordering-thanks__next-heigher' : ''}`}
-                  ></i>
-                  <span className="padding-left-right-normal margin-left-right-smaller">{t('PendingPickUp')}</span>
-                </div>
-              )}
+                </p>
+              </div>
+            </React.Fragment>
+          ) : (
+            <div className="line-height-normal text-black padding-left-right-small flex flex-middle">
+              <i className="ordering-thanks__prev"></i>
+              <span className="padding-left-right-normal margin-left-right-smaller">{t('Confirmed')}</span>
             </div>
+          )}
+
+          {currentStatusObj.status === 'accepted' ? (
+            <React.Fragment>
+              <h4 className="flex flex-middle ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
+                <i className="ordering-thanks__active"></i>
+                <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                  {currentStatusObj.firstNote}
+                </span>
+              </h4>
+              <div className="flex flex-middle text-gray padding-left-right-normal margin-left-right-normal">
+                <div className="margin-left-right-smaller flex flex-middle">
+                  <IconAccessTime className="icon icon__small icon__default" />
+                  <span className="">{currentStatusObj.secondNote}</span>
+                </div>
+              </div>
+            </React.Fragment>
+          ) : (
+            <div
+              className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${currentStatusObj.status === 'confirmed'
+                ? 'text-black'
+                : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
+                }`}
+            >
+              {status === 'paid' ? (
+                <i className="ordering-thanks__next ordering-thanks__next-heigher"></i>
+              ) : (
+                <i className="ordering-thanks__prev"></i>
+              )}
+              <span className="padding-left-right-normal margin-left-right-smaller">
+                {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
+              </span>
+            </div>
+          )}
+
+          {currentStatusObj.status === 'confirmed' ? (
+            <React.Fragment>
+              <h4
+                className={`flex flex-middle  ordering-thanks__progress-title   padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
+              >
+                <i className="ordering-thanks__active"></i>
+                <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
+                  {currentStatusObj.firstNote}
+                </span>
+              </h4>
+              <div className="flex flex-middle text-gray line-height-normal padding-left-right-normal margin-left-right-smaller">
+                <span className="padding-left-right-normal margin-left-right-smaller">
+                  {currentStatusObj.secondNote}
+                </span>
+              </div>
+            </React.Fragment>
+          ) : (
+            <div className="flex flex-middle padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
+              <i
+                className={`ordering-thanks__next ${status === 'accepted' ? 'ordering-thanks__next-heigher' : ''}`}
+              ></i>
+              <span className="padding-left-right-normal margin-left-right-smaller">{t('PendingPickUp')}</span>
+            </div>
+          )}
+        </div>
           </div>
-        )} */}
+    )
+  } */}
         {currentStatusObj.status === 'confirmed' ||
         currentStatusObj.status === 'riderPickUp' ||
         currentStatusObj.status === 'delivered' ||
@@ -1252,8 +1316,66 @@ export class ThankYou extends PureComponent {
     );
   }
 
+  getTimeFromOrderPaid() {
+    try {
+      const { order } = this.props;
+      const paidTime = _get(order, 'paidTime', null);
+
+      if (!paidTime) {
+        return null;
+      }
+
+      const milliseconds = getDifferenceInMilliseconds(new Date(), new Date(paidTime));
+
+      const minutes = milliseconds / (1000 * 60);
+
+      return minutes.toFixed(2);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  handleOrderCancellation = async ({ reason, detail }) => {
+    const { receiptNumber, orderStatusActions, thankYouActions, businessInfo, isOrderCancellable, order } = this.props;
+
+    try {
+      if (!isOrderCancellable) {
+        this.showRiderHasFoundMessageModal();
+        return;
+      }
+
+      const result = await orderStatusActions.cancelOrder({
+        orderId: receiptNumber,
+        reason,
+        detail,
+      });
+
+      if (result === 'fulfilled') {
+        CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
+          'store name': _get(order, 'storeInfo.name', ''),
+          'store id': _get(order, 'storeId', ''),
+          'time from order paid': this.getTimeFromOrderPaid() || '',
+          'order amount': _get(order, 'total', ''),
+          country: _get(businessInfo, 'country', ''),
+          'Reason for cancellation': reason,
+          otherReasonSpecification: detail,
+        });
+
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('handleOrderCancellation error', error);
+    } finally {
+      thankYouActions.hideOrderCancellationReasonAside();
+    }
+  };
+
+  handleHideOrderCancellationReasonAside = () => {
+    this.props.thankYouActions.hideOrderCancellationReasonAside();
+  };
+
   render() {
-    const { t, history, match, order, storeHashCode, user, orderStatus } = this.props;
+    const { t, history, match, order, storeHashCode, user, orderStatus, orderCancellationButtonVisible } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo, total, isPreOrder, cancelOperator } = order || {};
     const {
@@ -1352,6 +1474,7 @@ export class ThankYou extends PureComponent {
                     })}px`,
                     height: Utils.containerHeight({
                       headerEls: [this.headerEl],
+                      footerEls: [this.footerEl],
                     }),
                   }
                 : {}
@@ -1377,7 +1500,11 @@ export class ThankYou extends PureComponent {
 
               <div className="card">
                 {orderInfo}
+
                 {!isDineInType ? this.renderViewDetail() : this.renderNeedReceipt()}
+
+                {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
+
                 <PhoneLogin hideMessage={true} history={history} />
               </div>
             </div>
@@ -1408,6 +1535,12 @@ export class ThankYou extends PureComponent {
             });
           }}
         />
+
+        <OrderCancellationReasonsAside
+          show={this.props.orderCancellationReasonAsideVisible}
+          onHide={this.handleHideOrderCancellationReasonAside}
+          onCancelOrder={this.handleOrderCancellation}
+        />
       </section>
     );
   }
@@ -1427,11 +1560,15 @@ export default compose(
       orderStatus: getOrderStatus(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
+      isOrderCancellable: getIsOrderCancellable(state),
+      orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       orderDelayReason: getOrderDelayReason(state),
+      orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
       orderStatusActions: bindActionCreators(orderStatusActionCreators, dispatch),
+      showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
     })
   )
 )(ThankYou);
