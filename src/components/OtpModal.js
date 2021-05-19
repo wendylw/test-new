@@ -2,7 +2,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Trans, withTranslation } from 'react-i18next';
-import OtpInput from 'react-otp-input';
 import Header from './Header';
 import Constants from '../utils/constants';
 import beepOtpLock from '../images/beep-otp-lock.svg';
@@ -18,7 +17,7 @@ class OtpModal extends React.Component {
   countDownSetTimeoutObj = null;
 
   state = {
-    otp: null,
+    otp: '',
     currentOtpTime: this.props.ResendOtpTime,
     isNewInput: true,
   };
@@ -114,8 +113,18 @@ class OtpModal extends React.Component {
   }
 
   render() {
-    const { t, onClose, getOtp, isLoading, phone, ResendOtpTime, isError } = this.props;
-    const { currentOtpTime, isNewInput } = this.state;
+    const {
+      t,
+      onClose,
+      getOtp,
+      isLoading,
+      isResending,
+      phone,
+      showWhatsAppResendBtn,
+      ResendOtpTime,
+      isError,
+    } = this.props;
+    const { currentOtpTime, otp } = this.state;
 
     return (
       <div className="otp-modal absolute-wrapper flex flex-column" data-heap-name="common.otp-modal.container">
@@ -129,22 +138,23 @@ class OtpModal extends React.Component {
           <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
             {isError ? <img src={beepOtpError} alt="otp" /> : <img src={beepOtpLock} alt="otp" />}
           </figure>
-          <h2 className="padding-normal text-size-big text-line-height-base">
-            <Trans i18nKey="OTPSentTitle">
-              We’ve sent you a One-Time Password (OTP) to
-              <span className="text-size-big text-weight-bolder">{{ phone }}</span>. Enter it below to continue.
-            </Trans>
-          </h2>
-          <div className="margin-small">
-            {isNewInput ? (
+          <div className="otp-modal__content text-left">
+            <h2 className="text-size-biggest text-line-height-base">{t('EnterOTP')}</h2>
+            <p className="margin-top-bottom-normal">
+              <Trans i18nKey="OTPSentTip">
+                A code is sent to <span className="text-weight-bolder">{{ phone }}</span>
+              </Trans>
+            </p>
+            <div className="otp-modal__input-group">
               <div
-                className={`otp-modal__group form__group flex flex-middle flex-space-between text-size-larger ${
+                className={`otp-modal__form-group form__group flex flex-middle flex-space-between text-size-larger ${
                   isError ? 'otp-modal__form-group--error' : ''
                 }`}
               >
                 <input
                   id="newOtpInput"
                   ref={this.inputRef}
+                  value={isError ? '' : otp}
                   className="otp-modal__input form__input text-size-larger"
                   data-heap-name="common.otp-modal.new-otp-input"
                   onChange={e => this.updateAndValidateOtp(e.target.value)}
@@ -154,39 +164,59 @@ class OtpModal extends React.Component {
                   autoComplete="off"
                 />
               </div>
+              {isError && (
+                <p className="otp-modal__failed-otp padding-top-bottom-small">{t('CodeVerificationFailed')}</p>
+              )}
+            </div>
+          </div>
+          <div className={`flex flex-center flex-middle`}>
+            {!!currentOtpTime ? (
+              <button className="otp-modal__resend-tip button button__link margin-top-bottom-normal">
+                {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? ` ${currentOtpTime}` : '' })}
+              </button>
             ) : (
-              <OtpInput
-                key="otp-input"
-                // NOTE: OtpInput seems not support data attr, but we are not using old OtpInput anyway. This is just a placeholder.
-                data-heap-name="common.otp-modal.old-otp-input"
-                onChange={otp => this.updateAndValidateOtp(otp)}
-                numInputs={Constants.OTP_CODE_SIZE}
-                inputStyle={{
-                  width: '16vw',
-                  height: '16vw',
-                  fontSize: '8vw',
-                }}
-              />
+              <div className="flex flex-column">
+                <button
+                  className="otp-modal__button-resend-sms button button__link padding-normal text-weight-bolder text-uppercase"
+                  data-heap-name="common.otp-modal.resend-btn"
+                  onClick={() => {
+                    CleverTap.pushEvent('Login - Resend OTP');
+                    this.setState({ currentOtpTime: ResendOtpTime });
+                    this.countDown(ResendOtpTime);
+                    getOtp(phone, 'reSendotp');
+                  }}
+                >
+                  {t('ResendViaSMS')}
+                </button>
+                {showWhatsAppResendBtn && (
+                  <button
+                    className="otp-modal__button-resend-whats button button__link padding-small margin-top-bottom-normal text-size-small text-weight-bolder text-uppercase"
+                    data-heap-name="common.otp-modal.resend-whats-btn"
+                    onClick={() => {
+                      CleverTap.pushEvent('Login - Resend Whatsapp OTP');
+                      this.setState({ currentOtpTime: ResendOtpTime });
+                      this.countDown(ResendOtpTime);
+                      getOtp(phone, 'WhatsApp');
+                    }}
+                  >
+                    {t('ResendViaWhatsAPP')}
+                  </button>
+                )}
+              </div>
             )}
-            {isError && <p className="otp-modal__failed-otp padding-top-bottom-small">{t('CodeVerificationFailed')}</p>}
           </div>
-          <div className="margin-top-bottom-normal">
-            <p className="otp-modal__resend-tip text-size-big">{t('ResendOTPTip')}</p>
-            <button
-              className="otp-modal__button-resend button button__link padding-small text-size-big text-weight-bolder"
-              data-heap-name="common.otp-modal.resend-btn"
-              disabled={!!currentOtpTime}
-              onClick={() => {
-                CleverTap.pushEvent('Login - Resend OTP');
-                this.setState({ currentOtpTime: ResendOtpTime });
-                this.countDown(ResendOtpTime);
-                getOtp(phone);
-              }}
-            >
-              {t('OTPResendTitle', { currentOtpTime: currentOtpTime ? ` (${currentOtpTime})` : '' })}
-            </button>
-          </div>
-          {isLoading && <div className="loader theme full-page"></div>}
+          {isLoading ? (
+            <div className="page-loader flex flex-middle flex-center">
+              <div className="prompt-loader padding-small border-radius-large text-center flex flex-middle flex-center">
+                <div className="prompt-loader__content">
+                  <i className="circle-loader margin-smaller"></i>
+                  <span className="prompt-loader__text margin-top-bottom-smaller text-size-smaller">
+                    {isResending ? t('ResendingCode') : t('VerifyingCode')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </section>
 
         <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
@@ -203,6 +233,7 @@ OtpModal.propTypes = {
   ResendOtpTime: PropTypes.number,
   isLoading: PropTypes.bool,
   isError: PropTypes.bool,
+  showWhatsAppResendBtn: PropTypes.bool,
   onClose: PropTypes.func,
   getOtp: PropTypes.func,
   sendOtp: PropTypes.func,
