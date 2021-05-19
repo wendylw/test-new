@@ -6,6 +6,7 @@ import { IconInfo } from '../../../components/Icons';
 import ReceiptList from './components/ReceiptList';
 import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import DownloadBanner from '../../../components/DownloadBanner';
 
 import qs from 'qs';
 
@@ -15,7 +16,11 @@ import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getOnlineStoreInfo, getBusinessInfo } from '../../redux/modules/app';
 import { actions as homeActionCreators, getCashbackHistorySummary } from '../../redux/modules/home';
 import './LoyaltyHome.scss';
+import Utils from '../../../utils/utils';
 
+const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
+const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
+const isWebview = Utils.isWebview();
 class PageLoyalty extends React.Component {
   state = {
     showModal: false,
@@ -76,7 +81,7 @@ class PageLoyalty extends React.Component {
     const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     return !showRecentActivities ? (
       <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
-        <article className="text-center margin-top-bottom-normal">
+        <article className="loyalty-home__article text-center margin-top-bottom-normal">
           {logo ? (
             <Image
               className="loyalty-home__logo logo logo__big margin-top-bottom-normal"
@@ -94,6 +99,7 @@ class PageLoyalty extends React.Component {
             buttonText={t('HowToUseCashback')}
           />
         </article>
+        {!isWebview && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
         <ReceiptList history={history} />
       </section>
     ) : (

@@ -7,6 +7,10 @@
     background-color: $main-color;
   }
 
+  &__article {
+    flex: 1;
+  }
+
   &__location {
     color: $white;
   }

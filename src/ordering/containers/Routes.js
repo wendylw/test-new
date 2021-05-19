@@ -3,33 +3,33 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 import Utils from '../../utils/utils';
 import Home from './Home';
 import Cart from './Cart';
-import Payment from './Payment';
+import Payment from './payments/containers/Payment';
 import Customer from './Customer';
 import Constants from '../../utils/constants';
-import MerchantInfo from './MerchantInfo';
-import OrderDetails from './OrderDetails';
-import NotFound from '../../NotFound';
+import NotFound from '../../containers/NotFound';
 
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
-const Receipt = lazy(() => Utils.attemptLoad(() => import('./Receipt')));
-const StripePayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Stripe')));
-const AdyenPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/Adyen')));
-const CreditCard = lazy(() => Utils.attemptLoad(() => import('./Payment/CreditCard')));
-const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./Payment/OnlineBanking')));
-const ThankYou = lazy(() => Utils.attemptLoad(() => import('./ThankYou')));
-const Sorry = lazy(() => Utils.attemptLoad(() => import('./Sorry')));
+const StripePayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/Stripe')));
+const AdyenPayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/Adyen')));
+const CreditCard = lazy(() => Utils.attemptLoad(() => import('./payments/containers/CreditCard')));
+const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/OnlineBanking')));
+const Receipt = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/Receipt')));
+const ThankYou = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ThankYou')));
+const Sorry = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/Sorry')));
 const ErrorPage = lazy(() => Utils.attemptLoad(() => import('./Error')));
 const LocationAndDate = lazy(() => Utils.attemptLoad(() => import('./LocationAndDate')));
 const Promotion = lazy(() => Utils.attemptLoad(() => import('./Promotion')));
-const ReportDriver = lazy(() => Utils.attemptLoad(() => import('./ReportDriver')));
+const ReportDriver = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ReportDriver')));
 const PageLogin = lazy(() => Utils.attemptLoad(() => import('./PageLogin')));
 const StoreList = lazy(() => Utils.attemptLoad(() => import('./StoreList')));
 const Profile = lazy(() => Utils.attemptLoad(() => import('./Profile')));
 const AddressList = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressList')));
 const AddressDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressDetail')));
 const ContactDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/ContactDetail')));
-const SavedCards = lazy(() => Utils.attemptLoad(() => import('./Payment/SavedCards')));
-const CardCvv = lazy(() => Utils.attemptLoad(() => import('./Payment/SavedCards/CVV')));
+const SavedCards = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards')));
+const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards/CVV')));
+const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
+const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -49,6 +49,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION_AND_DATE} component={LocationAndDate} />
             <Route exact path={ROUTER_PATHS.ORDERING_CREDIT_CARD_PAYMENT} component={CreditCard} />
             <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT} component={StripePayment} />
+            <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE} component={StripePayment} />
             <Route exact path={ROUTER_PATHS.ORDERING_ADYEN_PAYMENT} component={AdyenPayment} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS} component={SavedCards} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_CVV} component={CardCvv} />

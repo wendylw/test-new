@@ -150,7 +150,11 @@ class LiveChat extends Component {
   };
 
   handleBtnClicked = () => {
-    const { waitingZendeskScript } = this.state;
+    const { onClickLiveChat, waitingZendeskScript } = this.state;
+
+    if (onClickLiveChat) {
+      onClickLiveChat();
+    }
 
     if (!waitingZendeskScript) {
       window.zE('webWidget', 'toggle');

@@ -8,7 +8,7 @@ import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 dayjs.extend(utc);
 
-const { SH_LOGISTICS_VALID_TIME, WEB_VIEW_SOURCE } = Constants;
+const { SH_LOGISTICS_VALID_TIME, WEB_VIEW_SOURCE, CLIENTS } = Constants;
 const Utils = {};
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
@@ -153,9 +153,9 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
 };
 
 Utils.isProductSoldOut = product => {
-  const { markedSoldOut, variations } = product;
+  const { stockStatus, variations } = product;
 
-  if (markedSoldOut) {
+  if (stockStatus === 'outOfStock') {
     return true;
   }
 
@@ -813,6 +813,18 @@ Utils.getOrderSource = () => {
     orderSource = 'BeepStore';
   }
   return orderSource;
+};
+
+Utils.getHeaderClient = () => {
+  let headerClient = '';
+  if (Utils.isAndroidWebview()) {
+    headerClient = CLIENTS.ANDROID;
+  } else if (Utils.isIOSWebview()) {
+    headerClient = CLIENTS.IOS;
+  } else {
+    headerClient = CLIENTS.WEB;
+  }
+  return headerClient;
 };
 
 export default Utils;

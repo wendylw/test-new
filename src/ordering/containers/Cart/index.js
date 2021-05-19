@@ -10,29 +10,38 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getCartSummary, getPromotion } from '../../../redux/modules/entities/carts';
-import { getOrderByOrderId } from '../../../redux/modules/entities/orders';
-import { actions as cartActionCreators, getBusinessInfo } from '../../redux/modules/cart';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
-import { actions as homeActionCreators, getShoppingCart, getCurrentProduct } from '../../redux/modules/home';
-import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusiness } from '../../redux/modules/app';
-import { getThankYouPageUrl, getCurrentOrderId } from '../../redux/modules/payment';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getUser,
+  getBusiness,
+  getBusinessInfo,
+  getShoppingCart,
+  getCartBilling,
+  getStoreInfoForCleverTap,
+} from '../../redux/modules/app';
+import {
+  actions as cartActionCreators,
+  getCategoryProductList,
+  getAllProductsIds,
+  getCheckingInventoryPendingState,
+} from '../../redux/modules/cart';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
 import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
+import CleverTap from '../../../utils/clevertap';
+import _isNil from 'lodash';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 class Cart extends Component {
   state = {
     expandBilling: true,
-    isCreatingOrder: false,
     additionalComments: Utils.getSessionVariable('additionalComments'),
     isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
@@ -45,18 +54,14 @@ class Cart extends Component {
   }
 
   async componentDidMount() {
-    const { homeActions } = this.props;
+    const { appActions } = this.props;
 
-    await homeActions.loadShoppingCart();
+    await appActions.loadShoppingCart();
 
     window.scrollTo(0, 0);
     this.handleResizeEvent();
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
-  }
-
-  componentWillUnmount() {
-    this.setState({ isCreatingOrder: false });
   }
 
   setCartContainerHeight = preContainerHeight => {
@@ -88,12 +93,23 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, customerActions, deliveryDetails } = this.props;
+    const { user, history, appActions, cartActions, customerActions, deliveryDetails } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
     const { name, phone } = profile || {};
 
+    const { status } = await cartActions.checkCartInventory();
+
+    if (status === 'reject') {
+      await appActions.loadShoppingCart();
+
+      return;
+    }
+
     if (!isLogin) {
+      CleverTap.pushEvent('Login - view login screen', {
+        'Screen Name': 'Cart Page',
+      });
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
@@ -194,18 +210,18 @@ class Cart extends Component {
   };
 
   handleGtmEventTracking = async callback => {
-    const { shoppingCart, cartSummary } = this.props;
+    const { shoppingCart, cartBilling } = this.props;
     const itemsInCart = shoppingCart.items.map(item => item.id);
     const gtmEventData = {
       product_id: itemsInCart,
-      cart_size: cartSummary.count,
-      cart_value_local: cartSummary.total,
+      cart_size: cartBilling.count,
+      cart_value_local: cartBilling.total,
     };
     gtmEventTracking(GTM_TRACKING_EVENTS.INITIATE_CHECKOUT, gtmEventData, callback);
   };
 
   handleClearAll = () => {
-    this.props.cartActions.clearAll().then(() => {
+    this.props.appActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
         search: window.location.search,
@@ -223,15 +239,17 @@ class Cart extends Component {
   };
 
   dismissPromotion = async () => {
-    const { promotionActions, homeActions } = this.props;
+    const { promotionActions, appActions } = this.props;
 
     await promotionActions.dismissPromotion();
-    await homeActions.loadShoppingCart();
+    await appActions.loadShoppingCart();
   };
 
   handleGotoPromotion = () => {
-    const { user } = this.props;
+    const { user, storeInfoForCleverTap } = this.props;
     const { isLogin } = user || {};
+
+    CleverTap.pushEvent('Cart page - click add promo code/voucher', storeInfoForCleverTap);
 
     if (isLogin) {
       this.props.history.push({
@@ -239,6 +257,9 @@ class Cart extends Component {
         search: window.location.search,
       });
     } else {
+      CleverTap.pushEvent('Login - view login screen', {
+        'Screen Name': 'Cart Page',
+      });
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
@@ -247,8 +268,9 @@ class Cart extends Component {
   };
 
   showShortPromoCode() {
-    const { promotion } = this.props;
-    const SHOW_LENGTH = 10;
+    const { cartBilling } = this.props;
+    const { promotion } = cartBilling || {};
+    const SHOW_LENGTH = 5;
     // show like "Promo..."
     if (promotion && promotion.promoCode) {
       if (promotion.promoCode.length > SHOW_LENGTH) {
@@ -262,6 +284,7 @@ class Cart extends Component {
   }
 
   AdditionalCommentsFocus = () => {
+    CleverTap.pushEvent('Cart page - click special instructions');
     setTimeout(() => {
       const container = document.querySelector('.ordering-cart__container');
       const productContainer = document.querySelector('.ordering-cart__products-container');
@@ -310,29 +333,26 @@ class Cart extends Component {
   }
 
   renderPromotionItem() {
-    const { t, promotion } = this.props;
+    const { t, cartBilling } = this.props;
+    const { promotion } = cartBilling || {};
 
     return (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
         {promotion ? (
           <React.Fragment>
-            <span className="flex flex-middle flex-space-between padding-left-right-small text-weight-bolder">
-              <IconLocalOffer className="icon icon__small icon__primary text-middle" />
-              <div>
-                <div className="flex flex-middle text-omit__single-line">
-                  <span className="margin-left-right-small text-size-big text-weight-bolder">
-                    {t(promotion.promoType)} ({this.showShortPromoCode()})
-                  </span>
-                  <button
-                    onClick={this.handleDismissPromotion}
-                    className="button"
-                    data-heap-name="ordering.cart.dismiss-promo"
-                  >
-                    <IconClose className="icon icon__small" />
-                  </button>
-                </div>
-              </div>
-            </span>
+            <div className="cart-promotion__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
+              <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+              <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
+                {t(promotion.promoType)} ({this.showShortPromoCode()})
+              </span>
+              <button
+                onClick={this.handleDismissPromotion}
+                className="button flex__shrink-fixed"
+                data-heap-name="ordering.cart.dismiss-promo"
+              >
+                <IconClose className="icon icon__small" />
+              </button>
+            </div>
             <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
               {'-'} <CurrencyNumber className="text-size-big text-weight-bolder" money={promotion.discount} />
             </div>
@@ -343,7 +363,7 @@ class Cart extends Component {
             onClick={this.handleGotoPromotion}
             data-heap-name="ordering.cart.add-promo"
           >
-            <IconLocalOffer className="icon icon__small icon__primary text-middle" />
+            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
             <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
           </button>
         )}
@@ -351,39 +371,47 @@ class Cart extends Component {
     );
   }
 
-  checkCartItemSoldOut = (shoppingCart = {}) => {
-    const { unavailableItems = [], items = [] } = shoppingCart;
-    const cartList = [...unavailableItems, ...items];
+  formatCleverTapAttributes(product) {
+    return {
+      'category name': product.categoryName,
+      'category rank': product.categoryRank,
+      'product name': product.title,
+      'product rank': product.rank,
+      'product image url': product.images?.length > 0 ? product.images[0] : '',
+      amount: !_isNil(product.originalDisplayPrice) ? product.originalDisplayPrice : product.displayPrice,
+      discountedprice: !_isNil(product.originalDisplayPrice) ? product.displayPrice : '',
+      'is bestsellar': product.isFeaturedProduct,
+      'has picture': product.images?.length > 0,
+    };
+  }
 
-    for (let i = 0; i < cartList.length; i++) {
-      const cartItem = cartList[i];
-      const { markedSoldOut, variations } = cartItem;
+  cleverTapTrack = (eventName, attributes = {}) => {
+    const { storeInfoForCleverTap } = this.props;
 
-      if (markedSoldOut) {
-        return true;
-      }
-
-      if (Array.isArray(variations) && variations.length > 0) {
-        if (variations.find(variation => variation.markedSoldOut)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
   };
 
   render() {
-    const { t, cartSummary, shoppingCart, businessInfo, user, history } = this.props;
-    const { isCreatingOrder, isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
+    const {
+      t,
+      cartBilling,
+      shoppingCart,
+      businessInfo,
+      user,
+      history,
+      storeInfoForCleverTap,
+      pendingCheckingInventory,
+    } = this.props;
+    const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
-    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartSummary || {};
+    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee, promotion } = cartBilling || {};
+    const { promoCode } = promotion || {};
     const { isLogin } = user || {};
     const isInvalidTotal =
       (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
     const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-    // const haveItemSoldOut = this.checkCartItemSoldOut(shoppingCart);
     const buttonText = !isInvalidTotal ? (
       <span className="text-weight-bolder" key="pay-now">
         {t('PayNow')}
@@ -397,7 +425,7 @@ class Cart extends Component {
       </span>
     );
 
-    if (!(cartSummary && items)) {
+    if (!(cartBilling && items)) {
       return null;
     }
 
@@ -410,7 +438,10 @@ class Cart extends Component {
           data-heap-name="ordering.cart.header"
           isPage={true}
           title={t('ProductsInOrderText', { count: count || 0 })}
-          navFunc={this.handleClickBack.bind(this)}
+          navFunc={() => {
+            CleverTap.pushEvent('Cart page - click back arrow', storeInfoForCleverTap);
+            this.handleClickBack();
+          }}
           rightContent={{
             icon: IconDeleteImage,
             text: t('ClearAll'),
@@ -438,7 +469,16 @@ class Cart extends Component {
               minHeight: productsContainerHeight,
             }}
           >
-            <CartList isLazyLoad={true} shoppingCart={shoppingCart} />
+            <CartList
+              isLazyLoad={true}
+              shoppingCart={shoppingCart}
+              onIncreaseCartItem={(product = {}) => {
+                this.cleverTapTrack('Cart page - Increase quantity', this.formatCleverTapAttributes(product));
+              }}
+              onDecreaseCartItem={(product = {}) => {
+                this.cleverTapTrack('Cart page - Decrease quantity', this.formatCleverTapAttributes(product));
+              }}
+            />
             {this.renderAdditionalComments()}
           </div>
           <Billing
@@ -463,7 +503,10 @@ class Cart extends Component {
         >
           <button
             className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
-            onClick={this.handleClickBack.bind(this)}
+            onClick={() => {
+              CleverTap.pushEvent('Cart Page - click back button(bottom)');
+              this.handleClickBack();
+            }}
             data-heap-name="ordering.cart.back-btn"
           >
             {t('Back')}
@@ -473,16 +516,18 @@ class Cart extends Component {
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
             onClick={() => {
-              this.setState({ isCreatingOrder: true });
-
+              CleverTap.pushEvent('Cart Page - click pay now', {
+                ...storeInfoForCleverTap,
+                'promo/voucher applied': promoCode || '',
+              });
               this.handleGtmEventTracking(async () => {
                 await this.handleClickContinue();
               });
             }}
-            disabled={!items || !items.length || isInvalidTotal || isCreatingOrder}
+            disabled={!items || !items.length || isInvalidTotal || pendingCheckingInventory}
           >
-            {isCreatingOrder ? t('Processing') : isInvalidTotal && `*`}
-            {!isCreatingOrder && buttonText}
+            {pendingCheckingInventory ? t('Processing') : isInvalidTotal && `*`}
+            {!pendingCheckingInventory && buttonText}
           </button>
         </footer>
         <ProductSoldOutModal
@@ -503,26 +548,22 @@ export default compose(
   withTranslation(['OrderingCart', 'OrderingPromotion']),
   connect(
     state => {
-      const currentOrderId = getCurrentOrderId(state);
-
       return {
+        pendingCheckingInventory: getCheckingInventoryPendingState(state),
         business: getBusiness(state),
         user: getUser(state),
-        cartSummary: getCartSummary(state),
-        promotion: getPromotion(state),
+        cartBilling: getCartBilling(state),
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        currentProduct: getCurrentProduct(state),
-        thankYouPageUrl: getThankYouPageUrl(state),
-        currentOrder: getOrderByOrderId(state, currentOrderId),
-        allBusinessInfo: getAllBusinesses(state),
         deliveryDetails: getDeliveryDetails(state),
+        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        allProductsIds: getAllProductsIds(state),
+        categories: getCategoryProductList(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       cartActions: bindActionCreators(cartActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),

@@ -35,7 +35,7 @@ class ContactDetail extends Component {
 
   handleClickContinue = async () => {
     const { username, phone } = this.state;
-    await this.props.customerActions.patchDeliveryDetails({ username, phone });
+    await this.props.customerActions.patchDeliveryDetails({ username: username && username.trim(), phone });
     this.handleClickBack();
   };
 
@@ -65,7 +65,7 @@ class ContactDetail extends Component {
                     placeholder={t('Name')}
                     value={username}
                     onChange={e => {
-                      this.setState({ username: e.target.value.trim() });
+                      this.setState({ username: e.target.value });
                     }}
                   />
                 </div>

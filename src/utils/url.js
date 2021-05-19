@@ -1,11 +1,10 @@
 import Utils from './utils';
 const API_URLS = {
-  GET_CART: {
-    url: '/api/cart',
-    method: 'get',
-  },
   GET_CART_TYPE: (isDeliveryType, deliveryCoords, fulfillDate) => {
-    let CartObj = API_URLS.GET_CART;
+    const CartObj = {
+      url: '/api/cart',
+      method: 'get',
+    };
     const params = {
       shippingType: Utils.getApiRequestShippingType(),
     };
@@ -93,10 +92,10 @@ const API_URLS = {
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
   }),
-  GET_PENDING_TRANSACTIONS: {
-    url: '/api/transactions/status/pending',
-    method: 'get',
-  },
+  // GET_PENDING_TRANSACTIONS: {
+  //   url: '/api/transactions/status/pending',
+  //   method: 'get',
+  // },
   PUT_TRANSACTIONS_STATUS: {
     url: '/api/transactions/status',
     method: 'put',
@@ -200,6 +199,10 @@ const API_URLS = {
   }),
   UPDATE_ADDRESS: (consumerId, addressId) => ({
     url: `/api/consumers/${consumerId}/address/${addressId}`,
+    method: 'put',
+  }),
+  CANCEL_ORDER: receiptNumber => ({
+    url: `/api/transactions/${receiptNumber}/status/cancel`,
     method: 'put',
   }),
 };

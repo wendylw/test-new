@@ -1,0 +1,15 @@
+@import "../Variables.scss";
+
+.download-banner {
+  color: $black;
+  text-decoration: none;
+  border-radius: $border-radius-large;
+  background-image: url("../images/beep-app-download-background.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  -moz-background-size: cover;
+
+  &__store-icon {
+    max-height: 50px;
+  }
+}

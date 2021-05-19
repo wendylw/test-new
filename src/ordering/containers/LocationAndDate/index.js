@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import qs from 'qs';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -28,11 +28,15 @@ import * as storeUtils from '../../../utils/store-utils';
 import * as timeLib from '../../../utils/time-lib';
 import config from '../../../config';
 import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
-import './OrderingLocationDate.scss';
-
-import { actions as appActionCreators, getBusinessDeliveryTypes, getBusinessUTCOffset } from '../../redux/modules/app';
-import { Fragment } from 'react';
+import {
+  actions as appActionCreators,
+  getBusinessDeliveryTypes,
+  getBusinessUTCOffset,
+  getStoreInfoForCleverTap,
+} from '../../redux/modules/app';
 import dayjs from 'dayjs';
+import CleverTap from '../../../utils/clevertap';
+import './OrderingLocationDate.scss';
 
 const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRESS_RANGE } = Constants;
 
@@ -358,7 +362,7 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryTypesSelector = () => {
-    const { t, deliveryType } = this.props;
+    const { t, deliveryType, storeInfoForCleverTap } = this.props;
     const isDelivery = deliveryType === DELIVERY_METHOD.DELIVERY;
     const isPickup = deliveryType === DELIVERY_METHOD.PICKUP;
 
@@ -368,7 +372,10 @@ class LocationAndDate extends Component {
           className={`location-date__delivery text-center padding-small text-size-big text-line-height-base text-weight-bolder ${
             isDelivery ? 'active' : ''
           }`}
-          onClick={() => this.handleDeliveryTypeChange(DELIVERY_METHOD.DELIVERY)}
+          onClick={() => {
+            CleverTap.pushEvent('Shipping Details - click delivery tab', storeInfoForCleverTap);
+            this.handleDeliveryTypeChange(DELIVERY_METHOD.DELIVERY);
+          }}
           data-heap-name="ordering.location-and-date.delivery"
         >
           {t('Delivery')}
@@ -377,7 +384,10 @@ class LocationAndDate extends Component {
           className={`location-date__pickup text-center padding-small text-size-big text-line-height-base text-weight-bolder ${
             isPickup ? 'active' : ''
           }`}
-          onClick={() => this.handleDeliveryTypeChange(DELIVERY_METHOD.PICKUP)}
+          onClick={() => {
+            CleverTap.pushEvent('Shipping Details - click pickup tab', storeInfoForCleverTap);
+            this.handleDeliveryTypeChange(DELIVERY_METHOD.PICKUP);
+          }}
           data-heap-name="ordering.location-and-date.pickup"
         >
           {t('Pickup')}
@@ -387,7 +397,7 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryTo = () => {
-    const { t, deliveryAddress } = this.props;
+    const { t, deliveryAddress, storeInfoForCleverTap } = this.props;
 
     return (
       <div className="padding-normal">
@@ -396,7 +406,10 @@ class LocationAndDate extends Component {
         </label>
         <div
           className="form__group flex flex-middle flex-space-between"
-          onClick={this.gotoLocationSearch}
+          onClick={() => {
+            CleverTap.pushEvent('Shipping Details - click deliver to', storeInfoForCleverTap);
+            this.gotoLocationSearch();
+          }}
           data-heap-name="ordering.location-and-date.deliver-to"
           data-testid="deliverTo"
         >
@@ -415,14 +428,17 @@ class LocationAndDate extends Component {
   };
 
   renderSelectedStore = () => {
-    const { t, store } = this.props;
+    const { t, store, storeInfoForCleverTap } = this.props;
     const storeName = store && store.name;
 
     return (
       <div
         className="padding-normal"
         data-testid="deliverTo"
-        onClick={this.handleGotoStoreListClick}
+        onClick={() => {
+          CleverTap.pushEvent('Shipping Details - click selected store', storeInfoForCleverTap);
+          this.handleGotoStoreListClick();
+        }}
         data-heap-name="ordering.location-and-date.selected-store"
       >
         <label className="location-date__label margin-top-bottom-small text-size-big text-weight-bolder">
@@ -445,7 +461,7 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryDateItem = orderDate => {
-    const { t, selectedOrderDate, businessUTCOffset } = this.props;
+    const { t, selectedOrderDate, businessUTCOffset, storeInfoForCleverTap } = this.props;
 
     const dateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, orderDate.date);
 
@@ -467,6 +483,7 @@ class LocationAndDate extends Component {
           data-heap-name="ordering.location-and-date.date-item"
           data-heap-is-today={isToday ? 'yes' : 'no'}
           onClick={() => {
+            CleverTap.pushEvent('Shipping Details - click shipping date', storeInfoForCleverTap);
             this.handleSelectDeliveryDate(orderDate);
           }}
         >
@@ -531,7 +548,7 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryHourTimeItem = timeItem => {
-    const { t, selectedTime } = this.props;
+    const { t, selectedTime, storeInfoForCleverTap } = this.props;
     const isImmediate = timeItem.from === TIME_SLOT_NOW;
     const isSelected = selectedTime && selectedTime.from === timeItem.from;
     const isSoldOut = timeItem.soldOut;
@@ -546,6 +563,7 @@ class LocationAndDate extends Component {
           data-heap-name="ordering.location-and-date.time-item"
           data-heap-is-immediate={isImmediate ? 'yes' : 'no'}
           onClick={() => {
+            CleverTap.pushEvent('Shipping Details - click shipping time', storeInfoForCleverTap);
             this.handleSelectDeliveryHourTime(timeItem);
           }}
         >
@@ -642,7 +660,10 @@ class LocationAndDate extends Component {
           data-heap-name="ordering.location-and-date.header"
           isPage={true}
           title={this.getLocationDisplayTitle()}
-          navFunc={this.handleBackClicked}
+          navFunc={() => {
+            CleverTap.pushEvent('Shipping Details - click back arrow');
+            this.handleBackClicked();
+          }}
         />
         <div
           className="location-date__container"
@@ -691,6 +712,7 @@ export default compose(
       selectedDay: getSelectedDay(state),
       selectedFromTime: getSelectedFromTime(state),
       showLoading: isShowLoading(state),
+      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
 
     dispatch => ({

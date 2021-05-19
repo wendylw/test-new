@@ -27,6 +27,7 @@ const ROUTER_PATHS = {
   ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
+  ORDERING_STRIPE_PAYMENT_SAVE: '/payment/stripe/save',
   ORDERING_ADYEN_PAYMENT: '/payment/adyen',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
@@ -87,6 +88,20 @@ const PAYMENT_METHOD_LABELS = {
   GCASH_PAY: 'GCash',
   LINE_PAY: 'Line',
   ADYEN_PAY: 'Adyen',
+};
+
+const PAYMENT_PROVIDERS = {
+  STRIPE: 'Stripe',
+  ADYEN: 'Adyen',
+  STRIPE_FPX: 'StripeFPX',
+  CCPP_TNG_PAY: 'CCPPTnGPay',
+  BOOST: 'Boost',
+  GRAB_PAY: 'GrabPay',
+  BEEP_TH_CREDIT_CARD: 'BeepTHCreditCard',
+  BEEP_TH_ONLINE_BANKING: 'BeepTHOnlineBanking',
+  BEEP_TH_LINE_PAY: 'BeepTHLinePay',
+  BEEP_PH_CREDIT_CARD: 'BeepPHCreditCard',
+  BEEP_PH_CCPP_GCASH: 'BeepPHCCPPGcash',
 };
 
 const CREDIT_CARD_BRANDS = {
@@ -195,6 +210,13 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
     showModal: true,
   },
+  40008: {
+    title: 'ApiError:40008Title',
+    desc: 'ApiError:40008Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
   40009: {
     title: 'ApiError:40009Title',
     desc: 'ApiError:40009Description',
@@ -300,6 +322,56 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Reorder',
     showModal: true,
   },
+  54012: {
+    title: 'ApiError:54012Title',
+    desc: 'ApiError:54012Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  54013: {
+    title: 'ApiError:54013Title',
+    desc: 'ApiError:54013Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  80000: {
+    title: 'ApiError:80000Title',
+    desc: 'ApiError:80000Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  80001: {
+    title: 'ApiError:80001Title',
+    desc: 'ApiError:80001Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  41016: {
+    title: 'ApiError:41016Title',
+    desc: 'ApiError:41016Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  41017: {
+    title: 'ApiError:41017Title',
+    desc: 'ApiError:41017Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  54023: {
+    title: 'ApiError:54023Title',
+    desc: 'ApiError:54023Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  54028: {
+    title: 'ApiError:54028Title',
+    desc: 'ApiError:54028Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
@@ -393,6 +465,9 @@ const PROMOTION_ERROR_CODES = {
   },
   54417: {
     desc: '54417NotMatchMinSubtotalConsumingPromo',
+  },
+  54418: {
+    desc: '54418NotMatchAppliedClientType',
   },
   60002: {
     desc: '60002NotActive',
@@ -495,8 +570,19 @@ const WEB_VIEW_SOURCE = {
   IOS: 'iOS',
   Android: 'Android',
 };
+const PAYMENT_API_PAYMENT_OPTIONS = {
+  SAVE_CARD: 'saveCard',
+  TOKENIZATION: 'tokenization',
+};
 
 const TIME_SLOT_NOW = 'now';
+
+export const AVAILABLE_REPORT_DRIVER_ORDER_STATUSES = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
+const CLIENTS = {
+  WEB: 'web',
+  IOS: 'iOS',
+  ANDROID: 'Android',
+};
 
 export default {
   OTP_CODE_SIZE,
@@ -506,6 +592,7 @@ export default {
   ROUTER_PATHS,
   CASHBACK_SOURCE,
   PAYMENT_METHOD_LABELS,
+  PAYMENT_PROVIDERS,
   CREDIT_CARD_BRANDS,
   HOME_ASIDE_NAMES,
   ADDRESS_RANGE,
@@ -539,4 +626,7 @@ export default {
   ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
   WEB_VIEW_SOURCE,
+  PAYMENT_API_PAYMENT_OPTIONS,
+  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
+  CLIENTS,
 };
