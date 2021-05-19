@@ -25,6 +25,8 @@ const cancelledDescriptionKey = {
   ist: 'ISTCancelledDescription',
   auto_cancelled: 'AutoCancelledDescription',
   merchant: 'MerchantCancelledDescription',
+  customer: 'CustomerCancelledDescription',
+  unknown: 'UnknownCancelledDescription',
 };
 
 function OrderStatusDescription(props) {
