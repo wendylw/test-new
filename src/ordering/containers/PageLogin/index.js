@@ -15,7 +15,7 @@ import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
-import CleverTap from '../../../utils/clevertap';
+import Utils from '../../../utils/utils';
 
 class PageLogin extends React.Component {
   state = {
@@ -96,6 +96,8 @@ class PageLogin extends React.Component {
       appActions.loginApp({
         accessToken,
         refreshToken,
+        touchPoint: ['delivery', 'pickup'].includes(Utils.getOrderTypeFromUrl()) ? 'OnlineOrder' : 'QROrder',
+        source: Utils.getOrderSource(),
       });
     }
   }

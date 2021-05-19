@@ -10,6 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
 import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import './LoyaltyLogin.scss';
+import Utils from '../../../utils/utils';
 
 class Login extends React.Component {
   state = {
@@ -47,6 +48,8 @@ class Login extends React.Component {
       appActions.loginApp({
         accessToken,
         refreshToken,
+        touchPoint: 'ClaimCashback',
+        source: Utils.isWebview() ? 'BeepApp' : 'Receipt',
       });
     }
   }
