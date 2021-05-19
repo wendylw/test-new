@@ -1,0 +1,32 @@
+.rider-info {
+  &__time-container {
+    padding-top: 0;
+  }
+
+  &__time-title {
+    margin-top: 0;
+  }
+
+  &__time {
+    display: block;
+  }
+
+  &__logo-container {
+    position: relative;
+    width: 16.2%;
+  }
+
+  &__logo-container::before {
+    content: "";
+    display: block;
+    padding: 50% 0;
+  }
+
+  &__logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

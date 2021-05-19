@@ -12,6 +12,7 @@ import LiveChat from '../../../../../components/LiveChat';
 import LiveChatNative from '../../../../../components/LiveChatNative';
 import OrderStatusDescription from './components/OrderStatusDescription';
 import LogisticsProcessing from './components/LogisticsProcessing';
+import RiderInfo from './components/RiderInfo';
 
 import config from '../../../../../config';
 import logisticsGoget from '../../../../../images/beep-logistics-goget.jpg';
@@ -19,7 +20,6 @@ import logisticsGrab from '../../../../../images/beep-logistics-grab.jpg';
 import logisticsLalamove from '../../../../../images/beep-logistics-lalamove.jpg';
 import logisticBeepOnFleet from '../../../../../images/beep-logistics-on-fleet.jpg';
 import logisticsMrspeedy from '../../../../../images/beep-logistics-rspeedy.jpg';
-import beepPreOrderSuccessImage from '../../../../../images/beep-pre-order-success.png';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
@@ -715,12 +715,28 @@ export class ThankYou extends PureComponent {
       };
     }
 
+    currentStatusObj.status = 'delivered';
+
     // const isShowProgress = ['paid', 'accepted', 'confirmed'].includes(currentStatusObj.status);
 
     return (
       <React.Fragment>
         {this.renderOrderDelayMessage()}
         <LogisticsProcessing useStorehubLogistics={useStorehubLogistics} orderStatus={orderStatus} />
+        <RiderInfo
+          t={t}
+          onlineStoreInfo={this.props.onlineStoreInfo || {}}
+          currentStatusObj={currentStatusObj}
+          useStorehubLogistics={useStorehubLogistics}
+          trackingUrl={trackingUrl}
+          storeInfo={storeInfo || {}}
+          driverPhone={driverPhone}
+          courier={courier}
+          bestLastMileETA={bestLastMileETA}
+          worstLastMileETA={worstLastMileETA}
+          supportCallPhone={this.state.supportCallPhone}
+          order={order}
+        />
         {/* {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
           currentStatusObj.status !== 'paid') ||
           !isShowProgress ? null : (
@@ -1396,7 +1412,7 @@ export class ThankYou extends PureComponent {
               status={orderStatus}
               shippingType={type}
               storeName={storeName}
-              cancelOperator={cancelOperator}
+              cancelOperator={cancelOperator || 'unknown'}
               cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
               isPreOrder={isPreOrder}
             />
