@@ -34,12 +34,6 @@ import CleverTap from '../../../../../utils/clevertap';
 import * as ApiFetch from '../../../../../utils/api/api-fetch';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
-const CARD_PAYMENT_RISKY_THRESHOLD = {
-  MY: 1000,
-  TH: 10000,
-  PH: 5000,
-};
-
 class CreditCard extends Component {
   static propTypes = {};
 
@@ -290,38 +284,35 @@ class CreditCard extends Component {
     let isExpired = null;
     let isInvalidCVV = null;
 
-    const cardPaymentRiskyThreshold = _get(CARD_PAYMENT_RISKY_THRESHOLD, merchantCountry, Infinity);
-
     // check card risk
-    if (cartBilling.total >= cardPaymentRiskyThreshold) {
-      const isRisky = await this.checkCardRisky();
+    const isRisky = await this.checkCardRisky();
 
-      if (isRisky) {
-        CleverTap.pushEvent('Card details - potential fraud card entry', {
-          country: merchantCountry,
-          'cart amount': cartBilling.total,
-          save_card: false,
-        });
+    if (isRisky) {
+      CleverTap.pushEvent('Card details - potential fraud card entry', {
+        country: merchantCountry,
+        'cart amount': cartBilling.total,
+        save_card: false,
+      });
 
-        cardInfoError.keys.push('cardNumber');
-        cardInfoError.messages.cardNumber = (
-          <Trans
-            t={t}
-            i18nKey="RiskyCardNumberMessage"
-            components={[
-              <span className="text-weight-bolder" />,
-              <CurrencyNumber className="text-weight-bolder" money={cardPaymentRiskyThreshold} />,
-            ]}
-          />
-        );
+      cardInfoError.keys.push('cardNumber');
+      cardInfoError.messages.cardNumber = (
+        <Trans
+          t={t}
+          i18nKey="RiskyCardNumberMessage"
+          components={[
+            <span className="text-weight-bolder" />,
+            // TODO: Pending PM confirm with Finance
+            <CurrencyNumber className="text-weight-bolder" money={0} />,
+          ]}
+        />
+      );
 
-        this.setState({
-          cardInfoError,
-          invalidCardInfoFields: ['cardNumber'],
-        });
+      this.setState({
+        cardInfoError,
+        invalidCardInfoFields: ['cardNumber'],
+      });
 
-        return;
-      }
+      return;
     }
 
     window.My2c2p.getEncrypted('bank-2c2p-form', function(encryptedData, errCode) {
