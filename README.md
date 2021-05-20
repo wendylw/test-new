@@ -66,40 +66,41 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 127.0.0.1 {business}.local.beep.shub.us
 ```
 
-<a name="start-ordering-loyalty"></a>
+2. Update .env
+   Update to `HOST={business}.local.beep.shub.us` on `frontend/.env` (1. local domain)
 
-### Start F&B && Loyalty
-
-1. Update .env
-
-   > 1. Update to `HOST={business}.local.beep.shub.us` on `frontend/.env` (1. local domain)
-   > 2. Update `REACT_APP_GOOGLE_MAPS_API_KEY`, `REACT_APP_CLEVER_TAP_ID` and `REACT_APP_CLEVER_TAP_SCRIPT_REGION` on `frontend/.env` (2. from Apollo)
-
-2. Start project
+3. Start project
+   > [Beep(F&B and Cashback) Setup](<https://storehub.atlassian.net/wiki/spaces/DP/pages/141820051#id-%E6%96%B0%E6%89%8B%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%EF%BC%88%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%EF%BC%89---Beep(F&BandCashback)Setup>): Steps to start core api and ecommerce api
 
 - Quickly start ordering using the test environment (Recommendation)
   [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
 
   > 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
   > 2. `cd frontend/ && yarn start`
-  > 3. Visiting URL: `{business}.local.beep.shub.us:3000`
-  > 4. In `{business}.local.beep.shub.us:3000/ordering/location`.If you need to fill in location, please enter KLCC
-  > 5. Set \_\_s to local ordering page cookie from PROXY testing environment (optional)
-  > 6. Set deliveryAddress to local sessionStorage from PROXY testing environment (optional)
-
-- Start ordering using local backend
-
-  > 1. [Set up and Run Backend](https://github.com/storehubnet/beep-v1-web/tree/master/backend#beep)
-  > 2. Back to frontend folder
-  > 3. Update `PROXY=http://localhost:7000` of `frontend/.env`
-  > 4. The remaining steps are the same as steps 3 ~ 6 of `Quickly start ordering using the test environment (Recommendation)`
+  > 3. Visiting URL: {business}.local.beep.shub.us:3000
+  > 4. Set \_\_s to local ordering page cookie from PROXY testing environment
+  > 5. Set deliveryAddress to local sessionStorage from PROXY testing environment
 
 - Start ordering on backend (Recommend to back-end developers)
 
-  > 1. Update `PROXY=http://localhost:7000` of `frontend/.env`
-  > 2. `yarn build` on frontend folder
-  > 3. [Set up and Run Backend](https://github.com/storehubnet/beep-v1-web/tree/master/backend#beep)
-  > 4. Visiting URL: {business}.local.beep.shub.us:7000
+  > 1. Start mongo
+  > 2. Start redis `redis-server`
+  > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
+  > 4. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
+  > 5. `cd frontend/ && yarn build`
+  > 6. Update `backend/.env`
+  > 7. `cd backend/ && yarn start`
+  > 8. Visiting URL: {business}.local.beep.test16.shub.us:7000
+
+- Start ordering using local backend
+  > 1. Start mongo
+  > 2. Start redis `redis-server`
+  > 3. Please clone [core-api](https://github.com/storehubnet/core-api.git) and [ecommerce-v1-api](https://github.com/storehubnet/ecommerce-v1-api.git) to locale and start
+  > 4. Update `backend/.env`
+  > 5. `cd backend/ && yarn start`
+  > 6. Back to `beep-v1-web` and update `PROXY=http://localhost:7000` of `frontend/.env`
+  > 7. `cd frontend/ && yarn start`
+  > 8. Visiting URL: {business}.local.beep.test16.shub.us:3000
 
 <a name="beep-entrance"></a>
 
