@@ -297,6 +297,12 @@ class CreditCard extends Component {
       const isRisky = await this.checkCardRisky();
 
       if (isRisky) {
+        CleverTap.pushEvent('Card details - potential fraud card entry', {
+          country: merchantCountry,
+          'cart amount': cartBilling.total,
+          save_card: false,
+        });
+
         cardInfoError.keys.push('cardNumber');
         cardInfoError.messages.cardNumber = (
           <Trans
