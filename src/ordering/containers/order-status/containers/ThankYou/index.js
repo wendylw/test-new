@@ -52,12 +52,9 @@ import {
   getRiderLocations,
   getOrderDelayReason,
   getIsOrderCancellable,
-  getOrderShippingType,
-  getUpdatedToSelfPickupStatus,
-} from '../../redux/selector';
-import './OrderingThanks.scss';
-import { actions as thankYouActionCreators } from './redux';
-import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder, updateOrderShippingType } from './redux/thunks';
+} from '../../redux/common';
+// import PhoneCopyModal from './components/PhoneCopyModal/index';
+import PhoneLogin from './components/PhoneLogin';
 import {
   getCashbackInfo,
   getStoreHashCode,
@@ -827,8 +824,9 @@ export class ThankYou extends PureComponent {
               )}
             </div>
           </div>
-        )} */}
-        {currentStatusObj.status === 'confirmed' ||
+    )
+  } */}
+        {/* {currentStatusObj.status === 'confirmed' ||
         currentStatusObj.status === 'riderPickUp' ||
         currentStatusObj.status === 'delivered' ||
         (!useStorehubLogistics && currentStatusObj.status !== 'paid')
@@ -843,8 +841,7 @@ export class ThankYou extends PureComponent {
               worstLastMileETA,
               order
             )
-          : null}
-
+          : null} */}
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
@@ -878,240 +875,240 @@ export class ThankYou extends PureComponent {
     }
   };
 
-  renderRiderInfo = (
-    currentStatusObj,
-    useStorehubLogistics,
-    trackingUrl,
-    storeInfo = {},
-    driverPhone,
-    courier,
-    bestLastMileETA,
-    worstLastMileETA,
-    order = {}
-  ) => {
-    const { status } = currentStatusObj;
-    const { deliveredTime } = order || {};
-    const { t, onlineStoreInfo = {} } = this.props;
-    const { name: storeName, phone: storePhone } = storeInfo;
-    const { logo: storeLogo } = onlineStoreInfo;
-    const { supportCallPhone } = this.state;
+  // renderRiderInfo = (
+  //   currentStatusObj,
+  //   useStorehubLogistics,
+  //   trackingUrl,
+  //   storeInfo = {},
+  //   driverPhone,
+  //   courier,
+  //   bestLastMileETA,
+  //   worstLastMileETA,
+  //   order = {}
+  // ) => {
+  //   const { status } = currentStatusObj;
+  //   const { deliveredTime } = order || {};
+  //   const { t, onlineStoreInfo = {} } = this.props;
+  //   const { name: storeName, phone: storePhone } = storeInfo;
+  //   const { logo: storeLogo } = onlineStoreInfo;
+  //   const { supportCallPhone } = this.state;
 
-    return (
-      <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
-        <div className="padding-normal">
-          {status === 'riderPickUp' && useStorehubLogistics && bestLastMileETA && worstLastMileETA && (
-            <p className="text-left text-size-big ">{t('OrderStatusPickedUp')}</p>
-          )}
-          {status === 'delivered' && useStorehubLogistics && deliveredTime && (
-            <p className="text-left text-size-big">{t('OrderStatusDelivered')}</p>
-          )}
-          {status !== 'paid' && !useStorehubLogistics && (
-            <p className="text-left text-size-big" style={{ marginBottom: '24px' }}>
-              {t('SelfDeliveryDescription')}
-            </p>
-          )}
-          {!(status !== 'paid' && !useStorehubLogistics) &&
-            status !== 'confirmed' &&
-            ((bestLastMileETA && worstLastMileETA) || deliveredTime ? (
-              <h2
-                className="padding-top-bottom-small text-left text-weight-bolder text-size-huge"
-                style={{ marginBottom: '16px' }}
-              >
-                {status === 'riderPickUp'
-                  ? `${this.getOrderETA(bestLastMileETA)} - ${this.getOrderETA(worstLastMileETA)} ${Utils.getTimeUnit(
-                      bestLastMileETA
-                    )}`
-                  : status === 'delivered'
-                  ? `${this.getOrderETA(deliveredTime)} ${Utils.getTimeUnit(deliveredTime)}`
-                  : null}
-              </h2>
-            ) : null)}
+  //   return (
+  //     <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
+  //       <div className="padding-normal">
+  //         {status === 'riderPickUp' && useStorehubLogistics && bestLastMileETA && worstLastMileETA && (
+  //           <p className="text-left text-size-big ">{t('OrderStatusPickedUp')}</p>
+  //         )}
+  //         {status === 'delivered' && useStorehubLogistics && deliveredTime && (
+  //           <p className="text-left text-size-big">{t('OrderStatusDelivered')}</p>
+  //         )}
+  //         {status !== 'paid' && !useStorehubLogistics && (
+  //           <p className="text-left text-size-big" style={{ marginBottom: '24px' }}>
+  //             {t('SelfDeliveryDescription')}
+  //           </p>
+  //         )}
+  //         {!(status !== 'paid' && !useStorehubLogistics) &&
+  //           status !== 'confirmed' &&
+  //           ((bestLastMileETA && worstLastMileETA) || deliveredTime ? (
+  //             <h2
+  //               className="padding-top-bottom-small text-left text-weight-bolder text-size-huge"
+  //               style={{ marginBottom: '16px' }}
+  //             >
+  //               {status === 'riderPickUp'
+  //                 ? `${this.getOrderETA(bestLastMileETA)} - ${this.getOrderETA(worstLastMileETA)} ${Utils.getTimeUnit(
+  //                     bestLastMileETA
+  //                   )}`
+  //                 : status === 'delivered'
+  //                 ? `${this.getOrderETA(deliveredTime)} ${Utils.getTimeUnit(deliveredTime)}`
+  //                 : null}
+  //             </h2>
+  //           ) : null)}
 
-          <div className={`flex  flex-middle`}>
-            <div className="ordering-thanks__rider-logo">
-              {useStorehubLogistics && (
-                <figure className="logo">
-                  <img src={this.getLogisticsLogo(courier)} alt="rider info" />
-                </figure>
-              )}
-              {!useStorehubLogistics && <Image src={storeLogo} alt="store info" className="logo" />}
-            </div>
-            <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
-              <p className="line-height-normal text-weight-bolder">
-                {useStorehubLogistics
-                  ? courier === 'onfleet'
-                    ? t('BeepFleet')
-                    : courier
-                  : t('DeliveryBy', { name: storeName })}
-              </p>
-              {
-                <span className="text-gray line-height-normal">
-                  {useStorehubLogistics
-                    ? driverPhone
-                      ? `+${driverPhone}`
-                      : null
-                    : storePhone
-                    ? `${storePhone}`
-                    : null}
-                </span>
-              }
-            </div>
-          </div>
-        </div>
-        {!useStorehubLogistics ? (
-          status !== 'paid' &&
-          storePhone && (
-            <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
-              {Utils.isWebview() && !supportCallPhone ? (
-                <a
-                  href="javascript:void(0)"
-                  onClick={() => this.copyPhoneNumber(storePhone, 'store')}
-                  className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-                >
-                  {t('CallStore')}
-                </a>
-              ) : (
-                <a
-                  href={`tel:+${storePhone}`}
-                  className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-                >
-                  {t('CallStore')}
-                </a>
-              )}
-            </div>
-          )
-        ) : (
-          <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
-            {status === 'confirmed' && (
-              <React.Fragment>
-                {storePhone &&
-                  (Utils.isWebview() ? (
-                    !supportCallPhone ? (
-                      <a
-                        href="javascript:void(0)"
-                        className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
-                        onClick={() => this.copyPhoneNumber(storePhone, 'store')}
-                      >
-                        {t('CallStore')}
-                      </a>
-                    ) : (
-                      <a
-                        href={`tel:+${storePhone}`}
-                        className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-                      >
-                        {t('CallStore')}
-                      </a>
-                    )
-                  ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
-                    <a
-                      href={trackingUrl}
-                      className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
-                      target="__blank"
-                      data-heap-name="ordering.thank-you.logistics-tracking-link"
-                    >
-                      {t('TrackOrder')}
-                    </a>
-                  ) : null)}
-                {Utils.isWebview() && !supportCallPhone ? (
-                  <a
-                    href="javascript:void(0)"
-                    onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
-                    className="text-weight-bolder button ordering-thanks__link text-uppercase"
-                  >
-                    {t('CallRider')}
-                  </a>
-                ) : (
-                  <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                    {t('CallRider')}
-                  </a>
-                )}
-              </React.Fragment>
-            )}
+  //         <div className={`flex  flex-middle`}>
+  //           <div className="ordering-thanks__rider-logo">
+  //             {useStorehubLogistics && (
+  //               <figure className="logo">
+  //                 <img src={this.getLogisticsLogo(courier)} alt="rider info" />
+  //               </figure>
+  //             )}
+  //             {!useStorehubLogistics && <Image src={storeLogo} alt="store info" className="logo" />}
+  //           </div>
+  //           <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
+  //             <p className="line-height-normal text-weight-bolder">
+  //               {useStorehubLogistics
+  //                 ? courier === 'onfleet'
+  //                   ? t('BeepFleet')
+  //                   : courier
+  //                 : t('DeliveryBy', { name: storeName })}
+  //             </p>
+  //             {
+  //               <span className="text-gray line-height-normal">
+  //                 {useStorehubLogistics
+  //                   ? driverPhone
+  //                     ? `+${driverPhone}`
+  //                     : null
+  //                   : storePhone
+  //                   ? `${storePhone}`
+  //                   : null}
+  //               </span>
+  //             }
+  //           </div>
+  //         </div>
+  //       </div>
+  //       {!useStorehubLogistics ? (
+  //         status !== 'paid' &&
+  //         storePhone && (
+  //           <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
+  //             {Utils.isWebview() && !supportCallPhone ? (
+  //               <a
+  //                 href="javascript:void(0)"
+  //                 onClick={() => this.copyPhoneNumber(storePhone, 'store')}
+  //                 className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+  //               >
+  //                 {t('CallStore')}
+  //               </a>
+  //             ) : (
+  //               <a
+  //                 href={`tel:+${storePhone}`}
+  //                 className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+  //               >
+  //                 {t('CallStore')}
+  //               </a>
+  //             )}
+  //           </div>
+  //         )
+  //       ) : (
+  //         <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
+  //           {status === 'confirmed' && (
+  //             <React.Fragment>
+  //               {storePhone &&
+  //                 (Utils.isWebview() ? (
+  //                   !supportCallPhone ? (
+  //                     <a
+  //                       href="javascript:void(0)"
+  //                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
+  //                       onClick={() => this.copyPhoneNumber(storePhone, 'store')}
+  //                     >
+  //                       {t('CallStore')}
+  //                     </a>
+  //                   ) : (
+  //                     <a
+  //                       href={`tel:+${storePhone}`}
+  //                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
+  //                     >
+  //                       {t('CallStore')}
+  //                     </a>
+  //                   )
+  //                 ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+  //                   <a
+  //                     href={trackingUrl}
+  //                     className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+  //                     target="__blank"
+  //                     data-heap-name="ordering.thank-you.logistics-tracking-link"
+  //                   >
+  //                     {t('TrackOrder')}
+  //                   </a>
+  //                 ) : null)}
+  //               {Utils.isWebview() && !supportCallPhone ? (
+  //                 <a
+  //                   href="javascript:void(0)"
+  //                   onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
+  //                   className="text-weight-bolder button ordering-thanks__link text-uppercase"
+  //                 >
+  //                   {t('CallRider')}
+  //                 </a>
+  //               ) : (
+  //                 <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+  //                   {t('CallRider')}
+  //                 </a>
+  //               )}
+  //             </React.Fragment>
+  //           )}
 
-            {status === 'riderPickUp' && (
-              <React.Fragment>
-                {Utils.isWebview() ? (
-                  !supportCallPhone ? (
-                    <a
-                      href="javascript:void(0)"
-                      onClick={() => this.copyPhoneNumber(storePhone, 'drive')}
-                      className="text-weight-bolder button ordering-thanks__link text-uppercase ordering-thanks__button-link"
-                    >
-                      {t('CallStore')}
-                    </a>
-                  ) : (
-                    <a
-                      href={`tel:+${storePhone}`}
-                      className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
-                    >
-                      {t('CallStore')}
-                    </a>
-                  )
-                ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
-                  <a
-                    href={trackingUrl}
-                    className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
-                    target="__blank"
-                    data-heap-name="ordering.thank-you.logistics-tracking-link"
-                  >
-                    {t('TrackOrder')}
-                  </a>
-                ) : null}
-                {Utils.isWebview() && !supportCallPhone ? (
-                  <a
-                    href="javascript:void(0)"
-                    onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
-                    className="text-weight-bolder button ordering-thanks__link text-uppercase"
-                  >
-                    {t('CallRider')}
-                  </a>
-                ) : (
-                  <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-                    {t('CallRider')}
-                  </a>
-                )}
-              </React.Fragment>
-            )}
+  //           {status === 'riderPickUp' && (
+  //             <React.Fragment>
+  //               {Utils.isWebview() ? (
+  //                 !supportCallPhone ? (
+  //                   <a
+  //                     href="javascript:void(0)"
+  //                     onClick={() => this.copyPhoneNumber(storePhone, 'drive')}
+  //                     className="text-weight-bolder button ordering-thanks__link text-uppercase ordering-thanks__button-link"
+  //                   >
+  //                     {t('CallStore')}
+  //                   </a>
+  //                 ) : (
+  //                   <a
+  //                     href={`tel:+${storePhone}`}
+  //                     className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+  //                   >
+  //                     {t('CallStore')}
+  //                   </a>
+  //                 )
+  //               ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+  //                 <a
+  //                   href={trackingUrl}
+  //                   className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
+  //                   target="__blank"
+  //                   data-heap-name="ordering.thank-you.logistics-tracking-link"
+  //                 >
+  //                   {t('TrackOrder')}
+  //                 </a>
+  //               ) : null}
+  //               {Utils.isWebview() && !supportCallPhone ? (
+  //                 <a
+  //                   href="javascript:void(0)"
+  //                   onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
+  //                   className="text-weight-bolder button ordering-thanks__link text-uppercase"
+  //                 >
+  //                   {t('CallRider')}
+  //                 </a>
+  //               ) : (
+  //                 <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
+  //                   {t('CallRider')}
+  //                 </a>
+  //               )}
+  //             </React.Fragment>
+  //           )}
 
-            {status === 'delivered' && (
-              <React.Fragment>
-                <button
-                  className="text-weight-bolder button text-uppercase text-center ordering-thanks__button-card-link"
-                  onClick={this.handleReportUnsafeDriver}
-                  data-heap-name="ordering.need-help.report-driver-btn"
-                >
-                  {t('ReportIssue')}
-                </button>
-              </React.Fragment>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
+  //           {status === 'delivered' && (
+  //             <React.Fragment>
+  //               <button
+  //                 className="text-weight-bolder button text-uppercase text-center ordering-thanks__button-card-link"
+  //                 onClick={this.handleReportUnsafeDriver}
+  //                 data-heap-name="ordering.need-help.report-driver-btn"
+  //               >
+  //                 {t('ReportIssue')}
+  //               </button>
+  //             </React.Fragment>
+  //           )}
+  //         </div>
+  //       )}
+  //     </div>
+  //   );
+  // };
 
-  copyPhoneNumber = (phone, PhoneName) => {
-    const { t } = this.props;
-    const input = document.createElement('input');
-    const title = t('CopyTitle');
-    const content =
-      PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone });
+  // copyPhoneNumber = (phone, PhoneName) => {
+  //   const { t } = this.props;
+  //   const input = document.createElement('input');
+  //   const title = t('CopyTitle');
+  //   const content =
+  //     PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone });
 
-    input.setAttribute('readonly', 'readonly');
-    input.setAttribute('value', '+' + phone);
-    document.body.appendChild(input);
-    input.setSelectionRange(0, 9999);
-    if (document.execCommand('copy')) {
-      input.select();
-      document.execCommand('copy');
-      this.setState({
-        showPhoneCopy: true,
-        phoneCopyTitle: title,
-        phoneCopyContent: content,
-      });
-    }
-    document.body.removeChild(input);
-  };
+  //   input.setAttribute('readonly', 'readonly');
+  //   input.setAttribute('value', '+' + phone);
+  //   document.body.appendChild(input);
+  //   input.setSelectionRange(0, 9999);
+  //   if (document.execCommand('copy')) {
+  //     input.select();
+  //     document.execCommand('copy');
+  //     this.setState({
+  //       showPhoneCopy: true,
+  //       phoneCopyTitle: title,
+  //       phoneCopyContent: content,
+  //     });
+  //   }
+  //   document.body.removeChild(input);
+  // };
 
   /* eslint-enable jsx-a11y/anchor-is-valid */
 
@@ -1449,7 +1446,7 @@ export class ThankYou extends PureComponent {
             </footer>
           </div>
         </React.Fragment>
-        <PhoneCopyModal
+        {/* <PhoneCopyModal
           show={this.state.showPhoneCopy}
           phoneCopyTitle={this.state.phoneCopyTitle}
           phoneCopyContent={this.state.phoneCopyContent}
@@ -1460,7 +1457,7 @@ export class ThankYou extends PureComponent {
               phoneCopyContent: '',
             });
           }}
-        />
+        /> */}
 
         <OrderCancellationReasonsAside
           show={this.props.orderCancellationReasonAsideVisible}
