@@ -4,8 +4,8 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
-import NativeHeader from '../../../components/NativeHeader';
-import WebHeader from '../../../components/WebHeader';
+import NativeHeader from '../../../../../components/NativeHeader';
+import WebHeader from '../../../../../components/WebHeader';
 import { compose } from 'redux';
 import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
@@ -26,7 +26,7 @@ import {
   getServiceCharge,
 } from '../../redux/common';
 import './OrderingDetails.scss';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 

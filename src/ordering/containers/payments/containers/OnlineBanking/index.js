@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import HybridHeader from '../../../../components/HybridHeader';
+import HybridHeader from '../../../../../components/HybridHeader';
 import Loader from '../../components/Loader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../../components/CreateOrderButton';

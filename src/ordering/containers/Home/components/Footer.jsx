@@ -19,7 +19,7 @@ import { del, get } from '../../../../utils/request';
 import Url from '../../../../utils/url';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../../utils/dsbridge-methods';
 
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
@@ -50,13 +50,14 @@ export class Footer extends Component {
   postAppMessage = async () => {
     const { appActions, user } = this.props;
     const { isLogin, isExpired } = user || {};
+    const touchPoint = ['delivery', 'pickup'].includes(Utils.getOrderTypeFromUrl()) ? 'OnlineOrder' : 'QROrder';
 
     if (isLogin) {
       this.handleWebRedirect();
     } else {
       let res = isExpired
-        ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED)
-        : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
+        ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED(touchPoint))
+        : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN(touchPoint));
       if (res === null || res === 'undefined') {
         console.log('native token is invalid');
       } else {
@@ -67,24 +68,6 @@ export class Footer extends Component {
         });
       }
     }
-
-    // dsbridge.call('callNativeAsync', { method: 'userModule-getToken' }, async res => {
-    //   console.log('res', JSON.stringify(res));
-    //   const { code, data } = JSON.parse(res);
-    //   const { access_token, refresh_token } = data;
-    //   if (!isLogin) {
-    //     await appActions.loginApp({
-    //       accessToken: access_token,
-    //       refreshToken: refresh_token,
-    //     });
-    //     const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
-    //     if (login) {
-    //       this.handleWebRedirect();
-    //     }
-    //   } else {
-    //     this.handleWebRedirect();
-    //   }
-    // });
   };
 
   handleRedirect = () => {

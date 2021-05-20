@@ -7,8 +7,8 @@ import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DownloadBanner from '../../../../../components/DownloadBanner';
-import NativeHeader from '../../../components/NativeHeader';
-import WebHeader from '../../../components/WebHeader';
+import NativeHeader from '../../../../../components/NativeHeader';
+import WebHeader from '../../../../../components/WebHeader';
 import { IconAccessTime, IconPin } from '../../../../../components/Icons';
 import Image from '../../../../../components/Image';
 import LiveChat from '../../../../../components/LiveChat';
@@ -37,7 +37,7 @@ import {
   gtmSetUserProperties,
   GTM_TRACKING_EVENTS,
 } from '../../../../../utils/gtm';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';

@@ -23,32 +23,6 @@ import Utils from '../../../utils/utils';
 import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    DsbridgeUtils.dsRegReceiveTokenListener({ callback: async res => await this.authTokens(res) });
-  }
-
-  authTokens = async res => {
-    if (res) {
-      if (Utils.isIOSWebview()) {
-        await this.loginBeepApp(res);
-      } else if (Utils.isAndroidWebview()) {
-        const data = JSON.parse(res) || {};
-        await this.loginBeepApp(data);
-      }
-    }
-  };
-
-  loginBeepApp = async res => {
-    const { appActions } = this.props;
-    if (res.access_token && res.refresh_token) {
-      await appActions.loginApp({
-        accessToken: res.access_token,
-        refreshToken: res.refresh_token,
-      });
-    }
-  };
-
   async componentDidMount() {
     const { appActions } = this.props;
     this.visitErrorPage();
@@ -65,14 +39,12 @@ class App extends Component {
     }
 
     // appLogin is true, isLogin is false
-    if (isWebview) {
-      if (appLogin && !isLogin) {
-        DsbridgeUtils.getTokenFromNative(user);
-      }
+    if (isWebview && !isLogin && appLogin) {
+      await this.postAppMessage();
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate = async prevProps => {
     const { appActions, user, pageError } = this.props;
     const { isExpired, isWebview, isLogin } = user || {};
     const { code } = prevProps.pageError || {};
@@ -81,14 +53,38 @@ class App extends Component {
       this.visitErrorPage();
     }
 
+    // token过期重新发postMessage
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      DsbridgeUtils.getTokenFromNative(user);
+      await this.postAppMessage();
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
       appActions.loadCustomerProfile();
     }
-  }
+  };
+
+  postAppMessage = async () => {
+    const { appActions, user } = this.props;
+    const { isLogin, isExpired } = user || {};
+    const touchPoint = 'ClaimCashback';
+
+    if (isLogin) {
+      this.handleWebRedirect();
+    } else {
+      let res = isExpired
+        ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED(touchPoint))
+        : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN(touchPoint));
+      if (res === null || res === 'undefined') {
+        console.log('native token is invalid');
+      } else {
+        const { access_token, refresh_token } = res;
+        await appActions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      }
+    }
+  };
 
   visitErrorPage() {
     const { pageError } = this.props;

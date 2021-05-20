@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import HybridHeader from '../../../../components/HybridHeader';
+import HybridHeader from '../../../../../components/HybridHeader';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
