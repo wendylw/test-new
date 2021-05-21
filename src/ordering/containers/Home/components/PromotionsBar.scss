@@ -16,6 +16,7 @@
 
   &__view-more-button {
     color: $status-blue;
+    // same height as .promotions-bar__list > li
     line-height: 1.82rem;
     border: none;
   }
