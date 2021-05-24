@@ -7,10 +7,11 @@ import PageProcessingLoader from '../../../../../components/PageProcessingLoader
 import Modal from '../../../../../../components/Modal';
 import './SelfPickup.scss';
 
-function SelfPickup({ t, processing, onChangeToSelfPickup }) {
+function SelfPickup({ t, processing, onClickSelfPickupButton, onChangeToSelfPickup }) {
   const [modalDisplayState, setModalDisplayState] = useState(false);
 
   const handleToggleModal = useCallback(status => {
+    onClickSelfPickupButton();
     setModalDisplayState(status);
   }, []);
 

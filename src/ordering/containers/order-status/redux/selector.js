@@ -4,6 +4,8 @@ import Constants from '../../../../utils/constants';
 
 const { PROMO_TYPE } = Constants;
 
+export const getUpdateOrderPendingState = state => state.orderStatus.common.updateOrderStatus === 'pending';
+
 export const getOrder = state => state.orderStatus.common.order;
 
 export const getReceiptNumber = state => state.orderStatus.common.receiptNumber;

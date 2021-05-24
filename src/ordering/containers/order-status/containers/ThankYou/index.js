@@ -52,6 +52,7 @@ import {
   getOrderDelayReason,
   getIsOrderCancellable,
   getOrderShippingType,
+  getUpdateOrderPendingState,
 } from '../../redux/selector';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
@@ -529,6 +530,7 @@ export class ThankYou extends PureComponent {
 
   handleChangeToSelfPickup = () => {
     const { order, businessInfo } = this.props;
+    const { orderId } = order || {};
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -537,6 +539,8 @@ export class ThankYou extends PureComponent {
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
+
+    updateOrderShippingType(orderId, DELIVERY_METHOD.PICKUP);
   };
 
   renderOrderDelayMessage = () => {
@@ -726,7 +730,7 @@ export class ThankYou extends PureComponent {
       customer: 'CustomerCancelledDescription',
       unknown: 'UnknownCancelledDescription',
     };
-    const { user, orderStatus } = this.props;
+    const { user, orderStatus, pendingUpdatedOrderStatus } = this.props;
     const { isWebview } = user;
 
     let currentStatusObj = {};
@@ -950,7 +954,7 @@ export class ThankYou extends PureComponent {
         <SelfPickup
           onClickSelfPickupButton={() => this.handleClickSelfPickupButton}
           onChangeToSelfPickup={() => this.handleChangeToSelfPickup}
-          processing={false}
+          processing={pendingUpdatedOrderStatus}
         />
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
@@ -1649,6 +1653,7 @@ export default compose(
       orderDelayReason: getOrderDelayReason(state),
       orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
       shippingType: getOrderShippingType(state),
+      pendingUpdatedOrderStatus: getUpdateOrderPendingState(state),
     }),
     dispatch => ({
       thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
