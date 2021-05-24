@@ -91,6 +91,7 @@ export const initialState = {
     otpType: 'otp',
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber,
+    noWhatsAppAccount: true,
   },
   error: null, // network error
   messageModal: {
@@ -433,7 +434,7 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, fields, responseGql } = action;
-  const { consumerId, login, user } = response || {};
+  const { consumerId, login, user, noWhatsAppAccount } = response || {};
 
   switch (type) {
     case types.SHOW_LOGIN_PAGE:
@@ -447,11 +448,12 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false, isError: true };
+      return { ...state, isFetching: false, isResending: false, isError: true };
     case types.GET_OTP_REQUEST:
       return {
         ...state,
         isFetching: true,
+        isResending: true,
         otpType: 'reSendotp',
       };
     case types.RESET_OTP_STATUS:
@@ -459,7 +461,7 @@ const user = (state = initialState.user, action) => {
     case types.UPDATE_OTP_STATUS:
       return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
-      return { ...state, isFetching: false, hasOtp: true };
+      return { ...state, isFetching: false, isResending: false, hasOtp: true, noWhatsAppAccount };
     case types.CREATE_OTP_SUCCESS:
       const { access_token, refresh_token } = response;
 
