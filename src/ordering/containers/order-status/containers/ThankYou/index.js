@@ -3,13 +3,12 @@ import _get from 'lodash/get';
 import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
-import { Trans, withTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DownloadBanner from '../../../../../components/DownloadBanner';
 import Header from '../../../../../components/Header';
 import { IconAccessTime, IconPin } from '../../../../../components/Icons';
-import Image from '../../../../../components/Image';
 import LiveChat from '../../../../../components/LiveChat';
 import LiveChatNative from '../../../../../components/LiveChatNative';
 import OrderStatusDescription from './components/OrderStatusDescription';
@@ -17,11 +16,6 @@ import LogisticsProcessing from './components/LogisticsProcessing';
 import RiderInfo from './components/RiderInfo';
 
 import config from '../../../../../config';
-import logisticsGoget from '../../../../../images/beep-logistics-goget.jpg';
-import logisticsGrab from '../../../../../images/beep-logistics-grab.jpg';
-import logisticsLalamove from '../../../../../images/beep-logistics-lalamove.jpg';
-import logisticBeepOnFleet from '../../../../../images/beep-logistics-on-fleet.jpg';
-import logisticsMrspeedy from '../../../../../images/beep-logistics-rspeedy.jpg';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
@@ -54,7 +48,6 @@ import {
   getOrderDelayReason,
   getIsOrderCancellable,
 } from '../../redux/common';
-// import PhoneCopyModal from './components/PhoneCopyModal/index';
 import PhoneLogin from './components/PhoneLogin';
 import {
   actions as thankYouActionCreators,
@@ -696,480 +689,51 @@ export class ThankYou extends PureComponent {
     return !(isWebview && isHideTopArea && status === LOGISTICS_PICKED_UP && Utils.isDeliveryType());
   };
   /* eslint-disable jsx-a11y/anchor-is-valid */
-  renderConsumerStatusFlow({
-    t,
-    ORDER_STATUS,
-    cashbackInfo,
-    businessInfo,
-    deliveryInformation,
-    cancelOperator,
-    order,
-  }) {
-    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIRMED, PICKUP, CANCELLED, DELIVERED } = ORDER_STATUS;
+  handleVisitReportDriverPage = () => {
+    const queryParams = {
+      receiptNumber: Utils.getQueryString('receiptNumber'),
+    };
+
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
+      search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
+  renderConsumerStatusFlow({ cashbackInfo, businessInfo, deliveryInformation, order }) {
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    let { storeInfo, status, isPreOrder } = order || {};
+    let { storeInfo, isPreOrder, deliveredTime } = order || {};
+    const { name: storeName, phone: storePhone } = storeInfo || {};
     let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
-    const cancelledDescriptionKey = {
-      ist: 'ISTCancelledDescription',
-      auto_cancelled: 'AutoCancelledDescription',
-      merchant: 'MerchantCancelledDescription',
-      customer: 'CustomerCancelledDescription',
-      unknown: 'UnknownCancelledDescription',
-    };
-    const { user, orderStatus } = this.props;
-
-    let currentStatusObj = {};
-
-    /** paid status */
-    if (status === PAID) {
-      currentStatusObj = {
-        status: 'paid',
-        firstNote: t('OrderReceived'),
-        secondNote: t('OrderReceivedDescription'),
-      };
-    }
-
-    /** accepted status */
-    if (status === ACCEPTED) {
-      currentStatusObj = {
-        status: 'accepted',
-        firstNote: t('MerchantAccepted'),
-        secondNote: t('FindingRider'),
-      };
-    }
-
-    /** logistic confirmed and confirmed */
-    if (status === CONFIRMED || status === LOGISTIC_CONFIRMED) {
-      currentStatusObj = {
-        status: 'confirmed',
-        firstNote: t('PendingPickUp'),
-        secondNote: t('RiderAssigned'),
-      };
-    }
-
-    /** pickup status */
-    if (status === PICKUP) {
-      currentStatusObj = {
-        status: 'riderPickUp',
-        firstNote: t('RiderPickUp'),
-        secondNote: t('TrackYourOrder'),
-      };
-    }
-
-    if (status === DELIVERED) {
-      currentStatusObj = {
-        status: 'delivered',
-        firstNote: t('OrderDelivered'),
-        secondNote: t('OrderDeliveredDescription'),
-      };
-    }
-
-    if (status === CANCELLED) {
-      currentStatusObj = {
-        status: 'cancelled',
-        descriptionKey: cancelledDescriptionKey[cancelOperator || 'unknown'],
-      };
-    }
-
-    currentStatusObj.status = 'delivered';
-
-    // const isShowProgress = ['paid', 'accepted', 'confirmed'].includes(currentStatusObj.status);
+    const { orderStatus, onlineStoreInfo } = this.props;
+    const { logo } = onlineStoreInfo || {};
 
     return (
       <React.Fragment>
         {this.renderOrderDelayMessage()}
         <LogisticsProcessing useStorehubLogistics={useStorehubLogistics} orderStatus={orderStatus} />
         <RiderInfo
-          t={t}
-          onlineStoreInfo={this.props.onlineStoreInfo || {}}
-          currentStatusObj={currentStatusObj}
+          status={orderStatus}
           useStorehubLogistics={useStorehubLogistics}
-          trackingUrl={trackingUrl}
-          storeInfo={storeInfo || {}}
-          driverPhone={driverPhone}
           courier={courier}
+          storeLogo={logo}
+          storeName={storeName}
           bestLastMileETA={bestLastMileETA}
           worstLastMileETA={worstLastMileETA}
+          deliveredTime={deliveredTime}
+          storePhone={storePhone}
+          driverPhone={driverPhone}
+          trackingUrl={trackingUrl}
+          inApp={Utils.isWebview()}
           supportCallPhone={this.state.supportCallPhone}
-          order={order}
+          visitReportPage={this.handleVisitReportDriverPage}
         />
-        {/* {currentStatusObj.status === 'cancelled' ? null : (!useStorehubLogistics &&
-          currentStatusObj.status !== 'paid') ||
-          !isShowProgress ? null : (
-          <div className="card text-center margin-normal flex">
-            <div className="padding-small margin-left-right-smaller text-left">
-          {currentStatusObj.status === 'paid' ? (
-            <React.Fragment>
-              <h4
-                className={`flex flex-middle text-size-big text-weight-bolder line-height-normal ordering-thanks__paid padding-left-right-small`}
-              >
-                <i className="ordering-thanks__active "></i>
-                <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                  {currentStatusObj.firstNote}
-                </span>
-              </h4>
-              <div className="flex flex-middle line-height-normal text-gray padding-left-right-normal">
-                <p className="ordering-thanks__description text-size-big padding-left-right-normal margin-left-right-smaller">
-                  <span className="padding-left-right-smaller">{currentStatusObj.secondNote}</span>
-                  <span role="img" aria-label="Goofy">
-                    😋
-                      </span>
-                </p>
-              </div>
-            </React.Fragment>
-          ) : (
-            <div className="line-height-normal text-black padding-left-right-small flex flex-middle">
-              <i className="ordering-thanks__prev"></i>
-              <span className="padding-left-right-normal margin-left-right-smaller">{t('Confirmed')}</span>
-            </div>
-          )}
-
-          {currentStatusObj.status === 'accepted' ? (
-            <React.Fragment>
-              <h4 className="flex flex-middle ordering-thanks__progress-title text-size-big text-weight-bolder line-height-normal padding-left-right-small margin-top-bottom-small  ordering-thanks__accepted padding-top-bottom-smaller">
-                <i className="ordering-thanks__active"></i>
-                <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                  {currentStatusObj.firstNote}
-                </span>
-              </h4>
-              <div className="flex flex-middle text-gray padding-left-right-normal margin-left-right-normal">
-                <div className="margin-left-right-smaller flex flex-middle">
-                  <IconAccessTime className="icon icon__small icon__default" />
-                  <span className="">{currentStatusObj.secondNote}</span>
-                </div>
-              </div>
-            </React.Fragment>
-          ) : (
-            <div
-              className={` flex flex-middle line-height-normal padding-left-right-small margin-top-bottom-small padding-top-bottom-smaller ${currentStatusObj.status === 'confirmed'
-                ? 'text-black'
-                : 'padding-top-bottom-smaller ordering-thanks__progress-title  text-gray'
-                }`}
-            >
-              {status === 'paid' ? (
-                <i className="ordering-thanks__next ordering-thanks__next-heigher"></i>
-              ) : (
-                <i className="ordering-thanks__prev"></i>
-              )}
-              <span className="padding-left-right-normal margin-left-right-smaller">
-                {currentStatusObj.status === 'confirmed' ? t('RiderFound') : t('MerchantAccepted')}
-              </span>
-            </div>
-          )}
-
-          {currentStatusObj.status === 'confirmed' ? (
-            <React.Fragment>
-              <h4
-                className={`flex flex-middle  ordering-thanks__progress-title   padding-left-right-small text-size-big text-weight-bolder line-height-normal  ordering-thanks__accepted`}
-              >
-                <i className="ordering-thanks__active"></i>
-                <span className="padding-left-right-normal text-weight-bolder margin-left-right-smaller">
-                  {currentStatusObj.firstNote}
-                </span>
-              </h4>
-              <div className="flex flex-middle text-gray line-height-normal padding-left-right-normal margin-left-right-smaller">
-                <span className="padding-left-right-normal margin-left-right-smaller">
-                  {currentStatusObj.secondNote}
-                </span>
-              </div>
-            </React.Fragment>
-          ) : (
-            <div className="flex flex-middle padding-top-bottom-smaller text-gray line-height-normal ordering-thanks__progress-title padding-left-right-small">
-              <i
-                className={`ordering-thanks__next ${status === 'accepted' ? 'ordering-thanks__next-heigher' : ''}`}
-              ></i>
-              <span className="padding-left-right-normal margin-left-right-smaller">{t('PendingPickUp')}</span>
-            </div>
-          )}
-        </div>
-          </div>
-    )
-  } */}
-        {/* {currentStatusObj.status === 'confirmed' ||
-        currentStatusObj.status === 'riderPickUp' ||
-        currentStatusObj.status === 'delivered' ||
-        (!useStorehubLogistics && currentStatusObj.status !== 'paid')
-          ? this.renderRiderInfo(
-              currentStatusObj,
-              useStorehubLogistics,
-              trackingUrl,
-              storeInfo,
-              driverPhone,
-              courier,
-              bestLastMileETA,
-              worstLastMileETA,
-              order
-            )
-          : null} */}
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
   }
-
-  getLogisticsLogo = (logistics = '') => {
-    switch (logistics.toLowerCase()) {
-      case 'grab':
-        return logisticsGrab;
-      case 'goget':
-        return logisticsGoget;
-      case 'lalamove':
-        return logisticsLalamove;
-      case 'mrspeedy':
-        return logisticsMrspeedy;
-      case 'onfleet':
-        return logisticBeepOnFleet;
-      default:
-        return logisticBeepOnFleet;
-    }
-  };
-
-  getOrderETA = ETA => {
-    if (!ETA) return '';
-
-    try {
-      const time = new Date(ETA);
-      return `${Utils.zero(time.getHours())}:${Utils.zero(time.getMinutes())}`;
-    } catch (e) {
-      return '';
-    }
-  };
-
-  // renderRiderInfo = (
-  //   currentStatusObj,
-  //   useStorehubLogistics,
-  //   trackingUrl,
-  //   storeInfo = {},
-  //   driverPhone,
-  //   courier,
-  //   bestLastMileETA,
-  //   worstLastMileETA,
-  //   order = {}
-  // ) => {
-  //   const { status } = currentStatusObj;
-  //   const { deliveredTime } = order || {};
-  //   const { t, onlineStoreInfo = {} } = this.props;
-  //   const { name: storeName, phone: storePhone } = storeInfo;
-  //   const { logo: storeLogo } = onlineStoreInfo;
-  //   const { supportCallPhone } = this.state;
-
-  //   return (
-  //     <div className="card text-center margin-normal flex ordering-thanks__rider flex-column">
-  //       <div className="padding-normal">
-  //         {status === 'riderPickUp' && useStorehubLogistics && bestLastMileETA && worstLastMileETA && (
-  //           <p className="text-left text-size-big ">{t('OrderStatusPickedUp')}</p>
-  //         )}
-  //         {status === 'delivered' && useStorehubLogistics && deliveredTime && (
-  //           <p className="text-left text-size-big">{t('OrderStatusDelivered')}</p>
-  //         )}
-  //         {status !== 'paid' && !useStorehubLogistics && (
-  //           <p className="text-left text-size-big" style={{ marginBottom: '24px' }}>
-  //             {t('SelfDeliveryDescription')}
-  //           </p>
-  //         )}
-  //         {!(status !== 'paid' && !useStorehubLogistics) &&
-  //           status !== 'confirmed' &&
-  //           ((bestLastMileETA && worstLastMileETA) || deliveredTime ? (
-  //             <h2
-  //               className="padding-top-bottom-small text-left text-weight-bolder text-size-huge"
-  //               style={{ marginBottom: '16px' }}
-  //             >
-  //               {status === 'riderPickUp'
-  //                 ? `${this.getOrderETA(bestLastMileETA)} - ${this.getOrderETA(worstLastMileETA)} ${Utils.getTimeUnit(
-  //                     bestLastMileETA
-  //                   )}`
-  //                 : status === 'delivered'
-  //                 ? `${this.getOrderETA(deliveredTime)} ${Utils.getTimeUnit(deliveredTime)}`
-  //                 : null}
-  //             </h2>
-  //           ) : null)}
-
-  //         <div className={`flex  flex-middle`}>
-  //           <div className="ordering-thanks__rider-logo">
-  //             {useStorehubLogistics && (
-  //               <figure className="logo">
-  //                 <img src={this.getLogisticsLogo(courier)} alt="rider info" />
-  //               </figure>
-  //             )}
-  //             {!useStorehubLogistics && <Image src={storeLogo} alt="store info" className="logo" />}
-  //           </div>
-  //           <div className="margin-top-bottom-smaller padding-left-right-normal text-left flex flex-column flex-space-between">
-  //             <p className="line-height-normal text-weight-bolder">
-  //               {useStorehubLogistics
-  //                 ? courier === 'onfleet'
-  //                   ? t('BeepFleet')
-  //                   : courier
-  //                 : t('DeliveryBy', { name: storeName })}
-  //             </p>
-  //             {
-  //               <span className="text-gray line-height-normal">
-  //                 {useStorehubLogistics
-  //                   ? driverPhone
-  //                     ? `+${driverPhone}`
-  //                     : null
-  //                   : storePhone
-  //                   ? `${storePhone}`
-  //                   : null}
-  //               </span>
-  //             }
-  //           </div>
-  //         </div>
-  //       </div>
-  //       {!useStorehubLogistics ? (
-  //         status !== 'paid' &&
-  //         storePhone && (
-  //           <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
-  //             {Utils.isWebview() && !supportCallPhone ? (
-  //               <a
-  //                 href="javascript:void(0)"
-  //                 onClick={() => this.copyPhoneNumber(storePhone, 'store')}
-  //                 className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-  //               >
-  //                 {t('CallStore')}
-  //               </a>
-  //             ) : (
-  //               <a
-  //                 href={`tel:+${storePhone}`}
-  //                 className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-  //               >
-  //                 {t('CallStore')}
-  //               </a>
-  //             )}
-  //           </div>
-  //         )
-  //       ) : (
-  //         <div className="ordering-thanks__button button text-uppercase flex  flex-center ordering-thanks__button-card-link">
-  //           {status === 'confirmed' && (
-  //             <React.Fragment>
-  //               {storePhone &&
-  //                 (Utils.isWebview() ? (
-  //                   !supportCallPhone ? (
-  //                     <a
-  //                       href="javascript:void(0)"
-  //                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link text-uppercase"
-  //                       onClick={() => this.copyPhoneNumber(storePhone, 'store')}
-  //                     >
-  //                       {t('CallStore')}
-  //                     </a>
-  //                   ) : (
-  //                     <a
-  //                       href={`tel:+${storePhone}`}
-  //                       className="text-weight-bolder button ordering-thanks__button-link ordering-thanks__link"
-  //                     >
-  //                       {t('CallStore')}
-  //                     </a>
-  //                   )
-  //                 ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
-  //                   <a
-  //                     href={trackingUrl}
-  //                     className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
-  //                     target="__blank"
-  //                     data-heap-name="ordering.thank-you.logistics-tracking-link"
-  //                   >
-  //                     {t('TrackOrder')}
-  //                   </a>
-  //                 ) : null)}
-  //               {Utils.isWebview() && !supportCallPhone ? (
-  //                 <a
-  //                   href="javascript:void(0)"
-  //                   onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
-  //                   className="text-weight-bolder button ordering-thanks__link text-uppercase"
-  //                 >
-  //                   {t('CallRider')}
-  //                 </a>
-  //               ) : (
-  //                 <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-  //                   {t('CallRider')}
-  //                 </a>
-  //               )}
-  //             </React.Fragment>
-  //           )}
-
-  //           {status === 'riderPickUp' && (
-  //             <React.Fragment>
-  //               {Utils.isWebview() ? (
-  //                 !supportCallPhone ? (
-  //                   <a
-  //                     href="javascript:void(0)"
-  //                     onClick={() => this.copyPhoneNumber(storePhone, 'drive')}
-  //                     className="text-weight-bolder button ordering-thanks__link text-uppercase ordering-thanks__button-link"
-  //                   >
-  //                     {t('CallStore')}
-  //                   </a>
-  //                 ) : (
-  //                   <a
-  //                     href={`tel:+${storePhone}`}
-  //                     className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
-  //                   >
-  //                     {t('CallStore')}
-  //                   </a>
-  //                 )
-  //               ) : trackingUrl && Utils.isValidUrl(trackingUrl) ? (
-  //                 <a
-  //                   href={trackingUrl}
-  //                   className="text-weight-bolder button ordering-thanks__link ordering-thanks__button-link"
-  //                   target="__blank"
-  //                   data-heap-name="ordering.thank-you.logistics-tracking-link"
-  //                 >
-  //                   {t('TrackOrder')}
-  //                 </a>
-  //               ) : null}
-  //               {Utils.isWebview() && !supportCallPhone ? (
-  //                 <a
-  //                   href="javascript:void(0)"
-  //                   onClick={() => this.copyPhoneNumber(driverPhone, 'drive')}
-  //                   className="text-weight-bolder button ordering-thanks__link text-uppercase"
-  //                 >
-  //                   {t('CallRider')}
-  //                 </a>
-  //               ) : (
-  //                 <a href={`tel:+${driverPhone}`} className="text-weight-bolder button ordering-thanks__link">
-  //                   {t('CallRider')}
-  //                 </a>
-  //               )}
-  //             </React.Fragment>
-  //           )}
-
-  //           {status === 'delivered' && (
-  //             <React.Fragment>
-  //               <button
-  //                 className="text-weight-bolder button text-uppercase text-center ordering-thanks__button-card-link"
-  //                 onClick={this.handleReportUnsafeDriver}
-  //                 data-heap-name="ordering.need-help.report-driver-btn"
-  //               >
-  //                 {t('ReportIssue')}
-  //               </button>
-  //             </React.Fragment>
-  //           )}
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
-  // };
-
-  // copyPhoneNumber = (phone, PhoneName) => {
-  //   const { t } = this.props;
-  //   const input = document.createElement('input');
-  //   const title = t('CopyTitle');
-  //   const content =
-  //     PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone });
-
-  //   input.setAttribute('readonly', 'readonly');
-  //   input.setAttribute('value', '+' + phone);
-  //   document.body.appendChild(input);
-  //   input.setSelectionRange(0, 9999);
-  //   if (document.execCommand('copy')) {
-  //     input.select();
-  //     document.execCommand('copy');
-  //     this.setState({
-  //       showPhoneCopy: true,
-  //       phoneCopyTitle: title,
-  //       phoneCopyContent: content,
-  //     });
-  //   }
-  //   document.body.removeChild(input);
-  // };
 
   /* eslint-enable jsx-a11y/anchor-is-valid */
 
@@ -1277,19 +841,16 @@ export class ThankYou extends PureComponent {
   };
 
   renderDeliveryTimeLine() {
-    const { t, order, cashbackInfo, businessInfo } = this.props;
-    const { deliveryInformation, cancelOperator } = order || {};
-    const ORDER_STATUS = Constants.ORDER_STATUS;
+    const { order, cashbackInfo, businessInfo } = this.props;
+    const { deliveryInformation } = order || {};
+    // const ORDER_STATUS = Constants.ORDER_STATUS;
 
     return (
       <React.Fragment>
         {this.renderConsumerStatusFlow({
-          t,
-          ORDER_STATUS,
           cashbackInfo,
           businessInfo,
           deliveryInformation,
-          cancelOperator,
           order,
         })}
       </React.Fragment>
@@ -1539,18 +1100,6 @@ export class ThankYou extends PureComponent {
             </footer>
           </div>
         </React.Fragment>
-        {/* <PhoneCopyModal
-          show={this.state.showPhoneCopy}
-          phoneCopyTitle={this.state.phoneCopyTitle}
-          phoneCopyContent={this.state.phoneCopyContent}
-          continue={() => {
-            this.setState({
-              showPhoneCopy: false,
-              phoneCopyTitle: '',
-              phoneCopyContent: '',
-            });
-          }}
-        /> */}
 
         <OrderCancellationReasonsAside
           show={this.props.orderCancellationReasonAsideVisible}

@@ -1,5 +1,4 @@
-import qs from 'qs';
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
@@ -55,6 +54,34 @@ function getDeliveredTime(deliveredTime, timeUnit) {
   }
 }
 
+async function copyDataToClipboard(text) {
+  try {
+    const data = [new window.ClipboardItem({ 'text/plain': text })];
+
+    await navigator.clipboard.write(data);
+
+    return { success: true };
+  } catch (e) {
+    if (!document.execCommand || !document.execCommand('copy')) {
+      return {
+        failure: true,
+      };
+    }
+
+    const copyInput = document.createElement('input');
+
+    copyInput.setAttribute('readonly', 'readonly');
+    copyInput.setAttribute('value', '+' + text);
+    document.body.appendChild(copyInput);
+    copyInput.setSelectionRange(0, 9999);
+    copyInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(copyInput);
+
+    return { success: true };
+  }
+}
+
 function RiderInfo({
   t,
   status,
@@ -70,43 +97,12 @@ function RiderInfo({
   trackingUrl,
   inApp,
   supportCallPhone,
+  visitReportPage,
 }) {
-  const handleReportUnsafeDriver = () => {
-    if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(status)) {
-      return;
-    }
-
-    const queryParams = {
-      receiptNumber: Utils.getQueryString('receiptNumber'),
-    };
-
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
-      search: qs.stringify(queryParams, { addQueryPrefix: true }),
-    });
-  };
-  const copyPhoneNumber = (phone, PhoneName) => {
-    const input = document.createElement('input');
-    const title = t('CopyTitle');
-    const content =
-      PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone });
-
-    input.setAttribute('readonly', 'readonly');
-    input.setAttribute('value', '+' + phone);
-    document.body.appendChild(input);
-    input.setSelectionRange(0, 9999);
-    if (document.execCommand('copy')) {
-      input.select();
-      document.execCommand('copy');
-      this.setState({
-        showPhoneCopy: true,
-        phoneCopyTitle: title,
-        phoneCopyContent: content,
-      });
-    }
-    document.body.removeChild(input);
-  };
-
+  const [copyPhoneModalInfo, setCopyPhoneModalInfo] = useState({
+    show: false,
+    description: null,
+  });
   const logisticStatus = !useStorehubLogistics ? 'merchantDelivery' : status;
   const logisticName = courier === 'onfleet' ? t('BeepFleet') : courier;
   const logisticPhone = useStorehubLogistics ? driverPhone && `+${driverPhone}` : storePhone;
@@ -129,6 +125,26 @@ function RiderInfo({
     ORDER_STATUS.LOGISTICS_PICKED_UP,
   ].includes(logisticStatus);
   const callStoreDisplayState = !useStorehubLogistics || (useStorehubLogistics && beginningDeliveryStates && inApp);
+  const handleVisitReportDriverPage = () => {
+    if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(status)) {
+      return;
+    }
+
+    visitReportPage();
+  };
+  const handleCopyPhoneNumber = (phone, PhoneName) => {
+    const result = copyDataToClipboard(phone);
+
+    if (result.success) {
+      setCopyPhoneModalInfo({
+        show: true,
+        description:
+          PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone }),
+      });
+    } else {
+      console.error('can not copy phone number');
+    }
+  };
   let callStoreButtonEl = null;
   let callRiderButtonEl = null;
   const trackingOrderButtonEl =
@@ -154,7 +170,7 @@ function RiderInfo({
     ) : (
       <button
         onClick={() =>
-          copyPhoneNumber(storePhone, logisticStatus === ORDER_STATUS.LOGISTICS_PICKED_UP ? 'drive' : 'store')
+          handleCopyPhoneNumber(storePhone, logisticStatus === ORDER_STATUS.LOGISTICS_PICKED_UP ? 'drive' : 'store')
         }
         className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
       >
@@ -173,7 +189,7 @@ function RiderInfo({
       </a>
     ) : (
       <button
-        onClick={() => copyPhoneNumber(driverPhone, 'drive')}
+        onClick={() => handleCopyPhoneNumber(driverPhone, 'drive')}
         className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
       >
         {t('CallStore')}
@@ -219,7 +235,7 @@ function RiderInfo({
           {logisticStatus === ORDER_STATUS.DELIVERED ? (
             <button
               className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
-              onClick={handleReportUnsafeDriver}
+              onClick={handleVisitReportDriverPage}
               data-heap-name="ordering.need-help.report-driver-btn"
             >
               {t('ReportIssue')}
@@ -230,19 +246,18 @@ function RiderInfo({
           {beginningDeliveryStates ? callRiderButtonEl : null}
         </div>
       </div>
-      <Modal show={true} className="rider-info__modal modal">
+      <Modal show={copyPhoneModalInfo.show} className="rider-info__modal modal">
         <Modal.Body className="padding-normal text-center">
-          <h2 className="padding-small text-size-biggest text-weight-bolder">{'this.state.phoneCopyTitle'}</h2>
-          <p className="modal__text padding-top-bottom-small">{'this.state.phoneCopyContent'}</p>
+          <h2 className="padding-small text-size-biggest text-weight-bolder">{t('CopyTitle')}</h2>
+          <p className="modal__text padding-top-bottom-small">{copyPhoneModalInfo.description}</p>
         </Modal.Body>
         <Modal.Footer className="padding-normal">
           <button
             className="button button__fill button__block text-weight-bolder text-uppercase"
             onClick={() => {
-              this.setState({
-                showPhoneCopy: false,
-                phoneCopyTitle: '',
-                phoneCopyContent: '',
+              setCopyPhoneModalInfo({
+                show: false,
+                description: null,
               });
             }}
           >
@@ -254,8 +269,27 @@ function RiderInfo({
   );
 }
 
-RiderInfo.propTypes = {};
+RiderInfo.propTypes = {
+  status: PropTypes.string,
+  useStorehubLogistics: PropTypes.bool,
+  courier: PropTypes.string,
+  storeLogo: PropTypes.string,
+  storeName: PropTypes.string,
+  bestLastMileETA: PropTypes.string,
+  worstLastMileETA: PropTypes.string,
+  deliveredTime: PropTypes.string,
+  storePhone: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  driverPhone: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  trackingUrl: PropTypes.string,
+  inApp: PropTypes.bool,
+  supportCallPhone: PropTypes.bool,
+  visitReportPage: PropTypes.func,
+};
 
-RiderInfo.defaultProps = {};
+RiderInfo.defaultProps = {
+  useStorehubLogistics: true,
+  supportCallPhone: false,
+  visitReportPage: () => {},
+};
 
 export default compose(withTranslation('OrderingThankYou'))(RiderInfo);
