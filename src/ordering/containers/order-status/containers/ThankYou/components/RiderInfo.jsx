@@ -104,6 +104,22 @@ function RiderInfo({
     description: null,
   });
   const logisticStatus = !useStorehubLogistics ? 'merchantDelivery' : status;
+  const startedDeliveryStates = [
+    ORDER_STATUS.CONFIRMED,
+    ORDER_STATUS.LOGISTICS_CONFIRMED,
+    ORDER_STATUS.LOGISTICS_PICKED_UP,
+  ].includes(logisticStatus);
+  const notStartedDeliveryStates = [
+    ORDER_STATUS.CREATED,
+    ORDER_STATUS.PENDING_PAYMENT,
+    ORDER_STATUS.PENDING_VERIFICATION,
+    ORDER_STATUS.PAID,
+  ];
+
+  if (!startedDeliveryStates || (!useStorehubLogistics && notStartedDeliveryStates.includes(status))) {
+    return null;
+  }
+
   const logisticName = courier === 'onfleet' ? t('BeepFleet') : courier;
   const logisticPhone = useStorehubLogistics ? driverPhone && `+${driverPhone}` : storePhone;
   const estimationInfo = {
@@ -119,12 +135,7 @@ function RiderInfo({
       title: t('SelfDeliveryDescription'),
     },
   };
-  const beginningDeliveryStates = [
-    ORDER_STATUS.CONFIRMED,
-    ORDER_STATUS.LOGISTICS_CONFIRMED,
-    ORDER_STATUS.LOGISTICS_PICKED_UP,
-  ].includes(logisticStatus);
-  const callStoreDisplayState = !useStorehubLogistics || (useStorehubLogistics && beginningDeliveryStates && inApp);
+  const callStoreDisplayState = !useStorehubLogistics || (useStorehubLogistics && startedDeliveryStates && inApp);
   const handleVisitReportDriverPage = () => {
     if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(status)) {
       return;
@@ -243,7 +254,7 @@ function RiderInfo({
           ) : null}
 
           {callStoreDisplayState ? callStoreButtonEl : trackingOrderButtonEl}
-          {beginningDeliveryStates ? callRiderButtonEl : null}
+          {startedDeliveryStates ? callRiderButtonEl : null}
         </div>
       </div>
       <Modal show={copyPhoneModalInfo.show} className="rider-info__modal modal">
