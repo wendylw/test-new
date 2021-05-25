@@ -29,6 +29,7 @@ export const initialState = {
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
+    noWhatsAppAccount: true,
   },
   error: null, // network error
   messageInfo: {
@@ -221,23 +222,23 @@ const fetchCustomerProfile = consumerId => ({
 
 const user = (state = initialState.user, action) => {
   const { type, response, responseGql, code, prompt, error } = action;
-  const { login, consumerId } = response || {};
+  const { login, consumerId, noWhatsAppAccount } = response || {};
 
   switch (type) {
     case types.FETCH_LOGIN_STATUS_REQUEST:
     case types.GET_OTP_REQUEST:
     case types.CREATE_OTP_REQUEST:
-      return { ...state, isFetching: true };
+      return { ...state, isFetching: true, isResending: true };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false };
+      return { ...state, isFetching: false, isResending: false };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
     case types.UPDATE_OTP_STATUS:
       return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
-      return { ...state, isFetching: false, hasOtp: true };
+      return { ...state, isFetching: false, isResending: false, hasOtp: true, noWhatsAppAccount };
     case types.CREATE_OTP_SUCCESS:
       const { access_token, refresh_token } = response;
 
