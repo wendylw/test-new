@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import _get from 'lodash/get';
 import Loader from '../../components/Loader';
 import { Trans } from 'react-i18next';
 import Header from '../../../../../components/Header';
@@ -295,17 +294,7 @@ class CreditCard extends Component {
       });
 
       cardInfoError.keys.push('cardNumber');
-      cardInfoError.messages.cardNumber = (
-        <Trans
-          t={t}
-          i18nKey="RiskyCardNumberMessage"
-          components={[
-            <span className="text-weight-bolder" />,
-            // TODO: Pending PM confirm with Finance
-            <CurrencyNumber className="text-weight-bolder" money={0} />,
-          ]}
-        />
-      );
+      cardInfoError.messages.cardNumber = t('RiskyCardNumberMessage');
 
       this.setState({
         cardInfoError,
