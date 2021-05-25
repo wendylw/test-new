@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import Loader from '../../components/Loader';
-import { Trans } from 'react-i18next';
 import Header from '../../../../../components/Header';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import FormValidate from '../../../../../utils/form-validate';
