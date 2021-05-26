@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import Constants from '../../../../../../utils/constants';
-import Utils from '../../../../../../utils/utils';
+import { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
+import { formatTo12hour } from '../../../../../../utils/time-lib';
 import Image from '../../../../../../components/Image';
 import Modal from '../../../../../../components/Modal';
 
@@ -23,64 +24,58 @@ const LOGISTICS_LOGOS_MAPPING = {
   onfleet: logisticBeepOnFleet,
 };
 
-function getDeliveredTimeRange(bestLastMileETA, worstLastMileETA, timeUnit) {
+function getDeliveredTimeRange(bestLastMileETA, worstLastMileETA) {
   if (!bestLastMileETA || !worstLastMileETA) {
     return null;
   }
 
   try {
-    const bestTime = new Date(bestLastMileETA);
-    const worstTime = new Date(worstLastMileETA);
-    const bestLastMileTime = `${Utils.zero(bestTime.getHours())}:${Utils.zero(bestTime.getMinutes())}`;
-    const worstLastMileTime = `${Utils.zero(worstTime.getHours())}:${Utils.zero(worstTime.getMinutes())}`;
+    const bestLastMileTime = formatTo12hour(bestLastMileETA, false);
+    const worstLastMileTime = formatTo12hour(bestLastMileETA);
 
-    return `${bestLastMileTime} - ${worstLastMileTime} ${timeUnit}`;
+    return `${bestLastMileTime} - ${worstLastMileTime}`;
   } catch (e) {
+    console.error('bestLastMileTime or worstLastMileTime is invalid');
+
     return null;
   }
 }
 
-function getDeliveredTime(deliveredTime, timeUnit) {
+function getDeliveredTime(deliveredTime) {
   if (!deliveredTime) {
     return null;
   }
 
   try {
-    const time = new Date(deliveredTime);
-
-    return `${Utils.zero(time.getHours())}:${Utils.zero(time.getMinutes())} ${timeUnit}`;
+    return formatTo12hour(deliveredTime);
   } catch (e) {
+    console.error('deliveredTime is invalid');
+
     return null;
   }
 }
 
-async function copyDataToClipboard(text) {
-  try {
-    const data = [new window.ClipboardItem({ 'text/plain': text })];
-
-    await navigator.clipboard.write(data);
-
-    return { success: true };
-  } catch (e) {
-    if (!document.execCommand || !document.execCommand('copy')) {
-      return {
-        failure: true,
-      };
-    }
-
-    const copyInput = document.createElement('input');
-
-    copyInput.setAttribute('readonly', 'readonly');
-    copyInput.setAttribute('value', '+' + text);
-    document.body.appendChild(copyInput);
-    copyInput.setSelectionRange(0, 9999);
-    copyInput.select();
-    document.execCommand('copy');
-    document.body.removeChild(copyInput);
-
-    return { success: true };
+const RenderRiderInfoButton = ({ phone, supportCallPhone, buttonText, buttonClickEvent }) => {
+  if (!phone) {
+    return null;
   }
-}
+
+  return supportCallPhone ? (
+    <a
+      href={`tel:+${phone}`}
+      className="rider-info__button button button__link flex__fluid-content text-center padding-normal text-weight-bolder text-uppercase"
+    >
+      {buttonText}
+    </a>
+  ) : (
+    <button
+      onClick={() => buttonClickEvent}
+      className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
+    >
+      {buttonText}
+    </button>
+  );
+};
 
 function RiderInfo({
   t,
@@ -99,10 +94,8 @@ function RiderInfo({
   supportCallPhone,
   visitReportPage,
 }) {
-  const [copyPhoneModalInfo, setCopyPhoneModalInfo] = useState({
-    show: false,
-    description: null,
-  });
+  const [displayCopyPhoneModalStatus, setDisplayCopyPhoneModalStatus] = useState(false);
+  const [copyPhoneModalDescription, setCopyPhoneModalDescription] = useState(null);
   const logisticStatus = !useStorehubLogistics ? 'merchantDelivery' : status;
   const startedDeliveryStates = [
     ORDER_STATUS.CONFIRMED,
@@ -125,41 +118,50 @@ function RiderInfo({
   const estimationInfo = {
     [ORDER_STATUS.LOGISTICS_PICKED_UP]: {
       title: t('OrderStatusPickedUp'),
-      deliveredTime: getDeliveredTimeRange(bestLastMileETA, worstLastMileETA, Utils.getTimeUnit(bestLastMileETA)),
+      deliveredTime: getDeliveredTimeRange(bestLastMileETA, worstLastMileETA),
     },
     [ORDER_STATUS.DELIVERED]: {
       title: t('OrderStatusDelivered'),
-      deliveredTime: getDeliveredTime(deliveredTime, Utils.getTimeUnit(deliveredTime)),
+      deliveredTime: getDeliveredTime(deliveredTime),
     },
     merchantDelivery: {
       title: t('SelfDeliveryDescription'),
     },
   };
   const callStoreDisplayState = !useStorehubLogistics || (useStorehubLogistics && startedDeliveryStates && inApp);
-  const handleVisitReportDriverPage = () => {
-    if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(status)) {
-      return;
-    }
-
-    visitReportPage();
-  };
-  const handleCopyPhoneNumber = (phone, PhoneName) => {
+  const handleCopyPhoneNumber = (phone, phoneName) => {
     const result = copyDataToClipboard(phone);
 
-    if (result.success) {
-      setCopyPhoneModalInfo({
-        show: true,
-        description:
-          PhoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone }),
-      });
+    if (result) {
+      setDisplayCopyPhoneModalStatus(true);
+      setCopyPhoneModalDescription(
+        phoneName === 'store' ? t('CopyStoreDescription', { phone }) : t('CopyDriverDescription', { phone })
+      );
     } else {
       console.error('can not copy phone number');
     }
   };
-  let callStoreButtonEl = null;
-  let callRiderButtonEl = null;
+  const callStoreButtonEl = (
+    <RenderRiderInfoButton
+      phone={storePhone}
+      supportCallPhone={supportCallPhone}
+      buttonText={t('CallStore')}
+      buttonClickEvent={handleCopyPhoneNumber(
+        storePhone,
+        logisticStatus === ORDER_STATUS.LOGISTICS_PICKED_UP ? 'drive' : 'store'
+      )}
+    />
+  );
+  const callRiderButtonEl = (
+    <RenderRiderInfoButton
+      phone={driverPhone}
+      supportCallPhone={supportCallPhone}
+      buttonText={t('CallRider')}
+      buttonClickEvent={handleCopyPhoneNumber(driverPhone, 'drive')}
+    />
+  );
   const trackingOrderButtonEl =
-    trackingUrl && Utils.isValidUrl(trackingUrl) ? (
+    trackingUrl && isValidUrl(trackingUrl) ? (
       <a
         href={trackingUrl}
         className="rider-info__button button button__link flex__fluid-content text-center padding-normal text-weight-bolder text-uppercase"
@@ -169,44 +171,6 @@ function RiderInfo({
         {t('TrackOrder')}
       </a>
     ) : null;
-
-  if (storePhone) {
-    callStoreButtonEl = supportCallPhone ? (
-      <a
-        href={`tel:+${storePhone}`}
-        className="rider-info__button button button__link flex__fluid-content text-center padding-normal text-weight-bolder text-uppercase"
-      >
-        {t('CallStore')}
-      </a>
-    ) : (
-      <button
-        onClick={() =>
-          handleCopyPhoneNumber(storePhone, logisticStatus === ORDER_STATUS.LOGISTICS_PICKED_UP ? 'drive' : 'store')
-        }
-        className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
-      >
-        {t('CallStore')}
-      </button>
-    );
-  }
-
-  if (driverPhone) {
-    callRiderButtonEl = supportCallPhone ? (
-      <a
-        href={`tel:+${driverPhone}`}
-        className="rider-info__button button button__link flex__fluid-content text-center padding-normal text-weight-bolder text-uppercase"
-      >
-        {t('CallStore')}
-      </a>
-    ) : (
-      <button
-        onClick={() => handleCopyPhoneNumber(driverPhone, 'drive')}
-        className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
-      >
-        {t('CallStore')}
-      </button>
-    );
-  }
 
   return (
     <React.Fragment>
@@ -246,7 +210,13 @@ function RiderInfo({
           {logisticStatus === ORDER_STATUS.DELIVERED ? (
             <button
               className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
-              onClick={handleVisitReportDriverPage}
+              onClick={() => {
+                if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(status)) {
+                  return;
+                }
+
+                visitReportPage();
+              }}
               data-heap-name="ordering.need-help.report-driver-btn"
             >
               {t('ReportIssue')}
@@ -257,19 +227,17 @@ function RiderInfo({
           {startedDeliveryStates ? callRiderButtonEl : null}
         </div>
       </div>
-      <Modal show={copyPhoneModalInfo.show} className="rider-info__modal modal">
+      <Modal show={displayCopyPhoneModalStatus} className="rider-info__modal modal">
         <Modal.Body className="padding-normal text-center">
           <h2 className="padding-small text-size-biggest text-weight-bolder">{t('CopyTitle')}</h2>
-          <p className="modal__text padding-top-bottom-small">{copyPhoneModalInfo.description}</p>
+          <p className="modal__text padding-top-bottom-small">{copyPhoneModalDescription}</p>
         </Modal.Body>
         <Modal.Footer className="padding-normal">
           <button
             className="button button__fill button__block text-weight-bolder text-uppercase"
             onClick={() => {
-              setCopyPhoneModalInfo({
-                show: false,
-                description: null,
-              });
+              setDisplayCopyPhoneModalStatus(false);
+              setCopyPhoneModalDescription(null);
             }}
           >
             {t('OK')}

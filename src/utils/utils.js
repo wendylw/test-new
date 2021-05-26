@@ -10,6 +10,7 @@ dayjs.extend(utc);
 
 const { SH_LOGISTICS_VALID_TIME, CLIENTS } = Constants;
 const Utils = {};
+
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
@@ -331,7 +332,7 @@ Utils.isSafari = function isSafari() {
   return Utils.getUserAgentInfo().browser.includes('Safari');
 };
 
-Utils.isValidUrl = function(url) {
+export const isValidUrl = url => {
   const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
   return domainRegex.test(url);
 };
@@ -623,15 +624,6 @@ Utils.checkEmailIsValid = email => {
   return emailRegex.test(email);
 };
 
-Utils.getTimeUnit = time => {
-  try {
-    const hour = new Date(time);
-    return hour < 12 ? 'AM' : 'PM';
-  } catch (e) {
-    return null;
-  }
-};
-
 Utils.getFileExtension = file => {
   const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
@@ -826,6 +818,32 @@ Utils.getHeaderClient = () => {
     headerClient = CLIENTS.WEB;
   }
   return headerClient;
+};
+
+export const copyDataToClipboard = async text => {
+  try {
+    const data = [new window.ClipboardItem({ 'text/plain': text })];
+
+    await navigator.clipboard.write(data);
+
+    return true;
+  } catch (e) {
+    if (!document.execCommand || !document.execCommand('copy')) {
+      return false;
+    }
+
+    const copyInput = document.createElement('input');
+
+    copyInput.setAttribute('readonly', 'readonly');
+    copyInput.setAttribute('value', '+' + text);
+    document.body.appendChild(copyInput);
+    copyInput.setSelectionRange(0, 9999);
+    copyInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(copyInput);
+
+    return true;
+  }
 };
 
 export default Utils;
