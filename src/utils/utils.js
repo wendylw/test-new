@@ -17,6 +17,7 @@ const {
   REGISTRATION_TOUCH_POINT,
 } = Constants;
 const Utils = {};
+
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
@@ -345,7 +346,7 @@ Utils.isSafari = function isSafari() {
   return Utils.getUserAgentInfo().browser.includes('Safari');
 };
 
-Utils.isValidUrl = function(url) {
+export const isValidUrl = url => {
   const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
   return domainRegex.test(url);
 };
@@ -643,15 +644,6 @@ Utils.checkEmailIsValid = email => {
   return emailRegex.test(email);
 };
 
-Utils.getTimeUnit = time => {
-  try {
-    const hour = new Date(time);
-    return hour < 12 ? 'AM' : 'PM';
-  } catch (e) {
-    return null;
-  }
-};
-
 Utils.getFileExtension = file => {
   const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
@@ -848,47 +840,29 @@ Utils.getHeaderClient = () => {
   return headerClient;
 };
 
-Utils.isFromBeepSite = () => {
-  // TODO: no check the value, it's a bad way
-  return Boolean(sessionStorage.getItem('orderSource'));
-};
+export const copyDataToClipboard = async text => {
+  try {
+    const data = [new window.ClipboardItem({ 'text/plain': text })];
 
-Utils.getRegistrationTouchPoint = () => {
-  const isOnCashbackPage = window.location.pathname.startsWith(ROUTER_PATHS.CASHBACK_BASE);
-  if (isOnCashbackPage) {
-    return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
-  }
+    await navigator.clipboard.write(data);
 
-  if (Utils.isQROrder()) {
-    return REGISTRATION_TOUCH_POINT.QR_ORDER;
-  }
+    return true;
+  } catch (e) {
+    if (!document.execCommand || !document.execCommand('copy')) {
+      return false;
+    }
 
-  return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
-};
+    const copyInput = document.createElement('input');
 
-Utils.getRegistrationSource = () => {
-  const registrationTouchPoint = Utils.getRegistrationTouchPoint();
+    copyInput.setAttribute('readonly', 'readonly');
+    copyInput.setAttribute('value', '+' + text);
+    document.body.appendChild(copyInput);
+    copyInput.setSelectionRange(0, 9999);
+    copyInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(copyInput);
 
-  switch (registrationTouchPoint) {
-    case REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK:
-      if (Utils.isWebview()) {
-        return REGISTRATION_SOURCE.BEEP_APP;
-      } else {
-        return REGISTRATION_SOURCE.RECEIPT;
-      }
-
-    case REGISTRATION_TOUCH_POINT.QR_ORDER:
-    case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
-    default:
-      if (Utils.isWebview()) {
-        return REGISTRATION_SOURCE.BEEP_APP;
-      }
-
-      if (Utils.isFromBeepSite()) {
-        return REGISTRATION_SOURCE.BEEP_SITE;
-      }
-
-      return REGISTRATION_SOURCE.BEEP_STORE;
+    return true;
   }
 };
 
