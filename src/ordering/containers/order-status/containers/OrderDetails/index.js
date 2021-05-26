@@ -148,7 +148,7 @@ export class OrderDetails extends Component {
             <div className="flex flex-space-between flex-middle">
               <span>{orderId}</span>
               <button
-                className="ordering-details__copy-button button button__outline text-size-small text-weight-bolder text-uppercase padding-left-right-normal"
+                className="ordering-details__copy-button button button__outline text-size-small text-uppercase padding-left-right-normal"
                 onClick={this.copyReceiptNumber}
               >
                 {t('Copy')}
@@ -182,9 +182,10 @@ export class OrderDetails extends Component {
         <div className="flex flex-column">
           <div className="flex flex-middle flex-space-between">
             <span className="ordering-details__subtitle padding-top-bottom-small">{t('OrderStatus')}</span>
-            <div>
-              <Tag className="tag tag__small tag__primary" text={ShippingTypes[shippingType]} />
-            </div>
+            <Tag
+              className="ordering-details__shipping-type-tag tag tag__small tag__primary"
+              text={ShippingTypes[shippingType]}
+            />
           </div>
           {status && <span className="text-weight-bolder">{status[0].toLocaleUpperCase() + status.slice(1)}</span>}
         </div>
@@ -241,7 +242,7 @@ export class OrderDetails extends Component {
                   </div>
                 </div>
                 <CurrencyNumber
-                  className="padding-top-bottom-small flex__shrink-fixed text-opacity text-weight-bolder"
+                  className="padding-top-bottom-small flex__shrink-fixed text-opacity"
                   money={displayPrice * quantity}
                 />
               </li>
@@ -396,9 +397,9 @@ export class OrderDetails extends Component {
               </li>
               {this.renderPromotion()}
               <li className="flex flex-space-between flex-middle">
-                <label className="padding-top-bottom-small text-size-biggest">{t('Total')}</label>
+                <label className="padding-top-bottom-normal text-size-big text-weight-bolder">{t('Total')}</label>
                 <CurrencyNumber
-                  className="padding-top-bottom-small text-size-biggest text-weight-bolder"
+                  className="padding-top-bottom-normal text-size-big text-weight-bolder"
                   money={total || 0}
                 />
               </li>
