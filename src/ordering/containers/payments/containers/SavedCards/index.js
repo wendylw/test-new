@@ -195,7 +195,7 @@ class SavedCards extends Component {
     return (
       <section className={`ordering-payment flex flex-column`}>
         <HybridHeader
-          className="flex-middle border__bottom-divider"
+          className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
           title={t('PayViaCard')}

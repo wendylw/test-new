@@ -12,69 +12,69 @@ export const NATIVE_METHODS = {
         email,
         message,
       },
-      call: 'sync',
+      mode: 'sync',
     };
   },
   GET_ADDRESS: {
     method: 'beepModule-getAddress',
-    call: 'sync',
+    mode: 'sync',
   },
   GOTO_HOME: {
     method: 'routerModule-closeWebView',
-    call: 'sync',
+    mode: 'sync',
   },
   GO_BACK: {
     method: 'routerModule-back',
-    call: 'sync',
+    mode: 'sync',
   },
   GET_LOGIN_STATUS: {
     method: 'userModule-isLogin',
-    call: 'sync',
+    mode: 'sync',
   },
   GET_TOKEN: {
     method: 'userModule-getToken',
-    call: 'async',
+    mode: 'async',
   },
   TOKEN_EXPIRED: {
     method: 'userModule-tokenExpired',
-    call: 'async',
+    mode: 'async',
   },
   SHOW_MAP: {
     method: 'mapModule-showMap',
-    call: 'sync',
+    mode: 'sync',
   },
   HIDE_MAP: {
     method: 'mapModule-hideMap',
-    call: 'sync',
+    mode: 'sync',
   },
   UPDATE_RIDER_POSITION: (lat, lng) => {
     return {
       method: 'mapModule-updateRiderPosition',
       params: {
-        lat: lat,
-        lng: lng,
+        lat,
+        lng,
       },
-      call: 'sync',
+      mode: 'sync',
     };
   },
-  UPDATE_HOME_POSITION: (deliveryLat, deliveryLng) => {
+  UPDATE_HOME_POSITION: (lat, lng) => {
     return {
       method: 'mapModule-updateHomePosition',
       params: {
-        lat: deliveryLat,
-        lng: deliveryLng,
+        lat,
+        lng,
       },
-      call: 'sync',
+      mode: 'sync',
     };
   },
-  UPDATE_STORE_POSITION: (storeLat, storeLng) => {
+  UPDATE_STORE_POSITION: (lat, lng) => {
     return {
       method: 'mapModule-updateStorePosition',
       params: {
-        lat: storeLat,
-        lng: storeLng,
+        lat,
+        lng,
       },
-      call: 'sync',
+      mode: 'sync',
     };
   },
   FOCUS_POSITIONS: focusPositionList => {
@@ -83,25 +83,19 @@ export const NATIVE_METHODS = {
       params: {
         positions: focusPositionList,
       },
-      call: 'sync',
+      mode: 'sync',
     };
   },
   NATIVE_LAYOUT: (area, data) => {
     return {
       method: 'nativeLayoutModule-nativeJsConfigLayout',
       params: {
-        area: area,
-        data: data,
+        area,
+        data,
       },
-      call: 'sync',
+      mode: 'sync',
     };
   },
-};
-
-const dsRegReceiveTokenListener = ({ callback }) => {
-  dsbridge.registerAsyn('onReceiveToken', res => {
-    callback && typeof callback === 'function' && callback(res);
-  });
 };
 
 const hasNativeSavedAddress = () => {
@@ -112,52 +106,44 @@ const hasNativeSavedAddress = () => {
   }
 };
 
-const getTokenFromNative = user => {
-  const { isExpired } = user || {};
-  if (isExpired) {
-    dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
-  } else {
-    dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
-  }
-};
-
 const dsbridgeCall = nativeMethod => {
-  const { method, params, call } = nativeMethod || {};
+  const { method, params, mode } = nativeMethod || {};
   const { data: hasNativeMethod } = JSON.parse(
     dsbridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
   );
-  if (hasNativeMethod && call === 'sync') {
-    let result = dsbridge.call('callNative', { method, params });
-    let { code, data, message } = JSON.parse(result);
-    if (typeof data === 'undefined' || data === null) {
-      return;
-    }
+
+  if (!hasNativeMethod) {
+    throw new Error("Native side didn't have method: " + method);
+  }
+
+  if (mode === 'sync') {
     try {
+      let result = dsbridge.call('callNative', { method, params });
+      let { code, data, message } = JSON.parse(result);
+      if (typeof data === 'undefined' || data === null) {
+        return;
+      }
       return data;
     } catch (e) {
       console.log(e);
     }
-  } else if (hasNativeMethod && call === 'async') {
+  } else if (mode === 'async') {
     var promise = new Promise(function(resolve, reject) {
-      dsbridge.call('callNativeAsync', { method, params }, function(result) {
-        let { code, data, message } = JSON.parse(result);
-        try {
+      try {
+        dsbridge.call('callNativeAsync', { method, params }, function(result) {
+          let { code, data, message } = JSON.parse(result);
           resolve(data);
-        } catch (e) {
-          console.log(e);
-          reject(e);
-        }
-      });
+        });
+      } catch (e) {
+        console.log(e);
+        reject(e);
+      }
     });
     return promise;
-  } else {
-    throw new Error("Native side didn't have method: " + method);
   }
 };
 
 export default {
   dsbridgeCall,
-  dsRegReceiveTokenListener,
   hasNativeSavedAddress,
-  getTokenFromNative,
 };

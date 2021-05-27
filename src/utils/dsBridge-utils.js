@@ -20,8 +20,6 @@ export const updateNativeHeaderToDefault = () => {
 
 export const registerFunc = data => {
   dsBridge.register('callWebView', function(res) {
-    console.log('register res', res);
-    // console.log('register res', JSON.stringify(res));
     const { method, params } = JSON.parse(res);
     dispatchNativeEvent(method, params, data);
     return { code: '00000' };
@@ -29,7 +27,6 @@ export const registerFunc = data => {
 };
 
 export const dispatchNativeEvent = (method, params, data) => {
-  console.log('dispatch params', method, params, data);
   switch (method) {
     case 'nativeLayoutModule_jsNativeEventDispatch':
       registerNativeHeaderEvents(params, data);
@@ -49,5 +46,14 @@ export const registerNativeHeaderEvents = (params, events) => {
 
   if (_isFunction(handler)) {
     handler.call(null, params.data);
+  }
+};
+
+export const getTokenFromNative = async user => {
+  const { isExpired } = user || {};
+  if (isExpired) {
+    return await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
+  } else {
+    return await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
   }
 };

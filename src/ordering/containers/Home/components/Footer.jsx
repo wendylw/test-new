@@ -15,11 +15,10 @@ import {
 } from '../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../redux/modules/entities/businesses';
 import Utils from '../../../../utils/utils';
-import { del, get } from '../../../../utils/request';
-import Url from '../../../../utils/url';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
+import { getTokenFromNative } from '../../../../utils/dsBridge-utils';
 
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
@@ -54,7 +53,7 @@ export class Footer extends Component {
     if (isLogin) {
       this.handleWebRedirect();
     } else {
-      let res = isExpired
+      const res = isExpired
         ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED)
         : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
       if (res === null || res === 'undefined') {
@@ -67,24 +66,6 @@ export class Footer extends Component {
         });
       }
     }
-
-    // dsbridge.call('callNativeAsync', { method: 'userModule-getToken' }, async res => {
-    //   console.log('res', JSON.stringify(res));
-    //   const { code, data } = JSON.parse(res);
-    //   const { access_token, refresh_token } = data;
-    //   if (!isLogin) {
-    //     await appActions.loginApp({
-    //       accessToken: access_token,
-    //       refreshToken: refresh_token,
-    //     });
-    //     const { login } = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
-    //     if (login) {
-    //       this.handleWebRedirect();
-    //     }
-    //   } else {
-    //     this.handleWebRedirect();
-    //   }
-    // });
   };
 
   handleRedirect = () => {
@@ -140,7 +121,6 @@ export class Footer extends Component {
       footerRef,
       style,
     } = this.props;
-    console.log('isLiveOnline', isLiveOnline);
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartBilling || {};

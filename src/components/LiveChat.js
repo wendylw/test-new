@@ -149,21 +149,6 @@ class LiveChat extends Component {
     return Promise.resolve();
   };
 
-  handleBtnClicked = () => {
-    const { onClickLiveChat, waitingZendeskScript } = this.state;
-
-    if (onClickLiveChat) {
-      onClickLiveChat();
-    }
-
-    if (!waitingZendeskScript) {
-      window.zE('webWidget', 'toggle');
-      if (!window.$zopim?.livechat) {
-        this.setState({ waitingZendeskScript: true });
-      }
-    }
-  };
-
   render() {
     const { t, onClick } = this.props;
     const { waitingZendeskScript } = this.state;

@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../components/HybridHeader';
-import _get from 'lodash/get';
-import _toString from 'lodash/toString';
-import _startsWith from 'lodash/startsWith';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
 

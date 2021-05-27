@@ -451,7 +451,7 @@ class Cart extends Component {
             attributes: {
               'data-heap-name': 'ordering.cart.clear-btn',
             },
-            onClick: this.handleClearAll.bind(this),
+            onClick: this.handleClearAll,
           }}
         ></HybridHeader>
         <div

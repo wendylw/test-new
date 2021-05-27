@@ -195,9 +195,7 @@ export class ThankYou extends PureComponent {
         DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.UPDATE_RIDER_POSITION(lat, lng));
         DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.FOCUS_POSITIONS(focusPositionList));
       } catch (e) {
-        this.setState({
-          isHideTopArea: false,
-        });
+        console.log(e);
       }
     } else {
       this.closeMap();

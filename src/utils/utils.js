@@ -26,7 +26,7 @@ Utils.getApiRequestShippingType = () => {
 };
 
 Utils.isWebview = function isWebview() {
-  return window.webViewSource === 'iOS' || window.webViewSource === 'Android';
+  return Utils.isAndroidWebview() || Utils.isIOSWebview();
 };
 
 // still need to distinguish ios webview and android webview

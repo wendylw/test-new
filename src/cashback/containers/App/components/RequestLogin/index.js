@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import DsbridgeUtils from '../../../../../utils/dsbridge-methods';
+import { getTokenFromNative } from '../../../../../utils/dsBridge-utils';
 import beepLoginImage from './images/login.svg';
 import './RequestLogin.scss';
 
 class RequestLogin extends Component {
-  handleClick = () => {
+  handleClick = async () => {
     const { user } = this.props;
-    DsbridgeUtils.getTokenFromNative(user);
+    await getTokenFromNative(user);
   };
 
   render() {
