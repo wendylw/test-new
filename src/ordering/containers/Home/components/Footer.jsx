@@ -49,13 +49,14 @@ export class Footer extends Component {
   postAppMessage = async () => {
     const { appActions, user } = this.props;
     const { isLogin, isExpired } = user || {};
+    const touchPoint = ['delivery', 'pickup'].includes(Utils.getOrderTypeFromUrl()) ? 'OnlineOrder' : 'QROrder';
 
     if (isLogin) {
       this.handleWebRedirect();
     } else {
-      const res = isExpired
-        ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED)
-        : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
+      let res = isExpired
+        ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED(touchPoint))
+        : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN(touchPoint));
       if (res === null || res === 'undefined') {
         console.log('native token is invalid');
       } else {

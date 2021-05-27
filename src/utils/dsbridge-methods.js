@@ -31,13 +31,23 @@ export const NATIVE_METHODS = {
     method: 'userModule-isLogin',
     mode: 'sync',
   },
-  GET_TOKEN: {
-    method: 'userModule-getToken',
-    mode: 'async',
+  GET_TOKEN: touchPoint => {
+    return {
+      method: 'userModule-getToken',
+      params: {
+        touchPoint,
+      },
+      mode: 'async',
+    };
   },
-  TOKEN_EXPIRED: {
-    method: 'userModule-tokenExpired',
-    mode: 'async',
+  TOKEN_EXPIRED: touchPoint => {
+    return {
+      method: 'userModule-tokenExpired',
+      params: {
+        touchPoint,
+      },
+      mode: 'async',
+    };
   },
   SHOW_MAP: {
     method: 'mapModule-showMap',

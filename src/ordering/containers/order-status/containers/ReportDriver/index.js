@@ -31,8 +31,8 @@ import {
 import { actions as appActionCreators } from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
-import Utils from '../../../utils/utils';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
+import Utils from '../../../../../utils/utils';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
