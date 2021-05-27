@@ -17,8 +17,7 @@ import { getAllBusinesses } from '../../../../redux/modules/entities/businesses'
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
-import { getTokenFromNative } from '../../../../utils/dsBridge-utils';
+import DsbridgeUtils, { NATIVE_METHODS } from '../../../../utils/dsbridge-methods';
 
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
