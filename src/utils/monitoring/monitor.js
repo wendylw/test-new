@@ -2,6 +2,9 @@ import * as Sentry from '@sentry/react';
 import { CaptureConsole } from '@sentry/integrations';
 import tids from './tracing-id';
 import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
+import './navigation-detector';
+import './click-detector';
+import loggly from './loggly';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
   Sentry.init({
@@ -61,11 +64,9 @@ try {
     const tid = tids[key];
     window.newrelic?.setCustomAttribute(key, tid);
     Sentry.setTag(key, tid);
-    window.heap?.addEventProperties({ [key]: tid });
 
     if (key === 'perm_tid') {
       Sentry.setUser({ [key]: tid });
-      window.heap?.addUserProperties({ [key]: tid });
     }
   });
 } catch (e) {
@@ -82,7 +83,7 @@ class SentryCapturedError extends Error {
 const trackError = (event, hint) => {
   try {
     const errorMessage = getErrorMessageFromHint(hint);
-    window.heap?.track('common.error', { errorMessage, sentryId: event?.event_id });
+    loggly.error('common.error', { errorMessage, sentryId: event?.event_id });
     try {
       throw new SentryCapturedError(errorMessage);
     } catch (err) {
@@ -92,3 +93,69 @@ const trackError = (event, hint) => {
     console.log(e);
   }
 };
+
+const logUrlChange = type => {
+  loggly.log('common.page-navigation', {
+    type,
+    query: window.location.search,
+  });
+};
+
+const logClientInfo = () => {
+  loggly.log('common.client-info', {
+    userAgent: navigator.userAgent,
+  });
+};
+
+window.addEventListener('sh-pushstate', () => {
+  logUrlChange('pushstate');
+});
+
+window.addEventListener('sh-replacestate', () => {
+  logUrlChange('replacestate');
+});
+
+window.addEventListener('popstate', () => {
+  logUrlChange('popstate');
+});
+
+const logUserAction = (type, data) => {
+  loggly.log(type, data);
+};
+
+window.addEventListener('sh-click', e => {
+  logUserAction('common.click', e.detail);
+});
+
+const logApiSuccess = data => {
+  loggly.log('common.api-responded', {
+    status: 'success',
+    ...data,
+  });
+};
+
+const logApiFailure = data => {
+  loggly.error('common.api-responded', {
+    status: 'failure',
+    ...data,
+  });
+};
+
+window.addEventListener('sh-api-success', e => {
+  logApiSuccess(e.detail);
+});
+
+window.addEventListener('sh-api-failure', e => {
+  logApiFailure(e.detail);
+});
+
+window.addEventListener('sh-fetch-error', e => {
+  loggly.error('common.fetch-error', e.detail);
+});
+
+const initiallyLogged = false;
+
+if (!initiallyLogged) {
+  logUrlChange('pageloaded');
+  logClientInfo();
+}

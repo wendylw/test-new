@@ -7,6 +7,7 @@ import { withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../../../components/Icons';
 import { defaultLocations, getDefaultCoords } from './utils';
 import CleverTap from '../../../../utils/clevertap';
+import loggly from '../../../../utils/monitoring/loggly';
 
 class Location extends React.Component {
   state = {
@@ -39,6 +40,7 @@ class Location extends React.Component {
           JSON.stringify(defaultCoords),
           defaultLocations.KualaLumpur
         );
+        loggly.warn('[Location] fetch_location_failed, use default location');
         this.setState({
           status: 'fetch_location_failed',
           origin: defaultCoords,

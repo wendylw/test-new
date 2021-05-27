@@ -27,6 +27,7 @@ import { actions } from './redux';
 import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';
 import CleverTap from '../../../../../utils/clevertap';
+import loggly from '../../../../../utils/monitoring/loggly';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -198,6 +199,7 @@ class OnlineBanking extends Component {
               });
             }}
             afterCreateOrder={orderId => {
+              loggly.log('online-banking.pay-attempt', { orderId, method: currentOnlineBanking.agentCode });
               this.setState({
                 payNowLoading: !!orderId,
               });

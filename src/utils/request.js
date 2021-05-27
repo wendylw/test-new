@@ -32,9 +32,20 @@ function get(url, options = {}) {
       if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
         window.location = response.url;
       }
-      return handleResponse(url, response);
+      return handleResponse(url, response, 'get');
     })
     .catch(error => {
+      if (error instanceof TypeError) {
+        window.dispatchEvent(
+          new CustomEvent('sh-fetch-error', {
+            detail: {
+              type: 'get',
+              request: url,
+              error: error.toString(),
+            },
+          })
+        );
+      }
       return Promise.reject(error);
     });
 }
@@ -54,9 +65,20 @@ const fetchData = function(url, requestOptions) {
       if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
         window.location = response.url;
       }
-      return handleResponse(url, response);
+      return handleResponse(url, response, method.toLowerCase());
     })
     .catch(error => {
+      if (error instanceof TypeError) {
+        window.dispatchEvent(
+          new CustomEvent('sh-fetch-error', {
+            detail: {
+              type: method.toLowerCase(),
+              request: url,
+              error: error.toString(),
+            },
+          })
+        );
+      }
       return Promise.reject(error);
     });
 };
@@ -85,19 +107,47 @@ function del(url, data, options) {
   });
 }
 
-async function handleResponse(url, response) {
+async function handleResponse(url, response, method) {
   if (response.status === 200) {
-    return response.json();
+    return response.json().then(data => {
+      window.dispatchEvent(
+        new CustomEvent('sh-api-success', {
+          detail: {
+            type: method,
+            request: url,
+          },
+        })
+      );
+      return Promise.resolve(data);
+    });
   } else if (response.status === 401) {
     return response
       .json()
       .catch(e => {
         console.error(e);
-
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              error: e.toString(),
+            },
+          })
+        );
         return Promise.reject(new RequestError('Error Page', '50000'));
       })
       .then(function(body) {
         const code = response.status;
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              error: REQUEST_ERROR_KEYS[code],
+              code,
+            },
+          })
+        );
         return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
       });
   } else {
@@ -105,13 +155,30 @@ async function handleResponse(url, response) {
       .json()
       .catch(e => {
         console.error(e);
-
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              error: e.toString(),
+            },
+          })
+        );
         return Promise.reject(new RequestError('Error Page', '50000'));
       })
       .then(function(body) {
         const code = body.code || response.status;
         const { extraInfo } = body;
-
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              error: REQUEST_ERROR_KEYS[code],
+              code,
+            },
+          })
+        );
         return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code, extraInfo));
       });
   }

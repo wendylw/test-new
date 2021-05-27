@@ -38,6 +38,7 @@ import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
 import _isNil from 'lodash';
+import loggly from '../../../utils/monitoring/loggly';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 class Cart extends Component {
@@ -222,6 +223,7 @@ class Cart extends Component {
   };
 
   handleClearAll = () => {
+    loggly.log('cart.clear-all-attempt');
     this.props.appActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
@@ -518,6 +520,7 @@ class Cart extends Component {
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
             onClick={() => {
+              loggly.log('cart.pay-now');
               CleverTap.pushEvent('Cart Page - click pay now', {
                 ...storeInfoForCleverTap,
                 'promo/voucher applied': promoCode || '',
