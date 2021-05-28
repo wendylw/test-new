@@ -15,7 +15,6 @@ import {
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
-import DsbridgeUtils from '../../../../../utils/dsbridge-methods';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 

@@ -13,7 +13,6 @@ import {
 } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
 import './AddressList.scss';
-import DsbridgeUtils from '../../../../../utils/dsbridge-methods';
 import CleverTap from '../../../../../utils/clevertap';
 
 class AddressList extends Component {
