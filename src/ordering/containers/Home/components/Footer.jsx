@@ -18,6 +18,7 @@ import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import { NativeMethods } from '../../../../utils/dsbridge-methods';
+import loggly from '../../../../utils/monitoring/loggly';
 
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
@@ -67,6 +68,8 @@ export class Footer extends Component {
   };
 
   handleRedirect = () => {
+    loggly.log('footer.place-order');
+
     const { user } = this.props;
     const { isWebview } = user || {};
     if (isWebview) {

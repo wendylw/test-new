@@ -1,6 +1,5 @@
 import Utils from './utils/utils';
-
-let business = (d => (d.length > 2 ? d.shift() : null))(window.location.hostname.split('.'));
+import business from './utils/business-name';
 
 /* eslint-disable */
 function guid() {

@@ -60,7 +60,7 @@ class Login extends React.Component {
 
   renderOtpModal() {
     const { user, t } = this.props;
-    const { isFetching, isLogin, hasOtp, phone } = user || {};
+    const { isFetching, isResending, isLogin, hasOtp, phone, noWhatsAppAccount, country } = user || {};
     const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
@@ -72,11 +72,13 @@ class Login extends React.Component {
         buttonText={t('OK')}
         ResendOtpTime={RESEND_OTP_TIME}
         phone={phone}
+        showWhatsAppResendBtn={!noWhatsAppAccount && country === 'MY'}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
         updateOtpStatus={this.updateOtpStatus.bind(this)}
         isLoading={isFetching || isLogin}
+        isResending={isResending}
       />
     );
   }

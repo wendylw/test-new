@@ -10,6 +10,7 @@ import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
 import { NativeMethods } from './utils/dsbridge-methods';
+import loggly from './utils/monitoring/loggly';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
 
@@ -38,7 +39,7 @@ class Bootstrap extends Component {
       host: document.location.host,
       href: document.location.href,
     });
-    window.heap?.track('common.render-error', {
+    loggly.error('common.render-error', {
       sentryId: eventId,
       errorMessage: error?.message,
     });

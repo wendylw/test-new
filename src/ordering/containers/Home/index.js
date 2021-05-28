@@ -124,7 +124,6 @@ export class Home extends Component {
     const divisible = Math.trunc(scrollDistance / segmentHeight);
     if (this.scrollDepthNumerator < divisible && divisible !== Infinity) {
       const scrollPercent = divisible * (100 / SCROLL_DEPTH_DENOMINATOR);
-      window.heap?.track('ordering.home.product-list.scroll', { percent: scrollPercent });
       this.scrollDepthNumerator += 1;
     }
   };

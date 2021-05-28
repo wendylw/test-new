@@ -36,6 +36,7 @@ import {
 } from '../../redux/modules/app';
 import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
+import loggly from '../../../utils/monitoring/loggly';
 import './OrderingLocationDate.scss';
 
 const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRESS_RANGE } = Constants;
@@ -211,6 +212,7 @@ class LocationAndDate extends Component {
   };
 
   goToNext = async () => {
+    loggly.log('location-data.continue');
     const { selectedOrderDate, selectedTime, homeActions, storeId, deliveryType, location, history } = this.props;
     const expectedDate = {
       date: selectedOrderDate.date.toISOString(),

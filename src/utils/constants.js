@@ -1,6 +1,6 @@
 const DOCUMENT_ROOT_ID = 'root';
 
-const RESEND_OTP_TIME = 30;
+const RESEND_OTP_TIME = 60;
 
 const MANIFEST = {
   PLACEHOLDER_ID: 'manifest-placeholder',

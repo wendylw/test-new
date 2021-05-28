@@ -21,6 +21,7 @@ import { getSelectedProductDetail } from '../../../redux/modules/home';
 import { actions as appActionCreators } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';
+import loggly from '../../../../utils/monitoring/loggly';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
 import './ProductDetailDrawer.scss';
@@ -80,6 +81,7 @@ class ProductDetailDrawer extends Component {
     ) {
       this.initVariationsByIdMap(selectedProduct);
       this.initMinimumVariationList();
+      loggly.log('product-detail.component-showed');
     }
 
     if (!show && prevProps.show !== show) {
@@ -454,6 +456,8 @@ class ProductDetailDrawer extends Component {
   };
 
   handleAddOrUpdateShoppingCartItem = async variables => {
+    loggly.log('product-detail.item-operate-attempt');
+
     const { appActions } = this.props;
 
     this.handleGtmEventTracking(variables);
@@ -465,7 +469,6 @@ class ProductDetailDrawer extends Component {
   };
 
   handleSwipeProductImage(index) {
-    window.heap?.track('ordering.home.product-detail-swipe', { ImageIndex: index });
     this.setState({ currentProductDescriptionImageIndex: index });
   }
 
