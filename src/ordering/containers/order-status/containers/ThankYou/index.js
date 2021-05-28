@@ -37,7 +37,7 @@ import {
   gtmSetUserProperties,
   GTM_TRACKING_EVENTS,
 } from '../../../../../utils/gtm';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../../../utils/dsbridge-methods';
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
@@ -154,7 +154,7 @@ export class ThankYou extends PureComponent {
 
   closeMap = () => {
     try {
-      DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.HIDE_MAP);
+      NativeMethods.hideMap();
     } catch (e) {}
   };
 
@@ -189,11 +189,11 @@ export class ThankYou extends PureComponent {
 
     if (orderStatus === PICKUP && Utils.isDeliveryType()) {
       try {
-        DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.SHOW_MAP);
-        DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.UPDATE_STORE_POSITION(storeLat, storeLng));
-        DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.UPDATE_HOME_POSITION(deliveryLat, deliveryLng));
-        DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.UPDATE_RIDER_POSITION(lat, lng));
-        DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.FOCUS_POSITIONS(focusPositionList));
+        NativeMethods.showMap();
+        NativeMethods.updateStorePosition(storeLat, storeLng);
+        NativeMethods.updateHomePosition(deliveryLat, deliveryLng);
+        NativeMethods.updateRiderPosition(lat, lng);
+        NativeMethods.focusPositions(focusPositionList);
       } catch (e) {
         console.log(e);
       }
@@ -1360,15 +1360,13 @@ export class ThankYou extends PureComponent {
               color: '#00b0ff',
             },
             onClick: () => {
-              DsbridgeUtils.dsbridgeCall(
-                NATIVE_METHODS.START_CHAT({
-                  orderId,
-                  name: orderUserName,
-                  phone: orderUserPhone,
-                  email: userEmail,
-                  storeName: orderStoreName,
-                })
-              );
+              NativeMethods.startChat({
+                orderId,
+                name: orderUserName,
+                phone: orderUserPhone,
+                email: userEmail,
+                storeName: orderStoreName,
+              });
             },
           }
         : {};
@@ -1391,7 +1389,7 @@ export class ThankYou extends PureComponent {
           isPage={false}
           title={`#${orderId}`}
           navFunc={() => {
-            DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GOTO_HOME);
+            NativeMethods.gotoHome();
           }}
           rightContent={rightContent}
         />

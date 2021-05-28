@@ -1,21 +1,21 @@
 import dsBridge from 'dsbridge';
-import DsbridgeUtils, { NATIVE_METHODS } from './dsbridge-methods';
+import { NativeMethods } from './dsbridge-methods';
 import _find from 'lodash/find';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 
 // https://storehub.atlassian.net/wiki/spaces/TS/pages/1049886771/Specification+for+dsBridge+usage
 export const updateNativeHeader = ({ left, center, right } = {}) => {
-  let data = {
+  let config = {
     left: left ? [left] : [],
     center: center ? [center] : [],
     right: right ? [right] : [],
   };
-  DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.NATIVE_LAYOUT('header', data));
+  NativeMethods.nativeLayout('header', config);
 };
 
 export const updateNativeHeaderToDefault = () => {
-  DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.NATIVE_LAYOUT('header', null));
+  NativeMethods.nativeLayout('header', null);
 };
 
 export const registerFunc = data => {
@@ -46,14 +46,5 @@ export const registerNativeHeaderEvents = (params, events) => {
 
   if (_isFunction(handler)) {
     handler.call(null, params.data);
-  }
-};
-
-export const getTokenFromNative = async user => {
-  const { isExpired } = user || {};
-  if (isExpired) {
-    return await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED);
-  } else {
-    return await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN);
   }
 };

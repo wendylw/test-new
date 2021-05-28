@@ -23,7 +23,7 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../utils/dsbridge-methods';
 
 const { ROUTER_PATHS } = Constants;
 let savedAddressRes;
@@ -32,8 +32,12 @@ class App extends Component {
   constructor(props) {
     super(props);
     if (Utils.isWebview()) {
-      savedAddressRes = DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_ADDRESS);
-      this.handleNativeResponse(savedAddressRes);
+      try {
+        savedAddressRes = NativeMethods.getAddress();
+        this.handleNativeResponse(savedAddressRes);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     // for temporarily fix Beep-321, IOS Beep App will give the first letter capitalize `type` in query

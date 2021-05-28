@@ -149,7 +149,7 @@ class AddressDetail extends Component {
       deliveryToCity: addressComponents && addressComponents.city ? addressComponents.city : '',
     });
     customerActions.removeSavedAddressInfo();
-    if (DsbridgeUtils.hasNativeSavedAddress()) {
+    if (Utils.hasNativeSavedAddress()) {
       const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
       sessionStorage.setItem('deliveryAddress', JSON.stringify({ ...deliveryAddress, addressName: name }));
     }

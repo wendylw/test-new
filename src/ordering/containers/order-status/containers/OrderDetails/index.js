@@ -26,7 +26,7 @@ import {
   getServiceCharge,
 } from '../../redux/common';
 import './OrderingDetails.scss';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../../../utils/dsbridge-methods';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
@@ -272,14 +272,17 @@ export class OrderDetails extends Component {
   };
 
   renderHeader() {
-    const { user, order, t, history } = this.props;
+    const { user, order, t, businessInfo, storeInfoForCleverTap } = this.props;
     const isWebview = _get(user, 'isWebview', false);
     const userEmail = _get(user, 'profile.email', '');
     const orderId = _get(order, 'orderId', '');
+    const subtotal = _get(order, 'subtotal', 0);
+    const paymentMethod = _get(order, 'paymentMethod', null);
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
     const orderUserName = _get(deliveryAddress, 'name', '');
     const orderUserPhone = _get(deliveryAddress, 'phone', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
+    const minimumConsumption = _get(businessInfo, 'qrOrderingSettings.minimumConsumption', 0);
 
     if (isWebview) {
       const rightContentOfLiveChat = !_isNil(order)
@@ -289,15 +292,20 @@ export class OrderDetails extends Component {
               color: '#00b0ff',
             },
             onClick: () => {
-              DsbridgeUtils.dsbridgeCall(
-                NATIVE_METHODS.START_CHAT({
-                  orderId,
-                  name: orderUserName,
-                  phone: orderUserPhone,
-                  email: userEmail,
-                  storeName: orderStoreName,
-                })
-              );
+              CleverTap.pushEvent('Order Details - click contact us', {
+                ...storeInfoForCleverTap,
+                'cart items quantity': this.getCartItemsQuantity(),
+                'cart amount': subtotal,
+                'has met minimum order value': subtotal >= minimumConsumption ? true : false,
+                'payment method': paymentMethod && paymentMethod[0],
+              });
+              NativeMethods.startChat({
+                orderId,
+                name: orderUserName,
+                phone: orderUserPhone,
+                email: userEmail,
+                storeName: orderStoreName,
+              });
             },
           }
         : {};
@@ -320,7 +328,7 @@ export class OrderDetails extends Component {
           isPage={true}
           title={t('OrderDetails')}
           navFunc={() => {
-            DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GO_BACK);
+            NativeMethods.goBack();
           }}
           rightContent={rightContent}
         />

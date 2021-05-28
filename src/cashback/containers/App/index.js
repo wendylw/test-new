@@ -19,8 +19,7 @@ import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
-import Utils from '../../../utils/utils';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../utils/dsbridge-methods';
 
 class App extends Component {
   async componentDidMount() {
@@ -32,8 +31,13 @@ class App extends Component {
 
     const { user } = this.props;
     const { isLogin, isWebview } = user || {};
-    const appLogin = DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_LOGIN_STATUS);
 
+    let appLogin;
+    try {
+      appLogin = NativeMethods.getLoginStatus();
+    } catch (e) {
+      console.error(e);
+    }
     if (isLogin) {
       appActions.loadCustomerProfile();
     }
@@ -65,24 +69,18 @@ class App extends Component {
 
   postAppMessage = async () => {
     const { appActions, user } = this.props;
-    const { isLogin, isExpired } = user || {};
+    const { isExpired } = user || {};
     const touchPoint = 'ClaimCashback';
 
-    if (isLogin) {
-      this.handleWebRedirect();
+    let res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
+    if (res === null || res === 'undefined') {
+      console.log('native token is invalid');
     } else {
-      let res = isExpired
-        ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED(touchPoint))
-        : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN(touchPoint));
-      if (res === null || res === 'undefined') {
-        console.log('native token is invalid');
-      } else {
-        const { access_token, refresh_token } = res;
-        await appActions.loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        });
-      }
+      const { access_token, refresh_token } = res;
+      await appActions.loginApp({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      });
     }
   };
 
@@ -122,9 +120,13 @@ class App extends Component {
   render() {
     const { user } = this.props;
     const { isWebview } = user || {};
-    const appLogin = DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_LOGIN_STATUS);
+    const appLogin = NativeMethods.getLoginStatus();
 
-    return !appLogin && isWebview ? <RequestLogin user={user} /> : this.renderMainContent();
+    return !appLogin && isWebview ? (
+      <RequestLogin user={user} onClick={this.postAppMessage} />
+    ) : (
+      this.renderMainContent()
+    );
   }
 }
 

@@ -1,10 +1,9 @@
-import Utils from './utils';
 import dsbridge from 'dsbridge';
 
-export const NATIVE_METHODS = {
-  START_CHAT: ({ orderId, phone, name, email, storeName }) => {
+export const NativeMethods = {
+  startChat: ({ orderId, phone, name, email, storeName }) => {
     const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
-    return {
+    const data = {
       method: 'beepModule-startChat',
       params: {
         phoneNumber: phone,
@@ -14,51 +13,72 @@ export const NATIVE_METHODS = {
       },
       mode: 'sync',
     };
+    return dsbridgeCall(data);
   },
-  GET_ADDRESS: {
-    method: 'beepModule-getAddress',
-    mode: 'sync',
+  getAddress: () => {
+    const data = {
+      method: 'beepModule-getAddress',
+      mode: 'sync',
+    };
+    return dsbridgeCall(data);
   },
-  GOTO_HOME: {
-    method: 'routerModule-closeWebView',
-    mode: 'sync',
+  gotoHome: () => {
+    const data = {
+      method: 'routerModule-closeWebView',
+      mode: 'sync',
+    };
+    return dsbridgeCall(data);
   },
-  GO_BACK: {
-    method: 'routerModule-back',
-    mode: 'sync',
+  goBack: () => {
+    const data = {
+      method: 'routerModule-back',
+      mode: 'sync',
+    };
+    return dsbridgeCall(data);
   },
-  GET_LOGIN_STATUS: {
-    method: 'userModule-isLogin',
-    mode: 'sync',
+  getLoginStatus: () => {
+    const data = {
+      method: 'userModule-isLogin',
+      mode: 'sync',
+    };
+    return dsbridgeCall(data);
   },
-  GET_TOKEN: touchPoint => {
-    return {
+  getToken: touchPoint => {
+    const data = {
       method: 'userModule-getToken',
       params: {
         touchPoint,
       },
       mode: 'async',
     };
+    return dsbridgeCall(data);
   },
-  TOKEN_EXPIRED: touchPoint => {
-    return {
+  tokenExpired: touchPoint => {
+    const data = {
       method: 'userModule-tokenExpired',
       params: {
         touchPoint,
       },
       mode: 'async',
     };
+    return dsbridgeCall(data);
   },
-  SHOW_MAP: {
-    method: 'mapModule-showMap',
-    mode: 'sync',
+  showMap: () => {
+    const data = {
+      method: 'mapModule-showMap',
+      mode: 'sync',
+    };
+    return dsbridgeCall(data);
   },
-  HIDE_MAP: {
-    method: 'mapModule-hideMap',
-    mode: 'sync',
+  hideMap: () => {
+    const data = {
+      method: 'mapModule-hideMap',
+      mode: 'sync',
+    };
+    return dsbridgeCall(data);
   },
-  UPDATE_RIDER_POSITION: (lat, lng) => {
-    return {
+  updateRiderPosition: (lat, lng) => {
+    const data = {
       method: 'mapModule-updateRiderPosition',
       params: {
         lat,
@@ -66,9 +86,10 @@ export const NATIVE_METHODS = {
       },
       mode: 'sync',
     };
+    return dsbridgeCall(data);
   },
-  UPDATE_HOME_POSITION: (lat, lng) => {
-    return {
+  updateHomePosition: (lat, lng) => {
+    const data = {
       method: 'mapModule-updateHomePosition',
       params: {
         lat,
@@ -76,9 +97,10 @@ export const NATIVE_METHODS = {
       },
       mode: 'sync',
     };
+    return dsbridgeCall(data);
   },
-  UPDATE_STORE_POSITION: (lat, lng) => {
-    return {
+  updateStorePosition: (lat, lng) => {
+    const data = {
       method: 'mapModule-updateStorePosition',
       params: {
         lat,
@@ -86,34 +108,29 @@ export const NATIVE_METHODS = {
       },
       mode: 'sync',
     };
+    return dsbridgeCall(data);
   },
-  FOCUS_POSITIONS: focusPositionList => {
-    return {
+  focusPositions: focusPositionList => {
+    const data = {
       method: 'mapModule-focusPositions',
       params: {
         positions: focusPositionList,
       },
       mode: 'sync',
     };
+    return dsbridgeCall(data);
   },
-  NATIVE_LAYOUT: (area, data) => {
-    return {
+  nativeLayout: (area, config) => {
+    const data = {
       method: 'nativeLayoutModule-nativeJsConfigLayout',
       params: {
         area,
-        data,
+        data: config,
       },
       mode: 'sync',
     };
+    return dsbridgeCall(data);
   },
-};
-
-const hasNativeSavedAddress = () => {
-  if (Utils.isWebview() && sessionStorage.getItem('addressIdFromNative')) {
-    return true;
-  } else {
-    return false;
-  }
 };
 
 const dsbridgeCall = nativeMethod => {
@@ -133,7 +150,11 @@ const dsbridgeCall = nativeMethod => {
       if (typeof data === 'undefined' || data === null) {
         return;
       }
-      return data;
+      if (code === 'A0400' || code === 'C0113' || code === 'B0001') {
+        console.error(message);
+      } else if (code === '00000') {
+        return data;
+      }
     } catch (e) {
       console.log(e);
     }
@@ -142,7 +163,11 @@ const dsbridgeCall = nativeMethod => {
       try {
         dsbridge.call('callNativeAsync', { method, params }, function(result) {
           let { code, data, message } = JSON.parse(result);
-          resolve(data);
+          if (code === 'A0400' || code === 'C0113' || code === 'B0001') {
+            reject(new Error(message));
+          } else if (code === '00000') {
+            resolve(data);
+          }
         });
       } catch (e) {
         console.log(e);
@@ -151,9 +176,4 @@ const dsbridgeCall = nativeMethod => {
     });
     return promise;
   }
-};
-
-export default {
-  dsbridgeCall,
-  hasNativeSavedAddress,
 };

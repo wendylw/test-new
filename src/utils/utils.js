@@ -25,6 +25,14 @@ Utils.getApiRequestShippingType = () => {
   return type ? Utils.mapString2camelCase(type) : undefined;
 };
 
+Utils.hasNativeSavedAddress = () => {
+  if (Utils.isWebview() && sessionStorage.getItem('addressIdFromNative')) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 Utils.isWebview = function isWebview() {
   return Utils.isAndroidWebview() || Utils.isIOSWebview();
 };

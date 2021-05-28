@@ -17,7 +17,7 @@ import { getAllBusinesses } from '../../../../redux/modules/entities/businesses'
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import DsbridgeUtils, { NATIVE_METHODS } from '../../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../../utils/dsbridge-methods';
 
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
@@ -53,9 +53,7 @@ export class Footer extends Component {
     if (isLogin) {
       this.handleWebRedirect();
     } else {
-      let res = isExpired
-        ? await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.TOKEN_EXPIRED(touchPoint))
-        : await DsbridgeUtils.dsbridgeCall(NATIVE_METHODS.GET_TOKEN(touchPoint));
+      let res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
       if (res === null || res === 'undefined') {
         console.log('native token is invalid');
       } else {

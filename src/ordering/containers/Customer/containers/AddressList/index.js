@@ -81,7 +81,7 @@ class AddressList extends Component {
                     deliveryToLocation: location,
                     deliveryToCity,
                   });
-                  if (DsbridgeUtils.hasNativeSavedAddress()) {
+                  if (Utils.hasNativeSavedAddress()) {
                     const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
                     sessionStorage.setItem(
                       'deliveryAddress',
