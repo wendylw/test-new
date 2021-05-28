@@ -11,6 +11,7 @@ import { IconDelete, IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import ProductItem from '../../../components/ProductItem';
 import ItemOperator from '../../../../components/ItemOperator';
+import loggly from '../../../../utils/monitoring/loggly';
 import './CartListDrawer.scss';
 
 class CartListDrawer extends Component {
@@ -53,6 +54,8 @@ class CartListDrawer extends Component {
   }
 
   handleClearCart = async () => {
+    loggly.log('cart-list-drawer.clear-all-attempt');
+
     const { appActions, onClearCart } = this.props;
 
     if (onClearCart) {
@@ -63,6 +66,8 @@ class CartListDrawer extends Component {
   };
 
   handleRemoveCartItem = cartItem => {
+    loggly.log('cart-list-drawer.item-operate-attempt');
+
     const { productId, variations } = cartItem;
 
     this.props.appActions
@@ -76,6 +81,8 @@ class CartListDrawer extends Component {
   };
 
   handleDecreaseCartItem = cartItem => {
+    loggly.log('cart-list-drawer.item-operate-attempt');
+
     const { quantity, productId, variations } = cartItem;
 
     if (quantity === 1) {
@@ -99,6 +106,8 @@ class CartListDrawer extends Component {
   };
 
   handleIncreaseCartItem = cartItem => {
+    loggly.log('cart-list-drawer.item-operate-attempt');
+
     const { quantity, productId, variations } = cartItem;
 
     this.handleGtmEventTracking(cartItem);

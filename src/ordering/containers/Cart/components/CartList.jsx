@@ -11,6 +11,7 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import { IconDelete } from '../../../../components/Icons';
 import ProductItem from '../../../components/ProductItem';
 import ItemOperator from '../../../../components/ItemOperator';
+import loggly from '../../../../utils/monitoring/loggly';
 
 class CartList extends Component {
   handleGtmEventTracking = product => {
@@ -55,6 +56,7 @@ class CartList extends Component {
   }
 
   handleRemoveCartItem = cartItem => {
+    loggly.log('cart-list.item-operate-attempt');
     const { productId, variations } = cartItem;
 
     this.props.appActions
@@ -68,6 +70,7 @@ class CartList extends Component {
   };
 
   handleDecreaseCartItem = cartItem => {
+    loggly.log('cart-list.item-operate-attempt');
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -82,6 +85,7 @@ class CartList extends Component {
   };
 
   handleIncreaseCartItem = cartItem => {
+    loggly.log('cart-list.item-operate-attempt');
     const { quantity } = cartItem;
 
     this.handleGtmEventTracking(cartItem);

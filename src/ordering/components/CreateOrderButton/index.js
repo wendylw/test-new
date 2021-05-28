@@ -8,6 +8,7 @@ import { getUser, getRequestInfo, getError, getCartBilling, types } from '../../
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import Constants from '../../../utils/constants';
+import loggly from '../../../utils/monitoring/loggly';
 import '../Loader.scss';
 
 const { ROUTER_PATHS } = Constants;
@@ -84,6 +85,7 @@ class CreateOrderButton extends React.Component {
       const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
       currentOrder = order;
       const { orderId } = currentOrder || {};
+      loggly.log('ordering.order-created', { orderId });
 
       newOrderId = orderId;
 
@@ -93,6 +95,7 @@ class CreateOrderButton extends React.Component {
       }
 
       if (thankYouPageUrl) {
+        loggly.log('ordering.to-thank-you', { orderId });
         window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
 
         return;

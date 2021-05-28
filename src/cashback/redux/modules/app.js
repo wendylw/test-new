@@ -64,11 +64,8 @@ export const actions = {
         shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
-          window.heap?.identify(resp.consumerId);
-          window.heap?.addEventProperties({ LoggedIn: 'yes' });
           const phone = Utils.getLocalStorageVariable('user.p');
           if (phone) {
-            window.heap?.addUserProperties({ PhoneNumber: phone });
           }
         }
         const userInfo = {
@@ -122,11 +119,22 @@ export const actions = {
     requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
       if (resp) {
         if (resp.consumerId) {
-          window.heap?.identify(resp.consumerId);
-          window.heap?.addEventProperties({ LoggedIn: 'yes' });
-        } else {
-          window.heap?.resetIdentity();
-          window.heap?.addEventProperties({ LoggedIn: 'no' });
+          if (resp.login) {
+            get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
+              const userInfo = {
+                Name: resp.user?.firstName,
+                Phone: resp.user?.phone,
+                Identity: resp.consumerId,
+                ...(resp.user?.email ? { Email: resp.user?.email } : {}),
+              };
+
+              if (profile.birthday) {
+                userInfo.DOB = new Date(profile.birthday);
+              }
+
+              CleverTap.onUserLogin(userInfo);
+            });
+          }
         }
       }
       return resp;
