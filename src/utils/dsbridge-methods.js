@@ -1,4 +1,12 @@
 import dsbridge from 'dsbridge';
+import _ from 'lodash';
+
+const StatusCodes = {
+  SUCCESS: '00000',
+  PARAM_ERROR: 'A0400',
+  METHOD_NOT_EXIST: 'C0113',
+  UNKNOWN_ERROR: 'B0001',
+};
 
 export const NativeMethods = {
   startChat: ({ orderId, phone, name, email, storeName }) => {
@@ -133,47 +141,70 @@ export const NativeMethods = {
   },
 };
 
+const hasMethodInNative = method => {
+  try {
+    const res = dsbridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } });
+    return JSON.parse(res);
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
 const dsbridgeCall = nativeMethod => {
   const { method, params, mode } = nativeMethod || {};
-  const { data: hasNativeMethod } = JSON.parse(
-    dsbridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
-  );
+  const { data: hasNativeMethod } = hasMethodInNative(method);
 
   if (!hasNativeMethod) {
     throw new Error("Native side didn't have method: " + method);
   }
-
   if (mode === 'sync') {
+    return dsbridgeSyncCall(method, params);
+  } else if (mode === 'async') {
+    return dsbridgeAsyncCall(method, params);
+  }
+};
+
+const dsbridgeSyncCall = (method, params) => {
+  try {
+    let result = dsbridge.call('callNative', { method, params });
+    let { code, data, message } = JSON.parse(result);
+    if (_.isNil(data)) {
+      return;
+    }
+    if (
+      code === StatusCodes.PARAM_ERROR ||
+      code === StatusCodes.METHOD_NOT_EXIST ||
+      code === StatusCodes.UNKNOWN_ERROR
+    ) {
+      console.error(message);
+    } else if (code === StatusCodes.SUCCESS) {
+      return data;
+    }
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+const dsbridgeAsyncCall = (method, params) => {
+  var promise = new Promise(function(resolve, reject) {
     try {
-      let result = dsbridge.call('callNative', { method, params });
-      let { code, data, message } = JSON.parse(result);
-      if (typeof data === 'undefined' || data === null) {
-        return;
-      }
-      if (code === 'A0400' || code === 'C0113' || code === 'B0001') {
-        console.error(message);
-      } else if (code === '00000') {
-        return data;
-      }
+      dsbridge.call('callNativeAsync', { method, params }, function(result) {
+        let { code, data, message } = JSON.parse(result);
+        if (
+          code === StatusCodes.PARAM_ERROR ||
+          code === StatusCodes.METHOD_NOT_EXIST ||
+          code === StatusCodes.UNKNOWN_ERROR
+        ) {
+          reject(new Error(message));
+        } else if (code === StatusCodes.SUCCESS) {
+          resolve(data);
+        }
+      });
     } catch (e) {
       console.log(e);
+      reject(e);
     }
-  } else if (mode === 'async') {
-    var promise = new Promise(function(resolve, reject) {
-      try {
-        dsbridge.call('callNativeAsync', { method, params }, function(result) {
-          let { code, data, message } = JSON.parse(result);
-          if (code === 'A0400' || code === 'C0113' || code === 'B0001') {
-            reject(new Error(message));
-          } else if (code === '00000') {
-            resolve(data);
-          }
-        });
-      } catch (e) {
-        console.log(e);
-        reject(e);
-      }
-    });
-    return promise;
-  }
+  });
+  return promise;
 };

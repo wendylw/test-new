@@ -19,6 +19,9 @@ import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import { NativeMethods } from '../../../../utils/dsbridge-methods';
 import loggly from '../../../../utils/monitoring/loggly';
+import _ from 'lodash';
+
+const { DELIVERY, PICKUP } = Constants.DELIVERY_METHOD;
 
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
@@ -49,13 +52,13 @@ export class Footer extends Component {
   postAppMessage = async () => {
     const { appActions, user } = this.props;
     const { isLogin, isExpired } = user || {};
-    const touchPoint = ['delivery', 'pickup'].includes(Utils.getOrderTypeFromUrl()) ? 'OnlineOrder' : 'QROrder';
+    const touchPoint = [DELIVERY, PICKUP].includes(Utils.getOrderTypeFromUrl()) ? 'OnlineOrder' : 'QROrder';
 
     if (isLogin) {
       this.handleWebRedirect();
     } else {
-      let res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
-      if (res === null || res === 'undefined') {
+      const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
+      if (_.isNil(res)) {
         console.log('native token is invalid');
       } else {
         const { access_token, refresh_token } = res;

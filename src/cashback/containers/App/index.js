@@ -31,20 +31,20 @@ class App extends Component {
 
     const { user } = this.props;
     const { isLogin, isWebview } = user || {};
-
-    let appLogin;
-    try {
-      appLogin = NativeMethods.getLoginStatus();
-    } catch (e) {
-      console.error(e);
-    }
-    if (isLogin) {
-      appActions.loadCustomerProfile();
-    }
+    const appLogin = this.getAppLoginStatus();
 
     // appLogin is true, isLogin is false
     if (isWebview && !isLogin && appLogin) {
       await this.postAppMessage();
+    }
+  }
+
+  getAppLoginStatus() {
+    try {
+      return NativeMethods.getLoginStatus();
+    } catch (e) {
+      console.error(e);
+      return false;
     }
   }
 
@@ -72,7 +72,7 @@ class App extends Component {
     const { isExpired } = user || {};
     const touchPoint = 'ClaimCashback';
 
-    let res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
+    const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
     if (res === null || res === 'undefined') {
       console.log('native token is invalid');
     } else {

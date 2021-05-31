@@ -17,6 +17,8 @@ import { actions as customerActionCreators, getDeliveryDetails } from '../../red
 import Utils from '../../../utils/utils';
 import loggly from '../../../utils/monitoring/loggly';
 
+const { DELIVERY, PICKUP } = Constants.DELIVERY_METHOD;
+
 class PageLogin extends React.Component {
   state = {
     sendOtp: false,
@@ -96,7 +98,7 @@ class PageLogin extends React.Component {
       appActions.loginApp({
         accessToken,
         refreshToken,
-        touchPoint: ['delivery', 'pickup'].includes(Utils.getOrderTypeFromUrl()) ? 'OnlineOrder' : 'QROrder',
+        touchPoint: [DELIVERY, PICKUP].includes(Utils.getOrderTypeFromUrl()) ? 'OnlineOrder' : 'QROrder',
         source: Utils.getOrderSource(),
       });
     }
