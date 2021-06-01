@@ -29,7 +29,7 @@ import {
   getOrderStatus,
   getReceiptNumber,
 } from '../../redux/common';
-import { actions as appActionCreators } from '../../../../redux/modules/app';
+import { actions as appActionCreators, getUserEmail, getUserConsumerId } from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 
@@ -38,12 +38,17 @@ const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
 const { REPORT_DRIVER_REASON_CODE, AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 class ReportDriver extends Component {
-  componentDidMount() {
-    const { receiptNumber, loadOrder, fetchReport } = this.props;
+  componentDidMount = async () => {
+    const { receiptNumber, loadOrder, fetchReport, userConsumerId, getProfileInfo, initialEmail } = this.props;
 
-    loadOrder(receiptNumber);
+    await loadOrder(receiptNumber);
+
+    userConsumerId && (await getProfileInfo(userConsumerId));
+
+    initialEmail(this.props.userEmail);
+
     fetchReport();
-  }
+  };
 
   componentWillUnmount() {
     // release the file reference
@@ -450,6 +455,8 @@ export default compose(
       uploadPhotoFile: getUploadPhotoFile(state),
       uploadPhotoUrl: getUploadPhotoUrl(state),
       inputEmail: getInputEmail(state),
+      userEmail: getUserEmail(state),
+      userConsumerId: getUserConsumerId(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,
@@ -464,6 +471,8 @@ export default compose(
       showMessageModal: appActionCreators.showMessageModal,
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
+      initialEmail: reportDriverActionCreators.initialEmail,
+      getProfileInfo: appActionCreators.getProfileInfo,
     }
   )
 )(ReportDriver);

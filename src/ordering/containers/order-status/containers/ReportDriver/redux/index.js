@@ -115,6 +115,9 @@ export const reportDriverSlice = createSlice({
   name: 'ordering/orderStatus/reportDriver',
   initialState,
   reducers: {
+    initialEmail(state, { payload }) {
+      state.inputEmail.value = payload;
+    },
     updateInputNotes(state, { payload }) {
       state.inputNotes = payload;
     },
