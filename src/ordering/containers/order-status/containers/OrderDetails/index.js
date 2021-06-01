@@ -328,6 +328,7 @@ export class OrderDetails extends Component {
           isPage={true}
           title={t('OrderDetails')}
           navFunc={() => {
+            CleverTap.pushEvent('Order details - click back arrow');
             NativeMethods.goBack();
           }}
           rightContent={rightContent}
