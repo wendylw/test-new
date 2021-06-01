@@ -20,6 +20,7 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import { NativeMethods } from '../../../utils/dsbridge-methods';
+import _ from 'lodash';
 
 class App extends Component {
   async componentDidMount() {
@@ -73,7 +74,7 @@ class App extends Component {
     const touchPoint = 'ClaimCashback';
 
     const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
-    if (res === null || res === 'undefined') {
+    if (_.isNil(res)) {
       console.log('native token is invalid');
     } else {
       const { access_token, refresh_token } = res;

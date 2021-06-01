@@ -1,7 +1,8 @@
 import dsbridge from 'dsbridge';
 import _ from 'lodash';
+import loggly from './monitoring/loggly';
 
-const StatusCodes = {
+export const StatusCodes = {
   SUCCESS: '00000',
   PARAM_ERROR: 'A0400',
   METHOD_NOT_EXIST: 'C0113',
@@ -143,16 +144,19 @@ export const NativeMethods = {
 
 const hasMethodInNative = method => {
   try {
-    const res = dsbridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } });
-    return JSON.parse(res);
+    const { data: hasNativeMethod } = JSON.parse(
+      dsbridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
+    );
+    return hasNativeMethod;
   } catch (e) {
-    throw new Error(e);
+    loggly.error('dsbridge-methods.has-native-method', { message: e });
+    return false;
   }
 };
 
 const dsbridgeCall = nativeMethod => {
   const { method, params, mode } = nativeMethod || {};
-  const { data: hasNativeMethod } = hasMethodInNative(method);
+  const hasNativeMethod = hasMethodInNative(method);
 
   if (!hasNativeMethod) {
     throw new Error("Native side didn't have method: " + method);
@@ -176,13 +180,12 @@ const dsbridgeSyncCall = (method, params) => {
       code === StatusCodes.METHOD_NOT_EXIST ||
       code === StatusCodes.UNKNOWN_ERROR
     ) {
-      console.error(message);
+      throw new Error(message);
     } else if (code === StatusCodes.SUCCESS) {
       return data;
     }
   } catch (e) {
-    console.log(e);
-    throw new Error(e);
+    loggly.error('dsbridge-methods.dsbridge-sync-call', { message: e });
   }
 };
 
@@ -202,7 +205,7 @@ const dsbridgeAsyncCall = (method, params) => {
         }
       });
     } catch (e) {
-      console.log(e);
+      loggly.error('dsbridge-methods.dsbridge-async-call', { message: e });
       reject(e);
     }
   });
