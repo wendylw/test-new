@@ -4,6 +4,7 @@ import Modal from '../../../../../components/Modal';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
+import loggly from '../../../../../utils/monitoring/loggly';
 import './AlcoholModal.scss';
 
 export class AlcoholModal extends PureComponent {
@@ -12,6 +13,7 @@ export class AlcoholModal extends PureComponent {
   };
 
   handleClick = isAgeLegal => {
+    loggly.log('alcohol-modal.click', { isAgeLegal });
     this.props.handleLegalAge(isAgeLegal);
     if (!isAgeLegal) {
       this.setState({

@@ -19,6 +19,7 @@ import { del, get } from '../../../../utils/request';
 import Url from '../../../../utils/url';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
+import loggly from '../../../../utils/monitoring/loggly';
 
 export class Footer extends Component {
   constructor(props) {
@@ -162,6 +163,8 @@ export class Footer extends Component {
   }
 
   handleRedirect = () => {
+    loggly.log('footer.place-order');
+
     const { user } = this.props;
     const { isWebview } = user || {};
     if (isWebview) {

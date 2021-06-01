@@ -83,17 +83,11 @@ const fetchStoreList = (page, pageSize, shippingType) => (dispatch, getState) =>
       `${Url.API_URLS.GET_SEARCHING_STORE_LIST.url}?keyword=${keyword}&lat=${coords.lat}&lng=${coords.lng}&page=${page}&pageSize=${pageSize}&shippingType=${shippingType}&countryCode=${countryCode}`
     ).then(async response => {
       if (response && Array.isArray(response.stores)) {
-        window.heap?.track('site.search.store-list.load-page', { Page: page, Keyword: keyword.toLowerCase() });
         if (page === 0) {
           CleverTap.pushEvent('Search - Perform search', {
             keyword,
             'has results': response.stores.length > 0,
           });
-          if (response.stores.length) {
-            window.heap?.track('site.search.store-list.has-search-result', { Keyword: keyword.toLowerCase() });
-          } else {
-            window.heap?.track('site.search.store-list.no-search-result', { Keyword: keyword.toLowerCase() });
-          }
         }
         await dispatch(storesActionCreators.saveStores(response.stores));
         return response;

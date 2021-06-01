@@ -29,6 +29,7 @@ import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
 import './OrderingCustomer.scss';
 import CleverTap from '../../../utils/clevertap';
+import loggly from '../../../utils/monitoring/loggly';
 
 const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 
@@ -128,6 +129,8 @@ class Customer extends Component {
   }
 
   handleBeforeCreateOrder = () => {
+    loggly.log('customer.create-order-attempt');
+
     const { customerActions } = this.props;
     const error = this.validateFields();
 
