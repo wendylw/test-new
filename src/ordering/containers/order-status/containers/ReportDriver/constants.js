@@ -11,6 +11,7 @@ export const REPORT_DRIVER_REASON_CODE = {
 export const REPORT_DRIVER_FIELD_NAMES = {
   NOTES: 'notes',
   PHOTO: 'photo',
+  EMAIL: 'email',
 };
 
 export const REPORT_DRIVER_REASONS = [
@@ -25,6 +26,10 @@ export const REPORT_DRIVER_REASONS = [
         name: REPORT_DRIVER_FIELD_NAMES.PHOTO,
         required: true,
       },
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.EMAIL,
+        required: true,
+      },
     ],
     i18n_key: 'Reasons_foodWasDamaged',
   },
@@ -33,6 +38,10 @@ export const REPORT_DRIVER_REASONS = [
     fields: [
       {
         name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.EMAIL,
         required: true,
       },
     ],
@@ -45,6 +54,10 @@ export const REPORT_DRIVER_REASONS = [
         name: REPORT_DRIVER_FIELD_NAMES.NOTES,
         required: true,
       },
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.EMAIL,
+        required: true,
+      },
     ],
     i18n_key: 'Reasons_driverWasRude',
   },
@@ -53,6 +66,10 @@ export const REPORT_DRIVER_REASONS = [
     fields: [
       {
         name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.EMAIL,
         required: true,
       },
     ],
@@ -65,6 +82,10 @@ export const REPORT_DRIVER_REASONS = [
         name: REPORT_DRIVER_FIELD_NAMES.NOTES,
         required: true,
       },
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.EMAIL,
+        required: true,
+      },
     ],
     i18n_key: 'Reasons_orderWasMissingItem',
   },
@@ -75,6 +96,10 @@ export const REPORT_DRIVER_REASONS = [
         name: REPORT_DRIVER_FIELD_NAMES.NOTES,
         required: true,
       },
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.EMAIL,
+        required: true,
+      },
     ],
     i18n_key: 'Reasons_neverReceivedMyOrder',
   },
@@ -83,6 +108,10 @@ export const REPORT_DRIVER_REASONS = [
     fields: [
       {
         name: REPORT_DRIVER_FIELD_NAMES.NOTES,
+        required: true,
+      },
+      {
+        name: REPORT_DRIVER_FIELD_NAMES.EMAIL,
         required: true,
       },
     ],

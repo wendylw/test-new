@@ -20,6 +20,7 @@ import {
   getShowPageLoader,
   getUploadPhotoUrl,
   getUploadPhotoFile,
+  getInputEmail,
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_FIELD_NAMES, REPORT_DRIVER_REASONS } from './constants';
 import {
@@ -76,6 +77,12 @@ class ReportDriver extends Component {
     this.props.updateInputNotes(notes);
   };
 
+  handleEmailChange = e => {
+    const email = e.target.value;
+
+    this.props.updateInputEmail(email);
+  };
+
   isOrderCanReportDriver = () => {
     const { orderStatus, isUseStorehubLogistics } = this.props;
 
@@ -92,11 +99,17 @@ class ReportDriver extends Component {
     return !uploadPhotoFile;
   }
 
+  isInputEmailEmpty() {
+    const { inputEmail } = this.props;
+    return inputEmail.trim().length === 0;
+  }
+
   isSubmitButtonDisable = () => {
     const { submitStatus, selectedReasonFields, selectedReasonCode } = this.props;
 
     const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
     const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
+    const selectedReasonEmailField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL);
 
     if (!this.isOrderCanReportDriver()) {
       return true;
@@ -111,6 +124,10 @@ class ReportDriver extends Component {
     }
 
     if (selectedReasonPhotoField && selectedReasonPhotoField.required && this.isUploadPhotoEmpty()) {
+      return true;
+    }
+
+    if (selectedReasonEmailField && selectedReasonEmailField.required && this.isInputEmailEmpty()) {
       return true;
     }
 
@@ -222,6 +239,25 @@ class ReportDriver extends Component {
     );
   }
 
+  renderEmailFiled({ t, inputEmail, disabled, required }) {
+    return (
+      <div className="padding-top-bottom-small margin-top-bottom-small">
+        <h3 className="margin-small">
+          <span className="text-weight-bolder">{t('Email')}</span>
+          {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
+        </h3>
+        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-large">
+          <input
+            disabled={disabled}
+            value={inputEmail}
+            onChange={this.handleEmailChange}
+            className="ordering-report-driver__input-email form__input padding-left-right-smaller form__group"
+          />
+        </div>
+      </div>
+    );
+  }
+
   renderPhotoField({ t, uploadPhotoFile, uploadPhotoUrl, disabled, required }) {
     return (
       <div className="padding-top-bottom-small margin-top-bottom-small">
@@ -271,6 +307,7 @@ class ReportDriver extends Component {
       selectedReasonFields,
       uploadPhotoFile,
       uploadPhotoUrl,
+      inputEmail,
     } = this.props;
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
 
@@ -284,6 +321,7 @@ class ReportDriver extends Component {
 
     const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
     const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
+    const selectedReasonEmailField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL);
 
     return (
       <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
@@ -346,7 +384,13 @@ class ReportDriver extends Component {
                   required: selectedReasonPhotoField.required,
                 })
               : null}
-
+            {selectedReasonEmailField &&
+              this.renderEmailFiled({
+                t,
+                disabled,
+                required: selectedReasonEmailField.required,
+                inputEmail,
+              })}
             <div className="margin-small">
               <button
                 className="button button__block button__fill text-uppercase text-weight-bolder"
@@ -378,6 +422,7 @@ export default compose(
       showPageLoader: getShowPageLoader(state),
       uploadPhotoFile: getUploadPhotoFile(state),
       uploadPhotoUrl: getUploadPhotoUrl(state),
+      inputEmail: getInputEmail(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,
@@ -390,6 +435,7 @@ export default compose(
       submitReport: reportDriverThunks.submitReport,
       loadOrder: commonActionCreators.loadOrder,
       showMessageModal: appActionCreators.showMessageModal,
+      updateInputEmail: reportDriverActionCreators.updateInputEmail,
     }
   )
 )(ReportDriver);

@@ -7,6 +7,7 @@ import {
   getInputNotes,
   getUploadPhotoFile,
   getUploadPhotoLocation,
+  getInputEmail,
 } from './selectors';
 import { getReceiptNumber } from '../../../redux/common';
 import * as ApiFetch from '../../../../../../utils/api/api-fetch';
@@ -25,6 +26,7 @@ export const initialState = {
   },
   submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
   showPageLoader: true,
+  inputEmail: '',
 };
 
 export const thunks = {
@@ -35,6 +37,7 @@ export const thunks = {
     const selectedReasonFields = getSelectedReasonFields(state);
     const selectedReasonNotesField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
     const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
+    const selectedReasonEmailField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL);
     const selectedReasonCode = getSelectedReasonCode(state);
     const receiptNumber = getReceiptNumber(state);
     const payload = {
@@ -44,6 +47,10 @@ export const thunks = {
     };
 
     dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
+
+    if (selectedReasonEmailField) {
+      payload.email = getInputEmail(state);
+    }
 
     if (selectedReasonNotesField) {
       payload.notes = getInputNotes(state).trim();
@@ -125,6 +132,9 @@ export const reportDriverSlice = createSlice({
     },
     updateSubmitStatus(state, { payload }) {
       state.submitStatus = payload;
+    },
+    updateInputEmail(state, { payload }) {
+      state.inputEmail = payload;
     },
   },
   extraReducers: {

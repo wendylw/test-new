@@ -37,3 +37,5 @@ export const getUploadPhotoUrl = state => {
 export const getUploadPhotoLocation = state => {
   return _get(state.orderStatus.reportDriver, 'uploadPhoto.location', '');
 };
+
+export const getInputEmail = state => _get(state.orderStatus.reportDriver, 'inputEmail', '');
