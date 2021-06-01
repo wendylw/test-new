@@ -5,6 +5,7 @@ import {
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,
   getOrderShippingType,
+  getTimeoutLookingForRider,
 } from '../../../redux/selector';
 import { getMerchantCountry } from '../../../../../redux/modules/app';
 
@@ -36,4 +37,9 @@ export const getOrderCancellationButtonVisible = createSelector(
       ORDER_STATUS.CONFIRMED,
       ORDER_STATUS.PICKED_UP,
     ].includes(orderStatus)
+);
+
+export const getDeliveryUpdatableToSelfPickupState = createSelector(
+  getTimeoutLookingForRider,
+  timeoutLookingForRider => timeoutLookingForRider
 );

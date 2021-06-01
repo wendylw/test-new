@@ -53,18 +53,20 @@ import {
   getIsOrderCancellable,
   getOrderShippingType,
   getUpdateOrderPendingState,
+  getUpdatedToSelfPickupStatus,
 } from '../../redux/selector';
-import PhoneCopyModal from './components/PhoneCopyModal/index';
-import PhoneLogin from './components/PhoneLogin';
 import './OrderingThanks.scss';
-import { actions as thankYouActionCreators } from './redux/index';
+import { actions as thankYouActionCreators } from './redux';
+import { loadStoreIdHashCode, loadStoreIdTableIdHashCode } from './redux/thunks';
 import {
   getCashbackInfo,
   getStoreHashCode,
   getOrderCancellationReasonAsideVisible,
   getOrderCancellationButtonVisible,
+  getDeliveryUpdatableToSelfPickupState,
 } from './redux/selector';
 import { actions as appActionCreators } from '../../../../redux/modules/app';
+import PhoneCopyModal from './components/PhoneCopyModal/index';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
@@ -121,13 +123,13 @@ export class ThankYou extends PureComponent {
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
     window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
-    const { thankYouActions, order, onlineStoreInfo, user } = this.props;
+    const { loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo, user } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
       Utils.isDineInType()
-        ? thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
-        : thankYouActions.getStoreHashData(storeId);
+        ? loadStoreIdTableIdHashCode({ storeId, tableId: config.table })
+        : loadStoreIdHashCode(storeId);
     }
 
     if (onlineStoreInfo && onlineStoreInfo.id) {
@@ -357,12 +359,12 @@ export class ThankYou extends PureComponent {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const { storeId } = this.props.order || {};
-    const { onlineStoreInfo, user, shippingType } = this.props;
+    const { onlineStoreInfo, user, shippingType, loadStoreIdTableIdHashCode, loadStoreIdHashCode } = this.props;
 
     if (storeId && prevStoreId !== storeId) {
       shippingType === DELIVERY_METHOD.DINE_IN
-        ? this.props.thankYouActions.getStoreHashDataWithTableId({ storeId, tableId: config.table })
-        : this.props.thankYouActions.getStoreHashData(storeId);
+        ? loadStoreIdTableIdHashCode({ storeId, tableId: config.table })
+        : loadStoreIdHashCode(storeId);
     }
     const tySourceCookie = this.getThankYouSource();
     if (onlineStoreInfo && onlineStoreInfo !== prevOnlineStoreInfo) {
@@ -468,14 +470,14 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellationButtonClick = () => {
-    const { order, businessInfo, thankYouActions, isOrderCancellable } = this.props;
+    const { order, businessInfo, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
 
     if (!isOrderCancellable) {
       this.showRiderHasFoundMessageModal();
       return;
     }
 
-    thankYouActions.showOrderCancellationReasonAside();
+    updateCancellationReasonVisibleState(true);
 
     CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -587,7 +589,7 @@ export class ThankYou extends PureComponent {
 
   renderPickupInfo() {
     const { t, order, businessInfo, cashbackInfo } = this.props;
-    const { pickUpId } = order || {};
+    const { pickUpId, refundShippingFee } = order || {};
     const { enableCashback } = businessInfo || {};
     const { cashback } = cashbackInfo || {};
 
@@ -604,6 +606,26 @@ export class ThankYou extends PureComponent {
             {pickUpId}
           </span>
         </div>
+
+        {refundShippingFee ? (
+          <div className="card text-center padding-small margin-normal">
+            <CurrencyNumber
+              className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
+              money={refundShippingFee || 0}
+            />
+            <h3 className="flex flex-middle flex-center">
+              <span className="text-size-big">{t('RefundDeliveryFee')}</span>
+              <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
+            </h3>
+            <p className="ordering-thanks__card-prompt-description margin-top-bottom-small text-line-height-base">
+              <Trans i18nKey="RefundDeliveryFeeDescription" ns="OrderingThankYou">
+                Upon choosing self-pickup, the delivery fee will be refunded as a{' '}
+                <span className="text-uppercase text-weight-bolder">voucher</span> which could be used upon your next
+                order.
+              </Trans>
+            </p>
+          </div>
+        ) : null}
         {enableCashback && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
@@ -730,7 +752,7 @@ export class ThankYou extends PureComponent {
       customer: 'CustomerCancelledDescription',
       unknown: 'UnknownCancelledDescription',
     };
-    const { user, orderStatus, pendingUpdatedOrderStatus } = this.props;
+    const { user, orderStatus, pendingUpdatedOrderStatus, updatableToSelfPickupStatus } = this.props;
     const { isWebview } = user;
 
     let currentStatusObj = {};
@@ -951,11 +973,15 @@ export class ThankYou extends PureComponent {
               order
             )
           : null}
-        <SelfPickup
-          onClickSelfPickupButton={() => this.handleClickSelfPickupButton}
-          onChangeToSelfPickup={() => this.handleChangeToSelfPickup}
-          processing={pendingUpdatedOrderStatus}
-        />
+
+        {updatableToSelfPickupStatus ? (
+          <SelfPickup
+            onClickSelfPickupButton={() => this.handleClickSelfPickupButton}
+            onChangeToSelfPickup={() => this.handleChangeToSelfPickup}
+            processing={pendingUpdatedOrderStatus}
+          />
+        ) : null}
+
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
     );
@@ -1408,7 +1434,14 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, orderStatusActions, thankYouActions, businessInfo, isOrderCancellable, order } = this.props;
+    const {
+      receiptNumber,
+      orderStatusActions,
+      updateCancellationReasonVisibleState,
+      businessInfo,
+      isOrderCancellable,
+      order,
+    } = this.props;
 
     try {
       if (!isOrderCancellable) {
@@ -1438,16 +1471,26 @@ export class ThankYou extends PureComponent {
     } catch (error) {
       console.error('handleOrderCancellation error', error);
     } finally {
-      thankYouActions.hideOrderCancellationReasonAside();
+      updateCancellationReasonVisibleState(false);
     }
   };
 
   handleHideOrderCancellationReasonAside = () => {
-    this.props.thankYouActions.hideOrderCancellationReasonAside();
+    this.props.updateCancellationReasonVisibleState(false);
   };
 
   render() {
-    const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible, shippingType } = this.props;
+    const {
+      t,
+      history,
+      match,
+      order,
+      storeHashCode,
+      user,
+      orderCancellationButtonVisible,
+      shippingType,
+      updatedToSelfPickupStatus,
+    } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
     const {
@@ -1456,6 +1499,9 @@ export class ThankYou extends PureComponent {
     } = user || {};
     const type = Utils.getOrderTypeFromUrl();
     let orderInfo = shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderStoreInfo() : null;
+    const pickupDescription = updatedToSelfPickupStatus
+      ? t('ThankYouForUpdatedToPickingUpForUS')
+      : t('ThankYouForPickingUpForUS');
     const options = [`h=${storeHashCode}`];
     const { isPreOrder } = order || {};
     const { isHideTopArea } = this.state;
@@ -1570,9 +1616,7 @@ export class ThankYou extends PureComponent {
             )}
             {shippingType !== DELIVERY_METHOD.PICKUP && shippingType !== DELIVERY_METHOD.DINE_IN ? null : (
               <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
-                {shippingType === DELIVERY_METHOD.PICKUP
-                  ? `${t('ThankYouForPickingUpForUS')} `
-                  : `${t('PrepareOrderDescription')} `}
+                {shippingType === DELIVERY_METHOD.PICKUP ? `${pickupDescription} ` : `${t('PrepareOrderDescription')} `}
                 <span role="img" aria-label="Goofy">
                   😋
                 </span>
@@ -1592,8 +1636,6 @@ export class ThankYou extends PureComponent {
                 {shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderViewDetail() : this.renderNeedReceipt()}
 
                 {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
-
-                <PhoneLogin hideMessage={true} history={history} />
               </div>
             </div>
             <footer
@@ -1654,9 +1696,16 @@ export default compose(
       orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
       shippingType: getOrderShippingType(state),
       pendingUpdatedOrderStatus: getUpdateOrderPendingState(state),
+      updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
+      updatedToSelfPickupStatus: getUpdatedToSelfPickupStatus(state),
     }),
     dispatch => ({
-      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+      updateCancellationReasonVisibleState: bindActionCreators(
+        thankYouActionCreators.updateCancellationReasonVisibleState,
+        dispatch
+      ),
+      loadStoreIdHashCode: bindActionCreators(loadStoreIdHashCode, dispatch),
+      loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),

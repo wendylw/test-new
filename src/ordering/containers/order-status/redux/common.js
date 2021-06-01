@@ -10,7 +10,7 @@ const initialState = {
   error: null,
 };
 
-export const { reducer, actions } = createSlice({
+const { reducer, actions } = createSlice({
   name: 'ordering/orderStatus/common',
   initialState,
   reducers: {},
@@ -47,16 +47,19 @@ export const { reducer, actions } = createSlice({
     [loadOrderStatus.rejected.type]: (state, { error }) => {
       state.error = error;
     },
-    [updateOrderShippingType.pending.type]: state => {
-      state.updateOrderStatus = 'pending';
-    },
-    [updateOrderShippingType.fulfilled.type]: (state, { payload }) => {
-      state.order = payload.order;
-      state.updateOrderStatus = 'fulfilled';
-    },
+    // [updateOrderShippingType.pending.type]: state => {
+    //   state.updateOrderStatus = 'pending';
+    // },
+    // [updateOrderShippingType.fulfilled.type]: (state, { payload }) => {
+    //   state.order = payload.order;
+    //   state.updateOrderStatus = 'fulfilled';
+    // },
     [updateOrderShippingType.rejected.type]: (state, { error }) => {
       state.error = error;
-      state.updateOrderStatus = 'rejected';
     },
   },
 });
+
+export { actions };
+
+export default reducer;

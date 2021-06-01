@@ -1,168 +1,71 @@
-import Url from '../../../../../../utils/url';
-import Constants from '../../../../../../utils/constants';
-import { API_REQUEST } from '../../../../../../redux/middlewares/api';
-import { createSelector } from 'reselect';
-import {
-  getOrderStatus,
-  getIsOnDemandOrder,
-  getIsUseStorehubLogistics,
-  getOrderShippingType,
-} from '../../../redux/selector';
-import { getMerchantCountry } from '../../../../../redux/modules/app';
-
-const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
-
-const types = {
-  // fetch cashbackInfo
-  fetchCashbackInfoRequest: 'ordering/orderStatus/thankYou/fetchCashbackInfoRequest',
-  fetchCashbackInfoSuccess: 'ordering/orderStatus/thankYou/fetchCashbackInfoSuccess',
-  fetchCashbackInfoFailure: 'ordering/orderStatus/thankYou/fetchCashbackInfoFailure',
-  // create cashbackInfo
-  createCashbackInfoRequest: 'ordering/orderStatus/thankYou/createCashbackInfoRequest',
-  createCashbackInfoSuccess: 'ordering/orderStatus/thankYou/createCashbackInfoSuccess',
-  createCashbackInfoFailure: 'ordering/orderStatus/thankYou/createCashbackInfoFailure',
-  // fetch store hash
-  fetchStoreHashRequest: 'ordering/orderStatus/thankYou/fetchStoreHashRequest',
-  fetchStoreHashSuccess: 'ordering/orderStatus/thankYou/fetchStoreHashSuccess',
-  fetchStoreHashFailure: 'ordering/orderStatus/thankYou/fetchStoreHashFailure',
-  // fetch store has with table id
-  fetchStoreHashWithTableIdRequest: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdRequest',
-  fetchStoreHashWithTableIdSuccess: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdSuccess',
-  fetchStoreHashWithTableIdFailure: 'ordering/orderStatus/thankYou/fetchStoreHashWithTableIdFailure',
-
-  // order cancellation reason aside
-  showOrderCancellationReasonAside: 'ordering/orderStatus/thankYou/showOrderCancellationReasonAside',
-  hideOrderCancellationReasonAside: 'ordering/orderStatus/thankYou/hideOrderCancellationReasonAside',
-};
+import { createSlice } from '@reduxjs/toolkit';
+import { loadCashbackInfo, createCashbackInfo, loadStoreIdHashCode, loadStoreIdTableIdHashCode } from './thunks';
 
 const initialState = {
-  cashbackInfo: null /* included: isFetching, customerId, consumerId, status */,
+  /* included: isFetching, customerId, consumerId, status */
+  cashbackInfo: {
+    isFetching: false,
+    customerId: null,
+    consumerId: null,
+    status: null,
+    updateCashbackInfoStatus: null,
+    createdCashbackInfo: false,
+    error: null,
+  },
   storeHashCode: null,
   orderCancellationReasonAsideVisible: false,
 };
 
-export const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case types.fetchCashbackInfoRequest:
-    case types.createCashbackInfoRequest:
-      return {
-        ...state,
-        cashbackInfo: {
-          ...state.cashbackInfo,
-          isFetching: true,
-        },
-      };
-    case types.fetchCashbackInfoFailure:
-    case types.createCashbackInfoFailure:
-      return {
-        ...state,
-        cashbackInfo: {
-          ...state.cashbackInfo,
-          isFetching: false,
-        },
-      };
-    case types.fetchCashbackInfoSuccess: {
-      const { response } = action;
+const { reducer, actions } = createSlice({
+  name: 'ordering/orderStatus/thankYou',
+  initialState,
+  reducers: {
+    updateCancellationReasonVisibleState(state, action) {
+      state.orderCancellationReasonAsideVisible = action.payload;
+    },
+  },
+  extraReducers: {
+    [loadCashbackInfo.pending.type]: state => {
+      state.cashbackInfo.isFetching = true;
+      state.cashbackInfo.updateCashbackInfoStatus = 'pending';
+    },
+    [loadCashbackInfo.fulfilled.type]: (state, { payload }) => {
+      state.cashbackInfo = Object.assign({}, state.cashbackInfo, payload, {
+        isFetching: false,
+        updateCashbackInfoStatus: 'fulfilled',
+        createdCashbackInfo: false,
+      });
+    },
+    [loadCashbackInfo.rejected.type]: (state, { error }) => {
+      state.cashbackInfo.error = error;
+      state.cashbackInfo.isFetching = false;
+      state.cashbackInfo.updateCashbackInfoStatus = 'rejected';
+    },
+    [createCashbackInfo.pending.type]: state => {
+      state.cashbackInfo.isFetching = true;
+      state.cashbackInfo.updateCashbackInfoStatus = 'pending';
+    },
+    [createCashbackInfo.fulfilled.type]: (state, { payload }) => {
+      state.cashbackInfo = Object.assign({}, state.cashbackInfo, payload, {
+        isFetching: false,
+        updateCashbackInfoStatus: 'fulfilled',
+        createdCashbackInfo: true,
+      });
+    },
+    [createCashbackInfo.rejected.type]: (state, { error }) => {
+      state.cashbackInfo.error = error;
+      state.cashbackInfo.isFetching = false;
+      state.cashbackInfo.updateCashbackInfoStatus = 'rejected';
+    },
+    [loadStoreIdHashCode.fulfilled.type]: (state, { payload }) => {
+      state.storeHashCode = payload.redirectTo;
+    },
+    [loadStoreIdTableIdHashCode.fulfilled.type]: (state, { payload }) => {
+      state.storeHashCode = payload.hex;
+    },
+  },
+});
 
-      return {
-        ...state,
-        cashbackInfo: {
-          ...state.cashbackInfo,
-          ...response,
-          isFetching: false,
-          createdCashbackInfo: false,
-        },
-      };
-    }
-    case types.createCashbackInfoSuccess: {
-      const { response } = action;
-      return {
-        ...state,
-        cashbackInfo: {
-          ...state.cashbackInfo,
-          ...response,
-          isFetching: false,
-          createdCashbackInfo: true,
-        },
-      };
-    }
-    case types.fetchStoreHashSuccess: {
-      const { response } = action;
-      const { redirectTo } = response || {};
-
-      return { ...state, storeHashCode: redirectTo };
-    }
-    case types.fetchStoreHashWithTableIdSuccess: {
-      const { response } = actions;
-      const { hex } = response || {};
-
-      return { ...state, storeHashCode: hex };
-    }
-    case types.showOrderCancellationReasonAside:
-      return {
-        ...state,
-        orderCancellationReasonAsideVisible: true,
-      };
-    case types.hideOrderCancellationReasonAside:
-      return {
-        ...state,
-        orderCancellationReasonAsideVisible: false,
-      };
-    default:
-      return state;
-  }
-};
+export { actions };
 
 export default reducer;
-
-export const actions = {
-  getCashbackInfo: receiptNumber => ({
-    [API_REQUEST]: {
-      types: [types.fetchCashbackInfoRequest, types.fetchCashbackInfoSuccess, types.fetchCashbackInfoFailure],
-      ...Url.API_URLS.GET_CASHBACK,
-      params: {
-        receiptNumber,
-        source: Constants.CASHBACK_SOURCE.QR_ORDERING,
-      },
-    },
-  }),
-
-  createCashbackInfo: ({ receiptNumber, phone, source }) => ({
-    [API_REQUEST]: {
-      types: [types.createCashbackInfoRequest, types.createCashbackInfoSuccess, types.createCashbackInfoFailure],
-      ...Url.API_URLS.POST_CASHBACK,
-      payload: {
-        receiptNumber,
-        phone,
-        source,
-      },
-    },
-  }),
-
-  getStoreHashData: storeId => ({
-    [API_REQUEST]: {
-      types: [types.fetchStoreHashRequest, types.fetchStoreHashSuccess, types.fetchStoreHashFailure],
-      ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
-    },
-  }),
-
-  getStoreHashDataWithTableId: ({ storeId, tableId }) => ({
-    [API_REQUEST]: {
-      types: [
-        types.fetchStoreHashWithTableIdRequest,
-        types.fetchStoreHashWithTableIdSuccess,
-        types.fetchStoreHashWithTableIdFailure,
-      ],
-      payload: {
-        tableId,
-      },
-      ...Url.API_URLS.POST_STORE_HASH_DATA(storeId),
-    },
-  }),
-  showOrderCancellationReasonAside: () => ({
-    type: types.showOrderCancellationReasonAside,
-  }),
-  hideOrderCancellationReasonAside: () => ({
-    type: types.hideOrderCancellationReasonAside,
-  }),
-};

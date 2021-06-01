@@ -11,4 +11,23 @@ export const API_INFO = {
   updateOrderShippingType: orderId => ({
     url: `/api/transactions/${orderId}/change-shipping-type`,
   }),
+  getCashbackInfo: (orderId, source) => ({
+    url: `/api/cashback`,
+    queryParams: {
+      receiptNumber: orderId,
+      source,
+    },
+  }),
+  createCashbackInfo: () => ({
+    url: `/api/cashback`,
+  }),
+  getStoreIdHashCode: storeId => ({
+    url: `/api/ordering/stores/${storeId}`,
+    queryParams: {
+      a: 'redirectTo',
+    },
+  }),
+  createStoreIdTableIdHashCode: storeId => ({
+    url: `/api/ordering/stores/${storeId}`,
+  }),
 };

@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../utils/constants';
 
-const { PROMO_TYPE } = Constants;
+const { PROMO_TYPE, DELIVERY_METHOD } = Constants;
 
 export const getUpdateOrderPendingState = state => state.orderStatus.common.updateOrderStatus === 'pending';
 
@@ -19,6 +19,18 @@ export const getRiderLocations = createSelector(getOrder, order => _get(order, '
 export const getOrderDelayReason = createSelector(getOrder, order => _get(order, 'delayReason', null));
 
 export const getOrderShippingType = createSelector(getOrder, order => _get(order, 'shippingType', null));
+
+export const getUpdatedToSelfPickupStatus = state => {
+  const { shippingType, originalShippingType } = state.orderStatus.common.order || {};
+
+  return (
+    originalShippingType && shippingType === DELIVERY_METHOD.PICKUP && originalShippingType !== DELIVERY_METHOD.PICKUP
+  );
+};
+
+export const getTimeoutLookingForRider = state => {
+  return _get(state.orderStatus.common.order, 'timeoutLookingForRider', null);
+};
 
 export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)

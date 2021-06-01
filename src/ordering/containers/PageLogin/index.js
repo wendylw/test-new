@@ -15,7 +15,6 @@ import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
-import CleverTap from '../../../utils/clevertap';
 import loggly from '../../../utils/monitoring/loggly';
 
 class PageLogin extends React.Component {
