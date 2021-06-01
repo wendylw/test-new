@@ -24,6 +24,7 @@ import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 import { NativeMethods } from '../../../utils/dsbridge-methods';
+import loggly from '../../../utils/monitoring/loggly';
 
 const { ROUTER_PATHS } = Constants;
 let savedAddressRes;
@@ -36,7 +37,7 @@ class App extends Component {
         savedAddressRes = NativeMethods.getAddress();
         this.handleNativeResponse(savedAddressRes);
       } catch (e) {
-        console.log(e);
+        loggly.error('ordering.get-address', { message: e });
       }
     }
 
