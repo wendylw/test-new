@@ -220,7 +220,7 @@ class ReportDriver extends Component {
           <span className="text-weight-bolder">{t('Notes')}</span>
           {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
         </h3>
-        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-large">
+        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-normal">
           <textarea
             className="ordering-report-driver__textarea form__textarea padding-small"
             data-heap-name="ordering.report-driver.notes-input"
@@ -246,7 +246,7 @@ class ReportDriver extends Component {
           <span className="text-weight-bolder">{t('Email')}</span>
           {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
         </h3>
-        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-large">
+        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-normal">
           <input
             disabled={disabled}
             value={inputEmail}
