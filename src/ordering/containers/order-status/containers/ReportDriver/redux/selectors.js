@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import { initialState } from './index';
 import { createSelector } from 'reselect';
-import { REPORT_DRIVER_REASONS } from '../constants';
+import { REPORT_DRIVER_REASONS, REPORT_DRIVER_FIELD_NAMES } from '../constants';
 
 export const getInputNotes = state => {
   return _get(state.orderStatus.reportDriver, 'inputNotes', initialState.inputNotes);
@@ -45,3 +45,15 @@ export const getInputEmailValue = state => _get(state.orderStatus.reportDriver, 
 export const getInputEmailIsCompleted = state => _get(state.orderStatus.reportDriver, 'inputEmail.isCompleted', false);
 
 export const getInputEmailIsValid = state => _get(state.orderStatus.reportDriver, 'inputEmail.isValid', false);
+
+export const getSelectedReasonNoteField = createSelector(getSelectedReasonFields, selectedReasonFields =>
+  selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES)
+);
+
+export const getSelectedReasonPhotoField = createSelector(getSelectedReasonFields, selectedReasonFields =>
+  selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO)
+);
+
+export const getSelectedReasonEmailField = createSelector(getSelectedReasonFields, selectedReasonFields =>
+  selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL)
+);

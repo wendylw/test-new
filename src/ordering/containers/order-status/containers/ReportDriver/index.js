@@ -15,14 +15,16 @@ import { actions as reportDriverActionCreators, thunks as reportDriverThunks } f
 import {
   getInputNotes,
   getSelectedReasonCode,
-  getSelectedReasonFields,
   getSubmitStatus,
   getShowPageLoader,
   getUploadPhotoUrl,
   getUploadPhotoFile,
   getInputEmail,
+  getSelectedReasonNoteField,
+  getSelectedReasonPhotoField,
+  getSelectedReasonEmailField,
 } from './redux/selectors';
-import { SUBMIT_STATUS, REPORT_DRIVER_FIELD_NAMES, REPORT_DRIVER_REASONS } from './constants';
+import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
 import {
   actions as commonActionCreators,
   getIsUseStorehubLogistics,
@@ -114,11 +116,13 @@ class ReportDriver extends Component {
   }
 
   isSubmitButtonDisable = () => {
-    const { submitStatus, selectedReasonFields, selectedReasonCode } = this.props;
-
-    const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
-    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
-    const selectedReasonEmailField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL);
+    const {
+      submitStatus,
+      selectedReasonCode,
+      selectedReasonNoteField,
+      selectedReasonPhotoField,
+      selectedReasonEmailField,
+    } = this.props;
 
     if (!this.isOrderCanReportDriver()) {
       return true;
@@ -168,10 +172,7 @@ class ReportDriver extends Component {
   };
 
   handleSubmit = async () => {
-    const { selectedReasonFields, inputEmail } = this.props;
-    const selectedReasonHasEmailField = selectedReasonFields.find(
-      field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL
-    );
+    const { selectedReasonHasEmailField, inputEmail } = this.props;
 
     if (selectedReasonHasEmailField && !inputEmail.isValid) {
       return;
@@ -336,10 +337,12 @@ class ReportDriver extends Component {
       submitStatus,
       showPageLoader,
       selectedReasonCode,
-      selectedReasonFields,
       uploadPhotoFile,
       uploadPhotoUrl,
       inputEmail,
+      selectedReasonNoteField,
+      selectedReasonPhotoField,
+      selectedReasonEmailField,
     } = this.props;
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
 
@@ -350,10 +353,6 @@ class ReportDriver extends Component {
     if (submitStatus === SUBMIT_STATUS.SUBMITTED) {
       return this.renderThankYou();
     }
-
-    const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
-    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
-    const selectedReasonEmailField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL);
 
     return (
       <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
@@ -446,7 +445,6 @@ export default compose(
     state => ({
       inputNotes: getInputNotes(state),
       selectedReasonCode: getSelectedReasonCode(state),
-      selectedReasonFields: getSelectedReasonFields(state),
       orderStatus: getOrderStatus(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       receiptNumber: getReceiptNumber(state),
@@ -457,6 +455,9 @@ export default compose(
       inputEmail: getInputEmail(state),
       userEmail: getUserEmail(state),
       userConsumerId: getUserConsumerId(state),
+      selectedReasonNoteField: getSelectedReasonNoteField(state),
+      selectedReasonPhotoField: getSelectedReasonPhotoField(state),
+      selectedReasonEmailField: getSelectedReasonEmailField(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,

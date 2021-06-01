@@ -1,13 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Url from '../../../../../../utils/url';
-import { REPORT_DRIVER_FIELD_NAMES, SUBMIT_STATUS } from '../constants';
+import { SUBMIT_STATUS } from '../constants';
 import {
-  getSelectedReasonFields,
   getSelectedReasonCode,
   getInputNotes,
   getUploadPhotoFile,
   getUploadPhotoLocation,
   getInputEmailValue,
+  getSelectedReasonNoteField,
+  getSelectedReasonPhotoField,
+  getSelectedReasonEmailField,
 } from './selectors';
 import { getReceiptNumber } from '../../../redux/common';
 import * as ApiFetch from '../../../../../../utils/api/api-fetch';
@@ -30,6 +32,7 @@ export const initialState = {
   inputEmail: {
     value: '',
     isCompleted: false, // it will be completed when input blur
+    isSubmitted: false,
     isValid: false,
   },
 };
@@ -39,10 +42,9 @@ export const thunks = {
     const { getState, dispatch } = thunkAPI;
     const state = getState();
     const actions = reportDriverSlice.actions;
-    const selectedReasonFields = getSelectedReasonFields(state);
-    const selectedReasonNotesField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
-    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
-    const selectedReasonEmailField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL);
+    const selectedReasonNotesField = getSelectedReasonNoteField(state);
+    const selectedReasonPhotoField = getSelectedReasonPhotoField(state);
+    const selectedReasonEmailField = getSelectedReasonEmailField(state);
     const selectedReasonCode = getSelectedReasonCode(state);
     const receiptNumber = getReceiptNumber(state);
     const payload = {
@@ -116,7 +118,13 @@ export const reportDriverSlice = createSlice({
   initialState,
   reducers: {
     initialEmail(state, { payload }) {
-      state.inputEmail.value = payload;
+      const email = payload.trim();
+
+      if (email.length > 0) {
+        state.inputEmail.value = email;
+        state.inputEmail.isCompleted = true;
+        state.inputEmail.isValid = Utils.checkEmailIsValid(email);
+      }
     },
     updateInputNotes(state, { payload }) {
       state.inputNotes = payload;
