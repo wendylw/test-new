@@ -83,6 +83,10 @@ class ReportDriver extends Component {
     this.props.updateInputEmail(email);
   };
 
+  handleEmailInputBlur = () => {
+    this.props.inputEmailCompleted();
+  };
+
   isOrderCanReportDriver = () => {
     const { orderStatus, isUseStorehubLogistics } = this.props;
 
@@ -101,7 +105,7 @@ class ReportDriver extends Component {
 
   isInputEmailEmpty() {
     const { inputEmail } = this.props;
-    return inputEmail.trim().length === 0;
+    return inputEmail.value.trim().length === 0;
   }
 
   isSubmitButtonDisable = () => {
@@ -159,6 +163,15 @@ class ReportDriver extends Component {
   };
 
   handleSubmit = async () => {
+    const { selectedReasonFields, inputEmail } = this.props;
+    const selectedReasonHasEmailField = selectedReasonFields.find(
+      field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL
+    );
+
+    if (selectedReasonHasEmailField && !inputEmail.isValid) {
+      return;
+    }
+
     await this.props.submitReport();
   };
 
@@ -240,20 +253,34 @@ class ReportDriver extends Component {
   }
 
   renderEmailFiled({ t, inputEmail, disabled, required }) {
+    const { value, isCompleted, isValid } = inputEmail;
+
+    const showInvalidError = isCompleted && !isValid;
+
     return (
       <div className="padding-top-bottom-small margin-top-bottom-small">
         <h3 className="margin-small">
           <span className="text-weight-bolder">{t('Email')}</span>
           {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
         </h3>
-        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-normal">
+        <div
+          className={`ordering-report-driver__group ${
+            showInvalidError ? 'error' : ''
+          } form__group margin-left-right-small border-radius-normal`}
+        >
           <input
             disabled={disabled}
-            value={inputEmail}
+            value={value}
             onChange={this.handleEmailChange}
-            className="ordering-report-driver__input-email form__input padding-left-right-smaller form__group"
+            onBlur={this.handleEmailInputBlur}
+            className="ordering-report-driver__input-email form__input padding-small form__group"
           />
         </div>
+        {showInvalidError && (
+          <p className="form__error-message padding-left-right-normal margin-top-bottom-small">
+            {t('PleaseEnterValidEmail')}
+          </p>
+        )}
       </div>
     );
   }
@@ -436,6 +463,7 @@ export default compose(
       loadOrder: commonActionCreators.loadOrder,
       showMessageModal: appActionCreators.showMessageModal,
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
+      inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
     }
   )
 )(ReportDriver);

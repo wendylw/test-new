@@ -7,7 +7,7 @@ import {
   getInputNotes,
   getUploadPhotoFile,
   getUploadPhotoLocation,
-  getInputEmail,
+  getInputEmailValue,
 } from './selectors';
 import { getReceiptNumber } from '../../../redux/common';
 import * as ApiFetch from '../../../../../../utils/api/api-fetch';
@@ -15,6 +15,7 @@ import { uploadReportDriverPhoto } from '../../../../../../utils/aws-s3';
 import { actions as appActions } from '../../../../../redux/modules/app';
 import i18next from 'i18next';
 import _get from 'lodash/get';
+import Utils from '../../../../../../utils/utils';
 
 export const initialState = {
   inputNotes: '',
@@ -26,7 +27,11 @@ export const initialState = {
   },
   submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
   showPageLoader: true,
-  inputEmail: '',
+  inputEmail: {
+    value: '',
+    isCompleted: false, // it will be completed when input blur
+    isValid: false,
+  },
 };
 
 export const thunks = {
@@ -49,7 +54,7 @@ export const thunks = {
     dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
 
     if (selectedReasonEmailField) {
-      payload.email = getInputEmail(state);
+      payload.email = getInputEmailValue(state);
     }
 
     if (selectedReasonNotesField) {
@@ -134,7 +139,16 @@ export const reportDriverSlice = createSlice({
       state.submitStatus = payload;
     },
     updateInputEmail(state, { payload }) {
-      state.inputEmail = payload;
+      state.inputEmail.value = payload;
+      state.inputEmail.isCompleted = false;
+      state.inputEmail.isValid = false;
+    },
+    inputEmailCompleted(state) {
+      const email = state.inputEmail.value.trim();
+
+      state.inputEmail.value = email;
+      state.inputEmail.isCompleted = true;
+      state.inputEmail.isValid = email.length > 0 ? Utils.checkEmailIsValid(email) : true;
     },
   },
   extraReducers: {

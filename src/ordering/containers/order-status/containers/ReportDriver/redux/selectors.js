@@ -38,4 +38,10 @@ export const getUploadPhotoLocation = state => {
   return _get(state.orderStatus.reportDriver, 'uploadPhoto.location', '');
 };
 
-export const getInputEmail = state => _get(state.orderStatus.reportDriver, 'inputEmail', '');
+export const getInputEmail = state => _get(state.orderStatus.reportDriver, 'inputEmail', initialState.inputEmail);
+
+export const getInputEmailValue = state => _get(state.orderStatus.reportDriver, 'inputEmail.value', '');
+
+export const getInputEmailIsCompleted = state => _get(state.orderStatus.reportDriver, 'inputEmail.isCompleted', false);
+
+export const getInputEmailIsValid = state => _get(state.orderStatus.reportDriver, 'inputEmail.isValid', false);

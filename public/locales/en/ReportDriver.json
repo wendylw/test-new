@@ -19,5 +19,6 @@
     "Reasons_driverWasRude": "Driver was rude",
     "Reasons_driverAskedMoreMoney": "Driver asked for more money on delivery",
     "Reasons_others": "Others",
-    "Email": "Email"
+    "Email": "Email",
+    "PleaseEnterValidEmail": "Please enter a valid email address"
 }
