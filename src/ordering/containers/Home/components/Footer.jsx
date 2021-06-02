@@ -19,7 +19,7 @@ import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import { NativeMethods } from '../../../../utils/dsbridge-methods';
 import loggly from '../../../../utils/monitoring/loggly';
-import _ from 'lodash';
+import _isNil from 'lodash/isNil';
 
 const { DELIVERY, PICKUP } = Constants.DELIVERY_METHOD;
 
@@ -58,7 +58,7 @@ export class Footer extends Component {
       this.handleWebRedirect();
     } else {
       const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
-      if (_.isNil(res)) {
+      if (_isNil(res)) {
         console.log('native token is invalid');
       } else {
         const { access_token, refresh_token } = res;

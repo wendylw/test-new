@@ -1,5 +1,5 @@
 import dsbridge from 'dsbridge';
-import _ from 'lodash';
+import _isNil from 'lodash/isNil';
 import loggly from './monitoring/loggly';
 
 export const StatusCodes = {
@@ -172,20 +172,17 @@ const dsbridgeSyncCall = (method, params) => {
   try {
     let result = dsbridge.call('callNative', { method, params });
     let { code, data, message } = JSON.parse(result);
-    if (_.isNil(data)) {
+    if (_isNil(data)) {
       return;
     }
-    if (
-      code === StatusCodes.PARAM_ERROR ||
-      code === StatusCodes.METHOD_NOT_EXIST ||
-      code === StatusCodes.UNKNOWN_ERROR
-    ) {
-      throw new Error(message);
-    } else if (code === StatusCodes.SUCCESS) {
+    if (code === StatusCodes.SUCCESS) {
       return data;
+    } else {
+      throw new Error(message);
     }
   } catch (e) {
     loggly.error('dsbridge-methods.dsbridge-sync-call', { message: e });
+    throw e;
   }
 };
 
@@ -194,14 +191,10 @@ const dsbridgeAsyncCall = (method, params) => {
     try {
       dsbridge.call('callNativeAsync', { method, params }, function(result) {
         let { code, data, message } = JSON.parse(result);
-        if (
-          code === StatusCodes.PARAM_ERROR ||
-          code === StatusCodes.METHOD_NOT_EXIST ||
-          code === StatusCodes.UNKNOWN_ERROR
-        ) {
-          reject(new Error(message));
-        } else if (code === StatusCodes.SUCCESS) {
+        if (code === StatusCodes.SUCCESS) {
           resolve(data);
+        } else {
+          reject(new Error(message));
         }
       });
     } catch (e) {
