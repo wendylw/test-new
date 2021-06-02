@@ -32,7 +32,6 @@ export const initialState = {
   inputEmail: {
     value: '',
     isCompleted: false, // it will be completed when input blur
-    isSubmitted: false,
     isValid: false,
   },
 };
