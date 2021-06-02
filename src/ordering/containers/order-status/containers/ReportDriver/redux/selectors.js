@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { initialState } from './index';
 import { createSelector } from 'reselect';
 import { REPORT_DRIVER_REASONS, REPORT_DRIVER_FIELD_NAMES, SUBMIT_STATUS } from '../constants';
+import { getIsOrderAbleReportDriver } from '../../../redux/common';
 
 export const getInputNotes = state => {
   return _get(state.orderStatus.reportDriver, 'inputNotes', initialState.inputNotes);
@@ -58,7 +59,7 @@ export const getSelectedReasonEmailField = createSelector(getSelectedReasonField
   selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL)
 );
 
-export const getSubmittable = createSelector(
+export const getIsSubmitButtonDisabled = createSelector(
   getSelectedReasonCode,
   getInputNotes,
   getUploadPhotoFile,
@@ -77,6 +78,55 @@ export const getSubmittable = createSelector(
     selectedReasonPhotoField,
     selectedReasonEmailField
   ) => {
+    if (!selectedReasonCode) {
+      return true;
+    }
+
+    if (submitStatus !== SUBMIT_STATUS.NOT_SUBMIT) {
+      return true;
+    }
+
+    if (selectedReasonNoteField && selectedReasonNoteField.required && inputNotes.length === 0) {
+      return true;
+    }
+
+    if (selectedReasonPhotoField && selectedReasonPhotoField.required && !uploadPhotoFile) {
+      return false;
+    }
+
+    if (selectedReasonEmailField && selectedReasonEmailField.required && inputEmail.value.length === 0) {
+      return true;
+    }
+
+    return false;
+  }
+);
+
+export const getSubmittable = createSelector(
+  getIsOrderAbleReportDriver,
+  getSelectedReasonCode,
+  getInputNotes,
+  getUploadPhotoFile,
+  getInputEmail,
+  getSubmitStatus,
+  getSelectedReasonNoteField,
+  getSelectedReasonPhotoField,
+  getSelectedReasonEmailField,
+  (
+    isOrderAbleReportDriver,
+    selectedReasonCode,
+    inputNotes,
+    uploadPhotoFile,
+    inputEmail,
+    submitStatus,
+    selectedReasonNoteField,
+    selectedReasonPhotoField,
+    selectedReasonEmailField
+  ) => {
+    if (!isOrderAbleReportDriver) {
+      return false;
+    }
+
     if (!selectedReasonCode) {
       return false;
     }

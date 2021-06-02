@@ -9,7 +9,7 @@ import * as ApiFetch from '../../../../utils/api/api-fetch';
 import { actions as appActions } from '../../../redux/modules/app';
 import i18next from 'i18next';
 
-const { PROMO_TYPE } = Constants;
+const { PROMO_TYPE, AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 const types = {
   // fetch order
@@ -183,3 +183,10 @@ export const getServiceCharge = createSelector(getOrderItems, items => {
   const serviceChargeItem = items.find(item => item.itemType === 'ServiceCharge');
   return _get(serviceChargeItem, 'displayPrice', 0);
 });
+
+export const getIsOrderAbleReportDriver = createSelector(
+  getOrderStatus,
+  getIsUseStorehubLogistics,
+  (orderStatus, isUseStorehubLogistics) =>
+    AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus) && isUseStorehubLogistics
+);

@@ -24,6 +24,7 @@ import {
   getSelectedReasonPhotoField,
   getSelectedReasonEmailField,
   getSubmittable,
+  getIsSubmitButtonDisabled,
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
 import {
@@ -31,6 +32,7 @@ import {
   getIsUseStorehubLogistics,
   getOrderStatus,
   getReceiptNumber,
+  getIsOrderAbleReportDriver,
 } from '../../redux/common';
 import { actions as appActionCreators, getUserEmail, getUserConsumerId } from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
@@ -38,7 +40,7 @@ import './OrderingReportDriver.scss';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
-const { REPORT_DRIVER_REASON_CODE, AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
+const { REPORT_DRIVER_REASON_CODE } = Constants;
 
 class ReportDriver extends Component {
   componentDidMount = async () => {
@@ -101,63 +103,6 @@ class ReportDriver extends Component {
     this.props.inputEmailCompleted();
   };
 
-  isOrderCanReportDriver = () => {
-    const { orderStatus, isUseStorehubLogistics } = this.props;
-
-    return AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus) && isUseStorehubLogistics;
-  };
-
-  isInputNotesEmpty() {
-    const { inputNotes } = this.props;
-    return inputNotes.trim().length === 0;
-  }
-
-  isUploadPhotoEmpty() {
-    const { uploadPhotoFile } = this.props;
-    return !uploadPhotoFile;
-  }
-
-  isInputEmailEmpty() {
-    const { inputEmail } = this.props;
-    return inputEmail.value.trim().length === 0;
-  }
-
-  isSubmitButtonDisable = () => {
-    const {
-      submitStatus,
-      selectedReasonCode,
-      selectedReasonNoteField,
-      selectedReasonPhotoField,
-      selectedReasonEmailField,
-    } = this.props;
-
-    if (!this.isOrderCanReportDriver()) {
-      return true;
-    }
-
-    if (!selectedReasonCode) {
-      return true;
-    }
-
-    if (selectedReasonNoteField && selectedReasonNoteField.required && this.isInputNotesEmpty()) {
-      return true;
-    }
-
-    if (selectedReasonPhotoField && selectedReasonPhotoField.required && this.isUploadPhotoEmpty()) {
-      return true;
-    }
-
-    if (selectedReasonEmailField && selectedReasonEmailField.required && this.isInputEmailEmpty()) {
-      return true;
-    }
-
-    if (submitStatus !== SUBMIT_STATUS.NOT_SUBMIT) {
-      return true;
-    }
-
-    return false;
-  };
-
   handleUploadPhoto = e => {
     // File Object https://developer.mozilla.org/en-US/docs/Web/API/File
     const file = e.target.files[0];
@@ -179,7 +124,16 @@ class ReportDriver extends Component {
   };
 
   handleSubmit = async () => {
-    const { submittable } = this.props;
+    const { submittable, isOrderAbleReportDriver } = this.props;
+
+    if (!isOrderAbleReportDriver) {
+      this.props.showMessageModal({
+        message: 'this order can not report driver',
+        description: 'can not report driver',
+      });
+
+      return;
+    }
 
     if (!submittable) {
       return;
@@ -351,6 +305,7 @@ class ReportDriver extends Component {
       selectedReasonNoteField,
       selectedReasonPhotoField,
       selectedReasonEmailField,
+      isSubmitButtonDisabled,
     } = this.props;
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
 
@@ -434,7 +389,7 @@ class ReportDriver extends Component {
               <button
                 className="button button__block button__fill text-uppercase text-weight-bolder"
                 data-heap-name="ordering.report-driver.submit-btn"
-                disabled={this.isSubmitButtonDisable()}
+                disabled={isSubmitButtonDisabled}
                 onClick={this.handleSubmit}
               >
                 {this.renderSubmitButtonContent()}
@@ -467,6 +422,8 @@ export default compose(
       selectedReasonPhotoField: getSelectedReasonPhotoField(state),
       selectedReasonEmailField: getSelectedReasonEmailField(state),
       submittable: getSubmittable(state),
+      isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
+      isOrderAbleReportDriver: getIsOrderAbleReportDriver(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,
