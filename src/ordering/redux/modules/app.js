@@ -815,7 +815,7 @@ export const getCartItemList = state => {
 export const getStoreInfoForCleverTap = state => {
   const business = getBusiness(state);
   const allBusinessInfo = getAllBusinesses(state);
-  const { billing: cartBilling } = state.app.shoppingCart;
+  const { billing: cartSummary } = state.app.shoppingCart;
 
-  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartBilling });
+  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
 };

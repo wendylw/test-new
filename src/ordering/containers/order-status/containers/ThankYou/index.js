@@ -42,7 +42,13 @@ import Utils from '../../../../../utils/utils';
 import { gotoHome } from '../../../../../utils/webview-utils';
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import {
+  getBusiness,
+  getBusinessInfo,
+  getBusinessUTCOffset,
+  getOnlineStoreInfo,
+  getUser,
+} from '../../../../redux/modules/app';
 import {
   actions as orderStatusActionCreators,
   getOrder,
@@ -275,7 +281,7 @@ export class ThankYou extends PureComponent {
 
   // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
   recordChargedEvent = () => {
-    const { order, onlineStoreInfo } = this.props;
+    const { order, business, onlineStoreInfo } = this.props;
 
     let totalQuantity = 0;
     let totalDiscount = 0;
@@ -321,6 +327,9 @@ export class ThankYou extends PureComponent {
       Items: itemsList,
       'Order Source': orderSource,
       'Pre-order Period': preOrderPeriod,
+      'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
+      'Cashback Store': business,
+      'promo/voucher applied': _get(order, 'displayPromotions[0].promotionCode'),
     });
   };
 
@@ -1600,6 +1609,7 @@ export default compose(
       order: getOrder(state),
       cashbackInfo: getCashbackInfo(state),
       businessInfo: getBusinessInfo(state),
+      business: getBusiness(state),
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
       orderStatus: getOrderStatus(state),
