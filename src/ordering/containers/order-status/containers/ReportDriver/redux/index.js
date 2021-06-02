@@ -60,7 +60,7 @@ export const thunks = {
     }
 
     if (selectedReasonNotesField) {
-      payload.notes = getInputNotes(state).trim();
+      payload.notes = getInputNotes(state);
     }
 
     if (selectedReasonPhotoField) {

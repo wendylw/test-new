@@ -23,6 +23,7 @@ import {
   getSelectedReasonNoteField,
   getSelectedReasonPhotoField,
   getSelectedReasonEmailField,
+  getSubmittable,
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
 import {
@@ -82,6 +83,12 @@ class ReportDriver extends Component {
     const notes = e.target.value.slice(0, NOTE_MAX_LENGTH);
 
     this.props.updateInputNotes(notes);
+  };
+
+  handleNotesBlur = () => {
+    const { inputNotes } = this.props;
+
+    this.props.updateInputNotes(inputNotes.trim());
   };
 
   handleEmailChange = e => {
@@ -172,9 +179,9 @@ class ReportDriver extends Component {
   };
 
   handleSubmit = async () => {
-    const { selectedReasonHasEmailField, inputEmail } = this.props;
+    const { submittable } = this.props;
 
-    if (selectedReasonHasEmailField && !inputEmail.isValid) {
+    if (!submittable) {
       return;
     }
 
@@ -248,6 +255,7 @@ class ReportDriver extends Component {
             maxLength={NOTE_MAX_LENGTH}
             value={inputNotes}
             onChange={this.handleNotesChange}
+            onBlur={this.handleNotesBlur}
             disabled={disabled}
           ></textarea>
           <p className="text-size-small text-right padding-small text-opacity">
@@ -458,6 +466,7 @@ export default compose(
       selectedReasonNoteField: getSelectedReasonNoteField(state),
       selectedReasonPhotoField: getSelectedReasonPhotoField(state),
       selectedReasonEmailField: getSelectedReasonEmailField(state),
+      submittable: getSubmittable(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,

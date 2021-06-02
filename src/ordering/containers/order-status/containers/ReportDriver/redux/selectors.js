@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import { initialState } from './index';
 import { createSelector } from 'reselect';
-import { REPORT_DRIVER_REASONS, REPORT_DRIVER_FIELD_NAMES } from '../constants';
+import { REPORT_DRIVER_REASONS, REPORT_DRIVER_FIELD_NAMES, SUBMIT_STATUS } from '../constants';
 
 export const getInputNotes = state => {
   return _get(state.orderStatus.reportDriver, 'inputNotes', initialState.inputNotes);
@@ -56,4 +56,53 @@ export const getSelectedReasonPhotoField = createSelector(getSelectedReasonField
 
 export const getSelectedReasonEmailField = createSelector(getSelectedReasonFields, selectedReasonFields =>
   selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL)
+);
+
+export const getSubmittable = createSelector(
+  getSelectedReasonCode,
+  getInputNotes,
+  getUploadPhotoFile,
+  getInputEmail,
+  getSubmitStatus,
+  getSelectedReasonNoteField,
+  getSelectedReasonPhotoField,
+  getSelectedReasonEmailField,
+  (
+    selectedReasonCode,
+    inputNotes,
+    uploadPhotoFile,
+    inputEmail,
+    submitStatus,
+    selectedReasonNoteField,
+    selectedReasonPhotoField,
+    selectedReasonEmailField
+  ) => {
+    if (!selectedReasonCode) {
+      return false;
+    }
+
+    if (submitStatus !== SUBMIT_STATUS.NOT_SUBMIT) {
+      return false;
+    }
+
+    if (selectedReasonNoteField && selectedReasonNoteField.required && inputNotes.length === 0) {
+      return false;
+    }
+
+    if (selectedReasonPhotoField && selectedReasonPhotoField.required && !uploadPhotoFile) {
+      return false;
+    }
+
+    if (selectedReasonEmailField) {
+      if (selectedReasonEmailField.required && inputEmail.value.length === 0) {
+        return false;
+      }
+
+      if (!inputEmail.isValid) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 );
