@@ -1,4 +1,6 @@
+import _get from 'lodash/get';
 import Constants from '../../../../utils/constants';
+import CleverTap from '../../../../utils/constants';
 import { actions as appActions } from '../../../redux/modules/app';
 import i18next from 'i18next';
 
@@ -10,12 +12,41 @@ const { DELIVERY_METHOD } = Constants;
 
 export const cancelOrder = createAsyncThunk(
   'ordering/orderStatus/common/cancelOrder',
-  async (orderId, reason, detail) => {
+  async ({ orderId, reason, detail }, { getState }) => {
+    const { orderStatus, app, entities } = getState();
+    const { order } = orderStatus.common;
+    const businessInfo = entities.businesses[app.business];
     const result = await put(API_INFO.cancelOrder(orderId).url, { reason, detail });
 
-    if (result.success) {
-      return 'fulfilled';
+    if (order && result.success) {
+      CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
+        'store name': _get(order, 'storeInfo.name', ''),
+        'store id': _get(order, 'storeId', ''),
+        'time from order paid': this.getTimeFromOrderPaid() || '',
+        'order amount': _get(order, 'total', ''),
+        country: _get(businessInfo, 'country', ''),
+        'Reason for cancellation': reason,
+        otherReasonSpecification: detail,
+      });
+
+      window.location.reload();
+    } else {
+      if (result.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        appActions.showApiErrorModal(result.code);
+      } else {
+        console.error('Cancel order error: ', result);
+
+        appActions.showMessageModal({
+          message: i18next.t('OrderingThankYou:CancellationError'),
+          description: i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'),
+        });
+      }
     }
+
+    return result;
   }
 );
 
@@ -43,63 +74,3 @@ export const updateOrderShippingType = createAsyncThunk(
     }
   }
 );
-
-// export const actions = {
-// loadOrder: orderId => ({
-//   [FETCH_GRAPHQL]: {
-//     types: [types.fetchOrderRequest, types.fetchOrderSuccess, types.fetchOrderFailure],
-//     endpoint: Url.apiGql('Order'),
-//     variables: { orderId },
-//   },
-// }),
-// loadOrderStatus: orderId => ({
-//   [API_REQUEST]: {
-//     types: [types.fetchOrderStatusRequest, types.fetchOrderStatusSuccess, types.fetchOrderStatusFailure],
-//     ...Url.API_URLS.GET_ORDER_STATUS({ orderId }),
-//   },
-// }),
-//   cancelOrder: ({ orderId, reason, detail }) => async (dispatch, getState) => {
-//     try {
-//       const { url: endPoint } = Url.API_URLS.CANCEL_ORDER(orderId);
-
-//       dispatch({
-//         type: types.cancelOrderRequest,
-//       });
-
-//       await ApiFetch.put(endPoint, {
-//         reason,
-//         detail,
-//       });
-
-//       dispatch({
-//         type: types.cancelOrderSuccess,
-//       });
-//     } catch (error) {
-//       dispatch({
-//         type: types.cancelOrderFailure,
-//         error,
-//       });
-
-//       if (error.code) {
-//         // TODO: This type is actually not used, because apiError does not respect action type,
-//         // which is a bad practice, we will fix it in the future, for now we just keep a useless
-//         // action type.
-//         dispatch({
-//           type: 'ordering/app/showApiErrorModal',
-//           ...error,
-//         });
-//       } else {
-//         console.error('Cancel order error: ', error);
-
-//         dispatch(
-//           appActions.showMessageModal({
-//             message: i18next.t('OrderingThankYou:CancellationError'),
-//             description: i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'),
-//           })
-//         );
-//       }
-//     }
-
-//     return getCancelOrderStatus(getState());
-//   },
-// };

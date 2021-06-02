@@ -2,16 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import { loadCashbackInfo, createCashbackInfo, loadStoreIdHashCode, loadStoreIdTableIdHashCode } from './thunks';
 
 const initialState = {
-  /* included: isFetching, customerId, consumerId, status */
+  /* included: customerId, consumerId, status */
   cashbackInfo: {
-    isFetching: false,
     customerId: null,
     consumerId: null,
     status: null,
-    updateCashbackInfoStatus: null,
-    createdCashbackInfo: false,
     error: null,
   },
+  updateCashbackInfoStatus: null,
   storeHashCode: null,
   orderCancellationReasonAsideVisible: false,
 };
@@ -26,36 +24,30 @@ const { reducer, actions } = createSlice({
   },
   extraReducers: {
     [loadCashbackInfo.pending.type]: state => {
-      state.cashbackInfo.isFetching = true;
-      state.cashbackInfo.updateCashbackInfoStatus = 'pending';
+      state.updateCashbackInfoStatus = 'pending';
     },
     [loadCashbackInfo.fulfilled.type]: (state, { payload }) => {
       state.cashbackInfo = Object.assign({}, state.cashbackInfo, payload, {
-        isFetching: false,
         updateCashbackInfoStatus: 'fulfilled',
         createdCashbackInfo: false,
       });
     },
     [loadCashbackInfo.rejected.type]: (state, { error }) => {
       state.cashbackInfo.error = error;
-      state.cashbackInfo.isFetching = false;
-      state.cashbackInfo.updateCashbackInfoStatus = 'rejected';
+      state.updateCashbackInfoStatus = 'rejected';
     },
     [createCashbackInfo.pending.type]: state => {
-      state.cashbackInfo.isFetching = true;
-      state.cashbackInfo.updateCashbackInfoStatus = 'pending';
+      state.updateCashbackInfoStatus = 'pending';
     },
     [createCashbackInfo.fulfilled.type]: (state, { payload }) => {
       state.cashbackInfo = Object.assign({}, state.cashbackInfo, payload, {
-        isFetching: false,
         updateCashbackInfoStatus: 'fulfilled',
         createdCashbackInfo: true,
       });
     },
     [createCashbackInfo.rejected.type]: (state, { error }) => {
       state.cashbackInfo.error = error;
-      state.cashbackInfo.isFetching = false;
-      state.cashbackInfo.updateCashbackInfoStatus = 'rejected';
+      state.updateCashbackInfoStatus = 'rejected';
     },
     [loadStoreIdHashCode.fulfilled.type]: (state, { payload }) => {
       state.storeHashCode = payload.redirectTo;

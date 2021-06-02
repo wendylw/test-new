@@ -10,10 +10,13 @@ import './SelfPickup.scss';
 function SelfPickup({ t, processing, onClickSelfPickupButton, onChangeToSelfPickup }) {
   const [modalDisplayState, setModalDisplayState] = useState(false);
 
-  const handleToggleModal = useCallback(status => {
-    onClickSelfPickupButton();
-    setModalDisplayState(status);
-  }, []);
+  const handleToggleModal = useCallback(
+    status => {
+      onClickSelfPickupButton();
+      setModalDisplayState(status);
+    },
+    [onClickSelfPickupButton]
+  );
 
   return (
     <section className="self-pickup">

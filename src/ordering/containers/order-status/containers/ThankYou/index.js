@@ -42,7 +42,13 @@ import Utils from '../../../../../utils/utils';
 import { gotoHome } from '../../../../../utils/webview-utils';
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import { getBusinessInfo, getBusinessUTCOffset, getOnlineStoreInfo, getUser } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getBusinessInfo,
+  getBusinessUTCOffset,
+  getOnlineStoreInfo,
+  getUser,
+} from '../../../../redux/modules/app';
 import { cancelOrder, loadOrder, loadOrderStatus, updateOrderShippingType } from '../../redux/thunks';
 import {
   getOrder,
@@ -65,11 +71,11 @@ import {
   getOrderCancellationButtonVisible,
   getDeliveryUpdatableToSelfPickupState,
 } from './redux/selector';
-import { actions as appActionCreators } from '../../../../redux/modules/app';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
+import PhoneLogin from './components/PhoneLogin';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -1434,45 +1440,20 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
-    const {
-      receiptNumber,
-      orderStatusActions,
-      updateCancellationReasonVisibleState,
-      businessInfo,
-      isOrderCancellable,
-      order,
-    } = this.props;
+    const { receiptNumber, orderStatusActions, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
 
-    try {
-      if (!isOrderCancellable) {
-        this.showRiderHasFoundMessageModal();
-        return;
-      }
-
-      const result = await orderStatusActions.cancelOrder({
-        orderId: receiptNumber,
-        reason,
-        detail,
-      });
-
-      if (result === 'fulfilled') {
-        CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
-          'store name': _get(order, 'storeInfo.name', ''),
-          'store id': _get(order, 'storeId', ''),
-          'time from order paid': this.getTimeFromOrderPaid() || '',
-          'order amount': _get(order, 'total', ''),
-          country: _get(businessInfo, 'country', ''),
-          'Reason for cancellation': reason,
-          otherReasonSpecification: detail,
-        });
-
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error('handleOrderCancellation error', error);
-    } finally {
-      updateCancellationReasonVisibleState(false);
+    if (!isOrderCancellable) {
+      this.showRiderHasFoundMessageModal();
+      return;
     }
+
+    await orderStatusActions.cancelOrder({
+      orderId: receiptNumber,
+      reason,
+      detail,
+    });
+
+    updateCancellationReasonVisibleState(false);
   };
 
   handleHideOrderCancellationReasonAside = () => {
@@ -1636,6 +1617,8 @@ export class ThankYou extends PureComponent {
                 {shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderViewDetail() : this.renderNeedReceipt()}
 
                 {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
+
+                <PhoneLogin hideMessage={true} history={history} />
               </div>
             </div>
             <footer
