@@ -69,7 +69,7 @@ export const thunks = {
           dispatch(actions.setUploadPhotoFileLocation(result.location));
           location = result.location;
         } catch (e) {
-          loggly.error('update feedback photo failure', e);
+          loggly.error('Upload photo of feedback failure', e);
           dispatch(
             appActions.showMessageModal({
               message: i18next.t('ConnectionIssue'),
@@ -88,7 +88,7 @@ export const thunks = {
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.SUBMITTED));
     } catch (e) {
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
-      loggly.error('submit feedback failure', e);
+      loggly.error('Submit feedback failure', e);
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
         // which is a bad practice, we will fix it in the future, for now we just keep a useless
