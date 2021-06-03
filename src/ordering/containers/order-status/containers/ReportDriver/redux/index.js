@@ -1,12 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Url from '../../../../../../utils/url';
-import { REPORT_DRIVER_FIELD_NAMES, SUBMIT_STATUS } from '../constants';
+import { SUBMIT_STATUS } from '../constants';
 import {
-  getSelectedReasonFields,
   getSelectedReasonCode,
   getInputNotes,
   getUploadPhotoFile,
   getUploadPhotoLocation,
+  getInputEmailValue,
+  getSelectedReasonNoteField,
+  getSelectedReasonPhotoField,
 } from './selectors';
 import { getReceiptNumber } from '../../../redux/common';
 import * as ApiFetch from '../../../../../../utils/api/api-fetch';
@@ -14,6 +16,8 @@ import { uploadReportDriverPhoto } from '../../../../../../utils/aws-s3';
 import { actions as appActions } from '../../../../../redux/modules/app';
 import i18next from 'i18next';
 import _get from 'lodash/get';
+import Utils from '../../../../../../utils/utils';
+import * as loggly from '../../../../../../utils/monitoring/loggly.js';
 
 export const initialState = {
   inputNotes: '',
@@ -25,6 +29,11 @@ export const initialState = {
   },
   submitStatus: SUBMIT_STATUS.NOT_SUBMIT,
   showPageLoader: true,
+  inputEmail: {
+    value: '',
+    isCompleted: false, // it will be completed when input blur
+    isValid: false,
+  },
 };
 
 export const thunks = {
@@ -32,9 +41,8 @@ export const thunks = {
     const { getState, dispatch } = thunkAPI;
     const state = getState();
     const actions = reportDriverSlice.actions;
-    const selectedReasonFields = getSelectedReasonFields(state);
-    const selectedReasonNotesField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
-    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
+    const selectedReasonNotesField = getSelectedReasonNoteField(state);
+    const selectedReasonPhotoField = getSelectedReasonPhotoField(state);
     const selectedReasonCode = getSelectedReasonCode(state);
     const receiptNumber = getReceiptNumber(state);
     const payload = {
@@ -45,8 +53,10 @@ export const thunks = {
 
     dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
 
+    payload.email = getInputEmailValue(state);
+
     if (selectedReasonNotesField) {
-      payload.notes = getInputNotes(state).trim();
+      payload.notes = getInputNotes(state);
     }
 
     if (selectedReasonPhotoField) {
@@ -59,7 +69,7 @@ export const thunks = {
           dispatch(actions.setUploadPhotoFileLocation(result.location));
           location = result.location;
         } catch (e) {
-          console.error(e);
+          loggly.error('order-status.report-driver.upload-photo-error', { message: e.message });
           dispatch(
             appActions.showMessageModal({
               message: i18next.t('ConnectionIssue'),
@@ -77,13 +87,20 @@ export const thunks = {
       await ApiFetch.post(Url.API_URLS.CREATE_FEED_BACK.url, payload);
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.SUBMITTED));
     } catch (e) {
-      console.error(e);
-      dispatch(
-        appActions.showMessageModal({
-          message: i18next.t('ConnectionIssue'),
-        })
-      );
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
+      loggly.error('order-status.report-driver.submit-error', { message: e.message });
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch({ type: 'ordering/orderStatus/reportDriver/submitReportFailure', ...e });
+      } else {
+        dispatch(
+          appActions.showMessageModal({
+            message: i18next.t('ConnectionIssue'),
+          })
+        );
+      }
     }
   }),
   fetchReport: createAsyncThunk('ordering/orderStatus/reportDriver/fetchReport', (data, thunkAPI) => {
@@ -103,6 +120,15 @@ export const reportDriverSlice = createSlice({
   name: 'ordering/orderStatus/reportDriver',
   initialState,
   reducers: {
+    initialEmail(state, { payload }) {
+      const email = payload.trim();
+
+      if (email.length > 0) {
+        state.inputEmail.value = email;
+        state.inputEmail.isCompleted = true;
+        state.inputEmail.isValid = Utils.checkEmailIsValid(email);
+      }
+    },
     updateInputNotes(state, { payload }) {
       state.inputNotes = payload;
     },
@@ -125,6 +151,18 @@ export const reportDriverSlice = createSlice({
     },
     updateSubmitStatus(state, { payload }) {
       state.submitStatus = payload;
+    },
+    updateInputEmail(state, { payload }) {
+      state.inputEmail.value = payload;
+      state.inputEmail.isCompleted = false;
+      state.inputEmail.isValid = false;
+    },
+    inputEmailCompleted(state) {
+      const email = state.inputEmail.value.trim();
+
+      state.inputEmail.value = email;
+      state.inputEmail.isCompleted = true;
+      state.inputEmail.isValid = email.length > 0 ? Utils.checkEmailIsValid(email) : true;
     },
   },
   extraReducers: {
