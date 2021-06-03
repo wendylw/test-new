@@ -194,7 +194,7 @@ const dsbridgeAsyncCall = (method, params) => {
         if (code === StatusCodes.SUCCESS) {
           resolve(data);
         } else {
-          reject(new Error(message));
+          throw new Error(message);
         }
       });
     } catch (e) {
