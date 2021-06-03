@@ -982,8 +982,8 @@ export class ThankYou extends PureComponent {
 
         {updatableToSelfPickupStatus ? (
           <SelfPickup
-            onClickSelfPickupButton={() => this.handleClickSelfPickupButton}
-            onChangeToSelfPickup={() => this.handleChangeToSelfPickup}
+            onClickSelfPickupButton={this.handleClickSelfPickupButton}
+            onChangeToSelfPickup={this.handleChangeToSelfPickup}
             processing={pendingUpdatedOrderStatus}
           />
         ) : null}
