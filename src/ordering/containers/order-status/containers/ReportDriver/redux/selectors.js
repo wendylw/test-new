@@ -55,28 +55,22 @@ export const getSelectedReasonPhotoField = createSelector(getSelectedReasonField
   selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO)
 );
 
-export const getSelectedReasonEmailField = createSelector(getSelectedReasonFields, selectedReasonFields =>
-  selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.EMAIL)
-);
-
 export const getIsSubmitButtonDisabled = createSelector(
   getSelectedReasonCode,
   getInputNotes,
   getUploadPhotoFile,
-  getInputEmail,
+  getInputEmailValue,
   getSubmitStatus,
   getSelectedReasonNoteField,
   getSelectedReasonPhotoField,
-  getSelectedReasonEmailField,
   (
     selectedReasonCode,
     inputNotes,
     uploadPhotoFile,
-    inputEmail,
+    inputEmailValue,
     submitStatus,
     selectedReasonNoteField,
-    selectedReasonPhotoField,
-    selectedReasonEmailField
+    selectedReasonPhotoField
   ) => {
     if (!selectedReasonCode) {
       return true;
@@ -91,10 +85,10 @@ export const getIsSubmitButtonDisabled = createSelector(
     }
 
     if (selectedReasonPhotoField && selectedReasonPhotoField.required && !uploadPhotoFile) {
-      return false;
+      return true;
     }
 
-    if (selectedReasonEmailField && selectedReasonEmailField.required && inputEmail.value.length === 0) {
+    if (inputEmailValue.length === 0) {
       return true;
     }
 
@@ -105,9 +99,8 @@ export const getIsSubmitButtonDisabled = createSelector(
 export const getSubmittable = createSelector(
   getIsSubmitButtonDisabled,
   getIsOrderAbleReportDriver,
-  getInputEmail,
-  getSelectedReasonEmailField,
-  (isSubmitButtonDisabled, isOrderAbleReportDriver, inputEmail, selectedReasonEmailField) => {
+  getInputEmailIsValid,
+  (isSubmitButtonDisabled, isOrderAbleReportDriver, inputEmailIsValid) => {
     if (isSubmitButtonDisabled) {
       return false;
     }
@@ -116,7 +109,7 @@ export const getSubmittable = createSelector(
       return false;
     }
 
-    if (selectedReasonEmailField && !inputEmail.isValid) {
+    if (!inputEmailIsValid) {
       return false;
     }
 

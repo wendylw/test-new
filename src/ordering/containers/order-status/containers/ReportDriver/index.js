@@ -22,9 +22,9 @@ import {
   getInputEmail,
   getSelectedReasonNoteField,
   getSelectedReasonPhotoField,
-  getSelectedReasonEmailField,
   getSubmittable,
   getIsSubmitButtonDisabled,
+  getInputEmailIsValid,
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
 import {
@@ -43,6 +43,8 @@ const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
 const { REPORT_DRIVER_REASON_CODE } = Constants;
 
 class ReportDriver extends Component {
+  inputRefOfEmail = null;
+
   componentDidMount = async () => {
     const { receiptNumber, loadOrder, fetchReport, userConsumerId, getProfileInfo, initialEmail } = this.props;
 
@@ -123,8 +125,8 @@ class ReportDriver extends Component {
     this.props.removeUploadPhotoFile();
   };
 
-  handleSubmit = async () => {
-    const { submittable, isOrderAbleReportDriver } = this.props;
+  beforeSubmit = () => {
+    const { isOrderAbleReportDriver, inputEmailCompleted } = this.props;
 
     if (!isOrderAbleReportDriver) {
       this.props.showMessageModal({
@@ -132,10 +134,25 @@ class ReportDriver extends Component {
         description: 'can not report driver',
       });
 
-      return;
+      return false;
     }
 
-    if (!submittable) {
+    inputEmailCompleted();
+
+    if (!this.props.inputEmailIsValid) {
+      this.inputRefOfEmail?.focus();
+      return false;
+    }
+
+    if (!this.props.submittable) {
+      return false;
+    }
+
+    return true;
+  };
+
+  handleSubmit = async () => {
+    if (!this.beforeSubmit()) {
       return;
     }
 
@@ -220,7 +237,7 @@ class ReportDriver extends Component {
     );
   }
 
-  renderEmailFiled({ t, inputEmail, disabled, required }) {
+  renderEmailFiled({ t, inputEmail, disabled }) {
     const { value, isCompleted, isValid } = inputEmail;
 
     const showInvalidError = isCompleted && !isValid;
@@ -229,7 +246,7 @@ class ReportDriver extends Component {
       <div className="padding-top-bottom-small margin-top-bottom-small">
         <h3 className="margin-small">
           <span className="text-weight-bolder">{t('Email')}</span>
-          {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
+          <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span>
         </h3>
         <div
           className={`ordering-report-driver__group ${
@@ -237,6 +254,7 @@ class ReportDriver extends Component {
           } form__group margin-left-right-small border-radius-normal`}
         >
           <input
+            ref={ref => (this.inputRefOfEmail = ref)}
             disabled={disabled}
             value={value}
             onChange={this.handleEmailChange}
@@ -304,7 +322,6 @@ class ReportDriver extends Component {
       inputEmail,
       selectedReasonNoteField,
       selectedReasonPhotoField,
-      selectedReasonEmailField,
       isSubmitButtonDisabled,
     } = this.props;
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
@@ -329,7 +346,12 @@ class ReportDriver extends Component {
         ></Header>
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
-          <div className="card padding-small margin-normal">
+          <div className="card padding-small">
+            {this.renderEmailFiled({
+              t,
+              disabled,
+              inputEmail,
+            })}
             <h3 className="margin-small text-weight-bolder">{t('SelectAReportReason')}</h3>
             <ul className="margin-small">
               {REPORT_DRIVER_REASONS.map(reason => ({
@@ -378,13 +400,6 @@ class ReportDriver extends Component {
                   required: selectedReasonPhotoField.required,
                 })
               : null}
-            {selectedReasonEmailField &&
-              this.renderEmailFiled({
-                t,
-                disabled,
-                required: selectedReasonEmailField.required,
-                inputEmail,
-              })}
             <div className="margin-small">
               <button
                 className="button button__block button__fill text-uppercase text-weight-bolder"
@@ -420,10 +435,10 @@ export default compose(
       userConsumerId: getUserConsumerId(state),
       selectedReasonNoteField: getSelectedReasonNoteField(state),
       selectedReasonPhotoField: getSelectedReasonPhotoField(state),
-      selectedReasonEmailField: getSelectedReasonEmailField(state),
       submittable: getSubmittable(state),
       isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
       isOrderAbleReportDriver: getIsOrderAbleReportDriver(state),
+      inputEmailIsValid: getInputEmailIsValid(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,

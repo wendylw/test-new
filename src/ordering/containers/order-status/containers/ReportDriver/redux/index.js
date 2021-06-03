@@ -43,7 +43,6 @@ export const thunks = {
     const actions = reportDriverSlice.actions;
     const selectedReasonNotesField = getSelectedReasonNoteField(state);
     const selectedReasonPhotoField = getSelectedReasonPhotoField(state);
-    const selectedReasonEmailField = getSelectedReasonEmailField(state);
     const selectedReasonCode = getSelectedReasonCode(state);
     const receiptNumber = getReceiptNumber(state);
     const payload = {
@@ -54,9 +53,7 @@ export const thunks = {
 
     dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.IN_PROGRESS));
 
-    if (selectedReasonEmailField) {
-      payload.email = getInputEmailValue(state);
-    }
+    payload.email = getInputEmailValue(state);
 
     if (selectedReasonNotesField) {
       payload.notes = getInputNotes(state);
