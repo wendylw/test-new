@@ -243,7 +243,7 @@ class ReportDriver extends Component {
     const showInvalidError = isCompleted && !isValid;
 
     return (
-      <div className="padding-top-bottom-small margin-top-bottom-small">
+      <div className="padding-top-bottom-small">
         <h3 className="margin-small">
           <span className="text-weight-bolder">{t('Email')}</span>
           <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span>
@@ -346,7 +346,7 @@ class ReportDriver extends Component {
         ></Header>
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
-          <div className="card padding-small">
+          <div className="card padding-small margin-normal">
             {this.renderEmailFiled({
               t,
               disabled,
