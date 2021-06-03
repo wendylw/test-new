@@ -20,5 +20,8 @@
     "DriverAskedMoreMoney": "Driver asked for more money on delivery",
     "Others": "Others",
     "Email": "Email",
-    "PleaseEnterValidEmail": "Please enter a valid email address"
+    "PleaseEnterValidEmail": "Please enter a valid email address",
+    "SubmissionFailed": "Submission Failed",
+    "ThisRestaurantUsesItsOwnDeliveryDrivers": "This restaurant uses its own delivery drivers. Please contact them directly to resolve the issue.",
+    "YourOrderHasNotBeenDeliveredYet": "Your order has not been delivered yet. Please try submitting later once you have received your food."
 }

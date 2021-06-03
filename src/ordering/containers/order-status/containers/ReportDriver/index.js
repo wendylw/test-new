@@ -27,13 +27,7 @@ import {
   getInputEmailIsValid,
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
-import {
-  actions as commonActionCreators,
-  getIsUseStorehubLogistics,
-  getOrderStatus,
-  getReceiptNumber,
-  getIsOrderAbleReportDriver,
-} from '../../redux/common';
+import { actions as commonActionCreators, getReceiptNumber } from '../../redux/common';
 import { actions as appActionCreators, getUserEmail, getUserConsumerId } from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
@@ -126,18 +120,7 @@ class ReportDriver extends Component {
   };
 
   beforeSubmit = () => {
-    const { isOrderAbleReportDriver, inputEmailCompleted } = this.props;
-
-    if (!isOrderAbleReportDriver) {
-      this.props.showMessageModal({
-        message: 'this order can not report driver',
-        description: 'can not report driver',
-      });
-
-      return false;
-    }
-
-    inputEmailCompleted();
+    this.props.inputEmailCompleted();
 
     if (!this.props.inputEmailIsValid) {
       this.inputRefOfEmail?.focus();
@@ -423,8 +406,6 @@ export default compose(
     state => ({
       inputNotes: getInputNotes(state),
       selectedReasonCode: getSelectedReasonCode(state),
-      orderStatus: getOrderStatus(state),
-      isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       receiptNumber: getReceiptNumber(state),
       submitStatus: getSubmitStatus(state),
       showPageLoader: getShowPageLoader(state),
@@ -437,7 +418,6 @@ export default compose(
       selectedReasonPhotoField: getSelectedReasonPhotoField(state),
       submittable: getSubmittable(state),
       isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
-      isOrderAbleReportDriver: getIsOrderAbleReportDriver(state),
       inputEmailIsValid: getInputEmailIsValid(state),
     }),
     {

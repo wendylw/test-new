@@ -17,6 +17,7 @@ import { actions as appActions } from '../../../../../redux/modules/app';
 import i18next from 'i18next';
 import _get from 'lodash/get';
 import Utils from '../../../../../../utils/utils';
+import * as loggly from '../../../../../../utils/monitoring/loggly.js';
 
 export const initialState = {
   inputNotes: '',
@@ -68,7 +69,7 @@ export const thunks = {
           dispatch(actions.setUploadPhotoFileLocation(result.location));
           location = result.location;
         } catch (e) {
-          console.error(e);
+          loggly.error('update feedback photo failure', e);
           dispatch(
             appActions.showMessageModal({
               message: i18next.t('ConnectionIssue'),
@@ -86,13 +87,20 @@ export const thunks = {
       await ApiFetch.post(Url.API_URLS.CREATE_FEED_BACK.url, payload);
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.SUBMITTED));
     } catch (e) {
-      console.error(e);
-      dispatch(
-        appActions.showMessageModal({
-          message: i18next.t('ConnectionIssue'),
-        })
-      );
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
+      loggly.error('submit feedback failure', e);
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch({ type: 'ordering/orderStatus/reportDriver/submitReportFailure', ...e });
+      } else {
+        dispatch(
+          appActions.showMessageModal({
+            message: i18next.t('ConnectionIssue'),
+          })
+        );
+      }
     }
   }),
   fetchReport: createAsyncThunk('ordering/orderStatus/reportDriver/fetchReport', (data, thunkAPI) => {

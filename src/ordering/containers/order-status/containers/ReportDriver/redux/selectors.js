@@ -2,7 +2,6 @@ import _get from 'lodash/get';
 import { initialState } from './index';
 import { createSelector } from 'reselect';
 import { REPORT_DRIVER_REASONS, REPORT_DRIVER_FIELD_NAMES, SUBMIT_STATUS } from '../constants';
-import { getIsOrderAbleReportDriver } from '../../../redux/common';
 
 export const getInputNotes = state => {
   return _get(state.orderStatus.reportDriver, 'inputNotes', initialState.inputNotes);
@@ -98,14 +97,9 @@ export const getIsSubmitButtonDisabled = createSelector(
 
 export const getSubmittable = createSelector(
   getIsSubmitButtonDisabled,
-  getIsOrderAbleReportDriver,
   getInputEmailIsValid,
-  (isSubmitButtonDisabled, isOrderAbleReportDriver, inputEmailIsValid) => {
+  (isSubmitButtonDisabled, inputEmailIsValid) => {
     if (isSubmitButtonDisabled) {
-      return false;
-    }
-
-    if (!isOrderAbleReportDriver) {
       return false;
     }
 
