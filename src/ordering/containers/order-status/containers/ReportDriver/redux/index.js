@@ -9,7 +9,6 @@ import {
   getInputEmailValue,
   getSelectedReasonNoteField,
   getSelectedReasonPhotoField,
-  getSelectedReasonEmailField,
 } from './selectors';
 import { getReceiptNumber } from '../../../redux/common';
 import * as ApiFetch from '../../../../../../utils/api/api-fetch';
