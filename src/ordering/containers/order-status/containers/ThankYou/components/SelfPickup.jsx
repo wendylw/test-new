@@ -50,7 +50,7 @@ function SelfPickup({ t, processing, onClickSelfPickupButton, onChangeToSelfPick
           </button>
           <button
             className="self-pickup__modal-fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
-            onClick={() => onChangeToSelfPickup}
+            onClick={() => onChangeToSelfPickup()}
           >
             {t('SelfPickUpPromptConfirmedText')}
           </button>
