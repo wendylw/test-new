@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import Header from '../../../../../components/Header';
-import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
 import LiveChatNative from '../../../../../components/LiveChatNative';
 import Tag from '../../../../../components/Tag';
@@ -18,6 +17,7 @@ import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../
 import {
   actions as orderStatusActionCreators,
   getIsUseStorehubLogistics,
+  getIsShowReorderButton,
   getOrder,
   getOrderStatus,
   getPromotion,
@@ -101,6 +101,15 @@ export class OrderDetails extends Component {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
+  handleReorder = () => {
+    const { order } = this.props;
+    const { shippingType } = order || '';
+    this.props.history.replace({
+      pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+      search: `type=${shippingType}`,
     });
   };
 
@@ -266,6 +275,7 @@ export class OrderDetails extends Component {
       history,
       t,
       isUseStorehubLogistics,
+      isShowReorderButton,
       serviceCharge,
       user,
       businessInfo,
@@ -400,16 +410,27 @@ export class OrderDetails extends Component {
               </li>
             </ul>
           </div>
+          {isShowReorderButton ? (
+            <div className="card margin-normal">
+              <button
+                onClick={this.handleReorder}
+                className="button button__block button__fill flex flex-middle flex-center padding-small"
+              >
+                <span className="text-size-big text-weight-bolder text-uppercase">{t('Reorder')}</span>
+              </button>
+            </div>
+          ) : null}
           {isUseStorehubLogistics ? (
             <div className="card margin-normal">
               <button
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
-                className="button button__block flex flex-middle flex-space-between padding-small"
+                className="button button__block flex flex-middle flex-center padding-small"
                 data-heap-name="ordering.contact-details.report-driver-btn"
               >
-                <span className="text-size-big text-weight-bolder padding-left-right-small">{t('ReportIssue')}</span>
-                <IconNext className="icon icon__small" />
+                <span className="text-size-big text-weight-bolder text-uppercase padding-left-right-small">
+                  {t('ReportIssue')}
+                </span>
               </button>
             </div>
           ) : null}
@@ -430,6 +451,7 @@ export default compose(
       orderStatus: getOrderStatus(state),
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),

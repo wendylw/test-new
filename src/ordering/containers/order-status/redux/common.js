@@ -150,6 +150,20 @@ export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)
 );
 
+export const getIsShowReorderButton = createSelector(
+  getOrderStatus,
+  getOrderShippingType,
+  (orderStatus, shippingType) => {
+    if (shippingType === Constants.DELIVERY_METHOD.DELIVERY && orderStatus === Constants.ORDER_STATUS.DELIVERED) {
+      return true;
+    } else if (shippingType === Constants.DELIVERY_METHOD.PICKUP && orderStatus === Constants.ORDER_STATUS.PICKED_UP) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+);
+
 export const getIsPreOrder = createSelector(getOrder, order => _get(order, 'isPreOrder', false));
 
 export const getIsOnDemandOrder = createSelector(getIsPreOrder, isPreOrder => !isPreOrder);
