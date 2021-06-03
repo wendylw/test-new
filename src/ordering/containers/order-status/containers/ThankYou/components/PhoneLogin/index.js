@@ -1,5 +1,6 @@
 import qs from 'qs';
 import React from 'react';
+import _isNil from 'lodash/isNil';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
@@ -33,13 +34,13 @@ class PhoneLogin extends React.Component {
   };
 
   async componentDidMount() {
-    const { history, thankYouActions, user } = this.props;
-    const { isWebview } = user;
+    const { history, thankYouActions, appActions } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { user, businessInfo } = this.props;
+    const { isWebview } = user;
     const { enableCashback } = businessInfo || {};
 
     if (enableCashback) {
