@@ -103,54 +103,21 @@ export const getIsSubmitButtonDisabled = createSelector(
 );
 
 export const getSubmittable = createSelector(
+  getIsSubmitButtonDisabled,
   getIsOrderAbleReportDriver,
-  getSelectedReasonCode,
-  getInputNotes,
-  getUploadPhotoFile,
   getInputEmail,
-  getSubmitStatus,
-  getSelectedReasonNoteField,
-  getSelectedReasonPhotoField,
   getSelectedReasonEmailField,
-  (
-    isOrderAbleReportDriver,
-    selectedReasonCode,
-    inputNotes,
-    uploadPhotoFile,
-    inputEmail,
-    submitStatus,
-    selectedReasonNoteField,
-    selectedReasonPhotoField,
-    selectedReasonEmailField
-  ) => {
+  (isSubmitButtonDisabled, isOrderAbleReportDriver, inputEmail, selectedReasonEmailField) => {
+    if (isSubmitButtonDisabled) {
+      return false;
+    }
+
     if (!isOrderAbleReportDriver) {
       return false;
     }
 
-    if (!selectedReasonCode) {
+    if (selectedReasonEmailField && !inputEmail.isValid) {
       return false;
-    }
-
-    if (submitStatus !== SUBMIT_STATUS.NOT_SUBMIT) {
-      return false;
-    }
-
-    if (selectedReasonNoteField && selectedReasonNoteField.required && inputNotes.length === 0) {
-      return false;
-    }
-
-    if (selectedReasonPhotoField && selectedReasonPhotoField.required && !uploadPhotoFile) {
-      return false;
-    }
-
-    if (selectedReasonEmailField) {
-      if (selectedReasonEmailField.required && inputEmail.value.length === 0) {
-        return false;
-      }
-
-      if (!inputEmail.isValid) {
-        return false;
-      }
     }
 
     return true;
