@@ -6,10 +6,10 @@ export const API_INFO = {
     url: `/api/transactions/${orderId}/status`,
   }),
   cancelOrder: orderId => ({
-    url: `/api/transactions/${orderId}/status/cancel`,
+    url: `/api/v3/transactions/${orderId}/status/cancel`,
   }),
   updateOrderShippingType: orderId => ({
-    url: `/api/transactions/${orderId}/change-shipping-type`,
+    url: `/api/v3/transactions/${orderId}/change-shipping-type`,
   }),
   getCashbackInfo: (orderId, source) => ({
     url: `/api/cashback`,
