@@ -53,12 +53,12 @@
   "54023Description":"Your order cannot be cancelled. Please contact customer support if you wish to proceed.",
   "54028Title": "Cancellation Error (Error: 54028)",
   "54028Description":"Your order cannot be cancelled. Please contact customer support if you wish to proceed.",
-  "51001Title": "Submission failed",
-  "51001Description": "you have submit a report already",
+  "51001Title": "You’ve submitted a report",
+  "51001Description": "Rest assured we have received your previous submission. We sincerely apologise for the inconvenience caused and our Customer Care team will be in touch shortly.",
   "51002Title": "Submission failed",
   "51002Description": "This restaurant uses its own delivery drivers. Please contact them directly to resolve the issue.",
   "51003Title": "Submission failed",
-  "51003Description": "Oops! You can only submit a report after your food has been delivered. If you are having issues with your order, you can contact us via live chat by clicking on the \"Need Help?\" button on your order tracking page.",
+  "51003Description": "You can only submit a report after your food has been delivered. If you are having issues with your order, you can contact us via live chat by clicking on the \"Need Help?\" button on your order tracking page.",
   "51004Title": "Submission failed",
-  "51004Description": "Oops! You are unable to submit a report as this is not a delivery order. Please send us an email to support@beepit.com if you've got any feedback."
+  "51004Description": "You are unable to submit a report as this is not a delivery order. Please send us an email to support@beepit.com if you've got any feedback."
 }
