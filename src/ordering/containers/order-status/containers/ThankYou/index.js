@@ -449,14 +449,12 @@ export class ThankYou extends PureComponent {
   };
 
   renderCashbackUI = cashback => {
-    const { t, cashbackInfo, user } = this.props;
+    const { t, cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
-    const { isWebview } = user;
     const statusCanGetCashback = ['Claimed_FirstTime', 'Claimed_NotFirstTime', 'Claimed_Repeat'];
 
-    // show cashback amount default if user access thank-you page through order history
     return (
-      (statusCanGetCashback.includes(status) || isWebview) && (
+      statusCanGetCashback.includes(status) && (
         <div className="ordering-thanks__card-prompt card text-center padding-small margin-normal">
           {this.state.cashbackSuccessImage && (
             <img

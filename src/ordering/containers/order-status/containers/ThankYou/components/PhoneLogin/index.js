@@ -14,6 +14,7 @@ import {
   getBusinessInfo,
 } from '../../../../../../redux/modules/app';
 import { actions as thankYouActionCreators, getCashbackInfo } from '../../redux';
+import { NativeMethods } from '../../../../../../../utils/dsbridge-methods';
 import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
@@ -32,7 +33,8 @@ class PhoneLogin extends React.Component {
   };
 
   async componentDidMount() {
-    const { history, thankYouActions } = this.props;
+    const { history, thankYouActions, user } = this.props;
+    const { isWebview } = user;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     await thankYouActions.getCashbackInfo(receiptNumber);
@@ -49,6 +51,19 @@ class PhoneLogin extends React.Component {
     this.setState({
       claimedAnimationGifSrc: succeedAnimationGif,
     });
+
+    if (isWebview) {
+      const res = await NativeMethods.getToken();
+      if (_isNil(res)) {
+        console.log('native token is invalid');
+      } else {
+        const { access_token, refresh_token } = res;
+        await appActions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      }
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {

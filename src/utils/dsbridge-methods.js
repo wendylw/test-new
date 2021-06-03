@@ -182,6 +182,7 @@ const dsbridgeSyncCall = (method, params) => {
     }
   } catch (e) {
     loggly.error('dsbridge-methods.dsbridge-sync-call', { message: e });
+    // TODO: handle the error in external calling function
     throw e;
   }
 };
