@@ -119,7 +119,7 @@ class ReportDriver extends Component {
     this.props.removeUploadPhotoFile();
   };
 
-  beforeSubmit = () => {
+  validate = () => {
     this.props.inputEmailCompleted();
 
     if (!this.props.inputEmailIsValid) {
@@ -135,7 +135,7 @@ class ReportDriver extends Component {
   };
 
   handleSubmit = async () => {
-    if (!this.beforeSubmit()) {
+    if (!this.validate()) {
       return;
     }
 
