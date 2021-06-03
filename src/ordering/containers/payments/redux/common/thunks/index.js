@@ -118,8 +118,8 @@ export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispa
 
     const result = await get(API_INFO.getPayments().url);
 
-    if (result.data) {
-      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
+    if (result) {
+      const paymentOptions = preprocessPaymentOptions(result, PaymentOptionModel, PAYMENTS_MAPPING);
       const selectedPaymentOption =
         paymentOptions.find(
           option =>

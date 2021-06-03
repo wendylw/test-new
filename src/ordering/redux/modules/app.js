@@ -419,6 +419,13 @@ export const actions = {
     return dispatch(addOrUpdateShoppingCartItem(variables));
   },
 
+  showApiErrorModal: code => dispatch => {
+    return dispatch({
+      type: 'ordering/app/showApiErrorModal',
+      code,
+    });
+  },
+
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
   },

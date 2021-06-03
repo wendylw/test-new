@@ -14,7 +14,8 @@ import {
   getUser,
   getBusinessInfo,
 } from '../../../../../../redux/modules/app';
-import { actions as thankYouActionCreators, getCashbackInfo } from '../../redux';
+import { getCashbackInfo } from '../../redux/selector';
+import { loadCashbackInfo, createCashbackInfo } from '../../redux/thunks';
 import './PhoneLogin.scss';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
@@ -59,10 +60,10 @@ class PhoneLogin extends React.Component {
   };
 
   async componentDidMount() {
-    const { history, thankYouActions } = this.props;
+    const { history, loadCashbackInfo } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    await thankYouActions.getCashbackInfo(receiptNumber);
+    await loadCashbackInfo(receiptNumber);
 
     const { user, businessInfo } = this.props;
     const { isWebview, isLogin } = user || {};
@@ -178,7 +179,7 @@ class PhoneLogin extends React.Component {
   }
 
   async canClaimCheck(user) {
-    const { thankYouActions } = this.props;
+    const { createCashbackInfo } = this.props;
     const { phone } = this.state;
     const { isLogin } = user || {};
     const { isFetching, createdCashbackInfo } = this.props.cashbackInfo || {};
@@ -188,7 +189,7 @@ class PhoneLogin extends React.Component {
     }
 
     if (isLogin && !isFetching && !createdCashbackInfo) {
-      await thankYouActions.createCashbackInfo(this.getOrderInfo());
+      await createCashbackInfo(this.getOrderInfo());
     }
 
     const { cashbackInfo } = this.props;
@@ -261,7 +262,8 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+      loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
+      createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
     })
   )
 )(PhoneLogin);
