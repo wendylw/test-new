@@ -14,7 +14,7 @@ export const ky = originalKy.create({
   credentials: 'include',
 });
 
-async function parseResponse(resp) {
+async function parseResponse(url, resp) {
   const rawContentType = resp.headers.get('content-type');
   let body = resp;
 
@@ -25,7 +25,7 @@ async function parseResponse(resp) {
   if (rawContentType.includes('application/json')) {
     const respBody = await resp.json();
 
-    body = respBody.data || respBody;
+    body = url.startsWith('/api/v3/') && respBody.data ? respBody.data : respBody;
   } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
     body = await resp.text();
   } else {
