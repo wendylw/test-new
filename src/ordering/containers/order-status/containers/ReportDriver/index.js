@@ -231,14 +231,14 @@ class ReportDriver extends Component {
         </h3>
         {uploadPhotoFile ? (
           <div className="ordering-report-driver__upload-image-container margin-small border-radius-large">
-            <img alt="upload file" src={uploadPhotoUrl} />
+            <img className="ordering-report-driver__upload-image" alt="upload file" src={uploadPhotoUrl} />
             {disabled ? null : (
               <button
                 onClick={this.handleRemoveUploadPhoto}
-                className="ordering-report-driver__button-close button"
+                className="ordering-report-driver__button-close button flex flex-middle flex-center margin-smaller"
                 data-heap-name="ordering.report-driver.remove-image"
               >
-                <IconClose className="ordering-report-driver__icon-close icon icon__small" />
+                <IconClose className="ordering-report-driver__icon-close icon icon__smaller" />
               </button>
             )}
           </div>
@@ -252,8 +252,8 @@ class ReportDriver extends Component {
               data-heap-name="ordering.report-driver.add-image"
             />
             <div className="ordering-report-driver__upload padding-normal border-radius-large">
-              <IconInsertPhoto className="icon icon__small" />
-              <p className="text-size-small">{t('UploadFileHere')}</p>
+              <IconInsertPhoto className="icon icon__normal" />
+              <p className="ordering-report-driver__upload-text margin-small text-size-small">{t('UploadFileHere')}</p>
             </div>
           </div>
         )}
