@@ -70,7 +70,7 @@ export const loadOrderStatus = createAsyncThunk('ordering/orderStatus/common/fet
 
 export const updateOrderShippingType = createAsyncThunk(
   'ordering/orderStatus/common/updateOrderShippingType',
-  async (orderId, shippingType) => {
+  async ({ orderId, shippingType }) => {
     const updateResult = await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
 
     if (updateResult.success) {

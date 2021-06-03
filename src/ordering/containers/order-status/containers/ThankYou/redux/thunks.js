@@ -12,9 +12,9 @@ export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/
 
 export const createCashbackInfo = createAsyncThunk(
   'ordering/orderStatus/thankYou/createCashbackInfo',
-  async (orderId, phone) => {
+  async ({ receiptNumber, phone }) => {
     const result = await post(API_INFO.createCashbackInfo().url, {
-      receiptNumber: orderId,
+      receiptNumber,
       phone,
       source: Constants.CASHBACK_SOURCE.QR_ORDERING,
     });
@@ -35,7 +35,7 @@ export const loadStoreIdHashCode = createAsyncThunk(
 
 export const loadStoreIdTableIdHashCode = createAsyncThunk(
   'ordering/orderStatus/thankYou/fetchStoreIdTableIdHashCode',
-  async (storeId, tableId) => {
+  async ({ storeId, tableId }) => {
     const result = await get(API_INFO.createStoreIdTableIdHashCode(storeId).url, {
       tableId,
     });

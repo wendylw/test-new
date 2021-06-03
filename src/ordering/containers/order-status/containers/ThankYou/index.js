@@ -552,7 +552,7 @@ export class ThankYou extends PureComponent {
       country: _get(businessInfo, 'country', ''),
     });
 
-    updateOrderShippingType(orderId, DELIVERY_METHOD.PICKUP);
+    updateOrderShippingType({ orderId, shippingType: DELIVERY_METHOD.PICKUP });
   };
 
   renderOrderDelayMessage = () => {

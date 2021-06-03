@@ -204,9 +204,8 @@ class PhoneLogin extends React.Component {
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     return {
-      phone,
       receiptNumber,
-      source: Constants.CASHBACK_SOURCE.QR_ORDERING,
+      phone,
     };
   }
 
