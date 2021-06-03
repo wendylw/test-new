@@ -1,5 +1,5 @@
 {
-    "ReportDriver": "Report Driver",
+    "ReportIssue": "Report Issue",
     "SelectAReportReason": "Select a report reason",
     "NoteFieldPlaceholder": "What went wrong? Leave comment tell us about it.",
     "LimitCharacters": "{{inputLength}}/{{maxLength}} characters",

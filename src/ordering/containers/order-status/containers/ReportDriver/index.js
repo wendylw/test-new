@@ -169,7 +169,7 @@ class ReportDriver extends Component {
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.thank-you-header"
           isPage={false}
-          title={t('ReportDriver')}
+          title={t('ReportIssue')}
           navFunc={this.handleGoBack}
         ></Header>
         <div className="padding-normal">
@@ -324,7 +324,7 @@ class ReportDriver extends Component {
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.header"
           isPage={false}
-          title={t('ReportDriver')}
+          title={t('ReportIssue')}
           navFunc={this.handleGoBack}
         ></Header>
 
