@@ -537,7 +537,7 @@ export class ThankYou extends PureComponent {
   };
 
   handleChangeToSelfPickup = () => {
-    const { order, businessInfo } = this.props;
+    const { order, businessInfo, updateOrderShippingType } = this.props;
     const { orderId } = order || {};
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
@@ -1440,14 +1440,14 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, orderStatusActions, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
+    const { receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
 
     if (!isOrderCancellable) {
       this.showRiderHasFoundMessageModal();
       return;
     }
 
-    await orderStatusActions.cancelOrder({
+    await cancelOrder({
       orderId: receiptNumber,
       reason,
       detail,
