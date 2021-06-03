@@ -53,8 +53,12 @@ export const cancelOrder = createAsyncThunk(
 export const loadOrder = createAsyncThunk('ordering/orderStatus/common/fetchOrder', async orderId => {
   const result = await post(API_INFO.getOrderDetail().url, { orderId });
 
-  if (result.order && result.order.shippingType === 'dineIn') {
-    result.order.shippingType = DELIVERY_METHOD.DINE_IN;
+  if (result.data) {
+    if (result.data.order && result.data.order.shippingType === 'dineIn') {
+      result.data.order.shippingType = DELIVERY_METHOD.DINE_IN;
+    }
+
+    return result.data;
   }
 
   return result;
