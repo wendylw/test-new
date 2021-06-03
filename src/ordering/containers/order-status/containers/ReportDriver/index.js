@@ -253,7 +253,7 @@ class ReportDriver extends Component {
             />
             <div className="ordering-report-driver__upload padding-normal border-radius-large">
               <IconInsertPhoto className="icon icon__normal" />
-              <p className="ordering-report-driver__upload-text text-size-small">{t('UploadFileHere')}</p>
+              <p className="ordering-report-driver__upload-text margin-small text-size-small">{t('UploadFileHere')}</p>
             </div>
           </div>
         )}

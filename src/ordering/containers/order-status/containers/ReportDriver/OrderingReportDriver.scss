@@ -24,8 +24,7 @@
     position: relative;
     display: inline-block;
     overflow: hidden;
-    width: 30vw;
-    min-height: 25vw;
+    width: 30%;
   }
 
   &__button-close {
@@ -59,12 +58,13 @@
 
   &__upload {
     display: inline-block;
-    fill: $gray-4;
+    fill: $gray-3;
     border: 2px dashed $gray-4;
   }
 
   &__upload-text {
-    padding-bottom: 2.4vw;
+    color: $gray-2;
+    margin-top: 0;
   }
 }
 
