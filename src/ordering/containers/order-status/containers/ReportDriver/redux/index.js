@@ -16,6 +16,7 @@ import { uploadReportDriverPhoto } from '../../../../../../utils/aws-s3';
 import { actions as appActions } from '../../../../../redux/modules/app';
 import i18next from 'i18next';
 import _get from 'lodash/get';
+import _trim from 'lodash/trim';
 import Utils from '../../../../../../utils/utils';
 import * as loggly from '../../../../../../utils/monitoring/loggly.js';
 
@@ -121,7 +122,7 @@ export const reportDriverSlice = createSlice({
   initialState,
   reducers: {
     initialEmail(state, { payload }) {
-      const email = payload.trim();
+      const email = _trim(payload);
 
       if (email.length > 0) {
         state.inputEmail.value = email;
@@ -158,7 +159,7 @@ export const reportDriverSlice = createSlice({
       state.inputEmail.isValid = false;
     },
     inputEmailCompleted(state) {
-      const email = state.inputEmail.value.trim();
+      const email = _trim(state.inputEmail.value);
 
       state.inputEmail.value = email;
       state.inputEmail.isCompleted = true;
