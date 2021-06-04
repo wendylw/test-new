@@ -59,7 +59,7 @@ import {
   getOrderDelayReason,
   getIsOrderCancellable,
   getOrderShippingType,
-  getUpdateOrderPendingState,
+  getUpdateShippingTypeState,
   getUpdatedToSelfPickupStatus,
 } from '../../redux/selector';
 import './OrderingThanks.scss';
@@ -762,7 +762,7 @@ export class ThankYou extends PureComponent {
       customer: 'CustomerCancelledDescription',
       unknown: 'UnknownCancelledDescription',
     };
-    const { user, orderStatus, pendingUpdatedOrderStatus, updatableToSelfPickupStatus } = this.props;
+    const { user, orderStatus, pendingUpdateShippingTypeStatus, updatableToSelfPickupStatus } = this.props;
     const { isWebview } = user;
 
     let currentStatusObj = {};
@@ -988,7 +988,7 @@ export class ThankYou extends PureComponent {
           <SelfPickup
             onClickSelfPickupButton={this.handleClickSelfPickupButton}
             onChangeToSelfPickup={this.handleChangeToSelfPickup}
-            processing={pendingUpdatedOrderStatus}
+            processing={pendingUpdateShippingTypeStatus}
           />
         ) : null}
 
@@ -1683,7 +1683,7 @@ export default compose(
       orderDelayReason: getOrderDelayReason(state),
       orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
       shippingType: getOrderShippingType(state),
-      pendingUpdatedOrderStatus: getUpdateOrderPendingState(state),
+      pendingUpdateShippingTypeStatus: getUpdateShippingTypeState(state),
       updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
       updatedToSelfPickupStatus: getUpdatedToSelfPickupStatus(state),
     }),

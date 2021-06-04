@@ -74,7 +74,7 @@
   "SelfPickUpTitle": "Don't want to wait",
   "SelfPickUpDescription": "Skip the delivery queue by switching to self-pickup and get your delivery fee refunded!",
   "SwitchToSelfPickUp": "Switch to self-pickup",
-  "SelfPickUpPromptDescription": "You will need to head to the store to  pick up your order.",
+  "SelfPickUpPromptDescription": "You will need to head to the store to pick up your order.",
   "GoBack": "Go back",
   "SelfPickUpPromptConfirmedText": "Yes, switch"
 }
