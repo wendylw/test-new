@@ -5,6 +5,7 @@ import { cancelOrder, loadOrder, loadOrderStatus, updateOrderShippingType } from
 const initialState = {
   receiptNumber: Utils.getQueryString('receiptNumber'),
   order: null,
+  updateShippingTypeStatus: null, // pending || fulfilled || rejected
   updateOrderStatus: null, // pending || fulfilled || rejected
   cancelOrderStatus: null, // pending || fulfilled || rejected
   error: null,
@@ -47,13 +48,12 @@ const { reducer, actions } = createSlice({
     [loadOrderStatus.rejected.type]: (state, { error }) => {
       state.error = error;
     },
-    // [updateOrderShippingType.pending.type]: state => {
-    //   state.updateOrderStatus = 'pending';
-    // },
-    // [updateOrderShippingType.fulfilled.type]: (state, { payload }) => {
-    //   state.order = payload.order;
-    //   state.updateOrderStatus = 'fulfilled';
-    // },
+    [updateOrderShippingType.pending.type]: state => {
+      state.updateShippingTypeStatus = 'pending';
+    },
+    [updateOrderShippingType.fulfilled.type]: state => {
+      state.updateShippingTypeStatus = 'fulfilled';
+    },
     [updateOrderShippingType.rejected.type]: (state, { error }) => {
       state.error = error;
     },
