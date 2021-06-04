@@ -43,3 +43,7 @@ export const getDeliveryUpdatableToSelfPickupState = createSelector(
   getTimeoutLookingForRider,
   timeoutLookingForRider => timeoutLookingForRider
 );
+
+export const getCancelOrderStatus = state => state.orderStatus.thankYou.cancelOrderStatus;
+
+export const getUpdateShippingTypeState = state => state.orderStatus.thankYou.updateShippingTypeStatus === 'pending';

@@ -50,7 +50,7 @@ import {
   getOnlineStoreInfo,
   getUser,
 } from '../../../../redux/modules/app';
-import { cancelOrder, loadOrder, loadOrderStatus, updateOrderShippingType } from '../../redux/thunks';
+import { loadOrder, loadOrderStatus } from '../../redux/thunks';
 import {
   getOrder,
   getOrderStatus,
@@ -59,18 +59,18 @@ import {
   getOrderDelayReason,
   getIsOrderCancellable,
   getOrderShippingType,
-  getUpdateShippingTypeState,
   getUpdatedToSelfPickupStatus,
 } from '../../redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
-import { loadStoreIdHashCode, loadStoreIdTableIdHashCode } from './redux/thunks';
+import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder, updateOrderShippingType } from './redux/thunks';
 import {
   getCashbackInfo,
   getStoreHashCode,
   getOrderCancellationReasonAsideVisible,
   getOrderCancellationButtonVisible,
   getDeliveryUpdatableToSelfPickupState,
+  getUpdateShippingTypeState,
 } from './redux/selector';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';

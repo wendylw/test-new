@@ -4,8 +4,6 @@ import Constants from '../../../../utils/constants';
 
 const { PROMO_TYPE, DELIVERY_METHOD } = Constants;
 
-export const getUpdateShippingTypeState = state => state.orderStatus.common.updateShippingTypeStatus === 'pending';
-
 export const getOrder = state => state.orderStatus.common.order;
 
 export const getReceiptNumber = state => state.orderStatus.common.receiptNumber;
@@ -37,8 +35,6 @@ export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
 export const getIsPreOrder = createSelector(getOrder, order => _get(order, 'isPreOrder', false));
 
 export const getIsOnDemandOrder = createSelector(getIsPreOrder, isPreOrder => !isPreOrder);
-
-export const getCancelOrderStatus = state => state.orderStatus.common.cancelOrderStatus;
 
 export const getIsOrderCancellable = createSelector(getOrder, order => _get(order, 'isCancellable', false));
 
