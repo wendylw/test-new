@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
-import CleverTap from '../../../../../../utils/constants';
+import CleverTap from '../../../../../../utils/clevertap';
 import { actions as appActions } from '../../../../../redux/modules/app';
 import { loadOrder } from '../../../redux/thunks';
 
@@ -91,11 +91,11 @@ export const cancelOrder = createAsyncThunk(
 
 export const updateOrderShippingType = createAsyncThunk(
   'ordering/orderStatus/common/updateOrderShippingType',
-  async ({ orderId, shippingType }) => {
+  async ({ orderId, shippingType }, { dispatch }) => {
     const updateResult = await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
 
     if (updateResult.success) {
-      return await loadOrder(orderId);
+      await dispatch(loadOrder(orderId));
     }
 
     return updateResult;
