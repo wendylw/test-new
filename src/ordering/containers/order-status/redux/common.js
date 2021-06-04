@@ -1,6 +1,6 @@
 import Utils from '../../../../utils/utils';
 import { createSlice } from '@reduxjs/toolkit';
-import { cancelOrder, loadOrder, loadOrderStatus, updateOrderShippingType } from './thunks';
+import { loadOrder, loadOrderStatus } from './thunks';
 
 const initialState = {
   receiptNumber: Utils.getQueryString('receiptNumber'),
@@ -16,17 +16,6 @@ const { reducer, actions } = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [cancelOrder.pending.type]: state => {
-      state.cancelOrderStatus = 'pending';
-    },
-    [cancelOrder.fulfilled.type]: (state, { payload }) => {
-      state.order = payload.order;
-      state.cancelOrderStatus = 'fulfilled';
-    },
-    [cancelOrder.rejected.type]: (state, { error }) => {
-      state.error = error;
-      state.cancelOrderStatus = 'rejected';
-    },
     [loadOrder.pending.type]: state => {
       state.updateOrderStatus = 'pending';
     },
@@ -46,15 +35,6 @@ const { reducer, actions } = createSlice({
       };
     },
     [loadOrderStatus.rejected.type]: (state, { error }) => {
-      state.error = error;
-    },
-    [updateOrderShippingType.pending.type]: state => {
-      state.updateShippingTypeStatus = 'pending';
-    },
-    [updateOrderShippingType.fulfilled.type]: state => {
-      state.updateShippingTypeStatus = 'fulfilled';
-    },
-    [updateOrderShippingType.rejected.type]: (state, { error }) => {
       state.error = error;
     },
   },
