@@ -64,6 +64,8 @@ class Cart extends Component {
     this.handleResizeEvent();
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
+
+    CleverTap.pushEvent('Cart page - view cart page', this.props.storeInfoForCleverTap);
   }
 
   setCartContainerHeight = preContainerHeight => {
@@ -406,7 +408,7 @@ class Cart extends Component {
       pendingCheckingInventory,
     } = this.props;
     const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
-    const { qrOrderingSettings } = businessInfo || {};
+    const { qrOrderingSettings, name } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee, promotion } = cartBilling || {};
@@ -524,6 +526,8 @@ class Cart extends Component {
               CleverTap.pushEvent('Cart Page - click pay now', {
                 ...storeInfoForCleverTap,
                 'promo/voucher applied': promoCode || '',
+                'Cashback Amount': cashback || 0,
+                'Cashback Store': name || '',
               });
               this.handleGtmEventTracking(async () => {
                 await this.handleClickContinue();
