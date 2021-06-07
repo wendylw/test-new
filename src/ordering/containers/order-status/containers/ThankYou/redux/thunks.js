@@ -51,7 +51,7 @@ export const loadStoreIdTableIdHashCode = createAsyncThunk(
 
 export const cancelOrder = createAsyncThunk(
   'ordering/orderStatus/common/cancelOrder',
-  async ({ orderId, reason, detail }, { getState }) => {
+  async ({ orderId, reason, detail }, { dispatch, getState }) => {
     const { orderStatus, app, entities } = getState();
     const { order } = orderStatus.common;
     const businessInfo = entities.businesses[app.business];
@@ -74,14 +74,16 @@ export const cancelOrder = createAsyncThunk(
         // TODO: This type is actually not used, because apiError does not respect action type,
         // which is a bad practice, we will fix it in the future, for now we just keep a useless
         // action type.
-        appActions.showApiErrorModal(result.code);
+        dispatch(appActions.showApiErrorModal(result.code));
       } else {
         console.error('Cancel order error: ', result);
 
-        appActions.showMessageModal({
-          message: i18next.t('OrderingThankYou:CancellationError'),
-          description: i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'),
-        });
+        dispatch(
+          appActions.showMessageModal({
+            message: i18next.t('OrderingThankYou:CancellationError'),
+            description: i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'),
+          })
+        );
       }
     }
 
