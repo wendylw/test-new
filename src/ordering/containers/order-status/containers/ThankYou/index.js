@@ -29,6 +29,7 @@ import beepOrderStatusPaid from '../../../../../images/order-status-paid.gif';
 import beepOrderStatusPickedUp from '../../../../../images/order-status-pickedup.gif';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
+import { getPaidToCurrentEventDurationMinutes } from './clevertap-utils';
 import Constants from '../../../../../utils/constants';
 import { formatPickupTime } from '../../../../../utils/datetime-lib';
 import {
@@ -40,7 +41,6 @@ import {
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import { gotoHome } from '../../../../../utils/webview-utils';
-import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
   actions as appActionCreators,
@@ -77,6 +77,7 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import PhoneLogin from './components/PhoneLogin';
+import { fromPairs } from 'lodash';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -492,7 +493,7 @@ export class ThankYou extends PureComponent {
     CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),
-      'time from order paid': this.getTimeFromOrderPaid() || '',
+      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)) || '',
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
@@ -530,11 +531,12 @@ export class ThankYou extends PureComponent {
 
   handleClickSelfPickupButton = () => {
     const { order, businessInfo } = this.props;
+    const paidTime = _get(order, 'paidTime', null);
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Not Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),
-      'time from order paid': this.getTimeFromOrderPaid() || '',
+      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)) || '',
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
@@ -543,11 +545,12 @@ export class ThankYou extends PureComponent {
   handleChangeToSelfPickup = () => {
     const { order, businessInfo, updateOrderShippingType } = this.props;
     const { orderId } = order || {};
+    const paidTime = _get(order, 'paidTime', null);
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),
-      'time from order paid': this.getTimeFromOrderPaid() || '',
+      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)) || '',
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
@@ -1422,25 +1425,6 @@ export class ThankYou extends PureComponent {
         )}
       </div>
     );
-  }
-
-  getTimeFromOrderPaid() {
-    try {
-      const { order } = this.props;
-      const paidTime = _get(order, 'paidTime', null);
-
-      if (!paidTime) {
-        return null;
-      }
-
-      const milliseconds = getDifferenceInMilliseconds(new Date(), new Date(paidTime));
-
-      const minutes = milliseconds / (1000 * 60);
-
-      return minutes.toFixed(2);
-    } catch (error) {
-      return null;
-    }
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
