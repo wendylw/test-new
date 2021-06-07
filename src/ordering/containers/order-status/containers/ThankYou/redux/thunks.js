@@ -5,6 +5,7 @@ import { get, post, put } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
+import { getPaidToCurrentEventDurationMinutes } from '../clevertap-utils';
 import { actions as appActions } from '../../../../../redux/modules/app';
 import { loadOrder } from '../../../redux/thunks';
 
@@ -58,10 +59,14 @@ export const cancelOrder = createAsyncThunk(
     const result = await put(API_INFO.cancelOrder(orderId).url, { reason, detail });
 
     if (order && result.success) {
+      console.log(1111);
+
+      debugger;
+
       CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
         'store name': _get(order, 'storeInfo.name', ''),
         'store id': _get(order, 'storeId', ''),
-        'time from order paid': this.getTimeFromOrderPaid() || '',
+        'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)) || '',
         'order amount': _get(order, 'total', ''),
         country: _get(businessInfo, 'country', ''),
         'Reason for cancellation': reason,
