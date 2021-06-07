@@ -59,10 +59,6 @@ export const cancelOrder = createAsyncThunk(
     const result = await put(API_INFO.cancelOrder(orderId).url, { reason, detail });
 
     if (order && result.success) {
-      console.log(1111);
-
-      debugger;
-
       CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
         'store name': _get(order, 'storeInfo.name', ''),
         'store id': _get(order, 'storeId', ''),
