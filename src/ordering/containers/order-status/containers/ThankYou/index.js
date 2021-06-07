@@ -29,7 +29,7 @@ import beepOrderStatusPaid from '../../../../../images/order-status-paid.gif';
 import beepOrderStatusPickedUp from '../../../../../images/order-status-pickedup.gif';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
-import { getPaidToCurrentEventDurationMinutes } from './clevertap-utils';
+import { getPaidToCurrentEventDurationMinutes } from './utils';
 import Constants from '../../../../../utils/constants';
 import { formatPickupTime } from '../../../../../utils/datetime-lib';
 import {
