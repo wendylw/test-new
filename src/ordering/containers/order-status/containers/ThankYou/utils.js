@@ -1,3 +1,6 @@
+/**
+ * CleverTap utils
+ */
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 
 export function getPaidToCurrentEventDurationMinutes(paidTime) {
