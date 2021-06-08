@@ -111,6 +111,11 @@ export const getDeliveryPreOrderTimeList = store => {
       continue;
     }
 
+    // remove 24:00
+    if (timeLib.isSame(time, '24:00')) {
+      continue;
+    }
+
     timeList.push(time);
   }
 

@@ -323,7 +323,7 @@ describe('test getDeliveryOrderTimeList function', () => {
 
   test('check StoreB pre order time list', () => {
     const expectedStartTimeList = ['01:00'];
-    const expectedEndTimeList = ['24:00'];
+    const expectedEndTimeList = ['23:00'];
     const expectedNotExistTimeList = ['12:00'];
     const expectedExistTimeList = ['13:00', '14:00'];
     const timeList = getDeliveryPreOrderTimeList(storeB);
