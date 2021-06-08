@@ -11,11 +11,13 @@ import Constants from '../../../../../utils/constants';
 
 class PromoItem extends Component {
   getAmountOffPromoTitle = amount => {
+    const { t } = this.props;
     return (
-      <Trans i18nKey="PromoTitleAbsolute" ns="OrderingPromotion">
-        <CurrencyNumber money={amount} className="text-size-big text-weight-bolder" />
-        {amount}
-      </Trans>
+      <Trans
+        t={t}
+        i18nKey="PromoTitleAbsolute"
+        components={[<CurrencyNumber money={amount} className="text-size-big text-weight-bolder" />]}
+      />
     );
   };
 
