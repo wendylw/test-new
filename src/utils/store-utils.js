@@ -125,7 +125,6 @@ export const getDeliveryPreOrderTimeList = store => {
 export const getDeliveryPreOrderValidTimePeriod = store => {
   const { validTimeFrom, validTimeTo, useStorehubLogistics } = store.qrOrderingSettings;
   const addAndCeilToHour = _flow([timeLib.add, timeLib.ceilToHour]);
-  const minusAndFloorToHour = _flow([timeLib.minus, timeLib.floorToHour]);
 
   // add 1 hour then ceil to hour, like 10:30 will get 12:00
   const preOrderValidTimeFrom = addAndCeilToHour(validTimeFrom, {
@@ -136,8 +135,8 @@ export const getDeliveryPreOrderValidTimePeriod = store => {
   if (!useStorehubLogistics) {
     return {
       validTimeFrom: preOrderValidTimeFrom,
-      // minus 1 hour and floor hour, like 19:30 will get 18:00
-      validTimeTo: minusAndFloorToHour(validTimeTo, { value: 1, unit: 'hour' }),
+      // floor hour, like 19:30 will get 19:00
+      validTimeTo: timeLib.floorToHour(validTimeTo),
     };
   }
 
@@ -150,8 +149,8 @@ export const getDeliveryPreOrderValidTimePeriod = store => {
 
   return {
     validTimeFrom: logisticsValidTimeFrom,
-    // minus 1 hour and floor hour, like 19:30 will get 18:00
-    validTimeTo: minusAndFloorToHour(logisticsValidTimeTo, { value: 1, unit: 'hour' }),
+    //floor hour, like 19:30 will get 19:00
+    validTimeTo: timeLib.floorToHour(logisticsValidTimeTo),
   };
 };
 
