@@ -4,6 +4,7 @@ import config from '../../config';
 import { get } from '../../utils/request';
 import Url from '../../utils/url';
 import Utils from '../../utils/utils';
+import loggly from '../../utils/monitoring/loggly';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -40,6 +41,7 @@ export const getPlaceInfoByDeviceByAskPermission = async () => {
     return placeInfo;
   } catch (e) {
     console.warn(e);
+    loggly.warn(e?.message);
   }
 };
 
@@ -77,6 +79,7 @@ export const getPlaceInfo = async ({
       }
     } catch (e) {
       console.warn(e);
+      loggly.warn(e?.message);
     }
   }
 
@@ -89,6 +92,7 @@ export const getPlaceInfo = async ({
       }
     } catch (e) {
       console.warn(e);
+      loggly.warn(e?.message);
     }
   }
 
@@ -109,6 +113,11 @@ export const getPlaceInfo = async ({
 };
 
 export const submitStoreMenu = async ({ deliveryAddress, store, source, shippingType = 'delivery' }) => {
+  loggly.log('beepit.click-store', {
+    targetBusiness: store.business,
+    source,
+  });
+
   const response = await get(Url.API_URLS.GET_STORE_HASH_DATA(store.id).url);
   const { redirectTo } = response || {};
   const storeUrlParams = {
@@ -130,6 +139,7 @@ export const submitStoreMenu = async ({ deliveryAddress, store, source, shipping
   form.appendChild(input1);
 
   if (!Boolean(deliveryAddress)) {
+    loggly.error('beepit.to-store-failure', { message: 'delivery address is empty' });
     console.error('delivery address is empty');
     return;
   }

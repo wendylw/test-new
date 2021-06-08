@@ -38,6 +38,7 @@ import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
 import _isNil from 'lodash';
+import loggly from '../../../utils/monitoring/loggly';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 class Cart extends Component {
@@ -63,6 +64,8 @@ class Cart extends Component {
     this.handleResizeEvent();
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
+
+    CleverTap.pushEvent('Cart page - view cart page', this.props.storeInfoForCleverTap);
   }
 
   setCartContainerHeight = preContainerHeight => {
@@ -222,6 +225,7 @@ class Cart extends Component {
   };
 
   handleClearAll = () => {
+    loggly.log('cart.clear-all-attempt');
     this.props.appActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
@@ -404,7 +408,7 @@ class Cart extends Component {
       pendingCheckingInventory,
     } = this.props;
     const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
-    const { qrOrderingSettings } = businessInfo || {};
+    const { qrOrderingSettings, name } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
     const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee, promotion } = cartBilling || {};
@@ -518,9 +522,12 @@ class Cart extends Component {
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
             onClick={() => {
+              loggly.log('cart.pay-now');
               CleverTap.pushEvent('Cart Page - click pay now', {
                 ...storeInfoForCleverTap,
                 'promo/voucher applied': promoCode || '',
+                'Cashback Amount': cashback || 0,
+                'Cashback Store': name || '',
               });
               this.handleGtmEventTracking(async () => {
                 await this.handleClickContinue();

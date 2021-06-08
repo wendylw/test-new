@@ -16,6 +16,7 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import CleverTap from '../../../utils/clevertap';
+import loggly from '../../../utils/monitoring/loggly';
 
 class PageLogin extends React.Component {
   state = {
@@ -72,7 +73,7 @@ class PageLogin extends React.Component {
 
   handleSubmitPhoneNumber(phone, type) {
     const { appActions } = this.props;
-
+    loggly.log('page-login.login-attempt');
     window.newrelic?.addPageAction('ordering.login.get-otp-start');
     appActions.getOtp({ phone, type });
     this.setState({ sendOtp: true });

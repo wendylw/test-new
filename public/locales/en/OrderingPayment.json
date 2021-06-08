@@ -44,5 +44,6 @@
   "AddAndPay": "Add & pay",
   "CardEndingIn": "Ending in {{cardEnding}}",
   "SecurityHint": "Our card payment service is under PCI compliance protection to protect and encrypt cardholder data transmissions. <1>Know more here</1>",
-  "TimeOut": "Time Out"
+  "TimeOut": "Time Out",
+  "RiskyCardNumberMessage": "There is an issue with this transaction. Please try a different card to complete this payment"
 }

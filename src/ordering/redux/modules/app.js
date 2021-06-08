@@ -227,7 +227,7 @@ export const actions = {
   loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
-    dispatch({
+    return dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
       requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
         accessToken,
@@ -236,11 +236,8 @@ export const actions = {
         shippingType: Utils.getApiRequestShippingType(),
       }).then(resp => {
         if (resp && resp.consumerId) {
-          window.heap?.identify(resp.consumerId);
-          window.heap?.addEventProperties({ LoggedIn: 'yes' });
           const phone = Utils.getLocalStorageVariable('user.p');
           if (phone) {
-            window.heap?.addUserProperties({ PhoneNumber: phone });
           }
           const userInfo = {
             Name: resp.user?.firstName,
@@ -298,8 +295,6 @@ export const actions = {
     requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
       if (resp) {
         if (resp.consumerId) {
-          window.heap?.identify(resp.consumerId);
-          window.heap?.addEventProperties({ LoggedIn: 'yes' });
           if (resp.login) {
             get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
               const userInfo = {
@@ -316,9 +311,6 @@ export const actions = {
               CleverTap.onUserLogin(userInfo);
             });
           }
-        } else {
-          window.heap?.resetIdentity();
-          window.heap?.addEventProperties({ LoggedIn: 'no' });
         }
       }
       return resp;
@@ -823,7 +815,7 @@ export const getCartItemList = state => {
 export const getStoreInfoForCleverTap = state => {
   const business = getBusiness(state);
   const allBusinessInfo = getAllBusinesses(state);
-  const { billing: cartBilling } = state.app.shoppingCart;
+  const { billing: cartSummary } = state.app.shoppingCart;
 
-  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartBilling });
+  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
 };
