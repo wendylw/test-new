@@ -40,12 +40,6 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
       };
       return expect(actions.resetOtpStatus()).toEqual(expectedAction);
     });
-    it('clearError', () => {
-      const expectedAction = {
-        type: types.CLEAR_ERROR,
-      };
-      return expect(actions.clearError()).toEqual(expectedAction);
-    });
     it('showMessageModal', () => {
       const reqParams = { message: 'hello', description: 'hello', buttonText: 'hello' };
       const expectedAction = {

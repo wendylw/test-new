@@ -24,6 +24,28 @@
     <meta name="twitter:description" content="__TWIITER_DESCRIPTION__" />
     <meta name="google-site-verification" content="ux-msEIAqigwlytxmevbW55bU3NbR9WGGFnIT-qZEO8" />
     <meta name="facebook-domain-verification" content="__FACEBOOK_DOMAIN_VERIFICATION__" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
+
+    <meta id="app-store-id" property="al:ios:app_store_id" content="1526807985" />
+    <meta property="al:ios:app_name" content="%REACT_APP_META_NAME%" />
+    <meta property="al:android:url" content="applinks://docs" />
+    <meta property="al:android:app_name" content="App Links" />
+    <meta property="al:android:package" content="org.applinks" />
+    <meta property="al:web:url" content="http://applinks.org/documentation" />
+    <meta property="al:web:should_fallback" content="true" />
+    <meta property="fb:app_id" content="1808145769328485" />
+
+    <script type="text/javascript">
+      var url = window.location.href; 
+      var appLinkMeta1 = document.createElement('meta')
+      appLinkMeta1.setAttribute('property','al:ios:url')
+      appLinkMeta1.content = url
+      var appLinkMeta2 = document.createElement('meta')
+      appLinkMeta2.name = '%REACT_APP_META_NAME%'
+      appLinkMeta2.content = `app-id=1526807985, app-argument=${url}`
+      document.getElementById('app-store-id').after(appLinkMeta1)
+      document.getElementById('app-store-id').after(appLinkMeta2)
+    </script>
 
     <!--
     manifest.json provides metadata used when your web app is installed on a
@@ -66,11 +88,7 @@
         s.parentNode.insertBefore(wzrk, s);
       })();
     </script>
-
-    <script type="text/javascript">
-      window.heap = window.heap || [], heap.load = function (e, t) { window.heap.appid = e, window.heap.config = t = t || {}; var r = t.forceSSL || "https:" === document.location.protocol, a = document.createElement("script"); a.type = "text/javascript", a.async = !0, a.crossorigin="", a.src = (r ? "https:" : "http:") + "//cdn.heapanalytics.com/js/heap-" + e + ".js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n); for (var o = function (e) { return function () { heap.push([e].concat(Array.prototype.slice.call(arguments, 0))) } }, p = ["addEventProperties", "addUserProperties", "clearEventProperties", "identify", "resetIdentity", "removeEventProperty", "setEventProperties", "track", "unsetEventProperty"], c = 0; c < p.length; c++)heap[p[c]] = o(p[c]) };
-      heap.load('%REACT_APP_HEAP_APP_ID%');
-    </script>
+    
     <!-- Following script tag will be filled in build-i18n-files.js -->
     <script id="I18N_FOLDER_PATH_SCRIPT"></script>
   </head>
@@ -130,7 +148,9 @@
           'navigator.geolocation',
           'Number.isNaN',
           'String.prototype.trim',
-          'Element.prototype.closest' // used by heap snapshot. we don't directly use it in code for now.
+          'Element.prototype.after',
+          'globalThis',
+          'CustomEvent'
         ];
         var featureArr = [];
 

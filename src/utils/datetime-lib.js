@@ -2,7 +2,9 @@ import CONSTANTS from './constants';
 import i18next from 'i18next';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import invariant from 'invariant';
 import * as timeLib from './time-lib';
+import loggly from '../utils/monitoring/loggly';
 
 dayjs.extend(utc);
 
@@ -112,6 +114,7 @@ export const toLocaleString = (date, countryCode, options) => {
   const dateObj = new Date(date);
   if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
+    loggly.warn('Invalid date object');
     return '';
   }
   let formatter;
@@ -159,6 +162,7 @@ export const toISODateString = date => {
   const dateObj = new Date(date);
   if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
+    loggly.warn('Invalid date object');
     return '';
   }
   return `${dateObj.getFullYear()}-${padZero(dateObj.getMonth() + 1)}-${padZero(dateObj.getDate())}`;
@@ -246,4 +250,10 @@ export const isSameTime = (time1, time2, unitToCheck = []) => {
   }
 
   return true;
+};
+
+export const getDifferenceInMilliseconds = (dateLeft, dateRight) => {
+  invariant(isValidDate(dateLeft) && isValidDate(dateRight), 'invalid date object');
+
+  return dateLeft.getTime() - dateRight.getTime();
 };

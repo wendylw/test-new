@@ -1,0 +1,53 @@
+@import "../../../../Variables.scss";
+
+.category {
+  width: 75%;
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  &__header {
+    top: 0;
+    background-color: $gray-6;
+    z-index: 10;
+  }
+}
+
+.product-list-item {
+  &__tag {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: inline-block;
+    margin: 3.8vw;
+  }
+
+  &__selected {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: inline-block;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
+    color: $gray-2;
+  }
+
+  &__price:not(.text-error) {
+    display: block;
+    color: $gray-2;
+  }
+}
+
+@media (min-width: 420px) {
+  .product-list-item {
+    &__tag {
+      margin: 12px;
+    }
+
+    &__selected {
+      padding-top: 1px;
+      padding-bottom: 1px;
+    }
+  }
+}

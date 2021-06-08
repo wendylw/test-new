@@ -30,6 +30,7 @@ import { withTranslation } from 'react-i18next';
 import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
+import loggly from '../../../utils/monitoring/loggly';
 import './OrderingPromotion.scss';
 
 class Promotion extends Component {
@@ -68,14 +69,18 @@ class Promotion extends Component {
   };
 
   handleApplyPromotion = async () => {
+    loggly.log('promotion.apply-attempt');
+
     if (this.props.inProcess) {
       return false;
     }
 
-    CleverTap.pushEvent('Cart Page - apply promo');
     await this.props.promotionActions.applyPromo();
 
     if (this.props.isAppliedSuccess) {
+      CleverTap.pushEvent('Cart Page - apply promo', {
+        'promo/voucher applied': this.props.promoCode,
+      });
       this.gotoCartPage();
     }
   };

@@ -77,6 +77,10 @@ address {
   line-height: $line-height-base;
 }
 
+.text-line-height-higher {
+  line-height: $line-height-higher;
+}
+
 .text-uppercase {
   text-transform: uppercase;
 }

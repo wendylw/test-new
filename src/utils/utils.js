@@ -8,7 +8,7 @@ import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 dayjs.extend(utc);
 
-const { SH_LOGISTICS_VALID_TIME } = Constants;
+const { SH_LOGISTICS_VALID_TIME, CLIENTS } = Constants;
 const Utils = {};
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
@@ -50,10 +50,6 @@ Utils.getQueryVariable = variable => {
   }
   return false;
 };
-
-// Utils.isWebview = function isWebview() {
-//   return Boolean(window.ReactNativeWebView && window.ReactNativeWebView.postMessage);
-// };
 
 Utils.debounce = function debounce(fn, timeout = 50) {
   let timer = null;
@@ -158,9 +154,9 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
 };
 
 Utils.isProductSoldOut = product => {
-  const { markedSoldOut, variations } = product;
+  const { stockStatus, variations } = product;
 
-  if (markedSoldOut) {
+  if (stockStatus === 'outOfStock') {
     return true;
   }
 
@@ -823,11 +819,11 @@ Utils.getOrderSource = () => {
 Utils.getHeaderClient = () => {
   let headerClient = '';
   if (Utils.isAndroidWebview()) {
-    headerClient = 'Android';
+    headerClient = CLIENTS.ANDROID;
   } else if (Utils.isIOSWebview()) {
-    headerClient = 'iOS';
+    headerClient = CLIENTS.IOS;
   } else {
-    headerClient = 'web';
+    headerClient = CLIENTS.WEB;
   }
   return headerClient;
 };

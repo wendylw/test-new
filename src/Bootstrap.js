@@ -3,13 +3,14 @@ import { Route, Redirect, Switch, BrowserRouter as Router } from 'react-router-d
 import qs from 'qs';
 import Constants from './utils/constants';
 import Utils from './utils/utils';
-import NotFound from './NotFound';
+import NotFound from './containers/NotFound';
 import { ErrorBoundary } from '@sentry/react';
 import ErrorComponent from './components/Error';
 import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
 import { gotoHome } from './utils/webview-utils';
+import loggly from './utils/monitoring/loggly';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
 
@@ -38,7 +39,7 @@ class Bootstrap extends Component {
       host: document.location.host,
       href: document.location.href,
     });
-    window.heap?.track('common.render-error', {
+    loggly.error('common.render-error', {
       sentryId: eventId,
       errorMessage: error?.message,
     });

@@ -3,25 +3,40 @@ import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import i18next from 'i18next';
 
-const { PROMOTION_ERROR_CODES, VOUCHER_STATUS } = Constants;
+const { PROMOTION_ERROR_CODES, VOUCHER_STATUS, CLIENTS } = Constants;
 
 export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo) {
   if (PROMOTION_ERROR_CODES[code]) {
     const translationKey = `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`;
-    const { minSubtotalConsumingPromo } = extraInfo || {};
-    const { locale, currency, country } = onlineStoreInfo;
-    const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
-    let minSubtotal = !(locale && currency)
-      ? minSubtotalConsumingPromo
-      : Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(minSubtotalConsumingPromo));
 
-    if (country === 'MY' && isSafari) {
-      minSubtotal = minSubtotal.replace(/^(\D+)/, '$1 ');
+    if (code === '54416') {
+      const { supportedChannel } = extraInfo || {};
+      return i18next.t(translationKey, { supportedChannel });
     }
 
-    return PROMOTION_ERROR_CODES[code].desc === '54417NotMatchMinSubtotalConsumingPromo'
-      ? i18next.t(translationKey, { minSubtotalConsumingPromo: minSubtotal })
-      : i18next.t(translationKey);
+    // not match min subtotal
+    if (code === '54417') {
+      const { minSubtotalConsumingPromo } = extraInfo || {};
+      const { locale, currency, country } = onlineStoreInfo;
+      const isSafari = Utils.getUserAgentInfo().browser.includes('Safari');
+      let minSubtotal = !(locale && currency)
+        ? minSubtotalConsumingPromo
+        : Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(minSubtotalConsumingPromo));
+
+      if (country === 'MY' && isSafari) {
+        minSubtotal = minSubtotal.replace(/^(\D+)/, '$1 ');
+      }
+
+      return i18next.t(translationKey, { minSubtotalConsumingPromo: minSubtotal });
+    }
+
+    // not match the client type
+    if (code === '54418') {
+      const supportClient = Utils.getHeaderClient() === CLIENTS.WEB ? 'Beep app' : 'Web';
+      return i18next.t(translationKey, { supportClient });
+    }
+
+    return i18next.t(translationKey);
   } else {
     return _isEmpty(errorMessage) ? i18next.t(`OrderingPromotion:60000InvalidPromotionOrVoucher`) : errorMessage;
   }

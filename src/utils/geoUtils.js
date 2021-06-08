@@ -3,6 +3,7 @@ import Utils from './utils';
 import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
 import { get, post } from './request';
+import loggly from '../utils/monitoring/loggly';
 
 const googleMaps = _get(window, 'google.maps', null);
 
@@ -27,6 +28,7 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
   let radiusNumber = radius;
   if ((locationCoords && typeof radiusNumber !== 'number') || (typeof radiusNumber === 'number' && !locationCoords)) {
     console.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
+    loggly.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
     locationCoords = undefined;
     radiusNumber = undefined;
   }
@@ -101,6 +103,7 @@ export const standardizeGeoAddress = geoAddressComponent => {
 export const getDeviceCoordinates = option => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
+      loggly.warn('Your browser does not support location detection.');
       reject('Your browser does not support location detection.');
       return;
     }
@@ -110,6 +113,7 @@ export const getDeviceCoordinates = option => {
       },
       error => {
         console.warn('Fail to detect location', error);
+        loggly.warn('Fail to detect location', { message: error?.message });
         reject(error);
       },
       option

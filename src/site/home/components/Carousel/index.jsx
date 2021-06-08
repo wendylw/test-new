@@ -50,8 +50,8 @@ class Carousel extends Component {
   renderPromotionTags = promoTag => {
     return (
       <div className="store-card-list__tag-cover">
-        <div className="store-card-list__promo-tag">
-          <span className="padding-smaller text-size-small text-uppercase text-weight-bolder">{promoTag}</span>
+        <div className="store-card-list__promo-tag padding-smaller text-size-reset text-center">
+          <span className="text-size-small text-uppercase text-line-height-base text-weight-bolder">{promoTag}</span>
         </div>
       </div>
     );

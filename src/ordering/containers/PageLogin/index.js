@@ -16,6 +16,7 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import CleverTap from '../../../utils/clevertap';
+import loggly from '../../../utils/monitoring/loggly';
 
 class PageLogin extends React.Component {
   state = {
@@ -70,11 +71,11 @@ class PageLogin extends React.Component {
     appActions.updateUser(user);
   }
 
-  handleSubmitPhoneNumber(phone) {
-    const { appActions, otpType } = this.props;
-
+  handleSubmitPhoneNumber(phone, type) {
+    const { appActions } = this.props;
+    loggly.log('page-login.login-attempt');
     window.newrelic?.addPageAction('ordering.login.get-otp-start');
-    appActions.getOtp({ phone, type: otpType });
+    appActions.getOtp({ phone, type });
     this.setState({ sendOtp: true });
   }
 
@@ -102,7 +103,7 @@ class PageLogin extends React.Component {
 
   renderOtpModal() {
     const { t, user } = this.props;
-    const { isFetching, isLogin, hasOtp, isError, phone } = user || {};
+    const { isFetching, isResending, isLogin, hasOtp, isError, phone, noWhatsAppAccount, country } = user || {};
     const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
@@ -114,11 +115,14 @@ class PageLogin extends React.Component {
         buttonText={t('OK')}
         ResendOtpTime={RESEND_OTP_TIME}
         phone={phone}
+        country={country}
+        showWhatsAppResendBtn={!noWhatsAppAccount && country === 'MY'}
         onClose={this.handleCloseOtpModal.bind(this)}
         getOtp={this.handleSubmitPhoneNumber.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
         updateOtpStatus={this.updateOtpStatus.bind(this)}
         isLoading={isFetching || isLogin}
+        isResending={isResending}
         isError={isError}
       />
     );
@@ -159,11 +163,17 @@ class PageLogin extends React.Component {
           />
           <div className="page-login__container">
             <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">
-              {isValidPhoneNumber(phone) ? (
-                <img src={beepLoginActive} alt="otp" />
-              ) : (
-                <img className="page-login__disabled" src={beepLoginDisabled} alt="otp" />
-              )}
+              <img
+                src={beepLoginActive}
+                alt="otp"
+                className={`${isValidPhoneNumber(phone) ? '' : 'page-login__icon--hide'}`}
+              />
+              <img
+                className=""
+                src={beepLoginDisabled}
+                alt="otp"
+                className={`${isValidPhoneNumber(phone) ? 'page-login__icon--hide' : 'page-login__disabled'}`}
+              />
             </figure>
             <PhoneViewContainer
               className="padding-normal margin-normal"

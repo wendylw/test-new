@@ -16,19 +16,20 @@ import CreateOrderButton from '../../components/CreateOrderButton';
 import AddressChangeModal from './components/AddressChangeModal';
 
 import {
+  actions as appActionCreators,
   getBusiness,
   getUser,
   getRequestInfo,
   getBusinessUTCOffset,
+  getCartBilling,
+  getBusinessInfo,
   getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
-import { actions as homeActionCreators } from '../../redux/modules/home';
-import { getBusinessInfo } from '../../redux/modules/cart';
-import { getCartSummary } from '../../../redux/modules/entities/carts';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
 import './OrderingCustomer.scss';
 import CleverTap from '../../../utils/clevertap';
+import loggly from '../../../utils/monitoring/loggly';
 
 const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
 
@@ -39,7 +40,7 @@ class Customer extends Component {
   };
 
   async componentDidMount() {
-    const { history, homeActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
+    const { history, appActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
     const { addressId, deliveryToLocation } = deliveryDetails || {};
@@ -49,7 +50,7 @@ class Customer extends Component {
     //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
     !addressId && (await customerActions.initDeliveryDetails(type));
     !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
-    homeActions.loadShoppingCart(
+    appActions.loadShoppingCart(
       deliveryToLocation.latitude &&
         deliveryToLocation.longitude && {
           lat: deliveryToLocation.latitude,
@@ -59,11 +60,11 @@ class Customer extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { cartSummary } = this.props;
-    const { cartSummary: prevCartSummary } = prevProps;
-    const { shippingFee } = cartSummary || {};
+    const { cartBilling } = this.props;
+    const { cartBilling: prevCartBilling } = prevProps;
+    const { shippingFee } = cartBilling || {};
 
-    if (shippingFee && prevCartSummary.shippingFee && shippingFee !== prevCartSummary.shippingFee) {
+    if (shippingFee && prevCartBilling.shippingFee && shippingFee !== prevCartBilling.shippingFee) {
       this.setState({ addressChange: true });
     }
   }
@@ -128,6 +129,8 @@ class Customer extends Component {
   }
 
   handleBeforeCreateOrder = () => {
+    loggly.log('customer.create-order-attempt');
+
     const { customerActions } = this.props;
     const error = this.validateFields();
 
@@ -151,8 +154,8 @@ class Customer extends Component {
   };
 
   visitPaymentPage = () => {
-    const { history, cartSummary } = this.props;
-    const { total } = cartSummary || {};
+    const { history, cartBilling } = this.props;
+    const { total } = cartBilling || {};
 
     if (total && !this.validateFields().showModal) {
       history.push({
@@ -302,16 +305,13 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartSummary, error, storeInfoForCleverTap } = this.props;
+    const { t, history, deliveryDetails, cartBilling, error, storeInfoForCleverTap } = this.props;
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(phone);
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
-    const { total, shippingFee } = cartSummary || {};
-
-    // console.log(shippingFee);
-    // console.log(addressChange);
+    const { total, shippingFee } = cartBilling || {};
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -421,6 +421,8 @@ class Customer extends Component {
               this.handleBeforeCreateOrder();
             }}
             afterCreateOrder={this.visitPaymentPage}
+            loaderText={t('Processing')}
+            processing={processing}
           >
             {processing ? t('Processing') : t('Continue')}
           </CreateOrderButton>
@@ -452,14 +454,14 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       allBusinessInfo: getAllBusinesses(state),
       deliveryDetails: getDeliveryDetails(state),
-      cartSummary: getCartSummary(state),
+      cartBilling: getCartBilling(state),
       requestInfo: getRequestInfo(state),
       error: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )

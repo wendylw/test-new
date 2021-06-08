@@ -1,9 +1,9 @@
+import 'whatwg-fetch';
 import './utils/monitoring/monitor';
 import './utils/monkey-patches';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import 'whatwg-fetch';
 import smoothscroll from 'smoothscroll-polyfill';
 import config from './config';
 import './i18n';
@@ -18,16 +18,6 @@ import Utils from './utils/utils';
 try {
   // kick off the polyfill!
   smoothscroll.polyfill();
-
-  window.heap?.addUserProperties({
-    account: config.business,
-  });
-  window.heap?.addEventProperties({
-    BusinessName: Utils.isSiteApp() ? 'beepit.com' : config.business,
-  });
-  window.heap?.addEventProperties({
-    isBeepAppWebview: Utils.isWebview() ? 'yes' : 'no',
-  });
 } catch (e) {
   throw e;
 } finally {

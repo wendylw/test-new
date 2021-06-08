@@ -1,6 +1,6 @@
 const DOCUMENT_ROOT_ID = 'root';
 
-const RESEND_OTP_TIME = 30;
+const RESEND_OTP_TIME = 60;
 
 const MANIFEST = {
   PLACEHOLDER_ID: 'manifest-placeholder',
@@ -210,6 +210,13 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
     showModal: true,
   },
+  40008: {
+    title: 'ApiError:40008Title',
+    desc: 'ApiError:40008Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
   40009: {
     title: 'ApiError:40009Title',
     desc: 'ApiError:40009Description',
@@ -315,6 +322,56 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Reorder',
     showModal: true,
   },
+  54012: {
+    title: 'ApiError:54012Title',
+    desc: 'ApiError:54012Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  54013: {
+    title: 'ApiError:54013Title',
+    desc: 'ApiError:54013Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  80000: {
+    title: 'ApiError:80000Title',
+    desc: 'ApiError:80000Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  80001: {
+    title: 'ApiError:80001Title',
+    desc: 'ApiError:80001Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  41016: {
+    title: 'ApiError:41016Title',
+    desc: 'ApiError:41016Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  41017: {
+    title: 'ApiError:41017Title',
+    desc: 'ApiError:41017Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  54023: {
+    title: 'ApiError:54023Title',
+    desc: 'ApiError:54023Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  54028: {
+    title: 'ApiError:54028Title',
+    desc: 'ApiError:54028Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
@@ -408,6 +465,9 @@ const PROMOTION_ERROR_CODES = {
   },
   54417: {
     desc: '54417NotMatchMinSubtotalConsumingPromo',
+  },
+  54418: {
+    desc: '54418NotMatchAppliedClientType',
   },
   60002: {
     desc: '60002NotActive',
@@ -513,6 +573,13 @@ const PAYMENT_API_PAYMENT_OPTIONS = {
 
 const TIME_SLOT_NOW = 'now';
 
+export const AVAILABLE_REPORT_DRIVER_ORDER_STATUSES = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
+const CLIENTS = {
+  WEB: 'web',
+  IOS: 'iOS',
+  ANDROID: 'Android',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -555,4 +622,6 @@ export default {
   ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
   PAYMENT_API_PAYMENT_OPTIONS,
+  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
+  CLIENTS,
 };
