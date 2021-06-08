@@ -496,6 +496,9 @@ const PROMOTION_ERROR_CODES = {
   60009: {
     desc: '60009VoucherHasBeenUsed',
   },
+  60010: {
+    desc: '60010VoucherNotMatchSource',
+  },
 };
 
 const VOUCHER_STATUS = {
