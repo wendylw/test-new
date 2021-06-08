@@ -414,9 +414,9 @@ export class OrderDetails extends Component {
             <div className="card margin-normal">
               <button
                 onClick={this.handleReorder}
-                className="button button__block button__fill flex flex-middle flex-center padding-small"
+                className="button button__block button__fill flex flex-middle flex-center padding-small text-weight-bolder text-uppercase"
               >
-                <span className="text-size-big text-weight-bolder text-uppercase">{t('Reorder')}</span>
+                {t('Reorder')}
               </button>
             </div>
           ) : null}
@@ -425,12 +425,10 @@ export class OrderDetails extends Component {
               <button
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
-                className="button button__block flex flex-middle flex-center padding-small"
+                className="button button__block flex flex-middle flex-center padding-small text-weight-bolder text-uppercase"
                 data-heap-name="ordering.contact-details.report-driver-btn"
               >
-                <span className="text-size-big text-weight-bolder text-uppercase padding-left-right-small">
-                  {t('ReportIssue')}
-                </span>
+                {t('ReportIssue')}
               </button>
             </div>
           ) : null}

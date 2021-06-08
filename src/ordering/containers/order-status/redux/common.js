@@ -9,7 +9,7 @@ import * as ApiFetch from '../../../../utils/api/api-fetch';
 import { actions as appActions } from '../../../redux/modules/app';
 import i18next from 'i18next';
 
-const { PROMO_TYPE } = Constants;
+const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 
 const types = {
   // fetch order
@@ -154,13 +154,10 @@ export const getIsShowReorderButton = createSelector(
   getOrderStatus,
   getOrderShippingType,
   (orderStatus, shippingType) => {
-    if (shippingType === Constants.DELIVERY_METHOD.DELIVERY && orderStatus === Constants.ORDER_STATUS.DELIVERED) {
-      return true;
-    } else if (shippingType === Constants.DELIVERY_METHOD.PICKUP && orderStatus === Constants.ORDER_STATUS.PICKED_UP) {
-      return true;
-    } else {
-      return false;
-    }
+    return (
+      (shippingType === DELIVERY_METHOD.DELIVERY && orderStatus === ORDER_STATUS.DELIVERED) ||
+      (shippingType === DELIVERY_METHOD.PICKUP && orderStatus === ORDER_STATUS.PICKED_UP)
+    );
   }
 );
 
