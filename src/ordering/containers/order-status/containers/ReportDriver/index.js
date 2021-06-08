@@ -28,9 +28,11 @@ import {
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
 import { actions as commonActionCreators, getReceiptNumber } from '../../redux/common';
-import { actions as appActionCreators, getUserEmail, getUserConsumerId } from '../../../../redux/modules/app';
+import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser } from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
+import Utils from '../../../../../utils/utils';
+import { getAppToken } from '../../../../../cashback/containers/utils';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
@@ -40,15 +42,52 @@ class ReportDriver extends Component {
   inputRefOfEmail = null;
 
   componentDidMount = async () => {
-    const { receiptNumber, loadOrder, fetchReport, userConsumerId, getProfileInfo, initialEmail } = this.props;
+    const { receiptNumber, loadOrder, fetchReport, user } = this.props;
 
     await loadOrder(receiptNumber);
+
+    if (Utils.isWebview() && !user?.isLogin) {
+      getAppToken(user);
+
+      window.sendToken = res => this.authTokens(res);
+    }
+
+    this.preFillEmail();
+
+    fetchReport();
+  };
+
+  authTokens = async res => {
+    if (res) {
+      const result = this.getAuthTokenResult(res);
+
+      if (!result?.access_token || !result?.refresh_token) {
+        return;
+      }
+
+      await this.props.loginApp({
+        accessToken: result.access_token,
+        refreshToken: result.refresh_token,
+      });
+
+      this.preFillEmail();
+    }
+  };
+
+  getAuthTokenResult = res => {
+    if (Utils.isIOSWebview()) {
+      return res;
+    } else if (Utils.isAndroidWebview()) {
+      return JSON.parse(res) || {};
+    }
+  };
+
+  preFillEmail = async () => {
+    const { userConsumerId, getProfileInfo, initialEmail } = this.props;
 
     userConsumerId && (await getProfileInfo(userConsumerId));
 
     initialEmail(this.props.userEmail);
-
-    fetchReport();
   };
 
   componentWillUnmount() {
@@ -419,6 +458,7 @@ export default compose(
       submittable: getSubmittable(state),
       isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
       inputEmailIsValid: getInputEmailIsValid(state),
+      user: getUser(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,
@@ -435,6 +475,7 @@ export default compose(
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
       initialEmail: reportDriverActionCreators.initialEmail,
       getProfileInfo: appActionCreators.getProfileInfo,
+      loginApp: appActionCreators.loginApp,
     }
   )
 )(ReportDriver);
