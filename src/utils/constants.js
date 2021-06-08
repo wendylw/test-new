@@ -472,6 +472,9 @@ const PROMOTION_ERROR_CODES = {
   54418: {
     desc: '54418NotMatchAppliedClientType',
   },
+  54419: {
+    desc: '54419OnlyApplicableForParticipating',
+  },
   60002: {
     desc: '60002NotActive',
   },
