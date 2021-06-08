@@ -309,7 +309,7 @@ describe('test getOrderDateList function', () => {
 describe('test getDeliveryOrderTimeList function', () => {
   test('check StoreA pre order time list', () => {
     const expectedStartTimeList = ['09:00', '10:00'];
-    const expectedEndTimeList = ['19:00', '20:00'];
+    const expectedEndTimeList = ['20:00', '21:00'];
     const expectedNotExistTimeList = ['12:00', '13:00'];
     const expectedExistTimeList = ['14:00', '15:00'];
 
@@ -323,7 +323,7 @@ describe('test getDeliveryOrderTimeList function', () => {
 
   test('check StoreB pre order time list', () => {
     const expectedStartTimeList = ['01:00'];
-    const expectedEndTimeList = ['23:00'];
+    const expectedEndTimeList = ['24:00'];
     const expectedNotExistTimeList = ['12:00'];
     const expectedExistTimeList = ['13:00', '14:00'];
     const timeList = getDeliveryPreOrderTimeList(storeB);
@@ -381,7 +381,7 @@ describe('test getDeliveryTodayTimeList function', () => {
   test('check storeA today time list, available immediately', () => {
     const currentTime = new Date('2020-11-19T14:02:17+08:00');
     const expectedStartTimeList = [TIME_SLOT_NOW, '16:00'];
-    const expectedEndTimeList = ['19:00', '20:00'];
+    const expectedEndTimeList = ['20:00', '21:00'];
     const todayTimeList = getDeliveryTodayTimeList(storeA, currentTime, MY_UTC_OFFSET);
 
     expect(todayTimeList).toArrayStartWith(expectedStartTimeList);
@@ -391,7 +391,7 @@ describe('test getDeliveryTodayTimeList function', () => {
   test('check storeA today time list, unavailable immediately', () => {
     const currentTime = new Date('2020-11-19T07:02:17+08:00');
     const expectedStartTimeList = ['09:00', '10:00'];
-    const expectedEndTimeList = ['19:00', '20:00'];
+    const expectedEndTimeList = ['20:00', '21:00'];
     const todayTimeList = getDeliveryTodayTimeList(storeA, currentTime, MY_UTC_OFFSET);
 
     expect(todayTimeList).toArrayStartWith(expectedStartTimeList);
@@ -439,21 +439,21 @@ describe('test getDeliveryPreOrderValidTimePeriod function', () => {
     const { validTimeFrom, validTimeTo } = getDeliveryPreOrderValidTimePeriod(storeA);
 
     expect(validTimeFrom).toBe('09:00');
-    expect(validTimeTo).toBe('20:00');
+    expect(validTimeTo).toBe('21:00');
   });
 
   test('check storeB delivery pre order valid time period', () => {
     const { validTimeFrom, validTimeTo } = getDeliveryPreOrderValidTimePeriod(storeB);
 
     expect(validTimeFrom).toBe('01:00');
-    expect(validTimeTo).toBe('23:00');
+    expect(validTimeTo).toBe('24:00');
   });
 
   test('check storeC delivery pre order valid time period', () => {
     const { validTimeFrom, validTimeTo } = getDeliveryPreOrderValidTimePeriod(storeC);
 
     expect(validTimeFrom).toBe('12:00');
-    expect(validTimeTo).toBe('17:00');
+    expect(validTimeTo).toBe('18:00');
   });
 });
 
