@@ -3,6 +3,7 @@ import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../../../components/Header';
+import Modal from '../../../../../components/Modal';
 import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -13,7 +14,7 @@ import {
   getSavedAddressInfo,
 } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
-import { post, put } from '../../../../../utils/request';
+import { post, put, del } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import webviewUtils from '../../../../../utils/webview-utils';
 import qs from 'qs';
@@ -25,6 +26,10 @@ const actions = {
 };
 
 class AddressDetail extends Component {
+  state = {
+    show: false,
+  };
+
   getShippingType() {
     const { history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -161,7 +166,18 @@ class AddressDetail extends Component {
     }
   };
 
+  removeSavedAddress = async () => {
+    const { user, savedAddressInfo } = this.props;
+    const { id } = savedAddressInfo;
+    const { consumerId } = user || {};
+    let response = await del(url.API_URLS.DELETE_ADDRESS(consumerId, id).url);
+    if (response === true) {
+      this.props.history.push({ pathname: '/customer' });
+    }
+  };
+
   render() {
+    const { show } = this.state;
     const { t, history, savedAddressInfo } = this.props;
     const { type, name, address, details, comments } = savedAddressInfo || {};
 
@@ -191,55 +207,65 @@ class AddressDetail extends Component {
           }}
         >
           <div className="padding-top-bottom-small">
-            <div className="ordering-customer__group form__group">
+            <div className="form__group address-detail__field">
+              <div className="padding-left-right-normal">
+                <span className="address-detail__title--required text-opacity text-size-small">{t('Name')}</span>
+              </div>
               <input
-                className="ordering-customer__input form__input padding-left-right-normal text-size-big text-line-height-base"
+                className="address-detail__input form__input padding-left-right-normal text-size-big text-line-height-base"
                 data-heap-name="ordering.customer.delivery-address-name"
                 type="text"
                 maxLength="140"
-                placeholder={t('AddressName')}
                 value={name}
                 name="addressName"
                 onChange={this.handleInputChange}
               />
             </div>
-            <p className="text-opacity padding-small">{t('AddressDetailLabel')}</p>
           </div>
 
           <div className="padding-top-bottom-small">
-            <div
-              className="form__group flex flex-middle flex-space-between"
-              data-heap-name="ordering.customer.delivery-address"
-              onClick={async () => {
-                const { search } = window.location;
+            <div className="form__group address-detail__field">
+              <div className="padding-left-right-normal">
+                <span className="address-detail__title--required text-opacity text-size-small">
+                  {t('AddressDetails')}
+                </span>
+              </div>
+              <div
+                className="flex flex-middle flex-space-between"
+                data-heap-name="ordering.customer.delivery-address"
+                onClick={async () => {
+                  const { search } = window.location;
 
-                const callbackUrl = encodeURIComponent(
-                  `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
-                );
+                  const callbackUrl = encodeURIComponent(
+                    `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
+                  );
 
-                CleverTap.pushEvent('Address details - click location row');
+                  CleverTap.pushEvent('Address details - click location row');
 
-                history.push({
-                  pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-                  search: `${search}&callbackUrl=${callbackUrl}`,
-                });
-              }}
-            >
-              <p className="padding-normal text-size-big text-line-height-base">
-                {address || t('AddAddressPlaceholder')}
-              </p>
-              <IconNext className="icon icon__normal flex__shrink-fixed" />
+                  history.push({
+                    pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+                    search: `${search}&callbackUrl=${callbackUrl}`,
+                  });
+                }}
+              >
+                <p className="padding-left-right-normal text-size-big text-line-height-base">{address}</p>
+                <IconNext className="icon  flex__shrink-fixed" />
+              </div>
             </div>
           </div>
 
           <div className="padding-top-bottom-small">
-            <div className="ordering-customer__group form__group">
+            <div className="form__group address-detail__field">
+              <div className="padding-left-right-normal">
+                <span className="address-detail__title--required text-opacity text-size-small">
+                  {t('UnitNumberAndFloor')}
+                </span>
+              </div>
               <input
-                className="ordering-customer__input form__input padding-left-right-normal text-size-big text-line-height-base"
+                className="address-detail__input form__input padding-left-right-normal text-size-big text-line-height-base"
                 data-heap-name="ordering.customer.delivery-address-detail"
                 type="text"
                 maxLength="140"
-                placeholder={t('AddressDetailsPlaceholder')}
                 value={details}
                 name="addressDetails"
                 onChange={this.handleInputChange}
@@ -248,19 +274,26 @@ class AddressDetail extends Component {
           </div>
 
           <div className="padding-top-bottom-small">
-            <div className="ordering-customer__group form__group">
+            <div className="form__group address-detail__field">
+              <div className="padding-left-right-normal">
+                <span className="text-opacity text-size-small">{t('NoteToDriver')}</span>
+              </div>
               <input
-                className="ordering-customer__input form__input padding-left-right-normal text-size-big"
+                className="address-detail__input form__input padding-left-right-normal text-size-big"
                 data-heap-name="ordering.customer.delivery-note"
                 type="text"
                 maxLength="140"
                 value={comments}
                 name="deliveryComments"
                 onChange={this.handleInputChange}
-                placeholder={`${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
               />
             </div>
           </div>
+          {type === actions.EDIT && (
+            <button className="button text-error" onClick={() => this.setState({ show: true })}>
+              {t('Remove')}
+            </button>
+          )}
         </section>
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
@@ -274,6 +307,26 @@ class AddressDetail extends Component {
             {type === actions.EDIT ? t('SaveChanges') : t('AddAddress')}
           </button>
         </footer>
+        <Modal show={show}>
+          <div className="text-center padding-top-bottom-normal">
+            <h2 className="text-size-big text-weight-bolder padding-top-bottom-small">{t('RemoveAddressTitle')}</h2>
+            <p className="text-opacity margin-left-right-normal">{t('RemoveAddressContent')}</p>
+          </div>
+          <div className="flex flex-center">
+            <button
+              className="address-detail__button address-detail__button-outline button button__block text-weight-bolder text-uppercase"
+              onClick={() => this.setState({ show: false })}
+            >
+              {t('KeepIt')}
+            </button>
+            <button
+              className="address-detail__button button button__block button__fill text-weight-bolder text-uppercase"
+              onClick={this.removeSavedAddress}
+            >
+              {t('EnsureRemove')}
+            </button>
+          </div>
+        </Modal>
       </div>
     );
   }
