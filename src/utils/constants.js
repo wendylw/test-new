@@ -418,9 +418,6 @@ const PROMOTION_ERROR_CODES = {
   54406: {
     desc: '54406FreePromotionNotMatchCondition',
   },
-  54407: {
-    desc: '54407NotMatchCondition',
-  },
   54403: {
     desc: '54403NotStartOrExpired',
   },
