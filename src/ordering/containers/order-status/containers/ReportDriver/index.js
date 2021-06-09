@@ -47,9 +47,9 @@ class ReportDriver extends Component {
     await loadOrder(receiptNumber);
 
     if (Utils.isWebview() && !user?.isLogin) {
-      getAppToken(user);
-
       window.sendToken = res => this.authTokens(res);
+
+      getAppToken(user);
     }
 
     this.preFillEmail();
@@ -69,6 +69,13 @@ class ReportDriver extends Component {
         accessToken: result.access_token,
         refreshToken: result.refresh_token,
       });
+
+      const { user } = this.props;
+
+      if (!user.isLogin && user.isExpired) {
+        getAppToken(user);
+        return;
+      }
 
       this.preFillEmail();
     }
