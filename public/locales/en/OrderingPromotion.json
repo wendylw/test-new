@@ -23,7 +23,7 @@
   "54416AppliedSourceDoesNotMatch": "This promotion is only for {{supportedChannel}} order (Error: 54416)",
   "54417NotMatchMinSubtotalConsumingPromo": "This promotion cannot be used because the minimum order value is not matched ({{minSubtotalConsumingPromo}}) (Error: 54417)",
   "54418NotMatchAppliedClientType": "This promotion can only be use on {{supportClient}} (Error: 54418)",
-  "54419OnlyApplicableForParticipating": "Sorry, this promo code is only applicable for participating restaurants (#: 54419)",
+  "54419OnlyApplicableForParticipating": "Sorry, this promo code is only applicable for participating restaurants (#54419)",
   "60001NotExisted": "This voucher code does not exist",
   "60002NotActive": "This voucher cannot be used because it's not activated yet (Error: NOT ACTIVE)",
   "60003Expired": "This voucher cannot be used because it's expired (Error: EXPIRED)",
