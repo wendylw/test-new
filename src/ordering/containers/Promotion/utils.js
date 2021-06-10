@@ -42,18 +42,29 @@ export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, o
   }
 }
 
-export const getPromoStatusLabelText = ({ status, validFrom, validTo, expired }) => {
+export const getPromoStatusLabelText = ({ status, validFrom, validTo, expired, invalidForWeb }) => {
   // Voucher status list: ['expired', 'redeemed', 'pendingRedeem', 'unused']
-  switch (status) {
-    case VOUCHER_STATUS.EXPIRED:
-      return i18next.t('OrderingPromotion:PromoExpiredLabel');
-    case VOUCHER_STATUS.REDEEMED:
-      return i18next.t('OrderingPromotion:PromoRedeemedLabel');
-    default:
-      if (expired) return i18next.t('OrderingPromotion:PromoExpiredLabel');
-      if (new Date() < new Date(validFrom) || new Date() > new Date(validTo)) {
-        return i18next.t('OrderingPromotion:PromoInvalidLabel');
-      }
-      return '';
+  if (status === VOUCHER_STATUS.EXPIRED) {
+    return i18next.t('OrderingPromotion:PromoExpiredLabel');
   }
+
+  if (status === VOUCHER_STATUS.REDEEMED) {
+    return i18next.t('OrderingPromotion:PromoRedeemedLabel');
+  }
+
+  if (expired) {
+    return i18next.t('OrderingPromotion:PromoExpiredLabel');
+  }
+
+  const currentDate = new Date();
+
+  if (currentDate < new Date(validFrom) || currentDate > new Date(validTo)) {
+    return i18next.t('OrderingPromotion:PromoInvalidLabel');
+  }
+
+  if (invalidForWeb) {
+    return i18next.t('OrderingPromotion:PromoAppOnlyLabel');
+  }
+
+  return '';
 };
