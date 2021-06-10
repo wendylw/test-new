@@ -289,11 +289,12 @@ class AddressDetail extends Component {
               />
             </div>
           </div>
-          {type === actions.EDIT && (
+          {/* remove address will cause delivery to pickup, will do remove feature further */}
+          {/* {type === actions.EDIT && (
             <button className="button text-error" onClick={() => this.setState({ show: true })}>
               {t('Remove')}
             </button>
-          )}
+          )} */}
         </section>
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
