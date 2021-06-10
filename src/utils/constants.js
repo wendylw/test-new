@@ -418,9 +418,6 @@ const PROMOTION_ERROR_CODES = {
   54406: {
     desc: '54406FreePromotionNotMatchCondition',
   },
-  54407: {
-    desc: '54407NotMatchCondition',
-  },
   54403: {
     desc: '54403NotStartOrExpired',
   },
@@ -438,6 +435,9 @@ const PROMOTION_ERROR_CODES = {
   },
   54401: {
     desc: '54401DeletedPromotion',
+  },
+  54407: {
+    desc: '54407RequireSameBusiness',
   },
   54408: {
     desc: '54408RequireSameBusiness',
@@ -468,6 +468,9 @@ const PROMOTION_ERROR_CODES = {
   },
   54418: {
     desc: '54418NotMatchAppliedClientType',
+  },
+  54419: {
+    desc: '54419OnlyApplicableForParticipating',
   },
   60002: {
     desc: '60002NotActive',
