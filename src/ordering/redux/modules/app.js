@@ -826,3 +826,7 @@ export const getStoreInfoForCleverTap = state => {
 
   return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
 };
+
+export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
+
+export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
