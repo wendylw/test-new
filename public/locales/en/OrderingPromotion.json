@@ -36,6 +36,7 @@
   "60000InvalidPromotionOrVoucher": "This code is invalid (Error: 60000)",
   "60010VoucherNotMatchSource": "This voucher is only valid on app. (Error: 60010)",
   "PromoExpiredLabel": "Expired",
+  "PromoAppOnlyLabel": "App Only",
   "PromoRedeemedLabel": "Redeemed",
   "PromoInvalidLabel": "Invalid",
   "PromoTitleAbsolute": "<0></0> off",

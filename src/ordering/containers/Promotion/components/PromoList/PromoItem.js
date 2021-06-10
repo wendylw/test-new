@@ -75,10 +75,10 @@ class PromoItem extends Component {
     return (
       <li
         className={`ordering-promo-item flex flex-middle card padding-smaller margin-normal ${
-          promo.expired ? 'disabled' : ''
+          promo.expired || promo.invalidForWeb ? 'disabled' : ''
         } ${isSelected ? 'selected' : ''}`}
         key={promo.id}
-        onClick={() => (!promo.expired ? onSelectPromo(promo) : {})}
+        onClick={() => (!promo.expired && !promo.invalidForWeb ? onSelectPromo(promo) : {})}
       >
         <IconVoucherTicket className="ordering-promo-item__icon-ticket icon icon__smaller icon__white margin-top-bottom-small margin-left-right-smaller" />
         <div className="flex flex-space-between flex-middle ordering-promo-item__content margin-smaller">
@@ -91,7 +91,7 @@ class PromoItem extends Component {
             </p>
           </div>
           <div className="text-right">
-            {promo.expired ? (
+            {promo.expired || promo.invalidForWeb ? (
               <i className="ordering-promo-item__tag tag tag__reverse-primary tag__outline tag__small margin-top-bottom-smaller text-uppercase text-weight-bolder">
                 {getPromoStatusLabelText(promo)}
               </i>
