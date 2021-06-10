@@ -26,7 +26,7 @@ export const REPORT_DRIVER_REASONS = [
         required: true,
       },
     ],
-    i18n_key: 'Reasons_foodWasDamaged',
+    i18n_key: 'FoodWasDamaged',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.DELIVERY_TAKE_TOO_LONG,
@@ -36,7 +36,7 @@ export const REPORT_DRIVER_REASONS = [
         required: true,
       },
     ],
-    i18n_key: 'Reasons_deliveryTakeTooLong',
+    i18n_key: 'DeliveryTakeTooLong',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.DRIVER_WAS_RUDE,
@@ -46,7 +46,7 @@ export const REPORT_DRIVER_REASONS = [
         required: true,
       },
     ],
-    i18n_key: 'Reasons_driverWasRude',
+    i18n_key: 'DriverWasRude',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.DRIVER_ASKED_MORE_MONEY,
@@ -56,7 +56,7 @@ export const REPORT_DRIVER_REASONS = [
         required: true,
       },
     ],
-    i18n_key: 'Reasons_driverAskedMoreMoney',
+    i18n_key: 'DriverAskedMoreMoney',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.ORDER_WAS_MISSING_ITEM,
@@ -66,7 +66,7 @@ export const REPORT_DRIVER_REASONS = [
         required: true,
       },
     ],
-    i18n_key: 'Reasons_orderWasMissingItem',
+    i18n_key: 'OrderWasMissingItem',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.NEVER_RECEIVED_MY_ORDER,
@@ -76,7 +76,7 @@ export const REPORT_DRIVER_REASONS = [
         required: true,
       },
     ],
-    i18n_key: 'Reasons_neverReceivedMyOrder',
+    i18n_key: 'NeverReceivedMyOrder',
   },
   {
     code: REPORT_DRIVER_REASON_CODE.OTHERS,
@@ -86,7 +86,7 @@ export const REPORT_DRIVER_REASONS = [
         required: true,
       },
     ],
-    i18n_key: 'Reasons_others',
+    i18n_key: 'Others',
   },
 ];
 
