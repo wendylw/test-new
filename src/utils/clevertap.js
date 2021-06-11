@@ -7,24 +7,38 @@ const pushEvent = (eventName, attributes) => {
   try {
     if (Utils.isWebview()) {
       if (Utils.isIOSWebview()) {
-        window.webkit?.messageHandlers?.clevertap?.postMessage({
-          action: 'recordEventWithProps',
-          event: eventName,
-          props: {
-            ...attributes,
-            'account name': businessName,
-          },
-        });
+        if (eventName === 'Charged') {
+          const { Items: items, ...chargeDetails } = attributes || {};
+          window.webkit?.messageHandlers?.clevertap?.postMessage({
+            action: 'recordChargedEvent',
+            chargeDetails: chargeDetails,
+            items: items,
+          });
+        } else {
+          window.webkit?.messageHandlers?.clevertap?.postMessage({
+            action: 'recordEventWithProps',
+            event: eventName,
+            props: {
+              ...attributes,
+              'account name': businessName,
+            },
+          });
+        }
       }
 
       if (Utils.isAndroidWebview()) {
-        window.CleverTap?.pushEvent(
-          eventName,
-          JSON.stringify({
-            ...attributes,
-            'account name': businessName,
-          })
-        );
+        if (eventName === 'Charged') {
+          const { Items, ...chargeDetails } = attributes || {};
+          window.CleverTap?.pushChargedEvent(JSON.stringify(...chargeDetails), JSON.stringify(Items));
+        } else {
+          window.CleverTap?.pushEvent(
+            eventName,
+            JSON.stringify({
+              ...attributes,
+              'account name': businessName,
+            })
+          );
+        }
       }
     } else {
       window.clevertap?.event.push(eventName, {
