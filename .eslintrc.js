@@ -384,7 +384,6 @@ module.exports = {
       extends: ['react-app', 'airbnb', 'prettier'],
       rules: {
         'no-unused-expressions': 'off',
-        'react-hooks/exhaustive-deps': 'warn',
       },
     },
     {
@@ -392,7 +391,6 @@ module.exports = {
       extends: ['react-app', 'prettier'],
       rules: {
         'no-unused-expressions': 'off',
-        'react-hooks/exhaustive-deps': 'warn',
       },
     },
   ],
