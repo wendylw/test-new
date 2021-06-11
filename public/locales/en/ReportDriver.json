@@ -1,5 +1,5 @@
 {
-    "ReportDriver": "Report Driver",
+    "ReportIssue": "Report Issue",
     "SelectAReportReason": "Select a report reason",
     "NoteFieldPlaceholder": "What went wrong? Leave comment tell us about it.",
     "LimitCharacters": "{{inputLength}}/{{maxLength}} characters",
@@ -12,11 +12,16 @@
     "UploadPhoto": "Upload photo",
     "UploadFileHere": "Upload file here",
     "UploadPhotoTooLarge": "The photo you have selected is too large. The maximum size is {{maxFileSize}}MB.",
-    "Reasons_foodWasDamaged": "Food was damaged",
-    "Reasons_deliveryTakeTooLong": "Delivery took too long",
-    "Reasons_orderWasMissingItem": "Order was missing item(s)",
-    "Reasons_neverReceivedMyOrder": "Never received my order",
-    "Reasons_driverWasRude": "Driver was rude",
-    "Reasons_driverAskedMoreMoney": "Driver asked for more money on delivery",
-    "Reasons_others": "Others"
+    "FoodWasDamaged": "Food was damaged",
+    "DeliveryTakeTooLong": "Delivery took too long",
+    "OrderWasMissingItem": "Order was missing item(s)",
+    "NeverReceivedMyOrder": "Never received my order",
+    "DriverWasRude": "Driver was rude",
+    "DriverAskedMoreMoney": "Driver asked for more money on delivery",
+    "Others": "Others",
+    "Email": "Email",
+    "PleaseEnterValidEmail": "Please enter a valid email address",
+    "SubmissionFailed": "Submission Failed",
+    "ThisRestaurantUsesItsOwnDeliveryDrivers": "This restaurant uses its own delivery drivers. Please contact them directly to resolve the issue.",
+    "YourOrderHasNotBeenDeliveredYet": "Your order has not been delivered yet. Please try submitting later once you have received your food."
 }
