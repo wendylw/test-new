@@ -62,7 +62,7 @@ export const cancelOrder = createAsyncThunk(
       CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
         'store name': _get(order, 'storeInfo.name', ''),
         'store id': _get(order, 'storeId', ''),
-        'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)) || '',
+        'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
         'order amount': _get(order, 'total', ''),
         country: _get(businessInfo, 'country', ''),
         'Reason for cancellation': reason,
