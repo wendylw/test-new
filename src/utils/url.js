@@ -205,6 +205,10 @@ const API_URLS = {
     url: `/api/transactions/${receiptNumber}/status/cancel`,
     method: 'put',
   }),
+  PAYMENT_RISK: () => ({
+    url: '/payment/risk',
+    method: 'get',
+  }),
 };
 
 export default {

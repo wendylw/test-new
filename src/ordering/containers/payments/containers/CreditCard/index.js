@@ -7,6 +7,7 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import FormValidate from '../../../../../utils/form-validate';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
+import Url from '../../../../../utils/url';
 import Utils from '../../../../../utils/utils';
 import config from '../../../../../config';
 
@@ -28,6 +29,7 @@ import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '
 import PaymentCardBrands from '../../components/PaymentCardBrands';
 import '../../styles/PaymentCreditCard.scss';
 import CleverTap from '../../../../../utils/clevertap';
+import * as ApiFetch from '../../../../../utils/api/api-fetch';
 import loggly from '../../../../../utils/monitoring/loggly';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
@@ -258,15 +260,20 @@ class CreditCard extends Component {
     return !(cardHolderNameError.key || (cardInfoError.keys && cardInfoError.keys.length));
   };
 
-  async handleBeforeCreateOrder() {
+  handleBeforeCreateOrder = async () => {
     this.setState({
       payNowLoading: true,
     });
 
-    await this.validateForm();
-
-    const { t } = this.props;
+    const { t, merchantCountry, cartBilling, storeInfoForCleverTap } = this.props;
     const { cardInfoError } = this.state;
+
+    CleverTap.pushEvent('Card Details - click continue', {
+      ...storeInfoForCleverTap,
+      'payment method': getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY),
+    });
+
+    await this.validateForm();
 
     if (!this.isFromComplete()) {
       return;
@@ -275,6 +282,27 @@ class CreditCard extends Component {
     let isInvalidNum = null;
     let isExpired = null;
     let isInvalidCVV = null;
+
+    // check card risk
+    const isRisky = await this.checkCardRisky();
+
+    if (isRisky) {
+      CleverTap.pushEvent('Card details - potential fraud card entry', {
+        country: merchantCountry,
+        'cart amount': cartBilling.total,
+        save_card: false,
+      });
+
+      cardInfoError.keys.push('cardNumber');
+      cardInfoError.messages.cardNumber = t('RiskyCardNumberMessage');
+
+      this.setState({
+        cardInfoError,
+        invalidCardInfoFields: ['cardNumber'],
+      });
+
+      return;
+    }
 
     window.My2c2p.getEncrypted('bank-2c2p-form', function(encryptedData, errCode) {
       if (!errCode) {
@@ -321,7 +349,28 @@ class CreditCard extends Component {
 
       return;
     }
-  }
+  };
+
+  checkCardRisky = async () => {
+    try {
+      const { card } = this.state;
+      const { merchantCountry, cartBilling } = this.props;
+
+      const result = await ApiFetch.get(Url.API_URLS.PAYMENT_RISK().url, {
+        queryParams: {
+          creditCardNum: card.cardNumber,
+          countryCode: merchantCountry,
+          amount: cartBilling.total,
+        },
+      });
+
+      return result.isRisky;
+    } catch (e) {
+      console.error('Check card payment risk fail, ', e);
+      // if failure, fallback to no risk
+      return false;
+    }
+  };
 
   handleChangeCardNumber(e) {
     let cursor = e.target.selectionStart;
@@ -379,8 +428,7 @@ class CreditCard extends Component {
   renderForm() {
     const { t, cartBilling } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
-    const { cardholderName } = card || {};
-    const cardNumber = card.formattedCardNumber;
+    const { cardholderName, cardNumber, formattedCardNumber } = card || {};
     const { total } = cartBilling || {};
 
     return (
@@ -410,7 +458,7 @@ class CreditCard extends Component {
                 data-heap-name="ordering.payment.credit-card.card-number"
                 type="tel"
                 placeholder="1234 1234 1234 1234"
-                value={cardNumber || ''}
+                value={formattedCardNumber || ''}
                 onChange={this.handleChangeCardNumber.bind(this)}
                 onBlur={this.validCardInfo.bind(this)}
               />
@@ -454,7 +502,10 @@ class CreditCard extends Component {
                 }
 
                 return (
-                  <span key={key} className="form__error-message padding-left-right-normal margin-top-bottom-small">
+                  <span
+                    key={key}
+                    className="form__error-message padding-left-right-normal margin-top-bottom-small text-line-height-higher"
+                  >
                     {cardInfoError.messages[key]}
                   </span>
                 );
@@ -489,7 +540,7 @@ class CreditCard extends Component {
           ) : null}
         </div>
 
-        <input type="hidden" data-encrypt="cardnumber" value={(cardNumber || '').replace(/[^\d]/g, '')}></input>
+        <input type="hidden" data-encrypt="cardnumber" value={cardNumber}></input>
         <input type="hidden" data-encrypt="month" value={(validDate || '').substring(0, 2)}></input>
         <input type="hidden" data-encrypt="year" value={`20${(validDate || '').substring(5, 7)}`}></input>
         <input type="hidden" name="encryptedCardInfo" value=""></input>
@@ -498,7 +549,7 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartBilling, merchantCountry, storeInfoForCleverTap } = this.props;
+    const { t, match, history, cartBilling, merchantCountry } = this.props;
     const { payNowLoading, domLoaded } = this.state;
     const { total } = cartBilling || {};
 
@@ -545,13 +596,7 @@ class CreditCard extends Component {
             data-test-id="payMoney"
             data-heap-name="ordering.payment.credit-card.pay-btn"
             disabled={payNowLoading}
-            beforeCreateOrder={() => {
-              CleverTap.pushEvent('Card Details - click continue', {
-                ...storeInfoForCleverTap,
-                'payment method': getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY),
-              });
-              this.handleBeforeCreateOrder();
-            }}
+            beforeCreateOrder={this.handleBeforeCreateOrder}
             validCreateOrder={Boolean(this.isFromComplete())}
             afterCreateOrder={orderId => {
               loggly.log('credit-card.pay-attempt', { orderId });

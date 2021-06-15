@@ -15,36 +15,72 @@ import { actions as reportDriverActionCreators, thunks as reportDriverThunks } f
 import {
   getInputNotes,
   getSelectedReasonCode,
-  getSelectedReasonFields,
   getSubmitStatus,
   getShowPageLoader,
   getUploadPhotoUrl,
   getUploadPhotoFile,
+  getInputEmail,
+  getSelectedReasonNoteField,
+  getSelectedReasonPhotoField,
+  getSubmittable,
+  getIsSubmitButtonDisabled,
+  getInputEmailIsValid,
 } from './redux/selectors';
-import { SUBMIT_STATUS, REPORT_DRIVER_FIELD_NAMES, REPORT_DRIVER_REASONS } from './constants';
-import {
-  actions as commonActionCreators,
-  getIsUseStorehubLogistics,
-  getOrderStatus,
-  getReceiptNumber,
-} from '../../redux/common';
-import { actions as appActionCreators } from '../../../../redux/modules/app';
+import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
+import { actions as commonActionCreators, getReceiptNumber } from '../../redux/common';
+import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser } from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
 import { NativeMethods } from '../../../../../utils/dsbridge-methods';
+import { getAppToken } from '../../../../../cashback/containers/utils';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
-const { REPORT_DRIVER_REASON_CODE, AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
+const { REPORT_DRIVER_REASON_CODE } = Constants;
 
 class ReportDriver extends Component {
-  componentDidMount() {
-    const { receiptNumber, loadOrder, fetchReport } = this.props;
+  inputRefOfEmail = null;
 
-    loadOrder(receiptNumber);
+  componentDidMount = async () => {
+    const { receiptNumber, loadOrder, fetchReport, user } = this.props;
+
+    await loadOrder(receiptNumber);
+
+    if (Utils.isWebview() && !user?.isLogin) {
+      const result = await NativeMethods.getToken();
+      await this.loginAppWithNativeToken(result);
+
+      const { user } = this.props;
+      if (!user.isLogin && user.isExpired) {
+        const result = await NativeMethods.tokenExpired();
+        await this.loginAppWithNativeToken(result);
+        return;
+      }
+    }
+
+    this.preFillEmail();
+
     fetchReport();
-  }
+  };
+
+  loginAppWithNativeToken = async result => {
+    if (!result?.access_token || !result?.refresh_token) {
+      return;
+    }
+    await this.props.loginApp({
+      accessToken: result.access_token,
+      refreshToken: result.refresh_token,
+    });
+  };
+
+  preFillEmail = async () => {
+    const { userConsumerId, getProfileInfo, initialEmail } = this.props;
+
+    userConsumerId && (await getProfileInfo(userConsumerId));
+
+    initialEmail(this.props.userEmail);
+  };
 
   componentWillUnmount() {
     // release the file reference
@@ -86,49 +122,20 @@ class ReportDriver extends Component {
     this.props.updateInputNotes(notes);
   };
 
-  isOrderCanReportDriver = () => {
-    const { orderStatus, isUseStorehubLogistics } = this.props;
+  handleNotesBlur = () => {
+    const { inputNotes } = this.props;
 
-    return AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus) && isUseStorehubLogistics;
+    this.props.updateInputNotes(inputNotes.trim());
   };
 
-  isInputNotesEmpty() {
-    const { inputNotes } = this.props;
-    return inputNotes.trim().length === 0;
-  }
+  handleEmailChange = e => {
+    const email = e.target.value;
 
-  isUploadPhotoEmpty() {
-    const { uploadPhotoFile } = this.props;
-    return !uploadPhotoFile;
-  }
+    this.props.updateInputEmail(email);
+  };
 
-  isSubmitButtonDisable = () => {
-    const { submitStatus, selectedReasonFields, selectedReasonCode } = this.props;
-
-    const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
-    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
-
-    if (!this.isOrderCanReportDriver()) {
-      return true;
-    }
-
-    if (!selectedReasonCode) {
-      return true;
-    }
-
-    if (selectedReasonNoteField && selectedReasonNoteField.required && this.isInputNotesEmpty()) {
-      return true;
-    }
-
-    if (selectedReasonPhotoField && selectedReasonPhotoField.required && this.isUploadPhotoEmpty()) {
-      return true;
-    }
-
-    if (submitStatus !== SUBMIT_STATUS.NOT_SUBMIT) {
-      return true;
-    }
-
-    return false;
+  handleEmailInputBlur = () => {
+    this.props.inputEmailCompleted();
   };
 
   handleUploadPhoto = e => {
@@ -151,7 +158,26 @@ class ReportDriver extends Component {
     this.props.removeUploadPhotoFile();
   };
 
+  validate = () => {
+    this.props.inputEmailCompleted();
+
+    if (!this.props.inputEmailIsValid) {
+      this.inputRefOfEmail?.focus();
+      return false;
+    }
+
+    if (!this.props.submittable) {
+      return false;
+    }
+
+    return true;
+  };
+
   handleSubmit = async () => {
+    if (!this.validate()) {
+      return;
+    }
+
     await this.props.submitReport();
   };
 
@@ -182,7 +208,7 @@ class ReportDriver extends Component {
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.thank-you-header"
           isPage={true}
-          title={t('ReportDriver')}
+          title={t('ReportIssue')}
           navFunc={this.handleGoBack}
         ></HybridHeader>
         <div className="padding-normal">
@@ -213,7 +239,7 @@ class ReportDriver extends Component {
           <span className="text-weight-bolder">{t('Notes')}</span>
           {required ? <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span> : null}
         </h3>
-        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-large">
+        <div className="ordering-report-driver__group form__group margin-left-right-small border-radius-normal">
           <textarea
             className="ordering-report-driver__textarea form__textarea padding-small"
             data-heap-name="ordering.report-driver.notes-input"
@@ -222,12 +248,47 @@ class ReportDriver extends Component {
             maxLength={NOTE_MAX_LENGTH}
             value={inputNotes}
             onChange={this.handleNotesChange}
+            onBlur={this.handleNotesBlur}
             disabled={disabled}
           ></textarea>
           <p className="text-size-small text-right padding-small text-opacity">
             {t('LimitCharacters', { inputLength: inputNotes.length, maxLength: NOTE_MAX_LENGTH })}
           </p>
         </div>
+      </div>
+    );
+  }
+
+  renderEmailFiled({ t, inputEmail, disabled }) {
+    const { value, isCompleted, isValid } = inputEmail;
+
+    const showInvalidError = isCompleted && !isValid;
+
+    return (
+      <div className="padding-top-bottom-small">
+        <h3 className="margin-small">
+          <span className="text-weight-bolder">{t('Email')}</span>
+          <span className="text-error text-lowercase">{` - *${t('Common:Required')}`}</span>
+        </h3>
+        <div
+          className={`ordering-report-driver__group ${
+            showInvalidError ? 'error' : ''
+          } form__group margin-left-right-small border-radius-normal`}
+        >
+          <input
+            ref={ref => (this.inputRefOfEmail = ref)}
+            disabled={disabled}
+            value={value}
+            onChange={this.handleEmailChange}
+            onBlur={this.handleEmailInputBlur}
+            className="ordering-report-driver__input-email form__input padding-small form__group"
+          />
+        </div>
+        {showInvalidError && (
+          <p className="form__error-message padding-left-right-normal margin-top-bottom-small">
+            {t('PleaseEnterValidEmail')}
+          </p>
+        )}
       </div>
     );
   }
@@ -241,14 +302,14 @@ class ReportDriver extends Component {
         </h3>
         {uploadPhotoFile ? (
           <div className="ordering-report-driver__upload-image-container margin-small border-radius-large">
-            <img alt="upload file" src={uploadPhotoUrl} />
+            <img className="ordering-report-driver__upload-image" alt="upload file" src={uploadPhotoUrl} />
             {disabled ? null : (
               <button
                 onClick={this.handleRemoveUploadPhoto}
-                className="ordering-report-driver__button-close button"
+                className="ordering-report-driver__button-close button flex flex-middle flex-center margin-smaller"
                 data-heap-name="ordering.report-driver.remove-image"
               >
-                <IconClose className="ordering-report-driver__icon-close icon icon__small" />
+                <IconClose className="ordering-report-driver__icon-close icon icon__smaller" />
               </button>
             )}
           </div>
@@ -262,8 +323,8 @@ class ReportDriver extends Component {
               data-heap-name="ordering.report-driver.add-image"
             />
             <div className="ordering-report-driver__upload padding-normal border-radius-large">
-              <IconInsertPhoto className="icon icon__small" />
-              <p className="text-size-small">{t('UploadFileHere')}</p>
+              <IconInsertPhoto className="icon icon__normal" />
+              <p className="ordering-report-driver__upload-text margin-small text-size-small">{t('UploadFileHere')}</p>
             </div>
           </div>
         )}
@@ -278,9 +339,12 @@ class ReportDriver extends Component {
       submitStatus,
       showPageLoader,
       selectedReasonCode,
-      selectedReasonFields,
       uploadPhotoFile,
       uploadPhotoUrl,
+      inputEmail,
+      selectedReasonNoteField,
+      selectedReasonPhotoField,
+      isSubmitButtonDisabled,
     } = this.props;
     const disabled = submitStatus !== SUBMIT_STATUS.NOT_SUBMIT;
 
@@ -292,9 +356,6 @@ class ReportDriver extends Component {
       return this.renderThankYou();
     }
 
-    const selectedReasonNoteField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.NOTES);
-    const selectedReasonPhotoField = selectedReasonFields.find(field => field.name === REPORT_DRIVER_FIELD_NAMES.PHOTO);
-
     return (
       <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
         <HybridHeader
@@ -302,12 +363,17 @@ class ReportDriver extends Component {
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.header"
           isPage={true}
-          title={t('ReportDriver')}
+          title={t('ReportIssue')}
           navFunc={this.handleGoBack}
         ></HybridHeader>
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
           <div className="card padding-small margin-normal">
+            {this.renderEmailFiled({
+              t,
+              disabled,
+              inputEmail,
+            })}
             <h3 className="margin-small text-weight-bolder">{t('SelectAReportReason')}</h3>
             <ul className="margin-small">
               {REPORT_DRIVER_REASONS.map(reason => ({
@@ -356,12 +422,11 @@ class ReportDriver extends Component {
                   required: selectedReasonPhotoField.required,
                 })
               : null}
-
             <div className="margin-small">
               <button
                 className="button button__block button__fill text-uppercase text-weight-bolder"
                 data-heap-name="ordering.report-driver.submit-btn"
-                disabled={this.isSubmitButtonDisable()}
+                disabled={isSubmitButtonDisabled}
                 onClick={this.handleSubmit}
               >
                 {this.renderSubmitButtonContent()}
@@ -380,14 +445,20 @@ export default compose(
     state => ({
       inputNotes: getInputNotes(state),
       selectedReasonCode: getSelectedReasonCode(state),
-      selectedReasonFields: getSelectedReasonFields(state),
-      orderStatus: getOrderStatus(state),
-      isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       receiptNumber: getReceiptNumber(state),
       submitStatus: getSubmitStatus(state),
       showPageLoader: getShowPageLoader(state),
       uploadPhotoFile: getUploadPhotoFile(state),
       uploadPhotoUrl: getUploadPhotoUrl(state),
+      inputEmail: getInputEmail(state),
+      userEmail: getUserEmail(state),
+      userConsumerId: getUserConsumerId(state),
+      selectedReasonNoteField: getSelectedReasonNoteField(state),
+      selectedReasonPhotoField: getSelectedReasonPhotoField(state),
+      submittable: getSubmittable(state),
+      isSubmitButtonDisabled: getIsSubmitButtonDisabled(state),
+      inputEmailIsValid: getInputEmailIsValid(state),
+      user: getUser(state),
     }),
     {
       updateInputNotes: reportDriverActionCreators.updateInputNotes,
@@ -400,6 +471,11 @@ export default compose(
       submitReport: reportDriverThunks.submitReport,
       loadOrder: commonActionCreators.loadOrder,
       showMessageModal: appActionCreators.showMessageModal,
+      updateInputEmail: reportDriverActionCreators.updateInputEmail,
+      inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
+      initialEmail: reportDriverActionCreators.initialEmail,
+      getProfileInfo: appActionCreators.getProfileInfo,
+      loginApp: appActionCreators.loginApp,
     }
   )
 )(ReportDriver);

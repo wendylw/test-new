@@ -116,8 +116,11 @@ export function creditCardDetector(cardNumberString) {
     }
   });
 
+  const formattedCardNumber = cardNumberSections.join('');
+
   Object.assign(card, {
-    formattedCardNumber: cardNumberSections.join(''),
+    cardNumber: formattedCardNumber.replace(/[^\d]/g, ''),
+    formattedCardNumber,
     brand: _get(ruler, 'brand', null),
     ruler,
   });
