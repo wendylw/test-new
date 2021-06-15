@@ -377,6 +377,7 @@ module.exports = {
   //   'react-hooks/rules-of-hooks': 'warn',
   //   'react-hooks/exhaustive-deps': 'error',
   // },
+  plugins: ['react'],
   overrides: [
     {
       files: 'src/**/*.@(js|jsx|ts|jsx)',
@@ -391,6 +392,7 @@ module.exports = {
       extends: ['react-app', 'prettier'],
       rules: {
         'no-unused-expressions': 'off',
+        // 'react/display-name': ['error', { ignoreTranspilerName: true }],
       },
     },
   ],
