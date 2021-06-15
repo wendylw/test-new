@@ -33,6 +33,7 @@ import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
 import { NativeMethods } from '../../../../../utils/dsbridge-methods';
+import loggly from '../../../../../utils/monitoring/loggly';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
@@ -54,7 +55,6 @@ class ReportDriver extends Component {
       if (!user.isLogin && user.isExpired) {
         const result = await NativeMethods.tokenExpired();
         await this.loginAppWithNativeToken(result);
-        return;
       }
     }
 
@@ -65,6 +65,7 @@ class ReportDriver extends Component {
 
   loginAppWithNativeToken = async result => {
     if (!result?.access_token || !result?.refresh_token) {
+      loggly.error('order-status.report-driver', { message: 'native token is invalid' });
       return;
     }
     await this.props.loginApp({
