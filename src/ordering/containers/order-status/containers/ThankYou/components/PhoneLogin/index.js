@@ -17,6 +17,7 @@ import {
 import { actions as thankYouActionCreators, getCashbackInfo } from '../../redux';
 import { NativeMethods } from '../../../../../../../utils/dsbridge-methods';
 import './PhoneLogin.scss';
+import loggly from '../../../../../../../utils/monitoring/loggly';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
@@ -40,7 +41,6 @@ class PhoneLogin extends React.Component {
     await thankYouActions.getCashbackInfo(receiptNumber);
 
     const { user, businessInfo } = this.props;
-    const { isWebview } = user;
     const { enableCashback } = businessInfo || {};
 
     if (enableCashback) {
@@ -53,10 +53,10 @@ class PhoneLogin extends React.Component {
       claimedAnimationGifSrc: succeedAnimationGif,
     });
 
-    if (isWebview) {
+    if (Utils.isWebview()) {
       const res = await NativeMethods.getToken();
       if (_isNil(res)) {
-        console.log('native token is invalid');
+        loggly.error('order-status.thank-you.phone-login', { message: 'native token is invalid' });
       } else {
         const { access_token, refresh_token } = res;
         await appActions.loginApp({

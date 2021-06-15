@@ -33,7 +33,6 @@ import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
 import { NativeMethods } from '../../../../../utils/dsbridge-methods';
-import { getAppToken } from '../../../../../cashback/containers/utils';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M

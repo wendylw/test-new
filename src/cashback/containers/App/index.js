@@ -20,6 +20,8 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import { NativeMethods } from '../../../utils/dsbridge-methods';
+import Utils from '../../../utils/utils';
+import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 
 class App extends Component {
@@ -31,11 +33,11 @@ class App extends Component {
     await appActions.fetchBusiness();
 
     const { user } = this.props;
-    const { isLogin, isWebview } = user || {};
+    const { isLogin } = user || {};
     const appLogin = this.getAppLoginStatus();
 
     // appLogin is true, isLogin is false
-    if (isWebview && !isLogin && appLogin) {
+    if (Utils.isWebview() && !isLogin && appLogin) {
       await this.postAppMessage();
     }
   }
@@ -51,7 +53,7 @@ class App extends Component {
 
   componentDidUpdate = async prevProps => {
     const { appActions, user, pageError } = this.props;
-    const { isExpired, isWebview, isLogin } = user || {};
+    const { isExpired, isLogin } = user || {};
     const { code } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
@@ -59,7 +61,7 @@ class App extends Component {
     }
 
     // token过期重新发postMessage
-    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
+    if (isExpired && prevProps.user.isExpired !== isExpired && Utils.isWebview()) {
       await this.postAppMessage();
     }
 
@@ -75,7 +77,7 @@ class App extends Component {
 
     const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
     if (_isNil(res)) {
-      console.log('native token is invalid');
+      loggly.error('cashback.post-app-message', { message: 'native token is invalid' });
     } else {
       const { access_token, refresh_token } = res;
       await appActions.loginApp({
@@ -120,10 +122,9 @@ class App extends Component {
 
   render() {
     const { user } = this.props;
-    const { isWebview } = user || {};
     const appLogin = NativeMethods.getLoginStatus();
 
-    return !appLogin && isWebview ? (
+    return !appLogin && Utils.isWebview() ? (
       <RequestLogin user={user} onClick={this.postAppMessage} />
     ) : (
       this.renderMainContent()

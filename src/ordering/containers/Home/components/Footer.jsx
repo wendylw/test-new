@@ -26,13 +26,13 @@ const { DELIVERY, PICKUP } = Constants.DELIVERY_METHOD;
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
     const { user } = this.props;
-    const { isExpired, isWebview, isLogin } = user || {};
+    const { isExpired, isLogin } = user || {};
 
     // token过期重新发postMessage
-    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
+    if (isExpired && prevProps.user.isExpired !== isExpired && Utils.isWebview()) {
       await this.postAppMessage();
     }
-    if (isLogin && prevProps.user.isLogin !== isLogin && isWebview) {
+    if (isLogin && prevProps.user.isLogin !== isLogin && Utils.isWebview()) {
       this.handleWebRedirect();
     }
   };
@@ -59,7 +59,7 @@ export class Footer extends Component {
     } else {
       const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
       if (_isNil(res)) {
-        console.log('native token is invalid');
+        loggly.error('ordering.home.footer', { message: 'native token is invalid' });
       } else {
         const { access_token, refresh_token } = res;
         await appActions.loginApp({
@@ -73,9 +73,7 @@ export class Footer extends Component {
   handleRedirect = () => {
     loggly.log('footer.place-order');
 
-    const { user } = this.props;
-    const { isWebview } = user || {};
-    if (isWebview) {
+    if (Utils.isWebview()) {
       this.postAppMessage();
     } else {
       this.handleWebRedirect();
