@@ -765,7 +765,7 @@ export class ThankYou extends PureComponent {
       customer: 'CustomerCancelledDescription',
       unknown: 'UnknownCancelledDescription',
     };
-    const { user, orderStatus, pendingUpdateShippingTypeStatus, updatableToSelfPickupStatus } = this.props;
+    const { user, orderStatus } = this.props;
     const { isWebview } = user;
 
     let currentStatusObj = {};
@@ -986,14 +986,6 @@ export class ThankYou extends PureComponent {
               order
             )
           : null}
-
-        {updatableToSelfPickupStatus ? (
-          <SelfPickup
-            onClickSelfPickupButton={this.handleClickSelfPickupButton}
-            onChangeToSelfPickup={this.handleChangeToSelfPickup}
-            processing={pendingUpdateShippingTypeStatus}
-          />
-        ) : null}
 
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
       </React.Fragment>
@@ -1368,7 +1360,15 @@ export class ThankYou extends PureComponent {
   };
 
   renderDeliveryImageAndTimeLine() {
-    const { t, order, cashbackInfo, businessInfo, shippingType } = this.props;
+    const {
+      t,
+      order,
+      cashbackInfo,
+      businessInfo,
+      shippingType,
+      pendingUpdateShippingTypeStatus,
+      updatableToSelfPickupStatus,
+    } = this.props;
     const { status, deliveryInformation, cancelOperator } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
@@ -1392,6 +1392,13 @@ export class ThankYou extends PureComponent {
             shippingType,
           })
         )}
+        {updatableToSelfPickupStatus ? (
+          <SelfPickup
+            onClickSelfPickupButton={this.handleClickSelfPickupButton}
+            onChangeToSelfPickup={this.handleChangeToSelfPickup}
+            processing={pendingUpdateShippingTypeStatus}
+          />
+        ) : null}
       </React.Fragment>
     );
   }
