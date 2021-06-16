@@ -7,8 +7,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "yarn run test:coverage"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
