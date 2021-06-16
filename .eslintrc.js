@@ -371,6 +371,14 @@ module.exports = {
   env: {
     browser: true,
   },
+  parserOptions: {
+    // keep consistent with https://github.com/facebook/create-react-app/blob/master/packages/eslint-config-react-app/index.js
+    ecmaVersion: 2018,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
   // it seems that we don't need to add react-hooks manually, because it's already included in the 'react-app' preset.
   // plugins: ['react-hooks'],
   // rules: {
