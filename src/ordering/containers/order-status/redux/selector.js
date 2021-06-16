@@ -16,6 +16,10 @@ export const getOrderDelayReason = createSelector(getOrder, order => _get(order,
 
 export const getOrderShippingType = createSelector(getOrder, order => _get(order, 'shippingType', null));
 
+export const getOrderOriginalShippingType = createSelector(getOrder, order =>
+  _get(order, 'originalShippingType', null)
+);
+
 export const getUpdatedToSelfPickupStatus = createSelector(
   getOrderShippingType,
   getOrderOriginalShippingType,
