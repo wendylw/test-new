@@ -114,7 +114,9 @@ export const toLocaleString = (date, countryCode, options) => {
   const dateObj = new Date(date);
   if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
-    loggly.warn('Invalid date object');
+    loggly.warn('common.console-warn', {
+      message: 'Invalid date object',
+    });
     return '';
   }
   let formatter;
@@ -162,7 +164,9 @@ export const toISODateString = date => {
   const dateObj = new Date(date);
   if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
-    loggly.warn('Invalid date object');
+    loggly.warn('common.console-warn', {
+      message: 'Invalid date object',
+    });
     return '';
   }
   return `${dateObj.getFullYear()}-${padZero(dateObj.getMonth() + 1)}-${padZero(dateObj.getDate())}`;

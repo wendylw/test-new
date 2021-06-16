@@ -40,7 +40,9 @@ class Location extends React.Component {
           JSON.stringify(defaultCoords),
           defaultLocations.KualaLumpur
         );
-        loggly.warn('[Location] fetch_location_failed, use default location');
+        loggly.warn('common.console-warn', {
+          message: '[Location] fetch_location_failed, use default location',
+        });
         this.setState({
           status: 'fetch_location_failed',
           origin: defaultCoords,

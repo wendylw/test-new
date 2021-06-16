@@ -32,8 +32,9 @@ export default store => next => action => {
 
       if (!response) {
         console.warn('requestPromise returns nothing in promise.then() when types =', types);
-        // TODO: unify loggly.warn format with loggly.log and loggly.error
-        loggly.warn(`requestPromise returns nothing in promise.then() when types = ${types}`);
+        loggly.warn('common.console-warn', {
+          message: `requestPromise returns nothing in promise.then() when types = ${types}`,
+        });
       }
       return next({ ...other, type: successType, response });
     })
