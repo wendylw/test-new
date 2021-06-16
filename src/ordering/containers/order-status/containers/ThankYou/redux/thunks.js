@@ -56,29 +56,32 @@ export const cancelOrder = createAsyncThunk(
     const { orderStatus, app, entities } = getState();
     const { order } = orderStatus.common;
     const businessInfo = entities.businesses[app.business];
-    const result = await put(API_INFO.cancelOrder(orderId).url, { reason, detail });
 
-    if (order && result.success) {
-      CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
-        'store name': _get(order, 'storeInfo.name', ''),
-        'store id': _get(order, 'storeId', ''),
-        'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
-        'order amount': _get(order, 'total', ''),
-        country: _get(businessInfo, 'country', ''),
-        'Reason for cancellation': reason,
-        otherReasonSpecification: detail,
-      });
+    try {
+      const result = await put(API_INFO.cancelOrder(orderId).url, { reason, detail });
+
+      if (order && result.success) {
+        CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
+          'store name': _get(order, 'storeInfo.name', ''),
+          'store id': _get(order, 'storeId', ''),
+          'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
+          'order amount': _get(order, 'total', ''),
+          country: _get(businessInfo, 'country', ''),
+          'Reason for cancellation': reason,
+          otherReasonSpecification: detail,
+        });
+      }
 
       window.location.reload();
-    } else {
-      if (result.code) {
+    } catch (e) {
+      console.error('Cancel order error: ', e);
+
+      if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
         // which is a bad practice, we will fix it in the future, for now we just keep a useless
         // action type.
-        dispatch(appActions.showApiErrorModal(result.code));
+        dispatch(appActions.showApiErrorModal(e.code));
       } else {
-        console.error('Cancel order error: ', result);
-
         dispatch(
           appActions.showMessageModal({
             message: i18next.t('OrderingThankYou:CancellationError'),
@@ -88,7 +91,7 @@ export const cancelOrder = createAsyncThunk(
       }
     }
 
-    return result;
+    return;
   }
 );
 

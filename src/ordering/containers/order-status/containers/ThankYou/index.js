@@ -70,7 +70,7 @@ import {
   getOrderCancellationReasonAsideVisible,
   getOrderCancellationButtonVisible,
   getDeliveryUpdatableToSelfPickupState,
-  getUpdateShippingTypeState,
+  getUpdateShippingTypeStatus,
 } from './redux/selector';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
@@ -1674,7 +1674,7 @@ export default compose(
       orderDelayReason: getOrderDelayReason(state),
       orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
       shippingType: getOrderShippingType(state),
-      pendingUpdateShippingTypeStatus: getUpdateShippingTypeState(state),
+      pendingUpdateShippingTypeStatus: getUpdateShippingTypeStatus(state),
       updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
       updatedToSelfPickupStatus: getUpdatedToSelfPickupStatus(state),
     }),
