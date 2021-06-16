@@ -83,7 +83,7 @@ class SentryCapturedError extends Error {
 const trackError = (event, hint) => {
   try {
     const errorMessage = getErrorMessageFromHint(hint);
-    loggly.error('common.error', { errorMessage, sentryId: event?.event_id });
+    loggly.error('common.error', { message: errorMessage, sentryId: event?.event_id });
     try {
       throw new SentryCapturedError(errorMessage);
     } catch (err) {
