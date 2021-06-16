@@ -70,7 +70,7 @@ import {
   getOrderCancellationReasonAsideVisible,
   getOrderCancellationButtonVisible,
   getDeliveryUpdatableToSelfPickupState,
-  getUpdateShippingTypeState,
+  getUpdateShippingTypePendingStatus,
 } from './redux/selector';
 import PhoneCopyModal from './components/PhoneCopyModal/index';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
@@ -493,7 +493,7 @@ export class ThankYou extends PureComponent {
     CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),
-      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)) || '',
+      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
@@ -536,7 +536,7 @@ export class ThankYou extends PureComponent {
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Not Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),
-      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)) || '',
+      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
@@ -550,7 +550,7 @@ export class ThankYou extends PureComponent {
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),
-      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)) || '',
+      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
@@ -1674,7 +1674,7 @@ export default compose(
       orderDelayReason: getOrderDelayReason(state),
       orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
       shippingType: getOrderShippingType(state),
-      pendingUpdateShippingTypeStatus: getUpdateShippingTypeState(state),
+      pendingUpdateShippingTypeStatus: getUpdateShippingTypePendingStatus(state),
       updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
       updatedToSelfPickupStatus: getUpdatedToSelfPickupStatus(state),
     }),

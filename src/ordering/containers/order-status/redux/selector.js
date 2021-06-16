@@ -16,13 +16,12 @@ export const getOrderDelayReason = createSelector(getOrder, order => _get(order,
 
 export const getOrderShippingType = createSelector(getOrder, order => _get(order, 'shippingType', null));
 
-export const getUpdatedToSelfPickupStatus = state => {
-  const { shippingType, originalShippingType } = state.orderStatus.common.order || {};
-
-  return (
+export const getUpdatedToSelfPickupStatus = createSelector(
+  getOrderShippingType,
+  getOrderOriginalShippingType,
+  (shippingType, originalShippingType) =>
     originalShippingType && shippingType === DELIVERY_METHOD.PICKUP && originalShippingType !== DELIVERY_METHOD.PICKUP
-  );
-};
+);
 
 export const getTimeoutLookingForRider = state => {
   return _get(state.orderStatus.common.order, 'timeoutLookingForRider', null);

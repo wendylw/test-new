@@ -6,7 +6,7 @@ import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 export function getPaidToCurrentEventDurationMinutes(paidTime) {
   try {
     if (!paidTime) {
-      return null;
+      return '';
     }
 
     const milliseconds = getDifferenceInMilliseconds(new Date(), new Date(paidTime));
@@ -15,6 +15,6 @@ export function getPaidToCurrentEventDurationMinutes(paidTime) {
 
     return minutes.toFixed(2);
   } catch (error) {
-    return null;
+    return '';
   }
 }

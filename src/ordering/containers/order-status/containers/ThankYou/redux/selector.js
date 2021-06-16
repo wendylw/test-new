@@ -46,4 +46,5 @@ export const getDeliveryUpdatableToSelfPickupState = createSelector(
 
 export const getCancelOrderStatus = state => state.orderStatus.thankYou.cancelOrderStatus;
 
-export const getUpdateShippingTypeState = state => state.orderStatus.thankYou.updateShippingTypeStatus === 'pending';
+export const getUpdateShippingTypePendingStatus = state =>
+  state.orderStatus.thankYou.updateShippingTypeStatus === 'pending';
