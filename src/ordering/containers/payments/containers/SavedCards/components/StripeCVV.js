@@ -10,8 +10,24 @@ const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripeMYPromise = loadStripe(MY_STRIPE_KEY);
-const stripeSGPromise = loadStripe(SG_STRIPE_KEY);
+const stripeMYPromise = loadStripe(MY_STRIPE_KEY)
+  .then(stripe => {
+    window.newrelic?.addPageAction('common.stripe-load-success');
+    return stripe;
+  })
+  .catch(err => {
+    window.newrelic?.addPageAction('common.stripe-load-failure');
+    throw err;
+  });
+const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
+  .then(stripe => {
+    window.newrelic?.addPageAction('common.stripe-load-success');
+    return stripe;
+  })
+  .catch(err => {
+    window.newrelic?.addPageAction('common.stripe-load-failure');
+    throw err;
+  });
 
 const CVVInput = forwardRef((props, ref) => {
   const { onReady, onChange } = props;
