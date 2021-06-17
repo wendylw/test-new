@@ -28,6 +28,7 @@ const actions = {
 class AddressDetail extends Component {
   state = {
     show: false,
+    hasAnyChanges: false,
   };
 
   getShippingType() {
@@ -51,6 +52,13 @@ class AddressDetail extends Component {
     const { address: savedAddress, coords: savedCoords, addressComponents: savedAddressComponents } =
       savedAddressInfo || {};
     const { address, coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const deliveryAddressUpdate = Boolean(Utils.getSessionVariable('deliveryAddressUpdate'));
+
+    Utils.removeSessionVariable('deliveryAddressUpdate');
+
+    this.setState({
+      hasAnyChanges: deliveryAddressUpdate,
+    });
 
     // if choose a new location, update the savedAddressInfo
     if (
@@ -109,6 +117,10 @@ class AddressDetail extends Component {
   };
 
   handleInputChange = e => {
+    this.setState({
+      hasAnyChanges: true,
+    });
+
     const inputValue = e.target.value;
     if (e.target.name === 'addressName') {
       this.props.customerActions.updateSavedAddressInfo({ name: inputValue });
@@ -177,7 +189,7 @@ class AddressDetail extends Component {
   };
 
   render() {
-    const { show } = this.state;
+    const { show, hasAnyChanges } = this.state;
     const { t, history, savedAddressInfo } = this.props;
     const { type, name, address, details, comments } = savedAddressInfo || {};
 
@@ -299,7 +311,7 @@ class AddressDetail extends Component {
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
             className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
-            disabled={!name || !details || !address}
+            disabled={!name || !details || !address || (type === actions.EDIT && !hasAnyChanges)}
             onClick={() => {
               CleverTap.pushEvent('Address details - click save changes');
               this.createOrUpdateAddress();
