@@ -5,6 +5,7 @@ import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
 import './navigation-detector';
 import './click-detector';
 import loggly from './loggly';
+import Utils from '../utils';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
   Sentry.init({
@@ -22,6 +23,10 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     },
   });
 }
+
+const getAppPlatform = () => {
+  return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
+};
 
 // inject xhr and fetch to inspect error
 const isRelativePath = url => {
@@ -69,6 +74,9 @@ try {
       Sentry.setUser({ [key]: tid });
     }
   });
+  const platform = getAppPlatform();
+  window.newrelic?.setCustomAttribute('app_plt', platform);
+  Sentry.setTag('app_plt', platform);
 } catch (e) {
   console.log(e);
 }
