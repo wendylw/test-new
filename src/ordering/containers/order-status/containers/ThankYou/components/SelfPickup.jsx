@@ -12,10 +12,9 @@ function SelfPickup({ t, processing, onClickSelfPickupButton, onChangeToSelfPick
 
   const handleToggleModal = useCallback(
     status => {
-      onClickSelfPickupButton();
       setModalDisplayState(status);
     },
-    [onClickSelfPickupButton]
+    []
   );
 
   return (
@@ -27,7 +26,10 @@ function SelfPickup({ t, processing, onClickSelfPickupButton, onChangeToSelfPick
         </p>
         <button
           className="button button__block button__fill text-uppercase text-weight-bolder"
-          onClick={() => handleToggleModal(true)}
+          onClick={() => {
+            onClickSelfPickupButton();
+            handleToggleModal(true);
+          }}
         >
           {t('SwitchToSelfPickUp')}
         </button>
