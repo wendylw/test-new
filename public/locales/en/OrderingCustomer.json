@@ -12,5 +12,8 @@
   "ContactEmptyTitle": "Contact Details Required",
   "ContactEmptyDescription": "Please fill in your contact details for proceed checkout",
   "DeliveryAddressEmptyTitle": "Delivery Address Required",
-  "DeliveryAddressEmptyDescription": "Please fill in your delivery address to proceed to checkout"
+  "DeliveryAddressEmptyDescription": "Please fill in your delivery address to proceed to checkout",
+  "placeholderOfAddressName": "Eg: Work",
+  "placeholderOfAddressDetails": "Eg: Level 7",
+  "placeholderOfDeliveryComments": "Eg: Drop at receptionist"
 }

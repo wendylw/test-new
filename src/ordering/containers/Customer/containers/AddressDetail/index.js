@@ -221,7 +221,7 @@ class AddressDetail extends Component {
           <div className="padding-top-bottom-small">
             <div className="form__group address-detail__field">
               <div className="padding-left-right-normal">
-                <span className="address-detail__title--required text-opacity text-size-small">{t('Name')}</span>
+                <span className="address-detail__title--required text-size-small">{t('Name')}</span>
               </div>
               <input
                 className="address-detail__input form__input padding-left-right-normal text-size-big text-line-height-base"
@@ -230,6 +230,7 @@ class AddressDetail extends Component {
                 maxLength="140"
                 value={name}
                 name="addressName"
+                placeholder={t('placeholderOfAddressName')}
                 onChange={this.handleInputChange}
               />
             </div>
@@ -238,9 +239,7 @@ class AddressDetail extends Component {
           <div className="padding-top-bottom-small">
             <div className="form__group address-detail__field">
               <div className="padding-left-right-normal">
-                <span className="address-detail__title--required text-opacity text-size-small">
-                  {t('AddressDetails')}
-                </span>
+                <span className="address-detail__title--required text-size-small">{t('AddressDetails')}</span>
               </div>
               <div
                 className="flex flex-middle flex-space-between"
@@ -269,9 +268,7 @@ class AddressDetail extends Component {
           <div className="padding-top-bottom-small">
             <div className="form__group address-detail__field">
               <div className="padding-left-right-normal">
-                <span className="address-detail__title--required text-opacity text-size-small">
-                  {t('UnitNumberAndFloor')}
-                </span>
+                <span className="address-detail__title--required text-size-small">{t('UnitNumberAndFloor')}</span>
               </div>
               <input
                 className="address-detail__input form__input padding-left-right-normal text-size-big text-line-height-base"
@@ -280,6 +277,7 @@ class AddressDetail extends Component {
                 maxLength="140"
                 value={details}
                 name="addressDetails"
+                placeholder={t('placeholderOfAddressDetails')}
                 onChange={this.handleInputChange}
               />
             </div>
@@ -288,7 +286,7 @@ class AddressDetail extends Component {
           <div className="padding-top-bottom-small">
             <div className="form__group address-detail__field">
               <div className="padding-left-right-normal">
-                <span className="text-opacity text-size-small">{t('NoteToDriver')}</span>
+                <span className="text-size-small">{t('NoteToDriver')}</span>
               </div>
               <input
                 className="address-detail__input form__input padding-left-right-normal text-size-big"
@@ -297,6 +295,7 @@ class AddressDetail extends Component {
                 maxLength="140"
                 value={comments}
                 name="deliveryComments"
+                placeholder={t('placeholderOfDeliveryComments')}
                 onChange={this.handleInputChange}
               />
             </div>
@@ -346,7 +345,7 @@ class AddressDetail extends Component {
 }
 
 export default compose(
-  withTranslation(),
+  withTranslation(['OrderingCustomer']),
   connect(
     state => ({
       user: getUser(state),
