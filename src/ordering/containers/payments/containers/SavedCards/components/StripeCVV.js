@@ -16,7 +16,10 @@ const stripeMYPromise = loadStripe(MY_STRIPE_KEY)
     return stripe;
   })
   .catch(err => {
-    window.newrelic?.addPageAction('common.stripe-load-failure');
+    window.newrelic?.addPageAction('common.stripe-load-failure', {
+      error: err?.message,
+      stack: err?.stack,
+    });
     throw err;
   });
 const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
@@ -25,7 +28,10 @@ const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
     return stripe;
   })
   .catch(err => {
-    window.newrelic?.addPageAction('common.stripe-load-failure');
+    window.newrelic?.addPageAction('common.stripe-load-failure', {
+      error: err?.message,
+      stack: err?.stack,
+    });
     throw err;
   });
 
