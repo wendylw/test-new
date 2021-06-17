@@ -15,5 +15,8 @@
   "DeliveryAddressEmptyDescription": "Please fill in your delivery address to proceed to checkout",
   "placeholderOfAddressName": "Eg: Work",
   "placeholderOfAddressDetails": "Eg: Level 7",
-  "placeholderOfDeliveryComments": "Eg: Drop at receptionist"
+  "placeholderOfDeliveryComments": "Eg: Drop at receptionist",
+  "AddressDetails": "Address Details",
+  "UnitNumberAndFloor": "Unit Number/Floor",
+  "NoteToDriver": "Note to Driver"
 }
