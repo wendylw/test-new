@@ -29,5 +29,6 @@ class Routes extends Component {
     );
   }
 }
+Routes.displayName = 'Routes';
 
 export default withRouter(Routes);

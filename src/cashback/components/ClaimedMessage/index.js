@@ -83,4 +83,6 @@ ClaimedMessage.defaultProps = {
   hideMessage: () => {},
 };
 
+ClaimedMessage.displayName = 'ClaimedMessage';
+
 export default withTranslation('Cashback')(ClaimedMessage);

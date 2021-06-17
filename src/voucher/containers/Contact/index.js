@@ -128,6 +128,7 @@ class Contact extends Component {
     );
   }
 }
+Contact.displayName = 'Contact';
 
 export default compose(
   withTranslation(['Voucher']),

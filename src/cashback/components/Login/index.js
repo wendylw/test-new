@@ -147,6 +147,8 @@ Login.propTypes = {
 
 Login.defaultProps = {};
 
+Login.displayName = 'Login';
+
 export default compose(
   withTranslation('Common'),
   connect(

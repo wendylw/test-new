@@ -29,5 +29,6 @@ class SwitchPanel extends React.Component {
     );
   }
 }
+SwitchPanel.displayName = 'SwitchPanel';
 
 export default withTranslation()(SwitchPanel);

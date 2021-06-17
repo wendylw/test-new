@@ -149,6 +149,8 @@ class RecentActivities extends React.Component {
   }
 }
 
+RecentActivities.displayName = 'RecentActivities';
+
 export default compose(
   withTranslation(['Cashback']),
   connect(

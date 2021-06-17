@@ -108,5 +108,6 @@ class EmptySearch extends Component {
     );
   }
 }
+EmptySearch.displayName = 'EmptySearch';
 
 export default withRouter(withTranslation('SiteHome')(EmptySearch));

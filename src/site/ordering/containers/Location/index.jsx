@@ -101,5 +101,6 @@ class Location extends React.Component {
     );
   }
 }
+Location.displayName = 'Location';
 
 export default withTranslation(['OrderingDelivery'])(Location);

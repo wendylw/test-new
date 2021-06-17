@@ -132,6 +132,8 @@ class App extends Component {
   }
 }
 
+App.displayName = 'App';
+
 export default connect(
   state => ({
     user: getUser(state),

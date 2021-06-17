@@ -150,5 +150,6 @@ function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
     </aside>
   );
 }
+OrderCancellationReasonsAside.displayName = 'OrderCancellationReasonsAside';
 
 export default OrderCancellationReasonsAside;

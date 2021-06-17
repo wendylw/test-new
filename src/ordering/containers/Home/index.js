@@ -1014,6 +1014,7 @@ export class Home extends Component {
     );
   }
 }
+Home.displayName = 'Home';
 
 export default compose(
   withTranslation(['OrderingHome']),

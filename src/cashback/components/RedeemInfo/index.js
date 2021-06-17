@@ -67,4 +67,6 @@ RedeemInfo.defaultProps = {
   buttonText: '',
 };
 
+RedeemInfo.displayName = 'RedeemInfo';
+
 export default withTranslation('Cashback')(RedeemInfo);

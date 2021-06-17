@@ -379,12 +379,6 @@ module.exports = {
       jsx: true,
     },
   },
-  // it seems that we don't need to add react-hooks manually, because it's already included in the 'react-app' preset.
-  // plugins: ['react-hooks'],
-  // rules: {
-  //   'react-hooks/rules-of-hooks': 'warn',
-  //   'react-hooks/exhaustive-deps': 'error',
-  // },
   plugins: ['react'],
   overrides: [
     {
@@ -400,7 +394,7 @@ module.exports = {
       extends: ['react-app', 'prettier'],
       rules: {
         'no-unused-expressions': 'off',
-        // 'react/display-name': ['error', { ignoreTranspilerName: true }],
+        'react/display-name': ['warn', { ignoreTranspilerName: true }],
       },
     },
   ],

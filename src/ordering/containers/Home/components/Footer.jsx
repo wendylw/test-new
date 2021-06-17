@@ -290,6 +290,7 @@ export class Footer extends Component {
     );
   }
 }
+Footer.displayName = 'Footer';
 
 Footer.propTypes = {
   footerRef: PropTypes.any,

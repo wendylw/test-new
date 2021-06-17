@@ -405,6 +405,7 @@ class LocationPicker extends Component {
     );
   }
 }
+LocationPicker.displayName = 'LocationPicker';
 
 export * from '../utils/geoUtils';
 

@@ -29,6 +29,7 @@ class App extends Component {
     return <Error message={error} clearError={appActions.clearError} />;
   }
 }
+App.displayName = 'App';
 
 export default connect(
   (state, props) => {

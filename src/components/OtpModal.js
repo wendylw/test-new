@@ -247,5 +247,6 @@ OtpModal.defaultProps = {
   onClose: () => {},
   sendOtp: () => {},
 };
+OtpModal.displayName = 'OtpModal';
 
 export default withTranslation()(OtpModal);

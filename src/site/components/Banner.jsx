@@ -10,5 +10,6 @@ const Banner = ({ className, children, title }) => {
     </div>
   );
 };
+Banner.displayName = 'Banner';
 
 export default Banner;

@@ -101,6 +101,7 @@ class ThankYou extends Component {
     );
   }
 }
+ThankYou.displayName = 'ThankYou';
 
 export default compose(
   withTranslation(['Voucher']),

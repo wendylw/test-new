@@ -113,6 +113,7 @@ class Stripe extends Component {
     );
   }
 }
+Stripe.displayName = 'Stripe';
 
 export default compose(
   withTranslation(['OrderingPayment']),
