@@ -41,7 +41,7 @@ export const getPlaceInfoByDeviceByAskPermission = async () => {
     return placeInfo;
   } catch (e) {
     console.warn(e);
-    loggly.warn('common.console-warn', {
+    loggly.warn('utils.getPlaceInfoByDeviceByAskPermission', {
       message: e?.message,
     });
   }
@@ -81,7 +81,7 @@ export const getPlaceInfo = async ({
       }
     } catch (e) {
       console.warn(e);
-      loggly.warn('common.console-warn', {
+      loggly.warn('utils.getPlaceInfo', {
         message: e?.message,
       });
     }
@@ -96,7 +96,7 @@ export const getPlaceInfo = async ({
       }
     } catch (e) {
       console.warn(e);
-      loggly.warn('common.console-warn', {
+      loggly.warn('utils.getPlaceInfo', {
         message: e?.message,
       });
     }

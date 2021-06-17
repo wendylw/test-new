@@ -28,7 +28,7 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
   let radiusNumber = radius;
   if ((locationCoords && typeof radiusNumber !== 'number') || (typeof radiusNumber === 'number' && !locationCoords)) {
     console.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
-    loggly.warn('common.console-warn', {
+    loggly.warn('geoUtils.getPlaceAutocompleteList', {
       message: 'getPlaceAutocompleteList: location and radius must be provided at the same time.',
     });
     locationCoords = undefined;
@@ -109,7 +109,7 @@ export const standardizeGeoAddress = geoAddressComponent => {
 export const getDeviceCoordinates = option => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      loggly.warn('common.console-warn', {
+      loggly.warn('geoUtils.getDeviceCoordinates', {
         message: 'Your browser does not support location detection.',
       });
       reject('Your browser does not support location detection.');
@@ -121,7 +121,7 @@ export const getDeviceCoordinates = option => {
       },
       error => {
         console.warn('Fail to detect location', error);
-        loggly.warn('common.console-warn', { message: `Fail to detect location, error: ${error?.message}` });
+        loggly.warn('geoUtils.getDeviceCoordinates', { message: `Fail to detect location, error: ${error?.message}` });
         reject(error);
       },
       option

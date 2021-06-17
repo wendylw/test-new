@@ -91,7 +91,7 @@ class QRScan extends Component {
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = error => {
           console.warn('[QRScan] getCamera failed:', error);
-          loggly.warn('common.console-warn', {
+          loggly.warn('qrscan.getCamera', {
             message: `[QRScan] getCamera failed: ${error?.message}`,
           });
           if (error.name !== 'NotAllowedError') {

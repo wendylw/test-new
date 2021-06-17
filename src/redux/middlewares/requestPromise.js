@@ -32,7 +32,7 @@ export default store => next => action => {
 
       if (!response) {
         console.warn('requestPromise returns nothing in promise.then() when types =', types);
-        loggly.warn('common.console-warn', {
+        loggly.warn('requestPromise.default', {
           message: `requestPromise returns nothing in promise.then() when types = ${types}`,
         });
       }
