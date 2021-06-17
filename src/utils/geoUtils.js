@@ -52,8 +52,12 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
       },
       (results, status) => {
         if (status === googleMaps.places.PlacesServiceStatus.OK) {
+          window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-success');
           resolve(results);
         } else {
+          window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-failure', {
+            error: status,
+          });
           resolve([]);
         }
       }
@@ -148,8 +152,12 @@ export const getPlacesFromCoordinates = coords => {
   return new Promise((resolve, reject) => {
     geocoder.geocode({ location }, (result, status) => {
       if (status === googleMaps.GeocoderStatus.OK && result.length) {
+        window.newrelic?.addPageAction('google-maps-api.geocode-success');
         resolve(result);
       } else {
+        window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
+          error: status,
+        });
         reject(`Failed to get location from coordinates: ${status}`);
       }
     });
@@ -250,8 +258,12 @@ export const getPlaceInfoFromPlaceId = (placeId, options = {}) => {
           addressComponents: standardizeGeoAddress(place.address_components),
           placeId: place.place_id,
         };
+        window.newrelic?.addPageAction('google-maps-api.geocode-success');
         resolve(result);
       } else {
+        window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
+          error: status,
+        });
         reject(`Failed to get location from coordinates: ${status}`);
       }
     });
@@ -274,8 +286,12 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
       },
       (result, status) => {
         if (status === googleMaps.places.PlacesServiceStatus.OK) {
+          window.newrelic?.addPageAction('google-maps-api.placesGetDetails-success');
           resolve(result);
         } else {
+          window.newrelic?.addPageAction('google-maps-api.placesGetDetails-failure', {
+            error: status,
+          });
           console.error('Fail to get place detail:', status, placeId);
           throw new Error('Fail to get place detail');
         }
