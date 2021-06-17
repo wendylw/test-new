@@ -318,7 +318,17 @@ export const isDeviceGeolocationDenied = async () => {
 
 // dev to change the dev mode url, other wise you will see API 500 error
 export const fetchGeolocationByIp = () => {
-  return fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ').then(data => data.json());
+  return fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ')
+    .then(data => {
+      window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-success');
+      return data.json();
+    })
+    .catch(err => {
+      window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-failure', {
+        error: err?.message,
+      });
+      throw err;
+    });
 };
 
 export const getPositionInfoBySource = async (source, withCache = true) => {

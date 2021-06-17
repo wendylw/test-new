@@ -40,7 +40,6 @@ const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY |
   .catch(err => {
     window.newrelic?.addPageAction('common.stripe-load-failure', {
       error: err?.message,
-      stack: err?.stack,
     });
     throw err;
   });
@@ -52,7 +51,6 @@ const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY |
   .catch(err => {
     window.newrelic?.addPageAction('common.stripe-load-failure', {
       error: err?.message,
-      stack: err?.stack,
     });
     throw err;
   });
