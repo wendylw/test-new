@@ -177,16 +177,6 @@ class AddressDetail extends Component {
     }
   };
 
-  removeSavedAddress = async () => {
-    const { user, savedAddressInfo } = this.props;
-    const { id } = savedAddressInfo;
-    const { consumerId } = user || {};
-    let response = await del(url.API_URLS.DELETE_ADDRESS(consumerId, id).url);
-    if (response === true) {
-      this.props.history.push({ pathname: '/customer' });
-    }
-  };
-
   render() {
     const { hasAnyChanges } = this.state;
     const { t, history, savedAddressInfo } = this.props;
