@@ -27,7 +27,6 @@ const actions = {
 
 class AddressDetail extends Component {
   state = {
-    show: false,
     hasAnyChanges: false,
   };
 
@@ -189,7 +188,7 @@ class AddressDetail extends Component {
   };
 
   render() {
-    const { show, hasAnyChanges } = this.state;
+    const { hasAnyChanges } = this.state;
     const { t, history, savedAddressInfo } = this.props;
     const { type, name, address, details, comments } = savedAddressInfo || {};
 
@@ -300,12 +299,6 @@ class AddressDetail extends Component {
               />
             </div>
           </div>
-          {/* remove address will cause delivery to pickup, will do remove feature further */}
-          {/* {type === actions.EDIT && (
-            <button className="button text-error" onClick={() => this.setState({ show: true })}>
-              {t('Remove')}
-            </button>
-          )} */}
         </section>
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
@@ -319,26 +312,6 @@ class AddressDetail extends Component {
             {type === actions.EDIT ? t('SaveChanges') : t('AddAddress')}
           </button>
         </footer>
-        <Modal show={show}>
-          <div className="text-center padding-top-bottom-normal">
-            <h2 className="text-size-big text-weight-bolder padding-top-bottom-small">{t('RemoveAddressTitle')}</h2>
-            <p className="text-opacity margin-left-right-normal">{t('RemoveAddressContent')}</p>
-          </div>
-          <div className="flex flex-center">
-            <button
-              className="address-detail__button address-detail__button-outline button button__block text-weight-bolder text-uppercase"
-              onClick={() => this.setState({ show: false })}
-            >
-              {t('KeepIt')}
-            </button>
-            <button
-              className="address-detail__button button button__block button__fill text-weight-bolder text-uppercase"
-              onClick={this.removeSavedAddress}
-            >
-              {t('EnsureRemove')}
-            </button>
-          </div>
-        </Modal>
       </div>
     );
   }
