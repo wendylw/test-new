@@ -197,7 +197,7 @@ class AddressDetail extends Component {
       <div className="flex flex-column address-detail">
         <Header
           headerRef={ref => (this.headerEl = ref)}
-          className="flex-middle"
+          className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           isPage={true}
           title={type === actions.EDIT ? t('EditAddress') : t('AddNewAddress')}
@@ -218,13 +218,13 @@ class AddressDetail extends Component {
               })}px`,
           }}
         >
-          <div className="padding-top-bottom-small">
-            <div className="form__group address-detail__field">
-              <div className="padding-left-right-normal">
-                <span className="address-detail__title--required text-size-small">{t('Name')}</span>
+          <div className="address-detail__input-wrapper">
+            <div className="form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal">
+              <div className="address-detail__title required">
+                <span className="text-size-small">{t('Name')}</span>
               </div>
               <input
-                className="address-detail__input form__input padding-left-right-normal text-size-big text-line-height-base"
+                className="address-detail__input form__input text-size-big text-line-height-base"
                 data-heap-name="ordering.customer.delivery-address-name"
                 type="text"
                 maxLength="140"
@@ -236,10 +236,10 @@ class AddressDetail extends Component {
             </div>
           </div>
 
-          <div className="padding-top-bottom-small">
-            <div className="form__group address-detail__field">
-              <div className="padding-left-right-normal">
-                <span className="address-detail__title--required text-size-small">{t('AddressDetails')}</span>
+          <div className="address-detail__input-wrapper">
+            <div className="form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal">
+              <div className="address-detail__title required">
+                <span className="text-size-small">{t('AddressDetails')}</span>
               </div>
               <div
                 className="flex flex-middle flex-space-between"
@@ -259,19 +259,19 @@ class AddressDetail extends Component {
                   });
                 }}
               >
-                <p className="padding-left-right-normal text-size-big text-line-height-base">{address}</p>
+                <p className="text-size-big text-line-height-base">{address}</p>
                 <IconNext className="icon  flex__shrink-fixed" />
               </div>
             </div>
           </div>
 
-          <div className="padding-top-bottom-small">
-            <div className="form__group address-detail__field">
-              <div className="padding-left-right-normal">
-                <span className="address-detail__title--required text-size-small">{t('UnitNumberAndFloor')}</span>
+          <div className="address-detail__input-wrapper">
+            <div className="form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal">
+              <div className="address-detail__title required">
+                <span className="text-size-small">{t('UnitNumberAndFloor')}</span>
               </div>
               <input
-                className="address-detail__input form__input padding-left-right-normal text-size-big text-line-height-base"
+                className="address-detail__input form__input text-size-big text-line-height-base"
                 data-heap-name="ordering.customer.delivery-address-detail"
                 type="text"
                 maxLength="140"
@@ -283,13 +283,13 @@ class AddressDetail extends Component {
             </div>
           </div>
 
-          <div className="padding-top-bottom-small">
-            <div className="form__group address-detail__field">
-              <div className="padding-left-right-normal">
+          <div className="address-detail__input-wrapper">
+            <div className="form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal">
+              <div className="address-detail__title">
                 <span className="text-size-small">{t('NoteToDriver')}</span>
               </div>
               <input
-                className="address-detail__input form__input padding-left-right-normal text-size-big"
+                className="address-detail__input form__input text-size-big"
                 data-heap-name="ordering.customer.delivery-note"
                 type="text"
                 maxLength="140"

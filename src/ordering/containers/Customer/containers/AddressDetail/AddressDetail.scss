@@ -9,24 +9,30 @@
     width: 100%;
   }
 
-  &__field {
-    padding: 4px 0;
+  &__input-wrapper {
+    margin: 6.7vw 0;
   }
 
-  &__title--required {
-    &::after {
+  &__title {
+    color: $gray-3;
+    &.required::after {
       content: "*";
       color: $status-red;
-      font-size: 16px;
-      vertical-align: middle;
+      font-size: 0.8571rem;
+      vertical-align: top;
+      margin-left: 0.3em;
     }
   }
 
   &__input {
     padding-top: 0;
     padding-bottom: 0;
-    height: 26px;
-    border-radius: 4px;
+    height: auto;
+    border-radius: $border-radius-base;
+
+    &::placeholder {
+      color: $gray-4;
+    }
   }
 
   &__button {
@@ -35,5 +41,13 @@
 
   &__button-outline {
     border: 1px solid #eee;
+  }
+}
+
+@media (min-width: 420px) {
+  .address-detail {
+    &__input-wrapper {
+      margin: 28px 0;
+    }
   }
 }
