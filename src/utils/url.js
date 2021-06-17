@@ -201,10 +201,6 @@ const API_URLS = {
     url: `/api/consumers/${consumerId}/address/${addressId}`,
     method: 'put',
   }),
-  DELETE_ADDRESS: (consumerId, addressId) => ({
-    url: `/api/consumers/${consumerId}/address/${addressId}`,
-    method: 'delete',
-  }),
   CANCEL_ORDER: receiptNumber => ({
     url: `/api/transactions/${receiptNumber}/status/cancel`,
     method: 'put',
