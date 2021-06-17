@@ -35,12 +35,8 @@
     }
   }
 
-  &__button {
-    border-radius: 0;
-  }
-
-  &__button-outline {
-    border: 1px solid #eee;
+  &__save-button {
+    letter-spacing: 1.25px;
   }
 }
 

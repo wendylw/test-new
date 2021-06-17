@@ -292,14 +292,14 @@ class AddressDetail extends Component {
         </section>
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
-            className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
+            className="address-detail__save-button button button__fill button__block padding-small text-weight-bolder text-uppercase"
             disabled={!name || !details || !address || (type === actions.EDIT && !hasAnyChanges)}
             onClick={() => {
               CleverTap.pushEvent('Address details - click save changes');
               this.createOrUpdateAddress();
             }}
           >
-            {type === actions.EDIT ? t('SaveChanges') : t('AddAddress')}
+            {type === actions.EDIT ? t('SaveChanges') : t('Save')}
           </button>
         </footer>
       </div>
