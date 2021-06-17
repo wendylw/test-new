@@ -531,7 +531,6 @@ export class ThankYou extends PureComponent {
 
   handleClickSelfPickupButton = () => {
     const { order, businessInfo } = this.props;
-    const paidTime = _get(order, 'paidTime', null);
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Not Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -545,7 +544,6 @@ export class ThankYou extends PureComponent {
   handleChangeToSelfPickup = () => {
     const { order, businessInfo, updateOrderShippingType } = this.props;
     const { orderId } = order || {};
-    const paidTime = _get(order, 'paidTime', null);
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
