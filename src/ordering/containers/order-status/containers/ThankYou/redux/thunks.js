@@ -96,12 +96,23 @@ export const cancelOrder = createAsyncThunk(
 export const updateOrderShippingType = createAsyncThunk(
   'ordering/orderStatus/common/updateOrderShippingType',
   async ({ orderId, shippingType }, { dispatch }) => {
-    const updateResult = await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
-
-    if (updateResult.success) {
+    try {
+      await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
       await dispatch(loadOrder(orderId));
+    } catch (e) {
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch(appActions.showApiErrorModal(e.code));
+      } else {
+        dispatch(
+          appActions.showMessageModal({
+            message: i18next.t('ApiError:57002Title'),
+            description: i18next.t('ApiError:57002Description'),
+          })
+        );
+      }
     }
-
-    return updateResult;
   }
 );

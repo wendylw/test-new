@@ -20,6 +20,7 @@ const initialState = {
   storeHashCode: null,
   orderCancellationReasonAsideVisible: false,
   updateShippingTypeStatus: null, // pending || fulfilled || rejected
+  updateShippingTypeError: null,
   cancelOrderStatus: null, // pending || fulfilled || rejected
 };
 
@@ -82,7 +83,7 @@ const { reducer, actions } = createSlice({
       state.updateShippingTypeStatus = 'fulfilled';
     },
     [updateOrderShippingType.rejected.type]: (state, { error }) => {
-      state.error = error;
+      state.updateShippingTypeError = error;
     },
   },
 });
