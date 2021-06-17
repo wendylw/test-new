@@ -35,8 +35,16 @@
     }
   }
 
+  &__detail-button {
+    max-height: none;
+  }
+
   &__save-button {
     letter-spacing: 1.25px;
+  }
+
+  &__icon-next svg {
+    fill: $gray-3;
   }
 }
 

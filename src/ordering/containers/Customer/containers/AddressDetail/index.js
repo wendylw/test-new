@@ -130,6 +130,22 @@ class AddressDetail extends Component {
     }
   };
 
+  handleAddressDetailClick = () => {
+    const { history, location } = this.props;
+    const { search } = location;
+
+    const callbackUrl = encodeURIComponent(
+      `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
+    );
+
+    CleverTap.pushEvent('Address details - click location row');
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+      search: `${search}&callbackUrl=${callbackUrl}`,
+    });
+  };
+
   createOrUpdateAddress = async () => {
     const { history, user, savedAddressInfo, customerActions } = this.props;
     const { id, type, name, address, details, comments, coords, addressComponents } = savedAddressInfo;
@@ -179,7 +195,7 @@ class AddressDetail extends Component {
 
   render() {
     const { hasAnyChanges } = this.state;
-    const { t, history, savedAddressInfo } = this.props;
+    const { t, savedAddressInfo } = this.props;
     const { type, name, address, details, comments } = savedAddressInfo || {};
 
     return (
@@ -226,32 +242,20 @@ class AddressDetail extends Component {
           </div>
 
           <div className="address-detail__input-wrapper">
-            <div className="form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal">
-              <div className="address-detail__title required">
-                <span className="text-size-small">{t('AddressDetails')}</span>
+            <button
+              className="address-detail__detail-button button button__block form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal flex flex-middle flex-space-between"
+              onClick={this.handleAddressDetailClick}
+            >
+              <div className="text-left">
+                <div className="address-detail__title required">
+                  <span className="text-size-small">{t('AddressDetails')}</span>
+                </div>
+                <div data-heap-name="ordering.customer.delivery-address">
+                  <p className="text-size-big text-line-height-base">{address}</p>
+                </div>
               </div>
-              <div
-                className="flex flex-middle flex-space-between"
-                data-heap-name="ordering.customer.delivery-address"
-                onClick={async () => {
-                  const { search } = window.location;
-
-                  const callbackUrl = encodeURIComponent(
-                    `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
-                  );
-
-                  CleverTap.pushEvent('Address details - click location row');
-
-                  history.push({
-                    pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-                    search: `${search}&callbackUrl=${callbackUrl}`,
-                  });
-                }}
-              >
-                <p className="text-size-big text-line-height-base">{address}</p>
-                <IconNext className="icon  flex__shrink-fixed" />
-              </div>
-            </div>
+              <IconNext className="address-detail__icon-next icon flex__shrink-fixed" />
+            </button>
           </div>
 
           <div className="address-detail__input-wrapper">
