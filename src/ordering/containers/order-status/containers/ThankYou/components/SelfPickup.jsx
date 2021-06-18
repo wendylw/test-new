@@ -7,15 +7,16 @@ import PageProcessingLoader from '../../../../../components/PageProcessingLoader
 import Modal from '../../../../../../components/Modal';
 import './SelfPickup.scss';
 
-function SelfPickup({ t, processing, onClickSelfPickupButton, onChangeToSelfPickup }) {
+function SelfPickup({ t, processing, updatableToSelfPickupStatus, onClickSelfPickupButton, onChangeToSelfPickup }) {
   const [modalDisplayState, setModalDisplayState] = useState(false);
 
-  const handleToggleModal = useCallback(
-    status => {
-      setModalDisplayState(status);
-    },
-    []
-  );
+  const handleToggleModal = useCallback(status => {
+    setModalDisplayState(status);
+  }, []);
+
+  if (!updatableToSelfPickupStatus) {
+    return null;
+  }
 
   return (
     <section className="self-pickup">
@@ -52,7 +53,9 @@ function SelfPickup({ t, processing, onClickSelfPickupButton, onChangeToSelfPick
           </button>
           <button
             className="self-pickup__modal-fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
-            onClick={() => onChangeToSelfPickup()}
+            onClick={() => {
+              onChangeToSelfPickup();
+            }}
           >
             {t('SelfPickUpPromptConfirmedText')}
           </button>
