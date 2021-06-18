@@ -9,7 +9,7 @@ import LiveChat from '../../../../../components/LiveChat';
 import Tag from '../../../../../components/Tag';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
-import Utils from '../../../../../utils/utils';
+import Utils, { copyDataToClipboard } from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
 import { loadOrder } from '../../redux/thunks';
@@ -57,22 +57,6 @@ export class OrderDetails extends Component {
       pathname: Constants.ROUTER_PATHS.MERCHANT_INFO,
       search: window.location.search,
     });
-  };
-
-  copyReceiptNumber = () => {
-    const { order } = this.props;
-    const { orderId } = order || '';
-    const input = document.createElement('input');
-    input.setAttribute('readonly', 'readonly');
-    input.setAttribute('value', orderId);
-    input.setAttribute('style', 'position:absolute;top:-9999px;left:-9999px;');
-    document.body.appendChild(input);
-    input.focus();
-    input.setSelectionRange(0, input.value.length);
-    if (document.execCommand('copy')) {
-      document.execCommand('copy');
-    }
-    document.body.removeChild(input);
   };
 
   isReportUnsafeDriverButtonDisabled = () => {
@@ -127,7 +111,8 @@ export class OrderDetails extends Component {
 
   renderReceiptInfo() {
     const { t, order } = this.props;
-    const { shippingType, orderId, pickUpId } = order || '';
+    const { shippingType, orderId, pickUpId } = order || {};
+
     return (
       <div className="border__bottom-divider">
         {shippingType !== 'delivery' && (
@@ -149,7 +134,7 @@ export class OrderDetails extends Component {
               <span>{orderId}</span>
               <button
                 className="ordering-details__copy-button button button__outline text-size-small text-uppercase padding-left-right-normal"
-                onClick={this.copyReceiptNumber}
+                onClick={() => copyDataToClipboard(orderId)}
               >
                 {t('Copy')}
               </button>
@@ -218,7 +203,7 @@ export class OrderDetails extends Component {
 
     return (
       <React.Fragment>
-        <span className="ordering-details__items text-weight-bolder">{t('Items')}</span>
+        <span className="ordering-details__items">{t('Items')}</span>
         <ul>
           {(items || []).map((value, index) => {
             const { title, displayPrice, quantity, variationTexts, itemType } = value;

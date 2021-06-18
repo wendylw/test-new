@@ -855,9 +855,10 @@ export const copyDataToClipboard = async text => {
     const copyInput = document.createElement('input');
 
     copyInput.setAttribute('readonly', 'readonly');
-    copyInput.setAttribute('value', '+' + text);
+    copyInput.setAttribute('style', 'position: absolute; top: -9999px; left: -9999px;');
+    copyInput.setAttribute('value', text);
     document.body.appendChild(copyInput);
-    copyInput.setSelectionRange(0, 9999);
+    copyInput.setSelectionRange(0, copyInput.value.length);
     copyInput.select();
     document.execCommand('copy');
     document.body.removeChild(copyInput);
