@@ -202,14 +202,14 @@ class AddressDetail extends Component {
       <div className="flex flex-column address-detail">
         <Header
           headerRef={ref => (this.headerEl = ref)}
-          className="flex-middle border__bottom-divider"
+          className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
           title={type === actions.EDIT ? t('EditAddress') : t('AddNewAddress')}
           navFunc={this.handleClickBack.bind(this)}
         />
         <section
-          className="address-detail__container padding-left-right-normal"
+          className="address-detail__container"
           style={{
             top: `${Utils.mainTop({
               headerEls: [this.headerEl],
@@ -223,72 +223,80 @@ class AddressDetail extends Component {
               })}px`,
           }}
         >
-          <div className="form__group address-detail__field flex flex-middle margin-top-bottom-normal padding-top-bottom-small padding-left-right-normal">
-            <div className="flex__fluid-content">
-              <div className="address-detail__title required">
-                <span className="text-size-small text-top">{t('Name')}</span>
+          <div className="margin-normal padding-top-bottom-smaller">
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('Name')}</span>
+                </div>
+                <input
+                  className="address-detail__input form__input text-size-big text-line-height-base"
+                  data-heap-name="ordering.customer.delivery-address-name"
+                  type="text"
+                  maxLength="140"
+                  value={name}
+                  name="addressName"
+                  placeholder={t('placeholderOfAddressName')}
+                  onChange={this.handleInputChange}
+                />
               </div>
-              <input
-                className="address-detail__input form__input text-size-big text-line-height-base"
-                data-heap-name="ordering.customer.delivery-address-name"
-                type="text"
-                maxLength="140"
-                value={name}
-                name="addressName"
-                placeholder={t('placeholderOfAddressName')}
-                onChange={this.handleInputChange}
-              />
             </div>
           </div>
 
-          <button
-            className="address-detail__detail-button button button__block form__group address-detail__field margin-top-bottom-normal padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between"
-            onClick={this.handleAddressDetailClick}
-          >
-            <div className="text-left flex__fluid-content">
-              <div className="address-detail__title required">
-                <span className="text-size-small text-top">{t('AddressDetails')}</span>
+          <div className="margin-normal padding-top-bottom-smaller">
+            <button
+              className="address-detail__detail-button button button__block form__group address-detail__field padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between"
+              onClick={this.handleAddressDetailClick}
+            >
+              <div className="text-left flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('AddressDetails')}</span>
+                </div>
+                <div data-heap-name="ordering.customer.delivery-address">
+                  <p className="address-detail__detail-content text-size-big text-line-height-base">{address}</p>
+                </div>
               </div>
-              <div data-heap-name="ordering.customer.delivery-address">
-                <p className="address-detail__detail-content text-size-big text-line-height-base">{address}</p>
-              </div>
-            </div>
-            <IconNext className="address-detail__icon-next icon icon__small icon__default flex__shrink-fixed" />
-          </button>
+              <IconNext className="address-detail__icon-next icon icon__small icon__default flex__shrink-fixed" />
+            </button>
+          </div>
 
-          <div className="form__group address-detail__field flex flex-middle margin-top-bottom-normal padding-top-bottom-small padding-left-right-normal">
-            <div className="flex__fluid-content">
-              <div className="address-detail__title required">
-                <span className="text-size-small text-top">{t('UnitNumberAndFloor')}</span>
+          <div className="margin-normal padding-top-bottom-smaller">
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('UnitNumberAndFloor')}</span>
+                </div>
+                <input
+                  className="address-detail__input form__input text-size-big text-line-height-base"
+                  data-heap-name="ordering.customer.delivery-address-detail"
+                  type="text"
+                  maxLength="140"
+                  value={details}
+                  name="addressDetails"
+                  placeholder={t('placeholderOfAddressDetails')}
+                  onChange={this.handleInputChange}
+                />
               </div>
-              <input
-                className="address-detail__input form__input text-size-big text-line-height-base"
-                data-heap-name="ordering.customer.delivery-address-detail"
-                type="text"
-                maxLength="140"
-                value={details}
-                name="addressDetails"
-                placeholder={t('placeholderOfAddressDetails')}
-                onChange={this.handleInputChange}
-              />
             </div>
           </div>
 
-          <div className="form__group address-detail__field flex flex-middle margin-top-bottom-normal padding-top-bottom-small padding-left-right-normal">
-            <div className="flex__fluid-content">
-              <div className="address-detail__title">
-                <span className="text-size-small text-top">{t('NoteToDriver')}</span>
+          <div className="margin-normal padding-top-bottom-smaller">
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title">
+                  <span className="text-size-small text-top">{t('NoteToDriver')}</span>
+                </div>
+                <input
+                  className="address-detail__input form__input text-size-big"
+                  data-heap-name="ordering.customer.delivery-note"
+                  type="text"
+                  maxLength="140"
+                  value={comments}
+                  name="deliveryComments"
+                  placeholder={t('placeholderOfDeliveryComments')}
+                  onChange={this.handleInputChange}
+                />
               </div>
-              <input
-                className="address-detail__input form__input text-size-big"
-                data-heap-name="ordering.customer.delivery-note"
-                type="text"
-                maxLength="140"
-                value={comments}
-                name="deliveryComments"
-                placeholder={t('placeholderOfDeliveryComments')}
-                onChange={this.handleInputChange}
-              />
             </div>
           </div>
         </section>

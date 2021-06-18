@@ -9,8 +9,9 @@
     width: 100%;
   }
 
-  &__input-wrapper {
-    margin: 6.7vw 0;
+  &__field {
+    margin-top: 0.7vw;
+    margin-bottom: 0.7vw;
   }
 
   &__title {
@@ -29,7 +30,6 @@
   &__input {
     padding-top: 0;
     padding-bottom: 0;
-    border-radius: $border-radius-base;
     height: 24px;
     line-height: 24px;
 
@@ -57,8 +57,9 @@
 
 @media (min-width: 420px) {
   .address-detail {
-    &__input-wrapper {
-      margin: 28px 0;
+    &__field {
+      margin-top: 2px;
+      margin-bottom: 2px;
     }
   }
 }
