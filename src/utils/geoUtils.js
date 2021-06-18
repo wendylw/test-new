@@ -58,6 +58,14 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
           window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-failure', {
             error: status,
           });
+          loggly.error('google-maps-api.getPlacePredictions-failure', {
+            error: status,
+            input: text,
+            location: locationCoords,
+            origin: originCoords,
+            radius: radiusNumber,
+            country,
+          });
           resolve([]);
         }
       }
@@ -157,6 +165,10 @@ export const getPlacesFromCoordinates = coords => {
       } else {
         window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
           error: status,
+        });
+        loggly.error('google-maps-api.geocode-failure', {
+          error: status,
+          location,
         });
         reject(`Failed to get location from coordinates: ${status}`);
       }
@@ -264,6 +276,10 @@ export const getPlaceInfoFromPlaceId = (placeId, options = {}) => {
         window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
           error: status,
         });
+        loggly.error('google-maps-api.geocode-failure', {
+          error: status,
+          placeId,
+        });
         reject(`Failed to get location from coordinates: ${status}`);
       }
     });
@@ -291,6 +307,11 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
         } else {
           window.newrelic?.addPageAction('google-maps-api.placesGetDetails-failure', {
             error: status,
+          });
+          loggly.error('google-maps-api.placesGetDetails-failure', {
+            error: status,
+            fields,
+            placeId,
           });
           console.error('Fail to get place detail:', status, placeId);
           throw new Error('Fail to get place detail');
@@ -341,6 +362,9 @@ export const fetchGeolocationByIp = () => {
     })
     .catch(err => {
       window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-failure', {
+        error: err?.message,
+      });
+      loggly.error('ip-api.fetchGeolocationByIp-failure', {
         error: err?.message,
       });
       throw err;
