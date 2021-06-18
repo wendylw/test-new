@@ -223,10 +223,10 @@ class AddressDetail extends Component {
               })}px`,
           }}
         >
-          <div className="address-detail__input-wrapper">
-            <div className="form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal">
+          <div className="form__group address-detail__field flex flex-middle margin-top-bottom-normal padding-top-bottom-small padding-left-right-normal">
+            <div className="flex__fluid-content">
               <div className="address-detail__title required">
-                <span className="text-size-small">{t('Name')}</span>
+                <span className="text-size-small text-top">{t('Name')}</span>
               </div>
               <input
                 className="address-detail__input form__input text-size-big text-line-height-base"
@@ -241,27 +241,25 @@ class AddressDetail extends Component {
             </div>
           </div>
 
-          <div className="address-detail__input-wrapper">
-            <button
-              className="address-detail__detail-button button button__block form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal flex flex-middle flex-space-between"
-              onClick={this.handleAddressDetailClick}
-            >
-              <div className="text-left">
-                <div className="address-detail__title required">
-                  <span className="text-size-small">{t('AddressDetails')}</span>
-                </div>
-                <div data-heap-name="ordering.customer.delivery-address">
-                  <p className="text-size-big text-line-height-base">{address}</p>
-                </div>
-              </div>
-              <IconNext className="address-detail__icon-next icon flex__shrink-fixed" />
-            </button>
-          </div>
-
-          <div className="address-detail__input-wrapper">
-            <div className="form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal">
+          <button
+            className="address-detail__detail-button button button__block form__group address-detail__field margin-top-bottom-normal padding-top-bottom-smaller padding-left-right-normal flex flex-middle flex-space-between"
+            onClick={this.handleAddressDetailClick}
+          >
+            <div className="text-left flex__fluid-content">
               <div className="address-detail__title required">
-                <span className="text-size-small">{t('UnitNumberAndFloor')}</span>
+                <span className="text-size-small text-top">{t('AddressDetails')}</span>
+              </div>
+              <div data-heap-name="ordering.customer.delivery-address">
+                <p className="address-detail__detail-content text-size-big text-line-height-base">{address}</p>
+              </div>
+            </div>
+            <IconNext className="address-detail__icon-next icon icon__small icon__default flex__shrink-fixed" />
+          </button>
+
+          <div className="form__group address-detail__field flex flex-middle margin-top-bottom-normal padding-top-bottom-smaller padding-left-right-normal">
+            <div className="flex__fluid-content">
+              <div className="address-detail__title required">
+                <span className="text-size-small text-top">{t('UnitNumberAndFloor')}</span>
               </div>
               <input
                 className="address-detail__input form__input text-size-big text-line-height-base"
@@ -276,10 +274,10 @@ class AddressDetail extends Component {
             </div>
           </div>
 
-          <div className="address-detail__input-wrapper">
-            <div className="form__group address-detail__field padding-top-bottom-smaller padding-left-right-normal">
+          <div className="form__group address-detail__field flex flex-middle margin-top-bottom-normal padding-top-bottom-smaller padding-left-right-normal">
+            <div className="flex__fluid-content">
               <div className="address-detail__title">
-                <span className="text-size-small">{t('NoteToDriver')}</span>
+                <span className="text-size-small text-top">{t('NoteToDriver')}</span>
               </div>
               <input
                 className="address-detail__input form__input text-size-big"

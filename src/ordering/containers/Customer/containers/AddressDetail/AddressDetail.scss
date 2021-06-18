@@ -15,9 +15,11 @@
 
   &__title {
     color: $gray-3;
+
     &.required::after {
       content: "*";
       color: $status-red;
+      line-height: 1em;
       font-size: 0.8571rem;
       vertical-align: top;
       margin-left: 0.3em;
@@ -29,6 +31,8 @@
     padding-bottom: 0;
     height: auto;
     border-radius: $border-radius-base;
+    height: 24px;
+    line-height: 24px;
 
     &::placeholder {
       color: $gray-4;
@@ -37,6 +41,10 @@
 
   &__detail-button {
     max-height: none;
+  }
+
+  &__detail-content {
+    min-height: 24px;
   }
 
   &__save-button {
