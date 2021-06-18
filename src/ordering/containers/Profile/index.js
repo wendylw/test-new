@@ -34,7 +34,7 @@ class Profile extends Component {
   };
 
   saveProfile = async () => {
-    const { user, history, deliveryDetails, customerActions } = this.props;
+    const { user, history, deliveryDetails, customerActions, appActions } = this.props;
     const { consumerId, profile } = user || {};
     const { name, email, phone } = profile || {};
     const { username, phone: orderPhone } = deliveryDetails || {};
@@ -60,6 +60,10 @@ class Profile extends Component {
         });
       }
     } catch (e) {
+      if (e.code) {
+        appActions.showApiErrorModal(e.code);
+      }
+
       this.setState({ error: true, message: e.message });
       this.timeoutId = setTimeout(() => {
         this.setState({ error: false });

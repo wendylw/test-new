@@ -291,7 +291,7 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:40024Title',
     desc: 'ApiError:40024Description',
     redirectUrl: '',
-    buttonText: 'Common:Continue',
+    buttonText: 'Common:Dismiss',
     showModal: true,
   },
   40025: {
