@@ -157,7 +157,7 @@ function RiderInfo({
       phone={driverPhone}
       supportCallPhone={supportCallPhone}
       buttonText={t('CallRider')}
-      buttonClickEvent={handleCopyPhoneNumber(driverPhone, 'drive')}
+      buttonClickEvent={handleCopyPhoneNumber(`+${driverPhone}`, 'drive')}
     />
   );
   const trackingOrderButtonEl =
