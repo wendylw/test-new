@@ -12,23 +12,29 @@ const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
 // recreating the `Stripe` object on every render.
 const stripeMYPromise = loadStripe(MY_STRIPE_KEY)
   .then(stripe => {
-    window.newrelic?.addPageAction('common.stripe-load-success');
+    window.newrelic?.addPageAction('common.stripe-load-success', {
+      country: 'MY',
+    });
     return stripe;
   })
   .catch(err => {
     window.newrelic?.addPageAction('common.stripe-load-failure', {
       error: err?.message,
+      country: 'MY',
     });
     throw err;
   });
 const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
   .then(stripe => {
-    window.newrelic?.addPageAction('common.stripe-load-success');
+    window.newrelic?.addPageAction('common.stripe-load-success', {
+      country: 'SG',
+    });
     return stripe;
   })
   .catch(err => {
     window.newrelic?.addPageAction('common.stripe-load-failure', {
       error: err?.message,
+      country: 'SG',
     });
     throw err;
   });
