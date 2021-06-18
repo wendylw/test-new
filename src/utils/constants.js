@@ -372,6 +372,30 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:OK',
     showModal: true,
   },
+  51001: {
+    title: 'ApiError:51001Title',
+    desc: 'ApiError:51001Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  51002: {
+    title: 'ApiError:51002Title',
+    desc: 'ApiError:51002Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  51003: {
+    title: 'ApiError:51003Title',
+    desc: 'ApiError:51003Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  51004: {
+    title: 'ApiError:51004Title',
+    desc: 'ApiError:51004Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
 };
 
 const POLYFILL_FEATURES_URL = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
@@ -409,9 +433,6 @@ const PROMOTION_ERROR_CODES = {
   54406: {
     desc: '54406FreePromotionNotMatchCondition',
   },
-  54407: {
-    desc: '54407NotMatchCondition',
-  },
   54403: {
     desc: '54403NotStartOrExpired',
   },
@@ -429,6 +450,9 @@ const PROMOTION_ERROR_CODES = {
   },
   54401: {
     desc: '54401DeletedPromotion',
+  },
+  54407: {
+    desc: '54407RequireSameBusiness',
   },
   54408: {
     desc: '54408RequireSameBusiness',
@@ -459,6 +483,9 @@ const PROMOTION_ERROR_CODES = {
   },
   54418: {
     desc: '54418NotMatchAppliedClientType',
+  },
+  54419: {
+    desc: '54419OnlyApplicableForParticipating',
   },
   60002: {
     desc: '60002NotActive',
