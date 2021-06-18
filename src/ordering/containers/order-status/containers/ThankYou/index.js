@@ -1390,13 +1390,12 @@ export class ThankYou extends PureComponent {
             shippingType,
           })
         )}
-        {updatableToSelfPickupStatus ? (
-          <SelfPickup
-            onClickSelfPickupButton={this.handleClickSelfPickupButton}
-            onChangeToSelfPickup={this.handleChangeToSelfPickup}
-            processing={pendingUpdateShippingTypeStatus}
-          />
-        ) : null}
+        <SelfPickup
+          processing={pendingUpdateShippingTypeStatus}
+          updatableToSelfPickupStatus={updatableToSelfPickupStatus}
+          onClickSelfPickupButton={this.handleClickSelfPickupButton}
+          onChangeToSelfPickup={this.handleChangeToSelfPickup}
+        />
       </React.Fragment>
     );
   }
