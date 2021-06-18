@@ -3,7 +3,6 @@ import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
 import Header from '../../../../../components/Header';
-import Modal from '../../../../../components/Modal';
 import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -14,7 +13,7 @@ import {
   getSavedAddressInfo,
 } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
-import { post, put, del } from '../../../../../utils/request';
+import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import webviewUtils from '../../../../../utils/webview-utils';
 import qs from 'qs';
