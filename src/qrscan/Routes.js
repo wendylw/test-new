@@ -8,7 +8,7 @@ import NotSupport from './containers/NotSupport';
 const NotFound = () => {
   return <Redirect to={'/'} />;
 };
-NotFound.displayName = 'NotFound';
+NotFound.displayName = 'QRScanNotFound';
 
 const BasicRoute = () => (
   <Router basename="/qrscan">
@@ -20,6 +20,6 @@ const BasicRoute = () => (
     </Switch>
   </Router>
 );
-BasicRoute.displayName = 'BasicRoute';
+BasicRoute.displayName = 'QRScanBasicRoute';
 
 export default BasicRoute;

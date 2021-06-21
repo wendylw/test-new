@@ -290,7 +290,7 @@ export class Footer extends Component {
     );
   }
 }
-Footer.displayName = 'Footer';
+Footer.displayName = 'OrderingFooter';
 
 Footer.propTypes = {
   footerRef: PropTypes.any,

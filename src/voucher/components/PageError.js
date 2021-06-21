@@ -31,7 +31,7 @@ class Error extends React.PureComponent {
     );
   }
 }
-Error.displayName = 'Error';
+Error.displayName = 'VoucherError';
 
 Error.propTypes = {
   title: PropTypes.string,

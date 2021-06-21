@@ -20,6 +20,6 @@ const ErrorMessage = ({ errors }) => {
     </span>
   );
 };
-ErrorMessage.displayName = 'ErrorMessage';
+ErrorMessage.displayName = 'StripeErrorMessage';
 
 export default ErrorMessage;

@@ -29,6 +29,6 @@ class Routes extends Component {
     );
   }
 }
-Routes.displayName = 'Routes';
+Routes.displayName = 'VoucherRoutes';
 
 export default withRouter(Routes);

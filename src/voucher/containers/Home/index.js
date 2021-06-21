@@ -117,7 +117,7 @@ class Home extends Component {
     );
   }
 }
-Home.displayName = 'Home';
+Home.displayName = 'VoucherHome';
 
 export default compose(
   withTranslation(['Voucher']),

@@ -4,6 +4,6 @@ import React from 'react';
 const NotFound = () => {
   return <Redirect to={'/'} />;
 };
-NotFound.displayName = 'NotFound';
+NotFound.displayName = 'SiteNotFound';
 
 export default NotFound;

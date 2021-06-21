@@ -12,6 +12,6 @@ class Index extends Component {
     );
   }
 }
-Index.displayName = 'Index';
+Index.displayName = 'OrderingIndex';
 
 export default Index;

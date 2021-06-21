@@ -34,6 +34,6 @@ class Routes extends Component {
   }
 }
 
-Routes.displayName = 'Routes';
+Routes.displayName = 'CashbackRoutes';
 
 export default withRouter(Routes);

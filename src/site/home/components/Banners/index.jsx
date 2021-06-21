@@ -57,6 +57,6 @@ class Banners extends Component {
     );
   }
 }
-Banners.displayName = 'Banners';
+Banners.displayName = 'SiteBanners';
 
 export default withRouter(Banners);

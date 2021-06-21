@@ -50,6 +50,6 @@ class Sorry extends Component {
     );
   }
 }
-Sorry.displayName = 'Sorry';
+Sorry.displayName = 'QRScanSorry';
 
 export default withRouter(withTranslation('Scanner')(Sorry));

@@ -10,6 +10,6 @@ const Banner = ({ className, children, title }) => {
     </div>
   );
 };
-Banner.displayName = 'Banner';
+Banner.displayName = 'SiteBanner';
 
 export default Banner;

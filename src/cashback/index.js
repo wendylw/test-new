@@ -13,6 +13,6 @@ class Index extends Component {
   }
 }
 
-Index.displayName = 'Index';
+Index.displayName = 'CashbackIndex';
 
 export default Index;

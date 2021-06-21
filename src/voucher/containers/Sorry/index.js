@@ -52,6 +52,6 @@ class Sorry extends Component {
     );
   }
 }
-Sorry.displayName = 'Sorry';
+Sorry.displayName = 'VoucherSorry';
 
 export default withTranslation(['Voucher'])(Sorry);

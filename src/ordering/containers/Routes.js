@@ -86,5 +86,5 @@ class Routes extends Component {
     );
   }
 }
-Routes.displayName = 'Routes';
+Routes.displayName = 'OrderingRoutes';
 export default withRouter(Routes);

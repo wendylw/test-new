@@ -41,7 +41,7 @@ CurrencyNumber.defaultProps = {
   money: 0,
 };
 
-CurrencyNumber.displayName = 'CurrencyNumber';
+CurrencyNumber.displayName = 'CashbackCurrencyNumber';
 
 export default connect(state => {
   const onlineStoreInfo = getOnlineStoreInfo(state) || {};

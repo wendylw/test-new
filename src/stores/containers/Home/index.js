@@ -26,7 +26,7 @@ import {
 import OfflineStoreModal from '../../../ordering/containers/Home/components/OfflineStoreModal';
 
 const { ROUTER_PATHS } = Constants;
-class App extends Component {
+class Home extends Component {
   state = {
     creatOfflineStoreOrderName: '',
   };
@@ -153,7 +153,7 @@ class App extends Component {
     );
   }
 }
-App.displayName = 'App';
+Home.displayName = 'StoresHome';
 
 export default compose(
   withTranslation(),
@@ -173,4 +173,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(withRouter(App));
+)(withRouter(Home));

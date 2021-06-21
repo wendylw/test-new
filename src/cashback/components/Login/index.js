@@ -147,7 +147,7 @@ Login.propTypes = {
 
 Login.defaultProps = {};
 
-Login.displayName = 'Login';
+Login.displayName = 'CashbackLogin';
 
 export default compose(
   withTranslation('Common'),

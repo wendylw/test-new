@@ -132,7 +132,7 @@ class App extends Component {
   }
 }
 
-App.displayName = 'App';
+App.displayName = 'CashbackApp';
 
 export default connect(
   state => ({

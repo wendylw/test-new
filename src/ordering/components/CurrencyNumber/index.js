@@ -43,7 +43,7 @@ class CurrencyNumber extends React.Component {
   }
 }
 
-CurrencyNumber.displayName = 'CurrencyNumber';
+CurrencyNumber.displayName = 'OrderingCurrencyNumber';
 
 CurrencyNumber.propTypes = {
   className: PropTypes.string,

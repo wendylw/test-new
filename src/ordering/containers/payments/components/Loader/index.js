@@ -22,7 +22,7 @@ class Loader extends Component {
     );
   }
 }
-Loader.displayName = 'Loader';
+Loader.displayName = 'PaymentLoader';
 
 Loader.propTypes = {
   className: PropTypes.string,
