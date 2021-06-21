@@ -15,7 +15,6 @@ import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
-import CleverTap from '../../../utils/clevertap';
 import loggly from '../../../utils/monitoring/loggly';
 
 class PageLogin extends React.Component {
@@ -165,13 +164,12 @@ class PageLogin extends React.Component {
             <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">
               <img
                 src={beepLoginActive}
-                alt="otp"
+                alt="otp active"
                 className={`${isValidPhoneNumber(phone) ? '' : 'page-login__icon--hide'}`}
               />
               <img
-                className=""
                 src={beepLoginDisabled}
-                alt="otp"
+                alt="otp disabled"
                 className={`${isValidPhoneNumber(phone) ? 'page-login__icon--hide' : 'page-login__disabled'}`}
               />
             </figure>

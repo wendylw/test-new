@@ -1,5 +1,3 @@
-import _isObject from 'lodash/isObject';
-
 export const API_INFO = {
   getStores: (businessName, storeId) => ({
     url: `/api/stores/${businessName}${storeId ? `/${storeId}` : ''}`,
@@ -15,6 +13,9 @@ export const API_INFO = {
   }),
   getOrderStatus: orderId => ({
     url: `/api/transactions/${orderId}/status`,
+  }),
+  updateOrderShippingType: orderId => ({
+    url: `/api/transactions/${orderId}/change-shipping-type`,
   }),
 };
 

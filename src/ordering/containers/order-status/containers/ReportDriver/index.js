@@ -27,7 +27,8 @@ import {
   getInputEmailIsValid,
 } from './redux/selectors';
 import { SUBMIT_STATUS, REPORT_DRIVER_REASONS } from './constants';
-import { actions as commonActionCreators, getReceiptNumber } from '../../redux/common';
+import { loadOrder } from '../../redux/thunks';
+import { getReceiptNumber } from '../../redux/selector';
 import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser } from '../../../../redux/modules/app';
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
@@ -476,7 +477,7 @@ export default compose(
       updateSubmitStatus: reportDriverActionCreators.updateSubmitStatus,
       fetchReport: reportDriverThunks.fetchReport,
       submitReport: reportDriverThunks.submitReport,
-      loadOrder: commonActionCreators.loadOrder,
+      loadOrder,
       showMessageModal: appActionCreators.showMessageModal,
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
