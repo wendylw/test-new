@@ -25,6 +25,7 @@ import {
   getServiceCharge,
 } from '../../redux/common';
 import './OrderingDetails.scss';
+import { IconNext } from '../../../../../components/Icons';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
@@ -410,25 +411,30 @@ export class OrderDetails extends Component {
               </li>
             </ul>
           </div>
-          {isShowReorderButton ? (
-            <div className="card margin-normal">
-              <button
-                onClick={this.handleReorder}
-                className="button button__block button__fill flex flex-middle flex-center padding-small text-weight-bolder text-uppercase"
-              >
-                {t('Reorder')}
-              </button>
-            </div>
-          ) : null}
+
           {isUseStorehubLogistics ? (
             <div className="card margin-normal">
               <button
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
-                className="button button__block flex flex-middle flex-center padding-small text-weight-bolder text-uppercase"
+                className="ordering-details__report-issue-button button button__block flex flex-middle flex-space-between padding-small"
                 data-heap-name="ordering.contact-details.report-driver-btn"
               >
-                {t('ReportIssue')}
+                <span className="text-left text-size-big flex__fluid-content">{t('ReportIssue')}</span>
+                <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
+              </button>
+            </div>
+          ) : null}
+
+          {isShowReorderButton ? (
+            <div className="card margin-normal">
+              <button
+                onClick={this.handleReorder}
+                className="ordering-details__reorder-button button button__block flex flex-middle flex-space-between padding-small"
+              >
+                <span className="text-left text-size-big flex__fluid-content">{t('Reorder')}</span>
+
+                <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
               </button>
             </div>
           ) : null}
