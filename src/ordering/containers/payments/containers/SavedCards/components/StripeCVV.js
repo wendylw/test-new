@@ -117,6 +117,8 @@ const CVVInput = forwardRef((props, ref) => {
   );
 });
 
+CVVInput.displayName = 'CVVInput';
+
 const StripeCVV = forwardRef((props, ref) => {
   const { merchantCountry } = props;
 
@@ -126,5 +128,6 @@ const StripeCVV = forwardRef((props, ref) => {
     </Elements>
   );
 });
+StripeCVV.displayName = 'StripeCVV';
 
 export default StripeCVV;

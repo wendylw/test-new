@@ -250,5 +250,6 @@ class QRScan extends Component {
     );
   }
 }
+QRScan.displayName = 'QRScan';
 
 export default withTranslation(['Scanner'])(QRScan);

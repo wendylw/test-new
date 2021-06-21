@@ -278,6 +278,7 @@ class AddressDetail extends Component {
     );
   }
 }
+AddressDetail.displayName = 'AddressDetail';
 
 export default compose(
   withTranslation(),

@@ -32,5 +32,6 @@ function PromotionDetails({ onHide, promotions, show, inApp }) {
     </aside>
   );
 }
+PromotionDetails.displayName = 'PromotionDetails';
 
 export default PromotionDetails;

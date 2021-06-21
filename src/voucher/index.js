@@ -13,5 +13,6 @@ class Voucher extends Component {
     );
   }
 }
+Voucher.displayName = 'Voucher';
 
 export default withRouter(Voucher);

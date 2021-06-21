@@ -131,4 +131,6 @@ class Bootstrap extends Component {
   }
 }
 
+Bootstrap.displayName = 'Bootstrap';
+
 export default Bootstrap;

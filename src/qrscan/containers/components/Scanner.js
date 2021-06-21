@@ -194,5 +194,6 @@ class Scanner extends Component {
     );
   }
 }
+Scanner.displayName = 'Scanner';
 
 export default withRouter(withTranslation('Scanner')(Scanner));

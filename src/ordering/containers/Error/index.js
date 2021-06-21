@@ -57,6 +57,7 @@ export class Error extends Component {
     );
   }
 }
+Error.displayName = 'Error';
 
 export default compose(
   withTranslation(),

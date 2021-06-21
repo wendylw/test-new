@@ -165,5 +165,6 @@ class PromotionContent extends PureComponent {
     );
   }
 }
+PromotionContent.displayName = 'PromotionContent';
 
 export default withTranslation('OrderingHome')(PromotionContent);
