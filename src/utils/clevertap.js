@@ -9,9 +9,13 @@ const pushEvent = (eventName, attributes) => {
       if (Utils.isIOSWebview()) {
         if (eventName === 'Charged') {
           const { Items: items, ...chargeDetails } = attributes || {};
+
           window.webkit?.messageHandlers?.clevertap?.postMessage({
             action: 'recordChargedEvent',
-            chargeDetails: chargeDetails,
+            chargeDetails: {
+              ...chargeDetails,
+              'account name': businessName,
+            },
             items: items,
           });
         } else {
@@ -29,7 +33,14 @@ const pushEvent = (eventName, attributes) => {
       if (Utils.isAndroidWebview()) {
         if (eventName === 'Charged') {
           const { Items, ...chargeDetails } = attributes || {};
-          window.CleverTap?.pushChargedEvent(JSON.stringify(...chargeDetails), JSON.stringify(Items));
+
+          window.CleverTap?.pushChargedEvent(
+            JSON.stringify({
+              ...chargeDetails,
+              'account name': businessName,
+            }),
+            JSON.stringify(Items)
+          );
         } else {
           window.CleverTap?.pushEvent(
             eventName,
