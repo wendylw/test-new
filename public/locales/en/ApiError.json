@@ -72,5 +72,7 @@
   "57005Title": "Change shipping type error (#57005)",
   "57005Description": "Can not change to pickup now",
   "57006Title": "Change shipping type error (#57006)",
-  "57006Description": "Cancel order failed, generated vouchers have been used"
+  "57006Description": "Cancel order failed, generated vouchers have been used",
+  "40024Title":"Oops! This is awkward…",
+  "40024Description":"Looks like you’ve entered this email before. Please try logging in or use a different email address."
 }

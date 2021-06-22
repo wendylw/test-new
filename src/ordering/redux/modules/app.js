@@ -419,12 +419,13 @@ export const actions = {
     return dispatch(addOrUpdateShoppingCartItem(variables));
   },
 
-  showApiErrorModal: code => dispatch => {
-    return dispatch({
-      type: 'ordering/app/showApiErrorModal',
-      code,
-    });
-  },
+  // TODO: This type is actually not used, because apiError does not respect action type,
+  // which is a bad practice, we will fix it in the future, for now we just keep a useless
+  // action type.
+  showApiErrorModal: code => ({
+    type: 'ordering/app/showApiErrorModal',
+    code,
+  }),
 
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());

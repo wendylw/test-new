@@ -34,7 +34,7 @@ class Profile extends Component {
   };
 
   saveProfile = async () => {
-    const { user, history, deliveryDetails, customerActions } = this.props;
+    const { user, history, deliveryDetails, customerActions, appActions } = this.props;
     const { consumerId, profile } = user || {};
     const { name, email, phone } = profile || {};
     const { username, phone: orderPhone } = deliveryDetails || {};
@@ -60,6 +60,10 @@ class Profile extends Component {
         });
       }
     } catch (e) {
+      if (e.code) {
+        appActions.showApiErrorModal(e.code);
+      }
+
       this.setState({ error: true, message: e.message });
       this.timeoutId = setTimeout(() => {
         this.setState({ error: false });
@@ -99,7 +103,7 @@ class Profile extends Component {
           <div>
             <form>
               <div className="profile__input padding-small border-radius-base">
-                <div>Name</div>
+                <div>{t('Name')}</div>
                 <input
                   name="consumerName"
                   value={name}
@@ -111,7 +115,7 @@ class Profile extends Component {
               </div>
               {this.state.error && <p className="profile__error-message">{this.state.message}</p>}
               <div className={`profile__input padding-small border-radius-base ${this.state.error ? 'error' : ''}`}>
-                <div>Email Address</div>
+                <div>{t('EmailAddress')}</div>
                 <input
                   name="consumerEmail"
                   value={email}
