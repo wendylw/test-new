@@ -187,6 +187,8 @@ class PageClaim extends React.Component {
   }
 }
 
+PageClaim.displayName = 'PageClaim';
+
 export default compose(
   withTranslation(['Cashback']),
   connect(

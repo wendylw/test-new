@@ -142,6 +142,7 @@ class Profile extends Component {
     );
   }
 }
+Profile.displayName = 'Profile';
 
 export default compose(
   withTranslation(),

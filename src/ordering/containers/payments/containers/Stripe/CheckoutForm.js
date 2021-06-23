@@ -442,5 +442,6 @@ function CheckoutForm({
     </section>
   );
 }
+CheckoutForm.displayName = 'CheckoutForm';
 
 export default CheckoutForm;

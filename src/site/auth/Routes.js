@@ -14,5 +14,6 @@ const AccountRoute = () => {
     </Switch>
   );
 };
+AccountRoute.displayName = 'AccountRoute';
 
 export default AccountRoute;

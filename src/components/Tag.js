@@ -38,5 +38,6 @@ Tag.defaultProps = {
   text: '',
   style: {},
 };
+Tag.displayName = 'Tag';
 
 export default Tag;

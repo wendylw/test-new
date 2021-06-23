@@ -284,6 +284,7 @@ export class VariationSelector extends Component {
     );
   }
 }
+VariationSelector.displayName = 'VariationSelector';
 
 VariationSelector.propTypes = {
   variation: PropTypes.object,

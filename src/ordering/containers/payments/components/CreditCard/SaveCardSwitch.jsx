@@ -25,5 +25,6 @@ function SaveCardSwitch(props) {
     </div>
   );
 }
+SaveCardSwitch.displayName = 'SaveCardSwitch';
 
 export default SaveCardSwitch;

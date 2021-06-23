@@ -226,6 +226,7 @@ class ProductList extends Component {
     );
   }
 }
+ProductList.displayName = 'ProductList';
 
 ProductList.propTypes = {
   onToggle: PropTypes.func,

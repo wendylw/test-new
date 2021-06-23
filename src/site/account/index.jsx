@@ -13,5 +13,6 @@ const Account = () => {
     </div>
   );
 };
+Account.displayName = 'Account';
 
 export default Account;

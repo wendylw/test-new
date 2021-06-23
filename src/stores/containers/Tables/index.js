@@ -89,6 +89,7 @@ class Tables extends Component {
     );
   }
 }
+Tables.displayName = 'Tables';
 
 export default compose(
   withTranslation(),

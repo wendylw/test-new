@@ -279,6 +279,8 @@ class Home extends React.Component {
   }
 }
 
+Home.displayName = 'Home';
+
 export default compose(
   withTranslation(),
   connect(
