@@ -11,5 +11,6 @@ class Permission extends Component {
     );
   }
 }
+Permission.displayName = 'Permission';
 
 export default Permission;

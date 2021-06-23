@@ -79,6 +79,7 @@ class CurrentCategoryBar extends PureComponent {
     );
   }
 }
+CurrentCategoryBar.displayName = 'CurrentCategoryBar';
 
 CurrentCategoryBar.propTypes = {
   categories: PropTypes.array,

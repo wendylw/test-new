@@ -41,7 +41,9 @@ export const getPlaceInfoByDeviceByAskPermission = async () => {
     return placeInfo;
   } catch (e) {
     console.warn(e);
-    loggly.warn(e?.message);
+    loggly.warn('utils.getPlaceInfoByDeviceByAskPermission', {
+      message: e?.message,
+    });
   }
 };
 
@@ -79,7 +81,9 @@ export const getPlaceInfo = async ({
       }
     } catch (e) {
       console.warn(e);
-      loggly.warn(e?.message);
+      loggly.warn('utils.getPlaceInfo', {
+        message: e?.message,
+      });
     }
   }
 
@@ -92,7 +96,9 @@ export const getPlaceInfo = async ({
       }
     } catch (e) {
       console.warn(e);
-      loggly.warn(e?.message);
+      loggly.warn('utils.getPlaceInfo', {
+        message: e?.message,
+      });
     }
   }
 

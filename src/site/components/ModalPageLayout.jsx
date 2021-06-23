@@ -27,6 +27,7 @@ class ModalPageLayout extends React.Component {
     );
   }
 }
+ModalPageLayout.displayName = 'ModalPageLayout';
 
 ModalPageLayout.propTypes = {
   onGoBack: PropTypes.func.isRequired,

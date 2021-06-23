@@ -43,5 +43,6 @@ class CollectionCard extends React.Component {
     );
   }
 }
+CollectionCard.displayName = 'CollectionCard';
 
 export default compose(withTranslation(['SiteHome']), withRouter)(CollectionCard);

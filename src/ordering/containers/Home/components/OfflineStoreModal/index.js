@@ -43,6 +43,7 @@ export class OfflineStoreModal extends PureComponent {
     );
   }
 }
+OfflineStoreModal.displayName = 'OfflineStoreModal';
 
 OfflineStoreModal.propTypes = {
   enableLiveOnline: PropTypes.bool,

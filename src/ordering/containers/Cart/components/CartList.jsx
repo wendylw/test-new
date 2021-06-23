@@ -228,6 +228,8 @@ class CartList extends Component {
   }
 }
 
+CartList.displayName = 'CartList';
+
 CartList.propTypes = {
   isList: PropTypes.bool,
   style: PropTypes.object,

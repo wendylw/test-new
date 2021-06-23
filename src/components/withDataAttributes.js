@@ -14,5 +14,6 @@ export default Component => {
     return <Component {...props} dataAttributes={dataAttrs} />;
   };
   hoistNonReactStatic(WithDataAttr, Component);
+  WithDataAttr.displayName = 'WithDataAttr';
   return WithDataAttr;
 };

@@ -39,5 +39,6 @@ class GetPermission extends Component {
     );
   }
 }
+GetPermission.displayName = 'GetPermission';
 
 export default withRouter(withTranslation('Scanner')(GetPermission));
