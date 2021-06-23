@@ -39,5 +39,6 @@ class SiteFooter extends Component {
     );
   }
 }
+SiteFooter.displayName = 'SiteFooter';
 
 export default withRouter(SiteFooter);

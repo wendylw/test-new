@@ -97,6 +97,7 @@ class PaymentItem extends Component {
   }
 }
 
+PaymentItem.displayName = 'PaymentItem';
 PaymentItem.propTypes = {
   option: PropTypes.shape({
     key: PropTypes.string,

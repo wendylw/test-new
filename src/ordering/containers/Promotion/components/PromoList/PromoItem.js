@@ -107,6 +107,7 @@ class PromoItem extends Component {
     );
   }
 }
+PromoItem.displayName = 'PromoItem';
 
 PromoItem.propTypes = {
   promo: PropTypes.object,

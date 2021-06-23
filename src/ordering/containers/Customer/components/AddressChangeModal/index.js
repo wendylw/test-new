@@ -40,6 +40,8 @@ export class AddressChangeModal extends React.Component {
   }
 }
 
+AddressChangeModal.displayName = 'AddressChangeModal';
+
 AddressChangeModal.propTypes = {
   deliveryFee: PropTypes.number,
   addressChange: PropTypes.bool,

@@ -175,6 +175,7 @@ class CollectionPage extends React.Component {
     );
   }
 }
+CollectionPage.displayName = 'CollectionPage';
 
 export default compose(
   withPlaceInfo({ fromIp: true }),

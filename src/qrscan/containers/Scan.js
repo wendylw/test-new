@@ -11,5 +11,6 @@ class Scan extends Component {
     );
   }
 }
+Scan.displayName = 'Scan';
 
 export default Scan;

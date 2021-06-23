@@ -418,6 +418,7 @@ export class OrderDetails extends Component {
     );
   }
 }
+OrderDetails.displayName = 'OrderDetails';
 
 export default compose(
   withTranslation(['OrderingDelivery']),

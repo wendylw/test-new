@@ -33,4 +33,6 @@ class RequestLogin extends Component {
   }
 }
 
+RequestLogin.displayName = 'RequestLogin';
+
 export default withTranslation('Cashback')(RequestLogin);
