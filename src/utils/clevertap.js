@@ -9,6 +9,7 @@ const pushEvent = (eventName, attributes) => {
       const appVersion = window.beepAppVersion;
 
       if (Utils.isIOSWebview()) {
+        // TODO: below check version code has bug, we will delete the check version code on 1.8.0
         if (eventName === 'Charged' && appVersion >= '1.7.3') {
           const { Items: items, ...chargeDetails } = attributes || {};
 
@@ -33,6 +34,7 @@ const pushEvent = (eventName, attributes) => {
       }
 
       if (Utils.isAndroidWebview()) {
+        // TODO: below check version code has bug, we will delete the check version code on 1.8.0
         if (eventName === 'Charged' && appVersion >= '1.7.3') {
           const { Items, ...chargeDetails } = attributes || {};
 
