@@ -54,9 +54,9 @@
     }
   }
 
-  &__report-issue-button,
-  &__reorder-button {
+  &__report-issue-button {
     color: $main-color;
+    border: none;
   }
 
   &__icon-next svg {

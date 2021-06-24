@@ -420,7 +420,7 @@ export class OrderDetails extends Component {
                 className="ordering-details__report-issue-button button button__block flex flex-middle flex-space-between padding-small"
                 data-heap-name="ordering.contact-details.report-driver-btn"
               >
-                <span className="text-weight-bolder text-left text-size-big flex__fluid-content">
+                <span className="text-weight-bolder text-left text-size-big flex__fluid-content padding-left-right-smaller">
                   {t('ReportIssue')}
                 </span>
                 <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
