@@ -57,6 +57,15 @@
   &__report-issue-button {
     color: $main-color;
     border: none;
+
+    &:disabled {
+      background-color: inherit;
+      color: $gray-4;
+
+      svg {
+        fill: $gray-4;
+      }
+    }
   }
 
   &__icon-next svg {
