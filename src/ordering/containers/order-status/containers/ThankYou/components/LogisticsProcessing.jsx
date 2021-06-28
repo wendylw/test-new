@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
-import { IconAccessTime } from '../../../../../../components/Icons';
+import { IconAccessTime, IconExpandMore } from '../../../../../../components/Icons';
 import Constants from '../../../../../../utils/constants';
 import './LogisticsProcessing.scss';
 
@@ -44,27 +44,25 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
   const currentStepIndex = currentStatusIndex > 2 ? 2 : currentStatusIndex;
 
   return (
-    <div className="card padding-normal margin-normal">
-      <ul>
+    <div className="card padding-small margin-normal">
+      <ul className="padding-smaller">
         {processingList.map((step, index) => {
           if (index === processingList.length - 1) {
             return null;
           }
 
           const itemClassList = ['logistics-processing__step padding-left-right-normal'];
-          const titleClassList = ['logistics-processing__step-title padding-left-right-normal text-line-height-base'];
 
           if (index < currentStepIndex) {
             itemClassList.push('logistics-processing__step--complete');
           } else if (index === currentStepIndex) {
             itemClassList.push('logistics-processing__step--active');
-            titleClassList.push('text-weight-bolder');
           }
 
           return (
             <li className={itemClassList.join(' ')} key={`beep-logistics-${step}-status`}>
               <i className="logistics-processing__icon" />
-              <h4 className={titleClassList.join(' ')}>
+              <h4 className="logistics-processing__step-title padding-left-right-normal text-line-height-base">
                 {currentStepIndex <= index
                   ? t(LOGISTIC_PROCESSING_MAPPING[step].activeTitleKey)
                   : t(LOGISTIC_PROCESSING_MAPPING[step].completeTitleKey)}
@@ -80,6 +78,7 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
           );
         })}
       </ul>
+      <IconExpandMore className="icon icon__smaller icon__default" />
     </div>
   );
 }
