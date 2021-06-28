@@ -71,6 +71,8 @@ import {
 import { actions as appActionCreators } from '../../../../redux/modules/app';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
+import OrderStatusDescription from './components/OrderStatusDescription';
+import LogisticsProcessing from './components/LogisticsProcessing';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -794,6 +796,7 @@ export class ThankYou extends PureComponent {
           />
         )}
         {this.renderOrderDelayMessage()}
+
         {currentStatusObj.status === 'cancelled' ? (
           <div className="card text-center margin-normal flex">
             <div className="padding-normal">
@@ -1298,30 +1301,24 @@ export class ThankYou extends PureComponent {
     return deliveryInformation[0];
   };
 
-  renderDeliveryImageAndTimeLine() {
+  renderDeliveryTimeLine() {
     const { t, order, cashbackInfo, businessInfo } = this.props;
-    const { status, deliveryInformation, cancelOperator } = order || {};
+    const { deliveryInformation, cancelOperator } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
       <React.Fragment>
-        {this.isNowPaidPreOrder() ? (
-          <img
-            className="ordering-thanks__image padding-normal"
-            src={`${status === 'shipped' ? beepOrderStatusPickedUp : beepPreOrderSuccessImage}`}
-            alt="Beep Success"
-          />
-        ) : (
-          this.renderConsumerStatusFlow({
-            t,
-            CONSUMERFLOW_STATUS,
-            cashbackInfo,
-            businessInfo,
-            deliveryInformation,
-            cancelOperator,
-            order,
-          })
-        )}
+        {!this.isNowPaidPreOrder()
+          ? this.renderConsumerStatusFlow({
+              t,
+              CONSUMERFLOW_STATUS,
+              cashbackInfo,
+              businessInfo,
+              deliveryInformation,
+              cancelOperator,
+              order,
+            })
+          : null}
       </React.Fragment>
     );
   }
@@ -1414,13 +1411,14 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, storeHashCode, user, orderCancellationButtonVisible } = this.props;
+    const { t, history, match, order, storeHashCode, user, orderStatus, orderCancellationButtonVisible } = this.props;
     const date = new Date();
-    const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
+    const { orderId, tableId, deliveryInformation = [], storeInfo, cancelOperator, total } = order || {};
     const {
       isWebview,
       profile: { email },
     } = user || {};
+    const { name: storeName } = storeInfo || {};
     const type = Utils.getOrderTypeFromUrl();
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
@@ -1524,15 +1522,16 @@ export class ThankYou extends PureComponent {
             }
           >
             {!isWebview && this.renderDownloadBanner()}
-            {isDeliveryType ? (
-              this.renderDeliveryImageAndTimeLine()
-            ) : (
-              <img
-                className="ordering-thanks__image padding-normal"
-                src={isDineInType ? beepSuccessImage : beepPreOrderSuccessImage}
-                alt="Beep Success"
-              />
-            )}
+            <OrderStatusDescription
+              status={orderStatus}
+              shippingType={type}
+              storeName={storeName}
+              cancelOperator={cancelOperator || 'unknown'}
+              cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
+              isPreOrder={isPreOrder}
+            />
+
+            {isDeliveryType ? this.renderDeliveryTimeLine() : null}
             {isDeliveryType ? null : (
               <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">
                 {t('ThankYou')}!
