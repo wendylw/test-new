@@ -21,4 +21,6 @@ function DownloadBanner(props) {
   );
 }
 
+DownloadBanner.displayName = 'DownloadBanner';
+
 export default DownloadBanner;

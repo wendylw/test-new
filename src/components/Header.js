@@ -184,5 +184,6 @@ Header.defaultProps = {
   isDeliveryType: Utils.isDeliveryType(),
   isPickUpType: Utils.isPickUpType(),
 };
+Header.displayName = 'Header';
 export const HeaderComponent = Header;
 export default withDataAttributes(withTranslation()(Header));

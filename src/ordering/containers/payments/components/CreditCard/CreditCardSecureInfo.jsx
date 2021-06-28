@@ -42,5 +42,6 @@ function CreditCardSecureInfo(props) {
     </div>
   );
 }
+CreditCardSecureInfo.displayName = 'CreditCardSecureInfo';
 
 export default CreditCardSecureInfo;

@@ -76,6 +76,7 @@ const PaymentCardBrands = ({ country, brand: originalBrand, vendor = '' }) => {
     </div>
   );
 };
+PaymentCardBrands.displayName = 'PaymentCardBrands';
 /* eslint-enable jsx-a11y/alt-text */
 
 PaymentCardBrands.VENDOR_STRIPE = 'Stripe';

@@ -92,6 +92,8 @@ class Message extends React.Component {
   }
 }
 
+Message.displayName = 'Message';
+
 export default compose(
   withTranslation('Common'),
   connect(

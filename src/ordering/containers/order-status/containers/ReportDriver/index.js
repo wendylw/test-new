@@ -446,6 +446,7 @@ class ReportDriver extends Component {
     );
   }
 }
+ReportDriver.displayName = 'ReportDriver';
 
 export default compose(
   withTranslation(['ReportDriver']),

@@ -48,6 +48,8 @@ class DocumentFavicon extends React.Component {
   }
 }
 
+DocumentFavicon.displayName = 'DocumentFavicon';
+
 DocumentFavicon.propTypes = {
   icon: PropTypes.string,
 };

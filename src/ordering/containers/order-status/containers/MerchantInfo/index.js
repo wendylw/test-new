@@ -113,6 +113,7 @@ export class MerchantInfo extends Component {
     );
   }
 }
+MerchantInfo.displayName = 'MerchantInfo';
 
 export default compose(
   withTranslation(['OrderingDelivery']),

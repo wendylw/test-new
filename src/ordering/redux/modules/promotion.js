@@ -241,8 +241,8 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.FETCH_CONSUMER_VOUCHER_LIST_SUCCESS:
       const vouchers = action.response;
       const voucherList = {
-        availablePromos: vouchers.filter(voucher => !voucher.expired),
-        unavailablePromos: vouchers.filter(voucher => voucher.expired),
+        availablePromos: vouchers.filter(voucher => !voucher.expired && !voucher.invalidForWeb),
+        unavailablePromos: vouchers.filter(voucher => voucher.expired || voucher.invalidForWeb),
         quantity: vouchers.length,
       };
 
@@ -253,8 +253,8 @@ const reducer = (state = initialState, action) => {
     case PROMOTION_TYPES.FETCH_PROMO_INFO_SUCCESS:
       const promo = action.response;
       const foundPromo = {
-        availablePromos: promo.filter(voucher => !voucher.expired),
-        unavailablePromos: promo.filter(voucher => voucher.expired),
+        availablePromos: promo.filter(voucher => !voucher.expired && !voucher.invalidForWeb),
+        unavailablePromos: promo.filter(voucher => voucher.expired || voucher.invalidForWeb),
         quantity: promo.length,
       };
 

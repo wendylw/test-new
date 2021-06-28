@@ -57,4 +57,6 @@ SwitchButton.defaultProps = {
   type: 'radio',
 };
 
+SwitchButton.displayName = 'SwitchButton';
+
 export default withDataAttributes(SwitchButton);

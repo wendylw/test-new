@@ -120,6 +120,7 @@ class PromoList extends Component {
     return this.renderNotSearchMode();
   }
 }
+PromoList.displayName = 'PromoList';
 
 export default compose(
   withTranslation(['OrderingPromotion']),

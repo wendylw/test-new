@@ -10,5 +10,6 @@ class NotFound extends React.Component {
     return null;
   }
 }
+NotFound.displayName = 'NotFound';
 
 export default NotFound;
