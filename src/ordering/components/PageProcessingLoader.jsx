@@ -7,7 +7,7 @@ function PageProcessingLoader({ loaderText }) {
     <div className="page-loader flex flex-middle flex-center">
       <div className="prompt-loader padding-small border-radius-large text-center flex flex-middle flex-center">
         <div className="prompt-loader__content">
-          <i className="circle-loader margin-smaller"></i>
+          <i className="circle-loader margin-smaller" />
           {loaderText ? (
             <span className="prompt-loader__text margin-top-bottom-smaller text-size-smaller">{loaderText}</span>
           ) : null}
@@ -21,6 +21,8 @@ PageProcessingLoader.propTypes = {
   loaderText: PropTypes.string,
 };
 
-PageProcessingLoader.defaultProps = {};
+PageProcessingLoader.defaultProps = {
+  loaderText: null,
+};
 
 export default PageProcessingLoader;
