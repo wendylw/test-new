@@ -81,6 +81,7 @@ OrderStatusDescription.propTypes = {
   cancelOperator: PropTypes.string,
   cancelAmountEl: PropTypes.element,
   isPreOrder: PropTypes.bool,
+  inApp: PropTypes.bool,
 };
 
 OrderStatusDescription.defaultProps = {
@@ -90,6 +91,7 @@ OrderStatusDescription.defaultProps = {
   cancelOperator: null,
   cancelAmountEl: <span />,
   isPreOrder: false,
+  inApp: false,
 };
 
 export default compose(withTranslation('OrderingThankYou'))(OrderStatusDescription);

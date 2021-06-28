@@ -63,7 +63,7 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
 
           return (
             <li className={itemClassList.join(' ')} key={`beep-logistics-${step}-status`}>
-              <i className="logistics-processing__icon"></i>
+              <i className="logistics-processing__icon" />
               <h4 className={titleClassList.join(' ')}>
                 {currentStepIndex <= index
                   ? t(LOGISTIC_PROCESSING_MAPPING[step].activeTitleKey)
@@ -84,8 +84,14 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
   );
 }
 
-LogisticsProcessing.propTypes = {};
+LogisticsProcessing.propTypes = {
+  useStorehubLogistics: PropTypes.bool,
+  orderStatus: PropTypes.string,
+};
 
-LogisticsProcessing.defaultProps = {};
+LogisticsProcessing.defaultProps = {
+  useStorehubLogistics: false,
+  orderStatus: null,
+};
 
 export default compose(withTranslation('OrderingThankYou'))(LogisticsProcessing);
