@@ -195,6 +195,7 @@ class PageLogin extends React.Component {
     );
   }
 }
+PageLogin.displayName = 'PageLogin';
 
 PageLogin.propTypes = {
   className: PropTypes.string,

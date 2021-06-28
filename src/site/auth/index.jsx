@@ -9,5 +9,6 @@ const Auth = () => {
     </div>
   );
 };
+Auth.displayName = 'Auth';
 
 export default Auth;

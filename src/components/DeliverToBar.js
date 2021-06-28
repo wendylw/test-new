@@ -72,6 +72,8 @@ class DeliverToBar extends Component {
   }
 }
 
+DeliverToBar.displayName = 'DeliverToBar';
+
 DeliverToBar.propTypes = {
   deliverToBarRef: PropTypes.any,
   className: PropTypes.string,

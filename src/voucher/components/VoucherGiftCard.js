@@ -27,5 +27,6 @@ class VoucherGiftCard extends Component {
     );
   }
 }
+VoucherGiftCard.displayName = 'VoucherGiftCard';
 
 export default VoucherGiftCard;

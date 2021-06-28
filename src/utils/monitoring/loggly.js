@@ -1,9 +1,14 @@
 import tids from './tracing-id';
 import _isPlainObject from 'lodash/isPlainObject';
 import businessName from '../business-name';
+import Utils from '../utils';
 const { REACT_APP_LOGGLY_SERVICE_URL, REACT_APP_LOGGLY_TOKEN, REACT_APP_LOGGLY_TAG } = process.env;
 
 const IS_DEV_ENV = process.env.NODE_ENV === 'development';
+
+const getAppPlatform = () => {
+  return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
+};
 
 const send = async (data, tags = '') => {
   if (!REACT_APP_LOGGLY_SERVICE_URL || !REACT_APP_LOGGLY_TOKEN || !REACT_APP_LOGGLY_TAG) {
@@ -45,6 +50,7 @@ const track = async (name, data, meta = {}) => {
       business: businessName || 'beepit.com', // fixme: there's some problem with the domain starts with 'scan'
       action: name,
       path: window.location.pathname,
+      app_plt: getAppPlatform(),
       data,
     };
     // todo: business name, page url, user agent, env, client timestamp, ...

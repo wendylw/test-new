@@ -31,5 +31,6 @@ class MessageModal extends Component {
     );
   }
 }
+MessageModal.displayName = 'MessageModal';
 
 export default withTranslation()(MessageModal);

@@ -114,6 +114,7 @@ class PromotionsBar extends PureComponent {
     );
   }
 }
+PromotionsBar.displayName = 'PromotionsBar';
 
 PromotionsBar.propTypes = {
   promotionRef: PropTypes.oneOfType([

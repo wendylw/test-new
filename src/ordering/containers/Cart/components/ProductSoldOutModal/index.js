@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import '../../../../components/MessageModal/MessageModal.scss';
 
-export class ProductSoldOuteModal extends PureComponent {
+export class ProductSoldOutModal extends PureComponent {
   render() {
     const { show, t, editHandler } = this.props;
 
@@ -29,12 +29,14 @@ export class ProductSoldOuteModal extends PureComponent {
   }
 }
 
-ProductSoldOuteModal.propTypes = {
+ProductSoldOutModal.displayName = 'ProductSoldOutModal';
+
+ProductSoldOutModal.propTypes = {
   show: PropTypes.bool,
 };
 
-ProductSoldOuteModal.defaultProps = {
+ProductSoldOutModal.defaultProps = {
   show: true,
 };
 
-export default compose(withTranslation('OrderingCart'))(ProductSoldOuteModal);
+export default compose(withTranslation('OrderingCart'))(ProductSoldOutModal);

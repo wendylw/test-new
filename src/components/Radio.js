@@ -47,4 +47,6 @@ Radio.defaultProps = {
   disabled: false,
 };
 
+Radio.displayName = 'Radio';
+
 export default withDataAttributes(Radio);

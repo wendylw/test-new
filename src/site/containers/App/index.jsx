@@ -34,6 +34,7 @@ class SiteApp extends React.Component {
     );
   }
 }
+SiteApp.displayName = 'SiteApp';
 
 export default compose(
   connect(

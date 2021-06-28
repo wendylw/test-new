@@ -291,7 +291,7 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:40024Title',
     desc: 'ApiError:40024Description',
     redirectUrl: '',
-    buttonText: 'Common:Continue',
+    buttonText: 'Common:Dismiss',
     showModal: true,
   },
   40025: {
@@ -522,6 +522,9 @@ const PROMOTION_ERROR_CODES = {
   },
   60009: {
     desc: '60009VoucherHasBeenUsed',
+  },
+  60010: {
+    desc: '60010VoucherNotMatchSource',
   },
 };
 

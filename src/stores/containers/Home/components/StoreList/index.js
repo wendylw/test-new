@@ -39,6 +39,7 @@ class StoreList extends Component {
     );
   }
 }
+StoreList.displayName = 'StoreList';
 
 StoreList.propTypes = {
   storeList: PropTypes.array,

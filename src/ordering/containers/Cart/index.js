@@ -552,6 +552,9 @@ class Cart extends Component {
     );
   }
 }
+
+Cart.displayName = 'Cart';
+
 /* TODO: backend data */
 export default compose(
   withTranslation(['OrderingCart', 'OrderingPromotion']),

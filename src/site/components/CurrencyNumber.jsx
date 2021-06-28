@@ -20,6 +20,7 @@ class CurrencyNumber extends React.Component {
     );
   }
 }
+CurrencyNumber.displayName = 'SiteCurrencyNumber';
 
 CurrencyNumber.propTypes = {
   className: PropTypes.string,

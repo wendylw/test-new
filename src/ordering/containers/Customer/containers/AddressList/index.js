@@ -167,6 +167,7 @@ class AddressList extends Component {
     );
   }
 }
+AddressList.displayName = 'AddressList';
 
 export default compose(
   withTranslation(),

@@ -444,6 +444,7 @@ class Customer extends Component {
     );
   }
 }
+Customer.displayName = 'Customer';
 
 export default compose(
   withTranslation(['OrderingCustomer']),
