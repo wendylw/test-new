@@ -68,12 +68,14 @@ function SelfPickup({ t, processing, updatableToSelfPickupStatus, onClickSelfPic
 
 SelfPickup.propTypes = {
   processing: PropTypes.bool,
+  updatableToSelfPickupStatus: PropTypes.bool,
   onClickSelfPickupButton: PropTypes.func,
   onChangeToSelfPickup: PropTypes.func,
 };
 
 SelfPickup.defaultProps = {
   processing: false,
+  updatableToSelfPickupStatus: false,
   onClickSelfPickupButton: () => {},
   onChangeToSelfPickup: () => {},
 };

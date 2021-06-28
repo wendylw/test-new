@@ -1,7 +1,6 @@
-import Constants from '../../../../utils/constants';
-
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { get, post, put } from '../../../../utils/api/api-fetch';
+import { get, post } from '../../../../utils/api/api-fetch';
+import Constants from '../../../../utils/constants';
 import { API_INFO } from './api-info';
 
 const { DELIVERY_METHOD } = Constants;
@@ -20,6 +19,6 @@ export const loadOrder = createAsyncThunk('ordering/orderStatus/common/fetchOrde
   return result;
 });
 
-export const loadOrderStatus = createAsyncThunk('ordering/orderStatus/common/fetchOrderStatus', async orderId => {
-  return get(API_INFO.getOrderStatus(orderId).url);
-});
+export const loadOrderStatus = createAsyncThunk('ordering/orderStatus/common/fetchOrderStatus', async orderId =>
+  get(API_INFO.getOrderStatus(orderId).url)
+);
