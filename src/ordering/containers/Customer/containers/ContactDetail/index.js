@@ -116,6 +116,7 @@ class ContactDetail extends Component {
     );
   }
 }
+ContactDetail.displayName = 'ContactDetail';
 
 export default compose(
   withTranslation(),

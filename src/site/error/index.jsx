@@ -81,5 +81,6 @@ class Error extends Component {
     );
   }
 }
+Error.displayName = 'SiteError';
 
 export default withTranslation(['Scanner'])(Error);

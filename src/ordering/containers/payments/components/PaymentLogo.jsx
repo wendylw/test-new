@@ -21,5 +21,6 @@ const imageMap = {
 const PaymentLogo = ({ logo, alt }) => (
   <img className="ordering-payment__image" src={_get(imageMap, logo, null)} alt={alt} />
 );
+PaymentLogo.displayName = 'PaymentLogo';
 
 export default PaymentLogo;

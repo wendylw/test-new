@@ -112,6 +112,7 @@ export class ScrollObservable extends React.Component {
 ScrollObservable.protoTypes = {
   targetId: PropTypes.string,
 };
+ScrollObservable.displayName = 'ScrollObservable';
 
 export class ScrollObserver extends React.Component {
   state = {
@@ -205,3 +206,5 @@ ScrollObserver.defaultProps = {
   containerId: '',
   targetIdPrefix: '',
 };
+
+ScrollObserver.displayName = 'ScrollObserver';

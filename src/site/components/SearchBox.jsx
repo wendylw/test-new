@@ -31,5 +31,6 @@ class SearchBox extends React.Component {
     );
   }
 }
+SearchBox.displayName = 'SearchBox';
 
 export default withTranslation()(SearchBox);

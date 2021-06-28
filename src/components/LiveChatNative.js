@@ -46,5 +46,6 @@ class LiveChatNative extends Component {
     );
   }
 }
+LiveChatNative.displayName = 'LiveChatNative';
 
 export default withTranslation('Common')(LiveChatNative);

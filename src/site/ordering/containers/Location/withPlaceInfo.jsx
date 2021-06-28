@@ -17,7 +17,7 @@ export default (source = {}, alwaysUpdate = false) => InnerComponent => {
     fromIp: false,
     ...source,
   };
-  class withPlaceInfo extends React.Component {
+  class WithPlaceInfo extends React.Component {
     state = {
       placeInfoUpdated: false,
       loadingPlaceInfo: false,
@@ -65,8 +65,9 @@ export default (source = {}, alwaysUpdate = false) => InnerComponent => {
       );
     }
   }
+  WithPlaceInfo.displayName = 'WithPlaceInfo';
   return connect(
     state => ({ currentPlaceId: state.app.currentPlaceId }),
     dispatch => bindActionCreators({ setCurrentPlaceInfo: appActionCreators.setCurrentPlaceInfo }, dispatch)
-  )(withPlaceInfo);
+  )(WithPlaceInfo);
 };

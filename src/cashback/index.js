@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import { Provider } from "react-redux";
-import App from "./containers/App";
-import store from "./redux/store";
+import React, { Component } from 'react';
+import { Provider } from 'react-redux';
+import App from './containers/App';
+import store from './redux/store';
 
-class index extends Component {
+class Index extends Component {
   render() {
     return (
       <Provider store={store}>
@@ -13,4 +13,6 @@ class index extends Component {
   }
 }
 
-export default index;
+Index.displayName = 'CashbackIndex';
+
+export default Index;

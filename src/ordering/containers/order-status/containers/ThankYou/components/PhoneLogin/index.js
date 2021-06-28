@@ -249,6 +249,7 @@ class PhoneLogin extends React.Component {
     );
   }
 }
+PhoneLogin.displayName = 'PhoneLogin';
 
 export default compose(
   withTranslation(),

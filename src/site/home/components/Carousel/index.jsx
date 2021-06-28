@@ -202,5 +202,6 @@ class Carousel extends Component {
     );
   }
 }
+Carousel.displayName = 'Carousel';
 
 export default withTranslation(['SiteHome'])(withRouter(Carousel));

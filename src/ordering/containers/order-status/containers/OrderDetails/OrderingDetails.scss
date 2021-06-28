@@ -59,6 +59,15 @@
       background-color: $gray-5;
     }
   }
+
+  &__report-issue-button,
+  &__reorder-button {
+    color: $main-color;
+  }
+
+  &__icon-next svg {
+    fill: $gray-0;
+  }
 }
 
 @media (min-width: 420px) {

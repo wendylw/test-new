@@ -92,5 +92,6 @@ export class AlcoholModal extends PureComponent {
     }
   }
 }
+AlcoholModal.displayName = 'AlcoholModal';
 
 export default compose(withTranslation('OrderingHome'))(AlcoholModal);

@@ -100,15 +100,9 @@
   "DeliveryDetails": "Delivery Details",
   "PickUpDetails": "Pickup Details",
   "Name": "Name",
-  "AddressName": "Address Name",
   "MobileNumber": "Mobile Number",
-  "AddAddressPlaceholder": "Add in your address*",
   "AddDeliveryTimePlaceholder": "Add in your delivery time",
   "PickUpAtPlaceholder": "Add in your pick up time",
-  "AddressDetailsPlaceholder": "House/floor/unit no.",
-  "AddNoteToDriverPlaceholder": "Note to driver",
-  "AddNoteToDriverOrMerchantPlaceholderExample": "e.g. meet at lobby (optional)",
-  "AddAddressDetailsPlaceholder": "House/floor/unit no.",
   "DeliveryFee": "Delivery Fee",
   "FreeDeliveryPrompt": "Free Delivery with <1></1> & above",
   "SearchRestaurantPlaceholder": "Search for restaurant, dishes, cuisines",
@@ -173,7 +167,6 @@
   "CompleteProfileTip": "Complete your profile to get updated on relevant offers & promotions by our partner merchants!",
   "DeliveryTo": "Delivery To",
   "AddNewAddress": "Add new address",
-  "AddAddress": "Add Address",
   "SavedAddress": "Saved Address",
   "OutOfRange": "OUT OF RANGE",
   "ContactDetails": "Contact Details",
@@ -198,5 +191,6 @@
   "NeedHelp": "Need Help",
   "CommonErrorMessage": "Whoops, this page isn't available",
   "ErrorId": "Error ID: {{ id }}",
-  "LowStockProductQuantity": "only {{quantityOnHand}} left"
+  "LowStockProductQuantity": "only {{quantityOnHand}} left",
+  "EmailAddress": "Email Address (optional)"
 }

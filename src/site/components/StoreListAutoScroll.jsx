@@ -60,6 +60,7 @@ class StoreListAutoScroll extends React.Component {
     return <React.Fragment>{this.props.children}</React.Fragment>;
   }
 }
+StoreListAutoScroll.displayName = 'StoreListAutoScroll';
 
 StoreListAutoScroll.propTypes = {
   getScrollParent: PropTypes.func.isRequired,

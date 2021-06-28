@@ -8,6 +8,7 @@ export const IconPending = props => (
     </svg>
   </i>
 );
+IconPending.displayName = 'IconPending';
 
 export const IconEarned = props => (
   <i {...props}>
@@ -17,6 +18,7 @@ export const IconEarned = props => (
     </svg>
   </i>
 );
+IconEarned.displayName = 'IconEarned';
 
 export const IconChecked = props => (
   <i {...props}>
@@ -26,6 +28,7 @@ export const IconChecked = props => (
     </svg>
   </i>
 );
+IconChecked.displayName = 'IconChecked';
 
 export const IconDone = props => (
   <i {...props}>
@@ -35,6 +38,7 @@ export const IconDone = props => (
     </svg>
   </i>
 );
+IconDone.displayName = 'IconDone';
 
 export const IconTicket = props => (
   <i {...props}>
@@ -44,6 +48,7 @@ export const IconTicket = props => (
     </svg>
   </i>
 );
+IconTicket.displayName = 'IconTicket';
 
 export const IconCart = props => (
   <i {...props}>
@@ -54,6 +59,7 @@ export const IconCart = props => (
     </svg>
   </i>
 );
+IconCart.displayName = 'IconCart';
 
 export const IconLocation = props => (
   <i {...props}>
@@ -63,6 +69,7 @@ export const IconLocation = props => (
     </svg>
   </i>
 );
+IconLocation.displayName = 'IconLocation';
 
 export const IconClose = props => (
   <i {...props}>
@@ -72,6 +79,7 @@ export const IconClose = props => (
     </svg>
   </i>
 );
+IconClose.displayName = 'IconClose';
 
 export const IconLeftArrow = props => (
   <i {...props}>
@@ -81,6 +89,7 @@ export const IconLeftArrow = props => (
     </svg>
   </i>
 );
+IconLeftArrow.displayName = 'IconLeftArrow';
 
 export const IconKeyArrowDown = props => (
   <i {...props}>
@@ -90,6 +99,7 @@ export const IconKeyArrowDown = props => (
     </svg>
   </i>
 );
+IconKeyArrowDown.displayName = 'IconKeyArrowDown';
 
 export const IconNext = props => (
   <i {...props}>
@@ -99,6 +109,7 @@ export const IconNext = props => (
     </svg>
   </i>
 );
+IconNext.displayName = 'IconNext';
 
 export const IconDelete = props => (
   <i {...props}>
@@ -109,6 +120,7 @@ export const IconDelete = props => (
     </svg>
   </i>
 );
+IconDelete.displayName = 'IconDelete';
 
 export const IconInfo = props => (
   <i {...props}>
@@ -118,6 +130,7 @@ export const IconInfo = props => (
     </svg>
   </i>
 );
+IconInfo.displayName = 'IconInfo';
 
 export const IconPin = props => (
   <i {...props}>
@@ -127,6 +140,7 @@ export const IconPin = props => (
     </svg>
   </i>
 );
+IconPin.displayName = 'IconPin';
 
 export const IconEdit = props => (
   <i {...props}>
@@ -136,6 +150,7 @@ export const IconEdit = props => (
     </svg>
   </i>
 );
+IconEdit.displayName = 'IconEdit';
 
 export const IconInfoOutline = props => (
   <i {...props}>
@@ -145,6 +160,7 @@ export const IconInfoOutline = props => (
     </svg>
   </i>
 );
+IconInfoOutline.displayName = 'IconInfoOutline';
 
 export const IconMotorcycle = props => (
   <i {...props}>
@@ -154,6 +170,7 @@ export const IconMotorcycle = props => (
     </svg>
   </i>
 );
+IconMotorcycle.displayName = 'IconMotorcycle';
 
 export const IconAccessTime = props => (
   <i {...props}>
@@ -163,6 +180,7 @@ export const IconAccessTime = props => (
     </svg>
   </i>
 );
+IconAccessTime.displayName = 'IconAccessTime';
 
 export const IconSearch = props => (
   <i {...props}>
@@ -172,6 +190,7 @@ export const IconSearch = props => (
     </svg>
   </i>
 );
+IconSearch.displayName = 'IconSearch';
 
 export const IconGpsFixed = props => (
   <i {...props}>
@@ -181,6 +200,7 @@ export const IconGpsFixed = props => (
     </svg>
   </i>
 );
+IconGpsFixed.displayName = 'IconGpsFixed';
 
 export const IconBookmarks = props => (
   <i {...props}>
@@ -190,6 +210,7 @@ export const IconBookmarks = props => (
     </svg>
   </i>
 );
+IconBookmarks.displayName = 'IconBookmarks';
 
 export const IconHome = props => (
   <i {...props}>
@@ -199,6 +220,7 @@ export const IconHome = props => (
     </svg>
   </i>
 );
+IconHome.displayName = 'IconHome';
 
 export const IconCropFree = props => (
   <i {...props}>
@@ -208,6 +230,7 @@ export const IconCropFree = props => (
     </svg>
   </i>
 );
+IconCropFree.displayName = 'IconCropFree';
 
 export const IconAccountCircle = props => (
   <i {...props}>
@@ -217,6 +240,7 @@ export const IconAccountCircle = props => (
     </svg>
   </i>
 );
+IconAccountCircle.displayName = 'IconAccountCircle';
 
 export const IconLabelOutline = props => (
   <i {...props}>
@@ -226,6 +250,7 @@ export const IconLabelOutline = props => (
     </svg>
   </i>
 );
+IconLabelOutline.displayName = 'IconLabelOutline';
 
 export const IconNotificationActive = props => (
   <i {...props}>
@@ -235,6 +260,7 @@ export const IconNotificationActive = props => (
     </svg>
   </i>
 );
+IconNotificationActive.displayName = 'IconNotificationActive';
 
 export const IconAttachMoney = props => (
   <i {...props}>
@@ -244,6 +270,7 @@ export const IconAttachMoney = props => (
     </svg>
   </i>
 );
+IconAttachMoney.displayName = 'IconAttachMoney';
 
 export const IconLocalOffer = props => (
   <i {...props}>
@@ -253,6 +280,7 @@ export const IconLocalOffer = props => (
     </svg>
   </i>
 );
+IconLocalOffer.displayName = 'IconLocalOffer';
 
 export const IconBookmark = props => (
   <i {...props}>
@@ -262,6 +290,7 @@ export const IconBookmark = props => (
     </svg>
   </i>
 );
+IconBookmark.displayName = 'IconBookmark';
 
 export const IconWallet = props => (
   <i {...props}>
@@ -271,6 +300,7 @@ export const IconWallet = props => (
     </svg>
   </i>
 );
+IconWallet.displayName = 'IconWallet';
 
 export const IconScanner = props => (
   <i {...props}>
@@ -279,6 +309,7 @@ export const IconScanner = props => (
     </svg>
   </i>
 );
+IconScanner.displayName = 'IconScanner';
 
 export const IconInsertPhoto = props => (
   <i {...props}>
@@ -288,6 +319,7 @@ export const IconInsertPhoto = props => (
     </svg>
   </i>
 );
+IconInsertPhoto.displayName = 'IconInsertPhoto';
 
 export const IconAddAddress = props => (
   <i {...props}>
@@ -318,6 +350,7 @@ export const IconAddAddress = props => (
     </svg>
   </i>
 );
+IconAddAddress.displayName = 'IconAddAddress';
 
 export const IconVoucherTicket = props => (
   <i {...props}>
@@ -335,6 +368,7 @@ export const IconVoucherTicket = props => (
     </svg>
   </i>
 );
+IconVoucherTicket.displayName = 'IconVoucherTicket';
 
 export const IconWrappedClose = props => (
   <i {...props}>
@@ -344,6 +378,7 @@ export const IconWrappedClose = props => (
     </svg>
   </i>
 );
+IconWrappedClose.displayName = 'IconWrappedClose';
 
 export const IconStar = props => (
   <i {...props}>
@@ -353,3 +388,4 @@ export const IconStar = props => (
     </svg>
   </i>
 );
+IconStar.displayName = 'IconStar';
