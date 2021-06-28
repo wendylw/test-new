@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../utils/constants';
 
-const { PROMO_TYPE, DELIVERY_METHOD } = Constants;
+const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 
 export const getOrder = state => state.orderStatus.common.order;
 
@@ -81,3 +81,14 @@ export const getServiceCharge = createSelector(getOrderItems, items => {
   const serviceChargeItem = items.find(item => item.itemType === 'ServiceCharge');
   return _get(serviceChargeItem, 'displayPrice', 0);
 });
+
+export const getIsShowReorderButton = createSelector(
+  getOrderStatus,
+  getOrderShippingType,
+  (orderStatus, shippingType) => {
+    return (
+      (shippingType === DELIVERY_METHOD.DELIVERY && orderStatus === ORDER_STATUS.DELIVERED) ||
+      (shippingType === DELIVERY_METHOD.PICKUP && orderStatus === ORDER_STATUS.PICKED_UP)
+    );
+  }
+);
