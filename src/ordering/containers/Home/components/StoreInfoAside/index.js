@@ -135,5 +135,6 @@ class StoreInfoAside extends Component {
     );
   }
 }
+StoreInfoAside.displayName = 'StoreInfoAside';
 
 export default withTranslation()(StoreInfoAside);

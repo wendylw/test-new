@@ -268,6 +268,7 @@ class App extends Component {
     );
   }
 }
+App.displayName = 'StoresApp';
 
 export default connect(
   state => ({

@@ -144,6 +144,7 @@ export class ReceiptDetail extends Component {
     );
   }
 }
+ReceiptDetail.displayName = 'ReceiptDetail';
 
 export default compose(
   withTranslation(),

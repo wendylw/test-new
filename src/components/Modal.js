@@ -63,14 +63,18 @@ class Modal extends Component {
     );
   }
 }
+Modal.displayName = 'Modal';
 
 Modal.Header = ({ children, className = '' }) => (
   <header className={`modal__header border__bottom-divider ${className}`}>{children}</header>
 );
+Modal.Header.displayName = 'ModalHeader';
 
 Modal.Body = ({ children, className = '' }) => <div className={`modal__body ${className}`}>{children}</div>;
+Modal.Body.displayName = 'ModalBody';
 
 Modal.Footer = ({ children, className = '' }) => <footer className={className}>{children}</footer>;
+Modal.Footer.displayName = 'ModalFooter';
 
 Modal.propTypes = {
   show: PropTypes.bool,

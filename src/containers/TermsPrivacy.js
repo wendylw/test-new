@@ -59,5 +59,6 @@ export class TermsPrivacy extends Component {
     );
   }
 }
+TermsPrivacy.displayName = 'TermsPrivacy';
 
 export default withTranslation()(TermsPrivacy);

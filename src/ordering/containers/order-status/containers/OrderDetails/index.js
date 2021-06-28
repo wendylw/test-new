@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import Header from '../../../../../components/Header';
-import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
 import LiveChatNative from '../../../../../components/LiveChatNative';
 import Tag from '../../../../../components/Tag';
@@ -18,6 +17,7 @@ import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../
 import { loadOrder } from '../../redux/thunks';
 import {
   getIsUseStorehubLogistics,
+  getIsShowReorderButton,
   getOrder,
   getOrderStatus,
   getPromotion,
@@ -25,6 +25,7 @@ import {
   getServiceCharge,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
+import { IconNext } from '../../../../../components/Icons';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
@@ -101,6 +102,15 @@ export class OrderDetails extends Component {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
+  handleReorder = () => {
+    const { order } = this.props;
+    const { shippingType } = order || '';
+    this.props.history.replace({
+      pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+      search: `type=${shippingType}`,
     });
   };
 
@@ -266,6 +276,7 @@ export class OrderDetails extends Component {
       history,
       t,
       isUseStorehubLogistics,
+      isShowReorderButton,
       serviceCharge,
       user,
       businessInfo,
@@ -400,16 +411,30 @@ export class OrderDetails extends Component {
               </li>
             </ul>
           </div>
+
           {isUseStorehubLogistics ? (
             <div className="card margin-normal">
               <button
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
-                className="button button__block flex flex-middle flex-space-between padding-small"
+                className="ordering-details__report-issue-button button button__block flex flex-middle flex-space-between padding-small"
                 data-heap-name="ordering.contact-details.report-driver-btn"
               >
-                <span className="text-size-big text-weight-bolder padding-left-right-small">{t('ReportIssue')}</span>
-                <IconNext className="icon icon__small" />
+                <span className="text-left text-size-big flex__fluid-content">{t('ReportIssue')}</span>
+                <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
+              </button>
+            </div>
+          ) : null}
+
+          {isShowReorderButton ? (
+            <div className="card margin-normal">
+              <button
+                onClick={this.handleReorder}
+                className="ordering-details__reorder-button button button__block flex flex-middle flex-space-between padding-small"
+              >
+                <span className="text-left text-size-big flex__fluid-content">{t('Reorder')}</span>
+
+                <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
               </button>
             </div>
           ) : null}
@@ -418,6 +443,7 @@ export class OrderDetails extends Component {
     );
   }
 }
+OrderDetails.displayName = 'OrderDetails';
 
 export default compose(
   withTranslation(['OrderingDelivery']),
@@ -430,6 +456,7 @@ export default compose(
       orderStatus: getOrderStatus(state),
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),

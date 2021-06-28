@@ -30,5 +30,6 @@ function OrderDelayMessage({ orderDelayReason }) {
     </div>
   );
 }
+OrderDelayMessage.displayName = 'OrderDelayMessage';
 
 export default OrderDelayMessage;

@@ -117,5 +117,6 @@ PhoneViewContainer.defaultProps = {
   updateCountry: () => {},
   onSubmit: () => {},
 };
+PhoneViewContainer.displayName = 'PhoneViewContainer';
 
 export default withTranslation()(PhoneViewContainer);

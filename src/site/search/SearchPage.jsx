@@ -244,6 +244,7 @@ class SearchPage extends React.Component {
     );
   }
 }
+SearchPage.displayName = 'SearchPage';
 
 export default compose(
   withPlaceInfo(),

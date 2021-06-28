@@ -42,6 +42,8 @@ export class TermsAndPrivacy extends React.Component {
   }
 }
 
+TermsAndPrivacy.displayName = 'TermsAndPrivacy';
+
 TermsAndPrivacy.propTypes = {
   buttonLinkClassName: PropTypes.string,
   baseName: PropTypes.string,

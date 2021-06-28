@@ -47,7 +47,7 @@ export class Error extends Component {
             data-heap-name="common.error-page.back-btn"
             onClick={() => {
               Utils.removeSessionVariable('errorMessage');
-              return (window.location.href = config.qrScanPageUrl);
+              return (window.location.href = config.beepitComUrl);
             }}
           >
             {t('BackToHome')}
@@ -57,6 +57,7 @@ export class Error extends Component {
     );
   }
 }
+Error.displayName = 'Error';
 
 export default compose(
   withTranslation(),
