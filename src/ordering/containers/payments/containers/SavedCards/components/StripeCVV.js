@@ -10,8 +10,34 @@ const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripeMYPromise = loadStripe(MY_STRIPE_KEY);
-const stripeSGPromise = loadStripe(SG_STRIPE_KEY);
+const stripeMYPromise = loadStripe(MY_STRIPE_KEY)
+  .then(stripe => {
+    window.newrelic?.addPageAction('common.stripe-load-success', {
+      country: 'MY',
+    });
+    return stripe;
+  })
+  .catch(err => {
+    window.newrelic?.addPageAction('common.stripe-load-failure', {
+      error: err?.message,
+      country: 'MY',
+    });
+    throw err;
+  });
+const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
+  .then(stripe => {
+    window.newrelic?.addPageAction('common.stripe-load-success', {
+      country: 'SG',
+    });
+    return stripe;
+  })
+  .catch(err => {
+    window.newrelic?.addPageAction('common.stripe-load-failure', {
+      error: err?.message,
+      country: 'SG',
+    });
+    throw err;
+  });
 
 const CVVInput = forwardRef((props, ref) => {
   const { onReady, onChange } = props;
@@ -91,6 +117,8 @@ const CVVInput = forwardRef((props, ref) => {
   );
 });
 
+CVVInput.displayName = 'CVVInput';
+
 const StripeCVV = forwardRef((props, ref) => {
   const { merchantCountry } = props;
 
@@ -100,5 +128,6 @@ const StripeCVV = forwardRef((props, ref) => {
     </Elements>
   );
 });
+StripeCVV.displayName = 'StripeCVV';
 
 export default StripeCVV;

@@ -32,5 +32,6 @@ const SiteRoute = () => {
     </Switch>
   );
 };
+SiteRoute.displayName = 'SiteRoute';
 
 export default withRouter(SiteRoute);

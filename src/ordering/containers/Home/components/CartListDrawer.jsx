@@ -310,6 +310,7 @@ class CartListDrawer extends Component {
     );
   }
 }
+CartListDrawer.displayName = 'CartListDrawer';
 
 CartListDrawer.propTypes = {
   show: PropTypes.bool,

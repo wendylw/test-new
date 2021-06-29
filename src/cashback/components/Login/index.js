@@ -147,6 +147,8 @@ Login.propTypes = {
 
 Login.defaultProps = {};
 
+Login.displayName = 'CashbackLogin';
+
 export default compose(
   withTranslation('Common'),
   connect(

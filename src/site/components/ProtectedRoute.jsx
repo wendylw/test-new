@@ -21,5 +21,6 @@ const ProtectedRoute = ({ children, ...props }) => {
     />
   );
 };
+ProtectedRoute.displayName = 'ProtectedRoute';
 
 export default ProtectedRoute;

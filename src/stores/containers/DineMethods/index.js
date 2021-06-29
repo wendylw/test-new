@@ -129,6 +129,7 @@ class DineMethods extends Component {
     );
   }
 }
+DineMethods.displayName = 'DineMethods';
 
 const DineMethodsContainer = props => {
   if (props.currentOrderMethod === DELIVERY_METHOD.DINE_IN) {
@@ -137,6 +138,7 @@ const DineMethodsContainer = props => {
 
   return <DineMethods {...props} />;
 };
+DineMethodsContainer.displayName = 'DineMethodsContainer';
 
 export default compose(
   withTranslation(),

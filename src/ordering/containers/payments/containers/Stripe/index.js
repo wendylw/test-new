@@ -32,8 +32,34 @@ import CheckoutForm from './CheckoutForm';
 const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '');
-const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '');
+const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '')
+  .then(stripe => {
+    window.newrelic?.addPageAction('common.stripe-load-success', {
+      country: 'MY',
+    });
+    return stripe;
+  })
+  .catch(err => {
+    window.newrelic?.addPageAction('common.stripe-load-failure', {
+      error: err?.message,
+      country: 'MY',
+    });
+    throw err;
+  });
+const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '')
+  .then(stripe => {
+    window.newrelic?.addPageAction('common.stripe-load-success', {
+      country: 'SG',
+    });
+    return stripe;
+  })
+  .catch(err => {
+    window.newrelic?.addPageAction('common.stripe-load-failure', {
+      error: err?.message,
+      country: 'SG',
+    });
+    throw err;
+  });
 
 // React Stripe.js reference: https://stripe.com/docs/stripe-js/react
 class Stripe extends Component {
@@ -113,6 +139,7 @@ class Stripe extends Component {
     );
   }
 }
+Stripe.displayName = 'Stripe';
 
 export default compose(
   withTranslation(['OrderingPayment']),

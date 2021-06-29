@@ -20,5 +20,6 @@ function AuthButton() {
     <p>You are not logged in.</p>
   );
 }
+AuthButton.displayName = 'AuthButton';
 
 export default AuthButton;

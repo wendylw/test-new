@@ -137,6 +137,8 @@ class DeliveryMethods extends Component {
   }
 }
 
+DeliveryMethods.displayName = 'DeliveryMethods';
+
 DeliveryMethods.propTypes = {
   store: PropTypes.object,
 };

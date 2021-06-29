@@ -88,6 +88,7 @@ class App extends Component {
     );
   }
 }
+App.displayName = 'VoucherApp';
 
 export default compose(
   withTranslation(),

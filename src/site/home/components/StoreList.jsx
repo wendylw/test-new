@@ -225,6 +225,8 @@ class StoreList extends Component {
   }
 }
 
+StoreList.displayName = 'StoreList';
+
 StoreList.propTypes = {
   stores: PropTypes.array.isRequired,
   hasMore: PropTypes.bool,

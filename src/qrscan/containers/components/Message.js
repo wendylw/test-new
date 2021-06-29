@@ -17,5 +17,6 @@ class Message extends Component {
     );
   }
 }
+Message.displayName = 'Message';
 
 export default withTranslation('Scanner')(Message);
