@@ -793,6 +793,7 @@ class ProductDetailDrawer extends Component {
     );
   }
 }
+ProductDetailDrawer.displayName = 'ProductDetailDrawer';
 
 ProductDetailDrawer.propTypes = {
   show: PropTypes.bool,

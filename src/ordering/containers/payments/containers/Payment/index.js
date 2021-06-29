@@ -248,6 +248,7 @@ class Payment extends Component {
     );
   }
 }
+Payment.displayName = 'Payment';
 
 export default compose(
   withTranslation(['OrderingPayment']),

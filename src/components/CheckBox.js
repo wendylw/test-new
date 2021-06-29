@@ -33,6 +33,8 @@ class CheckBox extends PureComponent {
   }
 }
 
+CheckBox.displayName = 'CheckBox';
+
 CheckBox.propTypes = {
   className: PropTypes.string,
   checked: PropTypes.bool,

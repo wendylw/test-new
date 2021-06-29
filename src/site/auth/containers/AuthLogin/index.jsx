@@ -21,5 +21,6 @@ const AuthLogin = () => {
     </div>
   );
 };
+AuthLogin.displayName = 'AuthLogin';
 
 export default AuthLogin;

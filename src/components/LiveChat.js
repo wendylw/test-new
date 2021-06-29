@@ -173,4 +173,6 @@ LiveChat.propTypes = {
   phone: PropTypes.string,
 };
 
+LiveChat.displayName = 'LiveChat';
+
 export default withTranslation('Common')(LiveChat);

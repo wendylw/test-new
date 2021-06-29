@@ -36,5 +36,6 @@ class Site extends Component {
     );
   }
 }
+Site.displayName = 'Site';
 
 export default withRouter(withTranslation()(Site));

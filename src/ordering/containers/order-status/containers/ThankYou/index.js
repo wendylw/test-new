@@ -1555,6 +1555,7 @@ export class ThankYou extends PureComponent {
     );
   }
 }
+ThankYou.displayName = 'OrderingThankyou';
 
 export default compose(
   withTranslation(['OrderingThankYou']),

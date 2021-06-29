@@ -143,6 +143,8 @@ export class Billing extends Component {
   }
 }
 
+Billing.displayName = 'Billing';
+
 Billing.propTypes = {
   billingRef: PropTypes.any,
   className: PropTypes.string,

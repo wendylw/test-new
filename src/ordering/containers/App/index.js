@@ -256,6 +256,7 @@ class App extends Component {
     );
   }
 }
+App.displayName = 'OrderingApp';
 
 export default compose(
   withTranslation(['ApiError', 'Common']),

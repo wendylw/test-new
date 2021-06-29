@@ -68,6 +68,7 @@ const StoreListItem = props => (
     )}
   </li>
 );
+StoreListItem.displayName = 'StoreListItem';
 
 class StoreList extends Component {
   constructor(props) {
@@ -228,6 +229,7 @@ class StoreList extends Component {
     );
   }
 }
+StoreList.displayName = 'StoreList';
 
 export default compose(
   withTranslation(),

@@ -24,6 +24,10 @@ const actions = {
 };
 
 class AddressDetail extends Component {
+  state = {
+    hasAnyChanges: false,
+  };
+
   getShippingType() {
     const { history } = this.props;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -45,6 +49,13 @@ class AddressDetail extends Component {
     const { address: savedAddress, coords: savedCoords, addressComponents: savedAddressComponents } =
       savedAddressInfo || {};
     const { address, coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const deliveryAddressUpdate = Boolean(Utils.getSessionVariable('deliveryAddressUpdate'));
+
+    Utils.removeSessionVariable('deliveryAddressUpdate');
+
+    this.setState({
+      hasAnyChanges: deliveryAddressUpdate,
+    });
 
     // if choose a new location, update the savedAddressInfo
     if (
@@ -103,6 +114,10 @@ class AddressDetail extends Component {
   };
 
   handleInputChange = e => {
+    this.setState({
+      hasAnyChanges: true,
+    });
+
     const inputValue = e.target.value;
     if (e.target.name === 'addressName') {
       this.props.customerActions.updateSavedAddressInfo({ name: inputValue });
@@ -111,6 +126,22 @@ class AddressDetail extends Component {
     } else if (e.target.name === 'deliveryComments') {
       this.props.customerActions.updateSavedAddressInfo({ comments: inputValue });
     }
+  };
+
+  handleAddressDetailClick = () => {
+    const { history, location } = this.props;
+    const { search } = location;
+
+    const callbackUrl = encodeURIComponent(
+      `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
+    );
+
+    CleverTap.pushEvent('Address details - click location row');
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
+      search: `${search}&callbackUrl=${callbackUrl}`,
+    });
   };
 
   createOrUpdateAddress = async () => {
@@ -161,7 +192,8 @@ class AddressDetail extends Component {
   };
 
   render() {
-    const { t, history, savedAddressInfo } = this.props;
+    const { hasAnyChanges } = this.state;
+    const { t, savedAddressInfo } = this.props;
     const { type, name, address, details, comments } = savedAddressInfo || {};
 
     return (
@@ -175,7 +207,7 @@ class AddressDetail extends Component {
           navFunc={this.handleClickBack.bind(this)}
         />
         <section
-          className="address-detail__container padding-left-right-normal"
+          className="address-detail__container"
           style={{
             top: `${Utils.mainTop({
               headerEls: [this.headerEl],
@@ -189,97 +221,103 @@ class AddressDetail extends Component {
               })}px`,
           }}
         >
-          <div className="padding-top-bottom-small">
-            <div className="ordering-customer__group form__group">
-              <input
-                className="ordering-customer__input form__input padding-left-right-normal text-size-big text-line-height-base"
-                data-heap-name="ordering.customer.delivery-address-name"
-                type="text"
-                maxLength="140"
-                placeholder={t('AddressName')}
-                value={name}
-                name="addressName"
-                onChange={this.handleInputChange}
-              />
+          <div className="margin-normal padding-top-bottom-smaller">
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('Name')}</span>
+                </div>
+                <input
+                  className="address-detail__input form__input text-size-big text-line-height-base"
+                  data-heap-name="ordering.customer.delivery-address-name"
+                  type="text"
+                  maxLength="140"
+                  value={name}
+                  name="addressName"
+                  placeholder={t('placeholderOfAddressName')}
+                  onChange={this.handleInputChange}
+                />
+              </div>
             </div>
-            <p className="text-opacity padding-small">{t('AddressDetailLabel')}</p>
           </div>
 
-          <div className="padding-top-bottom-small">
-            <div
-              className="form__group flex flex-middle flex-space-between"
-              data-heap-name="ordering.customer.delivery-address"
-              onClick={async () => {
-                const { search } = window.location;
-
-                const callbackUrl = encodeURIComponent(
-                  `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
-                );
-
-                CleverTap.pushEvent('Address details - click location row');
-
-                history.push({
-                  pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-                  search: `${search}&callbackUrl=${callbackUrl}`,
-                });
-              }}
+          <div className="margin-normal padding-top-bottom-smaller">
+            <button
+              className="address-detail__detail-button button button__block form__group address-detail__field padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between"
+              onClick={this.handleAddressDetailClick}
             >
-              <p className="padding-normal text-size-big text-line-height-base">
-                {address || t('AddAddressPlaceholder')}
-              </p>
-              <IconNext className="icon icon__normal flex__shrink-fixed" />
+              <div className="text-left flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('AddressDetails')}</span>
+                </div>
+                <div data-heap-name="ordering.customer.delivery-address">
+                  <p className="address-detail__detail-content text-size-big text-line-height-base">{address}</p>
+                </div>
+              </div>
+              <IconNext className="address-detail__icon-next icon icon__small icon__default flex__shrink-fixed" />
+            </button>
+          </div>
+
+          <div className="margin-normal padding-top-bottom-smaller">
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('UnitNumberAndFloor')}</span>
+                </div>
+                <input
+                  className="address-detail__input form__input text-size-big text-line-height-base"
+                  data-heap-name="ordering.customer.delivery-address-detail"
+                  type="text"
+                  maxLength="140"
+                  value={details}
+                  name="addressDetails"
+                  placeholder={t('placeholderOfAddressDetails')}
+                  onChange={this.handleInputChange}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="padding-top-bottom-small">
-            <div className="ordering-customer__group form__group">
-              <input
-                className="ordering-customer__input form__input padding-left-right-normal text-size-big text-line-height-base"
-                data-heap-name="ordering.customer.delivery-address-detail"
-                type="text"
-                maxLength="140"
-                placeholder={t('AddressDetailsPlaceholder')}
-                value={details}
-                name="addressDetails"
-                onChange={this.handleInputChange}
-              />
-            </div>
-          </div>
-
-          <div className="padding-top-bottom-small">
-            <div className="ordering-customer__group form__group">
-              <input
-                className="ordering-customer__input form__input padding-left-right-normal text-size-big"
-                data-heap-name="ordering.customer.delivery-note"
-                type="text"
-                maxLength="140"
-                value={comments}
-                name="deliveryComments"
-                onChange={this.handleInputChange}
-                placeholder={`${t('AddNoteToDriverPlaceholder')}: ${t('AddNoteToDriverOrMerchantPlaceholderExample')}`}
-              />
+          <div className="margin-normal padding-top-bottom-smaller">
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title">
+                  <span className="text-size-small text-top">{t('NoteToDriver')}</span>
+                </div>
+                <input
+                  className="address-detail__input form__input text-size-big"
+                  data-heap-name="ordering.customer.delivery-note"
+                  type="text"
+                  maxLength="140"
+                  value={comments}
+                  name="deliveryComments"
+                  placeholder={t('placeholderOfDeliveryComments')}
+                  onChange={this.handleInputChange}
+                />
+              </div>
             </div>
           </div>
         </section>
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
-            className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
-            disabled={!name || !details || !address}
+            className="address-detail__save-button button button__fill button__block padding-small text-weight-bolder text-uppercase"
+            disabled={!name || !details || !address || (type === actions.EDIT && !hasAnyChanges)}
             onClick={() => {
               CleverTap.pushEvent('Address details - click save changes');
               this.createOrUpdateAddress();
             }}
           >
-            {type === actions.EDIT ? t('SaveChanges') : t('AddAddress')}
+            {type === actions.EDIT ? t('SaveChanges') : t('Save')}
           </button>
         </footer>
       </div>
     );
   }
 }
+AddressDetail.displayName = 'AddressDetail';
 
 export default compose(
-  withTranslation(),
+  withTranslation(['OrderingCustomer']),
   connect(
     state => ({
       user: getUser(state),

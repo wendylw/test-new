@@ -28,7 +28,9 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
   let radiusNumber = radius;
   if ((locationCoords && typeof radiusNumber !== 'number') || (typeof radiusNumber === 'number' && !locationCoords)) {
     console.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
-    loggly.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
+    loggly.warn('geoUtils.getPlaceAutocompleteList', {
+      message: 'getPlaceAutocompleteList: location and radius must be provided at the same time.',
+    });
     locationCoords = undefined;
     radiusNumber = undefined;
   }
@@ -50,8 +52,20 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
       },
       (results, status) => {
         if (status === googleMaps.places.PlacesServiceStatus.OK) {
+          window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-success');
           resolve(results);
         } else {
+          window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-failure', {
+            error: status,
+          });
+          loggly.error('google-maps-api.getPlacePredictions-failure', {
+            error: status,
+            input: text,
+            location: locationCoords,
+            origin: originCoords,
+            radius: radiusNumber,
+            country,
+          });
           resolve([]);
         }
       }
@@ -103,7 +117,9 @@ export const standardizeGeoAddress = geoAddressComponent => {
 export const getDeviceCoordinates = option => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      loggly.warn('Your browser does not support location detection.');
+      loggly.warn('geoUtils.getDeviceCoordinates', {
+        message: 'Your browser does not support location detection.',
+      });
       reject('Your browser does not support location detection.');
       return;
     }
@@ -113,7 +129,7 @@ export const getDeviceCoordinates = option => {
       },
       error => {
         console.warn('Fail to detect location', error);
-        loggly.warn('Fail to detect location', { message: error?.message });
+        loggly.warn('geoUtils.getDeviceCoordinates', { message: `Fail to detect location, error: ${error?.message}` });
         reject(error);
       },
       option
@@ -144,8 +160,16 @@ export const getPlacesFromCoordinates = coords => {
   return new Promise((resolve, reject) => {
     geocoder.geocode({ location }, (result, status) => {
       if (status === googleMaps.GeocoderStatus.OK && result.length) {
+        window.newrelic?.addPageAction('google-maps-api.geocode-success');
         resolve(result);
       } else {
+        window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
+          error: status,
+        });
+        loggly.error('google-maps-api.geocode-failure', {
+          error: status,
+          location,
+        });
         reject(`Failed to get location from coordinates: ${status}`);
       }
     });
@@ -246,8 +270,16 @@ export const getPlaceInfoFromPlaceId = (placeId, options = {}) => {
           addressComponents: standardizeGeoAddress(place.address_components),
           placeId: place.place_id,
         };
+        window.newrelic?.addPageAction('google-maps-api.geocode-success');
         resolve(result);
       } else {
+        window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
+          error: status,
+        });
+        loggly.error('google-maps-api.geocode-failure', {
+          error: status,
+          placeId,
+        });
         reject(`Failed to get location from coordinates: ${status}`);
       }
     });
@@ -270,8 +302,17 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
       },
       (result, status) => {
         if (status === googleMaps.places.PlacesServiceStatus.OK) {
+          window.newrelic?.addPageAction('google-maps-api.placesGetDetails-success');
           resolve(result);
         } else {
+          window.newrelic?.addPageAction('google-maps-api.placesGetDetails-failure', {
+            error: status,
+          });
+          loggly.error('google-maps-api.placesGetDetails-failure', {
+            error: status,
+            fields,
+            placeId,
+          });
           console.error('Fail to get place detail:', status, placeId);
           throw new Error('Fail to get place detail');
         }
@@ -314,7 +355,20 @@ export const isDeviceGeolocationDenied = async () => {
 
 // dev to change the dev mode url, other wise you will see API 500 error
 export const fetchGeolocationByIp = () => {
-  return fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ').then(data => data.json());
+  return fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ')
+    .then(data => {
+      window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-success');
+      return data.json();
+    })
+    .catch(err => {
+      window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-failure', {
+        error: err?.message,
+      });
+      loggly.error('ip-api.fetchGeolocationByIp-failure', {
+        error: err?.message,
+      });
+      throw err;
+    });
 };
 
 export const getPositionInfoBySource = async (source, withCache = true) => {

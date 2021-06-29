@@ -38,4 +38,6 @@ TopMessage.defaultTypes = {
   hideMessage: () => {},
 };
 
+TopMessage.displayName = 'TopMessage';
+
 export default TopMessage;

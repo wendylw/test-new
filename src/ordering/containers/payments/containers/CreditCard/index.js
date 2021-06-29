@@ -625,6 +625,7 @@ class CreditCard extends Component {
     );
   }
 }
+CreditCard.displayName = 'CreditCard';
 
 export default compose(
   withTranslation(['OrderingPayment']),

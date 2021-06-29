@@ -38,4 +38,6 @@ ErrorToast.defaultProps = {
   message: '',
 };
 
+ErrorToast.displayName = 'ErrorToast';
+
 export default ErrorToast;

@@ -19,6 +19,7 @@ import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../
 import {
   actions as orderStatusActionCreators,
   getIsUseStorehubLogistics,
+  getIsShowReorderButton,
   getOrder,
   getOrderStatus,
   getPromotion,
@@ -103,6 +104,15 @@ export class OrderDetails extends Component {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
+    });
+  };
+
+  handleReorder = () => {
+    const { order } = this.props;
+    const { shippingType } = order || '';
+    this.props.history.replace({
+      pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+      search: `type=${shippingType}`,
     });
   };
 
@@ -356,8 +366,8 @@ export class OrderDetails extends Component {
   }
 
   render() {
-    const { order, t, isUseStorehubLogistics, serviceCharge } = this.props;
-    const { shippingFee, subtotal, total, tax, loyaltyDiscounts, deliveryInformation = [] } = order || '';
+    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton } = this.props;
+    const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
@@ -404,24 +414,39 @@ export class OrderDetails extends Component {
               </li>
             </ul>
           </div>
+
           {isUseStorehubLogistics ? (
             <div className="card margin-normal">
               <button
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
-                className="button button__block flex flex-middle flex-space-between padding-small"
+                className="ordering-details__report-issue-button button button__block flex flex-middle flex-space-between padding-small"
                 data-heap-name="ordering.contact-details.report-driver-btn"
               >
-                <span className="text-size-big text-weight-bolder padding-left-right-small">{t('ReportIssue')}</span>
-                <IconNext className="icon icon__small" />
+                <span className="text-weight-bolder text-left text-size-big flex__fluid-content padding-left-right-smaller">
+                  {t('ReportIssue')}
+                </span>
+                <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
               </button>
             </div>
           ) : null}
         </div>
+
+        {isShowReorderButton && (
+          <footer className="ordering-details__footer footer padding-top-bottom-smaller padding-left-right-normal">
+            <button
+              onClick={this.handleReorder}
+              className="button button__block button__fill padding-normal margin-top-bottom-smaller"
+            >
+              <span className="text-weight-bolder text-size-big text-uppercase">{t('Reorder')}</span>
+            </button>
+          </footer>
+        )}
       </section>
     );
   }
 }
+OrderDetails.displayName = 'OrderDetails';
 
 export default compose(
   withTranslation(['OrderingDelivery']),
@@ -434,6 +459,7 @@ export default compose(
       orderStatus: getOrderStatus(state),
       receiptNumber: getReceiptNumber(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),

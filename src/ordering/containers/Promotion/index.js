@@ -188,6 +188,7 @@ class Promotion extends Component {
     );
   }
 }
+Promotion.displayName = 'Promotion';
 export default compose(
   withTranslation(['OrderingPromotion']),
   connect(

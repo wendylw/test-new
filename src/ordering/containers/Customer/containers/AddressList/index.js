@@ -100,12 +100,12 @@ class AddressList extends Component {
           </div>
           <div className="address-list__delivery-info margin-normal">
             <div>
-              <summary>
+              <div>
                 <span>{addressName}</span>
                 {!availableStatus && (
                   <Tag text={t('OutOfRange')} className="tag__primary tag__small margin-left-right-normal" />
                 )}
-              </summary>
+              </div>
               <p className="padding-top-bottom-small text-opacity">{deliveryTo}</p>
             </div>
             <div className="padding-top-bottom-small text-line-height-base">
@@ -166,6 +166,7 @@ class AddressList extends Component {
     );
   }
 }
+AddressList.displayName = 'AddressList';
 
 export default compose(
   withTranslation(),

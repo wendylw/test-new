@@ -59,6 +59,7 @@ class Sorry extends Component {
     return <div className="loader theme full-page" data-heap-name="ordering.sorry.container"></div>;
   }
 }
+Sorry.displayName = 'OrderingSorry';
 
 export default compose(
   withTranslation(),

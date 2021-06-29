@@ -695,6 +695,7 @@ class LocationAndDate extends Component {
     );
   }
 }
+LocationAndDate.displayName = 'LocationAndDate';
 
 export default compose(
   withTranslation(),

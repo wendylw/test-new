@@ -225,6 +225,7 @@ class OnlineBanking extends Component {
     );
   }
 }
+OnlineBanking.displayName = 'OnlineBanking';
 
 export default compose(
   withTranslation(['OrderingPayment']),

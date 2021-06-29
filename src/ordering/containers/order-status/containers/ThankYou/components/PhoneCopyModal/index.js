@@ -29,6 +29,7 @@ export class PhoneCopyModal extends React.Component {
     );
   }
 }
+PhoneCopyModal.displayName = 'PhoneCopyModal';
 
 PhoneCopyModal.propTypes = {
   show: PropTypes.bool,

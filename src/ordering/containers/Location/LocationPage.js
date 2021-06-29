@@ -207,6 +207,7 @@ class LocationPage extends Component {
     );
   }
 }
+LocationPage.displayName = 'LocationPage';
 
 export default compose(
   withTranslation(['OrderingDelivery']),

@@ -25,4 +25,6 @@ function RequestLogin(props) {
   );
 }
 
+RequestLogin.displayName = 'RequestLogin';
+
 export default withTranslation('Cashback')(RequestLogin);

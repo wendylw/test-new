@@ -255,6 +255,7 @@ class AdyenPage extends Component {
     );
   }
 }
+AdyenPage.displayName = 'AdyenPage';
 
 export default compose(
   withTranslation(['OrderingPayment']),

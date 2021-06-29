@@ -257,6 +257,7 @@ class SavedCards extends Component {
     );
   }
 }
+SavedCards.displayName = 'SavedCards';
 
 export default compose(
   withTranslation(['OrderingPayment']),

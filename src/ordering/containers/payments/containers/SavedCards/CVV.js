@@ -212,6 +212,7 @@ class CardCVV extends Component {
     );
   }
 }
+CardCVV.displayName = 'CardCVV';
 
 export default compose(
   withTranslation(['OrderingPayment']),
