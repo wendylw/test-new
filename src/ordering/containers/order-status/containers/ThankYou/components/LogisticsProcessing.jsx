@@ -44,7 +44,7 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
   const currentStepIndex = currentStatusIndex > 2 ? 2 : currentStatusIndex;
 
   return (
-    <div className="card padding-small margin-normal">
+    <div className="card padding-small margin-normal flex flex-top">
       <ul className="padding-smaller">
         {processingList.map((step, index) => {
           if (index === processingList.length - 1) {

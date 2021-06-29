@@ -3,7 +3,7 @@ import _get from 'lodash/get';
 import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
-import { Trans, withTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DownloadBanner from '../../../../../components/DownloadBanner';
@@ -18,15 +18,7 @@ import logisticsGrab from '../../../../../images/beep-logistics-grab.jpg';
 import logisticsLalamove from '../../../../../images/beep-logistics-lalamove.jpg';
 import logisticBeepOnFleet from '../../../../../images/beep-logistics-on-fleet.jpg';
 import logisticsMrspeedy from '../../../../../images/beep-logistics-rspeedy.jpg';
-import beepPreOrderSuccessImage from '../../../../../images/beep-pre-order-success.png';
-import beepSuccessImage from '../../../../../images/beep-success.png';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
-import beepOrderStatusAccepted from '../../../../../images/order-status-accepted.gif';
-import beepOrderStatusCancelled from '../../../../../images/order-status-cancelled.png';
-import beepOrderStatusConfirmed from '../../../../../images/order-status-confirmed.gif';
-import beepOrderStatusDelivered from '../../../../../images/order-status-delivered.gif';
-import beepOrderStatusPaid from '../../../../../images/order-status-paid.gif';
-import beepOrderStatusPickedUp from '../../../../../images/order-status-pickedup.gif';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
@@ -683,28 +675,13 @@ export class ThankYou extends PureComponent {
     return !(isWebview && isHideTopArea && status === PICKUP && Utils.isDeliveryType());
   };
   /* eslint-disable jsx-a11y/anchor-is-valid */
-  renderConsumerStatusFlow({
-    t,
-    CONSUMERFLOW_STATUS,
-    cashbackInfo,
-    businessInfo,
-    deliveryInformation,
-    cancelOperator,
-    order,
-  }) {
+  renderConsumerStatusFlow({ t, CONSUMERFLOW_STATUS, cashbackInfo, businessInfo, deliveryInformation, order }) {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { storeInfo, status, isPreOrder } = order || {};
     let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
-    const cancelledDescriptionKey = {
-      ist: 'ISTCancelledDescription',
-      auto_cancelled: 'AutoCancelledDescription',
-      merchant: 'MerchantCancelledDescription',
-      customer: 'CustomerCancelledDescription',
-      unknown: 'UnknownCancelledDescription',
-    };
     const { orderStatus } = this.props;
 
     let currentStatusObj = {};
@@ -712,12 +689,6 @@ export class ThankYou extends PureComponent {
     if (status === PAID) {
       currentStatusObj = {
         status: 'paid',
-        style: {
-          width: '25%',
-        },
-        firstNote: t('OrderReceived'),
-        secondNote: t('OrderReceivedDescription'),
-        bannerImage: isPreOrder ? beepPreOrderSuccessImage : beepOrderStatusPaid,
       };
     }
 
@@ -725,12 +696,6 @@ export class ThankYou extends PureComponent {
     if (status === ACCEPTED) {
       currentStatusObj = {
         status: 'accepted',
-        style: {
-          width: '50%',
-        },
-        firstNote: t('MerchantAccepted'),
-        secondNote: t('FindingRider'),
-        bannerImage: beepOrderStatusAccepted,
       };
     }
 
@@ -738,12 +703,6 @@ export class ThankYou extends PureComponent {
     if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
         status: 'confirmed',
-        style: {
-          width: '75%',
-        },
-        firstNote: t('PendingPickUp'),
-        secondNote: t('RiderAssigned'),
-        bannerImage: beepOrderStatusConfirmed,
       };
     }
 
@@ -751,39 +710,23 @@ export class ThankYou extends PureComponent {
     if (status === PICKUP) {
       currentStatusObj = {
         status: 'riderPickUp',
-        style: {
-          width: '100%',
-        },
-        firstNote: t('RiderPickUp'),
-        secondNote: t('TrackYourOrder'),
-        bannerImage: beepOrderStatusPickedUp,
       };
     }
 
     if (status === DELIVERED) {
       currentStatusObj = {
         status: 'delivered',
-        style: {
-          width: '100%',
-        },
-        firstNote: t('OrderDelivered'),
-        secondNote: t('OrderDeliveredDescription'),
-        bannerImage: beepOrderStatusDelivered,
       };
     }
 
     if (status === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
-        descriptionKey: cancelledDescriptionKey[cancelOperator || 'unknown'],
-        bannerImage: beepOrderStatusCancelled,
       };
     }
 
-    const isShowProgress = ['paid', 'accepted', 'confirmed'].includes(currentStatusObj.status);
-
     return (
-      <React.Fragment>
+      <>
         {this.renderOrderDelayMessage()}
         <LogisticsProcessing useStorehubLogistics={useStorehubLogistics} orderStatus={orderStatus} />
         {currentStatusObj.status === 'confirmed' ||
@@ -803,7 +746,7 @@ export class ThankYou extends PureComponent {
             )
           : null}
         {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
-      </React.Fragment>
+      </>
     );
   }
 
@@ -1177,7 +1120,7 @@ export class ThankYou extends PureComponent {
 
   renderDeliveryTimeLine() {
     const { t, order, cashbackInfo, businessInfo } = this.props;
-    const { deliveryInformation, cancelOperator } = order || {};
+    const { deliveryInformation } = order || {};
     const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
 
     return (
@@ -1189,7 +1132,6 @@ export class ThankYou extends PureComponent {
               cashbackInfo,
               businessInfo,
               deliveryInformation,
-              cancelOperator,
               order,
             })
           : null}
