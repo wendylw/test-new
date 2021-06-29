@@ -1,10 +1,12 @@
+/* eslint-disable react/no-unused-prop-types */
 import { Component } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import PropTypes from 'prop-types';
-import * as dsBridgeUtils from '../utils/dsBridge-utils';
-import Utils from '../utils/utils';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
+import Utils from '../utils/utils';
+import * as dsBridgeUtils from '../utils/dsBridge-utils';
 
 if (Utils.isWebview()) {
   window.addEventListener('unload', () => {
@@ -54,11 +56,23 @@ function getNativeHeaderParams(props) {
 
 class NativeHeader extends Component {
   prevNativeHeaderParams = null;
+
   nextNativeHeaderParams = getNativeHeaderParams(this.props);
 
   componentDidMount() {
     this.updateNativeHeader();
     this.registerEvents();
+  }
+
+  // performance optimization
+  shouldComponentUpdate(nextProps) {
+    this.nextNativeHeaderParams = getNativeHeaderParams(nextProps);
+
+    return !_isEqual(this.prevNativeHeaderParams, this.nextNativeHeaderParams);
+  }
+
+  componentDidUpdate() {
+    this.updateNativeHeader();
   }
 
   registerEvents() {
@@ -91,17 +105,6 @@ class NativeHeader extends Component {
     this.nextNativeHeaderParams = null;
   }
 
-  // performance optimization
-  shouldComponentUpdate(nextProps) {
-    this.nextNativeHeaderParams = getNativeHeaderParams(nextProps);
-
-    return !_isEqual(this.prevNativeHeaderParams, this.nextNativeHeaderParams);
-  }
-
-  componentDidUpdate() {
-    this.updateNativeHeader();
-  }
-
   render() {
     return null;
   }
@@ -112,6 +115,7 @@ NativeHeader.propTypes = {
   title: PropTypes.string,
   titleAlignment: PropTypes.oneOf(['left', 'center', 'right']),
   navFunc: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
   rightContent: PropTypes.object,
 };
 
@@ -123,5 +127,8 @@ NativeHeader.defaultProps = {
   rightContent: null,
 };
 
+NativeHeader.displayName = 'NativeHeader';
+
 export const NativeHeaderComponent = NativeHeader;
+
 export default NativeHeader;

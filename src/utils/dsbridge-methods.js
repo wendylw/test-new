@@ -159,27 +159,27 @@ const dsbridgeCall = nativeMethod => {
   const hasNativeMethod = hasMethodInNative(method);
 
   if (!hasNativeMethod) {
-    throw new Error("Native side didn't have method: " + method);
+    throw new Error(`Native side didn't have method: ${method}`);
   }
   if (mode === 'sync') {
     return dsbridgeSyncCall(method, params);
-  } else if (mode === 'async') {
+  }
+  if (mode === 'async') {
     return dsbridgeAsyncCall(method, params);
   }
 };
 
 const dsbridgeSyncCall = (method, params) => {
   try {
-    let result = dsbridge.call('callNative', { method, params });
-    let { code, data, message } = JSON.parse(result);
+    const result = dsbridge.call('callNative', { method, params });
+    const { code, data, message } = JSON.parse(result);
     if (_isNil(data)) {
       return;
     }
     if (code === StatusCodes.SUCCESS) {
       return data;
-    } else {
-      throw new Error(message);
     }
+    throw new Error(message);
   } catch (e) {
     loggly.error('dsbridge-methods.dsbridge-sync-call', { message: e });
     // TODO: handle the error in external calling function
@@ -188,10 +188,10 @@ const dsbridgeSyncCall = (method, params) => {
 };
 
 const dsbridgeAsyncCall = (method, params) => {
-  var promise = new Promise(function(resolve, reject) {
+  const promise = new Promise((resolve, reject) => {
     try {
-      dsbridge.call('callNativeAsync', { method, params }, function(result) {
-        let { code, data, message } = JSON.parse(result);
+      dsbridge.call('callNativeAsync', { method, params }, result => {
+        const { code, data, message } = JSON.parse(result);
         if (code === StatusCodes.SUCCESS) {
           resolve(data);
         } else {

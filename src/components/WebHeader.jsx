@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import PropTypes from 'prop-types';
 import { IconLeftArrow, IconClose } from './Icons';
 import withDataAttributes from './withDataAttributes';
@@ -20,12 +21,14 @@ class WebHeader extends Component {
 
     return (
       <button
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...attributes}
+        type="button"
         onClick={onClick}
         style={style}
         className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
       >
-        {icon && <img className="text-middle icon__normal" src={icon} />}
+        {icon && <img alt="icon" className="text-middle icon__normal" src={icon} />}
         <span className="text-middle text-size-big">{text}</span>
       </button>
     );
@@ -46,6 +49,7 @@ class WebHeader extends Component {
     }
 
     return (
+      // eslint-disable-next-line react/jsx-props-no-spreading
       <header ref={headerRef} style={style} className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')}>
           {isPage ? (
@@ -67,21 +71,30 @@ class WebHeader extends Component {
 }
 
 WebHeader.propTypes = {
+  headerRef: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   className: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
   isPage: PropTypes.bool,
   title: PropTypes.string,
   navFunc: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
   rightContent: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  dataAttributes: PropTypes.object,
+  contentClassName: PropTypes.string,
 };
 
 WebHeader.defaultProps = {
+  headerRef: null,
   className: '',
   style: {},
   isPage: false,
   title: '',
   navFunc: () => {},
+  dataAttributes: {},
   rightContent: null,
+  contentClassName: null,
 };
 
 export const WebHeaderComponent = WebHeader;
