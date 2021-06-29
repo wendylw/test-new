@@ -388,6 +388,7 @@ module.exports = {
       extends: ['react-app', 'airbnb', 'prettier'],
       rules: {
         'no-unused-expressions': 'off',
+        'react/display-name': ['warn', { ignoreTranspilerName: true }],
       },
     },
     {

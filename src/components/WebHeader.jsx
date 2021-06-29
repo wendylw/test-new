@@ -70,6 +70,8 @@ class WebHeader extends Component {
   }
 }
 
+WebHeader.displayName = 'WebHeader';
+
 WebHeader.propTypes = {
   headerRef: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   className: PropTypes.string,
