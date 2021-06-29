@@ -6,25 +6,54 @@ const businessName = Utils.isSiteApp() ? 'beepit.com' : config.business;
 const pushEvent = (eventName, attributes) => {
   try {
     if (Utils.isWebview()) {
+      const appVersion = window.beepAppVersion;
+
       if (Utils.isIOSWebview()) {
-        window.webkit?.messageHandlers?.clevertap?.postMessage({
-          action: 'recordEventWithProps',
-          event: eventName,
-          props: {
-            ...attributes,
-            'account name': businessName,
-          },
-        });
+        // TODO: below check version code has bug, we will delete the check version code on 1.8.0
+        if (eventName === 'Charged' && appVersion >= '1.7.3') {
+          const { Items: items, ...chargeDetails } = attributes || {};
+
+          window.webkit?.messageHandlers?.clevertap?.postMessage({
+            action: 'recordChargedEvent',
+            chargeDetails: {
+              ...chargeDetails,
+              'account name': businessName,
+            },
+            items: items,
+          });
+        } else {
+          window.webkit?.messageHandlers?.clevertap?.postMessage({
+            action: 'recordEventWithProps',
+            event: eventName,
+            props: {
+              ...attributes,
+              'account name': businessName,
+            },
+          });
+        }
       }
 
       if (Utils.isAndroidWebview()) {
-        window.CleverTap?.pushEvent(
-          eventName,
-          JSON.stringify({
-            ...attributes,
-            'account name': businessName,
-          })
-        );
+        // TODO: below check version code has bug, we will delete the check version code on 1.8.0
+        if (eventName === 'Charged' && appVersion >= '1.7.3') {
+          const { Items, ...chargeDetails } = attributes || {};
+
+          window.CleverTap?.pushChargedEvent(
+            JSON.stringify({
+              ...chargeDetails,
+              'account name': businessName,
+            }),
+            JSON.stringify(Items)
+          );
+        } else {
+          window.CleverTap?.pushEvent(
+            eventName,
+            JSON.stringify({
+              ...attributes,
+              'account name': businessName,
+            })
+          );
+        }
       }
     } else {
       window.clevertap?.event.push(eventName, {
