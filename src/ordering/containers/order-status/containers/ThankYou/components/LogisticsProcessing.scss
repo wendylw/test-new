@@ -10,10 +10,10 @@
     color: $new-grey-1-1;
     opacity: 0;
 
-    transition: padding-bottom 0.4s, height 0.4s, opacity 0.4s;
-    -webkit-transition: padding-bottom 0.4s, height 0.4s, opacity 0.4s;
-    -moz-transition: padding-bottom 0.4s, height 0.4s, opacity 0.4s;
-    -ms-transition: padding-bottom 0.4s, height 0.4s, opacity 0.4s;
+    transition: padding-bottom 0.2s linear 0.2s, height 0.2s linear 0.2s, opacity 0.2s;
+    -webkit-transition: padding-bottom 0.2s linear 0.2s, height 0.2s linear 0.2s, opacity 0.2s;
+    -moz-transition: padding-bottom 0.2s linear 0.2s, height 0.2s linear 0.2s, opacity 0.2s;
+    -ms-transition: padding-bottom 0.2s linear 0.2s, height 0.2s linear 0.2s, opacity 0.2s;
   }
 
   &__step--active {
