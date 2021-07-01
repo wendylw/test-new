@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
@@ -35,6 +35,8 @@ const LOGISTIC_PROCESSING_MAPPING = {
 };
 
 function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
+  const [expandProcessingList, setExpandProcessingList] = useState(false);
+
   if (!LOGISTIC_PROCESSING_MAPPING[orderStatus] || (!useStorehubLogistics && orderStatus !== ORDER_STATUS.PAID)) {
     return null;
   }
@@ -44,8 +46,12 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
   const currentStepIndex = currentStatusIndex > 2 ? 2 : currentStatusIndex;
 
   return (
-    <div className="card padding-small margin-normal flex flex-top">
-      <ul className="padding-smaller">
+    <div className="card padding-small margin-normal flex flex-top flex-space-between">
+      <ul
+        className={`logistics-processing__list${
+          expandProcessingList ? '--expand' : ''
+        } padding-smaller flex__fluid-content`}
+      >
         {processingList.map((step, index) => {
           if (index === processingList.length - 1) {
             return null;
@@ -78,7 +84,10 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
           );
         })}
       </ul>
-      <IconExpandMore className="icon icon__smaller icon__default" />
+      <IconExpandMore
+        className="logistics-processing__icon-expand-more icon icon__small icon__default flex__shrink-fixed"
+        onClick={() => setExpandProcessingList(!expandProcessingList)}
+      />
     </div>
   );
 }

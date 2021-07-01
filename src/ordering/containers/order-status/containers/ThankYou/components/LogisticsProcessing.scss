@@ -4,8 +4,25 @@
   &__step {
     position: relative;
     padding-left: 11px;
-    padding-bottom: 2.4vw + 1.4vw;
+    padding-bottom: 0;
     margin-left: 11px;
+    height: 0;
+    color: $new-grey-1-1;
+    opacity: 0;
+
+    transition: padding-bottom 0.4s, height 0.4s, opacity 0.4s;
+    -webkit-transition: padding-bottom 0.4s, height 0.4s, opacity 0.4s;
+    -moz-transition: padding-bottom 0.4s, height 0.4s, opacity 0.4s;
+    -ms-transition: padding-bottom 0.4s, height 0.4s, opacity 0.4s;
+  }
+
+  &__step--active {
+    height: auto;
+    opacity: 1;
+  }
+
+  &__step:last-child {
+    padding-bottom: 0;
   }
 
   &__step::before {
@@ -18,14 +35,11 @@
     width: 1px;
     height: 100%;
     background-color: $gray-4;
+    opacity: 0;
   }
 
   &__step--complete::before {
     background-color: $theme-color;
-  }
-
-  &__step:last-child {
-    padding-bottom: 0;
   }
 
   &__step:last-child::before {
@@ -78,27 +92,81 @@
     line-height: 21px;
   }
 
-  &__step-description {
-    color: $new-grey-1-1;
+  &__step--active &__step-title {
+    color: $main-color;
+  }
 
+  &__step-description {
     .icon__smaller {
       margin-left: -1.4vw;
     }
+  }
+
+  &__icon-expand-more {
+    transition: transform 0.4s;
+    -webkit-transition: 0.4s;
+    -moz-transition: 0.4s;
+    -ms-transition: 0.4s;
+  }
+
+  &__list--expand &__step {
+    padding-left: 11px;
+    height: 21px;
+    opacity: 1;
+
+    transition: padding-bottom 0.4s, height 0.4s, opacity 0.2s linear 0.4s;
+    -webkit-transition: padding-bottom 0.4s, height 0.4s, opacity 0.2s linear 0.4s;
+    -moz-transition: padding-bottom 0.4s, height 0.4s, opacity 0.2s linear 0.4s;
+    -ms-transition: padding-bottom 0.4s, height 0.4s, opacity 0.2s linear 0.4s;
+  }
+
+  &__list--expand &__step:not(:last-child) {
+    padding-bottom: 1.4vw;
+  }
+
+  &__list--expand &__step--active:not(:last-child) {
+    padding-bottom: 3.8vw;
+    height: auto;
+  }
+
+  &__list--expand &__step::before {
+    opacity: 1;
+
+    transition: opacity 0.2s linear 0.4s;
+    -webkit-transition: opacity 0.2s linear 0.4s;
+    -moz-transition: opacity 0.2s linear 0.4s;
+    -ms-transition: opacity 0.2s linear 0.4s;
+  }
+
+  &__list--expand + &__icon-expand-more {
+    transform-origin: center;
+    -webkit-transform-origin: center;
+    -moz-transform-origin: center;
+    -ms-transform-origin: center;
+
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
   }
 }
 
 @media (min-width: 420px) {
   .logistics-processing {
-    &__step {
-      padding-bottom: 8px + 4px;
-    }
-
     &__step-description {
       color: $new-grey-1-1;
 
       .icon__smaller {
         margin-left: -4px;
       }
+    }
+
+    &__list--expand &__step:not(:last-child) {
+      padding-bottom: 4px;
+    }
+
+    &__list--expand &__step--active:not(:last-child) {
+      padding-bottom: 16px;
     }
   }
 }
