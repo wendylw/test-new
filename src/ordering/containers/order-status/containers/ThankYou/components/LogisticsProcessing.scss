@@ -1,4 +1,5 @@
 @import "../../../../../../Variables.scss";
+@import "../../../../../../Animates.scss";
 
 .logistics-processing {
   &__step {
@@ -86,6 +87,11 @@
 
   &__step--active &__icon::after {
     background-color: $theme-color;
+    animation-duration: 3s;
+
+    @extend .beep-animated;
+    @extend .beep-animated--infinite;
+    @extend .beep-scale-to-disappearance;
   }
 
   &__step-title {
@@ -111,7 +117,7 @@
 
   &__list--expand &__step {
     padding-left: 11px;
-    height: 21px;
+    height: 25px;
     opacity: 1;
 
     transition: padding-bottom 0.4s, height 0.4s, opacity 0.2s linear 0.4s;
@@ -121,7 +127,7 @@
   }
 
   &__list--expand &__step:not(:last-child) {
-    padding-bottom: 1.4vw;
+    padding-bottom: 2.4vw;
   }
 
   &__list--expand &__step--active:not(:last-child) {
@@ -162,7 +168,7 @@
     }
 
     &__list--expand &__step:not(:last-child) {
-      padding-bottom: 4px;
+      padding-bottom: 8px;
     }
 
     &__list--expand &__step--active:not(:last-child) {
