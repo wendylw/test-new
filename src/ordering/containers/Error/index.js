@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import config from '../../../config';
 import Utils from '../../../utils/utils';
-import { gotoHome } from '../../../utils/webview-utils';
+import { NativeMethods } from '../../../utils/dsbridge-methods';
 export class Error extends Component {
   getCurrentErrorType(type) {
     if (!type) {
@@ -38,7 +38,7 @@ export class Error extends Component {
     Utils.removeSessionVariable('errorMessage');
 
     if (Utils.isWebview()) {
-      gotoHome();
+      NativeMethods.gotoHome();
     } else {
       window.location.href = config.beepitComUrl;
     }

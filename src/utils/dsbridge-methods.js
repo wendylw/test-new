@@ -140,6 +140,13 @@ export const NativeMethods = {
     };
     return dsbridgeCall(data);
   },
+  gotoHome: () => {
+    const data = {
+      method: 'routerModule-gotoHome',
+      mode: 'sync',
+    };
+    return dsbridgeCall(data);
+  },
 };
 
 const hasMethodInNative = method => {
