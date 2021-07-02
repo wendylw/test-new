@@ -41,7 +41,6 @@ import {
 import { NativeMethods } from '../../../../../utils/dsbridge-methods';
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
-import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
   actions as appActionCreators,
@@ -78,7 +77,6 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import PhoneLogin from './components/PhoneLogin';
-import { fromPairs } from 'lodash';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -93,22 +91,9 @@ export class ThankYou extends PureComponent {
   constructor(props) {
     super(props);
 
-    let version = '0',
-      supportCallPhone = false;
-
-    if (Utils.isWebview()) {
-      version = window.beepAppVersion;
-    }
-
-    if (version > '1.0.1') {
-      supportCallPhone = true;
-    } else {
-      supportCallPhone = false;
-    }
-
     this.state = {
       cashbackSuccessImage,
-      supportCallPhone,
+      supportCallPhone: Utils.isWebview(),
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
