@@ -14,8 +14,8 @@ import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
+import { loadOrder } from '../../redux/thunks';
 import {
-  actions as orderStatusActionCreators,
   getIsUseStorehubLogistics,
   getIsShowReorderButton,
   getOrder,
@@ -23,7 +23,7 @@ import {
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
-} from '../../redux/common';
+} from '../../redux/selector';
 import './OrderingDetails.scss';
 import { IconNext } from '../../../../../components/Icons';
 
@@ -420,25 +420,25 @@ export class OrderDetails extends Component {
                 className="ordering-details__report-issue-button button button__block flex flex-middle flex-space-between padding-small"
                 data-heap-name="ordering.contact-details.report-driver-btn"
               >
-                <span className="text-left text-size-big flex__fluid-content">{t('ReportIssue')}</span>
-                <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
-              </button>
-            </div>
-          ) : null}
-
-          {isShowReorderButton ? (
-            <div className="card margin-normal">
-              <button
-                onClick={this.handleReorder}
-                className="ordering-details__reorder-button button button__block flex flex-middle flex-space-between padding-small"
-              >
-                <span className="text-left text-size-big flex__fluid-content">{t('Reorder')}</span>
-
+                <span className="text-weight-bolder text-left text-size-big flex__fluid-content padding-left-right-smaller">
+                  {t('ReportIssue')}
+                </span>
                 <IconNext className="ordering-details__icon-next icon icon__small flex__shrink-fixed" />
               </button>
             </div>
           ) : null}
         </div>
+
+        {isShowReorderButton && (
+          <footer className="ordering-details__footer footer padding-top-bottom-smaller padding-left-right-normal">
+            <button
+              onClick={this.handleReorder}
+              className="button button__block button__fill padding-normal margin-top-bottom-smaller"
+            >
+              <span className="text-weight-bolder text-size-big text-uppercase">{t('Reorder')}</span>
+            </button>
+          </footer>
+        )}
       </section>
     );
   }
@@ -461,7 +461,7 @@ export default compose(
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     {
-      loadOrder: orderStatusActionCreators.loadOrder,
+      loadOrder,
     }
   )
 )(OrderDetails);

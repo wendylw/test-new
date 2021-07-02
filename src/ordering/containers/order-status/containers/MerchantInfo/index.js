@@ -7,13 +7,8 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { IconNext } from '../../../../../components/Icons';
 import Utils from '../../../../../utils/utils';
-import {
-  actions as commonActionCreators,
-  getReceiptNumber,
-  getOrderStatus,
-  getIsUseStorehubLogistics,
-  getOrder,
-} from '../../redux/common';
+import { loadOrder } from '../../redux/thunks';
+import { getReceiptNumber, getOrderStatus, getIsUseStorehubLogistics, getOrder } from '../../redux/selector';
 
 import './OrderingMerchantInfo.scss';
 
@@ -130,7 +125,7 @@ export default compose(
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
     }),
     {
-      loadOrder: commonActionCreators.loadOrder,
+      loadOrder,
     }
   )
 )(MerchantInfo);

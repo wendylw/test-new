@@ -75,6 +75,11 @@ function convertOptions(options) {
   return currentOptions;
 }
 
+/* For the new version of the response data structure, and compatible with the old interface data return */
+function formatResponseData(url, result) {
+  return url.startsWith('/api/v3/') && result.data ? result.data : result;
+}
+
 /**
  * @param {string} url url for the request
  * @param {object} opts : {type: '', payload: {}, headers: {}, queryParams, ...others: {credentials: ''}}
@@ -86,7 +91,7 @@ async function _fetch(url, opts) {
   try {
     const resp = await ky(url, opts);
 
-    return await parseResponse(resp);
+    return formatResponseData(url, await parseResponse(resp));
   } catch (e) {
     let error = {};
 
@@ -142,6 +147,20 @@ export function put(url, payload, options = {}) {
       ...options,
       payload,
       method: 'put',
+    })
+  );
+}
+
+/**
+ * @param {object} payload : data in request. if payload is empty but options is required, pls set payload as `undefined`
+ */
+export function patch(url, payload, options = {}) {
+  return _fetch(
+    url,
+    convertOptions({
+      ...options,
+      payload,
+      method: 'patch',
     })
   );
 }
