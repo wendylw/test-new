@@ -42,7 +42,7 @@ import {
   getOnlineStoreInfo,
   getUser,
 } from '../../../../redux/modules/app';
-import { loadOrder, loadOrderStatus } from '../../redux/thunks';
+import { loadOrder } from '../../redux/thunks';
 import {
   getOrder,
   getOrderStatus,
@@ -71,7 +71,6 @@ import OrderStatusDescription from './components/OrderStatusDescription';
 import LogisticsProcessing from './components/LogisticsProcessing';
 import SelfPickup from './components/SelfPickup';
 import PhoneLogin from './components/PhoneLogin';
-import { fromPairs } from 'lodash';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 const ANIMATION_TIME = 3600;
@@ -335,15 +334,13 @@ export class ThankYou extends PureComponent {
   };
 
   loadOrder = async () => {
-    const { loadOrder, loadOrderStatus, receiptNumber } = this.props;
+    const { loadOrder, receiptNumber } = this.props;
 
     await loadOrder(receiptNumber);
 
     const { shippingType } = this.props;
 
     if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
-      await loadOrderStatus(receiptNumber);
-
       this.updateAppLocationAndStatus();
     }
   };
@@ -1478,7 +1475,6 @@ export default compose(
       loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
       loadOrder: bindActionCreators(loadOrder, dispatch),
-      loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       updateOrderShippingType: bindActionCreators(updateOrderShippingType, dispatch),
       showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
     })
