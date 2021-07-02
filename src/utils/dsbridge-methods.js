@@ -31,7 +31,7 @@ export const NativeMethods = {
     };
     return dsbridgeCall(data);
   },
-  gotoHome: () => {
+  closeWebView: () => {
     const data = {
       method: 'routerModule-closeWebView',
       mode: 'sync',

@@ -870,7 +870,7 @@ export class Home extends Component {
                 return;
               }
 
-              NativeMethods.gotoHome();
+              NativeMethods.closeWebView();
             }}
           />
         )}

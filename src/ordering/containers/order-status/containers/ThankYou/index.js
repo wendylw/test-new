@@ -1424,7 +1424,7 @@ export class ThankYou extends PureComponent {
           isPage={true}
           title={`#${orderId}`}
           navFunc={() => {
-            NativeMethods.gotoHome();
+            NativeMethods.closeWebView();
           }}
           rightContent={rightContent}
         />
