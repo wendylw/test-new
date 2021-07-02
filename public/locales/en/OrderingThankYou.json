@@ -34,8 +34,11 @@
   "PreOrderDeliverySMS": "We will SMS the order status to you on the day of delivery.",
   "Total": "Total",
   "ThankYouForPickingUpForUS": "Thank you for ordering with us! The pick up details are below, please do be on time to pick up your food",
+  "ThankYouForUpdatedToPickingUpForUS": "You've switched to self-pickup. The pickup details are below, we hope you enjoy your food!",
   "EarnedCashBackTitle": "You’ve earned cash back",
   "EarnedCashBackDescription": "This will automatically be used when you buy from us again!",
+  "RefundDeliveryFee": "Delivery Fee Refund",
+  "RefundDeliveryFeeDescription": "Upon choosing self-pickup, the delivery fee will be refunded as a <2>voucher</2> which could be used upon your next order.",
   "DeliveringTo": "Delivering to",
   "SelfDeliveryDescription": "This restaurant uses its own delivery riders. You won’t be able to track your order, if you need please contact the merchant.",
   "OrderStatusPickedUp": "Estimated order arrival time",
@@ -67,5 +70,11 @@
   "OrderCannotBeCancelledAsARiderFound": "Order cannot be cancelled as a rider is already picking up your meal.",
   "GotIt": "GOT IT",
   "CancellationError": "Cancellation Error",
-  "SomethingWentWrongWhenCancelingYourOrder": "Something went wrong while cancelling your order. Please check your connection and try again."
+  "SomethingWentWrongWhenCancelingYourOrder": "Something went wrong while cancelling your order. Please check your connection and try again.",
+  "SelfPickUpTitle": "Don't want to wait",
+  "SelfPickUpDescription": "Skip the delivery queue by switching to self-pickup and get your delivery fee refunded!",
+  "SwitchToSelfPickUp": "Switch to self-pickup",
+  "SelfPickUpPromptDescription": "You will need to head to the store to pick up your order.",
+  "GoBack": "Go back",
+  "SelfPickUpPromptConfirmedText": "Yes, switch"
 }

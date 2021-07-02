@@ -389,6 +389,11 @@ module.exports = {
       rules: {
         'no-unused-expressions': 'off',
         'react/display-name': ['warn', { ignoreTranspilerName: true }],
+        'react/prop-types': [2, { ignore: ['t'] }],
+        'react/button-has-type': [0],
+        'import/prefer-default-export': [0],
+        'no-nested-ternary': [0],
+        'class-methods-use-this': [0],
       },
     },
     {

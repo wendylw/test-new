@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import succeedAnimationGif from '../../../../../../../images/succeed-animation.gif';
-import Constants from '../../../../../../../utils/constants';
 import Utils from '../../../../../../../utils/utils';
 import CurrencyNumber from '../../../../../../components/CurrencyNumber';
 import {
@@ -14,8 +13,9 @@ import {
   getUser,
   getBusinessInfo,
 } from '../../../../../../redux/modules/app';
-import { actions as thankYouActionCreators, getCashbackInfo } from '../../redux';
 import { NativeMethods } from '../../../../../../../utils/dsbridge-methods';
+import { getCashbackInfo } from '../../redux/selector';
+import { loadCashbackInfo, createCashbackInfo } from '../../redux/thunks';
 import './PhoneLogin.scss';
 import loggly from '../../../../../../../utils/monitoring/loggly';
 
@@ -35,10 +35,10 @@ class PhoneLogin extends React.Component {
   };
 
   async componentDidMount() {
-    const { history, thankYouActions, appActions } = this.props;
+    const { history, loadCashbackInfo, appActions } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    await thankYouActions.getCashbackInfo(receiptNumber);
+    await loadCashbackInfo(receiptNumber);
 
     const { user, businessInfo } = this.props;
     const { enableCashback } = businessInfo || {};
@@ -162,7 +162,7 @@ class PhoneLogin extends React.Component {
   }
 
   async canClaimCheck(user) {
-    const { thankYouActions } = this.props;
+    const { createCashbackInfo } = this.props;
     const { phone } = this.state;
     const { isLogin } = user || {};
     const { isFetching, createdCashbackInfo } = this.props.cashbackInfo || {};
@@ -172,7 +172,7 @@ class PhoneLogin extends React.Component {
     }
 
     if (isLogin && !isFetching && !createdCashbackInfo) {
-      await thankYouActions.createCashbackInfo(this.getOrderInfo());
+      await createCashbackInfo(this.getOrderInfo());
     }
 
     const { cashbackInfo } = this.props;
@@ -187,9 +187,8 @@ class PhoneLogin extends React.Component {
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     return {
-      phone,
       receiptNumber,
-      source: Constants.CASHBACK_SOURCE.QR_ORDERING,
+      phone,
     };
   }
 
@@ -246,7 +245,8 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+      loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
+      createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
     })
   )
 )(PhoneLogin);

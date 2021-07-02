@@ -16,8 +16,8 @@ import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
+import { loadOrder } from '../../redux/thunks';
 import {
-  actions as orderStatusActionCreators,
   getIsUseStorehubLogistics,
   getIsShowReorderButton,
   getOrder,
@@ -25,7 +25,7 @@ import {
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
-} from '../../redux/common';
+} from '../../redux/selector';
 import './OrderingDetails.scss';
 import { NativeMethods } from '../../../../../utils/dsbridge-methods';
 
@@ -464,7 +464,7 @@ export default compose(
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     {
-      loadOrder: orderStatusActionCreators.loadOrder,
+      loadOrder,
     }
   )
 )(OrderDetails);
