@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import StoreList from './components/StoreList';
-import HybridHeader from '../../../components/HybridHeader';
+import Header from '../../../components/Header';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import { checkStoreIsOpened, getBusinessDateTime } from '../../../utils/store-utils';
@@ -127,7 +127,7 @@ class Home extends Component {
     return (
       this.props.isHome && (
         <section className="store-list__content" data-heap-name="stores.home.container">
-          <HybridHeader
+          <Header
             className="flex-middle border__bottom-divider"
             contentClassName="flex-middle"
             data-heap-name="stores.home.header"
