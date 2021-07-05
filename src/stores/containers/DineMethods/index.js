@@ -12,7 +12,7 @@ import {
 } from '../../redux/modules/home';
 import { actions as tablesActionCreators, getTables } from '../../redux/modules/tables';
 import Constants from '../../../utils/constants';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import DineInImage from '../../../images/icon-dine-in.svg';
 import TakeAwayImage from '../../../images/icon-take-away.svg';
 import { IconNext } from '../../../components/Icons';
@@ -95,7 +95,7 @@ class DineMethods extends Component {
     return (
       afterLoadTables && (
         <section className="dine" data-heap-name="stores.dine-methods.container">
-          <Header
+          <HybridHeader
             className="flex-middle border__bottom-divider"
             contentClassName="flex-middle"
             data-heap-name="stores.dine-methods.header"
