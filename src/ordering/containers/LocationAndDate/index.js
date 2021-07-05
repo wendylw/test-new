@@ -60,9 +60,13 @@ class LocationAndDate extends Component {
     // if delivery address updated from location page, should trigger `initial action` find nearest store
     const storeId = deliveryAddressUpdate && deliveryAddress.coords ? null : config.storeId;
 
-    CleverTap.pushEvent(
-      `Shipping Details${_get(deliveryAddress, 'address', undefined) ? '' : ' (missing delivery address)'} - View Page`
-    );
+    if (deliveryType === DELIVERY_METHOD.DELIVERY) {
+      CleverTap.pushEvent(
+        `Shipping Details${
+          _get(deliveryAddress, 'address', undefined) ? '' : ' (missing delivery address)'
+        } - View Page`
+      );
+    }
 
     await actions.initial({
       currentDate: new Date(),
