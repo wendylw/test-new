@@ -34,11 +34,13 @@ class App extends Component {
 
     const { user } = this.props;
     const { isLogin } = user || {};
-    const appLogin = this.getAppLoginStatus();
 
-    // appLogin is true, isLogin is false
-    if (Utils.isWebview() && !isLogin && appLogin) {
-      await this.postAppMessage();
+    if (!isLogin && Utils.isWebview()) {
+      const appLogin = this.getAppLoginStatus();
+
+      if (!appLogin) {
+        await this.postAppMessage();
+      }
     }
   }
 
@@ -122,13 +124,14 @@ class App extends Component {
 
   render() {
     const { user } = this.props;
-    const appLogin = NativeMethods.getLoginStatus();
+    const isWebview = Utils.isWebview();
 
-    return !appLogin && Utils.isWebview() ? (
-      <RequestLogin user={user} onClick={this.postAppMessage} />
-    ) : (
-      this.renderMainContent()
-    );
+    // TODO: don't known why we need this code
+    if (isWebview && !this.getAppLoginStatus()) {
+      return <RequestLogin user={user} onClick={this.postAppMessage} />;
+    }
+
+    return this.renderMainContent();
   }
 }
 
