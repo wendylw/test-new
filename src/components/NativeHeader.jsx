@@ -5,14 +5,7 @@ import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
-import Utils from '../utils/utils';
 import * as dsBridgeUtils from '../utils/dsBridge-utils';
-
-if (Utils.isWebview()) {
-  window.addEventListener('unload', () => {
-    dsBridgeUtils.updateNativeHeaderToDefault();
-  });
-}
 
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;
@@ -73,6 +66,10 @@ class NativeHeader extends Component {
 
   componentDidUpdate() {
     this.updateNativeHeader();
+  }
+
+  componentWillUnmount() {
+    dsBridgeUtils.updateNativeHeaderToDefault();
   }
 
   registerEvents() {
