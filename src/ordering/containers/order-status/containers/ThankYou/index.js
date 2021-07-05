@@ -721,12 +721,6 @@ export class ThankYou extends PureComponent {
     }, ANIMATION_TIME);
   };
 
-  isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS, shippingType) => {
-    const { PICKUP } = CONSUMERFLOW_STATUS;
-    const { isHideTopArea } = this.state;
-
-    return !(isWebview && isHideTopArea && status === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY);
-  };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({ CONSUMERFLOW_STATUS, cashbackInfo, businessInfo, deliveryInformation, order }) {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
@@ -735,7 +729,7 @@ export class ThankYou extends PureComponent {
     let { storeInfo, status, isPreOrder } = order || {};
     let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
-    const { orderStatus } = this.props;
+    const { orderStatus, orderDelayReason } = this.props;
 
     let currentStatusObj = {};
     /** paid status */
@@ -781,7 +775,11 @@ export class ThankYou extends PureComponent {
     return (
       <>
         {this.renderOrderDelayMessage()}
-        <LogisticsProcessing useStorehubLogistics={useStorehubLogistics} orderStatus={orderStatus} />
+        <LogisticsProcessing
+          useStorehubLogistics={useStorehubLogistics}
+          orderStatus={orderStatus}
+          orderDelayReason={orderDelayReason}
+        />
         {currentStatusObj.status === 'confirmed' ||
         currentStatusObj.status === 'riderPickUp' ||
         currentStatusObj.status === 'delivered' ||
@@ -1264,9 +1262,9 @@ export class ThankYou extends PureComponent {
       storeHashCode,
       user,
       orderStatus,
+      orderDelayReason,
       orderCancellationButtonVisible,
       shippingType,
-      updatedToSelfPickupStatus,
     } = this.props;
     const date = new Date();
     const { orderId, tableId, deliveryInformation = [], storeInfo, cancelOperator, total } = order || {};
@@ -1376,7 +1374,8 @@ export class ThankYou extends PureComponent {
           >
             {!isWebview && this.renderDownloadBanner()}
             <OrderStatusDescription
-              status={orderStatus}
+              orderStatus={orderStatus}
+              orderDelayReason={orderDelayReason}
               shippingType={type}
               storeName={storeName}
               cancelOperator={cancelOperator || 'unknown'}

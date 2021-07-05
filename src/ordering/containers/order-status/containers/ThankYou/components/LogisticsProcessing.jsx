@@ -4,9 +4,18 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import { IconAccessTime, IconExpandMore } from '../../../../../../components/Icons';
 import Constants from '../../../../../../utils/constants';
+import { ORDER_DELAY_REASON_CODES } from '../constants';
 import './LogisticsProcessing.scss';
 
 const { ORDER_STATUS } = Constants;
+const RAINY_DESCRIPTION_MAPPING = {
+  badWeatherDescriptionKey: 'BadWeatherDescriptionKey',
+  badWeatherImage: (
+    <span className="margin-left-right-smaller" role="img" aria-label="Cloud with Rain">
+      🌧️
+    </span>
+  ),
+};
 const LOGISTIC_PROCESSING_MAPPING = {
   [ORDER_STATUS.PAID]: {
     activeTitleKey: 'OrderReceived',
@@ -23,18 +32,25 @@ const LOGISTIC_PROCESSING_MAPPING = {
     completeTitleKey: 'RiderFound',
     descriptionKey: 'FindingRider',
     descriptionIcon: <IconAccessTime className="icon icon__smaller icon__default" />,
+    checkBadWeather: true,
   },
   [ORDER_STATUS.CONFIRMED]: {
     activeTitleKey: 'PendingPickUp',
     descriptionKey: 'RiderAssigned',
+    checkBadWeather: true,
   },
   [ORDER_STATUS.LOGISTIC_CONFIRMED]: {
     activeTitleKey: 'PendingPickUp',
     descriptionKey: 'RiderAssigned',
+    checkBadWeather: true,
   },
 };
 
-function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
+function getBadWeatherStatus({ currentStepIndex, index, delayReason, checkBadWeather }) {
+  return delayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER && currentStepIndex === index && checkBadWeather;
+}
+
+function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayReason }) {
   const [expandProcessingList, setExpandProcessingList] = useState(false);
 
   if (!LOGISTIC_PROCESSING_MAPPING[orderStatus] || (!useStorehubLogistics && orderStatus !== ORDER_STATUS.PAID)) {
@@ -80,6 +96,17 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
                   {LOGISTIC_PROCESSING_MAPPING[step].descriptionImage || null}
                 </div>
               ) : null}
+              {getBadWeatherStatus({
+                currentStepIndex,
+                index,
+                orderDelayReason,
+                checkBadWeather: LOGISTIC_PROCESSING_MAPPING[step].checkBadWeather,
+              }) ? (
+                <div className="logistics-processing__step-description flex flex-middle padding-left-right-normal">
+                  <span>{t(RAINY_DESCRIPTION_MAPPING.badWeatherDescriptionKey)}</span>
+                  {RAINY_DESCRIPTION_MAPPING.badWeatherImage}
+                </div>
+              ) : null}
             </li>
           );
         })}
@@ -94,12 +121,14 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus }) {
 
 LogisticsProcessing.propTypes = {
   useStorehubLogistics: PropTypes.bool,
-  orderStatus: PropTypes.string,
+  orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
+  orderDelayReason: PropTypes.oneOf(Object.values(ORDER_DELAY_REASON_CODES)),
 };
 
 LogisticsProcessing.defaultProps = {
   useStorehubLogistics: false,
   orderStatus: null,
+  orderDelayReason: null,
 };
 
 export default compose(withTranslation('OrderingThankYou'))(LogisticsProcessing);
