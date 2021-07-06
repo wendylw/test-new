@@ -148,7 +148,7 @@ async function _fetch(url, opts) {
           detail: {
             type: opts.method,
             request: requestUrl,
-            error: e.toString(),
+            error: e.message,
             requestStart,
           },
         })

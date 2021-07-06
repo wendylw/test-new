@@ -42,7 +42,7 @@ function get(url, options = {}) {
             detail: {
               type: 'get',
               request: url,
-              error: error.toString(),
+              error: error.message,
               requestStart,
             },
           })
@@ -135,7 +135,7 @@ async function handleResponse(url, response, method, requestStart) {
             detail: {
               type: method,
               request: url,
-              error: e.toString(),
+              error: e.message,
               requestStart,
             },
           })
@@ -167,7 +167,7 @@ async function handleResponse(url, response, method, requestStart) {
             detail: {
               type: method,
               request: url,
-              error: e.toString(),
+              error: e.message,
               requestStart,
             },
           })
