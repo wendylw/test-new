@@ -726,47 +726,47 @@ export class ThankYou extends PureComponent {
     const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
-    let { storeInfo, status, isPreOrder } = order || {};
+    let { storeInfo, isPreOrder } = order || {};
     let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
       deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const { orderStatus, orderDelayReason } = this.props;
 
     let currentStatusObj = {};
     /** paid status */
-    if (status === PAID) {
+    if (orderStatus === PAID) {
       currentStatusObj = {
         status: 'paid',
       };
     }
 
     /** accepted status */
-    if (status === ACCEPTED) {
+    if (orderStatus === ACCEPTED) {
       currentStatusObj = {
         status: 'accepted',
       };
     }
 
     /** logistic confirmed and confirmed */
-    if (status === CONFIMRMED || status === LOGISTIC_CONFIRMED) {
+    if (orderStatus === CONFIMRMED || orderStatus === LOGISTIC_CONFIRMED) {
       currentStatusObj = {
         status: 'confirmed',
       };
     }
 
     /** pickup status */
-    if (status === PICKUP) {
+    if (orderStatus === PICKUP) {
       currentStatusObj = {
         status: 'riderPickUp',
       };
     }
 
-    if (status === DELIVERED) {
+    if (orderStatus === DELIVERED) {
       currentStatusObj = {
         status: 'delivered',
       };
     }
 
-    if (status === CANCELLED) {
+    if (orderStatus === CANCELLED) {
       currentStatusObj = {
         status: 'cancelled',
       };
