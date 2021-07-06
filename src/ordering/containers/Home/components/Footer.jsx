@@ -57,7 +57,9 @@ export class Footer extends Component {
     if (isLogin) {
       this.handleWebRedirect();
     } else {
-      const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
+      const res = isExpired
+        ? await NativeMethods.tokenExpiredAsync(touchPoint)
+        : await NativeMethods.getTokenAsync(touchPoint);
       if (_isNil(res)) {
         loggly.error('ordering.home.footer', { message: 'native token is invalid' });
       } else {

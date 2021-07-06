@@ -89,7 +89,9 @@ class App extends Component {
     const { isExpired } = user || {};
     const touchPoint = 'ClaimCashback';
 
-    const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
+    const res = isExpired
+      ? await NativeMethods.tokenExpiredAsync(touchPoint)
+      : await NativeMethods.getTokenAsync(touchPoint);
     if (_isNil(res)) {
       loggly.error('cashback.post-app-message', { message: 'native token is invalid' });
     } else {

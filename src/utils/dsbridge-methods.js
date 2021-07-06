@@ -41,69 +41,69 @@ export const NativeMethods = {
         email,
         message,
       },
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
   getAddress: () => {
     const data = {
       method: 'beepModule-getAddress',
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
   closeWebView: () => {
     const data = {
       method: 'routerModule-closeWebView',
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
   goBack: () => {
     const data = {
       method: 'routerModule-back',
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
   getLoginStatus: () => {
     const data = {
       method: 'userModule-isLogin',
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
-  getToken: touchPoint => {
+  getTokenAsync: touchPoint => {
     const data = {
       method: 'userModule-getToken',
       params: {
         touchPoint,
       },
-      mode: 'async',
+      mode: MODE.ASYNC,
     };
     return dsBridgeCall(data);
   },
-  tokenExpired: touchPoint => {
+  tokenExpiredAsync: touchPoint => {
     const data = {
       method: 'userModule-tokenExpired',
       params: {
         touchPoint,
       },
-      mode: 'async',
+      mode: MODE.ASYNC,
     };
     return dsBridgeCall(data);
   },
   showMap: () => {
     const data = {
       method: 'mapModule-showMap',
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
   hideMap: () => {
     const data = {
       method: 'mapModule-hideMap',
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
@@ -114,7 +114,7 @@ export const NativeMethods = {
         lat,
         lng,
       },
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
@@ -125,7 +125,7 @@ export const NativeMethods = {
         lat,
         lng,
       },
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
@@ -136,7 +136,7 @@ export const NativeMethods = {
         lat,
         lng,
       },
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
@@ -146,7 +146,7 @@ export const NativeMethods = {
       params: {
         positions: focusPositionList,
       },
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
@@ -157,14 +157,14 @@ export const NativeMethods = {
         area,
         data: config,
       },
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },
   gotoHome: () => {
     const data = {
       method: 'routerModule-gotoHome',
-      mode: 'sync',
+      mode: MODE.SYNC,
     };
     return dsBridgeCall(data);
   },

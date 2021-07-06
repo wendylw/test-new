@@ -49,12 +49,12 @@ class ReportDriver extends Component {
     await loadOrder(receiptNumber);
 
     if (Utils.isWebview() && !user?.isLogin) {
-      const result = await NativeMethods.getToken();
+      const result = await NativeMethods.getTokenAsync();
       await this.loginAppWithNativeToken(result);
 
       const { user } = this.props;
       if (!user.isLogin && user.isExpired) {
-        const result = await NativeMethods.tokenExpired();
+        const result = await NativeMethods.tokenExpiredAsync();
         await this.loginAppWithNativeToken(result);
       }
     }
