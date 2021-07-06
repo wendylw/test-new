@@ -1,13 +1,33 @@
 import dsbridge from 'dsbridge';
-import _isNil from 'lodash/isNil';
 import loggly from './monitoring/loggly';
 
-export const StatusCodes = {
+const MODE = {
+  SYNC: 'sync',
+  ASYNC: 'async',
+};
+
+export const NATIVE_API_ERROR_CODES = {
   SUCCESS: '00000',
   PARAM_ERROR: 'A0400',
   METHOD_NOT_EXIST: 'C0113',
   UNKNOWN_ERROR: 'B0001',
 };
+
+export class NativeAPIError extends Error {
+  constructor(message, code = NATIVE_API_ERROR_CODES.UNKNOWN_ERROR, extra) {
+    super(message);
+    this.code = code;
+    this.extra = extra;
+  }
+
+  toJSON() {
+    return {
+      message: this.message,
+      code: this.code,
+      extra: this.extra,
+    };
+  }
+}
 
 export const NativeMethods = {
   startChat: ({ orderId, phone, name, email, storeName }) => {
@@ -166,55 +186,72 @@ const dsbridgeCall = nativeMethod => {
   const hasNativeMethod = hasMethodInNative(method);
 
   if (!hasNativeMethod) {
-    throw new Error(`Native side didn't have method: ${method}`);
+    throw new NativeAPIError(`Couldn't find the method: ${method}`, NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST, {
+      method,
+    });
   }
-  if (mode === 'sync') {
-    return dsbridgeSyncCall(method, params);
-  }
-  if (mode === 'async') {
-    return dsbridgeAsyncCall(method, params);
+
+  switch (mode) {
+    case MODE.SYNC:
+      return dsbridgeSyncCall(method, params);
+    case MODE.ASYNC:
+      return dsbridgeAsyncCall(method, params);
+    default:
+      throw new NativeAPIError("'mode' should be one of 'sync' or 'async'", NATIVE_API_ERROR_CODES.INVALID_ARGUMENT, {
+        mode,
+      });
   }
 };
 
 const dsbridgeSyncCall = (method, params) => {
   try {
     const result = dsbridge.call('callNative', { method, params });
+
     console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
 
     const { code, data, message } = JSON.parse(result);
-    if (_isNil(data)) {
-      return;
+
+    if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
+      throw new NativeAPIError(message, code, data);
     }
-    if (code === StatusCodes.SUCCESS) {
-      return data;
-    }
-    throw new Error(message);
-  } catch (e) {
-    loggly.error('dsbridge-methods.dsbridge-sync-call', { message: e });
-    // TODO: handle the error in external calling function
-    throw e;
+
+    return data;
+  } catch (error) {
+    const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
+
+    loggly.error('dsbridge-methods.dsbridge-sync-call', errorData);
+
+    throw error;
   }
 };
 
 const dsbridgeAsyncCall = (method, params) => {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
-      console.log('Call native method: %s\n\nparams: %s\n\n');
+      console.log('Call async native method: %s\n\nparams: %s\n\n');
 
       dsbridge.call('callNativeAsync', { method, params }, result => {
         const { code, data, message } = JSON.parse(result);
-        console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
 
-        if (code === StatusCodes.SUCCESS) {
-          resolve(data);
-        } else {
-          throw new Error(message);
+        console.log(
+          'Call async native method: %s\n\nparams: %s\n\nresult: %s\n\n',
+          method,
+          JSON.stringify(params),
+          result
+        );
+
+        if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
+          throw new NativeAPIError(message, code, data);
         }
+
+        resolve(data);
       });
-    } catch (e) {
-      loggly.error('dsbridge-methods.dsbridge-async-call', { message: e });
-      reject(e);
+    } catch (error) {
+      const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
+
+      loggly.error('dsbridge-methods.dsbridge-async-call', errorData);
+
+      reject(error);
     }
   });
-  return promise;
 };
