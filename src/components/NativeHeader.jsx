@@ -6,13 +6,6 @@ import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 import * as dsBridgeUtils from '../utils/dsBridge-utils';
-import Utils from '../utils/utils';
-
-if (Utils.isWebview()) {
-  window.addEventListener('pagehide', () => {
-    dsBridgeUtils.updateNativeHeaderToDefault();
-  });
-}
 
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;
@@ -57,11 +50,18 @@ function getNativeHeaderParams(props) {
 class NativeHeader extends Component {
   prevNativeHeaderParams = null;
 
-  nextNativeHeaderParams = getNativeHeaderParams(this.props);
+  nextNativeHeaderParams = null;
 
   componentDidMount() {
-    this.updateNativeHeader();
+    const nativeHeaderParams = getNativeHeaderParams(this.props);
+
+    dsBridgeUtils.updateNativeHeader(nativeHeaderParams);
+
+    this.prevNativeHeaderParams = nativeHeaderParams;
+
     this.registerEvents();
+
+    window.addEventListener('pageshow', this.handleWindowPageShow);
   }
 
   // performance optimization
@@ -72,8 +72,19 @@ class NativeHeader extends Component {
   }
 
   componentDidUpdate() {
-    this.updateNativeHeader();
+    dsBridgeUtils.updateNativeHeader(this.nextNativeHeaderParams);
+
+    this.prevNativeHeaderParams = this.nextNativeHeaderParams;
+    this.nextNativeHeaderParams = null;
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('pageshow', this.handleWindowPageShow);
+  }
+
+  handleWindowPageShow = () => {
+    dsBridgeUtils.updateNativeHeader(this.prevNativeHeaderParams);
+  };
 
   registerEvents() {
     dsBridgeUtils.registerFunc([
@@ -96,13 +107,6 @@ class NativeHeader extends Component {
         },
       },
     ]);
-  }
-
-  updateNativeHeader() {
-    dsBridgeUtils.updateNativeHeader(this.nextNativeHeaderParams);
-
-    this.prevNativeHeaderParams = this.nextNativeHeaderParams;
-    this.nextNativeHeaderParams = null;
   }
 
   render() {
