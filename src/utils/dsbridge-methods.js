@@ -1,4 +1,4 @@
-import dsbridge from 'dsbridge';
+import dsBridge from 'dsbridge';
 import loggly from './monitoring/loggly';
 
 const MODE = {
@@ -43,35 +43,35 @@ export const NativeMethods = {
       },
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   getAddress: () => {
     const data = {
       method: 'beepModule-getAddress',
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   closeWebView: () => {
     const data = {
       method: 'routerModule-closeWebView',
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   goBack: () => {
     const data = {
       method: 'routerModule-back',
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   getLoginStatus: () => {
     const data = {
       method: 'userModule-isLogin',
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   getToken: touchPoint => {
     const data = {
@@ -81,7 +81,7 @@ export const NativeMethods = {
       },
       mode: 'async',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   tokenExpired: touchPoint => {
     const data = {
@@ -91,21 +91,21 @@ export const NativeMethods = {
       },
       mode: 'async',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   showMap: () => {
     const data = {
       method: 'mapModule-showMap',
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   hideMap: () => {
     const data = {
       method: 'mapModule-hideMap',
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   updateRiderPosition: (lat, lng) => {
     const data = {
@@ -116,7 +116,7 @@ export const NativeMethods = {
       },
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   updateHomePosition: (lat, lng) => {
     const data = {
@@ -127,7 +127,7 @@ export const NativeMethods = {
       },
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   updateStorePosition: (lat, lng) => {
     const data = {
@@ -138,7 +138,7 @@ export const NativeMethods = {
       },
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   focusPositions: focusPositionList => {
     const data = {
@@ -148,7 +148,7 @@ export const NativeMethods = {
       },
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   nativeLayout: (area, config) => {
     const data = {
@@ -159,30 +159,30 @@ export const NativeMethods = {
       },
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
   gotoHome: () => {
     const data = {
       method: 'routerModule-gotoHome',
       mode: 'sync',
     };
-    return dsbridgeCall(data);
+    return dsBridgeCall(data);
   },
 };
 
 const hasMethodInNative = method => {
   try {
     const { data: hasNativeMethod } = JSON.parse(
-      dsbridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
+      dsBridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
     );
     return hasNativeMethod;
   } catch (e) {
-    loggly.error('dsbridge-methods.has-native-method', { message: e });
+    loggly.error('dsBridge-methods.hasNativeMethod', { message: e });
     return false;
   }
 };
 
-const dsbridgeCall = nativeMethod => {
+const dsBridgeCall = nativeMethod => {
   const { method, params, mode } = nativeMethod || {};
   const hasNativeMethod = hasMethodInNative(method);
 
@@ -194,9 +194,9 @@ const dsbridgeCall = nativeMethod => {
 
   switch (mode) {
     case MODE.SYNC:
-      return dsbridgeSyncCall(method, params);
+      return dsBridgeSyncCall(method, params);
     case MODE.ASYNC:
-      return dsbridgeAsyncCall(method, params);
+      return dsBridgeAsyncCall(method, params);
     default:
       throw new NativeAPIError("'mode' should be one of 'sync' or 'async'", NATIVE_API_ERROR_CODES.INVALID_ARGUMENT, {
         mode,
@@ -204,9 +204,9 @@ const dsbridgeCall = nativeMethod => {
   }
 };
 
-const dsbridgeSyncCall = (method, params) => {
+const dsBridgeSyncCall = (method, params) => {
   try {
-    const result = dsbridge.call('callNative', { method, params });
+    const result = dsBridge.call('callNative', { method, params });
 
     console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
 
@@ -220,18 +220,18 @@ const dsbridgeSyncCall = (method, params) => {
   } catch (error) {
     const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
 
-    loggly.error('dsbridge-methods.dsbridge-sync-call', errorData);
+    loggly.error(`dsBridge-methods.${method}`, errorData);
 
     throw error;
   }
 };
 
-const dsbridgeAsyncCall = (method, params) => {
+const dsBridgeAsyncCall = (method, params) => {
   return new Promise((resolve, reject) => {
     try {
       console.log('Call async native method: %s\n\nparams: %s\n\n');
 
-      dsbridge.call('callNativeAsync', { method, params }, result => {
+      dsBridge.call('callNativeAsync', { method, params }, result => {
         const { code, data, message } = JSON.parse(result);
 
         console.log(
@@ -250,7 +250,7 @@ const dsbridgeAsyncCall = (method, params) => {
     } catch (error) {
       const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
 
-      loggly.error('dsbridge-methods.dsbridge-async-call', errorData);
+      loggly.error(`dsBridge-methods.${method}`, errorData);
 
       reject(error);
     }
