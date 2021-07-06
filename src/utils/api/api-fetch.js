@@ -1,4 +1,5 @@
 import originalKy from 'ky';
+import qs from 'qs';
 import { getClientSource } from './api-utils';
 
 export const ky = originalKy.create({
@@ -88,9 +89,9 @@ function formatResponseData(url, result) {
  * @param {object} options.headers headers in request
  */
 async function _fetch(url, opts) {
-  const queryStr = new URLSearchParams(opts.searchParams).toString();
+  const queryStr = qs.stringify(opts.searchParams, { addQueryPrefix: true });
   const requestStart = new Date().valueOf();
-  const requestUrl = queryStr.length === 0 ? url : `${url}?${queryStr}`;
+  const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
   try {
     const resp = await ky(url, opts);
 
