@@ -20,6 +20,7 @@ export class NativeAPIError extends Error {
     this.extra = extra;
   }
 
+  //Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior
   toJSON() {
     return {
       message: this.message,
