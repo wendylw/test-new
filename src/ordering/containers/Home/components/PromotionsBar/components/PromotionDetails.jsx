@@ -1,25 +1,19 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import HybridHeader from '../../../../../../components/HybridHeader';
-import Utils from '../../../../../../utils/utils';
-import { updateNativeHeaderToDefault } from '../../../../../../utils/dsBridge-utils';
+import WebHeader from '../../../../../../components/WebHeader';
 import PromotionContent from './PromotionContent';
 import _isFunction from 'lodash/isFunction';
 
 function PromotionDetails({ onHide, promotions, show, inApp }) {
   const { t } = useTranslation('OrderingHome');
   const handleHide = useCallback(() => {
-    if (Utils.isWebview()) {
-      updateNativeHeaderToDefault();
-    }
-
     _isFunction(onHide) && onHide();
   }, [onHide]);
 
   return (
     <aside className={`promotions-bar__details aside fixed-wrapper ${show ? 'active' : ''}`}>
       <div className="promotions-bar__details-container aside__content">
-        <HybridHeader
+        <WebHeader
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={false}
