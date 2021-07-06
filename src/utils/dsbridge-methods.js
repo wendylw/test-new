@@ -199,6 +199,8 @@ const dsbridgeSyncCall = (method, params) => {
 const dsbridgeAsyncCall = (method, params) => {
   const promise = new Promise((resolve, reject) => {
     try {
+      console.log('Call native method: %s\n\nparams: %s\n\n');
+
       dsbridge.call('callNativeAsync', { method, params }, result => {
         const { code, data, message } = JSON.parse(result);
         console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
