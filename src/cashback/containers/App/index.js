@@ -25,6 +25,10 @@ import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 
 class App extends Component {
+  state = {
+    showAppLoginPage: false,
+  };
+
   async componentDidMount() {
     const { appActions } = this.props;
     this.visitErrorPage();
@@ -35,10 +39,14 @@ class App extends Component {
     const { user } = this.props;
     const { isLogin } = user || {};
 
-    if (!isLogin && Utils.isWebview()) {
+    if (Utils.isWebview()) {
       const appLogin = this.getAppLoginStatus();
 
-      if (!appLogin) {
+      this.setState({
+        showAppLoginPage: !appLogin && !isLogin,
+      });
+
+      if (appLogin && !isLogin) {
         await this.postAppMessage();
       }
     }
@@ -68,6 +76,10 @@ class App extends Component {
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
+      this.setState({
+        showAppLoginPage: false,
+      });
+
       appActions.loadCustomerProfile();
     }
   };
@@ -124,10 +136,9 @@ class App extends Component {
 
   render() {
     const { user } = this.props;
-    const isWebview = Utils.isWebview();
+    const { showAppLoginPage } = this.state;
 
-    // TODO: don't known why we need this code
-    if (isWebview && !this.getAppLoginStatus()) {
+    if (showAppLoginPage) {
       return <RequestLogin user={user} onClick={this.postAppMessage} />;
     }
 
