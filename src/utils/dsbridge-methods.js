@@ -179,6 +179,8 @@ const dsbridgeCall = nativeMethod => {
 const dsbridgeSyncCall = (method, params) => {
   try {
     const result = dsbridge.call('callNative', { method, params });
+    console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
+
     const { code, data, message } = JSON.parse(result);
     if (_isNil(data)) {
       return;
@@ -199,6 +201,8 @@ const dsbridgeAsyncCall = (method, params) => {
     try {
       dsbridge.call('callNativeAsync', { method, params }, result => {
         const { code, data, message } = JSON.parse(result);
+        console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
+
         if (code === StatusCodes.SUCCESS) {
           resolve(data);
         } else {
