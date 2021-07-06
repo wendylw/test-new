@@ -46,10 +46,6 @@ const LOGISTIC_PROCESSING_MAPPING = {
   },
 };
 
-function getBadWeatherStatus({ currentStepIndex, index, delayReason, checkBadWeather }) {
-  return delayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER && currentStepIndex === index && checkBadWeather;
-}
-
 function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayReason }) {
   const [expandProcessingList, setExpandProcessingList] = useState(false);
 
@@ -60,6 +56,7 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayR
   const processingList = Object.keys(LOGISTIC_PROCESSING_MAPPING);
   const currentStatusIndex = processingList.findIndex(step => step === orderStatus);
   const currentStepIndex = currentStatusIndex > 2 ? 2 : currentStatusIndex;
+  const rainyWeather = orderDelayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER;
 
   return (
     <div className="card padding-small margin-normal flex flex-top flex-space-between">
@@ -90,22 +87,22 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayR
                   : t(LOGISTIC_PROCESSING_MAPPING[step].completeTitleKey)}
               </h4>
               {currentStepIndex === index ? (
-                <div className="logistics-processing__step-description flex flex-middle padding-left-right-normal">
-                  {LOGISTIC_PROCESSING_MAPPING[step].descriptionIcon || null}
-                  <span>{t(LOGISTIC_PROCESSING_MAPPING[step].descriptionKey)}</span>
-                  {LOGISTIC_PROCESSING_MAPPING[step].descriptionImage || null}
-                </div>
-              ) : null}
-              {getBadWeatherStatus({
-                currentStepIndex,
-                index,
-                orderDelayReason,
-                checkBadWeather: LOGISTIC_PROCESSING_MAPPING[step].checkBadWeather,
-              }) ? (
-                <div className="logistics-processing__step-description flex flex-middle padding-left-right-normal">
-                  <span>{t(RAINY_DESCRIPTION_MAPPING.badWeatherDescriptionKey)}</span>
-                  {RAINY_DESCRIPTION_MAPPING.badWeatherImage}
-                </div>
+                <>
+                  {rainyWeather && currentStatusIndex > 1 ? null : (
+                    <div className="logistics-processing__step-description flex flex-middle padding-left-right-normal">
+                      {LOGISTIC_PROCESSING_MAPPING[step].descriptionIcon || null}
+                      <span>{t(LOGISTIC_PROCESSING_MAPPING[step].descriptionKey)}</span>
+                      {LOGISTIC_PROCESSING_MAPPING[step].descriptionImage || null}
+                    </div>
+                  )}
+
+                  {rainyWeather && LOGISTIC_PROCESSING_MAPPING[step].checkBadWeather ? (
+                    <div className="logistics-processing__step-description flex flex-middle padding-left-right-normal">
+                      <span>{t(RAINY_DESCRIPTION_MAPPING.badWeatherDescriptionKey)}</span>
+                      {RAINY_DESCRIPTION_MAPPING.badWeatherImage}
+                    </div>
+                  ) : null}
+                </>
               ) : null}
             </li>
           );
