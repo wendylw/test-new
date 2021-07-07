@@ -2,7 +2,7 @@ import dsBridge from 'dsbridge';
 import _find from 'lodash/find';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
-import loggly from './monitoring/loggly';
+import * as loggly from './monitoring/loggly';
 
 const MODE = {
   SYNC: 'sync',
@@ -32,6 +32,18 @@ export class NativeAPIError extends Error {
     };
   }
 }
+
+const hasMethodInNative = method => {
+  try {
+    const { data: hasNativeMethod } = JSON.parse(
+      dsBridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
+    );
+    return hasNativeMethod;
+  } catch (e) {
+    loggly.error('dsBridge-methods.hasNativeMethod', { message: e });
+    return false;
+  }
+};
 
 const dsBridgeSyncCall = (method, params) => {
   try {
@@ -85,13 +97,31 @@ const dsBridgeAsyncCall = (method, params) =>
     }
   });
 
-export const getWebviewSource = () => {
-  return window.webViewSource;
+const dsBridgeCall = nativeMethod => {
+  const { method, params, mode } = nativeMethod || {};
+  const hasNativeMethod = hasMethodInNative(method);
+
+  if (!hasNativeMethod) {
+    throw new NativeAPIError(`Couldn't find the method: ${method}`, NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST, {
+      method,
+    });
+  }
+
+  switch (mode) {
+    case MODE.SYNC:
+      return dsBridgeSyncCall(method, params);
+    case MODE.ASYNC:
+      return dsBridgeAsyncCall(method, params);
+    default:
+      throw new NativeAPIError("'mode' should be one of 'sync' or 'async'", NATIVE_API_ERROR_CODES.INVALID_ARGUMENT, {
+        mode,
+      });
+  }
 };
 
-export const getBeepAppVersion = () => {
-  return window.beepAppVersion;
-};
+export const getWebviewSource = () => window.webViewSource;
+
+export const getBeepAppVersion = () => window.beepAppVersion;
 
 export const startChat = ({ orderId, phone, name, email, storeName }) => {
   const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
@@ -245,40 +275,6 @@ export const gotoHome = () => {
     mode: MODE.SYNC,
   };
   return dsBridgeCall(data);
-};
-
-const hasMethodInNative = method => {
-  try {
-    const { data: hasNativeMethod } = JSON.parse(
-      dsBridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
-    );
-    return hasNativeMethod;
-  } catch (e) {
-    loggly.error('dsBridge-methods.hasNativeMethod', { message: e });
-    return false;
-  }
-};
-
-const dsBridgeCall = nativeMethod => {
-  const { method, params, mode } = nativeMethod || {};
-  const hasNativeMethod = hasMethodInNative(method);
-
-  if (!hasNativeMethod) {
-    throw new NativeAPIError(`Couldn't find the method: ${method}`, NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST, {
-      method,
-    });
-  }
-
-  switch (mode) {
-    case MODE.SYNC:
-      return dsBridgeSyncCall(method, params);
-    case MODE.ASYNC:
-      return dsBridgeAsyncCall(method, params);
-    default:
-      throw new NativeAPIError("'mode' should be one of 'sync' or 'async'", NATIVE_API_ERROR_CODES.INVALID_ARGUMENT, {
-        mode,
-      });
-  }
 };
 
 export const updateNativeHeader = ({ left, center, right } = {}) => {

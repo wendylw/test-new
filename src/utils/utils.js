@@ -6,7 +6,6 @@ import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
-import { getWebviewSource } from './native-methods';
 dayjs.extend(utc);
 
 const { SH_LOGISTICS_VALID_TIME, WEB_VIEW_SOURCE, CLIENTS } = Constants;
@@ -40,11 +39,11 @@ Utils.isWebview = function isWebview() {
 
 // still need to distinguish ios webview and android webview
 Utils.isIOSWebview = function isIOSWebview() {
-  return getWebviewSource() === WEB_VIEW_SOURCE.IOS;
+  return window.webViewSource === WEB_VIEW_SOURCE.IOS;
 };
 
 Utils.isAndroidWebview = function isAndroidWebview() {
-  return getWebviewSource() === WEB_VIEW_SOURCE.Android;
+  return window.webViewSource === WEB_VIEW_SOURCE.Android;
 };
 
 Utils.getQueryVariable = variable => {
