@@ -3,6 +3,7 @@ import _find from 'lodash/find';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import * as loggly from './monitoring/loggly';
+import debug from './debug';
 
 const MODE = {
   SYNC: 'sync',
@@ -49,7 +50,7 @@ const dsBridgeSyncCall = (method, params) => {
   try {
     const result = dsBridge.call('callNative', { method, params });
 
-    console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
+    debug('NativeMethod: %s\nparams: %o\nresult: %s\n', method, params, result);
 
     const { code, data, message } = JSON.parse(result);
 
@@ -70,17 +71,12 @@ const dsBridgeSyncCall = (method, params) => {
 const dsBridgeAsyncCall = (method, params) =>
   new Promise((resolve, reject) => {
     try {
-      console.log('Call async native method: %s\n\nparams: %s\n\n');
+      debug('Start NativeMethod: %s\nparams: %o\n', method, params);
 
       dsBridge.call('callNativeAsync', { method, params }, result => {
         const { code, data, message } = JSON.parse(result);
 
-        console.log(
-          'Call async native method: %s\n\nparams: %s\n\nresult: %s\n\n',
-          method,
-          JSON.stringify(params),
-          result
-        );
+        debug('NativeMethod: %s\nparams: %o\nresult: %s\n', method, params, result);
 
         if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
           throw new NativeAPIError(message, code, data);
