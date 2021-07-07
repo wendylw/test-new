@@ -53,7 +53,9 @@ class ContactDetail extends Component {
           navFunc={this.handleClickBack.bind(this)}
         />
         <section className="contact-details__container padding-left-right-normal">
-          <p className="text-size-small text-line-height-base text-opacity">{t('ContactTip')}</p>
+          <p className="text-size-small text-line-height-base text-opacity margin-top-bottom-normal">
+            {t('ContactTip')}
+          </p>
           <div className="margin-top-bottom-normal">
             <form>
               <div className="padding-top-bottom-small">
