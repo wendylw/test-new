@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const isDebugEnable = () => {
   try {
-    return process.env.NODE_ENV === 'development' || window.document.cookie.indexOf('__DEBUG__') !== -1;
+    return process.env.NODE_ENV === 'development' || window.document.cookie.indexOf('__SH__DEBUG__=1') !== -1;
   } catch (e) {
     return false;
   }
