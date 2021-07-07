@@ -85,6 +85,14 @@ const dsBridgeAsyncCall = (method, params) =>
     }
   });
 
+export const getWebviewSource = () => {
+  return window.webViewSource;
+};
+
+export const getBeepAppVersion = () => {
+  return window.beepAppVersion;
+};
+
 export const startChat = ({ orderId, phone, name, email, storeName }) => {
   const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
   const data = {
