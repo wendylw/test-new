@@ -252,6 +252,8 @@ class LocationAndDate extends Component {
       const storeHasChanged = storeId !== config.storeId;
 
       if (deliveryTypeHasChanged) {
+        await CleverTap.pushEvent(`Shipping Details - Switched to ${deliveryType}`);
+
         this.gotoOrderingHomePage(deliveryType, h);
         return;
       }
