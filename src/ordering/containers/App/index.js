@@ -21,7 +21,7 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
-import { NativeMethods } from '../../../utils/dsbridge-methods';
+import * as NativeMethods from '../../../utils/native-methods';
 import loggly from '../../../utils/monitoring/loggly';
 
 const { ROUTER_PATHS } = Constants;

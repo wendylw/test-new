@@ -19,12 +19,16 @@ import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
-import { NativeMethods } from '../../../utils/dsbridge-methods';
+import * as NativeMethods from '../../../utils/native-methods';
 import Utils from '../../../utils/utils';
 import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 
 class App extends Component {
+  state = {
+    showAppLoginPage: false,
+  };
+
   async componentDidMount() {
     const { appActions } = this.props;
     this.visitErrorPage();
@@ -34,11 +38,17 @@ class App extends Component {
 
     const { user } = this.props;
     const { isLogin } = user || {};
-    const appLogin = this.getAppLoginStatus();
 
-    // appLogin is true, isLogin is false
-    if (Utils.isWebview() && !isLogin && appLogin) {
-      await this.postAppMessage();
+    if (Utils.isWebview()) {
+      const appLogin = this.getAppLoginStatus();
+
+      this.setState({
+        showAppLoginPage: !appLogin && !isLogin,
+      });
+
+      if (appLogin && !isLogin) {
+        await this.postAppMessage();
+      }
     }
   }
 
@@ -66,6 +76,10 @@ class App extends Component {
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
+      this.setState({
+        showAppLoginPage: false,
+      });
+
       appActions.loadCustomerProfile();
     }
   };
@@ -75,7 +89,9 @@ class App extends Component {
     const { isExpired } = user || {};
     const touchPoint = 'ClaimCashback';
 
-    const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
+    const res = isExpired
+      ? await NativeMethods.tokenExpiredAsync(touchPoint)
+      : await NativeMethods.getTokenAsync(touchPoint);
     if (_isNil(res)) {
       loggly.error('cashback.post-app-message', { message: 'native token is invalid' });
     } else {
@@ -122,13 +138,13 @@ class App extends Component {
 
   render() {
     const { user } = this.props;
-    const appLogin = NativeMethods.getLoginStatus();
+    const { showAppLoginPage } = this.state;
 
-    return !appLogin && Utils.isWebview() ? (
-      <RequestLogin user={user} onClick={this.postAppMessage} />
-    ) : (
-      this.renderMainContent()
-    );
+    if (showAppLoginPage) {
+      return <RequestLogin user={user} onClick={this.postAppMessage} />;
+    }
+
+    return this.renderMainContent();
   }
 }
 

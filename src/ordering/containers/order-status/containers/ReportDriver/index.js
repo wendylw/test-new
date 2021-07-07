@@ -33,7 +33,7 @@ import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser 
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
-import { NativeMethods } from '../../../../../utils/dsbridge-methods';
+import * as NativeMethods from '../../../../../utils/native-methods';
 import loggly from '../../../../../utils/monitoring/loggly';
 
 const NOTE_MAX_LENGTH = 140;
@@ -49,12 +49,12 @@ class ReportDriver extends Component {
     await loadOrder(receiptNumber);
 
     if (Utils.isWebview() && !user?.isLogin) {
-      const result = await NativeMethods.getToken();
+      const result = await NativeMethods.getTokenAsync();
       await this.loginAppWithNativeToken(result);
 
       const { user } = this.props;
       if (!user.isLogin && user.isExpired) {
-        const result = await NativeMethods.tokenExpired();
+        const result = await NativeMethods.tokenExpiredAsync();
         await this.loginAppWithNativeToken(result);
       }
     }

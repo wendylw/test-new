@@ -13,7 +13,7 @@ import {
   getUser,
   getBusinessInfo,
 } from '../../../../../../redux/modules/app';
-import { NativeMethods } from '../../../../../../../utils/dsbridge-methods';
+import * as NativeMethods from '../../../../../../../utils/native-methods';
 import { getCashbackInfo } from '../../redux/selector';
 import { loadCashbackInfo, createCashbackInfo } from '../../redux/thunks';
 import './PhoneLogin.scss';
@@ -54,7 +54,7 @@ class PhoneLogin extends React.Component {
     });
 
     if (Utils.isWebview()) {
-      const res = await NativeMethods.getToken();
+      const res = await NativeMethods.getTokenAsync();
       if (_isNil(res)) {
         loggly.error('order-status.thank-you.phone-login', { message: 'native token is invalid' });
       } else {

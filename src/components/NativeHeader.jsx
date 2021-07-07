@@ -5,14 +5,7 @@ import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
-import Utils from '../utils/utils';
-import * as dsBridgeUtils from '../utils/dsBridge-utils';
-
-if (Utils.isWebview()) {
-  window.addEventListener('unload', () => {
-    dsBridgeUtils.updateNativeHeaderToDefault();
-  });
-}
+import * as NativeMethods from '../utils/native-methods';
 
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;
@@ -57,11 +50,18 @@ function getNativeHeaderParams(props) {
 class NativeHeader extends Component {
   prevNativeHeaderParams = null;
 
-  nextNativeHeaderParams = getNativeHeaderParams(this.props);
+  nextNativeHeaderParams = null;
 
   componentDidMount() {
-    this.updateNativeHeader();
+    const nativeHeaderParams = getNativeHeaderParams(this.props);
+
+    NativeMethods.updateNativeHeader(nativeHeaderParams);
+
+    this.prevNativeHeaderParams = nativeHeaderParams;
+
     this.registerEvents();
+
+    window.addEventListener('pageshow', this.handleWindowPageShow);
   }
 
   // performance optimization
@@ -72,11 +72,22 @@ class NativeHeader extends Component {
   }
 
   componentDidUpdate() {
-    this.updateNativeHeader();
+    NativeMethods.updateNativeHeader(this.nextNativeHeaderParams);
+
+    this.prevNativeHeaderParams = this.nextNativeHeaderParams;
+    this.nextNativeHeaderParams = null;
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('pageshow', this.handleWindowPageShow);
+  }
+
+  handleWindowPageShow = () => {
+    NativeMethods.updateNativeHeader(this.prevNativeHeaderParams);
+  };
+
   registerEvents() {
-    dsBridgeUtils.registerFunc([
+    NativeMethods.registerFunc([
       {
         type: 'onClick',
         targetId: 'headerBackButton',
@@ -96,13 +107,6 @@ class NativeHeader extends Component {
         },
       },
     ]);
-  }
-
-  updateNativeHeader() {
-    dsBridgeUtils.updateNativeHeader(this.nextNativeHeaderParams);
-
-    this.prevNativeHeaderParams = this.nextNativeHeaderParams;
-    this.nextNativeHeaderParams = null;
   }
 
   render() {

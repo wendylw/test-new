@@ -17,7 +17,7 @@ import { getAllBusinesses } from '../../../../redux/modules/entities/businesses'
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import { NativeMethods } from '../../../../utils/dsbridge-methods';
+import * as NativeMethods from '../../../../utils/native-methods';
 import loggly from '../../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 
@@ -57,7 +57,9 @@ export class Footer extends Component {
     if (isLogin) {
       this.handleWebRedirect();
     } else {
-      const res = isExpired ? await NativeMethods.tokenExpired(touchPoint) : await NativeMethods.getToken(touchPoint);
+      const res = isExpired
+        ? await NativeMethods.tokenExpiredAsync(touchPoint)
+        : await NativeMethods.getTokenAsync(touchPoint);
       if (_isNil(res)) {
         loggly.error('ordering.home.footer', { message: 'native token is invalid' });
       } else {

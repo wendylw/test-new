@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import config from '../../../config';
 import Utils from '../../../utils/utils';
+import * as NativeMethods from '../../../utils/native-methods';
 export class Error extends Component {
   getCurrentErrorType(type) {
     if (!type) {
@@ -33,6 +34,16 @@ export class Error extends Component {
     return Errors[type.replace(/\s/g, '')] || {};
   }
 
+  handleGoBack = () => {
+    Utils.removeSessionVariable('errorMessage');
+
+    if (Utils.isWebview()) {
+      NativeMethods.gotoHome();
+    } else {
+      window.location.href = config.beepitComUrl;
+    }
+  };
+
   render() {
     const { t, error } = this.props;
     const { message } = error || {};
@@ -45,10 +56,7 @@ export class Error extends Component {
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-heap-name="common.error-page.back-btn"
-            onClick={() => {
-              Utils.removeSessionVariable('errorMessage');
-              return (window.location.href = config.beepitComUrl);
-            }}
+            onClick={this.handleGoBack}
           >
             {t('BackToHome')}
           </button>
