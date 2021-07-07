@@ -4,6 +4,7 @@ import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
 import { get, post } from './request';
 import loggly from '../utils/monitoring/loggly';
+import { getLocation as getLocationFromTNG, isTNGMiniProgram } from './tng-bridge';
 
 const googleMaps = _get(window, 'google.maps', null);
 
@@ -138,19 +139,34 @@ export const getDeviceCoordinates = option => {
 };
 
 export const tryGetDeviceCoordinates = async () => {
+  if (isTNGMiniProgram()) {
+    const location = getLocationFromTNG();
+    return {
+      latitude: location.latitude,
+      longitude: location.longitude,
+    };
+  }
   try {
-    return await getDeviceCoordinates({
+    const result = await getDeviceCoordinates({
       enableHighAccuracy: true,
       timeout: 5000,
       maximumAge: 300000,
     });
+    return {
+      latitude: result.coords.latitude,
+      longitude: result.coords.longitude,
+    };
   } catch (e) {
     console.debug('failed to use high accuracy gps, try low accuracy...', e);
-    return await getDeviceCoordinates({
+    const result = await getDeviceCoordinates({
       enableHighAccuracy: false,
       timeout: 5000,
       maximumAge: 300000,
     });
+    return {
+      latitude: result.coords.latitude,
+      longitude: result.coords.longitude,
+    };
   }
 };
 
@@ -391,7 +407,7 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
 
   if (source === 'device') {
     const position = await tryGetDeviceCoordinates();
-    coords = { lat: position.coords.latitude, lng: position.coords.longitude };
+    coords = { lat: position.latitude, lng: position.longitude };
   } else if (source === 'ip') {
     const result = await fetchGeolocationByIp();
     if (result.status === 'success') {

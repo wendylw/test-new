@@ -34,7 +34,11 @@
     <meta property="al:web:url" content="http://applinks.org/documentation" />
     <meta property="al:web:should_fallback" content="true" />
     <meta property="fb:app_id" content="1808145769328485" />
-
+    <script>
+      if (navigator.userAgent.indexOf('AliApp') > -1) {
+        document.writeln('<script src="https://appx/web-view.min.js"' + '>' + '<' + '/' + 'script>');
+      }
+    </script>
     <script type="text/javascript">
       var url = window.location.href; 
       var appLinkMeta1 = document.createElement('meta')
@@ -188,7 +192,6 @@
         document.write('<script src="'+src + '">\u003c/script>'); // if not using unicode escape (\u003c), browser will think the outside script is closed.
       })();
     </script>
-    <script type="text/javascript" src="https://appx/web-view.min.js"></script>
   </body>
 
 </html>
