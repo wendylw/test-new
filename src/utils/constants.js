@@ -574,6 +574,10 @@ const ORDER_STATUS = {
   LOGISTICS_CONFIRMED: 'logisticsConfirmed',
   CONFIRMED: 'confirmed',
   DELIVERED: 'delivered',
+  /**
+   * If shipping type is delivery, pickedUp means picked up by rider.
+   * if shipping type is self-pickup, pickedUp means picked up by customer
+   * */
   PICKED_UP: 'pickedUp',
 };
 

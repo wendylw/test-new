@@ -17,14 +17,14 @@ const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 const RAINY_IMAGES_MAPPING = {
   [ORDER_STATUS.CONFIRMED]: beepOrderStatusPickedUpRainy,
   [ORDER_STATUS.LOGISTICS_CONFIRMED]: beepOrderStatusPickedUpRainy,
-  [ORDER_STATUS.LOGISTICS_PICKED_UP]: beepOrderStatusPickedUpRainy,
+  [ORDER_STATUS.PICKED_UP]: beepOrderStatusPickedUpRainy,
 };
 const STATUS_IMAGES_MAPPING = {
   [ORDER_STATUS.PAID]: beepOrderStatusPaid,
   [ORDER_STATUS.ACCEPTED]: beepOrderStatusAccepted,
   [ORDER_STATUS.CONFIRMED]: beepOrderStatusConfirmed,
   [ORDER_STATUS.LOGISTICS_CONFIRMED]: beepOrderStatusConfirmed,
-  [ORDER_STATUS.LOGISTICS_PICKED_UP]: beepOrderStatusPickedUp,
+  [ORDER_STATUS.PICKED_UP]: beepOrderStatusPickedUp,
   [ORDER_STATUS.DELIVERED]: beepOrderStatusDelivered,
   [ORDER_STATUS.CANCELLED]: beepOrderStatusCancelled,
 };
@@ -54,8 +54,7 @@ function OrderStatusDescription(props) {
     shippingType === DELIVERY_METHOD.DELIVERY && !isPreOrder
       ? STATUS_IMAGES_MAPPING[orderStatus]
       : beepPreOrderSuccessImage;
-  const showMapInApp =
-    inApp && orderStatus === ORDER_STATUS.LOGISTICS_PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
+  const showMapInApp = inApp && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
 
   return (
     <>
