@@ -1,4 +1,4 @@
-export const isTNGMiniProgram = async () => !!(navigator.userAgent.indexOf('AliApp') && window.my);
+export const isTNGMiniProgram = () => !!(navigator.userAgent.indexOf('AliApp') && window.my);
 
 export const getLocation = () =>
   new Promise((resolve, reject) => {
