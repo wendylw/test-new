@@ -33,7 +33,7 @@ import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser 
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
-import { NativeMethods } from '../../../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../../../utils/native-methods';
 import loggly from '../../../../../utils/monitoring/loggly';
 
 const NOTE_MAX_LENGTH = 140;

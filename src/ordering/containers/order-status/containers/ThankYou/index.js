@@ -38,7 +38,7 @@ import {
   gtmSetUserProperties,
   GTM_TRACKING_EVENTS,
 } from '../../../../../utils/gtm';
-import { NativeMethods } from '../../../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../../../utils/native-methods';
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';

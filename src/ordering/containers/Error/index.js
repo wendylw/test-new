@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import config from '../../../config';
 import Utils from '../../../utils/utils';
-import { NativeMethods } from '../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../utils/native-methods';
 export class Error extends Component {
   getCurrentErrorType(type) {
     if (!type) {

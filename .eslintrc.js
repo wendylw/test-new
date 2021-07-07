@@ -365,7 +365,7 @@ const legacyFiles = [
   'src/voucher/redux/store.js',
   'src/voucher/redux/types.js',
   'src/voucher/utils.js',
-  'src/utils/dsbridge-methods.js'
+  'src/utils/native-methods.js'
 ];
 
 module.exports = {

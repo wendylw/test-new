@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
-import * as dsBridgeUtils from '../utils/dsBridge-utils';
+import { updateNativeHeader, registerFunc } from '../utils/native-methods';
 
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;
@@ -55,7 +55,7 @@ class NativeHeader extends Component {
   componentDidMount() {
     const nativeHeaderParams = getNativeHeaderParams(this.props);
 
-    dsBridgeUtils.updateNativeHeader(nativeHeaderParams);
+    updateNativeHeader(nativeHeaderParams);
 
     this.prevNativeHeaderParams = nativeHeaderParams;
 
@@ -72,7 +72,7 @@ class NativeHeader extends Component {
   }
 
   componentDidUpdate() {
-    dsBridgeUtils.updateNativeHeader(this.nextNativeHeaderParams);
+    updateNativeHeader(this.nextNativeHeaderParams);
 
     this.prevNativeHeaderParams = this.nextNativeHeaderParams;
     this.nextNativeHeaderParams = null;
@@ -83,11 +83,11 @@ class NativeHeader extends Component {
   }
 
   handleWindowPageShow = () => {
-    dsBridgeUtils.updateNativeHeader(this.prevNativeHeaderParams);
+    updateNativeHeader(this.prevNativeHeaderParams);
   };
 
   registerEvents() {
-    dsBridgeUtils.registerFunc([
+    registerFunc([
       {
         type: 'onClick',
         targetId: 'headerBackButton',

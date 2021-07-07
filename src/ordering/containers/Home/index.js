@@ -50,7 +50,7 @@ import ProductList from './components/ProductList';
 import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
-import { NativeMethods } from '../../../utils/dsbridge-methods';
+import { NativeMethods } from '../../../utils/native-methods';
 
 const localState = {
   blockScrollTop: 0,

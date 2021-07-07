@@ -1,4 +1,7 @@
 import dsBridge from 'dsbridge';
+import _find from 'lodash/find';
+import _get from 'lodash/get';
+import _isFunction from 'lodash/isFunction';
 import loggly from './monitoring/loggly';
 
 const MODE = {
@@ -20,7 +23,7 @@ export class NativeAPIError extends Error {
     this.extra = extra;
   }
 
-  //Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior
+  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior
   toJSON() {
     return {
       message: this.message,
@@ -29,6 +32,58 @@ export class NativeAPIError extends Error {
     };
   }
 }
+
+const dsBridgeSyncCall = (method, params) => {
+  try {
+    const result = dsBridge.call('callNative', { method, params });
+
+    console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
+
+    const { code, data, message } = JSON.parse(result);
+
+    if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
+      throw new NativeAPIError(message, code, data);
+    }
+
+    return data;
+  } catch (error) {
+    const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
+
+    loggly.error(`dsBridge-methods.${method}`, errorData);
+
+    throw error;
+  }
+};
+
+const dsBridgeAsyncCall = (method, params) =>
+  new Promise((resolve, reject) => {
+    try {
+      console.log('Call async native method: %s\n\nparams: %s\n\n');
+
+      dsBridge.call('callNativeAsync', { method, params }, result => {
+        const { code, data, message } = JSON.parse(result);
+
+        console.log(
+          'Call async native method: %s\n\nparams: %s\n\nresult: %s\n\n',
+          method,
+          JSON.stringify(params),
+          result
+        );
+
+        if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
+          throw new NativeAPIError(message, code, data);
+        }
+
+        resolve(data);
+      });
+    } catch (error) {
+      const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
+
+      loggly.error(`dsBridge-methods.${method}`, errorData);
+
+      reject(error);
+    }
+  });
 
 export const NativeMethods = {
   startChat: ({ orderId, phone, name, email, storeName }) => {
@@ -204,55 +259,45 @@ const dsBridgeCall = nativeMethod => {
   }
 };
 
-const dsBridgeSyncCall = (method, params) => {
-  try {
-    const result = dsBridge.call('callNative', { method, params });
+export const updateNativeHeader = ({ left, center, right } = {}) => {
+  const config = {
+    left: left ? [left] : [],
+    center: center ? [center] : [],
+    right: right ? [right] : [],
+  };
+  NativeMethods.nativeLayout('header', config);
+};
 
-    console.log('Call native method: %s\n\nparams: %s\n\nresult: %s\n\n', method, JSON.stringify(params), result);
+export const updateNativeHeaderToDefault = () => {
+  NativeMethods.nativeLayout('header', null);
+};
 
-    const { code, data, message } = JSON.parse(result);
+export const registerNativeHeaderEvents = (params, events) => {
+  if (!params || params.area !== 'header') {
+    return;
+  }
 
-    if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
-      throw new NativeAPIError(message, code, data);
-    }
+  const event = _find(events, { type: params.event, targetId: params.id });
+  const handler = _get(event, 'handler', null);
 
-    return data;
-  } catch (error) {
-    const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
-
-    loggly.error(`dsBridge-methods.${method}`, errorData);
-
-    throw error;
+  if (_isFunction(handler)) {
+    handler.call(null, params.data);
   }
 };
 
-const dsBridgeAsyncCall = (method, params) => {
-  return new Promise((resolve, reject) => {
-    try {
-      console.log('Call async native method: %s\n\nparams: %s\n\n');
+export const dispatchNativeEvent = (method, params, data) => {
+  switch (method) {
+    case 'nativeLayoutModule_jsNativeEventDispatch':
+      registerNativeHeaderEvents(params, data);
+      break;
+    default:
+  }
+};
 
-      dsBridge.call('callNativeAsync', { method, params }, result => {
-        const { code, data, message } = JSON.parse(result);
-
-        console.log(
-          'Call async native method: %s\n\nparams: %s\n\nresult: %s\n\n',
-          method,
-          JSON.stringify(params),
-          result
-        );
-
-        if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
-          throw new NativeAPIError(message, code, data);
-        }
-
-        resolve(data);
-      });
-    } catch (error) {
-      const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
-
-      loggly.error(`dsBridge-methods.${method}`, errorData);
-
-      reject(error);
-    }
+export const registerFunc = data => {
+  dsBridge.register('callWebView', res => {
+    const { method, params } = JSON.parse(res);
+    dispatchNativeEvent(method, params, data);
+    return { code: '00000' };
   });
 };
