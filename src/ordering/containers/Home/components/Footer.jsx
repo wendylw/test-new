@@ -17,7 +17,7 @@ import { getAllBusinesses } from '../../../../redux/modules/entities/businesses'
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import { NativeMethods } from '../../../../utils/native-methods';
+import * as NativeMethods from '../../../../utils/native-methods';
 import loggly from '../../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 

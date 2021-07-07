@@ -85,144 +85,158 @@ const dsBridgeAsyncCall = (method, params) =>
     }
   });
 
-export const NativeMethods = {
-  startChat: ({ orderId, phone, name, email, storeName }) => {
-    const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
-    const data = {
-      method: 'beepModule-startChat',
-      params: {
-        phoneNumber: phone,
-        name,
-        email,
-        message,
-      },
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  getAddress: () => {
-    const data = {
-      method: 'beepModule-getAddress',
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  closeWebView: () => {
-    const data = {
-      method: 'routerModule-closeWebView',
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  goBack: () => {
-    const data = {
-      method: 'routerModule-back',
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  getLoginStatus: () => {
-    const data = {
-      method: 'userModule-isLogin',
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  getTokenAsync: touchPoint => {
-    const data = {
-      method: 'userModule-getToken',
-      params: {
-        touchPoint,
-      },
-      mode: MODE.ASYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  tokenExpiredAsync: touchPoint => {
-    const data = {
-      method: 'userModule-tokenExpired',
-      params: {
-        touchPoint,
-      },
-      mode: MODE.ASYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  showMap: () => {
-    const data = {
-      method: 'mapModule-showMap',
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  hideMap: () => {
-    const data = {
-      method: 'mapModule-hideMap',
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  updateRiderPosition: (lat, lng) => {
-    const data = {
-      method: 'mapModule-updateRiderPosition',
-      params: {
-        lat,
-        lng,
-      },
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  updateHomePosition: (lat, lng) => {
-    const data = {
-      method: 'mapModule-updateHomePosition',
-      params: {
-        lat,
-        lng,
-      },
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  updateStorePosition: (lat, lng) => {
-    const data = {
-      method: 'mapModule-updateStorePosition',
-      params: {
-        lat,
-        lng,
-      },
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  focusPositions: focusPositionList => {
-    const data = {
-      method: 'mapModule-focusPositions',
-      params: {
-        positions: focusPositionList,
-      },
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  nativeLayout: (area, config) => {
-    const data = {
-      method: 'nativeLayoutModule-nativeJsConfigLayout',
-      params: {
-        area,
-        data: config,
-      },
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
-  gotoHome: () => {
-    const data = {
-      method: 'routerModule-gotoHome',
-      mode: MODE.SYNC,
-    };
-    return dsBridgeCall(data);
-  },
+export const startChat = ({ orderId, phone, name, email, storeName }) => {
+  const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
+  const data = {
+    method: 'beepModule-startChat',
+    params: {
+      phoneNumber: phone,
+      name,
+      email,
+      message,
+    },
+    mode: MODE.SYNC,
+  };
+
+  return dsBridgeCall(data);
+};
+
+export const getAddress = () => {
+  const data = {
+    method: 'beepModule-getAddress',
+    mode: MODE.SYNC,
+  };
+
+  return dsBridgeCall(data);
+};
+
+export const closeWebView = () => {
+  const data = {
+    method: 'routerModule-closeWebView',
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const goBack = () => {
+  const data = {
+    method: 'routerModule-back',
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const getLoginStatus = () => {
+  const data = {
+    method: 'userModule-isLogin',
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const getTokenAsync = touchPoint => {
+  const data = {
+    method: 'userModule-getToken',
+    params: {
+      touchPoint,
+    },
+    mode: MODE.ASYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const tokenExpiredAsync = touchPoint => {
+  const data = {
+    method: 'userModule-tokenExpired',
+    params: {
+      touchPoint,
+    },
+    mode: MODE.ASYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const showMap = () => {
+  const data = {
+    method: 'mapModule-showMap',
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const hideMap = () => {
+  const data = {
+    method: 'mapModule-hideMap',
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const updateRiderPosition = (lat, lng) => {
+  const data = {
+    method: 'mapModule-updateRiderPosition',
+    params: {
+      lat,
+      lng,
+    },
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const updateHomePosition = (lat, lng) => {
+  const data = {
+    method: 'mapModule-updateHomePosition',
+    params: {
+      lat,
+      lng,
+    },
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const updateStorePosition = (lat, lng) => {
+  const data = {
+    method: 'mapModule-updateStorePosition',
+    params: {
+      lat,
+      lng,
+    },
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const focusPositions = focusPositionList => {
+  const data = {
+    method: 'mapModule-focusPositions',
+    params: {
+      positions: focusPositionList,
+    },
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const nativeLayout = (area, config) => {
+  const data = {
+    method: 'nativeLayoutModule-nativeJsConfigLayout',
+    params: {
+      area,
+      data: config,
+    },
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
+export const gotoHome = () => {
+  const data = {
+    method: 'routerModule-gotoHome',
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
 };
 
 const hasMethodInNative = method => {
@@ -265,11 +279,11 @@ export const updateNativeHeader = ({ left, center, right } = {}) => {
     center: center ? [center] : [],
     right: right ? [right] : [],
   };
-  NativeMethods.nativeLayout('header', config);
+  nativeLayout('header', config);
 };
 
 export const updateNativeHeaderToDefault = () => {
-  NativeMethods.nativeLayout('header', null);
+  nativeLayout('header', null);
 };
 
 export const registerNativeHeaderEvents = (params, events) => {

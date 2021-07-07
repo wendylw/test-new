@@ -27,7 +27,7 @@ import {
   getServiceCharge,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
-import { NativeMethods } from '../../../../../utils/native-methods';
+import * as NativeMethods from '../../../../../utils/native-methods';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 

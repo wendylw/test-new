@@ -9,7 +9,7 @@ import ErrorComponent from './components/Error';
 import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
-import { NativeMethods } from './utils/native-methods';
+import * as NativeMethods from './utils/native-methods';
 import loggly from './utils/monitoring/loggly';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));

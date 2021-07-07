@@ -19,7 +19,7 @@ import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
-import { NativeMethods } from '../../../utils/native-methods';
+import * as NativeMethods from '../../../utils/native-methods';
 import Utils from '../../../utils/utils';
 import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';

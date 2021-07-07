@@ -13,7 +13,7 @@ import {
   getUser,
   getBusinessInfo,
 } from '../../../../../../redux/modules/app';
-import { NativeMethods } from '../../../../../../../utils/native-methods';
+import * as NativeMethods from '../../../../../../../utils/native-methods';
 import { getCashbackInfo } from '../../redux/selector';
 import { loadCashbackInfo, createCashbackInfo } from '../../redux/thunks';
 import './PhoneLogin.scss';
