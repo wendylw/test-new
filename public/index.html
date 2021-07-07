@@ -34,6 +34,13 @@
     <meta property="al:web:url" content="http://applinks.org/documentation" />
     <meta property="al:web:should_fallback" content="true" />
     <meta property="fb:app_id" content="1808145769328485" />
+    <% if (process.env.REACT_APP_ENABLE_VCONSOLE === 'true') { %
+      <script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></script>
+      <script>
+        // VConsole will be exported to `window.VConsole` by default.
+        var vConsole = new window.VConsole();
+      </script>
+    <% } %>
     <script>
       if (navigator.userAgent.indexOf('AliApp') > -1) {
         document.writeln('<script src="https://appx/web-view.min.js"' + '>' + '<' + '/' + 'script>');

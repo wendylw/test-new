@@ -9,10 +9,8 @@ import smoothscroll from 'smoothscroll-polyfill';
 import './i18n';
 import Bootstrap from './Bootstrap';
 import './index.css';
-import { initVConsoleIfNecessary } from './utils/vconsole';
 
 try {
-  initVConsoleIfNecessary();
   // kick off the polyfill!
   smoothscroll.polyfill();
 } catch (e) {
