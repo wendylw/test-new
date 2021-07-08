@@ -135,7 +135,7 @@ class Home extends Component {
               isPage={true}
               title={window.document.title}
               navFunc={() => {
-                NativeMethods.goBack();
+                NativeMethods.closeWebView();
               }}
             />
           )}
