@@ -8,6 +8,7 @@ import { getPageError } from '../../../redux/modules/entities/error';
 import config from '../../../config';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
+import NativeHeader from '../../../components/NativeHeader';
 export class Error extends Component {
   getCurrentErrorType(type) {
     if (!type) {
@@ -51,17 +52,28 @@ export class Error extends Component {
     const { title, description } = this.getCurrentErrorType(errorMessage || message);
 
     return (
-      <ErrorPage title={title} description={description} data-heap-name="ordering.error-page.container">
-        <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
-          <button
-            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-            data-heap-name="common.error-page.back-btn"
-            onClick={this.handleGoBack}
-          >
-            {t('BackToHome')}
-          </button>
-        </footer>
-      </ErrorPage>
+      <>
+        {Utils.isWebview() && (
+          <NativeHeader
+            isPage={true}
+            title={window.document.title}
+            navFunc={() => {
+              NativeMethods.gotoHome();
+            }}
+          />
+        )}
+        <ErrorPage title={title} description={description} data-heap-name="ordering.error-page.container">
+          <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+            <button
+              className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+              data-heap-name="common.error-page.back-btn"
+              onClick={this.handleGoBack}
+            >
+              {t('BackToHome')}
+            </button>
+          </footer>
+        </ErrorPage>
+      </>
     );
   }
 }
