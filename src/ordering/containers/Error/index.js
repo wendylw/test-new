@@ -58,7 +58,7 @@ export class Error extends Component {
             isPage={true}
             title={window.document.title}
             navFunc={() => {
-              NativeMethods.gotoHome();
+              NativeMethods.goBack();
             }}
           />
         )}
