@@ -14,6 +14,7 @@ import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import _get from 'lodash/get';
 import qs from 'qs';
+import * as NativeMethods from '../../../utils/native-methods';
 import './StoresHome.scss';
 
 import {
@@ -24,6 +25,7 @@ import {
   showStores,
 } from '../../redux/modules/home';
 import OfflineStoreModal from '../../../ordering/containers/Home/components/OfflineStoreModal';
+import NativeHeader from '../../../components/NativeHeader';
 
 const { ROUTER_PATHS } = Constants;
 class Home extends Component {
@@ -119,6 +121,7 @@ class Home extends Component {
   render() {
     const { t, show, stores, onlineStoreInfo } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};
+    const isWebView = Utils.isWebview();
 
     if (!show) {
       return null;
@@ -127,6 +130,15 @@ class Home extends Component {
     return (
       this.props.isHome && (
         <section className="store-list__content" data-heap-name="stores.home.container">
+          {isWebView && (
+            <NativeHeader
+              isPage={true}
+              title={window.document.title}
+              navFunc={() => {
+                NativeMethods.goBack();
+              }}
+            />
+          )}
           <Header
             className="flex-middle border__bottom-divider"
             contentClassName="flex-middle"
