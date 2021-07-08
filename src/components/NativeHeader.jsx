@@ -124,10 +124,12 @@ NativeHeader.propTypes = {
 };
 
 NativeHeader.defaultProps = {
-  isPage: false,
-  title: '',
+  isPage: true,
+  title: window.document.title,
   titleAlignment: 'left',
-  navFunc: null,
+  navFunc: () => {
+    NativeMethods.goBack();
+  },
   rightContent: null,
 };
 

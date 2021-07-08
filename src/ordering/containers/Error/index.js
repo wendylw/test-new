@@ -53,15 +53,7 @@ export class Error extends Component {
 
     return (
       <>
-        {Utils.isWebview() && (
-          <NativeHeader
-            isPage={true}
-            title={window.document.title}
-            navFunc={() => {
-              NativeMethods.goBack();
-            }}
-          />
-        )}
+        {Utils.isWebview() && <NativeHeader />}
         <ErrorPage title={title} description={description} data-heap-name="ordering.error-page.container">
           <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
             <button
