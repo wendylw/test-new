@@ -60,8 +60,6 @@ class NativeHeader extends Component {
     this.prevNativeHeaderParams = nativeHeaderParams;
 
     this.registerEvents();
-
-    window.addEventListener('pageshow', this.handleWindowPageShow);
   }
 
   // performance optimization
@@ -77,14 +75,6 @@ class NativeHeader extends Component {
     this.prevNativeHeaderParams = this.nextNativeHeaderParams;
     this.nextNativeHeaderParams = null;
   }
-
-  componentWillUnmount() {
-    window.removeEventListener('pageshow', this.handleWindowPageShow);
-  }
-
-  handleWindowPageShow = () => {
-    NativeMethods.updateNativeHeader(this.prevNativeHeaderParams);
-  };
 
   registerEvents() {
     NativeMethods.registerFunc([
