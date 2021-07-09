@@ -140,7 +140,7 @@ export const getDeviceCoordinates = option => {
 
 export const tryGetDeviceCoordinates = async () => {
   if (isTNGMiniProgram()) {
-    const location = getLocationFromTNG();
+    const location = await getLocationFromTNG();
     return {
       latitude: location.latitude,
       longitude: location.longitude,
