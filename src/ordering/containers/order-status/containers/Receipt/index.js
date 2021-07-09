@@ -108,6 +108,7 @@ export class ReceiptDetail extends Component {
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           title={t('ViewReceipt')}
+          isPage={true}
           data-heap-name="ordering.receipt.header"
           navFunc={this.goBack}
           rightContent={{
