@@ -51,6 +51,7 @@ const track = async (name, data, meta = {}) => {
       action: name,
       path: window.location.pathname,
       app_plt: getAppPlatform(),
+      ts: new Date().valueOf(),
       data,
     };
     // todo: business name, page url, user agent, env, client timestamp, ...
