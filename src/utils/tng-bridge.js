@@ -1,4 +1,5 @@
-export const isTNGMiniProgram = () => !!(navigator.userAgent.indexOf('AliApp') && window.my);
+export const isTNGMiniProgram = () =>
+  !!(navigator.userAgent.indexOf('TNGKit') > -1 && navigator.userAgent.indexOf('MiniProgram') > -1 && window.my);
 
 export const getLocation = () =>
   new Promise((resolve, reject) => {
