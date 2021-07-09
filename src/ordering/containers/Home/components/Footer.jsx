@@ -21,8 +21,6 @@ import * as NativeMethods from '../../../../utils/native-methods';
 import loggly from '../../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 
-const { DELIVERY, PICKUP } = Constants.DELIVERY_METHOD;
-
 export class Footer extends Component {
   componentDidUpdate = async prevProps => {
     const { user } = this.props;
@@ -52,14 +50,11 @@ export class Footer extends Component {
   postAppMessage = async () => {
     const { appActions, user } = this.props;
     const { isLogin, isExpired } = user || {};
-    const touchPoint = [DELIVERY, PICKUP].includes(Utils.getOrderTypeFromUrl()) ? 'OnlineOrder' : 'QROrder';
 
     if (isLogin) {
       this.handleWebRedirect();
     } else {
-      const res = isExpired
-        ? await NativeMethods.tokenExpiredAsync(touchPoint)
-        : await NativeMethods.getTokenAsync(touchPoint);
+      const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
       if (_isNil(res)) {
         loggly.error('ordering.home.footer', { message: 'native token is invalid' });
       } else {

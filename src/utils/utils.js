@@ -8,7 +8,14 @@ import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 dayjs.extend(utc);
 
-const { SH_LOGISTICS_VALID_TIME, WEB_VIEW_SOURCE, CLIENTS } = Constants;
+const {
+  SH_LOGISTICS_VALID_TIME,
+  WEB_VIEW_SOURCE,
+  CLIENTS,
+  ROUTER_PATHS,
+  REGISTRATION_SOURCE,
+  REGISTRATION_TOUCH_POINT,
+} = Constants;
 const Utils = {};
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
@@ -374,6 +381,14 @@ Utils.isDigitalType = () => {
 
 Utils.isTakeAwayType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
+};
+
+Utils.isDeliveryOrder = () => {
+  return Utils.isDeliveryType() || Utils.isPickUpType();
+};
+
+Utils.isQROrder = () => {
+  return Utils.isDineInType() || Utils.isTakeAwayType();
 };
 
 Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
@@ -815,6 +830,7 @@ Utils.getOrderSource = () => {
   let orderSource = '';
   if (Utils.isWebview()) {
     orderSource = 'BeepApp';
+    // TODO: not check the value, it's a bad way
   } else if (sessionStorage.getItem('orderSource')) {
     orderSource = 'BeepSite';
   } else {
@@ -833,6 +849,46 @@ Utils.getHeaderClient = () => {
     headerClient = CLIENTS.WEB;
   }
   return headerClient;
+};
+
+Utils.getRegistrationTouchPoint = () => {
+  const isOnCashbackPage = window.location.pathname.startsWith(ROUTER_PATHS.CASHBACK_BASE);
+  if (isOnCashbackPage) {
+    return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
+  }
+
+  if (Utils.isQROrder()) {
+    return REGISTRATION_TOUCH_POINT.QR_ORDER;
+  }
+
+  return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
+};
+
+Utils.getRegistrationSource = () => {
+  const registrationTouchPoint = Utils.getRegistrationTouchPoint();
+
+  switch (registrationTouchPoint) {
+    case REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK:
+      if (Utils.isWebview()) {
+        return REGISTRATION_SOURCE.BEEP_APP;
+      } else {
+        return REGISTRATION_SOURCE.RECEIPT;
+      }
+
+    case REGISTRATION_TOUCH_POINT.QR_ORDER:
+    case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
+    default:
+      if (Utils.isWebview()) {
+        return REGISTRATION_SOURCE.BEEP_APP;
+      }
+
+      // TODO: not check the value, it's a bad way
+      if (Utils.getSessionVariable('orderSource')) {
+        return REGISTRATION_SOURCE.BEEP_SITE;
+      }
+
+      return REGISTRATION_SOURCE.BEEP_STORE;
+  }
 };
 
 export default Utils;

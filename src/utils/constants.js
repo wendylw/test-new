@@ -614,6 +614,19 @@ const CLIENTS = {
   ANDROID: 'Android',
 };
 
+export const REGISTRATION_TOUCH_POINT = {
+  CLAIM_CASHBACK: 'ClaimCashback',
+  ONLINE_ORDER: 'OnlineOrder',
+  QR_ORDER: 'QROrder',
+};
+
+export const REGISTRATION_SOURCE = {
+  BEEP_APP: 'BeepApp',
+  RECEIPT: 'Receipt',
+  BEEP_STORE: 'BeepStore',
+  BEEP_SITE: 'BeepSite',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -659,4 +672,6 @@ export default {
   PAYMENT_API_PAYMENT_OPTIONS,
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
   CLIENTS,
+  REGISTRATION_TOUCH_POINT,
+  REGISTRATION_SOURCE,
 };

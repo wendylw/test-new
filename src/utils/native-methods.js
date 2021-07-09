@@ -4,6 +4,7 @@ import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import * as loggly from './monitoring/loggly';
 import debug from './debug';
+import Utils from './utils';
 
 const MODE = {
   SYNC: 'sync',
@@ -168,22 +169,22 @@ export const getLoginStatus = () => {
   return dsBridgeCall(data);
 };
 
-export const getTokenAsync = touchPoint => {
+export const getTokenAsync = () => {
   const data = {
     method: 'userModule-getToken',
     params: {
-      touchPoint,
+      touchPoint: Utils.getRegistrationTouchPoint(),
     },
     mode: MODE.ASYNC,
   };
   return dsBridgeCall(data);
 };
 
-export const tokenExpiredAsync = touchPoint => {
+export const tokenExpiredAsync = () => {
   const data = {
     method: 'userModule-tokenExpired',
     params: {
-      touchPoint,
+      touchPoint: Utils.getRegistrationTouchPoint(),
     },
     mode: MODE.ASYNC,
   };
