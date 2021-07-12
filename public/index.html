@@ -36,8 +36,11 @@
     <meta property="fb:app_id" content="1808145769328485" />
     <script>
       if (document.cookie.indexOf('sh_devtools_enabled=true') > -1) {
-        document.writeln('<script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></' + 'script>');
-        document.writeln('<script>window.vConsoleInstance = new window.VConsole();</' + 'script>')
+        // toggle to commented code to toggle devtools. please also toggle the one in DevToolsTrigger.jsx
+        // document.writeln('<script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></' + 'script>');
+        // document.writeln('<script>window.vConsoleInstance = new window.VConsole();</' + 'script>')
+        document.writeln('<script src="https://cdn.jsdelivr.net/npm/eruda"></' + 'script>');
+        document.writeln('<script>window.eruda.init();</' + 'script>')
       }
     </script>
     <script>

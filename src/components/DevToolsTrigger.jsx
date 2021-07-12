@@ -10,23 +10,41 @@ const mainDomain = document.location.hostname
   .slice(-2)
   .join('.');
 
+// toggle to commented code to toggle devtools. please also toggle the one in index.html
+
+// const getDevtoolsSrc =  () => 'https://unpkg.com/vconsole/dist/vconsole.min.js';
+const getDevtoolsSrc = () => 'https://cdn.jsdelivr.net/npm/eruda';
+
+const initDevtools = () => {
+  // window.vConsoleInstance = new window.VConsole();
+  window.eruda.init();
+};
+const destroyDevtools = () => {
+  // window.vConsoleInstance.destroy();
+  // delete window.vConsoleInstance;
+  window.eruda.destroy();
+};
+// const isScriptLoaded = () => !!window.VConsole;
+const isScriptLoaded = () => !!window.eruda;
+
 const toggleDevTools = () => {
-  if (window.vConsoleInstance) {
-    window.vConsoleInstance.destroy();
-    delete window.vConsoleInstance;
+  if (window.devtoolsInitiated) {
+    destroyDevtools();
+    window.devtoolsInitiated = false;
     document.cookie = `sh_devtools_enabled=false; expires=${new Date(0).toUTCString()}; domain=${mainDomain}`;
     return;
   }
   const expireDate = new Date();
   expireDate.setDate(expireDate.getDate() + 7);
   document.cookie = `sh_devtools_enabled=true; domain=${mainDomain}; expires=${expireDate.toUTCString()}`;
-  if (window.VConsole) {
-    window.vConsoleInstance = new window.VConsole();
+  if (isScriptLoaded()) {
+    initDevtools();
+    window.devtoolsInitiated = true;
   } else {
     const elem = document.createElement('script');
-    elem.src = 'https://unpkg.com/vconsole/dist/vconsole.min.js';
+    elem.src = getDevtoolsSrc();
     elem.onload = () => {
-      window.vConsoleInstance = new window.VConsole();
+      initDevtools();
     };
     document.body.appendChild(elem);
   }
