@@ -89,6 +89,7 @@ class PageClaim extends React.Component {
       phone: Utils.getLocalStorageVariable('user.p'),
       receiptNumber,
       source: Constants.CASHBACK_SOURCE.RECEIPT,
+      registrationTouchpoint: Constants.REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK,
     };
   }
 
