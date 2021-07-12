@@ -6,7 +6,7 @@
   "41003UniversalPromotionError": "Promo code is applicable for delivery orders only",
   "54406FreePromotionNotMatchCondition": "This promotion cannot be used because did not meet minimum condition yet (Error: 54406)",
   "54407NotMatchCondition": "This promotion cannot be used because did not meet minimum condition yet (Error: 54407)",
-  "54403NotStartOrExpired": "This promotion cannot be used because it's expired or not started yet (Error: 54403)",
+  "54403NotStartOrExpired": "This promotion has expired or has not started (#54403)",
   "54404WeekdayNotMatch": "This promotion can only be used in the specific time only. Please check with the seller for more info (Error: 54404)",
   "54405TimeNotMatch": "This promotion can only be used in the specific time only. Please check with the seller for more info (Error: 54405)",
   "54301InvalidPromotionCode": "This promo code is invalid (Error: 54301)",

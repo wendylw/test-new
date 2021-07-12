@@ -1,9 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
-import Constants from '../../../../../../utils/constants';
+import { SHIPPING_TYPES_MAPPING, DELIVERY_METHOD, PROMOTIONS_TYPES } from './constants';
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
-
-const { PROMOTIONS_TYPES } = Constants;
 
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
 class PromotionContent extends PureComponent {
@@ -77,7 +75,15 @@ class PromotionContent extends PureComponent {
 
   getPromotionPrompt() {
     const { promotion, inApp, t } = this.props;
-    const { discountProductList, validDate, appliedClientTypes, maxDiscountAmount, minOrderAmount } = promotion;
+    const {
+      discountProductList,
+      validDate,
+      appliedClientTypes,
+      appliedSources,
+      maxDiscountAmount,
+      minOrderAmount,
+      requireFirstPurchase,
+    } = promotion;
 
     if (discountProductList || validDate) {
       return null;
@@ -89,48 +95,41 @@ class PromotionContent extends PureComponent {
       // eslint-disable-next-line jsx-a11y/anchor-has-content
       <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink} />
     );
+    const beepAppOnlyEl = <Trans t={t} i18nKey="OnlyInBeepAppPrompt" components={[appDownloadLinkEl]} />;
+    const firstOrderOnlyEl = requireFirstPurchase ? t('FirstOrderOnly') : null;
+    const deliveryOrderOnlyEl =
+      appliedSources.length === 1 && appliedSources[0] === SHIPPING_TYPES_MAPPING[DELIVERY_METHOD.DELIVERY_METHOD]
+        ? t('DeliveryOrderOnly')
+        : null;
 
     const showBeepAppOnlyText = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
-
-    if (!maxDiscountAmount && !minOrderAmount) {
-      return showBeepAppOnlyText ? (
-        <Trans t={t} i18nKey="OnlyInBeepAppPrompt" components={[appDownloadLinkEl]} />
-      ) : null;
-    }
+    const prompts = [];
 
     if (!maxDiscountAmount && minOrderAmount) {
-      return showBeepAppOnlyText ? (
-        <Trans
-          t={t}
-          i18nKey="PromotionOnlyMinOrderAmountOnlyInAppPrompt"
-          components={[minOrderAmountEl, appDownloadLinkEl]}
-        />
-      ) : (
-        <Trans t={t} i18nKey="PromotionOnlyMinOrderAmountPrompt" components={[minOrderAmountEl]} />
-      );
+      prompts.push(<Trans t={t} i18nKey="PromotionOnlyMinOrderAmountPrompt" components={[minOrderAmountEl]} />);
     }
 
     if (maxDiscountAmount && !minOrderAmount) {
-      return showBeepAppOnlyText ? (
-        <Trans
-          t={t}
-          i18nKey="PromotionOnlyMaxDiscountAmountOnlyInAppPrompt"
-          components={[maxDiscountAmountEl, appDownloadLinkEl]}
-        />
-      ) : (
-        <Trans t={t} i18nKey="PromotionOnlyMaxDiscountAmountPrompt" components={[maxDiscountAmountEl]} />
-      );
+      prompts.push(<Trans t={t} i18nKey="PromotionOnlyMaxDiscountAmountPrompt" components={[maxDiscountAmountEl]} />);
     }
 
-    return showBeepAppOnlyText ? (
-      <Trans
-        t={t}
-        i18nKey="PromotionOnlyInAppPrompt"
-        components={[maxDiscountAmountEl, minOrderAmountEl, appDownloadLinkEl]}
-      />
-    ) : (
-      <Trans t={t} i18nKey="PromotionPrompt" components={[maxDiscountAmountEl, minOrderAmountEl]} />
-    );
+    if (maxDiscountAmount && minOrderAmount) {
+      prompts.push(<Trans t={t} i18nKey="PromotionPrompt" components={[maxDiscountAmountEl, minOrderAmountEl]} />);
+    }
+
+    if (showBeepAppOnlyText) {
+      prompts.push(beepAppOnlyEl);
+    }
+
+    if (firstOrderOnlyEl) {
+      prompts.push(firstOrderOnlyEl);
+    }
+
+    if (deliveryOrderOnlyEl) {
+      prompts.push(deliveryOrderOnlyEl);
+    }
+
+    prompts.join(',');
   }
 
   render() {
