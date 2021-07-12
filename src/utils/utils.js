@@ -830,8 +830,7 @@ Utils.getOrderSource = () => {
   let orderSource = '';
   if (Utils.isWebview()) {
     orderSource = 'BeepApp';
-    // TODO: not check the value, it's a bad way
-  } else if (sessionStorage.getItem('orderSource')) {
+  } else if (Utils.isFromBeepSite()) {
     orderSource = 'BeepSite';
   } else {
     orderSource = 'BeepStore';
@@ -849,6 +848,11 @@ Utils.getHeaderClient = () => {
     headerClient = CLIENTS.WEB;
   }
   return headerClient;
+};
+
+Utils.isFromBeepSite = () => {
+  // TODO: no check the value, it's a bad way
+  return Boolean(sessionStorage.getItem('orderSource'));
 };
 
 Utils.getRegistrationTouchPoint = () => {
@@ -882,8 +886,7 @@ Utils.getRegistrationSource = () => {
         return REGISTRATION_SOURCE.BEEP_APP;
       }
 
-      // TODO: not check the value, it's a bad way
-      if (Utils.getSessionVariable('orderSource')) {
+      if (Utils.isFromBeepSite()) {
         return REGISTRATION_SOURCE.BEEP_SITE;
       }
 
