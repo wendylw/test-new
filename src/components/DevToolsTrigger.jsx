@@ -10,16 +10,16 @@ const mainDomain = document.location.hostname
   .slice(-2)
   .join('.');
 
-const toggleVConsole = () => {
+const toggleDevTools = () => {
   if (window.vConsoleInstance) {
     window.vConsoleInstance.destroy();
     delete window.vConsoleInstance;
-    document.cookie = `sh_vconsole_enabled=false; expires=${new Date(0).toUTCString()}; domain=${mainDomain}`;
+    document.cookie = `sh_devtools_enabled=false; expires=${new Date(0).toUTCString()}; domain=${mainDomain}`;
     return;
   }
   const expireDate = new Date();
   expireDate.setDate(expireDate.getDate() + 7);
-  document.cookie = `sh_vconsole_enabled=true; domain=${mainDomain}; expires=${expireDate.toUTCString()}`;
+  document.cookie = `sh_devtools_enabled=true; domain=${mainDomain}; expires=${expireDate.toUTCString()}`;
   if (window.VConsole) {
     window.vConsoleInstance = new window.VConsole();
   } else {
@@ -32,7 +32,7 @@ const toggleVConsole = () => {
   }
 };
 
-const VConsoleTrigger = props => {
+const DevToolsTrigger = props => {
   const [clickQueue, setClickQueue] = useState([]);
   const onClick = useCallback(() => {
     const nextClickQueue = [...clickQueue];
@@ -44,7 +44,7 @@ const VConsoleTrigger = props => {
       nextClickQueue.length >= CLICK_COUNTS &&
       nextClickQueue[nextClickQueue.length - 1] - nextClickQueue[0] < MAX_CLICK_SPAN
     ) {
-      toggleVConsole();
+      toggleDevTools();
       nextClickQueue.splice(0, nextClickQueue.length);
     }
     setClickQueue(nextClickQueue);
@@ -57,17 +57,17 @@ const VConsoleTrigger = props => {
   );
 };
 
-VConsoleTrigger.propTypes = {
+DevToolsTrigger.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
 };
 
-VConsoleTrigger.defaultProps = {
+DevToolsTrigger.defaultProps = {
   children: null,
   className: '',
   style: {},
 };
 
-export default VConsoleTrigger;
+export default DevToolsTrigger;
