@@ -29,6 +29,7 @@ import { checkStateRestoreStatus } from '../redux/modules/index';
 import Banners from './components/Banners';
 import Carousel from './components/Carousel';
 import BeepAppLink from './containers/CampaignBar/components/images/beep-app-link.jpg';
+import VConsoleTrigger from '../../components/VConsoleTrigger';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 const isCampaignActive = true; // feature switch
@@ -229,9 +230,11 @@ class Home extends React.Component {
           }}
         >
           <Banner className="entry-home__banner">
-            <figure className="entry-home__banner-image">
-              <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
-            </figure>
+            <VConsoleTrigger>
+              <figure className="entry-home__banner-image">
+                <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
+              </figure>
+            </VConsoleTrigger>
 
             <div className="entry-home__search">
               <div className="form__group flex flex-middle">
