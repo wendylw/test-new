@@ -169,12 +169,12 @@ class PageLogin extends React.Component {
               <img
                 src={beepLoginActive}
                 alt="otp active"
-                className={`${isValidPhoneNumber(phone) ? '' : 'page-login__icon--hide'}`}
+                className={`${isValidPhoneNumber(phone || '') ? '' : 'page-login__icon--hide'}`}
               />
               <img
                 src={beepLoginDisabled}
                 alt="otp disabled"
-                className={`${isValidPhoneNumber(phone) ? 'page-login__icon--hide' : 'page-login__disabled'}`}
+                className={`${isValidPhoneNumber(phone || '') ? 'page-login__icon--hide' : 'page-login__disabled'}`}
               />
             </figure>
             <PhoneViewContainer

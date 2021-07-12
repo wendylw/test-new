@@ -496,6 +496,9 @@ const PROMOTION_ERROR_CODES = {
   54419: {
     desc: '54419OnlyApplicableForParticipating',
   },
+  54420: {
+    desc: '54420ReachMaxBusinessClaimCount',
+  },
   60002: {
     desc: '60002NotActive',
   },
