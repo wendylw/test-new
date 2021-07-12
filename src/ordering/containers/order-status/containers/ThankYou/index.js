@@ -98,16 +98,7 @@ export class ThankYou extends PureComponent {
       phoneCopyTitle: '',
       phoneCopyContent: '',
     };
-    this.injectFun();
   }
-
-  injectFun = () => {
-    window.contactUs = !Utils.isDineInType()
-      ? () => {
-          this.handleVisitMerchantInfoPage();
-        }
-      : null;
-  };
 
   pollOrderStatusTimer = null;
 
@@ -175,8 +166,6 @@ export class ThankYou extends PureComponent {
     const { latitude: storeLat, longitude: storeLng } = location;
     const { address = {} } = deliveryInformation[0] || {};
     const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
-    const title = `#${orderId}`;
-    const text = t('ContactUs');
     const focusPositionList = [
       {
         lat: deliveryLat,
