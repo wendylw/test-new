@@ -23,6 +23,7 @@ import * as NativeMethods from '../../../utils/native-methods';
 import Utils from '../../../utils/utils';
 import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
+import NativeHeader from '../../../components/NativeHeader';
 
 class App extends Component {
   state = {
@@ -139,12 +140,15 @@ class App extends Component {
   render() {
     const { user } = this.props;
     const { showAppLoginPage } = this.state;
+    const isWebview = Utils.isWebview();
 
-    if (showAppLoginPage) {
-      return <RequestLogin user={user} onClick={this.postAppMessage} />;
-    }
+    return (
+      <>
+        {isWebview && <NativeHeader />}
 
-    return this.renderMainContent();
+        {showAppLoginPage ? <RequestLogin user={user} onClick={this.postAppMessage} /> : this.renderMainContent()}
+      </>
+    );
   }
 }
 
