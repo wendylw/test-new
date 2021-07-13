@@ -13,24 +13,26 @@ const mainDomain = document.location.hostname
 // toggle to commented code to toggle devtools. please also toggle the one in index.html
 
 // const getDevtoolsSrc =  () => 'https://unpkg.com/vconsole/dist/vconsole.min.js';
-const getDevtoolsSrc = () => 'https://cdn.jsdelivr.net/npm/eruda';
-
-const initDevtools = () => {
-  // window.vConsoleInstance = new window.VConsole();
-  window.eruda.init();
-};
-const destroyDevtools = () => {
-  // window.vConsoleInstance.destroy();
-  // delete window.vConsoleInstance;
-  window.eruda.destroy();
-};
+// const initDevtools = () => {
+//   window.vConsoleInstance = new window.VConsole();
+// };
+// const destroyDevtools = () => {
+//   window.vConsoleInstance.destroy();
+//   delete window.vConsoleInstance;
+// };
 // const isScriptLoaded = () => !!window.VConsole;
+// const isDevToolsInitiated = () => !!window.vConsoleInstance;
+
+const getDevtoolsSrc = () => 'https://cdn.jsdelivr.net/npm/eruda';
+const initDevtools = () => window.eruda.init();
+const destroyDevtools = () => window.eruda.destroy();
 const isScriptLoaded = () => !!window.eruda;
+// eslint-disable-next-line no-underscore-dangle
+const isDevToolsInitiated = () => !!(window.eruda && window.eruda._isInit === true);
 
 const toggleDevTools = () => {
-  if (window.devtoolsInitiated) {
+  if (isDevToolsInitiated()) {
     destroyDevtools();
-    window.devtoolsInitiated = false;
     document.cookie = `sh_devtools_enabled=false; expires=${new Date(0).toUTCString()}; domain=${mainDomain}`;
     return;
   }
@@ -39,7 +41,6 @@ const toggleDevTools = () => {
   document.cookie = `sh_devtools_enabled=true; domain=${mainDomain}; expires=${expireDate.toUTCString()}`;
   if (isScriptLoaded()) {
     initDevtools();
-    window.devtoolsInitiated = true;
   } else {
     const elem = document.createElement('script');
     elem.src = getDevtoolsSrc();

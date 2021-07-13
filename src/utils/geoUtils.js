@@ -4,7 +4,7 @@ import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
 import { get, post } from './request';
 import loggly from '../utils/monitoring/loggly';
-import { getLocation as getLocationFromTNG, isTNGMiniProgram } from './tng-bridge';
+import { getLocation as getLocationFromTNG, isTNGMiniProgram } from './tng-utils';
 
 const googleMaps = _get(window, 'google.maps', null);
 
