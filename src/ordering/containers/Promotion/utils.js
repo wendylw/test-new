@@ -11,7 +11,14 @@ export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, o
 
     if (code === '54416') {
       const { supportedChannel } = extraInfo || {};
+
       return i18next.t(translationKey, { supportedChannel });
+    }
+
+    if (code === '54405') {
+      const { validTimeFrom, validTimeTo } = extraInfo || {};
+
+      return i18next.t(translationKey, { validTimeFrom, validTimeTo });
     }
 
     // not match min subtotal
@@ -33,6 +40,7 @@ export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, o
     // not match the client type
     if (code === '54418') {
       const supportClient = Utils.getHeaderClient() === CLIENTS.WEB ? 'Beep app' : 'Web';
+
       return i18next.t(translationKey, { supportClient });
     }
 
