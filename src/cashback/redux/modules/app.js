@@ -52,7 +52,7 @@ export const types = APP_TYPES;
 
 //action creators
 export const actions = {
-  loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
+  loginApp: ({ accessToken, refreshToken, touchPoint, source }) => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
     return dispatch({
@@ -62,6 +62,8 @@ export const actions = {
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
         shippingType: Utils.getApiRequestShippingType(),
+        registrationTouchpoint: touchPoint,
+        registrationSource: source,
       }).then(resp => {
         if (resp && resp.consumerId) {
           const phone = Utils.getLocalStorageVariable('user.p');

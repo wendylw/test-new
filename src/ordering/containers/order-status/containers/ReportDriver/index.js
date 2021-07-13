@@ -9,7 +9,7 @@ import Constants from '../../../../../utils/constants';
 import PageLoader from '../../../../../components/PageLoader';
 import feedBackThankyou from '../../../../../images/feedback-thankyou.png';
 import { IconInsertPhoto } from '../../../../../components/Icons';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import Radio from '../../../../../components/Radio';
 import { actions as reportDriverActionCreators, thunks as reportDriverThunks } from './redux';
 import {
@@ -33,7 +33,8 @@ import { actions as appActionCreators, getUserEmail, getUserConsumerId, getUser 
 import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
-import { getAppToken } from '../../../../../cashback/containers/utils';
+import * as NativeMethods from '../../../../../utils/native-methods';
+import loggly from '../../../../../utils/monitoring/loggly';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
@@ -48,9 +49,14 @@ class ReportDriver extends Component {
     await loadOrder(receiptNumber);
 
     if (Utils.isWebview() && !user?.isLogin) {
-      window.sendToken = res => this.authTokens(res);
+      const result = await NativeMethods.getTokenAsync();
+      await this.loginAppWithNativeToken(result);
 
-      getAppToken(user);
+      const { user } = this.props;
+      if (!user.isLogin && user.isExpired) {
+        const result = await NativeMethods.tokenExpiredAsync();
+        await this.loginAppWithNativeToken(result);
+      }
     }
 
     this.preFillEmail();
@@ -58,36 +64,15 @@ class ReportDriver extends Component {
     fetchReport();
   };
 
-  authTokens = async res => {
-    if (res) {
-      const result = this.getAuthTokenResult(res);
-
-      if (!result?.access_token || !result?.refresh_token) {
-        return;
-      }
-
-      await this.props.loginApp({
-        accessToken: result.access_token,
-        refreshToken: result.refresh_token,
-      });
-
-      const { user } = this.props;
-
-      if (!user.isLogin && user.isExpired) {
-        getAppToken(user);
-        return;
-      }
-
-      this.preFillEmail();
+  loginAppWithNativeToken = async result => {
+    if (!result?.access_token || !result?.refresh_token) {
+      loggly.error('order-status.report-driver', { message: 'native token is invalid' });
+      return;
     }
-  };
-
-  getAuthTokenResult = res => {
-    if (Utils.isIOSWebview()) {
-      return res;
-    } else if (Utils.isAndroidWebview()) {
-      return JSON.parse(res) || {};
-    }
+    await this.props.loginApp({
+      accessToken: result.access_token,
+      refreshToken: result.refresh_token,
+    });
   };
 
   preFillEmail = async () => {
@@ -104,12 +89,20 @@ class ReportDriver extends Component {
   }
 
   handleGoBack = () => {
-    this.gotoThankYourPage();
+    this.goBack();
   };
 
   handleDone = () => {
-    this.gotoThankYourPage();
+    this.goBack();
   };
+
+  goBack() {
+    if (Utils.isWebview()) {
+      NativeMethods.goBack();
+    } else {
+      this.gotoThankYourPage();
+    }
+  }
 
   gotoThankYourPage = () => {
     const { receiptNumber, history } = this.props;
@@ -211,14 +204,14 @@ class ReportDriver extends Component {
     const { t } = this.props;
     return (
       <section className="ordering-report-thanks">
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.thank-you-header"
-          isPage={false}
+          isPage={true}
           title={t('ReportIssue')}
           navFunc={this.handleGoBack}
-        ></Header>
+        ></HybridHeader>
         <div className="padding-normal">
           <div className="text-center padding-left-right-normal">
             <img className="ordering-report-thanks__image" alt="Thank your feedback" src={feedBackThankyou} />
@@ -366,14 +359,14 @@ class ReportDriver extends Component {
 
     return (
       <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.report-driver.header"
-          isPage={false}
+          isPage={true}
           title={t('ReportIssue')}
           navFunc={this.handleGoBack}
-        ></Header>
+        ></HybridHeader>
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
           <div className="card padding-small margin-normal">

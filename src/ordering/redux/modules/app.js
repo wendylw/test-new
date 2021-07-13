@@ -224,7 +224,7 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
+  loginApp: ({ accessToken, refreshToken, touchPoint, source }) => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
     return dispatch({
@@ -234,6 +234,8 @@ export const actions = {
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
         shippingType: Utils.getApiRequestShippingType(),
+        registrationTouchpoint: touchPoint,
+        registrationSource: source,
       }).then(resp => {
         if (resp && resp.consumerId) {
           const phone = Utils.getLocalStorageVariable('user.p');
@@ -499,6 +501,7 @@ const user = (state = initialState.user, action) => {
         isLogin: login,
         consumerId,
         isFetching: false,
+        isExpired: false,
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');

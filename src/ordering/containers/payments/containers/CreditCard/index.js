@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import HybridHeader from '../../../../../components/HybridHeader';
 import Loader from '../../components/Loader';
-import Header from '../../../../../components/Header';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import FormValidate from '../../../../../utils/form-validate';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
@@ -558,7 +558,7 @@ class CreditCard extends Component {
         className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.payment.credit-card.container"
       >
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"

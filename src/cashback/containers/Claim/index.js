@@ -103,7 +103,7 @@ class PageClaim extends React.Component {
       const { cashbackInfo } = this.props;
       const { customerId } = cashbackInfo || {};
 
-      history.push({
+      history.replace({
         pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
         search: `?customerId=${this.props.user.customerId || customerId || ''}`,
       });

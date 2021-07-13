@@ -8,7 +8,7 @@ import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 dayjs.extend(utc);
 
-const { SH_LOGISTICS_VALID_TIME, CLIENTS } = Constants;
+const { SH_LOGISTICS_VALID_TIME, WEB_VIEW_SOURCE, CLIENTS } = Constants;
 const Utils = {};
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
@@ -25,18 +25,25 @@ Utils.getApiRequestShippingType = () => {
   return type ? Utils.mapString2camelCase(type) : undefined;
 };
 
-Utils.isWebview = function isWebview() {
-  return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
+Utils.hasNativeSavedAddress = () => {
+  if (Utils.isWebview() && sessionStorage.getItem('addressIdFromNative')) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
+Utils.isWebview = function isWebview() {
+  return Utils.isAndroidWebview() || Utils.isIOSWebview();
+};
+
+// still need to distinguish ios webview and android webview
 Utils.isIOSWebview = function isIOSWebview() {
-  return Boolean(
-    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
-  );
+  return window.webViewSource === WEB_VIEW_SOURCE.IOS;
 };
 
 Utils.isAndroidWebview = function isAndroidWebview() {
-  return Boolean(window.androidInterface);
+  return window.webViewSource === WEB_VIEW_SOURCE.Android;
 };
 
 Utils.getQueryVariable = variable => {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import LocationPicker, { setHistoricalDeliveryAddresses } from '../../../components/LocationPicker';
 import { post } from '../../../utils/request';
 import config from '../../../config';
@@ -171,7 +171,7 @@ class LocationPage extends Component {
     const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
     return (
       <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"
