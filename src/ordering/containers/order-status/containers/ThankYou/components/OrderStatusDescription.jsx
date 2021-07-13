@@ -78,14 +78,14 @@ function OrderStatusDescription(props) {
           </span>
         </p>
       ) : null}
-      {shippingType === DELIVERY_METHOD.CANCELLED ? (
+      {orderStatus === ORDER_STATUS.CANCELLED ? (
         <div className="card text-center margin-normal flex">
           <div className="padding-small text-left">
             <Trans i18nKey={cancelledDescriptionKey[cancelOperator]} ns="OrderingThankYou" storeName={storeName}>
-              <h4 className="padding-top-bottom-small text-size-big text-weight-bolder">
-                {{ storeName }}
+              <p className="padding-top-bottom-small padding-left-right-normal text-center text-size-big text-line-height-base">
+                <strong>{{ storeName }}</strong>
                 {cancelAmountEl}
-              </h4>
+              </p>
             </Trans>
           </div>
         </div>
