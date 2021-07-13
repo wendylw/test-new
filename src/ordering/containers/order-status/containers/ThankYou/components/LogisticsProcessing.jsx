@@ -49,8 +49,6 @@ const LOGISTIC_PROCESSING_MAPPING = {
 function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayReason }) {
   const [expandProcessingList, setExpandProcessingList] = useState(false);
 
-  console.log(orderStatus);
-
   if (!LOGISTIC_PROCESSING_MAPPING[orderStatus] || (!useStorehubLogistics && orderStatus !== ORDER_STATUS.PAID)) {
     return null;
   }
