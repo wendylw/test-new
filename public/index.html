@@ -28,21 +28,24 @@
 
     <meta id="app-store-id" property="al:ios:app_store_id" content="1526807985" />
     <meta property="al:ios:app_name" content="%REACT_APP_META_NAME%" />
-    <meta property="al:android:url" content="applinks://docs" />
-    <meta property="al:android:app_name" content="App Links" />
-    <meta property="al:android:package" content="org.applinks" />
+    <meta property="al:android:app_name" content="%REACT_APP_META_NAME%" />
+    <meta property="al:android:package" content="com.storehub.beep.fat"/>
     <meta property="al:web:url" content="http://applinks.org/documentation" />
     <meta property="al:web:should_fallback" content="true" />
     <meta property="fb:app_id" content="1808145769328485" />
 
     <script type="text/javascript">
       var url = window.location.href; 
+      var appLinkMeta = document.createElement('meta')
+      appLinkMeta.setAttribute('property','al:android:url')
+      appLinkMeta.content = url
       var appLinkMeta1 = document.createElement('meta')
       appLinkMeta1.setAttribute('property','al:ios:url')
       appLinkMeta1.content = url
       var appLinkMeta2 = document.createElement('meta')
       appLinkMeta2.name = '%REACT_APP_META_NAME%'
       appLinkMeta2.content = `app-id=1526807985, app-argument=${url}`
+      document.getElementById('app-store-id').after(appLinkMeta)
       document.getElementById('app-store-id').after(appLinkMeta1)
       document.getElementById('app-store-id').after(appLinkMeta2)
     </script>
