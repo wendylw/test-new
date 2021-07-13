@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
-import { SHIPPING_TYPES_MAPPING, DELIVERY_METHOD, PROMOTIONS_TYPES } from './constants';
+import { SHIPPING_TYPES_MAPPING, DELIVERY_METHOD, PROMOTIONS_TYPES } from '../constants';
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
 
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
@@ -76,6 +76,7 @@ class PromotionContent extends PureComponent {
   getPromotionPrompt() {
     const { promotion, inApp, t } = this.props;
     const {
+      id,
       discountProductList,
       validDate,
       appliedClientTypes,
@@ -129,7 +130,15 @@ class PromotionContent extends PureComponent {
       prompts.push(deliveryOrderOnlyEl);
     }
 
-    prompts.join(',');
+    return prompts.length === 0
+      ? null
+      : prompts.map((prompt, index) => {
+          return (
+            <span key={`${id}-prompt-${index}`}>
+              {index === 0 ? '' : ','} {prompt}
+            </span>
+          );
+        });
   }
 
   render() {
