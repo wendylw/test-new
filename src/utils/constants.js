@@ -425,8 +425,8 @@ const DELIVERY_METHOD = {
 const CONSUMERFLOW_STATUS = {
   PAID: 'paid',
   ACCEPTED: 'accepted',
-  LOGISTIC_CONFIRMED: 'logisticsConfirmed',
-  CONFIMRMED: 'confirmed',
+  LOGISTICS_CONFIRMED: 'logisticsConfirmed',
+  CONFIRMED: 'confirmed',
   DELIVERED: 'delivered',
   PICKUP: 'pickedUp',
   CANCELLED: 'cancelled',

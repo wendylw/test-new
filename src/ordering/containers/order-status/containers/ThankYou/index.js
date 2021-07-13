@@ -723,7 +723,7 @@ export class ThankYou extends PureComponent {
 
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({ CONSUMERFLOW_STATUS, cashbackInfo, businessInfo, deliveryInformation, order }) {
-    const { PAID, ACCEPTED, LOGISTIC_CONFIRMED, CONFIMRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
+    const { PAID, ACCEPTED, LOGISTICS_CONFIRMED, CONFIRMED, PICKUP, CANCELLED, DELIVERED } = CONSUMERFLOW_STATUS;
     const { cashback } = cashbackInfo || {};
     const { enableCashback } = businessInfo || {};
     let { storeInfo, isPreOrder } = order || {};
@@ -747,7 +747,7 @@ export class ThankYou extends PureComponent {
     }
 
     /** logistic confirmed and confirmed */
-    if (orderStatus === CONFIMRMED || orderStatus === LOGISTIC_CONFIRMED) {
+    if (orderStatus === CONFIRMED || orderStatus === LOGISTICS_CONFIRMED) {
       currentStatusObj = {
         status: 'confirmed',
       };
