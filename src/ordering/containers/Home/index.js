@@ -81,6 +81,11 @@ export class Home extends Component {
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
+
+    if (isSourceBeepitCom()) {
+      const source = Utils.getQueryString('source');
+      sessionStorage.setItem('orderSource', source);
+    }
   }
   deliveryEntryEl = null;
   headerEl = null;
@@ -513,11 +518,6 @@ export class Home extends Component {
     // table ordering situation
     if (!deliveryInfo || (!Utils.isDeliveryType() && !Utils.isPickUpType())) {
       return null;
-    }
-
-    if (isSourceBeepitCom()) {
-      const source = Utils.getQueryString('source');
-      sessionStorage.setItem('orderSource', source);
     }
 
     const isValidTimeToOrder = this.isValidTimeToOrder();
