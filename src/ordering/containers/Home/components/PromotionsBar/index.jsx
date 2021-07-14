@@ -81,7 +81,7 @@ class PromotionsBar extends PureComponent {
           </ul>
           <button
             onClick={this.handleViewDetails}
-            className="promotions-bar__view-more-button button button__link text-size-small padding-small margin-top-bottom-smaller"
+            className="promotions-bar__view-more-button button button__link text-size-small padding-small"
           >
             {t('ViewPromo')}
           </button>
