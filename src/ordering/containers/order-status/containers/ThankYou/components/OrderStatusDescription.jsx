@@ -50,10 +50,12 @@ function OrderStatusDescription(props) {
   } = props;
   const delayByBadWeatherImageSource =
     orderDelayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER ? RAINY_IMAGES_MAPPING[orderStatus] : null;
+  const preOrderPendingStoreAccept =
+    shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder && orderStatus === ORDER_STATUS.PAID;
   const ImageSource =
-    shippingType === DELIVERY_METHOD.DELIVERY && !isPreOrder
-      ? STATUS_IMAGES_MAPPING[orderStatus]
-      : beepPreOrderSuccessImage;
+    preOrderPendingStoreAccept || shippingType !== DELIVERY_METHOD.DELIVERY
+      ? beepPreOrderSuccessImage
+      : STATUS_IMAGES_MAPPING[orderStatus];
   const showMapInApp = inApp && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
 
   return (
