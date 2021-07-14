@@ -28,7 +28,6 @@ import {
   getCategoryProductList,
   getAllProductsIds,
   getCheckingInventoryPendingState,
-  getSelectedProductDetail,
 } from '../../redux/modules/cart';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
