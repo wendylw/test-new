@@ -126,13 +126,16 @@
     -ms-transition: padding-bottom 0.4s, height 0.4s, opacity 0.2s linear 0.4s;
   }
 
+  &__list--expand &__step--active {
+    height: auto;
+  }
+
   &__list--expand &__step:not(:last-child) {
     padding-bottom: 2.4vw;
   }
 
   &__list--expand &__step--active:not(:last-child) {
     padding-bottom: 3.8vw;
-    height: auto;
   }
 
   &__list--expand &__step::before {

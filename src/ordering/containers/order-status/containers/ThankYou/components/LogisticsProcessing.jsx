@@ -11,7 +11,7 @@ const { ORDER_STATUS } = Constants;
 const RAINY_DESCRIPTION_MAPPING = {
   badWeatherDescriptionKey: 'BadWeatherDescriptionKey',
   badWeatherImage: (
-    <span className="margin-left-right-smaller" role="img" aria-label="Cloud with Rain">
+    <span className="margin-left-right-smaller text-middle" role="img" aria-label="Cloud with Rain">
       🌧️
     </span>
   ),
@@ -22,7 +22,7 @@ const LOGISTIC_PROCESSING_MAPPING = {
     completeTitleKey: 'Confirmed',
     descriptionKey: 'OrderReceivedDescription',
     descriptionImage: (
-      <span className="margin-left-right-smaller" role="img" aria-label="Goofy">
+      <span className="margin-left-right-smaller text-middle" role="img" aria-label="Goofy">
         😋
       </span>
     ),
@@ -31,7 +31,7 @@ const LOGISTIC_PROCESSING_MAPPING = {
     activeTitleKey: 'MerchantAccepted',
     completeTitleKey: 'RiderFound',
     descriptionKey: 'FindingRider',
-    descriptionIcon: <IconAccessTime className="icon icon__smaller icon__default" />,
+    descriptionIcon: <IconAccessTime className="icon icon__smaller icon__default text-middle" />,
     checkBadWeather: true,
   },
   [ORDER_STATUS.CONFIRMED]: {
@@ -90,16 +90,20 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayR
                 <>
                   {rainyWeather && currentStatusIndex > 1 ? null : (
                     <div className="logistics-processing__step-description flex flex-middle padding-left-right-normal">
-                      {LOGISTIC_PROCESSING_MAPPING[step].descriptionIcon || null}
-                      <span>{t(LOGISTIC_PROCESSING_MAPPING[step].descriptionKey)}</span>
-                      {LOGISTIC_PROCESSING_MAPPING[step].descriptionImage || null}
+                      <p className="text-line-height-base">
+                        {LOGISTIC_PROCESSING_MAPPING[step].descriptionIcon || null}
+                        <span className="text-middle">{t(LOGISTIC_PROCESSING_MAPPING[step].descriptionKey)}</span>
+                        {LOGISTIC_PROCESSING_MAPPING[step].descriptionImage || null}
+                      </p>
                     </div>
                   )}
 
                   {rainyWeather && LOGISTIC_PROCESSING_MAPPING[step].checkBadWeather ? (
                     <div className="logistics-processing__step-description flex flex-middle padding-left-right-normal">
-                      <span>{t(RAINY_DESCRIPTION_MAPPING.badWeatherDescriptionKey)}</span>
-                      {RAINY_DESCRIPTION_MAPPING.badWeatherImage}
+                      <p className="text-line-height-base">
+                        <span className="text-middle">{t(RAINY_DESCRIPTION_MAPPING.badWeatherDescriptionKey)}</span>
+                        {RAINY_DESCRIPTION_MAPPING.badWeatherImage}
+                      </p>
                     </div>
                   ) : null}
                 </>
