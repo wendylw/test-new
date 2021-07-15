@@ -273,6 +273,14 @@ export const gotoHome = () => {
   return dsBridgeCall(data);
 };
 
+export const getUserInfo = () => {
+  const data = {
+    method: 'userModule-getUserInfo',
+    mode: MODE.SYNC,
+  };
+  return dsBridgeCall(data);
+};
+
 export const updateNativeHeader = ({ left, center, right } = {}) => {
   const config = {
     left: left ? [left] : [],
