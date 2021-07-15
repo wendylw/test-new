@@ -1267,7 +1267,8 @@ export class ThankYou extends PureComponent {
       shippingType,
     } = this.props;
     const date = new Date();
-    const { orderId, tableId, deliveryInformation = [], storeInfo, cancelOperator, total } = order || {};
+    const { orderId, tableId, deliveryInformation = [], storeInfo, cancelOperator, total, refundShippingFee } =
+      order || {};
     const {
       isWebview,
       profile: { email },
@@ -1376,7 +1377,8 @@ export class ThankYou extends PureComponent {
             <OrderStatusDescription
               orderStatus={orderStatus}
               orderDelayReason={orderDelayReason}
-              shippingType={type}
+              shippingType={shippingType}
+              refundShippingFee={refundShippingFee}
               storeName={storeName}
               cancelOperator={cancelOperator || 'unknown'}
               cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}

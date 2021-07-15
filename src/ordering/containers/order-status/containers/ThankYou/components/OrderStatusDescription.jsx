@@ -42,6 +42,7 @@ function OrderStatusDescription(props) {
     orderStatus,
     orderDelayReason,
     shippingType,
+    refundShippingFee,
     storeName,
     cancelOperator,
     cancelAmountEl,
@@ -57,6 +58,9 @@ function OrderStatusDescription(props) {
       ? beepPreOrderSuccessImage
       : STATUS_IMAGES_MAPPING[orderStatus];
   const showMapInApp = inApp && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
+  const pickUpDescription = refundShippingFee
+    ? t('ThankYouForUpdatedToPickingUpForUS')
+    : t('ThankYouForPickingUpForUS');
 
   return (
     <>
@@ -72,9 +76,7 @@ function OrderStatusDescription(props) {
       ) : null}
       {shippingType === DELIVERY_METHOD.PICKUP || shippingType === DELIVERY_METHOD.DINE_IN ? (
         <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big text-line-height-base">
-          {shippingType === DELIVERY_METHOD.PICKUP
-            ? `${t('ThankYouForPickingUpForUS')} `
-            : `${t('PrepareOrderDescription')} `}
+          {shippingType === DELIVERY_METHOD.PICKUP ? `${pickUpDescription} ` : `${t('PrepareOrderDescription')} `}
           <span role="img" aria-label="Goofy">
             😋
           </span>
@@ -100,6 +102,7 @@ OrderStatusDescription.propTypes = {
   orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
   orderDelayReason: PropTypes.oneOf(Object.values(ORDER_DELAY_REASON_CODES)),
   shippingType: PropTypes.oneOf(Object.values(DELIVERY_METHOD)),
+  refundShippingFee: PropTypes.number,
   storeName: PropTypes.string,
   cancelOperator: PropTypes.string,
   cancelAmountEl: PropTypes.element,
@@ -110,6 +113,7 @@ OrderStatusDescription.propTypes = {
 OrderStatusDescription.defaultProps = {
   orderStatus: null,
   shippingType: null,
+  refundShippingFee: 0,
   orderDelayReason: null,
   storeName: null,
   cancelOperator: null,
