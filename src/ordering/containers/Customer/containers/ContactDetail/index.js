@@ -108,7 +108,7 @@ class ContactDetail extends Component {
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
-            disabled={!username || !username.length || !isValidPhoneNumber(phone)}
+            disabled={!username || !username.length || !isValidPhoneNumber(phone || '')}
             onClick={this.handleClickContinue}
           >
             {t('Continue')}

@@ -90,7 +90,7 @@ export const initialState = {
     isError: false,
     otpType: 'otp',
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
-    phone: localePhoneNumber,
+    phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
   },
   error: null, // network error

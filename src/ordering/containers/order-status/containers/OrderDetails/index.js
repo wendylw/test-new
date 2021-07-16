@@ -1,11 +1,8 @@
-import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
-import NativeHeader from '../../../../../components/NativeHeader';
-import WebHeader from '../../../../../components/WebHeader';
 import { compose } from 'redux';
 import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
@@ -28,6 +25,7 @@ import {
 } from '../../redux/selector';
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
+import HybridHeader from '../../../../../components/HybridHeader';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
@@ -281,7 +279,7 @@ export class OrderDetails extends Component {
     });
   };
 
-  renderHeader() {
+  getRightContentOfHeader() {
     const { user, order, t, businessInfo, storeInfoForCleverTap } = this.props;
     const isWebview = _get(user, 'isWebview', false);
     const userEmail = _get(user, 'profile.email', '');
@@ -294,31 +292,33 @@ export class OrderDetails extends Component {
     const orderStoreName = _get(order, 'storeInfo.name', '');
     const minimumConsumption = _get(businessInfo, 'qrOrderingSettings.minimumConsumption', 0);
 
+    if (!order) {
+      return null;
+    }
+
     if (isWebview) {
-      const rightContentOfLiveChat = !_isNil(order)
-        ? {
-            text: `${t('NeedHelp')}?`,
-            style: {
-              color: '#00b0ff',
-            },
-            onClick: () => {
-              CleverTap.pushEvent('Order Details - click contact us', {
-                ...storeInfoForCleverTap,
-                'cart items quantity': this.getCartItemsQuantity(),
-                'cart amount': subtotal,
-                'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-                'payment method': paymentMethod && paymentMethod[0],
-              });
-              NativeMethods.startChat({
-                orderId,
-                name: orderUserName,
-                phone: orderUserPhone,
-                email: userEmail,
-                storeName: orderStoreName,
-              });
-            },
-          }
-        : {};
+      const rightContentOfNativeLiveChat = {
+        text: `${t('NeedHelp')}?`,
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          CleverTap.pushEvent('Order Details - click contact us', {
+            ...storeInfoForCleverTap,
+            'cart items quantity': this.getCartItemsQuantity(),
+            'cart amount': subtotal,
+            'has met minimum order value': subtotal >= minimumConsumption ? true : false,
+            'payment method': paymentMethod && paymentMethod[0],
+          });
+          NativeMethods.startChat({
+            orderId,
+            name: orderUserName,
+            phone: orderUserPhone,
+            email: userEmail,
+            storeName: orderStoreName,
+          });
+        },
+      };
 
       const rightContentOfContactUs = {
         text: t('ContactUs'),
@@ -330,40 +330,25 @@ export class OrderDetails extends Component {
         },
       };
 
-      const rightContent = window.liveChatAvailable ? rightContentOfLiveChat : rightContentOfContactUs;
-
-      return (
-        <NativeHeader
-          headerRef={ref => (this.headerEl = ref)}
-          isPage={true}
-          title={t('OrderDetails')}
-          navFunc={() => {
-            CleverTap.pushEvent('Order details - click back arrow');
-            NativeMethods.goBack();
-          }}
-          rightContent={rightContent}
-        />
-      );
+      return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    const rightContent = <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
-
-    return (
-      <WebHeader
-        headerRef={ref => (this.headerEl = ref)}
-        className="flex-middle"
-        isPage={true}
-        contentClassName="flex-middle"
-        data-heap-name="ordering.order-detail.header"
-        title={t('OrderDetails')}
-        navFunc={() => {
-          CleverTap.pushEvent('Order details - click back arrow');
-          this.gotoThankyouPage();
-        }}
-        rightContent={rightContent}
-      />
-    );
+    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
   }
+
+  handleHeaderNavFunc = () => {
+    const isWebview = Utils.isWebview();
+
+    CleverTap.pushEvent('Order details - click back arrow');
+
+    if (isWebview) {
+      NativeMethods.goBack();
+      return;
+    }
+
+    this.gotoThankyouPage();
+    return;
+  };
 
   render() {
     const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton } = this.props;
@@ -372,7 +357,16 @@ export class OrderDetails extends Component {
 
     return (
       <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
-        {this.renderHeader()}
+        <HybridHeader
+          headerRef={ref => (this.headerEl = ref)}
+          className="flex-middle"
+          isPage={true}
+          contentClassName="flex-middle"
+          data-heap-name="ordering.order-detail.header"
+          title={t('OrderDetails')}
+          navFunc={this.handleHeaderNavFunc}
+          rightContent={this.getRightContentOfHeader()}
+        />
         <div className="ordering-details__container">
           <div className="text-center">
             <img className="ordering-details__picture-succeed" src={beepPreOrderSuccess} alt="beep pre-order success" />
