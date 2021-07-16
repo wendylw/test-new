@@ -1,14 +1,11 @@
 import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
-import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DownloadBanner from '../../../../../components/DownloadBanner';
-import NativeHeader from '../../../../../components/NativeHeader';
-import WebHeader from '../../../../../components/WebHeader';
 import { IconAccessTime, IconPin } from '../../../../../components/Icons';
 import Image from '../../../../../components/Image';
 import LiveChat from '../../../../../components/LiveChat';
@@ -77,6 +74,7 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import PhoneLogin from './components/PhoneLogin';
+import HybridHeader from '../../../../../components/HybridHeader';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -98,16 +96,7 @@ export class ThankYou extends PureComponent {
       phoneCopyTitle: '',
       phoneCopyContent: '',
     };
-    this.injectFun();
   }
-
-  injectFun = () => {
-    window.contactUs = !Utils.isDineInType()
-      ? () => {
-          this.handleVisitMerchantInfoPage();
-        }
-      : null;
-  };
 
   pollOrderStatusTimer = null;
 
@@ -175,8 +164,6 @@ export class ThankYou extends PureComponent {
     const { latitude: storeLat, longitude: storeLng } = location;
     const { address = {} } = deliveryInformation[0] || {};
     const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
-    const title = `#${orderId}`;
-    const text = t('ContactUs');
     const focusPositionList = [
       {
         lat: deliveryLat,
@@ -1366,45 +1353,52 @@ export class ThankYou extends PureComponent {
     this.props.updateCancellationReasonVisibleState(false);
   };
 
-  renderHeader() {
-    const { user, order, history, storeHashCode, t } = this.props;
+  getRightContentOfHeader() {
+    const { user, order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
     const userEmail = _get(user, 'profile.email', '');
     const orderId = _get(order, 'orderId', '');
     const tableId = _get(order, 'tableId', '');
-    const type = Utils.getOrderTypeFromUrl();
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
     const orderUserName = _get(deliveryAddress, 'name', '');
     const orderUserPhone = _get(deliveryAddress, 'phone', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
-    const options = [`h=${storeHashCode}`];
+    const isDineInType = shippingType === DELIVERY_METHOD.DINE_IN;
 
-    if (tableId) {
-      options.push(`table=${tableId}`);
+    if (!order) {
+      return null;
     }
 
-    if (type) {
-      options.push(`type=${type}`);
+    const rightContentOfTableId = {
+      text: tableId ? t('TableIdText', { tableId }) : '',
+      style: {
+        color: '#8d90a1',
+      },
+      attributes: {
+        'data-testid': 'thanks__self-pickup',
+      },
+    };
+
+    if (isDineInType) {
+      return rightContentOfTableId;
     }
 
     if (isWebview) {
-      const rightContentOfLiveChat = !_isNil(order)
-        ? {
-            text: `${t('NeedHelp')}?`,
-            style: {
-              color: '#00b0ff',
-            },
-            onClick: () => {
-              NativeMethods.startChat({
-                orderId,
-                name: orderUserName,
-                phone: orderUserPhone,
-                email: userEmail,
-                storeName: orderStoreName,
-              });
-            },
-          }
-        : {};
+      const rightContentOfNativeLiveChat = {
+        text: `${t('NeedHelp')}?`,
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          NativeMethods.startChat({
+            orderId,
+            name: orderUserName,
+            phone: orderUserPhone,
+            email: userEmail,
+            storeName: orderStoreName,
+          });
+        },
+      };
 
       const rightContentOfContactUs = {
         text: t('ContactUs'),
@@ -1416,57 +1410,41 @@ export class ThankYou extends PureComponent {
         },
       };
 
-      const rightContent = window.liveChatAvailable ? rightContentOfLiveChat : rightContentOfContactUs;
-
-      return (
-        <NativeHeader
-          headerRef={ref => (this.headerEl = ref)}
-          isPage={true}
-          title={`#${orderId}`}
-          navFunc={() => {
-            NativeMethods.closeWebView();
-          }}
-          rightContent={rightContent}
-        />
-      );
+      return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    const isDineInType = Utils.isDineInType();
-    const rightContentOfTableId = {
-      text: tableId ? t('TableIdText', { tableId }) : '',
-      style: {
-        color: '#8d90a1',
-      },
-      attributes: {
-        'data-testid': 'thanks__self-pickup',
-      },
-    };
-
-    const rightContent = isDineInType ? (
-      rightContentOfTableId
-    ) : (
-      <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />
-    );
-
-    return (
-      <WebHeader
-        headerRef={ref => (this.headerEl = ref)}
-        className="flex-middle border__bottom-divider"
-        isPage={true}
-        contentClassName="flex-middle"
-        data-heap-name="ordering.thank-you.header"
-        title={`#${orderId}`}
-        navFunc={() => {
-          // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-          history.replace({
-            pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-            search: `?${options.join('&')}`,
-          });
-        }}
-        rightContent={rightContent}
-      />
-    );
+    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
   }
+
+  handleHeaderNavFunc = () => {
+    const { order, storeHashCode, history } = this.props;
+    const isWebview = Utils.isWebview();
+    const tableId = _get(order, 'tableId', '');
+    const type = Utils.getOrderTypeFromUrl();
+
+    if (isWebview) {
+      NativeMethods.closeWebView();
+      return;
+    }
+
+    const options = [`h=${storeHashCode}`];
+
+    if (tableId) {
+      options.push(`table=${tableId}`);
+    }
+
+    if (type) {
+      options.push(`type=${type}`);
+    }
+
+    // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
+    history.replace({
+      pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+      search: `?${options.join('&')}`,
+    });
+
+    return;
+  };
 
   render() {
     const {
@@ -1491,13 +1469,24 @@ export class ThankYou extends PureComponent {
       orderInfo = this.renderPreOrderMessage();
     }
 
+    const orderId = _get(order, 'orderId', '');
+
     return (
       <section
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
-          {this.renderHeader()}
+          <HybridHeader
+            headerRef={ref => (this.headerEl = ref)}
+            className="flex-middle border__bottom-divider"
+            isPage={true}
+            contentClassName="flex-middle"
+            data-heap-name="ordering.thank-you.header"
+            title={`#${orderId}`}
+            navFunc={this.handleHeaderNavFunc}
+            rightContent={this.getRightContentOfHeader()}
+          />
           <div
             className="ordering-thanks__container"
             style={
