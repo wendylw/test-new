@@ -281,6 +281,8 @@ export const getUserInfo = () => {
   return dsBridgeCall(data);
 };
 
+export const isLiveChatAvailable = () => window.liveChatAvailable;
+
 export const updateNativeHeader = ({ left, center, right } = {}) => {
   const config = {
     left: left ? [left] : [],
