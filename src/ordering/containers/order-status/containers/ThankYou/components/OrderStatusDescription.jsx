@@ -51,10 +51,12 @@ function OrderStatusDescription(props) {
   } = props;
   const delayByBadWeatherImageSource =
     orderDelayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER ? RAINY_IMAGES_MAPPING[orderStatus] : null;
-  const preOrderPendingStoreAccept =
-    shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder && orderStatus === ORDER_STATUS.PAID;
+  const preOrderPendingRiderConfirm =
+    shippingType === DELIVERY_METHOD.DELIVERY &&
+    isPreOrder &&
+    [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus);
   const ImageSource =
-    preOrderPendingStoreAccept || shippingType !== DELIVERY_METHOD.DELIVERY
+    preOrderPendingRiderConfirm || shippingType !== DELIVERY_METHOD.DELIVERY
       ? beepPreOrderSuccessImage
       : STATUS_IMAGES_MAPPING[orderStatus];
   const showMapInApp = inApp && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
