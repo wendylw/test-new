@@ -99,7 +99,7 @@ class PromotionContent extends PureComponent {
     const beepAppOnlyEl = <Trans t={t} i18nKey="OnlyInBeepAppPrompt" components={[appDownloadLinkEl]} />;
     const firstOrderOnlyEl = requireFirstPurchase ? t('FirstOrderOnly') : null;
     const deliveryOrderOnlyEl =
-      appliedSources.length === 1 && appliedSources[0] === SHIPPING_TYPES_MAPPING[DELIVERY_METHOD.DELIVERY_METHOD]
+      appliedSources.length === 1 && appliedSources[0] === SHIPPING_TYPES_MAPPING[DELIVERY_METHOD.DELIVERY]
         ? t('DeliveryOrderOnly')
         : null;
 
