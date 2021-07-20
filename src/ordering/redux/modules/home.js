@@ -24,9 +24,6 @@ export const initialState = {
     isFetching: false,
     categoryIds: [],
   },
-  timeSlot: {
-    timeSlotList: [],
-  },
   selectedProduct: {
     id: '',
     cartId: '',
@@ -56,11 +53,6 @@ const types = {
   INCREASE_PRODUCT_IN_CART: 'ORDERING/HOME/INCREASE_PRODUCT_IN_CART',
 
   SET_MENU_LAYOUT_TYPE: 'ORDERING/HOME/SET_MENU_TYPE',
-
-  // time slot
-  FETCH_TIMESLOT_REQUEST: 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST',
-  FETCH_TIMESLOT_SUCCESS: 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS',
-  FETCH_TIMESLOT_FAILURE: 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE',
 };
 
 const fetchOnlineCategory = variables => {
@@ -97,15 +89,6 @@ export const actions = {
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
   },
-
-  getTimeSlot: (shippingType, fulfillDate, storeid) => dispatch => {
-    return dispatch({
-      [API_REQUEST]: {
-        types: [types.FETCH_TIMESLOT_REQUEST, types.FETCH_TIMESLOT_SUCCESS, types.FETCH_TIMESLOT_FAILURE],
-        ...Url.API_URLS.GET_TIME_SLOT(shippingType, fulfillDate, storeid),
-      },
-    });
-  },
 };
 
 // reducers
@@ -125,24 +108,6 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
         categoryIds: onlineCategory.map(category => category.id),
       };
     case types.FETCH_ONLINECATEGORY_FAILURE:
-      return { ...state, isFetching: false };
-    default:
-      return state;
-  }
-};
-
-const timeSlot = (state = initialState.timeSlot, action) => {
-  switch (action.type) {
-    case types.FETCH_TIMESLOT_REQUEST:
-      return { ...state, isFetching: true };
-    case types.FETCH_TIMESLOT_SUCCESS:
-      const timeSlotList = action.response;
-      return {
-        ...state,
-        isFetching: false,
-        timeSlotList,
-      };
-    case types.FETCH_TIMESLOT_FAILURE:
       return { ...state, isFetching: false };
     default:
       return state;
@@ -171,7 +136,6 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
 export default combineReducers({
   domProperties,
   onlineCategory,
-  timeSlot,
   selectedProduct,
 });
 
@@ -256,8 +220,6 @@ export const getCategoryProductList = createSelector(
 );
 
 export const getProductItemMinHeight = state => state.home.domProperties.productItemMinHeight;
-
-export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;
 
 // This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
 export const getStoreInfoForCleverTap = state => {
