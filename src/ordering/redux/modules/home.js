@@ -11,13 +11,6 @@ import { getBusiness, getBusinessUTCOffset, getCartItemList, fetchShoppingCart }
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 
 export const initialState = {
-  domProperties: {
-    // 33.8% equal (item padding + item image + item cart controller button height) / window width
-    productItemMinHeight:
-      ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
-        ? document.body.clientWidth || window.innerWidth
-        : 414) * 0.26,
-  },
   onlineCategory: {
     isFetching: false,
     categoryIds: [],
@@ -114,11 +107,6 @@ export const actions = {
   },
 };
 
-// reducers
-const domProperties = (state = initialState.domProperties, action) => {
-  return state;
-};
-
 const onlineCategory = (state = initialState.onlineCategory, action) => {
   switch (action.type) {
     case types.FETCH_ONLINECATEGORY_REQUEST:
@@ -157,7 +145,6 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
 };
 
 export default combineReducers({
-  domProperties,
   onlineCategory,
   selectedProduct,
 });
@@ -239,8 +226,6 @@ export const getCategoryProductList = createSelector(
     return mergeWithShoppingCart(newCategories, carts);
   }
 );
-
-export const getProductItemMinHeight = state => state.home.domProperties.productItemMinHeight;
 
 // This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
 export const getStoreInfoForCleverTap = state => {

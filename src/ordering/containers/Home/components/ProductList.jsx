@@ -11,11 +11,7 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionsCreator } from '../../../redux/modules/app';
-import {
-  actions as homeActionsCreator,
-  getCategoryProductList,
-  getProductItemMinHeight,
-} from '../../../redux/modules/home';
+import { actions as homeActionsCreator, getCategoryProductList } from '../../../redux/modules/home';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import Constants from '../../../../utils/constants';
@@ -173,8 +169,17 @@ class ProductList extends Component {
     return <Tag text={t('BestSeller')} className="tag__small tag__primary text-size-smaller" />;
   }
 
+  get productItemMinHeight() {
+    // 33.8% equal (item padding + item image + item cart controller button height) / window width
+    return (
+      ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
+        ? document.body.clientWidth || window.innerWidth
+        : 414) * 0.26
+    );
+  }
+
   render() {
-    const { categories, style, productItemMinHeight } = this.props;
+    const { categories, style } = this.props;
 
     return (
       <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
@@ -203,7 +208,7 @@ class ProductList extends Component {
                       <LazyLoad
                         key={`product-item-${id}`}
                         offset={0}
-                        height={productItemMinHeight}
+                        height={this.productItemMinHeight}
                         scrollContainer="#product-list"
                       >
                         <ProductItem
@@ -249,7 +254,6 @@ export default compose(
     state => {
       return {
         categories: getCategoryProductList(state),
-        productItemMinHeight: getProductItemMinHeight(state),
       };
     },
     dispatch => ({
