@@ -10,7 +10,6 @@ import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
 import { getBusiness, getBusinessUTCOffset, getCartItemList, fetchShoppingCart } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getCoreStoreList } from '../../../redux/modules/entities/stores';
 import { APP_TYPES } from '../types';
 
 export const initialState = {
@@ -72,11 +71,6 @@ const types = {
   FETCH_TIMESLOT_SUCCESS: 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS',
   FETCH_TIMESLOT_FAILURE: 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE',
 
-  // core stores
-  FETCH_CORESTORES_REQUEST: 'STORES/HOME/FETCH_CORESTORES_REQUEST',
-  FETCH_CORESTORES_SUCCESS: 'STORES/HOME/FETCH_CORESTORES_SUCCESS',
-  FETCH_CORESTORES_FAILURE: 'STORES/HOME/FETCH_CORESTORES_FAILURE',
-
   // store hash code
   FETCH_STORE_HASHCODE_REQUEST: 'STORES/HOME/FETCH_STORE_HASHCODE_REQUEST',
   FETCH_STORE_HASHCODE_SUCCESS: 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS',
@@ -116,17 +110,6 @@ export const actions = {
     const shippingType = Utils.getApiRequestShippingType();
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
-  },
-
-  loadCoreStores: address => (dispatch, getState) => {
-    const business = getBusiness(getState());
-    return dispatch({
-      [FETCH_GRAPHQL]: {
-        types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
-        endpoint: Url.apiGql('CoreStores'),
-        variables: { business, ...address },
-      },
-    });
   },
 
   getStoreHashData: storeId => ({
@@ -197,15 +180,6 @@ const timeSlot = (state = initialState.timeSlot, action) => {
 
 const coreStore = (state = initialState.coreStore, action) => {
   switch (action.type) {
-    case types.FETCH_CORESTORES_REQUEST:
-      return { ...state, isFetching: true };
-    case types.FETCH_CORESTORES_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-      };
-    case types.FETCH_CORESTORES_FAILURE:
-      return { ...state, isFetching: false };
     case types.FETCH_STORE_HASHCODE_SUCCESS: {
       const { response } = action;
       const { redirectTo } = response || {};
@@ -260,8 +234,6 @@ export const getDeliveryInfo = state => {
   // if (!allBusinessInfo || Object.keys(allBusinessInfo).length === 0) return null;
   return Utils.getDeliveryInfo({ business, allBusinessInfo });
 };
-
-export const getStoresList = state => getCoreStoreList(state);
 
 export const getStoreHashCode = state => state.home.coreStore.storeHashCode;
 

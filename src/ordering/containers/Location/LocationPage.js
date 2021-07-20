@@ -97,7 +97,7 @@ class LocationPage extends Component {
       },
     };
 
-    let stores = await this.props.homeActions.loadCoreStores(address);
+    let stores = await this.props.appActions.loadCoreStores(address);
     stores = stores.responseGql.data.business.stores;
     if (!stores.length) {
       const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;

@@ -432,6 +432,18 @@ export const actions = {
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
   },
+
+  loadCoreStores: address => (dispatch, getState) => {
+    const business = getBusiness(getState());
+
+    return dispatch({
+      [FETCH_GRAPHQL]: {
+        types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
+        endpoint: Url.apiGql('CoreStores'),
+        variables: { business, ...address },
+      },
+    });
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -704,6 +716,11 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   return state;
 };
 
+const storesReducer = state => {
+  // Data is reducing in src/redux/modules/entities/stores.js
+  return state;
+};
+
 export default combineReducers({
   user,
   error,
@@ -713,6 +730,7 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  stores: storesReducer,
 });
 
 // selectors
@@ -740,11 +758,13 @@ export const getBusinessInfo = state => {
   return getBusinessByName(state, business) || {};
 };
 
+export const getStoresList = state => getCoreStoreList(state);
+
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
 });
 
-export const getBusinessDeliveryTypes = createSelector(getCoreStoreList, stores => {
+export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
   const deliveryTypes = stores.reduce((types, store) => {
     return types.concat(store.fulfillmentOptions);
   }, []);

@@ -19,6 +19,7 @@ import {
   getRequestInfo,
   getCartBilling,
   getStoreInfoForCleverTap,
+  getStoresList,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import {
@@ -26,7 +27,6 @@ import {
   getCategoryProductList,
   getDeliveryInfo,
   getPopUpModal,
-  getStoresList,
 } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
@@ -157,7 +157,7 @@ export class Home extends Component {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
 
-    await Promise.all([appActions.loadCoreBusiness(), homeActions.loadCoreStores()]);
+    await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 

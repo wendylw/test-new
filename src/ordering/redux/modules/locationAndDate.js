@@ -50,7 +50,7 @@ export const actions = {
 
     dispatch(actions.showLoading(true));
 
-    await dispatch(homeActions.loadCoreStores());
+    await dispatch(appActions.loadCoreStores());
 
     const stores = getCoreStoreList(getState());
     const businessUTCOffset = getBusinessUTCOffset(getState());

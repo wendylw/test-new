@@ -8,8 +8,13 @@ import HybridHeader from '../../../components/HybridHeader';
 import Image from '../../../components/Image';
 import { IconChecked } from '../../../components/Icons';
 
-import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
-import { actions as appActionCreators, getOnlineStoreInfo, getBusinessUTCOffset } from '../../redux/modules/app';
+import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getBusinessUTCOffset,
+  getStoresList,
+} from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 import { IconLocation } from '../../../components/Icons';
 import Tag from '../../../components/Tag';
@@ -92,7 +97,7 @@ class StoreList extends Component {
         },
       };
     }
-    await this.props.homeActions.loadCoreStores(
+    await this.props.appActions.loadCoreStores(
       this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY ? address : ''
     );
 
