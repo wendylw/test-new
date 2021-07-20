@@ -1,16 +1,14 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
-import config from '../../../config';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { API_INFO } from '../../../utils/api/api-utils';
 import { get } from '../../../utils/api/api-fetch';
 import { CART_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getAllProducts, getProductById } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
-import { getBusinessUTCOffset, getCartItemList, fetchShoppingCart } from './app';
+import { getBusinessUTCOffset, getCartItemList } from './app';
 import { APP_TYPES } from '../types';
 
 const initialState = {
@@ -28,21 +26,6 @@ const initialState = {
 };
 
 export const types = CART_TYPES;
-
-const fetchOnlineCategory = variables => {
-  const endpoint = Url.apiGql('OnlineCategory');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [
-        types.FETCH_ONLINECATEGORY_REQUEST,
-        types.FETCH_ONLINECATEGORY_SUCCESS,
-        types.FETCH_ONLINECATEGORY_FAILURE,
-      ],
-      endpoint,
-      variables,
-    },
-  };
-};
 
 // actions
 const cartActionTypes = {
@@ -88,24 +71,6 @@ export const actions = {
       },
     },
   }),
-
-  // load product list group by category, and shopping cart
-  loadProductList: () => (dispatch, getState) => {
-    const isDelivery = Utils.isDeliveryType();
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-
-    let deliveryCoords;
-    if (isDelivery) {
-      deliveryCoords = Utils.getDeliveryCoords();
-    }
-    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
-
-    const shippingType = Utils.getApiRequestShippingType();
-
-    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
-  },
 
   checkCartInventory: () => async (dispatch, getState) => {
     const state = getState();
