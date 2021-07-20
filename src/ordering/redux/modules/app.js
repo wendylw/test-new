@@ -440,6 +440,7 @@ export const actions = {
   loadCoreStores: address => (dispatch, getState) => {
     const business = getBusiness(getState());
 
+    // will be handle in src/redux/modules/entities/stores.js
     return dispatch({
       [FETCH_GRAPHQL]: {
         types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
@@ -731,11 +732,6 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   return state;
 };
 
-const storesReducer = state => {
-  // Data is reducing in src/redux/modules/entities/stores.js
-  return state;
-};
-
 const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
   switch (action.type) {
     case types.FETCH_STORE_HASHCODE_REQUEST: {
@@ -775,7 +771,6 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
-  stores: storesReducer,
   storeHashCode: storeHashCodeReducer,
 });
 

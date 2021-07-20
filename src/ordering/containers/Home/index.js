@@ -23,7 +23,7 @@ import {
   getDeliveryInfo,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
-import { actions as homeActionCreators, getCategoryProductList, getPopUpModal } from '../../redux/modules/home';
+import { actions as homeActionCreators, getCategoryProductList } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';
@@ -1041,7 +1041,6 @@ export default compose(
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
         businessLoaded: getBusinessIsLoaded(state),
-        popUpModal: getPopUpModal(state),
         cartBilling: getCartBilling(state),
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),

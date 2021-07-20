@@ -23,12 +23,7 @@ import {
   getCartBilling,
   getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
-import {
-  actions as cartActionCreators,
-  getCategoryProductList,
-  getAllProductsIds,
-  getCheckingInventoryPendingState,
-} from '../../redux/modules/cart';
+import { actions as cartActionCreators, getCheckingInventoryPendingState } from '../../redux/modules/cart';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
@@ -568,8 +563,6 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        allProductsIds: getAllProductsIds(state),
-        categories: getCategoryProductList(state),
       };
     },
     dispatch => ({

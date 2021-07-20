@@ -6,7 +6,6 @@ import { combineReducers } from 'redux';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { getAllProducts, getProductById } from '../../../redux/modules/entities/products';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { API_REQUEST } from '../../../redux/middlewares/api';
 import config from '../../../config';
 import { getBusiness, getBusinessUTCOffset, getCartItemList, fetchShoppingCart } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -138,8 +137,6 @@ export default combineReducers({
   onlineCategory,
   selectedProduct,
 });
-
-export const getCategoryIds = state => state.home.onlineCategory.categoryIds;
 
 const mergeWithShoppingCart = (onlineCategory, carts) => {
   if (!Array.isArray(onlineCategory)) {
