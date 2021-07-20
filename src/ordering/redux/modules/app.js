@@ -164,19 +164,6 @@ export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) =
   };
 };
 
-const fetchProductDetail = variables => {
-  const endpoint = Url.apiGql('ProductDetail');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
-      endpoint,
-      variables: {
-        ...variables,
-      },
-    },
-  };
-};
-
 // variables := { productId, variations }
 const removeShoppingCartItem = variables => {
   const endpoint = Url.apiGql('RemoveShoppingCartItem');
@@ -388,13 +375,6 @@ export const actions = {
     }
 
     return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
-  },
-
-  loadProductDetail: prod => (dispatch, getState) => {
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-    return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
   },
 
   // load shopping cart

@@ -9,7 +9,6 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import config from '../../../config';
 import { getBusiness, getBusinessUTCOffset, getCartItemList, fetchShoppingCart } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { APP_TYPES } from '../types';
 
 export const initialState = {
   domProperties: {
@@ -52,6 +51,11 @@ const types = {
   INCREASE_PRODUCT_IN_CART: 'ORDERING/HOME/INCREASE_PRODUCT_IN_CART',
 
   SET_MENU_LAYOUT_TYPE: 'ORDERING/HOME/SET_MENU_TYPE',
+
+  // fetch productDetail
+  FETCH_PRODUCTDETAIL_REQUEST: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__REQUEST',
+  FETCH_PRODUCTDETAIL_SUCCESS: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__SUCCESS',
+  FETCH_PRODUCTDETAIL_FAILURE: 'ORDERING/HOME/FETCH_PRODUCTDETAIL__FAILURE',
 };
 
 const fetchOnlineCategory = variables => {
@@ -65,6 +69,19 @@ const fetchOnlineCategory = variables => {
       ],
       endpoint,
       variables,
+    },
+  };
+};
+
+const fetchProductDetail = variables => {
+  const endpoint = Url.apiGql('ProductDetail');
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
+      endpoint,
+      variables: {
+        ...variables,
+      },
     },
   };
 };
@@ -87,6 +104,13 @@ export const actions = {
     const shippingType = Utils.getApiRequestShippingType();
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+  },
+
+  loadProductDetail: prod => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
   },
 };
 
@@ -114,9 +138,9 @@ const onlineCategory = (state = initialState.onlineCategory, action) => {
 };
 
 const selectedProduct = (state = initialState.selectedProduct, action) => {
-  if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_REQUEST) {
+  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
     return { ...state, isFetching: true, status: 'pending' };
-  } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_SUCCESS) {
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
     const { product } = action.responseGql.data;
 
     return {
@@ -125,7 +149,7 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
       status: 'fulfilled',
       id: product.id,
     };
-  } else if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_FAILURE) {
+  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
     return { ...state, isFetching: false, status: 'reject' };
   }
 
