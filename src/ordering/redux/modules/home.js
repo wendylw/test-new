@@ -30,10 +30,6 @@ export const initialState = {
   timeSlot: {
     timeSlotList: [],
   },
-  coreStore: {
-    isFetching: false,
-    storeHashCode: '',
-  },
   selectedProduct: {
     id: '',
     cartId: '',
@@ -70,11 +66,6 @@ const types = {
   FETCH_TIMESLOT_REQUEST: 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST',
   FETCH_TIMESLOT_SUCCESS: 'ORDERING/HOME/FETCH_TIMESLOT_SUCCESS',
   FETCH_TIMESLOT_FAILURE: 'ORDERING/HOME/FETCH_TIMESLOT_FAILURE',
-
-  // store hash code
-  FETCH_STORE_HASHCODE_REQUEST: 'STORES/HOME/FETCH_STORE_HASHCODE_REQUEST',
-  FETCH_STORE_HASHCODE_SUCCESS: 'STORES/HOME/FETCH_STORE_HASHCODE_SUCCESS',
-  FETCH_STORE_HASHCODE_FAILURE: 'STORES/HOME/FETCH_STORE_HASHCODE_FAILURE',
 };
 
 const fetchOnlineCategory = variables => {
@@ -111,17 +102,6 @@ export const actions = {
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
   },
-
-  getStoreHashData: storeId => ({
-    [API_REQUEST]: {
-      types: [
-        types.FETCH_STORE_HASHCODE_REQUEST,
-        types.FETCH_STORE_HASHCODE_SUCCESS,
-        types.FETCH_STORE_HASHCODE_FAILURE,
-      ],
-      ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
-    },
-  }),
 
   userConfirmPreOrder: () => ({
     type: types.SET_PRE_ORDER_MODAL_CONFIRM,
@@ -178,19 +158,6 @@ const timeSlot = (state = initialState.timeSlot, action) => {
   }
 };
 
-const coreStore = (state = initialState.coreStore, action) => {
-  switch (action.type) {
-    case types.FETCH_STORE_HASHCODE_SUCCESS: {
-      const { response } = action;
-      const { redirectTo } = response || {};
-
-      return { ...state, storeHashCode: redirectTo };
-    }
-    default:
-      return state;
-  }
-};
-
 const popUpModal = (state = initialState.popUpModal, action) => {
   if (action.type === types.SET_PRE_ORDER_MODAL_CONFIRM) {
     return { ...state, userConfirmed: true };
@@ -222,7 +189,6 @@ export default combineReducers({
   onlineCategory,
   popUpModal,
   timeSlot,
-  coreStore,
   selectedProduct,
 });
 
@@ -234,8 +200,6 @@ export const getDeliveryInfo = state => {
   // if (!allBusinessInfo || Object.keys(allBusinessInfo).length === 0) return null;
   return Utils.getDeliveryInfo({ business, allBusinessInfo });
 };
-
-export const getStoreHashCode = state => state.home.coreStore.storeHashCode;
 
 export const getCategoryIds = state => state.home.onlineCategory.categoryIds;
 

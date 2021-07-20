@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
-import Constants from '../../../utils/constants';
+import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
@@ -119,6 +119,10 @@ export const initialState = {
     shippingType: Utils.getOrderTypeFromUrl(),
   },
   shoppingCart: CartModel,
+  storeHashCode: {
+    data: null,
+    status: null,
+  },
 };
 
 const fetchCoreBusiness = variables => ({
@@ -444,6 +448,17 @@ export const actions = {
       },
     });
   },
+
+  getStoreHashData: storeId => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_STORE_HASHCODE_REQUEST,
+        types.FETCH_STORE_HASHCODE_SUCCESS,
+        types.FETCH_STORE_HASHCODE_FAILURE,
+      ],
+      ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
+    },
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -721,6 +736,36 @@ const storesReducer = state => {
   return state;
 };
 
+const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
+  switch (action.type) {
+    case types.FETCH_STORE_HASHCODE_REQUEST: {
+      return {
+        ...state,
+        status: API_REQUEST_STATUS.PENDING,
+      };
+    }
+    case types.FETCH_STORE_HASHCODE_SUCCESS: {
+      const hashCode = _get(action.response, 'redirectTo', null);
+
+      return {
+        ...state,
+        data: hashCode,
+        status: API_REQUEST_STATUS.FULFILLED,
+      };
+    }
+
+    case types.FETCH_STORE_HASHCODE_FAILURE: {
+      return {
+        ...state,
+        data: null,
+        status: API_REQUEST_STATUS.REJECTED,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   user,
   error,
@@ -731,6 +776,7 @@ export default combineReducers({
   apiError,
   shoppingCart,
   stores: storesReducer,
+  storeHashCode: storeHashCodeReducer,
 });
 
 // selectors
@@ -759,6 +805,8 @@ export const getBusinessInfo = state => {
 };
 
 export const getStoresList = state => getCoreStoreList(state);
+
+export const getStoreHashCode = state => state.app.storeHashCode.data;
 
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
