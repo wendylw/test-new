@@ -6,7 +6,6 @@ import { get } from '../../../utils/api/api-fetch';
 import { CART_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getBusinessUTCOffset } from './app';
-import { APP_TYPES } from '../types';
 
 const initialState = {
   pendingTransactionsIds: [],
