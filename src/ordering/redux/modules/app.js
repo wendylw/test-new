@@ -808,6 +808,8 @@ export const getStoresList = state => getCoreStoreList(state);
 
 export const getStoreHashCode = state => state.app.storeHashCode.data;
 
+export const getDeliveryInfo = createSelector(getBusinessInfo, businessInfo => Utils.getDeliveryInfo(businessInfo));
+
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
 });

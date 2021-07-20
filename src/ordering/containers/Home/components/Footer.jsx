@@ -7,13 +7,12 @@ import Constants from '../../../../utils/constants';
 import { actions as homeActionCreators, getCategoryProductList } from '../../../redux/modules/home';
 import {
   actions as appActionCreators,
-  getBusiness,
   getUser,
   getShoppingCart,
   getCartBilling,
   getBusinessInfo,
+  getDeliveryInfo,
 } from '../../../redux/modules/app';
-import { getAllBusinesses } from '../../../../redux/modules/entities/businesses';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
@@ -78,8 +77,8 @@ export class Footer extends Component {
   };
 
   handleWebRedirect = () => {
-    const { history, business, allBusinessInfo } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({ business, allBusinessInfo });
+    const { history, deliverInfo } = this.props;
+    const { enablePreOrder } = deliverInfo;
     if (enablePreOrder) {
       const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
@@ -224,9 +223,8 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),
-        business: getBusiness(state),
         user: getUser(state),
-        allBusinessInfo: getAllBusinesses(state),
+        deliverInfo: getDeliveryInfo(state),
       };
     },
     dispatch => ({

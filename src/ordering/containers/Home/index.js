@@ -20,14 +20,10 @@ import {
   getCartBilling,
   getStoreInfoForCleverTap,
   getStoresList,
+  getDeliveryInfo,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
-import {
-  actions as homeActionCreators,
-  getCategoryProductList,
-  getDeliveryInfo,
-  getPopUpModal,
-} from '../../redux/modules/home';
+import { actions as homeActionCreators, getCategoryProductList, getPopUpModal } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';

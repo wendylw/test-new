@@ -192,15 +192,6 @@ export default combineReducers({
   selectedProduct,
 });
 
-// selectors
-export const getDeliveryInfo = state => {
-  const business = getBusiness(state);
-  const allBusinessInfo = getAllBusinesses(state);
-  // ignore for now since home page needs address from it.
-  // if (!allBusinessInfo || Object.keys(allBusinessInfo).length === 0) return null;
-  return Utils.getDeliveryInfo({ business, allBusinessInfo });
-};
-
 export const getCategoryIds = state => state.home.onlineCategory.categoryIds;
 
 const mergeWithShoppingCart = (onlineCategory, carts) => {
