@@ -24,9 +24,6 @@ export const initialState = {
     isFetching: false,
     categoryIds: [],
   },
-  popUpModal: {
-    userConfirmed: false,
-  },
   timeSlot: {
     timeSlotList: [],
   },
@@ -59,8 +56,6 @@ const types = {
   INCREASE_PRODUCT_IN_CART: 'ORDERING/HOME/INCREASE_PRODUCT_IN_CART',
 
   SET_MENU_LAYOUT_TYPE: 'ORDERING/HOME/SET_MENU_TYPE',
-
-  SET_PRE_ORDER_MODAL_CONFIRM: 'ORDERING/HOME/SET_PRE_ORDER_MODAL_CONFIRM',
 
   // time slot
   FETCH_TIMESLOT_REQUEST: 'ORDERING/HOME/FETCH_TIMESLOT_REQUEST',
@@ -102,10 +97,6 @@ export const actions = {
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
   },
-
-  userConfirmPreOrder: () => ({
-    type: types.SET_PRE_ORDER_MODAL_CONFIRM,
-  }),
 
   getTimeSlot: (shippingType, fulfillDate, storeid) => dispatch => {
     return dispatch({
@@ -158,13 +149,6 @@ const timeSlot = (state = initialState.timeSlot, action) => {
   }
 };
 
-const popUpModal = (state = initialState.popUpModal, action) => {
-  if (action.type === types.SET_PRE_ORDER_MODAL_CONFIRM) {
-    return { ...state, userConfirmed: true };
-  }
-  return state;
-};
-
 const selectedProduct = (state = initialState.selectedProduct, action) => {
   if (action.type === APP_TYPES.FETCH_PRODUCTDETAIL_REQUEST) {
     return { ...state, isFetching: true, status: 'pending' };
@@ -187,7 +171,6 @@ const selectedProduct = (state = initialState.selectedProduct, action) => {
 export default combineReducers({
   domProperties,
   onlineCategory,
-  popUpModal,
   timeSlot,
   selectedProduct,
 });
@@ -273,8 +256,6 @@ export const getCategoryProductList = createSelector(
 );
 
 export const getProductItemMinHeight = state => state.home.domProperties.productItemMinHeight;
-
-export const getPopUpModal = state => state.home.popUpModal;
 
 export const getTimeSlotList = state => state.home.timeSlot.timeSlotList;
 
