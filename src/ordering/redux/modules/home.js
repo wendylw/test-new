@@ -1,8 +1,6 @@
 import _get from 'lodash/get';
-import * as StoreUtils from '../../../utils/store-utils';
 import { getAllProducts } from '../../../redux/modules/entities/products';
-import { actions as appActions, getBusiness } from './app';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { actions as appActions } from './app';
 import { createSelector } from 'reselect';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 
@@ -49,14 +47,6 @@ const reducer = (state = initialState, action) => {
 };
 
 export default reducer;
-
-// This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
-export const getStoreInfoForCleverTap = state => {
-  const business = getBusiness(state);
-  const allBusinessInfo = getAllBusinesses(state);
-
-  return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo });
-};
 
 export const getSelectedProductId = state => state.home.selectedProductDetail.productId;
 
