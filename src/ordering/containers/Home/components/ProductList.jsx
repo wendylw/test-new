@@ -18,6 +18,10 @@ import Constants from '../../../../utils/constants';
 import config from '../../../../config';
 import './ProductList.scss';
 
+const PRODUCT_ITEM_MIN_HEIGHT =
+  ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
+    ? document.body.clientWidth || window.innerWidth
+    : 414) * 0.26;
 class ProductList extends Component {
   handleGtmEventTracking = (eventName, data) => {
     if (!data) return;
@@ -169,15 +173,6 @@ class ProductList extends Component {
     return <Tag text={t('BestSeller')} className="tag__small tag__primary text-size-smaller" />;
   }
 
-  get productItemMinHeight() {
-    // 33.8% equal (item padding + item image + item cart controller button height) / window width
-    return (
-      ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
-        ? document.body.clientWidth || window.innerWidth
-        : 414) * 0.26
-    );
-  }
-
   render() {
     const { categories, style } = this.props;
 
@@ -208,7 +203,7 @@ class ProductList extends Component {
                       <LazyLoad
                         key={`product-item-${id}`}
                         offset={0}
-                        height={this.productItemMinHeight}
+                        height={PRODUCT_ITEM_MIN_HEIGHT}
                         scrollContainer="#product-list"
                       >
                         <ProductItem
