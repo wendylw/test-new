@@ -15,9 +15,11 @@ const reducer = (state = initialState, action) => {
       if (category.products && category.products.length) {
         kvData[category.id] = {
           ...category,
-          rank: rank++,
+          rank,
           products: category.products.map(product => product.id),
         };
+
+        rank += 1;
       }
     });
     return { ...state, ...kvData };
