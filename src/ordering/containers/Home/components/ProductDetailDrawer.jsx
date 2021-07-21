@@ -521,7 +521,7 @@ class ProductDetailDrawer extends Component {
   renderProductOperator() {
     const { t, selectedProduct = {}, onUpdateCartOnProductDetail } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
-    const { id: productId } = selectedProduct;
+    const { id: productId } = selectedProduct || {};
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
     const inventoryShortage = this.getShortageInventoryState(
       selectedProduct || {},

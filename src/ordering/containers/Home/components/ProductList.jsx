@@ -11,7 +11,7 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionsCreator, getCategoryProductList } from '../../../redux/modules/app';
-import { actions as homeActionsCreator } from '../../../redux/modules/home';
+import { actions as homeActionsCreator, getSelectedProductDetail } from '../../../redux/modules/home';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import Constants from '../../../../utils/constants';
@@ -101,7 +101,7 @@ class ProductList extends Component {
     return false;
   }
 
-  handleShowProductDetail = async product => {
+  handleShowProductDetail = async (product, category) => {
     if (this.isNeedToLocationAndDatePage()) {
       this.gotoLocationAndDatePage();
       return;
@@ -113,8 +113,8 @@ class ProductList extends Component {
       onClickProductItem(product);
     }
 
-    const { responseGql = {} } = await this.props.loadProductDetail(product);
-    const { data: productDetail = {} } = responseGql;
+    await this.props.showProductDetail(product.id, category.id);
+    const productDetail = this.props.selectedProductDetail;
 
     onToggle('PRODUCT_DETAIL');
 
@@ -122,7 +122,7 @@ class ProductList extends Component {
       onProductDetailShown(product);
     }
 
-    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
+    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail);
     await this.props.appActions.loadShoppingCart();
   };
 
@@ -214,7 +214,7 @@ class ProductList extends Component {
                           title={title}
                           variation={variation}
                           details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
-                          handleClickItem={() => this.handleShowProductDetail(product)}
+                          handleClickItem={() => this.handleShowProductDetail(product, category)}
                         >
                           {this.renderProductItemRightController(stockStatus, cartQuantity)}
                         </ProductItem>
@@ -249,11 +249,12 @@ export default compose(
     state => {
       return {
         categories: getCategoryProductList(state),
+        selectedProductDetail: getSelectedProductDetail(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionsCreator, dispatch),
-      loadProductDetail: bindActionCreators(homeActionsCreator.loadProductDetail, dispatch),
+      showProductDetail: bindActionCreators(homeActionsCreator.showProductDetail, dispatch),
     })
   )
 )(withRouter(ProductList));

@@ -1,73 +1,54 @@
-import Url from '../../../utils/url';
-import Utils from '../../../utils/utils';
+import _get from 'lodash/get';
 import * as StoreUtils from '../../../utils/store-utils';
-import { combineReducers } from 'redux';
-import { getProductById } from '../../../redux/modules/entities/products';
-import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { getBusiness, getBusinessUTCOffset } from './app';
+import { getAllProducts } from '../../../redux/modules/entities/products';
+import { actions as appActions, getBusiness } from './app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { createSelector } from 'reselect';
+import { getAllCategories } from '../../../redux/modules/entities/categories';
 
 export const initialState = {
-  selectedProduct: {
-    id: '',
-    cartId: '',
-    isFetching: false,
-    status: 'fulfilled',
+  selectedProductDetail: {
+    categoryId: null,
+    productId: null,
   },
 };
 
 const types = {
-  // fetch productDetail
-  FETCH_PRODUCTDETAIL_REQUEST: 'ORDERING/HOME/FETCH_PRODUCTDETAIL_REQUEST',
-  FETCH_PRODUCTDETAIL_SUCCESS: 'ORDERING/HOME/FETCH_PRODUCTDETAIL_SUCCESS',
-  FETCH_PRODUCTDETAIL_FAILURE: 'ORDERING/HOME/FETCH_PRODUCTDETAIL_FAILURE',
-};
-
-const fetchProductDetail = variables => {
-  const endpoint = Url.apiGql('ProductDetail');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
-      endpoint,
-      variables: {
-        ...variables,
-      },
-    },
-  };
+  SHOW_PRODUCT_DETAIL: 'ORDERING/HOME/SHOW_PRODUCT_DETAIL',
 };
 
 // actions
 export const actions = {
-  loadProductDetail: prod => (dispatch, getState) => {
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+  showProductDetail: (productId, categoryId) => async dispatch => {
+    await dispatch(appActions.loadProductDetail(productId));
 
-    return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
+    dispatch({
+      type: types.SHOW_PRODUCT_DETAIL,
+      payload: {
+        categoryId,
+        productId,
+      },
+    });
   },
 };
 
-const selectedProduct = (state = initialState.selectedProduct, action) => {
-  if (action.type === types.FETCH_PRODUCTDETAIL_REQUEST) {
-    return { ...state, isFetching: true, status: 'pending' };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_SUCCESS) {
-    const { product } = action.responseGql.data;
-
-    return {
-      ...state,
-      isFetching: false,
-      status: 'fulfilled',
-      id: product.id,
-    };
-  } else if (action.type === types.FETCH_PRODUCTDETAIL_FAILURE) {
-    return { ...state, isFetching: false, status: 'reject' };
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case types.SHOW_PRODUCT_DETAIL:
+      return {
+        ...state,
+        selectedProductDetail: {
+          ...state.selectedProductDetail,
+          categoryId: action.payload.categoryId,
+          productId: action.payload.productId,
+        },
+      };
+    default:
+      return state;
   }
-
-  return state;
 };
 
-export default combineReducers({
-  selectedProduct,
-});
+export default reducer;
 
 // This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
 export const getStoreInfoForCleverTap = state => {
@@ -77,24 +58,26 @@ export const getStoreInfoForCleverTap = state => {
   return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo });
 };
 
-export const getSelectedProductDetail = state => {
-  const { home, entities } = state;
-  const { selectedProduct } = home;
-  const { categories } = entities;
-  const categoriesKeys = Object.keys(categories) || [];
-  const selectedProductObject = getProductById(state, selectedProduct.id) || {};
-  let categoryName = '';
-  let categoryRank = '';
+export const getSelectedProductId = state => state.home.selectedProductDetail.productId;
 
-  categoriesKeys.forEach((key, index) => {
-    if ((categories[key].products || []).find(productId => productId === selectedProductObject.id)) {
-      categoryName = categories[key].name;
-      categoryRank = index + 1;
-    }
-  });
+export const getSelectedCategoryId = state => state.home.selectedProductDetail.categoryId;
 
-  return Object.assign({}, selectedProductObject, {
-    categoryName,
-    categoryRank,
-  });
-};
+export const getSelectedProduct = createSelector(getSelectedProductId, getAllProducts, (productId, products) =>
+  _get(products, productId, null)
+);
+
+export const getSelectedCategory = createSelector(getSelectedCategoryId, getAllCategories, (categoryId, categories) =>
+  _get(categories, categoryId, null)
+);
+
+export const getSelectedProductDetail = createSelector(getSelectedProduct, getSelectedCategory, (product, category) => {
+  if (!product) {
+    return null;
+  }
+
+  return {
+    ...product,
+    categoryName: _get(category, 'name', null),
+    categoryRank: _get(category, 'rank', null),
+  };
+});

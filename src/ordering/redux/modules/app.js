@@ -221,6 +221,20 @@ const fetchOnlineCategory = variables => {
   };
 };
 
+const fetchProductDetail = variables => {
+  const endpoint = Url.apiGql('ProductDetail');
+  //  will be handle in src/redux/modules/entities/products.js
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
+      endpoint,
+      variables: {
+        ...variables,
+      },
+    },
+  };
+};
+
 //action creators
 export const actions = {
   showLogin: () => ({
@@ -473,6 +487,13 @@ export const actions = {
     const shippingType = Utils.getApiRequestShippingType();
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+  },
+
+  loadProductDetail: productId => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    return dispatch(fetchProductDetail({ productId, fulfillDate }));
   },
 };
 

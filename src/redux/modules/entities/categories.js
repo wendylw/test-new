@@ -10,10 +10,12 @@ const reducer = (state = initialState, action) => {
 
     // Only deal with response.data.onlineCategory
     const kvData = {};
+    let rank = 1;
     onlineCategory.forEach(category => {
       if (category.products && category.products.length) {
         kvData[category.id] = {
           ...category,
+          rank: rank++,
           products: category.products.map(product => product.id),
         };
       }
@@ -27,4 +29,4 @@ export default reducer;
 
 // selectors
 
-export const getAllCategories = (state) => state.entities.categories;
+export const getAllCategories = state => state.entities.categories;
