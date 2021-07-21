@@ -9,7 +9,6 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
 import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
@@ -1049,7 +1048,6 @@ export default compose(
       };
     },
     dispatch => ({
-      storesActions: bindActionCreators(storesActionCreators, dispatch),
       appActions: bindActionCreators(appActionsCreators, dispatch),
     })
   )
