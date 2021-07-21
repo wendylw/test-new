@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
 import Constants from '../../../../utils/constants';
-import { actions as homeActionCreators, getCategoryProductList } from '../../../redux/modules/home';
 import {
   actions as appActionCreators,
   getUser,
@@ -12,6 +11,7 @@ import {
   getCartBilling,
   getBusinessInfo,
   getDeliveryInfo,
+  getCategoryProductList,
 } from '../../../redux/modules/app';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
@@ -228,7 +228,6 @@ export default compose(
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )

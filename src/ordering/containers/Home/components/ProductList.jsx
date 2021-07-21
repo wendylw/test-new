@@ -10,8 +10,8 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionsCreator } from '../../../redux/modules/app';
-import { actions as homeActionsCreator, getCategoryProductList } from '../../../redux/modules/home';
+import { actions as appActionsCreator, getCategoryProductList } from '../../../redux/modules/app';
+import { actions as homeActionsCreator } from '../../../redux/modules/home';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import Constants from '../../../../utils/constants';

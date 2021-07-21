@@ -21,9 +21,9 @@ import {
   getStoreInfoForCleverTap,
   getStoresList,
   getDeliveryInfo,
+  getCategoryProductList,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
-import { actions as homeActionCreators, getCategoryProductList } from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';
@@ -138,14 +138,14 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { homeActions, deliveryInfo, appActions } = this.props;
+    const { deliveryInfo, appActions } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
 
-    await homeActions.loadProductList();
+    await appActions.loadProductList();
 
     const pageRf = this.getPageRf();
 
@@ -1049,7 +1049,6 @@ export default compose(
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       storesActions: bindActionCreators(storesActionCreators, dispatch),
       appActions: bindActionCreators(appActionsCreators, dispatch),
     })

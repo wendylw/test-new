@@ -205,6 +205,22 @@ export const emptyShoppingCart = () => {
   };
 };
 
+const fetchOnlineCategory = variables => {
+  const endpoint = Url.apiGql('OnlineCategory');
+  // will be handle in src/redux/modules/entities/products.js and src/redux/modules/entities/categories.js
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.FETCH_ONLINECATEGORY_REQUEST,
+        types.FETCH_ONLINECATEGORY_SUCCESS,
+        types.FETCH_ONLINECATEGORY_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
+
 //action creators
 export const actions = {
   showLogin: () => ({
@@ -440,6 +456,24 @@ export const actions = {
       ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
     },
   }),
+
+  // load product list group by category, and shopping cart
+  loadProductList: () => (dispatch, getState) => {
+    const isDelivery = Utils.isDeliveryType();
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
+    let deliveryCoords;
+    if (isDelivery) {
+      deliveryCoords = Utils.getDeliveryCoords();
+    }
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
+
+    const shippingType = Utils.getApiRequestShippingType();
+
+    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -879,3 +913,81 @@ export const getStoreInfoForCleverTap = state => {
 export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
+
+const mergeWithShoppingCart = (onlineCategory, carts) => {
+  if (!Array.isArray(onlineCategory)) {
+    return null;
+  }
+
+  const shoppingCartNewSet = {};
+
+  if (carts) {
+    (carts || []).forEach(item => {
+      const newItem = shoppingCartNewSet[item.parentProductId || item.productId] || {
+        quantity: 0,
+        ids: [],
+        products: [],
+      };
+
+      newItem.quantity += item.quantity;
+      newItem.ids.push(item.id);
+      newItem.products.push(item);
+
+      shoppingCartNewSet[item.parentProductId || item.productId] = newItem;
+    });
+  }
+
+  return onlineCategory.map(category => {
+    const { products } = category;
+
+    category.cartQuantity = 0;
+
+    products.forEach(function(product) {
+      product.variations = product.variations || [];
+      product.soldOut = Utils.isProductSoldOut(product || {});
+      product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
+      product.cartQuantity = 0;
+
+      const result = shoppingCartNewSet[product.id];
+
+      if (result) {
+        category.cartQuantity += result.quantity;
+        product.cartQuantity += result.quantity;
+        product.cartItemIds = result.ids;
+        product.cartItems = result.products;
+        product.canDecreaseQuantity = result.quantity > 0 && result.ids.length === 1;
+      }
+    });
+
+    return category;
+  });
+};
+
+export const getCategoryProductList = createSelector(
+  [getAllProducts, getAllCategories, getCartItemList],
+  (allProducts, categories, carts) => {
+    if (!allProducts || !categories || !Array.isArray(carts)) {
+      return [];
+    }
+
+    const newCategories = Object.values(categories)
+      .map((category, categoryId) => {
+        return {
+          ...category,
+          products: category.products.map((id, index) => {
+            const product = JSON.parse(JSON.stringify(allProducts[id]));
+
+            return {
+              categoryName: category.name,
+              categoryRank: categoryId + 1,
+              rank: index + 1,
+              ...product,
+            };
+          }),
+        };
+      })
+      .filter(c => c.products.length);
+
+    return mergeWithShoppingCart(newCategories, carts);
+  }
+);
