@@ -17,7 +17,7 @@ import SwiperCore, { Autoplay, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getSelectedProductDetail } from '../../../redux/modules/home';
+import { getSelectedProductDetail } from '../redux/common/selectors';
 import { actions as appActionCreators } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';

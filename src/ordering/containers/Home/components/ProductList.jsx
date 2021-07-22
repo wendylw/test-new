@@ -11,7 +11,8 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionsCreator, getCategoryProductList } from '../../../redux/modules/app';
-import { actions as homeActionsCreator, getSelectedProductDetail } from '../../../redux/modules/home';
+import { getSelectedProductDetail } from '../redux/common/selectors';
+import { showProductDetail } from '../redux/common/thunks';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import Constants from '../../../../utils/constants';
@@ -113,7 +114,7 @@ class ProductList extends Component {
       onClickProductItem(product);
     }
 
-    await this.props.showProductDetail(product.id, category.id);
+    await this.props.showProductDetail({ productId: product.id, categoryId: category.id });
     const productDetail = this.props.selectedProductDetail;
 
     onToggle('PRODUCT_DETAIL');
@@ -254,7 +255,7 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionsCreator, dispatch),
-      showProductDetail: bindActionCreators(homeActionsCreator.showProductDetail, dispatch),
+      showProductDetail: bindActionCreators(showProductDetail, dispatch),
     })
   )
 )(withRouter(ProductList));
