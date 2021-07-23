@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
@@ -194,7 +194,7 @@ class SavedCards extends Component {
 
     return (
       <section className={`ordering-payment flex flex-column`}>
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}

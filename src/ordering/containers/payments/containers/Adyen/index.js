@@ -3,8 +3,8 @@ import AdyenCheckout from '@adyen/adyen-web';
 import '@adyen/adyen-web/dist/adyen.css';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import HybridHeader from '../../../../../components/HybridHeader';
 import Loader from '../../components/Loader';
-import Header from '../../../../../components/Header';
 import Constants from '../../../../../utils/constants';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
@@ -157,7 +157,7 @@ class AdyenPage extends Component {
 
     return (
       <section className={`ordering-payment flex flex-column`} data-heap-name="ordering.payment.adyen.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"

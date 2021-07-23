@@ -8,7 +8,14 @@ import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 dayjs.extend(utc);
 
-const { SH_LOGISTICS_VALID_TIME, CLIENTS } = Constants;
+const {
+  SH_LOGISTICS_VALID_TIME,
+  WEB_VIEW_SOURCE,
+  CLIENTS,
+  ROUTER_PATHS,
+  REGISTRATION_SOURCE,
+  REGISTRATION_TOUCH_POINT,
+} = Constants;
 const Utils = {};
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
@@ -25,18 +32,25 @@ Utils.getApiRequestShippingType = () => {
   return type ? Utils.mapString2camelCase(type) : undefined;
 };
 
-Utils.isWebview = function isWebview() {
-  return Boolean(Utils.isIOSWebview() || Utils.isAndroidWebview());
+Utils.hasNativeSavedAddress = () => {
+  if (Utils.isWebview() && sessionStorage.getItem('addressIdFromNative')) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
+Utils.isWebview = function isWebview() {
+  return Utils.isAndroidWebview() || Utils.isIOSWebview();
+};
+
+// still need to distinguish ios webview and android webview
 Utils.isIOSWebview = function isIOSWebview() {
-  return Boolean(
-    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
-  );
+  return window.webViewSource === WEB_VIEW_SOURCE.IOS;
 };
 
 Utils.isAndroidWebview = function isAndroidWebview() {
-  return Boolean(window.androidInterface);
+  return window.webViewSource === WEB_VIEW_SOURCE.Android;
 };
 
 Utils.getQueryVariable = variable => {
@@ -367,6 +381,14 @@ Utils.isDigitalType = () => {
 
 Utils.isTakeAwayType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.TAKE_AWAY;
+};
+
+Utils.isDeliveryOrder = () => {
+  return Utils.isDeliveryType() || Utils.isPickUpType();
+};
+
+Utils.isQROrder = () => {
+  return Utils.isDineInType() || Utils.isTakeAwayType();
 };
 
 Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistics }) => {
@@ -808,7 +830,7 @@ Utils.getOrderSource = () => {
   let orderSource = '';
   if (Utils.isWebview()) {
     orderSource = 'BeepApp';
-  } else if (sessionStorage.getItem('orderSource')) {
+  } else if (Utils.isFromBeepSite()) {
     orderSource = 'BeepSite';
   } else {
     orderSource = 'BeepStore';
@@ -826,6 +848,50 @@ Utils.getHeaderClient = () => {
     headerClient = CLIENTS.WEB;
   }
   return headerClient;
+};
+
+Utils.isFromBeepSite = () => {
+  // TODO: no check the value, it's a bad way
+  return Boolean(sessionStorage.getItem('orderSource'));
+};
+
+Utils.getRegistrationTouchPoint = () => {
+  const isOnCashbackPage = window.location.pathname.startsWith(ROUTER_PATHS.CASHBACK_BASE);
+  if (isOnCashbackPage) {
+    return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
+  }
+
+  if (Utils.isQROrder()) {
+    return REGISTRATION_TOUCH_POINT.QR_ORDER;
+  }
+
+  return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
+};
+
+Utils.getRegistrationSource = () => {
+  const registrationTouchPoint = Utils.getRegistrationTouchPoint();
+
+  switch (registrationTouchPoint) {
+    case REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK:
+      if (Utils.isWebview()) {
+        return REGISTRATION_SOURCE.BEEP_APP;
+      } else {
+        return REGISTRATION_SOURCE.RECEIPT;
+      }
+
+    case REGISTRATION_TOUCH_POINT.QR_ORDER:
+    case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
+    default:
+      if (Utils.isWebview()) {
+        return REGISTRATION_SOURCE.BEEP_APP;
+      }
+
+      if (Utils.isFromBeepSite()) {
+        return REGISTRATION_SOURCE.BEEP_SITE;
+      }
+
+      return REGISTRATION_SOURCE.BEEP_STORE;
+  }
 };
 
 export default Utils;
