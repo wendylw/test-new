@@ -89,7 +89,7 @@ const isGoogleAnalytics = event => {
   // null is not an object (evaluating 'g.readyState') from https://www.google-analytics.com/analytics.js
   try {
     const err = event.exception.values[0];
-    return /null is not an object (evaluating 'g.readyState')/.test(err.value);
+    return /null is not an object \(evaluating 'g\.readyState'\)/.test(err.value);
   } catch {
     return false;
   }
