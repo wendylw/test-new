@@ -104,7 +104,8 @@ const shouldFilter = (event, hint) => {
       isSelectedDebugHandlerError(event, hint) ||
       isChargeEventStructureInvalid(event, hint) ||
       isDuplicateChargeId(event, hint) ||
-      isTokenExpired(event, hint)
+      isTokenExpired(event, hint) ||
+      isGoogleAnalytics(event)
     );
   } catch {
     return false;
