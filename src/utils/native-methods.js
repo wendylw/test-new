@@ -246,9 +246,12 @@ export const updateStorePosition = (lat, lng) => {
 export const focusPositions = focusPositionList => {
   const data = {
     method: 'mapModule-focusPositions',
-    params: {
-      positions: focusPositionList,
-    },
+    // TODO: Hot fix live map wouldn't display on Android
+    params: Utils.isAndroidWebview()
+      ? focusPositionList
+      : {
+          positions: focusPositionList,
+        },
     mode: MODE.SYNC,
   };
   return dsBridgeCall(data);
