@@ -1,12 +1,11 @@
-import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import _get from 'lodash/get';
 import { compose } from 'redux';
-import Header from '../../../../../components/Header';
+import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
-import LiveChatNative from '../../../../../components/LiveChatNative';
 import Tag from '../../../../../components/Tag';
 import beepPreOrderSuccess from '../../../../../images/beep-pre-order-success.png';
 import CleverTap from '../../../../../utils/clevertap';
@@ -25,7 +24,8 @@ import {
   getServiceCharge,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
-import { IconNext } from '../../../../../components/Icons';
+import * as NativeMethods from '../../../../../utils/native-methods';
+import HybridHeader from '../../../../../components/HybridHeader';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
@@ -270,106 +270,103 @@ export class OrderDetails extends Component {
     );
   }
 
-  render() {
-    const {
-      order,
-      history,
-      t,
-      isUseStorehubLogistics,
-      isShowReorderButton,
-      serviceCharge,
-      user,
-      businessInfo,
-      storeInfoForCleverTap,
-    } = this.props;
-    const {
-      orderId,
-      shippingFee,
-      subtotal,
-      total,
-      tax,
-      loyaltyDiscounts,
-      deliveryInformation = [],
-      storeInfo,
-      paymentMethod,
-    } = order || '';
-    const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
+  gotoThankyouPage = () => {
+    const { history } = this.props;
 
-    const { isWebview, email } = user;
-    const { qrOrderingSettings } = businessInfo || {};
-    const { minimumConsumption } = qrOrderingSettings || {};
+    history.replace({
+      pathname: Constants.ROUTER_PATHS.THANK_YOU,
+      search: window.location.search,
+    });
+  };
 
-    const orderStoreName = storeInfo?.name || '';
-    let orderUserName = '';
-    let orderUserPhone = '';
+  getRightContentOfHeader() {
+    const { user, order, t, businessInfo, storeInfoForCleverTap } = this.props;
+    const isWebview = _get(user, 'isWebview', false);
+    const userEmail = _get(user, 'profile.email', '');
+    const orderId = _get(order, 'orderId', '');
+    const subtotal = _get(order, 'subtotal', 0);
+    const paymentMethod = _get(order, 'paymentMethod', null);
+    const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
+    const orderUserName = _get(deliveryAddress, 'name', '');
+    const orderUserPhone = _get(deliveryAddress, 'phone', '');
+    const orderStoreName = _get(order, 'storeInfo.name', '');
+    const minimumConsumption = _get(businessInfo, 'qrOrderingSettings.minimumConsumption', 0);
 
-    if (deliveryInformation.length > 0) {
-      const { address } = deliveryInformation[0];
-      orderUserName = address.name;
-      orderUserPhone = address.phone;
+    if (!order) {
+      return null;
     }
+
+    if (isWebview) {
+      const rightContentOfNativeLiveChat = {
+        text: `${t('NeedHelp')}?`,
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          CleverTap.pushEvent('Order Details - click contact us', {
+            ...storeInfoForCleverTap,
+            'cart items quantity': this.getCartItemsQuantity(),
+            'cart amount': subtotal,
+            'has met minimum order value': subtotal >= minimumConsumption ? true : false,
+            'payment method': paymentMethod && paymentMethod[0],
+          });
+          NativeMethods.startChat({
+            orderId,
+            name: orderUserName,
+            phone: orderUserPhone,
+            email: userEmail,
+            storeName: orderStoreName,
+          });
+        },
+      };
+
+      const rightContentOfContactUs = {
+        text: t('ContactUs'),
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          this.handleVisitMerchantInfoPage();
+        },
+      };
+
+      return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
+    }
+
+    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
+  }
+
+  handleHeaderNavFunc = () => {
+    const isWebview = Utils.isWebview();
+
+    CleverTap.pushEvent('Order details - click back arrow');
+
+    if (isWebview) {
+      NativeMethods.goBack();
+      return;
+    }
+
+    this.gotoThankyouPage();
+    return;
+  };
+
+  render() {
+    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton } = this.props;
+    const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
+    const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
       <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
-        <Header
+        <HybridHeader
+          headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
-          contentClassName="flex-middle"
           isPage={true}
+          contentClassName="flex-middle"
           data-heap-name="ordering.order-detail.header"
           title={t('OrderDetails')}
-          navFunc={() => {
-            CleverTap.pushEvent('Order details - click back arrow');
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.THANK_YOU,
-              search: window.location.search,
-            });
-          }}
-        >
-          {!isWebview ? (
-            <LiveChat
-              orderId={`${orderId}`}
-              name={orderUserName}
-              phone={orderUserPhone}
-              onClickLiveChat={() => {
-                CleverTap.pushEvent('Order Details - click contact us', {
-                  ...storeInfoForCleverTap,
-                  'cart items quantity': this.getCartItemsQuantity(),
-                  'cart amount': subtotal,
-                  'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-                  'payment method': paymentMethod && paymentMethod[0],
-                });
-              }}
-            />
-          ) : window.liveChatAvailable ? (
-            !_isNil(order) && (
-              <LiveChatNative
-                orderId={`${orderId}`}
-                name={orderUserName}
-                phone={orderUserPhone}
-                email={email}
-                storeName={orderStoreName}
-                onClickLiveChat={() => {
-                  CleverTap.pushEvent('Order Details - click contact us', {
-                    ...storeInfoForCleverTap,
-                    'cart items quantity': this.getCartItemsQuantity(),
-                    'cart amount': subtotal,
-                    'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-                    'payment method': paymentMethod && paymentMethod[0],
-                  });
-                }}
-              />
-            )
-          ) : (
-            <button
-              className="ordering-details__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
-              onClick={this.handleVisitMerchantInfoPage}
-              data-heap-name="ordering.order-detail.contact-us-btn"
-            >
-              <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
-            </button>
-          )}
-        </Header>
-
+          navFunc={this.handleHeaderNavFunc}
+          rightContent={this.getRightContentOfHeader()}
+        />
         <div className="ordering-details__container">
           <div className="text-center">
             <img className="ordering-details__picture-succeed" src={beepPreOrderSuccess} alt="beep pre-order success" />

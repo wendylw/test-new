@@ -19,34 +19,15 @@ import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
 import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
+import * as NativeMethods from '../../../utils/native-methods';
 import Utils from '../../../utils/utils';
-import { getAppLoginStatus, getAppToken } from '../utils';
+import loggly from '../../../utils/monitoring/loggly';
+import _isNil from 'lodash/isNil';
+import NativeHeader from '../../../components/NativeHeader';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    window.sendToken = res => this.authTokens(res);
-  }
-
-  authTokens = async res => {
-    if (res) {
-      if (Utils.isIOSWebview()) {
-        await this.loginBeepApp(res);
-      } else if (Utils.isAndroidWebview()) {
-        const data = JSON.parse(res) || {};
-        await this.loginBeepApp(data);
-      }
-    }
-  };
-
-  loginBeepApp = async res => {
-    const { appActions } = this.props;
-    if (res.access_token && res.refresh_token) {
-      await appActions.loginApp({
-        accessToken: res.access_token,
-        refreshToken: res.refresh_token,
-      });
-    }
+  state = {
+    showAppLoginPage: false,
   };
 
   async componentDidMount() {
@@ -57,38 +38,68 @@ class App extends Component {
     await appActions.fetchBusiness();
 
     const { user } = this.props;
-    const { isLogin, isWebview } = user || {};
-    const appLogin = getAppLoginStatus();
+    const { isLogin } = user || {};
 
-    if (isLogin) {
-      appActions.loadCustomerProfile();
-    }
+    if (Utils.isWebview()) {
+      const appLogin = this.getAppLoginStatus();
 
-    // appLogin is true, isLogin is false
-    if (isWebview) {
+      this.setState({
+        showAppLoginPage: !appLogin && !isLogin,
+      });
+
       if (appLogin && !isLogin) {
-        getAppToken(user);
+        await this.postAppMessage();
       }
     }
   }
 
-  componentDidUpdate(prevProps) {
+  getAppLoginStatus() {
+    try {
+      return NativeMethods.getLoginStatus();
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
+
+  componentDidUpdate = async prevProps => {
     const { appActions, user, pageError } = this.props;
-    const { isExpired, isWebview, isLogin } = user || {};
+    const { isExpired, isLogin } = user || {};
     const { code } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
       this.visitErrorPage();
     }
 
-    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      getAppToken(user);
+    // token过期重新发postMessage
+    if (isExpired && prevProps.user.isExpired !== isExpired && Utils.isWebview()) {
+      await this.postAppMessage();
     }
 
     if (isLogin && prevProps.user.isLogin !== isLogin) {
+      this.setState({
+        showAppLoginPage: false,
+      });
+
       appActions.loadCustomerProfile();
     }
-  }
+  };
+
+  postAppMessage = async () => {
+    const { appActions, user } = this.props;
+    const { isExpired } = user || {};
+
+    const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
+    if (_isNil(res)) {
+      loggly.error('cashback.post-app-message', { message: 'native token is invalid' });
+    } else {
+      const { access_token, refresh_token } = res;
+      await appActions.loginApp({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      });
+    }
+  };
 
   visitErrorPage() {
     const { pageError } = this.props;
@@ -125,10 +136,16 @@ class App extends Component {
 
   render() {
     const { user } = this.props;
-    const { isWebview } = user || {};
-    const appLogin = getAppLoginStatus();
+    const { showAppLoginPage } = this.state;
+    const isWebview = Utils.isWebview();
 
-    return !appLogin && isWebview ? <RequestLogin user={user} /> : this.renderMainContent();
+    return (
+      <>
+        {isWebview && <NativeHeader />}
+
+        {showAppLoginPage ? <RequestLogin user={user} onClick={this.postAppMessage} /> : this.renderMainContent()}
+      </>
+    );
   }
 }
 
