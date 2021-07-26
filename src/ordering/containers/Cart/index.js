@@ -31,7 +31,7 @@ import './OrderingCart.scss';
 import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
-import _isNil from 'lodash';
+import _isNil from 'lodash/isNil';
 import loggly from '../../../utils/monitoring/loggly';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
