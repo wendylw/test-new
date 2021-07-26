@@ -81,7 +81,7 @@ class PromotionContent extends PureComponent {
     const showBeepAppOnly = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
     const additionalList = { requireFirstPurchase, deliveryOnly, showBeepAppOnly };
 
-    if (additionalList.every(additional => !additional)) {
+    if ([requireFirstPurchase, deliveryOnly, showBeepAppOnly].every(additional => !additional)) {
       return null;
     }
 
