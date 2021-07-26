@@ -73,18 +73,64 @@ class PromotionContent extends PureComponent {
     }
   }
 
+  getPromotionPromptAdditional() {
+    const { t, promotion, inApp } = this.props;
+    const { appliedClientTypes, appliedSources, requireFirstPurchase } = promotion;
+    const deliveryOnly =
+      appliedSources.length === 1 && appliedSources[0] === SHIPPING_TYPES_MAPPING[DELIVERY_METHOD.DELIVERY];
+    const showBeepAppOnly = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
+    const additionalList = { requireFirstPurchase, deliveryOnly, showBeepAppOnly };
+
+    if (additionalList.every(additional => !additional)) {
+      return null;
+    }
+
+    const appDownloadLinkEl = (
+      // eslint-disable-next-line jsx-a11y/anchor-has-content
+      <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink} />
+    );
+    const additionalMap = {
+      requireFirstPurchase: {
+        key: 'FirstOrderOnly',
+      },
+      deliveryOnly: {
+        key: 'DeliveryOrderOnly',
+      },
+      showBeepAppOnly: {
+        key: 'OnlyInBeepAppPrompt',
+        components: [appDownloadLinkEl],
+      },
+      'requireFirstPurchase|deliveryOnly': {
+        key: 'FirstDeliveryOrderOnly',
+      },
+      'requireFirstPurchase|showBeepAppOnly': {
+        key: 'FirstAppOnly',
+        components: [appDownloadLinkEl],
+      },
+      'deliveryOnly|showBeepAppOnly': {
+        key: 'DeliveryAppOnly',
+        components: [appDownloadLinkEl],
+      },
+      'requireFirstPurchase|deliveryOnly|showBeepAppOnly': {
+        key: 'FirstDeliveryAppOnly',
+        components: [appDownloadLinkEl],
+      },
+    };
+
+    const currentKey = Object.keys(additionalList)
+      .filter(additionalKey => !!additionalList[additionalKey])
+      .join('|');
+
+    if (additionalMap[currentKey].components) {
+      return <Trans t={t} i18nKey={additionalMap[currentKey].key} components={additionalMap[currentKey].components} />;
+    }
+
+    return t(additionalMap[currentKey].key);
+  }
+
   getPromotionPrompt() {
-    const { promotion, inApp, t } = this.props;
-    const {
-      id,
-      discountProductList,
-      validDate,
-      appliedClientTypes,
-      appliedSources,
-      maxDiscountAmount,
-      minOrderAmount,
-      requireFirstPurchase,
-    } = promotion;
+    const { promotion, t } = this.props;
+    const { discountProductList, validDate, maxDiscountAmount, minOrderAmount } = promotion;
 
     if (discountProductList || validDate) {
       return null;
@@ -92,53 +138,20 @@ class PromotionContent extends PureComponent {
 
     const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
     const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
-    const appDownloadLinkEl = (
-      // eslint-disable-next-line jsx-a11y/anchor-has-content
-      <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink} />
-    );
-    const beepAppOnlyEl = <Trans t={t} i18nKey="OnlyInBeepAppPrompt" components={[appDownloadLinkEl]} />;
-    const firstOrderOnlyEl = requireFirstPurchase ? t('FirstOrderOnly') : null;
-    const deliveryOrderOnlyEl =
-      appliedSources.length === 1 && appliedSources[0] === SHIPPING_TYPES_MAPPING[DELIVERY_METHOD.DELIVERY]
-        ? t('DeliveryOrderOnly')
-        : null;
-
-    const showBeepAppOnlyText = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
-    const prompts = [];
 
     if (!maxDiscountAmount && minOrderAmount) {
-      prompts.push(<Trans t={t} i18nKey="PromotionOnlyMinOrderAmountPrompt" components={[minOrderAmountEl]} />);
+      return <Trans t={t} i18nKey="PromotionOnlyMinOrderAmountPrompt" components={[minOrderAmountEl]} />;
     }
 
     if (maxDiscountAmount && !minOrderAmount) {
-      prompts.push(<Trans t={t} i18nKey="PromotionOnlyMaxDiscountAmountPrompt" components={[maxDiscountAmountEl]} />);
+      return <Trans t={t} i18nKey="PromotionOnlyMaxDiscountAmountPrompt" components={[maxDiscountAmountEl]} />;
     }
 
     if (maxDiscountAmount && minOrderAmount) {
-      prompts.push(<Trans t={t} i18nKey="PromotionPrompt" components={[maxDiscountAmountEl, minOrderAmountEl]} />);
+      return <Trans t={t} i18nKey="PromotionPrompt" components={[maxDiscountAmountEl, minOrderAmountEl]} />;
     }
 
-    if (showBeepAppOnlyText) {
-      prompts.push(beepAppOnlyEl);
-    }
-
-    if (firstOrderOnlyEl) {
-      prompts.push(firstOrderOnlyEl);
-    }
-
-    if (deliveryOrderOnlyEl) {
-      prompts.push(deliveryOrderOnlyEl);
-    }
-
-    return prompts.length === 0
-      ? null
-      : prompts.map((prompt, index) => {
-          return (
-            <span key={`${id}-prompt-${index}`}>
-              {index === 0 ? '' : ','} {prompt}
-            </span>
-          );
-        });
+    return null;
   }
 
   render() {
@@ -147,7 +160,13 @@ class PromotionContent extends PureComponent {
       return null;
     }
 
-    const promotionPrompt = this.getPromotionPrompt();
+    const promotionPrompt = [this.getPromotionPrompt(), this.getPromotionPromptAdditional()].map((prompt, index) => {
+      return (
+        <span key={`${promotion.id}-prompt-${index}`}>
+          {index === 0 ? '' : ','} {prompt}
+        </span>
+      );
+    });
 
     // 注意！！！！：这只是临时PM决定的临时解决方案，绝对绝对绝对不能有第二次，如果有请提醒PM更换翻译文字长度，或者提供更通用的解决方案，这么可笑的处理并非作者本意
     if (promotion.promotionCode === 'FREEDEL') {
