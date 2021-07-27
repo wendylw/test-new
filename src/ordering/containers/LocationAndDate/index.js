@@ -3,7 +3,7 @@ import qs from 'qs';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import PageLoader from '../../../components/PageLoader';
 import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 import { IconNext, IconSearch } from '../../../components/Icons';
@@ -655,7 +655,7 @@ class LocationAndDate extends Component {
 
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"

@@ -5,8 +5,7 @@ import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
-import Header from '../../../components/Header';
-
+import HybridHeader from '../../../components/HybridHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
@@ -147,7 +146,7 @@ class PageLogin extends React.Component {
     return (
       <React.Fragment>
         <section className={classList.join(' ')} data-heap-name="ordering.login.container">
-          <Header
+          <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
             data-heap-name="ordering.login.header"
@@ -165,12 +164,12 @@ class PageLogin extends React.Component {
               <img
                 src={beepLoginActive}
                 alt="otp active"
-                className={`${isValidPhoneNumber(phone) ? '' : 'page-login__icon--hide'}`}
+                className={`${isValidPhoneNumber(phone || '') ? '' : 'page-login__icon--hide'}`}
               />
               <img
                 src={beepLoginDisabled}
                 alt="otp disabled"
-                className={`${isValidPhoneNumber(phone) ? 'page-login__icon--hide' : 'page-login__disabled'}`}
+                className={`${isValidPhoneNumber(phone || '') ? 'page-login__icon--hide' : 'page-login__disabled'}`}
               />
             </figure>
             <PhoneViewContainer
