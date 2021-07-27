@@ -13,7 +13,7 @@ import {
   getStoreHashCode,
 } from '../../redux/modules/tables';
 
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 class Tables extends Component {
@@ -45,7 +45,7 @@ class Tables extends Component {
 
     return (
       <section className="ordering-tables flex flex-column" data-heap-name="stores.tables.container">
-        <Header
+        <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="stores.tables.header"

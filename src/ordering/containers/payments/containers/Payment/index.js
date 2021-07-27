@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
@@ -191,7 +190,7 @@ class Payment extends Component {
 
     return (
       <section className="ordering-payment flex flex-column" data-heap-name="ordering.payment.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"

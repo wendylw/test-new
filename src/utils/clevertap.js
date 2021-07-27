@@ -6,11 +6,8 @@ const businessName = Utils.isSiteApp() ? 'beepit.com' : config.business;
 const pushEvent = (eventName, attributes) => {
   try {
     if (Utils.isWebview()) {
-      const appVersion = window.beepAppVersion;
-
       if (Utils.isIOSWebview()) {
-        // TODO: below check version code has bug, we will delete the check version code on 1.8.0
-        if (eventName === 'Charged' && appVersion >= '1.7.3') {
+        if (eventName === 'Charged') {
           const { Items: items, ...chargeDetails } = attributes || {};
 
           window.webkit?.messageHandlers?.clevertap?.postMessage({
@@ -34,8 +31,7 @@ const pushEvent = (eventName, attributes) => {
       }
 
       if (Utils.isAndroidWebview()) {
-        // TODO: below check version code has bug, we will delete the check version code on 1.8.0
-        if (eventName === 'Charged' && appVersion >= '1.7.3') {
+        if (eventName === 'Charged') {
           const { Items, ...chargeDetails } = attributes || {};
 
           window.CleverTap?.pushChargedEvent(
