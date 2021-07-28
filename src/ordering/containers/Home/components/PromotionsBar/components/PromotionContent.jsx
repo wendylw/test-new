@@ -117,7 +117,7 @@ class PromotionContent extends PureComponent {
       },
     };
 
-    const currentKey = Object.keys(additionalList)
+    const currentKey = ['requireFirstPurchase', 'deliveryOnly', 'showBeepAppOnly']
       .filter(additionalKey => !!additionalList[additionalKey])
       .join('|');
 
@@ -161,6 +161,10 @@ class PromotionContent extends PureComponent {
     }
 
     const promotionPrompt = [this.getPromotionPrompt(), this.getPromotionPromptAdditional()].map((prompt, index) => {
+      if (!prompt) {
+        return null;
+      }
+
       return (
         <span key={`${promotion.id}-prompt-${index}`}>
           {index === 0 ? '' : ','} {prompt}
