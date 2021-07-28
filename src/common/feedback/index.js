@@ -12,24 +12,28 @@ import { IconClose } from '../../components/Icons';
 // export interface FeedbackInstance {
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
-const FeedbackOptions = {
-  onClose: () => {},
-  icon: null,
-};
+// const FeedbackOptions = {
+//   onClose: () => {},
+//   icon: null,
+// };
 
-export const alert = {
+function destroyFeedback(target) {}
+
+const feedbackAlert = {
   create: (content, options) => {
-    const { closeIcon, className, style } = options;
+    const { button, className, style } = options;
     const classList = [...className];
 
     return (
       <div className={classList.join(' ')} style={style}>
         {content}
-        {closeIcon || <IconClose />}
+        {button || <IconClose onClick={destroyFeedback()} />}
       </div>
     );
   },
   mounted: () => {},
 };
 
-alert.create.displayName = 'alert';
+feedbackAlert.create.displayName = 'alert';
+
+export function alert(content, options) {}
