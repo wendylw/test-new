@@ -35,18 +35,6 @@ export class NativeAPIError extends Error {
   }
 }
 
-const hasMethodInNative = method => {
-  try {
-    const { data: hasNativeMethod } = JSON.parse(
-      dsBridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
-    );
-    return hasNativeMethod;
-  } catch (e) {
-    loggly.error('dsBridge-methods.hasNativeMethod', { message: e });
-    return false;
-  }
-};
-
 const dsBridgeSyncCall = (method, params) => {
   try {
     const result = dsBridge.call('callNative', { method, params });
@@ -96,6 +84,16 @@ const dsBridgeAsyncCall = (method, params) =>
 
     throw error;
   });
+
+const hasMethodInNative = method => {
+  try {
+    return dsBridgeSyncCall('hasNativeMethod', {
+      methodName: method,
+    });
+  } catch (error) {
+    return false;
+  }
+};
 
 const dsBridgeCall = nativeMethod => {
   const { method, params, mode } = nativeMethod || {};
