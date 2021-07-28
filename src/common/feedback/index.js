@@ -1,5 +1,5 @@
 import React from 'react';
-import IconChecked from '../../components/Icons';
+import { IconClose } from '../../components/Icons';
 // declare type FEEDBACK_TYPES = 'alert' | 'confirm' | 'toast' | 'fullScreen';
 // declare type FeedbackContent = React.ReactNode | string;
 // declare type FeedbackOptions = {
@@ -19,13 +19,17 @@ const FeedbackOptions = {
 
 export const alert = {
   create: (content, options) => {
-    const { icon, onClose } = options;
+    const { closeIcon, className, style } = options;
+    const classList = [...className];
 
     return (
-      <div>
-        <IconChecked />
+      <div className={classList.join(' ')} style={style}>
         {content}
+        {closeIcon || <IconClose />}
       </div>
     );
   },
+  mounted: () => {},
 };
+
+alert.create.displayName = 'alert';
