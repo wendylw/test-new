@@ -2,7 +2,7 @@ import React from 'react';
 // declare type FEEDBACK_TYPES = 'alert' | 'confirm' | 'toast' | 'fullScreen';
 // declare type FeedbackContent = React.ReactNode | string;
 // declare type FeedbackOptions = {
-//   duration: number | null;
+//   duration?: number | null;
 //   type: FEEDBACK_TYPES;
 //   onClose?: () => void;
 //   icon?: React.ReactNode;
@@ -11,3 +11,13 @@ import React from 'react';
 // export interface FeedbackInstance {
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
+const FeedbackOptions = {
+  onClose: () => {},
+  icon: null,
+};
+
+const feedback = {};
+
+feedback.alert = (content, options) => {};
+
+export default feedback;
