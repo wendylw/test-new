@@ -17,13 +17,15 @@ const FeedbackOptions = {
   icon: null,
 };
 
-export const feedback = {};
+export const alert = {
+  create: (content, options) => {
+    const { icon, onClose } = options;
 
-feedback.alert = (content, options) => {
-  return (
-    <div>
-      <IconChecked />
-      {content}
-    </div>
-  );
+    return (
+      <div>
+        <IconChecked />
+        {content}
+      </div>
+    );
+  },
 };
