@@ -61,7 +61,7 @@ const dsBridgeSyncCall = (method, params) => {
 
     return data;
   } catch (error) {
-    const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
+    const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
     loggly.error(`dsBridge-methods.${method}`, errorData);
 
@@ -80,18 +80,21 @@ const dsBridgeAsyncCall = (method, params) =>
         debug('NativeMethod: %s\nparams: %o\nresult: %s\n', method, params, result);
 
         if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
-          throw new NativeAPIError(message, code, data);
+          reject(new NativeAPIError(message, code, data));
+          return;
         }
 
         resolve(data);
       });
     } catch (error) {
-      const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
-
-      loggly.error(`dsBridge-methods.${method}`, errorData);
-
       reject(error);
     }
+  }).catch(error => {
+    const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
+
+    loggly.error(`dsBridge-methods.${method}`, errorData);
+
+    throw error;
   });
 
 const dsBridgeCall = nativeMethod => {
