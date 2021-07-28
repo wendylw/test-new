@@ -1,4 +1,5 @@
 import React from 'react';
+import IconChecked from '../../components/Icons';
 // declare type FEEDBACK_TYPES = 'alert' | 'confirm' | 'toast' | 'fullScreen';
 // declare type FeedbackContent = React.ReactNode | string;
 // declare type FeedbackOptions = {
@@ -16,8 +17,13 @@ const FeedbackOptions = {
   icon: null,
 };
 
-const feedback = {};
+export const feedback = {};
 
-feedback.alert = (content, options) => {};
-
-export default feedback;
+feedback.alert = (content, options) => {
+  return (
+    <div>
+      <IconChecked />
+      {content}
+    </div>
+  );
+};
