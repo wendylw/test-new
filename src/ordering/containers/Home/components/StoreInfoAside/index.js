@@ -4,11 +4,34 @@ import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import Utils from '../../../../../utils/utils';
 import './StoreInfoAside.scss';
+import * as ModalHub from '../../../../../utils/modal-hub';
 
 class StoreInfoAside extends Component {
   state = {
     initDom: true,
   };
+
+  componentDidMount() {
+    window.addEventListener('sh-modal-hash-popped', e => {
+      const { modalId } = e.detail;
+      if (modalId === 'StoreInfoAside') {
+        this.props.onToggle(null);
+      }
+    });
+  }
+  componentWillUnmount() {}
+
+  componentDidUpdate(prevProps) {
+    const { show } = this.props;
+    if (show !== prevProps.show) {
+      // show status changed
+      if (show) {
+        ModalHub.addModalId('StoreInfoAside');
+      } else {
+        ModalHub.removeModalId('StoreInfoAside');
+      }
+    }
+  }
 
   renderDeliveryHour = () => {
     const weekInfo = {
