@@ -17,18 +17,12 @@ SwiperCore.use([Autoplay]);
 
 class Carousel extends Component {
   handleStoreClicked = async (store, shippingType) => {
-    let type;
     const { currentPlaceInfo } = this.props;
-    if (shippingType.includes('Delivery')) {
-      type = 'delivery';
-    } else {
-      type = 'pickup';
-    }
     await submitStoreMenu({
       deliveryAddress: currentPlaceInfo,
       store: store,
       source: document.location.href,
-      shippingType: type,
+      shippingType: shippingType.toLowerCase(),
     });
   };
 
@@ -57,7 +51,7 @@ class Carousel extends Component {
     );
   };
 
-  renderCarouselStores(stores, shippingType, collectionInfo) {
+  renderCarouselStores(stores, collectionInfo) {
     const { t } = this.props;
     return (
       <Swiper className="carousel__wrapper margin-top-bottom-normal" slidesPerView={'auto'}>
@@ -74,7 +68,7 @@ class Carousel extends Component {
             cashbackRate,
             reviewInfo,
             promoTag,
-            shippingType: storeShippingType,
+            shippingType,
           } = store || {};
 
           const rating = _get(reviewInfo, 'rating', '');
@@ -93,7 +87,7 @@ class Carousel extends Component {
                   'collection rank': collectionInfo.index,
                   'store name': name,
                   'store rank': index + 1,
-                  'shipping type': storeShippingType,
+                  'shipping type': shippingType,
                   'has promo': promoTag?.length > 0,
                   cashback: store.cashbackRate || 0,
                 });
@@ -163,7 +157,7 @@ class Carousel extends Component {
     return (
       <div className="margin-top-bottom-normal">
         {(collections || []).map((item, index) => {
-          const { name, stores, urlPath, beepCollectionId, shippingType } = item;
+          const { name, stores, urlPath, beepCollectionId } = item;
           return (
             <section
               key={beepCollectionId}
@@ -191,7 +185,7 @@ class Carousel extends Component {
                 </span>
               </div>
               {stores &&
-                this.renderCarouselStores(stores, shippingType, {
+                this.renderCarouselStores(stores, {
                   name,
                   index,
                 })}
@@ -202,5 +196,6 @@ class Carousel extends Component {
     );
   }
 }
+Carousel.displayName = 'Carousel';
 
 export default withTranslation(['SiteHome'])(withRouter(Carousel));

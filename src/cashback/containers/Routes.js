@@ -6,7 +6,7 @@ import NotFound from '../../containers/NotFound';
 const RecentActivities = lazy(() => Utils.attemptLoad(() => import('./Home/components/RecentActivities')));
 const Claim = lazy(() => Utils.attemptLoad(() => import('./Claim')));
 const Home = lazy(() => Utils.attemptLoad(() => import('./Home')));
-const Error = lazy(() => Utils.attemptLoad(() => import('../../components/Error')));
+const Error = lazy(() => Utils.attemptLoad(() => import('./Error')));
 
 class Routes extends Component {
   render() {
@@ -33,5 +33,7 @@ class Routes extends Component {
     );
   }
 }
+
+Routes.displayName = 'CashbackRoutes';
 
 export default withRouter(Routes);

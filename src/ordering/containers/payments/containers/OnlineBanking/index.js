@@ -1,9 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import HybridHeader from '../../../../../components/HybridHeader';
 import Loader from '../../components/Loader';
-import Image from '../../../../../components/Image';
-import Header from '../../../../../components/Header';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import { IconKeyArrowDown } from '../../../../../components/Icons';
@@ -139,7 +138,7 @@ class OnlineBanking extends Component {
         className={`ordering-banking flex flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.payment.online-banking.container"
       >
-        <Header
+        <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.payment.online-banking.header"
@@ -226,6 +225,7 @@ class OnlineBanking extends Component {
     );
   }
 }
+OnlineBanking.displayName = 'OnlineBanking';
 
 export default compose(
   withTranslation(['OrderingPayment']),

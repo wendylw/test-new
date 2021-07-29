@@ -56,4 +56,6 @@ Error.defaultProps = {
   description: '',
 };
 
+Error.displayName = 'Error';
+
 export default withDataAttributes(withTranslation()(Error));

@@ -106,5 +106,6 @@ Image.defaultProps = {
   alt: '',
   scalingRatioIndex: 0,
 };
+Image.displayName = 'Image';
 
 export default Image;

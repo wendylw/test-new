@@ -11,5 +11,6 @@ class NotSupport extends Component {
     );
   }
 }
+NotSupport.displayName = 'QRScanNotSupport';
 
 export default NotSupport;

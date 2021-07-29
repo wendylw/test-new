@@ -14,6 +14,7 @@ import { withRouter } from 'react-router-dom';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import _get from 'lodash/get';
 import qs from 'qs';
+import * as NativeMethods from '../../../utils/native-methods';
 import './StoresHome.scss';
 
 import {
@@ -24,9 +25,10 @@ import {
   showStores,
 } from '../../redux/modules/home';
 import OfflineStoreModal from '../../../ordering/containers/Home/components/OfflineStoreModal';
+import NativeHeader from '../../../components/NativeHeader';
 
 const { ROUTER_PATHS } = Constants;
-class App extends Component {
+class Home extends Component {
   state = {
     creatOfflineStoreOrderName: '',
   };
@@ -119,6 +121,7 @@ class App extends Component {
   render() {
     const { t, show, stores, onlineStoreInfo } = this.props;
     const { logo, storeName } = onlineStoreInfo || {};
+    const isWebView = Utils.isWebview();
 
     if (!show) {
       return null;
@@ -127,6 +130,15 @@ class App extends Component {
     return (
       this.props.isHome && (
         <section className="store-list__content" data-heap-name="stores.home.container">
+          {isWebView && (
+            <NativeHeader
+              isPage={true}
+              title={window.document.title}
+              navFunc={() => {
+                NativeMethods.closeWebView();
+              }}
+            />
+          )}
           <Header
             className="flex-middle border__bottom-divider"
             contentClassName="flex-middle"
@@ -153,6 +165,7 @@ class App extends Component {
     );
   }
 }
+Home.displayName = 'StoresHome';
 
 export default compose(
   withTranslation(),
@@ -172,4 +185,4 @@ export default compose(
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
-)(withRouter(App));
+)(withRouter(Home));

@@ -90,7 +90,7 @@ export const initialState = {
     isError: false,
     otpType: 'otp',
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
-    phone: localePhoneNumber,
+    phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
   },
   error: null, // network error
@@ -234,6 +234,8 @@ export const actions = {
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
         shippingType: Utils.getApiRequestShippingType(),
+        registrationTouchpoint: Utils.getRegistrationTouchPoint(),
+        registrationSource: Utils.getRegistrationSource(),
       }).then(resp => {
         if (resp && resp.consumerId) {
           const phone = Utils.getLocalStorageVariable('user.p');
@@ -419,6 +421,14 @@ export const actions = {
     return dispatch(addOrUpdateShoppingCartItem(variables));
   },
 
+  // TODO: This type is actually not used, because apiError does not respect action type,
+  // which is a bad practice, we will fix it in the future, for now we just keep a useless
+  // action type.
+  showApiErrorModal: code => ({
+    type: 'ordering/app/showApiErrorModal',
+    code,
+  }),
+
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
   },
@@ -491,6 +501,7 @@ const user = (state = initialState.user, action) => {
         isLogin: login,
         consumerId,
         isFetching: false,
+        isExpired: false,
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');

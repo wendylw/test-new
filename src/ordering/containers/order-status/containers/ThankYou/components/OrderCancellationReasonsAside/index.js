@@ -5,7 +5,7 @@ import { ORDER_CANCELLATION_REASONS } from '../../constants';
 import _isFunction from 'lodash/isFunction';
 import '../OrderCancellationReasonsAside.scss';
 import { useSelector } from 'react-redux';
-import { getCancelOrderStatus } from '../../../../redux/common';
+import { getCancelOrderStatus } from '../../redux/selector';
 
 const orderCancellationReasons = [
   {
@@ -150,5 +150,6 @@ function OrderCancellationReasonsAside({ show, onHide, onCancelOrder }) {
     </aside>
   );
 }
+OrderCancellationReasonsAside.displayName = 'OrderCancellationReasonsAside';
 
 export default OrderCancellationReasonsAside;

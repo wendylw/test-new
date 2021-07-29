@@ -20,6 +20,7 @@ class RequestError extends Error {
 }
 
 function get(url, options = {}) {
+  const requestStart = new Date().valueOf();
   return fetch(url, {
     headers,
     credentials: 'include',
@@ -32,7 +33,7 @@ function get(url, options = {}) {
       if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
         window.location = response.url;
       }
-      return handleResponse(url, response, 'get');
+      return handleResponse(url, response, 'get', requestStart);
     })
     .catch(error => {
       if (error instanceof TypeError) {
@@ -41,7 +42,8 @@ function get(url, options = {}) {
             detail: {
               type: 'get',
               request: url,
-              error: error.toString(),
+              error: error.message,
+              requestStart,
             },
           })
         );
@@ -51,6 +53,7 @@ function get(url, options = {}) {
 }
 
 const fetchData = function(url, requestOptions) {
+  const requestStart = new Date().valueOf();
   const { method, data, options } = requestOptions;
   return fetch(url, {
     method,
@@ -65,7 +68,7 @@ const fetchData = function(url, requestOptions) {
       if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
         window.location = response.url;
       }
-      return handleResponse(url, response, method.toLowerCase());
+      return handleResponse(url, response, method.toLowerCase(), requestStart);
     })
     .catch(error => {
       if (error instanceof TypeError) {
@@ -75,6 +78,7 @@ const fetchData = function(url, requestOptions) {
               type: method.toLowerCase(),
               request: url,
               error: error.toString(),
+              requestStart,
             },
           })
         );
@@ -107,7 +111,7 @@ function del(url, data, options) {
   });
 }
 
-async function handleResponse(url, response, method) {
+async function handleResponse(url, response, method, requestStart) {
   if (response.status === 200) {
     return response.json().then(data => {
       window.dispatchEvent(
@@ -115,6 +119,7 @@ async function handleResponse(url, response, method) {
           detail: {
             type: method,
             request: url,
+            requestStart,
           },
         })
       );
@@ -130,7 +135,8 @@ async function handleResponse(url, response, method) {
             detail: {
               type: method,
               request: url,
-              error: e.toString(),
+              error: e.message,
+              requestStart,
             },
           })
         );
@@ -145,6 +151,7 @@ async function handleResponse(url, response, method) {
               request: url,
               error: REQUEST_ERROR_KEYS[code],
               code,
+              requestStart,
             },
           })
         );
@@ -160,7 +167,8 @@ async function handleResponse(url, response, method) {
             detail: {
               type: method,
               request: url,
-              error: e.toString(),
+              error: e.message,
+              requestStart,
             },
           })
         );
@@ -176,6 +184,7 @@ async function handleResponse(url, response, method) {
               request: url,
               error: REQUEST_ERROR_KEYS[code],
               code,
+              requestStart,
             },
           })
         );

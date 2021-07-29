@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import _get from 'lodash/get';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import Constants from '../../../../../utils/constants';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
@@ -135,7 +135,7 @@ class CardCVV extends Component {
 
     return (
       <section className="payment-credit-card flex flex-column">
-        <Header
+        <HybridHeader
           headerEl={ref => {
             this.headerEl = ref;
           }}
@@ -212,6 +212,7 @@ class CardCVV extends Component {
     );
   }
 }
+CardCVV.displayName = 'CardCVV';
 
 export default compose(
   withTranslation(['OrderingPayment']),

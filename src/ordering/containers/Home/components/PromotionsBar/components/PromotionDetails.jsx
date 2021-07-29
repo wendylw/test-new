@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import Header from '../../../../../../components/Header';
+import WebHeader from '../../../../../../components/WebHeader';
 import PromotionContent from './PromotionContent';
+import _isFunction from 'lodash/isFunction';
 
 function PromotionDetails({ onHide, promotions, show, inApp }) {
   const { t } = useTranslation('OrderingHome');
+  const handleHide = useCallback(() => {
+    _isFunction(onHide) && onHide();
+  }, [onHide]);
 
   return (
     <aside className={`promotions-bar__details aside fixed-wrapper ${show ? 'active' : ''}`}>
       <div className="promotions-bar__details-container aside__content">
-        <Header
+        <WebHeader
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={false}
           title={t('PromoDetails')}
-          navFunc={onHide}
+          navFunc={handleHide}
         />
         <ul className="promotions-bar__details-content">
           {promotions.map(promo => {
@@ -32,5 +36,6 @@ function PromotionDetails({ onHide, promotions, show, inApp }) {
     </aside>
   );
 }
+PromotionDetails.displayName = 'PromotionDetails';
 
 export default PromotionDetails;

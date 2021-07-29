@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import { withTranslation } from 'react-i18next';
 import { IconAddAddress, IconBookmark, IconNext } from '../../../../../components/Icons';
 import Tag from '../../../../../components/Tag';
@@ -13,7 +13,6 @@ import {
 } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
 import './AddressList.scss';
-import webviewUtils from '../../../../../utils/webview-utils';
 import CleverTap from '../../../../../utils/clevertap';
 
 class AddressList extends Component {
@@ -81,7 +80,7 @@ class AddressList extends Component {
                     deliveryToLocation: location,
                     deliveryToCity,
                   });
-                  if (webviewUtils.hasNativeSavedAddress()) {
+                  if (Utils.hasNativeSavedAddress()) {
                     const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
                     sessionStorage.setItem(
                       'deliveryAddress',
@@ -101,12 +100,12 @@ class AddressList extends Component {
           </div>
           <div className="address-list__delivery-info margin-normal">
             <div>
-              <summary>
+              <div>
                 <span>{addressName}</span>
                 {!availableStatus && (
                   <Tag text={t('OutOfRange')} className="tag__primary tag__small margin-left-right-normal" />
                 )}
-              </summary>
+              </div>
               <p className="padding-top-bottom-small text-opacity">{deliveryTo}</p>
             </div>
             <div className="padding-top-bottom-small text-line-height-base">
@@ -126,7 +125,7 @@ class AddressList extends Component {
     const { t } = this.props;
     return (
       <div>
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -167,6 +166,7 @@ class AddressList extends Component {
     );
   }
 }
+AddressList.displayName = 'AddressList';
 
 export default compose(
   withTranslation(),

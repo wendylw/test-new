@@ -1,11 +1,10 @@
 import qs from 'qs';
 import React from 'react';
+import _isNil from 'lodash/isNil';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getAppToken } from '../../../../../../../cashback/containers/utils';
 import succeedAnimationGif from '../../../../../../../images/succeed-animation.gif';
-import Constants from '../../../../../../../utils/constants';
 import Utils from '../../../../../../../utils/utils';
 import CurrencyNumber from '../../../../../../components/CurrencyNumber';
 import {
@@ -14,8 +13,11 @@ import {
   getUser,
   getBusinessInfo,
 } from '../../../../../../redux/modules/app';
-import { actions as thankYouActionCreators, getCashbackInfo } from '../../redux';
+import * as NativeMethods from '../../../../../../../utils/native-methods';
+import { getCashbackInfo } from '../../redux/selector';
+import { loadCashbackInfo, createCashbackInfo } from '../../redux/thunks';
 import './PhoneLogin.scss';
+import loggly from '../../../../../../../utils/monitoring/loggly';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
@@ -32,45 +34,14 @@ class PhoneLogin extends React.Component {
     claimedAnimationGifSrc: null,
   };
 
-  constructor(props) {
-    super(props);
-    window.sendToken = res => this.authTokens(res);
-  }
-
-  authTokens = async res => {
-    if (res) {
-      if (Utils.isIOSWebview()) {
-        await this.loginBeepApp(res);
-      } else if (Utils.isAndroidWebview()) {
-        const data = JSON.parse(res) || {};
-        await this.loginBeepApp(data);
-      }
-    }
-  };
-
-  loginBeepApp = async res => {
-    const { appActions } = this.props;
-    if (res.access_token && res.refresh_token) {
-      await appActions.loginApp({
-        accessToken: res.access_token,
-        refreshToken: res.refresh_token,
-      });
-    }
-  };
-
   async componentDidMount() {
-    const { history, thankYouActions } = this.props;
+    const { history, loadCashbackInfo, appActions } = this.props;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    await thankYouActions.getCashbackInfo(receiptNumber);
+    await loadCashbackInfo(receiptNumber);
 
     const { user, businessInfo } = this.props;
-    const { isWebview, isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
-
-    if (!isLogin && isWebview) {
-      getAppToken(user);
-    }
 
     if (enableCashback) {
       this.canClaimCheck(user);
@@ -81,6 +52,19 @@ class PhoneLogin extends React.Component {
     this.setState({
       claimedAnimationGifSrc: succeedAnimationGif,
     });
+
+    if (Utils.isWebview()) {
+      const res = await NativeMethods.getTokenAsync();
+      if (_isNil(res)) {
+        loggly.error('order-status.thank-you.phone-login', { message: 'native token is invalid' });
+      } else {
+        const { access_token, refresh_token } = res;
+        await appActions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      }
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -178,7 +162,7 @@ class PhoneLogin extends React.Component {
   }
 
   async canClaimCheck(user) {
-    const { thankYouActions } = this.props;
+    const { createCashbackInfo } = this.props;
     const { phone } = this.state;
     const { isLogin } = user || {};
     const { isFetching, createdCashbackInfo } = this.props.cashbackInfo || {};
@@ -188,7 +172,7 @@ class PhoneLogin extends React.Component {
     }
 
     if (isLogin && !isFetching && !createdCashbackInfo) {
-      await thankYouActions.createCashbackInfo(this.getOrderInfo());
+      await createCashbackInfo(this.getOrderInfo());
     }
 
     const { cashbackInfo } = this.props;
@@ -203,9 +187,8 @@ class PhoneLogin extends React.Component {
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     return {
-      phone,
       receiptNumber,
-      source: Constants.CASHBACK_SOURCE.QR_ORDERING,
+      phone,
     };
   }
 
@@ -249,6 +232,7 @@ class PhoneLogin extends React.Component {
     );
   }
 }
+PhoneLogin.displayName = 'PhoneLogin';
 
 export default compose(
   withTranslation(),
@@ -261,7 +245,8 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      thankYouActions: bindActionCreators(thankYouActionCreators, dispatch),
+      loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
+      createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
     })
   )
 )(PhoneLogin);

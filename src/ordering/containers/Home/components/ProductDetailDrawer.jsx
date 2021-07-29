@@ -640,7 +640,7 @@ class ProductDetailDrawer extends Component {
   };
 
   renderOperatorButton = () => {
-    const { selectedProduct, onDncreaseProductDetailItem, onIncreaseProductDetailItem } = this.props;
+    const { selectedProduct, onDecreaseProductDetailItem, onIncreaseProductDetailItem } = this.props;
     const { cartQuantity, minimumVariations, childrenProduct } = this.state;
     const inventoryShortage = this.getShortageInventoryState(
       selectedProduct || {},
@@ -663,7 +663,7 @@ class ProductDetailDrawer extends Component {
           decreaseDisabled={cartQuantity <= 1}
           increaseDisabled={Utils.isProductSoldOut(selectedProduct || {}) || inventoryShortage}
           onDecrease={() => {
-            onDncreaseProductDetailItem(selectedProduct);
+            onDecreaseProductDetailItem(selectedProduct);
             this.setState({ cartQuantity: cartQuantity - 1 });
           }}
           onIncrease={() => {
@@ -684,7 +684,7 @@ class ProductDetailDrawer extends Component {
 
   render() {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
-    const { t, onlineStoreInfo, selectedProduct, viewAside, show, onToggle } = this.props;
+    const { t, onlineStoreInfo, selectedProduct, viewAside, show, onToggle, hideCloseButton } = this.props;
     const { storeName } = onlineStoreInfo || {};
     const { id, _needMore, images, title, description } = selectedProduct || {};
     const { resizeImage } = this.state;
@@ -709,11 +709,13 @@ class ProductDetailDrawer extends Component {
           }}
         >
           <div className="product-detail__wrapper">
-            <IconClose
-              className="product-detail__icon-close icon icon__normal margin-normal"
-              onClick={() => onToggle()}
-              data-heap-name="ordering.home.product-detail.back-btn"
-            />
+            {!hideCloseButton && (
+              <IconClose
+                className="product-detail__icon-close icon icon__normal margin-normal"
+                onClick={() => onToggle()}
+                data-heap-name="ordering.home.product-detail.back-btn"
+              />
+            )}
 
             <div className="product-detail__image-container flex__shrink-fixed">
               {images && images.length > 1 ? (
@@ -791,18 +793,21 @@ class ProductDetailDrawer extends Component {
     );
   }
 }
+ProductDetailDrawer.displayName = 'ProductDetailDrawer';
 
 ProductDetailDrawer.propTypes = {
   show: PropTypes.bool,
   viewAside: PropTypes.string,
   footerEl: PropTypes.any,
   onToggle: PropTypes.func,
+  hideCloseButton: PropTypes.bool,
 };
 
 ProductDetailDrawer.defaultProps = {
   show: false,
   viewAside: '',
   onToggle: () => {},
+  hideCloseButton: false,
 };
 
 export default compose(

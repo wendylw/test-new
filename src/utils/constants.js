@@ -291,7 +291,7 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:40024Title',
     desc: 'ApiError:40024Description',
     redirectUrl: '',
-    buttonText: 'Common:Continue',
+    buttonText: 'Common:Dismiss',
     showModal: true,
   },
   40025: {
@@ -487,6 +487,9 @@ const PROMOTION_ERROR_CODES = {
   54419: {
     desc: '54419OnlyApplicableForParticipating',
   },
+  54420: {
+    desc: '54420ReachMaxBusinessClaimCount',
+  },
   60002: {
     desc: '60002NotActive',
   },
@@ -513,6 +516,9 @@ const PROMOTION_ERROR_CODES = {
   },
   60009: {
     desc: '60009VoucherHasBeenUsed',
+  },
+  60010: {
+    desc: '60010VoucherNotMatchSource',
   },
 };
 
@@ -584,6 +590,10 @@ const ADYEN_PAYMENT_TYPE = {
   PAY_WITH_SAVE_CARD: '3',
 };
 
+const WEB_VIEW_SOURCE = {
+  IOS: 'iOS',
+  Android: 'Android',
+};
 const PAYMENT_API_PAYMENT_OPTIONS = {
   SAVE_CARD: 'saveCard',
   TOKENIZATION: 'tokenization',
@@ -596,6 +606,19 @@ const CLIENTS = {
   WEB: 'web',
   IOS: 'iOS',
   ANDROID: 'Android',
+};
+
+export const REGISTRATION_TOUCH_POINT = {
+  CLAIM_CASHBACK: 'ClaimCashback',
+  ONLINE_ORDER: 'OnlineOrder',
+  QR_ORDER: 'QROrder',
+};
+
+export const REGISTRATION_SOURCE = {
+  BEEP_APP: 'BeepApp',
+  RECEIPT: 'Receipt',
+  BEEP_STORE: 'BeepStore',
+  BEEP_SITE: 'BeepSite',
 };
 
 export default {
@@ -638,7 +661,10 @@ export default {
   SH_LOGISTICS_VALID_TIME,
   ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
+  WEB_VIEW_SOURCE,
   PAYMENT_API_PAYMENT_OPTIONS,
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
   CLIENTS,
+  REGISTRATION_TOUCH_POINT,
+  REGISTRATION_SOURCE,
 };

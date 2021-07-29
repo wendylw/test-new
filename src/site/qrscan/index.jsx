@@ -32,15 +32,19 @@ if (typeof MediaStream !== 'undefined' && !('stop' in MediaStream.prototype)) {
 const processQR = qrData =>
   new Promise((resolve, reject) => {
     let data = qrData.trim();
+    const source = encodeURIComponent(window.location.href);
     const extraParams = 'utm_source=beepit.co&utm_medium=web_scanner&utm_campaign=web_scanner';
     const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
 
     if (/^https?:/.test(data)) {
+      data += `${data.includes('?') ? '&' : '?'}source=${source}`;
+
       if (data.includes('tableId=DEMO')) {
         data = data.match(domainRegex)[0];
       } else if (data.includes('beepit.co') || data.includes('beepit.com')) {
         data += `${data.includes('?') ? '&' : '?'}${extraParams}`;
       }
+
       window.location.href = data;
       resolve(data);
     } else {
@@ -91,7 +95,9 @@ class QRScan extends Component {
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = error => {
           console.warn('[QRScan] getCamera failed:', error);
-          loggly.warn(`[QRScan] getCamera failed: ${error?.message}`);
+          loggly.warn('qrscan.getCamera', {
+            message: `[QRScan] getCamera failed: ${error?.message}`,
+          });
           if (error.name !== 'NotAllowedError') {
             this.gotoNotSupport();
           }
@@ -248,5 +254,6 @@ class QRScan extends Component {
     );
   }
 }
+QRScan.displayName = 'QRScan';
 
 export default withTranslation(['Scanner'])(QRScan);

@@ -57,6 +57,7 @@ class ProductItem extends Component {
     );
   }
 }
+ProductItem.displayName = 'ProductItem';
 
 ProductItem.propTypes = {
   className: PropTypes.string,

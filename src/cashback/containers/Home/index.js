@@ -108,6 +108,8 @@ class PageLoyalty extends React.Component {
   }
 }
 
+PageLoyalty.displayName = 'PageLoyalty';
+
 export default compose(
   withTranslation(['Cashback']),
   connect(

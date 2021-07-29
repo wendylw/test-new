@@ -40,7 +40,7 @@ class PhoneViewContainer extends React.Component {
   handleSubmitPhoneNumber() {
     const { onSubmit, phone } = this.props;
 
-    if (!isValidPhoneNumber(phone)) {
+    if (!isValidPhoneNumber(phone || '')) {
       return;
     }
 
@@ -89,7 +89,7 @@ class PhoneViewContainer extends React.Component {
           className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
           data-heap-name="common.phone-view-container.submit-btn"
           onClick={this.handleSubmitPhoneNumber.bind(this)}
-          disabled={!phone || isSavingPhone || !isValidPhoneNumber(phone)}
+          disabled={!phone || isSavingPhone || !isValidPhoneNumber(phone || '')}
         >
           {buttonContent}
         </button>
@@ -117,5 +117,6 @@ PhoneViewContainer.defaultProps = {
   updateCountry: () => {},
   onSubmit: () => {},
 };
+PhoneViewContainer.displayName = 'PhoneViewContainer';
 
 export default withTranslation()(PhoneViewContainer);

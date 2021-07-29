@@ -6,7 +6,7 @@ import SaveCardSwitch from '../../components/CreditCard/SaveCardSwitch';
 import CreditCardSecureInfo from '../../components/CreditCard/CreditCardSecureInfo';
 import { CardNumberElement, CardExpiryElement, CardCvcElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import Loader from '../../components/Loader';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import CleverTap from '../../../../../utils/clevertap';
@@ -165,7 +165,7 @@ function CheckoutForm({
       className={`payment-credit-card flex flex-column ${match.isExact ? '' : 'hide'}`}
       data-heap-name="ordering.payment.stripe.container"
     >
-      <Header
+      <HybridHeader
         headerRef={headerRef}
         className="flex-middle"
         contentClassName="flex-middle"
@@ -442,5 +442,6 @@ function CheckoutForm({
     </section>
   );
 }
+CheckoutForm.displayName = 'CheckoutForm';
 
 export default CheckoutForm;

@@ -33,5 +33,6 @@ class VoucherIntroduction extends Component {
     );
   }
 }
+VoucherIntroduction.displayName = 'VoucherIntroduction';
 
 export default withTranslation(['Voucher'])(VoucherIntroduction);

@@ -77,6 +77,8 @@ const RenderRiderInfoButton = ({ phone, supportCallPhone, buttonText, buttonClic
   );
 };
 
+RenderRiderInfoButton.displayName = 'RenderRiderInfoButton';
+
 function RiderInfo({
   t,
   status,
@@ -173,7 +175,7 @@ function RiderInfo({
     ) : null;
 
   return (
-    <React.Fragment>
+    <>
       <div className="card margin-normal flex ordering-thanks__rider flex-column">
         <div className="padding-normal">
           {estimationInfo[logisticStatus] ? (
@@ -244,9 +246,11 @@ function RiderInfo({
           </button>
         </Modal.Footer>
       </Modal>
-    </React.Fragment>
+    </>
   );
 }
+
+RiderInfo.displayName = 'RiderInfo';
 
 RiderInfo.propTypes = {
   status: PropTypes.string,
@@ -266,6 +270,17 @@ RiderInfo.propTypes = {
 };
 
 RiderInfo.defaultProps = {
+  status: null,
+  courier: null,
+  storeLogo: null,
+  storeName: null,
+  bestLastMileETA: null,
+  worstLastMileETA: null,
+  deliveredTime: null,
+  storePhone: null,
+  driverPhone: null,
+  trackingUrl: null,
+  inApp: false,
   useStorehubLogistics: true,
   supportCallPhone: false,
   visitReportPage: () => {},

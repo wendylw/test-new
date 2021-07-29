@@ -5,24 +5,21 @@ class Error extends Component {
 
   render() {
     const { message } = this.props;
-    return (
-      <div>
-        {message}
-      </div>
-    );
+    return <div>{message}</div>;
   }
 
   componentDidMount = () => {
     this.timer = setTimeout(() => {
       this.props.clearError();
     }, 3000);
-  }
+  };
 
   componentWillUnmount = () => {
-    if(this.timer) {
-      clearTimeout(this.timer)
+    if (this.timer) {
+      clearTimeout(this.timer);
     }
-  }
+  };
 }
+Error.displayName = 'Error';
 
 export default Error;

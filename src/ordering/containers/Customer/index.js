@@ -9,7 +9,7 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import MessageModal from '../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
 import CreateOrderButton from '../../components/CreateOrderButton';
@@ -315,7 +315,7 @@ class Customer extends Component {
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle text-center"
           contentClassName="flex-middle"
@@ -329,7 +329,7 @@ class Customer extends Component {
               search: window.location.search,
             });
           }}
-        ></Header>
+        ></HybridHeader>
         <div
           className="ordering-customer__container"
           style={{
@@ -444,6 +444,7 @@ class Customer extends Component {
     );
   }
 }
+Customer.displayName = 'Customer';
 
 export default compose(
   withTranslation(['OrderingCustomer']),

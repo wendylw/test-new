@@ -149,6 +149,8 @@ class CreateOrderButton extends React.Component {
   }
 }
 
+CreateOrderButton.displayName = 'CreateOrderButton';
+
 CreateOrderButton.propTypes = {
   user: PropTypes.object,
   history: PropTypes.object,
