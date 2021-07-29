@@ -160,24 +160,29 @@ class PromotionContent extends PureComponent {
       return null;
     }
 
-    const promotionPrompt = [this.getPromotionPrompt(), this.getPromotionPromptAdditional()].map((prompt, index) => {
-      if (!prompt) {
-        return null;
-      }
+    const promotionPrompt = this.getPromotionPrompt();
+    const promotionPromptAdditional = this.getPromotionPromptAdditional();
+    const promotionPromptEl =
+      promotionPrompt || promotionPromptAdditional
+        ? [promotionPrompt, promotionPromptAdditional].map((prompt, index) => {
+            if (!prompt) {
+              return null;
+            }
 
-      return (
-        <span key={`${promotion.id}-prompt-${index}`}>
-          {index === 0 ? '' : ','} {prompt}
-        </span>
-      );
-    });
+            return (
+              <span key={`${promotion.id}-prompt-${index}`}>
+                {index === 0 ? '' : ','} {prompt}
+              </span>
+            );
+          })
+        : null;
 
     // 注意！！！！：这只是临时PM决定的临时解决方案，绝对绝对绝对不能有第二次，如果有请提醒PM更换翻译文字长度，或者提供更通用的解决方案，这么可笑的处理并非作者本意
     if (promotion.promotionCode === 'FREEDEL') {
       return (
         <>
           Use <strong>FREEDEL</strong> to enjoy Free Delivery for your first 5KM
-          {promotionPrompt && <>&nbsp;({promotionPrompt})</>}
+          {promotionPromptEl && <>&nbsp;({promotionPromptEl})</>}
         </>
       );
     }
@@ -187,9 +192,9 @@ class PromotionContent extends PureComponent {
     return (
       <>
         {promotionText}
-        {promotionPrompt && (
+        {promotionPromptEl && (
           <>
-            {singleLine ? ' ' : <br />} ({promotionPrompt})
+            {singleLine ? ' ' : <br />} ({promotionPromptEl})
           </>
         )}
       </>
