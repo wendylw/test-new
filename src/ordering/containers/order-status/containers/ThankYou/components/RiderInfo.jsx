@@ -77,6 +77,22 @@ const RenderRiderInfoButton = ({ phone, supportCallPhone, buttonText, buttonClic
   );
 };
 
+RenderRiderInfoButton.displayName = 'RenderRiderInfoButton';
+
+RenderRiderInfoButton.propTypes = {
+  phone: PropTypes.oneOfType(PropTypes.string, PropTypes.number),
+  supportCallPhone: PropTypes.string,
+  buttonText: PropTypes.string,
+  buttonClickEvent: PropTypes.func,
+};
+
+RenderRiderInfoButton.defaultProps = {
+  phone: null,
+  supportCallPhone: null,
+  buttonText: null,
+  buttonClickEvent: () => {},
+};
+
 function RiderInfo({
   t,
   status,
@@ -188,7 +204,7 @@ function RiderInfo({
               ) : null}
             </div>
           ) : null}
-          <div className={`flex  flex-middle`}>
+          <div className="flex flex-middle">
             <div className="rider-info__logo-container">
               {useStorehubLogistics && courier ? (
                 <figure className="rider-info__logo logo">
