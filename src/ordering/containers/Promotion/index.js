@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { debounce } from 'lodash';
 import Constants from '../../../utils/constants';
 import { IconWrappedClose } from '../../../components/Icons';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import PromoList from './components/PromoList/PromoList';
 import { bindActionCreators, compose } from 'redux';
 import {
@@ -111,15 +111,16 @@ class Promotion extends Component {
 
     return (
       <section className="ordering-promotion flex flex-column" data-heap-name="ordering.promotion.container">
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           data-heap-name="ordering.promotion.header"
           isPage={true}
           title={t('MyVouchersAndPromos')}
+          titleAlignment="center"
           navFunc={this.handleClickBack}
           headerRef={ref => (this.headerEl = ref)}
-        ></Header>
+        ></HybridHeader>
         <div
           className="ordering-promotion__container padding-top-bottom-normal"
           style={{

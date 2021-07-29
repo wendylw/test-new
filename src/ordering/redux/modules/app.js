@@ -90,7 +90,7 @@ export const initialState = {
     isError: false,
     otpType: 'otp',
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
-    phone: localePhoneNumber,
+    phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
   },
   error: null, // network error
@@ -234,6 +234,8 @@ export const actions = {
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
         shippingType: Utils.getApiRequestShippingType(),
+        registrationTouchpoint: Utils.getRegistrationTouchPoint(),
+        registrationSource: Utils.getRegistrationSource(),
       }).then(resp => {
         if (resp && resp.consumerId) {
           const phone = Utils.getLocalStorageVariable('user.p');
@@ -499,6 +501,7 @@ const user = (state = initialState.user, action) => {
         isLogin: login,
         consumerId,
         isFetching: false,
+        isExpired: false,
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');

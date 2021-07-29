@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { IconNext } from '../../../components/Icons';
 import DeliveryImage from '../../../images/icon-delivery.png';
 import PickUpImage from '../../../images/icon-pickup.png';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
@@ -102,7 +102,7 @@ class DeliveryMethods extends Component {
     const { fulfillmentOptions } = currentStoreInfo || {};
     return (
       <section className="delivery" data-heap-name="stores.delivery-methods.container">
-        <Header
+        <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="stores.delivery-methods.header"

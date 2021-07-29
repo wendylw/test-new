@@ -2,18 +2,10 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { IconLocalOffer } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
-import Constants from '../../../../../utils/constants';
+import { SHIPPING_TYPES_MAPPING, DELIVERY_METHOD } from './constants';
 import PromotionContent from './components/PromotionContent';
 import PromotionDetails from './components/PromotionDetails';
 import '../PromotionsBar.scss';
-
-const { DELIVERY_METHOD } = Constants;
-const SHIPPING_TYPES_MAPPING = {
-  [DELIVERY_METHOD.PICKUP]: 5,
-  [DELIVERY_METHOD.DELIVERY]: 6,
-  [DELIVERY_METHOD.TAKE_AWAY]: 7,
-  [DELIVERY_METHOD.DINE_IN]: 8,
-};
 
 const PROMOTIONS_MAX_DISPLAY_COUNT = 2;
 class PromotionsBar extends PureComponent {
@@ -81,7 +73,7 @@ class PromotionsBar extends PureComponent {
           </ul>
           <button
             onClick={this.handleViewDetails}
-            className="promotions-bar__view-more-button button button__link text-size-small padding-small"
+            className="promotions-bar__view-more-button button button__link text-size-small padding-small margin-top-bottom-smaller"
           >
             {t('ViewPromo')}
           </button>

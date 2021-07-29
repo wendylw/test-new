@@ -1,3 +1,5 @@
+import Utils from '../../utils/utils';
+
 export const API_INFO = {
   getStores: (businessName, storeId) => ({
     url: `/api/stores/${businessName}${storeId ? `/${storeId}` : ''}`,
@@ -20,10 +22,9 @@ export const API_INFO = {
 };
 
 export function getClientSource() {
-  const isIOS = Boolean(
-    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
-  );
-  const isAndroid = Boolean(window.androidInterface);
+  const isIOS = Utils.isIOSWebview();
+  const isAndroid = Utils.isAndroidWebview();
+
   const source = {
     name: 'web',
     web: !isIOS && !isAndroid,

@@ -1,17 +1,14 @@
 import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
-import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DownloadBanner from '../../../../../components/DownloadBanner';
-import Header from '../../../../../components/Header';
 import { IconAccessTime, IconPin } from '../../../../../components/Icons';
 import Image from '../../../../../components/Image';
 import LiveChat from '../../../../../components/LiveChat';
-import LiveChatNative from '../../../../../components/LiveChatNative';
 import config from '../../../../../config';
 import logisticsGoget from '../../../../../images/beep-logistics-goget.jpg';
 import logisticsGrab from '../../../../../images/beep-logistics-grab.jpg';
@@ -38,9 +35,9 @@ import {
   gtmSetUserProperties,
   GTM_TRACKING_EVENTS,
 } from '../../../../../utils/gtm';
+import * as NativeMethods from '../../../../../utils/native-methods';
 import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
-import { gotoHome } from '../../../../../utils/webview-utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
   actions as appActionCreators,
@@ -77,7 +74,7 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import PhoneLogin from './components/PhoneLogin';
-import { fromPairs } from 'lodash';
+import HybridHeader from '../../../../../components/HybridHeader';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -92,37 +89,14 @@ export class ThankYou extends PureComponent {
   constructor(props) {
     super(props);
 
-    let version = '0',
-      supportCallPhone = false;
-
-    if (Utils.isWebview()) {
-      version = window.beepAppVersion;
-    }
-
-    if (version > '1.0.1') {
-      supportCallPhone = true;
-    } else {
-      supportCallPhone = false;
-    }
-
     this.state = {
       cashbackSuccessImage,
-      isHideTopArea: false,
-      supportCallPhone,
+      supportCallPhone: Utils.isWebview(),
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
     };
-    this.injectFun();
   }
-
-  injectFun = () => {
-    window.contactUs = !Utils.isDineInType()
-      ? () => {
-          this.handleVisitMerchantInfoPage();
-        }
-      : null;
-  };
 
   pollOrderStatusTimer = null;
 
@@ -156,13 +130,10 @@ export class ThankYou extends PureComponent {
   };
 
   setContainerHeight() {
-    const { isHideTopArea } = this.state;
-
     if (
-      (isHideTopArea,
       Utils.isIOSWebview() &&
-        document.querySelector('.table-ordering') &&
-        document.querySelector('.ordering-thanks__container'))
+      document.querySelector('.table-ordering') &&
+      document.querySelector('.ordering-thanks__container')
     ) {
       document.querySelector('.table-ordering').style.minHeight = '0';
       document.querySelector('.ordering-thanks').style.backgroundColor = 'transparent';
@@ -172,22 +143,9 @@ export class ThankYou extends PureComponent {
   }
 
   closeMap = () => {
-    const res = window.beepAppVersion;
-
     try {
-      if (Utils.isAndroidWebview()) {
-        window.androidInterface.closeMap();
-      }
-
-      if (Utils.isIOSWebview() && res > '1.0.1' && res !== '1.1.2') {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'closeMap',
-        });
-      }
+      NativeMethods.hideMap();
     } catch (e) {}
-    this.setState({
-      isHideTopArea: false,
-    });
   };
 
   updateAppLocationAndStatus = () => {
@@ -206,8 +164,6 @@ export class ThankYou extends PureComponent {
     const { latitude: storeLat, longitude: storeLng } = location;
     const { address = {} } = deliveryInformation[0] || {};
     const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
-    const title = `#${orderId}`;
-    const text = t('ContactUs');
     const focusPositionList = [
       {
         lat: deliveryLat,
@@ -221,67 +177,13 @@ export class ThankYou extends PureComponent {
 
     if (orderStatus === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY) {
       try {
-        if (Utils.isAndroidWebview() && lat && lng) {
-          const res = window.beepAppVersion;
-          if (res > '1.0.1') {
-            window.androidInterface.updateHeaderOptionsAndShowMap(
-              JSON.stringify({
-                title,
-                rightButtons: [
-                  {
-                    text,
-                    callbackName: 'contactUs',
-                  },
-                ],
-              })
-            );
-            window.androidInterface.updateStorePosition(storeLat, storeLng);
-            window.androidInterface.updateHomePosition(deliveryLat, deliveryLng);
-            window.androidInterface.updateRiderPosition(lat, lng);
-            window.androidInterface.focusPositions(JSON.stringify(focusPositionList));
-            this.setState({
-              isHideTopArea: true,
-            });
-          }
-        }
-
-        if (Utils.isIOSWebview() && lat && lng) {
-          const res = window.beepAppVersion;
-          if (res > '1.0.1' && res !== '1.1.2') {
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateHeaderOptionsAndShowMap',
-              title,
-              rightButtons: [
-                {
-                  text,
-                  callbackName: 'contactUs',
-                },
-              ],
-            });
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateStorePosition',
-              lat: storeLat,
-              lng: storeLng,
-            });
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'updateHomePosition',
-              lat: deliveryLat,
-              lng: deliveryLng,
-            });
-            window.webkit.messageHandlers.shareAction.postMessage({ functionName: 'updateRiderPosition', lat, lng });
-            window.webkit.messageHandlers.shareAction.postMessage({
-              functionName: 'focusPositions',
-              positions: focusPositionList,
-            });
-            this.setState({
-              isHideTopArea: true,
-            });
-          }
-        }
+        NativeMethods.showMap();
+        NativeMethods.updateStorePosition(storeLat, storeLng);
+        NativeMethods.updateHomePosition(deliveryLat, deliveryLng);
+        NativeMethods.updateRiderPosition(lat, lng);
+        NativeMethods.focusPositions(focusPositionList);
       } catch (e) {
-        this.setState({
-          isHideTopArea: false,
-        });
+        console.log(e);
       }
     } else {
       this.closeMap();
@@ -734,9 +636,8 @@ export class ThankYou extends PureComponent {
 
   isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS, shippingType) => {
     const { PICKUP } = CONSUMERFLOW_STATUS;
-    const { isHideTopArea } = this.state;
 
-    return !(isWebview && isHideTopArea && status === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY);
+    return !(isWebview && status === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY);
   };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   renderConsumerStatusFlow({
@@ -1452,36 +1353,81 @@ export class ThankYou extends PureComponent {
     this.props.updateCancellationReasonVisibleState(false);
   };
 
-  render() {
-    const {
-      t,
-      history,
-      match,
-      order,
-      storeHashCode,
-      user,
-      orderCancellationButtonVisible,
-      shippingType,
-      updatedToSelfPickupStatus,
-    } = this.props;
-    const date = new Date();
-    const { orderId, tableId, deliveryInformation = [], storeInfo } = order || {};
-    const {
-      isWebview,
-      profile: { email },
-    } = user || {};
-    const type = Utils.getOrderTypeFromUrl();
-    let orderInfo = shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderStoreInfo() : null;
-    const pickupDescription = updatedToSelfPickupStatus
-      ? t('ThankYouForUpdatedToPickingUpForUS')
-      : t('ThankYouForPickingUpForUS');
-    const options = [`h=${storeHashCode}`];
-    const { isPreOrder } = order || {};
-    const { isHideTopArea } = this.state;
+  getRightContentOfHeader() {
+    const { user, order, shippingType, t } = this.props;
+    const isWebview = Utils.isWebview();
+    const userEmail = _get(user, 'profile.email', '');
+    const orderId = _get(order, 'orderId', '');
+    const tableId = _get(order, 'tableId', '');
+    const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
+    const orderUserName = _get(deliveryAddress, 'name', '');
+    const orderUserPhone = _get(deliveryAddress, 'phone', '');
+    const orderStoreName = _get(order, 'storeInfo.name', '');
+    const isDineInType = shippingType === DELIVERY_METHOD.DINE_IN;
 
-    if (shippingType === DELIVERY_METHOD.DELIVERY && this.isNowPaidPreOrder()) {
-      orderInfo = this.renderPreOrderMessage();
+    if (!order) {
+      return null;
     }
+
+    const rightContentOfTableId = {
+      text: tableId ? t('TableIdText', { tableId }) : '',
+      style: {
+        color: '#8d90a1',
+      },
+      attributes: {
+        'data-testid': 'thanks__self-pickup',
+      },
+    };
+
+    if (isDineInType) {
+      return rightContentOfTableId;
+    }
+
+    if (isWebview) {
+      const rightContentOfNativeLiveChat = {
+        text: `${t('NeedHelp')}?`,
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          NativeMethods.startChat({
+            orderId,
+            name: orderUserName,
+            phone: orderUserPhone,
+            email: userEmail,
+            storeName: orderStoreName,
+          });
+        },
+      };
+
+      const rightContentOfContactUs = {
+        text: t('ContactUs'),
+        style: {
+          color: '#00b0ff',
+        },
+        onClick: () => {
+          this.handleVisitMerchantInfoPage();
+        },
+      };
+
+      return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
+    }
+
+    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
+  }
+
+  handleHeaderNavFunc = () => {
+    const { order, storeHashCode, history } = this.props;
+    const isWebview = Utils.isWebview();
+    const tableId = _get(order, 'tableId', '');
+    const type = Utils.getOrderTypeFromUrl();
+
+    if (isWebview) {
+      NativeMethods.closeWebView();
+      return;
+    }
+
+    const options = [`h=${storeHashCode}`];
 
     if (tableId) {
       options.push(`table=${tableId}`);
@@ -1491,15 +1437,39 @@ export class ThankYou extends PureComponent {
       options.push(`type=${type}`);
     }
 
-    const orderStoreName = storeInfo?.name || '';
-    let orderUserName = '';
-    let orderUserPhone = '';
+    // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
+    history.replace({
+      pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+      search: `?${options.join('&')}`,
+    });
 
-    if (deliveryInformation.length > 0) {
-      const { address } = deliveryInformation[0];
-      orderUserName = address.name;
-      orderUserPhone = address.phone;
+    return;
+  };
+
+  render() {
+    const {
+      t,
+      history,
+      match,
+      order,
+      user,
+      orderCancellationButtonVisible,
+      shippingType,
+      updatedToSelfPickupStatus,
+    } = this.props;
+    const date = new Date();
+    const { isWebview } = user || {};
+    let orderInfo = shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderStoreInfo() : null;
+    const pickupDescription = updatedToSelfPickupStatus
+      ? t('ThankYouForUpdatedToPickingUpForUS')
+      : t('ThankYouForPickingUpForUS');
+    const { isPreOrder } = order || {};
+
+    if (shippingType === DELIVERY_METHOD.DELIVERY && this.isNowPaidPreOrder()) {
+      orderInfo = this.renderPreOrderMessage();
     }
+
+    const orderId = _get(order, 'orderId', '');
 
     return (
       <section
@@ -1507,55 +1477,16 @@ export class ThankYou extends PureComponent {
         data-heap-name="ordering.thank-you.container"
       >
         <React.Fragment>
-          {isWebview && isHideTopArea ? null : (
-            <Header
-              headerRef={ref => (this.headerEl = ref)}
-              className="flex-middle border__bottom-divider"
-              isPage={!isWebview}
-              contentClassName="flex-middle"
-              data-heap-name="ordering.thank-you.header"
-              title={`#${orderId}`}
-              navFunc={() => {
-                if (isWebview) {
-                  gotoHome();
-                } else {
-                  // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
-                  history.replace({
-                    pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-                    search: `?${options.join('&')}`,
-                  });
-                }
-              }}
-            >
-              {shippingType && shippingType !== DELIVERY_METHOD.DINE_IN ? (
-                !isWebview ? (
-                  <LiveChat orderId={`${orderId}`} name={orderUserName} phone={orderUserPhone} />
-                ) : window.liveChatAvailable ? (
-                  !_isNil(order) && (
-                    <LiveChatNative
-                      orderId={`${orderId}`}
-                      name={orderUserName}
-                      phone={orderUserPhone}
-                      email={email}
-                      storeName={orderStoreName}
-                    />
-                  )
-                ) : (
-                  <button
-                    className="ordering-thanks__button-contact-us button padding-top-bottom-smaller padding-left-right-normal flex__shrink-fixed text-uppercase"
-                    onClick={this.handleVisitMerchantInfoPage}
-                    data-heap-name="ordering.thank-you.contact-us-btn"
-                  >
-                    <span data-testid="thanks__self-pickup">{t('ContactUs')}</span>
-                  </button>
-                )
-              ) : (
-                <div className="flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal text-opacity">
-                  {tableId ? <span data-testid="thanks__table-id">{t('TableIdText', { tableId })}</span> : null}
-                </div>
-              )}
-            </Header>
-          )}
+          <HybridHeader
+            headerRef={ref => (this.headerEl = ref)}
+            className="flex-middle border__bottom-divider"
+            isPage={true}
+            contentClassName="flex-middle"
+            data-heap-name="ordering.thank-you.header"
+            title={`#${orderId}`}
+            navFunc={this.handleHeaderNavFunc}
+            rightContent={this.getRightContentOfHeader()}
+          />
           <div
             className="ordering-thanks__container"
             style={

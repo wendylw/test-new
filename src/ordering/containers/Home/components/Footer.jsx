@@ -15,27 +15,25 @@ import {
 } from '../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../redux/modules/entities/businesses';
 import Utils from '../../../../utils/utils';
-import { del, get } from '../../../../utils/request';
-import Url from '../../../../utils/url';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
+import * as NativeMethods from '../../../../utils/native-methods';
 import loggly from '../../../../utils/monitoring/loggly';
+import _isNil from 'lodash/isNil';
 
 export class Footer extends Component {
-  constructor(props) {
-    super(props);
-    window.sendToken = async res => await this.authTokens(res);
-  }
-
-  componentDidUpdate(prevProps) {
+  componentDidUpdate = async prevProps => {
     const { user } = this.props;
-    const { isExpired, isWebview } = user || {};
+    const { isExpired, isLogin } = user || {};
 
     // token过期重新发postMessage
-    if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
-      this.postAppMessage(user);
+    if (isExpired && prevProps.user.isExpired !== isExpired && Utils.isWebview()) {
+      await this.postAppMessage();
     }
-  }
+    if (isLogin && prevProps.user.isLogin !== isLogin && Utils.isWebview()) {
+      this.handleWebRedirect();
+    }
+  };
 
   getDisplayPrice() {
     const { shoppingCart } = this.props;
@@ -49,126 +47,31 @@ export class Footer extends Component {
     return totalPrice;
   }
 
-  authTokens = async res => {
-    if (res) {
-      if (Utils.isIOSWebview()) {
-        await this.loginBeepApp(res);
-      } else if (Utils.isAndroidWebview()) {
-        const data = JSON.parse(res) || {};
-        await this.loginBeepApp(data);
-      }
-    }
-  };
+  postAppMessage = async () => {
+    const { appActions, user } = this.props;
+    const { isLogin, isExpired } = user || {};
 
-  getLoginOrNot = async () => {
-    const res = await get(Url.API_URLS.GET_LOGIN_STATUS.url);
-    const { login } = res;
-    return login;
-  };
-
-  getKongTokenFromNative = async () => {
-    await del(Url.API_URLS.LOGOUT.url);
-  };
-
-  loginBeepApp = async res => {
-    const { appActions } = this.props;
-    let isLogin = await this.getLoginOrNot();
-    let isValidToken = Boolean(res.access_token && res.refresh_token);
-    if (isValidToken && isLogin) {
+    if (isLogin) {
       this.handleWebRedirect();
-    } else if (isValidToken && !isLogin) {
-      await appActions.loginApp({
-        accessToken: res.access_token,
-        refreshToken: res.refresh_token,
-      });
-      isLogin = await this.getLoginOrNot();
-      if (isLogin) {
-        this.handleWebRedirect();
-      }
-    } else if (!isValidToken) {
-      this.handleInvalidAppToken();
-    }
-  };
-
-  handleInvalidAppToken = () => {
-    const appVersion = window.beepAppVersion;
-    if (Utils.isAndroidWebview()) {
-      if (appVersion > '1.0.1') {
-        window.androidInterface.tokenExpired('true');
+    } else {
+      const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
+      if (_isNil(res)) {
+        loggly.error('ordering.home.footer', { message: 'native token is invalid' });
       } else {
-        window.androidInterface.tokenExpired();
-      }
-    }
-    if (Utils.isIOSWebview()) {
-      if (appVersion > '1.0.1') {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'tokenExpired',
-          callbackName: 'sendToken',
-          isCheckout: 'true',
-        });
-      } else {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'tokenExpired',
-          callbackName: 'sendToken',
+        const { access_token, refresh_token } = res;
+        await appActions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
         });
       }
     }
   };
-
-  postAppMessage(user) {
-    const { isExpired } = user || {};
-    const appVersion = window.beepAppVersion;
-    if (Utils.isAndroidWebview() && isExpired) {
-      if (appVersion > '1.0.1') {
-        window.androidInterface.tokenExpired('true');
-      } else {
-        window.androidInterface.tokenExpired();
-      }
-    }
-    if (Utils.isAndroidWebview() && !isExpired) {
-      if (appVersion > '1.0.1') {
-        window.androidInterface.getToken('true');
-      } else {
-        window.androidInterface.getToken();
-      }
-    }
-    if (Utils.isIOSWebview() && isExpired) {
-      if (appVersion > '1.0.1') {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'tokenExpired',
-          callbackName: 'sendToken',
-          isCheckout: 'true',
-        });
-      } else {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'tokenExpired',
-          callbackName: 'sendToken',
-        });
-      }
-    }
-    if (Utils.isIOSWebview() && !isExpired) {
-      if (appVersion > '1.0.1') {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'getToken',
-          callbackName: 'sendToken',
-          isCheckout: 'true',
-        });
-      } else {
-        window.webkit.messageHandlers.shareAction.postMessage({
-          functionName: 'getToken',
-          callbackName: 'sendToken',
-        });
-      }
-    }
-  }
 
   handleRedirect = () => {
     loggly.log('footer.place-order');
 
-    const { user } = this.props;
-    const { isWebview } = user || {};
-    if (isWebview) {
-      this.postAppMessage(user);
+    if (Utils.isWebview()) {
+      this.postAppMessage();
     } else {
       this.handleWebRedirect();
     }

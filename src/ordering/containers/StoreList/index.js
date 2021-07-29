@@ -4,7 +4,7 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import Image from '../../../components/Image';
 import { IconChecked } from '../../../components/Icons';
 
@@ -182,7 +182,7 @@ class StoreList extends Component {
     return (
       (onlineStoreInfo && (
         <section className="ordering-stores flex flex-column" data-heap-name="ordering.store-list.container">
-          <Header
+          <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
             isPage={true}
