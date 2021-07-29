@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { IconClose } from '../../components/Icons';
 // declare type FEEDBACK_TYPES = 'alert' | 'confirm' | 'toast' | 'fullScreen';
 // declare type FeedbackContent = React.ReactNode | string;
@@ -19,21 +20,24 @@ import { IconClose } from '../../components/Icons';
 
 function destroyFeedback(target) {}
 
-const feedbackAlert = {
-  create: (content, options) => {
-    const { button, className, style } = options;
-    const classList = [...className];
+const feedbackAlert = ({ content, options }) => {
+  const { button, className, style } = options;
+  const classList = [...className];
 
-    return (
-      <div className={classList.join(' ')} style={style}>
-        {content}
-        {button || <IconClose onClick={destroyFeedback()} />}
-      </div>
-    );
-  },
-  mounted: () => {},
+  return (
+    <div className={classList.join(' ')} style={style}>
+      {content}
+      {button || <IconClose onClick={destroyFeedback()} />}
+    </div>
+  );
 };
 
 feedbackAlert.create.displayName = 'alert';
 
-export function alert(content, options) {}
+export function alert(content, options) {
+  const alertPromise = new Promise();
+
+  alertPromise.then(() => {
+    return ReactDOM.render(React.createElement(feedbackAlert, _extends({}, props, {})), <div />);
+  });
+}
