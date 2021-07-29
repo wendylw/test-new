@@ -4,6 +4,33 @@ import { SHIPPING_TYPES_MAPPING, DELIVERY_METHOD, PROMOTIONS_TYPES } from '../co
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
 
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
+const ADDITIONAL_MAPPING = components => ({
+  requireFirstPurchase: {
+    key: 'FirstOrderOnly',
+  },
+  deliveryOnly: {
+    key: 'DeliveryOrderOnly',
+  },
+  showBeepAppOnly: {
+    key: 'OnlyInBeepAppPrompt',
+    components,
+  },
+  'requireFirstPurchase|deliveryOnly': {
+    key: 'FirstDeliveryOrderOnly',
+  },
+  'requireFirstPurchase|showBeepAppOnly': {
+    key: 'FirstAppOnly',
+    components,
+  },
+  'deliveryOnly|showBeepAppOnly': {
+    key: 'DeliveryAppOnly',
+    components,
+  },
+  'requireFirstPurchase|deliveryOnly|showBeepAppOnly': {
+    key: 'FirstDeliveryAppOnly',
+    components,
+  },
+});
 class PromotionContent extends PureComponent {
   getPromotionText() {
     const { promotion, t } = this.props;
@@ -73,64 +100,19 @@ class PromotionContent extends PureComponent {
     }
   }
 
-  getPromotionPromptAdditional() {
-    const { t, promotion, inApp } = this.props;
-    const { appliedClientTypes, appliedSources, requireFirstPurchase } = promotion;
-    const deliveryOnly =
-      appliedSources.length === 1 && appliedSources[0] === SHIPPING_TYPES_MAPPING[DELIVERY_METHOD.DELIVERY];
-    const showBeepAppOnly = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
-    const additionalList = { requireFirstPurchase, deliveryOnly, showBeepAppOnly };
-
-    if ([requireFirstPurchase, deliveryOnly, showBeepAppOnly].every(additional => !additional)) {
-      return null;
-    }
-
-    const appDownloadLinkEl = (
-      // eslint-disable-next-line jsx-a11y/anchor-has-content
-      <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink} />
-    );
-    const additionalMap = {
-      requireFirstPurchase: {
-        key: 'FirstOrderOnly',
-      },
-      deliveryOnly: {
-        key: 'DeliveryOrderOnly',
-      },
-      showBeepAppOnly: {
-        key: 'OnlyInBeepAppPrompt',
-        components: [appDownloadLinkEl],
-      },
-      'requireFirstPurchase|deliveryOnly': {
-        key: 'FirstDeliveryOrderOnly',
-      },
-      'requireFirstPurchase|showBeepAppOnly': {
-        key: 'FirstAppOnly',
-        components: [appDownloadLinkEl],
-      },
-      'deliveryOnly|showBeepAppOnly': {
-        key: 'DeliveryAppOnly',
-        components: [appDownloadLinkEl],
-      },
-      'requireFirstPurchase|deliveryOnly|showBeepAppOnly': {
-        key: 'FirstDeliveryAppOnly',
-        components: [appDownloadLinkEl],
-      },
-    };
-
-    const currentKey = ['requireFirstPurchase', 'deliveryOnly', 'showBeepAppOnly']
-      .filter(additionalKey => !!additionalList[additionalKey])
-      .join('|');
-
-    if (additionalMap[currentKey].components) {
-      return <Trans t={t} i18nKey={additionalMap[currentKey].key} components={additionalMap[currentKey].components} />;
-    }
-
-    return t(additionalMap[currentKey].key);
-  }
-
   getPromotionPrompt() {
-    const { promotion, t } = this.props;
-    const { discountProductList, validDate, maxDiscountAmount, minOrderAmount } = promotion;
+    const { promotion, t, inApp } = this.props;
+    const {
+      id,
+      discountProductList,
+      validDate,
+      maxDiscountAmount,
+      minOrderAmount,
+      appliedClientTypes,
+      appliedSources,
+      requireFirstPurchase,
+    } = promotion;
+    const prompts = [];
 
     if (discountProductList || validDate) {
       return null;
@@ -140,18 +122,52 @@ class PromotionContent extends PureComponent {
     const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
 
     if (!maxDiscountAmount && minOrderAmount) {
-      return <Trans t={t} i18nKey="PromotionOnlyMinOrderAmountPrompt" components={[minOrderAmountEl]} />;
+      prompts.push(<Trans t={t} i18nKey="PromotionOnlyMinOrderAmountPrompt" components={[minOrderAmountEl]} />);
     }
 
     if (maxDiscountAmount && !minOrderAmount) {
-      return <Trans t={t} i18nKey="PromotionOnlyMaxDiscountAmountPrompt" components={[maxDiscountAmountEl]} />;
+      prompts.push(<Trans t={t} i18nKey="PromotionOnlyMaxDiscountAmountPrompt" components={[maxDiscountAmountEl]} />);
     }
 
     if (maxDiscountAmount && minOrderAmount) {
-      return <Trans t={t} i18nKey="PromotionPrompt" components={[maxDiscountAmountEl, minOrderAmountEl]} />;
+      prompts.push(<Trans t={t} i18nKey="PromotionPrompt" components={[maxDiscountAmountEl, minOrderAmountEl]} />);
     }
 
-    return null;
+    // Push prompt additional text
+    const appDownloadLinkEl = (
+      // eslint-disable-next-line jsx-a11y/anchor-has-content
+      <a className="promotions-bar__link button button__link text-weight-bolder" href={appDownloadLink} />
+    );
+    const deliveryOnly =
+      appliedSources.length === 1 && appliedSources[0] === SHIPPING_TYPES_MAPPING[DELIVERY_METHOD.DELIVERY];
+    const showBeepAppOnly = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
+    const additionalList = { requireFirstPurchase, deliveryOnly, showBeepAppOnly };
+    const additionalMap = ADDITIONAL_MAPPING([appDownloadLinkEl]);
+
+    const currentKey = ['requireFirstPurchase', 'deliveryOnly', 'showBeepAppOnly']
+      .filter(additionalKey => !!additionalList[additionalKey])
+      .join('|');
+
+    if (additionalMap[currentKey]) {
+      const additional = additionalMap[currentKey].components ? (
+        <Trans t={t} i18nKey={additionalMap[currentKey].key} components={additionalMap[currentKey].components} />
+      ) : (
+        t(additionalMap[currentKey].key)
+      );
+
+      prompts.push(additional);
+    }
+    // End of Push prompt additional text
+
+    return prompts.length === 0
+      ? null
+      : prompts.map((prompt, index) => {
+          return (
+            <span key={`${id}-prompt-${index}`}>
+              {index === 0 ? '' : ','} {prompt}
+            </span>
+          );
+        });
   }
 
   render() {
@@ -161,28 +177,13 @@ class PromotionContent extends PureComponent {
     }
 
     const promotionPrompt = this.getPromotionPrompt();
-    const promotionPromptAdditional = this.getPromotionPromptAdditional();
-    const promotionPromptEl =
-      promotionPrompt || promotionPromptAdditional
-        ? [promotionPrompt, promotionPromptAdditional].map((prompt, index) => {
-            if (!prompt) {
-              return null;
-            }
-
-            return (
-              <span key={`${promotion.id}-prompt-${index}`}>
-                {index === 0 ? '' : ','} {prompt}
-              </span>
-            );
-          })
-        : null;
 
     // 注意！！！！：这只是临时PM决定的临时解决方案，绝对绝对绝对不能有第二次，如果有请提醒PM更换翻译文字长度，或者提供更通用的解决方案，这么可笑的处理并非作者本意
     if (promotion.promotionCode === 'FREEDEL') {
       return (
         <>
           Use <strong>FREEDEL</strong> to enjoy Free Delivery for your first 5KM
-          {promotionPromptEl && <>&nbsp;({promotionPromptEl})</>}
+          {promotionPrompt && <>&nbsp;({promotionPrompt})</>}
         </>
       );
     }
@@ -192,9 +193,9 @@ class PromotionContent extends PureComponent {
     return (
       <>
         {promotionText}
-        {promotionPromptEl && (
+        {promotionPrompt && (
           <>
-            {singleLine ? ' ' : <br />} ({promotionPromptEl})
+            {singleLine ? ' ' : <br />} ({promotionPrompt})
           </>
         )}
       </>
