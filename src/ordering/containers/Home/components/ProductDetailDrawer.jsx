@@ -147,11 +147,9 @@ class ProductDetailDrawer extends Component {
   initMinimumVariationList() {
     const { selectedProduct } = this.props;
     const { variations } = selectedProduct || {};
-    var minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
+    const minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
 
-    if (minimumVariations && minimumVariations.length) {
-      this.setState({ minimumVariations });
-    }
+    this.setState({ minimumVariations });
   }
 
   getTotalPriceDiff() {
