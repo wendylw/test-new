@@ -85,6 +85,16 @@ const isTokenExpired = (event, hint) => {
   }
 };
 
+const isGoogleAnalytics = event => {
+  // null is not an object (evaluating 'g.readyState') from https://www.google-analytics.com/analytics.js
+  try {
+    const err = event.exception.values[0];
+    return /null is not an object \(evaluating 'g\.readyState'\)/.test(err.value);
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -94,7 +104,8 @@ const shouldFilter = (event, hint) => {
       isSelectedDebugHandlerError(event, hint) ||
       isChargeEventStructureInvalid(event, hint) ||
       isDuplicateChargeId(event, hint) ||
-      isTokenExpired(event, hint)
+      isTokenExpired(event, hint) ||
+      isGoogleAnalytics(event)
     );
   } catch {
     return false;
