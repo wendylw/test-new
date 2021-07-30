@@ -47,9 +47,14 @@ feedbackAlert.create.displayName = 'alert';
 
 export function alert(content, options) {
   const alertPromise = new Promise();
-  const props = { content: FeedbackContent(content), options: FeedbackAlertOptions(options) };
 
-  alertPromise.then(() => {
-    return ReactDOM.render(React.createElement(feedbackAlert, _extends({}, props)), <div />);
+  return alertPromise.then(() => {
+    return ReactDOM.render(
+      React.createElement(feedbackAlert, {
+        content: FeedbackContent(content),
+        options: FeedbackAlertOptions(options),
+      }),
+      <div />
+    );
   });
 }
