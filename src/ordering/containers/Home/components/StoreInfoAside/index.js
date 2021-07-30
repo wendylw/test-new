@@ -4,34 +4,38 @@ import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import Utils from '../../../../../utils/utils';
 import './StoreInfoAside.scss';
-import * as ModalHub from '../../../../../utils/modal-hub';
+import { withBackButtonSupport } from '../../../../../utils/modal-back-button-support';
 
 class StoreInfoAside extends Component {
   state = {
     initDom: true,
   };
 
-  componentDidMount() {
-    window.addEventListener('sh-modal-hash-popped', e => {
-      const { modalId } = e.detail;
-      if (modalId === 'StoreInfoAside') {
-        this.props.onToggle(null);
-      }
-    });
-  }
-  componentWillUnmount() {}
+  onHistoryBackReceived = () => {
+    this.closeModal();
+  };
 
   componentDidUpdate(prevProps) {
     const { show } = this.props;
     if (show !== prevProps.show) {
       // show status changed
       if (show) {
-        ModalHub.addModalId('StoreInfoAside');
+        this.props.onModalOpen();
       } else {
-        ModalHub.removeModalId('StoreInfoAside');
+        this.props.onModalClose();
       }
     }
   }
+
+  closeModal = () => {
+    const { initDom } = this.state;
+    const { onToggle } = this.props;
+    if (initDom) {
+      this.setState({ initDom: false });
+    }
+
+    onToggle(null);
+  };
 
   renderDeliveryHour = () => {
     const weekInfo = {
@@ -74,7 +78,6 @@ class StoreInfoAside extends Component {
       businessLoaded,
       onlineStoreInfo,
       show,
-      onToggle,
       storeAddress,
       telephone,
       enablePreOrder,
@@ -101,13 +104,7 @@ class StoreInfoAside extends Component {
         style={{
           bottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
         }}
-        onClick={() => {
-          if (initDom) {
-            this.setState({ initDom: false });
-          }
-
-          onToggle(null);
-        }}
+        onClick={this.closeModal}
       >
         <div className="store-info-aside__container aside__content absolute-wrapper padding-normal">
           <div className="flex flex-top">
@@ -160,4 +157,4 @@ class StoreInfoAside extends Component {
 }
 StoreInfoAside.displayName = 'StoreInfoAside';
 
-export default withTranslation()(StoreInfoAside);
+export default withTranslation()(withBackButtonSupport(StoreInfoAside));

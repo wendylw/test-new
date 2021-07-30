@@ -25,6 +25,7 @@ import loggly from '../../../../utils/monitoring/loggly';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
 import './ProductDetailDrawer.scss';
+import { withBackButtonSupport } from '../../../../utils/modal-back-button-support';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -91,7 +92,19 @@ class ProductDetailDrawer extends Component {
         optionQuantity: {},
       });
     }
+    if (show !== prevProps.show) {
+      // show status changed
+      if (show) {
+        this.props.onModalOpen();
+      } else {
+        this.props.onModalClose();
+      }
+    }
   }
+
+  onHistoryBackReceived = () => {
+    this.closeModal();
+  };
 
   resizeImage() {
     const { show } = this.props;
@@ -822,4 +835,4 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
-)(withRouter(ProductDetailDrawer));
+)(withRouter(withBackButtonSupport(ProductDetailDrawer)));

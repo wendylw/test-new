@@ -1,14 +1,29 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useImperativeHandle, useEffect, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import WebHeader from '../../../../../../components/WebHeader';
 import PromotionContent from './PromotionContent';
 import _isFunction from 'lodash/isFunction';
+import { withBackButtonSupport } from '../../../../../../utils/modal-back-button-support';
 
-function PromotionDetails({ onHide, promotions, show, inApp }) {
+function PromotionDetails({ onHide, promotions, show, inApp, onModalOpen, onModalClose }, ref) {
   const { t } = useTranslation('OrderingHome');
   const handleHide = useCallback(() => {
     _isFunction(onHide) && onHide();
   }, [onHide]);
+  useImperativeHandle(ref, () => ({
+    onHistoryBackReceived: () => {
+      handleHide();
+    },
+  }));
+  useEffect(() => {
+    if (show) {
+      if (show) {
+        onModalOpen();
+      } else {
+        onModalClose();
+      }
+    }
+  }, [show, onModalOpen, onModalClose]);
 
   return (
     <aside className={`promotions-bar__details aside fixed-wrapper ${show ? 'active' : ''}`}>
@@ -38,4 +53,4 @@ function PromotionDetails({ onHide, promotions, show, inApp }) {
 }
 PromotionDetails.displayName = 'PromotionDetails';
 
-export default PromotionDetails;
+export default withBackButtonSupport(forwardRef(PromotionDetails));
