@@ -163,9 +163,9 @@ class PromotionContent extends PureComponent {
       ? null
       : prompts.map((prompt, index) => {
           return (
-            <span key={`${id}-prompt-${index}`}>
+            <p key={`${id}-prompt-${index}`}>
               {index === 0 ? '' : ','} {prompt}
-            </span>
+            </p>
           );
         });
   }
