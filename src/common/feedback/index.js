@@ -18,6 +18,17 @@ import { IconClose } from '../../components/Icons';
 //   icon: null,
 // };
 
+const FeedbackContent = content => content || null;
+const FeedbackAlertOptions = options =>
+  Object.assign(
+    {
+      button: null,
+      className: null,
+      style: {},
+    },
+    options
+  );
+
 function destroyFeedback(target) {}
 
 const feedbackAlert = ({ content, options }) => {
@@ -36,6 +47,7 @@ feedbackAlert.create.displayName = 'alert';
 
 export function alert(content, options) {
   const alertPromise = new Promise();
+  const props = { content: FeedbackContent(content), options: FeedbackAlertOptions(options) };
 
   alertPromise.then(() => {
     return ReactDOM.render(React.createElement(feedbackAlert, _extends({}, props, {})), <div />);
