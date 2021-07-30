@@ -50,6 +50,6 @@ export function alert(content, options) {
   const props = { content: FeedbackContent(content), options: FeedbackAlertOptions(options) };
 
   alertPromise.then(() => {
-    return ReactDOM.render(React.createElement(feedbackAlert, _extends({}, props, {})), <div />);
+    return ReactDOM.render(React.createElement(feedbackAlert, _extends({}, props)), <div />);
   });
 }
