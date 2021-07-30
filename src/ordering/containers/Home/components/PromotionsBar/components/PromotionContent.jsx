@@ -123,13 +123,9 @@ class PromotionContent extends PureComponent {
 
     if (!maxDiscountAmount && minOrderAmount) {
       prompts.push(<Trans t={t} i18nKey="PromotionOnlyMinOrderAmountPrompt" components={[minOrderAmountEl]} />);
-    }
-
-    if (maxDiscountAmount && !minOrderAmount) {
+    } else if (maxDiscountAmount && !minOrderAmount) {
       prompts.push(<Trans t={t} i18nKey="PromotionOnlyMaxDiscountAmountPrompt" components={[maxDiscountAmountEl]} />);
-    }
-
-    if (maxDiscountAmount && minOrderAmount) {
+    } else if (maxDiscountAmount && minOrderAmount) {
       prompts.push(<Trans t={t} i18nKey="PromotionPrompt" components={[maxDiscountAmountEl, minOrderAmountEl]} />);
     }
 
