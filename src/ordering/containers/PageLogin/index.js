@@ -5,8 +5,7 @@ import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
-import Header from '../../../components/Header';
-
+import HybridHeader from '../../../components/HybridHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
@@ -15,7 +14,6 @@ import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
-import CleverTap from '../../../utils/clevertap';
 import loggly from '../../../utils/monitoring/loggly';
 
 class PageLogin extends React.Component {
@@ -148,7 +146,7 @@ class PageLogin extends React.Component {
     return (
       <React.Fragment>
         <section className={classList.join(' ')} data-heap-name="ordering.login.container">
-          <Header
+          <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
             data-heap-name="ordering.login.header"
@@ -165,14 +163,13 @@ class PageLogin extends React.Component {
             <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">
               <img
                 src={beepLoginActive}
-                alt="otp"
-                className={`${isValidPhoneNumber(phone) ? '' : 'page-login__icon--hide'}`}
+                alt="otp active"
+                className={`${isValidPhoneNumber(phone || '') ? '' : 'page-login__icon--hide'}`}
               />
               <img
-                className=""
                 src={beepLoginDisabled}
-                alt="otp"
-                className={`${isValidPhoneNumber(phone) ? 'page-login__icon--hide' : 'page-login__disabled'}`}
+                alt="otp disabled"
+                className={`${isValidPhoneNumber(phone || '') ? 'page-login__icon--hide' : 'page-login__disabled'}`}
               />
             </figure>
             <PhoneViewContainer

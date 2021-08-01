@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import { useTranslation } from 'react-i18next';
 import RamadanIcon from '../../../../../../images/order-delay-ramadan.svg';
@@ -33,5 +34,13 @@ function OrderDelayMessage({ orderDelayReason }) {
   );
 }
 OrderDelayMessage.displayName = 'OrderDelayMessage';
+
+OrderDelayMessage.propTypes = {
+  orderDelayReason: PropTypes.string,
+};
+
+OrderDelayMessage.defaultProps = {
+  orderDelayReason: null,
+};
 
 export default OrderDelayMessage;

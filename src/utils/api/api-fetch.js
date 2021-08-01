@@ -1,4 +1,5 @@
 import originalKy from 'ky';
+import qs from 'qs';
 import { getClientSource } from './api-utils';
 
 export const ky = originalKy.create({
@@ -75,6 +76,11 @@ function convertOptions(options) {
   return currentOptions;
 }
 
+/* For the new version of the response data structure, and compatible with the old interface data return */
+function formatResponseData(url, result) {
+  return url.startsWith('/api/v3/') && result.data ? result.data : result;
+}
+
 /**
  * @param {string} url url for the request
  * @param {object} opts : {type: '', payload: {}, headers: {}, queryParams, ...others: {credentials: ''}}
@@ -83,10 +89,24 @@ function convertOptions(options) {
  * @param {object} options.headers headers in request
  */
 async function _fetch(url, opts) {
+  const queryStr = qs.stringify(opts.searchParams, { addQueryPrefix: true });
+  const requestStart = new Date().valueOf();
+  const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
   try {
     const resp = await ky(url, opts);
 
-    return await parseResponse(resp);
+    // Send log to Loggly
+    window.dispatchEvent(
+      new CustomEvent('sh-api-success', {
+        detail: {
+          type: opts.method,
+          request: requestUrl,
+          requestStart,
+        },
+      })
+    );
+
+    return formatResponseData(url, await parseResponse(resp));
   } catch (e) {
     let error = {};
 
@@ -95,13 +115,48 @@ async function _fetch(url, opts) {
 
       if (typeof body === 'object' && body.code) {
         error = body;
+        // Send log to Loggly
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: opts.method,
+              request: requestUrl,
+              code: body.code,
+              error: body.message,
+              requestStart,
+            },
+          })
+        );
       } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
         error = {
           code: '50000',
           status: e.status,
           message: typeof body === 'string' ? body : JSON.stringify(body),
         };
+        // Send log to Loggly
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: opts.method,
+              request: requestUrl,
+              requestStart,
+              error: error.message,
+            },
+          })
+        );
       }
+    } else {
+      // Send log to Loggly
+      window.dispatchEvent(
+        new CustomEvent('sh-fetch-error', {
+          detail: {
+            type: opts.method,
+            request: requestUrl,
+            error: e.message,
+            requestStart,
+          },
+        })
+      );
     }
 
     throw error;
@@ -142,6 +197,20 @@ export function put(url, payload, options = {}) {
       ...options,
       payload,
       method: 'put',
+    })
+  );
+}
+
+/**
+ * @param {object} payload : data in request. if payload is empty but options is required, pls set payload as `undefined`
+ */
+export function patch(url, payload, options = {}) {
+  return _fetch(
+    url,
+    convertOptions({
+      ...options,
+      payload,
+      method: 'patch',
     })
   );
 }

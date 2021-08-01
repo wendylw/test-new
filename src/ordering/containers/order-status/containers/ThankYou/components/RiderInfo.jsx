@@ -77,6 +77,22 @@ const RenderRiderInfoButton = ({ phone, supportCallPhone, buttonText, buttonClic
   );
 };
 
+RenderRiderInfoButton.displayName = 'RenderRiderInfoButton';
+
+RenderRiderInfoButton.propTypes = {
+  phone: PropTypes.oneOfType(PropTypes.string, PropTypes.number),
+  supportCallPhone: PropTypes.string,
+  buttonText: PropTypes.string,
+  buttonClickEvent: PropTypes.func,
+};
+
+RenderRiderInfoButton.defaultProps = {
+  phone: null,
+  supportCallPhone: null,
+  buttonText: null,
+  buttonClickEvent: () => {},
+};
+
 function RiderInfo({
   t,
   status,
@@ -173,7 +189,7 @@ function RiderInfo({
     ) : null;
 
   return (
-    <React.Fragment>
+    <>
       <div className="card margin-normal flex ordering-thanks__rider flex-column">
         <div className="padding-normal">
           {estimationInfo[logisticStatus] ? (
@@ -188,7 +204,7 @@ function RiderInfo({
               ) : null}
             </div>
           ) : null}
-          <div className={`flex  flex-middle`}>
+          <div className="flex flex-middle">
             <div className="rider-info__logo-container">
               {useStorehubLogistics && courier ? (
                 <figure className="rider-info__logo logo">
@@ -244,9 +260,11 @@ function RiderInfo({
           </button>
         </Modal.Footer>
       </Modal>
-    </React.Fragment>
+    </>
   );
 }
+
+RiderInfo.displayName = 'RiderInfo';
 
 RiderInfo.propTypes = {
   status: PropTypes.string,
@@ -266,6 +284,17 @@ RiderInfo.propTypes = {
 };
 
 RiderInfo.defaultProps = {
+  status: null,
+  courier: null,
+  storeLogo: null,
+  storeName: null,
+  bestLastMileETA: null,
+  worstLastMileETA: null,
+  deliveredTime: null,
+  storePhone: null,
+  driverPhone: null,
+  trackingUrl: null,
+  inApp: false,
   useStorehubLogistics: true,
   supportCallPhone: false,
   visitReportPage: () => {},

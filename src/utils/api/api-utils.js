@@ -1,4 +1,4 @@
-import _isObject from 'lodash/isObject';
+import Utils from '../../utils/utils';
 
 export const API_INFO = {
   getStores: (businessName, storeId) => ({
@@ -16,13 +16,15 @@ export const API_INFO = {
   getOrderStatus: orderId => ({
     url: `/api/transactions/${orderId}/status`,
   }),
+  updateOrderShippingType: orderId => ({
+    url: `/api/transactions/${orderId}/change-shipping-type`,
+  }),
 };
 
 export function getClientSource() {
-  const isIOS = Boolean(
-    window.webkit && window.webkit.messageHandlers.shareAction && window.webkit.messageHandlers.shareAction.postMessage
-  );
-  const isAndroid = Boolean(window.androidInterface);
+  const isIOS = Utils.isIOSWebview();
+  const isAndroid = Utils.isAndroidWebview();
+
   const source = {
     name: 'web',
     web: !isIOS && !isAndroid,

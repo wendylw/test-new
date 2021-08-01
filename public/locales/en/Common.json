@@ -158,6 +158,7 @@
   "CardExpired": "Card Expired",
   "BankDeclined": "Bank Declined",
   "IncorrectCvc": "Incorrect Cvc",
+  "PaymentGatewayError": "payment gateway error",
   "UnknownError": "Unknown Error",
   "OnlineBanking": "Online Banking",
   "CreditAndDebitCard": "Credit/Debit Card",

@@ -60,13 +60,27 @@
     }
   }
 
-  &__report-issue-button,
-  &__reorder-button {
+  &__report-issue-button {
     color: $main-color;
+    border: none;
+
+    &:disabled {
+      background-color: inherit;
+      color: $gray-4;
+
+      svg {
+        fill: $gray-4;
+      }
+    }
   }
 
   &__icon-next svg {
     fill: $gray-0;
+  }
+
+  &__footer {
+    background-color: white;
+    box-shadow: 0 -4px 16px 0 rgba(0, 0, 0, 0.06);
   }
 }
 
