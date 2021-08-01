@@ -11,6 +11,7 @@ import LiveChat from '../../../../../components/LiveChat';
 import OrderStatusDescription from './components/OrderStatusDescription';
 import LogisticsProcessing from './components/LogisticsProcessing';
 import RiderInfo from './components/RiderInfo';
+import CashbackInfo from './components/CashbackInfo';
 
 import config from '../../../../../config';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
