@@ -5,19 +5,19 @@
 1. [Abstraction](#abstraction)
 2. [Environments](#environments)
 3. [Get started](#get-started)
-   1. [Installation](#installation)
-   2. [Test environment .ENV](#env)
-   3. [Set local domain](#set-local-domain)
-   4. [Start F&B && Loyalty](#start-ordering-loyalty)
-   5. [Start Beep Entrance](#beep-entrance)
-   6. [Online Debug](#online-debug)
+   1. [.ENV file](#env)
+   2. [Installation](#installation)
+   3. [Start F&B && Loyalty](#start-ordering-loyalty)
+   4. [Start Beep Entrance](#beep-entrance)
+   5. [Online Debug](#online-debug)
 4. [Customize Workbox Service Workers](#customize-workbox-service-workers)
 5. [I18N JSON File Style Guide](#i18n-json-style-guide)
 6. [Style Guide](#style-guide)
-7. [Analyzing bundle size](#analyzing-bundle-size)
-8. [Trouble Shooting](#trouble-shooting)
-9. [Heap name convention for loggly](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
-10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
+7. [Heap tracking code](#heap-tracking-code)
+8. [Analyzing bundle size](#analyzing-bundle-size)
+9. [Trouble Shooting](#trouble-shooting)
+10. [Release Flow](https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow)
+11. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>
 
@@ -248,11 +248,4 @@ cd ../backend/
 cp .env.example .env
 cd ../frontend
 git push origin ${branch-name}
-```
-
-If terminal response
-`lint-staged requires at least version x.x.x of Node, please upgrade husky > pre-commit hook failed (add --no-verify to bypass)`
-
-```
-nvm use v12.17
 ```
