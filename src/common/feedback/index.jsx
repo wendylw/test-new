@@ -1,0 +1,94 @@
+import React, { useRef } from 'react';
+import ReactDOM from 'react-dom';
+import { IconClose } from '../../components/Icons';
+// declare type FEEDBACK_TYPES = 'alert' | 'confirm' | 'toast' | 'fullScreen';
+// declare type FeedbackContent = React.ReactNode | string;
+// declare type FeedbackOptions = {
+//   duration?: number | null;
+//   type: FEEDBACK_TYPES;
+//   onClose?: () => void;
+//   icon?: React.ReactNode;
+//   key?: string | number;
+// };
+// export interface FeedbackInstance {
+//   alert(content: FeedbackContent, options?: FeedbackOptions);
+// }
+// const FeedbackOptions = {
+//   onClose: () => {},
+//   icon: null,
+// };
+const FeedbackDOM = () => {
+  const feedbackRootDOM = document.createElement('div');
+  feedbackRootDOM.setAttribute('class', 'feedback');
+
+  document.body.appendChild(feedbackRootDOM);
+
+  return feedbackRootDOM;
+};
+const FeedbackContent = content => content || null;
+const FeedbackAlertOptions = options => ({
+  button: null,
+  className: null,
+  style: {},
+  ...options,
+});
+const destroyFeedback = container => {
+  ReactDOM.unmountComponentAtNode(container);
+
+  container.remove();
+};
+
+const FeedbackAlert = ({ content, options, onClose }) => {
+  const feedbackAlertEl = useRef(null);
+  const { buttonContent, className, style } = FeedbackAlertOptions(options);
+  const classList = [...className];
+
+  return (
+    <div ref={feedbackAlertEl} className={classList.join(' ')} style={style}>
+      {FeedbackContent(content)}
+      <button onClick={() => onClose()}>{buttonContent || <IconClose />}</button>
+    </div>
+  );
+};
+
+FeedbackAlert.create.displayName = 'FeedbackAlert';
+
+export function alert(content, options) {
+  const rootDom = FeedbackDOM();
+
+  ReactDOM.render(
+    React.createElement(
+      FeedbackAlert,
+      {
+        content,
+        options,
+        onClose: () => destroyFeedback(rootDom),
+        // onClose: result => destroyFeedback(result),
+      },
+      rootDom
+    )
+  );
+}
+
+// async function a() {
+//   var result = await alertPromise(<span></span>, { button: 'xxxx' });
+//   if (result === true) {
+//     document.location = 'xxxx';
+//   }
+//   console.log(result);
+// }
+
+// function b() {
+//   alert('xxx', { onClose: () => {} });
+// }
+
+// const alertPromise = (content, option) => {
+//   return new Promise(resolve => {
+//     alert(content, {
+//       ...option,
+//       onClose: () => {
+//         resolve();
+//       },
+//     });
+//   });
+// };
