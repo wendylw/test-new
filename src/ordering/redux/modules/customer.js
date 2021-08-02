@@ -16,7 +16,6 @@ import Utils from '../../../utils/utils';
 
 const initialState = {
   deliveryDetails: {
-    addressChange: false,
     addressId: '',
     addressName: '',
     username: '',
@@ -55,7 +54,6 @@ const initialState = {
 
 export const types = {
   PUT_DELIVERY_DETAILS: 'ORDERING/CUSTOMER/PUT_DELIVERY_DETAILS',
-  PUT_ADDRESS_CHANGE: 'ORDERING/CUSTOMER/PUT_ADDRESS_CHANGE',
   PUT_CUSTOMER_ERROR: 'ORDERING/CUSTOMER/PUT_CUSTOMER_ERROR',
   CLEAR_CUSTOMER_ERROR: 'ORDERING/CUSTOMER/CLEAR_CUSTOMER_ERROR',
 
@@ -98,34 +96,12 @@ export const actions = {
       if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
         newDeliveryDetails.addressDetails = '';
       }
-
-      const { customer } = getState();
-      const { deliveryDetails: nextDeliveryDetails } = customer;
-      const { deliveryToAddress } = nextDeliveryDetails;
-      const { longitude, latitude } = nextDeliveryDetails.deliveryToLocation;
-      if (!deliveryToAddress && !longitude && !latitude) {
-      } else {
-        const addressChange =
-          deliveryToAddress !== newDeliveryDetails.deliveryToAddress ||
-          longitude !== newDeliveryDetails.deliveryToLocation.longitude ||
-          latitude !== newDeliveryDetails.deliveryToLocation.latitude;
-        dispatch({
-          type: types.PUT_ADDRESS_CHANGE,
-          addressChange,
-        });
-      }
     } else if (shippingType === 'pickup') {
       delete newDeliveryDetails.deliveryToAddress;
       delete newDeliveryDetails.addressDetails;
     }
 
     dispatch(actions.updateDeliveryDetails(newDeliveryDetails));
-  },
-  updateAddressChange: addressChange => dispatch => {
-    dispatch({
-      type: types.PUT_ADDRESS_CHANGE,
-      addressChange,
-    });
   },
   updateDeliveryDetails: fields => async dispatch => {
     const result = await dispatch({
@@ -179,11 +155,6 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
     return {
       ...state,
       ...action.fields,
-    };
-  } else if (action.type === types.PUT_ADDRESS_CHANGE) {
-    return {
-      ...state,
-      addressChange: action.addressChange,
     };
   } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
     const deliveryAddressList = action.response || {};
@@ -309,7 +280,6 @@ export default combineReducers({
 
 export const getSavedAddressInfo = state => state.customer.savedAddressInfo;
 export const getDeliveryDetails = state => state.customer.deliveryDetails;
-export const getAddressChange = state => state.customer.deliveryDetails.addressChange;
 export const getCustomerError = state => state.customer.customerError;
 export const getDeliveryAddressList = state => {
   return getUserAddressList(state);
