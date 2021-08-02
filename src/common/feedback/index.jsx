@@ -63,7 +63,6 @@ export function alert(content, options) {
         content,
         options,
         onClose: () => destroyFeedback(rootDom),
-        // onClose: result => destroyFeedback(result),
       },
       rootDom
     )
