@@ -65,10 +65,6 @@ import HybridHeader from '../../../../../components/HybridHeader';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 const ANIMATION_TIME = 3600;
-const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
-const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
-const otherText = 'Download the Beep app to track your Order History!';
-const otherLink = 'https://dl.beepit.com/kVmT';
 
 export class ThankYou extends PureComponent {
   constructor(props) {
@@ -443,16 +439,6 @@ export class ThankYou extends PureComponent {
     updateOrderShippingType({ orderId, shippingType: DELIVERY_METHOD.PICKUP });
   };
 
-  renderOrderDelayMessage = () => {
-    const { orderDelayReason } = this.props;
-
-    if (!orderDelayReason) {
-      return null;
-    }
-
-    return <OrderDelayMessage orderDelayReason={orderDelayReason} />;
-  };
-
   renderCashbackUI = cashback => {
     const { t, cashbackInfo } = this.props;
     const { status } = cashbackInfo || {};
@@ -489,7 +475,7 @@ export class ThankYou extends PureComponent {
     const { t, order, businessInfo, cashbackInfo } = this.props;
     const { pickUpId, refundShippingFee } = order || {};
     const { enableCashback } = businessInfo || {};
-    const { cashback } = cashbackInfo || {};
+    const { cashback, status: cashbackStatus } = cashbackInfo || {};
 
     return (
       <React.Fragment>
@@ -524,17 +510,13 @@ export class ThankYou extends PureComponent {
             </p>
           </div>
         ) : null}
-        {enableCashback && +cashback ? this.renderCashbackUI(cashback) : null}
+        <CashbackInfo
+          enableCashback={enableCashback}
+          cashback={Number(cashback || 0)}
+          cashbackStatus={cashbackStatus}
+        />
       </React.Fragment>
     );
-  }
-
-  renderPreOrderDeliveryInfo() {
-    const { businessInfo, cashbackInfo } = this.props;
-    const { enableCashback } = businessInfo || {};
-    const { cashback } = cashbackInfo || {};
-
-    return enableCashback && +cashback ? this.renderCashbackUI(cashback) : null;
   }
 
   renderNeedReceipt() {
@@ -610,6 +592,7 @@ export class ThankYou extends PureComponent {
 
     return targetInfo;
   };
+
   cashbackSuccessStop = () => {
     let timer = setTimeout(() => {
       this.setState({
@@ -619,12 +602,6 @@ export class ThankYou extends PureComponent {
     }, ANIMATION_TIME);
   };
 
-  isRenderImage = (isWebview, status, ORDER_STATUS) => {
-    const { LOGISTICS_PICKED_UP } = ORDER_STATUS;
-    const { isHideTopArea } = this.state;
-
-    return !(isWebview && isHideTopArea && status === LOGISTICS_PICKED_UP && Utils.isDeliveryType());
-  };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   handleVisitReportDriverPage = () => {
     const queryParams = {
@@ -636,41 +613,6 @@ export class ThankYou extends PureComponent {
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
     });
   };
-
-  renderConsumerStatusFlow({ cashbackInfo, businessInfo, deliveryInformation, order }) {
-    const { cashback } = cashbackInfo || {};
-    const { enableCashback } = businessInfo || {};
-    let { storeInfo, isPreOrder, deliveredTime } = order || {};
-    const { name: storeName, phone: storePhone } = storeInfo || {};
-    let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
-      deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
-    const { orderStatus, onlineStoreInfo } = this.props;
-    const { logo } = onlineStoreInfo || {};
-
-    return (
-      <React.Fragment>
-        {this.renderOrderDelayMessage()}
-        <LogisticsProcessing useStorehubLogistics={useStorehubLogistics} orderStatus={orderStatus} />
-        <RiderInfo
-          status={orderStatus}
-          useStorehubLogistics={useStorehubLogistics}
-          courier={courier}
-          storeLogo={logo}
-          storeName={storeName}
-          bestLastMileETA={bestLastMileETA}
-          worstLastMileETA={worstLastMileETA}
-          deliveredTime={deliveredTime}
-          storePhone={storePhone}
-          driverPhone={driverPhone}
-          trackingUrl={trackingUrl}
-          inApp={Utils.isWebview()}
-          supportCallPhone={this.state.supportCallPhone}
-          visitReportPage={this.handleVisitReportDriverPage}
-        />
-        {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
-      </React.Fragment>
-    );
-  }
 
   /* eslint-enable jsx-a11y/anchor-is-valid */
 
@@ -777,18 +719,55 @@ export class ThankYou extends PureComponent {
   };
 
   renderDeliveryTimeLine() {
-    const { order, cashbackInfo, businessInfo } = this.props;
-    const { deliveryInformation } = order || {};
-    // const ORDER_STATUS = Constants.ORDER_STATUS;
+    const {
+      order,
+      cashbackInfo,
+      businessInfo,
+      pendingUpdateShippingTypeStatus,
+      updatableToSelfPickupStatus,
+      orderStatus,
+      onlineStoreInfo,
+      orderDelayReason,
+    } = this.props;
+    const { cashback, status: cashbackStatus } = cashbackInfo || {};
+    const { enableCashback } = businessInfo || {};
+    let { storeInfo, isPreOrder, deliveredTime, deliveryInformation } = order || {};
+    const { name: storeName, phone: storePhone } = storeInfo || {};
+    let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
+      deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
+    const { logo } = onlineStoreInfo || {};
 
     return (
       <React.Fragment>
-        {this.renderConsumerStatusFlow({
-          cashbackInfo,
-          businessInfo,
-          deliveryInformation,
-          order,
-        })}
+        <OrderDelayMessage orderDelayReason={orderDelayReason} />
+        <LogisticsProcessing useStorehubLogistics={useStorehubLogistics} orderStatus={orderStatus} />
+        <RiderInfo
+          status={orderStatus}
+          useStorehubLogistics={useStorehubLogistics}
+          courier={courier}
+          storeLogo={logo}
+          storeName={storeName}
+          bestLastMileETA={bestLastMileETA}
+          worstLastMileETA={worstLastMileETA}
+          deliveredTime={deliveredTime}
+          storePhone={storePhone}
+          driverPhone={driverPhone}
+          trackingUrl={trackingUrl}
+          inApp={Utils.isWebview()}
+          supportCallPhone={this.state.supportCallPhone}
+          visitReportPage={this.handleVisitReportDriverPage}
+        />
+        <CashbackInfo
+          enableCashback={enableCashback}
+          cashback={Number(cashback || 0)}
+          cashbackStatus={cashbackStatus}
+        />
+        <SelfPickup
+          processing={pendingUpdateShippingTypeStatus}
+          updatableToSelfPickupStatus={updatableToSelfPickupStatus}
+          onClickSelfPickupButton={this.handleClickSelfPickupButton}
+          onChangeToSelfPickup={this.handleChangeToSelfPickup}
+        />
       </React.Fragment>
     );
   }
@@ -818,15 +797,15 @@ export class ThankYou extends PureComponent {
       return null;
     }
 
-    return (
-      <div className="ordering-thanks__download">
-        {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP ? (
-          <DownloadBanner link={deliveryAndPickupLink} text={deliveryAndPickupText} />
-        ) : (
-          <DownloadBanner link={otherLink} text={otherText} />
-        )}
-      </div>
-    );
+    return <DownloadBanner shippingType={shippingType} isApp={isWebview} />;
+
+    //link={deliveryAndPickupLink} text={deliveryAndPickupText}
+    // return  (
+    //     {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP ? (
+    //     ) : (
+    //       <DownloadBanner link={otherLink} text={otherText} />
+    //     )}
+    // );
   }
 
   render() {
@@ -972,10 +951,11 @@ export class ThankYou extends PureComponent {
               cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
               isPreOrder={isPreOrder}
             />
-            {isDeliveryType ? this.renderDeliveryTimeLine() : null}
-            {this.renderTableId(isDineInType)}
-            {isDeliveryType || isDineInType ? null : this.renderPickupInfo()}
-            {isDeliveryType && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
+            {this.renderTableId(shippingType === DELIVERY_METHOD.DINE_IN)}
+            {shippingType === DELIVERY_METHOD.DELIVERY ? this.renderDeliveryTimeLine() : null}
+            {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.DINE_IN
+              ? null
+              : this.renderPickupInfo()}
 
             <div className="padding-top-bottom-small margin-normal">
               {this.renderDetailTitle({ isPreOrder, shippingType })}

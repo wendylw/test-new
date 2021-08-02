@@ -1,8 +1,30 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import beepAppAppleStore from '../images/beep-app-apple-store.svg';
 import beepAppGooglePlay from '../images/beep-app-google-play.svg';
 import Utils from '../utils/utils';
+import Constants from '../utils/constants';
+const { DELIVERY_METHOD } = Constants;
 import './DownloadBanner.scss';
+
+const DOWNLOAD_MAPPING = {
+  [DELIVERY_METHOD.DELIVERY]: {
+    link: 'https://storehub.page.link/c8Ci',
+    text: 'Discover 1,000+ More Restaurants Download the Beep app now!',
+  },
+  [DELIVERY_METHOD.PICKUP]: {
+    link: 'https://storehub.page.link/c8Ci',
+    text: 'Discover 1,000+ More Restaurants Download the Beep app now!',
+  },
+  [DELIVERY_METHOD.DINE_IN]: {
+    link: 'https://dl.beepit.com/kVmT',
+    text: 'Download the Beep app to track your Order History!',
+  },
+  [DELIVERY_METHOD.TAKE_AWAY]: {
+    link: 'https://dl.beepit.com/kVmT',
+    text: 'Download the Beep app to track your Order History!',
+  },
+};
 
 function DownloadBanner(props) {
   const { link, text } = props;
@@ -22,5 +44,9 @@ function DownloadBanner(props) {
 }
 
 DownloadBanner.displayName = 'DownloadBanner';
+
+DownloadBanner.propTypes = {
+  orderDelayReason: PropTypes.string,
+};
 
 export default DownloadBanner;
