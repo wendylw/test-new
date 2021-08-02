@@ -52,6 +52,8 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
 
+import { alert } from '../../../common/feedback';
+
 const localState = {
   blockScrollTop: 0,
 };

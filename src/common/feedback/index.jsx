@@ -51,7 +51,7 @@ const FeedbackAlert = ({ content, options, onClose }) => {
   );
 };
 
-FeedbackAlert.create.displayName = 'FeedbackAlert';
+FeedbackAlert.displayName = 'FeedbackAlert';
 
 export function alert(content, options) {
   const rootDom = FeedbackDOM();
