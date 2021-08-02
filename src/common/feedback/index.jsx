@@ -17,11 +17,12 @@ import { IconClose } from '../../components/Icons';
 //   onClose: () => {},
 //   icon: null,
 // };
-const FeedbackDOM = () => {
+const FeedbackDOM = async () => {
   const feedbackRootDOM = document.createElement('div');
+  feedbackRootDOM.setAttribute('id', 'common-feedback');
   feedbackRootDOM.setAttribute('class', 'feedback');
 
-  document.body.appendChild(feedbackRootDOM);
+  await document.body.appendChild(feedbackRootDOM);
 
   return feedbackRootDOM;
 };
