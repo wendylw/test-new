@@ -14,19 +14,6 @@ import './Feedback.scss';
 // export interface FeedbackInstance {
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
-// const FeedbackOptions = {
-//   onClose: () => {},
-//   icon: null,
-// };
-// const FeedbackDOM = async () => {
-//   const feedbackRootDOM = document.createElement('div');
-//   feedbackRootDOM.setAttribute('id', 'common-feedback');
-//   feedbackRootDOM.setAttribute('class', 'feedback');
-
-//   await document.body.appendChild(feedbackRootDOM);
-
-//   return feedbackRootDOM;
-// };
 const FeedbackContent = content => content || null;
 const FeedbackAlertOptions = options => ({
   buttonContent: null,
