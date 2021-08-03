@@ -835,6 +835,8 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
+export const getDeliveryDetails = state => state.app.deliveryDetails;
+
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
   (cartBilling, items, unavailableItems, allProducts, categories) => {
