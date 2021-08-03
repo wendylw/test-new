@@ -17,19 +17,19 @@ import { IconClose } from '../../components/Icons';
 //   onClose: () => {},
 //   icon: null,
 // };
-const FeedbackDOM = async () => {
-  const feedbackRootDOM = document.createElement('div');
-  feedbackRootDOM.setAttribute('id', 'common-feedback');
-  feedbackRootDOM.setAttribute('class', 'feedback');
+// const FeedbackDOM = async () => {
+//   const feedbackRootDOM = document.createElement('div');
+//   feedbackRootDOM.setAttribute('id', 'common-feedback');
+//   feedbackRootDOM.setAttribute('class', 'feedback');
 
-  await document.body.appendChild(feedbackRootDOM);
+//   await document.body.appendChild(feedbackRootDOM);
 
-  return feedbackRootDOM;
-};
+//   return feedbackRootDOM;
+// };
 const FeedbackContent = content => content || null;
 const FeedbackAlertOptions = options => ({
-  button: null,
-  className: null,
+  buttonContent: null,
+  className: '',
   style: {},
   ...options,
 });
@@ -55,18 +55,19 @@ const FeedbackAlert = ({ content, options, onClose }) => {
 FeedbackAlert.displayName = 'FeedbackAlert';
 
 export function alert(content, options) {
-  const rootDom = FeedbackDOM();
+  const feedbackRootDOM = document.createElement('div');
+  feedbackRootDOM.setAttribute('id', 'common-feedback');
+  feedbackRootDOM.setAttribute('class', 'feedback');
+
+  document.body.appendChild(feedbackRootDOM);
 
   ReactDOM.render(
-    React.createElement(
-      FeedbackAlert,
-      {
-        content,
-        options,
-        onClose: () => destroyFeedback(rootDom),
-      },
-      rootDom
-    )
+    React.createElement(FeedbackAlert, {
+      content,
+      options,
+      onClose: () => destroyFeedback(feedbackRootDOM),
+    }),
+    feedbackRootDOM
   );
 }
 
