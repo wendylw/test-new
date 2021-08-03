@@ -92,9 +92,11 @@ class ProductDetailDrawer extends Component {
         optionQuantity: {},
       });
     }
-    if (show !== prevProps.show) {
+    const shouldShow = this.shouldShowPopover(this.props);
+    const prevShouldShow = this.shouldShowPopover(prevProps);
+    if (shouldShow !== prevShouldShow) {
       // show status changed
-      if (show) {
+      if (shouldShow) {
         this.props.onModalOpen();
       } else {
         this.props.onModalClose();
@@ -104,6 +106,7 @@ class ProductDetailDrawer extends Component {
 
   onHistoryBackReceived = () => {
     this.closeModal();
+    // return false;
   };
 
   resizeImage() {
@@ -531,6 +534,12 @@ class ProductDetailDrawer extends Component {
     return this.getDisplayPrice() * cartQuantity;
   };
 
+  shouldShowPopover(props) {
+    const { selectedProduct, show } = props;
+    const { id, _needMore } = selectedProduct || {};
+    return show && selectedProduct && id && !_needMore;
+  }
+
   renderProductOperator() {
     const { t, selectedProduct = {}, onUpdateCartOnProductDetail } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
@@ -699,12 +708,12 @@ class ProductDetailDrawer extends Component {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
     const { t, onlineStoreInfo, selectedProduct, viewAside, show, onToggle, hideCloseButton } = this.props;
     const { storeName } = onlineStoreInfo || {};
-    const { id, _needMore, images, title, description } = selectedProduct || {};
+    const { images, title, description } = selectedProduct || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: description };
     const isHaveContent = Utils.removeHtmlTag(description);
 
-    if (show && selectedProduct && id && !_needMore) {
+    if (this.shouldShowPopover(this.props)) {
       className.push('active cover');
     }
 
