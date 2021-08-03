@@ -67,11 +67,11 @@ class AddressList extends Component {
           key={index}
           onClick={
             availableStatus
-              ? () => {
+              ? async () => {
                   CleverTap.pushEvent('Address list - click existing address', {
                     rank: index + 1,
                   });
-                  customerActions.patchDeliveryDetails({
+                  await customerActions.patchDeliveryDetails({
                     addressId,
                     addressName,
                     addressDetails,

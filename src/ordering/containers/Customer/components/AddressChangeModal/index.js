@@ -51,6 +51,7 @@ AddressChangeModal.propTypes = {
 AddressChangeModal.defaultProps = {
   deliveryFee: 0,
   addressChange: false,
+  continue: () => {},
 };
 
 export default compose(withTranslation('OrderingDelivery'))(AddressChangeModal);

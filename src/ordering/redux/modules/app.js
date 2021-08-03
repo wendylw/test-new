@@ -20,6 +20,7 @@ import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/enti
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
+import { fetchDeliveryDetails } from '../../containers/Customer/utils';
 
 import * as StoreUtils from '../../../utils/store-utils';
 
@@ -394,7 +395,7 @@ export const actions = {
   },
 
   // load shopping cart
-  loadShoppingCart: location => async (dispatch, getState) => {
+  loadShoppingCart: () => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
     const businessUTCOffset = getBusinessUTCOffset(getState());
@@ -404,13 +405,17 @@ export const actions = {
       return;
     }
 
-    let deliveryCoords;
-    if (isDelivery) {
-      deliveryCoords = Utils.getDeliveryCoords();
-    }
+    const deliveryDetails = await fetchDeliveryDetails();
+
+    const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
+
+    const deliveryCoords = deliveryToLocation
+      ? { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude }
+      : Utils.getDeliveryCoords();
+
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords, fulfillDate));
+    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
   },
 
   removeShoppingCartItem: variables => dispatch => {

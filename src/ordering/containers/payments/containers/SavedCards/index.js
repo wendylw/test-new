@@ -12,7 +12,6 @@ import _get from 'lodash/get';
 
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getUser, getCartBilling } from '../../../../redux/modules/app';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import IconAddNew from '../../../../../images/icon-add-new.svg';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
@@ -101,22 +100,7 @@ class SavedCards extends Component {
   };
 
   loadShoppingCart = async () => {
-    const { deliveryDetails, customerActions } = this.props;
-    const { addressId } = deliveryDetails || {};
-    const type = Utils.getOrderTypeFromUrl();
-
-    !addressId && (await customerActions.initDeliveryDetails(type));
-
-    const { deliveryDetails: newDeliveryDetails } = this.props;
-    const { deliveryToLocation } = newDeliveryDetails || {};
-
-    await this.props.appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
+    await this.props.appActions.loadShoppingCart();
   };
 
   setPaymentCard = card => {
@@ -267,13 +251,11 @@ export default compose(
       user: getUser(state),
       cardList: getCardList(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
-      deliveryDetails: getDeliveryDetails(state),
       supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
       paymentProvider: getSelectedPaymentProvider(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(paymentCommonThunks.loadPaymentOptions, dispatch),
       fetchSavedCard: bindActionCreators(savedCardsThunks.fetchSavedCard, dispatch),
       setPaymentCard: bindActionCreators(savedCardsActions.setPaymentCard, dispatch),

@@ -43,20 +43,14 @@ class Customer extends Component {
     const { history, appActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
-    const { addressId, deliveryToLocation } = deliveryDetails || {};
+    const { addressId } = deliveryDetails || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     // todo: think a better solution to avoid changing deliveryToAddress
     //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
     !addressId && (await customerActions.initDeliveryDetails(type));
-    !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
-    appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
+    !addressId && (await customerActions.fetchConsumerAddressList({ consumerId, storeId }));
+    appActions.loadShoppingCart();
   }
 
   componentDidUpdate(prevProps) {
@@ -146,12 +140,6 @@ class Customer extends Component {
 
     customerActions.clearError();
   }
-
-  handleHideChangeShippingFeeModal = () => {
-    const { customerActions } = this.props;
-
-    customerActions.updateAddressChange(false);
-  };
 
   visitPaymentPage = () => {
     const { history, cartBilling } = this.props;
@@ -435,11 +423,7 @@ class Customer extends Component {
             }}
           />
         ) : null}
-        <AddressChangeModal
-          deliveryFee={shippingFee}
-          addressChange={addressChange}
-          continue={this.handleHideChangeShippingFeeModal}
-        />
+        <AddressChangeModal deliveryFee={shippingFee} addressChange={addressChange} />
       </section>
     );
   }
