@@ -14,8 +14,8 @@ import './Feedback.scss';
 // export interface FeedbackInstance {
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
-const FeedbackContent = content => content || null;
-const FeedbackAlertOptions = options => ({
+const normalizeContent = content => content || null;
+const normalizeAlertOptions = options => ({
   buttonContent: null,
   className: '',
   style: {},
@@ -27,33 +27,34 @@ const destroyFeedback = target => {
   target.remove();
 };
 
-const FeedbackAlert = ({ content, options, onClose }) => {
-  const feedbackAlertEl = useRef(null);
-  const { buttonContent, className, style } = FeedbackAlertOptions(options);
-  const classList = [...className];
+const FeedbackAlert = props => {
+  const { content, buttonContent, className, style, close } = props;
 
   return (
-    <div ref={feedbackAlertEl} className={classList.join(' ')} style={style}>
-      {FeedbackContent(content)}
-      <button onClick={() => onClose()}>{buttonContent || <IconClose />}</button>
+    <div className={`${className ? ` ${className}` : ''}`} style={style}>
+      {content}
+      <button onClick={() => close()}>{buttonContent || <IconClose />}</button>
     </div>
   );
 };
 
 FeedbackAlert.displayName = 'FeedbackAlert';
 
-export function alert(content, options, container) {
+export function alert(content, options) {
+  const { container, onClose, ...otherOptions } = options;
   const feedbackRootDOM = document.createElement('div');
-  feedbackRootDOM.setAttribute('id', 'common-feedback');
   feedbackRootDOM.setAttribute('class', 'feedback');
 
   (container || document.body).appendChild(feedbackRootDOM);
 
   ReactDOM.render(
     React.createElement(FeedbackAlert, {
-      content,
-      options,
-      onClose: () => destroyFeedback(feedbackRootDOM),
+      content: normalizeContent(content),
+      ...normalizeAlertOptions(otherOptions),
+      close: () => {
+        onClose();
+        destroyFeedback(feedbackRootDOM);
+      },
     }),
     feedbackRootDOM
   );
