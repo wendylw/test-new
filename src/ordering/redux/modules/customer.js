@@ -12,20 +12,6 @@ import Utils from '../../../utils/utils';
 const { DELIVERY_METHOD } = Constants;
 
 const initialState = {
-  deliveryDetails: {
-    addressId: '',
-    addressName: '',
-    username: '',
-    phone: '',
-    addressDetails: '',
-    deliveryComments: '',
-    deliveryToAddress: '',
-    deliveryToCity: '',
-    deliveryToLocation: {
-      longitude: 0,
-      latitude: 0,
-    },
-  },
   customerError: {
     show: false,
     message: '',
