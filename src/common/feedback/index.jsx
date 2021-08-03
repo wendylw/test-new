@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { IconClose } from '../../components/Icons';
+import './Feedback.scss';
 // declare type FEEDBACK_TYPES = 'alert' | 'confirm' | 'toast' | 'fullScreen';
 // declare type FeedbackContent = React.ReactNode | string;
 // declare type FeedbackOptions = {
@@ -33,10 +34,10 @@ const FeedbackAlertOptions = options => ({
   style: {},
   ...options,
 });
-const destroyFeedback = container => {
-  ReactDOM.unmountComponentAtNode(container);
+const destroyFeedback = target => {
+  ReactDOM.unmountComponentAtNode(target);
 
-  container.remove();
+  target.remove();
 };
 
 const FeedbackAlert = ({ content, options, onClose }) => {
@@ -54,12 +55,12 @@ const FeedbackAlert = ({ content, options, onClose }) => {
 
 FeedbackAlert.displayName = 'FeedbackAlert';
 
-export function alert(content, options) {
+export function alert(content, options, container) {
   const feedbackRootDOM = document.createElement('div');
   feedbackRootDOM.setAttribute('id', 'common-feedback');
   feedbackRootDOM.setAttribute('class', 'feedback');
 
-  document.body.appendChild(feedbackRootDOM);
+  (container || document.body).appendChild(feedbackRootDOM);
 
   ReactDOM.render(
     React.createElement(FeedbackAlert, {
