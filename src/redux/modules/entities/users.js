@@ -9,7 +9,7 @@ const reducer = (state = initialState, action) => {
     loggly.log('users.address-list-loaded', { length: action.response?.length });
     return {
       ...state,
-      deliveryAddressList: action.response,
+      deliveryAddressList: action.response || [],
     };
   }
 

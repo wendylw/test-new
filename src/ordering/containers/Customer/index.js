@@ -1,4 +1,3 @@
-import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -24,14 +23,15 @@ import {
   getCartBilling,
   getBusinessInfo,
   getStoreInfoForCleverTap,
+  getDeliveryDetails,
 } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
+import { getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
 import './OrderingCustomer.scss';
 import CleverTap from '../../../utils/clevertap';
 import loggly from '../../../utils/monitoring/loggly';
 
-const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
+const { ADDRESS_RANGE, ROUTER_PATHS } = Constants;
 
 class Customer extends Component {
   state = {
@@ -40,16 +40,9 @@ class Customer extends Component {
   };
 
   async componentDidMount() {
-    const { history, appActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
-    const { consumerId } = user || {};
-    const { storeId } = requestInfo || {};
-    const { addressId } = deliveryDetails || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const { appActions, customerActions } = this.props;
 
-    // todo: think a better solution to avoid changing deliveryToAddress
-    //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
-    !addressId && (await customerActions.initDeliveryDetails(type));
-    !addressId && (await customerActions.fetchConsumerAddressList({ consumerId, storeId }));
+    await customerActions.init();
     appActions.loadShoppingCart();
   }
 

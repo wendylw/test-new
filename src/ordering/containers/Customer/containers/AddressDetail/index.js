@@ -6,12 +6,13 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { getUser, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import {
-  actions as customerActionCreators,
+  actions as appActionCreators,
+  getUser,
+  getStoreInfoForCleverTap,
   getDeliveryDetails,
-  getSavedAddressInfo,
-} from '../../../../redux/modules/customer';
+} from '../../../../redux/modules/app';
+import { actions as customerActionCreators, getSavedAddressInfo } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
@@ -145,7 +146,7 @@ class AddressDetail extends Component {
   };
 
   createOrUpdateAddress = async () => {
-    const { history, user, savedAddressInfo, customerActions } = this.props;
+    const { history, user, savedAddressInfo, customerActions, appActions } = this.props;
     const { id, type, name, address, details, comments, coords, addressComponents } = savedAddressInfo;
     const { consumerId } = user || {};
     const data = {
@@ -169,7 +170,7 @@ class AddressDetail extends Component {
       response = await put(requestUrl.url, data);
     }
     const { _id: addressId } = response || {};
-    customerActions.patchDeliveryDetails({
+    appActions.updateDeliveryDetails({
       addressId,
       addressName: name,
       addressDetails: details,
@@ -327,6 +328,7 @@ export default compose(
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(AddressDetail);

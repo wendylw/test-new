@@ -4,10 +4,9 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import Utils from '../../../../../utils/utils';
 import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { getUser } from '../../../../redux/modules/app';
-import { actions as customerActionCreators, getDeliveryDetails } from '../../../../redux/modules/customer';
+import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../../../redux/modules/app';
 import 'react-phone-number-input/style.css';
 import './ContactDetail.scss';
 
@@ -35,7 +34,7 @@ class ContactDetail extends Component {
 
   handleClickContinue = async () => {
     const { username, phone } = this.state;
-    await this.props.customerActions.patchDeliveryDetails({ username: username && username.trim(), phone });
+    await this.props.updateDeliveryDetails({ username: username && username.trim(), phone });
     this.handleClickBack();
   };
 
@@ -127,8 +126,8 @@ export default compose(
       user: getUser(state),
       deliveryDetails: getDeliveryDetails(state),
     }),
-    dispatch => ({
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
-    })
+    {
+      updateDeliveryDetails: appActionCreators.updateDeliveryDetails,
+    }
   )
 )(ContactDetail);

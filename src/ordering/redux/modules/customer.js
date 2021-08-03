@@ -3,16 +3,13 @@ import i18next from 'i18next';
 import Url from '../../../utils/url';
 import config from '../../../config';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import {
-  DeliveryDetailsStorageKey,
-  fetchDeliveryAddress,
-  fetchDeliveryDetails,
-  patchDeliveryDetails,
-  updateDeliveryDetails,
-} from '../../containers/Customer/utils';
-import { computeStraightDistance } from '../../../utils/geoUtils';
+import Constants from '../../../utils/constants';
+import { findAvailableAddressById, findNearbyAvailableAddress } from '../../containers/Customer/utils';
+import { actions as appActions, getShippingType, getDeliveryDetails, getUserConsumerId, getStoreId } from './app';
 import { getUserAddressList } from '../../../redux/modules/entities/users';
 import Utils from '../../../utils/utils';
+
+const { DELIVERY_METHOD } = Constants;
 
 const initialState = {
   deliveryDetails: {
@@ -53,7 +50,6 @@ const initialState = {
 // actions
 
 export const types = {
-  PUT_DELIVERY_DETAILS: 'ORDERING/CUSTOMER/PUT_DELIVERY_DETAILS',
   PUT_CUSTOMER_ERROR: 'ORDERING/CUSTOMER/PUT_CUSTOMER_ERROR',
   CLEAR_CUSTOMER_ERROR: 'ORDERING/CUSTOMER/CLEAR_CUSTOMER_ERROR',
 
@@ -68,68 +64,72 @@ export const types = {
 };
 
 export const actions = {
-  initDeliveryDetails: shippingType => async (dispatch, getState) => {
-    const deliveryDetails = await fetchDeliveryDetails();
-    const localStoragePhone = localStorage.getItem('user.p') || '';
+  init: () => async (dispatch, getState) => {
+    const state = getState();
+    const deliveryDetails = getDeliveryDetails(state);
+    const shippingType = getShippingType(state);
 
-    const newDeliveryDetails = {
-      ...deliveryDetails,
-      phone: (deliveryDetails && deliveryDetails.phone) || localStoragePhone,
-    };
-
-    if (shippingType === 'delivery') {
-      const deliveryAddress = await fetchDeliveryAddress();
-
-      if (deliveryAddress) {
-        const { addressComponents } = deliveryAddress;
-
-        newDeliveryDetails.deliveryToAddress = deliveryAddress.address;
-        newDeliveryDetails.deliveryToLocation = {
-          longitude: deliveryAddress.coords.lng,
-          latitude: deliveryAddress.coords.lat,
-        };
-        newDeliveryDetails.deliveryToCity = addressComponents && addressComponents.city ? addressComponents.city : '';
-      }
-
-      // if address chosen is different from address in session
-      // then clean up the address details info
-      if (deliveryDetails && deliveryDetails.deliveryToAddress !== newDeliveryDetails.deliveryToAddress) {
-        newDeliveryDetails.addressDetails = '';
-      }
-    } else if (shippingType === 'pickup') {
-      delete newDeliveryDetails.deliveryToAddress;
-      delete newDeliveryDetails.addressDetails;
+    if (shippingType !== DELIVERY_METHOD.DELIVERY) {
+      return;
     }
 
-    dispatch(actions.updateDeliveryDetails(newDeliveryDetails));
-  },
-  updateDeliveryDetails: fields => async dispatch => {
-    const result = await dispatch({
-      type: types.PUT_DELIVERY_DETAILS,
-      fields,
+    if (deliveryDetails.addressId) {
+      return;
+    }
+
+    const consumerId = getUserConsumerId(state);
+    const storeId = getStoreId(state);
+    const deliveryCoords = Utils.getDeliveryCoords();
+
+    await dispatch(actions.fetchConsumerAddressList({ consumerId, storeId }));
+
+    const addressList = getDeliveryAddressList(getState());
+
+    const addressIdFromNative = sessionStorage.getItem('addressIdFromNative');
+
+    const availableAddress = (() => {
+      if (addressIdFromNative) {
+        return findAvailableAddressById(addressList, addressIdFromNative);
+      }
+
+      if (deliveryCoords) {
+        return findNearbyAvailableAddress(addressList, {
+          longitude: deliveryCoords.lng,
+          latitude: deliveryCoords.lat,
+        });
+      }
+
+      return null;
+    })();
+
+    if (!availableAddress) {
+      return;
+    }
+
+    const {
+      _id,
+      addressName,
+      addressDetails,
+      comments: deliveryComments,
+      deliveryTo: deliveryToAddress,
+      location: deliveryToLocation,
+      city: deliveryToCity,
+    } = availableAddress;
+
+    appActions.updateDeliveryDetails({
+      addressId: _id,
+      addressName,
+      addressDetails,
+      deliveryComments,
+      deliveryToAddress,
+      deliveryToLocation,
+      deliveryToCity,
     });
-
-    await updateDeliveryDetails(fields);
-
-    return result;
   },
-  patchDeliveryDetails: fields => async dispatch => {
-    const result = await dispatch({
-      type: types.PUT_DELIVERY_DETAILS,
-      fields,
-    });
-
-    await patchDeliveryDetails(fields);
-
-    return result;
-  },
-  fetchConsumerAddressList: ({ consumerId, storeId, preventUpdate }) => ({
+  fetchConsumerAddressList: ({ consumerId, storeId }) => ({
     [API_REQUEST]: {
       types: [types.FETCH_ADDRESS_LIST_REQUEST, types.FETCH_ADDRESS_LIST_SUCCESS, types.FETCH_ADDRESS_LIST_FAILURE],
       ...Url.API_URLS.GET_ADDRESS_LIST(consumerId, storeId || config.storeId),
-    },
-    context: {
-      preventUpdate,
     },
   }),
   setError: error => ({
@@ -149,85 +149,6 @@ export const actions = {
 };
 
 // reducers
-
-const deliveryDetails = (state = initialState.deliveryDetails, action) => {
-  if (action.type === types.PUT_DELIVERY_DETAILS) {
-    return {
-      ...state,
-      ...action.fields,
-    };
-  } else if (action.type === types.FETCH_ADDRESS_LIST_SUCCESS) {
-    const deliveryAddressList = action.response || {};
-    const { preventUpdate } = action.context || {};
-    const { longitude, latitude } = state.deliveryToLocation;
-    let findAvailableAddress;
-
-    // menu header show address name if native use saved address
-    if (Utils.hasNativeSavedAddress()) {
-      const addressIdFromNative = sessionStorage.getItem('addressIdFromNative');
-      findAvailableAddress = (deliveryAddressList || []).find(
-        address => address.availableStatus && address._id === addressIdFromNative
-      );
-    } else {
-      findAvailableAddress = (deliveryAddressList || []).find(
-        address =>
-          address.availableStatus &&
-          (address.addressName === state.addressName ||
-            computeStraightDistance(
-              {
-                lng: address.location.longitude,
-                lat: address.location.latitude,
-              },
-              {
-                lng: longitude,
-                lat: latitude,
-              }
-            ) <= 500)
-      );
-    }
-
-    if (findAvailableAddress && !preventUpdate) {
-      const {
-        _id,
-        addressName,
-        addressDetails,
-        comments: deliveryComments,
-        deliveryTo: deliveryToAddress,
-        location: deliveryToLocation,
-        city: deliveryToCity,
-      } = findAvailableAddress;
-
-      // patch deliveryDetails to sessionStorage
-      const deliveryDetails = JSON.parse(Utils.getSessionVariable(DeliveryDetailsStorageKey));
-      Utils.setSessionVariable(
-        DeliveryDetailsStorageKey,
-        JSON.stringify({
-          ...deliveryDetails,
-          addressName,
-          addressDetails,
-          deliveryComments,
-          deliveryToAddress,
-          deliveryToLocation,
-          deliveryToCity,
-        })
-      );
-
-      return {
-        ...state,
-        addressId: _id,
-        deliveryAddressList,
-        addressName,
-        addressDetails,
-        deliveryComments,
-        deliveryToAddress,
-        deliveryToLocation,
-        deliveryToCity,
-      };
-    }
-  }
-  return state;
-};
-
 const customerError = (state = initialState.customerError, action) => {
   if (action.type === types.CLEAR_CUSTOMER_ERROR) {
     return {
@@ -271,7 +192,6 @@ const savedAddressInfo = (state = initialState.savedAddressInfo, action) => {
 };
 
 export default combineReducers({
-  deliveryDetails,
   customerError,
   savedAddressInfo,
 });
@@ -279,7 +199,6 @@ export default combineReducers({
 // selectors
 
 export const getSavedAddressInfo = state => state.customer.savedAddressInfo;
-export const getDeliveryDetails = state => state.customer.deliveryDetails;
 export const getCustomerError = state => state.customer.customerError;
 export const getDeliveryAddressList = state => {
   return getUserAddressList(state);

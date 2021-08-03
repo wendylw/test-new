@@ -5,12 +5,13 @@ import { IconAddAddress, IconBookmark, IconNext } from '../../../../../component
 import Tag from '../../../../../components/Tag';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { getRequestInfo, getUser, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import {
-  actions as customerActionCreators,
-  getDeliveryDetails,
-  getDeliveryAddressList,
-} from '../../../../redux/modules/customer';
+  actions as appActionCreators,
+  getRequestInfo,
+  getUser,
+  getStoreInfoForCleverTap,
+} from '../../../../redux/modules/app';
+import { actions as customerActionCreators, getDeliveryAddressList } from '../../../../redux/modules/customer';
 import Utils from '../../../../../utils/utils';
 import './AddressList.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -21,9 +22,7 @@ class AddressList extends Component {
     const { consumerId } = user || {};
     const { storeId } = requestInfo || {};
 
-    // todo: 怎么避免拿 addreesList 时候避免更新deliveryToAddress
-    // use 'fixed' to get pure addressList with updating deliveryToAddress
-    customerActions.fetchConsumerAddressList({ consumerId, storeId, preventUpdate: true });
+    customerActions.fetchConsumerAddressList({ consumerId, storeId });
   }
 
   addNewAddress = () => {
@@ -47,7 +46,7 @@ class AddressList extends Component {
   };
 
   renderAddressCard = () => {
-    const { t, addressList, history, customerActions } = this.props;
+    const { t, addressList, history, updateDeliveryDetails } = this.props;
     return (addressList || []).map((address, index) => {
       const {
         _id: addressId,
@@ -71,7 +70,7 @@ class AddressList extends Component {
                   CleverTap.pushEvent('Address list - click existing address', {
                     rank: index + 1,
                   });
-                  await customerActions.patchDeliveryDetails({
+                  await updateDeliveryDetails({
                     addressId,
                     addressName,
                     addressDetails,
@@ -173,13 +172,13 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      deliveryDetails: getDeliveryDetails(state),
       addressList: getDeliveryAddressList(state),
       requestInfo: getRequestInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),
+      updateDeliveryDetails: bindActionCreators(appActionCreators.updateDeliveryDetails, dispatch),
     })
   )
 )(AddressList);

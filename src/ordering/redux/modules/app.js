@@ -449,7 +449,7 @@ export const actions = {
     return dispatch(emptyShoppingCart());
   },
 
-  initDeliverDetails: () => async (dispatch, getState) => {
+  initDeliveryDetails: () => async (dispatch, getState) => {
     const deliveryDetailsInSession = await fetchDeliveryDetails();
     const localStoragePhone = localStorage.getItem('user.p') || '';
 
@@ -466,13 +466,16 @@ export const actions = {
     });
   },
 
-  updateDeliverDetails: data => async (dispatch, getState) => {
-    const deliveryDetailsInSession = await fetchDeliveryDetails();
+  updateDeliveryDetails: data => async (dispatch, getState) => {
+    const state = getState();
+    const deliveryDetails = getDeliveryDetails(state);
 
     const payload = {
-      ...deliveryDetailsInSession,
+      ...deliveryDetails,
       ...data,
     };
+
+    updateDeliveryDetails(payload);
 
     dispatch({
       type: types.DELIVERY_DETAILS_UPDATED,
@@ -572,13 +575,14 @@ const user = (state = initialState.user, action) => {
         },
       };
     case types.FETCH_PROFILE_SUCCESS:
-      const { firstName, email, birthday } = response || {};
+      const { firstName, email, birthday, phone } = response || {};
       return {
         ...state,
         profile: {
           name: firstName,
           email,
           birthday,
+          phone,
         },
       };
 
@@ -818,6 +822,7 @@ export const getBusinessDeliveryTypes = createSelector(getCoreStoreList, stores 
 });
 
 export const getStoreId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'storeId', null));
+export const getShippingType = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'shippingType', null));
 
 export const getStore = state => {
   const storeId = getStoreId(state);
