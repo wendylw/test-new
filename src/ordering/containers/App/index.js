@@ -96,6 +96,7 @@ class App extends Component {
 
     this.visitErrorPage();
     try {
+      await appActions.initDeliverDetails();
       await appActions.getLoginStatus();
       const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 

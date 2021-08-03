@@ -20,7 +20,7 @@ import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/enti
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
-import { fetchDeliveryDetails } from '../../containers/Customer/utils';
+import { fetchDeliveryDetails, updateDeliveryDetails } from '../../containers/Customer/utils';
 
 import * as StoreUtils from '../../../utils/store-utils';
 
@@ -120,6 +120,17 @@ export const initialState = {
     shippingType: Utils.getOrderTypeFromUrl(),
   },
   shoppingCart: CartModel,
+  deliveryDetails: {
+    username: '',
+    phone: '',
+    addressId: '',
+    addressName: '',
+    deliveryToAddress: '',
+    deliveryToLocation: null, // {latitude, longitude}
+    addressDetails: '',
+    deliveryComments: '',
+    deliveryToCity: '',
+  },
 };
 
 const fetchCoreBusiness = variables => ({
@@ -437,6 +448,37 @@ export const actions = {
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
   },
+
+  initDeliverDetails: () => async (dispatch, getState) => {
+    const deliveryDetailsInSession = await fetchDeliveryDetails();
+    const localStoragePhone = localStorage.getItem('user.p') || '';
+
+    const payload = {
+      ...deliveryDetailsInSession,
+      phone: deliveryDetailsInSession?.phone || localStoragePhone,
+    };
+
+    updateDeliveryDetails(payload);
+
+    dispatch({
+      type: types.DELIVERY_DETAILS_INIT,
+      payload,
+    });
+  },
+
+  updateDeliverDetails: data => async (dispatch, getState) => {
+    const deliveryDetailsInSession = await fetchDeliveryDetails();
+
+    const payload = {
+      ...deliveryDetailsInSession,
+      ...data,
+    };
+
+    dispatch({
+      type: types.DELIVERY_DETAILS_UPDATED,
+      payload,
+    });
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -709,6 +751,23 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   return state;
 };
 
+const deliveryDetails = (state = initialState.deliveryDetails, action) => {
+  switch (action.type) {
+    case types.DELIVERY_DETAILS_INIT:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case types.DELIVERY_DETAILS_UPDATED:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   user,
   error,
@@ -718,6 +777,7 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  deliveryDetails,
 });
 
 // selectors
