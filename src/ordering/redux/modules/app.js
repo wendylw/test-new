@@ -428,7 +428,7 @@ export const actions = {
       return;
     }
 
-    const deliveryDetails = gethDeliveryDetailsFromSessionStorage();
+    const deliveryDetails = getDeliveryDetails(getState());
 
     const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
 
