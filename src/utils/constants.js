@@ -621,6 +621,12 @@ export const REGISTRATION_SOURCE = {
   BEEP_SITE: 'BeepSite',
 };
 
+export const API_REQUEST_STATUS = {
+  PENDING: 'pending',
+  FULFILLED: 'fulfilled',
+  REJECTED: 'rejected',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -667,4 +673,5 @@ export default {
   CLIENTS,
   REGISTRATION_TOUCH_POINT,
   REGISTRATION_SOURCE,
+  API_REQUEST_STATUS,
 };

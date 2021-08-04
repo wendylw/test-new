@@ -7,13 +7,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
-import { getDeliveryInfo } from '../../../../redux/modules/home';
 import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
   getBusinessInfo,
   getUser,
+  getDeliveryInfo,
 } from '../../../../redux/modules/app';
 import {
   getPaymentsPendingState,
