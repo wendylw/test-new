@@ -15,11 +15,12 @@ class StoreInfoAside extends Component {
     this.closeModal();
   };
 
-  componentDidUpdate(prevProps) {
-    const { show } = this.props;
-    if (show !== prevProps.show) {
+  componentDidUpdate(prevProps, prevState) {
+    const shouldShow = this.shouldShowPopover(this.props, this.state);
+    const prevShouldShow = this.shouldShowPopover(prevProps, prevState);
+    if (shouldShow !== prevShouldShow) {
       // show status changed
-      if (show) {
+      if (shouldShow) {
         this.props.onModalVisibilityChanged(true);
       } else {
         this.props.onModalVisibilityChanged(false);
@@ -35,6 +36,12 @@ class StoreInfoAside extends Component {
     }
 
     onToggle(null);
+  };
+
+  shouldShowPopover = (props, state) => {
+    const { show, enablePreOrder, isValidTimeToOrder } = props;
+    const { initDom } = state;
+    return show || (initDom && !(isValidTimeToOrder || enablePreOrder));
   };
 
   renderDeliveryHour = () => {
@@ -77,14 +84,12 @@ class StoreInfoAside extends Component {
       businessInfo,
       businessLoaded,
       onlineStoreInfo,
-      show,
       storeAddress,
       telephone,
       enablePreOrder,
       isValidTimeToOrder,
       footerEl,
     } = this.props;
-    const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = ['store-info-aside aside fixed-wrapper'];
@@ -93,7 +98,7 @@ class StoreInfoAside extends Component {
       return null;
     }
 
-    if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
+    if (this.shouldShowPopover(this.props, this.state)) {
       classList.push('active');
     }
 
