@@ -35,7 +35,7 @@ Front end of this project is bootstrapped by [CRA (Create React App)](https://cr
 
 ## Environments
 
-- node 12.x
+- node 12.17.x
 - yarn
 - mongod >= 4
 - redis >= 5
