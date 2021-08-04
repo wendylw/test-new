@@ -20,9 +20,9 @@ class StoreInfoAside extends Component {
     if (show !== prevProps.show) {
       // show status changed
       if (show) {
-        this.props.onModalOpen();
+        this.props.onModalVisibilityChanged(true);
       } else {
-        this.props.onModalClose();
+        this.props.onModalVisibilityChanged(false);
       }
     }
   }

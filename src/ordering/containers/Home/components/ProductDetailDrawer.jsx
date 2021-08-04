@@ -97,16 +97,15 @@ class ProductDetailDrawer extends Component {
     if (shouldShow !== prevShouldShow) {
       // show status changed
       if (shouldShow) {
-        this.props.onModalOpen();
+        this.props.onModalVisibilityChanged(true);
       } else {
-        this.props.onModalClose();
+        this.props.onModalVisibilityChanged(false);
       }
     }
   }
 
   onHistoryBackReceived = () => {
     this.closeModal();
-    // return false;
   };
 
   resizeImage() {

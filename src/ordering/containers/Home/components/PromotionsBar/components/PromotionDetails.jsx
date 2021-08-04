@@ -5,7 +5,7 @@ import PromotionContent from './PromotionContent';
 import _isFunction from 'lodash/isFunction';
 import { withBackButtonSupport } from '../../../../../../utils/modal-back-button-support';
 
-function PromotionDetails({ onHide, promotions, show, inApp, onModalOpen, onModalClose }, ref) {
+function PromotionDetails({ onHide, promotions, show, inApp, onModalVisibilityChanged }, ref) {
   const { t } = useTranslation('OrderingHome');
   const handleHide = useCallback(() => {
     _isFunction(onHide) && onHide();
@@ -18,12 +18,12 @@ function PromotionDetails({ onHide, promotions, show, inApp, onModalOpen, onModa
   useEffect(() => {
     if (show) {
       if (show) {
-        onModalOpen();
+        onModalVisibilityChanged(true);
       } else {
-        onModalClose();
+        onModalVisibilityChanged(false);
       }
     }
-  }, [show, onModalOpen, onModalClose]);
+  }, [show, onModalVisibilityChanged]);
 
   return (
     <aside className={`promotions-bar__details aside fixed-wrapper ${show ? 'active' : ''}`}>
