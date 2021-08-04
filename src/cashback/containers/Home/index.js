@@ -23,7 +23,6 @@ const cashbackDownloadText = 'Download the Beep app to keep track of your cashba
 const isWebview = Utils.isWebview();
 class PageLoyalty extends React.Component {
   state = {
-    showModal: false,
     showRecentActivities: false,
   };
 

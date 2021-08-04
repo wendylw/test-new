@@ -11,6 +11,7 @@ import { actions as appActionCreators, getOnlineStoreInfo, getUser } from '../..
 import { actions as homeActionCreators, getCashbackHistory } from '../../../../redux/modules/home';
 import { toLocaleDateString } from '../../../../../utils/datetime-lib';
 import './RecentActivities.scss';
+import { withBackButtonSupport } from '../../../../../utils/modal-back-button-support';
 
 const DATE_OPTIONS = {
   weekday: 'short',
@@ -20,10 +21,6 @@ const DATE_OPTIONS = {
 };
 
 class RecentActivities extends React.Component {
-  state = {
-    fullScreen: false,
-  };
-
   componentDidMount() {
     const { user } = this.props;
     const { isLogin, customerId } = user || {};
@@ -31,6 +28,11 @@ class RecentActivities extends React.Component {
     if (isLogin && customerId) {
       this.getLoyaltyHistory(customerId);
     }
+    this.props.onModalVisibilityChanged(true);
+  }
+
+  componentWillUnmount() {
+    this.props.onModalVisibilityChanged(false);
   }
 
   componentDidUpdate(prevProps) {
@@ -46,16 +48,16 @@ class RecentActivities extends React.Component {
     }
   }
 
+  onHistoryBackReceived = () => {
+    this.props.closeActivity();
+  };
+
   getLoyaltyHistory(customerId) {
     const { homeActions } = this.props;
 
     if (customerId) {
       homeActions.getCashbackHistory(customerId);
     }
-  }
-
-  toggleFullScreen() {
-    this.setState({ fullScreen: !this.state.fullScreen });
   }
 
   getType(type, props) {
@@ -163,5 +165,6 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
-  )
+  ),
+  withBackButtonSupport
 )(RecentActivities);
