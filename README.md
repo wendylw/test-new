@@ -53,13 +53,15 @@ yarn
 
 ### Test environment .ENV
 
-Please contact the project administrator to access apollo https://apollo.shub.us/config.html?#/appid=beep-v1-web
+Please contact the project administrator to access apollo https://apollo.shub.us/config.html?#/appid=beep-v1-web , Some local environment variables need to use the value of the test environment
 
 <a name="start-ordering-loyalty"></a>
 
 ### Start F&B && Loyalty
 
 1. Set local domain
+
+{business} name can pick one account name from https://storehub.atlassian.net/wiki/spaces/QA/pages/1272873047/Test+Account
 
 ```sh
 (sudo) vim /etc/hosts (on Mac)
@@ -68,6 +70,7 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 
 2. Update .env
    Update to `HOST={business}.local.beep.shub.us` on `frontend/.env` (1. local domain)
+   Update `REACT_APP_GOOGLE_MAPS_API_KEY, REACT_APP_CLEVER_TAP_ID, REACT_APP_CLEVER_TAP_SCRIPT_REGION` on `frontend/.env` (2. from Apollo)
 
 3. Start project
    > [Beep(F&B and Cashback) Setup](<https://storehub.atlassian.net/wiki/spaces/DP/pages/141820051#id-%E6%96%B0%E6%89%8B%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%EF%BC%88%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%EF%BC%89---Beep(F&BandCashback)Setup>): Steps to start core api and ecommerce api
