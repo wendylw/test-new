@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { debounce } from 'lodash';
+import _debounce from 'lodash/debounce';
 import Constants from '../../../utils/constants';
 import { IconWrappedClose } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
@@ -56,7 +56,7 @@ class Promotion extends Component {
     });
   };
 
-  debounceSearchPromo = debounce(() => {
+  debounceSearchPromo = _debounce(() => {
     this.props.promotionActions.getPromoInfo();
   }, 700);
 

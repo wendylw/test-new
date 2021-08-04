@@ -13,9 +13,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getOneStoreInfo, getStoreHashCode } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
-import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
-import { getBusiness } from '../../../ordering/redux/modules/app';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getRemovedPickUpMerchantList, getDeliveryInfo } from '../../redux/modules/app';
 import '../DineMethods/StoresTakingMealMethod.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
@@ -57,17 +55,13 @@ class DeliveryMethods extends Component {
   }
 
   async handleVisitStore(methodName) {
-    const { store, homeActions } = this.props;
+    const { store, homeActions, deliveryInfo } = this.props;
     await homeActions.getStoreHashData(store.id);
     const { hashCode } = this.props;
     const currentMethod = METHODS_LIST.find(method => method.name === methodName);
 
     // isValid
-    const { allBusinessInfo, business } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({
-      business,
-      allBusinessInfo,
-    });
+    const { enablePreOrder } = deliveryInfo;
     const deliveryTo = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
     if (enablePreOrder) {
       // remove delivery time write in session to prevent date inconsistence issus
@@ -152,10 +146,9 @@ export default compose(
   connect(
     (state, ownProps) => ({
       hashCode: getStoreHashCode(state),
-      business: getBusiness(state),
       removePickUpMerchantList: getRemovedPickUpMerchantList(state),
-      allBusinessInfo: getAllBusinesses(state),
       currentStoreInfo: getOneStoreInfo(state, ownProps.store.id),
+      deliveryInfo: getDeliveryInfo(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

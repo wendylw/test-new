@@ -2,7 +2,7 @@ import React from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { debounce } from 'lodash';
+import _debounce from 'lodash/debounce';
 import { IconLeftArrow } from '../../components/Icons';
 import SearchBox from '../components/SearchBox';
 import SwitchPanel from '../components/SwitchPanel';
@@ -71,7 +71,7 @@ class SearchPage extends React.Component {
     });
   };
 
-  debounceSearchStores = debounce(() => {
+  debounceSearchStores = _debounce(() => {
     this.props.searchActions.setPaginationInfo();
     this.props.searchActions.getStoreList();
   }, 700);

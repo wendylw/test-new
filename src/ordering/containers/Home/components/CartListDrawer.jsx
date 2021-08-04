@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getShoppingCart, getCartBilling } from '../../../redux/modules/app';
-import { getSelectedProductDetail } from '../../../redux/modules/home';
+import { getSelectedProductDetail } from '../redux/common/selectors';
 import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { IconDelete, IconCart } from '../../../../components/Icons';

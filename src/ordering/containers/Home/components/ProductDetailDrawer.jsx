@@ -17,7 +17,7 @@ import SwiperCore, { Autoplay, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getSelectedProductDetail } from '../../../redux/modules/home';
+import { getSelectedProductDetail } from '../redux/common/selectors';
 import { actions as appActionCreators } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';
@@ -162,11 +162,9 @@ class ProductDetailDrawer extends Component {
   initMinimumVariationList() {
     const { selectedProduct } = this.props;
     const { variations } = selectedProduct || {};
-    var minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
+    const minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
 
-    if (minimumVariations && minimumVariations.length) {
-      this.setState({ minimumVariations });
-    }
+    this.setState({ minimumVariations });
   }
 
   getTotalPriceDiff() {
@@ -542,7 +540,7 @@ class ProductDetailDrawer extends Component {
   renderProductOperator() {
     const { t, selectedProduct = {}, onUpdateCartOnProductDetail } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
-    const { id: productId } = selectedProduct;
+    const { id: productId } = selectedProduct || {};
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
     const inventoryShortage = this.getShortageInventoryState(
       selectedProduct || {},
