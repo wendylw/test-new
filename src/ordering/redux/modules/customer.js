@@ -50,7 +50,7 @@ export const types = {
 };
 
 export const actions = {
-  init: () => async (dispatch, getState) => {
+  selectAvailableAddress: () => async (dispatch, getState) => {
     const state = getState();
     const deliveryDetails = getDeliveryDetails(state);
     const shippingType = getShippingType(state);

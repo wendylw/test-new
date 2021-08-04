@@ -42,7 +42,7 @@ class Customer extends Component {
   async componentDidMount() {
     const { appActions, customerActions } = this.props;
 
-    await customerActions.init();
+    await customerActions.selectAvailableAddress();
     appActions.loadShoppingCart();
   }
 
