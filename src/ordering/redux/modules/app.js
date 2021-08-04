@@ -20,7 +20,6 @@ import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/enti
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
-import { fetchDeliveryDetails, updateDeliveryDetails } from '../../containers/Customer/utils';
 
 import * as StoreUtils from '../../../utils/store-utils';
 
@@ -131,6 +130,19 @@ export const initialState = {
     deliveryComments: '',
     deliveryToCity: '',
   },
+};
+
+export const updateDeliveryDetailsInSessionStorage = data => {
+  return sessionStorage.setItem('deliveryDetails', JSON.stringify(data));
+};
+
+export const gethDeliveryDetailsFromSessionStorage = () => {
+  try {
+    return JSON.parse(Utils.getSessionVariable('deliveryDetails'));
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
 
 const fetchCoreBusiness = variables => ({
@@ -416,7 +428,7 @@ export const actions = {
       return;
     }
 
-    const deliveryDetails = await fetchDeliveryDetails();
+    const deliveryDetails = gethDeliveryDetailsFromSessionStorage();
 
     const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
 
@@ -450,7 +462,7 @@ export const actions = {
   },
 
   initDeliveryDetails: () => async (dispatch, getState) => {
-    const deliveryDetailsInSession = await fetchDeliveryDetails();
+    const deliveryDetailsInSession = gethDeliveryDetailsFromSessionStorage();
     const localStoragePhone = localStorage.getItem('user.p') || '';
 
     const payload = {
@@ -458,7 +470,7 @@ export const actions = {
       phone: deliveryDetailsInSession?.phone || localStoragePhone,
     };
 
-    updateDeliveryDetails(payload);
+    updateDeliveryDetailsInSessionStorage(payload);
 
     dispatch({
       type: types.DELIVERY_DETAILS_INIT,
@@ -475,7 +487,7 @@ export const actions = {
       ...data,
     };
 
-    updateDeliveryDetails(payload);
+    updateDeliveryDetailsInSessionStorage(payload);
 
     dispatch({
       type: types.DELIVERY_DETAILS_UPDATED,
