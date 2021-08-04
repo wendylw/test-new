@@ -29,6 +29,8 @@ let preventHashPoppedId = null;
 export const removeModalIdHash = modalId => {
   const modalIdSet = getModalIdsFromHash();
   if (modalIdSet.has(modalId)) {
+    // removing hash will cause hash change be triggered once more, so we add this flag
+    // to prevent redundant sh-modal-history-back dispatched unexpectedly.
     preventHashPoppedId = modalId;
     window.history.go(-1);
   }
@@ -37,7 +39,6 @@ export const removeModalIdHash = modalId => {
 window.addEventListener(
   'hashchange',
   e => {
-    e.preventDefault();
     const { newURL, oldURL } = e;
     const newModalIds = Array.from(getModalIdsFromHash(new URL(newURL).hash));
     const oldModalIds = Array.from(getModalIdsFromHash(new URL(oldURL).hash));
