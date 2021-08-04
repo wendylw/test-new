@@ -7,7 +7,6 @@ import * as timeLib from '../../../utils/time-lib';
 import URL from '../../../utils/url';
 import { getStoreById, getCoreStoreList } from '../../../redux/modules/entities/stores';
 import { actions as appActions, getBusinessUTCOffset } from './app';
-import { actions as homeActions } from './home';
 
 import { createSelector } from 'reselect';
 import dayjs from 'dayjs';
@@ -50,7 +49,7 @@ export const actions = {
 
     dispatch(actions.showLoading(true));
 
-    await dispatch(homeActions.loadCoreStores());
+    await dispatch(appActions.loadCoreStores());
 
     const stores = getCoreStoreList(getState());
     const businessUTCOffset = getBusinessUTCOffset(getState());

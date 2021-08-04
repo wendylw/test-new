@@ -8,7 +8,6 @@ import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
 import Utils from '../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
-import { actions as homeActionCreators } from '../../redux/modules/home';
 import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { connect } from 'react-redux';
@@ -97,7 +96,7 @@ class LocationPage extends Component {
       },
     };
 
-    let stores = await this.props.homeActions.loadCoreStores(address);
+    let stores = await this.props.appActions.loadCoreStores(address);
     stores = stores.responseGql.data.business.stores;
     if (!stores.length) {
       const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
@@ -217,7 +216,6 @@ export default compose(
       allBusinesses: getAllBusinesses(state),
     }),
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )

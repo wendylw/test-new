@@ -1,7 +1,7 @@
 /**
  * find inappropriate dependant to a module
  * Example:
- * node scripts/find-dependants.js src/ordering/redux/modules/home src/ordering/containers/Home/
+ * node scripts/find-dependants.js src/ordering/containers/Home/
  */
 
 const fs = require('fs-extra');
