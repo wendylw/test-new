@@ -17,8 +17,7 @@
 7. [Analyzing bundle size](#analyzing-bundle-size)
 8. [Trouble Shooting](#trouble-shooting)
 9. [Heap name convention for loggly](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
-10. [Release Flow](https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow)
-11. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
+10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>
 
@@ -52,13 +51,13 @@ yarn
 
 <a name="test-environment-env"></a>
 
-### Test environment .ENV
+### Test environment .ENV (Skip if done)
 
 Please contact the project administrator to access apollo https://apollo.shub.us/config.html?#/appid=beep-v1-web , Some local environment variables need to use the value of the test environment
 
 <a name="set-local-domain"></a>
 
-### Set local domain
+### Set local domain (Skip if done)
 
 {business} name can pick one account name from https://storehub.atlassian.net/wiki/spaces/QA/pages/1272873047/Test+Account
 
