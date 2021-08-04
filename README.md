@@ -5,7 +5,7 @@
 1. [Abstraction](#abstraction)
 2. [Environments](#environments)
 3. [Get started](#get-started)
-   1. [.ENV file](#env)
+   1. [Test environment .ENV](#env)
    2. [Installation](#installation)
    3. [Start F&B && Loyalty](#start-ordering-loyalty)
    4. [Start Beep Entrance](#beep-entrance)
@@ -13,9 +13,9 @@
 4. [Customize Workbox Service Workers](#customize-workbox-service-workers)
 5. [I18N JSON File Style Guide](#i18n-json-style-guide)
 6. [Style Guide](#style-guide)
-7. [Heap tracking code](#heap-tracking-code)
-8. [Analyzing bundle size](#analyzing-bundle-size)
-9. [Trouble Shooting](#trouble-shooting)
+7. [Analyzing bundle size](#analyzing-bundle-size)
+8. [Trouble Shooting](#trouble-shooting)
+9. [Heap name convention for loggly](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
 10. [Release Flow](https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow)
 11. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
@@ -23,49 +23,37 @@
 
 ## Abstraction
 
-Beep project contains some products of StoreHub, they are
-
-1. F&B (Ordering)
-2. Loyalty (Cashback)
-3. Beep Entrance (Site)
-
 Front end of this project is bootstrapped by [CRA (Create React App)](https://create-react-app.dev/docs/getting-started).
 
 <a name="environments"></a>
 
 ## Environments
 
+- nvm
 - node 12.17.x
 - yarn
-- mongod >= 4
-- redis >= 5
-- elasticsearch 7.x, 6.x
 
 <a name="get-started"></a>
 
 ## Get started
 
-<a name="env"></a>
-
-### .ENV
-
-Please contact the project administrator to access apollo https://apollo.shub.us/config.html?#/appid=beep-v1-web
-
 <a name="installation"></a>
 
 ### Installation
 
+Under the frontend folder
+
 ```sh
-cd frontend/ && cp .env.example .env
+cp .env.example .env
+nvm use v12.17
 yarn
 ```
 
-```sh
-cd ./backend
-git submodule update --init -f
-cp .env.example .env
-yarn
-```
+<a name="test-environment-env"></a>
+
+### Test environment .ENV
+
+Please contact the project administrator to access apollo https://apollo.shub.us/config.html?#/appid=beep-v1-web
 
 <a name="start-ordering-loyalty"></a>
 
@@ -208,12 +196,6 @@ yarn storybook
 cd ./frontend && yarn && yarn chromatic --project-token=ejo2it5a6d
 ```
 
-<a name="heap-tracking-code"></a>
-
-## Heap tracking code
-
-Refer to: [Heap name convention](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
-
 <a name="analyzing-bundle-size"></a>
 
 ## Analyzing bundle size
@@ -257,4 +239,11 @@ cd ../backend/
 cp .env.example .env
 cd ../frontend
 git push origin ${branch-name}
+```
+
+If terminal response
+`lint-staged requires at least version x.x.x of Node, please upgrade husky > pre-commit hook failed (add --no-verify to bypass)`
+
+```
+nvm use v12.17
 ```
