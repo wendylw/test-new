@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { IconClose } from '../../components/Icons';
-import './Feedback.scss';
+import './Alert.scss';
 
 function Alert(props) {
   const { content, buttonContent, className, style, close } = props;

@@ -1,7 +1,3 @@
-import React, { useRef } from 'react';
-import ReactDOM from 'react-dom';
-import { IconClose } from '../../components/Icons';
-import './Feedback.scss';
 // declare type FEEDBACK_TYPES = 'alert' | 'confirm' | 'toast' | 'fullScreen';
 // declare type FeedbackContent = React.ReactNode | string;
 // declare type FeedbackOptions = {
@@ -14,6 +10,11 @@ import './Feedback.scss';
 // export interface FeedbackInstance {
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Alert from './Alert';
+
 const normalizeContent = content => content || null;
 const normalizeAlertOptions = options => ({
   buttonContent: null,
@@ -27,36 +28,23 @@ const destroyFeedback = target => {
   target.remove();
 };
 
-const FeedbackAlert = props => {
-  const { content, buttonContent, className, style, close } = props;
-
-  return (
-    <div className={`${className ? ` ${className}` : ''}`} style={style}>
-      {content}
-      <button onClick={() => close()}>{buttonContent || <IconClose />}</button>
-    </div>
-  );
-};
-
-FeedbackAlert.displayName = 'FeedbackAlert';
-
 export function alert(content, options) {
   const { container, onClose, ...otherOptions } = options;
-  const feedbackRootDOM = document.createElement('div');
-  feedbackRootDOM.setAttribute('class', 'feedback');
+  const rootDOM = document.createElement('div');
+  rootDOM.setAttribute('class', 'feedback');
 
-  (container || document.body).appendChild(feedbackRootDOM);
+  (container || document.body).appendChild(rootDOM);
 
   ReactDOM.render(
-    React.createElement(FeedbackAlert, {
+    React.createElement(Alert, {
       content: normalizeContent(content),
       ...normalizeAlertOptions(otherOptions),
       close: () => {
         onClose();
-        destroyFeedback(feedbackRootDOM);
+        destroyFeedback(rootDOM);
       },
     }),
-    feedbackRootDOM
+    rootDOM
   );
 }
 
