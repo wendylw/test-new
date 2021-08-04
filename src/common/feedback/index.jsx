@@ -10,7 +10,6 @@
 // export interface FeedbackInstance {
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Alert from './Alert';
@@ -22,23 +21,17 @@ const normalizeAlertOptions = options => ({
   style: {},
   ...options,
 });
-const destroyFeedback = target => {
-  ReactDOM.unmountComponentAtNode(target);
-
-  target.remove();
-};
-
-export function alert(content, options) {
-  const { container, onClose, ...otherOptions } = options;
+const createFeedback = (content, options) => {
+  const { container, element, onClose, normalizeOptions, ...otherOptions } = options;
   const rootDOM = document.createElement('div');
   rootDOM.setAttribute('class', 'feedback');
 
   (container || document.body).appendChild(rootDOM);
 
   ReactDOM.render(
-    React.createElement(Alert, {
+    React.createElement(element, {
       content: normalizeContent(content),
-      ...normalizeAlertOptions(otherOptions),
+      ...normalizeOptions(otherOptions),
       close: () => {
         onClose();
         destroyFeedback(rootDOM);
@@ -46,6 +39,19 @@ export function alert(content, options) {
     }),
     rootDOM
   );
+};
+const destroyFeedback = target => {
+  ReactDOM.unmountComponentAtNode(target);
+
+  target.remove();
+};
+
+export function alert(content, options) {
+  createFeedback(content, {
+    ...options,
+    element: Alert,
+    normalizeOptions: normalizeAlertOptions,
+  });
 }
 
 // async function a() {
