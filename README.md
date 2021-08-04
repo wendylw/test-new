@@ -15,8 +15,9 @@
 6. [Style Guide](#style-guide)
 7. [Heap tracking code](#heap-tracking-code)
 8. [Analyzing bundle size](#analyzing-bundle-size)
-9. [Release Flow](https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow)
-10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
+9. [Trouble Shooting](#trouble-shooting)
+10. [Release Flow](https://github.com/storehubnet/beep-v1-web/wiki/Release-Flow)
+11. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>
 
@@ -219,4 +220,41 @@ Refer to: [Heap name convention](https://storehub.atlassian.net/wiki/spaces/SHFE
 
 ```shell script
 yarn build && yarn analyze
+```
+
+<a name="trouble-shooting"></a>
+
+## Trouble Shooting
+
+- If you push origin repo, terminal response
+  `
+  Warning: Setting pre-push script in package.json > scripts will be deprecated
+  Please move it to husky.hooks in package.json, a .huskyrc file, or a husky.config.js file
+  Or run ./node_modules/.bin/husky-upgrade for automatic update
+
+See https://github.com/typicode/husky for usage
+
+husky > pre-push (node v12.17.0)
+sh: ../git_hooks/copy: No such file or directory
+husky > pre-push hook failed (add --no-verify to bypass)
+error: failed to push some refs to 'https://github.com/storehubnet/beep-v1-web.git'
+`
+
+```shell script
+rm -rf node_modules/
+rm ../.git/hooks/pre-commit
+cd ../backend/
+yarn prepush
+cd ../frontend
+git push origin ${branch-name}
+```
+
+- If you push origin repo, terminal response
+  `-e >>> FILE .env.example NOT FOUND error: failed to push some refs to 'https://github.com/storehubnet/beep-v1-web.git'`
+
+```shell script
+cd ../backend/
+cp .env.example .env
+cd ../frontend
+git push origin ${branch-name}
 ```
