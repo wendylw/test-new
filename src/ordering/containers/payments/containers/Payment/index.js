@@ -6,13 +6,13 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
-import { getDeliveryInfo } from '../../../../redux/modules/home';
 import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
   getBusinessInfo,
   getUser,
+  getDeliveryInfo,
 } from '../../../../redux/modules/app';
 import {
   getPaymentsPendingState,
