@@ -102,15 +102,17 @@ export const actions = {
       city: deliveryToCity,
     } = availableAddress;
 
-    appActions.updateDeliveryDetails({
-      addressId: _id,
-      addressName,
-      addressDetails,
-      deliveryComments,
-      deliveryToAddress,
-      deliveryToLocation,
-      deliveryToCity,
-    });
+    dispatch(
+      appActions.updateDeliveryDetails({
+        addressId: _id,
+        addressName,
+        addressDetails,
+        deliveryComments,
+        deliveryToAddress,
+        deliveryToLocation,
+        deliveryToCity,
+      })
+    );
   },
   fetchConsumerAddressList: ({ consumerId, storeId }) => ({
     [API_REQUEST]: {

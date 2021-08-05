@@ -414,7 +414,7 @@ const ASIDE_NAMES = {
   ADD_MERCHANT_NOTE: 'ADD_MERCHANT_NOTE',
 };
 
-const DELIVERY_METHOD = {
+export const DELIVERY_METHOD = {
   DELIVERY: 'delivery',
   PICKUP: 'pickup',
   DINE_IN: 'dine-in',

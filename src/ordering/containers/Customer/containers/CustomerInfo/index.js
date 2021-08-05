@@ -26,7 +26,8 @@ import {
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
-import { getCustomerError, actions as customerActionCreators } from '../../../../redux/modules/customer';
+import { getCustomerError, actions as customerInfoActionCreators } from './redux';
+import { selectAvailableAddress } from '../../redux/common/thunks';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
@@ -40,9 +41,9 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    const { appActions, customerActions } = this.props;
+    const { appActions, selectAvailableAddress } = this.props;
 
-    await customerActions.selectAvailableAddress();
+    await selectAvailableAddress();
     appActions.loadShoppingCart();
   }
 
@@ -91,24 +92,24 @@ class CustomerInfo extends Component {
   };
 
   validateFields() {
-    const { deliveryDetails } = this.props;
+    const { deliveryDetails, t } = this.props;
     const { username, addressName } = deliveryDetails || {};
     const isDeliveryType = Utils.isDeliveryType();
     let error = {};
 
     if (!Boolean(addressName) && isDeliveryType) {
       error = {
-        showModal: true,
-        message: 'OrderingCustomer:DeliveryAddressEmptyTitle',
-        description: 'OrderingCustomer:DeliveryAddressEmptyDescription',
-        buttonText: 'OK',
+        show: true,
+        message: t('DeliveryAddressEmptyTitle'),
+        description: t('DeliveryAddressEmptyDescription'),
+        buttonText: t('OK'),
       };
     } else if (!Boolean(username)) {
       error = {
-        showModal: true,
-        message: 'OrderingCustomer:ContactEmptyTitle',
-        description: 'OrderingCustomer:ContactEmptyDescription',
-        buttonText: 'OK',
+        show: true,
+        message: t('ContactEmptyTitle'),
+        description: t('ContactEmptyDescription'),
+        buttonText: t('OK'),
       };
     }
 
@@ -118,27 +119,27 @@ class CustomerInfo extends Component {
   handleBeforeCreateOrder = () => {
     loggly.log('customer.create-order-attempt');
 
-    const { customerActions } = this.props;
+    const { customerInfoActions } = this.props;
     const error = this.validateFields();
 
-    if (error.showModal) {
-      customerActions.setError(error);
+    if (error.show) {
+      customerInfoActions.setCustomerError(error);
     } else {
       this.setState({ processing: true });
     }
   };
 
   handleErrorHide() {
-    const { customerActions } = this.props;
+    const { customerInfoActions } = this.props;
 
-    customerActions.clearError();
+    customerInfoActions.clearCustomerError();
   }
 
   visitPaymentPage = () => {
     const { history, cartBilling } = this.props;
     const { total } = cartBilling || {};
 
-    if (total && !this.validateFields().showModal) {
+    if (total && !this.validateFields().show) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
@@ -286,7 +287,7 @@ class CustomerInfo extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartBilling, error, storeInfoForCleverTap } = this.props;
+    const { t, history, deliveryDetails, cartBilling, customerError, storeInfoForCleverTap } = this.props;
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
@@ -396,7 +397,7 @@ class CustomerInfo extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={processing}
-            validCreateOrder={!total && !this.validateFields().showModal}
+            validCreateOrder={!total && !this.validateFields().show}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
               this.handleBeforeCreateOrder();
@@ -408,9 +409,9 @@ class CustomerInfo extends Component {
             {processing ? t('Processing') : t('Continue')}
           </CreateOrderButton>
         </footer>
-        {error.show ? (
+        {customerError.show ? (
           <MessageModal
-            data={error}
+            data={customerError}
             onHide={() => {
               this.handleErrorHide();
             }}
@@ -434,13 +435,14 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
       cartBilling: getCartBilling(state),
       requestInfo: getRequestInfo(state),
-      error: getCustomerError(state),
+      customerError: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
+      selectAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
+      customerInfoActions: bindActionCreators(customerInfoActionCreators, dispatch),
     })
   )
 )(CustomerInfo);
