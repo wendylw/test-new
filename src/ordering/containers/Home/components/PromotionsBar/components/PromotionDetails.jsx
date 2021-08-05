@@ -1,5 +1,6 @@
 import React, { useCallback, useImperativeHandle, useEffect, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { usePrevious } from 'react-use';
 import WebHeader from '../../../../../../components/WebHeader';
 import PromotionContent from './PromotionContent';
 import _isFunction from 'lodash/isFunction';
@@ -15,15 +16,12 @@ function PromotionDetails({ onHide, promotions, show, inApp, onModalVisibilityCh
       handleHide();
     },
   }));
+  const prevShow = usePrevious(show);
   useEffect(() => {
-    if (show) {
-      if (show) {
-        onModalVisibilityChanged(true);
-      } else {
-        onModalVisibilityChanged(false);
-      }
+    if (show !== prevShow) {
+      onModalVisibilityChanged(show);
     }
-  }, [show, onModalVisibilityChanged]);
+  }, [show, onModalVisibilityChanged, prevShow]);
 
   return (
     <aside className={`promotions-bar__details aside fixed-wrapper ${show ? 'active' : ''}`}>

@@ -96,11 +96,7 @@ class ProductDetailDrawer extends Component {
     const prevShouldShow = this.shouldShowPopover(prevProps);
     if (shouldShow !== prevShouldShow) {
       // show status changed
-      if (shouldShow) {
-        this.props.onModalVisibilityChanged(true);
-      } else {
-        this.props.onModalVisibilityChanged(false);
-      }
+      this.props.onModalVisibilityChanged(shouldShow);
     }
   }
 
@@ -534,7 +530,7 @@ class ProductDetailDrawer extends Component {
   shouldShowPopover(props) {
     const { selectedProduct, show } = props;
     const { id, _needMore } = selectedProduct || {};
-    return show && selectedProduct && id && !_needMore;
+    return !!(show && selectedProduct && id && !_needMore);
   }
 
   renderProductOperator() {

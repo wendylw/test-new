@@ -24,11 +24,7 @@ class CartListDrawer extends Component {
     const { show } = this.props;
     if (show !== prevProps.show) {
       // show status changed
-      if (show) {
-        this.props.onModalVisibilityChanged(true);
-      } else {
-        this.props.onModalVisibilityChanged(false);
-      }
+      this.props.onModalVisibilityChanged(show);
     }
   }
 

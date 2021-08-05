@@ -20,11 +20,7 @@ class StoreInfoAside extends Component {
     const prevShouldShow = this.shouldShowPopover(prevProps, prevState);
     if (shouldShow !== prevShouldShow) {
       // show status changed
-      if (shouldShow) {
-        this.props.onModalVisibilityChanged(true);
-      } else {
-        this.props.onModalVisibilityChanged(false);
-      }
+      this.props.onModalVisibilityChanged(shouldShow);
     }
   }
 
@@ -41,7 +37,7 @@ class StoreInfoAside extends Component {
   shouldShowPopover = (props, state) => {
     const { show, enablePreOrder, isValidTimeToOrder } = props;
     const { initDom } = state;
-    return show || (initDom && !(isValidTimeToOrder || enablePreOrder));
+    return !!(show || (initDom && !(isValidTimeToOrder || enablePreOrder)));
   };
 
   renderDeliveryHour = () => {
