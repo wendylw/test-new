@@ -92,7 +92,7 @@ const legacyFiles = [
   'src/ordering/containers/Customer/containers/AddressDetail/index.js',
   'src/ordering/containers/Customer/containers/AddressList/index.js',
   'src/ordering/containers/Customer/containers/ContactDetail/index.js',
-  'src/ordering/containers/Customer/index.js',
+  'src/ordering/containers/Customer/containers/CustomerInfo/index.js',
   'src/ordering/containers/Customer/utils.js',
   'src/ordering/containers/Error/index.js',
   'src/ordering/containers/Home/__fixtures__/index.js',
