@@ -10,14 +10,19 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionsCreator } from '../../../redux/modules/app';
-import { getCategoryProductList, getProductItemMinHeight } from '../../../redux/modules/home';
+import { actions as appActionsCreator, getCategoryProductList } from '../../../redux/modules/app';
+import { getSelectedProductDetail } from '../redux/common/selectors';
+import { showProductDetail } from '../redux/common/thunks';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import Constants from '../../../../utils/constants';
 import config from '../../../../config';
 import './ProductList.scss';
 
+const PRODUCT_ITEM_MIN_HEIGHT =
+  ((document.body.clientWidth || window.innerWidth) && (document.body.clientWidth || window.innerWidth) < 170
+    ? document.body.clientWidth || window.innerWidth
+    : 414) * 0.26;
 class ProductList extends Component {
   handleGtmEventTracking = (eventName, data) => {
     if (!data) return;
@@ -97,7 +102,7 @@ class ProductList extends Component {
     return false;
   }
 
-  handleShowProductDetail = async product => {
+  handleShowProductDetail = async (product, category) => {
     if (this.isNeedToLocationAndDatePage()) {
       this.gotoLocationAndDatePage();
       return;
@@ -109,8 +114,8 @@ class ProductList extends Component {
       onClickProductItem(product);
     }
 
-    const { responseGql = {} } = await this.props.appActions.loadProductDetail(product);
-    const { data: productDetail = {} } = responseGql;
+    await this.props.showProductDetail({ productId: product.id, categoryId: category.id });
+    const productDetail = this.props.selectedProductDetail;
 
     onToggle('PRODUCT_DETAIL');
 
@@ -118,7 +123,7 @@ class ProductList extends Component {
       onProductDetailShown(product);
     }
 
-    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail.product);
+    this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail);
     await this.props.appActions.loadShoppingCart();
   };
 
@@ -170,7 +175,7 @@ class ProductList extends Component {
   }
 
   render() {
-    const { categories, style, productItemMinHeight } = this.props;
+    const { categories, style } = this.props;
 
     return (
       <div id="product-list" className="category" ref={ref => (this.productList = ref)} style={style}>
@@ -199,7 +204,7 @@ class ProductList extends Component {
                       <LazyLoad
                         key={`product-item-${id}`}
                         offset={0}
-                        height={productItemMinHeight}
+                        height={PRODUCT_ITEM_MIN_HEIGHT}
                         scrollContainer="#product-list"
                       >
                         <ProductItem
@@ -210,7 +215,7 @@ class ProductList extends Component {
                           title={title}
                           variation={variation}
                           details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
-                          handleClickItem={() => this.handleShowProductDetail(product)}
+                          handleClickItem={() => this.handleShowProductDetail(product, category)}
                         >
                           {this.renderProductItemRightController(stockStatus, cartQuantity)}
                         </ProductItem>
@@ -245,11 +250,12 @@ export default compose(
     state => {
       return {
         categories: getCategoryProductList(state),
-        productItemMinHeight: getProductItemMinHeight(state),
+        selectedProductDetail: getSelectedProductDetail(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionsCreator, dispatch),
+      showProductDetail: bindActionCreators(showProductDetail, dispatch),
     })
   )
 )(withRouter(ProductList));

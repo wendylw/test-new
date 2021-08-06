@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { debounce } from 'lodash';
+import _debounce from 'lodash/debounce';
 import {
   getDevicePositionInfo,
   getHistoricalDeliveryAddresses,
@@ -137,7 +137,7 @@ class LocationPicker extends Component {
     }
   }
 
-  debounceSearchPlaces = debounce(async () => {
+  debounceSearchPlaces = _debounce(async () => {
     CleverTap.pushEvent('Location Page - Search for location');
     const { searchText, devicePositionInfo } = this.state;
     const { mode } = this.props;

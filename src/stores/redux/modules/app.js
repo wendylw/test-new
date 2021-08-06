@@ -7,6 +7,7 @@ import Constants from '../../../utils/constants';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { createSelector } from 'reselect';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
+import Utils from '../../../utils/utils';
 
 export const initialState = {
   error: null, // network error
@@ -161,3 +162,5 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
 export const getBusinessDeliveryRadius = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'qrOrderingSettings.deliveryRadius', 0);
 });
+
+export const getDeliveryInfo = createSelector(getBusinessInfo, businessInfo => Utils.getDeliveryInfo(businessInfo));
