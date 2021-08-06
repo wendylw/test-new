@@ -136,11 +136,11 @@ export const initialState = {
   },
 };
 
-export const updateDeliveryDetailsInSessionStorage = data => {
+const updateDeliveryDetailsInSessionStorage = data => {
   return sessionStorage.setItem('deliveryDetails', JSON.stringify(data));
 };
 
-export const gethDeliveryDetailsFromSessionStorage = () => {
+const getDeliveryDetailsFromSessionStorage = () => {
   try {
     return JSON.parse(Utils.getSessionVariable('deliveryDetails'));
   } catch (e) {
@@ -476,7 +476,7 @@ export const actions = {
   },
 
   initDeliveryDetails: () => async (dispatch, getState) => {
-    const deliveryDetailsInSession = gethDeliveryDetailsFromSessionStorage();
+    const deliveryDetailsInSession = getDeliveryDetailsFromSessionStorage();
     const localStoragePhone = localStorage.getItem('user.p') || '';
 
     const payload = {

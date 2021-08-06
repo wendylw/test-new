@@ -170,7 +170,7 @@ class AddressDetail extends Component {
       response = await put(requestUrl.url, data);
     }
     const { _id: addressId } = response || {};
-    appActions.updateDeliveryDetails({
+    await appActions.updateDeliveryDetails({
       addressId,
       addressName: name,
       addressDetails: details,
