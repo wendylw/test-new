@@ -102,7 +102,7 @@ export const actions = {
       city: deliveryToCity,
     } = availableAddress;
 
-    dispatch(
+    await dispatch(
       appActions.updateDeliveryDetails({
         addressId: _id,
         addressName,
