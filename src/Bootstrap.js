@@ -78,7 +78,7 @@ class Bootstrap extends Component {
 
   onErrorScreenBackToHomeButtonClickUpdate = () => {
     if (Utils.isWebview()) {
-      gotoHome();
+      NativeMethods.gotoHome();
     } else {
       document.location.href = '/';
     }
@@ -177,18 +177,11 @@ class Bootstrap extends Component {
 
   render() {
     return (
-<<<<<<< HEAD
       <ErrorBoundary
         fallback={this.renderErrorUpdate ? this.renderErrorUpdate : this.renderError}
         onError={this.handleError}
       >
         <Router>{Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}</Router>
-=======
-      <ErrorBoundary fallback={this.renderError} onError={this.handleError}>
-        <Router key={this.state.remountKey}>
-          {Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}
-        </Router>
->>>>>>> e21e2b1d508d11aee8758633a4d0e9e3af6e9763
       </ErrorBoundary>
     );
   }
