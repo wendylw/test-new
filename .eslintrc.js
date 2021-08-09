@@ -231,7 +231,6 @@ const legacyFiles = [
   'src/redux/modules/entities/products.test.js',
   'src/redux/modules/entities/stores.js',
   'src/redux/modules/entities/stores.test.js',
-  'src/redux/modules/entities/users.js',
   'src/serviceWorker.js',
   'src/setupProxy.js',
   'src/setupTests.js',
