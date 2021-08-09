@@ -7,7 +7,7 @@ import cashbackSuccessImage from '../../../../../../images/succeed-animation.gif
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
 
 const ANIMATION_TIME = 3600;
-const GET_CASHBACK_STATUS_MAPPING = ['Claimed_NotFirstTime', 'Claimed_Repeat', 'Claimed_FirstTime'];
+const GET_CASHBACK_STATUS_LIST = ['Claimed_NotFirstTime', 'Claimed_Repeat', 'Claimed_FirstTime'];
 
 function CashbackInfo(props) {
   const { t, enableCashback, cashback, cashbackStatus } = props;
@@ -24,11 +24,11 @@ function CashbackInfo(props) {
   }
 
   return (
-    GET_CASHBACK_STATUS_MAPPING.includes(cashbackStatus) && (
+    GET_CASHBACK_STATUS_LIST.includes(cashbackStatus) && (
       <div className="ordering-thanks__card-prompt card text-center padding-small margin-normal">
         {cashbackInfoLoaded ? null : (
           <img
-            src={cashbackInfoLoaded ? null : cashbackSuccessImage}
+            src={cashbackSuccessImage}
             alt="cashback Earned"
             onLoad={() => handleHideCashbackSuccessImage()}
             className="ordering-thanks__card-prompt-congratulation absolute-wrapper"
@@ -55,13 +55,13 @@ CashbackInfo.displayName = 'CashbackInfo';
 CashbackInfo.propTypes = {
   enableCashback: PropTypes.bool,
   cashback: PropTypes.number,
-  cashbackStatus: PropTypes.oneOf(GET_CASHBACK_STATUS_MAPPING),
+  cashbackStatus: PropTypes.oneOf(GET_CASHBACK_STATUS_LIST),
 };
 
 CashbackInfo.defaultProps = {
   enableCashback: false,
   cashback: 0,
-  cashbackStatus: GET_CASHBACK_STATUS_MAPPING[0],
+  cashbackStatus: GET_CASHBACK_STATUS_LIST[0],
 };
 
 export default compose(withTranslation('OrderingThankYou'))(CashbackInfo);
