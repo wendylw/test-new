@@ -21,6 +21,7 @@ import {
   getSelectedDay,
   getSelectedFromTime,
   isShowLoading,
+  getOriginalDeliveryType,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -221,7 +222,16 @@ class LocationAndDate extends Component {
 
   goToNext = async () => {
     loggly.log('location-data.continue');
-    const { selectedOrderDate, selectedTime, appActions, storeId, deliveryType, location, history } = this.props;
+    const {
+      selectedOrderDate,
+      selectedTime,
+      appActions,
+      storeId,
+      originalDeliveryType,
+      deliveryType,
+      location,
+      history,
+    } = this.props;
     const expectedDate = {
       date: selectedOrderDate.date.toISOString(),
       isOpen: selectedOrderDate.isOpen,
@@ -247,13 +257,15 @@ class LocationAndDate extends Component {
     const h = decodeURIComponent(this.props.storeHashCode);
     const from = _get(location, 'state.from', null);
 
+    if (originalDeliveryType && originalDeliveryType !== deliveryType) {
+      await CleverTap.pushEvent(`Shipping Details - Switched to ${deliveryType}`);
+    }
+
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       const deliveryTypeHasChanged = this.query.type !== deliveryType;
       const storeHasChanged = storeId !== config.storeId;
 
       if (deliveryTypeHasChanged) {
-        await CleverTap.pushEvent(`Shipping Details - Switched to ${deliveryType}`);
-
         this.gotoOrderingHomePage(deliveryType, h);
         return;
       }
@@ -726,6 +738,7 @@ export default compose(
       selectedFromTime: getSelectedFromTime(state),
       showLoading: isShowLoading(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      originalDeliveryType: getOriginalDeliveryType(state),
     }),
 
     dispatch => ({
