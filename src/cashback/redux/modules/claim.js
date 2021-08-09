@@ -1,4 +1,5 @@
 import Url from '../../../utils/url';
+import Utils from '../../../utils/utils';
 import { CLAIM_TYPES } from '../types';
 import Constants from '../../../utils/constants';
 
@@ -34,6 +35,8 @@ export const actions = {
         receiptNumber,
         phone,
         source,
+        registrationTouchpoint: Utils.getRegistrationTouchPoint(),
+        registrationSource: Utils.getRegistrationSource(),
       },
     },
   }),

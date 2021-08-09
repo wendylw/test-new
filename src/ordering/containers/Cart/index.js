@@ -3,13 +3,13 @@ import { withTranslation, Trans } from 'react-i18next';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import Billing from '../../components/Billing';
-import CartList from './components/CartList.jsx';
-import { IconDelete, IconClose, IconLocalOffer } from '../../../components/Icons';
+import CartList from './components/CartList';
+import { IconClose, IconLocalOffer } from '../../../components/Icons';
+import IconDeleteImage from '../../../images/icon-delete.svg';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
@@ -23,13 +23,7 @@ import {
   getCartBilling,
   getStoreInfoForCleverTap,
 } from '../../redux/modules/app';
-import {
-  actions as cartActionCreators,
-  getCategoryProductList,
-  getAllProductsIds,
-  getCheckingInventoryPendingState,
-  getSelectedProductDetail,
-} from '../../redux/modules/cart';
+import { actions as cartActionCreators, getCheckingInventoryPendingState } from '../../redux/modules/cart';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
@@ -37,7 +31,7 @@ import './OrderingCart.scss';
 import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
-import _isNil from 'lodash';
+import _isNil from 'lodash/isNil';
 import loggly from '../../../utils/monitoring/loggly';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
@@ -436,7 +430,7 @@ class Cart extends Component {
 
     return (
       <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -447,19 +441,18 @@ class Cart extends Component {
             CleverTap.pushEvent('Cart page - click back arrow', storeInfoForCleverTap);
             this.handleClickBack();
           }}
-        >
-          <button
-            className="button flex__shrink-fixed padding-top-bottom-smaller padding-left-right-normal"
-            onClick={() => {
-              CleverTap.pushEvent('Cart page - click clear all', storeInfoForCleverTap);
-              this.handleClearAll();
-            }}
-            data-heap-name="ordering.cart.clear-btn"
-          >
-            <IconDelete className="icon icon__normal icon__error text-middle" />
-            <span className="text-middle text-size-big text-error">{t('ClearAll')}</span>
-          </button>
-        </Header>
+          rightContent={{
+            icon: IconDeleteImage,
+            text: t('ClearAll'),
+            style: {
+              color: '#fa4133',
+            },
+            attributes: {
+              'data-heap-name': 'ordering.cart.clear-btn',
+            },
+            onClick: this.handleClearAll,
+          }}
+        ></HybridHeader>
         <div
           className="ordering-cart__container"
           style={{
@@ -562,7 +555,6 @@ export default compose(
     state => {
       return {
         pendingCheckingInventory: getCheckingInventoryPendingState(state),
-
         business: getBusiness(state),
         user: getUser(state),
         cartBilling: getCartBilling(state),
@@ -571,8 +563,6 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        allProductsIds: getAllProductsIds(state),
-        categories: getCategoryProductList(state),
       };
     },
     dispatch => ({

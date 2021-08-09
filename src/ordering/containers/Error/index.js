@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 import { getPageError } from '../../../redux/modules/entities/error';
 import config from '../../../config';
 import Utils from '../../../utils/utils';
+import * as NativeMethods from '../../../utils/native-methods';
+import NativeHeader from '../../../components/NativeHeader';
 export class Error extends Component {
   getCurrentErrorType(type) {
     if (!type) {
@@ -33,6 +35,16 @@ export class Error extends Component {
     return Errors[type.replace(/\s/g, '')] || {};
   }
 
+  handleGoBack = () => {
+    Utils.removeSessionVariable('errorMessage');
+
+    if (Utils.isWebview()) {
+      NativeMethods.gotoHome();
+    } else {
+      window.location.href = config.beepitComUrl;
+    }
+  };
+
   render() {
     const { t, error } = this.props;
     const { message } = error || {};
@@ -40,20 +52,20 @@ export class Error extends Component {
     const { title, description } = this.getCurrentErrorType(errorMessage || message);
 
     return (
-      <ErrorPage title={title} description={description} data-heap-name="ordering.error-page.container">
-        <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
-          <button
-            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-            data-heap-name="common.error-page.back-btn"
-            onClick={() => {
-              Utils.removeSessionVariable('errorMessage');
-              return (window.location.href = config.beepitComUrl);
-            }}
-          >
-            {t('BackToHome')}
-          </button>
-        </footer>
-      </ErrorPage>
+      <>
+        {Utils.isWebview() && <NativeHeader />}
+        <ErrorPage title={title} description={description} data-heap-name="ordering.error-page.container">
+          <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+            <button
+              className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+              data-heap-name="common.error-page.back-btn"
+              onClick={this.handleGoBack}
+            >
+              {t('BackToHome')}
+            </button>
+          </footer>
+        </ErrorPage>
+      </>
     );
   }
 }

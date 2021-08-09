@@ -9,7 +9,6 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
 import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
@@ -19,15 +18,11 @@ import {
   getRequestInfo,
   getCartBilling,
   getStoreInfoForCleverTap,
+  getStoresList,
+  getDeliveryInfo,
+  getCategoryProductList,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
-import {
-  actions as homeActionCreators,
-  getCategoryProductList,
-  getDeliveryInfo,
-  getPopUpModal,
-  getStoresList,
-} from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';
@@ -37,6 +32,7 @@ import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
 import Header from '../../../components/Header';
+import NativeHeader from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
@@ -49,6 +45,7 @@ import ProductList from './components/ProductList';
 import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
+import * as NativeMethods from '../../../utils/native-methods';
 
 const localState = {
   blockScrollTop: 0,
@@ -78,6 +75,11 @@ export class Home extends Component {
 
     if (Utils.isDineInType()) {
       this.checkTableId();
+    }
+
+    if (isSourceBeepitCom()) {
+      const source = Utils.getQueryString('source');
+      sessionStorage.setItem('orderSource', source);
     }
   }
   deliveryEntryEl = null;
@@ -135,14 +137,14 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { homeActions, deliveryInfo, appActions } = this.props;
+    const { deliveryInfo, appActions } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
 
-    await homeActions.loadProductList();
+    await appActions.loadProductList();
 
     const pageRf = this.getPageRf();
 
@@ -150,7 +152,7 @@ export class Home extends Component {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
 
-    await Promise.all([appActions.loadCoreBusiness(), homeActions.loadCoreStores()]);
+    await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -513,11 +515,6 @@ export class Home extends Component {
       return null;
     }
 
-    if (isSourceBeepitCom()) {
-      const source = Utils.getQueryString('source');
-      sessionStorage.setItem('orderSource', source);
-    }
-
     const isValidTimeToOrder = this.isValidTimeToOrder();
     const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
 
@@ -850,6 +847,7 @@ export class Home extends Component {
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId, shippingType } = requestInfo || {};
     const { promotions } = businessInfo || {};
+    const isWebview = Utils.isWebview();
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -857,6 +855,20 @@ export class Home extends Component {
 
     return (
       <section className="ordering-home flex flex-column">
+        {isWebview && (
+          <NativeHeader
+            isPage={true}
+            title={window.document.title}
+            navFunc={() => {
+              if (viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL) {
+                this.handleToggleAside();
+                return;
+              }
+
+              NativeMethods.closeWebView();
+            }}
+          />
+        )}
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
         <PromotionsBar
@@ -949,10 +961,11 @@ export class Home extends Component {
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
+          hideCloseButton={isWebview}
           onIncreaseProductDetailItem={(product = {}) => {
             this.cleverTapTrack('Product details - Increase quantity', this.formatCleverTapAttributes(product));
           }}
-          onDncreaseProductDetailItem={(product = {}) => {
+          onDecreaseProductDetailItem={(product = {}) => {
             this.cleverTapTrack('Product details - Decrease quantity', this.formatCleverTapAttributes(product));
           }}
           onUpdateCartOnProductDetail={(product = {}) => {
@@ -1027,7 +1040,6 @@ export default compose(
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
         businessLoaded: getBusinessIsLoaded(state),
-        popUpModal: getPopUpModal(state),
         cartBilling: getCartBilling(state),
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
@@ -1036,8 +1048,6 @@ export default compose(
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
-      storesActions: bindActionCreators(storesActionCreators, dispatch),
       appActions: bindActionCreators(appActionsCreators, dispatch),
     })
   )

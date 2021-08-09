@@ -10,7 +10,7 @@ import ErrorUpdateComponent from './components/ErrorUpdate';
 import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
-import { gotoHome } from './utils/webview-utils';
+import * as NativeMethods from './utils/native-methods';
 import loggly from './utils/monitoring/loggly';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
@@ -30,6 +30,10 @@ const AsyncVoucher = lazy(() => Utils.attemptLoad(() => import('./voucher')));
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 class Bootstrap extends Component {
+  state = {
+    remountKey: Date.now(),
+  };
+
   handleError = (error, componentStack, eventId) => {
     window.newrelic?.addPageAction('common.render-error', {
       error: error?.message,
@@ -46,9 +50,27 @@ class Bootstrap extends Component {
     });
   };
 
+  componentDidMount() {
+    window.addEventListener('pageshow', this.handlePageShow);
+  }
+
+  handlePageShow = event => {
+    if (event.persisted) {
+      // Trigger remount all components, for fixing back cache
+      // Fixed Issues: https://storehub.atlassian.net/browse/BEEP-784
+      this.setState({
+        remountKey: Date.now(),
+      });
+    }
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener('pageshow', this.handlePageShow);
+  }
+
   onErrorScreenBackToHomeButtonClick = () => {
     if (Utils.isWebview()) {
-      gotoHome();
+      NativeMethods.gotoHome();
     } else {
       document.location.href = '/';
     }
@@ -155,11 +177,18 @@ class Bootstrap extends Component {
 
   render() {
     return (
+<<<<<<< HEAD
       <ErrorBoundary
         fallback={this.renderErrorUpdate ? this.renderErrorUpdate : this.renderError}
         onError={this.handleError}
       >
         <Router>{Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}</Router>
+=======
+      <ErrorBoundary fallback={this.renderError} onError={this.handleError}>
+        <Router key={this.state.remountKey}>
+          {Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}
+        </Router>
+>>>>>>> e21e2b1d508d11aee8758633a4d0e9e3af6e9763
       </ErrorBoundary>
     );
   }

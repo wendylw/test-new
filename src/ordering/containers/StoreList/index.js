@@ -4,12 +4,16 @@ import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import Image from '../../../components/Image';
 import { IconChecked } from '../../../components/Icons';
-
-import { actions as homeActionCreators, getStoresList, getStoreHashCode } from '../../redux/modules/home';
-import { actions as appActionCreators, getOnlineStoreInfo, getBusinessUTCOffset } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getOnlineStoreInfo,
+  getBusinessUTCOffset,
+  getStoresList,
+  getStoreHashCode,
+} from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
 import { IconLocation } from '../../../components/Icons';
 import Tag from '../../../components/Tag';
@@ -92,7 +96,7 @@ class StoreList extends Component {
         },
       };
     }
-    await this.props.homeActions.loadCoreStores(
+    await this.props.appActions.loadCoreStores(
       this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY ? address : ''
     );
 
@@ -140,7 +144,7 @@ class StoreList extends Component {
             state: from ? { from } : null,
           });
         } else {
-          await this.props.homeActions.getStoreHashData(store.id);
+          await this.props.appActions.getStoreHashData(store.id);
           window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
             Constants.ROUTER_PATHS.ORDERING_HOME
           }?h=${this.props.storeHash}&type=${this.state.search.type ||
@@ -182,7 +186,7 @@ class StoreList extends Component {
     return (
       (onlineStoreInfo && (
         <section className="ordering-stores flex flex-column" data-heap-name="ordering.store-list.container">
-          <Header
+          <HybridHeader
             className="flex-middle"
             contentClassName="flex-middle"
             isPage={true}
@@ -241,7 +245,6 @@ export default compose(
       businessUTCOffset: getBusinessUTCOffset(state),
     }),
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
