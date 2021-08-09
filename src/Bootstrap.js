@@ -78,7 +78,7 @@ class Bootstrap extends Component {
 
   onErrorScreenBackToHomeButtonClickUpdate = () => {
     if (Utils.isWebview()) {
-      gotoHome();
+      NativeMethods.gotoHome();
     } else {
       document.location.href = '/';
     }
