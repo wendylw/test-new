@@ -186,7 +186,6 @@ const legacyFiles = [
   'src/ordering/redux/modules/cart.js',
   'src/ordering/redux/modules/cartAction.test.js',
   'src/ordering/redux/modules/cartReducer.test.js',
-  'src/ordering/redux/modules/customer.js',
   'src/ordering/redux/modules/index.js',
   'src/ordering/redux/modules/locationAndDate.js',
   'src/ordering/redux/modules/promotion.js',

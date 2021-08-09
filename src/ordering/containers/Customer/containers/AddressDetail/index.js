@@ -12,7 +12,7 @@ import {
   getStoreInfoForCleverTap,
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
-import { actions as customerActionCreators, getSavedAddressInfo } from '../../../../redux/modules/customer';
+import { actions as customerActionCreators, getAddressInfo } from './redux';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
@@ -37,7 +37,7 @@ class AddressDetail extends Component {
   }
 
   componentDidMount = async () => {
-    const { deliveryDetails, savedAddressInfo, customerActions, location } = this.props;
+    const { deliveryDetails, addressInfo, customerActions, location } = this.props;
     const {
       addressId,
       addressName,
@@ -47,8 +47,7 @@ class AddressDetail extends Component {
       deliveryToLocation,
       deliveryToCity,
     } = deliveryDetails || {};
-    const { address: savedAddress, coords: savedCoords, addressComponents: savedAddressComponents } =
-      savedAddressInfo || {};
+    const { address: savedAddress, coords: savedCoords, addressComponents: savedAddressComponents } = addressInfo || {};
     const { address, coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
     const deliveryAddressUpdate = Boolean(Utils.getSessionVariable('deliveryAddressUpdate'));
 
@@ -58,14 +57,14 @@ class AddressDetail extends Component {
       hasAnyChanges: deliveryAddressUpdate,
     });
 
-    // if choose a new location, update the savedAddressInfo
+    // if choose a new location, update the addressInfo
     if (
       address !== savedAddress ||
       coords.lat !== savedCoords.latitude ||
       coords.lng !== savedCoords.longitude ||
       addressComponents.city !== savedAddressComponents.city
     ) {
-      customerActions.updateSavedAddressInfo({
+      customerActions.updateAddressInfo({
         address: address,
         coords: {
           latitude: coords.lat,
@@ -76,7 +75,7 @@ class AddressDetail extends Component {
     }
 
     if (location.state && location.state.fromCustomer) {
-      customerActions.updateSavedAddressInfo({
+      customerActions.updateAddressInfo({
         id: addressId,
         type: actions.EDIT,
         name: addressName,
@@ -92,7 +91,7 @@ class AddressDetail extends Component {
     }
 
     if (location.state && location.state.fromAddressList) {
-      customerActions.updateSavedAddressInfo({
+      customerActions.updateAddressInfo({
         type: actions.ADD,
         address,
         coords: { longitude: coords.lng, latitude: coords.lat },
@@ -102,12 +101,12 @@ class AddressDetail extends Component {
   };
 
   handleClickBack = () => {
-    const { history, savedAddressInfo, customerActions } = this.props;
-    const { type } = savedAddressInfo || {};
+    const { history, addressInfo, customerActions } = this.props;
+    const { type } = addressInfo || {};
     const pathname = type === actions.ADD ? '/customer/addressList' : '/customer';
 
     CleverTap.pushEvent('Address details - click back arrow');
-    customerActions.removeSavedAddressInfo();
+    customerActions.removeAddressInfo();
     history.push({
       pathname,
       search: window.location.search,
@@ -121,11 +120,11 @@ class AddressDetail extends Component {
 
     const inputValue = e.target.value;
     if (e.target.name === 'addressName') {
-      this.props.customerActions.updateSavedAddressInfo({ name: inputValue });
+      this.props.customerActions.updateAddressInfo({ name: inputValue });
     } else if (e.target.name === 'addressDetails') {
-      this.props.customerActions.updateSavedAddressInfo({ details: inputValue });
+      this.props.customerActions.updateAddressInfo({ details: inputValue });
     } else if (e.target.name === 'deliveryComments') {
-      this.props.customerActions.updateSavedAddressInfo({ comments: inputValue });
+      this.props.customerActions.updateAddressInfo({ comments: inputValue });
     }
   };
 
@@ -146,8 +145,8 @@ class AddressDetail extends Component {
   };
 
   createOrUpdateAddress = async () => {
-    const { history, user, savedAddressInfo, customerActions, appActions } = this.props;
-    const { id, type, name, address, details, comments, coords, addressComponents } = savedAddressInfo;
+    const { history, user, addressInfo, customerActions, appActions } = this.props;
+    const { id, type, name, address, details, comments, coords, addressComponents } = addressInfo;
     const { consumerId } = user || {};
     const data = {
       addressName: name,
@@ -179,7 +178,7 @@ class AddressDetail extends Component {
       deliveryToLocation: coords,
       deliveryToCity: addressComponents && addressComponents.city ? addressComponents.city : '',
     });
-    customerActions.removeSavedAddressInfo();
+    customerActions.removeAddressInfo();
     if (Utils.hasNativeSavedAddress()) {
       const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
       sessionStorage.setItem('deliveryAddress', JSON.stringify({ ...deliveryAddress, addressName: name }));
@@ -194,8 +193,8 @@ class AddressDetail extends Component {
 
   render() {
     const { hasAnyChanges } = this.state;
-    const { t, savedAddressInfo } = this.props;
-    const { type, name, address, details, comments } = savedAddressInfo || {};
+    const { t, addressInfo } = this.props;
+    const { type, name, address, details, comments } = addressInfo || {};
 
     return (
       <div className="flex flex-column address-detail">
@@ -323,7 +322,7 @@ export default compose(
     state => ({
       user: getUser(state),
       deliveryDetails: getDeliveryDetails(state),
-      savedAddressInfo: getSavedAddressInfo(state),
+      addressInfo: getAddressInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
