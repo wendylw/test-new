@@ -60,6 +60,14 @@ class LocationAndDate extends Component {
     // if delivery address updated from location page, should trigger `initial action` find nearest store
     const storeId = deliveryAddressUpdate && deliveryAddress.coords ? null : config.storeId;
 
+    if (deliveryType === DELIVERY_METHOD.DELIVERY) {
+      CleverTap.pushEvent(
+        `Shipping Details${
+          _get(deliveryAddress, 'address', undefined) ? '' : ' (missing delivery address)'
+        } - View Page`
+      );
+    }
+
     await actions.initial({
       currentDate: new Date(),
       deliveryType: this.props.deliveryType || deliveryType,
@@ -244,6 +252,8 @@ class LocationAndDate extends Component {
       const storeHasChanged = storeId !== config.storeId;
 
       if (deliveryTypeHasChanged) {
+        await CleverTap.pushEvent(`Shipping Details - Switched to ${deliveryType}`);
+
         this.gotoOrderingHomePage(deliveryType, h);
         return;
       }
@@ -476,7 +486,7 @@ class LocationAndDate extends Component {
     return (
       <li key={dateDayjs.format()}>
         <button
-          className={`location-date__button-date button 
+          className={`location-date__button-date button
           ${isSelected ? 'button__fill' : 'button__outline'}
           padding-top-bottom-smaller padding-left-right-normal margin-left-right-small
           ${isToday ? 'text-uppercase' : ''}`}
@@ -621,7 +631,7 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryContainer = () => {
-    const { t, deliveryAddress } = this.props;
+    const { deliveryAddress } = this.props;
     return (
       <Fragment>
         {this.renderDeliveryTo()}
