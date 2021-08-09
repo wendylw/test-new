@@ -42,46 +42,6 @@ function URLError(props) {
   );
 }
 
-// class URLError extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {};
-//   }
-
-//   render() {
-//     const { t } = this.props;
-//     const { title, description, children } = this.props || {};
-//     const error = {
-//       title,
-//       description,
-//     };
-
-//     if (!title && !description) {
-//       error.title = `${t('Eep')}!`;
-//       error.description = t('ErrorPageDescription');
-//     }
-
-//     return (
-//       <section className="error flex flex-column">
-//         <div className="error__container">
-//           <figure className="error__image-container margin-top-bottom-normal text-center">
-//             <img src={beepErrorImage} alt="Error found" />
-//           </figure>
-//           <div className="error__content padding-small margin-top-bottom-small">
-//             {title ? <h2 className="error__title text-center text-size-large">{title}</h2> : null}
-//             {description ? (
-//               <div className="error__description_update margin-top-bottom-small text-center">
-//                 <div className="text-size-big text-line-height-base">{description}</div>
-//               </div>
-//             ) : null}
-//           </div>
-//         </div>
-//         {children}
-//       </section>
-//     );
-//   }
-// }
-
 // URLError.propTypes = {
 //   title: PropTypes.node,
 //   description: PropTypes.node,

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Route, Redirect } from 'react-router-dom';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
