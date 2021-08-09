@@ -11,6 +11,7 @@
   "Sorry": "Sorry",
   "Processing": "Processing",
   "BackToHome": "Back to home",
+  "SatisfyYourCravingsHere": "Satisfy your cravings here",
   "Save": "Save",
   "Free": "Free",
   "ContactUs": "Contact Us",
@@ -191,7 +192,9 @@
   "ReportIssue": "Report Issue",
   "NeedHelp": "Need Help",
   "CommonErrorMessage": "Whoops, this page isn't available",
+  "CommonErrorMessageUpdate": "What the Beep?",
   "ErrorId": "Error ID: {{ id }}",
+  "ErrorContent" : "So sorry, it seems like this page does not exist. Go back to our homepage and order food from the best restaurants and cafes near you!",
   "LowStockProductQuantity": "only {{quantityOnHand}} left",
   "EmailAddress": "Email Address (optional)"
 }
