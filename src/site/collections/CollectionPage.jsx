@@ -1,5 +1,4 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
@@ -18,7 +17,7 @@ import { checkStateRestoreStatus } from '../redux/modules/index';
 import { collectionCardActionCreators, getCurrentCollection } from '../redux/modules/entities/storeCollections';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
-import ErrorUpdateComponent from '../../components/ErrorUpdate';
+import ErrorUpdateComponent from '../../components/URLError';
 import Utils from '../../../src/utils/utils';
 const { COLLECTIONS_TYPE } = constants;
 
@@ -158,17 +157,16 @@ class CollectionPage extends React.Component {
       </div>
     );
   };
-  onErrorScreenBackToHomeButtonClickUpdate = () => {
+  handleErrorScreenBackToHomeButtonClick = () => {
     document.location.href = '/';
   };
   render() {
-    const { currentCollection } = this.props;
+    const { currentCollection, t } = this.props;
     if (currentCollection) {
-      if (Object.keys(currentCollection).length === 0) {
+      if (currentCollection && Object.keys(currentCollection).length === 0) {
         return null;
       }
     }
-    const { t } = this.props;
 
     return currentCollection ? (
       <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
@@ -187,7 +185,7 @@ class CollectionPage extends React.Component {
         <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-            onClick={this.onErrorScreenBackToHomeButtonClickUpdate}
+            onClick={this.handleErrorScreenBackToHomeButtonClick}
           >
             {t('SatisfyYourCravingsHere')}
           </button>
