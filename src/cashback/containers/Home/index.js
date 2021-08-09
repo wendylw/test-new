@@ -8,8 +8,6 @@ import RecentActivities from './components/RecentActivities';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import DownloadBanner from '../../../components/DownloadBanner';
 
-import qs from 'qs';
-
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -27,10 +25,7 @@ class PageLoyalty extends React.Component {
   };
 
   async componentDidMount() {
-    const { history, appActions, homeActions } = this.props;
-    const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    await homeActions.setCustomerId(customerId);
+    const { appActions } = this.props;
     await appActions.setCashbackMessage();
     appActions.showMessageInfo();
   }
@@ -77,7 +72,6 @@ class PageLoyalty extends React.Component {
     const { displayBusinessName, name } = businessInfo || {};
     const { logo } = onlineStoreInfo || {};
     const { showRecentActivities } = this.state;
-    const { customerId = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     return !showRecentActivities ? (
       <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
         <article className="loyalty-home__article text-center margin-top-bottom-normal">
@@ -102,7 +96,7 @@ class PageLoyalty extends React.Component {
         <ReceiptList history={history} />
       </section>
     ) : (
-      <RecentActivities history={history} customerId={customerId} closeActivity={this.closeActivity.bind(this)} />
+      <RecentActivities history={history} closeActivity={this.closeActivity.bind(this)} />
     );
   }
 }
@@ -119,7 +113,6 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
 )(PageLoyalty);

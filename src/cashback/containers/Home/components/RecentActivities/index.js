@@ -119,7 +119,7 @@ class RecentActivities extends React.Component {
   }
 
   render() {
-    const { t, history, customerId, closeActivity } = this.props;
+    const { t, closeActivity } = this.props;
 
     return (
       <section
@@ -138,10 +138,6 @@ class RecentActivities extends React.Component {
           title={t('CashbackHistory')}
           isPage={true}
           navFunc={() => {
-            history.push({
-              pathname: Constants.ROUTER_PATHS.CASHBACK_HOME,
-              search: `?customerId=${customerId || ''}`,
-            });
             closeActivity();
           }}
         />
