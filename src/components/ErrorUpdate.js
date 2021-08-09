@@ -59,6 +59,7 @@ class ErrorUpdate extends React.Component {
 ErrorUpdate.defaultProps = {
   title: '',
   description: '',
+  test: '',
 };
 
 ErrorUpdate.displayName = 'ErrorUpdate';
