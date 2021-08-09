@@ -6,6 +6,7 @@ import Utils from './utils/utils';
 import NotFound from './containers/NotFound';
 import { ErrorBoundary } from '@sentry/react';
 import ErrorComponent from './components/Error';
+import ErrorUpdateComponent from './components/ErrorUpdate';
 import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
@@ -46,6 +47,14 @@ class Bootstrap extends Component {
   };
 
   onErrorScreenBackToHomeButtonClick = () => {
+    if (Utils.isWebview()) {
+      gotoHome();
+    } else {
+      document.location.href = '/';
+    }
+  };
+
+  onErrorScreenBackToHomeButtonClickUpdate = () => {
     if (Utils.isWebview()) {
       gotoHome();
     } else {
@@ -122,9 +131,34 @@ class Bootstrap extends Component {
     );
   };
 
+  //update
+  renderErrorUpdate = () => {
+    return (
+      <Translation i18n={i18n}>
+        {t => (
+          <main className="fixed-wrapper fixed-wrapper__main bootstrap__render-error">
+            <ErrorUpdateComponent title={t('CommonErrorMessageUpdate')} description={t('ErrorContent')}>
+              <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+                <button
+                  className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+                  onClick={this.onErrorScreenBackToHomeButtonClickUpdate}
+                >
+                  {t('SatisfyYourCravingsHere')}
+                </button>
+              </footer>
+            </ErrorUpdateComponent>
+          </main>
+        )}
+      </Translation>
+    );
+  };
+
   render() {
     return (
-      <ErrorBoundary fallback={this.renderError} onError={this.handleError}>
+      <ErrorBoundary
+        fallback={this.renderErrorUpdate ? this.renderErrorUpdate : this.renderError}
+        onError={this.handleError}
+      >
         <Router>{Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}</Router>
       </ErrorBoundary>
     );

@@ -392,6 +392,7 @@ module.exports = {
         'import/prefer-default-export': [0],
         'no-nested-ternary': [0],
         'class-methods-use-this': [0],
+        'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
       },
     },
     {
