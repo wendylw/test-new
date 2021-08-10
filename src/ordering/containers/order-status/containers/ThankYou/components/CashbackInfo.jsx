@@ -13,16 +13,17 @@ function CashbackInfo(props) {
   const timeoutRef = useRef(null);
   const { t, enableCashback, cashback, cashbackStatus } = props;
   const [cashbackInfoLoaded, setCashbackInfoLoaded] = useState(false);
+  const [imgLoaded, setImageLoaded] = useState(false);
   const handleHideCashbackSuccessImage = useCallback(() => setCashbackInfoLoaded(false), []);
 
   useEffect(() => {
     timeoutRef.current =
-      cashbackInfoLoaded && (timeoutRef.current || setTimeout(handleHideCashbackSuccessImage, ANIMATION_TIME));
+      imgLoaded && (timeoutRef.current || setTimeout(handleHideCashbackSuccessImage, ANIMATION_TIME));
 
     return () => {
       clearTimeout(timeoutRef.current);
     };
-  }, [cashbackInfoLoaded, handleHideCashbackSuccessImage]);
+  }, [imgLoaded, handleHideCashbackSuccessImage]);
 
   if (!enableCashback || !cashback) {
     return null;
@@ -35,7 +36,7 @@ function CashbackInfo(props) {
           <img
             src={cashbackSuccessImage}
             alt="cashback Earned"
-            onLoad={() => handleHideCashbackSuccessImage()}
+            onLoad={() => setImageLoaded(true)}
             className="ordering-thanks__card-prompt-congratulation absolute-wrapper"
           />
         )}
