@@ -6,7 +6,6 @@ import Utils from './utils/utils';
 import NotFound from './containers/NotFound';
 import { ErrorBoundary } from '@sentry/react';
 import ErrorComponent from './components/Error';
-import ErrorUpdateComponent from './components/URLError';
 import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
@@ -76,14 +75,6 @@ class Bootstrap extends Component {
     }
   };
 
-  onErrorScreenBackToHomeButtonClickUpdate = () => {
-    if (Utils.isWebview()) {
-      NativeMethods.gotoHome();
-    } else {
-      document.location.href = '/';
-    }
-  };
-
   renderSitePages = () => {
     return (
       <Suspense fallback={<div className="loader theme full-page"></div>}>
@@ -137,7 +128,7 @@ class Bootstrap extends Component {
       <Translation i18n={i18n}>
         {t => (
           <main className="fixed-wrapper fixed-wrapper__main bootstrap__render-error">
-            <ErrorComponent title={t('CommonErrorMessage')} description={t('ErrorId', { id: eventId })}>
+            <ErrorComponent id title={t('CommonErrorMessage')} description={t('ErrorId', { id: eventId })}>
               <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
                 <button
                   className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
@@ -153,32 +144,12 @@ class Bootstrap extends Component {
     );
   };
 
-  //update
-  renderErrorUpdate = () => {
-    return (
-      <Translation i18n={i18n}>
-        {t => (
-          <main className="fixed-wrapper fixed-wrapper__main bootstrap__render-error">
-            <ErrorUpdateComponent title={t('CommonErrorMessageUpdate')} description={t('ErrorContent')}>
-              <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
-                <button
-                  className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-                  onClick={this.onErrorScreenBackToHomeButtonClickUpdate}
-                >
-                  {t('SatisfyYourCravingsHere')}
-                </button>
-              </footer>
-            </ErrorUpdateComponent>
-          </main>
-        )}
-      </Translation>
-    );
-  };
-
   render() {
     return (
       <ErrorBoundary fallback={this.renderError} onError={this.handleError}>
-        <Router>{Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}</Router>
+        <Router key={this.state.remountKey}>
+          {Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}
+        </Router>
       </ErrorBoundary>
     );
   }

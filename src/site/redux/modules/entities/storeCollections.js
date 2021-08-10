@@ -5,7 +5,7 @@ import { getCountryCodeByPlaceInfo } from '../../../../utils/geoUtils';
 import { combineReducers } from 'redux';
 import constants from '../../../../utils/constants';
 
-const { COLLECTIONS_TYPE } = constants;
+const { COLLECTIONS_TYPE, API_REQUEST_STATUS } = constants;
 
 const initialState = {
   pageInfo: {
@@ -15,7 +15,10 @@ const initialState = {
       hasMore: true,
     },
   },
-  currentCollection: {},
+  currentCollection: {
+    data: {},
+    status: null,
+  },
   collections: {
     Icon: [],
     SearchOthers: [],
@@ -137,9 +140,23 @@ const pageInfo = (state = initialState.pageInfo.SearchOthers, action) => {
 
 const currentCollection = (state = initialState.currentCollection, action) => {
   switch (action.type) {
+    case types.GET_CURRENT_COLLECTION_REQUEST:
+      return {
+        ...state,
+        status: API_REQUEST_STATUS.PENDING,
+      };
     case types.GET_CURRENT_COLLECTION_SUCCESS:
       const { response } = action;
-      return response;
+      return {
+        ...state,
+        data: response,
+        status: API_REQUEST_STATUS.FULFILLED,
+      };
+    case types.GET_CURRENT_COLLECTION_FAILURE:
+      return {
+        ...state,
+        state: API_REQUEST_STATUS.REJECTED,
+      };
     default:
       return state;
   }
@@ -155,7 +172,8 @@ export default combineReducers({
 // @selector
 export const getAllStoreCollections = state => state.entities.storeCollections.collections;
 export const getStorePageInfo = state => state.entities.storeCollections.pageInfo;
-export const getCurrentCollection = state => state.entities.storeCollections.currentCollection;
+export const getCurrentCollection = state => state.entities.storeCollections.currentCollection.data;
+export const getCurrentCollectionStatus = state => state.entities.storeCollections.currentCollection.status;
 export const getOtherCollections = state => getAllStoreCollections(state)[COLLECTIONS_TYPE.OTHERS];
 export const getPopupCollections = state => getAllStoreCollections(state)[COLLECTIONS_TYPE.POPULAR];
 export const getIconCollections = state => getAllStoreCollections(state)[COLLECTIONS_TYPE.ICON];

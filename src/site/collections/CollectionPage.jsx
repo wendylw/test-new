@@ -1,5 +1,4 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
@@ -15,13 +14,16 @@ import '../home/index.scss';
 import './CollectionPage.scss';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
-import { collectionCardActionCreators, getCurrentCollection } from '../redux/modules/entities/storeCollections';
+import {
+  collectionCardActionCreators,
+  getCurrentCollection,
+  getCurrentCollectionStatus,
+} from '../redux/modules/entities/storeCollections';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
-import ErrorUpdateComponent from '../../components/URLError';
-import Utils from '../../../src/utils/utils';
+import ErrorComponent from '../../components/Error';
 import PageLoader from '../../../src/components/PageLoader';
-const { COLLECTIONS_TYPE } = constants;
+const { COLLECTIONS_TYPE, API_REQUEST_STATUS } = constants;
 
 class CollectionPage extends React.Component {
   renderId = `${Date.now()}`;
@@ -32,21 +34,20 @@ class CollectionPage extends React.Component {
     await this.props.collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
     if (!this.props.currentCollection) {
       await this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
+      return;
     }
     const { currentCollection } = this.props;
-    if (currentCollection) {
-      const { shippingType, urlPath, name, beepCollectionId } = currentCollection;
-      if (!checkStateRestoreStatus()) {
-        const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
-        this.props.collectionsActions.setShippingType(type);
-        this.props.collectionsActions.resetPageInfo(type);
-      }
-      this.props.collectionsActions.getStoreList(urlPath);
-      CleverTap.pushEvent('Collection Page - View Collection Page', {
-        'collection name': name,
-        'collection id': beepCollectionId,
-      });
+    const { shippingType, urlPath, name, beepCollectionId } = currentCollection;
+    if (!checkStateRestoreStatus()) {
+      const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
+      this.props.collectionsActions.setShippingType(type);
+      this.props.collectionsActions.resetPageInfo(type);
     }
+    this.props.collectionsActions.getStoreList(urlPath);
+    CleverTap.pushEvent('Collection Page - View Collection Page', {
+      'collection name': name,
+      'collection id': beepCollectionId,
+    });
   };
 
   backToPreviousPage = () => {
@@ -163,14 +164,11 @@ class CollectionPage extends React.Component {
     document.location.href = '/';
   };
   render() {
-    const { currentCollection, t } = this.props;
-    if (currentCollection) {
-      if (currentCollection && Object.keys(currentCollection).length === 0) {
-        return <PageLoader />;
-      }
+    const { currentCollection, t, currentCollectionStatus } = this.props;
+    if (currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
+      return <PageLoader />;
     }
-
-    return currentCollection ? (
+    return currentCollection && Object.keys(currentCollection).length ? (
       <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
         {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
         <section
@@ -183,7 +181,7 @@ class CollectionPage extends React.Component {
         </section>
       </ModalPageLayout>
     ) : (
-      <ErrorUpdateComponent title={t('CommonErrorMessageUpdate')} description={t('ErrorContent')}>
+      <ErrorComponent title={t('CommonErrorMessageUpdate')} description={t('ErrorContent')}>
         <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <button
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
@@ -192,7 +190,7 @@ class CollectionPage extends React.Component {
             {t('SatisfyYourCravingsHere')}
           </button>
         </footer>
-      </ErrorUpdateComponent>
+      </ErrorComponent>
     );
   }
 }
@@ -204,6 +202,7 @@ export default compose(
   connect(
     state => ({
       currentCollection: getCurrentCollection(state),
+      currentCollectionStatus: getCurrentCollectionStatus(state),
       stores: getStoreList(state),
       pageInfo: getPageInfo(state),
       storeLinkInfo: getStoreLinkInfo(state),
