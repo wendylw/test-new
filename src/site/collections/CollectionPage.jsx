@@ -20,6 +20,7 @@ import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
 import ErrorUpdateComponent from '../../components/URLError';
 import Utils from '../../../src/utils/utils';
+import PageLoader from '../../../src/components/PageLoader';
 const { COLLECTIONS_TYPE } = constants;
 
 class CollectionPage extends React.Component {
@@ -165,7 +166,7 @@ class CollectionPage extends React.Component {
     const { currentCollection, t } = this.props;
     if (currentCollection) {
       if (currentCollection && Object.keys(currentCollection).length === 0) {
-        return null;
+        return <PageLoader />;
       }
     }
 
