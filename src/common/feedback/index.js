@@ -17,9 +17,10 @@ import Alert from './Alert';
 const normalizeContent = content => content || null;
 const normalizeAlertOptions = options => ({
   buttonContent: null,
-  className: '',
+  className: null,
+  container: document.body,
   style: {},
-  close: () => {},
+  onClose: () => {},
   ...options,
 });
 const destroyFeedback = target => {
@@ -36,8 +37,8 @@ const createAlertFeedback = (content, options) => {
 
   ReactDOM.render(
     React.createElement(Alert, {
-      content: normalizeContent(content),
-      ...normalizeAlertOptions(otherOptions),
+      content,
+      ...otherOptions,
       close: async () => {
         await onClose();
         destroyFeedback(rootDOM);
@@ -47,8 +48,8 @@ const createAlertFeedback = (content, options) => {
   );
 };
 
-export function alert(content, options) {
-  createAlertFeedback(content, options);
+export function alert(content, options = {}) {
+  createAlertFeedback(normalizeContent(content), normalizeAlertOptions(options));
 }
 
 // async function a() {
