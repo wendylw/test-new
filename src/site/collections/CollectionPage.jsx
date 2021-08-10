@@ -204,21 +204,6 @@ class CollectionPage extends React.Component {
         </section>
       </ModalPageLayout>
     );
-    // return currentCollection && Object.keys(currentCollection).length ? (
-    //   <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
-    //     {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
-    //     <section
-    //       ref={this.sectionRef}
-    //       className="entry-home fixed-wrapper__container wrapper"
-    //       data-heap-name="site.collection.container"
-    //       data-heap-collection-name={currentCollection.name}
-    //     >
-    //       {this.renderStoreList()}
-    //     </section>
-    //   </ModalPageLayout>
-    // ) : (
-    //   this.renderError()
-    // );
   }
 }
 CollectionPage.displayName = 'CollectionPage';
