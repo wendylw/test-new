@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
@@ -10,14 +10,19 @@ const ANIMATION_TIME = 3600;
 const GET_CASHBACK_STATUS_LIST = ['Claimed_NotFirstTime', 'Claimed_Repeat', 'Claimed_FirstTime'];
 
 function CashbackInfo(props) {
+  const timeoutRef = useRef(null);
   const { t, enableCashback, cashback, cashbackStatus } = props;
   const [cashbackInfoLoaded, setCashbackInfoLoaded] = useState(false);
-  const handleHideCashbackSuccessImage = useCallback(() => {
-    const timer = setTimeout(() => {
-      setCashbackInfoLoaded(false);
-      clearTimeout(timer);
-    }, ANIMATION_TIME);
-  }, []);
+  const handleHideCashbackSuccessImage = useCallback(() => setCashbackInfoLoaded(false), []);
+
+  useEffect(() => {
+    timeoutRef.current =
+      cashbackInfoLoaded && (timeoutRef.current || setTimeout(handleHideCashbackSuccessImage, ANIMATION_TIME));
+
+    return () => {
+      clearTimeout(timeoutRef.current);
+    };
+  }, [cashbackInfoLoaded, handleHideCashbackSuccessImage]);
 
   if (!enableCashback || !cashback) {
     return null;
