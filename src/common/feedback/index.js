@@ -19,39 +19,36 @@ const normalizeAlertOptions = options => ({
   buttonContent: null,
   className: '',
   style: {},
+  close: () => {},
   ...options,
 });
-const createFeedback = (content, options) => {
-  const { container, element, onClose, normalizeOptions, ...otherOptions } = options;
-  const rootDOM = document.createElement('div');
-  rootDOM.setAttribute('class', 'feedback');
+const destroyFeedback = target => {
+  ReactDOM.unmountComponentAtNode(target);
 
+  target.remove();
+};
+const createAlertFeedback = (content, options) => {
+  const { container, onClose, ...otherOptions } = options;
+  const rootDOM = document.createElement('div');
+
+  rootDOM.setAttribute('class', 'feedback');
   (container || document.body).appendChild(rootDOM);
 
   ReactDOM.render(
-    React.createElement(element, {
+    React.createElement(Alert, {
       content: normalizeContent(content),
-      ...normalizeOptions(otherOptions),
-      close: () => {
-        onClose();
+      ...normalizeAlertOptions(otherOptions),
+      close: async () => {
+        await onClose();
         destroyFeedback(rootDOM);
       },
     }),
     rootDOM
   );
 };
-const destroyFeedback = target => {
-  ReactDOM.unmountComponentAtNode(target);
-
-  target.remove();
-};
 
 export function alert(content, options) {
-  createFeedback(content, {
-    ...options,
-    element: Alert,
-    normalizeOptions: normalizeAlertOptions,
-  });
+  createAlertFeedback(content, options);
 }
 
 // async function a() {
