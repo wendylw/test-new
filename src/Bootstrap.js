@@ -128,7 +128,7 @@ class Bootstrap extends Component {
       <Translation i18n={i18n}>
         {t => (
           <main className="fixed-wrapper fixed-wrapper__main bootstrap__render-error">
-            <ErrorComponent id title={t('CommonErrorMessage')} description={t('ErrorId', { id: eventId })}>
+            <ErrorComponent title={t('CommonErrorMessage')} description={t('ErrorId', { id: eventId })}>
               <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
                 <button
                   className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"

@@ -13,7 +13,7 @@ import './Error.scss';
 
 class Error extends React.Component {
   render() {
-    const { t, dataAttributes } = this.props;
+    const { t, dataAttributes, className } = this.props;
     const { title, description, children } = this.props || {};
     const error = {
       title,
@@ -26,7 +26,7 @@ class Error extends React.Component {
     }
 
     return (
-      <section className="error flex flex-column" {...dataAttributes}>
+      <section className={`error flex flex-column ${className}`} {...dataAttributes}>
         <div className="error__container">
           <figure className="error__image-container margin-top-bottom-normal text-center">
             <img src={beepErrorImage} alt="Error found" />
@@ -49,11 +49,13 @@ class Error extends React.Component {
 Error.propTypes = {
   title: PropTypes.node,
   description: PropTypes.node,
+  className: PropTypes.string,
 };
 
 Error.defaultProps = {
   title: '',
   description: '',
+  className: '',
 };
 
 Error.displayName = 'Error';

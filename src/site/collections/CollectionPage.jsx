@@ -33,7 +33,6 @@ class CollectionPage extends React.Component {
   componentDidMount = async () => {
     await this.props.collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
     if (!this.props.currentCollection) {
-      await this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
       return;
     }
     const { currentCollection } = this.props;
@@ -163,12 +162,36 @@ class CollectionPage extends React.Component {
   handleErrorScreenBackToHomeButtonClick = () => {
     document.location.href = '/';
   };
+
+  renderError() {
+    const { t } = this.props;
+    return (
+      <ErrorComponent
+        className="collection-page__error-page"
+        title={t('CommonErrorMessageUpdate')}
+        description={t('ErrorContent')}
+      >
+        <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+          <button
+            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+            onClick={this.handleErrorScreenBackToHomeButtonClick}
+          >
+            {t('SatisfyYourCravingsHere')}
+          </button>
+        </footer>
+      </ErrorComponent>
+    );
+  }
+
   render() {
-    const { currentCollection, t, currentCollectionStatus } = this.props;
+    const { currentCollection, currentCollectionStatus } = this.props;
     if (currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
       return <PageLoader />;
     }
-    return currentCollection && Object.keys(currentCollection).length ? (
+    if (!currentCollection) {
+      return this.renderError();
+    }
+    return (
       <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
         {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
         <section
@@ -180,18 +203,22 @@ class CollectionPage extends React.Component {
           {this.renderStoreList()}
         </section>
       </ModalPageLayout>
-    ) : (
-      <ErrorComponent title={t('CommonErrorMessageUpdate')} description={t('ErrorContent')}>
-        <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
-          <button
-            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-            onClick={this.handleErrorScreenBackToHomeButtonClick}
-          >
-            {t('SatisfyYourCravingsHere')}
-          </button>
-        </footer>
-      </ErrorComponent>
     );
+    // return currentCollection && Object.keys(currentCollection).length ? (
+    //   <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
+    //     {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
+    //     <section
+    //       ref={this.sectionRef}
+    //       className="entry-home fixed-wrapper__container wrapper"
+    //       data-heap-name="site.collection.container"
+    //       data-heap-collection-name={currentCollection.name}
+    //     >
+    //       {this.renderStoreList()}
+    //     </section>
+    //   </ModalPageLayout>
+    // ) : (
+    //   this.renderError()
+    // );
   }
 }
 CollectionPage.displayName = 'CollectionPage';

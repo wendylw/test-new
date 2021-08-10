@@ -16,7 +16,7 @@ const initialState = {
     },
   },
   currentCollection: {
-    data: {},
+    data: null,
     status: null,
   },
   collections: {
