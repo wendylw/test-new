@@ -7,8 +7,32 @@
     border-bottom: 3px solid $theme-color;
   }
 }
-.collection-page__error-page .error__description {
-  width: 100%;
-  padding: 0 3.8vw;
-  max-width: 100%;
+.fixed-wrapper__main {
+  .error__container {
+    padding-top: 19vh;
+  }
+}
+.bootstrap {
+  &__render-error {
+    .error__image-container {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .error__title {
+      font-size: 20px;
+      color: $main-color;
+      font-weight: $font-weight-bolder;
+    }
+    .error__description {
+      font-size: 16px;
+      margin-top: 16px;
+      margin-left: auto;
+      margin-right: auto;
+      color: $gray-2;
+      width: 100%;
+      padding: 0 2.8vw;
+      max-width: 100%;
+      font-weight: 400;
+    }
+  }
 }

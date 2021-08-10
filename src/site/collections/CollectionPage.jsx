@@ -166,20 +166,18 @@ class CollectionPage extends React.Component {
   renderError() {
     const { t } = this.props;
     return (
-      <ErrorComponent
-        className="collection-page__error-page"
-        title={t('CommonErrorMessageUpdate')}
-        description={t('ErrorContent')}
-      >
-        <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
-          <button
-            className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
-            onClick={this.handleErrorScreenBackToHomeButtonClick}
-          >
-            {t('SatisfyYourCravingsHere')}
-          </button>
-        </footer>
-      </ErrorComponent>
+      <main className="fixed-wrapper fixed-wrapper__main bootstrap__render-error">
+        <ErrorComponent title={t('CommonErrorMessageUpdate')} description={t('ErrorContent')}>
+          <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+            <button
+              className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+              onClick={this.handleErrorScreenBackToHomeButtonClick}
+            >
+              {t('SatisfyYourCravingsHere')}
+            </button>
+          </footer>
+        </ErrorComponent>
+      </main>
     );
   }
 
