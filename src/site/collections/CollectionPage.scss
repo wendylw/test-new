@@ -7,16 +7,15 @@
     border-bottom: 3px solid $theme-color;
   }
 }
-.fixed-wrapper__main {
-  .error__container {
-    padding-top: 19vh;
-  }
-}
+
 .collection-page {
   &__render-error {
     .error__image-container {
       margin-left: auto;
       margin-right: auto;
+    }
+    .error__container {
+      padding-top: 19vh;
     }
     .error__title {
       font-size: 20px;
