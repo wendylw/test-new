@@ -23,7 +23,7 @@ import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
 import ErrorComponent from '../../components/Error';
 import PageLoader from '../../../src/components/PageLoader';
-const { COLLECTIONS_TYPE, API_REQUEST_STATUS } = constants;
+const { API_REQUEST_STATUS } = constants;
 
 class CollectionPage extends React.Component {
   renderId = `${Date.now()}`;
@@ -35,6 +35,7 @@ class CollectionPage extends React.Component {
     if (!this.props.currentCollection) {
       return;
     }
+
     const { currentCollection } = this.props;
     const { shippingType, urlPath, name, beepCollectionId } = currentCollection;
     if (!checkStateRestoreStatus()) {
@@ -186,9 +187,11 @@ class CollectionPage extends React.Component {
     if (currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
       return <PageLoader />;
     }
+
     if (!currentCollection) {
       return this.renderError();
     }
+
     return (
       <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
         {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
