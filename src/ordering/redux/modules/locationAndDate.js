@@ -16,6 +16,7 @@ const { DELIVERY_METHOD, TIME_SLOT_NOW } = Constants;
 
 const initialState = {
   currentDate: null, // js Date Object
+  originalDeliveryType: null,
   deliveryType: null,
   storeId: null,
   deliveryAddress: '',
@@ -29,6 +30,7 @@ const initialState = {
 export const actions = {
   initial: ({
     currentDate,
+    originalDeliveryType,
     deliveryType,
     storeId,
     deliveryAddress,
@@ -45,6 +47,7 @@ export const actions = {
       selectedDay: null,
       selectedFromTime: null,
       loading: false,
+      ...(originalDeliveryType ? { originalDeliveryType } : {}),
     };
 
     dispatch(actions.showLoading(true));
@@ -489,5 +492,7 @@ export const getSelectedTime = createSelector(
 );
 
 export const isShowLoading = state => _get(state.locationAndDate, 'loading', false);
+
+export const getOriginalDeliveryType = state => _get(state.locationAndDate, 'originalDeliveryType', false);
 
 export default reducer;

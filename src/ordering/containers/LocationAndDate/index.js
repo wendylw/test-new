@@ -21,6 +21,7 @@ import {
   getSelectedDay,
   getSelectedFromTime,
   isShowLoading,
+  getOriginalDeliveryType,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -76,6 +77,9 @@ class LocationAndDate extends Component {
       deliveryCoords: deliveryAddress.coords,
       expectedDay: this.props.selectedDay || expectedDay,
       expectedFromTime: this.props.selectedFromTime || expectedFromTime,
+      ...(this.query.storeid || deliveryAddressUpdate
+        ? {}
+        : { originalDeliveryType: this.props.deliveryType || deliveryType }),
     });
 
     Utils.removeSessionVariable('deliveryAddressUpdate');
@@ -221,7 +225,16 @@ class LocationAndDate extends Component {
 
   goToNext = async () => {
     loggly.log('location-data.continue');
-    const { selectedOrderDate, selectedTime, appActions, storeId, deliveryType, location, history } = this.props;
+    const {
+      selectedOrderDate,
+      selectedTime,
+      appActions,
+      storeId,
+      originalDeliveryType,
+      deliveryType,
+      location,
+      history,
+    } = this.props;
     const expectedDate = {
       date: selectedOrderDate.date.toISOString(),
       isOpen: selectedOrderDate.isOpen,
@@ -246,7 +259,6 @@ class LocationAndDate extends Component {
     await appActions.getStoreHashData(storeId);
     const h = decodeURIComponent(this.props.storeHashCode);
     const from = _get(location, 'state.from', null);
-    const originalDeliveryType = Utils.getOrderTypeFromUrl();
 
     if (originalDeliveryType && originalDeliveryType !== deliveryType) {
       await CleverTap.pushEvent(`Shipping Details - Switched to ${deliveryType}`);
@@ -729,6 +741,7 @@ export default compose(
       selectedFromTime: getSelectedFromTime(state),
       showLoading: isShowLoading(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      originalDeliveryType: getOriginalDeliveryType(state),
     }),
 
     dispatch => ({
