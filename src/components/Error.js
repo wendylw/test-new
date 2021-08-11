@@ -26,7 +26,7 @@ class Error extends React.Component {
     }
 
     return (
-      <section className={`error flex flex-column`} {...dataAttributes}>
+      <section className="error flex flex-column" {...dataAttributes}>
         <div className="error__container">
           <figure className="error__image-container margin-top-bottom-normal text-center">
             <img src={beepErrorImage} alt="Error found" />
