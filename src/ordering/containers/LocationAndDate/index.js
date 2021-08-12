@@ -77,9 +77,10 @@ class LocationAndDate extends Component {
       deliveryCoords: deliveryAddress.coords,
       expectedDay: this.props.selectedDay || expectedDay,
       expectedFromTime: this.props.selectedFromTime || expectedFromTime,
-      ...(this.query.storeid || deliveryAddressUpdate
-        ? {}
-        : { originalDeliveryType: this.props.deliveryType || deliveryType }),
+      originalDeliveryType:
+        this.query.storeid || deliveryAddressUpdate
+          ? this.props.originalDeliveryType
+          : this.props.deliveryType || deliveryType,
     });
 
     Utils.removeSessionVariable('deliveryAddressUpdate');

@@ -40,6 +40,7 @@ export const actions = {
   }) => async (dispatch, getState) => {
     const payload = {
       currentDate,
+      originalDeliveryType,
       deliveryType,
       storeId,
       deliveryAddress,
@@ -47,7 +48,6 @@ export const actions = {
       selectedDay: null,
       selectedFromTime: null,
       loading: false,
-      ...(originalDeliveryType ? { originalDeliveryType } : {}),
     };
 
     dispatch(actions.showLoading(true));
