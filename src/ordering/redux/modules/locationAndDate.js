@@ -304,11 +304,19 @@ export const actions = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_AND_DATE.INITIAL:
-      const { currentDate, deliveryType, storeId, deliveryAddress, deliveryCoords } = action.payload;
+      const {
+        currentDate,
+        originalDeliveryType,
+        deliveryType,
+        storeId,
+        deliveryAddress,
+        deliveryCoords,
+      } = action.payload;
 
       return {
         ...state,
         currentDate,
+        originalDeliveryType,
         deliveryType,
         storeId,
         deliveryAddress,
@@ -493,6 +501,6 @@ export const getSelectedTime = createSelector(
 
 export const isShowLoading = state => _get(state.locationAndDate, 'loading', false);
 
-export const getOriginalDeliveryType = state => _get(state.locationAndDate, 'originalDeliveryType', false);
+export const getOriginalDeliveryType = state => _get(state.locationAndDate, 'originalDeliveryType', null);
 
 export default reducer;

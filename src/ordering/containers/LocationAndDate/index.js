@@ -675,7 +675,7 @@ class LocationAndDate extends Component {
   };
 
   render() {
-    const { t, businessDeliveryTypes, showLoading } = this.props;
+    const { businessDeliveryTypes, showLoading } = this.props;
 
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
