@@ -4,10 +4,40 @@ import Tag from '../../../../../components/Tag';
 import Image from '../../../../../components/Image';
 import Utils from '../../../../../utils/utils';
 import './StoreInfoAside.scss';
+import { withBackButtonSupport } from '../../../../../utils/modal-back-button-support';
 
 class StoreInfoAside extends Component {
   state = {
     initDom: true,
+  };
+
+  onHistoryBackReceived = () => {
+    this.closeModal();
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    const shouldShow = this.shouldShowPopover(this.props, this.state);
+    const prevShouldShow = this.shouldShowPopover(prevProps, prevState);
+    if (shouldShow !== prevShouldShow) {
+      // show status changed
+      this.props.onModalVisibilityChanged(shouldShow);
+    }
+  }
+
+  closeModal = () => {
+    const { initDom } = this.state;
+    const { onToggle } = this.props;
+    if (initDom) {
+      this.setState({ initDom: false });
+    }
+
+    onToggle(null);
+  };
+
+  shouldShowPopover = (props, state) => {
+    const { show, enablePreOrder, isValidTimeToOrder } = props;
+    const { initDom } = state;
+    return !!(show || (initDom && !(isValidTimeToOrder || enablePreOrder)));
   };
 
   renderDeliveryHour = () => {
@@ -50,15 +80,12 @@ class StoreInfoAside extends Component {
       businessInfo,
       businessLoaded,
       onlineStoreInfo,
-      show,
-      onToggle,
       storeAddress,
       telephone,
       enablePreOrder,
       isValidTimeToOrder,
       footerEl,
     } = this.props;
-    const { initDom } = this.state;
     const { stores, multipleStores } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const classList = ['store-info-aside aside fixed-wrapper'];
@@ -67,7 +94,7 @@ class StoreInfoAside extends Component {
       return null;
     }
 
-    if (show || (initDom && !(isValidTimeToOrder || enablePreOrder))) {
+    if (this.shouldShowPopover(this.props, this.state)) {
       classList.push('active');
     }
 
@@ -78,13 +105,7 @@ class StoreInfoAside extends Component {
         style={{
           bottom: footerEl ? `${footerEl.clientHeight || footerEl.offsetHeight}px` : '0',
         }}
-        onClick={() => {
-          if (initDom) {
-            this.setState({ initDom: false });
-          }
-
-          onToggle(null);
-        }}
+        onClick={this.closeModal}
       >
         <div className="store-info-aside__container aside__content absolute-wrapper padding-normal">
           <div className="flex flex-top">
@@ -137,4 +158,4 @@ class StoreInfoAside extends Component {
 }
 StoreInfoAside.displayName = 'StoreInfoAside';
 
-export default withTranslation()(StoreInfoAside);
+export default withTranslation()(withBackButtonSupport(StoreInfoAside));

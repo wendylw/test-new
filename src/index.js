@@ -1,6 +1,7 @@
 import 'whatwg-fetch';
 import './utils/monitoring/monitor';
 import './utils/monkey-patches';
+import './utils/polyfills';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
