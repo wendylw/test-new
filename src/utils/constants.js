@@ -599,6 +599,10 @@ const ADYEN_PAYMENT_TYPE = {
   PAY_WITH_SAVE_CARD: '3',
 };
 
+const WEB_VIEW_SOURCE = {
+  IOS: 'iOS',
+  Android: 'Android',
+};
 const PAYMENT_API_PAYMENT_OPTIONS = {
   SAVE_CARD: 'saveCard',
   TOKENIZATION: 'tokenization',
@@ -611,6 +615,25 @@ const CLIENTS = {
   WEB: 'web',
   IOS: 'iOS',
   ANDROID: 'Android',
+};
+
+export const REGISTRATION_TOUCH_POINT = {
+  CLAIM_CASHBACK: 'ClaimCashback',
+  ONLINE_ORDER: 'OnlineOrder',
+  QR_ORDER: 'QROrder',
+};
+
+export const REGISTRATION_SOURCE = {
+  BEEP_APP: 'BeepApp',
+  RECEIPT: 'Receipt',
+  BEEP_STORE: 'BeepStore',
+  BEEP_SITE: 'BeepSite',
+};
+
+export const API_REQUEST_STATUS = {
+  PENDING: 'pending',
+  FULFILLED: 'fulfilled',
+  REJECTED: 'rejected',
 };
 
 export default {
@@ -654,7 +677,11 @@ export default {
   SH_LOGISTICS_VALID_TIME,
   ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
+  WEB_VIEW_SOURCE,
   PAYMENT_API_PAYMENT_OPTIONS,
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
   CLIENTS,
+  REGISTRATION_TOUCH_POINT,
+  REGISTRATION_SOURCE,
+  API_REQUEST_STATUS,
 };

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import Utils from '../../../../../utils/utils';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -45,7 +45,7 @@ class ContactDetail extends Component {
 
     return (
       <div className="contact-details flex flex-column">
-        <Header
+        <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
@@ -53,7 +53,9 @@ class ContactDetail extends Component {
           navFunc={this.handleClickBack.bind(this)}
         />
         <section className="contact-details__container padding-left-right-normal">
-          <p className="text-size-small text-line-height-base text-opacity">{t('ContactTip')}</p>
+          <p className="text-size-small text-line-height-base text-opacity margin-top-bottom-normal">
+            {t('ContactTip')}
+          </p>
           <div className="margin-top-bottom-normal">
             <form>
               <div className="padding-top-bottom-small">

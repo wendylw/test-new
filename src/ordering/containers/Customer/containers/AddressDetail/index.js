@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../../../components/Header';
+import HybridHeader from '../../../../../components/HybridHeader';
 import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -15,7 +15,6 @@ import {
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
-import webviewUtils from '../../../../../utils/webview-utils';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 
@@ -180,7 +179,7 @@ class AddressDetail extends Component {
       deliveryToCity: addressComponents && addressComponents.city ? addressComponents.city : '',
     });
     customerActions.removeSavedAddressInfo();
-    if (webviewUtils.hasNativeSavedAddress()) {
+    if (Utils.hasNativeSavedAddress()) {
       const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
       sessionStorage.setItem('deliveryAddress', JSON.stringify({ ...deliveryAddress, addressName: name }));
     }
@@ -199,7 +198,7 @@ class AddressDetail extends Component {
 
     return (
       <div className="flex flex-column address-detail">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"

@@ -1,20 +1,37 @@
-import React from 'react';
+import React, { useCallback, useImperativeHandle, useEffect, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import Header from '../../../../../../components/Header';
+import { usePrevious } from 'react-use';
+import WebHeader from '../../../../../../components/WebHeader';
 import PromotionContent from './PromotionContent';
+import _isFunction from 'lodash/isFunction';
+import { withBackButtonSupport } from '../../../../../../utils/modal-back-button-support';
 
-function PromotionDetails({ onHide, promotions, show, inApp }) {
+function PromotionDetails({ onHide, promotions, show, inApp, onModalVisibilityChanged }, ref) {
   const { t } = useTranslation('OrderingHome');
+  const handleHide = useCallback(() => {
+    _isFunction(onHide) && onHide();
+  }, [onHide]);
+  useImperativeHandle(ref, () => ({
+    onHistoryBackReceived: () => {
+      handleHide();
+    },
+  }));
+  const prevShow = usePrevious(show);
+  useEffect(() => {
+    if (show !== prevShow) {
+      onModalVisibilityChanged(show);
+    }
+  }, [show, onModalVisibilityChanged, prevShow]);
 
   return (
     <aside className={`promotions-bar__details aside fixed-wrapper ${show ? 'active' : ''}`}>
       <div className="promotions-bar__details-container aside__content">
-        <Header
+        <WebHeader
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={false}
           title={t('PromoDetails')}
-          navFunc={onHide}
+          navFunc={handleHide}
         />
         <ul className="promotions-bar__details-content">
           {promotions.map(promo => {
@@ -34,4 +51,4 @@ function PromotionDetails({ onHide, promotions, show, inApp }) {
 }
 PromotionDetails.displayName = 'PromotionDetails';
 
-export default PromotionDetails;
+export default withBackButtonSupport(forwardRef(PromotionDetails));

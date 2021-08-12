@@ -3,7 +3,7 @@ import qs from 'qs';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import PageLoader from '../../../components/PageLoader';
 import beepLocationdateHint from '../../../images/beep-locationdate-hint.png';
 import { IconNext, IconSearch } from '../../../components/Icons';
@@ -27,12 +27,12 @@ import Utils from '../../../utils/utils';
 import * as storeUtils from '../../../utils/store-utils';
 import * as timeLib from '../../../utils/time-lib';
 import config from '../../../config';
-import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
 import {
   actions as appActionCreators,
   getBusinessDeliveryTypes,
   getBusinessUTCOffset,
   getStoreInfoForCleverTap,
+  getStoreHashCode,
 } from '../../redux/modules/app';
 import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
@@ -213,7 +213,7 @@ class LocationAndDate extends Component {
 
   goToNext = async () => {
     loggly.log('location-data.continue');
-    const { selectedOrderDate, selectedTime, homeActions, storeId, deliveryType, location, history } = this.props;
+    const { selectedOrderDate, selectedTime, appActions, storeId, deliveryType, location, history } = this.props;
     const expectedDate = {
       date: selectedOrderDate.date.toISOString(),
       isOpen: selectedOrderDate.isOpen,
@@ -235,7 +235,7 @@ class LocationAndDate extends Component {
     // reset redux store data when will unmount
     this.resetWhenWillUnmount = true;
 
-    await homeActions.getStoreHashData(storeId);
+    await appActions.getStoreHashData(storeId);
     const h = decodeURIComponent(this.props.storeHashCode);
     const from = _get(location, 'state.from', null);
 
@@ -655,7 +655,7 @@ class LocationAndDate extends Component {
 
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
-        <Header
+        <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle"
           contentClassName="flex-middle"
@@ -720,7 +720,6 @@ export default compose(
 
     dispatch => ({
       actions: bindActionCreators(locationAndDateActionCreator, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )

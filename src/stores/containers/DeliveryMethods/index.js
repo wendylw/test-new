@@ -6,16 +6,14 @@ import { withRouter } from 'react-router-dom';
 import { IconNext } from '../../../components/Icons';
 import DeliveryImage from '../../../images/icon-delivery.png';
 import PickUpImage from '../../../images/icon-pickup.png';
-import Header from '../../../components/Header';
+import HybridHeader from '../../../components/HybridHeader';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getOneStoreInfo, getStoreHashCode } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
-import { getRemovedPickUpMerchantList } from '../../redux/modules/app';
-import { getBusiness } from '../../../ordering/redux/modules/app';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getRemovedPickUpMerchantList, getDeliveryInfo } from '../../redux/modules/app';
 import '../DineMethods/StoresTakingMealMethod.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
@@ -57,17 +55,13 @@ class DeliveryMethods extends Component {
   }
 
   async handleVisitStore(methodName) {
-    const { store, homeActions } = this.props;
+    const { store, homeActions, deliveryInfo } = this.props;
     await homeActions.getStoreHashData(store.id);
     const { hashCode } = this.props;
     const currentMethod = METHODS_LIST.find(method => method.name === methodName);
 
     // isValid
-    const { allBusinessInfo, business } = this.props;
-    const { enablePreOrder } = Utils.getDeliveryInfo({
-      business,
-      allBusinessInfo,
-    });
+    const { enablePreOrder } = deliveryInfo;
     const deliveryTo = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
     if (enablePreOrder) {
       // remove delivery time write in session to prevent date inconsistence issus
@@ -102,7 +96,7 @@ class DeliveryMethods extends Component {
     const { fulfillmentOptions } = currentStoreInfo || {};
     return (
       <section className="delivery" data-heap-name="stores.delivery-methods.container">
-        <Header
+        <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="stores.delivery-methods.header"
@@ -152,10 +146,9 @@ export default compose(
   connect(
     (state, ownProps) => ({
       hashCode: getStoreHashCode(state),
-      business: getBusiness(state),
       removePickUpMerchantList: getRemovedPickUpMerchantList(state),
-      allBusinessInfo: getAllBusinesses(state),
       currentStoreInfo: getOneStoreInfo(state, ownProps.store.id),
+      deliveryInfo: getDeliveryInfo(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),
