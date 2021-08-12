@@ -58,7 +58,7 @@ class Home extends React.Component {
       return;
     }
     const { location } = this.props;
-    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: true });
+    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
 
     // if no placeInfo at all
     if (!placeInfo) {
