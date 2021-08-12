@@ -5,16 +5,24 @@ import Header from '../../../components/Header';
 import { withTranslation } from 'react-i18next';
 import beepQrScanImage from '../../../images/beep-qrscan.png';
 import './RedeemInfo.scss';
+import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 
 class RedeemInfo extends React.Component {
   state = {
     showModal: false,
   };
 
+  onHistoryBackReceived = () => {
+    if (this.state.showModal === true) {
+      this.toggleModal();
+    }
+  };
+
   toggleModal() {
     const { showModal } = this.state;
 
     this.setState({ showModal: !showModal });
+    this.props.onModalVisibilityChanged(!showModal);
   }
 
   render() {
@@ -69,4 +77,4 @@ RedeemInfo.defaultProps = {
 
 RedeemInfo.displayName = 'RedeemInfo';
 
-export default withTranslation('Cashback')(RedeemInfo);
+export default withTranslation('Cashback')(withBackButtonSupport(RedeemInfo));

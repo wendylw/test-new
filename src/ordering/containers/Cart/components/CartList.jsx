@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators } from '../../../redux/modules/app';
-import { getSelectedProductDetail } from '../../../redux/modules/cart';
-import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import { IconDelete } from '../../../../components/Icons';
@@ -184,8 +182,8 @@ class CartList extends Component {
   }
 
   render() {
-    const { viewAside, selectedProduct, shoppingCart, style } = this.props;
-    if (!shoppingCart || viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE) {
+    const { shoppingCart, style } = this.props;
+    if (!shoppingCart) {
       return null;
     }
 
@@ -195,12 +193,6 @@ class CartList extends Component {
       return 0;
     };
     let cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
-
-    if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
-      cartItems = cartItems.filter(
-        cartItem => cartItem.productId === selectedProduct.id || cartItem.parentProductId === selectedProduct.id
-      );
-    }
 
     return (
       <ul style={style} data-heap-name="ordering.cart.cart-list">
@@ -243,11 +235,7 @@ CartList.defaultProps = {
 export default compose(
   withTranslation(),
   connect(
-    state => {
-      return {
-        selectedProduct: getSelectedProductDetail(state),
-      };
-    },
+    state => ({}),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
     })

@@ -17,7 +17,7 @@ import SwiperCore, { Autoplay, Pagination } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getSelectedProductDetail } from '../../../redux/modules/home';
+import { getSelectedProductDetail } from '../redux/common/selectors';
 import { actions as appActionCreators } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';
@@ -25,6 +25,7 @@ import loggly from '../../../../utils/monitoring/loggly';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
 import './ProductDetailDrawer.scss';
+import { withBackButtonSupport } from '../../../../utils/modal-back-button-support';
 
 const VARIATION_TYPES = {
   SINGLE_CHOICE: 'SingleChoice',
@@ -91,7 +92,17 @@ class ProductDetailDrawer extends Component {
         optionQuantity: {},
       });
     }
+    const shouldShow = this.shouldShowPopover(this.props);
+    const prevShouldShow = this.shouldShowPopover(prevProps);
+    if (shouldShow !== prevShouldShow) {
+      // show status changed
+      this.props.onModalVisibilityChanged(shouldShow);
+    }
   }
+
+  onHistoryBackReceived = () => {
+    this.closeModal();
+  };
 
   resizeImage() {
     const { show } = this.props;
@@ -147,11 +158,9 @@ class ProductDetailDrawer extends Component {
   initMinimumVariationList() {
     const { selectedProduct } = this.props;
     const { variations } = selectedProduct || {};
-    var minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
+    const minimumVariations = (variations || []).filter(v => v.enableSelectionAmountLimit && v.minSelectionAmount);
 
-    if (minimumVariations && minimumVariations.length) {
-      this.setState({ minimumVariations });
-    }
+    this.setState({ minimumVariations });
   }
 
   getTotalPriceDiff() {
@@ -518,10 +527,16 @@ class ProductDetailDrawer extends Component {
     return this.getDisplayPrice() * cartQuantity;
   };
 
+  shouldShowPopover(props) {
+    const { selectedProduct, show } = props;
+    const { id, _needMore } = selectedProduct || {};
+    return !!(show && selectedProduct && id && !_needMore);
+  }
+
   renderProductOperator() {
     const { t, selectedProduct = {}, onUpdateCartOnProductDetail } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
-    const { id: productId } = selectedProduct;
+    const { id: productId } = selectedProduct || {};
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
     const inventoryShortage = this.getShortageInventoryState(
       selectedProduct || {},
@@ -686,12 +701,12 @@ class ProductDetailDrawer extends Component {
     const className = ['aside fixed-wrapper', 'product-detail flex flex-column flex-end'];
     const { t, onlineStoreInfo, selectedProduct, viewAside, show, onToggle, hideCloseButton } = this.props;
     const { storeName } = onlineStoreInfo || {};
-    const { id, _needMore, images, title, description } = selectedProduct || {};
+    const { images, title, description } = selectedProduct || {};
     const { resizeImage } = this.state;
     const descriptionStr = { __html: description };
     const isHaveContent = Utils.removeHtmlTag(description);
 
-    if (show && selectedProduct && id && !_needMore) {
+    if (this.shouldShowPopover(this.props)) {
       className.push('active cover');
     }
 
@@ -822,4 +837,4 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
-)(withRouter(ProductDetailDrawer));
+)(withRouter(withBackButtonSupport(ProductDetailDrawer)));

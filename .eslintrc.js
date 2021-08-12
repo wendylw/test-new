@@ -187,9 +187,6 @@ const legacyFiles = [
   'src/ordering/redux/modules/cartAction.test.js',
   'src/ordering/redux/modules/cartReducer.test.js',
   'src/ordering/redux/modules/customer.js',
-  'src/ordering/redux/modules/home.js',
-  'src/ordering/redux/modules/homeActions.test.js',
-  'src/ordering/redux/modules/homeReducer.test.js',
   'src/ordering/redux/modules/index.js',
   'src/ordering/redux/modules/locationAndDate.js',
   'src/ordering/redux/modules/promotion.js',
@@ -393,6 +390,7 @@ module.exports = {
         'import/prefer-default-export': [0],
         'no-nested-ternary': [0],
         'class-methods-use-this': [0],
+        'no-debugger': 'warn',
       },
     },
     {
