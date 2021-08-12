@@ -168,7 +168,7 @@ class CollectionPage extends React.Component {
     const { t } = this.props;
     return (
       <main className="fixed-wrapper fixed-wrapper__main collection-page__render-error">
-        <ErrorComponent title={t('CommonErrorMessageUpdate')} description={t('ErrorContent')}>
+        <ErrorComponent title={t('CollectionNotFoundErrorTitle')} description={t('CollectionNotFoundErrorContent')}>
           <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
             <button
               className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"

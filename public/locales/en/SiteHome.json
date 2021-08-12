@@ -8,6 +8,6 @@
   "MvpFreeDeliveryPrompt": "Free Delivery Promo",
   "SeeAll": "See All",
   "SatisfyYourCravingsHere": "Satisfy your cravings here",
-  "CommonErrorMessageUpdate": "What the Beep?",
-  "ErrorContent" : "So sorry, it seems like this page does not exist. Go back to our homepage and order food from the best restaurants and cafes near you!"
+  "CollectionNotFoundErrorTitle": "What the Beep?",
+  "CollectionNotFoundErrorContent" : "So sorry, it seems like this page does not exist. Go back to our homepage and order food from the best restaurants and cafes near you!"
 }
