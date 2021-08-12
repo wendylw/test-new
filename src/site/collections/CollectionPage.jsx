@@ -184,7 +184,7 @@ class CollectionPage extends React.Component {
 
   render() {
     const { currentCollection, currentCollectionStatus } = this.props;
-    if (currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
+    if (!currentCollectionStatus || currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
       return <PageLoader />;
     }
 
