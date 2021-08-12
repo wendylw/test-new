@@ -4,12 +4,12 @@ import { IconClose } from '../../components/Icons';
 import './Alert.scss';
 
 function Alert(props) {
-  const { content, buttonContent, className, style, close } = props;
+  const { content, closeContent, className, style, close } = props;
 
   return (
-    <div className={`${className ? ` ${className}` : ''}`} style={style}>
+    <div className={`alert ${className}`} style={style}>
       {content}
-      <button onClick={() => close()}>{buttonContent || <IconClose />}</button>
+      <button onClick={() => close()}>{closeContent || <IconClose />}</button>
     </div>
   );
 }
@@ -18,7 +18,7 @@ Alert.displayName = 'Alert';
 
 Alert.propTypes = {
   content: PropTypes.string,
-  buttonContent: PropTypes.node,
+  closeContent: PropTypes.node,
   className: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
@@ -27,8 +27,8 @@ Alert.propTypes = {
 
 Alert.defaultProps = {
   content: null,
-  buttonContent: null,
-  className: null,
+  closeContent: null,
+  className: '',
   style: {},
   close: () => {},
 };
