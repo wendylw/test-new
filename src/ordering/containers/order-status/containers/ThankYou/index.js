@@ -132,8 +132,10 @@ export class ThankYou extends PureComponent {
 
   closeMap = () => {
     try {
-      NativeMethods.hideMap();
-    } catch (e) {}
+      if (Utils.isWebview()) {
+        NativeMethods.hideMap();
+      }
+    } catch (error) {}
   };
 
   updateAppLocationAndStatus = () => {
@@ -142,39 +144,39 @@ export class ThankYou extends PureComponent {
     //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
-    const { orderStatus, riderLocations = [], shippingType } = this.props;
-    const [lat = null, lng = null] = riderLocations || [];
-    const ORDER_STATUS = Constants.ORDER_STATUS;
-    const { PICKUP } = ORDER_STATUS;
-    const { order = {} } = this.props;
-    const { storeInfo = {}, deliveryInformation = [] } = order;
-    const { location = {} } = storeInfo;
-    const { latitude: storeLat, longitude: storeLng } = location;
-    const { address = {} } = deliveryInformation[0] || {};
-    const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
-    const focusPositionList = [
-      {
-        lat: deliveryLat,
-        lng: deliveryLng,
-      },
-      {
-        lat,
-        lng,
-      },
-    ];
+    try {
+      const { orderStatus, riderLocations = [], shippingType } = this.props;
+      const [lat = null, lng = null] = riderLocations || [];
+      const ORDER_STATUS = Constants.ORDER_STATUS;
+      const { PICKUP } = ORDER_STATUS;
+      const { order = {} } = this.props;
+      const { storeInfo = {}, deliveryInformation = [] } = order;
+      const { location = {} } = storeInfo;
+      const { latitude: storeLat, longitude: storeLng } = location;
+      const { address = {} } = deliveryInformation[0] || {};
+      const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
+      const focusPositionList = [
+        {
+          lat: deliveryLat,
+          lng: deliveryLng,
+        },
+        {
+          lat,
+          lng,
+        },
+      ];
 
-    if (orderStatus === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY) {
-      try {
+      if (orderStatus === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY) {
         NativeMethods.showMap();
         NativeMethods.updateStorePosition(storeLat, storeLng);
         NativeMethods.updateHomePosition(deliveryLat, deliveryLng);
         NativeMethods.updateRiderPosition(lat, lng);
         NativeMethods.focusPositions(focusPositionList);
-      } catch (e) {
-        console.log(e);
+      } else {
+        this.closeMap();
       }
-    } else {
-      this.closeMap();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -242,7 +244,9 @@ export class ThankYou extends PureComponent {
     if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
       await loadOrderStatus(receiptNumber);
 
-      this.updateAppLocationAndStatus();
+      if (Utils.isWebview()) {
+        this.updateAppLocationAndStatus();
+      }
     }
   };
 
