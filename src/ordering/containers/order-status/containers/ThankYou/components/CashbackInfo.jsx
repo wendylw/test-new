@@ -12,9 +12,9 @@ const GET_CASHBACK_STATUS_LIST = ['Claimed_NotFirstTime', 'Claimed_Repeat', 'Cla
 function CashbackInfo(props) {
   const timeoutRef = useRef(null);
   const { t, enableCashback, cashback, cashbackStatus } = props;
-  const [cashbackSuccessImageSrc, setCashbackSuccessImageSrc] = useState(cashbackSuccessImage);
+  const [cashbackSuccessImageVisibility, setCashbackSuccessImageVisibility] = useState(true);
   const [imgLoaded, setImageLoaded] = useState(false);
-  const handleHideCashbackSuccessImage = useCallback(() => setCashbackSuccessImageSrc(''), []);
+  const handleHideCashbackSuccessImage = useCallback(() => setCashbackSuccessImageVisibility(false), []);
 
   useEffect(() => {
     if (imgLoaded) {
@@ -33,14 +33,14 @@ function CashbackInfo(props) {
   return (
     GET_CASHBACK_STATUS_LIST.includes(cashbackStatus) && (
       <div className="ordering-thanks__card-prompt card text-center padding-small margin-normal">
-        {cashbackSuccessImageSrc ? null : (
+        {cashbackSuccessImageVisibility ? (
           <img
-            src={cashbackSuccessImageSrc}
+            src={cashbackSuccessImage}
             alt="cashback Earned"
             onLoad={() => setImageLoaded(true)}
             className="ordering-thanks__card-prompt-congratulation absolute-wrapper"
           />
-        )}
+        ) : null}
         <CurrencyNumber
           className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
           money={cashback}
