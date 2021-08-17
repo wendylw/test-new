@@ -2,6 +2,7 @@ import tids from './tracing-id';
 import _isPlainObject from 'lodash/isPlainObject';
 import businessName from '../business-name';
 import Utils from '../utils';
+import debug from '../debug';
 const { REACT_APP_LOGGLY_SERVICE_URL, REACT_APP_LOGGLY_TOKEN, REACT_APP_LOGGLY_TAG } = process.env;
 
 const IS_DEV_ENV = process.env.NODE_ENV === 'development';
@@ -11,6 +12,10 @@ const getAppPlatform = () => {
 };
 
 const send = async (data, tags = '') => {
+  const body = JSON.stringify(data);
+
+  debug(`[LOGGLY] %s`, body);
+
   if (!REACT_APP_LOGGLY_SERVICE_URL || !REACT_APP_LOGGLY_TOKEN || !REACT_APP_LOGGLY_TAG) {
     return;
   }
@@ -18,11 +23,9 @@ const send = async (data, tags = '') => {
     / /g,
     ''
   )}${tags && `,${tags}`}/`;
+
   const headers = new Headers({ 'Content-Type': 'application/json' });
-  const body = JSON.stringify(data);
-  if (IS_DEV_ENV) {
-    console.debug(`[LOGGLY] ${body}`);
-  }
+
   try {
     await fetch(endpoint, {
       method: 'POST',
