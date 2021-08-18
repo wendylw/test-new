@@ -176,6 +176,8 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       deliveryToAddress: deliveryTo,
       deliveryToLocation: location,
       deliveryToCity: city,
+      postCode,
+      addressId,
     } = deliveryDetails || {};
 
     variables = {
@@ -184,12 +186,14 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       ...expectDeliveryDateInfo,
       deliveryAddressInfo: {
         ...contactDetail,
+        addressId,
         addressDetails,
         address: addressDetails ? `${addressDetails}, ${deliveryTo}` : deliveryTo,
         city: city || '',
         country,
         deliveryTo,
         location,
+        postCode,
       },
       deliveryComments,
     };
