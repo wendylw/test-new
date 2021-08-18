@@ -133,6 +133,7 @@ export const initialState = {
     addressDetails: '',
     deliveryComments: '',
     deliveryToCity: '',
+    postCode: '',
   },
 };
 

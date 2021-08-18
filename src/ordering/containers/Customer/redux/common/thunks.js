@@ -72,6 +72,7 @@ export const selectAvailableAddress = createAsyncThunk(
       deliveryTo: deliveryToAddress,
       location: deliveryToLocation,
       city: deliveryToCity,
+      postCode,
     } = availableAddress;
 
     dispatch(
@@ -83,6 +84,7 @@ export const selectAvailableAddress = createAsyncThunk(
         deliveryToAddress,
         deliveryToLocation,
         deliveryToCity,
+        postCode,
       })
     );
   }
