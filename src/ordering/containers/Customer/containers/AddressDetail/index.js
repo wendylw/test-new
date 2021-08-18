@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _get from 'lodash/get';
 import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
@@ -148,14 +149,19 @@ class AddressDetail extends Component {
     const { history, user, addressInfo, customerActions, appActions } = this.props;
     const { id, type, name, address, details, comments, coords, addressComponents } = addressInfo;
     const { consumerId } = user || {};
+    const postCode = _get(addressComponents, 'postCode', '');
+    const city = _get(addressComponents, 'city', '');
+    const countryCode = _get(addressComponents, 'countryCode', '');
+
     const data = {
       addressName: name,
       deliveryTo: address,
       addressDetails: details,
       comments: comments,
       location: coords,
-      city: addressComponents && addressComponents.city ? addressComponents.city : '',
-      countryCode: addressComponents && addressComponents.countryCode ? addressComponents.countryCode : '',
+      city,
+      countryCode,
+      postCode,
     };
 
     let requestUrl;
@@ -168,21 +174,27 @@ class AddressDetail extends Component {
       requestUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, id);
       response = await put(requestUrl.url, data);
     }
-    const { _id: addressId } = response || {};
-    await appActions.updateDeliveryDetails({
-      addressId,
-      addressName: name,
-      addressDetails: details,
-      deliveryComments: comments,
-      deliveryToAddress: address,
-      deliveryToLocation: coords,
-      deliveryToCity: addressComponents && addressComponents.city ? addressComponents.city : '',
+
+    const savedAddressName = _get(response, 'addressName', name);
+
+    appActions.updateDeliveryDetails({
+      addressId: _get(response, '_id', ''),
+      addressName: savedAddressName,
+      addressDetails: _get(response, 'addressDetails', details),
+      deliveryComments: _get(response, 'comments', comments),
+      deliveryToAddress: _get(response, 'address', address),
+      deliveryToLocation: _get(response, 'location', coords),
+      deliveryToCity: _get(response, 'city', city),
+      postCode: _get(response, 'postCode', postCode),
     });
+
     customerActions.removeAddressInfo();
+
     if (Utils.hasNativeSavedAddress()) {
       const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
-      sessionStorage.setItem('deliveryAddress', JSON.stringify({ ...deliveryAddress, addressName: name }));
+      sessionStorage.setItem('deliveryAddress', JSON.stringify({ ...deliveryAddress, addressName: savedAddressName }));
     }
+
     if (response) {
       history.push({
         pathname: '/customer',

@@ -13,8 +13,21 @@ import ProductItem from '../../../components/ProductItem';
 import ItemOperator from '../../../../components/ItemOperator';
 import loggly from '../../../../utils/monitoring/loggly';
 import './CartListDrawer.scss';
+import { withBackButtonSupport } from '../../../../utils/modal-back-button-support';
 
 class CartListDrawer extends Component {
+  onHistoryBackReceived = e => {
+    this.closeCartAside();
+  };
+
+  componentDidUpdate(prevProps) {
+    const { show } = this.props;
+    if (show !== prevProps.show) {
+      // show status changed
+      this.props.onModalVisibilityChanged(show);
+    }
+  }
+
   handleGtmEventTracking = selectedProduct => {
     const stockStatusMapping = {
       outOfStock: 'out of stock',
@@ -43,14 +56,16 @@ class CartListDrawer extends Component {
     return ['outOfStock', 'unavailable'].includes(stockStatus);
   }
 
-  handleHideCartAside(e) {
+  closeCartAside() {
     const { onToggle } = this.props;
+    onToggle();
+  }
 
+  handleHideCartAside(e) {
     if (e && e.target !== e.currentTarget) {
       return;
     }
-
-    onToggle();
+    this.closeCartAside();
   }
 
   handleClearCart = async () => {
@@ -337,5 +352,6 @@ export default compose(
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
-  )
+  ),
+  withBackButtonSupport
 )(CartListDrawer);

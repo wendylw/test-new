@@ -4,13 +4,36 @@ import Utils from '../../../utils/utils';
 import i18next from 'i18next';
 
 const { PROMOTION_ERROR_CODES, VOUCHER_STATUS, CLIENTS } = Constants;
+const WEEK_DAYS_MAPPING = {
+  2: 'Mon',
+  3: 'Tue',
+  4: 'Wed',
+  5: 'Thu',
+  6: 'Fri',
+  7: 'Sat',
+  1: 'Sun',
+};
 
 export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo) {
   if (PROMOTION_ERROR_CODES[code]) {
     const translationKey = `OrderingPromotion:${PROMOTION_ERROR_CODES[code].desc}`;
 
+    if (code === '54404') {
+      const { validDays = [] } = extraInfo || {};
+      const validDaysString = validDays.map(day => i18next.t(WEEK_DAYS_MAPPING[day])).join(',');
+
+      return i18next.t(translationKey, { validDaysString });
+    }
+
+    if (code === '54405') {
+      const { validTimeFrom = '', validTimeTo = '' } = extraInfo || {};
+
+      return i18next.t(translationKey, { validTimeFrom, validTimeTo });
+    }
+
     if (code === '54416') {
       const { supportedChannel } = extraInfo || {};
+
       return i18next.t(translationKey, { supportedChannel });
     }
 
