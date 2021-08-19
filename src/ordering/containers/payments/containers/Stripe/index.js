@@ -3,7 +3,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import _get from 'lodash/get';
 import Constants from '../../../../../utils/constants';
 
 import Utils from '../../../../../utils/utils';
@@ -20,11 +19,7 @@ import {
   getCartBilling,
   getBusinessInfo,
 } from '../../../../redux/modules/app';
-import {
-  getSelectedPaymentOption,
-  getSelectedPaymentOptionSupportSaveCard,
-  getSelectedPaymentProvider,
-} from '../../redux/common/selectors';
+import { getSelectedPaymentOptionSupportSaveCard, getSelectedPaymentProvider } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';

@@ -1,6 +1,7 @@
 export const API_INFO = {
-  getPayments: () => ({
+  getPayments: shippingType => ({
     url: '/payment/online/options',
+    queryParams: { shippingType },
   }),
   getSavedCardList: (userId, paymentProvider) => ({
     url: `/api/consumers/${userId}/paymentMethods`,

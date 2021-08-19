@@ -81,7 +81,7 @@ export class MerchantInfo extends Component {
               {isWebView ? (
                 <span className="gray-font-opacity">{phone}</span>
               ) : (
-                <a className="link link__non-underline link__block" href={`tel:${phone}`}>
+                <a className="button button__link button__default" href={`tel:${phone}`}>
                   {phone}
                 </a>
               )}

@@ -16,6 +16,7 @@ import {
   getBusinessUTCOffset,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
+import { getSelectedPaymentProvider } from '../selectors';
 
 import { fetchDeliveryDetails } from '../../../../Customer/utils';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
@@ -80,6 +81,7 @@ const checkCreatedOrderStatus = orderId => {
 export const createOrder = ({ cashback, shippingType }) => async (dispatch, getState) => {
   const isDigital = Utils.isDigitalType();
   const cartItems = getCartItems(getState());
+  const paymentProvider = getSelectedPaymentProvider(getState());
 
   if (isDigital) {
     const business = getBusiness(getState());
@@ -143,6 +145,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     tableId,
     cashback,
     orderSource,
+    paymentProvider,
   };
 
   // --Begin-- Deal with PreOrder expectDeliveryDateFrom, expectDeliveryDateTo

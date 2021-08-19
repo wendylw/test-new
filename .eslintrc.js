@@ -139,7 +139,6 @@ const legacyFiles = [
   'src/ordering/containers/payments/components/Loader/PaymentLoader.stories.js',
   'src/ordering/containers/payments/components/OrderInfo/index.js',
   'src/ordering/containers/payments/components/PaymentCardBrands/index.js',
-  'src/ordering/containers/payments/components/PaymentItem.jsx',
   'src/ordering/containers/payments/components/PaymentLogo.jsx',
   'src/ordering/containers/payments/components/RedirectForm/index.js',
   'src/ordering/containers/payments/containers/Adyen/index.js',
@@ -385,12 +384,14 @@ module.exports = {
       rules: {
         'no-unused-expressions': 'off',
         'react/display-name': ['warn', { ignoreTranspilerName: true }],
-        'react/prop-types': [2, { ignore: ['t'] }],
+        'react/prop-types': [2, { ignore: ['t', 'history'] }],
         'react/button-has-type': [0],
         'import/prefer-default-export': [0],
         'no-nested-ternary': [0],
         'class-methods-use-this': [0],
         'no-debugger': 'warn',
+        'jsx-a11y/click-events-have-key-events': 'off',
+        'jsx-a11y/no-noninteractive-element-interactions': 'off',
       },
     },
     {

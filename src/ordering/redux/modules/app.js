@@ -52,7 +52,7 @@ const CartModel = {
     subtotal: 0,
     total: 0,
     tax: 0,
-    cashback: 0,
+    totalCashback: 0,
     serviceCharge: 0,
     shippingFee: 0,
     promotion: {

@@ -61,10 +61,12 @@ function SelfPickup({ t, processing, updatableToSelfPickupStatus, onClickSelfPic
           </button>
         </Modal.Footer>
       </Modal>
-      {processing ? <PageProcessingLoader processing={processing} loaderText={t('Processing')} /> : null}
+      <PageProcessingLoader show={processing} loaderText={t('Processing')} />
     </section>
   );
 }
+
+SelfPickup.displayName = 'SelfPickup';
 
 SelfPickup.propTypes = {
   processing: PropTypes.bool,

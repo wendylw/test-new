@@ -25,6 +25,7 @@ import {
 import * as paymentCommonThunks from '../../redux/common/thunks';
 import Utils from '../../../../../utils/utils';
 import PaymentItem from '../../components/PaymentItem';
+import PayByCash from '../../components/PayByCash';
 import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -113,7 +114,7 @@ class Payment extends Component {
   };
 
   handleBeforeCreateOrder = async () => {
-    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user } = this.props;
+    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user, paymentsActions } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
@@ -132,6 +133,12 @@ class Payment extends Component {
       return;
     }
 
+    if (currentPaymentOption.paymentProvider === 'SHOfflinePayment') {
+      paymentsActions.updatePayByCashPromptDisplay(true);
+
+      return;
+    }
+
     const { pathname, paymentProvider } = currentPaymentOption;
 
     // currently only Stripe payment support save cards
@@ -140,6 +147,7 @@ class Payment extends Component {
         pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
         search: window.location.search,
       });
+
       return;
     }
 
@@ -213,6 +221,15 @@ class Payment extends Component {
           }}
         >
           {this.renderPaymentList()}
+          <PayByCash
+            onPayWithCash={({ thankYouPageUrl, tableId, type }) => {
+              window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${
+                type ? `&type=${type}` : ''
+              }`;
+
+              return;
+            }}
+          />
         </div>
 
         <footer

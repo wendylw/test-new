@@ -7,6 +7,7 @@ import paymentGrabImage from '../../../../images/payment-grab.png';
 import paymentTNGImage from '../../../../images/payment-tng.png';
 import paymentGcashImage from '../../../../images/payment-gcash.png';
 import paymentLineImage from '../../../../images/payment-line.png';
+import paymentPayByCashImage from '../../../../images/payment-pay-by-cash.svg';
 
 const imageMap = {
   paymentBankingImage,
@@ -16,6 +17,7 @@ const imageMap = {
   paymentTNGImage,
   paymentGcashImage,
   paymentLineImage,
+  paymentPayByCashImage,
 };
 
 const PaymentLogo = ({ logo, alt }) => (
