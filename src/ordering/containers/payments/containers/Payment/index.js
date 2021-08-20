@@ -23,6 +23,7 @@ import {
   getSelectedPaymentOptionSupportSaveCard,
 } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
+import { actions as paymentActions } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
 import PaymentItem from '../../components/PaymentItem';
 import PayByCash from '../../components/PayByCash';
@@ -114,7 +115,7 @@ class Payment extends Component {
   };
 
   handleBeforeCreateOrder = async () => {
-    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user, paymentsActions } = this.props;
+    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user, paymentActions } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
@@ -134,7 +135,7 @@ class Payment extends Component {
     }
 
     if (currentPaymentOption.paymentProvider === 'SHOfflinePayment') {
-      paymentsActions.updatePayByCashPromptDisplay(true);
+      paymentActions.updatePayByCashPromptDisplayStatus(true);
 
       return;
     }
@@ -281,6 +282,7 @@ export default compose(
       };
     },
     dispatch => ({
+      paymentActions: bindActionCreators(paymentActions, dispatch),
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       customerActions: bindActionCreators(customerActionCreators, dispatch),
