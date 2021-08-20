@@ -535,16 +535,11 @@ export const actions = {
 
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
-    const isDelivery = Utils.isDeliveryType();
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
-    let deliveryCoords;
-    if (isDelivery) {
-      deliveryCoords = Utils.getDeliveryCoords();
-    }
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
+    config.storeId && dispatch(actions.loadShoppingCart());
 
     const shippingType = Utils.getApiRequestShippingType();
 
