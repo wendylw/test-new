@@ -20,7 +20,7 @@ function OrderDelayMessage({ orderDelayReason }) {
 
   const orderDelayMessageConfig = _get(orderDelayMessageConfigMap, orderDelayReason, null);
 
-  if (!orderDelayMessageConfig) {
+  if (!orderDelayMessageConfig || !orderDelayReason) {
     return null;
   }
 

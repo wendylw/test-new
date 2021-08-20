@@ -116,7 +116,6 @@ const legacyFiles = [
   'src/ordering/containers/LocationAndDate/index.js',
   'src/ordering/containers/order-status/containers/MerchantInfo/index.js',
   'src/ordering/containers/order-status/containers/OrderDetails/index.js',
-  'src/ordering/containers/order-status/containers/Receipt/index.js',
   'src/ordering/containers/order-status/containers/ReportDriver/constants.js',
   'src/ordering/containers/order-status/containers/ReportDriver/index.js',
   'src/ordering/containers/order-status/containers/ReportDriver/redux/index.js',
@@ -382,6 +381,7 @@ module.exports = {
       excludedFiles: legacyFiles,
       extends: ['react-app', 'airbnb', 'prettier'],
       rules: {
+        'no-console': [1, { allow: ['error'] }],
         'no-unused-expressions': 'off',
         'react/display-name': ['warn', { ignoreTranspilerName: true }],
         'react/prop-types': [2, { ignore: ['t', 'history'] }],

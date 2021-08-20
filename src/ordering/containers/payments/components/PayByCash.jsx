@@ -43,10 +43,12 @@ function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptD
               try {
                 const shippingType = Utils.getOrderTypeFromUrl();
                 const createOrderResult = await createOrder({ cashback, shippingType });
-                const { tableId, shippingType: type, redirectUrl: thankYouPageUrl } = createOrderResult?.order || {};
+                const { tableId, shippingType: type, redirectUrl: thankYouPageUrl } = createOrderResult.order;
 
                 if (thankYouPageUrl) {
-                  onPayWithCash({ thankYouPageUrl, tableId, type });
+                  onPayWithCash(
+                    `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`
+                  );
                 }
               } catch {
                 setCreatingOrder(false);

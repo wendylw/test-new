@@ -62,13 +62,13 @@ CashbackInfo.displayName = 'CashbackInfo';
 CashbackInfo.propTypes = {
   enableCashback: PropTypes.bool,
   cashback: PropTypes.number,
-  cashbackStatus: PropTypes.oneOf(GET_CASHBACK_STATUS_LIST),
+  cashbackStatus: PropTypes.string,
 };
 
 CashbackInfo.defaultProps = {
   enableCashback: false,
   cashback: 0,
-  cashbackStatus: GET_CASHBACK_STATUS_LIST[0],
+  cashbackStatus: null,
 };
 
 export default compose(withTranslation('OrderingThankYou'))(CashbackInfo);

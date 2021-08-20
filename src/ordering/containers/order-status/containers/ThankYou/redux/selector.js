@@ -1,3 +1,4 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../../../utils/constants';
 import {
@@ -6,6 +7,8 @@ import {
   getIsUseStorehubLogistics,
   getOrderShippingType,
   getTimeoutLookingForRider,
+  getOrderOriginalShippingType,
+  getOrderStoreInfo,
 } from '../../../redux/selector';
 import { getMerchantCountry } from '../../../../../redux/modules/app';
 
@@ -43,6 +46,15 @@ export const getDeliveryUpdatableToSelfPickupState = createSelector(
   getTimeoutLookingForRider,
   timeoutLookingForRider => timeoutLookingForRider
 );
+
+export const getDeliverySwitchedToSelfPickupState = createSelector(
+  getOrderShippingType,
+  getOrderOriginalShippingType,
+  (shippingType, originalShippingType) =>
+    originalShippingType && shippingType === DELIVERY_METHOD.PICKUP && originalShippingType === DELIVERY_METHOD.DELIVERY
+);
+
+export const getOrderStoreName = createSelector(getOrderStoreInfo, storeInfo => _get(storeInfo, 'name', ''));
 
 export const getCancelOrderStatus = state => state.orderStatus.thankYou.cancelOrderStatus;
 

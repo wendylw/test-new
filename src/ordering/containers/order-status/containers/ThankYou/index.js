@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
+import _isNumber from 'lodash/isNumber';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
@@ -47,7 +48,8 @@ import {
   getOrderDelayReason,
   getIsOrderCancellable,
   getOrderShippingType,
-  getUpdatedToSelfPickupStatus,
+  getIsPreOrder,
+  getCancelOperator,
 } from '../../redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
@@ -260,7 +262,7 @@ export class ThankYou extends PureComponent {
     }, 60000);
   };
 
-  componentDidUpdate(prevProps, prevStates) {
+  componentDidUpdate(prevProps) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const { storeId } = this.props.order || {};
@@ -344,26 +346,6 @@ export class ThankYou extends PureComponent {
     Utils.removeCookieVariable('__ty_source', '');
   };
 
-  handleClickViewReceipt = () => {
-    const { history, order } = this.props;
-    const type = Utils.getOrderTypeFromUrl();
-    const { orderId } = order || {};
-
-    history.push({
-      pathname: Constants.ROUTER_PATHS.RECEIPT_DETAIL,
-      search: `?receiptNumber=${orderId || ''}&type=${type}`,
-    });
-  };
-
-  handleClickViewDetail = () => {
-    const { history } = this.props;
-
-    history.push({
-      pathname: Constants.ROUTER_PATHS.ORDER_DETAILS,
-      search: window.location.search,
-    });
-  };
-
   showRiderHasFoundMessageModal() {
     const { showMessageModal, t } = this.props;
 
@@ -401,15 +383,10 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  isReportUnsafeDriverButtonDisabled = () => {
-    const { order } = this.props;
-    const { status } = order || {};
-
-    return !AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(status);
-  };
-
   handleReportUnsafeDriver = () => {
-    if (this.isReportUnsafeDriverButtonDisabled()) {
+    const { history, orderStatus } = this.props;
+
+    if (!AVAILABLE_REPORT_DRIVER_ORDER_STATUSES.includes(orderStatus)) {
       return;
     }
 
@@ -417,7 +394,7 @@ export class ThankYou extends PureComponent {
       receiptNumber: Utils.getQueryString('receiptNumber'),
     };
 
-    this.props.history.push({
+    history.push({
       pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
     });
@@ -449,170 +426,6 @@ export class ThankYou extends PureComponent {
 
     updateOrderShippingType({ orderId, shippingType: DELIVERY_METHOD.PICKUP });
   };
-
-  renderOrderDelayMessage = () => {
-    const { orderDelayReason } = this.props;
-
-    if (!orderDelayReason) {
-      return null;
-    }
-
-    return <OrderDelayMessage orderDelayReason={orderDelayReason} />;
-  };
-
-  renderCashbackUI = cashback => {
-    const { t, cashbackInfo } = this.props;
-    const { status } = cashbackInfo || {};
-    const statusCanGetCashback = ['Claimed_FirstTime', 'Claimed_NotFirstTime', 'Claimed_Repeat'];
-
-    return (
-      statusCanGetCashback.includes(status) && (
-        <div className="ordering-thanks__card-prompt card text-center padding-small margin-normal">
-          {this.state.cashbackSuccessImage && (
-            <img
-              src={this.state.cashbackSuccessImage}
-              alt="cashback Earned"
-              onLoad={this.cashbackSuccessStop}
-              className="ordering-thanks__card-prompt-congratulation absolute-wrapper"
-            />
-          )}
-          <CurrencyNumber
-            className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
-            money={cashback || 0}
-          />
-          <h3 className="flex flex-middle flex-center">
-            <span className="text-size-big text-weight-bolder">{t('EarnedCashBackTitle')}</span>
-            <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
-          </h3>
-          <p className="ordering-thanks__card-prompt-description margin-top-bottom-small text-line-height-base">
-            {t('EarnedCashBackDescription')}
-          </p>
-        </div>
-      )
-    );
-  };
-
-  renderTableId(isDineInType) {
-    const { t, order } = this.props;
-    const { tableId } = order || {};
-
-    if (!isDineInType || !tableId) {
-      return null;
-    }
-
-    return (
-      <React.Fragment>
-        <div className="card text-center padding-small margin-normal">
-          <label className="ordering-thanks__table-number-title margin-top-bottom-small text-line-height-base">
-            {t('TableNumber')}
-          </label>
-          <span
-            className="ordering-thanks__table-number margin-top-bottom-small text-size-huge"
-            data-testid="thanks__table-number"
-          >
-            {tableId}
-          </span>
-        </div>
-      </React.Fragment>
-    );
-  }
-
-  renderPickupInfo() {
-    const { t, order, businessInfo, cashbackInfo } = this.props;
-    const { pickUpId, refundShippingFee } = order || {};
-    const { enableCashback } = businessInfo || {};
-    const { cashback } = cashbackInfo || {};
-
-    return (
-      <React.Fragment>
-        <div className="card text-center padding-small margin-normal">
-          <label className="ordering-thanks__pickup-number-title margin-top-bottom-small text-line-height-base">
-            {t('OrderNumber')}
-          </label>
-          <span
-            className="ordering-thanks__pickup-number margin-top-bottom-small text-size-huge"
-            data-testid="thanks__pickup-number"
-          >
-            {pickUpId}
-          </span>
-        </div>
-
-        {refundShippingFee ? (
-          <div className="card text-center padding-small margin-normal">
-            <CurrencyNumber
-              className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
-              money={refundShippingFee || 0}
-            />
-            <h3 className="flex flex-middle flex-center">
-              <span className="text-size-big">{t('RefundDeliveryFee')}</span>
-              <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
-            </h3>
-            <p className="ordering-thanks__card-prompt-description margin-top-bottom-small text-line-height-base">
-              <Trans i18nKey="RefundDeliveryFeeDescription" ns="OrderingThankYou">
-                Upon choosing self-pickup, the delivery fee will be refunded as a{' '}
-                <span className="text-uppercase text-weight-bolder">voucher</span> which could be used upon your next
-                order.
-              </Trans>
-            </p>
-          </div>
-        ) : null}
-        {enableCashback && +cashback ? this.renderCashbackUI(cashback) : null}
-      </React.Fragment>
-    );
-  }
-
-  renderPreOrderDeliveryInfo() {
-    const { businessInfo, cashbackInfo } = this.props;
-    const { enableCashback } = businessInfo || {};
-    const { cashback } = cashbackInfo || {};
-
-    return enableCashback && +cashback ? this.renderCashbackUI(cashback) : null;
-  }
-
-  renderNeedReceipt() {
-    const { t, order } = this.props;
-    const { orderId } = order || {};
-
-    if (this.state.needReceipt === 'detail') {
-      return (
-        <div className="padding-small">
-          <h4 className="padding-left-right-small margin-top-bottom-small text-size-big text-weight-bolder">
-            {t('PingStaffTitle')}
-          </h4>
-          <div className="padding-left-right-small">
-            <label>{t('ReceiptNumber')}: </label>
-            <span className="margin-left-right-smaller text-weight-bolder">{orderId}</span>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <button
-        className="ordering-thanks__button-card-link button button__block text-weight-bolder text-uppercase"
-        onClick={this.handleClickViewReceipt}
-        data-testid="thanks__view-receipt"
-        data-heap-name="ordering.thank-you.view-receipt-btn"
-      >
-        {t('ViewReceipt')}
-      </button>
-    );
-  }
-
-  renderViewDetail() {
-    const { t } = this.props;
-
-    return (
-      <button
-        className="ordering-thanks__button-card-link button button__block text-weight-bolder text-uppercase"
-        onClick={this.handleClickViewDetail}
-        data-testid="thanks__view-receipt"
-        data-heap-name="ordering.thank-you.view-detail-btn"
-      >
-        {t('SeeDetails')}
-      </button>
-    );
-  }
 
   renderOrderCancellationButton() {
     const { t, isOrderCancellable } = this.props;
@@ -651,11 +464,6 @@ export class ThankYou extends PureComponent {
     }, ANIMATION_TIME);
   };
 
-  isRenderImage = (isWebview, status, CONSUMERFLOW_STATUS, shippingType) => {
-    const { PICKUP } = CONSUMERFLOW_STATUS;
-
-    return !(isWebview && status === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY);
-  };
   /* eslint-disable jsx-a11y/anchor-is-valid */
   handleVisitReportDriverPage = () => {
     const queryParams = {
@@ -668,94 +476,70 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  renderConsumerStatusFlow({ cashbackInfo, businessInfo, deliveryInformation, order }) {
-    const { cashback } = cashbackInfo || {};
-    const { enableCashback } = businessInfo || {};
-    let { storeInfo, isPreOrder, deliveredTime } = order || {};
-    const { name: storeName, phone: storePhone } = storeInfo || {};
-    let { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
-      deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
-    const { orderStatus, onlineStoreInfo } = this.props;
-    const { logo } = onlineStoreInfo || {};
-
-    return (
-      <React.Fragment>
-        {this.renderOrderDelayMessage()}
-        <LogisticsProcessing useStorehubLogistics={useStorehubLogistics} orderStatus={orderStatus} />
-        <RiderInfo
-          status={orderStatus}
-          useStorehubLogistics={useStorehubLogistics}
-          courier={courier}
-          storeLogo={logo}
-          storeName={storeName}
-          bestLastMileETA={bestLastMileETA}
-          worstLastMileETA={worstLastMileETA}
-          deliveredTime={deliveredTime}
-          storePhone={storePhone}
-          driverPhone={driverPhone}
-          trackingUrl={trackingUrl}
-          inApp={Utils.isWebview()}
-          supportCallPhone={this.state.supportCallPhone}
-          visitReportPage={this.handleVisitReportDriverPage}
-        />
-        {enableCashback && !isPreOrder && +cashback ? this.renderCashbackUI(cashback) : null}
-      </React.Fragment>
-    );
-  }
-
-  /* eslint-enable jsx-a11y/anchor-is-valid */
-
   renderStoreInfo = () => {
     const { t, order, onlineStoreInfo = {}, businessUTCOffset, shippingType } = this.props;
     const { isPreOrder } = order || {};
 
-    if (!order) return;
+    if (!order) return null;
 
     const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom, createdTime } = order || {};
+    const { name } = storeInfo || {};
     const { address } = (deliveryInformation && deliveryInformation[0]) || {};
     const deliveryAddress = address && address.address;
-    const { name } = storeInfo || {};
     const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
     const pickupTime = formatPickupTime({
       date: isPreOrder ? new Date(expectDeliveryDateFrom) : new Date(new Date(createdTime).getTime() + 1000 * 60 * 30),
       locale: onlineStoreInfo.country,
       businessUTCOffset,
     });
+    const contentMapping = {
+      [DELIVERY_METHOD.PICKUP]: {
+        timeLabel: t('PickUpOn'),
+        time: pickupTime,
+        addressLabel: t('PickupAt'),
+        address: storeAddress,
+      },
+      [DELIVERY_METHOD.TAKE_AWAY]: {
+        address: storeAddress,
+      },
+      [DELIVERY_METHOD.DELIVERY]: {
+        addressLabel: t('DeliveringTo'),
+        address: deliveryAddress,
+      },
+    };
+    const content = contentMapping[shippingType] || {};
 
     return (
-      <div className="padding-small">
+      <div className="ordering-thanks__summary-content padding-small">
         <div className="padding-left-right-small flex flex-middle flex-space-between">
           <label className="margin-top-bottom-small text-size-big text-weight-bolder">{name}</label>
         </div>
 
-        {shippingType === DELIVERY_METHOD.PICKUP ? (
+        {content.time ? (
           <div className="padding-left-right-small">
-            <h4 className="margin-top-bottom-small text-weight-bolder">{t('PickUpOn')}</h4>
+            <h4 className="margin-top-bottom-small text-weight-bolder">{content.timeLabel}</h4>
             <p className="flex flex-top padding-top-bottom-small">
               <IconAccessTime className="icon icon__small icon__primary" />
               <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
-                {pickupTime}
+                {content.time}
               </span>
             </p>
           </div>
         ) : null}
 
-        {shippingType === DELIVERY_METHOD.DELIVERY ? (
-          <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('DeliveringTo')}</h4>
+        {content.address ? (
+          <div>
+            <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">
+              {content.addressLabel}
+            </h4>
+            <p className="padding-left-right-small flex flex-top padding-top-bottom-small">
+              <IconPin className="icon icon__small icon__primary" />
+              <span className="ordering-thanks__address padding-top-bottom-smaller padding-left-right-small text-line-height-base">
+                {content.address}
+              </span>
+            </p>
+          </div>
         ) : null}
-
-        {shippingType === DELIVERY_METHOD.PICKUP ? (
-          <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">{t('PickupAt')}</h4>
-        ) : null}
-
-        <p className="padding-left-right-small flex flex-top padding-top-bottom-small">
-          <IconPin className="icon icon__small icon__primary" />
-          <span className="ordering-thanks__address padding-top-bottom-smaller padding-left-right-small text-line-height-base">
-            {shippingType !== DELIVERY_METHOD.DINE_IN && shippingType !== DELIVERY_METHOD.DELIVERY
-              ? storeAddress
-              : deliveryAddress}
-          </span>
-        </p>
 
         <div className="padding-normal text-center">
           <span className="margin-left-right-smaller ordering-thanks__total">{t('Total')}</span>
@@ -807,49 +591,180 @@ export class ThankYou extends PureComponent {
     return deliveryInformation[0];
   };
 
-  renderDeliveryTimeLine() {
+  renderDeliveryInfo() {
     const {
       order,
-      cashbackInfo,
-      businessInfo,
       pendingUpdateShippingTypeStatus,
       updatableToSelfPickupStatus,
+      orderStatus,
+      onlineStoreInfo,
+      orderDelayReason,
+      shippingType,
     } = this.props;
-    const { deliveryInformation } = order || {};
-    // const ORDER_STATUS = Constants.ORDER_STATUS;
+
+    if (shippingType !== DELIVERY_METHOD.DELIVERY) {
+      return null;
+    }
+
+    const { storeInfo, deliveredTime, deliveryInformation } = order || {};
+    const { name: storeName, phone: storePhone } = storeInfo || {};
+    const { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
+      deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
+    const { logo } = onlineStoreInfo || {};
 
     return (
-      <React.Fragment>
-        {this.renderConsumerStatusFlow({
-          cashbackInfo,
-          businessInfo,
-          deliveryInformation,
-          order,
-        })}
+      <>
+        <OrderDelayMessage orderDelayReason={orderDelayReason} />
+        <LogisticsProcessing
+          useStorehubLogistics={useStorehubLogistics}
+          orderStatus={orderStatus}
+          orderDelayReason={orderDelayReason}
+        />
+        <RiderInfo
+          status={orderStatus}
+          useStorehubLogistics={useStorehubLogistics}
+          courier={courier}
+          storeLogo={logo}
+          storeName={storeName}
+          bestLastMileETA={bestLastMileETA}
+          worstLastMileETA={worstLastMileETA}
+          deliveredTime={deliveredTime}
+          storePhone={storePhone}
+          driverPhone={driverPhone}
+          trackingUrl={trackingUrl}
+          inApp={Utils.isWebview()}
+          supportCallPhone={this.state.supportCallPhone}
+          visitReportPage={this.handleVisitReportDriverPage}
+        />
         <SelfPickup
           processing={pendingUpdateShippingTypeStatus}
           updatableToSelfPickupStatus={updatableToSelfPickupStatus}
           onClickSelfPickupButton={this.handleClickSelfPickupButton}
           onChangeToSelfPickup={this.handleChangeToSelfPickup}
         />
-      </React.Fragment>
+      </>
     );
   }
 
-  isNowPaidPreOrder() {
-    const { order } = this.props;
-
-    return order && order.isPreOrder && ['paid', 'accepted'].includes(order.status);
-  }
-
-  renderDetailTitle({ isPreOrder, shippingType }) {
-    if (isPreOrder && shippingType === DELIVERY_METHOD.DELIVERY) return null;
-    const { t } = this.props;
+  renderViewOrderDetailButton() {
+    const { t, history } = this.props;
 
     return (
-      <h4 className="margin-top-bottom-small text-uppercase text-weight-bolder text-size-big">
-        {isPreOrder && shippingType === DELIVERY_METHOD.PICKUP ? t('PickUpDetails') : t('OrderDetails')}
-      </h4>
+      <button
+        className="ordering-thanks__button-card-link button button__block text-weight-bolder text-uppercase"
+        onClick={() => {
+          history.push({
+            pathname: Constants.ROUTER_PATHS.ORDER_DETAILS,
+            search: window.location.search,
+          });
+        }}
+        data-testid="thanks__view-receipt"
+        data-heap-name="ordering.thank-you.view-detail-btn"
+      >
+        {t('ViewOrderDetail')}
+      </button>
+    );
+  }
+
+  renderPickupTakeAwayDineInInfo() {
+    const { t, order, shippingType } = this.props;
+    const { tableId, pickUpId, refundShippingFee } = order || {};
+
+    if (shippingType === DELIVERY_METHOD.DELIVERY) {
+      return null;
+    }
+
+    return (
+      <>
+        {tableId ? (
+          <div className="card text-center padding-small margin-normal">
+            <label className="ordering-thanks__table-number-title margin-top-bottom-small text-line-height-base">
+              {t('TableNumber')}
+            </label>
+            <span
+              className="ordering-thanks__table-number margin-top-bottom-small text-size-huge"
+              data-testid="thanks__table-number"
+            >
+              {tableId}
+            </span>
+          </div>
+        ) : null}
+
+        <div className="ordering-thanks__card card text-center margin-normal">
+          <div className="padding-small">
+            <label className="ordering-thanks__pickup-number-title margin-top-bottom-small text-line-height-base">
+              {t('OrderNumber')}
+            </label>
+            <span
+              className="ordering-thanks__pickup-number margin-top-bottom-small text-size-huge"
+              data-testid="thanks__pickup-number"
+            >
+              {pickUpId}
+            </span>
+          </div>
+
+          {shippingType === DELIVERY_METHOD.DINE_IN ? this.renderViewOrderDetailButton() : null}
+        </div>
+
+        {refundShippingFee ? (
+          <div className="card text-center padding-small margin-normal">
+            <CurrencyNumber
+              className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
+              money={refundShippingFee || 0}
+            />
+            <h3 className="flex flex-middle flex-center">
+              <span className="text-size-big">{t('RefundDeliveryFee')}</span>
+              <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
+            </h3>
+            <p className="ordering-thanks__card-prompt-description margin-top-bottom-small text-line-height-base">
+              <Trans i18nKey="RefundDeliveryFeeDescription" ns="OrderingThankYou">
+                Upon choosing self-pickup, the delivery fee will be refunded as a{' '}
+                <span className="text-uppercase text-weight-bolder">voucher</span> which could be used upon your next
+                order.
+              </Trans>
+            </p>
+          </div>
+        ) : null}
+      </>
+    );
+  }
+
+  renderSummary() {
+    const { t, orderStatus, isPreOrder, orderCancellationButtonVisible, shippingType, isOrderCancellable } = this.props;
+
+    if (shippingType === DELIVERY_METHOD.DINE_IN) {
+      return null;
+    }
+
+    const isDeliveryPreOrder = shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder;
+    const paidOrAcceptedOrder = ['paid', 'accepted'].includes(orderStatus);
+    const orderInfo = isDeliveryPreOrder && paidOrAcceptedOrder ? this.renderPreOrderMessage() : this.renderStoreInfo();
+
+    return (
+      <div className="padding-top-bottom-small margin-normal">
+        <h4 className="margin-top-bottom-small text-uppercase text-weight-bolder text-size-big">
+          {shippingType === DELIVERY_METHOD.PICKUP ? t('PickUpDetails') : t('OrderDetails')}
+        </h4>
+
+        <div className="ordering-thanks__card card">
+          {orderInfo}
+
+          {this.renderViewOrderDetailButton()}
+
+          {orderCancellationButtonVisible && (
+            <button
+              className={`ordering-thanks__order-cancellation-button ${
+                isOrderCancellable ? '' : 'button__link-disabled'
+              } button button__block text-weight-bolder text-uppercase`}
+              onClick={this.handleOrderCancellationButtonClick}
+              data-testid="thanks__order-cancellation-button"
+              data-heap-name="ordering.thank-you.order-cancellation-button"
+            >
+              {t('CancelOrder')}
+            </button>
+          )}
+        </div>
+      </div>
     );
   }
 
@@ -987,15 +902,23 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, orderCancellationButtonVisible, shippingType, orderStatus } = this.props;
+    const {
+      t,
+      history,
+      match,
+      order,
+      shippingType,
+      orderStatus,
+      orderDelayReason,
+      isPreOrder,
+      cancelOperator,
+      businessInfo,
+      cashbackInfo,
+    } = this.props;
     const date = new Date();
-    let orderInfo = shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderStoreInfo() : null;
-    const { isPreOrder, cancelOperator, storeInfo, total } = order || {};
-    const { name: storeName } = storeInfo || {};
-
-    if (shippingType === DELIVERY_METHOD.DELIVERY && this.isNowPaidPreOrder()) {
-      orderInfo = this.renderPreOrderMessage();
-    }
+    const { total } = order || {};
+    const { enableCashback } = businessInfo || {};
+    const { cashback, status: cashbackStatus } = cashbackInfo || {};
 
     const orderId = _get(order, 'orderId', '');
 
@@ -1004,7 +927,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        <React.Fragment>
+        <>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
             className="flex-middle border__bottom-divider"
@@ -1034,33 +957,26 @@ export class ThankYou extends PureComponent {
             {this.renderDownloadBanner()}
 
             <OrderStatusDescription
-              status={orderStatus}
+              orderStatus={orderStatus}
               shippingType={shippingType}
-              storeName={storeName}
+              orderDelayReason={orderDelayReason}
               cancelOperator={cancelOperator || 'unknown'}
-              cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
               isPreOrder={isPreOrder}
+              isApp={Utils.isWebview()}
+              cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
             />
-            {shippingType === DELIVERY_METHOD.DELIVERY ? this.renderDeliveryTimeLine() : null}
-            {this.renderTableId(shippingType === DELIVERY_METHOD.DINE_IN)}
-            {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.DINE_IN
-              ? null
-              : this.renderPickupInfo()}
-            {shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
+            {this.renderDeliveryInfo()}
+            {this.renderPickupTakeAwayDineInInfo()}
 
-            <div className="padding-top-bottom-small margin-normal">
-              {this.renderDetailTitle({ isPreOrder, shippingType })}
+            <CashbackInfo
+              enableCashback={enableCashback}
+              cashback={_isNumber(cashback) ? Number(cashback) : 0}
+              cashbackStatus={cashbackStatus}
+            />
 
-              <div className="card">
-                {orderInfo}
+            {this.renderSummary()}
 
-                {shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderViewDetail() : this.renderNeedReceipt()}
-
-                {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
-
-                <PhoneLogin hideMessage={true} history={history} />
-              </div>
-            </div>
+            <PhoneLogin history={history} />
             <footer
               ref={ref => (this.footerEl = ref)}
               className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
@@ -1075,7 +991,7 @@ export class ThankYou extends PureComponent {
               </a>
             </footer>
           </div>
-        </React.Fragment>
+        </>
 
         <OrderCancellationReasonsAside
           show={this.props.orderCancellationReasonAsideVisible}
@@ -1101,6 +1017,8 @@ export default compose(
       user: getUser(state),
       receiptNumber: getReceiptNumber(state),
       orderStatus: getOrderStatus(state),
+      isPreOrder: getIsPreOrder(state),
+      cancelOperator: getCancelOperator(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       isOrderCancellable: getIsOrderCancellable(state),
@@ -1110,7 +1028,6 @@ export default compose(
       shippingType: getOrderShippingType(state),
       pendingUpdateShippingTypeStatus: getUpdateShippingTypePendingStatus(state),
       updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
-      updatedToSelfPickupStatus: getUpdatedToSelfPickupStatus(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(

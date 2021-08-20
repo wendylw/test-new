@@ -9,7 +9,6 @@ const MANIFEST = {
 
 const ROUTER_PATHS = {
   TERMS_OF_USE: '/terms-conditions',
-  RECEIPT_DETAIL: '/receipt',
   THANK_YOU: '/thank-you',
   PRIVACY: '/privacy',
   ERROR: '/error',

@@ -44,8 +44,8 @@ $total-text-size: 1.7142rem;
     display: block;
     margin-left: auto;
     margin-right: auto;
-    max-width: 60%;
-    padding-top: 0;
+    max-width: 50%;
+    max-height: 190px;
   }
 
   &__page-title {
@@ -99,11 +99,13 @@ $total-text-size: 1.7142rem;
     margin-right: 5px;
   }
 
+  &__table-number-title,
   &__pickup-number-title {
     display: block;
     color: $new-grey-1-1;
   }
 
+  &__table-number,
   &__pickup-number {
     display: block;
     letter-spacing: 0.05em;
@@ -140,15 +142,17 @@ $total-text-size: 1.7142rem;
     font-size: $total-text-size;
   }
 
-  &__button-card-link {
+  &__card > *:first-child ~ .button {
     border-top: 1px solid $gray-4;
+  }
+
+  &__button-card-link {
     color: $status-blue;
     border-radius: 0;
     min-height: 56px;
   }
 
   &__order-cancellation-button {
-    border-top: 1px solid $gray-4;
     color: $status-red;
     border-radius: 0;
     min-height: 56px;

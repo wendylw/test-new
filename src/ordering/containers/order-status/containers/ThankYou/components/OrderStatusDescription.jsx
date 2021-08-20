@@ -2,31 +2,33 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation, Trans } from 'react-i18next';
 import { compose } from 'redux';
+import { connect } from 'react-redux';
 import Constants from '../../../../../../utils/constants';
 import { ORDER_DELAY_REASON_CODES } from '../constants';
-import beepOrderStatusAccepted from '../../../../../../images/order-status-accepted.gif';
-import beepOrderStatusConfirmed from '../../../../../../images/order-status-confirmed.gif';
-import beepOrderStatusDelivered from '../../../../../../images/order-status-delivered.gif';
-import beepOrderStatusPaid from '../../../../../../images/order-status-paid.gif';
-import beepOrderStatusPickedUp from '../../../../../../images/order-status-picked-up.gif';
-import beepOrderStatusPickedUpRainy from '../../../../../../images/order-status-picked-up-rainy.gif';
-import beepOrderStatusCancelled from '../../../../../../images/order-status-cancelled.png';
-import beepPreOrderSuccessImage from '../../../../../../images/beep-pre-order-success.png';
+import { getDeliverySwitchedToSelfPickupState, getOrderStoreName } from '../redux/selector';
+import orderStatusAccepted from '../../../../../../images/order-status-accepted.gif';
+import orderStatusConfirmed from '../../../../../../images/order-status-confirmed.gif';
+import orderStatusDelivered from '../../../../../../images/order-status-delivered.gif';
+import orderStatusPaid from '../../../../../../images/order-status-paid.gif';
+import orderStatusPickedUp from '../../../../../../images/order-status-picked-up.gif';
+import orderStatusPickedUpRainy from '../../../../../../images/order-status-picked-up-rainy.gif';
+import orderStatusCancelled from '../../../../../../images/order-status-cancelled.png';
+import orderSuccessImage from '../../../../../../images/order-success.png';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 const RAINY_IMAGES_MAPPING = {
-  [ORDER_STATUS.CONFIRMED]: beepOrderStatusPickedUpRainy,
-  [ORDER_STATUS.LOGISTICS_CONFIRMED]: beepOrderStatusPickedUpRainy,
-  [ORDER_STATUS.PICKED_UP]: beepOrderStatusPickedUpRainy,
+  [ORDER_STATUS.CONFIRMED]: orderStatusPickedUpRainy,
+  [ORDER_STATUS.LOGISTICS_CONFIRMED]: orderStatusPickedUpRainy,
+  [ORDER_STATUS.PICKED_UP]: orderStatusPickedUpRainy,
 };
 const STATUS_IMAGES_MAPPING = {
-  [ORDER_STATUS.PAID]: beepOrderStatusPaid,
-  [ORDER_STATUS.ACCEPTED]: beepOrderStatusAccepted,
-  [ORDER_STATUS.CONFIRMED]: beepOrderStatusConfirmed,
-  [ORDER_STATUS.LOGISTICS_CONFIRMED]: beepOrderStatusConfirmed,
-  [ORDER_STATUS.PICKED_UP]: beepOrderStatusPickedUp,
-  [ORDER_STATUS.DELIVERED]: beepOrderStatusDelivered,
-  [ORDER_STATUS.CANCELLED]: beepOrderStatusCancelled,
+  [ORDER_STATUS.PAID]: orderStatusPaid,
+  [ORDER_STATUS.ACCEPTED]: orderStatusAccepted,
+  [ORDER_STATUS.CONFIRMED]: orderStatusConfirmed,
+  [ORDER_STATUS.LOGISTICS_CONFIRMED]: orderStatusConfirmed,
+  [ORDER_STATUS.PICKED_UP]: orderStatusPickedUp,
+  [ORDER_STATUS.DELIVERED]: orderStatusDelivered,
+  [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
 };
 const cancelledDescriptionKey = {
   ist: 'ISTCancelledDescription',
@@ -42,11 +44,11 @@ function OrderStatusDescription(props) {
     orderStatus,
     orderDelayReason,
     shippingType,
-    refundShippingFee,
-    storeName,
     cancelOperator,
-    cancelAmountEl,
     isPreOrder,
+    storeName,
+    deliveryToSelfPickup,
+    cancelAmountEl,
     inApp,
   } = props;
   const delayByBadWeatherImageSource =
@@ -57,10 +59,10 @@ function OrderStatusDescription(props) {
     [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus);
   const ImageSource =
     preOrderPendingRiderConfirm || shippingType !== DELIVERY_METHOD.DELIVERY
-      ? beepPreOrderSuccessImage
+      ? orderSuccessImage
       : STATUS_IMAGES_MAPPING[orderStatus];
   const showMapInApp = inApp && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
-  const pickUpDescription = refundShippingFee
+  const pickUpDescription = deliveryToSelfPickup
     ? t('ThankYouForUpdatedToPickingUpForUS')
     : t('ThankYouForPickingUpForUS');
 
@@ -68,16 +70,18 @@ function OrderStatusDescription(props) {
     <>
       {showMapInApp || (!ImageSource && !delayByBadWeatherImageSource) ? null : (
         <img
-          className="ordering-thanks__image padding-normal"
+          className="ordering-thanks__image padding-small"
           src={delayByBadWeatherImageSource || ImageSource}
           alt={`Beep ${orderStatus || 'order success'}`}
         />
       )}
       {shippingType !== DELIVERY_METHOD.DELIVERY ? (
-        <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">{t('ThankYou')}!</h2>
+        <h2 className="ordering-thanks__page-title text-center padding-left-right-small text-size-large text-weight-light">
+          {t('ThankYou')}!
+        </h2>
       ) : null}
       {shippingType === DELIVERY_METHOD.PICKUP || shippingType === DELIVERY_METHOD.DINE_IN ? (
-        <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big text-line-height-base">
+        <p className="ordering-thanks__page-description padding-small text-center text-size-big text-line-height-base">
           {shippingType === DELIVERY_METHOD.PICKUP ? `${pickUpDescription} ` : `${t('PrepareOrderDescription')} `}
           <span role="img" aria-label="Goofy">
             😋
@@ -104,26 +108,32 @@ OrderStatusDescription.displayName = 'OrderStatusDescription';
 
 OrderStatusDescription.propTypes = {
   orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
-  orderDelayReason: PropTypes.oneOf(Object.values(ORDER_DELAY_REASON_CODES)),
   shippingType: PropTypes.oneOf(Object.values(DELIVERY_METHOD)),
-  refundShippingFee: PropTypes.number,
-  storeName: PropTypes.string,
+  orderDelayReason: PropTypes.oneOf(Object.values(ORDER_DELAY_REASON_CODES)),
   cancelOperator: PropTypes.string,
-  cancelAmountEl: PropTypes.element,
   isPreOrder: PropTypes.bool,
+  deliveryToSelfPickup: PropTypes.bool,
+  storeName: PropTypes.string,
+  cancelAmountEl: PropTypes.element,
   inApp: PropTypes.bool,
 };
 
 OrderStatusDescription.defaultProps = {
   orderStatus: null,
   shippingType: null,
-  refundShippingFee: 0,
   orderDelayReason: null,
-  storeName: null,
   cancelOperator: null,
-  cancelAmountEl: <span />,
   isPreOrder: false,
+  deliveryToSelfPickup: false,
+  storeName: null,
+  cancelAmountEl: <span />,
   inApp: false,
 };
 
-export default compose(withTranslation('OrderingThankYou'))(OrderStatusDescription);
+export default compose(
+  withTranslation('OrderingThankYou'),
+  connect(state => ({
+    deliveryToSelfPickup: getDeliverySwitchedToSelfPickupState(state),
+    storeName: getOrderStoreName(state),
+  }))
+)(OrderStatusDescription);

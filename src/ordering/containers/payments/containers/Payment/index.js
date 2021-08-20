@@ -221,15 +221,7 @@ class Payment extends Component {
           }}
         >
           {this.renderPaymentList()}
-          <PayByCash
-            onPayWithCash={({ thankYouPageUrl, tableId, type }) => {
-              window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${
-                type ? `&type=${type}` : ''
-              }`;
-
-              return;
-            }}
-          />
+          <PayByCash onPayWithCash={redirectUrl => (window.location = redirectUrl)} />
         </div>
 
         <footer
