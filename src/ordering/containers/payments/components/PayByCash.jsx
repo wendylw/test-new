@@ -13,9 +13,12 @@ import Modal from '../../../../components/Modal';
 function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptDisplayStatus, onPayWithCash }) {
   const { t } = useTranslation('OrderingPayment');
   const [creatingOrder, setCreatingOrder] = useState(false);
-  const handleToggleModal = useCallback(status => {
-    updatePayByCashPromptDisplayStatus({ status });
-  }, []);
+  const handleToggleModal = useCallback(
+    status => {
+      updatePayByCashPromptDisplayStatus({ status });
+    },
+    [updatePayByCashPromptDisplayStatus]
+  );
 
   // console.log(modalDisplay);
 
