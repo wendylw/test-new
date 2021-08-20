@@ -135,7 +135,7 @@ class Payment extends Component {
     }
 
     if (currentPaymentOption.paymentProvider === 'SHOfflinePayment') {
-      paymentActions.updatePayByCashPromptDisplayStatus(true);
+      paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
 
       return;
     }

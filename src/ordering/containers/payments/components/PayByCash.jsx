@@ -14,8 +14,10 @@ function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptD
   const { t } = useTranslation('OrderingPayment');
   const [creatingOrder, setCreatingOrder] = useState(false);
   const handleToggleModal = useCallback(status => {
-    updatePayByCashPromptDisplayStatus(status);
+    updatePayByCashPromptDisplayStatus({ status });
   }, []);
+
+  // console.log(modalDisplay);
 
   return (
     <>
@@ -43,7 +45,8 @@ function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptD
               try {
                 const shippingType = Utils.getOrderTypeFromUrl();
                 const createOrderResult = await createOrder({ cashback, shippingType });
-                const { tableId, shippingType: type, redirectUrl: thankYouPageUrl } = createOrderResult.order;
+                const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
+                const { tableId, shippingType: type } = order;
 
                 if (thankYouPageUrl) {
                   onPayWithCash(
