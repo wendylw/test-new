@@ -20,7 +20,7 @@ function SelfPickup({ t, processing, updatableToSelfPickupStatus, onClickSelfPic
 
   return (
     <section className="self-pickup">
-      <div className="card text-center padding-normal margin-normal">
+      <div className="card text-center padding-normal margin-small">
         <h2 className="self-pickup__title">{t('SelfPickUpTitle')}</h2>
         <p className="padding-top-bottom-normal padding-left-right-small text-line-height-higher">
           {t('SelfPickUpDescription')}

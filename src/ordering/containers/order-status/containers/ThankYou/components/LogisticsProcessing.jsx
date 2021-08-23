@@ -59,7 +59,7 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayR
   const rainyWeather = orderDelayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER;
 
   return (
-    <div className="card padding-small margin-normal flex flex-top flex-space-between">
+    <div className="card padding-small margin-small flex flex-top flex-space-between">
       <ul
         className={`logistics-processing__list${
           expandProcessingList ? '--expand' : ''

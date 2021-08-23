@@ -75,3 +75,10 @@ export const getServiceCharge = createSelector(getOrderItems, items => {
   const serviceChargeItem = items.find(item => item.itemType === 'ServiceCharge');
   return _get(serviceChargeItem, 'displayPrice', 0);
 });
+
+export const getDisplayDiscount = createSelector(getOrder, order => {
+  const { loyaltyDiscounts } = order || {};
+  const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
+
+  return displayDiscount;
+});

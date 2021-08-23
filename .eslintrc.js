@@ -125,7 +125,6 @@ const legacyFiles = [
   'src/ordering/containers/order-status/containers/ThankYou/components/OrderCancellationReasonsAside/index.js',
   'src/ordering/containers/order-status/containers/ThankYou/components/OrderDelayMessage/index.js',
   'src/ordering/containers/order-status/containers/ThankYou/components/PhoneCopyModal/index.js',
-  'src/ordering/containers/order-status/containers/ThankYou/components/PhoneLogin/index.js',
   'src/ordering/containers/order-status/containers/ThankYou/constants.js',
   'src/ordering/containers/order-status/containers/ThankYou/index.js',
   'src/ordering/containers/order-status/containers/ThankYou/redux/index.js',

@@ -58,7 +58,7 @@ function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptD
                     }`
                   );
                 }
-              } catch {
+              } finally {
                 setCreatingOrder(false);
               }
             }}

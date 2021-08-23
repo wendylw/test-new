@@ -32,7 +32,7 @@ function CashbackInfo(props) {
 
   return (
     GET_CASHBACK_STATUS_LIST.includes(cashbackStatus) && (
-      <div className="ordering-thanks__card-prompt card text-center padding-small margin-normal">
+      <div className="ordering-thanks__card-prompt card text-center padding-small margin-small">
         {cashbackSuccessImageVisibility ? (
           <img
             src={cashbackSuccessImage}

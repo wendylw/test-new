@@ -353,7 +353,7 @@ export class OrderDetails extends Component {
           rightContent={this.getRightContentOfHeader()}
         />
         <div className="ordering-details__container">
-          <div className="card padding-top-bottom-small padding-left-right-normal margin-normal">
+          <div className="card padding-top-bottom-small padding-left-right-normal margin-small">
             {this.renderBaseInfo()}
             {this.renderReceiptInfo()}
             {this.renderPaymentMethod()}
@@ -392,7 +392,7 @@ export class OrderDetails extends Component {
           </div>
 
           {isUseStorehubLogistics ? (
-            <div className="card margin-normal">
+            <div className="card margin-small">
               <button
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}

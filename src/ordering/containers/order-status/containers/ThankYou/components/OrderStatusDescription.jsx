@@ -11,6 +11,7 @@ import orderStatusConfirmed from '../../../../../../images/order-status-confirme
 import orderStatusDelivered from '../../../../../../images/order-status-delivered.gif';
 import orderStatusPaid from '../../../../../../images/order-status-paid.gif';
 import orderStatusPickedUp from '../../../../../../images/order-status-picked-up.gif';
+import orderStatusPendingPayment from '../../../../../../images/order-status-pending-payment.gif';
 import orderStatusPickedUpRainy from '../../../../../../images/order-status-picked-up-rainy.gif';
 import orderStatusCancelled from '../../../../../../images/order-status-cancelled.png';
 import orderSuccessImage from '../../../../../../images/order-success.png';
@@ -21,7 +22,7 @@ const RAINY_IMAGES_MAPPING = {
   [ORDER_STATUS.LOGISTICS_CONFIRMED]: orderStatusPickedUpRainy,
   [ORDER_STATUS.PICKED_UP]: orderStatusPickedUpRainy,
 };
-const STATUS_IMAGES_MAPPING = {
+const DELIVERY_STATUS_IMAGES_MAPPING = {
   [ORDER_STATUS.PAID]: orderStatusPaid,
   [ORDER_STATUS.ACCEPTED]: orderStatusAccepted,
   [ORDER_STATUS.CONFIRMED]: orderStatusConfirmed,
@@ -30,7 +31,16 @@ const STATUS_IMAGES_MAPPING = {
   [ORDER_STATUS.DELIVERED]: orderStatusDelivered,
   [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
 };
-const cancelledDescriptionKey = {
+const NOT_DELIVERY_STATUS_IMAGES_MAPPING = {
+  [ORDER_STATUS.PENDING_PAYMENT]: orderStatusPendingPayment,
+  [ORDER_STATUS.PAID]: orderSuccessImage,
+  [ORDER_STATUS.ACCEPTED]: orderSuccessImage,
+  [ORDER_STATUS.CONFIRMED]: orderSuccessImage,
+  [ORDER_STATUS.PICKED_UP]: orderStatusDelivered,
+  [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
+  [ORDER_STATUS.PAYMENT_CANCELLED]: orderStatusCancelled,
+};
+const CANCELLED_DESCRIPTION_TRANSLATION_KEYS = {
   ist: 'ISTCancelledDescription',
   auto_cancelled: 'AutoCancelledDescription',
   merchant: 'MerchantCancelledDescription',
@@ -59,8 +69,8 @@ function OrderStatusDescription(props) {
     [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus);
   const ImageSource =
     preOrderPendingRiderConfirm || shippingType !== DELIVERY_METHOD.DELIVERY
-      ? orderSuccessImage
-      : STATUS_IMAGES_MAPPING[orderStatus];
+      ? NOT_DELIVERY_STATUS_IMAGES_MAPPING[orderStatus]
+      : DELIVERY_STATUS_IMAGES_MAPPING[orderStatus];
   const showMapInApp = inApp && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
   const pickUpDescription = deliveryToSelfPickup
     ? t('ThankYouForUpdatedToPickingUpForUS')
@@ -76,22 +86,32 @@ function OrderStatusDescription(props) {
         />
       )}
       {shippingType !== DELIVERY_METHOD.DELIVERY ? (
-        <h2 className="ordering-thanks__page-title text-center padding-left-right-small text-size-large text-weight-light">
-          {t('ThankYou')}!
-        </h2>
-      ) : null}
-      {shippingType === DELIVERY_METHOD.PICKUP || shippingType === DELIVERY_METHOD.DINE_IN ? (
-        <p className="ordering-thanks__page-description padding-small text-center text-size-big text-line-height-base">
-          {shippingType === DELIVERY_METHOD.PICKUP ? `${pickUpDescription} ` : `${t('PrepareOrderDescription')} `}
-          <span role="img" aria-label="Goofy">
-            😋
-          </span>
-        </p>
+        <>
+          <h2 className="ordering-thanks__page-title text-center padding-left-right-small text-size-large text-weight-light">
+            {orderStatus === ORDER_STATUS.PENDING_PAYMENT ? t('PayAtTheCashier') : t('ThankYou')}!
+          </h2>
+          <p className="ordering-thanks__page-description padding-small text-center text-size-big text-line-height-base">
+            {orderStatus === ORDER_STATUS.PENDING_PAYMENT ? (
+              t('PendingPaymentDescription')
+            ) : (
+              <>
+                {shippingType === DELIVERY_METHOD.PICKUP ? `${pickUpDescription} ` : `${t('PrepareOrderDescription')} `}
+                <span role="img" aria-label="Goofy">
+                  😋
+                </span>
+              </>
+            )}
+          </p>
+        </>
       ) : null}
       {orderStatus === ORDER_STATUS.CANCELLED ? (
-        <div className="card text-center margin-normal flex">
+        <div className="card text-center margin-small flex">
           <div className="padding-small text-left">
-            <Trans i18nKey={cancelledDescriptionKey[cancelOperator]} ns="OrderingThankYou" storeName={storeName}>
+            <Trans
+              i18nKey={CANCELLED_DESCRIPTION_TRANSLATION_KEYS[cancelOperator]}
+              ns="OrderingThankYou"
+              storeName={storeName}
+            >
               <p className="padding-top-bottom-small padding-left-right-normal text-center text-size-big text-line-height-base">
                 <strong>{{ storeName }}</strong>
                 {cancelAmountEl}
@@ -110,7 +130,7 @@ OrderStatusDescription.propTypes = {
   orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
   shippingType: PropTypes.oneOf(Object.values(DELIVERY_METHOD)),
   orderDelayReason: PropTypes.oneOf(Object.values(ORDER_DELAY_REASON_CODES)),
-  cancelOperator: PropTypes.string,
+  cancelOperator: PropTypes.oneOf(Object.keys(CANCELLED_DESCRIPTION_TRANSLATION_KEYS)),
   isPreOrder: PropTypes.bool,
   deliveryToSelfPickup: PropTypes.bool,
   storeName: PropTypes.string,

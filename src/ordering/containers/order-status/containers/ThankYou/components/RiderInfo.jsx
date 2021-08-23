@@ -190,7 +190,7 @@ function RiderInfo({
 
   return (
     <>
-      <div className="card margin-normal flex ordering-thanks__rider flex-column">
+      <div className="card margin-small flex ordering-thanks__rider flex-column">
         <div className="padding-normal">
           {estimationInfo[logisticStatus] ? (
             <div className="rider-info__time-container padding-top-bottom-normal">

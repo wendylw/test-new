@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../../../utils/constants';
 import {
+  getOrder,
   getOrderStatus,
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,
@@ -60,3 +61,17 @@ export const getCancelOrderStatus = state => state.orderStatus.thankYou.cancelOr
 
 export const getUpdateShippingTypePendingStatus = state =>
   state.orderStatus.thankYou.updateShippingTypeStatus === 'pending';
+
+export const getOrderDeliveryInfo = createSelector(getOrder, order => {
+  if (!order) {
+    return null;
+  }
+
+  const { expectDeliveryDateFrom, expectDeliveryDateTo, deliveryInformation } = order;
+  const responseDeliveryInformation = deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
+
+  return {
+    expectDeliveryDateRange: [expectDeliveryDateFrom, expectDeliveryDateTo],
+    ...responseDeliveryInformation,
+  };
+});

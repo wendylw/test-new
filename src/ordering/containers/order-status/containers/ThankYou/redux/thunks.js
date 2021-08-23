@@ -42,7 +42,7 @@ export const loadStoreIdHashCode = createAsyncThunk(
 export const loadStoreIdTableIdHashCode = createAsyncThunk(
   'ordering/orderStatus/thankYou/fetchStoreIdTableIdHashCode',
   async ({ storeId, tableId }) => {
-    const result = await get(API_INFO.createStoreIdTableIdHashCode(storeId).url, {
+    const result = await post(API_INFO.createStoreIdTableIdHashCode(storeId).url, {
       tableId,
     });
 

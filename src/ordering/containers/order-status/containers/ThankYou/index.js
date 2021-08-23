@@ -1,18 +1,20 @@
 import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
 import _isNumber from 'lodash/isNumber';
+import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import DownloadBanner from '../../../../../components/DownloadBanner';
-import { IconAccessTime, IconPin } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
 import OrderStatusDescription from './components/OrderStatusDescription';
 import LogisticsProcessing from './components/LogisticsProcessing';
 import RiderInfo from './components/RiderInfo';
 import CashbackInfo from './components/CashbackInfo';
+import OrderSummary from './components/OrderSummary';
+import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 
 import config from '../../../../../config';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
@@ -20,7 +22,6 @@ import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from './utils';
 import Constants from '../../../../../utils/constants';
-import { formatPickupTime } from '../../../../../utils/datetime-lib';
 import {
   gtmEventTracking,
   gtmSetPageViewData,
@@ -28,7 +29,6 @@ import {
   GTM_TRACKING_EVENTS,
 } from '../../../../../utils/gtm';
 import * as NativeMethods from '../../../../../utils/native-methods';
-import * as storeUtils from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
@@ -53,20 +53,26 @@ import {
 } from '../../redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
-import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder, updateOrderShippingType } from './redux/thunks';
+import {
+  loadStoreIdHashCode,
+  loadStoreIdTableIdHashCode,
+  cancelOrder,
+  updateOrderShippingType,
+  loadCashbackInfo,
+  createCashbackInfo,
+} from './redux/thunks';
 import {
   getCashbackInfo,
   getStoreHashCode,
   getOrderCancellationReasonAsideVisible,
-  getOrderCancellationButtonVisible,
   getDeliveryUpdatableToSelfPickupState,
   getUpdateShippingTypePendingStatus,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
-import PhoneLogin from './components/PhoneLogin';
 import HybridHeader from '../../../../../components/HybridHeader';
+import loggly from '../../../../../utils/monitoring/loggly';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 const ANIMATION_TIME = 3600;
@@ -85,18 +91,50 @@ export class ThankYou extends PureComponent {
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
+      phone: Utils.getLocalStorageVariable('user.p'),
     };
   }
 
   pollOrderStatusTimer = null;
+
+  async canClaimCheck(user) {
+    const { history, createCashbackInfo } = this.props;
+    const { phone } = this.state;
+    const { isLogin } = user || {};
+    const { isFetching, createdCashbackInfo } = this.props.cashbackInfo || {};
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+
+    if (isLogin) {
+      Utils.setLocalStorageVariable('user.p', phone);
+    }
+
+    if (isLogin && !isFetching && !createdCashbackInfo) {
+      await createCashbackInfo({
+        receiptNumber,
+        phone,
+      });
+    }
+  }
 
   componentDidMount = async () => {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
     window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
-    const { loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo, user } = this.props;
+    const {
+      history,
+      loginApp,
+      loadCashbackInfo,
+      loadStoreIdHashCode,
+      loadStoreIdTableIdHashCode,
+      order,
+      onlineStoreInfo,
+      businessInfo,
+      user,
+    } = this.props;
     const { storeId } = order || {};
+    const { enableCashback } = businessInfo || {};
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     if (storeId) {
       Utils.isDineInType()
@@ -116,6 +154,25 @@ export class ThankYou extends PureComponent {
 
     if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
       this.pollOrderStatus();
+    }
+
+    await loadCashbackInfo(receiptNumber);
+
+    if (enableCashback) {
+      this.canClaimCheck(user);
+    }
+
+    if (Utils.isWebview()) {
+      const res = await NativeMethods.getTokenAsync();
+      if (_isNil(res)) {
+        loggly.error('order-status.thank-you.phone-login', { message: 'native token is invalid' });
+      } else {
+        const { access_token, refresh_token } = res;
+        await loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      }
     }
   };
 
@@ -262,11 +319,21 @@ export class ThankYou extends PureComponent {
     }, 60000);
   };
 
-  componentDidUpdate(prevProps) {
-    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
+  async componentDidUpdate(prevProps) {
+    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo, businessInfo: prevBusinessInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
-    const { storeId } = this.props.order || {};
-    const { onlineStoreInfo, user, shippingType, loadStoreIdTableIdHashCode, loadStoreIdHashCode } = this.props;
+    const {
+      order,
+      onlineStoreInfo,
+      businessInfo,
+      user,
+      shippingType,
+      loadStoreIdTableIdHashCode,
+      loadStoreIdHashCode,
+    } = this.props;
+    const { storeId } = order || {};
+    const { isLogin } = user || {};
+    const { enableCashback } = businessInfo || {};
 
     if (storeId && prevStoreId !== storeId) {
       shippingType === DELIVERY_METHOD.DINE_IN
@@ -284,6 +351,15 @@ export class ThankYou extends PureComponent {
     }
 
     this.setContainerHeight();
+
+    const canCreateCashback =
+      isLogin &&
+      enableCashback &&
+      (prevBusinessInfo.enableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
+
+    if (canCreateCashback) {
+      this.canClaimCheck(user);
+    }
   }
 
   componentWillUnmount = () => {
@@ -476,121 +552,6 @@ export class ThankYou extends PureComponent {
     });
   };
 
-  renderStoreInfo = () => {
-    const { t, order, onlineStoreInfo = {}, businessUTCOffset, shippingType } = this.props;
-    const { isPreOrder } = order || {};
-
-    if (!order) return null;
-
-    const { storeInfo, total, deliveryInformation, expectDeliveryDateFrom, createdTime } = order || {};
-    const { name } = storeInfo || {};
-    const { address } = (deliveryInformation && deliveryInformation[0]) || {};
-    const deliveryAddress = address && address.address;
-    const storeAddress = Utils.getValidAddress(storeInfo || {}, Constants.ADDRESS_RANGE.COUNTRY);
-    const pickupTime = formatPickupTime({
-      date: isPreOrder ? new Date(expectDeliveryDateFrom) : new Date(new Date(createdTime).getTime() + 1000 * 60 * 30),
-      locale: onlineStoreInfo.country,
-      businessUTCOffset,
-    });
-    const contentMapping = {
-      [DELIVERY_METHOD.PICKUP]: {
-        timeLabel: t('PickUpOn'),
-        time: pickupTime,
-        addressLabel: t('PickupAt'),
-        address: storeAddress,
-      },
-      [DELIVERY_METHOD.TAKE_AWAY]: {
-        address: storeAddress,
-      },
-      [DELIVERY_METHOD.DELIVERY]: {
-        addressLabel: t('DeliveringTo'),
-        address: deliveryAddress,
-      },
-    };
-    const content = contentMapping[shippingType] || {};
-
-    return (
-      <div className="ordering-thanks__summary-content padding-small">
-        <div className="padding-left-right-small flex flex-middle flex-space-between">
-          <label className="margin-top-bottom-small text-size-big text-weight-bolder">{name}</label>
-        </div>
-
-        {content.time ? (
-          <div className="padding-left-right-small">
-            <h4 className="margin-top-bottom-small text-weight-bolder">{content.timeLabel}</h4>
-            <p className="flex flex-top padding-top-bottom-small">
-              <IconAccessTime className="icon icon__small icon__primary" />
-              <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
-                {content.time}
-              </span>
-            </p>
-          </div>
-        ) : null}
-
-        {content.address ? (
-          <div>
-            <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">
-              {content.addressLabel}
-            </h4>
-            <p className="padding-left-right-small flex flex-top padding-top-bottom-small">
-              <IconPin className="icon icon__small icon__primary" />
-              <span className="ordering-thanks__address padding-top-bottom-smaller padding-left-right-small text-line-height-base">
-                {content.address}
-              </span>
-            </p>
-          </div>
-        ) : null}
-
-        <div className="padding-normal text-center">
-          <span className="margin-left-right-smaller ordering-thanks__total">{t('Total')}</span>
-          <CurrencyNumber
-            className="ordering-thanks__total margin-left-right-smaller text-weight-bolder"
-            money={total || 0}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  renderPreOrderMessage = () => {
-    const { t, order, businessUTCOffset } = this.props;
-
-    const { expectDeliveryDateFrom, expectDeliveryDateTo } = order;
-    const deliveryInformation = this.getDeliveryInformation();
-
-    if (!deliveryInformation) {
-      return null;
-    }
-
-    const { address } = deliveryInformation.address;
-    const expectFrom = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateFrom));
-    const expectTo = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateTo));
-
-    return (
-      <div className="padding-small">
-        <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">
-          {t('ThanksForOrderingWithUs')}
-        </h4>
-        <p className="padding-top-bottom-smaller padding-left-right-small text-line-height-base text-opacity">
-          {t('PreOrderDeliveryTimeDetails', {
-            day: expectFrom.format('dddd, MMMM DD'),
-            dayAndTime: `${expectFrom.format('hh:mm A')} - ${expectTo.format('hh:mm A')}`,
-            deliveryTo: address,
-          })}
-        </p>
-        <p className="padding-top-bottom-smaller padding-left-right-small text-line-height-base text-opacity">
-          {t('PreOrderDeliverySMS')}
-        </p>
-      </div>
-    );
-  };
-
-  getDeliveryInformation = () => {
-    const { order = {} } = this.props;
-    const { deliveryInformation = [] } = order;
-    return deliveryInformation[0];
-  };
-
   renderDeliveryInfo() {
     const {
       order,
@@ -677,7 +638,7 @@ export class ThankYou extends PureComponent {
     return (
       <>
         {tableId ? (
-          <div className="card text-center padding-small margin-normal">
+          <div className="card text-center padding-small margin-small">
             <label className="ordering-thanks__table-number-title margin-top-bottom-small text-line-height-base">
               {t('TableNumber')}
             </label>
@@ -690,7 +651,7 @@ export class ThankYou extends PureComponent {
           </div>
         ) : null}
 
-        <div className="ordering-thanks__card card text-center margin-normal">
+        <div className="ordering-thanks__card card text-center margin-small">
           <div className="padding-small">
             <label className="ordering-thanks__pickup-number-title margin-top-bottom-small text-line-height-base">
               {t('OrderNumber')}
@@ -707,7 +668,7 @@ export class ThankYou extends PureComponent {
         </div>
 
         {refundShippingFee ? (
-          <div className="card text-center padding-small margin-normal">
+          <div className="card text-center padding-small margin-small">
             <CurrencyNumber
               className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
               money={refundShippingFee || 0}
@@ -726,45 +687,6 @@ export class ThankYou extends PureComponent {
           </div>
         ) : null}
       </>
-    );
-  }
-
-  renderSummary() {
-    const { t, orderStatus, isPreOrder, orderCancellationButtonVisible, shippingType, isOrderCancellable } = this.props;
-
-    if (shippingType === DELIVERY_METHOD.DINE_IN) {
-      return null;
-    }
-
-    const isDeliveryPreOrder = shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder;
-    const paidOrAcceptedOrder = ['paid', 'accepted'].includes(orderStatus);
-    const orderInfo = isDeliveryPreOrder && paidOrAcceptedOrder ? this.renderPreOrderMessage() : this.renderStoreInfo();
-
-    return (
-      <div className="padding-top-bottom-small margin-normal">
-        <h4 className="margin-top-bottom-small text-uppercase text-weight-bolder text-size-big">
-          {shippingType === DELIVERY_METHOD.PICKUP ? t('PickUpDetails') : t('OrderDetails')}
-        </h4>
-
-        <div className="ordering-thanks__card card">
-          {orderInfo}
-
-          {this.renderViewOrderDetailButton()}
-
-          {orderCancellationButtonVisible && (
-            <button
-              className={`ordering-thanks__order-cancellation-button ${
-                isOrderCancellable ? '' : 'button__link-disabled'
-              } button button__block text-weight-bolder text-uppercase`}
-              onClick={this.handleOrderCancellationButtonClick}
-              data-testid="thanks__order-cancellation-button"
-              data-heap-name="ordering.thank-you.order-cancellation-button"
-            >
-              {t('CancelOrder')}
-            </button>
-          )}
-        </div>
-      </div>
     );
   }
 
@@ -904,7 +826,6 @@ export class ThankYou extends PureComponent {
   render() {
     const {
       t,
-      history,
       match,
       order,
       shippingType,
@@ -914,6 +835,9 @@ export class ThankYou extends PureComponent {
       cancelOperator,
       businessInfo,
       cashbackInfo,
+      businessUTCOffset,
+      showMessageModal,
+      onlineStoreInfo,
     } = this.props;
     const date = new Date();
     const { total } = order || {};
@@ -955,7 +879,6 @@ export class ThankYou extends PureComponent {
             }
           >
             {this.renderDownloadBanner()}
-
             <OrderStatusDescription
               orderStatus={orderStatus}
               shippingType={shippingType}
@@ -967,16 +890,17 @@ export class ThankYou extends PureComponent {
             />
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
-
             <CashbackInfo
               enableCashback={enableCashback}
               cashback={_isNumber(cashback) ? Number(cashback) : 0}
               cashbackStatus={cashbackStatus}
             />
-
-            {this.renderSummary()}
-
-            <PhoneLogin history={history} />
+            <OrderSummary
+              showMessageModal={showMessageModal}
+              businessUTCOffset={businessUTCOffset}
+              onlineStoreInfo={onlineStoreInfo}
+            />
+            <PendingPaymentOrderDetail />
             <footer
               ref={ref => (this.footerEl = ref)}
               className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
@@ -1024,7 +948,6 @@ export default compose(
       isOrderCancellable: getIsOrderCancellable(state),
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       orderDelayReason: getOrderDelayReason(state),
-      orderCancellationButtonVisible: getOrderCancellationButtonVisible(state),
       shippingType: getOrderShippingType(state),
       pendingUpdateShippingTypeStatus: getUpdateShippingTypePendingStatus(state),
       updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
@@ -1040,7 +963,10 @@ export default compose(
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       updateOrderShippingType: bindActionCreators(updateOrderShippingType, dispatch),
+      loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
+      createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
       showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
+      loginApp: bindActionCreators(appActionCreators.loginApp, dispatch),
     })
   )
 )(ThankYou);
