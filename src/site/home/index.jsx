@@ -30,6 +30,7 @@ import Banners from './components/Banners';
 import Carousel from './components/Carousel';
 import BeepAppLink from './containers/CampaignBar/components/images/beep-app-link.jpg';
 import DevToolsTrigger from '../../components/DevToolsTrigger';
+import { isTNGMiniProgram } from '../../utils/tng-utils';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 const isCampaignActive = true; // feature switch
@@ -58,7 +59,7 @@ class Home extends React.Component {
       return;
     }
     const { location } = this.props;
-    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
+    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: isTNGMiniProgram() });
 
     // if no placeInfo at all
     if (!placeInfo) {
