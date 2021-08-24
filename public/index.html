@@ -34,18 +34,32 @@
     <meta property="al:web:url" content="http://applinks.org/documentation" />
     <meta property="al:web:should_fallback" content="true" />
     <meta property="fb:app_id" content="1808145769328485" />
+
+    <% if (process.env.NODE_ENV === 'development') { %>
+      <script>
+        window._isDevelopment_ = true;
+      </script>
+    <% } %>
+
     <script>
-      if (document.cookie.indexOf('sh_devtools_enabled=true') > -1) {
+      var userAgent = navigator.userAgent;
+      var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
+      var isInTngIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
+
+      window._isTNGMiniProgram_ = isInTngMiniProgram || isInTngIDE;
+
+      if(window._isTNGMiniProgram_) {
+        document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
+      }
+
+    </script>
+    <script>
+      if (window._isTNGMiniProgram_ && window._isDevelopment_) {
         // toggle to commented code to toggle devtools. please also toggle the one in DevToolsTrigger.jsx
         // document.writeln('<script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></' + 'script>');
         // document.writeln('<script>window.vConsoleInstance = new window.VConsole();</' + 'script>')
         document.writeln('<script src="https://cdn.jsdelivr.net/npm/eruda"></' + 'script>');
         document.writeln('<script>window.eruda.init();</' + 'script>')
-      }
-    </script>
-    <script>
-      if (navigator.userAgent.indexOf('TNGKit') > -1 && navigator.userAgent.indexOf('MiniProgram') > -1) {
-        document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
       }
     </script>
     <script type="text/javascript">

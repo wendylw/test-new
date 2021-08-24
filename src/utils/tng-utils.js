@@ -1,5 +1,5 @@
-export const isTNGMiniProgram = () =>
-  !!(navigator.userAgent.indexOf('TNGKit') > -1 && navigator.userAgent.indexOf('MiniProgram') > -1 && window.my);
+// eslint-disable-next-line no-underscore-dangle
+export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
 export const getLocation = () =>
   new Promise((resolve, reject) => {
