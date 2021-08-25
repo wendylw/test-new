@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
-import _isNumber from 'lodash/isNumber';
 import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
@@ -45,11 +44,9 @@ import {
   getOrderStatus,
   getReceiptNumber,
   getRiderLocations,
-  getOrderDelayReason,
   getIsOrderCancellable,
   getOrderShippingType,
   getIsPreOrder,
-  getCancelOperator,
 } from '../../redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
@@ -57,17 +54,10 @@ import {
   loadStoreIdHashCode,
   loadStoreIdTableIdHashCode,
   cancelOrder,
-  updateOrderShippingType,
   loadCashbackInfo,
   createCashbackInfo,
 } from './redux/thunks';
-import {
-  getCashbackInfo,
-  getStoreHashCode,
-  getOrderCancellationReasonAsideVisible,
-  getDeliveryUpdatableToSelfPickupState,
-  getUpdateShippingTypePendingStatus,
-} from './redux/selector';
+import { getCashbackInfo, getStoreHashCode, getOrderCancellationReasonAsideVisible } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
@@ -87,7 +77,6 @@ export class ThankYou extends PureComponent {
 
     this.state = {
       cashbackSuccessImage,
-      supportCallPhone: Utils.isWebview(),
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
@@ -97,6 +86,7 @@ export class ThankYou extends PureComponent {
 
   pollOrderStatusTimer = null;
 
+  // TODO: Will move to cashbackInfo component
   async canClaimCheck(user) {
     const { history, createCashbackInfo } = this.props;
     const { phone } = this.state;
@@ -432,25 +422,6 @@ export class ThankYou extends PureComponent {
     });
   }
 
-  handleOrderCancellationButtonClick = () => {
-    const { order, businessInfo, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
-
-    if (!isOrderCancellable) {
-      this.showRiderHasFoundMessageModal();
-      return;
-    }
-
-    updateCancellationReasonVisibleState(true);
-
-    CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
-      'store name': _get(order, 'storeInfo.name', ''),
-      'store id': _get(order, 'storeId', ''),
-      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
-      'order amount': _get(order, 'total', ''),
-      country: _get(businessInfo, 'country', ''),
-    });
-  };
-
   handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
     history.push({
@@ -489,8 +460,7 @@ export class ThankYou extends PureComponent {
   };
 
   handleChangeToSelfPickup = () => {
-    const { order, businessInfo, updateOrderShippingType } = this.props;
-    const { orderId } = order || {};
+    const { order, businessInfo } = this.props;
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -499,26 +469,7 @@ export class ThankYou extends PureComponent {
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
-
-    updateOrderShippingType({ orderId, shippingType: DELIVERY_METHOD.PICKUP });
   };
-
-  renderOrderCancellationButton() {
-    const { t, isOrderCancellable } = this.props;
-
-    return (
-      <button
-        className={`ordering-thanks__order-cancellation-button ${
-          isOrderCancellable ? '' : 'button__link-disabled'
-        } button button__block text-weight-bolder text-uppercase`}
-        onClick={this.handleOrderCancellationButtonClick}
-        data-testid="thanks__order-cancellation-button"
-        data-heap-name="ordering.thank-you.order-cancellation-button"
-      >
-        {t('CancelOrder')}
-      </button>
-    );
-  }
 
   getLogsInfoByStatus = (statusUpdateLogs, statusType) => {
     //const statusUpdateLogs = logs && logs.filter(x => x.type === 'status_updated');
@@ -553,53 +504,20 @@ export class ThankYou extends PureComponent {
   };
 
   renderDeliveryInfo() {
-    const {
-      order,
-      pendingUpdateShippingTypeStatus,
-      updatableToSelfPickupStatus,
-      orderStatus,
-      onlineStoreInfo,
-      orderDelayReason,
-      shippingType,
-    } = this.props;
+    const { onlineStoreInfo, shippingType } = this.props;
 
     if (shippingType !== DELIVERY_METHOD.DELIVERY) {
       return null;
     }
 
-    const { storeInfo, deliveredTime, deliveryInformation } = order || {};
-    const { name: storeName, phone: storePhone } = storeInfo || {};
-    const { trackingUrl, useStorehubLogistics, courier, driverPhone, bestLastMileETA, worstLastMileETA } =
-      deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
     const { logo } = onlineStoreInfo || {};
 
     return (
       <>
-        <OrderDelayMessage orderDelayReason={orderDelayReason} />
-        <LogisticsProcessing
-          useStorehubLogistics={useStorehubLogistics}
-          orderStatus={orderStatus}
-          orderDelayReason={orderDelayReason}
-        />
-        <RiderInfo
-          status={orderStatus}
-          useStorehubLogistics={useStorehubLogistics}
-          courier={courier}
-          storeLogo={logo}
-          storeName={storeName}
-          bestLastMileETA={bestLastMileETA}
-          worstLastMileETA={worstLastMileETA}
-          deliveredTime={deliveredTime}
-          storePhone={storePhone}
-          driverPhone={driverPhone}
-          trackingUrl={trackingUrl}
-          inApp={Utils.isWebview()}
-          supportCallPhone={this.state.supportCallPhone}
-          visitReportPage={this.handleVisitReportDriverPage}
-        />
+        <OrderDelayMessage />
+        <LogisticsProcessing />
+        <RiderInfo storeLogo={logo} inApp={Utils.isWebview()} visitReportPage={this.handleVisitReportDriverPage} />
         <SelfPickup
-          processing={pendingUpdateShippingTypeStatus}
-          updatableToSelfPickupStatus={updatableToSelfPickupStatus}
           onClickSelfPickupButton={this.handleClickSelfPickupButton}
           onChangeToSelfPickup={this.handleChangeToSelfPickup}
         />
@@ -730,6 +648,19 @@ export class ThankYou extends PureComponent {
     this.props.updateCancellationReasonVisibleState(false);
   };
 
+  // TODO: Will move to cancel order component
+  handleClickCancelOrderButton = () => {
+    const { order, businessInfo } = this.props;
+
+    CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
+      'order amount': _get(order, 'total', ''),
+      country: _get(businessInfo, 'country', ''),
+    });
+  };
+
   getRightContentOfHeader() {
     const { user, order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
@@ -824,25 +755,10 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const {
-      t,
-      match,
-      order,
-      shippingType,
-      orderStatus,
-      orderDelayReason,
-      isPreOrder,
-      cancelOperator,
-      businessInfo,
-      cashbackInfo,
-      businessUTCOffset,
-      showMessageModal,
-      onlineStoreInfo,
-    } = this.props;
+    const { t, match, order, businessInfo, businessUTCOffset, showMessageModal, onlineStoreInfo } = this.props;
     const date = new Date();
     const { total } = order || {};
     const { enableCashback } = businessInfo || {};
-    const { cashback, status: cashbackStatus } = cashbackInfo || {};
 
     const orderId = _get(order, 'orderId', '');
 
@@ -880,25 +796,17 @@ export class ThankYou extends PureComponent {
           >
             {this.renderDownloadBanner()}
             <OrderStatusDescription
-              orderStatus={orderStatus}
-              shippingType={shippingType}
-              orderDelayReason={orderDelayReason}
-              cancelOperator={cancelOperator || 'unknown'}
-              isPreOrder={isPreOrder}
               isApp={Utils.isWebview()}
               cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
             />
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
-            <CashbackInfo
-              enableCashback={enableCashback}
-              cashback={_isNumber(cashback) ? Number(cashback) : 0}
-              cashbackStatus={cashbackStatus}
-            />
+            <CashbackInfo enableCashback={enableCashback} />
             <OrderSummary
               showMessageModal={showMessageModal}
               businessUTCOffset={businessUTCOffset}
               onlineStoreInfo={onlineStoreInfo}
+              onClickCancelOrderButton={this.handleClickCancelOrderButton}
             />
             <PendingPaymentOrderDetail />
             <footer
@@ -942,15 +850,11 @@ export default compose(
       receiptNumber: getReceiptNumber(state),
       orderStatus: getOrderStatus(state),
       isPreOrder: getIsPreOrder(state),
-      cancelOperator: getCancelOperator(state),
       riderLocations: getRiderLocations(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       isOrderCancellable: getIsOrderCancellable(state),
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
-      orderDelayReason: getOrderDelayReason(state),
       shippingType: getOrderShippingType(state),
-      pendingUpdateShippingTypeStatus: getUpdateShippingTypePendingStatus(state),
-      updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -962,7 +866,6 @@ export default compose(
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
-      updateOrderShippingType: bindActionCreators(updateOrderShippingType, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
       showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),

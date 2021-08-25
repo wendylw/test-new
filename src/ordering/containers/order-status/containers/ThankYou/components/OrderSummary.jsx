@@ -184,6 +184,7 @@ function OrderSummary({
   onlineStoreInfo,
   businessUTCOffset,
   updateCancellationReasonVisibleState,
+  onClickCancelOrderButton,
   showMessageModal,
 }) {
   const { t } = useTranslation('OrderingThankYou');
@@ -201,19 +202,12 @@ function OrderSummary({
         description: t('OrderCannotBeCancelledAsARiderFound'),
         buttonText: t('GotIt'),
       });
+
       return;
     }
 
+    onClickCancelOrderButton();
     updateCancellationReasonVisibleState(true);
-
-    // After Update
-    // CleverTap.pushEvent('Thank you Page - Cancel Order(Not Confirmed)', {
-    //   'store name': _get(order, 'storeInfo.name', ''),
-    //   'store id': _get(order, 'storeId', ''),
-    //   'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
-    //   'order amount': _get(order, 'total', ''),
-    //   country: _get(businessInfo, 'country', ''),
-    // });
   };
 
   if (shippingType === DELIVERY_METHOD.DINE_IN) {
@@ -224,7 +218,7 @@ function OrderSummary({
   const paidOrAcceptedOrder = ['paid', 'accepted'].includes(orderStatus);
 
   return (
-    <div className="padding-top-bottom-small margin-normal">
+    <div className="padding-top-bottom-small margin-small">
       <div className="ordering-thanks__card card">
         {isDeliveryPreOrder && paidOrAcceptedOrder ? (
           <PreOrderMessage
@@ -277,6 +271,7 @@ OrderSummary.propTypes = {
   shippingType: PropTypes.oneOf(Object.values(DELIVERY_METHOD)),
   isOrderCancellable: PropTypes.bool,
   storeName: PropTypes.string,
+  onClickCancelOrderButton: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
   order: PropTypes.object,
   updateCancellationReasonVisibleState: PropTypes.func,
@@ -300,6 +295,7 @@ OrderSummary.defaultProps = {
   order: {},
   orderDeliveryInfo: {},
   storeInfo: {},
+  onClickCancelOrderButton: () => {},
   updateCancellationReasonVisibleState: () => {},
   showMessageModal: () => {},
   businessUTCOffset: 480,

@@ -1,10 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation, Trans } from 'react-i18next';
-import { compose } from 'redux';
+import { useTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import Constants from '../../../../../../utils/constants';
 import { ORDER_DELAY_REASON_CODES } from '../constants';
+import {
+  getOrderStatus,
+  getOrderDelayReason,
+  getOrderShippingType,
+  getIsPreOrder,
+  getCancelOperator,
+} from '../../../redux/selector';
 import { getDeliverySwitchedToSelfPickupState, getOrderStoreName } from '../redux/selector';
 import orderStatusAccepted from '../../../../../../images/order-status-accepted.gif';
 import orderStatusConfirmed from '../../../../../../images/order-status-confirmed.gif';
@@ -49,8 +55,8 @@ const CANCELLED_DESCRIPTION_TRANSLATION_KEYS = {
 };
 
 function OrderStatusDescription(props) {
+  const { t } = useTranslation('OrderingThankYou');
   const {
-    t,
     orderStatus,
     orderDelayReason,
     shippingType,
@@ -108,7 +114,7 @@ function OrderStatusDescription(props) {
         <div className="card text-center margin-small flex">
           <div className="padding-small text-left">
             <Trans
-              i18nKey={CANCELLED_DESCRIPTION_TRANSLATION_KEYS[cancelOperator]}
+              i18nKey={CANCELLED_DESCRIPTION_TRANSLATION_KEYS[cancelOperator || 'unknown']}
               ns="OrderingThankYou"
               storeName={storeName}
             >
@@ -150,10 +156,12 @@ OrderStatusDescription.defaultProps = {
   inApp: false,
 };
 
-export default compose(
-  withTranslation('OrderingThankYou'),
-  connect(state => ({
-    deliveryToSelfPickup: getDeliverySwitchedToSelfPickupState(state),
-    storeName: getOrderStoreName(state),
-  }))
-)(OrderStatusDescription);
+export default connect(state => ({
+  orderStatus: getOrderStatus(state),
+  shippingType: getOrderShippingType(state),
+  orderDelayReason: getOrderDelayReason(state),
+  cancelOperator: getCancelOperator(state),
+  isPreOrder: getIsPreOrder(state),
+  deliveryToSelfPickup: getDeliverySwitchedToSelfPickupState(state),
+  storeName: getOrderStoreName(state),
+}))(OrderStatusDescription);

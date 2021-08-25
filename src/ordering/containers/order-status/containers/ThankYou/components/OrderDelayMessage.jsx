@@ -1,7 +1,9 @@
+import _get from 'lodash/get';
 import React from 'react';
 import PropTypes from 'prop-types';
-import _get from 'lodash/get';
+import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { getOrderDelayReason } from '../../../redux/selector';
 import RamadanIcon from '../../../../../../images/order-delay-ramadan.svg';
 import './OrderDelayMessage.scss';
 
@@ -43,4 +45,6 @@ OrderDelayMessage.defaultProps = {
   orderDelayReason: null,
 };
 
-export default OrderDelayMessage;
+export default connect(state => ({
+  orderDelayReason: getOrderDelayReason(state),
+}))(OrderDelayMessage);

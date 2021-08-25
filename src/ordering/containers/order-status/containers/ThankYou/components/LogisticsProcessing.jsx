@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { compose } from 'redux';
-import { IconAccessTime, IconExpandMore } from '../../../../../../components/Icons';
+import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import Constants from '../../../../../../utils/constants';
 import { ORDER_DELAY_REASON_CODES } from '../constants';
+import { getOrderStatus, getOrderDelayReason, getIsUseStorehubLogistics } from '../../../redux/selector';
+import { IconAccessTime, IconExpandMore } from '../../../../../../components/Icons';
 import './LogisticsProcessing.scss';
 
 const { ORDER_STATUS } = Constants;
@@ -46,10 +47,11 @@ const LOGISTIC_PROCESSING_MAPPING = {
   },
 };
 
-function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayReason }) {
+function LogisticsProcessing({ isUseStorehubLogistics, orderStatus, orderDelayReason }) {
+  const { t } = useTranslation('OrderingThankYou');
   const [expandProcessingList, setExpandProcessingList] = useState(false);
 
-  if (!LOGISTIC_PROCESSING_MAPPING[orderStatus] || (!useStorehubLogistics && orderStatus !== ORDER_STATUS.PAID)) {
+  if (!LOGISTIC_PROCESSING_MAPPING[orderStatus] || (!isUseStorehubLogistics && orderStatus !== ORDER_STATUS.PAID)) {
     return null;
   }
 
@@ -127,15 +129,19 @@ function LogisticsProcessing({ t, useStorehubLogistics, orderStatus, orderDelayR
 LogisticsProcessing.displayName = 'LogisticsProcessing';
 
 LogisticsProcessing.propTypes = {
-  useStorehubLogistics: PropTypes.bool,
+  isUseStorehubLogistics: PropTypes.bool,
   orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
   orderDelayReason: PropTypes.oneOf(Object.values(ORDER_DELAY_REASON_CODES)),
 };
 
 LogisticsProcessing.defaultProps = {
-  useStorehubLogistics: false,
+  isUseStorehubLogistics: false,
   orderStatus: null,
   orderDelayReason: null,
 };
 
-export default compose(withTranslation('OrderingThankYou'))(LogisticsProcessing);
+export default connect(state => ({
+  isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+  orderStatus: getOrderStatus(state),
+  orderDelayReason: getOrderDelayReason(state),
+}))(LogisticsProcessing);

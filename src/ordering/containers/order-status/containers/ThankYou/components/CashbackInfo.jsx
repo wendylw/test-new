@@ -1,7 +1,9 @@
+import _isNumber from 'lodash/isNumber';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { compose } from 'redux';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
+import { getCashbackInfo } from '../redux/selector';
 import IconCelebration from '../../../../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../../../../images/succeed-animation.gif';
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
@@ -9,9 +11,11 @@ import CurrencyNumber from '../../../../../components/CurrencyNumber';
 const ANIMATION_TIME = 3600;
 const GET_CASHBACK_STATUS_LIST = ['Claimed_NotFirstTime', 'Claimed_Repeat', 'Claimed_FirstTime'];
 
-function CashbackInfo(props) {
+function CashbackInfo({ enableCashback, cashbackInfo }) {
   const timeoutRef = useRef(null);
-  const { t, enableCashback, cashback, cashbackStatus } = props;
+  const { t } = useTranslation('OrderingThankYou');
+  const { cashback: originalCashback, status: cashbackStatus } = cashbackInfo;
+  const cashback = _isNumber(originalCashback) ? Number(originalCashback) : 0;
   const [cashbackSuccessImageVisibility, setCashbackSuccessImageVisibility] = useState(true);
   const [imgLoaded, setImageLoaded] = useState(false);
   const handleHideCashbackSuccessImage = useCallback(() => setCashbackSuccessImageVisibility(false), []);
@@ -61,14 +65,18 @@ CashbackInfo.displayName = 'CashbackInfo';
 
 CashbackInfo.propTypes = {
   enableCashback: PropTypes.bool,
-  cashback: PropTypes.number,
-  cashbackStatus: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  cashbackInfo: PropTypes.object,
 };
 
 CashbackInfo.defaultProps = {
   enableCashback: false,
-  cashback: 0,
-  cashbackStatus: null,
+  cashbackInfo: {},
 };
 
-export default compose(withTranslation('OrderingThankYou'))(CashbackInfo);
+export default connect(
+  state => ({
+    cashbackInfo: getCashbackInfo(state),
+  }),
+  {}
+)(CashbackInfo);

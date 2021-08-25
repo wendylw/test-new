@@ -313,7 +313,7 @@ export const actions = {
     },
   }),
 
-  getLoginStatus: () => ({
+  getLoginStatus: () => dispatch => ({
     types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
     requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
       if (resp) {
@@ -332,6 +332,8 @@ export const actions = {
               }
 
               CleverTap.onUserLogin(userInfo);
+
+              dispatch({ type: types.FETCH_PROFILE_SUCCESS, response: profile });
             });
           }
         }
@@ -588,13 +590,13 @@ const user = (state = initialState.user, action) => {
         },
       };
     case types.FETCH_PROFILE_SUCCESS:
-      const { firstName, email, birthday } = response || {};
+      const { firstName } = response || {};
+
       return {
         ...state,
         profile: {
           name: firstName,
-          email,
-          birthday,
+          ...response,
         },
       };
 

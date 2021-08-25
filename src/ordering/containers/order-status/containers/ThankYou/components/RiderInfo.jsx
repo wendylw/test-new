@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { compose } from 'redux';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 import Constants from '../../../../../../utils/constants';
 import { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
 import { formatTo12hour } from '../../../../../../utils/time-lib';
+import { getOrderStoreName, getOrderDeliveryInfo } from '../redux/selector';
+import { getOrderStatus, getIsUseStorehubLogistics, getOrder, getOrderStoreInfo } from '../../../redux/selector';
 import Image from '../../../../../../components/Image';
 import Modal from '../../../../../../components/Modal';
 
@@ -81,38 +83,36 @@ RenderRiderInfoButton.displayName = 'RenderRiderInfoButton';
 
 RenderRiderInfoButton.propTypes = {
   phone: PropTypes.oneOfType(PropTypes.string, PropTypes.number),
-  supportCallPhone: PropTypes.string,
+  supportCallPhone: PropTypes.bool,
   buttonText: PropTypes.string,
   buttonClickEvent: PropTypes.func,
 };
 
 RenderRiderInfoButton.defaultProps = {
   phone: null,
-  supportCallPhone: null,
+  supportCallPhone: false,
   buttonText: null,
   buttonClickEvent: () => {},
 };
 
 function RiderInfo({
-  t,
-  status,
-  useStorehubLogistics,
-  courier,
+  orderStatus,
+  isUseStorehubLogistics,
+  orderDeliveryInfo,
   storeLogo,
   storeName,
-  bestLastMileETA,
-  worstLastMileETA,
-  deliveredTime,
-  storePhone,
-  driverPhone,
-  trackingUrl,
+  order,
+  storeInfo,
   inApp,
-  supportCallPhone,
   visitReportPage,
 }) {
+  const { t } = useTranslation('OrderingThankYou');
+  const { trackingUrl, courier, driverPhone, bestLastMileETA, worstLastMileETA } = orderDeliveryInfo || {};
+  const { deliveredTime } = order || {};
+  const { phone: storePhone } = storeInfo;
   const [displayCopyPhoneModalStatus, setDisplayCopyPhoneModalStatus] = useState(false);
   const [copyPhoneModalDescription, setCopyPhoneModalDescription] = useState(null);
-  const logisticStatus = !useStorehubLogistics ? 'merchantDelivery' : status;
+  const logisticStatus = !isUseStorehubLogistics ? 'merchantDelivery' : orderStatus;
   const startedDeliveryStates = [
     ORDER_STATUS.CONFIRMED,
     ORDER_STATUS.LOGISTICS_CONFIRMED,
@@ -125,12 +125,12 @@ function RiderInfo({
     ORDER_STATUS.PAID,
   ];
 
-  if (!startedDeliveryStates || (!useStorehubLogistics && notStartedDeliveryStates.includes(status))) {
+  if (!startedDeliveryStates || (!isUseStorehubLogistics && notStartedDeliveryStates.includes(orderStatus))) {
     return null;
   }
 
   const logisticName = courier === 'onfleet' ? t('BeepFleet') : courier;
-  const logisticPhone = useStorehubLogistics ? driverPhone && `+${driverPhone}` : storePhone;
+  const logisticPhone = isUseStorehubLogistics ? driverPhone && `+${driverPhone}` : storePhone;
   const estimationInfo = {
     [ORDER_STATUS.LOGISTICS_PICKED_UP]: {
       title: t('OrderStatusPickedUp'),
@@ -144,7 +144,7 @@ function RiderInfo({
       title: t('SelfDeliveryDescription'),
     },
   };
-  const callStoreDisplayState = !useStorehubLogistics || (useStorehubLogistics && startedDeliveryStates && inApp);
+  const callStoreDisplayState = !isUseStorehubLogistics || (isUseStorehubLogistics && startedDeliveryStates && inApp);
   const handleCopyPhoneNumber = (phone, phoneName) => {
     const result = copyDataToClipboard(phone);
 
@@ -160,7 +160,7 @@ function RiderInfo({
   const callStoreButtonEl = (
     <RenderRiderInfoButton
       phone={storePhone}
-      supportCallPhone={supportCallPhone}
+      supportCallPhone={inApp}
       buttonText={t('CallStore')}
       buttonClickEvent={handleCopyPhoneNumber(
         storePhone,
@@ -171,7 +171,7 @@ function RiderInfo({
   const callRiderButtonEl = (
     <RenderRiderInfoButton
       phone={driverPhone}
-      supportCallPhone={supportCallPhone}
+      supportCallPhone={inApp}
       buttonText={t('CallRider')}
       buttonClickEvent={handleCopyPhoneNumber(`+${driverPhone}`, 'drive')}
     />
@@ -206,7 +206,7 @@ function RiderInfo({
           ) : null}
           <div className="flex flex-middle">
             <div className="rider-info__logo-container">
-              {useStorehubLogistics && courier ? (
+              {isUseStorehubLogistics && courier ? (
                 <figure className="rider-info__logo logo">
                   <img src={LOGISTICS_LOGOS_MAPPING[courier.toLowerCase()]} alt="Beep logistics provider" />
                 </figure>
@@ -216,7 +216,7 @@ function RiderInfo({
             </div>
             <div className="padding-left-right-normal margin-top-bottom-smaller text-left flex flex-column flex-space-between">
               <p className="line-height-normal text-weight-bolder">
-                {useStorehubLogistics && logisticName ? logisticName : t('DeliveryBy', { name: storeName })}
+                {isUseStorehubLogistics && logisticName ? logisticName : t('DeliveryBy', { name: storeName })}
               </p>
               {logisticPhone ? <span className="text-gray line-height-normal">{logisticPhone}</span> : null}
             </div>
@@ -227,7 +227,7 @@ function RiderInfo({
             <button
               className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
               onClick={() => {
-                if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(status)) {
+                if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(orderStatus)) {
                   return;
                 }
 
@@ -267,37 +267,51 @@ function RiderInfo({
 RiderInfo.displayName = 'RiderInfo';
 
 RiderInfo.propTypes = {
-  status: PropTypes.string,
-  useStorehubLogistics: PropTypes.bool,
-  courier: PropTypes.string,
+  orderStatus: PropTypes.string,
+  isUseStorehubLogistics: PropTypes.bool,
+  orderDeliveryInfo: PropTypes.shape({
+    courier: PropTypes.string,
+    bestLastMileETA: PropTypes.string,
+    worstLastMileETA: PropTypes.string,
+    driverPhone: PropTypes.string,
+    trackingUrl: PropTypes.string,
+  }),
   storeLogo: PropTypes.string,
   storeName: PropTypes.string,
-  bestLastMileETA: PropTypes.string,
-  worstLastMileETA: PropTypes.string,
-  deliveredTime: PropTypes.string,
-  storePhone: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  driverPhone: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  trackingUrl: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  order: PropTypes.object,
+  storeInfo: PropTypes.shape({
+    phone: PropTypes.string,
+  }),
   inApp: PropTypes.bool,
-  supportCallPhone: PropTypes.bool,
   visitReportPage: PropTypes.func,
 };
 
 RiderInfo.defaultProps = {
-  status: null,
-  courier: null,
+  orderStatus: null,
   storeLogo: null,
   storeName: null,
-  bestLastMileETA: null,
-  worstLastMileETA: null,
-  deliveredTime: null,
-  storePhone: null,
-  driverPhone: null,
-  trackingUrl: null,
   inApp: false,
-  useStorehubLogistics: true,
-  supportCallPhone: false,
+  order: {},
+  storeInfo: {
+    phone: null,
+  },
+  orderDeliveryInfo: {
+    courier: null,
+    bestLastMileETA: null,
+    worstLastMileETA: null,
+    driverPhone: null,
+    trackingUrl: null,
+  },
+  isUseStorehubLogistics: true,
   visitReportPage: () => {},
 };
 
-export default compose(withTranslation('OrderingThankYou'))(RiderInfo);
+export default connect(state => ({
+  order: getOrder(state),
+  storeInfo: getOrderStoreInfo(state),
+  orderStatus: getOrderStatus(state),
+  storeName: getOrderStoreName(state),
+  isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+  orderDeliveryInfo: getOrderDeliveryInfo(state),
+}))(RiderInfo);
