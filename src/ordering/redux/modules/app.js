@@ -313,34 +313,36 @@ export const actions = {
     },
   }),
 
-  getLoginStatus: () => dispatch => ({
-    types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
-      if (resp) {
-        if (resp.consumerId) {
-          if (resp.login) {
-            get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
-              const userInfo = {
-                Name: profile.firstName,
-                Phone: profile.phone,
-                Email: profile.email,
-                Identity: resp.consumerId,
-              };
+  getLoginStatus: () => dispatch => {
+    return dispatch({
+      types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
+      requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
+        if (resp) {
+          if (resp.consumerId) {
+            if (resp.login) {
+              get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
+                const userInfo = {
+                  Name: profile.firstName,
+                  Phone: profile.phone,
+                  Email: profile.email,
+                  Identity: resp.consumerId,
+                };
 
-              if (profile.birthday) {
-                userInfo.DOB = new Date(profile.birthday);
-              }
+                if (profile.birthday) {
+                  userInfo.DOB = new Date(profile.birthday);
+                }
 
-              CleverTap.onUserLogin(userInfo);
+                CleverTap.onUserLogin(userInfo);
 
-              dispatch({ type: types.FETCH_PROFILE_SUCCESS, response: profile });
-            });
+                dispatch({ type: types.FETCH_PROFILE_SUCCESS, response: profile });
+              });
+            }
           }
         }
-      }
-      return resp;
-    }),
-  }),
+        return resp;
+      }),
+    });
+  },
 
   setLoginPrompt: prompt => ({
     type: types.SET_LOGIN_PROMPT,
