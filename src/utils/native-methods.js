@@ -292,6 +292,20 @@ export const getUserInfo = () => {
   return dsBridgeCall(data);
 };
 
+export const promptEnableAppNotification = ({ title, description, sourcePage }) => {
+  const data = {
+    method: 'beepModule-promptEnableAppNotification',
+    params: {
+      title,
+      description,
+      sourcePage,
+    },
+    mode: MODE.SYNC,
+  };
+
+  return dsBridgeCall(data);
+};
+
 export const isLiveChatAvailable = () => window.liveChatAvailable;
 
 export const updateNativeHeader = ({ left, center, right } = {}) => {
