@@ -1,4 +1,5 @@
 import MessagePortal from './message-portal';
+import debug from './debug';
 
 // eslint-disable-next-line no-underscore-dangle
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
@@ -23,6 +24,20 @@ const getMessagePortal = () => {
   return self.messagePortal;
 };
 
+export const callMessagePortal = async (method, data) => {
+  try {
+    debug('[TNG utils] before call method: %s\n parameter: %o', method, data);
+    const messagePortal = getMessagePortal();
+    const result = await messagePortal.call(method, data);
+    debug('[TNG utils] call success method: %s\n parameter: %o\n result: %o', method, data, result);
+    return result;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    throw error;
+  }
+};
+
 export const getLocation = () =>
   new Promise((resolve, reject) => {
     if (isTNGMiniProgram()) {
@@ -44,7 +59,4 @@ export const getLocation = () =>
     }
   });
 
-export const getAccessToken = data => {
-  const messagePortal = getMessagePortal();
-  return messagePortal.call('getAccessToken', data);
-};
+export const getAccessToken = data => callMessagePortal('getAccessToken', data);
