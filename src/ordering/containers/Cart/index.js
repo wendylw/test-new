@@ -33,6 +33,7 @@ import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
 import _isNil from 'lodash/isNil';
 import loggly from '../../../utils/monitoring/loggly';
+import * as TngUtils from '../../../utils/tng-utils';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 class Cart extends Component {
@@ -91,7 +92,7 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, appActions, cartActions, customerActions, deliveryDetails } = this.props;
+    const { user, history, appActions, cartActions, customerActions, deliveryDetails, business } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
     const { name, phone } = profile || {};
@@ -108,11 +109,21 @@ class Cart extends Component {
       CleverTap.pushEvent('Login - view login screen', {
         'Screen Name': 'Cart Page',
       });
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-        nextPage: true,
-      });
+
+      if (TngUtils.isTNGMiniProgram()) {
+        try {
+          const result = await TngUtils.getAccessToken({ business });
+          console.log(result);
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        history.push({
+          pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+          search: window.location.search,
+          nextPage: true,
+        });
+      }
     }
 
     // if have name, redirect to customer page

@@ -1,5 +1,27 @@
+import MessagePortal from './message-portal';
+
 // eslint-disable-next-line no-underscore-dangle
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
+
+const initMessagePortal = () => {
+  const messagePortal = new MessagePortal('TNGMiniProgram', window.my.postMessage);
+
+  window.my.onMessage = data => {
+    messagePortal.receiveRawMessage(data);
+  };
+
+  return messagePortal;
+};
+
+const getMessagePortal = () => {
+  const self = getMessagePortal;
+
+  if (!self.messagePortal) {
+    self.messagePortal = initMessagePortal();
+  }
+
+  return self.messagePortal;
+};
 
 export const getLocation = () =>
   new Promise((resolve, reject) => {
@@ -21,3 +43,8 @@ export const getLocation = () =>
       reject(new Error('Not in TNG Mini Program.'));
     }
   });
+
+export const getAccessToken = data => {
+  const messagePortal = getMessagePortal();
+  return messagePortal.call('getAccessToken', data);
+};
