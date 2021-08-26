@@ -15,12 +15,13 @@ function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptD
   const [creatingOrder, setCreatingOrder] = useState(false);
   const handleToggleModal = useCallback(
     status => {
+      console.log('xxxx=>', status);
       updatePayByCashPromptDisplayStatus({ status });
     },
     [updatePayByCashPromptDisplayStatus]
   );
 
-  // console.log(modalDisplay);
+  console.log('yyyy=>', modalDisplay);
 
   return (
     <>
@@ -97,6 +98,6 @@ export default connect(
   }),
   {
     createOrder: createOrderThunk,
-    updatePayByCashPromptDisplayStatus: paymentActions.updatePayByCashPromptDisplay,
+    updatePayByCashPromptDisplayStatus: paymentActions.updatePayByCashPromptDisplayStatus,
   }
 )(PayByCash);
