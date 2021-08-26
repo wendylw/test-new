@@ -21,18 +21,20 @@ import {
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
+  getOrderShippingType,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
+import { DELIVERY_METHOD } from '../../../Home/components/PromotionsBar/constants';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 const ShippingTypes = {
-  dineIn: 'dine in',
-  pickup: 'self pickup',
-  delivery: 'delivery',
-  takeaway: 'take away',
+  [DELIVERY_METHOD.DINE_IN]: 'dine in',
+  [DELIVERY_METHOD.PICKUP]: 'self pickup',
+  [DELIVERY_METHOD.DELIVERY]: 'delivery',
+  [DELIVERY_METHOD.TAKE_AWAY]: 'take away',
 };
 
 export class OrderDetails extends Component {
@@ -89,8 +91,7 @@ export class OrderDetails extends Component {
   };
 
   handleReorder = () => {
-    const { order } = this.props;
-    const { shippingType } = order || '';
+    const { shippingType } = this.props;
     this.props.history.replace({
       pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
       search: `type=${shippingType}`,
@@ -110,8 +111,8 @@ export class OrderDetails extends Component {
   };
 
   renderReceiptInfo() {
-    const { t, order } = this.props;
-    const { shippingType, orderId, pickUpId } = order || {};
+    const { t, order, shippingType } = this.props;
+    const { orderId, pickUpId } = order || {};
 
     return (
       <div className="border__bottom-divider">
@@ -157,11 +158,12 @@ export class OrderDetails extends Component {
   }
 
   renderBaseInfo() {
-    const { t, order } = this.props;
-    const { shippingType, storeInfo, deliveryInformation, status } = order || '';
+    const { t, order, shippingType } = this.props;
+    const { storeInfo, deliveryInformation, status } = order || '';
     const { name } = storeInfo || '';
     const { address } = deliveryInformation && deliveryInformation.length > 0 ? deliveryInformation[0] : {};
     const { address: deliveryAddress } = address || '';
+
     return (
       <section className="border__bottom-divider padding-top-bottom-small">
         <div className="flex flex-column">
@@ -430,6 +432,7 @@ export default compose(
     state => ({
       user: getUser(state),
       order: getOrder(state),
+      shippingType: getOrderShippingType(state),
       promotion: getPromotion(state),
       serviceCharge: getServiceCharge(state),
       orderStatus: getOrderStatus(state),

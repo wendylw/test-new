@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Constants from '../../../../../../utils/constants';
 import { ORDER_DELAY_REASON_CODES } from '../constants';
-import { getOrderStatus, getOrderDelayReason, getIsUseStorehubLogistics } from '../../../redux/selector';
+import { getOrderStatus, getOrderDelayReason, getIsUseStorehubLogistics, getIsPreOrder } from '../../../redux/selector';
 import { IconAccessTime, IconExpandMore } from '../../../../../../components/Icons';
 import './LogisticsProcessing.scss';
 
@@ -47,11 +47,16 @@ const LOGISTIC_PROCESSING_MAPPING = {
   },
 };
 
-function LogisticsProcessing({ isUseStorehubLogistics, orderStatus, orderDelayReason }) {
+function LogisticsProcessing({ isUseStorehubLogistics, isPreOrder, orderStatus, orderDelayReason }) {
   const { t } = useTranslation('OrderingThankYou');
   const [expandProcessingList, setExpandProcessingList] = useState(false);
+  const preOrderPendingRiderConfirm = isPreOrder && [ORDER_STATUS.PAID, ORDER_STATUS.ACCEPTED].includes(orderStatus);
 
-  if (!LOGISTIC_PROCESSING_MAPPING[orderStatus] || (!isUseStorehubLogistics && orderStatus !== ORDER_STATUS.PAID)) {
+  if (
+    !LOGISTIC_PROCESSING_MAPPING[orderStatus] ||
+    preOrderPendingRiderConfirm ||
+    (!isUseStorehubLogistics && orderStatus !== ORDER_STATUS.PAID)
+  ) {
     return null;
   }
 
@@ -130,18 +135,21 @@ LogisticsProcessing.displayName = 'LogisticsProcessing';
 
 LogisticsProcessing.propTypes = {
   isUseStorehubLogistics: PropTypes.bool,
+  isPreOrder: PropTypes.bool,
   orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
   orderDelayReason: PropTypes.oneOf(Object.values(ORDER_DELAY_REASON_CODES)),
 };
 
 LogisticsProcessing.defaultProps = {
   isUseStorehubLogistics: false,
+  isPreOrder: false,
   orderStatus: null,
   orderDelayReason: null,
 };
 
 export default connect(state => ({
   isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+  isPreOrder: getIsPreOrder(state),
   orderStatus: getOrderStatus(state),
   orderDelayReason: getOrderDelayReason(state),
 }))(LogisticsProcessing);

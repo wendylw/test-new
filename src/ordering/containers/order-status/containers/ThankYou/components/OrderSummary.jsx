@@ -52,14 +52,13 @@ PreOrderMessage.propTypes = {
   expectFrom: PropTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
   expectTo: PropTypes.object,
-  // eslint-disable-next-line react/forbid-prop-types
-  address: PropTypes.object,
+  address: PropTypes.string,
 };
 
 PreOrderMessage.defaultProps = {
   expectFrom: {},
   expectTo: {},
-  address: {},
+  address: null,
 };
 
 PreOrderMessage.displayName = 'PreOrderMessage';
@@ -94,7 +93,7 @@ const StoreInfo = ({ storeAddress, storeName, total, deliveryAddress, pickupTime
 
       {contentMapping[shippingType].time ? (
         <div className="padding-left-right-small">
-          <h4 className="margin-top-bottom-small text-weight-bolder">{contentMapping[shippingType].timeLabel}</h4>
+          <h4 className="margin-top-bottom-small">{contentMapping[shippingType].timeLabel}</h4>
           <p className="flex flex-top padding-top-bottom-small">
             <IconAccessTime className="icon icon__small icon__primary" />
             <span className="ordering-thanks__time padding-top-bottom-smaller padding-left-right-small text-weight-bolder text-line-height-base">
@@ -106,7 +105,7 @@ const StoreInfo = ({ storeAddress, storeName, total, deliveryAddress, pickupTime
 
       {contentMapping[shippingType].address ? (
         <div>
-          <h4 className="padding-left-right-small margin-top-bottom-small text-weight-bolder">
+          <h4 className="padding-left-right-small margin-top-bottom-small">
             {contentMapping[shippingType].addressLabel}
           </h4>
           <p className="padding-left-right-small flex flex-top padding-top-bottom-small">
@@ -149,7 +148,7 @@ StoreInfo.defaultProps = {
 
 StoreInfo.displayName = 'StoreInfo';
 
-const ViewOrderDetailButton = ({ history }) => {
+const ViewOrderDetailsButton = ({ history }) => {
   const { t } = useTranslation('OrderingThankYou');
 
   return (
@@ -164,14 +163,15 @@ const ViewOrderDetailButton = ({ history }) => {
       data-testid="thanks__view-receipt"
       data-heap-name="ordering.thank-you.view-detail-btn"
     >
-      {t('ViewOrderDetail')}
+      {t('ViewOrderDetails')}
     </button>
   );
 };
 
-ViewOrderDetailButton.displayName = 'ViewOrderDetailButton';
+ViewOrderDetailsButton.displayName = 'ViewOrderDetailsButton';
 
 function OrderSummary({
+  history,
   orderStatus,
   isPreOrder,
   orderCancellationButtonVisible,
@@ -218,13 +218,13 @@ function OrderSummary({
   const paidOrAcceptedOrder = ['paid', 'accepted'].includes(orderStatus);
 
   return (
-    <div className="padding-top-bottom-small margin-small">
+    <div className="margin-small">
       <div className="ordering-thanks__card card">
         {isDeliveryPreOrder && paidOrAcceptedOrder ? (
           <PreOrderMessage
             expectFrom={getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateRange[0]))}
             expectTo={getBusinessDateTime(businessUTCOffset, new Date(expectDeliveryDateRange[1]))}
-            address={address}
+            address={address && address.address}
           />
         ) : (
           <StoreInfo
@@ -243,7 +243,7 @@ function OrderSummary({
           />
         )}
 
-        <ViewOrderDetailButton />
+        <ViewOrderDetailsButton history={history} />
 
         {orderCancellationButtonVisible && (
           <button
@@ -265,6 +265,8 @@ function OrderSummary({
 OrderSummary.displayName = 'OrderSummary';
 
 OrderSummary.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  history: PropTypes.object,
   orderStatus: PropTypes.oneOf(Object.values(ORDER_STATUS)),
   isPreOrder: PropTypes.bool,
   orderCancellationButtonVisible: PropTypes.bool,
@@ -286,6 +288,7 @@ OrderSummary.propTypes = {
 };
 
 OrderSummary.defaultProps = {
+  history: {},
   orderStatus: null,
   isPreOrder: false,
   orderCancellationButtonVisible: false,

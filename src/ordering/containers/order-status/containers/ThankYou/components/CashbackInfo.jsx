@@ -15,7 +15,7 @@ function CashbackInfo({ enableCashback, cashbackInfo }) {
   const timeoutRef = useRef(null);
   const { t } = useTranslation('OrderingThankYou');
   const { cashback: originalCashback, status: cashbackStatus } = cashbackInfo;
-  const cashback = _isNumber(originalCashback) ? Number(originalCashback) : 0;
+  const cashback = _isNumber(Number(originalCashback)) ? Number(originalCashback) : 0;
   const [cashbackSuccessImageVisibility, setCashbackSuccessImageVisibility] = useState(true);
   const [imgLoaded, setImageLoaded] = useState(false);
   const handleHideCashbackSuccessImage = useCallback(() => setCashbackSuccessImageVisibility(false), []);

@@ -64,7 +64,7 @@ import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import loggly from '../../../../../utils/monitoring/loggly';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -196,7 +196,6 @@ export class ThankYou extends PureComponent {
     try {
       const { orderStatus, riderLocations = [], shippingType } = this.props;
       const [lat = null, lng = null] = riderLocations || [];
-      const ORDER_STATUS = Constants.ORDER_STATUS;
       const { PICKUP } = ORDER_STATUS;
       const { order = {} } = this.props;
       const { storeInfo = {}, deliveryInformation = [] } = order;
@@ -525,7 +524,7 @@ export class ThankYou extends PureComponent {
     );
   }
 
-  renderViewOrderDetailButton() {
+  renderViewOrderDetailsButton() {
     const { t, history } = this.props;
 
     return (
@@ -540,14 +539,22 @@ export class ThankYou extends PureComponent {
         data-testid="thanks__view-receipt"
         data-heap-name="ordering.thank-you.view-detail-btn"
       >
-        {t('ViewOrderDetail')}
+        {t('ViewOrderDetails')}
       </button>
     );
   }
 
   renderPickupTakeAwayDineInInfo() {
-    const { t, order, shippingType } = this.props;
+    const { t, order, orderStatus, shippingType } = this.props;
     const { tableId, pickUpId, refundShippingFee } = order || {};
+    const hideViewOrderDetailsButton =
+      shippingType !== DELIVERY_METHOD.DINE_IN ||
+      [
+        ORDER_STATUS.CREATED,
+        ORDER_STATUS.PENDING_PAYMENT,
+        ORDER_STATUS.PENDING_VERIFICATION,
+        ORDER_STATUS.PAYMENT_CANCELLED,
+      ].includes(orderStatus);
 
     if (shippingType === DELIVERY_METHOD.DELIVERY) {
       return null;
@@ -582,7 +589,7 @@ export class ThankYou extends PureComponent {
             </span>
           </div>
 
-          {shippingType === DELIVERY_METHOD.DINE_IN ? this.renderViewOrderDetailButton() : null}
+          {hideViewOrderDetailsButton ? null : this.renderViewOrderDetailsButton()}
         </div>
 
         {refundShippingFee ? (
@@ -755,7 +762,7 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, match, order, businessInfo, businessUTCOffset, showMessageModal, onlineStoreInfo } = this.props;
+    const { t, history, match, order, businessInfo, businessUTCOffset, showMessageModal, onlineStoreInfo } = this.props;
     const date = new Date();
     const { total } = order || {};
     const { enableCashback } = businessInfo || {};
@@ -803,6 +810,7 @@ export class ThankYou extends PureComponent {
             {this.renderPickupTakeAwayDineInInfo()}
             <CashbackInfo enableCashback={enableCashback} />
             <OrderSummary
+              history={history}
               showMessageModal={showMessageModal}
               businessUTCOffset={businessUTCOffset}
               onlineStoreInfo={onlineStoreInfo}
