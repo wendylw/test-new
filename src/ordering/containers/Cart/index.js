@@ -35,6 +35,11 @@ import _isNil from 'lodash/isNil';
 import loggly from '../../../utils/monitoring/loggly';
 import * as TngUtils from '../../../utils/tng-utils';
 
+TngUtils.isTNGMiniProgram() &&
+  TngUtils.getAccessToken({ business: 'hcbeep' }).then(result => {
+    console.log(result);
+  });
+
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 class Cart extends Component {
   state = {
@@ -123,6 +128,7 @@ class Cart extends Component {
           search: window.location.search,
           nextPage: true,
         });
+        return;
       }
     }
 
