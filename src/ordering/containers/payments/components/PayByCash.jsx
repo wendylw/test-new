@@ -15,13 +15,10 @@ function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptD
   const [creatingOrder, setCreatingOrder] = useState(false);
   const handleToggleModal = useCallback(
     status => {
-      console.log('xxxx=>', status);
       updatePayByCashPromptDisplayStatus({ status });
     },
     [updatePayByCashPromptDisplayStatus]
   );
-
-  console.log('yyyy=>', modalDisplay);
 
   return (
     <>
