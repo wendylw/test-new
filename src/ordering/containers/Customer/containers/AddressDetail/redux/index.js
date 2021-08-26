@@ -13,6 +13,8 @@ const initialState = {
     latitude: 0,
   },
   addressComponents: {},
+  contactNumber: '',
+  contactName: '',
 };
 
 export const { actions, reducer } = createSlice({

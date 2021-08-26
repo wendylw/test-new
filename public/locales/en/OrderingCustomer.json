@@ -13,10 +13,14 @@
   "ContactEmptyDescription": "Please fill in your contact details for proceed checkout",
   "DeliveryAddressEmptyTitle": "Delivery Address Required",
   "DeliveryAddressEmptyDescription": "Please fill in your delivery address to proceed to checkout",
-  "placeholderOfAddressName": "Eg: Work",
+  "placeholderOfAddressName": "Eg: Work/home",
   "placeholderOfAddressDetails": "Eg: Level 7",
-  "placeholderOfDeliveryComments": "Eg: Drop at receptionist",
+  "placeholderOfDeliveryComments": "Eg: Drop off at door",
   "AddressDetails": "Address Details",
   "UnitNumberAndFloor": "Unit Number/Floor",
-  "NoteToDriver": "Note to Driver"
+  "NoteToDriver": "Note to Driver",
+  "ContactName": "Contact Name",
+  "ContactNumber": "Contact Number",
+  "AddressName": "Address Name",
+  "NoteToDriverOptional": "Note To Driver(Optional)"
 }

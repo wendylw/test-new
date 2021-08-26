@@ -19,7 +19,9 @@ import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
-
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
+import 'react-phone-number-input/style.css';
+const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const actions = {
   EDIT: 'edit',
   ADD: 'add',
@@ -45,6 +47,8 @@ class AddressDetail extends Component {
       deliveryToAddress,
       addressDetails,
       deliveryComments,
+      username,
+      phone,
       deliveryToLocation,
       deliveryToCity,
     } = deliveryDetails || {};
@@ -84,6 +88,8 @@ class AddressDetail extends Component {
         details: addressDetails,
         comments: deliveryComments,
         coords: deliveryToLocation,
+        contactName: username,
+        contactNumber: phone,
         addressComponents: {
           ...addressComponents,
           city: deliveryToCity,
@@ -94,6 +100,8 @@ class AddressDetail extends Component {
     if (location.state && location.state.fromAddressList) {
       customerActions.updateAddressInfo({
         type: actions.ADD,
+        contactName: username,
+        contactNumber: phone,
         address,
         coords: { longitude: coords.lng, latitude: coords.lat },
         addressComponents,
@@ -124,6 +132,10 @@ class AddressDetail extends Component {
       this.props.customerActions.updateAddressInfo({ name: inputValue });
     } else if (e.target.name === 'addressDetails') {
       this.props.customerActions.updateAddressInfo({ details: inputValue });
+    } else if (e.target.name === 'contactName') {
+      this.props.customerActions.updateAddressInfo({ contactName: inputValue });
+    } else if (e.target.name === 'contactNumber') {
+      this.props.customerActions.updateAddressInfo({ contactNumber: inputValue });
     } else if (e.target.name === 'deliveryComments') {
       this.props.customerActions.updateAddressInfo({ comments: inputValue });
     }
@@ -147,13 +159,26 @@ class AddressDetail extends Component {
 
   createOrUpdateAddress = async () => {
     const { history, user, addressInfo, customerActions, appActions } = this.props;
-    const { id, type, name, address, details, comments, coords, addressComponents } = addressInfo;
+    const {
+      id,
+      type,
+      name,
+      address,
+      details,
+      comments,
+      coords,
+      addressComponents,
+      contactName,
+      contactNumber,
+    } = addressInfo;
     const { consumerId } = user || {};
     const postCode = _get(addressComponents, 'postCode', '');
     const city = _get(addressComponents, 'city', '');
     const countryCode = _get(addressComponents, 'countryCode', '');
 
     const data = {
+      contactName: contactName,
+      contactNumber: contactNumber,
       addressName: name,
       deliveryTo: address,
       addressDetails: details,
@@ -186,6 +211,8 @@ class AddressDetail extends Component {
       deliveryToLocation: _get(response, 'location', coords),
       deliveryToCity: _get(response, 'city', city),
       postCode: _get(response, 'postCode', postCode),
+      username: _get(response, 'username', contactName),
+      phone: _get(response, 'phone', contactNumber),
     });
 
     customerActions.removeAddressInfo();
@@ -202,12 +229,18 @@ class AddressDetail extends Component {
       });
     }
   };
+  handlePhoneHasAnyChanges = () => {
+    this.setState({
+      hasAnyChanges: true,
+    });
+  };
 
   render() {
     const { hasAnyChanges } = this.state;
-    const { t, addressInfo } = this.props;
-    const { type, name, address, details, comments } = addressInfo || {};
-
+    const { addressInfo, t } = this.props;
+    const { type, name, address, details, comments, contactNumber, contactName, country } = addressInfo || {};
+    console.log(contactName);
+    console.log(contactNumber);
     return (
       <div className="flex flex-column address-detail">
         <HybridHeader
@@ -234,10 +267,53 @@ class AddressDetail extends Component {
           }}
         >
           <div className="margin-normal padding-top-bottom-smaller">
+            <form>
+              <div className="padding-top-bottom-small">
+                <div className="contact-details__group form__group">
+                  <div className="address-detail__title required">
+                    <span className="text-size-small text-top-contact">{t('ContactName')}</span>
+                  </div>
+                  <input
+                    className="contact-details__input form__input padding-left-right-normal text-size-biggest"
+                    data-heap-name="ordering.contact-details.name-input"
+                    type="text"
+                    placeholder={t('Name')}
+                    value={contactName}
+                    name="contactName"
+                    onChange={this.handleInputChange}
+                  />
+                </div>
+              </div>
+              <br />
+              <div className="contact-details__group form__group">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top-contact">{t('ContactNumber')}</span>
+                </div>
+                <PhoneInput
+                  international // If input want to show country code when phone number is empty, pls add international on props
+                  smartCaret={false}
+                  data-heap-name="ordering.contact-details.phone-input"
+                  placeholder={t('EnterPhoneNumber')}
+                  value={formatPhoneNumberIntl(contactNumber)}
+                  country={country}
+                  metadata={metadataMobile}
+                  onChange={phone => {
+                    const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
+                    phone =
+                      metadataMobile.countries[selectedCountry] &&
+                      Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]);
+                    this.props.customerActions.updateAddressInfo({ contactNumber: phone });
+                    this.handlePhoneHasAnyChanges();
+                  }}
+                />
+              </div>
+            </form>
+          </div>
+          <div className="margin-normal padding-top-bottom-smaller">
             <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
               <div className="flex__fluid-content">
                 <div className="address-detail__title required">
-                  <span className="text-size-small text-top">{t('Name')}</span>
+                  <span className="text-size-small text-top">{t('AddressName')}</span>
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big text-line-height-base"
@@ -294,7 +370,7 @@ class AddressDetail extends Component {
             <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
               <div className="flex__fluid-content">
                 <div className="address-detail__title">
-                  <span className="text-size-small text-top">{t('NoteToDriver')}</span>
+                  <span className="text-size-small text-top">{t('NoteToDriverOptional')}</span>
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big"
@@ -313,7 +389,15 @@ class AddressDetail extends Component {
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
             className="address-detail__save-button button button__fill button__block padding-small text-weight-bolder text-uppercase"
-            disabled={!name || !details || !address || (type === actions.EDIT && !hasAnyChanges)}
+            disabled={
+              !name ||
+              !details ||
+              !address ||
+              (type === actions.EDIT && !hasAnyChanges) ||
+              !contactName ||
+              !contactName.length ||
+              !isValidPhoneNumber(contactNumber || '')
+            }
             onClick={() => {
               CleverTap.pushEvent('Address details - click save changes');
               this.createOrUpdateAddress();

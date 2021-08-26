@@ -16,6 +16,10 @@
     background-color: $white;
     color: initial;
   }
+  .add {
+    max-height: none;
+    height: auto;
+  }
 
   &__detail ~ &__detail::before {
     content: "";

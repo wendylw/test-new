@@ -53,8 +53,14 @@
   &__icon-next svg {
     fill: $gray-3;
   }
+  .PhoneInput {
+    border: 0px;
+  }
 }
 
+.text-top-contact {
+  padding-left: 15px;
+}
 @media (min-width: 420px) {
   .address-detail {
     &__field {

@@ -13,7 +13,7 @@ import MessageModal from '../../../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import AddressChangeModal from '../../components/AddressChangeModal';
-
+import { getAddressList } from '../../redux/common/selectors';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -147,6 +147,22 @@ class CustomerInfo extends Component {
     }
   };
 
+  handleChooseAddressListOrAddressDetail = () => {
+    try {
+      const { history, addressList, deliveryDetails } = this.props;
+      const { addressName } = deliveryDetails;
+      history.push({
+        pathname:
+          addressList.length > 0 || addressName
+            ? `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`
+            : `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
+        search: window.location.search,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   renderDeliveryPickupDetail() {
     if (Utils.isDineInType() || Utils.isTakeAwayType()) {
       return null;
@@ -177,15 +193,12 @@ class CustomerInfo extends Component {
               } flex-space-between padding-left-right-small`}
             >
               {isDeliveryType ? (
-                <Link
+                <button
                   onClick={() => {
                     CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
+                    this.handleChooseAddressListOrAddressDetail;
                   }}
-                  to={{
-                    pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
-                    search: window.location.search,
-                  }}
-                  className="ordering-customer__button-link button__link"
+                  className="ordering-customer__button-link button button__link text-left add"
                 >
                   {Boolean(addressName) ? (
                     <React.Fragment>
@@ -203,7 +216,7 @@ class CustomerInfo extends Component {
                       </p>
                     </React.Fragment>
                   )}
-                </Link>
+                </button>
               ) : (
                 <Link
                   to={{
@@ -438,6 +451,7 @@ export default compose(
       customerError: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      addressList: getAddressList(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

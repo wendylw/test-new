@@ -561,7 +561,7 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, fields, responseGql } = action;
-  const { consumerId, login, user, noWhatsAppAccount } = response || {};
+  const { consumerId, login, user, noWhatsAppAccount, addressId } = response || {};
 
   switch (type) {
     case types.SHOW_LOGIN_PAGE:
@@ -610,6 +610,7 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         consumerId,
+        addressId,
         profile: {
           phone: user.phone,
           name: user.firstName,

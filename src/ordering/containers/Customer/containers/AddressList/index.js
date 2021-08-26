@@ -5,7 +5,11 @@ import { IconAddAddress, IconBookmark, IconNext } from '../../../../../component
 import Tag from '../../../../../components/Tag';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getStoreInfoForCleverTap,
+  getDeliveryDetails,
+} from '../../../../redux/modules/app';
 import { loadAddressList } from '../../redux/common/thunks';
 import { getAddressList } from '../../redux/common/selectors';
 import Utils from '../../../../../utils/utils';
@@ -40,7 +44,8 @@ class AddressList extends Component {
   };
 
   renderAddressCard = () => {
-    const { t, addressList, history, updateDeliveryDetails } = this.props;
+    const { t, addressList, history, updateDeliveryDetails, deliveryDetails } = this.props;
+
     return (addressList || []).map((address, index) => {
       const {
         _id: addressId,
@@ -52,6 +57,8 @@ class AddressList extends Component {
         location,
         city: deliveryToCity,
         postCode,
+        username,
+        phone,
       } = address;
       return (
         <div
@@ -74,6 +81,8 @@ class AddressList extends Component {
                     deliveryToLocation: location,
                     deliveryToCity,
                     postCode,
+                    phone: phone || deliveryDetails.phone,
+                    username: username || deliveryDetails.username,
                   });
                   if (Utils.hasNativeSavedAddress()) {
                     const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
@@ -169,6 +178,7 @@ export default compose(
     state => ({
       addressList: getAddressList(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      deliveryDetails: getDeliveryDetails(state),
     }),
     dispatch => ({
       loadAddressList: bindActionCreators(loadAddressList, dispatch),
