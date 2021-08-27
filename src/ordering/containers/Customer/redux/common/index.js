@@ -5,7 +5,7 @@ import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 const initialState = {
   addressList: {
-    data: [],
+    data: {}, // {id: address}
     status: null,
     error: null,
   },
@@ -14,13 +14,27 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'ordering/customer/common',
   initialState,
+  reducers: {
+    updateAddress(state, action) {
+      const address = action.payload;
+      // eslint-disable-next-line no-underscore-dangle
+      state.addressList.data[address._id] = address;
+    },
+  },
   extraReducers: {
     [loadAddressList.pending.type]: state => {
       state.addressList.status = API_REQUEST_STATUS.PENDING;
     },
 
     [loadAddressList.fulfilled.type]: (state, action) => {
-      state.addressList.data = action.payload;
+      const addressList = action.payload;
+      const addressIdMaps = {};
+      addressList.forEach(address => {
+        // eslint-disable-next-line no-underscore-dangle
+        addressIdMaps[address._id] = address;
+      });
+
+      state.addressList.data = addressIdMaps;
       state.addressList.status = API_REQUEST_STATUS.FULFILLED;
       state.addressList.error = null;
     },

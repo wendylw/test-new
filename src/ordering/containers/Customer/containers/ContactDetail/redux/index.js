@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { actions as appActionCreators, getUserConsumerId, getDeliveryDetails } from '../../../../../redux/modules/app';
 import { upsertAddress } from '../../../redux/common/api-request';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
+import { actions as commonActions } from '../../../redux/common/index';
 
 const initialState = {
   username: '',
@@ -26,10 +27,21 @@ export const updateContactDetail = createAsyncThunk(
       const { addressId } = getDeliveryDetails(state);
       const contactName = getUsername(state);
       const contactNumber = getPhone(state);
-      if (addressId) {
-        await upsertAddress({ consumerId, addressId, contactName, contactNumber });
+      if (!addressId) {
+        await dispatch(appActionCreators.updateDeliveryDetails({ username: contactName, phone: contactNumber }));
+        return;
       }
-      await dispatch(appActionCreators.updateDeliveryDetails({ username: contactName, phone: contactNumber }));
+
+      const updatedAddress = await upsertAddress({ consumerId, addressId, contactName, contactNumber });
+
+      await dispatch(
+        appActionCreators.updateDeliveryDetails({
+          username: updatedAddress.contactName,
+          phone: updatedAddress.contactNumber,
+        })
+      );
+
+      commonActions.updateAddress(updatedAddress);
     } catch (error) {
       console.log(error);
       throw error;
