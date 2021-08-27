@@ -27,7 +27,7 @@ import {
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import { getCustomerError, actions as customerInfoActionCreators } from './redux';
-import { selectAvailableAddress } from '../../redux/common/thunks';
+import { selectAvailableAddress, loadAddressList } from '../../redux/common/thunks';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
@@ -41,8 +41,9 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    const { appActions, selectAvailableAddress } = this.props;
+    const { appActions, selectAvailableAddress, loadAddressList } = this.props;
 
+    await loadAddressList();
     await selectAvailableAddress();
     appActions.loadShoppingCart();
   }
@@ -147,20 +148,22 @@ class CustomerInfo extends Component {
     }
   };
 
-  handleChooseAddressListOrAddressDetail = () => {
-    try {
-      const { history, addressList, deliveryDetails } = this.props;
-      const { addressName } = deliveryDetails;
+  handleAddressClick = () => {
+    const { history, addressList, storeInfoForCleverTap } = this.props;
+    CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
+    if (addressList.length === 0) {
       history.push({
-        pathname:
-          addressList.length > 0 || addressName
-            ? `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`
-            : `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
+        pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
         search: window.location.search,
       });
-    } catch (error) {
-      console.log(error);
+      return;
     }
+
+    history.push({
+      pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
+      search: window.location.search,
+    });
+    return;
   };
 
   renderDeliveryPickupDetail() {
@@ -195,10 +198,9 @@ class CustomerInfo extends Component {
               {isDeliveryType ? (
                 <button
                   onClick={() => {
-                    CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
-                    this.handleChooseAddressListOrAddressDetail;
+                    this.handleAddressClick();
                   }}
-                  className="ordering-customer__button-link button button__link text-left add"
+                  className="button button__link text-left ordering-customer__address-button"
                 >
                   {Boolean(addressName) ? (
                     <React.Fragment>
@@ -456,6 +458,7 @@ export default compose(
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       selectAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
+      loadAddressList: bindActionCreators(loadAddressList, dispatch),
       customerInfoActions: bindActionCreators(customerInfoActionCreators, dispatch),
     })
   )

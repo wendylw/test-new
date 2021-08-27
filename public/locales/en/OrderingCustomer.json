@@ -18,9 +18,8 @@
   "placeholderOfDeliveryComments": "Eg: Drop off at door",
   "AddressDetails": "Address Details",
   "UnitNumberAndFloor": "Unit Number/Floor",
-  "NoteToDriver": "Note to Driver",
+  "NoteToDriver": "Note To Driver(Optional)",
   "ContactName": "Contact Name",
   "ContactNumber": "Contact Number",
-  "AddressName": "Address Name",
-  "NoteToDriverOptional": "Note To Driver(Optional)"
+  "AddressName": "Address Name"
 }

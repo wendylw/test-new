@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { actions as appActionCreators, getUserConsumerId, getDeliveryDetails } from '../../../../../redux/modules/app';
-import { fetchputAddressDetail } from '../../../redux/common/api-request';
+import { upsertAddress } from '../../../redux/common/api-request';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 
 const initialState = {
@@ -17,7 +17,6 @@ export const getUsername = state => state.customer.contactDetail.username;
 
 export const getPhone = state => state.customer.contactDetail.phone;
 
-// add
 export const updateContactDetail = createAsyncThunk(
   'ordering/customer/common/updateContactDetail',
   async (_, { getState, dispatch }) => {
@@ -28,7 +27,7 @@ export const updateContactDetail = createAsyncThunk(
       const contactName = getUsername(state);
       const contactNumber = getPhone(state);
       if (addressId) {
-        await fetchputAddressDetail({ consumerId, addressId, contactName, contactNumber });
+        await upsertAddress({ consumerId, addressId, contactName, contactNumber });
       }
       await dispatch(appActionCreators.updateDeliveryDetails({ username: contactName, phone: contactNumber }));
     } catch (error) {
@@ -66,7 +65,7 @@ export const { actions, reducer } = createSlice({
     },
 
     [updateContactDetail.rejected.type]: (state, action) => {
-      state.updateContactDetailResult.status = API_REQUEST_STATUS.FULFILLED;
+      state.updateContactDetailResult.status = API_REQUEST_STATUS.REJECTED;
       state.updateContactDetailResult.error = action.error;
     },
   },

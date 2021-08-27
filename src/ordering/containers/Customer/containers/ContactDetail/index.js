@@ -10,8 +10,7 @@ import { actions as appActionCreators, getUser, getDeliveryDetails } from '../..
 import { actions as ContactDetailActions } from './redux';
 import 'react-phone-number-input/style.css';
 import './ContactDetail.scss';
-import { getAddressInfo } from '../AddressDetail/redux/index';
-import { updateContactDetail, getUsername, getPhone } from './redux/index';
+import { updateContactDetail, getUsername, getPhone } from './redux';
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class ContactDetail extends Component {
@@ -120,7 +119,6 @@ export default compose(
       username: getUsername(state),
       phone: getPhone(state),
       deliveryDetails: getDeliveryDetails(state),
-      addressInfo: getAddressInfo(state),
     }),
     {
       updateDeliveryDetails: appActionCreators.updateDeliveryDetails,

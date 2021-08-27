@@ -57,8 +57,8 @@ class AddressList extends Component {
         location,
         city: deliveryToCity,
         postCode,
-        username,
-        phone,
+        contactName,
+        contactNumber,
       } = address;
       return (
         <div
@@ -81,8 +81,8 @@ class AddressList extends Component {
                     deliveryToLocation: location,
                     deliveryToCity,
                     postCode,
-                    phone: phone || deliveryDetails.phone,
-                    username: username || deliveryDetails.username,
+                    phone: contactNumber || deliveryDetails.phone,
+                    username: contactName || deliveryDetails.username,
                   });
                   if (Utils.hasNativeSavedAddress()) {
                     const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));

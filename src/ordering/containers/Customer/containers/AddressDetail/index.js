@@ -141,6 +141,37 @@ class AddressDetail extends Component {
     }
   };
 
+  phoneInputChange = phone => {
+    const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
+    const phoneInput =
+      metadataMobile.countries[selectedCountry] &&
+      Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]);
+    this.props.customerActions.updateAddressInfo({ contactNumber: phoneInput });
+    this.setState({
+      hasAnyChanges: true,
+    });
+  };
+
+  checkSaveButtonDisabled = () => {
+    const { addressInfo } = this.props;
+    const { hasAnyChanges } = this.state;
+    const { name, details, type, address, contactName, contactNumber } = addressInfo;
+
+    if (type === actions.EDIT && !hasAnyChanges) {
+      return true;
+    }
+
+    if (!name || !details || !address) {
+      return true;
+    }
+
+    if (!contactName || !contactName.length || !isValidPhoneNumber(contactNumber || '')) {
+      return true;
+    }
+
+    return false;
+  };
+
   handleAddressDetailClick = () => {
     const { history, location } = this.props;
     const { search } = location;
@@ -229,18 +260,11 @@ class AddressDetail extends Component {
       });
     }
   };
-  handlePhoneHasAnyChanges = () => {
-    this.setState({
-      hasAnyChanges: true,
-    });
-  };
 
   render() {
     const { hasAnyChanges } = this.state;
     const { addressInfo, t } = this.props;
     const { type, name, address, details, comments, contactNumber, contactName, country } = addressInfo || {};
-    console.log(contactName);
-    console.log(contactNumber);
     return (
       <div className="flex flex-column address-detail">
         <HybridHeader
@@ -267,47 +291,38 @@ class AddressDetail extends Component {
           }}
         >
           <div className="margin-normal padding-top-bottom-smaller">
-            <form>
-              <div className="padding-top-bottom-small">
-                <div className="contact-details__group form__group">
-                  <div className="address-detail__title required">
-                    <span className="text-size-small text-top-contact">{t('ContactName')}</span>
-                  </div>
-                  <input
-                    className="contact-details__input form__input padding-left-right-normal text-size-biggest"
-                    data-heap-name="ordering.contact-details.name-input"
-                    type="text"
-                    placeholder={t('Name')}
-                    value={contactName}
-                    name="contactName"
-                    onChange={this.handleInputChange}
-                  />
-                </div>
-              </div>
-              <br />
+            <div className="padding-top-bottom-small">
               <div className="contact-details__group form__group">
                 <div className="address-detail__title required">
-                  <span className="text-size-small text-top-contact">{t('ContactNumber')}</span>
+                  <span className="text-size-small text-top-contact">{t('ContactName')}</span>
                 </div>
-                <PhoneInput
-                  international // If input want to show country code when phone number is empty, pls add international on props
-                  smartCaret={false}
-                  data-heap-name="ordering.contact-details.phone-input"
-                  placeholder={t('EnterPhoneNumber')}
-                  value={formatPhoneNumberIntl(contactNumber)}
-                  country={country}
-                  metadata={metadataMobile}
-                  onChange={phone => {
-                    const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
-                    phone =
-                      metadataMobile.countries[selectedCountry] &&
-                      Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]);
-                    this.props.customerActions.updateAddressInfo({ contactNumber: phone });
-                    this.handlePhoneHasAnyChanges();
-                  }}
+                <input
+                  className="contact-details__input form__input padding-left-right-normal text-size-biggest"
+                  data-heap-name="ordering.contact-details.name-input"
+                  type="text"
+                  placeholder={t('Name')}
+                  value={contactName}
+                  name="contactName"
+                  onChange={this.handleInputChange}
                 />
               </div>
-            </form>
+            </div>
+            <br />
+            <div className="contact-details__group form__group">
+              <div className="address-detail__title required">
+                <span className="text-size-small text-top-contact">{t('ContactNumber')}</span>
+              </div>
+              <PhoneInput
+                international // If input want to show country code when phone number is empty, pls add international on props
+                smartCaret={false}
+                data-heap-name="ordering.contact-details.phone-input"
+                placeholder={t('EnterPhoneNumber')}
+                value={formatPhoneNumberIntl(contactNumber)}
+                country={country}
+                metadata={metadataMobile}
+                onChange={this.phoneInputChange}
+              />
+            </div>
           </div>
           <div className="margin-normal padding-top-bottom-smaller">
             <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
@@ -370,7 +385,7 @@ class AddressDetail extends Component {
             <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
               <div className="flex__fluid-content">
                 <div className="address-detail__title">
-                  <span className="text-size-small text-top">{t('NoteToDriverOptional')}</span>
+                  <span className="text-size-small text-top">{t('NoteToDriver')}</span>
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big"
@@ -389,15 +404,7 @@ class AddressDetail extends Component {
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
             className="address-detail__save-button button button__fill button__block padding-small text-weight-bolder text-uppercase"
-            disabled={
-              !name ||
-              !details ||
-              !address ||
-              (type === actions.EDIT && !hasAnyChanges) ||
-              !contactName ||
-              !contactName.length ||
-              !isValidPhoneNumber(contactNumber || '')
-            }
+            disabled={this.checkSaveButtonDisabled()}
             onClick={() => {
               CleverTap.pushEvent('Address details - click save changes');
               this.createOrUpdateAddress();
