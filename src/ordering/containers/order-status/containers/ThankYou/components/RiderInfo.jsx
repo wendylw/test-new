@@ -123,9 +123,9 @@ function RiderInfo({
     ORDER_STATUS.PENDING_PAYMENT,
     ORDER_STATUS.PENDING_VERIFICATION,
     ORDER_STATUS.PAID,
-  ];
+  ].includes(logisticStatus);
 
-  if (!startedDeliveryStates || (!isUseStorehubLogistics && notStartedDeliveryStates.includes(orderStatus))) {
+  if (!startedDeliveryStates || (!isUseStorehubLogistics && notStartedDeliveryStates)) {
     return null;
   }
 
@@ -162,10 +162,9 @@ function RiderInfo({
       phone={storePhone}
       supportCallPhone={inApp}
       buttonText={t('CallStore')}
-      buttonClickEvent={handleCopyPhoneNumber(
-        storePhone,
-        logisticStatus === ORDER_STATUS.LOGISTICS_PICKED_UP ? 'drive' : 'store'
-      )}
+      buttonClickEvent={() =>
+        handleCopyPhoneNumber(storePhone, logisticStatus === ORDER_STATUS.LOGISTICS_PICKED_UP ? 'drive' : 'store')
+      }
     />
   );
   const callRiderButtonEl = (
@@ -173,7 +172,7 @@ function RiderInfo({
       phone={driverPhone}
       supportCallPhone={inApp}
       buttonText={t('CallRider')}
-      buttonClickEvent={handleCopyPhoneNumber(`+${driverPhone}`, 'drive')}
+      buttonClickEvent={() => handleCopyPhoneNumber(`+${driverPhone}`, 'drive')}
     />
   );
   const trackingOrderButtonEl =
@@ -227,7 +226,7 @@ function RiderInfo({
             <button
               className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
               onClick={() => {
-                if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(orderStatus)) {
+                if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(logisticStatus)) {
                   return;
                 }
 

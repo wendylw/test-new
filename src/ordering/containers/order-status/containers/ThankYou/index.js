@@ -65,6 +65,12 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import loggly from '../../../../../utils/monitoring/loggly';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
+const BEFORE_PAID_STATUS_LIST = [
+  ORDER_STATUS.CREATED,
+  ORDER_STATUS.PENDING_PAYMENT,
+  ORDER_STATUS.PENDING_VERIFICATION,
+  ORDER_STATUS.PAYMENT_CANCELLED,
+];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -548,13 +554,7 @@ export class ThankYou extends PureComponent {
     const { t, order, orderStatus, shippingType } = this.props;
     const { tableId, pickUpId, refundShippingFee } = order || {};
     const hideViewOrderDetailsButton =
-      shippingType !== DELIVERY_METHOD.DINE_IN ||
-      [
-        ORDER_STATUS.CREATED,
-        ORDER_STATUS.PENDING_PAYMENT,
-        ORDER_STATUS.PENDING_VERIFICATION,
-        ORDER_STATUS.PAYMENT_CANCELLED,
-      ].includes(orderStatus);
+      shippingType !== DELIVERY_METHOD.DINE_IN || BEFORE_PAID_STATUS_LIST.includes(orderStatus);
 
     if (shippingType === DELIVERY_METHOD.DELIVERY) {
       return null;
@@ -732,10 +732,13 @@ export class ThankYou extends PureComponent {
   }
 
   handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history } = this.props;
+    const { order, storeHashCode, history, orderStatus } = this.props;
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
     const type = Utils.getOrderTypeFromUrl();
+    const pathname = BEFORE_PAID_STATUS_LIST.includes(orderStatus)
+      ? Constants.ROUTER_PATHS.ORDERING_PAYMENT
+      : Constants.ROUTER_PATHS.ORDERING_HOME;
 
     if (isWebview) {
       NativeMethods.closeWebView();
@@ -752,9 +755,8 @@ export class ThankYou extends PureComponent {
       options.push(`type=${type}`);
     }
 
-    // todo: fix this bug, should bring hash instead of table=xx&storeId=xx
     history.replace({
-      pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
+      pathname,
       search: `?${options.join('&')}`,
     });
 
