@@ -2,9 +2,7 @@ import MessagePortal from './message-portal';
 import debug from './debug';
 
 export const TNG_MINI_PROGRAM_ENV_LIST = {
-  DEVELOPMENT: 'DEV',
   SANDBOX: 'SBX',
-  PREVIEW: 'PRE',
   PRODUCTION: 'PROD',
 };
 
@@ -80,9 +78,8 @@ export const isRequiredDevTools = async () => {
   }
 
   try {
-    const enableDevToolsEnvs = [TNG_MINI_PROGRAM_ENV_LIST.DEVELOPMENT, TNG_MINI_PROGRAM_ENV_LIST.SANDBOX];
     const env = await getEnv();
-    return enableDevToolsEnvs.includes(env);
+    return env === TNG_MINI_PROGRAM_ENV_LIST.SANDBOX;
   } catch {
     return false;
   }
