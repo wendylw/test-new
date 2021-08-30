@@ -76,5 +76,7 @@
   "SwitchToSelfPickUp": "Switch to self-pickup",
   "SelfPickUpPromptDescription": "You will need to head to the store to pick up your order.",
   "GoBack": "Go back",
-  "SelfPickUpPromptConfirmedText": "Yes, switch"
+  "SelfPickUpPromptConfirmedText": "Yes, switch",
+  "PromptUserEnableAppNotificationTitle": "Track Your Order Status",
+  "PromptUserEnableAppNotificationContent": "No more SMS! Track your order status by enabling Beep notifications in your phone's Settings."
 }

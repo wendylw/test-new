@@ -126,8 +126,30 @@ export class ThankYou extends PureComponent {
 
     if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
       this.pollOrderStatus();
+
+      if (Utils.isWebview()) {
+        this.promptUserEnableAppNotification();
+      }
     }
   };
+
+  promptUserEnableAppNotification() {
+    try {
+      const { t } = this.props;
+
+      NativeMethods.promptEnableAppNotification({
+        title: t('PromptUserEnableAppNotificationTitle'),
+        description: t('PromptUserEnableAppNotificationContent'),
+        sourcePage: 'thank you page',
+      });
+    } catch (error) {
+      // we add the [promptEnableAppNotification] function on version 1.10.0
+      // so before 1.10.0 call this function will throw NativeApiError with METHOD_NOT_EXIST of code
+      if (error?.code !== NativeMethods.NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST) {
+        console.error(error);
+      }
+    }
+  }
 
   setContainerHeight() {
     if (
@@ -144,8 +166,10 @@ export class ThankYou extends PureComponent {
 
   closeMap = () => {
     try {
-      NativeMethods.hideMap();
-    } catch (e) {}
+      if (Utils.isWebview()) {
+        NativeMethods.hideMap();
+      }
+    } catch (error) {}
   };
 
   updateAppLocationAndStatus = () => {
@@ -154,39 +178,39 @@ export class ThankYou extends PureComponent {
     //      updateHomePosition(lat: Double, lng: Double) // 更新收货坐标
     //      updateRiderPosition(lat: Double, lng: Double) // 更新骑手坐标
 
-    const { orderStatus, riderLocations = [], shippingType } = this.props;
-    const [lat = null, lng = null] = riderLocations || [];
-    const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
-    const { PICKUP } = CONSUMERFLOW_STATUS;
-    const { order = {}, t } = this.props;
-    const { orderId, storeInfo = {}, deliveryInformation = [] } = order;
-    const { location = {} } = storeInfo;
-    const { latitude: storeLat, longitude: storeLng } = location;
-    const { address = {} } = deliveryInformation[0] || {};
-    const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
-    const focusPositionList = [
-      {
-        lat: deliveryLat,
-        lng: deliveryLng,
-      },
-      {
-        lat,
-        lng,
-      },
-    ];
+    try {
+      const { orderStatus, riderLocations = [], shippingType } = this.props;
+      const [lat = null, lng = null] = riderLocations || [];
+      const CONSUMERFLOW_STATUS = Constants.CONSUMERFLOW_STATUS;
+      const { PICKUP } = CONSUMERFLOW_STATUS;
+      const { order = {} } = this.props;
+      const { storeInfo = {}, deliveryInformation = [] } = order;
+      const { location = {} } = storeInfo;
+      const { latitude: storeLat, longitude: storeLng } = location;
+      const { address = {} } = deliveryInformation[0] || {};
+      const { latitude: deliveryLat, longitude: deliveryLng } = address.location || {};
+      const focusPositionList = [
+        {
+          lat: deliveryLat,
+          lng: deliveryLng,
+        },
+        {
+          lat,
+          lng,
+        },
+      ];
 
-    if (orderStatus === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY) {
-      try {
+      if (orderStatus === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY) {
         NativeMethods.showMap();
         NativeMethods.updateStorePosition(storeLat, storeLng);
         NativeMethods.updateHomePosition(deliveryLat, deliveryLng);
         NativeMethods.updateRiderPosition(lat, lng);
         NativeMethods.focusPositions(focusPositionList);
-      } catch (e) {
-        console.log(e);
+      } else {
+        this.closeMap();
       }
-    } else {
-      this.closeMap();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -254,7 +278,9 @@ export class ThankYou extends PureComponent {
     if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
       await loadOrderStatus(receiptNumber);
 
-      this.updateAppLocationAndStatus();
+      if (Utils.isWebview()) {
+        this.updateAppLocationAndStatus();
+      }
     }
   };
 
