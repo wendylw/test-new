@@ -50,7 +50,7 @@ const NOT_DELIVERY_STATUS_IMAGES_MAPPING = {
 const getNotDeliveryTitleAndDescription = (orderStatus, shippingType, paymentMethod, deliveryToSelfPickup) => {
   if (orderStatus === ORDER_STATUS.PAYMENT_CANCELLED) {
     return {
-      titleKey: 'YourSessionHasExpired',
+      titleKey: 'SessionExpired',
       descriptionKey: 'PaymentCancelledDescription',
       emoji: null,
     };

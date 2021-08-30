@@ -5,7 +5,7 @@
   "PingStaffTitle": "Ping the staff for a receipt",
   "ThankYou": "Thank You",
   "PayAtTheCashier": "Pay at the Cashier",
-  "YourSessionHasExpired": "Your session has expired",
+  "SessionExpired": "Session Expired",
   "PrepareOrderDescription": "We're preparing your order now.",
   "PendingPaymentDescription": "Your meal will only be served after payment is completed.",
   "PaymentCancelledDescription": "Please return to the menu screen if you'd like to place your order again.",
