@@ -150,6 +150,10 @@ export class ThankYou extends PureComponent {
 
     if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
       this.pollOrderStatus();
+
+      if (Utils.isWebview()) {
+        this.promptUserEnableAppNotification();
+      }
     }
 
     await loadCashbackInfo(receiptNumber);
@@ -171,6 +175,24 @@ export class ThankYou extends PureComponent {
       }
     }
   };
+
+  promptUserEnableAppNotification() {
+    try {
+      const { t } = this.props;
+
+      NativeMethods.promptEnableAppNotification({
+        title: t('PromptUserEnableAppNotificationTitle'),
+        description: t('PromptUserEnableAppNotificationContent'),
+        sourcePage: 'thank you page',
+      });
+    } catch (error) {
+      // we add the [promptEnableAppNotification] function on version 1.10.0
+      // so before 1.10.0 call this function will throw NativeApiError with METHOD_NOT_EXIST of code
+      if (error?.code !== NativeMethods.NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST) {
+        console.error(error);
+      }
+    }
+  }
 
   setContainerHeight() {
     if (
