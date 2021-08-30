@@ -22,6 +22,7 @@ import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 
 import * as StoreUtils from '../../../utils/store-utils';
+import * as TngUtils from '../../../utils/tng-utils';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -495,6 +496,37 @@ export const actions = {
 
     return dispatch(fetchProductDetail({ productId, fulfillDate }));
   },
+
+  loginByTngdMiniProgram: () => async (dispatch, getState) => {
+    if (!Utils.isTNGMiniProgram()) {
+      throw new Error('Not in tng mini program');
+    }
+
+    try {
+      const isLogin = getUserIsLogin(getState());
+      const business = getBusiness(getState());
+      if (isLogin) {
+        return true;
+      }
+
+      const result = await TngUtils.getAccessToken({ business: business });
+
+      const { access_token, refresh_token } = result;
+
+      await dispatch(
+        actions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        })
+      );
+    } catch (e) {
+      // TODO: prompt user login failed
+      console.error(e);
+      return false;
+    }
+
+    return getUserIsLogin(getState());
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -827,6 +859,8 @@ export const getMerchantCountry = state => {
   return null;
 };
 export const getApiError = state => state.app.apiError;
+
+export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);

@@ -48,14 +48,20 @@ class ReportDriver extends Component {
 
     await loadOrder(receiptNumber);
 
-    if (Utils.isWebview() && !user?.isLogin) {
-      const result = await NativeMethods.getTokenAsync();
-      await this.loginAppWithNativeToken(result);
-
-      const { user } = this.props;
-      if (!user.isLogin && user.isExpired) {
-        const result = await NativeMethods.tokenExpiredAsync();
+    if (!user?.isLogin) {
+      if (Utils.isWebview()) {
+        const result = await NativeMethods.getTokenAsync();
         await this.loginAppWithNativeToken(result);
+
+        const { user } = this.props;
+        if (!user.isLogin && user.isExpired) {
+          const result = await NativeMethods.tokenExpiredAsync();
+          await this.loginAppWithNativeToken(result);
+        }
+      }
+
+      if (Utils.isTNGMiniProgram()) {
+        await this.props.loginByTngdMiniProgram();
       }
     }
 
@@ -478,6 +484,7 @@ export default compose(
       initialEmail: reportDriverActionCreators.initialEmail,
       getProfileInfo: appActionCreators.getProfileInfo,
       loginApp: appActionCreators.loginApp,
+      loginByTngdMiniProgram: appActionCreators.loginByTngdMiniProgram,
     }
   )
 )(ReportDriver);

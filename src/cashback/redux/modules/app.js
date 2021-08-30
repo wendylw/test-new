@@ -5,6 +5,7 @@ import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
+import * as TngUtils from '../../../utils/tng-utils';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -217,6 +218,37 @@ export const actions = {
       },
     },
   }),
+
+  loginByTngdMiniProgram: () => async (dispatch, getState) => {
+    if (!Utils.isTNGMiniProgram()) {
+      throw new Error('Not in tng mini program');
+    }
+
+    try {
+      const isLogin = getUserIsLogin(getState());
+      const business = getBusiness(getState());
+      if (isLogin) {
+        return true;
+      }
+
+      const result = await TngUtils.getAccessToken({ business: business });
+
+      const { access_token, refresh_token } = result;
+
+      await dispatch(
+        actions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        })
+      );
+    } catch (e) {
+      // TODO: prompt user login failed
+      console.error(e);
+      return false;
+    }
+
+    return getUserIsLogin(getState());
+  },
 };
 
 const fetchCustomerProfile = consumerId => ({
@@ -422,3 +454,5 @@ export const getMessageInfo = state => state.app.messageInfo;
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'timezoneOffset', 480)
 );
+
+export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));

@@ -112,31 +112,12 @@ class PageLogin extends React.Component {
   };
 
   loginInTngMiniProgram = async () => {
-    try {
-      // already login
-      if (this.props.isLogin) {
-        this.visitNextPage();
-        return;
-      }
+    const { appActions } = this.props;
+    const isLogin = await appActions.loginByTngdMiniProgram();
 
-      const { business, appActions } = this.props;
-
-      const result = await TngUtils.getAccessToken({ business: business });
-      const { access_token, refresh_token } = result;
-      await appActions.loginApp({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      });
-    } catch (e) {
-      console.error(e);
-    }
-
-    if (!this.props.isLogin) {
+    if (!isLogin) {
       this.goBack();
-      this.props.appActions.showMessageModal({
-        message: 'Login failed',
-        description: 'Please try again',
-      });
+      return;
     }
 
     this.visitNextPage();
