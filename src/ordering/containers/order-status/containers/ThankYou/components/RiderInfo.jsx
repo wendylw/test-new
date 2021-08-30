@@ -113,12 +113,8 @@ function RiderInfo({
   const [displayCopyPhoneModalStatus, setDisplayCopyPhoneModalStatus] = useState(false);
   const [copyPhoneModalDescription, setCopyPhoneModalDescription] = useState(null);
   const logisticStatus = !isUseStorehubLogistics ? 'merchantDelivery' : orderStatus;
-  const startedDeliveryStates = [
-    ORDER_STATUS.CONFIRMED,
-    ORDER_STATUS.LOGISTICS_CONFIRMED,
-    ORDER_STATUS.PICKED_UP,
-    ORDER_STATUS.DELIVERED,
-  ].includes(orderStatus);
+  const startedDeliveryStatusList = [ORDER_STATUS.CONFIRMED, ORDER_STATUS.LOGISTICS_CONFIRMED, ORDER_STATUS.PICKED_UP];
+  const startedDeliveryStates = startedDeliveryStatusList.includes(orderStatus);
   const notStartedDeliveryStates = [
     ORDER_STATUS.CREATED,
     ORDER_STATUS.PENDING_PAYMENT,
@@ -126,13 +122,10 @@ function RiderInfo({
     ORDER_STATUS.PAID,
   ].includes(orderStatus);
 
-  console.log('=======');
-  console.log(orderStatus);
-  console.log(startedDeliveryStates);
-  console.log(isUseStorehubLogistics);
-  console.log(notStartedDeliveryStates);
-
-  if (!startedDeliveryStates || (!isUseStorehubLogistics && notStartedDeliveryStates)) {
+  if (
+    ![...startedDeliveryStatusList, ORDER_STATUS.DELIVERED].includes(orderStatus) ||
+    (!isUseStorehubLogistics && notStartedDeliveryStates)
+  ) {
     return null;
   }
 
@@ -232,13 +225,7 @@ function RiderInfo({
           {logisticStatus === ORDER_STATUS.DELIVERED ? (
             <button
               className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
-              onClick={() => {
-                if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP].includes(logisticStatus)) {
-                  return;
-                }
-
-                visitReportPage();
-              }}
+              onClick={() => visitReportPage()}
               data-heap-name="ordering.need-help.report-driver-btn"
             >
               {t('ReportIssue')}
