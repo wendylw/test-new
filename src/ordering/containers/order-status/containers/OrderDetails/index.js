@@ -69,7 +69,7 @@ export class OrderDetails extends Component {
 
   handleReportUnsafeDriver = () => {
     const { order, businessInfo, storeInfoForCleverTap } = this.props;
-    const { paymentMethod, subtotal } = order || {};
+    const { paymentNames, subtotal } = order || {};
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const queryParams = {
@@ -81,7 +81,7 @@ export class OrderDetails extends Component {
       'cart items quantity': this.getCartItemsQuantity(),
       'cart amount': subtotal,
       'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-      'payment method': paymentMethod && paymentMethod[0],
+      'payment method': paymentNames && paymentNames[0],
     });
 
     this.props.history.push({
@@ -148,11 +148,11 @@ export class OrderDetails extends Component {
 
   renderPaymentMethod() {
     const { t, order } = this.props;
-    const { paymentMethod } = order || {};
+    const { paymentNames } = order || {};
     return (
       <div className="flex flex-column border__bottom-divider padding-top-bottom-normal">
         <span className="ordering-details__subtitle">{t('PaymentMethod')}</span>
-        <span className="padding-top-bottom-small text-weight-bolder">{paymentMethod && paymentMethod[0]}</span>
+        <span className="padding-top-bottom-small text-weight-bolder">{paymentNames && paymentNames[0]}</span>
       </div>
     );
   }
@@ -272,7 +272,7 @@ export class OrderDetails extends Component {
     const userEmail = _get(user, 'profile.email', '');
     const orderId = _get(order, 'orderId', '');
     const subtotal = _get(order, 'subtotal', 0);
-    const paymentMethod = _get(order, 'paymentMethod', null);
+    const paymentNames = _get(order, 'paymentNames', null);
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
     const orderUserName = _get(deliveryAddress, 'name', '');
     const orderUserPhone = _get(deliveryAddress, 'phone', '');
@@ -295,7 +295,7 @@ export class OrderDetails extends Component {
             'cart items quantity': this.getCartItemsQuantity(),
             'cart amount': subtotal,
             'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-            'payment method': paymentMethod && paymentMethod[0],
+            'payment method': paymentNames && paymentNames[0],
           });
           NativeMethods.startChat({
             orderId,
@@ -339,7 +339,7 @@ export class OrderDetails extends Component {
 
   render() {
     const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton } = this.props;
-    const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
+    const { shippingFee, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } = order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
@@ -382,6 +382,12 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
               </li>
+              {paymentMethod === 'Offline' ? (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('Rounding')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={roundedAmount || 0} />
+                </li>
+              ) : null}
               {this.renderPromotion()}
               <li className="flex flex-space-between flex-middle">
                 <label className="padding-top-bottom-normal text-size-big text-weight-bolder">{t('Total')}</label>

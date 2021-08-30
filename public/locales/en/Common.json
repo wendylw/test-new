@@ -187,6 +187,7 @@
   "StoreAddress": "Store Address",
   "Items": "Items",
   "ServiceCharge": "Service Charge",
+  "Rounding": "Rounding",
   "ReportIssue": "Report Issue",
   "NeedHelp": "Need Help",
   "CommonErrorMessage": "Whoops, this page isn't available",

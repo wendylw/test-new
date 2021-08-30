@@ -298,7 +298,7 @@ export class ThankYou extends PureComponent {
       'Shipping Type': order.shippingType,
       'Preorder Flag': order.isPreOrder,
       'Delivery Instructions': _get(order, 'deliveryInformation[0].comments'),
-      'Payment Method': _get(order, 'paymentMethod[0]', ''),
+      'Payment Method': _get(order, 'paymentNames[0]', ''),
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
