@@ -9,17 +9,24 @@ import HybridHeader from '../../../components/HybridHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { actions as appActionCreators, getUser, getOtpType } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getOtpType, getBusiness } from '../../redux/modules/app';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import loggly from '../../../utils/monitoring/loggly';
+import * as TngUtils from '../../../utils/tng-utils';
 
 class PageLogin extends React.Component {
   state = {
     sendOtp: false,
   };
+
+  componentDidMount() {
+    if (TngUtils.isTNGMiniProgram()) {
+      this.loginInTngMiniProgram();
+    }
+  }
 
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
@@ -99,6 +106,41 @@ class PageLogin extends React.Component {
     }
   }
 
+  goBack = () => {
+    this.props.history.goBack();
+  };
+
+  loginInTngMiniProgram = async () => {
+    try {
+      // already login
+      if (this.props.isLogin) {
+        this.visitNextPage();
+        return;
+      }
+
+      const { business, appActions } = this.props;
+
+      const result = await TngUtils.getAccessToken({ business: business });
+      const { access_token, refresh_token } = result;
+      await appActions.loginApp({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+
+    if (!this.props.isLogin) {
+      this.goBack();
+      this.props.appActions.showMessageModal({
+        message: 'Login failed',
+        description: 'Please try again',
+      });
+    }
+
+    this.visitNextPage();
+  };
+
   renderOtpModal() {
     const { t, user } = this.props;
     const { isFetching, isResending, isLogin, hasOtp, isError, phone, noWhatsAppAccount, country } = user || {};
@@ -127,9 +169,13 @@ class PageLogin extends React.Component {
   }
 
   render() {
-    const { t, user, className, history } = this.props;
+    const { t, user, className } = this.props;
     const { isLogin, showLoginPage, hasOtp, isFetching, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
+
+    if (TngUtils.isTNGMiniProgram()) {
+      return null;
+    }
 
     if (isLogin) {
       return null;
@@ -152,12 +198,7 @@ class PageLogin extends React.Component {
             data-heap-name="ordering.login.header"
             title="Login or Create Account"
             isPage={true}
-            navFunc={() => {
-              history.push({
-                pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-                search: window.location.search,
-              });
-            }}
+            navFunc={this.goBack}
           />
           <div className="page-login__container">
             <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">
@@ -212,6 +253,7 @@ export default compose(
       user: getUser(state),
       deliveryDetails: getDeliveryDetails(state),
       otpType: getOtpType(state),
+      business: getBusiness(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
