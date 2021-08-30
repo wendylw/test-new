@@ -4,6 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import Constants from '../../../../../../utils/constants';
 import { ORDER_DELAY_REASON_CODES } from '../constants';
+import { ORDER_PAYMENT_METHODS } from '../../../constants';
 import {
   getOrderStatus,
   getOrderDelayReason,
@@ -11,7 +12,7 @@ import {
   getIsPreOrder,
   getCancelOperator,
 } from '../../../redux/selector';
-import { getDeliverySwitchedToSelfPickupState, getOrderStoreName } from '../redux/selector';
+import { getDeliverySwitchedToSelfPickupState, getOrderStoreName, getOrderPaymentMethod } from '../redux/selector';
 import orderStatusAccepted from '../../../../../../images/order-status-accepted.gif';
 import orderStatusConfirmed from '../../../../../../images/order-status-confirmed.gif';
 import orderStatusDelivered from '../../../../../../images/order-status-delivered.gif';
@@ -19,7 +20,7 @@ import orderStatusPaid from '../../../../../../images/order-status-paid.gif';
 import orderStatusPickedUp from '../../../../../../images/order-status-picked-up.gif';
 import orderStatusPendingPayment from '../../../../../../images/order-status-pending-payment.gif';
 import orderStatusPickedUpRainy from '../../../../../../images/order-status-picked-up-rainy.gif';
-import orderStatusCancelled from '../../../../../../images/order-status-cancelled.png';
+import orderStatusCancelled from '../../../../../../images/order-status-payment-cancelled.png';
 import orderSuccessImage from '../../../../../../images/order-success.png';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
@@ -46,6 +47,45 @@ const NOT_DELIVERY_STATUS_IMAGES_MAPPING = {
   [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
   [ORDER_STATUS.PAYMENT_CANCELLED]: orderStatusCancelled,
 };
+const getNotDeliveryTitleAndDescription = (orderStatus, shippingType, paymentMethod, deliveryToSelfPickup) => {
+  if (orderStatus === ORDER_STATUS.PAYMENT_CANCELLED) {
+    return {
+      titleKey: 'YourSessionHasExpired',
+      descriptionKey: 'PaymentCancelledDescription',
+      emoji: null,
+    };
+  }
+
+  if (paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE && orderStatus === ORDER_STATUS.PENDING_PAYMENT) {
+    return {
+      titleKey: 'PayAtTheCashier',
+      descriptionKey: 'PendingPaymentDescription',
+      emoji: null,
+    };
+  }
+
+  if (shippingType === DELIVERY_METHOD.PICKUP) {
+    return {
+      titleKey: 'ThankYou',
+      descriptionKey: deliveryToSelfPickup ? 'ThankYouForUpdatedToPickingUpForUS' : 'ThankYouForPickingUpForUS',
+      emoji: (
+        <span role="img" aria-label="Goofy">
+          😋
+        </span>
+      ),
+    };
+  }
+
+  return {
+    titleKey: 'ThankYou',
+    descriptionKey: 'PrepareOrderDescription',
+    emoji: (
+      <span role="img" aria-label="Goofy">
+        😋
+      </span>
+    ),
+  };
+};
 const CANCELLED_DESCRIPTION_TRANSLATION_KEYS = {
   ist: 'ISTCancelledDescription',
   auto_cancelled: 'AutoCancelledDescription',
@@ -63,6 +103,7 @@ function OrderStatusDescription(props) {
     cancelOperator,
     isPreOrder,
     storeName,
+    paymentMethod,
     deliveryToSelfPickup,
     cancelAmountEl,
     inApp,
@@ -78,9 +119,12 @@ function OrderStatusDescription(props) {
       ? NOT_DELIVERY_STATUS_IMAGES_MAPPING[orderStatus]
       : DELIVERY_STATUS_IMAGES_MAPPING[orderStatus];
   const showMapInApp = inApp && orderStatus === ORDER_STATUS.PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY;
-  const pickUpDescription = deliveryToSelfPickup
-    ? t('ThankYouForUpdatedToPickingUpForUS')
-    : t('ThankYouForPickingUpForUS');
+  const titleAndDescription = getNotDeliveryTitleAndDescription(
+    orderStatus,
+    shippingType,
+    paymentMethod,
+    deliveryToSelfPickup
+  );
 
   return (
     <>
@@ -94,19 +138,11 @@ function OrderStatusDescription(props) {
       {shippingType !== DELIVERY_METHOD.DELIVERY ? (
         <>
           <h2 className="ordering-thanks__page-title text-center padding-left-right-small text-size-large text-weight-light">
-            {orderStatus === ORDER_STATUS.PENDING_PAYMENT ? t('PayAtTheCashier') : t('ThankYou')}!
+            {t(titleAndDescription.titleKey)}!
           </h2>
           <p className="ordering-thanks__page-description padding-small text-center text-size-big text-line-height-base">
-            {orderStatus === ORDER_STATUS.PENDING_PAYMENT ? (
-              t('PendingPaymentDescription')
-            ) : (
-              <>
-                {shippingType === DELIVERY_METHOD.PICKUP ? `${pickUpDescription} ` : `${t('PrepareOrderDescription')} `}
-                <span role="img" aria-label="Goofy">
-                  😋
-                </span>
-              </>
-            )}
+            {t(titleAndDescription.descriptionKey)}
+            {titleAndDescription.emoji}
           </p>
         </>
       ) : null}
@@ -140,6 +176,7 @@ OrderStatusDescription.propTypes = {
   isPreOrder: PropTypes.bool,
   deliveryToSelfPickup: PropTypes.bool,
   storeName: PropTypes.string,
+  paymentMethod: PropTypes.string,
   cancelAmountEl: PropTypes.element,
   inApp: PropTypes.bool,
 };
@@ -152,6 +189,7 @@ OrderStatusDescription.defaultProps = {
   isPreOrder: false,
   deliveryToSelfPickup: false,
   storeName: null,
+  paymentMethod: null,
   cancelAmountEl: <span />,
   inApp: false,
 };
@@ -164,4 +202,5 @@ export default connect(state => ({
   isPreOrder: getIsPreOrder(state),
   deliveryToSelfPickup: getDeliverySwitchedToSelfPickupState(state),
   storeName: getOrderStoreName(state),
+  paymentMethod: getOrderPaymentMethod(state),
 }))(OrderStatusDescription);

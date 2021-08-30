@@ -9,6 +9,7 @@ import LiveChat from '../../../../../components/LiveChat';
 import Tag from '../../../../../components/Tag';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
+import { ORDER_PAYMENT_METHODS } from '../../constants';
 import Utils, { copyDataToClipboard } from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
@@ -26,9 +27,8 @@ import {
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
-import { DELIVERY_METHOD } from '../../../Home/components/PromotionsBar/constants';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 
 const ShippingTypes = {
   [DELIVERY_METHOD.DINE_IN]: 'dine in',
@@ -382,7 +382,7 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
               </li>
-              {paymentMethod === 'Offline' ? (
+              {paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE ? (
                 <li className="flex flex-space-between flex-middle">
                   <span className="padding-top-bottom-small text-opacity">{t('Rounding')}</span>
                   <CurrencyNumber className="padding-top-bottom-small text-opacity" money={roundedAmount || 0} />

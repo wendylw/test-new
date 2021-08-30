@@ -57,6 +57,8 @@ export const getDeliverySwitchedToSelfPickupState = createSelector(
 
 export const getOrderStoreName = createSelector(getOrderStoreInfo, storeInfo => _get(storeInfo, 'name', ''));
 
+export const getOrderPaymentMethod = createSelector(getOrder, order => _get(order, 'paymentMethod', ''));
+
 export const getCancelOrderStatus = state => state.orderStatus.thankYou.cancelOrderStatus;
 
 export const getUpdateShippingTypePendingStatus = state =>
