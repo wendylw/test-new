@@ -290,39 +290,45 @@ class AddressDetail extends Component {
           }}
         >
           <div className="margin-normal padding-top-bottom-smaller">
-            <div className="padding-top-bottom-small">
-              <div className="contact-details__group form__group">
-                <div className="address-detail__title required required_change">
-                  <span className="text-size-small address-detail__text-top-contact">{t('ContactName')}</span>
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('ContactName')}</span>
                 </div>
                 <input
-                  className="contact-details__input form__input padding-left-right-normal text-size-biggest"
-                  data-heap-name="ordering.contact-details.name-input"
+                  className="address-detail__input form__input text-size-big text-line-height-base"
+                  data-heap-name="ordering.customer.delivery-address-name"
                   type="text"
-                  placeholder={t('Name')}
+                  maxLength="140"
                   value={contactName}
                   name="contactName"
+                  placeholder={t('Name')}
                   onChange={this.handleInputChange}
                 />
               </div>
             </div>
-            <br />
-            <div className="contact-details__group form__group">
-              <div className="address-detail__title required required_change">
-                <span className="text-size-small address-detail__text-top-contact">{t('ContactNumber')}</span>
+          </div>
+
+          <div className="margin-normal padding-top-bottom-smaller">
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('ContactNumber')}</span>
+                </div>
+                <PhoneInput
+                  international // If input want to show country code when phone number is empty, pls add international on props
+                  smartCaret={false}
+                  data-heap-name="ordering.contact-details.phone-input"
+                  placeholder={t('EnterPhoneNumber')}
+                  value={formatPhoneNumberIntl(contactNumber)}
+                  country={country}
+                  metadata={metadataMobile}
+                  onChange={this.phoneInputChange}
+                />
               </div>
-              <PhoneInput
-                international // If input want to show country code when phone number is empty, pls add international on props
-                smartCaret={false}
-                data-heap-name="ordering.contact-details.phone-input"
-                placeholder={t('EnterPhoneNumber')}
-                value={formatPhoneNumberIntl(contactNumber)}
-                country={country}
-                metadata={metadataMobile}
-                onChange={this.phoneInputChange}
-              />
             </div>
           </div>
+
           <div className="margin-normal padding-top-bottom-smaller">
             <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
               <div className="flex__fluid-content">
