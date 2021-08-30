@@ -15,6 +15,7 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import loggly from '../../../utils/monitoring/loggly';
+import Utils from '../../../utils/utils';
 import * as TngUtils from '../../../utils/tng-utils';
 
 class PageLogin extends React.Component {
@@ -23,7 +24,7 @@ class PageLogin extends React.Component {
   };
 
   componentDidMount() {
-    if (TngUtils.isTNGMiniProgram()) {
+    if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
     }
   }
@@ -173,7 +174,7 @@ class PageLogin extends React.Component {
     const { isLogin, showLoginPage, hasOtp, isFetching, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
-    if (TngUtils.isTNGMiniProgram()) {
+    if (Utils.isTNGMiniProgram()) {
       return null;
     }
 

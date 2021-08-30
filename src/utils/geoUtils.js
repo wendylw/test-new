@@ -4,7 +4,7 @@ import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
 import { get, post } from './request';
 import loggly from '../utils/monitoring/loggly';
-import { getLocation as getLocationFromTNG, isTNGMiniProgram } from './tng-utils';
+import { getLocation as getLocationFromTNG } from './tng-utils';
 
 const googleMaps = _get(window, 'google.maps', null);
 
@@ -143,7 +143,7 @@ export const getDeviceCoordinates = option => {
 };
 
 export const tryGetDeviceCoordinates = async () => {
-  if (isTNGMiniProgram()) {
+  if (Utils.isTNGMiniProgram()) {
     const location = await getLocationFromTNG();
     return {
       latitude: location.latitude,

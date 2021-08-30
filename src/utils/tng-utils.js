@@ -1,13 +1,11 @@
 import MessagePortal from './message-portal';
 import debug from './debug';
+import Utils from './utils';
 
 export const TNG_MINI_PROGRAM_ENV_LIST = {
   SANDBOX: 'SBX',
   PRODUCTION: 'PROD',
 };
-
-// eslint-disable-next-line no-underscore-dangle
-export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
 const initMessagePortal = () => {
   const messagePortal = new MessagePortal('TNGMiniProgram', window.my.postMessage);
@@ -46,7 +44,7 @@ export const callMessagePortal = async (method, data) => {
 
 export const getLocation = () =>
   new Promise((resolve, reject) => {
-    if (isTNGMiniProgram()) {
+    if (Utils.isTNGMiniProgram()) {
       window.my.getLocation({
         success: result => {
           resolve({
@@ -70,7 +68,7 @@ export const getAccessToken = data => callMessagePortal('getAccessToken', data);
 export const getEnv = () => callMessagePortal('getEnv');
 
 export const isRequiredDevTools = async () => {
-  if (!isTNGMiniProgram()) {
+  if (!Utils.isTNGMiniProgram()) {
     return false;
   }
 

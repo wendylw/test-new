@@ -880,6 +880,10 @@ Utils.getRegistrationSource = () => {
     case REGISTRATION_TOUCH_POINT.QR_ORDER:
     case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
     default:
+      if (Utils.isTNGMiniProgram()) {
+        return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
+      }
+
       if (Utils.isWebview()) {
         return REGISTRATION_SOURCE.BEEP_APP;
       }
@@ -891,5 +895,7 @@ Utils.getRegistrationSource = () => {
       return REGISTRATION_SOURCE.BEEP_STORE;
   }
 };
+
+Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
 export default Utils;
