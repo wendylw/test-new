@@ -293,7 +293,7 @@ class AddressDetail extends Component {
           <div className="margin-normal padding-top-bottom-smaller">
             <div className="padding-top-bottom-small">
               <div className="contact-details__group form__group">
-                <div className="address-detail__title required">
+                <div className="address-detail__title required_change">
                   <span className="text-size-small text-top-contact">{t('ContactName')}</span>
                 </div>
                 <input
@@ -309,7 +309,7 @@ class AddressDetail extends Component {
             </div>
             <br />
             <div className="contact-details__group form__group">
-              <div className="address-detail__title required">
+              <div className="address-detail__title required_change">
                 <span className="text-size-small text-top-contact">{t('ContactNumber')}</span>
               </div>
               <PhoneInput
