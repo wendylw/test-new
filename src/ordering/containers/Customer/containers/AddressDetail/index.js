@@ -144,8 +144,9 @@ class AddressDetail extends Component {
   phoneInputChange = phone => {
     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
     const phoneInput =
-      metadataMobile.countries[selectedCountry] &&
-      Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]);
+      (metadataMobile.countries[selectedCountry] &&
+        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0])) ||
+      '';
     this.props.customerActions.updateAddressInfo({ contactNumber: phoneInput });
     this.setState({
       hasAnyChanges: true,

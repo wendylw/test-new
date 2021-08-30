@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { actions as appActionCreators, getUserConsumerId, getDeliveryDetails } from '../../../../../redux/modules/app';
-import { upsertAddress } from '../../../redux/common/api-request';
+import { updateAddress } from '../../../redux/common/api-request';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 import { actions as commonActions } from '../../../redux/common/index';
 
@@ -32,7 +32,7 @@ export const updateContactDetail = createAsyncThunk(
         return;
       }
 
-      const updatedAddress = await upsertAddress({ consumerId, addressId, contactName, contactNumber });
+      const updatedAddress = await updateAddress({ consumerId, addressId, contactName, contactNumber });
 
       await dispatch(
         appActionCreators.updateDeliveryDetails({
@@ -43,8 +43,7 @@ export const updateContactDetail = createAsyncThunk(
 
       commonActions.updateAddress(updatedAddress);
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.error(error);
     }
   }
 );
