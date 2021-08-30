@@ -1,6 +1,13 @@
 import MessagePortal from './message-portal';
 import debug from './debug';
 
+export const TNG_MINI_PROGRAM_ENV_LIST = {
+  DEVELOPMENT: 'DEV',
+  SANDBOX: 'SBX',
+  PREVIEW: 'PRE',
+  PRODUCTION: 'PROD',
+};
+
 // eslint-disable-next-line no-underscore-dangle
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
@@ -60,3 +67,23 @@ export const getLocation = () =>
   });
 
 export const getAccessToken = data => callMessagePortal('getAccessToken', data);
+
+export const getEnv = () => callMessagePortal('getEnv');
+
+export const isRequiredDevTools = async () => {
+  if (!isTNGMiniProgram()) {
+    return false;
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    return true;
+  }
+
+  try {
+    const enableDevToolsEnvs = [TNG_MINI_PROGRAM_ENV_LIST.DEVELOPMENT, TNG_MINI_PROGRAM_ENV_LIST.SANDBOX];
+    const env = await getEnv();
+    return enableDevToolsEnvs.includes(env);
+  } catch {
+    return false;
+  }
+};

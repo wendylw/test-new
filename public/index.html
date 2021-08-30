@@ -35,12 +35,6 @@
     <meta property="al:web:should_fallback" content="true" />
     <meta property="fb:app_id" content="1808145769328485" />
 
-    <% if (process.env.NODE_ENV === 'development') { %>
-      <script>
-        window._isDevelopment_ = true;
-      </script>
-    <% } %>
-
     <script>
       var userAgent = navigator.userAgent;
       var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
@@ -54,7 +48,7 @@
 
     </script>
     <script>
-      if (window._isTNGMiniProgram_ && window._isDevelopment_) {
+      if (document.cookie.indexOf('sh_devtools_enabled=true') > -1) {
         // toggle to commented code to toggle devtools. please also toggle the one in DevToolsTrigger.jsx
         // document.writeln('<script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></' + 'script>');
         // document.writeln('<script>window.vConsoleInstance = new window.VConsole();</' + 'script>')
