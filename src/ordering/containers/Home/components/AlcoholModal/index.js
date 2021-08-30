@@ -23,12 +23,12 @@ export class AlcoholModal extends PureComponent {
     }
 
     const { setCookieVariable } = Utils;
-    const test = window.sessionStorage.getItem('AlcoholHide');
+    const test = Utils.getSessionVariable('AlcHide');
     const hostName = window.location.hostname;
     const domain = hostName.replace('hcbeep.', '');
     const expires = 'Sun, 16 Jul 3567 06:23:41 GMT';
     if (test) {
-      setCookieVariable({ name: 'AlcoholHide', value: 'true', expires: expires, domain: domain });
+      setCookieVariable({ name: 'AlcHide', value: '1', expires: expires, domain: domain });
     }
   };
 

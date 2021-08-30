@@ -109,6 +109,16 @@ Utils.getCookieVariable = function getCookieVariable(name, scope) {
   return null;
 };
 
+Utils.getCookie = function(objName) {
+  var arrStr = document.cookie.split('; ');
+  for (var i = 0; i < arrStr.length; i++) {
+    var temp = arrStr[i].split('=');
+    if (temp[0] == objName) {
+      return decodeURI(temp[1]);
+    }
+  }
+};
+
 Utils.setCookieVariable = function setCookieVariable({ name, value, expires, domain }) {
   document.cookie = `${name}=${value}; expires=${expires}; domain=${domain}; path=/`;
 };

@@ -63,7 +63,7 @@ export class Home extends Component {
       offlineStoreModal: false,
       dScrollY: 0,
       deliveryBar: false,
-      alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
+      alcoholModalHide: Utils.getSessionVariable('AlcHide') || Utils.getCookie('AlcHide'),
       callApiFinish: false,
       enablePreOrderFroMultipleStore: false,
       isValidToOrderFromMultipleStore: false,
@@ -751,7 +751,7 @@ export class Home extends Component {
     } else {
       CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
     }
-    isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
+    isAgeLegal && Utils.setSessionVariable('AlcHide', 1);
     this.setAlcoholModalState(!isAgeLegal);
   };
 
