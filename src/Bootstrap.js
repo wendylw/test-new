@@ -11,7 +11,7 @@ import i18n from './i18n';
 import './Bootstrap.scss';
 import * as NativeMethods from './utils/native-methods';
 import loggly from './utils/monitoring/loggly';
-import { toggleDevTools } from './utils/dev-tools';
+import { initialDevTools } from './utils/dev-tools';
 import { isRequiredDevTools } from './utils/tng-utils';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
@@ -162,7 +162,7 @@ class Bootstrap extends Component {
   try {
     const result = await isRequiredDevTools();
     if (result) {
-      toggleDevTools();
+      initialDevTools();
     }
   } catch {}
 })();

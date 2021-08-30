@@ -23,12 +23,7 @@ const isScriptLoaded = () => !!window.eruda;
 // eslint-disable-next-line no-underscore-dangle
 const isDevToolsInitiated = () => !!(window.eruda && window.eruda._isInit === true);
 
-export const toggleDevTools = () => {
-  if (isDevToolsInitiated()) {
-    destroyDevtools();
-    document.cookie = `sh_devtools_enabled=false; expires=${new Date(0).toUTCString()}; domain=${mainDomain}`;
-    return;
-  }
+export const initialDevTools = () => {
   const expireDate = new Date();
   expireDate.setDate(expireDate.getDate() + 7);
   document.cookie = `sh_devtools_enabled=true; domain=${mainDomain}; expires=${expireDate.toUTCString()}`;
@@ -42,4 +37,14 @@ export const toggleDevTools = () => {
     };
     document.body.appendChild(elem);
   }
+};
+
+export const toggleDevTools = () => {
+  if (isDevToolsInitiated()) {
+    destroyDevtools();
+    document.cookie = `sh_devtools_enabled=false; expires=${new Date(0).toUTCString()}; domain=${mainDomain}`;
+    return;
+  }
+
+  initialDevTools();
 };
