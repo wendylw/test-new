@@ -46,6 +46,7 @@ import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
+import Cookies from 'js-cookie';
 
 const localState = {
   blockScrollTop: 0,
@@ -63,7 +64,7 @@ export class Home extends Component {
       offlineStoreModal: false,
       dScrollY: 0,
       deliveryBar: false,
-      alcoholModalHide: Utils.getCookie('AlcHide') && Utils.getCookie('AlcHide') === '1',
+      alcoholModalHide: Cookies.get('Alc') && Cookies.get('Alc') === '1',
       callApiFinish: false,
       enablePreOrderFroMultipleStore: false,
       isValidToOrderFromMultipleStore: false,
@@ -751,7 +752,7 @@ export class Home extends Component {
     } else {
       CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
     }
-    // isAgeLegal && Utils.setSessionVariable('AlcHide', 1);
+    // isAgeLegal && Utils.setSessionVariable('Alc', 1);
     this.setAlcoholModalState(!isAgeLegal);
   };
 

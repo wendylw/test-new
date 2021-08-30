@@ -6,6 +6,7 @@ import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
+import Cookies from 'js-cookie';
 dayjs.extend(utc);
 
 const {
@@ -95,43 +96,12 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return top + height - windowScrolledTop - topAdjustment;
 };
 
-Utils.getCookieVariable = function getCookieVariable(name, scope) {
-  let keyEQ = scope + name + '=';
-  let ca = document.cookie.split(';');
-
-  for (let i = 0, len = ca.length; i < len; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(keyEQ) === 0 && c.substring(keyEQ.length, c.length) !== '')
-      return c.substring(keyEQ.length, c.length);
-  }
-
-  return null;
-};
-
-Utils.getCookie = function(objName) {
-  var arrStr = document.cookie.split('; ');
-  for (var i = 0; i < arrStr.length; i++) {
-    var temp = arrStr[i].split('=');
-    if (temp[0] == objName) {
-      return decodeURI(temp[1]);
-    }
-  }
-};
-
-Utils.setCookieVariable = function setCookieVariable({ name, value, expires, domain, path }) {
-  document.cookie = `${name}=${value}; expires=${expires}; domain=${domain}; path=${path}`;
-};
-
-Utils.removeCookieVariable = function removeCookieVariable(name, scope) {
-  document.cookie = scope + name + '=; path=/';
-};
-
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
-    Utils.getCookieVariable(name, 'localStorage_');
+    const { AddLocalStorage } = Utils;
+    Cookies.get(AddLocalStorage(name));
   }
 };
 
@@ -140,7 +110,8 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    Utils.setCookieVariable(name, value, 'localStorage_');
+    const { AddLocalStorage } = Utils;
+    Cookies.set(AddLocalStorage(name), value);
   }
 };
 
@@ -148,7 +119,8 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    Utils.removeCookieVariable(name, 'localStorage_');
+    const { AddLocalStorage } = Utils;
+    Cookies.remove(AddLocalStorage(name));
   }
 };
 
@@ -156,7 +128,8 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   try {
     return sessionStorage.getItem(name);
   } catch (e) {
-    Utils.getCookieVariable(name, 'sessionStorage_');
+    const { AddSessionStorage } = Utils;
+    Cookies.get(AddSessionStorage(name));
   }
 };
 
@@ -165,7 +138,8 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
-    Utils.setCookieVariable(name, value, 'sessionStorage_');
+    const { AddSessionStorage } = Utils;
+    Cookies.set(AddSessionStorage(name), value);
   }
 };
 
@@ -173,7 +147,8 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
     sessionStorage.removeItem(name);
   } catch (e) {
-    Utils.removeCookieVariable(name, 'sessionStorage_');
+    const { AddSessionStorage } = Utils;
+    Cookies.remove(AddSessionStorage(name));
   }
 };
 
@@ -902,4 +877,19 @@ Utils.getRegistrationSource = () => {
   }
 };
 
+Utils.DeleteTheFirstWord = () => {
+  const hostName = window.location.hostname;
+  const arr = hostName.split('.');
+  delete arr[0];
+  const result = arr.toString().replace(/\,/g, '.');
+  return result;
+};
+
+Utils.AddLocalStorage = name => {
+  return 'localStorage_' + name;
+};
+
+Utils.AddSessionStorage = name => {
+  return 'sessionStorage_' + name;
+};
 export default Utils;

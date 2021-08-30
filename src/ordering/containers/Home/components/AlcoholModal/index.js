@@ -7,7 +7,7 @@ import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
 import loggly from '../../../../../utils/monitoring/loggly';
 import './AlcoholModal.scss';
 import Utils from '../../../../../utils/utils';
-
+import Cookies from 'js-cookie';
 export class AlcoholModal extends PureComponent {
   state = {
     confirmNotLegal: false,
@@ -22,11 +22,9 @@ export class AlcoholModal extends PureComponent {
       });
     }
 
-    const { setCookieVariable } = Utils;
-    const hostName = window.location.hostname;
-    const domain = hostName.replace('hcbeep.', '');
-    const expires = 'Sun, 16 Jul 3567 06:23:41 GMT';
-    setCookieVariable({ name: 'AlcHide', value: '1', expires: expires, domain: domain, path: '/' });
+    const { DeleteTheFirstWord } = Utils;
+    const domain = DeleteTheFirstWord();
+    Cookies.set('Alc', '1', { expires: 1000000, path: '/', domain: domain });
   };
 
   renderAskContent() {
