@@ -116,14 +116,21 @@ function RiderInfo({
   const startedDeliveryStates = [
     ORDER_STATUS.CONFIRMED,
     ORDER_STATUS.LOGISTICS_CONFIRMED,
-    ORDER_STATUS.LOGISTICS_PICKED_UP,
-  ].includes(logisticStatus);
+    ORDER_STATUS.PICKED_UP,
+    ORDER_STATUS.DELIVERED,
+  ].includes(orderStatus);
   const notStartedDeliveryStates = [
     ORDER_STATUS.CREATED,
     ORDER_STATUS.PENDING_PAYMENT,
     ORDER_STATUS.PENDING_VERIFICATION,
     ORDER_STATUS.PAID,
-  ].includes(logisticStatus);
+  ].includes(orderStatus);
+
+  console.log('=======');
+  console.log(orderStatus);
+  console.log(startedDeliveryStates);
+  console.log(isUseStorehubLogistics);
+  console.log(notStartedDeliveryStates);
 
   if (!startedDeliveryStates || (!isUseStorehubLogistics && notStartedDeliveryStates)) {
     return null;
@@ -132,7 +139,7 @@ function RiderInfo({
   const logisticName = courier === 'onfleet' ? t('BeepFleet') : courier;
   const logisticPhone = isUseStorehubLogistics ? driverPhone && `+${driverPhone}` : storePhone;
   const estimationInfo = {
-    [ORDER_STATUS.LOGISTICS_PICKED_UP]: {
+    [ORDER_STATUS.PICKED_UP]: {
       title: t('OrderStatusPickedUp'),
       deliveredTime: getDeliveredTimeRange(bestLastMileETA, worstLastMileETA),
     },
@@ -163,7 +170,7 @@ function RiderInfo({
       supportCallPhone={inApp}
       buttonText={t('CallStore')}
       buttonClickEvent={() =>
-        handleCopyPhoneNumber(storePhone, logisticStatus === ORDER_STATUS.LOGISTICS_PICKED_UP ? 'drive' : 'store')
+        handleCopyPhoneNumber(storePhone, logisticStatus === ORDER_STATUS.PICKED_UP ? 'drive' : 'store')
       }
     />
   );
@@ -226,7 +233,7 @@ function RiderInfo({
             <button
               className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
               onClick={() => {
-                if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.LOGISTICS_PICKED_UP].includes(logisticStatus)) {
+                if (![ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP].includes(logisticStatus)) {
                   return;
                 }
 
