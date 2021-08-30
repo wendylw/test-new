@@ -758,9 +758,13 @@ export class ThankYou extends PureComponent {
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
     const type = Utils.getOrderTypeFromUrl();
-    const pathname = BEFORE_PAID_STATUS_LIST.includes(orderStatus)
-      ? Constants.ROUTER_PATHS.ORDERING_PAYMENT
-      : Constants.ROUTER_PATHS.ORDERING_HOME;
+    const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+    const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
+
+    if (isOrderBeforePaid) {
+      history.goBack();
+      return;
+    }
 
     if (isWebview) {
       NativeMethods.closeWebView();
