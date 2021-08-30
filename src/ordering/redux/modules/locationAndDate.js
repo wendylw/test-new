@@ -16,6 +16,7 @@ const { DELIVERY_METHOD, TIME_SLOT_NOW } = Constants;
 
 const initialState = {
   currentDate: null, // js Date Object
+  originalDeliveryType: null,
   deliveryType: null,
   storeId: null,
   deliveryAddress: '',
@@ -29,6 +30,7 @@ const initialState = {
 export const actions = {
   initial: ({
     currentDate,
+    originalDeliveryType,
     deliveryType,
     storeId,
     deliveryAddress,
@@ -38,6 +40,7 @@ export const actions = {
   }) => async (dispatch, getState) => {
     const payload = {
       currentDate,
+      originalDeliveryType,
       deliveryType,
       storeId,
       deliveryAddress,
@@ -301,11 +304,19 @@ export const actions = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_AND_DATE.INITIAL:
-      const { currentDate, deliveryType, storeId, deliveryAddress, deliveryCoords } = action.payload;
+      const {
+        currentDate,
+        originalDeliveryType,
+        deliveryType,
+        storeId,
+        deliveryAddress,
+        deliveryCoords,
+      } = action.payload;
 
       return {
         ...state,
         currentDate,
+        originalDeliveryType,
         deliveryType,
         storeId,
         deliveryAddress,
@@ -489,5 +500,7 @@ export const getSelectedTime = createSelector(
 );
 
 export const isShowLoading = state => _get(state.locationAndDate, 'loading', false);
+
+export const getOriginalDeliveryType = state => _get(state.locationAndDate, 'originalDeliveryType', null);
 
 export default reducer;

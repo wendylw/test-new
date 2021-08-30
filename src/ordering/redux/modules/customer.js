@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import i18next from 'i18next';
+import _get from 'lodash/get';
 import Url from '../../../utils/url';
 import config from '../../../config';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -29,6 +30,7 @@ const initialState = {
       longitude: 0,
       latitude: 0,
     },
+    postCode: '',
   },
   customerError: {
     show: false,
@@ -91,6 +93,7 @@ export const actions = {
           latitude: deliveryAddress.coords.lat,
         };
         newDeliveryDetails.deliveryToCity = addressComponents && addressComponents.city ? addressComponents.city : '';
+        newDeliveryDetails.postCode = _get(addressComponents, 'postCode', '');
       }
 
       // if address chosen is different from address in session
@@ -224,6 +227,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         deliveryTo: deliveryToAddress,
         location: deliveryToLocation,
         city: deliveryToCity,
+        postCode = '',
       } = findAvailableAddress;
 
       // patch deliveryDetails to sessionStorage
@@ -232,12 +236,14 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         DeliveryDetailsStorageKey,
         JSON.stringify({
           ...deliveryDetails,
+          addressId: _id,
           addressName,
           addressDetails,
           deliveryComments,
           deliveryToAddress,
           deliveryToLocation,
           deliveryToCity,
+          postCode,
         })
       );
 
@@ -251,6 +257,7 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         deliveryToAddress,
         deliveryToLocation,
         deliveryToCity,
+        postCode,
       };
     }
   }
