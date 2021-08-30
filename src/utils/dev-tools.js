@@ -23,7 +23,7 @@ const isScriptLoaded = () => !!window.eruda;
 // eslint-disable-next-line no-underscore-dangle
 const isDevToolsInitiated = () => !!(window.eruda && window.eruda._isInit === true);
 
-export const initialDevTools = () => {
+export const initDevTools = () => {
   const expireDate = new Date();
   expireDate.setDate(expireDate.getDate() + 7);
   document.cookie = `sh_devtools_enabled=true; domain=${mainDomain}; expires=${expireDate.toUTCString()}`;
@@ -46,5 +46,5 @@ export const toggleDevTools = () => {
     return;
   }
 
-  initialDevTools();
+  initDevTools();
 };
