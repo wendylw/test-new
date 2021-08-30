@@ -6,6 +6,7 @@ import { compose } from 'redux';
 import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
 import loggly from '../../../../../utils/monitoring/loggly';
 import './AlcoholModal.scss';
+import Utils from '../../../../../utils/utils';
 
 export class AlcoholModal extends PureComponent {
   state = {
@@ -19,6 +20,15 @@ export class AlcoholModal extends PureComponent {
       this.setState({
         confirmNotLegal: true,
       });
+    }
+
+    const { setCookieVariable } = Utils;
+    const test = window.sessionStorage.getItem('AlcoholHide');
+    const hostName = window.location.hostname;
+    const domain = hostName.replace('hcbeep.', '');
+    const expires = 'Sun, 16 Jul 3567 06:23:41 GMT';
+    if (test) {
+      setCookieVariable({ name: 'AlcoholHide', value: 'true', expires: expires, domain: domain });
     }
   };
 

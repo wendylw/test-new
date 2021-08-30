@@ -109,10 +109,9 @@ Utils.getCookieVariable = function getCookieVariable(name, scope) {
   return null;
 };
 
-Utils.setCookieVariable = function setCookieVariable(name, value, scope = '') {
-  document.cookie = scope + name + '=' + value + '; path=/';
+Utils.setCookieVariable = function setCookieVariable({ name, value, expires, domain }) {
+  document.cookie = `${name}=${value}; expires=${expires}; domain=${domain}; path=/`;
 };
-
 Utils.removeCookieVariable = function removeCookieVariable(name, scope) {
   document.cookie = scope + name + '=; path=/';
 };
