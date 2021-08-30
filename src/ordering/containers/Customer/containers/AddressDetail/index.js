@@ -262,7 +262,6 @@ class AddressDetail extends Component {
   };
 
   render() {
-    const { hasAnyChanges } = this.state;
     const { addressInfo, t } = this.props;
     const { type, name, address, details, comments, contactNumber, contactName, country } = addressInfo || {};
     return (
@@ -293,8 +292,8 @@ class AddressDetail extends Component {
           <div className="margin-normal padding-top-bottom-smaller">
             <div className="padding-top-bottom-small">
               <div className="contact-details__group form__group">
-                <div className="address-detail__title required_change">
-                  <span className="text-size-small text-top-contact">{t('ContactName')}</span>
+                <div className="address-detail__title required required_change">
+                  <span className="text-size-small address-detail__text-top-contact">{t('ContactName')}</span>
                 </div>
                 <input
                   className="contact-details__input form__input padding-left-right-normal text-size-biggest"
@@ -309,8 +308,8 @@ class AddressDetail extends Component {
             </div>
             <br />
             <div className="contact-details__group form__group">
-              <div className="address-detail__title required_change">
-                <span className="text-size-small text-top-contact">{t('ContactNumber')}</span>
+              <div className="address-detail__title required required_change">
+                <span className="text-size-small address-detail__text-top-contact">{t('ContactNumber')}</span>
               </div>
               <PhoneInput
                 international // If input want to show country code when phone number is empty, pls add international on props

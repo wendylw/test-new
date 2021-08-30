@@ -26,13 +26,8 @@
       margin-left: 0.3em;
     }
     &.required_change::after {
-      content: "*";
-      color: $status-red;
-      line-height: 1em;
-      font-size: 0.8571rem;
-      margin-left: 0.3em;
       position: relative;
-      top: 4px;
+      top: 8px;
     }
   }
 
@@ -62,15 +57,14 @@
   &__icon-next svg {
     fill: $gray-3;
   }
+  &__text-top-contact {
+    padding-left: 15px;
+    position: relative;
+    top: 5px;
+  }
   .PhoneInput {
     border: none;
   }
-}
-
-.text-top-contact {
-  padding-left: 15px;
-  position: relative;
-  top: 5px;
 }
 @media (min-width: 420px) {
   .address-detail {
