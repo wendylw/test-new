@@ -55,6 +55,7 @@ const pushEvent = (eventName, attributes) => {
       window.clevertap?.event.push(eventName, {
         ...attributes,
         'account name': businessName,
+        Source: Utils.isTNGMiniProgram() ? 'TNG Mini Program' : undefined,
       });
     }
   } catch (error) {
