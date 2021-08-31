@@ -88,6 +88,8 @@ export const cancelOrder = createAsyncThunk(
           })
         );
       }
+
+      throw e;
     }
   }
 );
@@ -112,6 +114,8 @@ export const updateOrderShippingType = createAsyncThunk(
           })
         );
       }
+
+      throw e;
     }
   }
 );
