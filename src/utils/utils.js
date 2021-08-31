@@ -897,8 +897,8 @@ Utils.getCookieVariable = name => {
   return Cookies.get(name);
 };
 
-Utils.setCookieVariable = (name, value, { expires, path, domain }) => {
-  return Cookies.set(name, value, { expires, path, domain });
+Utils.setCookieVariable = (name, value, attributes) => {
+  return Cookies.set(name, value, attributes);
 };
 
 Utils.removeCookieVariable = (name, { path, domain }) => {
