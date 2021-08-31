@@ -825,15 +825,19 @@ Utils.getOpeningHours = function({
 };
 
 Utils.getOrderSource = () => {
-  let orderSource = '';
-  if (Utils.isWebview()) {
-    orderSource = 'BeepApp';
-  } else if (Utils.isFromBeepSite()) {
-    orderSource = 'BeepSite';
-  } else {
-    orderSource = 'BeepStore';
+  if (Utils.isTNGMiniProgram()) {
+    return 'TNGMiniProgram';
   }
-  return orderSource;
+
+  if (Utils.isWebview()) {
+    return 'BeepApp';
+  }
+
+  if (Utils.isFromBeepSite()) {
+    return 'BeepSite';
+  }
+
+  return 'BeepStore';
 };
 
 Utils.getHeaderClient = () => {
