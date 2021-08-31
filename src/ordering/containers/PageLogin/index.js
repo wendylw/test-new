@@ -6,6 +6,7 @@ import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
+import PageLoader from '../../../components/PageLoader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
@@ -155,7 +156,7 @@ class PageLogin extends React.Component {
     const classList = ['page-login flex flex-column'];
 
     if (Utils.isTNGMiniProgram()) {
-      return null;
+      return <PageLoader />;
     }
 
     if (isLogin) {
