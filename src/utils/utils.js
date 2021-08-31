@@ -893,16 +893,16 @@ Utils.getCookieNameOfSessionStorage = name => {
   return 'sessionStorage_' + name;
 };
 
-Utils.getCookieVariable = TokenKey => {
-  return Cookies.get(TokenKey);
+Utils.getCookieVariable = name => {
+  return Cookies.get(name);
 };
 
-Utils.setCookieVariable = (TokenKey, token, { expires, path, domain }) => {
-  return Cookies.set(TokenKey, token, { expires, path, domain });
+Utils.setCookieVariable = (name, value, { expires, path, domain }) => {
+  return Cookies.set(name, value, { expires, path, domain });
 };
 
-Utils.removeCookieVariable = (TokenKey, { path, domain }) => {
-  return Cookies.remove(TokenKey, { path, domain });
+Utils.removeCookieVariable = (name, { path, domain }) => {
+  return Cookies.remove(name, { path, domain });
 };
 
 export default Utils;

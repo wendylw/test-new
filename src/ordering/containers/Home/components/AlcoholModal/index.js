@@ -6,6 +6,7 @@ import { compose } from 'redux';
 import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
 import loggly from '../../../../../utils/monitoring/loggly';
 import './AlcoholModal.scss';
+
 export class AlcoholModal extends PureComponent {
   state = {
     confirmNotLegal: false,

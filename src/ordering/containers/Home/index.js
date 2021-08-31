@@ -56,8 +56,6 @@ const SCROLL_DEPTH_DENOMINATOR = 4;
 const { DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
 export class Home extends Component {
   constructor(props) {
-    const { getCookieVariable } = Utils;
-    const getAlcoholModalHide = getCookieVariable('sh__ac') === '1';
     super(props);
     this.state = {
       viewAside: null,
@@ -65,7 +63,7 @@ export class Home extends Component {
       offlineStoreModal: false,
       dScrollY: 0,
       deliveryBar: false,
-      alcoholModalHide: getAlcoholModalHide,
+      alcoholModalHide: Utils.getCookieVariable('sh__ac') === '1',
       callApiFinish: false,
       enablePreOrderFroMultipleStore: false,
       isValidToOrderFromMultipleStore: false,
@@ -753,12 +751,9 @@ export class Home extends Component {
     } else {
       CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
     }
-    // isAgeLegal && Utils.setSessionVariable('Alc', 1);
     this.setAlcoholModalState(!isAgeLegal);
 
-    const { getMainDomain, setCookieVariable } = Utils;
-    const domain = getMainDomain();
-    setCookieVariable('sh__ac', '1', { expires: 3650, path: '/', domain: domain });
+    Utils.setCookieVariable('sh__ac', '1', { expires: 3650, path: '/', domain: Utils.getMainDomain() });
   };
 
   isCountryNeedAlcoholPop = country => {
