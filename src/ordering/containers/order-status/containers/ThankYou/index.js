@@ -324,7 +324,7 @@ export class ThankYou extends PureComponent {
   };
 
   getThankYouSource = () => {
-    return Utils.getCookieVariable('__ty_source', '');
+    return Utils.getCookieVariable('__ty_source');
   };
   isSourceFromPayment = source => {
     return source === 'payment';
