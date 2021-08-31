@@ -9,7 +9,7 @@ import HybridHeader from '../../../components/HybridHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { actions as appActionCreators, getUser, getOtpType, getBusiness } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getOtpType } from '../../redux/modules/app';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
@@ -234,7 +234,6 @@ export default compose(
       user: getUser(state),
       deliveryDetails: getDeliveryDetails(state),
       otpType: getOtpType(state),
-      business: getBusiness(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
