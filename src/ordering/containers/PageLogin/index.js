@@ -16,7 +16,6 @@ import './OrderingPageLogin.scss';
 import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
-import * as TngUtils from '../../../utils/tng-utils';
 
 class PageLogin extends React.Component {
   state = {
