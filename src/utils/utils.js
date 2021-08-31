@@ -101,7 +101,7 @@ Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
     return localStorage.getItem(name);
   } catch (e) {
     const { getCookieNameOfLocalStorage, getCookieVariable } = Utils;
-    return getCookieVariable(getCookieNameOfLocalStorage(name));
+    getCookieVariable(getCookieNameOfLocalStorage(name));
   }
 };
 
@@ -111,7 +111,7 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
     localStorage.setItem(name, value || '');
   } catch (e) {
     const { getCookieNameOfLocalStorage, setCookieVariable } = Utils;
-    return setCookieVariable(getCookieNameOfLocalStorage(name), value);
+    setCookieVariable(getCookieNameOfLocalStorage(name), value, { expires: 3650 });
   }
 };
 
@@ -120,7 +120,7 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
     localStorage.removeItem(name);
   } catch (e) {
     const { getCookieNameOfLocalStorage, removeCookieVariable } = Utils;
-    return removeCookieVariable(getCookieNameOfLocalStorage(name));
+    removeCookieVariable(getCookieNameOfLocalStorage(name));
   }
 };
 
@@ -129,7 +129,7 @@ Utils.getSessionVariable = function getSessionVariable(name) {
     return sessionStorage.getItem(name);
   } catch (e) {
     const { getCookieNameOfSessionStorage, getCookieVariable } = Utils;
-    return getCookieVariable(getCookieNameOfSessionStorage(name));
+    getCookieVariable(getCookieNameOfSessionStorage(name));
   }
 };
 
@@ -139,7 +139,7 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
     const { getCookieNameOfSessionStorage, setCookieVariable } = Utils;
-    return setCookieVariable(getCookieNameOfSessionStorage(name), value);
+    setCookieVariable(getCookieNameOfSessionStorage(name), value, { expires: 3650 });
   }
 };
 
@@ -148,7 +148,7 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
     sessionStorage.removeItem(name);
   } catch (e) {
     const { getCookieNameOfSessionStorage, removeCookieVariable } = Utils;
-    return removeCookieVariable(getCookieNameOfSessionStorage(name));
+    removeCookieVariable(getCookieNameOfSessionStorage(name));
   }
 };
 
