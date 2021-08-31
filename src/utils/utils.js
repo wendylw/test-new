@@ -100,8 +100,8 @@ Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
-    const { AddLocalStorage } = Utils;
-    Cookies.get(AddLocalStorage(name));
+    const { getCookieNameOfLocalStorage, getCookieVariable } = Utils;
+    return getCookieVariable(getCookieNameOfLocalStorage(name));
   }
 };
 
@@ -110,8 +110,8 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    const { AddLocalStorage } = Utils;
-    Cookies.set(AddLocalStorage(name), value);
+    const { getCookieNameOfLocalStorage, setCookieVariable } = Utils;
+    return setCookieVariable(getCookieNameOfLocalStorage(name), value);
   }
 };
 
@@ -119,8 +119,8 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    const { AddLocalStorage } = Utils;
-    Cookies.remove(AddLocalStorage(name));
+    const { getCookieNameOfLocalStorage, removeCookieVariable } = Utils;
+    return removeCookieVariable(getCookieNameOfLocalStorage(name));
   }
 };
 
@@ -128,8 +128,8 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   try {
     return sessionStorage.getItem(name);
   } catch (e) {
-    const { AddSessionStorage } = Utils;
-    Cookies.get(AddSessionStorage(name));
+    const { getCookieNameOfSessionStorage, getCookieVariable } = Utils;
+    return getCookieVariable(getCookieNameOfSessionStorage(name));
   }
 };
 
@@ -138,8 +138,8 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
-    const { AddSessionStorage } = Utils;
-    Cookies.set(AddSessionStorage(name), value);
+    const { getCookieNameOfSessionStorage, setCookieVariable } = Utils;
+    return setCookieVariable(getCookieNameOfSessionStorage(name), value);
   }
 };
 
@@ -147,8 +147,8 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
     sessionStorage.removeItem(name);
   } catch (e) {
-    const { AddSessionStorage } = Utils;
-    Cookies.remove(AddSessionStorage(name));
+    const { getCookieNameOfSessionStorage, removeCookieVariable } = Utils;
+    return removeCookieVariable(getCookieNameOfSessionStorage(name));
   }
 };
 
@@ -877,19 +877,32 @@ Utils.getRegistrationSource = () => {
   }
 };
 
-Utils.DeleteTheFirstWord = () => {
+Utils.getMainDomain = () => {
   const hostName = window.location.hostname;
   const arr = hostName.split('.');
-  delete arr[0];
-  const result = arr.toString().replace(/\,/g, '.');
+  arr.shift();
+  const result = arr.join('.');
   return result;
 };
 
-Utils.AddLocalStorage = name => {
+Utils.getCookieNameOfLocalStorage = name => {
   return 'localStorage_' + name;
 };
 
-Utils.AddSessionStorage = name => {
+Utils.getCookieNameOfSessionStorage = name => {
   return 'sessionStorage_' + name;
 };
+
+Utils.getCookieVariable = TokenKey => {
+  return Cookies.get(TokenKey);
+};
+
+Utils.setCookieVariable = (TokenKey, token, { expires, path, domain }) => {
+  return Cookies.set(TokenKey, token, { expires, path, domain });
+};
+
+Utils.removeCookieVariable = (TokenKey, { path, domain }) => {
+  return Cookies.remove(TokenKey, { path, domain });
+};
+
 export default Utils;

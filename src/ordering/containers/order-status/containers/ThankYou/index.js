@@ -375,7 +375,7 @@ export class ThankYou extends PureComponent {
     gtmSetPageViewData(pageViewData);
 
     // immidiately remove __ty_source cookie after send the request.
-    Utils.removeCookieVariable('__ty_source', '');
+    Utils.removeCookieVariable('__ty_source');
   };
 
   handleClickViewReceipt = () => {

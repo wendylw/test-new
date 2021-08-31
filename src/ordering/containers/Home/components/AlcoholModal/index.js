@@ -6,8 +6,6 @@ import { compose } from 'redux';
 import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
 import loggly from '../../../../../utils/monitoring/loggly';
 import './AlcoholModal.scss';
-import Utils from '../../../../../utils/utils';
-import Cookies from 'js-cookie';
 export class AlcoholModal extends PureComponent {
   state = {
     confirmNotLegal: false,
@@ -21,10 +19,6 @@ export class AlcoholModal extends PureComponent {
         confirmNotLegal: true,
       });
     }
-
-    const { DeleteTheFirstWord } = Utils;
-    const domain = DeleteTheFirstWord();
-    Cookies.set('Alc', '1', { expires: 1000000, path: '/', domain: domain });
   };
 
   renderAskContent() {

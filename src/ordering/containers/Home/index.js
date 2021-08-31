@@ -46,7 +46,6 @@ import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
-import Cookies from 'js-cookie';
 
 const localState = {
   blockScrollTop: 0,
@@ -57,6 +56,8 @@ const SCROLL_DEPTH_DENOMINATOR = 4;
 const { DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
 export class Home extends Component {
   constructor(props) {
+    const { getCookieVariable } = Utils;
+    const getAlcoholModalHide = getCookieVariable('sh__ac') === '1';
     super(props);
     this.state = {
       viewAside: null,
@@ -64,7 +65,7 @@ export class Home extends Component {
       offlineStoreModal: false,
       dScrollY: 0,
       deliveryBar: false,
-      alcoholModalHide: Cookies.get('Alc') && Cookies.get('Alc') === '1',
+      alcoholModalHide: getAlcoholModalHide,
       callApiFinish: false,
       enablePreOrderFroMultipleStore: false,
       isValidToOrderFromMultipleStore: false,
@@ -754,6 +755,10 @@ export class Home extends Component {
     }
     // isAgeLegal && Utils.setSessionVariable('Alc', 1);
     this.setAlcoholModalState(!isAgeLegal);
+
+    const { getMainDomain, setCookieVariable } = Utils;
+    const domain = getMainDomain();
+    setCookieVariable('sh__ac', '1', { expires: 3650, path: '/', domain: domain });
   };
 
   isCountryNeedAlcoholPop = country => {
