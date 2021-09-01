@@ -113,7 +113,7 @@ class PageLogin extends React.Component {
 
   loginInTngMiniProgram = async () => {
     const { appActions } = this.props;
-    const isLogin = await appActions.loginByTngdMiniProgram();
+    const isLogin = await appActions.loginByTngMiniProgram();
 
     if (!isLogin) {
       this.goBack();

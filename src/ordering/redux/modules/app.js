@@ -497,7 +497,7 @@ export const actions = {
     return dispatch(fetchProductDetail({ productId, fulfillDate }));
   },
 
-  loginByTngdMiniProgram: () => async (dispatch, getState) => {
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }

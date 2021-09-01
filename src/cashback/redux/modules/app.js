@@ -219,7 +219,7 @@ export const actions = {
     },
   }),
 
-  loginByTngdMiniProgram: () => async (dispatch, getState) => {
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
