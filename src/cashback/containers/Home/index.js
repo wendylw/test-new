@@ -19,6 +19,7 @@ import Utils from '../../../utils/utils';
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
 const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
 const isWebview = Utils.isWebview();
+const isTNGMiniProgram = Utils.isTNGMiniProgram();
 class PageLoyalty extends React.Component {
   state = {
     showRecentActivities: false,
@@ -92,7 +93,7 @@ class PageLoyalty extends React.Component {
             buttonText={t('HowToUseCashback')}
           />
         </article>
-        {!isWebview && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
+        {!isWebview && !isTNGMiniProgram && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
         <ReceiptList history={history} />
       </section>
     ) : (

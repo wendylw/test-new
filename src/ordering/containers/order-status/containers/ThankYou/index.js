@@ -1485,6 +1485,8 @@ export class ThankYou extends PureComponent {
     } = this.props;
     const date = new Date();
     const { isWebview } = user || {};
+    const isTNGMiniProgram = Utils.isTNGMiniProgram();
+
     let orderInfo = shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderStoreInfo() : null;
     const pickupDescription = updatedToSelfPickupStatus
       ? t('ThankYouForUpdatedToPickingUpForUS')
@@ -1529,7 +1531,7 @@ export class ThankYou extends PureComponent {
                 : {}
             }
           >
-            {!isWebview && this.renderDownloadBanner()}
+            {!isWebview && !isTNGMiniProgram && this.renderDownloadBanner()}
             {shippingType === DELIVERY_METHOD.DELIVERY ? (
               this.renderDeliveryImageAndTimeLine()
             ) : (
