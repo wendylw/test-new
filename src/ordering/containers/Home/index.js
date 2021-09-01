@@ -753,7 +753,11 @@ export class Home extends Component {
     }
     this.setAlcoholModalState(!isAgeLegal);
 
-    Utils.setCookieVariable('sh__ac', '1', { expires: 3650, path: '/', domain: Utils.getMainDomain() });
+    Utils.setCookieVariable('sh__ac', isAgeLegal ? '1' : '0', {
+      expires: 3650,
+      path: '/',
+      domain: Utils.getMainDomain(),
+    });
   };
 
   isCountryNeedAlcoholPop = country => {
