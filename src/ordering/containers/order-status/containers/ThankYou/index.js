@@ -1346,6 +1346,11 @@ export class ThankYou extends PureComponent {
 
   renderDownloadBanner() {
     const { shippingType } = this.props;
+    const hideDownloadBanner = Utils.isTNGMiniProgram() || Utils.isWebview();
+
+    if (hideDownloadBanner) {
+      return null;
+    }
 
     return (
       <div className="ordering-thanks__download">
@@ -1478,14 +1483,11 @@ export class ThankYou extends PureComponent {
       history,
       match,
       order,
-      user,
       orderCancellationButtonVisible,
       shippingType,
       updatedToSelfPickupStatus,
     } = this.props;
     const date = new Date();
-    const { isWebview } = user || {};
-    const isTNGMiniProgram = Utils.isTNGMiniProgram();
 
     let orderInfo = shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderStoreInfo() : null;
     const pickupDescription = updatedToSelfPickupStatus
@@ -1531,7 +1533,7 @@ export class ThankYou extends PureComponent {
                 : {}
             }
           >
-            {!isWebview && !isTNGMiniProgram && this.renderDownloadBanner()}
+            {this.renderDownloadBanner()}
             {shippingType === DELIVERY_METHOD.DELIVERY ? (
               this.renderDeliveryImageAndTimeLine()
             ) : (
