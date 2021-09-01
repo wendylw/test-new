@@ -901,8 +901,9 @@ Utils.setCookieVariable = (name, value, attributes) => {
   return Cookies.set(name, value, attributes);
 };
 
-Utils.removeCookieVariable = (name, { path, domain }) => {
-  return Cookies.remove(name, { path, domain });
+// IMPORTANT! When deleting a cookie and you're not relying on the default attributes, you must pass the exact same path and domain attributes that were used to set the cookie
+Utils.removeCookieVariable = (name, attributes) => {
+  return Cookies.remove(name, attributes);
 };
 
 export default Utils;
