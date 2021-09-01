@@ -11,7 +11,7 @@ import i18n from './i18n';
 import './Bootstrap.scss';
 import * as NativeMethods from './utils/native-methods';
 import loggly from './utils/monitoring/loggly';
-import { initDevTools } from './utils/dev-tools';
+import { initDevTools, isDevToolsInitiated } from './utils/dev-tools';
 import { isRequiredDevTools } from './utils/tng-utils';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
@@ -160,6 +160,10 @@ class Bootstrap extends Component {
 // enable dev-tools in tng mini-program
 (async () => {
   try {
+    if (isDevToolsInitiated()) {
+      return;
+    }
+
     const result = await isRequiredDevTools();
     if (result) {
       initDevTools();
