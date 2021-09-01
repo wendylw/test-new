@@ -121,7 +121,6 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
     }),
     {
-      updateDeliveryDetails: appActionCreators.updateDeliveryDetails,
       init: ContactDetailActions.init,
       updateUserName: ContactDetailActions.updateUserName,
       updatePhone: ContactDetailActions.updatePhone,
