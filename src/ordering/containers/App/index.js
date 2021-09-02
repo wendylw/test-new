@@ -103,23 +103,7 @@ class App extends Component {
       }
 
       const { user, businessInfo } = this.props;
-      const { isLogin } = user || {};
       const { onlineStoreInfo } = responseGql.data || {};
-
-      if (isLogin) {
-        appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
-          const { data = {} } = responseGql;
-          this.setGtmData({
-            userInfo: data.user,
-            businessInfo,
-          });
-
-          this.setGtmData({
-            userInfo: data.user,
-            businessInfo,
-          });
-        });
-      }
 
       const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
 
@@ -149,8 +133,8 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { appActions, user, pageError, businessInfo } = this.props;
-    const { isExpired, isWebview, isLogin, isFetching } = user || {};
+    const { user, pageError } = this.props;
+    const { isExpired, isWebview } = user || {};
     const { code } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
@@ -159,16 +143,6 @@ class App extends Component {
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       // this.postAppMessage(user);
-    }
-
-    if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin && businessInfo) {
-      appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
-        const { data = {} } = responseGql;
-        this.setGtmData({
-          userInfo: data.user,
-          businessInfo,
-        });
-      });
     }
   }
 

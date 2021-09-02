@@ -24,7 +24,6 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
         access_token: accessToken,
         refresh_token: refreshToken,
         consumerId: '123456',
-        customerId: '111111',
         login: true,
         storeCreditsBalance: 'mockStoreCreditsBalance',
       },
@@ -135,7 +134,6 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
       const action = { type: types.FETCH_CUSTOMER_PROFILE_SUCCESS, ...userActionInfo };
       const expectedState = {
         ...initialState.user,
-        customerId: '111111',
         storeCreditsBalance: 'mockStoreCreditsBalance',
       };
       expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);

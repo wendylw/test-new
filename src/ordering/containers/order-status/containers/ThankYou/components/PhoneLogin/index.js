@@ -208,28 +208,8 @@ class PhoneLogin extends React.Component {
   }
 
   render() {
-    const { user, businessInfo, onlineStoreInfo, cashbackInfo, hideMessage } = this.props;
-    const { claimedAnimationGifSrc, showCelebration } = this.state;
-    const { customerId } = user || {};
-    const { country } = onlineStoreInfo || {};
-    const { enableCashback } = businessInfo || {};
-    const { defaultLoyaltyRatio } = cashbackInfo || {};
-
-    if (!country || !enableCashback || defaultLoyaltyRatio === 0 || hideMessage) {
-      return null;
-    }
-
-    return (
-      <div className="phone-login padding-normal" data-heap-name="ordering.thank-you.phone-login.container">
-        <div
-          className={`ordering-thanks__card-prompt-congratulation absolute-wrapper ${
-            showCelebration && customerId ? 'active' : ''
-          }`}
-        >
-          <img src={claimedAnimationGifSrc} alt="Beep Claimed" />
-        </div>
-      </div>
-    );
+    // HideMessage is passed in as props, and its value is always true
+    return null;
   }
 }
 PhoneLogin.displayName = 'PhoneLogin';
