@@ -133,17 +133,6 @@ const fetchCoreBusiness = variables => ({
   },
 });
 
-const fetchCustomerProfile = consumerId => ({
-  [API_REQUEST]: {
-    types: [
-      types.FETCH_CUSTOMER_PROFILE_REQUEST,
-      types.FETCH_CUSTOMER_PROFILE_SUCCESS,
-      types.FETCH_CUSTOMER_PROFILE_FAILURE,
-    ],
-    ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
-  },
-});
-
 // generator a virtual shopping cart for Customer place a Voucher Order
 const generatorShoppingCartForVoucherOrdering = () => {
   const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
@@ -395,16 +384,6 @@ export const actions = {
     const { storeId, business } = config;
 
     return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
-  },
-
-  loadCustomerProfile: () => (dispatch, getState) => {
-    const { app } = getState();
-
-    if (app.user.consumerId) {
-      document.cookie = `consumerId=${app.user.consumerId}`;
-    }
-
-    return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
   },
 
   // load shopping cart
