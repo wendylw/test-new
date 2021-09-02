@@ -10,11 +10,10 @@ import PageLoader from '../../../components/PageLoader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { actions as appActionCreators, getUser, getOtpType } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getOtpType, getDeliveryDetails } from '../../redux/modules/app';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
-import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
 
@@ -39,14 +38,14 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, user, deliveryDetails, customerActions } = this.props;
+    const { history, location, user, deliveryDetails, appActions } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { nextPage } = location;
     const { profile } = user || {};
     const { name, phone } = profile || {};
     if (nextPage && name) {
-      !username && (await customerActions.patchDeliveryDetails({ username: name }));
-      !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
+      !username && (await appActions.updateDeliveryDetails({ username: name }));
+      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
 
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
@@ -238,7 +237,6 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(PageLogin);

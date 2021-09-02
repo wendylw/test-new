@@ -6,7 +6,6 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import {
   getOnlineStoreInfo,
   getBusiness,
@@ -41,22 +40,9 @@ class Payment extends Component {
   willUnmount = false;
 
   componentDidMount = async () => {
-    const { deliveryDetails, customerActions, paymentsActions } = this.props;
-    const { addressId } = deliveryDetails || {};
-    const type = Utils.getOrderTypeFromUrl();
+    const { paymentsActions } = this.props;
 
-    !addressId && (await customerActions.initDeliveryDetails(type));
-
-    const { deliveryDetails: newDeliveryDetails } = this.props;
-    const { deliveryToLocation } = newDeliveryDetails || {};
-
-    await this.props.appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
+    await this.props.appActions.loadShoppingCart();
 
     /**
      * Load all payment options action and except saved card list
@@ -260,13 +246,11 @@ export default compose(
         currentPaymentOption: getSelectedPaymentOption(state),
         currentPaymentSupportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
         areAllOptionsUnavailable: getAllOptionsUnavailableState(state),
-
         deliveryInfo: getDeliveryInfo(state),
         business: getBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         businessInfo: getBusinessInfo(state),
         merchantCountry: getMerchantCountry(state),
-        deliveryDetails: getDeliveryDetails(state),
         user: getUser(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
@@ -274,7 +258,6 @@ export default compose(
     dispatch => ({
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Payment);
