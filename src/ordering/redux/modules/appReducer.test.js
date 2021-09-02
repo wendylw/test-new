@@ -130,14 +130,6 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
         prompt: 'mockPrompt',
       });
     });
-    it('FETCH_CUSTOMER_PROFILE_SUCCESS', () => {
-      const action = { type: types.FETCH_CUSTOMER_PROFILE_SUCCESS, ...userActionInfo };
-      const expectedState = {
-        ...initialState.user,
-        storeCreditsBalance: 'mockStoreCreditsBalance',
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
-    });
     it('default', () => {
       expect(getReducerNewState(appReducers, { type: 'default' }, nameField)).toEqual({ ...initialState.user });
     });

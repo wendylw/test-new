@@ -201,29 +201,5 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
         return expectedActionsCheck(actions.loadCoreBusiness(), expectedActions);
       });
     });
-    describe('loadCustomerProfile', () => {
-      it(':Success', () => {
-        successMockFetch();
-        const caseStore = configureMiddlewareStore(orderingStore);
-        const expectedActions = [
-          { type: types.FETCH_CUSTOMER_PROFILE_REQUEST },
-          { type: types.FETCH_CUSTOMER_PROFILE_SUCCESS, response: commonSuccessData, params: {} },
-        ];
-        return caseStore.dispatch(actions.loadCustomerProfile()).then(() => {
-          expect(caseStore.getActions()).toEqual(expectedActions);
-        });
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const caseStore = configureMiddlewareStore(orderingStore);
-        const expectedActions = [
-          { type: types.FETCH_CUSTOMER_PROFILE_REQUEST },
-          { type: types.FETCH_CUSTOMER_PROFILE_FAILURE, code: mockErrorCode, message: mockErrorMsg },
-        ];
-        return caseStore.dispatch(actions.loadCustomerProfile()).then(() => {
-          expect(caseStore.getActions()).toEqual(expectedActions);
-        });
-      });
-    });
   });
 });

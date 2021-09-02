@@ -208,7 +208,7 @@ class PhoneLogin extends React.Component {
   }
 
   render() {
-    // HideMessage is passed in as props, and its value is always true
+    // HideMessage is passed in as props, and its value is always true. In the future, the logic for loading data will be removed, and the entire control will no longer be used and deleted
     return null;
   }
 }

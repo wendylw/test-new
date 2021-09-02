@@ -554,10 +554,6 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
-    case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
-      const { storeCreditsBalance, customerId } = response || {};
-
-      return { ...state, storeCreditsBalance, customerId };
     case types.UPDATE_PROFILE_INFO:
       return {
         ...state,
