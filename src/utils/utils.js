@@ -15,6 +15,7 @@ const {
   ROUTER_PATHS,
   REGISTRATION_SOURCE,
   REGISTRATION_TOUCH_POINT,
+  ORDER_SOURCE,
 } = Constants;
 const Utils = {};
 Utils.getQueryString = key => {
@@ -826,18 +827,31 @@ Utils.getOpeningHours = function({
 
 Utils.getOrderSource = () => {
   if (Utils.isTNGMiniProgram()) {
-    return 'TNGMiniProgram';
+    return ORDER_SOURCE.TNG_MINI_PROGRAM;
   }
 
   if (Utils.isWebview()) {
-    return 'BeepApp';
+    return ORDER_SOURCE.BEEP_APP;
   }
 
   if (Utils.isFromBeepSite()) {
-    return 'BeepSite';
+    return ORDER_SOURCE.BEEP_SITE;
   }
 
-  return 'BeepStore';
+  return ORDER_SOURCE.BEEP_STORE;
+};
+
+Utils.getOrderSourceForCleverTab = () => {
+  const orderSource = Utils.getOrderSource();
+
+  const mapping = {
+    [ORDER_SOURCE.TNG_MINI_PROGRAM]: 'TNG Mini Program',
+    [ORDER_SOURCE.BEEP_APP]: 'App',
+    [ORDER_SOURCE.BEEP_SITE]: 'beepit.com',
+    [ORDER_SOURCE.BEEP_STORE]: 'Store URL',
+  };
+
+  return mapping[orderSource];
 };
 
 Utils.getHeaderClient = () => {
