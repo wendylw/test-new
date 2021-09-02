@@ -142,6 +142,10 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
+    if (enableCashback) {
+      this.canClaimCheck(user);
+    }
+
     await this.loadOrder();
 
     const { shippingType } = this.props;
@@ -157,10 +161,6 @@ export class ThankYou extends PureComponent {
     }
 
     await loadCashbackInfo(receiptNumber);
-
-    if (enableCashback) {
-      this.canClaimCheck(user);
-    }
 
     if (Utils.isWebview()) {
       const res = await NativeMethods.getTokenAsync();
@@ -352,6 +352,15 @@ export class ThankYou extends PureComponent {
     const { isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
 
+    const canCreateCashback =
+      isLogin &&
+      enableCashback &&
+      (prevBusinessInfo.enableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
+
+    if (canCreateCashback) {
+      await this.canClaimCheck(user);
+    }
+
     if (storeId && prevStoreId !== storeId) {
       shippingType === DELIVERY_METHOD.DINE_IN
         ? loadStoreIdTableIdHashCode({ storeId, tableId: config.table })
@@ -368,15 +377,6 @@ export class ThankYou extends PureComponent {
     }
 
     this.setContainerHeight();
-
-    const canCreateCashback =
-      isLogin &&
-      enableCashback &&
-      (prevBusinessInfo.enableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
-
-    if (canCreateCashback) {
-      this.canClaimCheck(user);
-    }
   }
 
   componentWillUnmount = () => {

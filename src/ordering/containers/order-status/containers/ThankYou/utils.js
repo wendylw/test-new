@@ -1,7 +1,11 @@
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 
 export function formatPhoneNumber(phone) {
-  return `${phone.startsWith('+') ? '' : '+'}${phone}`;
+  try {
+    return `${phone.startsWith('+') ? '' : '+'}${phone}`;
+  } catch {
+    return phone;
+  }
 }
 
 /**

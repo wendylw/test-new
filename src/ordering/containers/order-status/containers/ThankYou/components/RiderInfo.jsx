@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import dayjs from 'dayjs';
 import Constants from '../../../../../../utils/constants';
 import { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
-import { formatTo12hour } from '../../../../../../utils/time-lib';
 import { formatPhoneNumber } from '../utils';
 import { getOrderStoreName, getOrderDeliveryInfo } from '../redux/selector';
 import { getOrderStatus, getIsUseStorehubLogistics, getOrder, getOrderStoreInfo } from '../../../redux/selector';
@@ -34,8 +33,8 @@ function getDeliveredTimeRange(bestLastMileETA, worstLastMileETA) {
   }
 
   try {
-    const bestLastMileTime = formatTo12hour(bestLastMileETA, false);
-    const worstLastMileTime = formatTo12hour(bestLastMileETA);
+    const bestLastMileTime = dayjs(bestLastMileETA).format('hh:mm');
+    const worstLastMileTime = dayjs(worstLastMileETA).format('hh:mm A');
 
     return `${bestLastMileTime} - ${worstLastMileTime}`;
   } catch (e) {
@@ -190,6 +189,9 @@ function RiderInfo({
         {t('TrackOrder')}
       </a>
     ) : null;
+
+  console.log(bestLastMileETA);
+  console.log(worstLastMileETA);
 
   return (
     <>
