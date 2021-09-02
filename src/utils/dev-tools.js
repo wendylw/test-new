@@ -24,6 +24,10 @@ const isScriptLoaded = () => !!window.eruda;
 export const isDevToolsInitiated = () => !!(window.eruda && window.eruda._isInit === true);
 
 export const initDevTools = () => {
+  if (isDevToolsInitiated()) {
+    return;
+  }
+
   const expireDate = new Date();
   expireDate.setDate(expireDate.getDate() + 7);
   document.cookie = `sh_devtools_enabled=true; domain=${mainDomain}; expires=${expireDate.toUTCString()}`;
