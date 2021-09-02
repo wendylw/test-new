@@ -76,7 +76,7 @@ OrderDetails.defaultProps = {
 };
 
 function PendingPaymentOrderDetail({ order, promotion, items, serviceCharge, displayDiscount, orderStatus }) {
-  const { t } = useTranslation('OrderingThankYou');
+  const { t } = useTranslation(['OrderingThankYou', 'OrderingDelivery']);
   const { id, shippingFee, subtotal, total, tax } = order || {};
   const invalidStatus = [
     ORDER_STATUS.CREATED,
@@ -105,7 +105,7 @@ function PendingPaymentOrderDetail({ order, promotion, items, serviceCharge, dis
           <CurrencyNumber className="padding-top-bottom-small text-opacity" money={tax || 0} />
         </li>
         <li className="flex flex-space-between flex-middle">
-          <span className="padding-top-bottom-small text-opacity">{t('DeliveryCharge')}</span>
+          <span className="padding-top-bottom-small text-opacity">{t('OrderingDelivery:DeliveryCharge')}</span>
           <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
         </li>
         <li className="flex flex-space-between flex-middle">
