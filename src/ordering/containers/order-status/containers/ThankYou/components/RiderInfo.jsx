@@ -190,9 +190,6 @@ function RiderInfo({
       </a>
     ) : null;
 
-  console.log(bestLastMileETA);
-  console.log(worstLastMileETA);
-
   return (
     <>
       <div className="card margin-small flex ordering-thanks__rider flex-column">
