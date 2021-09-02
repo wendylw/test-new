@@ -252,7 +252,7 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {isCampaignActive && countryCode.toUpperCase() === 'MY' && (
+          {isCampaignActive && countryCode.toUpperCase() === 'MY' && !Utils.isTNGMiniProgram() && (
             <a
               className="offer-details__bar"
               data-heap-name="site.home.campaign-bar"
