@@ -83,3 +83,26 @@ export const isRequiredDevTools = async () => {
     return false;
   }
 };
+
+export const callTradePay = () => {
+  try {
+    window.my.tradePay({
+      paymentUrl:
+        'https://m-sd.tngdigital.com.my/s/cashier/index.html?bizNo=20210902111212800110171537101302190&timestamp=1630549491093&merchantId=217120000000855805277&sign=m9oeZKCz%252FP3auNNUId2JAhDAkiEAj0VdK4YBy2UnFpkZaV9buHffKdm1w%252BTnNR%252FG4GCbVDefPNIuwIDrB%252B5s8l%252Fkl3wur2os4PTfnKnWsIKd8%252FFoVDy5lN%252FfDxmXhoHFkuXiQSQxvamthLkS42ttIuH1ZOhvDYMoZOxeQVIV2UQpeF3fiXq3V1MQLNBnNh%252FCaY4dBqhcnqlUNL424hXjcT90cIER2SoGyK7y9NJsYXEPWGZ%252FhQD0cilbBsAkX6TEOQwm2EtbOU%252BU0PeyItAGm3JuN7USGxaxlqNPN8pZIEx%252FanNcrFUOn4VK6ZbfPyY6WpsICLDvTgdl6D4Oa%252FzvmQ%253D%253D',
+      success: res => {
+        window.my.alert({
+          content: JSON.stringify(res),
+        });
+      },
+      fail: res => {
+        window.my.alert({
+          content: JSON.stringify(res),
+        });
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    throw error;
+  }
+};
