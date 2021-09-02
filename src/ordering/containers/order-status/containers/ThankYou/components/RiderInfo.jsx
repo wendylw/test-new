@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Constants from '../../../../../../utils/constants';
 import { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
 import { formatTo12hour } from '../../../../../../utils/time-lib';
+import { formatPhoneNumber } from '../utils';
 import { getOrderStoreName, getOrderDeliveryInfo } from '../redux/selector';
 import { getOrderStatus, getIsUseStorehubLogistics, getOrder, getOrderStoreInfo } from '../../../redux/selector';
 import Image from '../../../../../../components/Image';
@@ -64,14 +65,14 @@ const RenderRiderInfoButton = ({ phone, supportCallPhone, buttonText, buttonClic
 
   return supportCallPhone ? (
     <a
-      href={`tel:+${phone}`}
+      href={`tel:${phone}`}
       className="rider-info__button button button__link flex__fluid-content text-center padding-normal text-weight-bolder text-uppercase"
     >
       {buttonText}
     </a>
   ) : (
     <button
-      onClick={() => buttonClickEvent}
+      onClick={buttonClickEvent}
       className="rider-info__button button button__link flex__fluid-content padding-normal text-weight-bolder text-uppercase"
     >
       {buttonText}
@@ -82,7 +83,7 @@ const RenderRiderInfoButton = ({ phone, supportCallPhone, buttonText, buttonClic
 RenderRiderInfoButton.displayName = 'RenderRiderInfoButton';
 
 RenderRiderInfoButton.propTypes = {
-  phone: PropTypes.oneOfType(PropTypes.string, PropTypes.number),
+  phone: PropTypes.string,
   supportCallPhone: PropTypes.bool,
   buttonText: PropTypes.string,
   buttonClickEvent: PropTypes.func,
@@ -110,6 +111,8 @@ function RiderInfo({
   const { trackingUrl, courier, driverPhone, bestLastMileETA, worstLastMileETA } = orderDeliveryInfo || {};
   const { deliveredTime } = order || {};
   const { phone: storePhone } = storeInfo;
+  const validDriverPhone = formatPhoneNumber(driverPhone);
+  const validStorePhone = formatPhoneNumber(storePhone);
   const [displayCopyPhoneModalStatus, setDisplayCopyPhoneModalStatus] = useState(false);
   const [copyPhoneModalDescription, setCopyPhoneModalDescription] = useState(null);
   const logisticStatus = !isUseStorehubLogistics ? 'merchantDelivery' : orderStatus;
@@ -130,7 +133,7 @@ function RiderInfo({
   }
 
   const logisticName = courier === 'onfleet' ? t('BeepFleet') : courier;
-  const logisticPhone = isUseStorehubLogistics ? driverPhone && `+${driverPhone}` : storePhone;
+  const logisticPhone = isUseStorehubLogistics ? validDriverPhone : validStorePhone;
   const estimationInfo = {
     [ORDER_STATUS.PICKED_UP]: {
       title: t('OrderStatusPickedUp'),
@@ -159,20 +162,20 @@ function RiderInfo({
   };
   const callStoreButtonEl = (
     <RenderRiderInfoButton
-      phone={storePhone}
+      phone={validStorePhone}
       supportCallPhone={inApp}
       buttonText={t('CallStore')}
       buttonClickEvent={() =>
-        handleCopyPhoneNumber(storePhone, logisticStatus === ORDER_STATUS.PICKED_UP ? 'drive' : 'store')
+        handleCopyPhoneNumber(validStorePhone, logisticStatus === ORDER_STATUS.PICKED_UP ? 'drive' : 'store')
       }
     />
   );
   const callRiderButtonEl = (
     <RenderRiderInfoButton
-      phone={driverPhone}
+      phone={validDriverPhone}
       supportCallPhone={inApp}
       buttonText={t('CallRider')}
-      buttonClickEvent={() => handleCopyPhoneNumber(`+${driverPhone}`, 'drive')}
+      buttonClickEvent={() => handleCopyPhoneNumber(validDriverPhone, 'drive')}
     />
   );
   const trackingOrderButtonEl =
