@@ -39,6 +39,10 @@
     color: $status-blue;
   }
 
+  &__button + &__button {
+    border-left-color: $gray-4;
+  }
+
   &__modal {
     top: 0;
   }

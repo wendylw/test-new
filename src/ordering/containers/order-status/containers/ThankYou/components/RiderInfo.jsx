@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import dayjs from 'dayjs';
 import Constants from '../../../../../../utils/constants';
 import { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
 import { formatTo12hour } from '../../../../../../utils/time-lib';
@@ -50,7 +51,7 @@ function getDeliveredTime(deliveredTime) {
   }
 
   try {
-    return formatTo12hour(deliveredTime);
+    return dayjs(deliveredTime).format('hh:mm A');
   } catch (e) {
     console.error('deliveredTime is invalid');
 
@@ -147,7 +148,7 @@ function RiderInfo({
       title: t('SelfDeliveryDescription'),
     },
   };
-  const callStoreDisplayState = !isUseStorehubLogistics || (isUseStorehubLogistics && startedDeliveryStates && inApp);
+  const callStoreDisplayState = !isUseStorehubLogistics || (isUseStorehubLogistics && inApp);
   const handleCopyPhoneNumber = (phone, phoneName) => {
     const result = copyDataToClipboard(phone);
 
@@ -235,8 +236,12 @@ function RiderInfo({
             </button>
           ) : null}
 
-          {callStoreDisplayState ? callStoreButtonEl : trackingOrderButtonEl}
-          {startedDeliveryStates ? callRiderButtonEl : null}
+          {startedDeliveryStates ? (
+            <>
+              {callStoreDisplayState ? callStoreButtonEl : trackingOrderButtonEl}
+              {callRiderButtonEl}
+            </>
+          ) : null}
         </div>
       </div>
       <Modal show={displayCopyPhoneModalStatus} className="rider-info__modal modal">
