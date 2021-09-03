@@ -21,7 +21,6 @@ import {
 } from '../../../../redux/modules/app';
 import SaveCardSwitch from '../../components/CreditCard/SaveCardSwitch';
 import CreditCardSecureInfo from '../../components/CreditCard/CreditCardSecureInfo';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import { getSelectedPaymentOption } from '../../redux/common/selectors';
 import { loadPaymentOptions } from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
@@ -39,22 +38,9 @@ class AdyenPage extends Component {
   card = null;
 
   componentDidMount = async () => {
-    const { deliveryDetails, customerActions, loadPaymentOptions } = this.props;
-    const { addressId } = deliveryDetails || {};
-    const type = Utils.getOrderTypeFromUrl();
+    const { loadPaymentOptions } = this.props;
 
-    !addressId && (await customerActions.initDeliveryDetails(type));
-
-    const { deliveryDetails: newDeliveryDetails } = this.props;
-    const { deliveryToLocation } = newDeliveryDetails || {};
-
-    await this.props.appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
+    await this.props.appActions.loadShoppingCart();
 
     this.initAdyenCard();
     loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
@@ -268,12 +254,10 @@ export default compose(
         cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         user: getUser(state),
-        deliveryDetails: getDeliveryDetails(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
     })
   )

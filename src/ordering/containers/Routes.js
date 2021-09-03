@@ -4,7 +4,7 @@ import Utils from '../../utils/utils';
 import Home from './Home';
 import Cart from './Cart';
 import Payment from './payments/containers/Payment';
-import Customer from './Customer';
+import CustomerInfo from './Customer/containers/CustomerInfo';
 import Constants from '../../utils/constants';
 import NotFound from '../../containers/NotFound';
 
@@ -42,7 +42,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
             <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
-            <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={Customer} />
+            <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={CustomerInfo} />
             <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION} component={Location} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOCATION_AND_DATE} component={LocationAndDate} />

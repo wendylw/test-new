@@ -4,11 +4,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import Constants from '../../../../../utils/constants';
-
-import Utils from '../../../../../utils/utils';
-
 import { bindActionCreators, compose } from 'redux';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
@@ -62,22 +58,7 @@ class Stripe extends Component {
     try {
       await this.ensurePaymentProvider();
 
-      const { deliveryDetails, customerActions } = this.props;
-      const { addressId } = deliveryDetails || {};
-      const type = Utils.getOrderTypeFromUrl();
-
-      !addressId && (await customerActions.initDeliveryDetails(type));
-
-      const { deliveryDetails: newDeliveryDetails } = this.props;
-      const { deliveryToLocation } = newDeliveryDetails || {};
-
-      this.props.appActions.loadShoppingCart(
-        deliveryToLocation.latitude &&
-          deliveryToLocation.longitude && {
-            lat: deliveryToLocation.latitude,
-            lng: deliveryToLocation.longitude,
-          }
-      );
+      this.props.appActions.loadShoppingCart();
     } catch (error) {
       // TODO: handle this error in Payment 2.0
       console.error(error);
@@ -146,7 +127,6 @@ export default compose(
         cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         merchantCountry: getMerchantCountry(state),
-        deliveryDetails: getDeliveryDetails(state),
         user: getUser(state),
         paymentProvider: getSelectedPaymentProvider(state),
         supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
@@ -155,7 +135,6 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
     })
   )
