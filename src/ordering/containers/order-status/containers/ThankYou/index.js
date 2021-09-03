@@ -142,7 +142,7 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    await loadCashbackInfo(receiptNumber);
+    loadCashbackInfo(receiptNumber);
 
     if (enableCashback) {
       this.canClaimCheck(user);
