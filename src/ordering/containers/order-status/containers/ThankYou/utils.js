@@ -1,6 +1,6 @@
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 
-export function getCompletePhoneNumber(phone) {
+export function formatCompletePhoneNumber(phone) {
   try {
     return `${phone.startsWith('+') ? '' : '+'}${phone}`;
   } catch {

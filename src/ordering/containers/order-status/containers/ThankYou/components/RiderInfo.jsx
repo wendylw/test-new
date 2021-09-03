@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import dayjs from 'dayjs';
 import Constants from '../../../../../../utils/constants';
 import { isValidUrl, copyDataToClipboard } from '../../../../../../utils/utils';
-import { getCompletePhoneNumber } from '../utils';
+import { formatCompletePhoneNumber } from '../utils';
 import { getOrderStoreName, getOrderDeliveryInfo } from '../redux/selector';
 import { getOrderStatus, getIsUseStorehubLogistics, getOrder, getOrderStoreInfo } from '../../../redux/selector';
 import Image from '../../../../../../components/Image';
@@ -111,8 +111,8 @@ function RiderInfo({
   const { trackingUrl, courier, driverPhone, bestLastMileETA, worstLastMileETA } = orderDeliveryInfo || {};
   const { deliveredTime } = order || {};
   const { phone: storePhone } = storeInfo;
-  const validDriverPhone = getCompletePhoneNumber(driverPhone);
-  const validStorePhone = getCompletePhoneNumber(storePhone);
+  const validDriverPhone = formatCompletePhoneNumber(driverPhone);
+  const validStorePhone = formatCompletePhoneNumber(storePhone);
   const [displayCopyPhoneModalStatus, setDisplayCopyPhoneModalStatus] = useState(false);
   const [copyPhoneModalDescription, setCopyPhoneModalDescription] = useState(null);
   const logisticStatus = !isUseStorehubLogistics ? 'merchantDelivery' : orderStatus;
@@ -147,7 +147,7 @@ function RiderInfo({
       title: t('SelfDeliveryDescription'),
     },
   };
-  const callStoreDisplayState = !isUseStorehubLogistics || (isUseStorehubLogistics && inApp);
+  const callStoreDisplayState = !isUseStorehubLogistics || inApp;
   const handleCopyPhoneNumber = (phone, phoneName) => {
     const result = copyDataToClipboard(phone);
 
