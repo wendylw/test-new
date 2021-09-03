@@ -142,6 +142,8 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
+    await loadCashbackInfo(receiptNumber);
+
     if (enableCashback) {
       this.canClaimCheck(user);
     }
@@ -159,8 +161,6 @@ export class ThankYou extends PureComponent {
         this.promptUserEnableAppNotification();
       }
     }
-
-    await loadCashbackInfo(receiptNumber);
 
     if (Utils.isWebview()) {
       const res = await NativeMethods.getTokenAsync();
