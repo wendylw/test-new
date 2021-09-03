@@ -4,7 +4,6 @@ import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
-import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -21,6 +20,7 @@ import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
+import './AddressDetail.scss';
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const actions = {
   EDIT: 'edit',
