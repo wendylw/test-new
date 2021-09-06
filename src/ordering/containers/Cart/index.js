@@ -91,10 +91,9 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, appActions, cartActions, deliveryDetails } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
+    const { user, history, appActions, cartActions } = this.props;
     const { consumerId, isLogin, profile } = user || {};
-    const { name, phone } = profile || {};
+    const { name } = profile || {};
 
     const { status } = await cartActions.checkCartInventory();
 
@@ -115,37 +114,11 @@ class Cart extends Component {
       });
     }
 
-    // if have name, redirect to customer page
-    // if have consumerId, get profile first and update consumer profile, then redirect to next page
-    if (isLogin && name) {
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
+    if ((isLogin && name) || (isLogin && consumerId)) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
       });
-    } else {
-      if (isLogin && consumerId) {
-        let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
-        let { firstName, email, birthday, phone } = await get(request.url);
-        this.props.appActions.updateProfileInfo({
-          name: firstName,
-          email,
-          birthday,
-          phone,
-        });
-        !username && (await appActions.updateDeliveryDetails({ username: firstName }));
-        !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-        firstName
-          ? history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-              search: window.location.search,
-            })
-          : history.push({
-              pathname: Constants.ROUTER_PATHS.PROFILE,
-              search: window.location.search,
-            });
-      }
     }
   };
 
