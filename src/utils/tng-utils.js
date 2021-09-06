@@ -88,7 +88,7 @@ export const callTradePay = () => {
   try {
     window.my.tradePay({
       paymentUrl:
-        'https://m-sd.tngdigital.com.my/s/cashier/index.html?bizNo=20210902111212800110171912901303918&timestamp=1630556110815&merchantId=217120000000855805277&sign=WNaoo1NV7Vhx9oxfK%252Bbis9bd2x9Oi0MTDVmkZHsvdHdqvOxCin%252BJgipzCZSeSAbTQt22Fk1vc%252Bb0zVTWMa%252FOrYzpE76%252FxIKBGhgk5ZTz9xIdamS6BQX8kLUnJL5KgEmYL7m1HV8qzRIkPMcoh2Uwvt9gLyVQdwzyDkFtUjsdIVemObC9xjUynxW0%252F9QAUdUlYJdvUq6GakmJYaozcuqBF7xsj4qc6NKa5TxuiAr%252FZKbQ0JuAoZ4cUY0lQisSOXMixkXycip7Jso5R52a%252B0MAnnLZzJwMuafPf8R939%252BuCppayesxdOoC5zhhFLDmnJqwrS0RK3PBFAZU7D72EYsgzg%253D%253D',
+        'https://m-sd.tngdigital.com.my/s/cashier/index.html?bizNo=20210906111212800110171685801272898&timestamp=1630913156920&merchantId=217120000000855805277&sign=xOa%252BrukhbSbGY222X8anbYLMex2BbGI3PEd0b2Hr5%252FTyWKVcltraDupNspFav%252F6djXau5elutrM4GuH53E6Mc%252BzF3J1WMvkCnaFyR4BN1YZzzHQJxxqdqciuLIM9y6BRFL0Ol%252BG62vShLHSxGIOdHtln96L8U14yW7D4NmmNxrdkorm1%252BfxykemEQz1k03jsfRqEih1GAtxmSMJorRYoyH5Qt9YUGJsom4wrcJNVEy8A2M%252BaY5zfTUT9%252BwIEg3DpeEqiuSaB8ruu4LgXXZ5KqG3RXMhX0I%252BdXdCFnVz4YGSFxhl93DZ6YwQEw2d37xzDIgog%252BGfe9QWecQroRoeOvw%253D%253D',
       success: res => {
         window.my.alert({
           content: JSON.stringify(res),
@@ -96,11 +96,11 @@ export const callTradePay = () => {
 
         const form = document.createElement('form');
         const data = {
-          receiptNumber: '1630556109711',
-          paymentId: '20210902111212800110171912901303918',
+          receiptNumber: '803498344665789',
+          paymentId: '20210906111212800110171685801272898',
           paymentMethod: 'TngMiniProgram',
           status: 'Success',
-          amount: '0.01',
+          amount: '33.32',
         };
         form.action = process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL;
         form.method = 'POST';
@@ -126,7 +126,6 @@ export const callTradePay = () => {
     });
   } catch (error) {
     console.error(error);
-
     throw error;
   }
 };
