@@ -128,7 +128,8 @@ export class ThankYou extends PureComponent {
       this.pollOrderStatus();
 
       if (Utils.isWebview()) {
-        this.promptUserEnableAppNotification();
+        // TODO: Temporarily hide this pop up message until transactional notification feature goes to production
+        // this.promptUserEnableAppNotification();
       }
     }
   };

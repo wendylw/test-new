@@ -21,7 +21,8 @@ export const addModalIdHash = modalId => {
   if (!newHashObj.modal) {
     delete newHashObj.modal;
   }
-  document.location.hash = `#${qs.stringify(newHashObj)}`;
+  // don't use `document.location.hash = `#${qs.stringify(newHashObj)}``, for it causes a weird issue on iOS (BEEP-1011)
+  window.history.pushState(window.history.state, '', `#${qs.stringify(newHashObj)}`);
 };
 
 let preventHashPoppedId = null;
