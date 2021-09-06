@@ -219,12 +219,16 @@ export const actions = {
     },
   }),
 
-  loginByTngdMiniProgram: () => async (dispatch, getState) => {
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
 
     try {
+      dispatch({
+        type: types.LOGIN_BY_TNG_MINI_PROGRAM_REQUEST,
+      });
+
       const isLogin = getUserIsLogin(getState());
       const business = getBusiness(getState());
       if (isLogin) {
@@ -241,9 +245,18 @@ export const actions = {
           refreshToken: refresh_token,
         })
       );
+
+      dispatch({
+        type: types.LOGIN_BY_TNG_MINI_PROGRAM_SUCCESS,
+      });
     } catch (e) {
       // TODO: prompt user login failed
       console.error(e);
+
+      dispatch({
+        type: types.LOGIN_BY_TNG_MINI_PROGRAM_FAILURE,
+      });
+
       return false;
     }
 
@@ -342,6 +355,15 @@ const user = (state = initialState.user, action) => {
       } else {
         return state;
       }
+    case types.LOGIN_BY_TNG_MINI_PROGRAM_REQUEST: {
+      return { ...state, isFetching: true };
+    }
+    case types.LOGIN_BY_TNG_MINI_PROGRAM_SUCCESS: {
+      return { ...state, isFetching: false };
+    }
+    case types.LOGIN_BY_TNG_MINI_PROGRAM_FAILURE: {
+      return { ...state, isFetching: false };
+    }
     default:
       return state;
   }

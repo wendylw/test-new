@@ -61,7 +61,7 @@ class ReportDriver extends Component {
       }
 
       if (Utils.isTNGMiniProgram()) {
-        await this.props.loginByTngdMiniProgram();
+        await this.props.loginByTngMiniProgram();
       }
     }
 
@@ -484,7 +484,7 @@ export default compose(
       initialEmail: reportDriverActionCreators.initialEmail,
       getProfileInfo: appActionCreators.getProfileInfo,
       loginApp: appActionCreators.loginApp,
-      loginByTngdMiniProgram: appActionCreators.loginByTngdMiniProgram,
+      loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
     }
   )
 )(ReportDriver);

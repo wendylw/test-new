@@ -124,6 +124,31 @@ export const initialState = {
     data: null,
     status: null,
   },
+  deliveryDetails: {
+    username: '',
+    phone: '',
+    addressId: '',
+    addressName: '',
+    deliveryToAddress: '',
+    deliveryToLocation: null, // {latitude, longitude}
+    addressDetails: '',
+    deliveryComments: '',
+    deliveryToCity: '',
+    postCode: '',
+  },
+};
+
+const updateDeliveryDetailsInSessionStorage = data => {
+  return sessionStorage.setItem('deliveryDetails', JSON.stringify(data));
+};
+
+const getDeliveryDetailsFromSessionStorage = () => {
+  try {
+    return JSON.parse(Utils.getSessionVariable('deliveryDetails'));
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
 
 const fetchCoreBusiness = variables => ({
@@ -409,7 +434,7 @@ export const actions = {
   },
 
   // load shopping cart
-  loadShoppingCart: location => async (dispatch, getState) => {
+  loadShoppingCart: () => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
     const businessUTCOffset = getBusinessUTCOffset(getState());
@@ -419,13 +444,17 @@ export const actions = {
       return;
     }
 
-    let deliveryCoords;
-    if (isDelivery) {
-      deliveryCoords = Utils.getDeliveryCoords();
-    }
+    const deliveryDetails = getDeliveryDetails(getState());
+
+    const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
+
+    const deliveryCoords = deliveryToLocation
+      ? { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude }
+      : Utils.getDeliveryCoords();
+
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords, fulfillDate));
+    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -448,6 +477,39 @@ export const actions = {
     return dispatch(emptyShoppingCart());
   },
 
+  initDeliveryDetails: () => async (dispatch, getState) => {
+    const deliveryDetailsInSession = getDeliveryDetailsFromSessionStorage();
+    const localStoragePhone = localStorage.getItem('user.p') || '';
+
+    const payload = {
+      ...deliveryDetailsInSession,
+      phone: deliveryDetailsInSession?.phone || localStoragePhone,
+    };
+
+    updateDeliveryDetailsInSessionStorage(payload);
+
+    dispatch({
+      type: types.DELIVERY_DETAILS_INIT,
+      payload,
+    });
+  },
+
+  updateDeliveryDetails: data => async (dispatch, getState) => {
+    const state = getState();
+    const deliveryDetails = getDeliveryDetails(state);
+
+    const payload = {
+      ...deliveryDetails,
+      ...data,
+    };
+
+    updateDeliveryDetailsInSessionStorage(payload);
+
+    dispatch({
+      type: types.DELIVERY_DETAILS_UPDATED,
+      payload,
+    });
+  },
   loadCoreStores: address => (dispatch, getState) => {
     const business = getBusiness(getState());
 
@@ -474,16 +536,11 @@ export const actions = {
 
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
-    const isDelivery = Utils.isDeliveryType();
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
-    let deliveryCoords;
-    if (isDelivery) {
-      deliveryCoords = Utils.getDeliveryCoords();
-    }
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-    config.storeId && dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
+    config.storeId && dispatch(actions.loadShoppingCart());
 
     const shippingType = Utils.getApiRequestShippingType();
 
@@ -497,12 +554,16 @@ export const actions = {
     return dispatch(fetchProductDetail({ productId, fulfillDate }));
   },
 
-  loginByTngdMiniProgram: () => async (dispatch, getState) => {
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
 
     try {
+      dispatch({
+        type: types.LOGIN_BY_TNG_MINI_PROGRAM_REQUEST,
+      });
+
       const isLogin = getUserIsLogin(getState());
       const business = getBusiness(getState());
       if (isLogin) {
@@ -519,9 +580,18 @@ export const actions = {
           refreshToken: refresh_token,
         })
       );
+
+      dispatch({
+        type: types.LOGIN_BY_TNG_MINI_PROGRAM_SUCCESS,
+      });
     } catch (e) {
       // TODO: prompt user login failed
       console.error(e);
+
+      dispatch({
+        type: types.LOGIN_BY_TNG_MINI_PROGRAM_FAILURE,
+      });
+
       return false;
     }
 
@@ -620,13 +690,14 @@ const user = (state = initialState.user, action) => {
         },
       };
     case types.FETCH_PROFILE_SUCCESS:
-      const { firstName, email, birthday } = response || {};
+      const { firstName, email, birthday, phone } = response || {};
       return {
         ...state,
         profile: {
           name: firstName,
           email,
           birthday,
+          phone,
         },
       };
 
@@ -650,6 +721,15 @@ const user = (state = initialState.user, action) => {
       } else {
         return state;
       }
+    case types.LOGIN_BY_TNG_MINI_PROGRAM_REQUEST: {
+      return { ...state, isFetching: true };
+    }
+    case types.LOGIN_BY_TNG_MINI_PROGRAM_SUCCESS: {
+      return { ...state, isFetching: false };
+    }
+    case types.LOGIN_BY_TNG_MINI_PROGRAM_FAILURE: {
+      return { ...state, isFetching: false };
+    }
     default:
       return state;
   }
@@ -799,6 +879,23 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   return state;
 };
 
+const deliveryDetails = (state = initialState.deliveryDetails, action) => {
+  switch (action.type) {
+    case types.DELIVERY_DETAILS_INIT:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case types.DELIVERY_DETAILS_UPDATED:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
 const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
   switch (action.type) {
     case types.FETCH_STORE_HASHCODE_REQUEST: {
@@ -838,6 +935,7 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  deliveryDetails,
   storeHashCode: storeHashCodeReducer,
 });
 
@@ -887,6 +985,7 @@ export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => 
 });
 
 export const getStoreId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'storeId', null));
+export const getShippingType = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'shippingType', null));
 
 export const getStore = state => {
   const storeId = getStoreId(state);
@@ -903,6 +1002,8 @@ export const getCartItems = state => state.app.shoppingCart.items;
 export const getCartBilling = state => state.app.shoppingCart.billing;
 
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
+
+export const getDeliveryDetails = state => state.app.deliveryDetails;
 
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],

@@ -7,11 +7,9 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import { IconKeyArrowDown } from '../../../../../components/Icons';
 import Constants from '../../../../../utils/constants';
-import Utils from '../../../../../utils/utils';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
@@ -37,22 +35,9 @@ class OnlineBanking extends Component {
   };
 
   async componentDidMount() {
-    const { deliveryDetails, customerActions, loadPaymentOptions } = this.props;
-    const { addressId } = deliveryDetails || {};
-    const type = Utils.getOrderTypeFromUrl();
+    const { loadPaymentOptions } = this.props;
 
-    !addressId && (await customerActions.initDeliveryDetails(type));
-
-    const { deliveryDetails: newDeliveryDetails } = this.props;
-    const { deliveryToLocation } = newDeliveryDetails || {};
-
-    await this.props.appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
+    await this.props.appActions.loadShoppingCart();
 
     /**
      * Load all payment options action and except saved card list
@@ -241,13 +226,11 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
       updateBankingSelected: bindActionCreators(actions.updateBankingSelected, dispatch),
     })

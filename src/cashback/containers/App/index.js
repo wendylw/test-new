@@ -99,7 +99,7 @@ class App extends Component {
     }
 
     if (Utils.isTNGMiniProgram()) {
-      await this.props.appActions.loginByTngdMiniProgram();
+      await this.props.appActions.loginByTngMiniProgram();
     }
   };
 

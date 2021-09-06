@@ -239,10 +239,6 @@ export class ThankYou extends PureComponent {
         };
       }) || [];
 
-    const orderSourceType = Utils.getOrderSource();
-    const orderSource =
-      orderSourceType === 'BeepApp' ? 'App' : orderSourceType === 'BeepSite' ? 'beepit.com' : 'Store URL';
-
     let preOrderPeriod = 0;
     if (order.isPreOrder) {
       preOrderPeriod = (new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / (60 * 60 * 1000);
@@ -260,7 +256,7 @@ export class ThankYou extends PureComponent {
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
-      'Order Source': orderSource,
+      'Order Source': Utils.getOrderSourceForCleverTab(),
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
@@ -1346,6 +1342,11 @@ export class ThankYou extends PureComponent {
 
   renderDownloadBanner() {
     const { shippingType } = this.props;
+    const hideDownloadBanner = Utils.isTNGMiniProgram() || Utils.isWebview();
+
+    if (hideDownloadBanner) {
+      return null;
+    }
 
     return (
       <div className="ordering-thanks__download">
@@ -1478,13 +1479,12 @@ export class ThankYou extends PureComponent {
       history,
       match,
       order,
-      user,
       orderCancellationButtonVisible,
       shippingType,
       updatedToSelfPickupStatus,
     } = this.props;
     const date = new Date();
-    const { isWebview } = user || {};
+
     let orderInfo = shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderStoreInfo() : null;
     const pickupDescription = updatedToSelfPickupStatus
       ? t('ThankYouForUpdatedToPickingUpForUS')
@@ -1529,7 +1529,7 @@ export class ThankYou extends PureComponent {
                 : {}
             }
           >
-            {!isWebview && this.renderDownloadBanner()}
+            {this.renderDownloadBanner()}
             {shippingType === DELIVERY_METHOD.DELIVERY ? (
               this.renderDeliveryImageAndTimeLine()
             ) : (

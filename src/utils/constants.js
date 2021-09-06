@@ -637,6 +637,13 @@ export const API_REQUEST_STATUS = {
   REJECTED: 'rejected',
 };
 
+export const ORDER_SOURCE = {
+  TNG_MINI_PROGRAM: 'TNGMiniProgram',
+  BEEP_APP: 'BeepApp',
+  BEEP_SITE: 'BeepSite',
+  BEEP_STORE: 'BeepStore',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -685,4 +692,5 @@ export default {
   REGISTRATION_TOUCH_POINT,
   REGISTRATION_SOURCE,
   API_REQUEST_STATUS,
+  ORDER_SOURCE,
 };
