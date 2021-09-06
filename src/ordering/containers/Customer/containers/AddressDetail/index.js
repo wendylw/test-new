@@ -157,10 +157,11 @@ class AddressDetail extends Component {
     const { addressInfo } = this.props;
     const { hasAnyChanges } = this.state;
     const { name, details, type, address, contactName, contactNumber } = addressInfo;
-    const judge_one = type === actions.EDIT && !hasAnyChanges;
-    const judge_two = !name || !details || !address;
-    const judge_three = !contactName || !contactName.length || !isValidPhoneNumber(contactNumber || '');
-    return judge_one || judge_two || judge_three;
+    const notModifiedOnEditPage = type === actions.EDIT && !hasAnyChanges;
+    const notModifiedOnNameOrDetailsOrAddress = !name || !details || !address;
+    const notModifiedOnContactNameOrContactNumber =
+      !contactName || !contactName.length || !isValidPhoneNumber(contactNumber || '');
+    return notModifiedOnEditPage || notModifiedOnNameOrDetailsOrAddress || notModifiedOnContactNameOrContactNumber;
   };
 
   handleAddressDetailClick = () => {
