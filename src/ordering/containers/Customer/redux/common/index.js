@@ -5,7 +5,7 @@ import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 const initialState = {
   addressList: {
-    data: {}, // {id: address}
+    data: {}, // {${addressId}: ${addressObject}}
     status: null,
     error: null,
   },
@@ -40,8 +40,7 @@ export const { reducer, actions } = createSlice({
     },
 
     [loadAddressList.rejected.type]: (state, action) => {
-      state.addressList.data = [];
-      state.addressList.status = API_REQUEST_STATUS.FULFILLED;
+      state.addressList.status = API_REQUEST_STATUS.REJECTED;
       state.addressList.error = action.error;
     },
   },

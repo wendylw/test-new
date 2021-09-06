@@ -200,7 +200,7 @@ class CustomerInfo extends Component {
                   onClick={() => {
                     this.handleAddressClick();
                   }}
-                  className="button button__link text-left ordering-customer__address-button"
+                  className="ordering-customer__address-button button button__link text-left"
                 >
                   {Boolean(addressName) ? (
                     <React.Fragment>

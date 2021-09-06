@@ -157,20 +157,10 @@ class AddressDetail extends Component {
     const { addressInfo } = this.props;
     const { hasAnyChanges } = this.state;
     const { name, details, type, address, contactName, contactNumber } = addressInfo;
-
-    if (type === actions.EDIT && !hasAnyChanges) {
-      return true;
-    }
-
-    if (!name || !details || !address) {
-      return true;
-    }
-
-    if (!contactName || !contactName.length || !isValidPhoneNumber(contactNumber || '')) {
-      return true;
-    }
-
-    return false;
+    const judge_one = type === actions.EDIT && !hasAnyChanges;
+    const judge_two = !name || !details || !address;
+    const judge_three = !contactName || !contactName.length || !isValidPhoneNumber(contactNumber || '');
+    return judge_one || judge_two || judge_three;
   };
 
   handleAddressDetailClick = () => {
