@@ -154,12 +154,10 @@ export class ThankYou extends PureComponent {
 
     this.setContainerHeight();
 
-    if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
-      this.pollOrderStatus();
+    this.pollOrderStatus();
 
-      if (Utils.isWebview()) {
-        this.promptUserEnableAppNotification();
-      }
+    if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
+      this.promptUserEnableAppNotification();
     }
 
     if (Utils.isWebview()) {
@@ -317,19 +315,26 @@ export class ThankYou extends PureComponent {
 
     const { shippingType } = this.props;
 
-    if (shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) {
-      await loadOrderStatus(receiptNumber);
+    await loadOrderStatus(receiptNumber);
 
-      if (Utils.isWebview()) {
-        this.updateAppLocationAndStatus();
-      }
+    if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
+      this.updateAppLocationAndStatus();
     }
   };
 
   pollOrderStatus = () => {
     this.pollOrderStatusTimer = setInterval(async () => {
       try {
-        await this.loadOrder();
+        const { shippingType, orderStatus } = this.props;
+        const clearSetIntervalStatus =
+          [ORDER_STATUS.CANCELLED, ORDER_STATUS.PAYMENT_CANCELLED, ORDER_STATUS.DELIVERED].includes(orderStatus) ||
+          (orderStatus === ORDER_STATUS.PICKED_UP && shippingType !== DELIVERY_METHOD.DELIVERY);
+
+        if (clearSetIntervalStatus) {
+          clearInterval(this.pollOrderStatusTimer);
+        } else {
+          await this.loadOrder();
+        }
       } catch (e) {
         captureException(e);
       }
