@@ -1,3 +1,5 @@
+import { get } from '../../../../../../utils/api/api-fetch';
+
 export const API_INFO = {
   getPayments: () => ({
     url: '/payment/online/options',
@@ -7,3 +9,5 @@ export const API_INFO = {
     queryParams: { provider: paymentProvider },
   }),
 };
+
+export const getPaymentDetails = orderId => get('/payment/details', { queryParams: { orderId } });

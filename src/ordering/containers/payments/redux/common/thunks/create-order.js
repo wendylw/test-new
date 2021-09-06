@@ -3,9 +3,11 @@ import i18next from 'i18next';
 
 import Url from '../../../../../../utils/url';
 import Utils from '../../../../../../utils/utils';
-import Constants from '../../../../../../utils/constants';
+import Constants, { ORDER_SOURCE } from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
+import { callTradePay } from '../../../../../../utils/tng-utils';
+import { getPaymentDetails } from './api-info';
 
 import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
@@ -226,14 +228,26 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       },
     } = resp;
+    const result = {
+      order,
+      redirectUrl,
+    };
 
     try {
       await checkCreatedOrderStatus(order.orderId);
 
-      return {
-        order,
-        redirectUrl,
-      };
+      if (!Utils.isTNGMiniProgram()) {
+        return result;
+      }
+
+      const { redirectionUrl: paymentUrl, paymentId } = await getPaymentDetails(order.orderId);
+      const { resultCode } = await callTradePay(paymentUrl);
+
+      if (resultCode !== '6002') {
+        result[paymentId] = paymentId;
+
+        return result;
+      }
     } catch (error) {
       throw error;
     }
@@ -287,6 +301,10 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
   const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
   const source = Utils.getOrderSource();
   const planId = getBusinessByName(state, business).planId || '';
+  const action =
+    source === ORDER_SOURCE.TNG_MINI_PROGRAM
+      ? config.storehubPaymentResponseURL.replace('%business%', business)
+      : config.storeHubPaymentEntryURL;
   const basicArgs = {
     amount: order.total,
     currency: currency,
@@ -295,10 +313,10 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
     redirectURL: redirectURL,
     webhookURL: webhookURL,
     // paymentName: paymentProvider,
-    source: source,
+    source,
     isInternal: planId.startsWith('internal'),
   };
-  submitForm(config.storeHubPaymentEntryURL, { ...basicArgs, ...paymentArgs });
+  submitForm(action, { ...basicArgs, ...paymentArgs });
 };
 
 const submitForm = (action, data) => {
