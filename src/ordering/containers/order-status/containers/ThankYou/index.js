@@ -207,7 +207,7 @@ export class ThankYou extends PureComponent {
     try {
       const { orderStatus, riderLocations = [], shippingType } = this.props;
       const [lat = null, lng = null] = riderLocations || [];
-      const { PICKUP } = ORDER_STATUS;
+      const { PICKED_UP } = ORDER_STATUS;
       const { order = {} } = this.props;
       const { storeInfo = {}, deliveryInformation = [] } = order;
       const { location = {} } = storeInfo;
@@ -225,7 +225,7 @@ export class ThankYou extends PureComponent {
         },
       ];
 
-      if (orderStatus === PICKUP && shippingType === DELIVERY_METHOD.DELIVERY) {
+      if (orderStatus === PICKED_UP && shippingType === DELIVERY_METHOD.DELIVERY) {
         NativeMethods.showMap();
         NativeMethods.updateStorePosition(storeLat, storeLng);
         NativeMethods.updateHomePosition(deliveryLat, deliveryLng);
@@ -294,11 +294,11 @@ export class ThankYou extends PureComponent {
   };
 
   loadOrder = async () => {
-    const { loadOrder, loadOrderStatus, receiptNumber, isUseStorehubLogistics } = this.props;
+    const { loadOrder, loadOrderStatus, receiptNumber } = this.props;
 
     await loadOrder(receiptNumber);
 
-    const { shippingType } = this.props;
+    const { shippingType, isUseStorehubLogistics } = this.props;
 
     await loadOrderStatus(receiptNumber);
 
@@ -821,7 +821,7 @@ export class ThankYou extends PureComponent {
           >
             {this.renderDownloadBanner()}
             <OrderStatusDescription
-              isApp={Utils.isWebview()}
+              inApp={Utils.isWebview()}
               cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
             />
             {this.renderDeliveryInfo()}
