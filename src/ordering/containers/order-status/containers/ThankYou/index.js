@@ -1,6 +1,5 @@
 import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
-import _isNil from 'lodash/isNil';
 import qs from 'qs';
 import React, { PureComponent } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
@@ -47,6 +46,7 @@ import {
   getIsOrderCancellable,
   getOrderShippingType,
   getIsPreOrder,
+  getIsUseStorehubLogistics,
 } from '../../redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
@@ -62,7 +62,6 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
-import loggly from '../../../../../utils/monitoring/loggly';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 const BEFORE_PAID_STATUS_LIST = [
@@ -119,7 +118,6 @@ export class ThankYou extends PureComponent {
     window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
     const {
       history,
-      loginApp,
       loadCashbackInfo,
       loadStoreIdHashCode,
       loadStoreIdTableIdHashCode,
@@ -158,19 +156,6 @@ export class ThankYou extends PureComponent {
 
     if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
       this.promptUserEnableAppNotification();
-    }
-
-    if (Utils.isWebview()) {
-      const res = await NativeMethods.getTokenAsync();
-      if (_isNil(res)) {
-        loggly.error('order-status.thank-you.phone-login', { message: 'native token is invalid' });
-      } else {
-        const { access_token, refresh_token } = res;
-        await loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        });
-      }
     }
   };
 
@@ -309,7 +294,7 @@ export class ThankYou extends PureComponent {
   };
 
   loadOrder = async () => {
-    const { loadOrder, loadOrderStatus, receiptNumber } = this.props;
+    const { loadOrder, loadOrderStatus, receiptNumber, isUseStorehubLogistics } = this.props;
 
     await loadOrder(receiptNumber);
 
@@ -317,7 +302,7 @@ export class ThankYou extends PureComponent {
 
     await loadOrderStatus(receiptNumber);
 
-    if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
+    if (shippingType === DELIVERY_METHOD.DELIVERY && isUseStorehubLogistics && Utils.isWebview()) {
       this.updateAppLocationAndStatus();
     }
   };
@@ -896,6 +881,7 @@ export default compose(
       isOrderCancellable: getIsOrderCancellable(state),
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       shippingType: getOrderShippingType(state),
+      isUseStorehubLogistics: getIsUseStorehubLogistics(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -910,7 +896,6 @@ export default compose(
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
       showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
-      loginApp: bindActionCreators(appActionCreators.loginApp, dispatch),
     })
   )
 )(ThankYou);

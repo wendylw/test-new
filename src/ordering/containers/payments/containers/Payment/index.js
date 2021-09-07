@@ -42,7 +42,9 @@ class Payment extends Component {
   willUnmount = false;
 
   componentDidMount = async () => {
-    const { paymentsActions } = this.props;
+    const { paymentsActions, paymentActions } = this.props;
+
+    paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
     await this.props.appActions.loadShoppingCart();
 
