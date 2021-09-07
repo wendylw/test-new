@@ -3,7 +3,7 @@ import i18next from 'i18next';
 
 import Url from '../../../../../../utils/url';
 import Utils from '../../../../../../utils/utils';
-import Constants, { ORDER_SOURCE } from '../../../../../../utils/constants';
+import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
