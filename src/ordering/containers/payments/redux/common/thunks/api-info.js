@@ -1,4 +1,4 @@
-import { get } from '../../../../../../utils/api/api-fetch';
+import { post } from '../../../../../../utils/api/api-fetch';
 
 export const API_INFO = {
   getPayments: () => ({
@@ -10,4 +10,4 @@ export const API_INFO = {
   }),
 };
 
-export const getPaymentDetails = orderId => get('/payment/details', { queryParams: { orderId } });
+export const createPaymentDetails = orderId => post('/payment/details', { queryParams: { orderId } });

@@ -127,7 +127,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
 
   // expectedDeliveryHour & expectedDeliveryDate will always be there if
   // there is preOrder in url
-  const orderSource = getOrderSource();
+  const orderSource = Utils.getOrderSource();
   const business = getBusiness(getState());
   const businessInfo = getBusinessByName(getState(), business);
   const { qrOrderingSettings = {} } = businessInfo || {};
@@ -265,18 +265,6 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       );
     }
   }
-};
-
-const getOrderSource = () => {
-  let orderSource = '';
-  if (Utils.isWebview()) {
-    orderSource = 'BeepApp';
-  } else if (sessionStorage.getItem('orderSource')) {
-    orderSource = 'BeepSite';
-  } else {
-    orderSource = 'BeepStore';
-  }
-  return orderSource;
 };
 
 const createVoucherOrderRequest = async payload => {
