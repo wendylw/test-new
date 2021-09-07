@@ -290,10 +290,9 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
   const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
   const source = Utils.getOrderSource();
   const planId = getBusinessByName(state, business).planId || '';
-  const action =
-    source === ORDER_SOURCE.TNG_MINI_PROGRAM
-      ? config.storehubPaymentResponseURL.replace('%business%', business)
-      : config.storeHubPaymentEntryURL;
+  const action = Utils.isTNGMiniProgram()
+    ? config.storehubPaymentResponseURL.replace('%business%', business)
+    : config.storeHubPaymentEntryURL;
   const basicArgs = {
     amount: order.total,
     currency: currency,
