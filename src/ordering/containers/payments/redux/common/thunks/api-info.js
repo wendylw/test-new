@@ -10,4 +10,4 @@ export const API_INFO = {
   }),
 };
 
-export const createPaymentDetails = orderId => post('/payment/details', { queryParams: { orderId } });
+export const createTngdPaymentDetails = orderId => post('/payment/details', { queryParams: { orderId } });

@@ -7,7 +7,7 @@ import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
-import { createPaymentDetails } from './api-info';
+import { createTngdPaymentDetails } from './api-info';
 
 import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
@@ -236,19 +236,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     try {
       await checkCreatedOrderStatus(order.orderId);
 
-      if (!Utils.isTNGMiniProgram()) {
-        return result;
-      }
-
-      const { redirectionUrl: paymentUrl, paymentId } = await createPaymentDetails(order.orderId);
-      const { resultCode } = await callTradePay(paymentUrl);
-
-      // Network exception
-      if (resultCode !== '6002') {
-        result.paymentId = paymentId;
-
-        return result;
-      }
+      return result;
     } catch (error) {
       throw error;
     }
@@ -304,6 +292,31 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
     source,
     isInternal: planId.startsWith('internal'),
   };
+
+  if (Utils.isTNGMiniProgram()) {
+    try {
+      const { redirectionUrl: paymentUrl, paymentId } = await createTngdPaymentDetails(order.orderId);
+
+      paymentArgs.paymentId = paymentId;
+
+      await callTradePay(paymentUrl);
+    } catch (e) {
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch({ type: 'ordering/payments/common/createTngdPaymentDetailFailure', ...e });
+      } else {
+        dispatch(
+          appActions.showMessageModal({
+            message: i18next.t('PaymentFailed'),
+            description: i18next.t('PaymentFailedDescription'),
+          })
+        );
+      }
+    }
+  }
+
   submitForm(action, { ...basicArgs, ...paymentArgs });
 };
 
