@@ -7,7 +7,7 @@ import Constants, { ORDER_SOURCE } from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
-import { getPaymentDetails } from './api-info';
+import { createPaymentDetails } from './api-info';
 
 import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
@@ -240,9 +240,10 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         return result;
       }
 
-      const { redirectionUrl: paymentUrl, paymentId } = await getPaymentDetails(order.orderId);
+      const { redirectionUrl: paymentUrl, paymentId } = await createPaymentDetails(order.orderId);
       const { resultCode } = await callTradePay(paymentUrl);
 
+      // Network exception
       if (resultCode !== '6002') {
         result.paymentId = paymentId;
 
