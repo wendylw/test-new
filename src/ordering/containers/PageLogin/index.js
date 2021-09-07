@@ -30,7 +30,7 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, user, deliveryDetails } = this.props;
+    const { history, location } = this.props;
     const { nextPage } = location;
     if (nextPage) {
       history.push({
