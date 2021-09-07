@@ -244,7 +244,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       const { resultCode } = await callTradePay(paymentUrl);
 
       if (resultCode !== '6002') {
-        result[paymentId] = paymentId;
+        result.paymentId = paymentId;
 
         return result;
       }

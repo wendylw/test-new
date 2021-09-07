@@ -55,6 +55,7 @@ class CreateOrderButton extends React.Component {
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
     let currentOrder;
+    let currentPaymentId;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
@@ -82,8 +83,9 @@ class CreateOrderButton extends React.Component {
         paymentName: paymentName || 'N/A',
       });
 
-      const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
+      const { order, redirectUrl: thankYouPageUrl, paymentId } = createOrderResult || {};
       currentOrder = order;
+      currentPaymentId = paymentId;
       const { orderId } = currentOrder || {};
       loggly.log('ordering.order-created', { orderId });
 
@@ -109,7 +111,10 @@ class CreateOrderButton extends React.Component {
     if (currentOrder) {
       // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
       // paymentExtraData could be changed after beforeCreateOrder is executed.
-      gotoPayment(currentOrder, this.props.paymentExtraData);
+      gotoPayment(currentOrder, {
+        ...this.props.paymentExtraData,
+        ...(currentPaymentId ? { paymentId: currentPaymentId } : {}),
+      });
     }
   };
 
