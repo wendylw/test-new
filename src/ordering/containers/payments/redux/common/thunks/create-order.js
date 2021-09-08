@@ -271,7 +271,7 @@ const createOrderStatusRequest = async orderId => {
   return get(url);
 };
 
-export const gotoPayment = (order = {}, paymentArgs) => async (dispatch, getState) => {
+export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) => {
   const state = getState();
   const { currency } = getOnlineStoreInfo(state);
   const business = getBusiness(state);
@@ -304,7 +304,7 @@ export const gotoPayment = (order = {}, paymentArgs) => async (dispatch, getStat
       });
       const { redirectionUrl: paymentUrl } = paymentData?.actionForm || {};
 
-      paymentArgs.paymentId = paymentId;
+      basicArgs.paymentId = paymentId;
       await callTradePay(paymentUrl);
     } catch (e) {
       if (e.code) {
