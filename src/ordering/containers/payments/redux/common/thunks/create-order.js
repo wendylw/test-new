@@ -278,9 +278,7 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
   const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
   const source = Utils.getOrderSource();
   const planId = getBusinessByName(state, business).planId || '';
-  const action = Utils.isTNGMiniProgram()
-    ? config.storehubPaymentResponseURL.replace('%business%', business)
-    : config.storeHubPaymentEntryURL;
+  let action = config.storeHubPaymentEntryURL;
   const basicArgs = {
     amount: order.total,
     currency: currency,
@@ -296,6 +294,7 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
     try {
       const { redirectionUrl: paymentUrl, paymentId } = await createTngdPaymentDetails(order.orderId);
 
+      action = config.storehubPaymentResponseURL.replace('%business%', business);
       paymentArgs.paymentId = paymentId;
 
       await callTradePay(paymentUrl);
@@ -313,6 +312,8 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
           })
         );
       }
+
+      return;
     }
   }
 
