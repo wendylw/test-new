@@ -139,7 +139,7 @@ class CustomerInfo extends Component {
     const { history, cartBilling } = this.props;
     const { total } = cartBilling || {};
 
-    if (total && !this.validateFields().show && !Utils.isTNGMiniProgram) {
+    if (total && !this.validateFields().show && !Utils.isTNGMiniProgram()) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,

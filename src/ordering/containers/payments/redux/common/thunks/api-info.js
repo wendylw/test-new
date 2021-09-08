@@ -10,5 +10,5 @@ export const API_INFO = {
   }),
 };
 
-export const createPaymentDetails = ({ orderId, orderSource, isInternal = false, paymentProvider, webhookURL }) =>
-  post('/payment', { receiptNumber: orderId, orderSource, isInternal, paymentProvider, webhookURL });
+export const createPaymentDetails = ({ orderId, orderSource, paymentProvider, webhookURL }) =>
+  post('/payment', { receiptNumber: orderId, orderSource, paymentProvider, webhookURL });

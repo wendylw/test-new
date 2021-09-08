@@ -297,8 +297,7 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
     try {
       const { paymentData, paymentId } = await createPaymentDetails({
         orderId,
-        source,
-        isInternal,
+        orderSource: source,
         paymentProvider: 'TNGMiniProgram',
         webhookURL,
       });
