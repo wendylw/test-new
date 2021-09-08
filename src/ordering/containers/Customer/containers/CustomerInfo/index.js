@@ -43,14 +43,13 @@ class CustomerInfo extends Component {
   async componentDidMount() {
     const { user, deliveryDetails } = this.props;
     const { profile } = user || {};
-    const { name, phone } = profile || {};
-    const { username, phone: orderPhone } = deliveryDetails || {};
     const { appActions, selectAvailableAddress } = this.props;
 
-    if (name) {
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-    }
+    await appActions.updateDeliveryDetails({
+      username: deliveryDetails.username || profile.name,
+      phone: deliveryDetails.phone || profile.phone,
+    });
+
     await selectAvailableAddress();
     appActions.loadShoppingCart();
   }

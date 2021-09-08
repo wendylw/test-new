@@ -90,8 +90,7 @@ class Cart extends Component {
 
   handleClickContinue = async () => {
     const { user, history, appActions, cartActions } = this.props;
-    const { consumerId, isLogin, profile } = user || {};
-    const { name } = profile || {};
+    const { isLogin } = user || {};
 
     const { status } = await cartActions.checkCartInventory();
 
@@ -110,14 +109,13 @@ class Cart extends Component {
         search: window.location.search,
         nextPage: true,
       });
+      return;
     }
 
-    if ((isLogin && name) || (isLogin && consumerId)) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    }
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      search: window.location.search,
+    });
   };
 
   handleResizeEvent() {
