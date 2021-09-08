@@ -8,7 +8,7 @@ import { bindActionCreators, compose } from 'redux';
 import { put } from '../../../utils/request';
 import url from '../../../utils/url';
 import './Profile.scss';
-
+import Utils from '../../../../src/utils/utils';
 // import DayPicker from 'react-day-picker';
 // import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
@@ -53,8 +53,12 @@ class Profile extends Component {
       if (success) {
         !username && (await appActions.updateDeliveryDetails({ username: name }));
         !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
+        // history.push({
+        //   pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        //   search: window.location.search,
+        // });
         history.push({
-          pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+          pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
           search: window.location.search,
         });
       }
@@ -84,25 +88,80 @@ class Profile extends Component {
   //   this.props.appActions.updateProfileInfo({ birthday: date });
   // };
 
+  focusMethod = () => {
+    const profile__email = document.getElementById('profile__email');
+    profile__email.focus();
+    profile__email.style.border = '1px solid #FA4133';
+    const notValidEmail = document.getElementById('notValidEmail');
+    notValidEmail.style.display = 'block';
+    const input_email = document.getElementById('input_email');
+    // input_email.style.border = '1px solid #FA4133';
+    input_email.style.color = 'red';
+  };
+
+  notFocusMethod = () => {
+    const profile__email = document.getElementById('profile__email');
+    const notValidEmail = document.getElementById('notValidEmail');
+    notValidEmail.style.display = 'none';
+    profile__email.style.border = '1px solid #dededf';
+    const input_email = document.getElementById('input_email');
+    input_email.style.color = '#303030';
+  };
+
+  handleEmailInputBlur = () => {
+    const email = document.getElementById('input_email').value;
+    const verifyEmail = Utils.checkEmailIsValid(email);
+    console.log(Utils.checkEmailIsValid(email)); // true false
+    if (verifyEmail) {
+      this.notFocusMethod();
+    } else {
+      this.focusMethod();
+    }
+    // Utils.checkEmailIsValid(email)
+  };
+
+  skipProfile = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: Constants.ROUTER_PATHS.THANK_YOU,
+      search: window.location.search,
+    });
+  };
+
   render() {
     const { t, user } = this.props;
     const { profile } = user || {};
-    const { name, email } = profile || {};
+    const { name, email, birthday } = profile || {};
     return (
       <div className="profile flex flex-column">
-        <HybridHeader
+        {/* <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           isPage={true}
           title={t('CompleteYourProfile')}
           navFunc={this.handleClickBack.bind(this)}
-        />
+        /> */}
         <section className="profile__container padding-left-right-normal">
-          <p className="margin-top-bottom-normal text-size-big text-line-height-base">{t('CompleteProfileTip')}</p>
+          <div className="profile__flex">
+            <div>
+              <p className="profile__complete_title profile__complete_title_two">{t('Complete')}</p>
+              <p className="profile__complete_title ">{t('YourProfile')}</p>
+            </div>
+            <a href="#" className="profile__skip" onClick={this.skipProfile}>
+              {t('SkipForNow')}
+            </a>
+          </div>
+          <p className="profile__margin-top-bottom-normal text-size-big text-line-height-base">
+            {t('CompleteProfileTip')}
+          </p>
           <div>
             <form>
-              <div className="profile__input padding-small border-radius-base">
-                <div>{t('Name')}</div>
+              <div className="profile__input padding-small border-radius-base padding-left-right-normal">
+                <div className="flex__fluid-content">
+                  <div className="profile__title required">
+                    <span className="text-size-small text-top">{t('Name')}</span>
+                  </div>
+                </div>
                 <input
                   name="consumerName"
                   value={name}
@@ -113,11 +172,43 @@ class Profile extends Component {
                 />
               </div>
               {this.state.error && <p className="profile__error-message">{this.state.message}</p>}
-              <div className={`profile__input padding-small border-radius-base ${this.state.error ? 'error' : ''}`}>
-                <div>{t('EmailAddress')}</div>
+              <div
+                id="profile__email"
+                className={`profile__input padding-small border-radius-base padding-left-right-normal ${
+                  this.state.error ? 'error' : ''
+                }`}
+              >
+                <div className="flex__fluid-content">
+                  <div className="profile__title required">
+                    <span className="text-size-small text-top">{t('EmailAddress')}</span>
+                  </div>
+                </div>
                 <input
+                  id="input_email"
                   name="consumerEmail"
                   value={email}
+                  className="form__input"
+                  type="text"
+                  onChange={this.handleInputChange}
+                  onBlur={this.handleEmailInputBlur}
+                />
+              </div>
+              <p id="notValidEmail" className="profile__not-valid">
+                {t('NotValidEmail')}
+              </p>
+              <div
+                className={`profile__input padding-small border-radius-base padding-left-right-normal ${
+                  this.state.error ? 'error' : ''
+                }`}
+              >
+                <div className="flex__fluid-content">
+                  <div className="profile__title required">
+                    <span className="text-size-small text-top">{t('DateOfBirth')}</span>
+                  </div>
+                </div>
+                <input
+                  name="consumerEmail"
+                  value={birthday}
                   className="form__input"
                   type="text"
                   onChange={this.handleInputChange}
@@ -135,7 +226,7 @@ class Profile extends Component {
         <footer className="footer footer__transparent margin-normal">
           <button
             className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
-            disabled={!name}
+            disabled={!name || !Utils.checkEmailIsValid(email)}
             onClick={this.saveProfile}
           >
             {t('Continue')}

@@ -193,5 +193,10 @@
   "CommonErrorMessage": "Whoops, this page isn't available",
   "ErrorId": "Error ID: {{ id }}",
   "LowStockProductQuantity": "only {{quantityOnHand}} left",
-  "EmailAddress": "Email Address (optional)"
+  "EmailAddress": "Email Address (optional)",
+  "DateOfBirth": "Date of Birth",
+  "Complete": "Complete",
+  "YourProfile": "Your Profile",
+  "NotValidEmail": "Please try again or enter a valid email address",
+  "SkipForNow": "Skip for now"
 }
