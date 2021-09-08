@@ -7,7 +7,7 @@ import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
-import { createTngdPaymentDetails } from './api-info';
+import { createPaymentDetails } from './api-info';
 
 import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
@@ -271,32 +271,40 @@ const createOrderStatusRequest = async orderId => {
   return get(url);
 };
 
-export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) => {
+export const gotoPayment = (order = {}, paymentArgs) => async (dispatch, getState) => {
   const state = getState();
   const { currency } = getOnlineStoreInfo(state);
   const business = getBusiness(state);
   const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
   const source = Utils.getOrderSource();
   const planId = getBusinessByName(state, business).planId || '';
-  let action = config.storeHubPaymentEntryURL;
+  const { orderId, total: amount } = order;
+  const isInternal = planId.startsWith('internal');
+  const isTNGPayment = Utils.isTNGMiniProgram();
+  const action = isTNGPayment ? redirectURL : config.storeHubPaymentEntryURL;
   const basicArgs = {
-    amount: order.total,
+    amount,
     currency: currency,
-    receiptNumber: order.orderId,
+    receiptNumber: orderId,
     businessName: business,
-    redirectURL: redirectURL,
-    webhookURL: webhookURL,
+    redirectURL,
+    webhookURL,
     source,
-    isInternal: planId.startsWith('internal'),
+    isInternal,
   };
 
-  if (Utils.isTNGMiniProgram()) {
+  if (isTNGPayment) {
     try {
-      const { redirectionUrl: paymentUrl, paymentId } = await createTngdPaymentDetails(order.orderId);
+      const { paymentData, paymentId } = await createPaymentDetails({
+        orderId,
+        source,
+        isInternal,
+        paymentProvider: 'TNGMiniProgram',
+        webhookURL,
+      });
+      const { redirectionUrl: paymentUrl } = paymentData?.actionForm || {};
 
-      action = config.storehubPaymentResponseURL.replace('%business%', business);
       paymentArgs.paymentId = paymentId;
-
       await callTradePay(paymentUrl);
     } catch (e) {
       if (e.code) {

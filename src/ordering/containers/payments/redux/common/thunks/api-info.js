@@ -10,4 +10,5 @@ export const API_INFO = {
   }),
 };
 
-export const createTngdPaymentDetails = orderId => post('/payment/details', { queryParams: { orderId } });
+export const createPaymentDetails = ({ orderId, orderSource, isInternal = true, paymentProvider, webhookURL }) =>
+  post('/payment', { receiptNumber: orderId, orderSource, isInternal, paymentProvider, webhookURL });
