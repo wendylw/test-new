@@ -288,7 +288,6 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
     businessName: business,
     redirectURL: redirectURL,
     webhookURL: webhookURL,
-    // paymentName: paymentProvider,
     source,
     isInternal: planId.startsWith('internal'),
   };
