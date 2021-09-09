@@ -304,6 +304,7 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
       const { redirectionUrl: paymentUrl } = paymentData?.actionForm || {};
 
       basicArgs.paymentId = paymentId;
+      basicArgs.paymentMethod = 'TNGMiniProgram';
       await callTradePay(paymentUrl);
     } catch (e) {
       if (e.code) {
