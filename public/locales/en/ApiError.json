@@ -84,5 +84,5 @@
   "57011Title": "Payment method unavailable (#57011)",
   "57011Description": "Please choose a different payment method to continue",
   "57013Title": "Unable to process order (#57013)",
-  "57013Description": "This store no longer supports {{shippingType}} orders, please select another shipping method and try again"
+  "57013Description": "The selected shipping method is not supported. Please select another shipping method and try again"
 }
