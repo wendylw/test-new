@@ -331,6 +331,7 @@ export class ThankYou extends PureComponent {
     const { storeId: prevStoreId } = prevOrder || {};
     const {
       order,
+      orderStatus,
       history,
       onlineStoreInfo,
       businessInfo,
@@ -343,6 +344,15 @@ export class ThankYou extends PureComponent {
     const { isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const canGetCashback =
+      enableCashback &&
+      orderStatus &&
+      orderStatus !== prevProps.orderStatus &&
+      !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+
+    if (canGetCashback) {
+      loadCashbackInfo(receiptNumber);
+    }
 
     const canCreateCashback =
       isLogin &&
@@ -350,7 +360,6 @@ export class ThankYou extends PureComponent {
       (prevBusinessInfo.enableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
 
     if (canCreateCashback) {
-      loadCashbackInfo(receiptNumber);
       await this.canClaimCheck(user);
     }
 
