@@ -140,9 +140,8 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    loadCashbackInfo(receiptNumber);
-
     if (enableCashback) {
+      loadCashbackInfo(receiptNumber);
       this.canClaimCheck(user);
     }
 
@@ -332,6 +331,7 @@ export class ThankYou extends PureComponent {
     const { storeId: prevStoreId } = prevOrder || {};
     const {
       order,
+      history,
       onlineStoreInfo,
       businessInfo,
       user,
@@ -342,6 +342,7 @@ export class ThankYou extends PureComponent {
     const { storeId } = order || {};
     const { isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
+    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     const canCreateCashback =
       isLogin &&
@@ -349,6 +350,7 @@ export class ThankYou extends PureComponent {
       (prevBusinessInfo.enableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
 
     if (canCreateCashback) {
+      loadCashbackInfo(receiptNumber);
       await this.canClaimCheck(user);
     }
 
