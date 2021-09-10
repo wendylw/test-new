@@ -96,14 +96,9 @@ export class ThankYou extends PureComponent {
     const { history, createCashbackInfo } = this.props;
     const { phone } = this.state;
     const { isLogin } = user || {};
-    const { isFetching, createdCashbackInfo } = this.props.cashbackInfo || {};
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     if (isLogin) {
-      Utils.setLocalStorageVariable('user.p', phone);
-    }
-
-    if (isLogin && !isFetching && !createdCashbackInfo) {
       await createCashbackInfo({
         receiptNumber,
         phone,
@@ -355,7 +350,7 @@ export class ThankYou extends PureComponent {
     }
 
     const canCreateCashback =
-      isLogin &&
+      canGetCashback &&
       enableCashback &&
       (prevBusinessInfo.enableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
 
