@@ -27,14 +27,7 @@ import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
-
-const ShippingTypes = {
-  dineIn: 'dine in',
-  pickup: 'self pickup',
-  delivery: 'delivery',
-  takeaway: 'take away',
-};
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING } = Constants;
 
 export class OrderDetails extends Component {
   state = {};
@@ -184,7 +177,10 @@ export class OrderDetails extends Component {
           <div className="flex flex-middle flex-space-between">
             <span className="ordering-details__subtitle padding-top-bottom-small">{t('OrderStatus')}</span>
             <div>
-              <Tag className="tag tag__small tag__primary" text={ShippingTypes[shippingType]} />
+              <Tag
+                className="tag tag__small tag__primary"
+                text={ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING[shippingType]}
+              />
             </div>
           </div>
           {status && <span className="text-weight-bolder">{status[0].toLocaleUpperCase() + status.slice(1)}</span>}
@@ -270,15 +266,6 @@ export class OrderDetails extends Component {
     );
   }
 
-  gotoThankyouPage = () => {
-    const { history } = this.props;
-
-    history.replace({
-      pathname: Constants.ROUTER_PATHS.THANK_YOU,
-      search: window.location.search,
-    });
-  };
-
   getRightContentOfHeader() {
     const { user, order, t, businessInfo, storeInfoForCleverTap } = this.props;
     const isWebview = _get(user, 'isWebview', false);
@@ -346,7 +333,7 @@ export class OrderDetails extends Component {
       return;
     }
 
-    this.gotoThankyouPage();
+    this.props.history.goBack();
     return;
   };
 

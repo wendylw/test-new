@@ -25,6 +25,7 @@ import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 import NativeHeader from '../../../components/NativeHeader';
 import PageLoader from '../../../components/PageLoader';
+import * as TngUtils from '../../../utils/tng-utils';
 
 class App extends Component {
   state = {
@@ -32,7 +33,12 @@ class App extends Component {
   };
 
   async componentDidMount() {
+    if (Utils.isTNGMiniProgram()) {
+      TngUtils.setTabBarVisibility(false);
+    }
+
     const { appActions } = this.props;
+
     this.visitErrorPage();
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();

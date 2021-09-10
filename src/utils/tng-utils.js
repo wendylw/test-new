@@ -84,6 +84,14 @@ export const isRequiredDevTools = async () => {
   }
 };
 
+export const setTabBarVisibility = async visible => {
+  try {
+    await callMessagePortal('setTabBarVisibility', visible);
+  } catch (e) {
+    console.error('Set tab bar visibility error', e);
+  }
+};
+
 export const callTradePay = paymentUrl =>
   new Promise((resolve, reject) => {
     if (Utils.isTNGMiniProgram()) {

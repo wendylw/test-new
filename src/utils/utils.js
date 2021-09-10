@@ -873,12 +873,18 @@ Utils.isFromBeepSite = () => {
 
 Utils.getRegistrationTouchPoint = () => {
   const isOnCashbackPage = window.location.pathname.startsWith(ROUTER_PATHS.CASHBACK_BASE);
+  const isOnOrderHistory = window.location.pathname.startsWith(ROUTER_PATHS.ORDER_HISTORY);
+
   if (isOnCashbackPage) {
     return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
   }
 
   if (Utils.isQROrder()) {
     return REGISTRATION_TOUCH_POINT.QR_ORDER;
+  }
+
+  if (Utils.isTNGMiniProgram() && isOnOrderHistory) {
+    return REGISTRATION_TOUCH_POINT.TNG;
   }
 
   return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;

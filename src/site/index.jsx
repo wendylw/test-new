@@ -9,6 +9,7 @@ import DocumentFavicon from '../components/DocumentFavicon';
 import DocumentHeadInfo from '../components/DocumentHeadInfo';
 import favicon from '../images/favicon.ico';
 import Utils from '../utils/utils';
+import Constants from '../utils/constants';
 
 class Site extends Component {
   constructor(props) {
@@ -21,14 +22,15 @@ class Site extends Component {
     }
   }
   render() {
-    const { t } = this.props;
+    const { t, location } = this.props;
+    const isOrderHistoryPage = location.pathname === Constants.ROUTER_PATHS.ORDER_HISTORY;
 
     return (
       <Provider store={store}>
         <SiteApp />
         <DocumentFavicon icon={favicon} />
         <DocumentHeadInfo
-          title={t('MvpDocumentTitle')}
+          title={isOrderHistoryPage ? t('MyOrderHistory') : t('MvpDocumentTitle')}
           description={t('MvpDocumentDescription')}
           keywords={t('MvpDocumentKeywords')}
         />

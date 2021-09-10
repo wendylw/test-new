@@ -271,6 +271,7 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
+  // TODO: use login request in `src/utils/api-request.js` and thunk
   loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
 

@@ -49,6 +49,7 @@ const ROUTER_PATHS = {
   SCAN: '/scan',
   SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
+  ORDER_HISTORY: '/order-history',
   // voucher
   VOUCHER_HOME: '/voucher',
   VOUCHER_CONTACT: '/voucher/contact',
@@ -621,6 +622,7 @@ export const REGISTRATION_TOUCH_POINT = {
   CLAIM_CASHBACK: 'ClaimCashback',
   ONLINE_ORDER: 'OnlineOrder',
   QR_ORDER: 'QROrder',
+  TNG: 'TNG',
 };
 
 export const REGISTRATION_SOURCE = {
@@ -642,6 +644,13 @@ export const ORDER_SOURCE = {
   BEEP_APP: 'BeepApp',
   BEEP_SITE: 'BeepSite',
   BEEP_STORE: 'BeepStore',
+};
+
+export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
+  [DELIVERY_METHOD.DINE_IN]: 'dine in',
+  [DELIVERY_METHOD.PICKUP]: 'self pickup',
+  [DELIVERY_METHOD.DELIVERY]: 'delivery',
+  [DELIVERY_METHOD.TAKE_AWAY]: 'take away',
 };
 
 export default {
@@ -693,4 +702,5 @@ export default {
   REGISTRATION_SOURCE,
   API_REQUEST_STATUS,
   ORDER_SOURCE,
+  ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
 };

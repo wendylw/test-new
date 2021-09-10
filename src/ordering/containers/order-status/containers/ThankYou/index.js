@@ -1448,10 +1448,18 @@ export class ThankYou extends PureComponent {
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
     const type = Utils.getOrderTypeFromUrl();
+    const from = Utils.getQueryString('from');
 
     if (isWebview) {
       NativeMethods.closeWebView();
       return;
+    }
+
+    if (Utils.isTNGMiniProgram()) {
+      if (from === 'orderHistory') {
+        history.goBack();
+        return;
+      }
     }
 
     const options = [`h=${storeHashCode}`];

@@ -53,6 +53,7 @@ export const types = APP_TYPES;
 
 //action creators
 export const actions = {
+  // TODO: use login request in `src/utils/api-request.js` and thunk
   loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
