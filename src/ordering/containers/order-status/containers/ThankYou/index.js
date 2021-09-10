@@ -92,18 +92,24 @@ export class ThankYou extends PureComponent {
   pollOrderStatusTimer = null;
 
   // TODO: Will move to cashbackInfo component
-  async canClaimCheck(user) {
-    const { history, createCashbackInfo } = this.props;
-    const { phone } = this.state;
+  async canClaimCheck() {
+    const { history, user, createCashbackInfo, businessInfo, orderStatus, loadCashbackInfo } = this.props;
+    const { enableCashback } = businessInfo || {};
     const { isLogin } = user || {};
+
+    if (!enableCashback || !isLogin || !orderStatus || BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
+      return;
+    }
+
+    const { phone } = this.state;
     const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
-    if (isLogin) {
-      await createCashbackInfo({
-        receiptNumber,
-        phone,
-      });
-    }
+    loadCashbackInfo(receiptNumber);
+
+    createCashbackInfo({
+      receiptNumber,
+      phone,
+    });
   }
 
   componentDidMount = async () => {
@@ -111,19 +117,8 @@ export class ThankYou extends PureComponent {
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
     window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
-    const {
-      history,
-      loadCashbackInfo,
-      loadStoreIdHashCode,
-      loadStoreIdTableIdHashCode,
-      order,
-      onlineStoreInfo,
-      businessInfo,
-      user,
-    } = this.props;
+    const { user, loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo } = this.props;
     const { storeId } = order || {};
-    const { enableCashback } = businessInfo || {};
-    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
 
     if (storeId) {
       Utils.isDineInType()
@@ -135,10 +130,7 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    if (enableCashback) {
-      loadCashbackInfo(receiptNumber);
-      this.canClaimCheck(user);
-    }
+    this.canClaimCheck();
 
     await this.loadOrder();
 
@@ -324,10 +316,10 @@ export class ThankYou extends PureComponent {
   async componentDidUpdate(prevProps) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo, businessInfo: prevBusinessInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
+    const { enableCashback: prevEnableCashback } = prevBusinessInfo;
     const {
       order,
       orderStatus,
-      history,
       onlineStoreInfo,
       businessInfo,
       user,
@@ -336,23 +328,14 @@ export class ThankYou extends PureComponent {
       loadStoreIdHashCode,
     } = this.props;
     const { storeId } = order || {};
-    const { isLogin } = user || {};
     const { enableCashback } = businessInfo || {};
-    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    const canGetCashback =
-      enableCashback &&
-      orderStatus &&
-      orderStatus !== prevProps.orderStatus &&
-      !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+    const canUpdateCashback =
+      prevEnableCashback !== enableCashback ||
+      prevProps.orderStatus !== orderStatus ||
+      prevProps.user.isLogin !== user.isLogin;
 
-    if (canGetCashback) {
-      loadCashbackInfo(receiptNumber);
-    }
-
-    const canCreateCashback = canGetCashback && isLogin !== prevProps.user.isLogin;
-
-    if (canCreateCashback) {
-      await this.canClaimCheck(user);
+    if (canUpdateCashback) {
+      await this.canClaimCheck();
     }
 
     if (storeId && prevStoreId !== storeId) {
