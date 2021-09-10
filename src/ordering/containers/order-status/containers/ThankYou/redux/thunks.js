@@ -12,15 +12,9 @@ import { loadOrder } from '../../../redux/thunks';
 import { error as logglyError } from '../../../../../../utils/monitoring/loggly';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
-  console.log(1);
-
   try {
     const { url, queryParams } = API_INFO.getCashbackInfo(orderId, Constants.CASHBACK_SOURCE.QR_ORDERING);
-    console.log(1);
-
     const result = await get(url, { queryParams });
-
-    console.log(2);
 
     return result;
   } catch (e) {
