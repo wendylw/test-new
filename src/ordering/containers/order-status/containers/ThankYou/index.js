@@ -349,10 +349,7 @@ export class ThankYou extends PureComponent {
       loadCashbackInfo(receiptNumber);
     }
 
-    const canCreateCashback =
-      canGetCashback &&
-      enableCashback &&
-      (prevBusinessInfo.enableCashback !== enableCashback || isLogin !== prevProps.user.isLogin);
+    const canCreateCashback = canGetCashback && enableCashback && isLogin !== prevProps.user.isLogin;
 
     if (canCreateCashback) {
       await this.canClaimCheck(user);
