@@ -14,7 +14,9 @@ import Constants from '../utils/constants';
 class Site extends Component {
   constructor(props) {
     super(props);
-    if (Utils.getUserAgentInfo().browser.includes('Safari')) {
+    const browser = Utils.getUserAgentInfo().browser;
+
+    if (browser.includes('Safari') || browser.includes('AppleWebKit')) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';
