@@ -78,7 +78,7 @@
   "57008Title": "Unable to apply CashBack (#57008)",
   "57008Description": "An error occurred while applying CashBack. Please try again",
   "57009Title": "Minimum spend not met (#57009)",
-  "57009Description": "Minimum order amount is ${minimumConsumption}. Please edit your cart and try again",
+  "57009Description": "You haven't reached the mininum order amount. Please edit your cart and try again",
   "57010Title": "Unable to apply CashBack (#57010)",
   "57010Description": "An error occurred while applying CashBack. Please try again",
   "57011Title": "Payment method unavailable (#57011)",
