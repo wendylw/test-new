@@ -7,12 +7,13 @@ import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
+import * as ApiRequest from '../../../utils/api-request';
 import CleverTap from '../../../utils/clevertap';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { post, get } from '../../../utils/request';
+import { get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
@@ -271,44 +272,30 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  // TODO: use login request in `src/utils/api-request.js` and thunk
-  loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
-    const businessUTCOffset = getBusinessUTCOffset(getState());
+  loginApp: ({ accessToken, refreshToken }) => async (dispatch, getState) => {
+    try {
+      const businessUTCOffset = getBusinessUTCOffset(getState());
 
-    return dispatch({
-      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
+      dispatch({
+        type: types.CREATE_LOGIN_REQUEST,
+      });
+
+      const result = await ApiRequest.login({
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-        shippingType: Utils.getApiRequestShippingType(),
-        registrationTouchpoint: Utils.getRegistrationTouchPoint(),
-        registrationSource: Utils.getRegistrationSource(),
-      }).then(resp => {
-        if (resp && resp.consumerId) {
-          const phone = Utils.getLocalStorageVariable('user.p');
-          if (phone) {
-          }
-          const userInfo = {
-            Name: resp.user?.firstName,
-            Phone: resp.user?.phone,
-            Identity: resp.consumerId,
-            ...(resp.user?.email ? { Email: resp.user?.email } : {}),
-          };
+      });
 
-          CleverTap.pushEvent('Login - login successful', {
-            'new user': resp.user?.isFirstLogin,
-          });
-
-          if (resp.user?.birthday) {
-            userInfo.DOB = new Date(resp.user?.birthday);
-          }
-
-          CleverTap.onUserLogin(userInfo);
-        }
-        return resp;
-      }),
-    });
+      dispatch({
+        type: types.CREATE_LOGIN_SUCCESS,
+        payload: result,
+      });
+    } catch (error) {
+      dispatch({
+        type: types.CREATE_LOGIN_FAILURE,
+        error: error,
+      });
+    }
   },
 
   resetOtpStatus: () => ({
@@ -561,21 +548,17 @@ export const actions = {
     }
 
     try {
+      const business = getBusiness(getState());
+
       dispatch({
-        type: types.LOGIN_BY_TNG_MINI_PROGRAM_REQUEST,
+        type: types.CREATE_LOGIN_REQUEST,
       });
 
-      const isLogin = getUserIsLogin(getState());
-      const business = getBusiness(getState());
-      if (isLogin) {
-        return true;
-      }
+      const tokens = await TngUtils.getAccessToken({ business: business });
 
-      const result = await TngUtils.getAccessToken({ business: business });
+      const { access_token, refresh_token } = tokens;
 
-      const { access_token, refresh_token } = result;
-
-      await dispatch(
+      const result = await dispatch(
         actions.loginApp({
           accessToken: access_token,
           refreshToken: refresh_token,
@@ -583,14 +566,13 @@ export const actions = {
       );
 
       dispatch({
-        type: types.LOGIN_BY_TNG_MINI_PROGRAM_SUCCESS,
+        type: types.CREATE_LOGIN_SUCCESS,
+        payload: result,
       });
-    } catch (e) {
-      // TODO: prompt user login failed
-      console.error(e);
-
+    } catch (error) {
       dispatch({
-        type: types.LOGIN_BY_TNG_MINI_PROGRAM_FAILURE,
+        type: types.CREATE_LOGIN_FAILURE,
+        error,
       });
 
       return false;
@@ -602,7 +584,7 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, fields, responseGql } = action;
-  const { consumerId, login, user, noWhatsAppAccount } = response || {};
+  const { consumerId, login, noWhatsAppAccount } = response || {};
 
   switch (type) {
     case types.SHOW_LOGIN_PAGE:
@@ -639,7 +621,8 @@ const user = (state = initialState.user, action) => {
         accessToken: access_token,
         refreshToken: refresh_token,
       };
-    case types.CREATE_LOGIN_SUCCESS:
+    case types.CREATE_LOGIN_SUCCESS: {
+      const { consumerId, user } = action.payload;
       if (state.accessToken) {
         delete state.accessToken;
       }
@@ -661,6 +644,7 @@ const user = (state = initialState.user, action) => {
         hasOtp: false,
         isFetching: false,
       };
+    }
     case types.FETCH_LOGIN_STATUS_SUCCESS:
       return {
         ...state,
@@ -722,15 +706,6 @@ const user = (state = initialState.user, action) => {
       } else {
         return state;
       }
-    case types.LOGIN_BY_TNG_MINI_PROGRAM_REQUEST: {
-      return { ...state, isFetching: true };
-    }
-    case types.LOGIN_BY_TNG_MINI_PROGRAM_SUCCESS: {
-      return { ...state, isFetching: false };
-    }
-    case types.LOGIN_BY_TNG_MINI_PROGRAM_FAILURE: {
-      return { ...state, isFetching: false };
-    }
     default:
       return state;
   }

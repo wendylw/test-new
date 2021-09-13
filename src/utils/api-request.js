@@ -2,10 +2,11 @@ import { post } from './api/api-fetch';
 import Utils from './utils';
 import CleverTap from './clevertap';
 
-export const login = ({ accessToken, refreshToken }) =>
+export const login = ({ accessToken, refreshToken, fulfillDate }) =>
   post('/api/login', {
     accessToken,
     refreshToken,
+    fulfillDate,
     registrationTouchpoint: Utils.getRegistrationTouchPoint(),
     registrationSource: Utils.getRegistrationSource(),
   }).then(data => {

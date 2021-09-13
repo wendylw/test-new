@@ -12,6 +12,7 @@ import {
   getBusinessInfo,
   getDeliveryInfo,
   getCategoryProductList,
+  getUserIsLogin,
 } from '../../../redux/modules/app';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
@@ -66,14 +67,32 @@ export class Footer extends Component {
     }
   };
 
+  loginInTngMiniProgram = async () => {
+    if (this.props.isLogin) {
+      this.handleWebRedirect();
+      return;
+    }
+
+    // TODO: handle login fail
+    await this.props.appActions.loginByTngMiniProgram();
+
+    this.handleWebRedirect();
+  };
+
   handleRedirect = () => {
     loggly.log('footer.place-order');
 
     if (Utils.isWebview()) {
       this.postAppMessage();
-    } else {
-      this.handleWebRedirect();
+      return;
     }
+
+    if (Utils.isTNGMiniProgram()) {
+      this.loginInTngMiniProgram();
+      return;
+    }
+
+    this.handleWebRedirect();
   };
 
   handleWebRedirect = () => {
@@ -224,6 +243,7 @@ export default compose(
         shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),
         user: getUser(state),
+        isLogin: getUserIsLogin(state),
         deliverInfo: getDeliveryInfo(state),
       };
     },
