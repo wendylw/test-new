@@ -1460,6 +1460,9 @@ export class ThankYou extends PureComponent {
         history.goBack();
         return;
       }
+
+      // goto beep site home page
+      window.location.href = config.beepitComUrl;
     }
 
     const options = [`h=${storeHashCode}`];
