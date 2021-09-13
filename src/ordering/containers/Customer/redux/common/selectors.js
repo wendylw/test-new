@@ -1,1 +1,1 @@
-export const getAddressList = state => state.customer.common.addressList.data;
+export const getAddressList = state => Object.values(state.customer.common.addressList.data);

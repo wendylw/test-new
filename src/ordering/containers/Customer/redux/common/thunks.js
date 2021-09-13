@@ -39,8 +39,6 @@ export const selectAvailableAddress = createAsyncThunk(
 
     const deliveryCoords = Utils.getDeliveryCoords();
 
-    await dispatch(loadAddressList());
-
     const addressList = getAddressList(getState());
 
     const addressIdFromNative = sessionStorage.getItem('addressIdFromNative');
