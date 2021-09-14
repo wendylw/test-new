@@ -225,16 +225,17 @@ export const actions = {
 
       const business = getBusiness(getState());
 
+      const businessUTCOffset = getBusinessUTCOffset(getState());
+
       const tokens = await TngUtils.getAccessToken({ business: business });
 
       const { access_token, refresh_token } = tokens;
 
-      const result = await dispatch(
-        actions.loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        })
-      );
+      const result = ApiRequest.login({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
+      });
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
