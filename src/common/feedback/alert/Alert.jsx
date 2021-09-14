@@ -5,6 +5,7 @@ import { withTranslation } from 'react-i18next';
 import './Alert.scss';
 
 function Alert(props) {
+  const { t } = withTranslation();
   const { content, closeContent, className, style, close } = props;
 
   return (
