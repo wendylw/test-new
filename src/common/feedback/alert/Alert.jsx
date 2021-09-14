@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-// import { IconClose } from '../../../components/Icons';
 import './Alert.scss';
 
 function Alert(props) {

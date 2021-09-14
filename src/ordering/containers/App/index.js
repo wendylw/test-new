@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -22,6 +23,7 @@ import faviconImage from '../../../images/favicon.ico';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import loggly from '../../../utils/monitoring/loggly';
+import { alert } from '../../../common/feedback/alert';
 
 const { ROUTER_PATHS } = Constants;
 let savedAddressRes;
@@ -150,7 +152,7 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { appActions, user, pageError, businessInfo } = this.props;
+    const { appActions, user, pageError, businessInfo, messageModal, apiErrorMessage } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
     const { code } = prevProps.pageError || {};
 
@@ -170,6 +172,50 @@ class App extends Component {
           businessInfo,
         });
       });
+    }
+
+    if (
+      (messageModal.show && messageModal.show !== prevProps.messageModal.show) ||
+      (apiErrorMessage.show && apiErrorMessage.show !== prevProps.apiErrorMessage.show)
+    ) {
+      const { message, description, buttonText, redirectUrl } = messageModal || apiErrorMessage;
+
+      alert(
+        <>
+          <h4 className="padding-small text-size-biggest text-weight-bolder">{message}</h4>
+          <p className="padding-top-bottom-small">{description}</p>
+        </>,
+        {
+          container: findDOMNode(this.orderingContainer),
+          closeContent: buttonText,
+          onClose: () => {
+            if (messageModal.show) {
+              this.props.appActions.hideMessageModal();
+
+              return;
+            }
+
+            const { ROUTER_PATHS } = Constants;
+            const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
+            const h = Utils.getQueryVariable('h');
+            const type = Utils.getQueryVariable('type');
+            let callback_url;
+
+            appActions.hideApiMessageModal();
+
+            if (redirectUrl && window.location.pathname !== redirectUrl) {
+              switch (redirectUrl) {
+                case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
+                  callback_url = encodeURIComponent(ORDERING_HOME);
+                  window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}&callbackUrl=${callback_url}`;
+                  break;
+                default:
+                  window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
+              }
+            }
+          },
+        }
+      );
     }
   }
 
@@ -201,18 +247,6 @@ class App extends Component {
     const type = Utils.getQueryVariable('type');
     let callback_url;
 
-    // const result = await promiseAlert(
-    //   <>
-    //     <h4 className="padding-small text-size-biggest text-weight-bolder">test</h4>
-    //     <p className="padding-top-bottom-small">test</p>
-    //   </>,
-    //   {
-    //     container: document.querySelector('.table-ordering'),
-    //   }
-    // );
-
-    // console.log('result', result);
-
     appActions.hideApiMessageModal();
     if (redirectUrl && window.location.pathname !== redirectUrl) {
       switch (redirectUrl) {
@@ -231,7 +265,11 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
+      <main
+        ref={ref => (this.orderingContainer = ref)}
+        className="table-ordering fixed-wrapper fixed-wrapper__main"
+        data-heap-name="ordering.app.container"
+      >
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         {apiErrorMessage.show ? (
           <MessageModal

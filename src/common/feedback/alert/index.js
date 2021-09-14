@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import { destroyTarget } from '../utils';
 import Alert from './Alert';
 
@@ -18,7 +18,7 @@ const createAlert = (content, options) => {
   rootDOM.setAttribute('class', 'alert-container');
   (container || document.body).appendChild(rootDOM);
 
-  ReactDOM.render(
+  render(
     React.createElement(Alert, {
       content,
       ...otherOptions,
