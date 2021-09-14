@@ -216,9 +216,11 @@ class Home extends React.Component {
           gotoLocationPage={this.gotoLocationPage}
           backLeftPosition={this.backLeftPosition}
         >
-          <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
-            <IconScanner className="icon icon__primary" onClick={this.handleQRCodeClicked} />
-          </Link>
+          {!Utils.isTNGMiniProgram() && (
+            <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
+              <IconScanner className="icon icon__primary" onClick={this.handleQRCodeClicked} />
+            </Link>
+          )}
         </DeliverToBar>
 
         <section
