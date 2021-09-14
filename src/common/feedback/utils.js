@@ -26,23 +26,3 @@ export const destroyTarget = target => {
 
   target.remove();
 };
-
-// export function handleApiErrorAction(error) {
-//   const { status } = error;
-
-//   if (!status) {
-//     if (process.env.NODE_ENV !== 'production') {
-//       /* eslint-disable */
-//       console.error('API ERROR:', error);
-//       /* eslint-enable */
-//     }
-
-//     return handleApiError();
-//   }
-
-//   return handleApiError({
-//     status,
-//     fbType: FEEDBACK_TYPE.ALERT,
-//     fbStatus: FEEDBACK_STATUS.ERROR,
-//   });
-// }
