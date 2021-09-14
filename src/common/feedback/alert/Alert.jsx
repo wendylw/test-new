@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { IconClose } from '../../components/Icons';
+import { IconClose } from '../../../components/Icons';
 import './Alert.scss';
 
 function Alert(props) {

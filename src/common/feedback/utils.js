@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+
 /**
  * Feedback Component Type
  * Components: message, modal, notification
@@ -17,6 +19,12 @@ export const FEEDBACK_STATUS = {
   ERROR: 'ERROR',
   WARNING: 'WARNING',
   INFO: 'INFO',
+};
+
+export const destroyTarget = target => {
+  ReactDOM.unmountComponentAtNode(target);
+
+  target.remove();
 };
 
 // export function handleApiErrorAction(error) {
