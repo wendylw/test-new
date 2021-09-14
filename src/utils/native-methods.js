@@ -35,18 +35,6 @@ export class NativeAPIError extends Error {
   }
 }
 
-const hasMethodInNative = method => {
-  try {
-    const { data: hasNativeMethod } = JSON.parse(
-      dsBridge.call('callNative', { method: 'hasNativeMethod', params: { methodName: method } })
-    );
-    return hasNativeMethod;
-  } catch (e) {
-    loggly.error('dsBridge-methods.hasNativeMethod', { message: e });
-    return false;
-  }
-};
-
 const dsBridgeSyncCall = (method, params) => {
   try {
     const result = dsBridge.call('callNative', { method, params });
@@ -61,9 +49,12 @@ const dsBridgeSyncCall = (method, params) => {
 
     return data;
   } catch (error) {
-    const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
+    const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
     loggly.error(`dsBridge-methods.${method}`, errorData);
+
+    // eslint-disable-next-line no-console
+    console.error(error);
 
     throw error;
   }
@@ -80,19 +71,35 @@ const dsBridgeAsyncCall = (method, params) =>
         debug('NativeMethod: %s\nparams: %o\nresult: %s\n', method, params, result);
 
         if (code !== NATIVE_API_ERROR_CODES.SUCCESS) {
-          throw new NativeAPIError(message, code, data);
+          reject(new NativeAPIError(message, code, data));
+          return;
         }
 
         resolve(data);
       });
     } catch (error) {
-      const errorData = error instanceof NativeAPIError ? error : { message: error.message || error.toString() };
-
-      loggly.error(`dsBridge-methods.${method}`, errorData);
-
       reject(error);
     }
+  }).catch(error => {
+    const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
+
+    loggly.error(`dsBridge-methods.${method}`, errorData);
+
+    // eslint-disable-next-line no-console
+    console.error(error);
+
+    throw error;
   });
+
+const hasMethodInNative = method => {
+  try {
+    return dsBridgeSyncCall('hasNativeMethod', {
+      methodName: method,
+    });
+  } catch (error) {
+    return false;
+  }
+};
 
 const dsBridgeCall = nativeMethod => {
   const { method, params, mode } = nativeMethod || {};
@@ -282,6 +289,20 @@ export const getUserInfo = () => {
     method: 'userModule-getUserInfo',
     mode: MODE.SYNC,
   };
+  return dsBridgeCall(data);
+};
+
+export const promptEnableAppNotification = ({ title, description, sourcePage }) => {
+  const data = {
+    method: 'beepModule-promptEnableAppNotification',
+    params: {
+      title,
+      description,
+      sourcePage,
+    },
+    mode: MODE.SYNC,
+  };
+
   return dsBridgeCall(data);
 };
 

@@ -7,7 +7,7 @@ import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 
-import { getCartItems } from '../../../../../redux/modules/app';
+import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
   getBusiness,
   getOnlineStoreInfo,
@@ -17,7 +17,6 @@ import {
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 
-import { fetchDeliveryDetails } from '../../../../Customer/utils';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
 import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
@@ -133,7 +132,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   const { enablePreOrder } = qrOrderingSettings;
   const additionalComments = Utils.getSessionVariable('additionalComments');
   const { storeId, tableId } = getRequestInfo(getState());
-  const deliveryDetails = await fetchDeliveryDetails();
+  const deliveryDetails = getDeliveryDetails(getState());
   const { phone, username: name } = deliveryDetails || {};
   const contactDetail = { phone, name };
   let variables = {
@@ -176,6 +175,8 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       deliveryToAddress: deliveryTo,
       deliveryToLocation: location,
       deliveryToCity: city,
+      postCode,
+      addressId,
     } = deliveryDetails || {};
 
     variables = {
@@ -184,12 +185,14 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       ...expectDeliveryDateInfo,
       deliveryAddressInfo: {
         ...contactDetail,
+        addressId,
         addressDetails,
         address: addressDetails ? `${addressDetails}, ${deliveryTo}` : deliveryTo,
         city: city || '',
         country,
         deliveryTo,
         location,
+        postCode,
       },
       deliveryComments,
     };

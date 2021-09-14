@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../components/HybridHeader';
 import Constants from '../../../utils/constants';
-import { actions as appActionCreators, getUser } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../redux/modules/app';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { put } from '../../../utils/request';
 import url from '../../../utils/url';
 import './Profile.scss';
-import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
 
 // import DayPicker from 'react-day-picker';
 // import DayPickerInput from 'react-day-picker/DayPickerInput';
@@ -34,7 +33,7 @@ class Profile extends Component {
   };
 
   saveProfile = async () => {
-    const { user, history, deliveryDetails, customerActions, appActions } = this.props;
+    const { user, history, deliveryDetails, appActions } = this.props;
     const { consumerId, profile } = user || {};
     const { name, email, phone } = profile || {};
     const { username, phone: orderPhone } = deliveryDetails || {};
@@ -52,8 +51,8 @@ class Profile extends Component {
       const response = await put(createdUrl.url, data);
       const { success } = response;
       if (success) {
-        !username && (await customerActions.patchDeliveryDetails({ username: name }));
-        !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
+        !username && (await appActions.updateDeliveryDetails({ username: name }));
+        !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
         history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
           search: window.location.search,
@@ -157,7 +156,6 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Profile);

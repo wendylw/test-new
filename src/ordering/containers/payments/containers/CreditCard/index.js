@@ -13,7 +13,6 @@ import config from '../../../../../config';
 
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
@@ -66,22 +65,10 @@ class CreditCard extends Component {
 
     this.setState({ domLoaded: true });
 
-    const { deliveryDetails, customerActions, loadPaymentOptions } = this.props;
-    const { addressId } = deliveryDetails || {};
-    const type = Utils.getOrderTypeFromUrl();
+    const { loadPaymentOptions } = this.props;
 
-    !addressId && (await customerActions.initDeliveryDetails(type));
+    this.props.appActions.loadShoppingCart();
 
-    const { deliveryDetails: newDeliveryDetails } = this.props;
-    const { deliveryToLocation } = newDeliveryDetails || {};
-
-    this.props.appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
     loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
   }
 
@@ -639,13 +626,11 @@ export default compose(
         cartBilling: getCartBilling(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         merchantCountry: getMerchantCountry(state),
-        deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
     })
   )

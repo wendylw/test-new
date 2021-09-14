@@ -83,6 +83,7 @@ export const standardizeGeoAddress = geoAddressComponent => {
     state: '',
     country: '',
     countryCode: '',
+    postCode: '',
   };
 
   const isCountry = types => types.includes('country');
@@ -93,6 +94,7 @@ export const standardizeGeoAddress = geoAddressComponent => {
     types.includes('route') ||
     types.includes('neighborhood') ||
     types.includes('sublocality');
+  const isPostCode = types => types.includes('postal_code');
 
   const street2 = [];
 
@@ -106,6 +108,8 @@ export const standardizeGeoAddress = geoAddressComponent => {
       standardized.city = short_name;
     } else if (isStreet2(types)) {
       street2.push(short_name);
+    } else if (isPostCode(types)) {
+      standardized.postCode = long_name;
     }
   });
 

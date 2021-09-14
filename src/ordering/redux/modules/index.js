@@ -5,7 +5,7 @@ import home from '../../containers/Home/redux/index';
 import cart from './cart';
 import promotion from './promotion';
 import payments from '../../containers/payments/redux';
-import customer from './customer';
+import customer from '../../containers/Customer/redux';
 import locationAndDate from './locationAndDate';
 import orderStatus from '../../containers/order-status/redux';
 

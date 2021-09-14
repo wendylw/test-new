@@ -1,19 +1,18 @@
-import qs from 'qs';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { Link } from 'react-router-dom';
 import { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
-import Utils from '../../../utils/utils';
-import Constants from '../../../utils/constants';
-import { formatToDeliveryTime } from '../../../utils/datetime-lib';
+import Utils from '../../../../../utils/utils';
+import Constants from '../../../../../utils/constants';
+import { formatToDeliveryTime } from '../../../../../utils/datetime-lib';
 
-import HybridHeader from '../../../components/HybridHeader';
-import MessageModal from '../../components/MessageModal';
-import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../components/Icons';
-import CreateOrderButton from '../../components/CreateOrderButton';
-import AddressChangeModal from './components/AddressChangeModal';
+import HybridHeader from '../../../../../components/HybridHeader';
+import MessageModal from '../../../../components/MessageModal';
+import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
+import CreateOrderButton from '../../../../components/CreateOrderButton';
+import AddressChangeModal from '../../components/AddressChangeModal';
 
 import {
   actions as appActionCreators,
@@ -24,39 +23,28 @@ import {
   getCartBilling,
   getBusinessInfo,
   getStoreInfoForCleverTap,
-} from '../../redux/modules/app';
-import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
-import { getDeliveryDetails, getCustomerError, actions as customerActionCreators } from '../../redux/modules/customer';
-import './OrderingCustomer.scss';
-import CleverTap from '../../../utils/clevertap';
-import loggly from '../../../utils/monitoring/loggly';
+  getDeliveryDetails,
+} from '../../../../redux/modules/app';
+import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
+import { getCustomerError, actions as customerInfoActionCreators } from './redux';
+import { selectAvailableAddress } from '../../redux/common/thunks';
+import './CustomerInfo.scss';
+import CleverTap from '../../../../../utils/clevertap';
+import loggly from '../../../../../utils/monitoring/loggly';
 
-const { ADDRESS_RANGE, PREORDER_IMMEDIATE_TAG, ROUTER_PATHS } = Constants;
+const { ADDRESS_RANGE, ROUTER_PATHS } = Constants;
 
-class Customer extends Component {
+class CustomerInfo extends Component {
   state = {
     addressChange: false,
     processing: false,
   };
 
   async componentDidMount() {
-    const { history, appActions, customerActions, user, requestInfo, deliveryDetails } = this.props;
-    const { consumerId } = user || {};
-    const { storeId } = requestInfo || {};
-    const { addressId, deliveryToLocation } = deliveryDetails || {};
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
+    const { appActions, selectAvailableAddress } = this.props;
 
-    // todo: think a better solution to avoid changing deliveryToAddress
-    //won't init username, phone, deliveryToAddress, deliveryDetails unless addressId is null
-    !addressId && (await customerActions.initDeliveryDetails(type));
-    !addressId && customerActions.fetchConsumerAddressList({ consumerId, storeId });
-    appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
+    await selectAvailableAddress();
+    appActions.loadShoppingCart();
   }
 
   componentDidUpdate(prevProps) {
@@ -104,24 +92,24 @@ class Customer extends Component {
   };
 
   validateFields() {
-    const { deliveryDetails } = this.props;
+    const { deliveryDetails, t } = this.props;
     const { username, addressName } = deliveryDetails || {};
     const isDeliveryType = Utils.isDeliveryType();
     let error = {};
 
     if (!Boolean(addressName) && isDeliveryType) {
       error = {
-        showModal: true,
-        message: 'OrderingCustomer:DeliveryAddressEmptyTitle',
-        description: 'OrderingCustomer:DeliveryAddressEmptyDescription',
-        buttonText: 'OK',
+        show: true,
+        message: t('DeliveryAddressEmptyTitle'),
+        description: t('DeliveryAddressEmptyDescription'),
+        buttonText: t('OK'),
       };
     } else if (!Boolean(username)) {
       error = {
-        showModal: true,
-        message: 'OrderingCustomer:ContactEmptyTitle',
-        description: 'OrderingCustomer:ContactEmptyDescription',
-        buttonText: 'OK',
+        show: true,
+        message: t('ContactEmptyTitle'),
+        description: t('ContactEmptyDescription'),
+        buttonText: t('OK'),
       };
     }
 
@@ -131,33 +119,27 @@ class Customer extends Component {
   handleBeforeCreateOrder = () => {
     loggly.log('customer.create-order-attempt');
 
-    const { customerActions } = this.props;
+    const { customerInfoActions } = this.props;
     const error = this.validateFields();
 
-    if (error.showModal) {
-      customerActions.setError(error);
+    if (error.show) {
+      customerInfoActions.setCustomerError(error);
     } else {
       this.setState({ processing: true });
     }
   };
 
   handleErrorHide() {
-    const { customerActions } = this.props;
+    const { customerInfoActions } = this.props;
 
-    customerActions.clearError();
+    customerInfoActions.clearCustomerError();
   }
-
-  handleHideChangeShippingFeeModal = () => {
-    const { customerActions } = this.props;
-
-    customerActions.updateAddressChange(false);
-  };
 
   visitPaymentPage = () => {
     const { history, cartBilling } = this.props;
     const { total } = cartBilling || {};
 
-    if (total && !this.validateFields().showModal) {
+    if (total && !this.validateFields().show) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
@@ -305,7 +287,7 @@ class Customer extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartBilling, error, storeInfoForCleverTap } = this.props;
+    const { t, history, deliveryDetails, cartBilling, customerError, storeInfoForCleverTap } = this.props;
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
@@ -415,7 +397,7 @@ class Customer extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={processing}
-            validCreateOrder={!total && !this.validateFields().showModal}
+            validCreateOrder={!total && !this.validateFields().show}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
               this.handleBeforeCreateOrder();
@@ -427,24 +409,20 @@ class Customer extends Component {
             {processing ? t('Processing') : t('Continue')}
           </CreateOrderButton>
         </footer>
-        {error.show ? (
+        {customerError.show ? (
           <MessageModal
-            data={error}
+            data={customerError}
             onHide={() => {
               this.handleErrorHide();
             }}
           />
         ) : null}
-        <AddressChangeModal
-          deliveryFee={shippingFee}
-          addressChange={addressChange}
-          continue={this.handleHideChangeShippingFeeModal}
-        />
+        <AddressChangeModal deliveryFee={shippingFee} addressChange={addressChange} />
       </section>
     );
   }
 }
-Customer.displayName = 'Customer';
+CustomerInfo.displayName = 'CustomerInfo';
 
 export default compose(
   withTranslation(['OrderingCustomer']),
@@ -457,13 +435,14 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
       cartBilling: getCartBilling(state),
       requestInfo: getRequestInfo(state),
-      error: getCustomerError(state),
+      customerError: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
+      selectAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
+      customerInfoActions: bindActionCreators(customerInfoActionCreators, dispatch),
     })
   )
-)(Customer);
+)(CustomerInfo);
