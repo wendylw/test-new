@@ -7,9 +7,10 @@ import { compose } from 'redux';
 import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
 import Tag from '../../../../../components/Tag';
+import beepPreOrderSuccess from '../../../../../images/beep-pre-order-success.png';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
-import Utils, { copyDataToClipboard } from '../../../../../utils/utils';
+import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
 import { loadOrder } from '../../redux/thunks';
@@ -57,6 +58,22 @@ export class OrderDetails extends Component {
       pathname: Constants.ROUTER_PATHS.MERCHANT_INFO,
       search: window.location.search,
     });
+  };
+
+  copyReceiptNumber = () => {
+    const { order } = this.props;
+    const { orderId } = order || '';
+    const input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('value', orderId);
+    input.setAttribute('style', 'position:absolute;top:-9999px;left:-9999px;');
+    document.body.appendChild(input);
+    input.focus();
+    input.setSelectionRange(0, input.value.length);
+    if (document.execCommand('copy')) {
+      document.execCommand('copy');
+    }
+    document.body.removeChild(input);
   };
 
   isReportUnsafeDriverButtonDisabled = () => {
@@ -111,8 +128,7 @@ export class OrderDetails extends Component {
 
   renderReceiptInfo() {
     const { t, order } = this.props;
-    const { shippingType, orderId, pickUpId } = order || {};
-
+    const { shippingType, orderId, pickUpId } = order || '';
     return (
       <div className="border__bottom-divider">
         {shippingType !== 'delivery' && (
@@ -133,8 +149,8 @@ export class OrderDetails extends Component {
             <div className="flex flex-space-between flex-middle">
               <span>{orderId}</span>
               <button
-                className="ordering-details__copy-button button button__outline text-size-small text-uppercase padding-left-right-normal"
-                onClick={() => copyDataToClipboard(orderId)}
+                className="ordering-details__copy-button button button__outline text-size-small text-weight-bolder text-uppercase padding-left-right-normal"
+                onClick={this.copyReceiptNumber}
               >
                 {t('Copy')}
               </button>
@@ -167,10 +183,9 @@ export class OrderDetails extends Component {
         <div className="flex flex-column">
           <div className="flex flex-middle flex-space-between">
             <span className="ordering-details__subtitle padding-top-bottom-small">{t('OrderStatus')}</span>
-            <Tag
-              className="ordering-details__shipping-type-tag tag tag__small tag__primary"
-              text={ShippingTypes[shippingType]}
-            />
+            <div>
+              <Tag className="tag tag__small tag__primary" text={ShippingTypes[shippingType]} />
+            </div>
           </div>
           {status && <span className="text-weight-bolder">{status[0].toLocaleUpperCase() + status.slice(1)}</span>}
         </div>
@@ -203,7 +218,7 @@ export class OrderDetails extends Component {
 
     return (
       <React.Fragment>
-        <span className="ordering-details__items">{t('Items')}</span>
+        <span className="ordering-details__items text-weight-bolder">{t('Items')}</span>
         <ul>
           {(items || []).map((value, index) => {
             const { title, displayPrice, quantity, variationTexts, itemType } = value;
@@ -227,7 +242,7 @@ export class OrderDetails extends Component {
                   </div>
                 </div>
                 <CurrencyNumber
-                  className="padding-top-bottom-small flex__shrink-fixed text-opacity"
+                  className="padding-top-bottom-small flex__shrink-fixed text-opacity text-weight-bolder"
                   money={displayPrice * quantity}
                 />
               </li>
@@ -353,6 +368,9 @@ export class OrderDetails extends Component {
           rightContent={this.getRightContentOfHeader()}
         />
         <div className="ordering-details__container">
+          <div className="text-center">
+            <img className="ordering-details__picture-succeed" src={beepPreOrderSuccess} alt="beep pre-order success" />
+          </div>
           <div className="card padding-top-bottom-small padding-left-right-normal margin-normal">
             {this.renderBaseInfo()}
             {this.renderReceiptInfo()}
@@ -382,9 +400,9 @@ export class OrderDetails extends Component {
               </li>
               {this.renderPromotion()}
               <li className="flex flex-space-between flex-middle">
-                <label className="padding-top-bottom-normal text-size-big text-weight-bolder">{t('Total')}</label>
+                <label className="padding-top-bottom-small text-size-biggest">{t('Total')}</label>
                 <CurrencyNumber
-                  className="padding-top-bottom-normal text-size-big text-weight-bolder"
+                  className="padding-top-bottom-small text-size-biggest text-weight-bolder"
                   money={total || 0}
                 />
               </li>

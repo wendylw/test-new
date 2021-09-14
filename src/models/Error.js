@@ -1,13 +1,12 @@
 function ErrorModel(error = {}) {
   const BeepError = class extends Error {
-    constructor({ status = null, message = '', code = null, key = null, extra = {}, type = null }) {
+    constructor({ status = null, message = '', code = null, extraInfo = {}, type = null }) {
       super();
 
-      // this.code = code;
-      // this.key = key;
       this.status = status;
+      this.code = code;
       this.message = message;
-      this.extra = extra;
+      this.extraInfo = extraInfo;
       this.type = type;
     }
   };

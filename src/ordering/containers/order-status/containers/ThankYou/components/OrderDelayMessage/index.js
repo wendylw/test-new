@@ -1,13 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { ORDER_DELAY_REASON_CODES } from '../../constants';
 import _get from 'lodash/get';
 import { useTranslation } from 'react-i18next';
-import RamadanIcon from '../../../../../../images/order-delay-ramadan.svg';
-import './OrderDelayMessage.scss';
+import RamadanIcon from '../../../../../../../images/order-delay-ramadan.svg';
+import '../OrderDelayMessage.scss';
 
-const ORDER_DELAY_REASON_CODES = {
-  RAMADAN: 'ramadan',
-};
 const orderDelayMessageConfigMap = {
   [ORDER_DELAY_REASON_CODES.RAMADAN]: {
     icon: RamadanIcon,
@@ -34,13 +31,5 @@ function OrderDelayMessage({ orderDelayReason }) {
   );
 }
 OrderDelayMessage.displayName = 'OrderDelayMessage';
-
-OrderDelayMessage.propTypes = {
-  orderDelayReason: PropTypes.string,
-};
-
-OrderDelayMessage.defaultProps = {
-  orderDelayReason: null,
-};
 
 export default OrderDelayMessage;

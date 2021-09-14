@@ -139,7 +139,7 @@ class Header extends Component {
             </div>
           ) : (
             <h2
-              className="header__title text-size-big text-middle text-middle text-omit__single-line"
+              className="header__title text-size-big text-weight-bolder text-middle text-middle text-omit__single-line"
               data-testid="headerTitle"
             >
               {title}
