@@ -200,6 +200,18 @@ class App extends Component {
     const type = Utils.getQueryVariable('type');
     let callback_url;
 
+    // const result = await promiseAlert(
+    //   <>
+    //     <h4 className="padding-small text-size-biggest text-weight-bolder">test</h4>
+    //     <p className="padding-top-bottom-small">test</p>
+    //   </>,
+    //   {
+    //     container: document.querySelector('.table-ordering'),
+    //   }
+    // );
+
+    // console.log('result', result);
+
     appActions.hideApiMessageModal();
     if (redirectUrl && window.location.pathname !== redirectUrl) {
       switch (redirectUrl) {

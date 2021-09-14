@@ -22,7 +22,7 @@ const createAlert = (content, options) => {
     React.createElement(Alert, {
       content,
       ...otherOptions,
-      onClose: async () => {
+      close: async () => {
         await onClose();
         destroyTarget(rootDOM);
       },
@@ -31,9 +31,9 @@ const createAlert = (content, options) => {
   );
 };
 
-export function alert(content, options = {}) {
+export const alert = (content, options = {}) => {
   createAlert(content || null, normalizeAlertOptions(options));
-}
+};
 
 export const promiseAlert = (content, options = {}) =>
   new Promise(resolve => {
