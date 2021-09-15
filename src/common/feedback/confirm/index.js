@@ -4,7 +4,7 @@ import { destroyTarget } from '../utils';
 import Confirm from './Confirm';
 
 const normalizeConfirmOptions = options => ({
-  closeContent: null,
+  closeButtonContent: null,
   okContent: null,
   className: '',
   container: document.body,
@@ -17,7 +17,6 @@ const createConfirmFeedback = (content, options) => {
   const { container, onClose, onOk, ...otherOptions } = options;
   const rootDOM = document.createElement('div');
 
-  rootDOM.setAttribute('class', 'confirm-container');
   (container || document.body).appendChild(rootDOM);
 
   ReactDOM.render(

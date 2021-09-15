@@ -5,7 +5,8 @@ import Alert from './Alert';
 
 const normalizeAlertOptions = options => ({
   container: document.body,
-  closeContent: null,
+  show: true,
+  closeButtonContent: null,
   className: '',
   style: {},
   onClose: () => {},
@@ -15,14 +16,13 @@ const createAlert = (content, options) => {
   const { container, onClose, ...otherOptions } = options;
   const rootDOM = document.createElement('div');
 
-  rootDOM.setAttribute('class', 'alert-container');
   (container || document.body).appendChild(rootDOM);
 
   render(
     React.createElement(Alert, {
       content,
       ...otherOptions,
-      close: async () => {
+      onClose: async () => {
         await onClose();
         destroyTarget(rootDOM);
       },
