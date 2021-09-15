@@ -266,7 +266,7 @@ const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, responseGql, code, prompt, error } = action;
+  const { type, response, responseGql, prompt, error } = action;
   const { login, consumerId, noWhatsAppAccount } = response || {};
 
   switch (type) {
@@ -317,7 +317,7 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
-      if (error && (error.code === 401 || error.code === '40000')) {
+      if (error?.error === 'TokenExpiredError') {
         return { ...state, isExpired: true, isFetching: false };
       }
 

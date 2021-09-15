@@ -656,7 +656,7 @@ const user = (state = initialState.user, action) => {
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');
-      if (error && (error.code === 401 || error.code === '40000')) {
+      if (error?.error === 'TokenExpiredError') {
         return { ...state, isExpired: true, isFetching: false };
       }
 
