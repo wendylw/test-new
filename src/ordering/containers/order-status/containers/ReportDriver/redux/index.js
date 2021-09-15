@@ -1,3 +1,4 @@
+import React from 'react';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Url from '../../../../../../utils/url';
 import { SUBMIT_STATUS } from '../constants';
@@ -13,11 +14,10 @@ import {
 import { getReceiptNumber } from '../../../redux/selector';
 import * as ApiFetch from '../../../../../../utils/api/api-fetch';
 import { uploadReportDriverPhoto } from '../../../../../../utils/aws-s3';
-import { actions as appActions } from '../../../../../redux/modules/app';
-import i18next from 'i18next';
 import _get from 'lodash/get';
 import _trim from 'lodash/trim';
 import Utils from '../../../../../../utils/utils';
+import { formatAlertContent, alert } from '../../../../../../common/feedback';
 import * as loggly from '../../../../../../utils/monitoring/loggly.js';
 
 export const initialState = {
@@ -71,11 +71,9 @@ export const thunks = {
           location = result.location;
         } catch (e) {
           loggly.error('order-status.report-driver.upload-photo-error', { message: e.message });
-          dispatch(
-            appActions.showMessageModal({
-              message: i18next.t('ConnectionIssue'),
-            })
-          );
+
+          alert(formatAlertContent({ key: 'ConnectionIssue' }));
+
           dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
           return false;
         }
@@ -96,11 +94,7 @@ export const thunks = {
         // action type.
         dispatch({ type: 'ordering/orderStatus/reportDriver/submitReportFailure', ...e });
       } else {
-        dispatch(
-          appActions.showMessageModal({
-            message: i18next.t('ConnectionIssue'),
-          })
-        );
+        alert(formatAlertContent({ key: 'ConnectionIssue' }));
       }
     }
   }),

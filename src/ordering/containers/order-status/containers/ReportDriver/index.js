@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 
@@ -35,7 +34,7 @@ import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
-import { alert } from '../../../../../common/feedback';
+import { formatAlertContent, alert } from '../../../../../common/feedback';
 import loggly from '../../../../../utils/monitoring/loggly';
 
 const NOTE_MAX_LENGTH = 140;
@@ -147,12 +146,13 @@ class ReportDriver extends Component {
     const file = e.target.files[0];
 
     if (file.size > UPLOAD_FILE_MAX_SIZE) {
-      alert(
-        <h4 className="padding-small text-size-biggest text-weight-bolder">
-          {t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) })}
-        </h4>,
-        { container: ReactDOM.findDOMNode(this.reportDriver) }
-      );
+      const alertContent = formatAlertContent({
+        key: 'UploadPhotoTooLarge',
+        options: { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) },
+      });
+
+      alert(alertContent);
+
       // clear the select file
       e.target.value = '';
       return;
@@ -364,13 +364,7 @@ class ReportDriver extends Component {
     }
 
     return (
-      <section
-        ref={ref => {
-          this.reportDriver = ref;
-        }}
-        className="ordering-report-driver flex flex-column"
-        data-heap-name="ordering.report-driver.container"
-      >
+      <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
         <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
