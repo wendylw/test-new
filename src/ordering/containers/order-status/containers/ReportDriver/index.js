@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 
@@ -34,6 +35,7 @@ import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
+import { alert } from '../../../../../common/feedback';
 import loggly from '../../../../../utils/monitoring/loggly';
 
 const NOTE_MAX_LENGTH = 140;
@@ -140,13 +142,17 @@ class ReportDriver extends Component {
   };
 
   handleUploadPhoto = e => {
+    const { t } = this.props;
     // File Object https://developer.mozilla.org/en-US/docs/Web/API/File
     const file = e.target.files[0];
 
     if (file.size > UPLOAD_FILE_MAX_SIZE) {
-      this.props.showMessageModal({
-        message: this.props.t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) }),
-      });
+      alert(
+        <h4 className="padding-small text-size-biggest text-weight-bolder">
+          {t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) })}
+        </h4>,
+        { container: ReactDOM.findDOMNode(this.reportDriver) }
+      );
       // clear the select file
       e.target.value = '';
       return;
@@ -358,7 +364,13 @@ class ReportDriver extends Component {
     }
 
     return (
-      <section className="ordering-report-driver flex flex-column" data-heap-name="ordering.report-driver.container">
+      <section
+        ref={ref => {
+          this.reportDriver = ref;
+        }}
+        className="ordering-report-driver flex flex-column"
+        data-heap-name="ordering.report-driver.container"
+      >
         <HybridHeader
           className="flex-middle"
           contentClassName="flex-middle"
@@ -472,7 +484,6 @@ export default compose(
       fetchReport: reportDriverThunks.fetchReport,
       submitReport: reportDriverThunks.submitReport,
       loadOrder,
-      showMessageModal: appActionCreators.showMessageModal,
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
       initialEmail: reportDriverActionCreators.initialEmail,
