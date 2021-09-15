@@ -381,7 +381,7 @@ class ReportDriver extends Component {
         ></HybridHeader>
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
-          <div className="card padding-small margin-normal">
+          <div className="card padding-small margin-small">
             {this.renderEmailFiled({
               t,
               disabled,

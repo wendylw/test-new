@@ -1,13 +1,28 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
-import { compose } from 'redux';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
+import Constants from '../../../../../../utils/constants';
 
+import { updateOrderShippingType as updateOrderShippingTypeThunk } from '../redux/thunks';
+import { getOrder } from '../../../redux/selector';
+import { getUpdateShippingTypePendingStatus, getDeliveryUpdatableToSelfPickupState } from '../redux/selector';
 import PageProcessingLoader from '../../../../../components/PageProcessingLoader';
 import Modal from '../../../../../../components/Modal';
 import './SelfPickup.scss';
 
-function SelfPickup({ t, processing, updatableToSelfPickupStatus, onClickSelfPickupButton, onChangeToSelfPickup }) {
+const { DELIVERY_METHOD } = Constants;
+
+function SelfPickup({
+  order,
+  processing,
+  updatableToSelfPickupStatus,
+  updateOrderShippingType,
+  onClickSelfPickupButton,
+  onChangeToSelfPickup,
+}) {
+  const { t } = useTranslation('OrderingThankYou');
+  const { orderId } = order || {};
   const [modalDisplayState, setModalDisplayState] = useState(false);
 
   const handleToggleModal = useCallback(status => {
@@ -20,7 +35,7 @@ function SelfPickup({ t, processing, updatableToSelfPickupStatus, onClickSelfPic
 
   return (
     <section className="self-pickup">
-      <div className="card text-center padding-normal margin-normal">
+      <div className="card text-center padding-normal margin-small">
         <h2 className="self-pickup__title">{t('SelfPickUpTitle')}</h2>
         <p className="padding-top-bottom-normal padding-left-right-small text-line-height-higher">
           {t('SelfPickUpDescription')}
@@ -54,6 +69,8 @@ function SelfPickup({ t, processing, updatableToSelfPickupStatus, onClickSelfPic
           <button
             className="self-pickup__modal-fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
             onClick={() => {
+              updateOrderShippingType({ orderId, shippingType: DELIVERY_METHOD.PICKUP });
+
               onChangeToSelfPickup();
             }}
           >
@@ -61,23 +78,39 @@ function SelfPickup({ t, processing, updatableToSelfPickupStatus, onClickSelfPic
           </button>
         </Modal.Footer>
       </Modal>
-      {processing ? <PageProcessingLoader processing={processing} loaderText={t('Processing')} /> : null}
+      <PageProcessingLoader show={processing} loaderText={t('Processing')} />
     </section>
   );
 }
 
+SelfPickup.displayName = 'SelfPickup';
+
 SelfPickup.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  order: PropTypes.object,
   processing: PropTypes.bool,
   updatableToSelfPickupStatus: PropTypes.bool,
+  updateOrderShippingType: PropTypes.func,
   onClickSelfPickupButton: PropTypes.func,
   onChangeToSelfPickup: PropTypes.func,
 };
 
 SelfPickup.defaultProps = {
+  order: {},
   processing: false,
   updatableToSelfPickupStatus: false,
+  updateOrderShippingType: () => {},
   onClickSelfPickupButton: () => {},
   onChangeToSelfPickup: () => {},
 };
 
-export default compose(withTranslation('OrderingThankYou'))(SelfPickup);
+export default connect(
+  state => ({
+    order: getOrder(state),
+    processing: getUpdateShippingTypePendingStatus(state),
+    updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
+  }),
+  {
+    updateOrderShippingType: updateOrderShippingTypeThunk,
+  }
+)(SelfPickup);

@@ -4,12 +4,12 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError, getCartBilling, types } from '../../redux/modules/app';
+import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
+import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import loggly from '../../../utils/monitoring/loggly';
-import '../Loader.scss';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -73,10 +73,11 @@ class CreateOrderButton extends React.Component {
     //   return;
     // }
 
-    if ((isLogin || type === 'digital') && validCreateOrder) {
+    if ((isLogin || type === 'digital') && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
+
       const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
         paymentName: paymentName || 'N/A',
@@ -132,18 +133,7 @@ class CreateOrderButton extends React.Component {
         >
           {children}
         </button>
-        {processing ? (
-          <div className="page-loader flex flex-middle flex-center">
-            <div className="prompt-loader padding-small border-radius-large text-center flex flex-middle flex-center">
-              <div className="prompt-loader__content">
-                <i className="circle-loader margin-smaller"></i>
-                {loaderText ? (
-                  <span className="prompt-loader__text margin-top-bottom-smaller text-size-smaller">{loaderText}</span>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        ) : null}
+        <PageProcessingLoader show={processing} loaderText={loaderText} />
       </>
     );
   }

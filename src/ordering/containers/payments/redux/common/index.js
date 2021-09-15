@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   options: [],
   selectedOptionProvider: null,
+  payByCashPromptDisplay: false,
   status: '',
   error: {},
 };
@@ -31,6 +32,9 @@ const { reducer, actions } = createSlice({
       if (payload) {
         state.selectedOptionProvider = payload;
       }
+    },
+    updatePayByCashPromptDisplayStatus: (state, { payload }) => {
+      state.payByCashPromptDisplay = payload.status;
     },
   },
 });

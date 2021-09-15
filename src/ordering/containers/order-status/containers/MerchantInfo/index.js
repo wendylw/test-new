@@ -65,7 +65,7 @@ export class MerchantInfo extends Component {
         />
 
         <div className="ordering-merchant-info__container padding-top-bottom-normal">
-          <ul className="card padding-left-right-small margin-normal">
+          <ul className="card padding-left-right-small margin-small">
             <li className="ordering-merchant-info__item margin-left-right-small border__bottom-divider">
               <summary className="padding-top-bottom-smaller text-size-big text-weight-bolder">
                 {t('StoreName')}
@@ -81,7 +81,7 @@ export class MerchantInfo extends Component {
               {isWebView ? (
                 <span className="gray-font-opacity">{phone}</span>
               ) : (
-                <a className="link link__non-underline link__block" href={`tel:${phone}`}>
+                <a className="button button__link button__default" href={`tel:${phone}`}>
                   {phone}
                 </a>
               )}
@@ -96,7 +96,7 @@ export class MerchantInfo extends Component {
             </li>
           </ul>
           {isUseStorehubLogistics ? (
-            <div className="card margin-normal">
+            <div className="card margin-small">
               <button
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
