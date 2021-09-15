@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
+import dayjs from 'dayjs';
 import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
@@ -15,7 +16,6 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
-import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
@@ -602,6 +602,8 @@ const user = (state = initialState.user, action) => {
         delete state.refreshToken;
       }
 
+      const birthdayDayjs = dayjs(user.birthday);
+
       return {
         ...state,
         consumerId,
@@ -609,7 +611,7 @@ const user = (state = initialState.user, action) => {
           phone: user.phone,
           name: user.firstName,
           email: user.email,
-          birthday: toISODateString(user.birthday),
+          birthday: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM') : '',
         },
         isLogin: true,
         hasOtp: false,
@@ -644,24 +646,20 @@ const user = (state = initialState.user, action) => {
           ...fields,
         },
       };
-    case types.FETCH_PROFILE_SUCCESS:
+    case types.FETCH_PROFILE_SUCCESS: {
       const { firstName, email, birthday, phone } = response || {};
+      const birthdayDayjs = dayjs(birthday);
       return {
         ...state,
         profile: {
           name: firstName,
           email,
-          birthday,
+          birthday: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM') : '',
           phone,
         },
       };
+    }
 
-    case types.CREATE_OR_UPDATE_PROFILE_SUCCESS:
-      const { success } = response || {};
-      return {
-        ...state,
-        success,
-      };
     case types.UPDATE_USER:
       return Object.assign({}, state, action.user);
     case types.FETCH_ONLINESTOREINFO_SUCCESS:
@@ -676,6 +674,7 @@ const user = (state = initialState.user, action) => {
       } else {
         return state;
       }
+
     default:
       return state;
   }

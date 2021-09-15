@@ -6,6 +6,7 @@ import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
+import Cookies from 'js-cookie';
 dayjs.extend(utc);
 
 const {
@@ -111,6 +112,22 @@ Utils.getCookieVariable = function getCookieVariable(name, scope) {
 
 Utils.setCookieVariable = function setCookieVariable(name, value, scope = '') {
   document.cookie = scope + name + '=' + value + '; path=/';
+};
+
+Utils.getCookieVariableChange = name => {
+  return Cookies.get(name);
+};
+
+Utils.setCookieVariableChange = (name, value, attributes) => {
+  return Cookies.set(name, value, attributes);
+};
+
+Utils.getMainDomain = () => {
+  const hostName = window.location.hostname;
+  const arr = hostName.split('.');
+  arr.shift();
+  const result = arr.join('.');
+  return result;
 };
 
 Utils.removeCookieVariable = function removeCookieVariable(name, scope) {
@@ -641,6 +658,27 @@ Utils.notHomeOrLocationPath = pathname => {
 Utils.checkEmailIsValid = email => {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return emailRegex.test(email);
+};
+
+Utils.checkBirthdayIsValid = birthday => {
+  var reg = birthday.match(/^(\d{2})(\/)(\d{2})$/);
+  if (reg == null || reg[1] > 31 || reg[3] > 12 || reg[1] < '01' || reg[3] < '01') {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+Utils.transformBirthdayIsValid = inputDate => {
+  var birthday_month = inputDate.split('/')[1];
+  var birthday_day = inputDate.split('/')[0];
+  var birthday_year = '2020';
+  const date = new Date();
+  const day = date.setDate(birthday_day);
+  const month = date.setMonth(birthday_month - 1);
+  const year = date.setFullYear(birthday_year);
+  const res = date.toISOString();
+  return res;
 };
 
 Utils.getTimeUnit = time => {

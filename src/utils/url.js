@@ -84,10 +84,10 @@ const API_URLS = {
     method: 'post',
     mode: 'cors',
   }),
-  GET_OTP: {
-    url: '/api/otp',
-    method: 'post',
-  },
+  UPDATE_PROFILE: consumerId => ({
+    url: `/api/consumers/${consumerId}/profile`,
+    method: 'put',
+  }),
   GET_CUSTOMER_PROFILE: consumerId => ({
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
