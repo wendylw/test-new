@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { usePrevious } from 'react-use';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import './Alert.scss';
 
 function Alert(props) {
-  const { t, content, show, closeButtonContent, className, style, onClose } = props;
+  const { t } = useTranslation();
+  const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
+  const prevShow = usePrevious(show);
+
+  useEffect(() => {
+    if (show !== prevShow) {
+      onModalVisibilityChanged(show);
+    }
+  }, [show, prevShow, onModalVisibilityChanged]);
 
   if (!show) {
     return null;
@@ -34,6 +44,7 @@ Alert.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
   onClose: PropTypes.func,
+  onModalVisibilityChanged: PropTypes.func,
 };
 
 Alert.defaultProps = {
@@ -43,6 +54,7 @@ Alert.defaultProps = {
   className: '',
   style: {},
   onClose: () => {},
+  onModalVisibilityChanged: () => {},
 };
 
-export default withTranslation()(Alert);
+export default withBackButtonSupport(Alert);
