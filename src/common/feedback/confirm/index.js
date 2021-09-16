@@ -5,7 +5,7 @@ import Confirm from './Confirm';
 
 const normalizeConfirmOptions = options => ({
   closeButtonContent: null,
-  okContent: null,
+  okButtonContent: null,
   className: '',
   container: document.body,
   style: {},

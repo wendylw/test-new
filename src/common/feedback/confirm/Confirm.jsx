@@ -4,13 +4,13 @@ import { withTranslation } from 'react-i18next';
 import './Confirm.scss';
 
 function Confirm(props) {
-  const { t, content, closeButtonContent, okContent, className, style, onClose } = props;
+  const { t, content, closeButtonContent, okButtonContent, className, style, onClose } = props;
 
   return (
     <div className={`confirm ${className}`} style={style}>
       {content}
       <button onClick={() => onClose('cancel')}>{closeButtonContent || t('Cancel')}</button>
-      <button onClick={() => onClose('ok')}>{okContent || t('OK')}</button>
+      <button onClick={() => onClose('ok')}>{okButtonContent || t('OK')}</button>
     </div>
   );
 }
@@ -20,7 +20,7 @@ Confirm.displayName = 'Confirm';
 Confirm.propTypes = {
   content: PropTypes.string,
   closeButtonContent: PropTypes.node,
-  okContent: PropTypes.node,
+  okButtonContent: PropTypes.node,
   className: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
@@ -30,7 +30,7 @@ Confirm.propTypes = {
 Confirm.defaultProps = {
   content: null,
   closeButtonContent: null,
-  okContent: null,
+  okButtonContent: null,
   className: '',
   style: {},
   onClose: () => {},
