@@ -150,7 +150,7 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { appActions, user, pageError, businessInfo, messageModal, apiErrorMessage } = this.props;
+    const { appActions, user, pageError, businessInfo } = this.props;
     const { isExpired, isWebview, isLogin, isFetching } = user || {};
     const { code } = prevProps.pageError || {};
 
@@ -215,15 +215,11 @@ class App extends Component {
   };
 
   render() {
-    let { onlineStoreInfo, messageModal, apiErrorMessage } = this.props;
+    let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main
-        ref={ref => (this.orderingContainer = ref)}
-        className="table-ordering fixed-wrapper fixed-wrapper__main"
-        data-heap-name="ordering.app.container"
-      >
+      <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
         {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         {apiErrorMessage.show ? (
           <MessageModal

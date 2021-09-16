@@ -1,5 +1,5 @@
-import React from 'react';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import i18next from 'i18next';
 import Url from '../../../../../../utils/url';
 import { SUBMIT_STATUS } from '../constants';
 import {
@@ -17,7 +17,7 @@ import { uploadReportDriverPhoto } from '../../../../../../utils/aws-s3';
 import _get from 'lodash/get';
 import _trim from 'lodash/trim';
 import Utils from '../../../../../../utils/utils';
-import { formatAlertContent, alert } from '../../../../../../common/feedback';
+import { standardAlertContent, alert } from '../../../../../../common/feedback';
 import * as loggly from '../../../../../../utils/monitoring/loggly.js';
 
 export const initialState = {
@@ -72,7 +72,7 @@ export const thunks = {
         } catch (e) {
           loggly.error('order-status.report-driver.upload-photo-error', { message: e.message });
 
-          alert(formatAlertContent({ key: 'ConnectionIssue' }));
+          alert(standardAlertContent(i18next.t('ConnectionIssue')));
 
           dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
           return false;
@@ -94,7 +94,7 @@ export const thunks = {
         // action type.
         dispatch({ type: 'ordering/orderStatus/reportDriver/submitReportFailure', ...e });
       } else {
-        alert(formatAlertContent({ key: 'ConnectionIssue' }));
+        alert(standardAlertContent(i18next.t('ConnectionIssue')));
       }
     }
   }),

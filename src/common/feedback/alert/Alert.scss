@@ -7,9 +7,9 @@
   z-index: $z-index-base;
 
   &__content {
-    max-width: 85%;
+    max-width: 360px;
     max-height: 80%;
-    width: 85%;
+    width: 90%;
     background-color: $white;
     overflow: hidden;
   }
