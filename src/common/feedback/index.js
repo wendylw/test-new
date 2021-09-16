@@ -10,4 +10,4 @@
 // export interface FeedbackInstance {
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
-export { alert } from './alert';
+export { formatAlertContent, alert, promiseAlert } from './alert';
