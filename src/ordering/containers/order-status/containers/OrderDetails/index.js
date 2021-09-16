@@ -7,10 +7,10 @@ import { compose } from 'redux';
 import { IconNext } from '../../../../../components/Icons';
 import LiveChat from '../../../../../components/LiveChat';
 import Tag from '../../../../../components/Tag';
-import beepPreOrderSuccess from '../../../../../images/beep-pre-order-success.png';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
-import Utils from '../../../../../utils/utils';
+import { ORDER_PAYMENT_METHODS } from '../../constants';
+import Utils, { copyDataToClipboard } from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import { getBusinessInfo, getStoreInfoForCleverTap, getUser } from '../../../../redux/modules/app';
 import { loadOrder } from '../../redux/thunks';
@@ -22,6 +22,7 @@ import {
   getPromotion,
   getReceiptNumber,
   getServiceCharge,
+  getOrderShippingType,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -53,22 +54,6 @@ export class OrderDetails extends Component {
     });
   };
 
-  copyReceiptNumber = () => {
-    const { order } = this.props;
-    const { orderId } = order || '';
-    const input = document.createElement('input');
-    input.setAttribute('readonly', 'readonly');
-    input.setAttribute('value', orderId);
-    input.setAttribute('style', 'position:absolute;top:-9999px;left:-9999px;');
-    document.body.appendChild(input);
-    input.focus();
-    input.setSelectionRange(0, input.value.length);
-    if (document.execCommand('copy')) {
-      document.execCommand('copy');
-    }
-    document.body.removeChild(input);
-  };
-
   isReportUnsafeDriverButtonDisabled = () => {
     const { orderStatus } = this.props;
 
@@ -77,7 +62,7 @@ export class OrderDetails extends Component {
 
   handleReportUnsafeDriver = () => {
     const { order, businessInfo, storeInfoForCleverTap } = this.props;
-    const { paymentMethod, subtotal } = order || {};
+    const { paymentNames, subtotal } = order || {};
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const queryParams = {
@@ -89,7 +74,7 @@ export class OrderDetails extends Component {
       'cart items quantity': this.getCartItemsQuantity(),
       'cart amount': subtotal,
       'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-      'payment method': paymentMethod && paymentMethod[0],
+      'payment method': paymentNames && paymentNames[0],
     });
 
     this.props.history.push({
@@ -99,8 +84,7 @@ export class OrderDetails extends Component {
   };
 
   handleReorder = () => {
-    const { order } = this.props;
-    const { shippingType } = order || '';
+    const { shippingType } = this.props;
     this.props.history.replace({
       pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
       search: `type=${shippingType}`,
@@ -120,8 +104,9 @@ export class OrderDetails extends Component {
   };
 
   renderReceiptInfo() {
-    const { t, order } = this.props;
-    const { shippingType, orderId, pickUpId } = order || '';
+    const { t, order, shippingType } = this.props;
+    const { orderId, pickUpId } = order || {};
+
     return (
       <div className="border__bottom-divider">
         {shippingType !== 'delivery' && (
@@ -142,8 +127,8 @@ export class OrderDetails extends Component {
             <div className="flex flex-space-between flex-middle">
               <span>{orderId}</span>
               <button
-                className="ordering-details__copy-button button button__outline text-size-small text-weight-bolder text-uppercase padding-left-right-normal"
-                onClick={this.copyReceiptNumber}
+                className="ordering-details__copy-button button button__outline text-size-small text-uppercase padding-left-right-normal"
+                onClick={() => copyDataToClipboard(orderId)}
               >
                 {t('Copy')}
               </button>
@@ -156,32 +141,31 @@ export class OrderDetails extends Component {
 
   renderPaymentMethod() {
     const { t, order } = this.props;
-    const { paymentMethod } = order || {};
+    const { paymentNames } = order || {};
     return (
       <div className="flex flex-column border__bottom-divider padding-top-bottom-normal">
         <span className="ordering-details__subtitle">{t('PaymentMethod')}</span>
-        <span className="padding-top-bottom-small text-weight-bolder">{paymentMethod && paymentMethod[0]}</span>
+        <span className="padding-top-bottom-small text-weight-bolder">{paymentNames && paymentNames[0]}</span>
       </div>
     );
   }
 
   renderBaseInfo() {
-    const { t, order } = this.props;
-    const { shippingType, storeInfo, deliveryInformation, status } = order || '';
+    const { t, order, shippingType } = this.props;
+    const { storeInfo, deliveryInformation, status } = order || '';
     const { name } = storeInfo || '';
     const { address } = deliveryInformation && deliveryInformation.length > 0 ? deliveryInformation[0] : {};
     const { address: deliveryAddress } = address || '';
+
     return (
       <section className="border__bottom-divider padding-top-bottom-small">
         <div className="flex flex-column">
           <div className="flex flex-middle flex-space-between">
             <span className="ordering-details__subtitle padding-top-bottom-small">{t('OrderStatus')}</span>
-            <div>
-              <Tag
-                className="tag tag__small tag__primary"
-                text={ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING[shippingType]}
-              />
-            </div>
+            <Tag
+              className="ordering-details__shipping-type-tag tag tag__small tag__primary"
+              text={ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING[shippingType]}
+            />
           </div>
           {status && <span className="text-weight-bolder">{status[0].toLocaleUpperCase() + status.slice(1)}</span>}
         </div>
@@ -214,7 +198,7 @@ export class OrderDetails extends Component {
 
     return (
       <React.Fragment>
-        <span className="ordering-details__items text-weight-bolder">{t('Items')}</span>
+        <span className="ordering-details__items">{t('Items')}</span>
         <ul>
           {(items || []).map((value, index) => {
             const { title, displayPrice, quantity, variationTexts, itemType } = value;
@@ -238,7 +222,7 @@ export class OrderDetails extends Component {
                   </div>
                 </div>
                 <CurrencyNumber
-                  className="padding-top-bottom-small flex__shrink-fixed text-opacity text-weight-bolder"
+                  className="padding-top-bottom-small flex__shrink-fixed text-opacity"
                   money={displayPrice * quantity}
                 />
               </li>
@@ -272,7 +256,7 @@ export class OrderDetails extends Component {
     const userEmail = _get(user, 'profile.email', '');
     const orderId = _get(order, 'orderId', '');
     const subtotal = _get(order, 'subtotal', 0);
-    const paymentMethod = _get(order, 'paymentMethod', null);
+    const paymentNames = _get(order, 'paymentNames', null);
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
     const orderUserName = _get(deliveryAddress, 'name', '');
     const orderUserPhone = _get(deliveryAddress, 'phone', '');
@@ -295,7 +279,7 @@ export class OrderDetails extends Component {
             'cart items quantity': this.getCartItemsQuantity(),
             'cart amount': subtotal,
             'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-            'payment method': paymentMethod && paymentMethod[0],
+            'payment method': paymentNames && paymentNames[0],
           });
           NativeMethods.startChat({
             orderId,
@@ -339,7 +323,7 @@ export class OrderDetails extends Component {
 
   render() {
     const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton } = this.props;
-    const { shippingFee, subtotal, total, tax, loyaltyDiscounts } = order || '';
+    const { shippingFee, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } = order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
@@ -355,10 +339,7 @@ export class OrderDetails extends Component {
           rightContent={this.getRightContentOfHeader()}
         />
         <div className="ordering-details__container">
-          <div className="text-center">
-            <img className="ordering-details__picture-succeed" src={beepPreOrderSuccess} alt="beep pre-order success" />
-          </div>
-          <div className="card padding-top-bottom-small padding-left-right-normal margin-normal">
+          <div className="card padding-top-bottom-small padding-left-right-normal margin-small">
             {this.renderBaseInfo()}
             {this.renderReceiptInfo()}
             {this.renderPaymentMethod()}
@@ -385,11 +366,17 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
               </li>
+              {paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE ? (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('Rounding')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={roundedAmount || 0} />
+                </li>
+              ) : null}
               {this.renderPromotion()}
               <li className="flex flex-space-between flex-middle">
-                <label className="padding-top-bottom-small text-size-biggest">{t('Total')}</label>
+                <label className="padding-top-bottom-normal text-size-big text-weight-bolder">{t('Total')}</label>
                 <CurrencyNumber
-                  className="padding-top-bottom-small text-size-biggest text-weight-bolder"
+                  className="padding-top-bottom-normal text-size-big text-weight-bolder"
                   money={total || 0}
                 />
               </li>
@@ -397,7 +384,7 @@ export class OrderDetails extends Component {
           </div>
 
           {isUseStorehubLogistics ? (
-            <div className="card margin-normal">
+            <div className="card margin-small">
               <button
                 disabled={this.isReportUnsafeDriverButtonDisabled()}
                 onClick={this.handleReportUnsafeDriver}
@@ -435,6 +422,7 @@ export default compose(
     state => ({
       user: getUser(state),
       order: getOrder(state),
+      shippingType: getOrderShippingType(state),
       promotion: getPromotion(state),
       serviceCharge: getServiceCharge(state),
       orderStatus: getOrderStatus(state),

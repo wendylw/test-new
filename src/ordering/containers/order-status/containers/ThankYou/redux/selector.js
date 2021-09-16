@@ -1,11 +1,15 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../../../utils/constants';
 import {
+  getOrder,
   getOrderStatus,
   getIsOnDemandOrder,
   getIsUseStorehubLogistics,
   getOrderShippingType,
   getTimeoutLookingForRider,
+  getOrderOriginalShippingType,
+  getOrderStoreInfo,
 } from '../../../redux/selector';
 import { getMerchantCountry } from '../../../../../redux/modules/app';
 
@@ -44,7 +48,32 @@ export const getDeliveryUpdatableToSelfPickupState = createSelector(
   timeoutLookingForRider => timeoutLookingForRider
 );
 
+export const getDeliverySwitchedToSelfPickupState = createSelector(
+  getOrderShippingType,
+  getOrderOriginalShippingType,
+  (shippingType, originalShippingType) =>
+    originalShippingType && shippingType === DELIVERY_METHOD.PICKUP && originalShippingType === DELIVERY_METHOD.DELIVERY
+);
+
+export const getOrderStoreName = createSelector(getOrderStoreInfo, storeInfo => _get(storeInfo, 'name', ''));
+
+export const getOrderPaymentMethod = createSelector(getOrder, order => _get(order, 'paymentMethod', ''));
+
 export const getCancelOrderStatus = state => state.orderStatus.thankYou.cancelOrderStatus;
 
 export const getUpdateShippingTypePendingStatus = state =>
   state.orderStatus.thankYou.updateShippingTypeStatus === 'pending';
+
+export const getOrderDeliveryInfo = createSelector(getOrder, order => {
+  if (!order) {
+    return null;
+  }
+
+  const { expectDeliveryDateFrom, expectDeliveryDateTo, deliveryInformation } = order;
+  const responseDeliveryInformation = deliveryInformation && deliveryInformation[0] ? deliveryInformation[0] : {};
+
+  return {
+    expectDeliveryDateRange: [expectDeliveryDateFrom, expectDeliveryDateTo],
+    ...responseDeliveryInformation,
+  };
+});

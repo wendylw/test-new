@@ -22,8 +22,10 @@ import {
   getSelectedPaymentOptionSupportSaveCard,
 } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
+import { actions as paymentActions } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
 import PaymentItem from '../../components/PaymentItem';
+import PayByCash from '../../components/PayByCash';
 import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -40,7 +42,9 @@ class Payment extends Component {
   willUnmount = false;
 
   componentDidMount = async () => {
-    const { paymentsActions } = this.props;
+    const { paymentsActions, paymentActions } = this.props;
+
+    paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
     await this.props.appActions.loadShoppingCart();
 
@@ -99,7 +103,7 @@ class Payment extends Component {
   };
 
   handleBeforeCreateOrder = async () => {
-    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user } = this.props;
+    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user, paymentActions } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
@@ -118,6 +122,12 @@ class Payment extends Component {
       return;
     }
 
+    if (currentPaymentOption.paymentProvider === 'SHOfflinePayment') {
+      paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
+
+      return;
+    }
+
     const { pathname, paymentProvider } = currentPaymentOption;
 
     // currently only Stripe payment support save cards
@@ -126,6 +136,7 @@ class Payment extends Component {
         pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
         search: window.location.search,
       });
+
       return;
     }
 
@@ -199,6 +210,7 @@ class Payment extends Component {
           }}
         >
           {this.renderPaymentList()}
+          <PayByCash onPayWithCash={redirectUrl => (window.location = redirectUrl)} />
         </div>
 
         <footer
@@ -256,6 +268,7 @@ export default compose(
       };
     },
     dispatch => ({
+      paymentActions: bindActionCreators(paymentActions, dispatch),
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
