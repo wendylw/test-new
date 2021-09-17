@@ -12,7 +12,6 @@ import {
   getBusiness,
   getOnlineStoreInfo,
   getRequestInfo,
-  actions as appActions,
   getBusinessUTCOffset,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
@@ -23,6 +22,7 @@ import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
+import { alert } from '../../../../../../common/feedback';
 const { DELIVERY_METHOD } = Constants;
 
 const POLLING_INTERVAL = 3000;
@@ -101,11 +101,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         // action type.
         dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
       } else {
-        dispatch(
-          appActions.showMessageModal({
-            message: i18next.t('OrderingPayment:PlaceOrderFailedDescription'),
-          })
-        );
+        alert(i18next.t('OrderingPayment:PlaceOrderFailedDescription'));
       }
     }
     return;
@@ -247,11 +243,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       // action type.
       dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
     } else {
-      dispatch(
-        appActions.showMessageModal({
-          message: i18next.t('OrderingPayment:PlaceOrderFailedDescription'),
-        })
-      );
+      alert(i18next.t('OrderingPayment:PlaceOrderFailedDescription'));
     }
   }
 };

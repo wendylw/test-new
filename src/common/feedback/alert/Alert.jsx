@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import './Alert.scss';
 
-function Alert(props) {
+const Alert = function(props) {
   const { t } = useTranslation();
   const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
   const prevShow = usePrevious(show);
@@ -32,7 +32,7 @@ function Alert(props) {
       </div>
     </div>
   );
-}
+};
 
 Alert.displayName = 'Alert';
 

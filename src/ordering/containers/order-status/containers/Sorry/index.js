@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
-import { actions as appActionCreators } from '../../../../redux/modules/app';
+import { alert } from '../../../../../common/feedback';
 
 const PROVIDER_TO_METHOD = {
   StripeFPX: 'onlineBanking',
@@ -21,13 +18,9 @@ const PROVIDER_TO_METHOD = {
 
 class Sorry extends Component {
   async componentDidMount() {
-    const { t, showMessageModal } = this.props;
-    const description = this.getDescription();
+    const { t } = this.props;
 
-    showMessageModal({
-      message: t('PaymentFailed'),
-      description: description,
-    });
+    alert(this.getDescription(), { title: t('PaymentFailed') });
 
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
@@ -61,9 +54,4 @@ class Sorry extends Component {
 }
 Sorry.displayName = 'OrderingSorry';
 
-export default compose(
-  withTranslation(),
-  connect(state => ({}), {
-    showMessageModal: appActionCreators.showMessageModal,
-  })
-)(Sorry);
+export default Sorry;

@@ -17,7 +17,7 @@ import { uploadReportDriverPhoto } from '../../../../../../utils/aws-s3';
 import _get from 'lodash/get';
 import _trim from 'lodash/trim';
 import Utils from '../../../../../../utils/utils';
-import { standardAlertContent, alert } from '../../../../../../common/feedback';
+import { alert } from '../../../../../../common/feedback';
 import * as loggly from '../../../../../../utils/monitoring/loggly.js';
 
 export const initialState = {
@@ -72,7 +72,7 @@ export const thunks = {
         } catch (e) {
           loggly.error('order-status.report-driver.upload-photo-error', { message: e.message });
 
-          alert(standardAlertContent(i18next.t('ConnectionIssue')));
+          alert(i18next.t('ConnectionIssue'));
 
           dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
           return false;
@@ -94,7 +94,7 @@ export const thunks = {
         // action type.
         dispatch({ type: 'ordering/orderStatus/reportDriver/submitReportFailure', ...e });
       } else {
-        alert(standardAlertContent(i18next.t('ConnectionIssue')));
+        alert(i18next.t('ConnectionIssue'));
       }
     }
   }),

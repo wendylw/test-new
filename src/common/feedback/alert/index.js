@@ -4,11 +4,11 @@ import { destroyTarget } from '../utils';
 import Alert from './Alert';
 import '../Feedback.scss';
 
-export const standardAlertContent = (title, description) => (
+const alertStandardContent = (content, title) => (
   // eslint-disable-next-line react/jsx-filename-extension
   <>
     {title ? <h4 className="padding-small text-size-biggest text-weight-bolder">{title}</h4> : null}
-    {description ? <p className="modal__text  padding-top-bottom-small">{description}</p> : null}
+    {content ? <p className="padding-top-bottom-small">{content}</p> : null}
   </>
 );
 
@@ -41,14 +41,31 @@ const createAlert = (content, options) => {
   );
 };
 
-export const alert = (content, options = {}) => {
-  createAlert(content || null, normalizeAlertOptions(options));
+export const alert = (content, options = {}) => createAlert(content || null, normalizeAlertOptions(options));
+
+alert.raw = (content, options = {}) => {
+  const { title } = options;
+
+  createAlert(alertStandardContent(content, title), normalizeAlertOptions(options));
 };
 
 export const promiseAlert = (content, options = {}) =>
   new Promise(resolve => {
     const { onClose } = options;
+
     alert(content, {
+      ...options,
+      onClose: () => {
+        resolve(onClose);
+      },
+    });
+  });
+
+promiseAlert.raw = (content, options = {}) =>
+  new Promise(resolve => {
+    const { onClose } = options;
+
+    alert.raw(content, {
       ...options,
       onClose: () => {
         resolve(onClose);

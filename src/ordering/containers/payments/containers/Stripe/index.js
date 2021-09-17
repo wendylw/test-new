@@ -85,22 +85,12 @@ class Stripe extends Component {
   };
 
   render() {
-    const {
-      t,
-      match,
-      history,
-      cartBilling,
-      merchantCountry,
-      supportSaveCard,
-      storeInfoForCleverTap,
-      appActions,
-    } = this.props;
+    const { t, match, history, cartBilling, merchantCountry, supportSaveCard, storeInfoForCleverTap } = this.props;
     const isAddCardPath = ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE === history.location.pathname;
 
     return (
       <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
         <CheckoutForm
-          showMessageModal={appActions.showMessageModal}
           match={match}
           t={t}
           history={history}
