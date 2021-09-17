@@ -647,6 +647,7 @@ const CLIENTS = {
   WEB: 'web',
   IOS: 'iOS',
   ANDROID: 'Android',
+  TNG_MINI_PROGRAM: 'tngMiniProgram',
 };
 
 export const REGISTRATION_TOUCH_POINT = {
@@ -682,6 +683,12 @@ export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
   [DELIVERY_METHOD.PICKUP]: 'self pickup',
   [DELIVERY_METHOD.DELIVERY]: 'delivery',
   [DELIVERY_METHOD.TAKE_AWAY]: 'take away',
+};
+
+export const PROMOTION_CLIENT_TYPES = {
+  TNG_MINI_PROGRAM: 'tngMiniProgram',
+  APP: 'app',
+  WEB: 'web',
 };
 
 export default {
@@ -733,4 +740,5 @@ export default {
   API_REQUEST_STATUS,
   ORDER_SOURCE,
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
+  PROMOTION_CLIENT_TYPES,
 };

@@ -2,8 +2,9 @@ import _isEmpty from 'lodash/isEmpty';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import i18next from 'i18next';
+import _get from 'lodash/get';
 
-const { PROMOTION_ERROR_CODES, VOUCHER_STATUS, CLIENTS } = Constants;
+const { PROMOTION_ERROR_CODES, VOUCHER_STATUS, PROMOTION_CLIENT_TYPES } = Constants;
 const WEEK_DAYS_MAPPING = {
   2: 'Mon',
   3: 'Tue',
@@ -12,6 +13,12 @@ const WEEK_DAYS_MAPPING = {
   6: 'Fri',
   7: 'Sat',
   1: 'Sun',
+};
+
+const PROMOTION_CLIENT_TYPES_DISPLAY_NAME_MAPPING = {
+  [PROMOTION_CLIENT_TYPES.WEB]: 'Web',
+  [PROMOTION_CLIENT_TYPES.APP]: 'Beep app',
+  [PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM]: 'Beep Mini Program via the Touch ’n Go eWallet app',
 };
 
 export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo) {
@@ -55,8 +62,16 @@ export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, o
 
     // not match the client type
     if (code === '54418') {
-      const supportClient = Utils.getHeaderClient() === CLIENTS.WEB ? 'Beep app' : 'Web';
-      return i18next.t(translationKey, { supportClient });
+      const promotionClientTypes = _get(extraInfo, 'appliedClientTypes', []);
+      if (promotionClientTypes.length === 1) {
+        const clientTypeDisplayName = PROMOTION_CLIENT_TYPES_DISPLAY_NAME_MAPPING[promotionClientTypes[0]];
+        return i18next.t(translationKey, { supportClient: clientTypeDisplayName });
+      }
+
+      const promotionClientTypesDisplayName = promotionClientTypes.map(
+        clientType => PROMOTION_CLIENT_TYPES_DISPLAY_NAME_MAPPING[clientType]
+      );
+      return i18next.t(translationKey, { supportClient: promotionClientTypesDisplayName.join(' and ') });
     }
 
     return i18next.t(translationKey);

@@ -846,16 +846,20 @@ Utils.getOrderSourceForCleverTab = () => {
   return mapping[orderSource];
 };
 
-Utils.getHeaderClient = () => {
-  let headerClient = '';
-  if (Utils.isAndroidWebview()) {
-    headerClient = CLIENTS.ANDROID;
-  } else if (Utils.isIOSWebview()) {
-    headerClient = CLIENTS.IOS;
-  } else {
-    headerClient = CLIENTS.WEB;
+Utils.getClient = () => {
+  if (Utils.isTNGMiniProgram()) {
+    return CLIENTS.TNG_MINI_PROGRAM;
   }
-  return headerClient;
+
+  if (Utils.isAndroidWebview()) {
+    return CLIENTS.ANDROID;
+  }
+
+  if (Utils.isIOSWebview()) {
+    return CLIENTS.IOS;
+  }
+
+  return CLIENTS.WEB;
 };
 
 export const copyDataToClipboard = async text => {
