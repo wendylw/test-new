@@ -1,0 +1,58 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/prefer-stateless-function */
+import PropTypes from 'prop-types';
+import React from 'react';
+import Modal from '../../../../../components/Modal';
+import withDataAttributes from '../../../../../components/withDataAttributes';
+import './DuplicatedEmailAlert.scss';
+
+function DuplicatedEmailAlert(props) {
+  const { show, t } = props;
+  return (
+    // eslint-disable-next-line react/destructuring-assignment
+    <Modal className="alert-warning__modal" show={show}>
+      <Modal.Body className="text-center padding-small">
+        <h2 className="padding-small text-size-biggest text-line-height-base text-weight-bolder">
+          {t('DuplicatedEmailAlertTitle')}
+        </h2>
+        <p className="alert-warning__modal-description padding-small text-size-big text-line-height-higher">
+          {t('DuplicatedEmailAlertEmial')}
+        </p>
+      </Modal.Body>
+      <Modal.Footer className="flex flex-stretch">
+        <button
+          className="alert-warning__modal-default-button button button__link flex__fluid-content text-weight-bolder text-uppercase"
+          // eslint-disable-next-line react/destructuring-assignment
+          onClick={props.onDonotAsk}
+        >
+          {t('DuplicatedEmailAlertDonotAskAgain')}
+        </button>
+        <button
+          className="alert-warning__modal-fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
+          // eslint-disable-next-line react/destructuring-assignment
+          onClick={props.onBackEdit}
+        >
+          {t('DuplicatedEmailAlertBackToEdit')}
+        </button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
+DuplicatedEmailAlert.displayName = 'DuplicatedEmailAlert';
+
+DuplicatedEmailAlert.propTypes = {
+  show: PropTypes.bool,
+  t: PropTypes.func,
+  onDonotAsk: PropTypes.func,
+  onBackEdit: PropTypes.func,
+};
+
+DuplicatedEmailAlert.defaultProps = {
+  show: false,
+  t: () => {},
+  onDonotAsk: () => {},
+  onBackEdit: () => {},
+};
+
+export default withDataAttributes(DuplicatedEmailAlert);

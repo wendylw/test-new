@@ -192,16 +192,5 @@
   "NeedHelp": "Need Help",
   "CommonErrorMessage": "Whoops, this page isn't available",
   "ErrorId": "Error ID: {{ id }}",
-  "LowStockProductQuantity": "only {{quantityOnHand}} left",
-  "EmailAddress": "Email Address",
-  "DateOfBirth": "Date of Birth",
-  "Complete": "Complete",
-  "YourProfile": "Your Profile",
-  "NotValidEmail": "Please try again or enter a valid email address",
-  "NotValidBirthday": "Please enter a valid date of birth(dd/mm)",
-  "SkipForNow": "Skip for now",
-  "AlertWarningTitle": "OOPS! THIS IS AWKWARD…",
-  "AlertWarningEmial": "Looks like you’ve entered this email before. Please use a different email address.",
-  "AlertWarningDonotAskAgain": "DON’T ASK AGAIN",
-  "AlertWarningBACKTOEDIT": "BACK TO EDIT"
+  "LowStockProductQuantity": "only {{quantityOnHand}} left"
 }

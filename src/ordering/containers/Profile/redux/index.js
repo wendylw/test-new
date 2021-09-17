@@ -1,12 +1,26 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import _trim from 'lodash/trim';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
+import Utils from '../../../../utils/utils';
 import { updateProfile } from './thunk';
 
 const initialState = {
-  name: '',
-  email: '',
-  birthday: '',
+  name: {
+    data: '',
+    isValid: false,
+    isComplete: false,
+  },
+  email: {
+    data: '',
+    isValid: false,
+    isComplete: false,
+  },
+  birthday: {
+    data: '',
+    isValid: false,
+    isComplete: false,
+  },
   showModal: '',
   updateProfileResult: {
     status: null,
@@ -18,11 +32,58 @@ export const { actions, reducer } = createSlice({
   name: 'ordering/profile',
   initialState,
   reducers: {
-    updateProfileInfo(state, action) {
-      return {
-        ...state,
-        ...action.payload,
+    init(state, action) {
+      const { name, email, birthday } = action.payload;
+
+      const tirmedEmail = _trim(email);
+      if (tirmedEmail.length > 0) {
+        state.email = {
+          data: tirmedEmail,
+          isValid: Utils.checkEmailIsValid(tirmedEmail),
+          isComplete: true,
+        };
+      } else {
+        state.email = {
+          ...initialState.email,
+        };
+      }
+
+      state.name = {
+        ...initialState.name,
+        data: name,
       };
+
+      const tirmedBirthday = _trim(birthday);
+      if (tirmedBirthday.length > 0) {
+        state.birthday = {
+          data: birthday,
+          isValid: Utils.checkBirthdayIsValid(tirmedBirthday),
+          isComplete: true,
+        };
+      } else {
+        state.birthday = {
+          ...initialState.birthday,
+        };
+      }
+    },
+    updateName(state, action) {
+      state.name.data = action.payload;
+    },
+    updateEmail(state, action) {
+      state.email.data = _trim(action.payload);
+      state.email.isComplete = false;
+    },
+    updateBirthday(state, action) {
+      state.birthday.data = _trim(action.payload);
+      state.birthday.isComplete = false;
+    },
+    completeEmail(state) {
+      state.email.isValid = Utils.checkEmailIsValid(state.email.data);
+      state.email.isComplete = true;
+    },
+    completeBirthday(state) {
+      state.birthday.isValid = Utils.checkBirthdayIsValid(state.birthday.data);
+      state.birthday.isComplete = true;
     },
     resetUpdateProfileResult(state) {
       return {

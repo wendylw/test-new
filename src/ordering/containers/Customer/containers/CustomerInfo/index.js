@@ -41,9 +41,10 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    const { user, deliveryDetails } = this.props;
+    const { user, deliveryDetails, appActions, selectAvailableAddress } = this.props;
+    const { consumerId } = user || {};
+    consumerId && (await appActions.getProfileInfo(consumerId));
     const { profile } = user || {};
-    const { appActions, selectAvailableAddress } = this.props;
 
     await appActions.updateDeliveryDetails({
       username: deliveryDetails.username || profile.name,

@@ -97,6 +97,7 @@ export class ThankYou extends PureComponent {
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
+      hasRecordedChargedEvent: false,
       from: null,
     };
   }
@@ -323,10 +324,11 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    if (this.state.from === 'payment' && this.props.order && onlineStoreInfo) {
+    if (!this.state.hasRecordedChargedEvent && this.state.from === 'payment' && this.props.order && onlineStoreInfo) {
       const orderInfo = this.props.order;
       this.recordChargedEvent();
       this.handleGtmEventTracking({ order: orderInfo });
+      this.setState({ hasRecordedChargedEvent: true });
     }
 
     this.setContainerHeight();
@@ -1510,7 +1512,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <div>
-        {this.state.from === 'payment' && <Profile />}
+        {order && this.state.from === 'payment' && <Profile />}
 
         <section
           className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}

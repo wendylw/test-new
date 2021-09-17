@@ -7,10 +7,18 @@ import { bindActionCreators, compose } from 'redux';
 import './Profile.scss';
 import Utils from '../../../utils/utils';
 import 'react-day-picker/lib/style.css';
-import AlertWarning from '../AlertWarning/AlertWarning';
+import DuplicatedEmailAlert from '../Profile/components/DuplicatedEmailAlert/DuplicatedEmailAlert.jsx';
 import _trim from 'lodash/trim';
 import { actions as profileActionCreators } from './redux/index';
-import { getUpdateProfileError, getProfile, getShowModal } from './redux/selectors';
+import {
+  getUpdateProfileError,
+  getProfileName,
+  getProfileEmail,
+  getProfileBirthday,
+  getEmailInvalidErrorVisibility,
+  getbirthdayInvalidErrorVisibility,
+  getShowModal,
+} from './redux/selectors';
 import { updateProfile } from './redux/thunk';
 class Profile extends Component {
   constructor(props) {
@@ -31,11 +39,11 @@ class Profile extends Component {
     const { name, email, birthday } = this.props.user.profile || {};
 
     setTimeout(() => {
-      const showProfile = !name || !email || !birthday;
+      const showProfile = name;
       this.props.profileAction.setModal(showProfile);
     }, 3000);
 
-    profileAction.updateProfileInfo({ name, email, birthday });
+    profileAction.init({ name, email, birthday });
   }
 
   handleClickBack = () => {
@@ -60,11 +68,11 @@ class Profile extends Component {
   handleInputChange = e => {
     const inputValue = e.target.value;
     if (e.target.name === 'consumerName') {
-      this.props.profileAction.updateProfileInfo({ name: inputValue });
-    } else if (e.target.name === 'consumerBirthday') {
-      this.props.profileAction.updateProfileInfo({ birthday: inputValue });
+      this.props.profileAction.updateName(inputValue);
     } else if (e.target.name === 'consumerEmail') {
-      this.props.profileAction.updateProfileInfo({ email: inputValue });
+      this.props.profileAction.updateEmail(inputValue);
+    } else if (e.target.name === 'consumerBirthday') {
+      this.props.profileAction.updateBirthday(inputValue);
     }
   };
 
@@ -96,9 +104,15 @@ class Profile extends Component {
     this.props.profileAction.resetUpdateProfileResult();
   };
 
+  handleBirthdayInputBlur = () => {
+    this.props.profileAction.completeBirthday();
+  };
+
+  handleEmailInputBlur = () => {
+    this.props.profileAction.completeEmail();
+  };
+
   renderEmailFiled({ t, email, disabled }) {
-    let emailTrim = _trim(email);
-    const showInvalidError = emailTrim && !Utils.checkEmailIsValid(emailTrim);
     return (
       <div>
         <div className="flex__fluid-content">
@@ -108,7 +122,7 @@ class Profile extends Component {
         </div>
         <div
           className={`profile__email-input profile__PhoneInputCountry ${
-            showInvalidError ? 'error' : ''
+            !this.props.emaiInvalidErrorVisibility ? 'error' : ''
           } form__group margin-left-right-small border-radius-normal`}
         >
           <input
@@ -127,12 +141,10 @@ class Profile extends Component {
 
   render() {
     const { t, showModal } = this.props;
-    const { name, email, birthday } = this.props.profile;
+    const email = this.props.profileEmail;
+    const birthday = this.props.profileBirthday;
+    const name = this.props.profileName;
     let disabled;
-    let emailTrim = _trim(email);
-    let birthdayTrim = _trim(birthday);
-    const showInvalidError = emailTrim && !Utils.checkEmailIsValid(emailTrim);
-    const showInvalidBirthday = birthdayTrim && !Utils.checkBirthdayIsValid(birthday);
 
     const className = ['aside fixed-wrapper', 'profil  flex flex-column flex-end'];
 
@@ -143,7 +155,7 @@ class Profile extends Component {
     return (
       <div style={{ opacity: this.state.ifDisplay || Utils.getCookieVariableChange('a_sk') ? '0' : '1' }}>
         <div>
-          <AlertWarning
+          <DuplicatedEmailAlert
             show={this.props.updateProfileError?.code === '40024'}
             onDonotAsk={this.handleDonotAsk}
             onBackEdit={this.handleBackEdit}
@@ -190,7 +202,7 @@ class Profile extends Component {
                   </div>
                   <div
                     className={`profile__position profile__input padding-small border-radius-base padding-left-right-normal profile__email-input profile__PhoneInputCountry ${
-                      showInvalidError ? 'error' : ''
+                      this.props.emaiInvalidErrorVisibility ? 'error' : ''
                     } form__group margin-left-right-small border-radius-normal`}
                   >
                     {this.renderEmailFiled({
@@ -199,14 +211,14 @@ class Profile extends Component {
                       email,
                     })}
                   </div>
-                  {showInvalidError && (
+                  {this.props.emaiInvalidErrorVisibility && (
                     <p className="profile__showError  form__error-message padding-left-right-normal margin-top-bottom-small">
                       {t('NotValidEmail')}
                     </p>
                   )}
                   <div
                     className={`profile__birthday profile__input padding-small border-radius-base padding-left-right-normal
-                   ${showInvalidBirthday ? 'error' : ''}
+                   ${this.props.birthdayInvalidErrorVisibility ? 'error' : ''}
                     `}
                   >
                     <div className="flex__fluid-content">
@@ -217,13 +229,14 @@ class Profile extends Component {
                     <input
                       name="consumerBirthday"
                       value={birthday}
+                      onBlur={this.handleBirthdayInputBlur}
                       className="form__input"
                       placeholder="DD/MM"
                       type="text"
                       onChange={this.handleInputChange}
                     />
                   </div>
-                  {showInvalidBirthday && (
+                  {this.props.birthdayInvalidErrorVisibility && (
                     <p className="profile__showError_birthday  form__error-message padding-left-right-normal margin-top-bottom-small">
                       {t('NotValidBirthday')}
                     </p>
@@ -234,7 +247,7 @@ class Profile extends Component {
             <footer className="footer footer__transparent margin-normal">
               <button
                 className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
-                disabled={!name || showInvalidError || !email || !birthday || showInvalidBirthday}
+                disabled={!name || this.props.emaiInvalidErrorVisibility || this.props.birthdayInvalidErrorVisibility}
                 onClick={this.saveProfile}
               >
                 {t('Continue')}
@@ -249,14 +262,18 @@ class Profile extends Component {
 Profile.displayName = 'Profile';
 
 export default compose(
-  withTranslation(),
+  withTranslation('Profile'),
   connect(
     state => ({
       user: getUser(state),
-      profile: getProfile(state),
+      profileName: getProfileName(state),
+      profileEmail: getProfileEmail(state),
+      profileBirthday: getProfileBirthday(state),
       showModal: getShowModal(state),
       deliveryDetails: getDeliveryDetails(state),
       updateProfileError: getUpdateProfileError(state),
+      emaiInvalidErrorVisibility: getEmailInvalidErrorVisibility(state),
+      birthdayInvalidErrorVisibility: getbirthdayInvalidErrorVisibility(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
