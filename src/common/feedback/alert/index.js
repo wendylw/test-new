@@ -28,17 +28,16 @@ const createAlert = (content, options) => {
   rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
   container.appendChild(rootDOM);
 
-  render(
-    React.createElement(Alert, {
-      content,
-      ...otherOptions,
-      onClose: async () => {
-        await onClose();
-        destroyTarget(rootDOM);
-      },
-    }),
-    rootDOM
-  );
+  const alertInstance = React.createElement(Alert, {
+    content,
+    ...otherOptions,
+    onClose: async () => {
+      await onClose();
+      render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => destroyTarget(rootDOM));
+    },
+  });
+
+  render(alertInstance, rootDOM);
 };
 
 export const alert = (content, options = {}) => createAlert(content || null, normalizeAlertOptions(options));
