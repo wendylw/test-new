@@ -105,14 +105,14 @@ export class ThankYou extends PureComponent {
   pollOrderStatusTimer = null;
 
   componentDidMount = async () => {
-    const from = Utils.getCookieVariable('__ty_source', '');
+    const from = Utils.getCookieVariable('__ty_source');
 
     this.setState({
       from,
     });
 
     // immidiately remove __ty_source cookie after setting in the state.
-    Utils.removeCookieVariable('__ty_source', '');
+    Utils.removeCookieVariable('__ty_source');
 
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
@@ -340,7 +340,7 @@ export class ThankYou extends PureComponent {
   };
 
   getThankYouSource = () => {
-    return Utils.getCookieVariable('__ty_source', '');
+    return Utils.getCookieVariable('__ty_source');
   };
   isSourceFromPayment = source => {
     return source === 'payment';

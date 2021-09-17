@@ -89,7 +89,7 @@ class Profile extends Component {
   }
 
   handleDonotAsk = () => {
-    Utils.setCookieVariableChange('a_sk', '1', {
+    Utils.setCookieVariable('a_sk', '1', {
       expires: 3650,
       path: '/',
       domain: Utils.getMainDomain(),
@@ -153,7 +153,7 @@ class Profile extends Component {
     }
 
     return (
-      <div style={{ opacity: this.state.ifDisplay || Utils.getCookieVariableChange('a_sk') ? '0' : '1' }}>
+      <div style={{ opacity: this.state.ifDisplay || Utils.getCookieVariable('a_sk') ? '0' : '1' }}>
         <div>
           <DuplicatedEmailAlert
             show={this.props.updateProfileError?.code === '40024'}

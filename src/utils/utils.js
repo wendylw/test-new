@@ -96,49 +96,12 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return top + height - windowScrolledTop - topAdjustment;
 };
 
-Utils.getCookieVariable = function getCookieVariable(name, scope) {
-  let keyEQ = scope + name + '=';
-  let ca = document.cookie.split(';');
-
-  for (let i = 0, len = ca.length; i < len; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(keyEQ) === 0 && c.substring(keyEQ.length, c.length) !== '')
-      return c.substring(keyEQ.length, c.length);
-  }
-
-  return null;
-};
-
-Utils.setCookieVariable = function setCookieVariable(name, value, scope = '') {
-  document.cookie = scope + name + '=' + value + '; path=/';
-};
-
-Utils.getCookieVariableChange = name => {
-  return Cookies.get(name);
-};
-
-Utils.setCookieVariableChange = (name, value, attributes) => {
-  return Cookies.set(name, value, attributes);
-};
-
-Utils.getMainDomain = () => {
-  const hostName = window.location.hostname;
-  const arr = hostName.split('.');
-  arr.shift();
-  const result = arr.join('.');
-  return result;
-};
-
-Utils.removeCookieVariable = function removeCookieVariable(name, scope) {
-  document.cookie = scope + name + '=; path=/';
-};
-
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
-    Utils.getCookieVariable(name, 'localStorage_');
+    const { getCookieNameOfLocalStorage, getCookieVariable } = Utils;
+    getCookieVariable(getCookieNameOfLocalStorage(name));
   }
 };
 
@@ -147,7 +110,8 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    Utils.setCookieVariable(name, value, 'localStorage_');
+    const { getCookieNameOfLocalStorage, setCookieVariable } = Utils;
+    setCookieVariable(getCookieNameOfLocalStorage(name), value, { expires: 3650 });
   }
 };
 
@@ -155,7 +119,8 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    Utils.removeCookieVariable(name, 'localStorage_');
+    const { getCookieNameOfLocalStorage, removeCookieVariable } = Utils;
+    removeCookieVariable(getCookieNameOfLocalStorage(name));
   }
 };
 
@@ -163,7 +128,8 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   try {
     return sessionStorage.getItem(name);
   } catch (e) {
-    Utils.getCookieVariable(name, 'sessionStorage_');
+    const { getCookieNameOfSessionStorage, getCookieVariable } = Utils;
+    getCookieVariable(getCookieNameOfSessionStorage(name));
   }
 };
 
@@ -172,7 +138,8 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
-    Utils.setCookieVariable(name, value, 'sessionStorage_');
+    const { getCookieNameOfSessionStorage, setCookieVariable } = Utils;
+    setCookieVariable(getCookieNameOfSessionStorage(name), value, { expires: 3650 });
   }
 };
 
@@ -180,7 +147,8 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
     sessionStorage.removeItem(name);
   } catch (e) {
-    Utils.removeCookieVariable(name, 'sessionStorage_');
+    const { getCookieNameOfSessionStorage, removeCookieVariable } = Utils;
+    removeCookieVariable(getCookieNameOfSessionStorage(name));
   }
 };
 
@@ -928,6 +896,35 @@ Utils.getRegistrationSource = () => {
 
       return REGISTRATION_SOURCE.BEEP_STORE;
   }
+};
+
+Utils.getMainDomain = () => {
+  const hostName = window.location.hostname;
+  const arr = hostName.split('.');
+  arr.shift();
+  const result = arr.join('.');
+  return result;
+};
+
+Utils.getCookieNameOfLocalStorage = name => {
+  return 'localStorage_' + name;
+};
+
+Utils.getCookieNameOfSessionStorage = name => {
+  return 'sessionStorage_' + name;
+};
+
+Utils.getCookieVariable = name => {
+  return Cookies.get(name);
+};
+
+Utils.setCookieVariable = (name, value, attributes) => {
+  return Cookies.set(name, value, attributes);
+};
+
+// IMPORTANT! When deleting a cookie and you're not relying on the default attributes, you must pass the exact same path and domain attributes that were used to set the cookie
+Utils.removeCookieVariable = (name, attributes) => {
+  return Cookies.remove(name, attributes);
 };
 
 export default Utils;
