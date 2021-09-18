@@ -5,17 +5,11 @@ import ErrorToast from '../../../components/ErrorToast';
 import SiteFooter from '../../components/SiteFooter';
 import { appActionCreators, getError } from '../../redux/modules/app';
 import Routes from '../../Routes';
-import Utils from '../../../utils/utils';
-import * as TngUtils from '../../../utils/tng-utils';
 
 class SiteApp extends React.Component {
   showSiteFooter = false; // hide the siteFooter temporarily, could show it in the future
 
   componentDidMount = async () => {
-    if (Utils.isTNGMiniProgram()) {
-      TngUtils.setTabBarVisibility(true);
-    }
-
     await this.props.appActions.ping();
   };
 

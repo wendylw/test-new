@@ -22,7 +22,6 @@ import faviconImage from '../../../images/favicon.ico';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import loggly from '../../../utils/monitoring/loggly';
-import * as TngUtils from '../../../utils/tng-utils';
 
 const { ROUTER_PATHS } = Constants;
 let savedAddressRes;
@@ -93,10 +92,6 @@ class App extends Component {
       document.body.style.width = '100%';
       document.body.style.height = '100%';
       document.body.style.overflow = 'hidden';
-    }
-
-    if (Utils.isTNGMiniProgram()) {
-      TngUtils.setTabBarVisibility(false);
     }
 
     this.visitErrorPage();
