@@ -753,6 +753,7 @@ export class ThankYou extends PureComponent {
 
       // goto beep site home page
       window.location.href = config.beepitComUrl;
+      return;
     }
 
     const options = [`h=${storeHashCode}`];
