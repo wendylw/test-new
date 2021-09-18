@@ -67,6 +67,7 @@ export class OrderDetails extends Component {
     const { minimumConsumption } = qrOrderingSettings || {};
     const queryParams = {
       receiptNumber: this.props.receiptNumber,
+      from: 'orderDetails',
     };
 
     CleverTap.pushEvent('Order Details - click report issue', {
