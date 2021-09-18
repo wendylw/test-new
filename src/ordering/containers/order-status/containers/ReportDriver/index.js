@@ -105,9 +105,18 @@ class ReportDriver extends Component {
   goBack() {
     if (Utils.isWebview()) {
       NativeMethods.goBack();
-    } else {
-      this.gotoThankYourPage();
+      return;
     }
+
+    const from = Utils.getQueryString('from');
+
+    if (from === 'orderDetails') {
+      this.props.history.goBack();
+      return;
+    }
+
+    // from sms
+    this.gotoThankYourPage();
   }
 
   gotoThankYourPage = () => {
