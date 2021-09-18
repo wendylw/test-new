@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import EmptyImage from '../../../images/empty.png';
 
 function OrderListEmptyView() {
-  const { t } = useTranslation('orderHistory');
+  const { t } = useTranslation('OrderHistory');
 
   return (
     <div
