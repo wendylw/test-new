@@ -155,6 +155,9 @@ class CustomerInfo extends Component {
       history.push({
         pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
         search: window.location.search,
+        state: {
+          fromAddressList: true,
+        },
       });
       return;
     }
