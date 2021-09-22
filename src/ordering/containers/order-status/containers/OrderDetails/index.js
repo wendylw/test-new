@@ -86,9 +86,11 @@ export class OrderDetails extends Component {
 
   handleReorder = () => {
     const { shippingType } = this.props;
+    const h = Utils.getQueryString('h');
+
     this.props.history.replace({
       pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-      search: `type=${shippingType}`,
+      search: `type=${shippingType}&h=${h}`,
     });
   };
 
