@@ -1,8 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import dayjs from 'dayjs';
 import _trim from 'lodash/trim';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
+import Util from '../utils';
 import { updateProfile } from './thunk';
 
 const initialState = {
@@ -34,12 +36,13 @@ export const { actions, reducer } = createSlice({
   reducers: {
     init(state, action) {
       const { name, email, birthday } = action.payload;
+      const birthdayDayjs = dayjs(birthday);
 
-      const tirmedEmail = _trim(email);
-      if (tirmedEmail.length > 0) {
+      const trimedEmail = _trim(email);
+      if (trimedEmail.length > 0) {
         state.email = {
-          data: tirmedEmail,
-          isValid: Utils.checkEmailIsValid(tirmedEmail),
+          data: trimedEmail,
+          isValid: Utils.checkEmailIsValid(trimedEmail),
           isComplete: true,
         };
       } else {
@@ -56,8 +59,8 @@ export const { actions, reducer } = createSlice({
       const tirmedBirthday = _trim(birthday);
       if (tirmedBirthday.length > 0) {
         state.birthday = {
-          data: birthday,
-          isValid: Utils.checkBirthdayIsValid(tirmedBirthday),
+          data: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM') : '',
+          isValid: Util.checkBirthdayIsValid(birthdayDayjs.format('DD/MM')),
           isComplete: true,
         };
       } else {
@@ -82,7 +85,7 @@ export const { actions, reducer } = createSlice({
       state.email.isComplete = true;
     },
     completeBirthday(state) {
-      state.birthday.isValid = Utils.checkBirthdayIsValid(state.birthday.data);
+      state.birthday.isValid = Util.checkBirthdayIsValid(state.birthday.data);
       state.birthday.isComplete = true;
     },
     resetUpdateProfileResult(state) {
@@ -95,6 +98,13 @@ export const { actions, reducer } = createSlice({
     },
     setModal(state, action) {
       state.showModal = action.payload;
+    },
+    doNotAskAgain(state) {
+      state.showModal = false;
+      state.updateProfileResult = {
+        ...state.updateProfileResult,
+        ...initialState.updateProfileResult,
+      };
     },
   },
 

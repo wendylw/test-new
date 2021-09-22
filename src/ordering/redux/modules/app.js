@@ -602,8 +602,6 @@ const user = (state = initialState.user, action) => {
         delete state.refreshToken;
       }
 
-      const birthdayDayjs = dayjs(user.birthday);
-
       return {
         ...state,
         consumerId,
@@ -611,7 +609,7 @@ const user = (state = initialState.user, action) => {
           phone: user.phone,
           name: user.firstName,
           email: user.email,
-          birthday: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM') : '',
+          birthday: user.birthday,
         },
         isLogin: true,
         hasOtp: false,
@@ -648,13 +646,12 @@ const user = (state = initialState.user, action) => {
       };
     case types.FETCH_PROFILE_SUCCESS: {
       const { firstName, email, birthday, phone } = response || {};
-      const birthdayDayjs = dayjs(birthday);
       return {
         ...state,
         profile: {
           name: firstName,
           email,
-          birthday: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM') : '',
+          birthday,
           phone,
         },
       };

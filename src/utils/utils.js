@@ -628,27 +628,6 @@ Utils.checkEmailIsValid = email => {
   return emailRegex.test(email);
 };
 
-Utils.checkBirthdayIsValid = birthday => {
-  var reg = birthday.match(/^(\d{2})(\/)(\d{2})$/);
-  if (reg == null || reg[1] > 31 || reg[3] > 12 || reg[1] < '01' || reg[3] < '01') {
-    return false;
-  } else {
-    return true;
-  }
-};
-
-Utils.transformBirthdayIsValid = inputDate => {
-  var birthday_month = inputDate.split('/')[1];
-  var birthday_day = inputDate.split('/')[0];
-  var birthday_year = '2020';
-  const date = new Date();
-  const day = date.setDate(birthday_day);
-  const month = date.setMonth(birthday_month - 1);
-  const year = date.setFullYear(birthday_year);
-  const res = date.toISOString();
-  return res;
-};
-
 Utils.getTimeUnit = time => {
   try {
     const hour = new Date(time);

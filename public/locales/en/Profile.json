@@ -8,7 +8,7 @@
     "SkipForNow": "Skip for now",
     "DuplicatedEmailAlertTitle": "OOPS! THIS IS AWKWARD…",
     "DuplicatedEmailAlertEmial": "Looks like you’ve entered this email before. Please use a different email address.",
-    "DuplicatedEmailAlertDonotAskAgain": "DON’T ASK AGAIN",
+    "DuplicatedEmailAlertDoNotAskAgain": "DON’T ASK AGAIN",
     "DuplicatedEmailAlertBackToEdit": "BACK TO EDIT"
   }
   

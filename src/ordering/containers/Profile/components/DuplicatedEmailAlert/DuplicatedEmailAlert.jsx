@@ -23,9 +23,9 @@ function DuplicatedEmailAlert(props) {
         <button
           className="alert-warning__modal-default-button button button__link flex__fluid-content text-weight-bolder text-uppercase"
           // eslint-disable-next-line react/destructuring-assignment
-          onClick={props.onDonotAsk}
+          onClick={props.onDoNotAsk}
         >
-          {t('DuplicatedEmailAlertDonotAskAgain')}
+          {t('DuplicatedEmailAlertDoNotAskAgain')}
         </button>
         <button
           className="alert-warning__modal-fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
@@ -44,14 +44,14 @@ DuplicatedEmailAlert.displayName = 'DuplicatedEmailAlert';
 DuplicatedEmailAlert.propTypes = {
   show: PropTypes.bool,
   t: PropTypes.func,
-  onDonotAsk: PropTypes.func,
+  onDoNotAsk: PropTypes.func,
   onBackEdit: PropTypes.func,
 };
 
 DuplicatedEmailAlert.defaultProps = {
   show: false,
   t: () => {},
-  onDonotAsk: () => {},
+  onDoNotAsk: () => {},
   onBackEdit: () => {},
 };
 

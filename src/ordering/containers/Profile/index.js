@@ -6,9 +6,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import './Profile.scss';
 import Utils from '../../../utils/utils';
-import 'react-day-picker/lib/style.css';
 import DuplicatedEmailAlert from '../Profile/components/DuplicatedEmailAlert/DuplicatedEmailAlert.jsx';
-import _trim from 'lodash/trim';
 import { actions as profileActionCreators } from './redux/index';
 import {
   getUpdateProfileError,
@@ -20,18 +18,21 @@ import {
   getShowModal,
 } from './redux/selectors';
 import { updateProfile } from './redux/thunk';
-class Profile extends Component {
+class CompeteProfileModal extends Component {
   constructor(props) {
     super(props);
-    this.textInput = React.createRef();
   }
-  inputRefOfEmail = null;
+
   state = {
     error: false,
     message: '',
-    ifDisplay: '',
   };
   async componentDidMount() {
+    const getCookieAsk = Utils.getCookieVariable('a_sk');
+    if (getCookieAsk === '1') {
+      return;
+    }
+
     const { appActions, profileAction, user } = this.props;
     const { consumerId } = user || {};
     consumerId && (await appActions.getProfileInfo(consumerId));
@@ -57,9 +58,9 @@ class Profile extends Component {
     const { updateProfile } = this.props;
     await updateProfile();
     if (!this.props.updateProfileError) {
-      this.skipProfile();
+      this.closeProfileModal();
     } else if (this.props.updateProfileError.code) {
-      if (this.props.updateProfileError.code == '40024') {
+      if (this.props.updateProfileError.code === '40024') {
         return;
       }
     }
@@ -76,28 +77,18 @@ class Profile extends Component {
     }
   };
 
-  skipProfile = () => {
+  closeProfileModal = () => {
     this.props.profileAction.setModal(false);
   };
 
-  handleHideProductDetail(e) {
-    if (e && e.target !== e.currentTarget) {
-      return;
-    }
-
-    this.closeModal();
-  }
-
-  handleDonotAsk = () => {
+  handleDoNotAsk = () => {
     Utils.setCookieVariable('a_sk', '1', {
       expires: 3650,
       path: '/',
       domain: Utils.getMainDomain(),
     });
 
-    this.setState({
-      ifDisplay: true,
-    });
+    this.props.profileAction.doNotAskAgain();
   };
 
   handleBackEdit = () => {
@@ -112,7 +103,7 @@ class Profile extends Component {
     this.props.profileAction.completeEmail();
   };
 
-  renderEmailFiled({ t, email, disabled }) {
+  renderEmailFiled({ t, email }) {
     return (
       <div>
         <div className="flex__fluid-content">
@@ -122,17 +113,16 @@ class Profile extends Component {
         </div>
         <div
           className={`profile__email-input profile__PhoneInputCountry ${
-            !this.props.emaiInvalidErrorVisibility ? 'error' : ''
+            !this.props.emailInvalidErrorVisibility ? 'error' : ''
           } form__group margin-left-right-small border-radius-normal`}
         >
           <input
-            ref={ref => (this.inputRefOfEmail = ref)}
-            disabled={disabled}
             name="consumerEmail"
             value={email}
             onChange={this.handleInputChange}
             onBlur={this.handleEmailInputBlur}
-            className="ordering-report-driver__input-email form__input padding-small"
+            // className="ordering-report-driver__input-email form__input padding-small"
+            className="profile__input-email form__input padding-small"
           />
         </div>
       </div>
@@ -144,110 +134,107 @@ class Profile extends Component {
     const email = this.props.profileEmail;
     const birthday = this.props.profileBirthday;
     const name = this.props.profileName;
-    let disabled;
 
-    const className = ['aside fixed-wrapper', 'profil  flex flex-column flex-end'];
+    const className = ['aside fixed-wrapper', 'profile  flex flex-column flex-end'];
 
     if (showModal) {
       className.push('active cover');
     }
 
     return (
-      <div style={{ opacity: this.state.ifDisplay || Utils.getCookieVariable('a_sk') ? '0' : '1' }}>
+      <div>
         <div>
           <DuplicatedEmailAlert
             show={this.props.updateProfileError?.code === '40024'}
-            onDonotAsk={this.handleDonotAsk}
+            onDoNotAsk={this.handleDoNotAsk}
             onBackEdit={this.handleBackEdit}
             t={this.props.t}
           />
         </div>
 
-        <aside
-          ref={ref => (this.asideEl = ref)}
-          className={className.join(' ')}
-          onClick={e => this.handleHideProductDetail(e)}
-          data-heap-name="ordering.home.profile.container"
-        >
-          <div ref={this.textInput} className="profile flex flex-column profile__container aside__content">
+        <aside className={className.join(' ')} data-heap-name="ordering.home.profile.container">
+          <div className="profile flex flex-column profile__container aside__content">
             <section className="profile__container padding-left-right-normal">
               <div className="profile__flex">
                 <div>
                   <p className="profile__complete_title profile__complete_title_two">{t('Complete')}</p>
                   <p className="profile__complete_title ">{t('YourProfile')}</p>
                 </div>
-                <a className="profile__skip" onClick={this.skipProfile}>
+                <button className="profile__skip profile__button-link" onClick={this.closeProfileModal}>
                   {t('SkipForNow')}
-                </a>
+                </button>
               </div>
               <p className="profile__margin-top-bottom-normal text-size-big text-line-height-base">
                 {t('CompleteProfileTip')}
               </p>
               <div>
-                <form>
-                  <div className="profile__input padding-small border-radius-base padding-left-right-normal">
-                    <div className="flex__fluid-content">
-                      <div className="profile__title required">
-                        <span className="text-size-small text-top">{t('Name')}</span>
-                      </div>
+                <div className="profile__input padding-small border-radius-base padding-left-right-normal">
+                  <div className="flex__fluid-content">
+                    <div className="profile__title required">
+                      <span className="text-size-small text-top">{t('Name')}</span>
                     </div>
-                    <input
-                      name="consumerName"
-                      value={name}
-                      className="form__input"
-                      type="text"
-                      required={true}
-                      onChange={this.handleInputChange}
-                    />
                   </div>
-                  <div
-                    className={`profile__position profile__input padding-small border-radius-base padding-left-right-normal profile__email-input profile__PhoneInputCountry ${
-                      this.props.emaiInvalidErrorVisibility ? 'error' : ''
-                    } form__group margin-left-right-small border-radius-normal`}
-                  >
-                    {this.renderEmailFiled({
-                      t,
-                      disabled,
-                      email,
-                    })}
-                  </div>
-                  {this.props.emaiInvalidErrorVisibility && (
-                    <p className="profile__showError  form__error-message padding-left-right-normal margin-top-bottom-small">
-                      {t('NotValidEmail')}
-                    </p>
-                  )}
-                  <div
-                    className={`profile__birthday profile__input padding-small border-radius-base padding-left-right-normal
+                  <input
+                    name="consumerName"
+                    value={name}
+                    className="form__input"
+                    type="text"
+                    required={true}
+                    onChange={this.handleInputChange}
+                  />
+                </div>
+                <div
+                  className={`profile__position profile__input padding-small border-radius-base padding-left-right-normal profile__email-input profile__PhoneInputCountry ${
+                    this.props.emailInvalidErrorVisibility ? 'error' : ''
+                  } form__group margin-left-right-small border-radius-normal`}
+                >
+                  {this.renderEmailFiled({
+                    t,
+                    email,
+                  })}
+                </div>
+                {this.props.emailInvalidErrorVisibility && (
+                  <p className="profile__showError  form__error-message padding-left-right-normal margin-top-bottom-small">
+                    {t('NotValidEmail')}
+                  </p>
+                )}
+                <div
+                  className={`profile__birthday profile__input padding-small border-radius-base padding-left-right-normal
                    ${this.props.birthdayInvalidErrorVisibility ? 'error' : ''}
                     `}
-                  >
-                    <div className="flex__fluid-content">
-                      <div className="profile__title required">
-                        <span className="text-size-small text-top">{t('DateOfBirth')}</span>
-                      </div>
+                >
+                  <div className="flex__fluid-content">
+                    <div className="profile__title required">
+                      <span className="text-size-small text-top">{t('DateOfBirth')}</span>
                     </div>
-                    <input
-                      name="consumerBirthday"
-                      value={birthday}
-                      onBlur={this.handleBirthdayInputBlur}
-                      className="form__input"
-                      placeholder="DD/MM"
-                      type="text"
-                      onChange={this.handleInputChange}
-                    />
                   </div>
-                  {this.props.birthdayInvalidErrorVisibility && (
-                    <p className="profile__showError_birthday  form__error-message padding-left-right-normal margin-top-bottom-small">
-                      {t('NotValidBirthday')}
-                    </p>
-                  )}
-                </form>
+                  <input
+                    name="consumerBirthday"
+                    value={birthday}
+                    onBlur={this.handleBirthdayInputBlur}
+                    className="form__input"
+                    placeholder="DD/MM"
+                    type="text"
+                    onChange={this.handleInputChange}
+                  />
+                </div>
+                {this.props.birthdayInvalidErrorVisibility && (
+                  <p className="profile__showError_birthday  form__error-message padding-left-right-normal margin-top-bottom-small">
+                    {t('NotValidBirthday')}
+                  </p>
+                )}
               </div>
             </section>
             <footer className="footer footer__transparent margin-normal">
               <button
                 className="button button__fill button__block padding-small text-size-big text-weight-bolder text-uppercase"
-                disabled={!name || this.props.emaiInvalidErrorVisibility || this.props.birthdayInvalidErrorVisibility}
+                disabled={
+                  !name ||
+                  !birthday ||
+                  !email ||
+                  this.props.emailInvalidErrorVisibility ||
+                  this.props.birthdayInvalidErrorVisibility
+                }
                 onClick={this.saveProfile}
               >
                 {t('Continue')}
@@ -259,7 +246,7 @@ class Profile extends Component {
     );
   }
 }
-Profile.displayName = 'Profile';
+CompeteProfileModal.displayName = 'CompeteProfileModal';
 
 export default compose(
   withTranslation('Profile'),
@@ -272,7 +259,7 @@ export default compose(
       showModal: getShowModal(state),
       deliveryDetails: getDeliveryDetails(state),
       updateProfileError: getUpdateProfileError(state),
-      emaiInvalidErrorVisibility: getEmailInvalidErrorVisibility(state),
+      emailInvalidErrorVisibility: getEmailInvalidErrorVisibility(state),
       birthdayInvalidErrorVisibility: getbirthdayInvalidErrorVisibility(state),
     }),
     dispatch => ({
@@ -281,4 +268,4 @@ export default compose(
       updateProfile: bindActionCreators(updateProfile, dispatch),
     })
   )
-)(Profile);
+)(CompeteProfileModal);

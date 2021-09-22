@@ -75,8 +75,7 @@ import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import PhoneLogin from './components/PhoneLogin';
 import HybridHeader from '../../../../../components/HybridHeader';
-import Profile from '../../../../containers/Profile/index';
-import { getProfile } from '../../../Profile/redux/selectors';
+import CompeteProfileModal from '../../../../containers/Profile/index';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -339,9 +338,6 @@ export class ThankYou extends PureComponent {
     this.closeMap();
   };
 
-  getThankYouSource = () => {
-    return Utils.getCookieVariable('__ty_source');
-  };
   isSourceFromPayment = source => {
     return source === 'payment';
   };
@@ -1512,7 +1508,7 @@ export class ThankYou extends PureComponent {
 
     return (
       <div>
-        {order && this.state.from === 'payment' && <Profile />}
+        {order && this.state.from === 'payment' && <CompeteProfileModal />}
 
         <section
           className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
@@ -1652,7 +1648,6 @@ export default compose(
       pendingUpdateShippingTypeStatus: getUpdateShippingTypePendingStatus(state),
       updatableToSelfPickupStatus: getDeliveryUpdatableToSelfPickupState(state),
       updatedToSelfPickupStatus: getUpdatedToSelfPickupStatus(state),
-      profile: getProfile(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

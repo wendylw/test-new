@@ -8,14 +8,6 @@
     height: 0;
   }
 
-  &__show-alertWarning {
-    display: block;
-  }
-
-  &__notShow-alertWarning {
-    display: none;
-  }
-
   &__container {
     height: 100vh;
     width: 100%;
@@ -40,20 +32,18 @@
     }
   }
 
-  &__not-valid {
-    display: none;
-    color: #fa4133;
-    position: relative;
-    top: -16px;
-  }
-
   &__complete_title {
     width: 223px;
     color: #303030;
-    font-family: Roboto;
     font-size: 30px;
     font-weight: bold;
     line-height: 36px;
+  }
+
+  &__button-link {
+    background-color: $white;
+    color: initial;
+    border: none;
   }
 
   &__complete_title_two {
@@ -72,7 +62,6 @@
 
   &__skip {
     color: #303030;
-    font-family: Roboto;
     font-size: 16px;
     font-weight: 500;
     line-height: 22px;
