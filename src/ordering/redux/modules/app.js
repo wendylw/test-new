@@ -158,17 +158,6 @@ const fetchCoreBusiness = variables => ({
   },
 });
 
-const fetchCustomerProfile = consumerId => ({
-  [API_REQUEST]: {
-    types: [
-      types.FETCH_CUSTOMER_PROFILE_REQUEST,
-      types.FETCH_CUSTOMER_PROFILE_SUCCESS,
-      types.FETCH_CUSTOMER_PROFILE_FAILURE,
-    ],
-    ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
-  },
-});
-
 // generator a virtual shopping cart for Customer place a Voucher Order
 const generatorShoppingCartForVoucherOrdering = () => {
   const orderingInfo = VoucherUtils.getVoucherOrderingInfoFromSessionStorage();
@@ -426,16 +415,6 @@ export const actions = {
     return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
   },
 
-  loadCustomerProfile: () => (dispatch, getState) => {
-    const { app } = getState();
-
-    if (app.user.consumerId) {
-      document.cookie = `consumerId=${app.user.consumerId}`;
-    }
-
-    return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
-  },
-
   // load shopping cart
   loadShoppingCart: () => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
@@ -636,10 +615,6 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
-    case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
-      const { storeCreditsBalance, customerId } = response || {};
-
-      return { ...state, storeCreditsBalance, customerId };
     case types.UPDATE_PROFILE_INFO:
       return {
         ...state,

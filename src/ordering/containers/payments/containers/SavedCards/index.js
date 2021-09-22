@@ -42,9 +42,6 @@ class SavedCards extends Component {
       this.setState({
         showLoading: true,
       });
-
-      const { user, appActions } = this.props;
-      if (!user) await appActions.loadCustomerProfile();
       await this.ensurePaymentProvider();
 
       const { paymentProvider, history, cardList, supportSaveCard } = this.props;

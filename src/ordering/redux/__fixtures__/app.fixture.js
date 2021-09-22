@@ -42,8 +42,6 @@ const fetchCoreBusinessData = {
 };
 const fetchCustomerProfileData = {
   business: 'wenjingzhang',
-  customerId: '190e64b2-ff1b-4d04-bbbf-540e4b001dd6',
-  storeCreditsBalance: 8.42,
   storeCreditsSpent: 0,
   businessInfo: { displayBusinessName: 'wenjingzhang', country: 'MY', currency: 'MYR' },
 };
