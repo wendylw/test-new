@@ -86,7 +86,7 @@ export const showBackButton = ({
 
   return !!stateMetrics.find(
     state =>
-      state.isSite === isBeepitCom &&
+      (state.isSite === isBeepitCom || Utils.isTNGMiniProgram()) &&
       state.isOpen === isValidTimeToOrder &&
       state.type === orderType.toLowerCase() &&
       state.preOrder === Boolean(enablePreOrder) &&
