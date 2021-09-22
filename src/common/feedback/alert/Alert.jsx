@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import './Alert.scss';
 
-const Alert = (props, ref) => {
+const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();
   const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
   useImperativeHandle(ref, () => ({
@@ -35,7 +35,7 @@ const Alert = (props, ref) => {
       </div>
     </div>
   );
-};
+});
 
 Alert.displayName = 'Alert';
 
@@ -60,4 +60,4 @@ Alert.defaultProps = {
   onModalVisibilityChanged: () => {},
 };
 
-export default withBackButtonSupport(forwardRef(Alert));
+export default withBackButtonSupport(Alert);

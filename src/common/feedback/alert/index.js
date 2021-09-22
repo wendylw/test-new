@@ -30,53 +30,33 @@ const normalizeAlertOptions = options => ({
   onClose: () => {},
   ...options,
 });
-const createAlert = (content, options) => {
-  const { container, onClose, ...restOptions } = options;
-  const rootDOM = document.createElement('div');
+const createAlert = (content, options) =>
+  new Promise(resolve => {
+    const { container, onClose, ...restOptions } = options;
+    const rootDOM = document.createElement('div');
 
-  rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
-  container.appendChild(rootDOM);
+    rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
+    container.appendChild(rootDOM);
 
-  const alertInstance = React.createElement(Alert, {
-    content,
-    ...restOptions,
-    onClose: async () => {
-      await onClose();
-      render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => destroyTarget(rootDOM));
-    },
+    const alertInstance = React.createElement(Alert, {
+      content,
+      ...restOptions,
+      onClose: () => {
+        render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => {
+          destroyTarget(rootDOM);
+          onClose();
+          resolve();
+        });
+      },
+    });
+
+    render(alertInstance, rootDOM);
   });
-
-  render(alertInstance, rootDOM);
-};
 
 export const alert = (content, options = {}) => {
   const { title, ...restOptions } = options;
 
-  createAlert(<AlertStandardContent content={content} title={title} />, normalizeAlertOptions(restOptions));
+  return createAlert(<AlertStandardContent content={content} title={title} />, normalizeAlertOptions(restOptions));
 };
 
-alert.promise = (content, options = {}) =>
-  new Promise(resolve => {
-    const { onClose } = options;
-
-    alert(content, {
-      ...options,
-      onClose: () => {
-        resolve(onClose);
-      },
-    });
-  });
-
 alert.raw = (content, options = {}) => createAlert(content, normalizeAlertOptions(options));
-
-alert.rawPromise = (content, options = {}) =>
-  new Promise(resolve => {
-    const { onClose } = options;
-
-    alert.raw(content, {
-      ...options,
-      onClose: () => {
-        resolve(onClose);
-      },
-    });
-  });
