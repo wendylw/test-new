@@ -74,7 +74,7 @@ const stateMetrics = [
 ];
 
 export const showBackButton = ({
-  isBeepitCom = isSourceBeepitCom(),
+  isBeepitCom = Utils.isFromBeepSite(),
   orderType = Utils.getOrderTypeFromUrl(),
   isValidTimeToOrder,
   enablePreOrder,
