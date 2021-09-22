@@ -121,7 +121,6 @@ class CompeteProfileModal extends Component {
             value={email}
             onChange={this.handleInputChange}
             onBlur={this.handleEmailInputBlur}
-            // className="ordering-report-driver__input-email form__input padding-small"
             className="profile__input-email form__input padding-small"
           />
         </div>
