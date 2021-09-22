@@ -397,7 +397,7 @@ class CustomerInfo extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={processing}
-            validCreateOrder={Utils.isTNGMiniProgram() || (!total && !this.validateFields().show)}
+            validCreateOrder={(Utils.isTNGMiniProgram() || !total) && !this.validateFields().show}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
               this.handleBeforeCreateOrder();
