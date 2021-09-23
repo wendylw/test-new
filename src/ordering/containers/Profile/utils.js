@@ -1,7 +1,5 @@
 /* eslint-disable camelcase */
-/* eslint-disable no-var */
-const Util = {};
-Util.checkBirthdayIsValid = birthday => {
+export const checkBirthdayIsValid = birthday => {
   const reg = birthday.match(/^(\d{2})(\/)(\d{2})$/);
   const day = Number(reg[1]);
   const month = Number(reg[3]);
@@ -11,7 +9,7 @@ Util.checkBirthdayIsValid = birthday => {
   return true;
 };
 
-Util.ConvertToBackEndFormat = inputDate => {
+export const ConvertToBackEndFormat = inputDate => {
   const [birthday_day, birthday_month] = inputDate.split('/');
   const birthday_year = '2020';
   const date = new Date();
@@ -21,5 +19,3 @@ Util.ConvertToBackEndFormat = inputDate => {
   const res = date.toISOString();
   return res;
 };
-
-export default Util;

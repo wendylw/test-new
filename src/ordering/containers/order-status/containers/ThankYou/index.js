@@ -1510,14 +1510,12 @@ export class ThankYou extends PureComponent {
       <section
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
-        style={{ zIndex: '5', position: 'absolute' }}
       >
         {order && this.state.from === 'payment' && <CompeteProfileModal />}
         <React.Fragment>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
             className="flex-middle border__bottom-divider"
-            style={{ zIndex: 0 }}
             isPage={true}
             contentClassName="flex-middle"
             data-heap-name="ordering.thank-you.header"

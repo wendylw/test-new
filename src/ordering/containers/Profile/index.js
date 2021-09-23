@@ -36,7 +36,8 @@ class CompeteProfileModal extends Component {
     const { name, email, birthday } = this.props.user.profile || {};
 
     this.timer = setTimeout(() => {
-      const showProfile = !name || !email || !birthday;
+      // const showProfile = !name || !email || !birthday;
+      const showProfile = name;
       this.props.profileAction.setModal(showProfile);
     }, 3000);
 
@@ -147,7 +148,11 @@ class CompeteProfileModal extends Component {
           />
         </div>
 
-        <aside className={className.join(' ')} data-heap-name="ordering.home.profile.container">
+        <aside
+          className={className.join(' ')}
+          data-heap-name="ordering.home.profile.container"
+          style={{ zIndex: '101' }}
+        >
           <div className="profile flex flex-column profile__container aside__content">
             <section className="profile__container padding-left-right-normal">
               <div className="profile__flex">

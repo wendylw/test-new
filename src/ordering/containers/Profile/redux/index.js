@@ -4,7 +4,8 @@ import dayjs from 'dayjs';
 import _trim from 'lodash/trim';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
-import Util from '../utils';
+// eslint-disable-next-line import/named
+import { checkBirthdayIsValid } from '../utils';
 import { updateProfile } from './thunk';
 
 const initialState = {
@@ -60,7 +61,7 @@ export const { actions, reducer } = createSlice({
       if (tirmedBirthday.length > 0) {
         state.birthday = {
           data: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM') : '',
-          isValid: Util.checkBirthdayIsValid(birthdayDayjs.format('DD/MM')),
+          isValid: checkBirthdayIsValid(birthdayDayjs.format('DD/MM')),
           isComplete: true,
         };
       } else {
@@ -85,7 +86,7 @@ export const { actions, reducer } = createSlice({
       state.email.isComplete = true;
     },
     completeBirthday(state) {
-      state.birthday.isValid = Util.checkBirthdayIsValid(state.birthday.data);
+      state.birthday.isValid = checkBirthdayIsValid(state.birthday.data);
       state.birthday.isComplete = true;
     },
     resetUpdateProfileResult(state) {
