@@ -40,11 +40,22 @@ class CompeteProfileModal extends Component {
     const { name, email, birthday } = this.props.user.profile || {};
 
     setTimeout(() => {
-      const showProfile = name;
+      const showProfile = !name || !email || !birthday;
       this.props.profileAction.setModal(showProfile);
     }, 3000);
 
     profileAction.init({ name, email, birthday });
+  }
+
+  //WARNING! To be deprecated in React v17. Use componentDidMount instead.
+  componentWillUnmount() {
+    const { name } = this.props.user.profile || {};
+    clearTimeout(
+      setTimeout(() => {
+        const showProfile = name;
+        this.props.profileAction.setModal(showProfile);
+      }, 3000)
+    );
   }
 
   handleClickBack = () => {
