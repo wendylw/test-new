@@ -79,7 +79,7 @@ class AddressDetail extends Component {
       });
     }
 
-    if (location.state && location.state.fromCustomer) {
+    if (location.state && location.state.type === 'edit') {
       customerActions.updateAddressInfo({
         id: addressId,
         type: actions.EDIT,
@@ -97,7 +97,7 @@ class AddressDetail extends Component {
       });
     }
 
-    if (location.state && location.state.fromAddressList) {
+    if (location.state && location.state.type === 'add') {
       customerActions.updateAddressInfo({
         type: actions.ADD,
         contactName: username,

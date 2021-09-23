@@ -155,6 +155,9 @@ class CustomerInfo extends Component {
       history.push({
         pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
         search: window.location.search,
+        state: {
+          type: 'add',
+        },
       });
       return;
     }
@@ -249,7 +252,7 @@ class CustomerInfo extends Component {
                 pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
                 search: window.location.search,
                 state: {
-                  fromCustomer: true,
+                  type: 'edit',
                 },
               }}
               className="ordering-customer__address-detail-container button__link flex flex-start padding-top-bottom-smaller padding-left-right-small"
