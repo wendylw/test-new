@@ -157,7 +157,6 @@ class CustomerInfo extends Component {
         search: window.location.search,
         state: {
           type: 'add',
-          // fromAddressList: true,
         },
       });
       return;
