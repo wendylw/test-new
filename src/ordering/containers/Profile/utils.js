@@ -1,15 +1,20 @@
+import { isValidDate } from '../../../utils/datetime-lib';
+
 export const checkBirthdayIsValid = birthday => {
-  const getBirthday = birthday.split('/');
-  const birthdayTemporary = `2021/${getBirthday[1]}/${getBirthday[0]}`;
-  const birthDayComplete = birthdayTemporary.split('/');
-  if (birthdayTemporary === '') return false;
-  const d = new Date(birthdayTemporary);
-  if (Number.isNaN(d)) return false;
-  return (
-    parseInt(birthDayComplete[0], 10) === d.getFullYear() &&
-    parseInt(birthDayComplete[2], 10) === d.getDate() &&
-    parseInt(birthDayComplete[1], 10) === d.getMonth() + 1
-  );
+  try {
+    const getDate = birthday.match(/^(\d{2})(\/)(\d{2})$/);
+    const birthdayCom = `2020/${getDate[3]}/${getDate[1]}`;
+    const birthdayComP = birthdayCom.split('/');
+    const date = new Date(birthdayCom);
+    if (!isValidDate(date)) return false;
+    return (
+      parseInt(birthdayComP[0], 10) === date.getFullYear() &&
+      parseInt(birthdayComP[1], 10) === date.getMonth() + 1 &&
+      parseInt(birthdayComP[2], 10) === date.getDate()
+    );
+  } catch (error) {
+    return false;
+  }
 };
 
 export const convertToBackEndFormat = inputDate => {
