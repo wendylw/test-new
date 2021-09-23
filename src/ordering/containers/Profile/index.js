@@ -19,27 +19,23 @@ import {
 } from './redux/selectors';
 import { updateProfile } from './redux/thunk';
 class CompeteProfileModal extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   state = {
     error: false,
     message: '',
   };
   async componentDidMount() {
+    const { appActions, profileAction, user } = this.props;
+    const { consumerId } = user || {};
     const getCookieAsk = Utils.getCookieVariable('a_sk');
-    if (getCookieAsk === '1') {
+    if (getCookieAsk === '1' || !consumerId) {
       return;
     }
 
-    const { appActions, profileAction, user } = this.props;
-    const { consumerId } = user || {};
     consumerId && (await appActions.getProfileInfo(consumerId));
 
     const { name, email, birthday } = this.props.user.profile || {};
 
-    setTimeout(() => {
+    this.timer = setTimeout(() => {
       const showProfile = !name || !email || !birthday;
       this.props.profileAction.setModal(showProfile);
     }, 3000);
@@ -47,15 +43,8 @@ class CompeteProfileModal extends Component {
     profileAction.init({ name, email, birthday });
   }
 
-  //WARNING! To be deprecated in React v17. Use componentDidMount instead.
   componentWillUnmount() {
-    const { name } = this.props.user.profile || {};
-    clearTimeout(
-      setTimeout(() => {
-        const showProfile = name;
-        this.props.profileAction.setModal(showProfile);
-      }, 3000)
-    );
+    clearTimeout(this.timer);
   }
 
   handleClickBack = () => {
@@ -70,10 +59,6 @@ class CompeteProfileModal extends Component {
     await updateProfile();
     if (!this.props.updateProfileError) {
       this.closeProfileModal();
-    } else if (this.props.updateProfileError.code) {
-      if (this.props.updateProfileError.code === '40024') {
-        return;
-      }
     }
   };
 

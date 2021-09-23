@@ -1507,119 +1507,115 @@ export class ThankYou extends PureComponent {
     const orderId = _get(order, 'orderId', '');
 
     return (
-      <div>
+      <section
+        className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
+        data-heap-name="ordering.thank-you.container"
+        style={{ zIndex: '5', position: 'absolute' }}
+      >
         {order && this.state.from === 'payment' && <CompeteProfileModal />}
+        <React.Fragment>
+          <HybridHeader
+            headerRef={ref => (this.headerEl = ref)}
+            className="flex-middle border__bottom-divider"
+            style={{ zIndex: 0 }}
+            isPage={true}
+            contentClassName="flex-middle"
+            data-heap-name="ordering.thank-you.header"
+            title={`#${orderId}`}
+            navFunc={this.handleHeaderNavFunc}
+            rightContent={this.getRightContentOfHeader()}
+          />
+          <div
+            className="ordering-thanks__container"
+            style={
+              !Utils.isIOSWebview()
+                ? {
+                    top: `${Utils.mainTop({
+                      headerEls: [this.headerEl],
+                    })}px`,
+                    height: Utils.containerHeight({
+                      headerEls: [this.headerEl],
+                      footerEls: [this.footerEl],
+                    }),
+                  }
+                : {}
+            }
+          >
+            {!isWebview && this.renderDownloadBanner()}
+            {shippingType === DELIVERY_METHOD.DELIVERY ? (
+              this.renderDeliveryImageAndTimeLine()
+            ) : (
+              <img
+                className="ordering-thanks__image padding-normal"
+                src={shippingType === DELIVERY_METHOD.DINE_IN ? beepSuccessImage : beepPreOrderSuccessImage}
+                alt="Beep Success"
+              />
+            )}
+            {shippingType === DELIVERY_METHOD.DELIVERY ? null : (
+              <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">
+                {t('ThankYou')}!
+              </h2>
+            )}
+            {shippingType !== DELIVERY_METHOD.PICKUP && shippingType !== DELIVERY_METHOD.DINE_IN ? null : (
+              <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
+                {shippingType === DELIVERY_METHOD.PICKUP ? `${pickupDescription} ` : `${t('PrepareOrderDescription')} `}
+                <span role="img" aria-label="Goofy">
+                  😋
+                </span>
+              </p>
+            )}
+            {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.DINE_IN
+              ? null
+              : this.renderPickupInfo()}
+            {shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
 
-        <section
-          className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
-          data-heap-name="ordering.thank-you.container"
-          style={{ zIndex: '5', position: 'absolute' }}
-        >
-          <React.Fragment>
-            <HybridHeader
-              headerRef={ref => (this.headerEl = ref)}
-              className="flex-middle border__bottom-divider"
-              isPage={true}
-              contentClassName="flex-middle"
-              data-heap-name="ordering.thank-you.header"
-              title={`#${orderId}`}
-              navFunc={this.handleHeaderNavFunc}
-              rightContent={this.getRightContentOfHeader()}
-            />
-            <div
-              className="ordering-thanks__container"
-              style={
-                !Utils.isIOSWebview()
-                  ? {
-                      top: `${Utils.mainTop({
-                        headerEls: [this.headerEl],
-                      })}px`,
-                      height: Utils.containerHeight({
-                        headerEls: [this.headerEl],
-                        footerEls: [this.footerEl],
-                      }),
-                    }
-                  : {}
-              }
-            >
-              {!isWebview && this.renderDownloadBanner()}
-              {shippingType === DELIVERY_METHOD.DELIVERY ? (
-                this.renderDeliveryImageAndTimeLine()
-              ) : (
-                <img
-                  className="ordering-thanks__image padding-normal"
-                  src={shippingType === DELIVERY_METHOD.DINE_IN ? beepSuccessImage : beepPreOrderSuccessImage}
-                  alt="Beep Success"
-                />
-              )}
-              {shippingType === DELIVERY_METHOD.DELIVERY ? null : (
-                <h2 className="ordering-thanks__page-title text-center text-size-large text-weight-light">
-                  {t('ThankYou')}!
-                </h2>
-              )}
-              {shippingType !== DELIVERY_METHOD.PICKUP && shippingType !== DELIVERY_METHOD.DINE_IN ? null : (
-                <p className="ordering-thanks__page-description padding-small margin-top-bottom-small text-center text-size-big">
-                  {shippingType === DELIVERY_METHOD.PICKUP
-                    ? `${pickupDescription} `
-                    : `${t('PrepareOrderDescription')} `}
-                  <span role="img" aria-label="Goofy">
-                    😋
-                  </span>
-                </p>
-              )}
-              {shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.DINE_IN
-                ? null
-                : this.renderPickupInfo()}
-              {shippingType === DELIVERY_METHOD.DELIVERY && isPreOrder ? this.renderPreOrderDeliveryInfo() : null}
+            <div className="padding-top-bottom-small margin-normal">
+              {this.renderDetailTitle({ isPreOrder, shippingType })}
 
-              <div className="padding-top-bottom-small margin-normal">
-                {this.renderDetailTitle({ isPreOrder, shippingType })}
+              <div className="card">
+                {orderInfo}
 
-                <div className="card">
-                  {orderInfo}
+                {shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderViewDetail() : this.renderNeedReceipt()}
 
-                  {shippingType !== DELIVERY_METHOD.DINE_IN ? this.renderViewDetail() : this.renderNeedReceipt()}
+                {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
 
-                  {orderCancellationButtonVisible && this.renderOrderCancellationButton()}
-
-                  <PhoneLogin hideMessage={true} history={history} />
-                </div>
+                <PhoneLogin hideMessage={true} history={history} />
               </div>
-              <footer
-                ref={ref => (this.footerEl = ref)}
-                className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
-              >
-                <span>&copy; {date.getFullYear()} </span>
-                <a
-                  className="ordering-thanks__button-footer-link button button__link padding-small"
-                  href="https://www.storehub.com/"
-                  data-heap-name="ordering.thank-you.storehub-link"
-                >
-                  {t('StoreHub')}
-                </a>
-              </footer>
             </div>
-          </React.Fragment>
-          <PhoneCopyModal
-            show={this.state.showPhoneCopy}
-            phoneCopyTitle={this.state.phoneCopyTitle}
-            phoneCopyContent={this.state.phoneCopyContent}
-            continue={() => {
-              this.setState({
-                showPhoneCopy: false,
-                phoneCopyTitle: '',
-                phoneCopyContent: '',
-              });
-            }}
-          />
+            <footer
+              ref={ref => (this.footerEl = ref)}
+              className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
+            >
+              <span>&copy; {date.getFullYear()} </span>
+              <a
+                className="ordering-thanks__button-footer-link button button__link padding-small"
+                href="https://www.storehub.com/"
+                data-heap-name="ordering.thank-you.storehub-link"
+              >
+                {t('StoreHub')}
+              </a>
+            </footer>
+          </div>
+        </React.Fragment>
+        <PhoneCopyModal
+          show={this.state.showPhoneCopy}
+          phoneCopyTitle={this.state.phoneCopyTitle}
+          phoneCopyContent={this.state.phoneCopyContent}
+          continue={() => {
+            this.setState({
+              showPhoneCopy: false,
+              phoneCopyTitle: '',
+              phoneCopyContent: '',
+            });
+          }}
+        />
 
-          <OrderCancellationReasonsAside
-            show={this.props.orderCancellationReasonAsideVisible}
-            onHide={this.handleHideOrderCancellationReasonAside}
-            onCancelOrder={this.handleOrderCancellation}
-          />
-        </section>
-      </div>
+        <OrderCancellationReasonsAside
+          show={this.props.orderCancellationReasonAsideVisible}
+          onHide={this.handleHideOrderCancellationReasonAside}
+          onCancelOrder={this.handleOrderCancellation}
+        />
+      </section>
     );
   }
 }

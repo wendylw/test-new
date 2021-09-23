@@ -60,7 +60,7 @@ class App extends Component {
 
   checkCustomer = async type => {
     if (config.storeId) {
-      Utils.removeCookieVariable('__s', '');
+      Utils.removeCookieVariable('__s');
     }
     this.checkType(type);
   };
