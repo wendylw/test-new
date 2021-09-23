@@ -662,7 +662,7 @@ export const REGISTRATION_SOURCE = {
   RECEIPT: 'Receipt',
   BEEP_STORE: 'BeepStore',
   BEEP_SITE: 'BeepSite',
-  TNGD_MINI_PROGRAM: 'TNGD Mini Program',
+  TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
 };
 
 export const API_REQUEST_STATUS = {
