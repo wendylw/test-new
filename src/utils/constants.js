@@ -672,7 +672,7 @@ export const API_REQUEST_STATUS = {
 };
 
 export const ORDER_SOURCE = {
-  TNG_MINI_PROGRAM: 'TNGMiniProgram',
+  TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
   BEEP_APP: 'BeepApp',
   BEEP_SITE: 'BeepSite',
   BEEP_STORE: 'BeepStore',
