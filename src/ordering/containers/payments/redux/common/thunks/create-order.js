@@ -101,7 +101,11 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         // action type.
         dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
       } else {
-        alert(i18next.t('OrderingPayment:PlaceOrderFailedDescription'));
+        alert.raw(
+          <p className="padding-small text-size-biggest text-weight-bolder">
+            {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}
+          </p>
+        );
       }
     }
     return;
@@ -243,7 +247,11 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       // action type.
       dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
     } else {
-      alert(i18next.t('OrderingPayment:PlaceOrderFailedDescription'));
+      alert.raw(
+        <p className="padding-small text-size-biggest text-weight-bolder">
+          {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}
+        </p>
+      );
     }
   }
 };

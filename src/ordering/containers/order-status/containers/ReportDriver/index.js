@@ -146,7 +146,11 @@ class ReportDriver extends Component {
     const file = e.target.files[0];
 
     if (file.size > UPLOAD_FILE_MAX_SIZE) {
-      alert(t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) }));
+      alert.raw(
+        <p className="padding-small text-size-biggest text-weight-bolder">
+          {t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) })}
+        </p>
+      );
 
       // clear the select file
       e.target.value = '';

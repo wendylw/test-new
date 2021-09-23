@@ -72,7 +72,9 @@ export const thunks = {
         } catch (e) {
           loggly.error('order-status.report-driver.upload-photo-error', { message: e.message });
 
-          alert(i18next.t('ConnectionIssue'));
+          alert.raw(
+            <p className="padding-small text-size-biggest text-weight-bolder">{i18next.t('ConnectionIssue')}</p>
+          );
 
           dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
           return false;
@@ -94,7 +96,7 @@ export const thunks = {
         // action type.
         dispatch({ type: 'ordering/orderStatus/reportDriver/submitReportFailure', ...e });
       } else {
-        alert(i18next.t('ConnectionIssue'));
+        alert.raw(<p className="padding-small text-size-biggest text-weight-bolder">{i18next.t('ConnectionIssue')}</p>);
       }
     }
   }),
