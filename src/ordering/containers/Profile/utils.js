@@ -1,21 +1,24 @@
-/* eslint-disable camelcase */
 export const checkBirthdayIsValid = birthday => {
-  const reg = birthday.match(/^(\d{2})(\/)(\d{2})$/);
-  const day = Number(reg[1]);
-  const month = Number(reg[3]);
-  if (reg == null || day > 31 || month > 12 || day < 1 || month < 1) {
-    return false;
-  }
-  return true;
+  const getBirthday = birthday.split('/');
+  const birthdayTemporary = `2021/${getBirthday[1]}/${getBirthday[0]}`;
+  const birthDayComplete = birthdayTemporary.split('/');
+  if (birthdayTemporary === '') return false;
+  const d = new Date(birthdayTemporary);
+  if (Number.isNaN(d)) return false;
+  return (
+    parseInt(birthDayComplete[0], 10) === d.getFullYear() &&
+    parseInt(birthDayComplete[2], 10) === d.getDate() &&
+    parseInt(birthDayComplete[1], 10) === d.getMonth() + 1
+  );
 };
 
-export const ConvertToBackEndFormat = inputDate => {
-  const [birthday_day, birthday_month] = inputDate.split('/');
-  const birthday_year = '2020';
+export const convertToBackEndFormat = inputDate => {
+  const [birthdayDay, birthdayMonth] = inputDate.split('/');
+  const birthdayYear = '2020';
   const date = new Date();
-  date.setDate(birthday_day);
-  date.setMonth(birthday_month - 1);
-  date.setFullYear(birthday_year);
+  date.setDate(birthdayDay);
+  date.setMonth(birthdayMonth - 1);
+  date.setFullYear(birthdayYear);
   const res = date.toISOString();
   return res;
 };

@@ -1,8 +1,6 @@
 import { createSelector } from 'reselect';
 
 export const getUpdateProfileError = state => state.profile.updateProfileResult.error;
-export const getProfile = state => state.profile;
-
 export const getProfileName = state => state.profile.name.data;
 export const getProfileEmail = state => state.profile.email.data;
 export const getProfileBirthday = state => state.profile.birthday.data;
