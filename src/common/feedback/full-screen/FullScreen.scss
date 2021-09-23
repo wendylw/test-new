@@ -1,21 +1,28 @@
 @import "../../../Variables.scss";
 
-.alert {
-  top: 0;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: $z-index-base;
+.prompt-page {
+  padding: 14vh 0;
 
-  &__content {
-    max-width: 360px;
-    max-height: 80%;
-    width: 90%;
-    background-color: $white;
-    overflow: hidden;
+  &__image-container {
+    margin: auto;
+    max-width: 50%;
   }
 
-  &__body {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+  &__content {
+    margin: 4vh 0;
+  }
+
+  &__paragraphs {
+    margin: auto;
+    width: 90%;
+
+    p {
+      line-height: $line-height-base;
+    }
+  }
+
+  &__title {
+    margin: 2vh 0;
+    color: $gray-2;
   }
 }

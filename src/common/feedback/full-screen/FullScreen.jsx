@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import './FullScreen.scss';
 
-const Alert = forwardRef((props, ref) => {
+const FullScreen = forwardRef((props, ref) => {
   const { t } = useTranslation();
   const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
   useImperativeHandle(ref, () => ({
@@ -37,9 +37,9 @@ const Alert = forwardRef((props, ref) => {
   );
 });
 
-Alert.displayName = 'Alert';
+FullScreen.displayName = 'FullScreen';
 
-Alert.propTypes = {
+FullScreen.propTypes = {
   content: PropTypes.node,
   show: PropTypes.bool,
   closeButtonContent: PropTypes.node,
@@ -50,7 +50,7 @@ Alert.propTypes = {
   onModalVisibilityChanged: PropTypes.func,
 };
 
-Alert.defaultProps = {
+FullScreen.defaultProps = {
   content: null,
   show: false,
   closeButtonContent: null,
@@ -60,4 +60,4 @@ Alert.defaultProps = {
   onModalVisibilityChanged: () => {},
 };
 
-export default withBackButtonSupport(Alert);
+export default withBackButtonSupport(FullScreen);

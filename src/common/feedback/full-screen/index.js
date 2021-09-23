@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import { render } from 'react-dom';
 import { destroyTarget } from '../utils';
 import Alert from './FullScreen';
@@ -7,32 +7,19 @@ import '../Feedback.scss';
 
 const STATUS_LIST = ['error', 'warning', 'info', 'success'];
 
-const AlertStandardContent = ({ content, title }) => (
-  // eslint-disable-next-line react/jsx-filename-extension
-  <>
-    {title ? <h4 className="padding-small text-size-biggest text-weight-bolder">{title}</h4> : null}
-    {content ? <div className="padding-top-bottom-small">{content}</div> : null}
-  </>
-);
-AlertStandardContent.displayName = 'AlertStandardContent';
-AlertStandardContent.propTypes = {
-  content: PropTypes.node,
-  title: PropTypes.string,
-};
-AlertStandardContent.defaultProps = {
-  content: null,
-  title: null,
-};
-const normalizeAlertOptions = options => ({
+const normalizeFullScreenOptions = options => ({
   container: document.body,
   show: true,
+  title: null,
+  content: null,
+  buttons: [],
   closeButtonContent: null,
   className: '',
   style: {},
   onClose: () => {},
   ...options,
 });
-const createAlert = (content, options) =>
+const createFullScreen = (status, options) =>
   new Promise(resolve => {
     const { container, onClose, ...restOptions } = options;
     const rootDOM = document.createElement('div');
@@ -41,7 +28,7 @@ const createAlert = (content, options) =>
     container.appendChild(rootDOM);
 
     const alertInstance = React.createElement(Alert, {
-      content,
+      status,
       ...restOptions,
       onClose: () => {
         render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => {
@@ -55,10 +42,4 @@ const createAlert = (content, options) =>
     render(alertInstance, rootDOM);
   });
 
-export const alert = (content, options = {}) => {
-  const { title, ...restOptions } = options;
-
-  return createAlert(<AlertStandardContent content={content} title={title} />, normalizeAlertOptions(restOptions));
-};
-
-alert.raw = (content, options = {}) => createAlert(content, normalizeAlertOptions(options));
+export const fullScreen = (status, options = {}) => createFullScreen(status, normalizeFullScreenOptions(options));
