@@ -1,3 +1,4 @@
+import React from 'react';
 import { captureException } from '@sentry/react';
 import i18next from 'i18next';
 
