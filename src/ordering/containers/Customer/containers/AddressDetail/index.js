@@ -18,6 +18,7 @@ import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
+import _trim from 'lodash/trim';
 import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import './AddressDetail.scss';
@@ -129,15 +130,15 @@ class AddressDetail extends Component {
 
     const inputValue = e.target.value;
     if (e.target.name === 'addressName') {
-      this.props.customerActions.updateAddressInfo({ name: inputValue });
+      this.props.customerActions.updateAddressInfo({ name: _trim(inputValue) });
     } else if (e.target.name === 'addressDetails') {
-      this.props.customerActions.updateAddressInfo({ details: inputValue });
+      this.props.customerActions.updateAddressInfo({ details: _trim(inputValue) });
     } else if (e.target.name === 'contactName') {
-      this.props.customerActions.updateAddressInfo({ contactName: inputValue });
+      this.props.customerActions.updateAddressInfo({ contactName: _trim(inputValue) });
     } else if (e.target.name === 'contactNumber') {
       this.props.customerActions.updateAddressInfo({ contactNumber: inputValue });
     } else if (e.target.name === 'deliveryComments') {
-      this.props.customerActions.updateAddressInfo({ comments: inputValue });
+      this.props.customerActions.updateAddressInfo({ comments: _trim(inputValue) });
     }
   };
 
