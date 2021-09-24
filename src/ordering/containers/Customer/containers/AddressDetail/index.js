@@ -130,15 +130,15 @@ class AddressDetail extends Component {
 
     const inputValue = e.target.value;
     if (e.target.name === 'addressName') {
-      this.props.customerActions.updateAddressInfo({ name: _trim(inputValue) });
+      this.props.customerActions.updateAddressInfo({ name: inputValue });
     } else if (e.target.name === 'addressDetails') {
-      this.props.customerActions.updateAddressInfo({ details: _trim(inputValue) });
+      this.props.customerActions.updateAddressInfo({ details: inputValue });
     } else if (e.target.name === 'contactName') {
-      this.props.customerActions.updateAddressInfo({ contactName: _trim(inputValue) });
+      this.props.customerActions.updateAddressInfo({ contactName: inputValue });
     } else if (e.target.name === 'contactNumber') {
       this.props.customerActions.updateAddressInfo({ contactNumber: inputValue });
     } else if (e.target.name === 'deliveryComments') {
-      this.props.customerActions.updateAddressInfo({ comments: _trim(inputValue) });
+      this.props.customerActions.updateAddressInfo({ comments: inputValue });
     }
   };
 
@@ -201,12 +201,12 @@ class AddressDetail extends Component {
     const countryCode = _get(addressComponents, 'countryCode', '');
 
     const data = {
-      contactName: contactName,
+      contactName: _trim(contactName),
       contactNumber: contactNumber,
-      addressName: name,
-      deliveryTo: address,
-      addressDetails: details,
-      comments: comments,
+      addressName: _trim(name),
+      deliveryTo: _trim(address),
+      addressDetails: _trim(details),
+      comments: _trim(comments),
       location: coords,
       city,
       countryCode,
@@ -235,8 +235,8 @@ class AddressDetail extends Component {
       deliveryToLocation: _get(response, 'location', coords),
       deliveryToCity: _get(response, 'city', city),
       postCode: _get(response, 'postCode', postCode),
-      username: _get(response, 'username', contactName),
-      phone: _get(response, 'phone', contactNumber),
+      username: _get(response, 'contactName', contactName),
+      phone: _get(response, 'contactNumber', contactNumber),
     });
 
     customerActions.removeAddressInfo();
