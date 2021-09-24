@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
@@ -54,4 +55,4 @@ class Sorry extends Component {
 }
 Sorry.displayName = 'OrderingSorry';
 
-export default Sorry;
+export default withTranslation()(Sorry);
