@@ -26,17 +26,18 @@ class CompeteProfileModal extends Component {
   async componentDidMount() {
     const { appActions, profileAction, user } = this.props;
     const { consumerId } = user || {};
-    const getCookieAsk = Utils.getCookieVariable('a_sk');
+    const getCookieAsk = Utils.getCookieVariable('do_not_ask');
     if (getCookieAsk === '1' || !consumerId) {
       return;
     }
 
-    consumerId && (await appActions.getProfileInfo(consumerId));
+    await appActions.getProfileInfo(consumerId);
 
     const { name, email, birthday } = this.props.user.profile || {};
 
     this.timer = setTimeout(() => {
-      const showProfile = !name || !email || !birthday;
+      // const showProfile = !name || !email || !birthday;
+      const showProfile = name;
       this.props.profileAction.setModal(showProfile);
     }, 3000);
 
@@ -78,7 +79,7 @@ class CompeteProfileModal extends Component {
   };
 
   handleDoNotAsk = () => {
-    Utils.setCookieVariable('a_sk', '1', {
+    Utils.setCookieVariable('do_not_ask', '1', {
       expires: 3650,
       path: '/',
       domain: Utils.getMainDomain(),
@@ -99,7 +100,15 @@ class CompeteProfileModal extends Component {
     this.props.profileAction.completeEmail();
   };
 
-  renderEmailFiled({ t, email }) {
+  handleEmailInputFocus = () => {
+    this.props.profileAction.startEditEmail();
+  };
+
+  handleBirthdayInputFocus = () => {
+    this.props.profileAction.startEditBirthday();
+  };
+
+  renderEmailField({ t, email }) {
     return (
       <div>
         <div className="flex__fluid-content">
@@ -118,6 +127,7 @@ class CompeteProfileModal extends Component {
             onChange={this.handleInputChange}
             onBlur={this.handleEmailInputBlur}
             className="profile__input-email form__input padding-small"
+            onFocus={this.handleEmailInputFocus}
           />
         </div>
       </div>
@@ -138,15 +148,12 @@ class CompeteProfileModal extends Component {
 
     return (
       <div>
-        <div>
-          <DuplicatedEmailAlert
-            show={this.props.updateProfileError?.code === '40024'}
-            onDoNotAsk={this.handleDoNotAsk}
-            onBackEdit={this.handleBackEdit}
-            t={this.props.t}
-          />
-        </div>
-
+        <DuplicatedEmailAlert
+          show={this.props.updateProfileError?.code === '40024'}
+          onDoNotAsk={this.handleDoNotAsk}
+          onBackEdit={this.handleBackEdit}
+          t={this.props.t}
+        />
         <aside
           className={className.join(' ')}
           data-heap-name="ordering.home.profile.container"
@@ -156,8 +163,7 @@ class CompeteProfileModal extends Component {
             <section className="profile__container padding-left-right-normal">
               <div className="profile__flex">
                 <div>
-                  <p className="profile__complete_title profile__complete_title_two">{t('Complete')}</p>
-                  <p className="profile__complete_title ">{t('YourProfile')}</p>
+                  <p className="profile__complete_title profile__complete_title_two">{t('CompleteYourProfile')}</p>
                 </div>
                 <button className="profile__skip profile__button-link" onClick={this.closeProfileModal}>
                   {t('SkipForNow')}
@@ -187,7 +193,7 @@ class CompeteProfileModal extends Component {
                     this.props.emailInvalidErrorVisibility ? 'error' : ''
                   } form__group margin-left-right-small border-radius-normal`}
                 >
-                  {this.renderEmailFiled({
+                  {this.renderEmailField({
                     t,
                     email,
                   })}
@@ -215,6 +221,7 @@ class CompeteProfileModal extends Component {
                     placeholder="DD/MM"
                     type="text"
                     onChange={this.handleInputChange}
+                    onFocus={this.handleBirthdayInputFocus}
                   />
                 </div>
                 {this.props.birthdayInvalidErrorVisibility && (

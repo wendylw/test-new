@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import _trim from 'lodash/trim';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
-// eslint-disable-next-line import/named
 import { checkBirthdayIsValid } from '../utils';
 import { updateProfile } from './thunk';
 
@@ -24,7 +23,7 @@ const initialState = {
     isValid: false,
     isComplete: false,
   },
-  showModal: '',
+  showModal: false,
   updateProfileResult: {
     status: null,
     error: null,
@@ -77,9 +76,14 @@ export const { actions, reducer } = createSlice({
       state.email.data = _trim(action.payload);
       state.email.isComplete = false;
     },
+    startEditEmail(state) {
+      state.email.isComplete = false;
+    },
+    startEditBirthday(state) {
+      state.birthday.isComplete = false;
+    },
     updateBirthday(state, action) {
       state.birthday.data = _trim(action.payload);
-      state.birthday.isComplete = false;
     },
     completeEmail(state) {
       state.email.isValid = Utils.checkEmailIsValid(state.email.data);

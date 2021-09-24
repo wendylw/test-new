@@ -260,7 +260,7 @@ class ReportDriver extends Component {
     );
   }
 
-  renderEmailFiled({ t, inputEmail, disabled }) {
+  renderEmailField({ t, inputEmail, disabled }) {
     const { value, isCompleted, isValid } = inputEmail;
 
     const showInvalidError = isCompleted && !isValid;
@@ -370,7 +370,7 @@ class ReportDriver extends Component {
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
           <div className="card padding-small margin-normal">
-            {this.renderEmailFiled({
+            {this.renderEmailField({
               t,
               disabled,
               inputEmail,
