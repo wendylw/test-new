@@ -338,9 +338,6 @@ export class ThankYou extends PureComponent {
     this.closeMap();
   };
 
-  isSourceFromPayment = source => {
-    return source === 'payment';
-  };
   handleGtmEventTracking = ({ order = {} }) => {
     const { onlineStoreInfo } = this.props;
     const productsInOrder = order.items || [];
