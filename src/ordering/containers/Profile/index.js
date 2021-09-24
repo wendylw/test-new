@@ -91,12 +91,20 @@ class CompleteProfileModal extends Component {
     this.props.profileAction.resetUpdateProfileResult();
   };
 
+  handleNameInputBlur = () => {
+    this.props.profileAction.completeName();
+  };
+
   handleBirthdayInputBlur = () => {
     this.props.profileAction.completeBirthday();
   };
 
   handleEmailInputBlur = () => {
     this.props.profileAction.completeEmail();
+  };
+
+  handleNameInputFocus = () => {
+    this.props.profileAction.startEditName();
   };
 
   handleEmailInputFocus = () => {
@@ -185,6 +193,8 @@ class CompleteProfileModal extends Component {
                     type="text"
                     required={true}
                     onChange={this.handleInputChange}
+                    onFocus={this.handleNameInputFocus}
+                    onBlur={this.handleNameInputBlur}
                   />
                 </div>
                 <div

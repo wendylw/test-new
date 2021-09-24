@@ -76,6 +76,9 @@ export const { actions, reducer } = createSlice({
       state.email.data = _trim(action.payload);
       state.email.isComplete = false;
     },
+    startEditName(state) {
+      state.name.isComplete = false;
+    },
     startEditEmail(state) {
       state.email.isComplete = false;
     },
@@ -84,6 +87,10 @@ export const { actions, reducer } = createSlice({
     },
     updateBirthday(state, action) {
       state.birthday.data = _trim(action.payload);
+    },
+    completeName(state) {
+      state.name.data = _trim(state.name.data);
+      state.email.isComplete = true;
     },
     completeEmail(state) {
       state.email.isValid = Utils.checkEmailIsValid(state.email.data);
