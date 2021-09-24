@@ -5,7 +5,7 @@ import _trim from 'lodash/trim';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
 import { checkBirthdayIsValid } from '../utils';
-import { updateProfile } from './thunk';
+import { saveProfileInfo } from './thunk';
 
 const initialState = {
   name: {
@@ -114,17 +114,17 @@ export const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [updateProfile.pending.type]: state => {
+    [saveProfileInfo.pending.type]: state => {
       state.updateProfileResult.status = API_REQUEST_STATUS.PENDING;
     },
 
-    [updateProfile.fulfilled.type]: (state, action) => {
+    [saveProfileInfo.fulfilled.type]: (state, action) => {
       state.updateProfileResult.data = action.payload;
       state.updateProfileResult.status = API_REQUEST_STATUS.FULFILLED;
       state.updateProfileResult.error = null;
     },
 
-    [updateProfile.rejected.type]: (state, action) => {
+    [saveProfileInfo.rejected.type]: (state, action) => {
       state.updateProfileResult.status = API_REQUEST_STATUS.REJECTED;
       state.updateProfileResult.error = action.error;
     },

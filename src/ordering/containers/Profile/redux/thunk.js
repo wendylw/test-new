@@ -4,7 +4,7 @@ import { getUserConsumerId } from '../../../redux/modules/app';
 import { updateProfileInfo } from './api-request';
 import { convertToBackEndFormat } from '../utils';
 
-export const updateProfile = createAsyncThunk('ordering/profile', (_, { getState }) => {
+export const saveProfileInfo = createAsyncThunk('ordering/profile/saveProfileInfo', (_, { getState }) => {
   const state = getState();
   const name = getProfileName(state);
   const email = getProfileEmail(state);

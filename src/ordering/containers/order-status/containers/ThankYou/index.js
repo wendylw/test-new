@@ -75,7 +75,7 @@ import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import PhoneLogin from './components/PhoneLogin';
 import HybridHeader from '../../../../../components/HybridHeader';
-import CompeteProfileModal from '../../../../containers/Profile/index';
+import CompleteProfileModal from '../../../../containers/Profile/index';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
 // const { DELIVERED, CANCELLED, PICKED_UP } = ORDER_STATUS;
@@ -1508,7 +1508,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {order && this.state.from === 'payment' && <CompeteProfileModal />}
+        {order && this.state.from === 'payment' && <CompleteProfileModal />}
         <React.Fragment>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}

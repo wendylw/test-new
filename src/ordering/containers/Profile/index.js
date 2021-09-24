@@ -17,8 +17,8 @@ import {
   getbirthdayInvalidErrorVisibility,
   getShowModal,
 } from './redux/selectors';
-import { updateProfile } from './redux/thunk';
-class CompeteProfileModal extends Component {
+import { saveProfileInfo } from './redux/thunk';
+class CompleteProfileModal extends Component {
   state = {
     error: false,
     message: '',
@@ -55,8 +55,8 @@ class CompeteProfileModal extends Component {
   };
 
   saveProfile = async () => {
-    const { updateProfile } = this.props;
-    await updateProfile();
+    const { saveProfileInfo } = this.props;
+    await saveProfileInfo();
     if (!this.props.updateProfileError) {
       this.closeProfileModal();
     }
@@ -251,7 +251,7 @@ class CompeteProfileModal extends Component {
     );
   }
 }
-CompeteProfileModal.displayName = 'CompeteProfileModal';
+CompleteProfileModal.displayName = 'CompleteProfileModal';
 
 export default compose(
   withTranslation('Profile'),
@@ -270,7 +270,7 @@ export default compose(
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       profileAction: bindActionCreators(profileActionCreators, dispatch),
-      updateProfile: bindActionCreators(updateProfile, dispatch),
+      saveProfileInfo: bindActionCreators(saveProfileInfo, dispatch),
     })
   )
-)(CompeteProfileModal);
+)(CompleteProfileModal);

@@ -100,8 +100,9 @@ Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
-    const { getCookieNameOfLocalStorage, getCookieVariable } = Utils;
-    getCookieVariable(getCookieNameOfLocalStorage(name));
+    const { getCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    getCookieVariable(cookieNameOfLocalStorage);
   }
 };
 
@@ -110,8 +111,9 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    const { getCookieNameOfLocalStorage, setCookieVariable } = Utils;
-    setCookieVariable(getCookieNameOfLocalStorage(name), value, { expires: 3650 });
+    const { setCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    setCookieVariable(cookieNameOfLocalStorage, value);
   }
 };
 
@@ -119,8 +121,9 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    const { getCookieNameOfLocalStorage, removeCookieVariable } = Utils;
-    removeCookieVariable(getCookieNameOfLocalStorage(name));
+    const { removeCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    removeCookieVariable(cookieNameOfLocalStorage);
   }
 };
 
@@ -128,8 +131,9 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   try {
     return sessionStorage.getItem(name);
   } catch (e) {
-    const { getCookieNameOfSessionStorage, getCookieVariable } = Utils;
-    getCookieVariable(getCookieNameOfSessionStorage(name));
+    const { getCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    getCookieVariable(cookieNameOfSessionStorage);
   }
 };
 
@@ -138,8 +142,9 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
-    const { getCookieNameOfSessionStorage, setCookieVariable } = Utils;
-    setCookieVariable(getCookieNameOfSessionStorage(name), value, { expires: 3650 });
+    const { setCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    setCookieVariable(cookieNameOfSessionStorage, value);
   }
 };
 
@@ -147,8 +152,9 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
     sessionStorage.removeItem(name);
   } catch (e) {
-    const { getCookieNameOfSessionStorage, removeCookieVariable } = Utils;
-    removeCookieVariable(getCookieNameOfSessionStorage(name));
+    const { removeCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    removeCookieVariable(cookieNameOfSessionStorage);
   }
 };
 
@@ -883,14 +889,6 @@ Utils.getMainDomain = () => {
   arr.shift();
   const result = arr.join('.');
   return result;
-};
-
-Utils.getCookieNameOfLocalStorage = name => {
-  return 'localStorage_' + name;
-};
-
-Utils.getCookieNameOfSessionStorage = name => {
-  return 'sessionStorage_' + name;
 };
 
 Utils.getCookieVariable = name => {
