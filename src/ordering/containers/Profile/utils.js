@@ -2,8 +2,11 @@ import { isValidDate } from '../../../utils/datetime-lib';
 
 export const checkBirthdayIsValid = birthday => {
   try {
-    const getDate = birthday.match(/^(\d{2})(\/)(\d{2})$/);
-    const birthdayCom = `2020/${getDate[3]}/${getDate[1]}`;
+    const matchedDate = birthday.match(/^(\d{2})(\/)(\d{2})$/);
+    if (!matchedDate) {
+      return false;
+    }
+    const birthdayCom = `2020/${matchedDate[3]}/${matchedDate[1]}`;
     const birthdayComP = birthdayCom.split('/');
     const date = new Date(birthdayCom);
     if (!isValidDate(date)) return false;
@@ -24,6 +27,5 @@ export const convertToBackEndFormat = inputDate => {
   date.setDate(birthdayDay);
   date.setMonth(birthdayMonth - 1);
   date.setFullYear(birthdayYear);
-  const res = date.toISOString();
-  return res;
+  return date.toISOString();
 };
