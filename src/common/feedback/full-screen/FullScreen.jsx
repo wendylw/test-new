@@ -3,11 +3,31 @@ import { usePrevious } from 'react-use';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
+import BeepError from '../../../images/beep-error.png';
+import BeepWarning from '../../../images/beep-warning.png';
+import { FEEDBACK_STATUS } from '../utils';
 import './FullScreen.scss';
+
+const STATUS_IMAGE_MAPPING = {
+  [FEEDBACK_STATUS.ERROR]: BeepError,
+  [FEEDBACK_STATUS.WARNING]: BeepWarning,
+};
 
 const FullScreen = forwardRef((props, ref) => {
   const { t } = useTranslation();
-  const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
+  const {
+    status,
+    image,
+    content,
+    buttons,
+    show,
+    closeButtonContent,
+    className,
+    style,
+    onClose,
+    onModalVisibilityChanged,
+  } = props;
+  const isImageUrl = typeof image === 'string';
   useImperativeHandle(ref, () => ({
     onHistoryBackReceived: () => false,
   }));
@@ -23,13 +43,21 @@ const FullScreen = forwardRef((props, ref) => {
   }
 
   return (
-    <div className={`alert absolute-wrapper flex flex-column flex-middle flex-center ${className}`} style={style}>
-      <div className="alert__content border-radius-large">
-        <div className="alert__body text-center padding-small">{content}</div>
+    <div className={`full-screen absolute-wrapper ${className}`} style={style}>
+      <div className="full-screen__content">
+        {image && !isImageUrl ? (
+          image
+        ) : (
+          <figure className="full-screen__image-container">
+            <img src={isImageUrl ? image : STATUS_IMAGE_MAPPING[status]} alt={`beep ${status}`} />
+          </figure>
+        )}
+        <div className="full-screen__body">{content}</div>
         <div className="padding-small">
           {/* TODO： close button UI will be customize */}
-          <button className="button button__fill button__block text-weight-bolder" onClick={onClose}>
-            {closeButtonContent || t('OK')}
+          {buttons.map(button => button)}
+          <button className="button button__fill text-weight-bolder" onClick={onClose}>
+            {closeButtonContent || t('BackToHome')}
           </button>
         </div>
       </div>
@@ -40,7 +68,10 @@ const FullScreen = forwardRef((props, ref) => {
 FullScreen.displayName = 'FullScreen';
 
 FullScreen.propTypes = {
+  status: PropTypes.oneOf(Object.values(FEEDBACK_STATUS)),
+  image: PropTypes.node,
   content: PropTypes.node,
+  buttons: PropTypes.arrayOf(PropTypes.node),
   show: PropTypes.bool,
   closeButtonContent: PropTypes.node,
   className: PropTypes.string,
@@ -51,7 +82,10 @@ FullScreen.propTypes = {
 };
 
 FullScreen.defaultProps = {
+  status: null,
+  image: null,
   content: null,
+  buttons: [],
   show: false,
   closeButtonContent: null,
   className: '',

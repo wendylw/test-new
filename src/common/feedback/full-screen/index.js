@@ -5,12 +5,12 @@ import { destroyTarget } from '../utils';
 import Alert from './FullScreen';
 import '../Feedback.scss';
 
-const STATUS_LIST = ['error', 'warning', 'info', 'success'];
+const FullScreenStandardContent = ({ content, title }) => {};
 
 const normalizeFullScreenOptions = options => ({
   container: document.body,
   show: true,
-  title: null,
+  image: null,
   content: null,
   buttons: [],
   closeButtonContent: null,
@@ -27,11 +27,11 @@ const createFullScreen = (status, options) =>
     rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
     container.appendChild(rootDOM);
 
-    const alertInstance = React.createElement(Alert, {
+    const fullScreenInstance = React.createElement(Alert, {
       status,
       ...restOptions,
       onClose: () => {
-        render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => {
+        render(React.cloneElement(fullScreenInstance, { show: false }), rootDOM, () => {
           destroyTarget(rootDOM);
           onClose();
           resolve();
@@ -39,7 +39,7 @@ const createFullScreen = (status, options) =>
       },
     });
 
-    render(alertInstance, rootDOM);
+    render(fullScreenInstance, rootDOM);
   });
 
 export const fullScreen = (status, options = {}) => createFullScreen(status, normalizeFullScreenOptions(options));
