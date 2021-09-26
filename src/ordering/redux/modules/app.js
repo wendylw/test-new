@@ -94,6 +94,7 @@ export const initialState = {
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
+    loginRequestStatus: null,
   },
   error: null, // network error
   messageModal: {
@@ -598,8 +599,9 @@ const user = (state = initialState.user, action) => {
       return { ...state, showLoginPage: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
     case types.CREATE_OTP_REQUEST:
-    case types.CREATE_LOGIN_REQUEST:
       return { ...state, isFetching: true };
+    case types.CREATE_LOGIN_REQUEST:
+      return { ...state, isFetching: true, loginRequestStatus: API_REQUEST_STATUS.PENDING };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
@@ -648,6 +650,7 @@ const user = (state = initialState.user, action) => {
         isLogin: true,
         hasOtp: false,
         isFetching: false,
+        loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
       };
     }
     case types.FETCH_LOGIN_STATUS_SUCCESS:
@@ -660,11 +663,11 @@ const user = (state = initialState.user, action) => {
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');
-      if (error?.error === 'TokenExpiredError') {
-        return { ...state, isExpired: true, isFetching: false };
+      if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
+        return { ...state, isExpired: true, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
       }
 
-      return { ...state, isFetching: false };
+      return { ...state, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
     case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
@@ -940,6 +943,13 @@ export const getMerchantCountry = state => {
 export const getApiError = state => state.app.apiError;
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getUserLoginRequestStatus = state => state.app.user.loginRequestStatus;
+
+export const getIsUserLoginRequestStatusInPending = createSelector(
+  getUserLoginRequestStatus,
+  status => status === API_REQUEST_STATUS.PENDING
+);
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);

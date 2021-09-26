@@ -317,7 +317,7 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
-      if (error?.error === 'TokenExpiredError') {
+      if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
         return { ...state, isExpired: true, isFetching: false };
       }
 
