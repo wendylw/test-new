@@ -9,6 +9,10 @@
   "TouchNGo": "Touch 'n Go eWallet",
   "GCash": "GCash",
   "Line": "LINE Pay",
+  "Cash": "Cash",
+  "PayAtTheCashier": "Pay at the cashier",
+  "PayByCashPromptDescription": "Your order will only be confirmed after payment is made.",
+  "PayByCashPromptConfirmedText": "Pay with cash",
   "RequiredMessage": "Required",
   "CardNumberIncompleteMessage": "Your card's {{nameString}} {{verb}} incomplete.",
   "CardNumberStringIncompleteMessage": "Your card’s number is incomplete.",
@@ -45,5 +49,6 @@
   "CardEndingIn": "Ending in {{cardEnding}}",
   "SecurityHint": "Our card payment service is under PCI compliance protection to protect and encrypt cardholder data transmissions. <1>Know more here</1>",
   "TimeOut": "Time Out",
-  "RiskyCardNumberMessage": "There is an issue with this transaction. Please try a different card to complete this payment"
+  "RiskyCardNumberMessage": "There is an issue with this transaction. Please try a different card to complete this payment",
+  "GoBack": "Go back"
 }

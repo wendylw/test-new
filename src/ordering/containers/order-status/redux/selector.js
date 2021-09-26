@@ -10,26 +10,23 @@ export const getReceiptNumber = state => state.orderStatus.common.receiptNumber;
 
 export const getOrderStatus = createSelector(getOrder, order => _get(order, 'status', null));
 
-export const getLoadOrderStatus = createSelector(getOrder, order => _get(order, 'status', null));
-
 export const getRiderLocations = createSelector(getOrder, order => _get(order, 'riderLocations', null));
 
 export const getOrderDelayReason = createSelector(getOrder, order => _get(order, 'delayReason', null));
 
 export const getOrderShippingType = createSelector(getOrder, order => _get(order, 'shippingType', null));
 
+export const getRefundShippingFee = createSelector(getOrder, order => _get(order, 'refundShippingFee', null));
+
+export const getCancelOperator = createSelector(getOrder, order => _get(order, 'cancelOperator', null));
+
+export const getOrderStoreInfo = createSelector(getOrder, order => _get(order, 'storeInfo', null));
+
 export const getOrderOriginalShippingType = createSelector(getOrder, order =>
   _get(order, 'originalShippingType', null)
 );
 
-export const getUpdatedToSelfPickupStatus = createSelector(
-  getOrderShippingType,
-  getOrderOriginalShippingType,
-  (shippingType, originalShippingType) =>
-    originalShippingType && shippingType === DELIVERY_METHOD.PICKUP && originalShippingType !== DELIVERY_METHOD.PICKUP
-);
-
-export const getTimeoutLookingForRider = state => _get(state.orderStatus.common.order, 'timeoutLookingForRider', null);
+export const getTimeoutLookingForRider = state => _get(state.orderStatus.common.order, 'timeoutLookingForRider', false);
 
 export const getIsUseStorehubLogistics = createSelector(getOrder, order =>
   _get(order, 'deliveryInformation.0.useStorehubLogistics', false)
@@ -77,4 +74,11 @@ export const getOrderItems = createSelector(getOrder, order => _get(order, 'item
 export const getServiceCharge = createSelector(getOrderItems, items => {
   const serviceChargeItem = items.find(item => item.itemType === 'ServiceCharge');
   return _get(serviceChargeItem, 'displayPrice', 0);
+});
+
+export const getDisplayDiscount = createSelector(getOrder, order => {
+  const { loyaltyDiscounts } = order || {};
+  const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
+
+  return displayDiscount;
 });

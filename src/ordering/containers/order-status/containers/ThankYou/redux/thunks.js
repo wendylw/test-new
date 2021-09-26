@@ -6,14 +6,22 @@ import { API_INFO } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from '../utils';
-import { actions as appActions } from '../../../../../redux/modules/app';
+import { actions as appActions, getBusinessInfo } from '../../../../../redux/modules/app';
+import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
+import { error as logglyError } from '../../../../../../utils/monitoring/loggly';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
-  const { url, queryParams } = API_INFO.getCashbackInfo(orderId, Constants.CASHBACK_SOURCE.QR_ORDERING);
-  const result = await get(url, { queryParams });
+  try {
+    const { url, queryParams } = API_INFO.getCashbackInfo(orderId, Constants.CASHBACK_SOURCE.QR_ORDERING);
+    const result = await get(url, { queryParams });
 
-  return result;
+    return result;
+  } catch (e) {
+    logglyError('Load cashback info error: ', e);
+
+    throw e;
+  }
 });
 
 export const createCashbackInfo = createAsyncThunk(
@@ -42,7 +50,7 @@ export const loadStoreIdHashCode = createAsyncThunk(
 export const loadStoreIdTableIdHashCode = createAsyncThunk(
   'ordering/orderStatus/thankYou/fetchStoreIdTableIdHashCode',
   async ({ storeId, tableId }) => {
-    const result = await get(API_INFO.createStoreIdTableIdHashCode(storeId).url, {
+    const result = await post(API_INFO.createStoreIdTableIdHashCode(storeId).url, {
       tableId,
     });
 
@@ -53,28 +61,25 @@ export const loadStoreIdTableIdHashCode = createAsyncThunk(
 export const cancelOrder = createAsyncThunk(
   'ordering/orderStatus/common/cancelOrder',
   async ({ orderId, reason, detail }, { dispatch, getState }) => {
-    const { orderStatus, app, entities } = getState();
-    const { order } = orderStatus.common;
-    const businessInfo = entities.businesses[app.business];
+    const order = getOrder(getState());
+    const businessInfo = getBusinessInfo(getState());
 
     try {
-      const result = await put(API_INFO.cancelOrder(orderId).url, { reason, detail });
+      await put(API_INFO.cancelOrder(orderId).url, { reason, detail });
 
-      if (order && result.success) {
-        CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
-          'store name': _get(order, 'storeInfo.name', ''),
-          'store id': _get(order, 'storeId', ''),
-          'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
-          'order amount': _get(order, 'total', ''),
-          country: _get(businessInfo, 'country', ''),
-          'Reason for cancellation': reason,
-          otherReasonSpecification: detail,
-        });
-      }
+      CleverTap.pushEvent('Thank you Page - Cancel Reason(Cancellation Confirmed)', {
+        'store name': _get(order, 'storeInfo.name', ''),
+        'store id': _get(order, 'storeId', ''),
+        'time from order paid': getPaidToCurrentEventDurationMinutes(_get(order, 'paidTime', null)),
+        'order amount': _get(order, 'total', ''),
+        country: _get(businessInfo, 'country', ''),
+        'Reason for cancellation': reason,
+        otherReasonSpecification: detail,
+      });
 
       window.location.reload();
     } catch (e) {
-      console.error('Cancel order error: ', e);
+      logglyError('Cancel order error: ', e);
 
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
@@ -89,6 +94,8 @@ export const cancelOrder = createAsyncThunk(
           })
         );
       }
+
+      throw e;
     }
   }
 );
@@ -113,6 +120,8 @@ export const updateOrderShippingType = createAsyncThunk(
           })
         );
       }
+
+      throw e;
     }
   }
 );

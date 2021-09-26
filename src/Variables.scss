@@ -18,6 +18,8 @@ $gray-4: #dededf;
 $gray-5: #efefef;
 $gray-6: #fbfbfb;
 
+$new-grey-1-1: #8f9092;
+
 /* status color */
 $status-gray: #808fa4;
 $status-blue: #00b0ff;
@@ -41,3 +43,49 @@ $border-radius-large: 8px;
 $z-index-base: 100;
 $z-index-high: 200;
 $z-index-higher: 300;
+
+/* new theme color */
+$basic-theme-basic: #ff9419;
+$basic-theme-dark: #fc7118;
+$basic-theme-light: #fec788;
+$basic-text-basic: #303030;
+$basic-text-light: #9e9e9e;
+$basic-text-lighter: #d1d1d1;
+$basic-white: #ffffff;
+$basic-grey-1: #f9fafb; //(Background colour)
+$basic-grey-2: #eff2f3; //(search fill + divider)
+$basic-grey-3: #dededf; //(bigger divider)
+$basic-grey-4: #d1d1d1; //(New Placeholder Text Grey)
+$basic-grey-5: #c6c6c6; //(disabled background)
+$basic-grey-6: #9e9e9e;
+$basic-grey-7: #303030; //(Font Black)
+$basic-grey-8: #1d1d1d; //(Black)
+$basic-link: #00b0ff;
+$basic-dark-link: #0089c7; //link hover
+$basic-light-link: #ecf9ff; //link active / press down
+$basic-lighter-link: #9ee1ff; //link visited / press up
+
+// error colors
+$status-error-basic: #e15343;
+$status-error-dark: #c04537;
+$status-error-light: #e0aaa4;
+
+// success colors
+$status-success-basic: #36a93f;
+$status-success-dark: #02814e;
+$status-success-light: #dffde2;
+
+// info colors
+$status-info-basic: #57b5e3;
+$status-info-dark: #0295dc;
+$status-info-light: #9ee1ff;
+
+// warning colors
+$status-warning-basic: #ffcc00;
+$status-warning-dark: #f0b917;
+$status-warning-light: #ffd880;
+
+// primary colors
+$status-primary-basic: #fc7118;
+$status-primary-dark: #d15607;
+$status-primary-light: #ff9d5e;

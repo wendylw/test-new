@@ -710,6 +710,10 @@ img {
     width: 100%;
   }
 
+  &__default {
+    color: $gray-2;
+  }
+
   &.dark {
     background-color: $main-color;
   }
