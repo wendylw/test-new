@@ -22,7 +22,7 @@
     height: 24px;
   }
 
-  &__not-valid {
+  &__input-message--error {
     float: left;
   }
 
@@ -37,17 +37,17 @@
     color: $gray-3;
   }
 
-  &__title-small {
+  &__label {
     color: $gray-3;
+  }
 
-    &.required::after {
-      content: "*";
-      color: $status-red;
-      line-height: 1em;
-      font-size: 0.8571rem;
-      vertical-align: top;
-      margin-left: 0.3em;
-    }
+  &__input--required &__label::after {
+    content: "*";
+    color: $status-red;
+    line-height: 1em;
+    font-size: 0.8571rem;
+    vertical-align: top;
+    margin-left: 0.3em;
   }
 
   &__margin-top {

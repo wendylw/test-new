@@ -159,10 +159,8 @@ class CompleteProfileModal extends Component {
               <div className="padding-left-right-normal">
                 <div className="padding-top-bottom-smaller margin-top-bottom-normal">
                   <div className="form__group padding-small border-radius-base padding-left-right-normal ">
-                    <div className="flex__fluid-content">
-                      <div className=" profile__title-small required">
-                        <span className="text-size-small text-top">{t('Name')}</span>
-                      </div>
+                    <div className="profile__label profile__input--required">
+                      <label className="profile__label text-size-small text-top">{t('Name')}</label>
                     </div>
                     <input
                       name="consumerName"
@@ -182,8 +180,8 @@ class CompleteProfileModal extends Component {
                   ${this.props.emailInvalidErrorVisibility ? 'error' : ''}
                    `}
                   >
-                    <div className=" profile__title-small required">
-                      <span className="text-size-small text-top">{t('EmailAddress')}</span>
+                    <div className=" profile__label profile__input--required">
+                      <label className="profile__label text-size-small text-top">{t('EmailAddress')}</label>
                     </div>
                     <input
                       name="consumerEmail"
@@ -191,13 +189,13 @@ class CompleteProfileModal extends Component {
                       onChange={this.handleInputChange}
                       onBlur={this.handleEmailInputBlur}
                       className={`profile__input form__input
-                  ${this.props.emailInvalidErrorVisibility ? 'profile__input-error' : ''}
+                  ${this.props.emailInvalidErrorVisibility ? 'text-error' : ''}
                    `}
                       onFocus={this.handleEmailInputFocus}
                     />
                   </div>
                   {this.props.emailInvalidErrorVisibility && (
-                    <p className="profile__not-valid form__error-message padding-top-bottom-smaller">
+                    <p className="profile__input-message--error form__error-message padding-top-bottom-smaller">
                       {t('NotValidEmail')}
                     </p>
                   )}
@@ -208,17 +206,15 @@ class CompleteProfileModal extends Component {
                     ${this.props.birthdayInvalidErrorVisibility ? 'error' : ''}
                      `}
                   >
-                    <div className="flex__fluid-content">
-                      <div className=" profile__title-small required">
-                        <span className="text-size-small text-top">{t('DateOfBirth')}</span>
-                      </div>
+                    <div className=" profile__label profile__input--required">
+                      <label className="profile__label text-size-small text-top">{t('DateOfBirth')}</label>
                     </div>
                     <input
                       name="consumerBirthday"
                       value={birthday}
                       onBlur={this.handleBirthdayInputBlur}
                       className={`profile__input form__input
-                  ${this.props.birthdayInvalidErrorVisibility ? 'profile__input-error' : ''}
+                  ${this.props.birthdayInvalidErrorVisibility ? 'text-error' : ''}
                    `}
                       placeholder="DD/MM"
                       type="text"
@@ -227,7 +223,7 @@ class CompleteProfileModal extends Component {
                     />
                   </div>
                   {this.props.birthdayInvalidErrorVisibility && (
-                    <p className="profile__not-valid form__error-message padding-top-bottom-smaller">
+                    <p className="profile__input-message--error form__error-message padding-top-bottom-smaller">
                       {t('NotValidBirthday')}
                     </p>
                   )}
