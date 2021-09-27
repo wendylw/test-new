@@ -45,7 +45,7 @@ const FullScreen = forwardRef((props, ref) => {
   }
 
   return (
-    <div className={`full-screen absolute-wrapper ${className}`} style={style}>
+    <div className={`full-screen absolute-wrapper flex flex-column flex-space-between ${className}`} style={style}>
       <div className="full-screen__content">
         {image && !isImageUrl ? (
           image
@@ -55,16 +55,16 @@ const FullScreen = forwardRef((props, ref) => {
           </figure>
         )}
         {content ? <div className="full-screen__body text-center">{content}</div> : null}
-        <div className="full-screen__button-group padding-small text-center">
-          {buttons.map(button => button)}
-          {/* TODO： close button UI will be customize */}
-          <button
-            className="button button__fill padding-left-right-normal text-uppercase text-weight-bolder"
-            onClick={onClose}
-          >
-            {closeButtonContent || t('BackToHome')}
-          </button>
-        </div>
+      </div>
+      <div className="full-screen__button-group padding-small text-center">
+        {buttons.map(button => button)}
+        {/* TODO： close button UI will be customize */}
+        <button
+          className="button button__fill button__block padding-left-right-normal text-uppercase text-weight-bolder"
+          onClick={onClose}
+        >
+          {closeButtonContent || t('BackToHome')}
+        </button>
       </div>
     </div>
   );

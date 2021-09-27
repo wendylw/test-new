@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { render } from 'react-dom';
-import { destroyTarget } from '../utils';
+import { FEEDBACK_STATUS, destroyTarget } from '../utils';
 import FullScreen from './FullScreen';
 import '../Feedback.scss';
 
@@ -24,6 +24,7 @@ FullScreenStandardContent.defaultProps = {
 const normalizeFullScreenOptions = options => ({
   container: document.body,
   show: true,
+  status: FEEDBACK_STATUS.ERROR,
   image: null,
   content: null,
   buttons: [],
@@ -33,7 +34,7 @@ const normalizeFullScreenOptions = options => ({
   onClose: () => {},
   ...options,
 });
-const createFullScreen = (status, options) =>
+const createFullScreen = (content, options) =>
   new Promise(resolve => {
     const { container, onClose, ...restOptions } = options;
     const rootDOM = document.createElement('div');
@@ -42,7 +43,7 @@ const createFullScreen = (status, options) =>
     container.appendChild(rootDOM);
 
     const fullScreenInstance = React.createElement(FullScreen, {
-      status,
+      content,
       ...restOptions,
       onClose: () => {
         render(React.cloneElement(fullScreenInstance, { show: false }), rootDOM, () => {
@@ -56,11 +57,11 @@ const createFullScreen = (status, options) =>
     render(fullScreenInstance, rootDOM);
   });
 
-export const fullScreen = (status, options = {}) => {
-  const { title, content, ...restOptions } = options;
+export const fullScreen = (content, options = {}) => {
+  const { title, ...restOptions } = options;
 
   createFullScreen(
-    status,
+    content,
     normalizeFullScreenOptions({
       ...restOptions,
       content: <FullScreenStandardContent title={title} content={content} />,
@@ -68,4 +69,4 @@ export const fullScreen = (status, options = {}) => {
   );
 };
 
-fullScreen.raw = (status, options = {}) => createFullScreen(status, normalizeFullScreenOptions(options));
+fullScreen.raw = (content, options = {}) => createFullScreen(content, normalizeFullScreenOptions(options));
