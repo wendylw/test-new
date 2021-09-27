@@ -8,15 +8,45 @@
     height: 0;
   }
 
+  &__name-width {
+    width: 70%;
+  }
+
+  &__tip-color {
+    color: #8f9092;
+  }
+
+  &__name-input {
+    padding: 0;
+    line-height: 24px;
+    height: 24px;
+  }
+
+  &__email-input {
+    padding: 0;
+    line-height: 24px;
+    height: 24px;
+  }
+
+  &__fl {
+    float: left;
+  }
+
+  &__birthday-input {
+    padding: 0;
+    line-height: 24px;
+    height: 24px;
+  }
+
+  &__input-error {
+    color: red;
+  }
+
   &__container {
     height: 100vh;
     width: 100%;
     overflow: auto;
     color: $gray-3;
-  }
-
-  &__error-message {
-    color: $status-red;
   }
 
   &__title {
@@ -32,73 +62,11 @@
     }
   }
 
-  &__complete_title {
-    width: 81%;
-    color: #303030;
-    font-size: 30px;
-    font-weight: bold;
-    line-height: 36px;
-    padding-top: 75px;
-  }
-
-  &__button-link {
-    background-color: $white;
-    color: initial;
-    border: none;
-  }
-
-  &__flex {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  &__margin-top-bottom-normal {
-    margin-top: 18px;
-    margin-bottom: 24px;
-  }
-
-  &__skip {
-    color: #303030;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 22px;
-    text-decoration: none;
-    height: 46px;
-    width: 45%;
-  }
-
-  &__email-input {
-    border: none;
-  }
-
-  &__PhoneInputCountry {
-    margin-left: -8px;
-  }
-
-  &__position {
-    position: relative;
-    left: 9px;
-  }
-
-  &__showError,
-  &__showError_birthday {
-    font-size: 14px;
-    margin-left: -14px;
-    position: relative;
-    top: -11px;
-    margin-top: -10px;
-  }
-
-  &__showError_birthday {
-    top: -18px;
-  }
-
   &__margin-top {
     margin-top: -32px;
   }
 
   &__input {
-    margin-bottom: 27px;
     border: 1px solid $gray-4;
 
     input {

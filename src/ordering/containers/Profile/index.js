@@ -115,39 +115,13 @@ class CompleteProfileModal extends Component {
     this.props.profileAction.startEditBirthday();
   };
 
-  renderEmailField({ t, email }) {
-    return (
-      <div>
-        <div className="flex__fluid-content">
-          <div className="profile__title required">
-            <span className="text-size-small text-top">{t('EmailAddress')}</span>
-          </div>
-        </div>
-        <div
-          className={`profile__email-input profile__PhoneInputCountry ${
-            !this.props.emailInvalidErrorVisibility ? 'error' : ''
-          } form__group margin-left-right-small border-radius-normal`}
-        >
-          <input
-            name="consumerEmail"
-            value={email}
-            onChange={this.handleInputChange}
-            onBlur={this.handleEmailInputBlur}
-            className="profile__input-email form__input padding-small"
-            onFocus={this.handleEmailInputFocus}
-          />
-        </div>
-      </div>
-    );
-  }
-
   render() {
     const { t, showModal } = this.props;
     const email = this.props.profileEmail;
     const birthday = this.props.profileBirthday;
     const name = this.props.profileName;
 
-    const className = ['aside fixed-wrapper', 'profile  flex flex-column flex-end'];
+    const className = ['aside fixed-wrapper', 'profile flex flex-column flex-end'];
 
     if (showModal) {
       className.push('active cover');
@@ -166,78 +140,96 @@ class CompleteProfileModal extends Component {
           data-heap-name="ordering.home.profile.container"
           style={{ zIndex: '101' }}
         >
-          <div className="profile flex flex-column profile__container aside__content">
-            <section className="profile__container padding-left-right-normal">
-              <div className="profile__flex">
-                <div>
-                  <p className="profile__complete_title profile__complete_title_two">{t('CompleteYourProfile')}</p>
-                </div>
-                <button className="profile__skip profile__button-link" onClick={this.closeProfileModal}>
+          <div className="profile flex flex-column flex-space-between aside__content">
+            <section>
+              <div className="padding-top-bottom-smaller padding-left-right-normal text-right">
+                <button
+                  className="button button__link text-size-big padding-top-bottom-normal flex__shrink-fixed"
+                  onClick={this.closeProfileModal}
+                >
                   {t('SkipForNow')}
                 </button>
               </div>
-              <p className="profile__margin-top-bottom-normal text-size-big text-line-height-base">
-                {t('CompleteProfileTip')}
-              </p>
-              <div>
-                <div className="profile__input padding-small border-radius-base padding-left-right-normal">
-                  <div className="flex__fluid-content">
-                    <div className="profile__title required">
-                      <span className="text-size-small text-top">{t('Name')}</span>
+              <div className="padding-top-bottom-smaller padding-left-right-normal">
+                <h2 className="profile__name-width padding-top-bottom-normal text-size-huge text-weight-bolder">
+                  {t('CompleteYourProfile')}
+                </h2>
+                <p className="profile__tip-color text-size-big text-line-height-base">{t('CompleteProfileTip')}</p>
+              </div>
+              <div className="padding-left-right-normal">
+                <div className="padding-top-bottom-smaller margin-top-bottom-normal">
+                  <div className="form__group padding-small border-radius-base padding-left-right-normal ">
+                    <div className="flex__fluid-content">
+                      <div className="profile__title required">
+                        <span className="text-size-small text-top">{t('Name')}</span>
+                      </div>
                     </div>
+                    <input
+                      name="consumerName"
+                      value={name}
+                      className="profile__name-input form__input"
+                      type="text"
+                      required={true}
+                      onChange={this.handleInputChange}
+                      onFocus={this.handleNameInputFocus}
+                      onBlur={this.handleNameInputBlur}
+                    />
                   </div>
-                  <input
-                    name="consumerName"
-                    value={name}
-                    className="form__input"
-                    type="text"
-                    required={true}
-                    onChange={this.handleInputChange}
-                    onFocus={this.handleNameInputFocus}
-                    onBlur={this.handleNameInputBlur}
-                  />
                 </div>
-                <div
-                  className={`profile__position profile__input padding-small border-radius-base padding-left-right-normal profile__email-input profile__PhoneInputCountry ${
-                    this.props.emailInvalidErrorVisibility ? 'error' : ''
-                  } form__group margin-left-right-small border-radius-normal`}
-                >
-                  {this.renderEmailField({
-                    t,
-                    email,
-                  })}
-                </div>
-                {this.props.emailInvalidErrorVisibility && (
-                  <p className="profile__showError  form__error-message padding-left-right-normal margin-top-bottom-small">
-                    {t('NotValidEmail')}
-                  </p>
-                )}
-                <div
-                  className={`profile__birthday profile__input padding-small border-radius-base padding-left-right-normal
-                   ${this.props.birthdayInvalidErrorVisibility ? 'error' : ''}
-                    `}
-                >
-                  <div className="flex__fluid-content">
+                <div className="padding-top-bottom-small margin-top-bottom-normal">
+                  <div
+                    className={`form__group padding-small border-radius-base padding-left-right-normal
+                  ${this.props.emailInvalidErrorVisibility ? 'error' : ''}
+                   `}
+                  >
                     <div className="profile__title required">
-                      <span className="text-size-small text-top">{t('DateOfBirth')}</span>
+                      <span className="text-size-small text-top">{t('EmailAddress')}</span>
                     </div>
+                    <input
+                      name="consumerEmail"
+                      value={email}
+                      onChange={this.handleInputChange}
+                      onBlur={this.handleEmailInputBlur}
+                      className={`profile__email-input form__input
+                  ${this.props.emailInvalidErrorVisibility ? 'profile__input-error' : ''}
+                   `}
+                      onFocus={this.handleEmailInputFocus}
+                    />
                   </div>
-                  <input
-                    name="consumerBirthday"
-                    value={birthday}
-                    onBlur={this.handleBirthdayInputBlur}
-                    className="form__input"
-                    placeholder="DD/MM"
-                    type="text"
-                    onChange={this.handleInputChange}
-                    onFocus={this.handleBirthdayInputFocus}
-                  />
+                  {this.props.emailInvalidErrorVisibility && (
+                    <p className="profile__fl form__error-message padding-top-bottom-smaller">{t('NotValidEmail')}</p>
+                  )}
                 </div>
-                {this.props.birthdayInvalidErrorVisibility && (
-                  <p className="profile__showError_birthday  form__error-message padding-left-right-normal margin-top-bottom-small">
-                    {t('NotValidBirthday')}
-                  </p>
-                )}
+                <div className="padding-top-bottom-small margin-top-bottom-normal ">
+                  <div
+                    className={`profile__birthday profile__input padding-small border-radius-base padding-left-right-normal
+                    ${this.props.birthdayInvalidErrorVisibility ? 'error' : ''}
+                     `}
+                  >
+                    <div className="flex__fluid-content">
+                      <div className="profile__title required">
+                        <span className="text-size-small text-top">{t('DateOfBirth')}</span>
+                      </div>
+                    </div>
+                    <input
+                      name="consumerBirthday"
+                      value={birthday}
+                      onBlur={this.handleBirthdayInputBlur}
+                      className={`profile__birthday-input form__input
+                  ${this.props.birthdayInvalidErrorVisibility ? 'profile__input-error' : ''}
+                   `}
+                      placeholder="DD/MM"
+                      type="text"
+                      onChange={this.handleInputChange}
+                      onFocus={this.handleBirthdayInputFocus}
+                    />
+                  </div>
+                  {this.props.birthdayInvalidErrorVisibility && (
+                    <p className="profile__fl form__error-message padding-top-bottom-smaller">
+                      {t('NotValidBirthday')}
+                    </p>
+                  )}
+                </div>
               </div>
             </section>
             <footer className="footer footer__transparent margin-normal">
