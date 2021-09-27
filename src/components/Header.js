@@ -10,6 +10,7 @@ import CurrencyNumber from '../ordering/components/CurrencyNumber';
 import withDataAttributes from './withDataAttributes';
 import './Header.scss';
 
+// TODO: This Header component will be deprecated
 class Header extends Component {
   renderLogoAndNavDom() {
     const { isStoreHome, isPage, logo, title, backHomeSiteButtonVisibility, navFunc } = this.props;
