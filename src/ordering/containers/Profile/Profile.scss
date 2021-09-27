@@ -8,10 +8,6 @@
     height: 0;
   }
 
-  // &__name-width {
-  //   width: 70%;
-  // }
-
   &__title {
     width: 70%;
   }
@@ -26,27 +22,9 @@
     height: 24px;
   }
 
-  // &__name-input {
-  //   padding: 0;
-  //   line-height: 24px;
-  //   height: 24px;
-  // }
-
-  // &__email-input {
-  //   padding: 0;
-  //   line-height: 24px;
-  //   height: 24px;
-  // }
-
   &__not-valid {
     float: left;
   }
-
-  // &__birthday-input {
-  //   padding: 0;
-  //   line-height: 24px;
-  //   height: 24px;
-  // }
 
   &__input-error {
     color: $status-red;
