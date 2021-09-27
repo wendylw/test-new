@@ -11,6 +11,8 @@ import './FullScreen.scss';
 const STATUS_IMAGE_MAPPING = {
   [FEEDBACK_STATUS.ERROR]: BeepError,
   [FEEDBACK_STATUS.WARNING]: BeepWarning,
+  [FEEDBACK_STATUS.INFO]: BeepError,
+  [FEEDBACK_STATUS.SUCCESS]: BeepWarning,
 };
 
 const FullScreen = forwardRef((props, ref) => {
@@ -52,11 +54,14 @@ const FullScreen = forwardRef((props, ref) => {
             <img src={isImageUrl ? image : STATUS_IMAGE_MAPPING[status]} alt={`beep ${status}`} />
           </figure>
         )}
-        <div className="full-screen__body">{content}</div>
-        <div className="padding-small">
-          {/* TODO： close button UI will be customize */}
+        {content ? <div className="full-screen__body text-center">{content}</div> : null}
+        <div className="full-screen__button-group padding-small text-center">
           {buttons.map(button => button)}
-          <button className="button button__fill text-weight-bolder" onClick={onClose}>
+          {/* TODO： close button UI will be customize */}
+          <button
+            className="button button__fill padding-left-right-normal text-uppercase text-weight-bolder"
+            onClick={onClose}
+          >
             {closeButtonContent || t('BackToHome')}
           </button>
         </div>

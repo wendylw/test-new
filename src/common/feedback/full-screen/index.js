@@ -1,12 +1,26 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { render } from 'react-dom';
 import { destroyTarget } from '../utils';
-import Alert from './FullScreen';
+import FullScreen from './FullScreen';
 import '../Feedback.scss';
 
-const FullScreenStandardContent = ({ content, title }) => {};
-
+const FullScreenStandardContent = ({ content, title }) => (
+  // eslint-disable-next-line react/jsx-filename-extension
+  <div className="padding-top-bottom-normal">
+    {title ? <h4 className="padding-left-right-normal text-size-biggest text-weight-bolder">{title}</h4> : null}
+    {content ? <div className="padding-top-bottom-normal">{content}</div> : null}
+  </div>
+);
+FullScreenStandardContent.displayName = 'FullScreenStandardContent';
+FullScreenStandardContent.propTypes = {
+  content: PropTypes.node,
+  title: PropTypes.string,
+};
+FullScreenStandardContent.defaultProps = {
+  content: null,
+  title: null,
+};
 const normalizeFullScreenOptions = options => ({
   container: document.body,
   show: true,
@@ -27,7 +41,7 @@ const createFullScreen = (status, options) =>
     rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
     container.appendChild(rootDOM);
 
-    const fullScreenInstance = React.createElement(Alert, {
+    const fullScreenInstance = React.createElement(FullScreen, {
       status,
       ...restOptions,
       onClose: () => {
@@ -42,4 +56,16 @@ const createFullScreen = (status, options) =>
     render(fullScreenInstance, rootDOM);
   });
 
-export const fullScreen = (status, options = {}) => createFullScreen(status, normalizeFullScreenOptions(options));
+export const fullScreen = (status, options = {}) => {
+  const { title, content, ...restOptions } = options;
+
+  createFullScreen(
+    status,
+    normalizeFullScreenOptions({
+      ...restOptions,
+      content: <FullScreenStandardContent title={title} content={content} />,
+    })
+  );
+};
+
+fullScreen.raw = (status, options = {}) => createFullScreen(status, normalizeFullScreenOptions(options));

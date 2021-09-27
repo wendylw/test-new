@@ -1,7 +1,11 @@
 @import "../../../Variables.scss";
 
 .full-screen {
+  top: 0;
   padding: 14vh 0;
+  height: 100%;
+  background-color: $white;
+  z-index: $z-index-base;
 
   &__image-container {
     margin: auto;
@@ -12,17 +16,8 @@
     margin: 4vh 0;
   }
 
-  &__paragraphs {
-    margin: auto;
-    width: 90%;
-
-    p {
-      line-height: $line-height-base;
-    }
-  }
-
-  &__title {
-    margin: 2vh 0;
-    color: $gray-2;
+  &__button-group button {
+    min-width: 120px;
+    max-height: 40px;
   }
 }
