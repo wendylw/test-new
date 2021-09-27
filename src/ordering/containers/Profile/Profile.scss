@@ -8,38 +8,48 @@
     height: 0;
   }
 
-  &__name-width {
+  // &__name-width {
+  //   width: 70%;
+  // }
+
+  &__title {
     width: 70%;
   }
 
   &__tip-color {
-    color: #8f9092;
+    color: $new-grey-1-1;
   }
 
-  &__name-input {
+  &__input {
     padding: 0;
     line-height: 24px;
     height: 24px;
   }
 
-  &__email-input {
-    padding: 0;
-    line-height: 24px;
-    height: 24px;
-  }
+  // &__name-input {
+  //   padding: 0;
+  //   line-height: 24px;
+  //   height: 24px;
+  // }
 
-  &__fl {
+  // &__email-input {
+  //   padding: 0;
+  //   line-height: 24px;
+  //   height: 24px;
+  // }
+
+  &__not-valid {
     float: left;
   }
 
-  &__birthday-input {
-    padding: 0;
-    line-height: 24px;
-    height: 24px;
-  }
+  // &__birthday-input {
+  //   padding: 0;
+  //   line-height: 24px;
+  //   height: 24px;
+  // }
 
   &__input-error {
-    color: red;
+    color: $status-red;
   }
 
   &__container {
@@ -49,7 +59,7 @@
     color: $gray-3;
   }
 
-  &__title {
+  &__title-small {
     color: $gray-3;
 
     &.required::after {
@@ -66,7 +76,7 @@
     margin-top: -32px;
   }
 
-  &__input {
+  &__input-next {
     border: 1px solid $gray-4;
 
     input {

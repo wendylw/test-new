@@ -36,7 +36,8 @@ class CompleteProfileModal extends Component {
     const { name, email, birthday } = this.props.user.profile || {};
 
     this.timer = setTimeout(() => {
-      const showProfile = !name || !email || !birthday;
+      // const showProfile = !name || !email || !birthday;
+      const showProfile = name;
       this.props.profileAction.setModal(showProfile);
     }, 3000);
 
@@ -151,7 +152,7 @@ class CompleteProfileModal extends Component {
                 </button>
               </div>
               <div className="padding-top-bottom-smaller padding-left-right-normal">
-                <h2 className="profile__name-width padding-top-bottom-normal text-size-huge text-weight-bolder">
+                <h2 className="profile__title padding-top-bottom-normal text-size-huge text-weight-bolder">
                   {t('CompleteYourProfile')}
                 </h2>
                 <p className="profile__tip-color text-size-big text-line-height-base">{t('CompleteProfileTip')}</p>
@@ -160,14 +161,14 @@ class CompleteProfileModal extends Component {
                 <div className="padding-top-bottom-smaller margin-top-bottom-normal">
                   <div className="form__group padding-small border-radius-base padding-left-right-normal ">
                     <div className="flex__fluid-content">
-                      <div className="profile__title required">
+                      <div className=" profile__title-small required">
                         <span className="text-size-small text-top">{t('Name')}</span>
                       </div>
                     </div>
                     <input
                       name="consumerName"
                       value={name}
-                      className="profile__name-input form__input"
+                      className="profile__input form__input"
                       type="text"
                       required={true}
                       onChange={this.handleInputChange}
@@ -182,7 +183,7 @@ class CompleteProfileModal extends Component {
                   ${this.props.emailInvalidErrorVisibility ? 'error' : ''}
                    `}
                   >
-                    <div className="profile__title required">
+                    <div className=" profile__title-small required">
                       <span className="text-size-small text-top">{t('EmailAddress')}</span>
                     </div>
                     <input
@@ -190,24 +191,26 @@ class CompleteProfileModal extends Component {
                       value={email}
                       onChange={this.handleInputChange}
                       onBlur={this.handleEmailInputBlur}
-                      className={`profile__email-input form__input
+                      className={`profile__input form__input
                   ${this.props.emailInvalidErrorVisibility ? 'profile__input-error' : ''}
                    `}
                       onFocus={this.handleEmailInputFocus}
                     />
                   </div>
                   {this.props.emailInvalidErrorVisibility && (
-                    <p className="profile__fl form__error-message padding-top-bottom-smaller">{t('NotValidEmail')}</p>
+                    <p className="profile__not-valid form__error-message padding-top-bottom-smaller">
+                      {t('NotValidEmail')}
+                    </p>
                   )}
                 </div>
                 <div className="padding-top-bottom-small margin-top-bottom-normal ">
                   <div
-                    className={`profile__birthday profile__input padding-small border-radius-base padding-left-right-normal
+                    className={`profile__birthday profile__input-next padding-small border-radius-base padding-left-right-normal
                     ${this.props.birthdayInvalidErrorVisibility ? 'error' : ''}
                      `}
                   >
                     <div className="flex__fluid-content">
-                      <div className="profile__title required">
+                      <div className=" profile__title-small required">
                         <span className="text-size-small text-top">{t('DateOfBirth')}</span>
                       </div>
                     </div>
@@ -215,7 +218,7 @@ class CompleteProfileModal extends Component {
                       name="consumerBirthday"
                       value={birthday}
                       onBlur={this.handleBirthdayInputBlur}
-                      className={`profile__birthday-input form__input
+                      className={`profile__input form__input
                   ${this.props.birthdayInvalidErrorVisibility ? 'profile__input-error' : ''}
                    `}
                       placeholder="DD/MM"
@@ -225,7 +228,7 @@ class CompleteProfileModal extends Component {
                     />
                   </div>
                   {this.props.birthdayInvalidErrorVisibility && (
-                    <p className="profile__fl form__error-message padding-top-bottom-smaller">
+                    <p className="profile__not-valid form__error-message padding-top-bottom-smaller">
                       {t('NotValidBirthday')}
                     </p>
                   )}
