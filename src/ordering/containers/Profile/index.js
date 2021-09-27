@@ -36,8 +36,7 @@ class CompleteProfileModal extends Component {
     const { name, email, birthday } = this.props.user.profile || {};
 
     this.timer = setTimeout(() => {
-      // const showProfile = !name || !email || !birthday;
-      const showProfile = name;
+      const showProfile = !name || !email || !birthday;
       this.props.profileAction.setModal(showProfile);
     }, 3000);
 
