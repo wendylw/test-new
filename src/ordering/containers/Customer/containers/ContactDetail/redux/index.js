@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import _trim from 'lodash/trim';
 import { actions as appActionCreators, getUserConsumerId, getDeliveryDetails } from '../../../../../redux/modules/app';
 import { updateAddress } from '../../../redux/common/api-request';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
@@ -25,7 +26,7 @@ export const updateContactDetail = createAsyncThunk(
       const state = getState();
       const consumerId = getUserConsumerId(state);
       const { addressId } = getDeliveryDetails(state);
-      const contactName = getUsername(state);
+      const contactName = _trim(getUsername(state));
       const contactNumber = getPhone(state);
       if (!addressId) {
         await dispatch(appActionCreators.updateDeliveryDetails({ username: contactName, phone: contactNumber }));

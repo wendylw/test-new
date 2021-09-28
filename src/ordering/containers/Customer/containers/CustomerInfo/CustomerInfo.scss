@@ -20,6 +20,7 @@
   &__address-button {
     max-height: none;
     height: auto;
+    width: 100%;
   }
 
   &__detail ~ &__detail::before {
