@@ -24,7 +24,7 @@ import {
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
+import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
@@ -75,11 +75,6 @@ export class Home extends Component {
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
-
-    if (isSourceBeepitCom()) {
-      const source = Utils.getQueryString('source');
-      sessionStorage.setItem('orderSource', source);
-    }
   }
   deliveryEntryEl = null;
   headerEl = null;
@@ -127,18 +122,10 @@ export class Home extends Component {
     }
   };
 
-  get navBackUrl() {
-    const source = Utils.getQueryString('source');
-    if (source) {
-      return source;
-    }
-    return config.beepitComUrl;
-  }
-
   componentDidMount = async () => {
     const { deliveryInfo, appActions } = this.props;
 
-    if (isSourceBeepitCom()) {
+    if (Utils.isFromBeepSite()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
@@ -490,7 +477,13 @@ export class Home extends Component {
   }
 
   handleNavBack = () => {
-    window.location.href = this.navBackUrl;
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+    if (sourceUrl) {
+      window.location.href = sourceUrl;
+      return;
+    }
+
+    this.props.history.goBack();
   };
 
   handleToggleAside(asideName) {
@@ -535,7 +528,8 @@ export class Home extends Component {
     const { t, businessInfo } = this.props;
     const { stores = [] } = businessInfo;
     const pickupAddress = stores.length ? Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY) : '';
-    const backHomeSiteButtonVisibility = Utils.isFromBeepSite() || Utils.isTNGMiniProgram();
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+    const backHomeSiteButtonVisibility = Boolean(sourceUrl);
 
     return (
       <DeliverToBar
@@ -549,7 +543,7 @@ export class Home extends Component {
             data-heap-name="order.home.delivery-bar-back-btn"
             onClick={event => {
               event.preventDefault();
-              window.location.href = this.navBackUrl;
+              this.handleNavBack();
               event.stopPropagation();
             }}
           />
@@ -687,7 +681,9 @@ export class Home extends Component {
       return false;
     }
 
-    return Utils.isFromBeepSite() || Utils.isTNGMiniProgram();
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+
+    return Boolean(sourceUrl);
   };
 
   renderHeader() {

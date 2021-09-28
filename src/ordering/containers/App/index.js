@@ -37,6 +37,12 @@ class App extends Component {
         loggly.error('ordering.get-address', { message: e });
       }
     }
+
+    const source = Utils.getQueryString('source');
+
+    if (source) {
+      Utils.saveSourceUrlToSessionStorage(source);
+    }
   }
   state = {};
 

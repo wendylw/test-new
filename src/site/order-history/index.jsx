@@ -57,7 +57,7 @@ class OrderHistory extends React.Component {
 
   handleOrderItemClick = order => {
     const urlObj = new URL(order.url);
-    urlObj.searchParams.append('from', 'orderHistory');
+    urlObj.searchParams.append('source', document.location.href);
 
     window.location.href = urlObj.toString();
   };

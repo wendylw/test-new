@@ -890,8 +890,20 @@ export const copyDataToClipboard = async text => {
 };
 
 Utils.isFromBeepSite = () => {
-  // TODO: no check the value, it's a bad way
-  return Boolean(sessionStorage.getItem('orderSource'));
+  try {
+    const beepOrderingSourceUrl = Utils.getSourceUrlFromSessionStorage();
+    if (!beepOrderingSourceUrl) {
+      return false;
+    }
+    const urlObj = new URL(beepOrderingSourceUrl);
+    const hostname = urlObj.hostname;
+    const pathname = urlObj.pathname;
+
+    return Utils.isSiteApp(hostname) && pathname.startsWith(ROUTER_PATHS.SITE_HOME);
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 };
 
 Utils.getRegistrationTouchPoint = () => {
@@ -944,5 +956,13 @@ Utils.getRegistrationSource = () => {
 };
 
 Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
+
+Utils.saveSourceUrlToSessionStorage = sourceUrl => {
+  Utils.setSessionVariable('BeepOrderingSourceUrl', sourceUrl);
+};
+
+Utils.getSourceUrlFromSessionStorage = () => {
+  return Utils.getSessionVariable('BeepOrderingSourceUrl');
+};
 
 export default Utils;

@@ -88,7 +88,7 @@ export class OrderDetails extends Component {
     const { shippingType } = this.props;
     const h = Utils.getQueryString('h');
 
-    this.props.history.replace({
+    this.props.history.push({
       pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
       search: `type=${shippingType}&h=${h}`,
     });

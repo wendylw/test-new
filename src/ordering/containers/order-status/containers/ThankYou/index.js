@@ -731,9 +731,9 @@ export class ThankYou extends PureComponent {
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
     const type = Utils.getOrderTypeFromUrl();
-    const from = Utils.getQueryString('from');
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (isOrderBeforePaid) {
       history.goBack();
@@ -745,14 +745,8 @@ export class ThankYou extends PureComponent {
       return;
     }
 
-    if (Utils.isTNGMiniProgram()) {
-      if (from === 'orderHistory') {
-        history.goBack();
-        return;
-      }
-
-      // goto beep site home page
-      window.location.href = config.beepitComUrl;
+    if (Utils.isTNGMiniProgram() && sourceUrl) {
+      window.location.href = sourceUrl;
       return;
     }
 
