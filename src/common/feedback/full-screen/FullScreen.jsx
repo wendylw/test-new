@@ -29,11 +29,12 @@ const FullScreen = forwardRef((props, ref) => {
         <div className="full-screen__body text-center">{content}</div>
       </div>
       <div className="full-screen__button-group">
-        {buttons.map(({ type, content: buttonContent, onClick }) => (
+        {buttons.map(({ key, type, className: buttonClassName, content: buttonContent, onClick }) => (
           <div className="margin-small">
             <button
-              key={`full-screen-button-${content}-type`}
-              className={`button button__${type} button__block padding-left-right-normal text-uppercase text-weight-bolder`}
+              key={key}
+              className={`button button__${type} button__block padding-left-right-normal text-uppercase text-weight-bolder ${buttonClassName ||
+                ''}`}
               onClick={onClick}
             >
               {buttonContent}
@@ -46,7 +47,7 @@ const FullScreen = forwardRef((props, ref) => {
             className="button button__fill button__block padding-left-right-normal text-uppercase text-weight-bolder"
             onClick={onClose}
           >
-            {closeButtonContent || t('BackToHome')}
+            {closeButtonContent || t('OK')}
           </button>
         </div>
       </div>
@@ -60,7 +61,9 @@ FullScreen.propTypes = {
   content: PropTypes.node,
   buttons: PropTypes.arrayOf(
     PropTypes.shape({
+      key: PropTypes.string,
       type: PropTypes.oneOf(Object.values(BUTTONS_STYLE_TYPES)),
+      className: PropTypes.string,
       content: PropTypes.node,
       onClick: PropTypes.func,
     })

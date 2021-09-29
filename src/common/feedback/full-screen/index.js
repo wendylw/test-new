@@ -33,13 +33,14 @@ FullScreenStandardContent.propTypes = {
   title: PropTypes.string,
 };
 FullScreenStandardContent.defaultProps = {
-  status: Object.values(FEEDBACK_STATUS),
+  status: null,
   image: null,
   content: null,
   title: null,
 };
 const normalizeButtons = buttons =>
-  buttons.map(buttonOptions => ({
+  buttons.map((buttonOptions, index) => ({
+    key: `full-screen-button-${index}`,
     type: BUTTONS_STYLE_TYPES.OUTLINE,
     content: null,
     onClick: () => {},
@@ -48,8 +49,6 @@ const normalizeButtons = buttons =>
 const normalizeFullScreenOptions = options => ({
   container: document.body,
   show: true,
-  status: FEEDBACK_STATUS.ERROR,
-  image: null,
   content: null,
   buttons: [],
   closeButtonContent: null,
@@ -85,18 +84,10 @@ export const fullScreen = (content, options = {}) => {
   const { title, buttons, ...restOptions } = options;
 
   createFullScreen(
-    content,
+    <FullScreenStandardContent status={restOptions.status} image={restOptions.image} title={title} content={content} />,
     normalizeFullScreenOptions({
       ...restOptions,
       buttons: normalizeButtons(buttons),
-      content: (
-        <FullScreenStandardContent
-          status={restOptions.status}
-          image={restOptions.image}
-          title={title}
-          content={content}
-        />
-      ),
     })
   );
 };
