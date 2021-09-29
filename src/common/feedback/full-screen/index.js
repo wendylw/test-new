@@ -68,6 +68,7 @@ const createFullScreen = (content, options) =>
     const fullScreenInstance = React.createElement(FullScreen, {
       content,
       ...restOptions,
+      destroyContainer: destroyTarget(rootDOM),
       onClose: () => {
         render(React.cloneElement(fullScreenInstance, { show: false }), rootDOM, () => {
           destroyTarget(rootDOM);
