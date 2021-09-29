@@ -897,9 +897,8 @@ Utils.isFromBeepSite = () => {
     }
     const urlObj = new URL(beepOrderingSourceUrl);
     const hostname = urlObj.hostname;
-    const pathname = urlObj.pathname;
 
-    return Utils.isSiteApp(hostname) && pathname.startsWith(ROUTER_PATHS.SITE_HOME);
+    return Utils.isSiteApp(hostname);
   } catch (error) {
     console.error(error);
     return false;
