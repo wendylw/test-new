@@ -28,14 +28,7 @@ import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD } = Constants;
-
-const ShippingTypes = {
-  [DELIVERY_METHOD.DINE_IN]: 'dine in',
-  [DELIVERY_METHOD.PICKUP]: 'self pickup',
-  [DELIVERY_METHOD.DELIVERY]: 'delivery',
-  [DELIVERY_METHOD.TAKE_AWAY]: 'take away',
-};
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING } = Constants;
 
 export class OrderDetails extends Component {
   state = {};
@@ -74,6 +67,7 @@ export class OrderDetails extends Component {
     const { minimumConsumption } = qrOrderingSettings || {};
     const queryParams = {
       receiptNumber: this.props.receiptNumber,
+      from: 'orderDetails',
     };
 
     CleverTap.pushEvent('Order Details - click report issue', {
@@ -92,9 +86,11 @@ export class OrderDetails extends Component {
 
   handleReorder = () => {
     const { shippingType } = this.props;
-    this.props.history.replace({
+    const h = Utils.getQueryString('h');
+
+    this.props.history.push({
       pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
-      search: `type=${shippingType}`,
+      search: `type=${shippingType}&h=${h}`,
     });
   };
 
@@ -171,7 +167,7 @@ export class OrderDetails extends Component {
             <span className="ordering-details__subtitle padding-top-bottom-small">{t('OrderStatus')}</span>
             <Tag
               className="ordering-details__shipping-type-tag tag tag__small tag__primary"
-              text={ShippingTypes[shippingType]}
+              text={ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING[shippingType]}
             />
           </div>
           {status && <span className="text-weight-bolder">{status[0].toLocaleUpperCase() + status.slice(1)}</span>}
@@ -257,15 +253,6 @@ export class OrderDetails extends Component {
     );
   }
 
-  gotoThankyouPage = () => {
-    const { history } = this.props;
-
-    history.replace({
-      pathname: Constants.ROUTER_PATHS.THANK_YOU,
-      search: window.location.search,
-    });
-  };
-
   getRightContentOfHeader() {
     const { user, order, t, businessInfo, storeInfoForCleverTap } = this.props;
     const isWebview = _get(user, 'isWebview', false);
@@ -333,7 +320,7 @@ export class OrderDetails extends Component {
       return;
     }
 
-    this.gotoThankyouPage();
+    this.props.history.goBack();
     return;
   };
 
