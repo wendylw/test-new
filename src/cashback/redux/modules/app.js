@@ -5,14 +5,12 @@ import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
 import Url from '../../../utils/url';
-import * as TngUtils from '../../../utils/tng-utils';
-import * as ApiRequest from '../../../utils/api-request';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { get } from '../../../utils/request';
+import { post, get } from '../../../utils/request';
 import { createSelector } from 'reselect';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
@@ -54,30 +52,37 @@ export const types = APP_TYPES;
 
 //action creators
 export const actions = {
-  loginApp: ({ accessToken, refreshToken }) => async (dispatch, getState) => {
-    try {
-      const businessUTCOffset = getBusinessUTCOffset(getState());
+  loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
 
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const result = await ApiRequest.login({
+    return dispatch({
+      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
+      requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
-
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
-    } catch (error) {
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error: error,
-      });
-    }
+        shippingType: Utils.getApiRequestShippingType(),
+        registrationTouchpoint: Utils.getRegistrationTouchPoint(),
+        registrationSource: Utils.getRegistrationSource(),
+      }).then(resp => {
+        if (resp && resp.consumerId) {
+          const phone = Utils.getLocalStorageVariable('user.p');
+          if (phone) {
+          }
+        }
+        const userInfo = {
+          Name: resp.user?.firstName,
+          Phone: resp.user?.phone,
+          Email: resp.user?.email,
+          Identity: resp.consumerId,
+        };
+        if (resp.user?.birthday) {
+          userInfo.DOB = new Date(resp.user?.birthday);
+        }
+        CleverTap.onUserLogin(userInfo);
+        return resp;
+      }),
+    });
   },
 
   resetOtpStatus: () => ({
@@ -212,46 +217,6 @@ export const actions = {
       },
     },
   }),
-
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!Utils.isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
-    try {
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const business = getBusiness(getState());
-
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-
-      const tokens = await TngUtils.getAccessToken({ business: business });
-
-      const { access_token, refresh_token } = tokens;
-
-      const result = ApiRequest.login({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
-
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
-    } catch (error) {
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error,
-      });
-
-      return false;
-    }
-
-    return getUserIsLogin(getState());
-  },
 };
 
 const fetchCustomerProfile = consumerId => ({
@@ -266,7 +231,7 @@ const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, responseGql, prompt, error } = action;
+  const { type, response, responseGql, code, prompt, error } = action;
   const { login, consumerId, noWhatsAppAccount } = response || {};
 
   switch (type) {
@@ -293,14 +258,14 @@ const user = (state = initialState.user, action) => {
         accessToken: access_token,
         refreshToken: refresh_token,
       };
-    case types.CREATE_LOGIN_REQUEST: {
-      return {
-        ...state,
-        isFetching: true,
-      };
-    }
-    case types.CREATE_LOGIN_SUCCESS: {
-      const { consumerId } = action.payload;
+    case types.CREATE_LOGIN_SUCCESS:
+      if (state.accessToken) {
+        delete state.accessToken;
+      }
+
+      if (state.refreshToken) {
+        delete state.refreshToken;
+      }
 
       return {
         ...state,
@@ -308,7 +273,6 @@ const user = (state = initialState.user, action) => {
         isLogin: true,
         isFetching: false,
       };
-    }
     case types.FETCH_LOGIN_STATUS_SUCCESS:
       return {
         ...state,
@@ -317,7 +281,11 @@ const user = (state = initialState.user, action) => {
         isFetching: false,
       };
     case types.CREATE_LOGIN_FAILURE:
-      if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
+      if (code && code === 401 && code < 40000) {
+        return { ...state, isExpired: true, isFetching: false };
+      }
+
+      if (error && error.code === 401) {
         return { ...state, isExpired: true, isFetching: false };
       }
 
@@ -454,5 +422,3 @@ export const getMessageInfo = state => state.app.messageInfo;
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'timezoneOffset', 480)
 );
-
-export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));

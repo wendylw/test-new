@@ -29,8 +29,8 @@ class Location extends React.Component {
         const position = await tryGetDeviceCoordinates();
         this.setState({
           origin: {
-            lng: position.longitude,
-            lat: position.latitude,
+            lng: position.coords.longitude,
+            lat: position.coords.latitude,
           },
         });
       } catch (e) {

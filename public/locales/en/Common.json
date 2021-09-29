@@ -193,6 +193,5 @@
   "CommonErrorMessage": "Whoops, this page isn't available",
   "ErrorId": "Error ID: {{ id }}",
   "LowStockProductQuantity": "only {{quantityOnHand}} left",
-  "EmailAddress": "Email Address (optional)",
-  "MyOrderHistory": "My Order History"
+  "EmailAddress": "Email Address (optional)"
 }

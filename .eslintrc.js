@@ -310,6 +310,7 @@ const legacyFiles = [
   'src/utils/api/api-fetch.js',
   'src/utils/api/api-utils.js',
   'src/utils/aws-s3.js',
+  'src/utils/backHelper.js',
   'src/utils/business-name.js',
   'src/utils/clevertap.js',
   'src/utils/constants.js',

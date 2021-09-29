@@ -7,13 +7,12 @@ import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
 import Url from '../../../utils/url';
-import * as ApiRequest from '../../../utils/api-request';
 import CleverTap from '../../../utils/clevertap';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { get } from '../../../utils/request';
+import { post, get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
@@ -23,7 +22,6 @@ import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 
 import * as StoreUtils from '../../../utils/store-utils';
-import * as TngUtils from '../../../utils/tng-utils';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -94,7 +92,6 @@ export const initialState = {
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
-    loginRequestStatus: null,
   },
   error: null, // network error
   messageModal: {
@@ -273,30 +270,43 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  loginApp: ({ accessToken, refreshToken }) => async (dispatch, getState) => {
-    try {
-      const businessUTCOffset = getBusinessUTCOffset(getState());
+  loginApp: ({ accessToken, refreshToken }) => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
 
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const result = await ApiRequest.login({
+    return dispatch({
+      types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
+      requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
+        shippingType: Utils.getApiRequestShippingType(),
+        registrationTouchpoint: Utils.getRegistrationTouchPoint(),
+        registrationSource: Utils.getRegistrationSource(),
+      }).then(resp => {
+        if (resp && resp.consumerId) {
+          const phone = Utils.getLocalStorageVariable('user.p');
+          if (phone) {
+          }
+          const userInfo = {
+            Name: resp.user?.firstName,
+            Phone: resp.user?.phone,
+            Identity: resp.consumerId,
+            ...(resp.user?.email ? { Email: resp.user?.email } : {}),
+          };
 
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
-    } catch (error) {
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error: error,
-      });
-    }
+          CleverTap.pushEvent('Login - login successful', {
+            'new user': resp.user?.isFirstLogin,
+          });
+
+          if (resp.user?.birthday) {
+            userInfo.DOB = new Date(resp.user?.birthday);
+          }
+
+          CleverTap.onUserLogin(userInfo);
+        }
+        return resp;
+      }),
+    });
   },
 
   resetOtpStatus: () => ({
@@ -546,51 +556,11 @@ export const actions = {
 
     return dispatch(fetchProductDetail({ productId, fulfillDate }));
   },
-
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
-    if (!Utils.isTNGMiniProgram()) {
-      throw new Error('Not in tng mini program');
-    }
-
-    try {
-      const business = getBusiness(getState());
-
-      dispatch({
-        type: types.CREATE_LOGIN_REQUEST,
-      });
-
-      const businessUTCOffset = getBusinessUTCOffset(getState());
-
-      const tokens = await TngUtils.getAccessToken({ business: business });
-
-      const { access_token, refresh_token } = tokens;
-
-      const result = await ApiRequest.login({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-      });
-
-      dispatch({
-        type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
-      });
-    } catch (error) {
-      dispatch({
-        type: types.CREATE_LOGIN_FAILURE,
-        error,
-      });
-
-      return false;
-    }
-
-    return getUserIsLogin(getState());
-  },
 };
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, fields, responseGql } = action;
-  const { consumerId, login, noWhatsAppAccount } = response || {};
+  const { consumerId, login, user, noWhatsAppAccount } = response || {};
 
   switch (type) {
     case types.SHOW_LOGIN_PAGE:
@@ -599,9 +569,8 @@ const user = (state = initialState.user, action) => {
       return { ...state, showLoginPage: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
     case types.CREATE_OTP_REQUEST:
-      return { ...state, isFetching: true };
     case types.CREATE_LOGIN_REQUEST:
-      return { ...state, isFetching: true, loginRequestStatus: API_REQUEST_STATUS.PENDING };
+      return { ...state, isFetching: true };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
@@ -628,8 +597,7 @@ const user = (state = initialState.user, action) => {
         accessToken: access_token,
         refreshToken: refresh_token,
       };
-    case types.CREATE_LOGIN_SUCCESS: {
-      const { consumerId, user } = action.payload;
+    case types.CREATE_LOGIN_SUCCESS:
       if (state.accessToken) {
         delete state.accessToken;
       }
@@ -650,9 +618,7 @@ const user = (state = initialState.user, action) => {
         isLogin: true,
         hasOtp: false,
         isFetching: false,
-        loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
       };
-    }
     case types.FETCH_LOGIN_STATUS_SUCCESS:
       return {
         ...state,
@@ -663,11 +629,11 @@ const user = (state = initialState.user, action) => {
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');
-      if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
-        return { ...state, isExpired: true, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+      if (error && (error.code === 401 || error.code === '40000')) {
+        return { ...state, isExpired: true, isFetching: false };
       }
 
-      return { ...state, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+      return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
     case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
@@ -941,15 +907,6 @@ export const getMerchantCountry = state => {
   return null;
 };
 export const getApiError = state => state.app.apiError;
-
-export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
-
-export const getUserLoginRequestStatus = state => state.app.user.loginRequestStatus;
-
-export const getIsUserLoginRequestStatusInPending = createSelector(
-  getUserLoginRequestStatus,
-  status => status === API_REQUEST_STATUS.PENDING
-);
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);

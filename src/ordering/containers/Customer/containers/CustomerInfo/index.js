@@ -139,7 +139,7 @@ class CustomerInfo extends Component {
     const { history, cartBilling } = this.props;
     const { total } = cartBilling || {};
 
-    if (total && !this.validateFields().show && !Utils.isTNGMiniProgram()) {
+    if (total && !this.validateFields().show) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
@@ -397,7 +397,7 @@ class CustomerInfo extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={processing}
-            validCreateOrder={(Utils.isTNGMiniProgram() || !total) && !this.validateFields().show}
+            validCreateOrder={!total && !this.validateFields().show}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
               this.handleBeforeCreateOrder();

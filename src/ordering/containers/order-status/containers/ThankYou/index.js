@@ -250,6 +250,10 @@ export class ThankYou extends PureComponent {
         };
       }) || [];
 
+    const orderSourceType = Utils.getOrderSource();
+    const orderSource =
+      orderSourceType === 'BeepApp' ? 'App' : orderSourceType === 'BeepSite' ? 'beepit.com' : 'Store URL';
+
     let preOrderPeriod = 0;
     if (order.isPreOrder) {
       preOrderPeriod = (new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / (60 * 60 * 1000);
@@ -267,7 +271,7 @@ export class ThankYou extends PureComponent {
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
-      'Order Source': Utils.getOrderSourceForCleverTab(),
+      'Order Source': orderSource,
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
@@ -610,10 +614,10 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    const { shippingType } = this.props;
-    const hideDownloadBanner = Utils.isTNGMiniProgram() || Utils.isWebview();
+    const { user, shippingType } = this.props;
+    const { isWebview } = user || {};
 
-    if (hideDownloadBanner) {
+    if (isWebview) {
       return null;
     }
 
@@ -732,7 +736,6 @@ export class ThankYou extends PureComponent {
     const type = Utils.getOrderTypeFromUrl();
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
-    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (isOrderBeforePaid) {
       history.goBack();
@@ -741,11 +744,6 @@ export class ThankYou extends PureComponent {
 
     if (isWebview) {
       NativeMethods.closeWebView();
-      return;
-    }
-
-    if (Utils.isTNGMiniProgram() && sourceUrl) {
-      window.location.href = sourceUrl;
       return;
     }
 

@@ -10,13 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Location from './ordering/containers/Location';
 import CollectionPage from './collections/CollectionPage';
 import SearchPage from './search/SearchPage';
-import Utils from '../utils/utils';
-import Constants from '../utils/constants';
-
-const { ROUTER_PATHS } = Constants;
-
 const AsyncTermsPrivacy = lazy(() => import('../containers/TermsPrivacy'));
-const OrderHistory = lazy(() => import('./order-history'));
 
 const SiteRoute = () => {
   return (
@@ -33,8 +27,6 @@ const SiteRoute = () => {
       <ProtectedRoute path={`/account`}>
         <Account />
       </ProtectedRoute>
-      {/* order history only can be visit on TNG mini program */}
-      <Route path={ROUTER_PATHS.ORDER_HISTORY} component={Utils.isTNGMiniProgram() ? OrderHistory : NotFound} />
       <Redirect from={`/`} to={`/home`} />
       <Route component={NotFound} />
     </Switch>

@@ -71,6 +71,10 @@ const API_URLS = {
     url: '/api/ping',
     method: 'get',
   },
+  POST_LOGIN: {
+    url: '/api/login',
+    method: 'post',
+  },
   GET_TERMS_PRIVACY: {
     ur: '/api/privacy',
     method: 'get',

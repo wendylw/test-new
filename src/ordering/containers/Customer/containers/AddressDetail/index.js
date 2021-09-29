@@ -182,7 +182,7 @@ class AddressDetail extends Component {
       addressName: savedAddressName,
       addressDetails: _get(response, 'addressDetails', details),
       deliveryComments: _get(response, 'comments', comments),
-      deliveryToAddress: _get(response, 'deliveryTo', address),
+      deliveryToAddress: _get(response, 'address', address),
       deliveryToLocation: _get(response, 'location', coords),
       deliveryToCity: _get(response, 'city', city),
       postCode: _get(response, 'postCode', postCode),

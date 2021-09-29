@@ -24,7 +24,6 @@ import Utils from '../../../utils/utils';
 import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 import NativeHeader from '../../../components/NativeHeader';
-import PageLoader from '../../../components/PageLoader';
 
 class App extends Component {
   state = {
@@ -33,7 +32,6 @@ class App extends Component {
 
   async componentDidMount() {
     const { appActions } = this.props;
-
     this.visitErrorPage();
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
@@ -52,12 +50,6 @@ class App extends Component {
       if (appLogin && !isLogin) {
         await this.postAppMessage();
       }
-    }
-
-    if (Utils.isTNGMiniProgram()) {
-      this.setState({
-        showAppLoginPage: !isLogin,
-      });
     }
   }
 
@@ -90,17 +82,6 @@ class App extends Component {
       });
 
       appActions.loadCustomerProfile();
-    }
-  };
-
-  handleLoginClick = async () => {
-    if (Utils.isWebview()) {
-      await this.postAppMessage();
-      return;
-    }
-
-    if (Utils.isTNGMiniProgram()) {
-      await this.props.appActions.loginByTngMiniProgram();
     }
   };
 
@@ -155,7 +136,6 @@ class App extends Component {
 
   render() {
     const { user } = this.props;
-    const { isFetching } = user;
     const { showAppLoginPage } = this.state;
     const isWebview = Utils.isWebview();
 
@@ -163,9 +143,7 @@ class App extends Component {
       <>
         {isWebview && <NativeHeader />}
 
-        {showAppLoginPage ? <RequestLogin user={user} onClick={this.handleLoginClick} /> : this.renderMainContent()}
-
-        {isFetching && <PageLoader />}
+        {showAppLoginPage ? <RequestLogin user={user} onClick={this.postAppMessage} /> : this.renderMainContent()}
       </>
     );
   }

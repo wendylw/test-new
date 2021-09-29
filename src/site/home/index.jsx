@@ -29,8 +29,6 @@ import { checkStateRestoreStatus } from '../redux/modules/index';
 import Banners from './components/Banners';
 import Carousel from './components/Carousel';
 import BeepAppLink from './containers/CampaignBar/components/images/beep-app-link.jpg';
-import DevToolsTrigger from '../../components/DevToolsTrigger';
-import Utils from '../../utils/utils';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 const isCampaignActive = true; // feature switch
@@ -59,7 +57,7 @@ class Home extends React.Component {
       return;
     }
     const { location } = this.props;
-    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: Utils.isTNGMiniProgram() });
+    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: false });
 
     // if no placeInfo at all
     if (!placeInfo) {
@@ -216,11 +214,9 @@ class Home extends React.Component {
           gotoLocationPage={this.gotoLocationPage}
           backLeftPosition={this.backLeftPosition}
         >
-          {!Utils.isTNGMiniProgram() && (
-            <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
-              <IconScanner className="icon icon__primary" onClick={this.handleQRCodeClicked} />
-            </Link>
-          )}
+          <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
+            <IconScanner className="icon icon__primary" onClick={this.handleQRCodeClicked} />
+          </Link>
         </DeliverToBar>
 
         <section
@@ -233,11 +229,9 @@ class Home extends React.Component {
           }}
         >
           <Banner className="entry-home__banner">
-            <DevToolsTrigger>
-              <figure className="entry-home__banner-image">
-                <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
-              </figure>
-            </DevToolsTrigger>
+            <figure className="entry-home__banner-image">
+              <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
+            </figure>
 
             <div className="entry-home__search">
               <div className="form__group flex flex-middle">
@@ -254,7 +248,7 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {isCampaignActive && countryCode.toUpperCase() === 'MY' && !Utils.isTNGMiniProgram() && (
+          {isCampaignActive && countryCode.toUpperCase() === 'MY' && (
             <a
               className="offer-details__bar"
               data-heap-name="site.home.campaign-bar"

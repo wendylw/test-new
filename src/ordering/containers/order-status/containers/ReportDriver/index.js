@@ -48,20 +48,14 @@ class ReportDriver extends Component {
 
     await loadOrder(receiptNumber);
 
-    if (!user?.isLogin) {
-      if (Utils.isWebview()) {
-        const result = await NativeMethods.getTokenAsync();
+    if (Utils.isWebview() && !user?.isLogin) {
+      const result = await NativeMethods.getTokenAsync();
+      await this.loginAppWithNativeToken(result);
+
+      const { user } = this.props;
+      if (!user.isLogin && user.isExpired) {
+        const result = await NativeMethods.tokenExpiredAsync();
         await this.loginAppWithNativeToken(result);
-
-        const { user } = this.props;
-        if (!user.isLogin && user.isExpired) {
-          const result = await NativeMethods.tokenExpiredAsync();
-          await this.loginAppWithNativeToken(result);
-        }
-      }
-
-      if (Utils.isTNGMiniProgram()) {
-        await this.props.loginByTngMiniProgram();
       }
     }
 
@@ -105,18 +99,9 @@ class ReportDriver extends Component {
   goBack() {
     if (Utils.isWebview()) {
       NativeMethods.goBack();
-      return;
+    } else {
+      this.gotoThankYourPage();
     }
-
-    const from = Utils.getQueryString('from');
-
-    if (from === 'orderDetails') {
-      this.props.history.goBack();
-      return;
-    }
-
-    // from sms
-    this.gotoThankYourPage();
   }
 
   gotoThankYourPage = () => {
@@ -493,7 +478,6 @@ export default compose(
       initialEmail: reportDriverActionCreators.initialEmail,
       getProfileInfo: appActionCreators.getProfileInfo,
       loginApp: appActionCreators.loginApp,
-      loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
     }
   )
 )(ReportDriver);
