@@ -56,10 +56,6 @@ export const { actions, reducer } = createSlice({
   },
 
   extraReducers: {
-    [init.pending.type]: state => {
-      state.updateAddressDetailResult.status = API_REQUEST_STATUS.PENDING;
-    },
-
     [init.fulfilled.type]: (state, action) => {
       const { payload } = action;
 
