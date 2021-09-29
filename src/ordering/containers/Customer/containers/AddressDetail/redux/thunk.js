@@ -28,7 +28,7 @@ export const init = createAsyncThunk('ordering/customer/addressDetail', ({ actio
     details: '',
     comments: '',
     contactName: '',
-    contactNumber: null,
+    contactNumber: '',
   };
 
   // if choose a new location, update the addressInfo

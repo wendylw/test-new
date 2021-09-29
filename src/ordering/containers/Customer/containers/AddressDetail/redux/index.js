@@ -3,7 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 import _trim from 'lodash/trim';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { init } from './thunk';
-import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
 
 const initialState = {
   id: '',
@@ -19,10 +18,6 @@ const initialState = {
   addressComponents: {},
   contactNumber: '',
   contactName: '',
-  updateAddressDetailResult: {
-    status: null,
-    error: null,
-  },
   contactNumberValidStatus: {
     isValid: false,
     isComplete: false,
@@ -69,9 +64,6 @@ export const { actions, reducer } = createSlice({
       state.coords = payload.coords;
       state.addressComponents = payload.addressComponents;
       state.contactName = payload.contactName;
-
-      state.updateAddressDetailResult.status = API_REQUEST_STATUS.FULFILLED;
-      state.updateAddressDetailResult.error = null;
     },
   },
 });

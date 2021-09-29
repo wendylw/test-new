@@ -14,24 +14,6 @@
     margin-bottom: 0.7vw;
   }
 
-  &__no-border {
-    border: none;
-  }
-
-  &__margin-left-right-small {
-    margin-left: 16px;
-    margin-right: 16px;
-  }
-
-  &__show-error {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  &__font-size {
-    font-size: 16px;
-  }
-
   &__title {
     color: $gray-3;
 
@@ -92,6 +74,7 @@
     padding: 0;
     height: 24px;
     line-height: 24px;
+    font-size: 1.1428rem;
   }
 }
 

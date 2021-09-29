@@ -45,12 +45,6 @@ class AddressDetail extends Component {
   componentDidMount = async () => {
     const { init, location } = this.props;
     await init({ actionType: location.state?.type });
-    const deliveryAddressUpdate = Boolean(Utils.getSessionVariable('deliveryAddressUpdate'));
-    Utils.removeSessionVariable('deliveryAddressUpdate');
-
-    this.setState({
-      hasAnyChanges: deliveryAddressUpdate,
-    });
   };
 
   handleClickBack = () => {
@@ -105,6 +99,8 @@ class AddressDetail extends Component {
     if (!contactName || !contactName.length || contactNumberInvalidErrorVisibility) {
       return true;
     }
+
+    return false;
   };
 
   handleAddressDetailClick = () => {
@@ -254,37 +250,42 @@ class AddressDetail extends Component {
             </div>
           </div>
 
-          <div
-            className={`margin-normal padding-top-bottom-smaller flex__fluid-content ${
-              this.props.contactNumberInvalidErrorVisibility ? 'error' : ''
-            } form__group address-detail__margin-left-right-small border-radius-normal`}
-          >
-            <div className="address-detail__no-border address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
-              <div className="flex__fluid-content">
-                <div className="address-detail__title required">
-                  <span className="text-size-smaller text-top">{t('ContactNumber')}</span>
+          <div className="margin-normal padding-top-bottom-small" style={{ position: 'relative' }}>
+            <div
+              className={` ${
+                this.props.contactNumberInvalidErrorVisibility ? 'error' : ''
+              } form__group border-radius-normal`}
+            >
+              <div className=" address-detail__field flex flex-middle padding-top-bottom-small padding-left-right-normal ">
+                <div className="flex__fluid-content">
+                  <div className="address-detail__title required">
+                    <span className="text-size-small text-top">{t('ContactNumber')}</span>
+                  </div>
+                  <PhoneInput
+                    international // If input want to show country code when phone number is empty, pls add international on props
+                    smartCaret={false}
+                    data-heap-name="ordering.contact-details.phone-input"
+                    placeholder={t('EnterPhoneNumber')}
+                    value={formatPhoneNumberIntl(contactNumber)}
+                    country={country}
+                    metadata={metadataMobile}
+                    onChange={this.phoneInputChange}
+                    onFocus={this.handlePhoneNumberFocus}
+                    onBlur={this.handleNameInputBlur}
+                  />
                 </div>
-                <PhoneInput
-                  international // If input want to show country code when phone number is empty, pls add international on props
-                  smartCaret={false}
-                  data-heap-name="ordering.contact-details.phone-input"
-                  placeholder={t('EnterPhoneNumber')}
-                  value={formatPhoneNumberIntl(contactNumber)}
-                  country={country}
-                  metadata={metadataMobile}
-                  onChange={this.phoneInputChange}
-                  onFocus={this.handlePhoneNumberFocus}
-                  onBlur={this.handleNameInputBlur}
-                />
               </div>
             </div>
-          </div>
 
-          {this.props.contactNumberInvalidErrorVisibility && (
-            <p className="address-detail__show-error address-detail__font-size  form__error-message padding-left-right-normal margin-top-bottom-small">
-              {t('PleaseEnterValidPhoneNumber')}
-            </p>
-          )}
+            {this.props.contactNumberInvalidErrorVisibility && (
+              <p
+                className="text-size-big  form__error-message padding-top-bottom-smaller "
+                style={{ position: 'absolute' }}
+              >
+                {t('PleaseEnterValidPhoneNumber')}
+              </p>
+            )}
+          </div>
 
           <div className="margin-normal padding-top-bottom-smaller">
             <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
@@ -372,7 +373,6 @@ class AddressDetail extends Component {
               this.createOrUpdateAddress();
             }}
           >
-            {/* {type === actions.EDIT ? t('SaveChanges') : t('Save')} */}
             {t('Save')}
           </button>
         </footer>
