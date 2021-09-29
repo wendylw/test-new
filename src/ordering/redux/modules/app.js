@@ -368,16 +368,6 @@ export const actions = {
     prompt,
   }),
 
-  // showMessageModal: ({ message, description, buttonText = '' }) => ({
-  //   type: types.SET_MESSAGE_INFO,
-  //   message,
-  //   description,
-  //   buttonText,
-  // }),
-
-  // hideMessageModal: () => ({
-  //   type: types.HIDE_MESSAGE_MODAL,
-  // }),
   hideApiMessageModal: () => ({
     type: types.CLEAR_API_ERROR,
   }),
