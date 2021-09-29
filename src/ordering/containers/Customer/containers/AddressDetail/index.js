@@ -202,9 +202,8 @@ class AddressDetail extends Component {
 
   render() {
     const { addressInfo, t } = this.props;
-    const { type, name, address, details, comments, contactNumber: contactNumberChange, contactName, country } =
-      addressInfo || {};
-    const contactNumber = contactNumberChange;
+    const { type, name, address, details, comments, contactNumber, contactName, country } = addressInfo || {};
+
     return (
       <div className="flex flex-column address-detail">
         <HybridHeader
