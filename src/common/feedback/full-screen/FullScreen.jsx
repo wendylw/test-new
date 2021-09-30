@@ -8,17 +8,7 @@ import './FullScreen.scss';
 
 const FullScreen = forwardRef((props, ref) => {
   const { t } = useTranslation();
-  const {
-    content,
-    buttons,
-    show,
-    closeButtonContent,
-    className,
-    style,
-    destroyContainer,
-    onClose,
-    onModalVisibilityChanged,
-  } = props;
+  const { content, buttons, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
   useImperativeHandle(ref, () => ({
     onHistoryBackReceived: () => false,
   }));
@@ -83,7 +73,6 @@ FullScreen.propTypes = {
   className: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
-  destroyContainer: PropTypes.func,
   onClose: PropTypes.func,
   onModalVisibilityChanged: PropTypes.func,
 };
@@ -95,7 +84,6 @@ FullScreen.defaultProps = {
   closeButtonContent: null,
   className: '',
   style: {},
-  destroyContainer: () => {},
   onClose: () => {},
   onModalVisibilityChanged: () => {},
 };

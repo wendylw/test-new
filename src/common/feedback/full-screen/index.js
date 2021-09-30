@@ -46,16 +46,16 @@ const normalizeButtons = buttons =>
     onClick: () => {},
     ...buttonOptions,
   }));
-const normalizeFullScreenOptions = options => ({
+const normalizeFullScreenOptions = ({ buttons, ...restOptions }) => ({
   container: document.body,
   show: true,
   content: null,
-  buttons: [],
   closeButtonContent: null,
   className: '',
   style: {},
   onClose: () => {},
-  ...options,
+  buttons: buttons ? normalizeButtons(buttons) : [],
+  ...restOptions,
 });
 const createFullScreen = (content, options) =>
   new Promise(resolve => {
@@ -68,7 +68,6 @@ const createFullScreen = (content, options) =>
     const fullScreenInstance = React.createElement(FullScreen, {
       content,
       ...restOptions,
-      destroyContainer: destroyTarget(rootDOM),
       onClose: () => {
         render(React.cloneElement(fullScreenInstance, { show: false }), rootDOM, () => {
           destroyTarget(rootDOM);
@@ -86,12 +85,8 @@ export const fullScreen = (content, options = {}) => {
 
   createFullScreen(
     <FullScreenStandardContent status={restOptions.status} image={restOptions.image} title={title} content={content} />,
-    normalizeFullScreenOptions({
-      ...restOptions,
-      buttons: normalizeButtons(buttons),
-    })
+    normalizeFullScreenOptions(restOptions)
   );
 };
 
-fullScreen.raw = (content, options = {}) =>
-  createFullScreen(content, normalizeFullScreenOptions({ ...options, buttons: normalizeButtons(options.buttons) }));
+fullScreen.raw = (content, options = {}) => createFullScreen(content, normalizeFullScreenOptions(options));
