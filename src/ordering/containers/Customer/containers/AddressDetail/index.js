@@ -96,7 +96,13 @@ class AddressDetail extends Component {
       return true;
     }
 
-    if (!contactName || !contactName.length || contactNumberInvalidErrorVisibility) {
+    if (
+      !_trim(contactName) ||
+      !contactName.length ||
+      contactNumberInvalidErrorVisibility ||
+      !_trim(details) ||
+      !_trim(name)
+    ) {
       return true;
     }
 
