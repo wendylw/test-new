@@ -6,6 +6,8 @@ import Utils from '../../../../../../utils/utils';
 import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
+import { callTradePay } from '../../../../../../utils/tng-utils';
+import { createPaymentDetails } from './api-info';
 
 import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
@@ -127,7 +129,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
 
   // expectedDeliveryHour & expectedDeliveryDate will always be there if
   // there is preOrder in url
-  const orderSource = getOrderSource();
+  const orderSource = Utils.getOrderSource();
   const business = getBusiness(getState());
   const businessInfo = getBusinessByName(getState(), business);
   const { qrOrderingSettings = {} } = businessInfo || {};
@@ -229,14 +231,15 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       },
     } = resp;
+    const result = {
+      order,
+      redirectUrl,
+    };
 
     try {
       await checkCreatedOrderStatus(order.orderId);
 
-      return {
-        order,
-        redirectUrl,
-      };
+      return result;
     } catch (error) {
       throw error;
     }
@@ -254,18 +257,6 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       );
     }
   }
-};
-
-const getOrderSource = () => {
-  let orderSource = '';
-  if (Utils.isWebview()) {
-    orderSource = 'BeepApp';
-  } else if (sessionStorage.getItem('orderSource')) {
-    orderSource = 'BeepSite';
-  } else {
-    orderSource = 'BeepStore';
-  }
-  return orderSource;
 };
 
 const createVoucherOrderRequest = async payload => {
@@ -290,18 +281,54 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
   const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
   const source = Utils.getOrderSource();
   const planId = getBusinessByName(state, business).planId || '';
+  const { orderId, total: amount } = order;
+  const isInternal = planId.startsWith('internal');
+  const isTNGPayment = Utils.isTNGMiniProgram();
+  const action = isTNGPayment ? redirectURL : config.storeHubPaymentEntryURL;
   const basicArgs = {
-    amount: order.total,
+    amount,
     currency: currency,
-    receiptNumber: order.orderId,
+    receiptNumber: orderId,
     businessName: business,
-    redirectURL: redirectURL,
-    webhookURL: webhookURL,
-    // paymentName: paymentProvider,
-    source: source,
-    isInternal: planId.startsWith('internal'),
+    redirectURL,
+    webhookURL,
+    source,
+    isInternal,
   };
-  submitForm(config.storeHubPaymentEntryURL, { ...basicArgs, ...paymentArgs });
+
+  if (isTNGPayment) {
+    try {
+      const { paymentData, paymentId } = await createPaymentDetails({
+        orderId,
+        orderSource: source,
+        paymentProvider: 'TNGMiniProgram',
+        webhookURL,
+      });
+      const { redirectionUrl: paymentUrl } = paymentData?.actionForm || {};
+
+      basicArgs.paymentId = paymentId;
+      basicArgs.paymentMethod = 'TNGMiniProgram';
+      await callTradePay(paymentUrl);
+    } catch (e) {
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch({ type: 'ordering/payments/common/createTngdPaymentDetailFailure', ...e });
+      } else {
+        dispatch(
+          appActions.showMessageModal({
+            message: i18next.t('PaymentFailed'),
+            description: i18next.t('PaymentFailedDescription'),
+          })
+        );
+      }
+
+      return;
+    }
+  }
+
+  submitForm(action, { ...basicArgs, ...paymentArgs });
 };
 
 const submitForm = (action, data) => {

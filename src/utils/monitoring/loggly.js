@@ -8,6 +8,10 @@ const { REACT_APP_LOGGLY_SERVICE_URL, REACT_APP_LOGGLY_TOKEN, REACT_APP_LOGGLY_T
 const IS_DEV_ENV = process.env.NODE_ENV === 'development';
 
 const getAppPlatform = () => {
+  if (Utils.isTNGMiniProgram()) {
+    return 'tng-mini-program';
+  }
+
   return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
 };
 
