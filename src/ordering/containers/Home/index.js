@@ -529,7 +529,7 @@ export class Home extends Component {
     const { stores = [] } = businessInfo;
     const pickupAddress = stores.length ? Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY) : '';
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
-    const backHomeSiteButtonVisibility = Boolean(sourceUrl);
+    const backHomeSiteButtonVisibility = Boolean(sourceUrl) && !Utils.isWebview();
 
     return (
       <DeliverToBar
@@ -678,6 +678,10 @@ export class Home extends Component {
 
     // Only display back button for delivery order
     if (!Utils.isDeliveryOrder()) {
+      return false;
+    }
+
+    if (Utils.isWebview()) {
       return false;
     }
 
