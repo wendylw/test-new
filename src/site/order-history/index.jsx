@@ -22,6 +22,8 @@ import Loader from './components/Loader';
 import RequireLoginPage from './components/RequireLoginPage';
 import './order-history.scss';
 import OrderListEmptyView from './components/OrderListEmptyView';
+import Clevertap from '../../utils/clevertap';
+import _get from 'lodash/get';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
@@ -58,6 +60,11 @@ class OrderHistory extends React.Component {
   handleOrderItemClick = order => {
     const urlObj = new URL(order.url);
     urlObj.searchParams.append('source', document.location.href);
+
+    Clevertap.pushEvent('Order History - Click order card', {
+      rank: _get(order, 'rank', null),
+      'store name': _get(order, 'store.storeDisplayName', ''),
+    });
 
     window.location.href = urlObj.toString();
   };
@@ -116,6 +123,7 @@ class OrderHistory extends React.Component {
                 <li
                   key={order.receiptNumber}
                   className="margin-normal"
+                  data-heap-name="site.order-history.order"
                   onClick={() => this.handleOrderItemClick(order)}
                 >
                   <OrderItem order={order} />

@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './LiveChat.scss';
 import Utils from '../utils/utils';
+import _isFunction from 'lodash/isFunction';
 
 const zendeskDepartmentId = Number(process.env.REACT_APP_ZENDESK_DEPARTMENT_ID);
 class LiveChat extends Component {
@@ -160,7 +161,10 @@ class LiveChat extends Component {
   };
 
   handleClick = () => {
+    const { onClick } = this.props;
     const { waitingZendeskScript } = this.state;
+
+    _isFunction(onClick) && onClick();
 
     if (!waitingZendeskScript) {
       window.zE('webWidget', 'toggle');
@@ -193,6 +197,7 @@ LiveChat.propTypes = {
   name: PropTypes.string,
   phone: PropTypes.string,
   email: PropTypes.string,
+  onClick: PropTypes.func,
 };
 
 LiveChat.displayName = 'LiveChat';

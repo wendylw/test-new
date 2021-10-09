@@ -61,22 +61,12 @@ export class OrderDetails extends Component {
   };
 
   handleReportUnsafeDriver = () => {
-    const { order, businessInfo, storeInfoForCleverTap } = this.props;
-    const { paymentNames, subtotal } = order || {};
-    const { qrOrderingSettings } = businessInfo || {};
-    const { minimumConsumption } = qrOrderingSettings || {};
     const queryParams = {
       receiptNumber: this.props.receiptNumber,
       from: 'orderDetails',
     };
 
-    CleverTap.pushEvent('Order Details - click report issue', {
-      ...storeInfoForCleverTap,
-      'cart items quantity': this.getCartItemsQuantity(),
-      'cart amount': subtotal,
-      'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-      'payment method': paymentNames && paymentNames[0],
-    });
+    this.pushCleverTapEvent('Order Details - click report issue');
 
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.REPORT_DRIVER,
@@ -87,6 +77,8 @@ export class OrderDetails extends Component {
   handleReorder = () => {
     const { shippingType } = this.props;
     const h = Utils.getQueryString('h');
+
+    this.pushCleverTapEvent('Order details - Click reorder');
 
     this.props.history.push({
       pathname: `${Constants.ROUTER_PATHS.ORDERING_HOME}`,
@@ -254,17 +246,15 @@ export class OrderDetails extends Component {
   }
 
   getRightContentOfHeader() {
-    const { user, order, t, businessInfo, storeInfoForCleverTap } = this.props;
+    const { user, order, t } = this.props;
     const isWebview = _get(user, 'isWebview', false);
     const userEmail = _get(user, 'profile.email', '');
     const orderId = _get(order, 'orderId', '');
-    const subtotal = _get(order, 'subtotal', 0);
-    const paymentNames = _get(order, 'paymentNames', null);
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
     const orderUserName = _get(deliveryAddress, 'name', '');
     const orderUserPhone = _get(deliveryAddress, 'phone', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
-    const minimumConsumption = _get(businessInfo, 'qrOrderingSettings.minimumConsumption', 0);
+    const eventName = 'Order Details - click contact us';
 
     if (!order) {
       return null;
@@ -277,13 +267,8 @@ export class OrderDetails extends Component {
           color: '#00b0ff',
         },
         onClick: () => {
-          CleverTap.pushEvent('Order Details - click contact us', {
-            ...storeInfoForCleverTap,
-            'cart items quantity': this.getCartItemsQuantity(),
-            'cart amount': subtotal,
-            'has met minimum order value': subtotal >= minimumConsumption ? true : false,
-            'payment method': paymentNames && paymentNames[0],
-          });
+          this.pushCleverTapEvent(eventName);
+
           NativeMethods.startChat({
             orderId,
             name: orderUserName,
@@ -300,6 +285,8 @@ export class OrderDetails extends Component {
           color: '#00b0ff',
         },
         onClick: () => {
+          this.pushCleverTapEvent(eventName);
+
           this.handleVisitMerchantInfoPage();
         },
       };
@@ -307,8 +294,33 @@ export class OrderDetails extends Component {
       return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    return <LiveChat orderId={orderId} email={userEmail} name={orderUserName} phone={orderUserPhone} />;
+    return (
+      <LiveChat
+        onClick={() => {
+          this.pushCleverTapEvent(eventName);
+        }}
+        orderId={orderId}
+        email={userEmail}
+        name={orderUserName}
+        phone={orderUserPhone}
+      />
+    );
   }
+
+  pushCleverTapEvent = eventName => {
+    const { storeInfoForCleverTap, order, businessInfo } = this.props;
+    const subtotal = _get(order, 'subtotal', 0);
+    const minimumConsumption = _get(businessInfo, 'qrOrderingSettings.minimumConsumption', 0);
+    const paymentName = _get(order, 'paymentNames.0', null);
+
+    CleverTap.pushEvent(eventName, {
+      ...storeInfoForCleverTap,
+      'cart items quantity': this.getCartItemsQuantity(),
+      'cart amount': subtotal,
+      'has met minimum order value': subtotal >= minimumConsumption ? true : false,
+      'payment method': paymentName,
+    });
+  };
 
   handleHeaderNavFunc = () => {
     const isWebview = Utils.isWebview();

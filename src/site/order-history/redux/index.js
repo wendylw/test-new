@@ -26,9 +26,16 @@ export const { reducer, actions } = createSlice({
     [loadNextOrderHistoryData.fulfilled.type]: (state, action) => {
       const orderHistoryList = action.payload;
       const orderHistoryObj = {};
+      let rank = Object.keys(state.data).length;
+
       orderHistoryList.forEach(order => {
-        orderHistoryObj[order.receiptNumber] = order;
-        order.shippingType = order.shippingType === 'dineIn' ? DELIVERY_METHOD.DINE_IN : order.shippingType;
+        rank += 1;
+
+        orderHistoryObj[order.receiptNumber] = {
+          ...order,
+          shippingType: order.shippingType === 'dineIn' ? DELIVERY_METHOD.DINE_IN : order.shippingType,
+          rank, // position of the order in the list(attribute of Clever tap event)
+        };
       });
 
       state.data = {
@@ -51,9 +58,16 @@ export const { reducer, actions } = createSlice({
     [initOrderHistoryData.fulfilled.type]: (state, action) => {
       const orderHistoryList = action.payload;
       const orderHistoryObj = {};
+      let rank = 0;
+
       orderHistoryList.forEach(order => {
-        orderHistoryObj[order.receiptNumber] = order;
-        order.shippingType = order.shippingType === 'dineIn' ? DELIVERY_METHOD.DINE_IN : order.shippingType;
+        rank += 1;
+
+        orderHistoryObj[order.receiptNumber] = {
+          ...order,
+          shippingType: order.shippingType === 'dineIn' ? DELIVERY_METHOD.DINE_IN : order.shippingType,
+          rank, // position of the order in the list(attribute of Clever tap event)
+        };
       });
 
       state.data = orderHistoryObj;
