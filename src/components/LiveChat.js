@@ -11,23 +11,33 @@ class LiveChat extends Component {
   componentDidMount() {
     this.loadZendeskWidget().then(() => {
       window.zE('webWidget', 'show');
+      this.prefillUserInfo();
     });
   }
 
   componentDidUpdate(prevProps) {
-    const { name, phone } = this.props;
-
-    if (prevProps.name !== name && prevProps.phone !== phone && window.zE) {
-      window.zE('webWidget', 'prefill', {
-        name: {
-          value: name,
-        },
-        phone: {
-          value: phone,
-        },
-      });
+    const { name, phone, email } = this.props;
+    if (prevProps.name !== name || prevProps.phone !== phone || prevProps.email !== email) {
+      this.prefillUserInfo();
     }
   }
+
+  prefillUserInfo = () => {
+    const { name, phone, email } = this.props;
+
+    window.zE &&
+      window.zE('webWidget', 'prefill', {
+        name: {
+          value: name || '',
+        },
+        phone: {
+          value: phone || '',
+        },
+        email: {
+          value: email || '',
+        },
+      });
+  };
 
   componentWillUnmount() {
     window.zE && window.zE('webWidget', 'hide');
@@ -182,6 +192,7 @@ LiveChat.propTypes = {
   orderId: PropTypes.string,
   name: PropTypes.string,
   phone: PropTypes.string,
+  email: PropTypes.string,
 };
 
 LiveChat.displayName = 'LiveChat';

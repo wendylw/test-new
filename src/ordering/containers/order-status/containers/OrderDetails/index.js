@@ -307,7 +307,7 @@ export class OrderDetails extends Component {
       return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
+    return <LiveChat orderId={orderId} email={userEmail} name={orderUserName} phone={orderUserPhone} />;
   }
 
   handleHeaderNavFunc = () => {
