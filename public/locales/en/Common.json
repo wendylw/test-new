@@ -194,5 +194,7 @@
   "ErrorId": "Error ID: {{ id }}",
   "LowStockProductQuantity": "only {{quantityOnHand}} left",
   "EmailAddress": "Email Address (optional)",
-  "MyOrderHistory": "My Order History"
+  "MyOrderHistory": "My Order History",
+  "TermsOfService": "Terms of Service",
+  "PrivacyPolicy": "Privacy Policy"
 }

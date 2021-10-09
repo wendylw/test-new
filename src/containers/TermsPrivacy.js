@@ -6,9 +6,15 @@ import DocumentHeadInfo from '../components/DocumentHeadInfo';
 
 import '../Common.scss';
 import Utils from '../utils/utils';
+import HybridHeader from '../components/HybridHeader';
 
 // Example1 URL: http://nike.storehub.local:3000/#/terms-conditions
 // Example1 URL: http://nike.storehub.local:3000/#/privacy
+
+const PAGE_NAMES = {
+  TERMS: 'terms',
+  PRIVACY: 'privacy',
+};
 
 export class TermsPrivacy extends Component {
   state = {
@@ -47,13 +53,28 @@ export class TermsPrivacy extends Component {
     this.setState({ termsPrivacyData: data });
   }
 
+  getHeaderTitle() {
+    const { pageName, t } = this.props;
+    if (pageName === PAGE_NAMES.TERMS) {
+      return t('Terms of Service');
+    }
+
+    if (pageName === PAGE_NAMES.PRIVACY) {
+      return t('Privacy Policy');
+    }
+
+    return window.document.title;
+  }
+
   render() {
     const { t } = this.props;
     const { termsPrivacyData } = this.state;
     const content = { __html: termsPrivacyData };
+    const headerVisible = Utils.isTNGMiniProgram() || Utils.isWebview();
 
     return (
       <DocumentHeadInfo title={t('StoreHubBeep')}>
+        {headerVisible && <HybridHeader title={this.getHeaderTitle()} />}
         <div dangerouslySetInnerHTML={content} />
       </DocumentHeadInfo>
     );
