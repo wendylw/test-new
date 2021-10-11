@@ -14,12 +14,12 @@ import Field from './Field';
 import ErrorMessage from './ErrorMessage';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
+import { alert } from '../../../../../common/feedback';
 import { STRIPE_LOAD_TIME_OUT } from './constants';
 
 const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS } = Constants;
 
 function CheckoutForm({
-  showMessageModal,
   t,
   history,
   cartSummary,
@@ -96,13 +96,10 @@ function CheckoutForm({
 
     console.error('Load Stripe time out');
 
-    showMessageModal({
-      message: t('TimeOut'),
-      description: t('ConnectionIssue'),
-    });
+    alert(t('ConnectionIssue'), { title: t('TimeOut') });
 
     history.goBack();
-  }, [t, showMessageModal, history, isReady]);
+  }, [t, history, isReady]);
 
   useEffect(() => {
     timeoutRef.current = timeoutRef.current || setTimeout(handleTimeout, STRIPE_LOAD_TIME_OUT);
