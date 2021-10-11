@@ -1,12 +1,14 @@
 import i18next from 'i18next';
 import Constants from './constants';
-import { alert, fullScreen } from '../common/feedback';
+import Utils from './utils';
+import config from '../config';
 import { ERROR_TYPES } from '../common/feedback/utils';
 import * as NativeMethods from './native-methods';
+import { alert, fullScreen } from '../common/feedback';
 
 const { ROUTER_PATHS } = Constants;
 
-const ERROR_CODE_MAP = {
+const ERROR_MAPPING = {
   40000: {
     buttonText: 'Common:TryAgain',
   },
@@ -29,6 +31,19 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
   },
   40004: {
+    type: ERROR_TYPES.FULL_SCREEN,
+    onClose: () => {
+      if (Utils.isWebview()) {
+        NativeMethods.gotoHome();
+
+        return;
+      }
+      window.location.href = config.beepitComUrl;
+    },
+    buttonText: 'Common:BackToHome',
+  },
+  40005: {
+    type: ERROR_TYPES.FULL_SCREEN,
     onClose: () => {
       if (Utils.isWebview()) {
         NativeMethods.gotoHome();
@@ -50,6 +65,18 @@ const ERROR_CODE_MAP = {
       window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`;
     },
     buttonText: 'Common:Continue',
+  },
+  40011: {
+    type: ERROR_TYPES.FULL_SCREEN,
+    onClose: () => {
+      if (Utils.isWebview()) {
+        NativeMethods.gotoHome();
+
+        return;
+      }
+      window.location.href = config.beepitComUrl;
+    },
+    buttonText: 'Common:BackToHome',
   },
   40012: {
     onClose: () => {
@@ -165,23 +192,35 @@ const ERROR_CODE_MAP = {
   },
 };
 
-export const getErrorContent = ({ type, code, content, options }, callback) => {
-  const content = i18next.t(`ApiError:${code}Description`);
+export const errorAction = (code, customizeContent, commonOptions, callback) => {
+  const content = customizeContent || i18next.t(`ApiError:${code}Description`);
+  const {
+    title: optionTitle,
+    closeButtonContent: optionCloseButtonContent,
+    onClose: optionCloseFunction,
+    resetOptions,
+  } = commonOptions;
   const options = {
-    title: i18next.t(`ApiError:${code}Title`),
+    title: optionTitle || i18next.t(`ApiError:${code}Title`),
+    closeButtonContent: ERROR_MAPPING[code] ? i18next.t(ERROR_MAPPING[code].buttonText) : optionCloseButtonContent,
+    onClose: async () => {
+      if (typeof optionCloseFunction === 'function') {
+        await optionCloseButtonContent();
+      }
+
+      if (ERROR_MAPPING[code]) {
+        ERROR_MAPPING[code].onClose();
+      }
+    },
+    ...resetOptions,
   };
 
-  if (ERROR_MAPPING[code]) {
-    options.closeButtonContent = i18next.t(ERROR_MAPPING[code].buttonText);
-    options.onClose = ERROR_MAPPING[code].onClose;
-  }
-
-  switch (type) {
-    case ERROR_TYPES.ALERT:
-      break;
+  switch (ERROR_MAPPING[code].type) {
     case ERROR_TYPES.FULL_SCREEN:
+      fullScreen(content, options).then(callback);
       break;
     default:
+      alert(content, options).then(callback);
       break;
   }
 };
