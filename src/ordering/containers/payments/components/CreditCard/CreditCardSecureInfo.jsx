@@ -28,7 +28,7 @@ function CreditCardSecureInfo(props) {
             transmissions.
             {knowMoreLink && (
               <a
-                className="text-weight-bolder link__non-underline payment-credit-card__link"
+                className="payment-credit-card__link button button__link button__default text-weight-bolder"
                 target="_blank"
                 rel="noopener noreferrer"
                 href={knowMoreLink}

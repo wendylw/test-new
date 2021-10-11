@@ -9,7 +9,6 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as storesActionCreators } from '../../../stores/redux/modules/home';
 import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
@@ -19,15 +18,11 @@ import {
   getRequestInfo,
   getCartBilling,
   getStoreInfoForCleverTap,
+  getStoresList,
+  getDeliveryInfo,
+  getCategoryProductList,
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
-import {
-  actions as homeActionCreators,
-  getCategoryProductList,
-  getDeliveryInfo,
-  getPopUpModal,
-  getStoresList,
-} from '../../redux/modules/home';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';
@@ -142,14 +137,14 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { homeActions, deliveryInfo, appActions } = this.props;
+    const { deliveryInfo, appActions } = this.props;
 
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
 
-    await homeActions.loadProductList();
+    await appActions.loadProductList();
 
     const pageRf = this.getPageRf();
 
@@ -157,7 +152,7 @@ export class Home extends Component {
       this.setAlcoholModalState(deliveryInfo.sellAlcohol);
     }
 
-    await Promise.all([appActions.loadCoreBusiness(), homeActions.loadCoreStores()]);
+    await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -1045,7 +1040,6 @@ export default compose(
         requestInfo: getRequestInfo(state),
         categories: getCategoryProductList(state),
         businessLoaded: getBusinessIsLoaded(state),
-        popUpModal: getPopUpModal(state),
         cartBilling: getCartBilling(state),
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
@@ -1054,8 +1048,6 @@ export default compose(
       };
     },
     dispatch => ({
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
-      storesActions: bindActionCreators(storesActionCreators, dispatch),
       appActions: bindActionCreators(appActionsCreators, dispatch),
     })
   )

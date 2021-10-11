@@ -17,6 +17,7 @@ const {
   REGISTRATION_TOUCH_POINT,
 } = Constants;
 const Utils = {};
+
 Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
@@ -345,7 +346,7 @@ Utils.isSafari = function isSafari() {
   return Utils.getUserAgentInfo().browser.includes('Safari');
 };
 
-Utils.isValidUrl = function(url) {
+export const isValidUrl = url => {
   const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
   return domainRegex.test(url);
 };
@@ -408,10 +409,8 @@ Utils.getLogisticsValidTime = ({ validTimeFrom, validTimeTo, useStorehubLogistic
   };
 };
 
-// TODO: we can directly pass in businessInfo, instead of allBusinessInfo and business id.
-Utils.getDeliveryInfo = ({ business, allBusinessInfo }) => {
-  const originalInfo = allBusinessInfo[business] || {};
-  const { stores, qrOrderingSettings } = originalInfo || {};
+Utils.getDeliveryInfo = businessInfo => {
+  const { stores, qrOrderingSettings } = businessInfo || {};
   const {
     defaultShippingZone,
     minimumConsumption,
@@ -645,15 +644,6 @@ Utils.checkEmailIsValid = email => {
   return emailRegex.test(email);
 };
 
-Utils.getTimeUnit = time => {
-  try {
-    const hour = new Date(time);
-    return hour < 12 ? 'AM' : 'PM';
-  } catch (e) {
-    return null;
-  }
-};
-
 Utils.getFileExtension = file => {
   const fileNames = file.name.split('.');
   const fileNameExtension = fileNames.length > 1 && fileNames[fileNames.length - 1];
@@ -848,6 +838,33 @@ Utils.getHeaderClient = () => {
     headerClient = CLIENTS.WEB;
   }
   return headerClient;
+};
+
+export const copyDataToClipboard = async text => {
+  try {
+    const data = [new window.ClipboardItem({ 'text/plain': text })];
+
+    await navigator.clipboard.write(data);
+
+    return true;
+  } catch (e) {
+    if (!document.execCommand || !document.execCommand('copy')) {
+      return false;
+    }
+
+    const copyInput = document.createElement('input');
+
+    copyInput.setAttribute('readonly', 'readonly');
+    copyInput.setAttribute('style', 'position: absolute; top: -9999px; left: -9999px;');
+    copyInput.setAttribute('value', text);
+    document.body.appendChild(copyInput);
+    copyInput.setSelectionRange(0, copyInput.value.length);
+    copyInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(copyInput);
+
+    return true;
+  }
 };
 
 Utils.isFromBeepSite = () => {

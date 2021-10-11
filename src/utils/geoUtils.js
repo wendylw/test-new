@@ -1,4 +1,4 @@
-import { intersection } from 'lodash';
+import _intersection from 'lodash/intersection';
 import Utils from './utils';
 import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
@@ -83,6 +83,7 @@ export const standardizeGeoAddress = geoAddressComponent => {
     state: '',
     country: '',
     countryCode: '',
+    postCode: '',
   };
 
   const isCountry = types => types.includes('country');
@@ -93,6 +94,7 @@ export const standardizeGeoAddress = geoAddressComponent => {
     types.includes('route') ||
     types.includes('neighborhood') ||
     types.includes('sublocality');
+  const isPostCode = types => types.includes('postal_code');
 
   const street2 = [];
 
@@ -106,6 +108,8 @@ export const standardizeGeoAddress = geoAddressComponent => {
       standardized.city = short_name;
     } else if (isStreet2(types)) {
       street2.push(short_name);
+    } else if (isPostCode(types)) {
+      standardized.postCode = long_name;
     }
   });
 
@@ -405,7 +409,7 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
 
   const pickPreferredGeoCodeResult = locationList => {
     const preferredLocation = locationList.find(location => {
-      return !!intersection(location.types, ['neighborhood', 'premise', 'subpremise']).length;
+      return !!_intersection(location.types, ['neighborhood', 'premise', 'subpremise']).length;
     });
     if (preferredLocation) {
       return preferredLocation;

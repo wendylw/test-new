@@ -4,25 +4,20 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import Utils from '../../../../../utils/utils';
 import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { getUser } from '../../../../redux/modules/app';
-import { actions as customerActionCreators, getDeliveryDetails } from '../../../../redux/modules/customer';
+import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../../../redux/modules/app';
+import { actions as ContactDetailActions, getPhone, getUsername } from './redux';
 import 'react-phone-number-input/style.css';
 import './ContactDetail.scss';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class ContactDetail extends Component {
-  state = {
-    username: '',
-    phone: '',
-  };
-
   componentDidMount() {
-    const { deliveryDetails } = this.props;
+    const { deliveryDetails, init } = this.props;
     const { phone, username } = deliveryDetails;
-    this.setState({ phone, username });
+    init({ phone, username });
   }
 
   handleClickBack = () => {
@@ -34,14 +29,13 @@ class ContactDetail extends Component {
   };
 
   handleClickContinue = async () => {
-    const { username, phone } = this.state;
-    await this.props.customerActions.patchDeliveryDetails({ username: username && username.trim(), phone });
+    const { username, phone } = this.props;
+    await this.props.updateDeliveryDetails({ username: username && username.trim(), phone });
     this.handleClickBack();
   };
 
   render() {
-    const { t, country } = this.props;
-    const { phone, username } = this.state;
+    const { t, country, phone, username, updateUserName, updatePhone } = this.props;
 
     return (
       <div className="contact-details flex flex-column">
@@ -67,7 +61,7 @@ class ContactDetail extends Component {
                     placeholder={t('Name')}
                     value={username}
                     onChange={e => {
-                      this.setState({ username: e.target.value });
+                      updateUserName(e.target.value);
                     }}
                   />
                 </div>
@@ -85,11 +79,10 @@ class ContactDetail extends Component {
                   onChange={phone => {
                     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
-                    this.setState({
-                      phone:
-                        metadataMobile.countries[selectedCountry] &&
-                        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0]),
-                    });
+                    updatePhone(
+                      metadataMobile.countries[selectedCountry] &&
+                        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0])
+                    );
                   }}
                 />
               </div>
@@ -126,9 +119,14 @@ export default compose(
     state => ({
       user: getUser(state),
       deliveryDetails: getDeliveryDetails(state),
+      username: getUsername(state),
+      phone: getPhone(state),
     }),
-    dispatch => ({
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
-    })
+    {
+      updateDeliveryDetails: appActionCreators.updateDeliveryDetails,
+      init: ContactDetailActions.init,
+      updateUserName: ContactDetailActions.updateUserName,
+      updatePhone: ContactDetailActions.updatePhone,
+    }
   )
 )(ContactDetail);

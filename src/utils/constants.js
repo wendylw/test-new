@@ -9,7 +9,6 @@ const MANIFEST = {
 
 const ROUTER_PATHS = {
   TERMS_OF_USE: '/terms-conditions',
-  RECEIPT_DETAIL: '/receipt',
   THANK_YOU: '/thank-you',
   PRIVACY: '/privacy',
   ERROR: '/error',
@@ -336,6 +335,47 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:OK',
     showModal: true,
   },
+  57008: {
+    title: 'ApiError:57008Title',
+    desc: 'ApiError:57008Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  57009: {
+    title: 'ApiError:57009Title',
+    desc: 'ApiError:57009Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  57010: {
+    title: 'ApiError:57010Title',
+    desc: 'ApiError:57010Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
+  57011: {
+    title: 'ApiError:57011Title',
+    desc: 'ApiError:57011Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_PAYMENT}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  57012: {
+    title: 'ApiError:57012Title',
+    desc: 'ApiError:57012Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
+  57013: {
+    title: 'ApiError:57013Title',
+    desc: 'ApiError:57013Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.CONTACT_DETAIL}`,
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
   80000: {
     title: 'ApiError:80000Title',
     desc: 'ApiError:80000Description',
@@ -422,15 +462,6 @@ const DELIVERY_METHOD = {
   DIGITAL: 'digital',
 };
 
-const CONSUMERFLOW_STATUS = {
-  PAID: 'paid',
-  ACCEPTED: 'accepted',
-  LOGISTICS_CONFIRMED: 'logisticsConfirmed',
-  CONFIRMED: 'confirmed',
-  DELIVERED: 'delivered',
-  PICKUP: 'pickedUp',
-  CANCELLED: 'cancelled',
-};
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const PROMOTION_ERROR_CODES = {
@@ -634,6 +665,12 @@ export const REGISTRATION_SOURCE = {
   BEEP_SITE: 'BeepSite',
 };
 
+export const API_REQUEST_STATUS = {
+  PENDING: 'pending',
+  FULFILLED: 'fulfilled',
+  REJECTED: 'rejected',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -659,7 +696,6 @@ export default {
   LANGUAGES,
   ASIDE_NAMES,
   DELIVERY_METHOD,
-  CONSUMERFLOW_STATUS,
   WEEK_DAYS_I18N_KEYS,
   PROMOTION_ERROR_CODES,
   VOUCHER_STATUS,
@@ -681,4 +717,5 @@ export default {
   CLIENTS,
   REGISTRATION_TOUCH_POINT,
   REGISTRATION_SOURCE,
+  API_REQUEST_STATUS,
 };

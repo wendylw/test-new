@@ -19,7 +19,6 @@ import DocumentFavicon from '../../../components/DocumentFavicon';
 import MessageModal from '../../components/MessageModal';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
-import { actions as homeActionCreators } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import loggly from '../../../utils/monitoring/loggly';
@@ -96,6 +95,7 @@ class App extends Component {
 
     this.visitErrorPage();
     try {
+      await appActions.initDeliveryDetails();
       await appActions.getLoginStatus();
       const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
@@ -253,7 +253,6 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
     })
   )
 )(App);

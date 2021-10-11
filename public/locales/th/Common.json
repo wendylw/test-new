@@ -57,7 +57,7 @@
   "OTPResendTitle": "ส่ง OTP อีกครั้ง {{currentOtpTime}}",
   "EnterPhoneNumber": "ใส่เบอร์โทรศัพท์มือถือ",
   "PeopleCountModalTitle": "ยินดีต้อนรับ! วันนี้ต้องการรับประทานอาหารสำหรับกี่ท่าน?",
-  "ViewReceipt": "ดูใบเสร็จ",
+  "ViewOrderDetails": "ดูใบเสร็จ",
   "Eep": "อุ๊ปส์",
   "ErrorPageDescription": "มีบางอย่างผิดพลาด กรุณาสแกนคิวอาร์โค้ดอีกครั้ง หรือสอบถามพนักงานเพื่อรับความช่วยเหลือ",
   "NotFound": "ไม่พบข้อมูล",

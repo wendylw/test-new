@@ -2,7 +2,8 @@ import { actions } from '..';
 import _findIndex from 'lodash/findIndex';
 import { get } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from './api-info';
-import { getCartBilling } from '../../../../../redux/modules/app';
+import { getCartBilling, getRequestInfo } from '../../../../../redux/modules/app';
+import Utils from '../../../../../../utils/utils';
 
 const { loadPaymentsPending, loadPaymentsSuccess, loadPaymentsFailed, updatePaymentSelected } = actions;
 
@@ -74,6 +75,10 @@ const PAYMENTS_MAPPING = {
     key: 'GCash',
     logo: 'paymentGcashImage',
   },
+  SHOfflinePayment: {
+    key: 'Cash',
+    logo: 'paymentPayByCashImage',
+  },
 };
 
 const PaymentOptionModel = {
@@ -112,11 +117,14 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) => {
 
 export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispatch, getState) => {
   const { total } = getCartBilling(getState());
+  const { storeId } = getRequestInfo(getState());
+  const shippingType = Utils.getApiRequestShippingType();
 
   try {
     dispatch(loadPaymentsPending());
+    const { url, queryParams } = API_INFO.getPayments(storeId, shippingType);
 
-    const result = await get(API_INFO.getPayments().url);
+    const result = await get(url, { queryParams });
 
     if (result.data) {
       const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);

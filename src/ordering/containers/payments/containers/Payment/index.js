@@ -6,14 +6,13 @@ import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
-import { getDeliveryDetails, actions as customerActionCreators } from '../../../../redux/modules/customer';
-import { getDeliveryInfo } from '../../../../redux/modules/home';
 import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
   getBusinessInfo,
   getUser,
+  getDeliveryInfo,
 } from '../../../../redux/modules/app';
 import {
   getPaymentsPendingState,
@@ -23,8 +22,10 @@ import {
   getSelectedPaymentOptionSupportSaveCard,
 } from '../../redux/common/selectors';
 import * as paymentCommonThunks from '../../redux/common/thunks';
+import { actions as paymentActions } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
 import PaymentItem from '../../components/PaymentItem';
+import PayByCash from '../../components/PayByCash';
 import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -41,22 +42,11 @@ class Payment extends Component {
   willUnmount = false;
 
   componentDidMount = async () => {
-    const { deliveryDetails, customerActions, paymentsActions } = this.props;
-    const { addressId } = deliveryDetails || {};
-    const type = Utils.getOrderTypeFromUrl();
+    const { paymentsActions, paymentActions } = this.props;
 
-    !addressId && (await customerActions.initDeliveryDetails(type));
+    paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
-    const { deliveryDetails: newDeliveryDetails } = this.props;
-    const { deliveryToLocation } = newDeliveryDetails || {};
-
-    await this.props.appActions.loadShoppingCart(
-      deliveryToLocation.latitude &&
-        deliveryToLocation.longitude && {
-          lat: deliveryToLocation.latitude,
-          lng: deliveryToLocation.longitude,
-        }
-    );
+    await this.props.appActions.loadShoppingCart();
 
     /**
      * Load all payment options action and except saved card list
@@ -113,7 +103,7 @@ class Payment extends Component {
   };
 
   handleBeforeCreateOrder = async () => {
-    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user } = this.props;
+    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user, paymentActions } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
@@ -132,6 +122,12 @@ class Payment extends Component {
       return;
     }
 
+    if (currentPaymentOption.paymentProvider === 'SHOfflinePayment') {
+      paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
+
+      return;
+    }
+
     const { pathname, paymentProvider } = currentPaymentOption;
 
     // currently only Stripe payment support save cards
@@ -140,6 +136,7 @@ class Payment extends Component {
         pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS,
         search: window.location.search,
       });
+
       return;
     }
 
@@ -213,6 +210,7 @@ class Payment extends Component {
           }}
         >
           {this.renderPaymentList()}
+          <PayByCash onPayWithCash={redirectUrl => (window.location = redirectUrl)} />
         </div>
 
         <footer
@@ -260,21 +258,19 @@ export default compose(
         currentPaymentOption: getSelectedPaymentOption(state),
         currentPaymentSupportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
         areAllOptionsUnavailable: getAllOptionsUnavailableState(state),
-
         deliveryInfo: getDeliveryInfo(state),
         business: getBusiness(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         businessInfo: getBusinessInfo(state),
         merchantCountry: getMerchantCountry(state),
-        deliveryDetails: getDeliveryDetails(state),
         user: getUser(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
     dispatch => ({
+      paymentActions: bindActionCreators(paymentActions, dispatch),
       paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Payment);

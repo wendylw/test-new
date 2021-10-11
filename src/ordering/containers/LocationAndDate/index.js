@@ -21,18 +21,19 @@ import {
   getSelectedDay,
   getSelectedFromTime,
   isShowLoading,
+  getOriginalDeliveryType,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as storeUtils from '../../../utils/store-utils';
 import * as timeLib from '../../../utils/time-lib';
 import config from '../../../config';
-import { actions as homeActionCreators, getStoreHashCode } from '../../redux/modules/home';
 import {
   actions as appActionCreators,
   getBusinessDeliveryTypes,
   getBusinessUTCOffset,
   getStoreInfoForCleverTap,
+  getStoreHashCode,
 } from '../../redux/modules/app';
 import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
@@ -60,6 +61,14 @@ class LocationAndDate extends Component {
     // if delivery address updated from location page, should trigger `initial action` find nearest store
     const storeId = deliveryAddressUpdate && deliveryAddress.coords ? null : config.storeId;
 
+    if (deliveryType === DELIVERY_METHOD.DELIVERY) {
+      CleverTap.pushEvent(
+        `Shipping Details${
+          _get(deliveryAddress, 'address', undefined) ? '' : ' (missing delivery address)'
+        } - View Page`
+      );
+    }
+
     await actions.initial({
       currentDate: new Date(),
       deliveryType: this.props.deliveryType || deliveryType,
@@ -68,6 +77,8 @@ class LocationAndDate extends Component {
       deliveryCoords: deliveryAddress.coords,
       expectedDay: this.props.selectedDay || expectedDay,
       expectedFromTime: this.props.selectedFromTime || expectedFromTime,
+      originalDeliveryType:
+        this.query.storeid || deliveryAddressUpdate ? this.props.originalDeliveryType : deliveryType,
     });
 
     Utils.removeSessionVariable('deliveryAddressUpdate');
@@ -213,7 +224,16 @@ class LocationAndDate extends Component {
 
   goToNext = async () => {
     loggly.log('location-data.continue');
-    const { selectedOrderDate, selectedTime, homeActions, storeId, deliveryType, location, history } = this.props;
+    const {
+      selectedOrderDate,
+      selectedTime,
+      appActions,
+      storeId,
+      originalDeliveryType,
+      deliveryType,
+      location,
+      history,
+    } = this.props;
     const expectedDate = {
       date: selectedOrderDate.date.toISOString(),
       isOpen: selectedOrderDate.isOpen,
@@ -235,9 +255,13 @@ class LocationAndDate extends Component {
     // reset redux store data when will unmount
     this.resetWhenWillUnmount = true;
 
-    await homeActions.getStoreHashData(storeId);
+    await appActions.getStoreHashData(storeId);
     const h = decodeURIComponent(this.props.storeHashCode);
     const from = _get(location, 'state.from', null);
+
+    if (originalDeliveryType && originalDeliveryType !== deliveryType) {
+      await CleverTap.pushEvent(`Shipping Details - Switched to ${deliveryType}`);
+    }
 
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       const deliveryTypeHasChanged = this.query.type !== deliveryType;
@@ -476,7 +500,7 @@ class LocationAndDate extends Component {
     return (
       <li key={dateDayjs.format()}>
         <button
-          className={`location-date__button-date button 
+          className={`location-date__button-date button
           ${isSelected ? 'button__fill' : 'button__outline'}
           padding-top-bottom-smaller padding-left-right-normal margin-left-right-small
           ${isToday ? 'text-uppercase' : ''}`}
@@ -621,7 +645,7 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryContainer = () => {
-    const { t, deliveryAddress } = this.props;
+    const { deliveryAddress } = this.props;
     return (
       <Fragment>
         {this.renderDeliveryTo()}
@@ -651,7 +675,7 @@ class LocationAndDate extends Component {
   };
 
   render() {
-    const { t, businessDeliveryTypes, showLoading } = this.props;
+    const { businessDeliveryTypes, showLoading } = this.props;
 
     return (
       <section className="location-date flex flex-column" data-heap-name="ordering.location-and-date.container">
@@ -716,11 +740,11 @@ export default compose(
       selectedFromTime: getSelectedFromTime(state),
       showLoading: isShowLoading(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      originalDeliveryType: getOriginalDeliveryType(state),
     }),
 
     dispatch => ({
       actions: bindActionCreators(locationAndDateActionCreator, dispatch),
-      homeActions: bindActionCreators(homeActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )

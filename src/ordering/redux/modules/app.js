@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
-import Constants from '../../../utils/constants';
+import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
 import config from '../../../config';
@@ -52,7 +52,7 @@ const CartModel = {
     subtotal: 0,
     total: 0,
     tax: 0,
-    cashback: 0,
+    totalCashback: 0,
     serviceCharge: 0,
     shippingFee: 0,
     promotion: {
@@ -119,6 +119,35 @@ export const initialState = {
     shippingType: Utils.getOrderTypeFromUrl(),
   },
   shoppingCart: CartModel,
+  storeHashCode: {
+    data: null,
+    status: null,
+  },
+  deliveryDetails: {
+    username: '',
+    phone: '',
+    addressId: '',
+    addressName: '',
+    deliveryToAddress: '',
+    deliveryToLocation: null, // {latitude, longitude}
+    addressDetails: '',
+    deliveryComments: '',
+    deliveryToCity: '',
+    postCode: '',
+  },
+};
+
+const updateDeliveryDetailsInSessionStorage = data => {
+  return sessionStorage.setItem('deliveryDetails', JSON.stringify(data));
+};
+
+const getDeliveryDetailsFromSessionStorage = () => {
+  try {
+    return JSON.parse(Utils.getSessionVariable('deliveryDetails'));
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
 
 const fetchCoreBusiness = variables => ({
@@ -160,19 +189,6 @@ export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) =
   };
 };
 
-const fetchProductDetail = variables => {
-  const endpoint = Url.apiGql('ProductDetail');
-  return {
-    [FETCH_GRAPHQL]: {
-      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
-      endpoint,
-      variables: {
-        ...variables,
-      },
-    },
-  };
-};
-
 // variables := { productId, variations }
 const removeShoppingCartItem = variables => {
   const endpoint = Url.apiGql('RemoveShoppingCartItem');
@@ -210,6 +226,36 @@ export const emptyShoppingCart = () => {
     [FETCH_GRAPHQL]: {
       types: [types.CLEARALL_REQUEST, types.CLEARALL_SUCCESS, types.CLEARALL_FAILURE],
       endpoint,
+    },
+  };
+};
+
+const fetchOnlineCategory = variables => {
+  const endpoint = Url.apiGql('OnlineCategory');
+  // will be handle in src/redux/modules/entities/products.js and src/redux/modules/entities/categories.js
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [
+        types.FETCH_ONLINECATEGORY_REQUEST,
+        types.FETCH_ONLINECATEGORY_SUCCESS,
+        types.FETCH_ONLINECATEGORY_FAILURE,
+      ],
+      endpoint,
+      variables,
+    },
+  };
+};
+
+const fetchProductDetail = variables => {
+  const endpoint = Url.apiGql('ProductDetail');
+  //  will be handle in src/redux/modules/entities/products.js
+  return {
+    [FETCH_GRAPHQL]: {
+      types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
+      endpoint,
+      variables: {
+        ...variables,
+      },
     },
   };
 };
@@ -292,32 +338,36 @@ export const actions = {
     },
   }),
 
-  getLoginStatus: () => ({
-    types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-    requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
-      if (resp) {
-        if (resp.consumerId) {
-          if (resp.login) {
-            get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
-              const userInfo = {
-                Name: profile.firstName,
-                Phone: profile.phone,
-                Email: profile.email,
-                Identity: resp.consumerId,
-              };
+  getLoginStatus: () => dispatch => {
+    return dispatch({
+      types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
+      requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
+        if (resp) {
+          if (resp.consumerId) {
+            if (resp.login) {
+              get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
+                const userInfo = {
+                  Name: profile.firstName,
+                  Phone: profile.phone,
+                  Email: profile.email,
+                  Identity: resp.consumerId,
+                };
 
-              if (profile.birthday) {
-                userInfo.DOB = new Date(profile.birthday);
-              }
+                if (profile.birthday) {
+                  userInfo.DOB = new Date(profile.birthday);
+                }
 
-              CleverTap.onUserLogin(userInfo);
-            });
+                CleverTap.onUserLogin(userInfo);
+
+                dispatch({ type: types.FETCH_PROFILE_SUCCESS, response: profile });
+              });
+            }
           }
         }
-      }
-      return resp;
-    }),
-  }),
+        return resp;
+      }),
+    });
+  },
 
   setLoginPrompt: prompt => ({
     type: types.SET_LOGIN_PROMPT,
@@ -386,15 +436,8 @@ export const actions = {
     return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
   },
 
-  loadProductDetail: prod => (dispatch, getState) => {
-    const businessUTCOffset = getBusinessUTCOffset(getState());
-    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-    return dispatch(fetchProductDetail({ productId: prod.id, fulfillDate }));
-  },
-
   // load shopping cart
-  loadShoppingCart: location => async (dispatch, getState) => {
+  loadShoppingCart: () => async (dispatch, getState) => {
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
     const businessUTCOffset = getBusinessUTCOffset(getState());
@@ -404,13 +447,17 @@ export const actions = {
       return;
     }
 
-    let deliveryCoords;
-    if (isDelivery) {
-      deliveryCoords = Utils.getDeliveryCoords();
-    }
+    const deliveryDetails = getDeliveryDetails(getState());
+
+    const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
+
+    const deliveryCoords = deliveryToLocation
+      ? { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude }
+      : Utils.getDeliveryCoords();
+
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-    await dispatch(fetchShoppingCart(isDelivery, location || deliveryCoords, fulfillDate));
+    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -431,6 +478,83 @@ export const actions = {
 
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
+  },
+
+  initDeliveryDetails: () => async (dispatch, getState) => {
+    const deliveryDetailsInSession = getDeliveryDetailsFromSessionStorage();
+    const localStoragePhone = localStorage.getItem('user.p') || '';
+
+    const payload = {
+      ...deliveryDetailsInSession,
+      phone: deliveryDetailsInSession?.phone || localStoragePhone,
+    };
+
+    updateDeliveryDetailsInSessionStorage(payload);
+
+    dispatch({
+      type: types.DELIVERY_DETAILS_INIT,
+      payload,
+    });
+  },
+
+  updateDeliveryDetails: data => async (dispatch, getState) => {
+    const state = getState();
+    const deliveryDetails = getDeliveryDetails(state);
+
+    const payload = {
+      ...deliveryDetails,
+      ...data,
+    };
+
+    updateDeliveryDetailsInSessionStorage(payload);
+
+    dispatch({
+      type: types.DELIVERY_DETAILS_UPDATED,
+      payload,
+    });
+  },
+  loadCoreStores: address => (dispatch, getState) => {
+    const business = getBusiness(getState());
+
+    // will be handle in src/redux/modules/entities/stores.js
+    return dispatch({
+      [FETCH_GRAPHQL]: {
+        types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
+        endpoint: Url.apiGql('CoreStores'),
+        variables: { business, ...address },
+      },
+    });
+  },
+
+  getStoreHashData: storeId => ({
+    [API_REQUEST]: {
+      types: [
+        types.FETCH_STORE_HASHCODE_REQUEST,
+        types.FETCH_STORE_HASHCODE_SUCCESS,
+        types.FETCH_STORE_HASHCODE_FAILURE,
+      ],
+      ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
+    },
+  }),
+
+  // load product list group by category, and shopping cart
+  loadProductList: () => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    config.storeId && dispatch(actions.loadShoppingCart());
+
+    const shippingType = Utils.getApiRequestShippingType();
+
+    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+  },
+
+  loadProductDetail: productId => (dispatch, getState) => {
+    const businessUTCOffset = getBusinessUTCOffset(getState());
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+
+    return dispatch(fetchProductDetail({ productId, fulfillDate }));
   },
 };
 
@@ -525,13 +649,14 @@ const user = (state = initialState.user, action) => {
         },
       };
     case types.FETCH_PROFILE_SUCCESS:
-      const { firstName, email, birthday } = response || {};
+      const { firstName, email, birthday, phone } = response || {};
       return {
         ...state,
         profile: {
           name: firstName,
           email,
           birthday,
+          phone,
         },
       };
 
@@ -704,6 +829,53 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   return state;
 };
 
+const deliveryDetails = (state = initialState.deliveryDetails, action) => {
+  switch (action.type) {
+    case types.DELIVERY_DETAILS_INIT:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case types.DELIVERY_DETAILS_UPDATED:
+      return {
+        ...state,
+        ...action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
+  switch (action.type) {
+    case types.FETCH_STORE_HASHCODE_REQUEST: {
+      return {
+        ...state,
+        status: API_REQUEST_STATUS.PENDING,
+      };
+    }
+    case types.FETCH_STORE_HASHCODE_SUCCESS: {
+      const hashCode = _get(action.response, 'redirectTo', null);
+
+      return {
+        ...state,
+        data: hashCode,
+        status: API_REQUEST_STATUS.FULFILLED,
+      };
+    }
+
+    case types.FETCH_STORE_HASHCODE_FAILURE: {
+      return {
+        ...state,
+        data: null,
+        status: API_REQUEST_STATUS.REJECTED,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   user,
   error,
@@ -713,6 +885,8 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  deliveryDetails,
+  storeHashCode: storeHashCodeReducer,
 });
 
 // selectors
@@ -740,11 +914,17 @@ export const getBusinessInfo = state => {
   return getBusinessByName(state, business) || {};
 };
 
+export const getStoresList = state => getCoreStoreList(state);
+
+export const getStoreHashCode = state => state.app.storeHashCode.data;
+
+export const getDeliveryInfo = createSelector(getBusinessInfo, businessInfo => Utils.getDeliveryInfo(businessInfo));
+
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
 });
 
-export const getBusinessDeliveryTypes = createSelector(getCoreStoreList, stores => {
+export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
   const deliveryTypes = stores.reduce((types, store) => {
     return types.concat(store.fulfillmentOptions);
   }, []);
@@ -753,6 +933,7 @@ export const getBusinessDeliveryTypes = createSelector(getCoreStoreList, stores 
 });
 
 export const getStoreId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'storeId', null));
+export const getShippingType = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'shippingType', null));
 
 export const getStore = state => {
   const storeId = getStoreId(state);
@@ -769,6 +950,8 @@ export const getCartItems = state => state.app.shoppingCart.items;
 export const getCartBilling = state => state.app.shoppingCart.billing;
 
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
+
+export const getDeliveryDetails = state => state.app.deliveryDetails;
 
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
@@ -834,3 +1017,81 @@ export const getStoreInfoForCleverTap = state => {
 export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
+
+const mergeWithShoppingCart = (onlineCategory, carts) => {
+  if (!Array.isArray(onlineCategory)) {
+    return null;
+  }
+
+  const shoppingCartNewSet = {};
+
+  if (carts) {
+    (carts || []).forEach(item => {
+      const newItem = shoppingCartNewSet[item.parentProductId || item.productId] || {
+        quantity: 0,
+        ids: [],
+        products: [],
+      };
+
+      newItem.quantity += item.quantity;
+      newItem.ids.push(item.id);
+      newItem.products.push(item);
+
+      shoppingCartNewSet[item.parentProductId || item.productId] = newItem;
+    });
+  }
+
+  return onlineCategory.map(category => {
+    const { products } = category;
+
+    category.cartQuantity = 0;
+
+    products.forEach(function(product) {
+      product.variations = product.variations || [];
+      product.soldOut = Utils.isProductSoldOut(product || {});
+      product.hasSingleChoice = !!product.variations.find(v => v.variationType === 'SingleChoice');
+      product.cartQuantity = 0;
+
+      const result = shoppingCartNewSet[product.id];
+
+      if (result) {
+        category.cartQuantity += result.quantity;
+        product.cartQuantity += result.quantity;
+        product.cartItemIds = result.ids;
+        product.cartItems = result.products;
+        product.canDecreaseQuantity = result.quantity > 0 && result.ids.length === 1;
+      }
+    });
+
+    return category;
+  });
+};
+
+export const getCategoryProductList = createSelector(
+  [getAllProducts, getAllCategories, getCartItemList],
+  (allProducts, categories, carts) => {
+    if (!allProducts || !categories || !Array.isArray(carts)) {
+      return [];
+    }
+
+    const newCategories = Object.values(categories)
+      .map((category, categoryId) => {
+        return {
+          ...category,
+          products: category.products.map((id, index) => {
+            const product = JSON.parse(JSON.stringify(allProducts[id]));
+
+            return {
+              categoryName: category.name,
+              categoryRank: categoryId + 1,
+              rank: index + 1,
+              ...product,
+            };
+          }),
+        };
+      })
+      .filter(c => c.products.length);
+
+    return mergeWithShoppingCart(newCategories, carts);
+  }
+);

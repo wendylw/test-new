@@ -22,21 +22,16 @@ import {
   getShoppingCart,
   getCartBilling,
   getStoreInfoForCleverTap,
+  getDeliveryDetails,
 } from '../../redux/modules/app';
-import {
-  actions as cartActionCreators,
-  getCategoryProductList,
-  getAllProductsIds,
-  getCheckingInventoryPendingState,
-} from '../../redux/modules/cart';
-import { actions as customerActionCreators, getDeliveryDetails } from '../../redux/modules/customer';
+import { actions as cartActionCreators, getCheckingInventoryPendingState } from '../../redux/modules/cart';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
 import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
-import _isNil from 'lodash';
+import _isNil from 'lodash/isNil';
 import loggly from '../../../utils/monitoring/loggly';
 
 const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
@@ -96,7 +91,7 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, appActions, cartActions, customerActions, deliveryDetails } = this.props;
+    const { user, history, appActions, cartActions, deliveryDetails } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
     const { name, phone } = profile || {};
@@ -123,8 +118,8 @@ class Cart extends Component {
     // if have name, redirect to customer page
     // if have consumerId, get profile first and update consumer profile, then redirect to next page
     if (isLogin && name) {
-      !username && (await customerActions.patchDeliveryDetails({ username: name }));
-      !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
+      !username && (await appActions.updateDeliveryDetails({ username: name }));
+      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
@@ -139,8 +134,8 @@ class Cart extends Component {
           birthday,
           phone,
         });
-        !username && (await customerActions.patchDeliveryDetails({ username: firstName }));
-        !orderPhone && (await customerActions.patchDeliveryDetails({ phone: phone }));
+        !username && (await appActions.updateDeliveryDetails({ username: firstName }));
+        !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
         firstName
           ? history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
@@ -568,15 +563,12 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        allProductsIds: getAllProductsIds(state),
-        categories: getCategoryProductList(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       cartActions: bindActionCreators(cartActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
-      customerActions: bindActionCreators(customerActionCreators, dispatch),
     })
   )
 )(Cart);
