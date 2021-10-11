@@ -141,8 +141,7 @@ export class ThankYou extends PureComponent {
     this.pollOrderStatus();
 
     if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
-      // TODO: Temporarily hide this pop up message until transactional notification feature goes to production
-      // this.promptUserEnableAppNotification();
+      this.promptUserEnableAppNotification();
     }
   };
 
