@@ -1,4 +1,8 @@
 import i18next from 'i18next';
+import Constants from './constants';
+import { alert, fullScreen } from '../common/feedback';
+
+const { ROUTER_PATHS } = Constants;
 
 export const ERROR_MAPPING = {
   40000: {
@@ -6,6 +10,9 @@ export const ERROR_MAPPING = {
   },
   40001: {
     buttonText: 'Common:Continue',
+    onClose: () => {
+      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+    },
   },
   40002: {
     buttonText: 'Common:Continue',
@@ -51,11 +58,9 @@ export const ERROR_MAPPING = {
   },
   40025: {
     buttonText: 'Common:Continue',
-    showModal: false,
   },
   40026: {
     buttonText: 'Common:Continue',
-    showModal: false,
   },
   41000: {
     buttonText: 'Common:Continue',
@@ -71,13 +76,14 @@ export const ERROR_MAPPING = {
   },
 };
 
-export const errorAction = code => {
-  const content = i18next.t(`ApiError:${code}Description`);
+export const getErrorContent = (type, code, content, options, callback) => {
+  const content = content || i18next.t(`ApiError:${code}Description`);
   const options = {
     title: i18next.t(`ApiError:${code}Title`),
   };
 
   if (ERROR_MAPPING[code]) {
     options.closeButtonContent = i18next.t(ERROR_MAPPING[code].buttonText);
+    options.onClose = ERROR_MAPPING[code].onClose;
   }
 };

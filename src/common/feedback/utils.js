@@ -1,13 +1,23 @@
 import ReactDOM from 'react-dom';
 
 /**
- * Feedback Status for message, modal, notification
+ * Feedback Status
  */
 export const FEEDBACK_STATUS = {
   SUCCESS: 'SUCCESS',
   ERROR: 'ERROR',
   WARNING: 'WARNING',
   INFO: 'INFO',
+};
+
+/**
+ * Feedback Type
+ */
+export const ERROR_TYPES = {
+  ALERT: 'alert',
+  FULL_SCREEN: 'fullScreen',
+  CONFIRM: 'confirm',
+  NOTIFICATION: 'notification',
 };
 
 /**
