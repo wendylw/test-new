@@ -10,13 +10,11 @@ it('src/ordering/redux/store.js', () => {
       requestInfo: { storeId: null, tableId: null },
       user: {
         consumerId: null,
-        customerId: '',
         hasOtp: false,
         isExpired: false,
         isLogin: false,
         isWebview: false,
         showLoginPage: false,
-        storeCreditsBalance: 0,
       },
     },
     cart: { pendingTransactionsIds: [] },
@@ -40,7 +38,7 @@ it('src/ordering/redux/store.js', () => {
       carts: {
         data: {},
         promotion: null,
-        summary: { count: 0, discount: 0, storeCreditsBalance: 0, subtotal: 0, tax: 0, total: 0 },
+        summary: { count: 0, discount: 0, subtotal: 0, tax: 0, total: 0 },
       },
       categories: {},
       error: {},
