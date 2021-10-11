@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
+import { alert } from '../../../../../../common/feedback';
 import { API_INFO } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
@@ -87,12 +88,9 @@ export const cancelOrder = createAsyncThunk(
         // action type.
         dispatch(appActions.showApiErrorModal(e.code));
       } else {
-        dispatch(
-          appActions.showMessageModal({
-            message: i18next.t('OrderingThankYou:CancellationError'),
-            description: i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'),
-          })
-        );
+        alert(i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'), {
+          title: i18next.t('OrderingThankYou:CancellationError'),
+        });
       }
 
       throw e;
@@ -113,12 +111,7 @@ export const updateOrderShippingType = createAsyncThunk(
         // action type.
         dispatch(appActions.showApiErrorModal(e.code));
       } else {
-        dispatch(
-          appActions.showMessageModal({
-            message: i18next.t('ApiError:57002Title'),
-            description: i18next.t('ApiError:57002Description'),
-          })
-        );
+        alert(i18next.t('ApiError:57002Description'), { title: i18next.t('ApiError:57002Title') });
       }
 
       throw e;

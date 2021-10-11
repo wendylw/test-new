@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
-  getMessageModal,
   getError,
   getUser,
   getApiError,
@@ -215,12 +214,11 @@ class App extends Component {
   };
 
   render() {
-    let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
+    let { onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
-        {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         {apiErrorMessage.show ? (
           <MessageModal
             data={apiErrorMessage}
@@ -247,7 +245,6 @@ export default compose(
         user: getUser(state),
         error: getError(state),
         pageError: getPageError(state),
-        messageModal: getMessageModal(state),
         apiErrorMessage: getApiError(state),
       };
     },

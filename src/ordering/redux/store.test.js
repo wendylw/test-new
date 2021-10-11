@@ -6,7 +6,6 @@ it('src/ordering/redux/store.js', () => {
     app: {
       business: null,
       error: null,
-      messageModal: { buttonText: '', description: '', message: '', show: false },
       onlineStoreInfo: { id: '', isFetching: false },
       requestInfo: { storeId: null, tableId: null },
       user: {

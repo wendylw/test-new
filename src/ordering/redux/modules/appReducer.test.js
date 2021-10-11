@@ -233,46 +233,6 @@ describe('src/ordering/redux/modules/app.js:reducers', () => {
       });
     });
   });
-  describe('messageModal', () => {
-    const nameField = 'messageModal';
-    const messageModalActionInfo = {
-      message: 'mockMessage',
-      description: 'mockDescription',
-      buttonText: 'mockButtonText',
-    };
-    it('SET_MESSAGE_INFO', () => {
-      const action = {
-        type: types.SET_MESSAGE_INFO,
-        ...messageModalActionInfo,
-      };
-      const expectedState = {
-        ...initialState.messageModal,
-        show: true,
-        message: 'mockMessage',
-        description: 'mockDescription',
-        buttonText: 'mockButtonText',
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
-    });
-    it('HIDE_MESSAGE_MODAL', () => {
-      const action = {
-        type: types.HIDE_MESSAGE_MODAL,
-        ...messageModalActionInfo,
-      };
-      const expectedState = {
-        ...initialState.messageModal,
-        show: false,
-        message: '',
-        description: '',
-      };
-      expect(getReducerNewState(appReducers, action, nameField)).toEqual(expectedState);
-    });
-    it('default', () => {
-      expect(getReducerNewState(appReducers, { type: 'default' }, nameField)).toEqual({
-        ...initialState.messageModal,
-      });
-    });
-  });
   describe('requestInfo', () => {
     const nameField = 'requestInfo';
     it('should return initial requestInfo state', () => {
