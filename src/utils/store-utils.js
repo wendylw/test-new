@@ -1,5 +1,5 @@
 import * as timeLib from './time-lib';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { computeStraightDistance } from './geoUtils';
 import Utils from './utils';

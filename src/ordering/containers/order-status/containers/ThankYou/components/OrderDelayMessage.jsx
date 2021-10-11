@@ -1,10 +1,15 @@
-import React from 'react';
-import { ORDER_DELAY_REASON_CODES } from '../../constants';
 import _get from 'lodash/get';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import RamadanIcon from '../../../../../../../images/order-delay-ramadan.svg';
-import '../OrderDelayMessage.scss';
+import { getOrderDelayReason } from '../../../redux/selector';
+import RamadanIcon from '../../../../../../images/order-delay-ramadan.svg';
+import './OrderDelayMessage.scss';
 
+const ORDER_DELAY_REASON_CODES = {
+  RAMADAN: 'ramadan',
+};
 const orderDelayMessageConfigMap = {
   [ORDER_DELAY_REASON_CODES.RAMADAN]: {
     icon: RamadanIcon,
@@ -17,7 +22,7 @@ function OrderDelayMessage({ orderDelayReason }) {
 
   const orderDelayMessageConfig = _get(orderDelayMessageConfigMap, orderDelayReason, null);
 
-  if (!orderDelayMessageConfig) {
+  if (!orderDelayMessageConfig || !orderDelayReason) {
     return null;
   }
 
@@ -32,4 +37,14 @@ function OrderDelayMessage({ orderDelayReason }) {
 }
 OrderDelayMessage.displayName = 'OrderDelayMessage';
 
-export default OrderDelayMessage;
+OrderDelayMessage.propTypes = {
+  orderDelayReason: PropTypes.string,
+};
+
+OrderDelayMessage.defaultProps = {
+  orderDelayReason: null,
+};
+
+export default connect(state => ({
+  orderDelayReason: getOrderDelayReason(state),
+}))(OrderDelayMessage);

@@ -113,7 +113,7 @@ class Login extends React.Component {
                 By tapping to continue, you agree to our
                 <br />
                 <Link
-                  className="text-weight-bolder link__non-underline"
+                  className="button button__link button__default text-weight-bolder"
                   target="_blank"
                   to={Constants.ROUTER_PATHS.TERMS_OF_USE}
                   data-heap-name="cashback.login.term-link"
@@ -122,7 +122,7 @@ class Login extends React.Component {
                 </Link>
                 , and{' '}
                 <Link
-                  className="text-weight-bolder link__non-underline"
+                  className="button button__link button__default text-weight-bolder"
                   target="_blank"
                   to={Constants.ROUTER_PATHS.PRIVACY}
                   data-heap-name="cashback.login.privacy-policy-link"
