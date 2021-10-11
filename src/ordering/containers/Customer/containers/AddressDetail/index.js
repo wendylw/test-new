@@ -21,7 +21,7 @@ import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 import _trim from 'lodash/trim';
-import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
+import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import './AddressDetail.scss';
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
@@ -96,13 +96,7 @@ class AddressDetail extends Component {
       return true;
     }
 
-    if (
-      !_trim(contactName) ||
-      !contactName.length ||
-      contactNumberInvalidErrorVisibility ||
-      !_trim(details) ||
-      !_trim(name)
-    ) {
+    if (!_trim(contactName) || contactNumberInvalidErrorVisibility || !_trim(details) || !_trim(name)) {
       return true;
     }
 
@@ -113,15 +107,11 @@ class AddressDetail extends Component {
     const { history, location } = this.props;
     const { search } = location;
 
-    const callbackUrl = encodeURIComponent(
-      `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
-    );
-
     CleverTap.pushEvent('Address details - click location row');
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-      search: `${search}&callbackUrl=${callbackUrl}`,
+      search,
     });
   };
 
