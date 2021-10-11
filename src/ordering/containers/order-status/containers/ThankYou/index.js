@@ -666,6 +666,8 @@ export class ThankYou extends PureComponent {
     const { user, order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
     const userEmail = _get(user, 'profile.email', '');
+    const userPhone = _get(user, 'profile.phone', '');
+    const userName = _get(user, 'profile.name', '');
     const orderId = _get(order, 'orderId', '');
     const tableId = _get(order, 'tableId', '');
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
@@ -677,6 +679,14 @@ export class ThankYou extends PureComponent {
     if (!order) {
       return null;
     }
+
+    // TODO: doesn't ensure the user already login on thankyou page
+    // so possible getting empty value from user profile
+    const userInfoForLiveChat = {
+      email: userEmail,
+      phone: orderUserPhone || userPhone,
+      name: orderUserName || userName,
+    };
 
     const rightContentOfTableId = {
       text: tableId ? t('TableIdText', { tableId }) : '',
@@ -701,9 +711,9 @@ export class ThankYou extends PureComponent {
         onClick: () => {
           NativeMethods.startChat({
             orderId,
-            name: orderUserName,
-            phone: orderUserPhone,
-            email: userEmail,
+            name: userInfoForLiveChat.name,
+            phone: userInfoForLiveChat.phone,
+            email: userInfoForLiveChat.email,
             storeName: orderStoreName,
           });
         },
@@ -722,7 +732,14 @@ export class ThankYou extends PureComponent {
       return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    return <LiveChat orderId={orderId} email={userEmail} name={orderUserName} phone={orderUserPhone} />;
+    return (
+      <LiveChat
+        orderId={orderId}
+        email={userInfoForLiveChat.email}
+        name={userInfoForLiveChat.name}
+        phone={userInfoForLiveChat.phone}
+      />
+    );
   }
 
   handleHeaderNavFunc = () => {

@@ -249,6 +249,8 @@ export class OrderDetails extends Component {
     const { user, order, t } = this.props;
     const isWebview = _get(user, 'isWebview', false);
     const userEmail = _get(user, 'profile.email', '');
+    const userPhone = _get(user, 'profile.phone', '');
+    const userName = _get(user, 'profile.name', '');
     const orderId = _get(order, 'orderId', '');
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
     const orderUserName = _get(deliveryAddress, 'name', '');
@@ -259,6 +261,14 @@ export class OrderDetails extends Component {
     if (!order) {
       return null;
     }
+
+    // TODO: doesn't ensure the user already login on thankyou page
+    // so possible getting empty value from user profile
+    const userInfoForLiveChat = {
+      email: userEmail,
+      phone: orderUserPhone || userPhone,
+      name: orderUserName || userName,
+    };
 
     if (isWebview) {
       const rightContentOfNativeLiveChat = {
@@ -271,9 +281,9 @@ export class OrderDetails extends Component {
 
           NativeMethods.startChat({
             orderId,
-            name: orderUserName,
-            phone: orderUserPhone,
-            email: userEmail,
+            name: userInfoForLiveChat.name,
+            phone: userInfoForLiveChat.phone,
+            email: userInfoForLiveChat.email,
             storeName: orderStoreName,
           });
         },
@@ -300,9 +310,9 @@ export class OrderDetails extends Component {
           this.pushCleverTapEvent(eventName);
         }}
         orderId={orderId}
-        email={userEmail}
-        name={orderUserName}
-        phone={orderUserPhone}
+        email={userInfoForLiveChat.email}
+        name={userInfoForLiveChat.name}
+        phone={userInfoForLiveChat.phone}
       />
     );
   }
