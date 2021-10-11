@@ -31,6 +31,8 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
+import { getAlcoholModalDisplayResult } from './redux/common/selectors';
+import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
 import Header from '../../../components/Header';
 import NativeHeader from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
@@ -59,11 +61,9 @@ export class Home extends Component {
     super(props);
     this.state = {
       viewAside: null,
-      alcoholModal: false,
       offlineStoreModal: false,
       dScrollY: 0,
       deliveryBar: false,
-      alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
       callApiFinish: false,
       enablePreOrderFroMultipleStore: false,
       isValidToOrderFromMultipleStore: false,
@@ -137,20 +137,14 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { deliveryInfo, appActions } = this.props;
-
+    const { appActions, getUserAlcoholConsent } = this.props;
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
 
     await appActions.loadProductList();
-
-    const pageRf = this.getPageRf();
-
-    if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
-      this.setAlcoholModalState(deliveryInfo.sellAlcohol);
-    }
+    await getUserAlcoholConsent();
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
@@ -200,16 +194,12 @@ export class Home extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { deliveryInfo: prevDeliveryInfo } = prevProps;
+    const { shouldShowAlcoholModal: prevShouldShowAlcoholModal } = prevProps;
+    const { shouldShowAlcoholModal: newShouldShowAlcoholModal } = this.props;
     const { containerHeight } = prevState;
-    const { deliveryInfo } = this.props;
-    const pageRf = this.getPageRf();
-    const { sellAlcohol } = deliveryInfo;
 
-    if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
-      if (sellAlcohol) {
-        this.setAlcoholModalState(sellAlcohol);
-      }
+    if (prevShouldShowAlcoholModal !== newShouldShowAlcoholModal) {
+      this.toggleBodyScroll(newShouldShowAlcoholModal);
     }
 
     this.setMainContainerHeight(containerHeight);
@@ -328,22 +318,6 @@ export class Home extends Component {
 
       Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
     }
-  };
-
-  setAlcoholModalState = val => {
-    this.setState({
-      alcoholModal: val,
-    });
-
-    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide) {
-      this.toggleBodyScroll(true);
-    } else {
-      this.toggleBodyScroll(false);
-    }
-  };
-
-  getPageRf = () => {
-    return Utils.getQueryString('pageRefer');
   };
 
   setMainContainerHeight = containerHeight => {
@@ -742,17 +716,17 @@ export class Home extends Component {
   }
 
   handleLegalAge = isAgeLegal => {
-    const { storeInfoForCleverTap } = this.props;
+    const { storeInfoForCleverTap, setUserAlcoholConsent } = this.props;
 
     CleverTap.pushEvent('Menu Page - Alcohol Counsent - Pop up', storeInfoForCleverTap);
 
     if (isAgeLegal) {
       CleverTap.pushEvent('Menu Page - Alcohol Consent - Click yes', storeInfoForCleverTap);
+      // No need to wait for response
+      setUserAlcoholConsent();
     } else {
       CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
     }
-    isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
-    this.setAlcoholModalState(!isAgeLegal);
   };
 
   isCountryNeedAlcoholPop = country => {
@@ -830,6 +804,7 @@ export class Home extends Component {
       history,
       freeDeliveryFee,
       deliveryInfo,
+      shouldShowAlcoholModal,
       ...otherProps
     } = this.props;
     const {
@@ -844,7 +819,7 @@ export class Home extends Component {
       breakTimeFrom,
       breakTimeTo,
     } = deliveryInfo;
-    const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
+    const { viewAside, callApiFinish, windowSize } = this.state;
     const { tableId, shippingType } = requestInfo || {};
     const { promotions } = businessInfo || {};
     const isWebview = Utils.isWebview();
@@ -852,7 +827,6 @@ export class Home extends Component {
     if (!onlineStoreInfo || !categories) {
       return null;
     }
-
     return (
       <section className="ordering-home flex flex-column">
         {isWebview && (
@@ -1019,7 +993,7 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
-        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
+        {shouldShowAlcoholModal ? (
           <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
         ) : null}
         {this.renderOfflineModal(enableLiveOnline)}
@@ -1044,11 +1018,14 @@ export default compose(
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        shouldShowAlcoholModal: getAlcoholModalDisplayResult(state),
         store: getStore(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionsCreators, dispatch),
+      getUserAlcoholConsent: bindActionCreators(getUserAlcoholConsent, dispatch),
+      setUserAlcoholConsent: bindActionCreators(setUserAlcoholConsent, dispatch),
     })
   )
 )(Home);
