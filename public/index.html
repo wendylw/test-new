@@ -129,50 +129,18 @@
           lastTouchEnd = now;
         }, false);
       }
-    </script>
-
-    <script>
-      (function loadPolyfill() {
-        var polyfillUrl = 'https://cdn.polyfill.io/v3/polyfill.min.js?features=';
-        var LANGUAGES = ['en', 'th'];
-        var POLYFILL_FEATURES = [
-          'Object.values',
-          'Object.assign',
-          'Object.keys',
-          'Object.defineProperty',
-          'Map',
-          'Intl',
-          'Promise',
-          'Array.prototype.includes',
-          'localStorage',
-          'navigator.geolocation',
-          'Number.isNaN',
-          'String.prototype.trim',
-          'Element.prototype.after',
-          'globalThis',
-          'CustomEvent'
-        ];
-        var featureArr = [];
-
-        try {
-          for (var i=0; i<POLYFILL_FEATURES.length; i++) {
-            var feature = POLYFILL_FEATURES[i];
-            if (feature === 'Intl') {
-              for (var j=0; j<LANGUAGES.length; j++) {
-                featureArr.push('Intl.~locale.' + LANGUAGES[j]);
-              }
-            } else {
-              featureArr.push(feature);
-            }
-          }
-          polyfillUrl = polyfillUrl + encodeURIComponent(featureArr.join(','));
-          document.write('<script src="' + polyfillUrl + '" crossorigin><\/script>');
-        } catch (e) {
-          console.error(e);
+      var logScriptLoadError = function (scriptName) {
+        if (window.newrelic && window.newrelic.addPageAction) {
+          window.newrelic.addPageAction('common.script-load-error', {
+            scriptName: scriptName
+          })
         }
-      })();
+      }
     </script>
- 
+
+    <!-- NOTE: If you want add some polyfill, please check whether it's already included in the polyfill collections like `default` or `es2015`, etc. -->
+    <script src="https://polyfill-service.pro.mymyhub.com/v3/polyfill.min.js?features=default%2Ces2015%2Ces2016%2Ces2017%2Cnavigator.geolocation%2CglobalThis%2CIntl.~locale.en%2CIntl.~locale.th" crossorigin="anonymous" onerror="logScriptLoadError('polyfill-service')"></script>
+
     <script>
       (function () {
         // fix FB-1755: Some browsers caches the google maps script for a long time, which makes the token expired.
@@ -185,7 +153,7 @@
         var src = "https://maps.googleapis.com/maps/api/js?v=quarterly&key=%REACT_APP_GOOGLE_MAPS_API_KEY%&libraries=geometry,places&timestamp=" + timestamp;
         // Must use document.write. If we use document.body.appendChild, the main code (which depends on google map) might be executed before google maps is executed
         // TODO: we should finally make the geoUtils to be an async function, that only resolves when google maps is ready.
-        document.write('<script src="'+src + '">\u003c/script>'); // if not using unicode escape (\u003c), browser will think the outside script is closed.
+        document.write('<script src="'+src + '" onerror="logScriptLoadError(\'google-map-api\')">\u003c/script>'); // if not using unicode escape (\u003c), browser will think the outside script is closed.
       })();
     </script>
   </body>

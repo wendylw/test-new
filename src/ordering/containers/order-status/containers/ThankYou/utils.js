@@ -1,5 +1,13 @@
 import { getDifferenceInMilliseconds } from '../../../../../utils/datetime-lib';
 
+export function formatCompletePhoneNumber(phone) {
+  try {
+    return `${phone.startsWith('+') ? '' : '+'}${phone}`;
+  } catch {
+    return phone;
+  }
+}
+
 /**
  * CleverTap utils
  */

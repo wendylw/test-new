@@ -8,7 +8,6 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { getUser, getBusiness } from './app';
 
 export const initialState = {
-  customerId: null,
   receiptList: [],
   fetchState: true,
   cashbackHistorySummary: null,
@@ -17,11 +16,6 @@ export const initialState = {
 export const types = HOME_TYPES;
 
 export const actions = {
-  setCustomerId: customerId => ({
-    type: types.SET_CUSTOMER_ID_SUCCESS,
-    customerId,
-  }),
-
   getReceiptList: (business, page, pageSize) => ({
     [API_REQUEST]: {
       types: [types.FETCH_RECEIPT_LIST_REQUEST, types.FETCH_RECEIPT_LIST_SUCCESS, types.FETCH_RECEIPT_LIST_FAILURE],
@@ -52,9 +46,6 @@ export const actions = {
 // reducer
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case types.SET_CUSTOMER_ID_SUCCESS: {
-      return { ...state, customerId: action.customerId };
-    }
     case types.GET_CASHBACK_HISTORIES_SUCCESS: {
       const { response } = action;
       const { totalCredits } = response || {};
@@ -83,7 +74,6 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
-export const getCustomerId = state => state.home.customerId;
 export const getReceiptList = state => state.home.receiptList;
 export const getFetchState = state => state.home.fetchState;
 export const getCashbackHistorySummary = state => state.home.cashbackHistorySummary;
