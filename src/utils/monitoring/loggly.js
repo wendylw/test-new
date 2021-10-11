@@ -3,32 +3,9 @@ import _isPlainObject from 'lodash/isPlainObject';
 import businessName from '../business-name';
 import Utils from '../utils';
 import debug from '../debug';
-import { getUserInfo } from '../native-methods';
 const { REACT_APP_LOGGLY_SERVICE_URL, REACT_APP_LOGGLY_TOKEN, REACT_APP_LOGGLY_TAG } = process.env;
 
 const IS_DEV_ENV = process.env.NODE_ENV === 'development';
-
-const getDeviceId = (() => {
-  let deviceId;
-
-  return () => {
-    if (!Utils.isWebview()) {
-      return undefined;
-    }
-
-    if (deviceId) {
-      return deviceId;
-    }
-
-    try {
-      const userInfo = getUserInfo();
-      deviceId = userInfo?.deviceId;
-      return deviceId;
-    } catch {
-      return null;
-    }
-  };
-})();
 
 const getAppPlatform = () => {
   if (Utils.isTNGMiniProgram()) {
@@ -82,7 +59,6 @@ const track = async (name, data, meta = {}) => {
       path: window.location.pathname,
       app_plt: getAppPlatform(),
       ts: new Date().valueOf(),
-      deviceId: getDeviceId(),
       data,
     };
     // todo: business name, page url, user agent, env, client timestamp, ...
