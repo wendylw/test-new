@@ -7,3 +7,30 @@
     border-bottom: 3px solid $theme-color;
   }
 }
+
+.collection-page {
+  &__render-error {
+    .error__image-container {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .error__container {
+      padding-top: 19vh;
+    }
+    .error__title {
+      font-size: 20px;
+      color: $main-color;
+      font-weight: $font-weight-bolder;
+    }
+    .error__description {
+      margin-top: 16px;
+      margin-left: auto;
+      margin-right: auto;
+      color: $gray-2;
+      width: 100%;
+      padding: 0 2.8vw;
+      max-width: 100%;
+      font-weight: 400;
+    }
+  }
+}
