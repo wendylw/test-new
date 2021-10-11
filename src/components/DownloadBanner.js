@@ -15,8 +15,12 @@ function DownloadBanner(props) {
       target={client === 'PC' ? '_blank' : ''}
     >
       <span className="download-banner__text text-weight-bolder">{text}</span>
-      <img src={beepAppAppleStore} className="download-banner__store-icon margin-left-right-small" />
-      <img src={beepAppGooglePlay} className="download-banner__store-icon" />
+      <img
+        src={beepAppAppleStore}
+        className="download-banner__store-icon margin-left-right-small"
+        alt="Beep Apple Store Download"
+      />
+      <img src={beepAppGooglePlay} className="download-banner__store-icon" alt="Beep Google Play Download" />
     </a>
   );
 }

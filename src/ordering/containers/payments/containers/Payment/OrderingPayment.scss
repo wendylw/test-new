@@ -54,9 +54,30 @@
   }
 }
 
-.link__non-underline {
-  text-decoration: none;
-  color: $gray-2;
+.payment-item-prompt {
+  top: 0;
+
+  &__description {
+    color: $gray-2;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 280px;
+  }
+
+  &__default-button,
+  &__fill-button {
+    border-radius: 0;
+    border: 0;
+    border-top: 1px solid;
+  }
+
+  &__default-button {
+    border-top-color: $gray-4;
+  }
+
+  &__fill-button {
+    border-top-color: $theme-color;
+  }
 }
 
 .ordering-card-list {

@@ -4,6 +4,7 @@ import _every from 'lodash/every';
 import { getUser, getCartBilling } from '../../../../redux/modules/app';
 
 export const getSelectedPaymentProvider = ({ payments }) => payments.common.selectedOptionProvider;
+export const getPayByCashPromptDisplayStatus = ({ payments }) => payments.common.payByCashPromptDisplay;
 export const getPaymentsPendingState = ({ payments }) => payments.common.status === 'pending';
 
 export const getOriginalPaymentOptions = ({ payments }) => payments.common.options;
@@ -59,3 +60,5 @@ export const getAllOptionsUnavailableState = createSelector(getAllPaymentsOption
     _some(Object.values(option.disabledConditions || {}), value => value === true)
   );
 });
+
+export const getTotalCashbackFromCartBilling = createSelector(getCartBilling, cartBilling => cartBilling.totalCashback);

@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import PropTypes from 'prop-types';
 import _values from 'lodash/values';
 import _every from 'lodash/every';
 
 import { getSelectedPaymentOption } from '../redux/common/selectors';
-import * as paymentCommonThunks from '../redux/common/thunks';
+import { updatePaymentOptionSelected as updatePaymentOptionSelectedThunk } from '../redux/common/thunks';
 import PaymentLogo from './PaymentLogo';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Radio from '../../../../components/Radio';
@@ -22,13 +22,13 @@ class PaymentItem extends Component {
   }
 
   handleSelectPaymentOption = (option, currentPaymentOption) => {
-    const { paymentsActions } = this.props;
+    const { updatePaymentOptionSelected } = this.props;
     const { disabledConditions, paymentProvider } = option;
     const selectedOption = this.getSelectedCurrentOptionState(paymentProvider, currentPaymentOption);
     const enabledOption = this.getAllDisabledConditionsAvailable(disabledConditions);
 
     if (!selectedOption && enabledOption) {
-      paymentsActions.updatePaymentOptionSelected(paymentProvider);
+      updatePaymentOptionSelected(paymentProvider);
     }
   };
 
@@ -74,6 +74,7 @@ class PaymentItem extends Component {
     return (
       <li
         key={key}
+        id={`paymentItem-${key}`}
         className={classList.join(' ')}
         data-testid="paymentSelector"
         data-heap-name="ordering.payment.payment-item"
@@ -85,7 +86,10 @@ class PaymentItem extends Component {
             <PaymentLogo logo={logo} alt={key} />
           </figure>
           <div className="ordering-payment__description text-middle padding-left-right-normal">
-            <label className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder">
+            <label
+              htmlFor={`paymentItem-${key}`}
+              className="ordering-payment__label text-omit__single-line text-size-big text-weight-bolder"
+            >
               {t(key)}
             </label>
             {this.renderDescription()}
@@ -98,21 +102,36 @@ class PaymentItem extends Component {
 }
 
 PaymentItem.displayName = 'PaymentItem';
-PaymentItem.propTypes = {
-  option: PropTypes.shape({
-    key: PropTypes.string,
-    logo: PropTypes.string,
-    paymentName: PropTypes.string,
-    paymentProvider: PropTypes.string,
+
+const optionType = PropTypes.shape({
+  key: PropTypes.string,
+  logo: PropTypes.string,
+  paymentName: PropTypes.string,
+  paymentProvider: PropTypes.string,
+  available: PropTypes.bool,
+  minAmount: PropTypes.number,
+  pathname: PropTypes.string,
+  selected: PropTypes.bool,
+  disabledConditions: PropTypes.shape({
+    minAmount: PropTypes.bool,
     available: PropTypes.bool,
-    pathname: PropTypes.string,
-    selected: PropTypes.bool,
-    disabledConditions: PropTypes.object,
   }),
+});
+
+PaymentItem.propTypes = {
+  option: optionType,
+  currentPaymentOption: optionType,
+  updatePaymentOptionSelected: PropTypes.func,
 };
 
 PaymentItem.defaultProps = {
-  option: {},
+  option: {
+    paymentProvider: null,
+  },
+  currentPaymentOption: {
+    paymentProvider: null,
+  },
+  updatePaymentOptionSelected: () => {},
 };
 
 export default compose(
@@ -121,8 +140,8 @@ export default compose(
     state => ({
       currentPaymentOption: getSelectedPaymentOption(state),
     }),
-    dispatch => ({
-      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
-    })
+    {
+      updatePaymentOptionSelected: updatePaymentOptionSelectedThunk,
+    }
   )
 )(PaymentItem);
