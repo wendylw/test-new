@@ -73,7 +73,7 @@ export class TermsPrivacy extends Component {
     const headerVisible = Utils.isTNGMiniProgram() || Utils.isWebview();
 
     return (
-      <DocumentHeadInfo title={t('StoreHubBeep')}>
+      <DocumentHeadInfo title={t('Beep')}>
         {headerVisible && <HybridHeader title={this.getHeaderTitle()} />}
         <div dangerouslySetInnerHTML={content} />
       </DocumentHeadInfo>
