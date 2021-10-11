@@ -7,6 +7,8 @@
   "40002Description": "An error occurred while verifying your details. Please try again.",
   "40003Title": "Verification Failed (Error: {{error_code}})",
   "40003Description": "An error occurred while verifying your details. Please try again.",
+  "40004Title": "Store Not Found",
+  "40004Description": "This store does not exist, please check your store name and try again.",
   "40008Title": "Incomplete delivery info (Error: {{error_code}})",
   "40008Description": "Please complete your delivery information and try again.",
   "40009Title": "Out of Range (Error: {{error_code}})",
