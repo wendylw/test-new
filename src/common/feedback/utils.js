@@ -11,16 +11,6 @@ export const FEEDBACK_STATUS = {
 };
 
 /**
- * Feedback Type
- */
-export const ERROR_TYPES = {
-  ALERT: 'alert',
-  FULL_SCREEN: 'fullScreen',
-  CONFIRM: 'confirm',
-  NOTIFICATION: 'notification',
-};
-
-/**
  *
  * Feedback buttons style types
  */

@@ -1,5 +1,8 @@
+import i18next from 'i18next';
 import originalKy from 'ky';
 import qs from 'qs';
+import { ERROR_MAPPING } from '../feedback';
+import { alert } from '../../common/feedback';
 import { getClientSource } from './api-utils';
 
 export const ky = originalKy.create({
@@ -91,73 +94,63 @@ function formatResponseData(url, result) {
 async function _fetch(url, opts) {
   const queryStr = qs.stringify(opts.searchParams, { addQueryPrefix: true });
   const requestStart = new Date().valueOf();
-  const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
+  const requestUrl = `${url}${queryStr.length === 0 ? '' : queryStr}`;
+  const customEventDetail = {
+    type: opts.method,
+    request: requestUrl,
+    requestStart,
+  };
+
   try {
     const resp = await ky(url, opts);
 
     // Send log to Loggly
     window.dispatchEvent(
       new CustomEvent('sh-api-success', {
-        detail: {
-          type: opts.method,
-          request: requestUrl,
-          requestStart,
-        },
+        detail: customEventDetail,
       })
     );
 
     return formatResponseData(url, await parseResponse(resp));
   } catch (e) {
-    let error = {};
+    /**
+     * error data structures:
+     * {errorCode}
+     * {code}
+     * {errors:[{code}]}
+     * string
+     *  */
+    const body = await parseResponse(e.response || e);
+    const errorBody = (body.errors ? body.errors[0] : body) || {};
+    const errorMessage = typeof errorBody === 'string' ? errorBody : JSON.stringify(errorBody.message);
+    const error = {
+      status: e.status,
+      code: errorBody.errorCode || '50000',
+      message: errorMessage,
+      ...(typeof errorBody === 'string' ? {} : errorBody),
+    };
+    const errorFeedbackContent = i18next.t(`ApiError:${error.code}Description`);
 
-    if (e.response) {
-      const body = await parseResponse(e.response);
+    if (errorFeedbackContent && !opts.customizeError) {
+      const { api: errorApi, ...options } = ERROR_MAPPING[errorBody.code];
+      const errorApiFunction = errorApi || alert;
 
-      if (typeof body === 'object' && body.code) {
-        error = body;
-        // Send log to Loggly
-        window.dispatchEvent(
-          new CustomEvent('sh-api-failure', {
-            detail: {
-              type: opts.method,
-              request: requestUrl,
-              code: body.code,
-              error: body.message,
-              requestStart,
-            },
-          })
-        );
-      } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
-        error = {
-          code: '50000',
-          status: e.status,
-          message: typeof body === 'string' ? body : JSON.stringify(body),
-        };
-        // Send log to Loggly
-        window.dispatchEvent(
-          new CustomEvent('sh-api-failure', {
-            detail: {
-              type: opts.method,
-              request: requestUrl,
-              requestStart,
-              error: error.message,
-            },
-          })
-        );
-      }
-    } else {
-      // Send log to Loggly
-      window.dispatchEvent(
-        new CustomEvent('sh-fetch-error', {
-          detail: {
-            type: opts.method,
-            request: requestUrl,
-            error: e.message,
-            requestStart,
-          },
-        })
-      );
+      errorApiFunction(errorFeedbackContent, options || {});
     }
+
+    // Send log to Loggly
+    if (errorBody.code || errorBody.errorCode) {
+      customEventDetail.code = errorBody.code || errorBody.errorCode;
+    }
+
+    window.dispatchEvent(
+      new CustomEvent(e.response ? 'sh-api-failure' : 'sh-fetch-error', {
+        detail: {
+          ...customEventDetail,
+          error: errorMessage,
+        },
+      })
+    );
 
     throw error;
   }
