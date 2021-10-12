@@ -122,13 +122,14 @@ async function _fetch(url, opts) {
      *  */
     const body = await parseResponse(e.response || e);
     const errorBody = (body.errors ? body.errors[0] : body) || {};
-    const errorMessage = typeof errorBody === 'string' ? errorBody : JSON.stringify(errorBody.message);
     const error = {
       status: e.status,
       code: errorBody.errorCode || '50000',
-      message: errorMessage,
+      message: typeof errorBody === 'string' ? errorBody : JSON.stringify(errorBody.message),
       ...(typeof errorBody === 'string' ? {} : errorBody),
     };
+
+    // Call feedback api
     const errorFeedbackContent = i18next.t(`ApiError:${error.code}Description`);
 
     if (errorFeedbackContent && !opts.customizeError) {
@@ -147,7 +148,7 @@ async function _fetch(url, opts) {
       new CustomEvent(e.response ? 'sh-api-failure' : 'sh-fetch-error', {
         detail: {
           ...customEventDetail,
-          error: errorMessage,
+          error: error.message,
         },
       })
     );
