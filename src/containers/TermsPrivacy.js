@@ -56,11 +56,11 @@ export class TermsPrivacy extends Component {
   getHeaderTitle() {
     const { pageName, t } = this.props;
     if (pageName === PAGE_NAMES.TERMS) {
-      return t('Terms of Service');
+      return t('TermsOfService');
     }
 
     if (pageName === PAGE_NAMES.PRIVACY) {
-      return t('Privacy Policy');
+      return t('PrivacyPolicy');
     }
 
     return window.document.title;
