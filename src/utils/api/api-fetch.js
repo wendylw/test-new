@@ -129,14 +129,14 @@ async function _fetch(url, opts) {
       ...(typeof errorBody === 'string' ? {} : errorBody),
     };
 
-    // Call feedback api
-    const errorFeedbackContent = i18next.t(`ApiError:${error.code}Description`);
+    // Call feedback API
+    const feedbackContent = i18next.t(`ApiError:${error.code}Description`);
 
-    if (errorFeedbackContent && !opts.customizeError) {
+    if (feedbackContent && !opts.customizeError) {
       const { api: errorApi, ...options } = ERROR_MAPPING[errorBody.code];
       const errorApiFunction = errorApi || alert;
 
-      errorApiFunction(errorFeedbackContent, options || {});
+      errorApiFunction(feedbackContent, options || {});
     }
 
     // Send log to Loggly
