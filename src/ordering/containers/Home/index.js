@@ -818,6 +818,10 @@ export class Home extends Component {
     this.promotionEl = ref;
   };
 
+  handleConfirmAlcoholDenied = () => {
+    this.handleNavBack();
+  };
+
   render() {
     const {
       categories,
@@ -1018,7 +1022,11 @@ export class Home extends Component {
           enablePreOrder={this.isPreOrderEnabled()}
         />
         {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
-          <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
+          <AlcoholModal
+            onConfirmAlcoholDenied={this.handleConfirmAlcoholDenied}
+            handleLegalAge={this.handleLegalAge}
+            country={this.getBusinessCountry()}
+          />
         ) : null}
         {this.renderOfflineModal(enableLiveOnline)}
       </section>
