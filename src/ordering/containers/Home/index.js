@@ -31,7 +31,7 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
-import { getAlcoholModalDisplayResult } from './redux/common/selectors';
+import { getUserHasReachedLegalDrinkingAge, getAlcoholModalDisplayResult } from './redux/common/selectors';
 import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
 import Header from '../../../components/Header';
 import NativeHeader from '../../../components/NativeHeader';
@@ -137,14 +137,16 @@ export class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { appActions, getUserAlcoholConsent } = this.props;
+    const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent } = this.props;
     if (isSourceBeepitCom()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
 
     await appActions.loadProductList();
-    await getUserAlcoholConsent();
+
+    // Double-checking with backend only if user is not in legal drinking age
+    if (!hasUserReachedLegalDrinkingAge) getUserAlcoholConsent();
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
@@ -1018,6 +1020,7 @@ export default compose(
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
         shouldShowAlcoholModal: getAlcoholModalDisplayResult(state),
         store: getStore(state),
       };
