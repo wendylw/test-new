@@ -7,7 +7,7 @@ import DocumentHeadInfo from '../components/DocumentHeadInfo';
 import '../Common.scss';
 import Utils from '../utils/utils';
 import HybridHeader from '../components/HybridHeader';
-
+import './TermsPrivacy.scss';
 // Example1 URL: http://nike.storehub.local:3000/#/terms-conditions
 // Example1 URL: http://nike.storehub.local:3000/#/privacy
 
@@ -66,6 +66,16 @@ export class TermsPrivacy extends Component {
     return window.document.title;
   }
 
+  handleContentClick = event => {
+    if (event.target?.nodeName.toLowerCase() === 'a') {
+      // block link in beep tng mini program because user can't back this page from third page
+      if (Utils.isTNGMiniProgram()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
+  };
+
   render() {
     const { t } = this.props;
     const { termsPrivacyData } = this.state;
@@ -75,7 +85,12 @@ export class TermsPrivacy extends Component {
     return (
       <DocumentHeadInfo title={t('Beep')}>
         {headerVisible && <HybridHeader title={this.getHeaderTitle()} />}
-        <div dangerouslySetInnerHTML={content} />
+        {/* remove link style in tng mini program */}
+        <div
+          className={Utils.isTNGMiniProgram() ? 'terms-privacy__remove-link-style' : ''}
+          onClick={this.handleContentClick}
+          dangerouslySetInnerHTML={content}
+        />
       </DocumentHeadInfo>
     );
   }
