@@ -20,7 +20,7 @@ export const getUserAlcoholConsent = createAsyncThunk('ordering/home/common/getU
 });
 
 // Optimistic update: do not care about the API callback result, just confirm alcohol consent
-export const setUserAlcoholConsent = createAsyncThunk('ordering/home/common/setUserAlcoholConsent', () => {
-  setAlcoholConsent();
+export const setUserAlcoholConsent = createAsyncThunk('ordering/home/common/setUserAlcoholConsent', async () => {
+  setAlcoholConsent().catch(() => {});
   return true;
 });
