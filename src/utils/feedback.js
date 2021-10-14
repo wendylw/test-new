@@ -3,190 +3,414 @@ import Constants from './constants';
 import Utils from './utils';
 import config from '../config';
 import * as NativeMethods from './native-methods';
-import { fullScreen } from '../common/feedback';
+import { alert, fullScreen } from '../common/feedback';
 
 const { ROUTER_PATHS } = Constants;
 
+const PaymentFailedCode = {
+  AmountTooLarge: 'AmountTooLarge',
+  AmountTooSmall: 'AmountTooSmall',
+  AuthenticationRequired: 'AuthenticationRequired',
+  BalanceInsufficient: 'BalanceInsufficient',
+  CardExpired: 'CardExpired',
+  BankDeclined: 'BankDeclined',
+  IncorrectCvc: 'IncorrectCvc',
+  PaymentGatewayError: 'PaymentGatewayError',
+  UnknownError: 'UnknownError',
+};
+
 export const ERROR_MAPPING = {
-  40000: {
-    closeButtonText: i18next.t('Common:TryAgain'),
-  },
-  40001: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40002: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40003: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40004: {
-    api: fullScreen,
-    onClose: () => {
-      if (Utils.isWebview()) {
-        NativeMethods.gotoHome();
+  40000: options =>
+    alert(`ApiError:40000Description`, {
+      title: `ApiError:40000Title`,
+      closeButtonText: i18next.t('Common:TryAgain'),
+      onClose: () => {
+        window.location.reload();
+      },
+      ...options,
+    }),
+  40001: options =>
+    alert(`ApiError:40001Description`, {
+      title: `ApiError:40001Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+      },
+      ...options,
+    }),
+  40002: options =>
+    alert(`ApiError:40002Description`, {
+      title: `ApiError:40002Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+      },
+      ...options,
+    }),
+  40003: options =>
+    alert(`ApiError:40003Description`, {
+      title: `ApiError:40003Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+      },
+      ...options,
+    }),
+  40004: options =>
+    fullScreen(`ApiError:40004Description`, {
+      title: `ApiError:40004Title`,
+      closeButtonText: i18next.t('Common:BackToHome'),
+      onClose: () => {
+        if (Utils.isWebview()) {
+          NativeMethods.gotoHome();
 
-        return;
-      }
-      window.location.href = config.beepitComUrl;
-    },
-    closeButtonText: i18next.t('Common:BackToHome'),
-  },
-  40005: {
-    api: fullScreen,
-    onClose: () => {
-      if (Utils.isWebview()) {
-        NativeMethods.gotoHome();
+          return;
+        }
+        window.location.href = config.beepitComUrl;
+      },
+      ...options,
+    }),
+  40005: options =>
+    fullScreen(`ApiError:StoreNotFoundDescription`, {
+      title: `ApiError:StoreNotFoundTitle`,
+      closeButtonText: i18next.t('Common:BackToHome'),
+      onClose: () => {
+        if (Utils.isWebview()) {
+          NativeMethods.gotoHome();
 
-        return;
-      }
-      window.location.href = config.beepitComUrl;
-    },
-    closeButtonText: i18next.t('Common:BackToHome'),
-  },
-  40008: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40009: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40011: {
-    api: fullScreen,
-    onClose: () => {
-      if (Utils.isWebview()) {
-        NativeMethods.gotoHome();
+          return;
+        }
+        window.location.href = config.beepitComUrl;
+      },
+      ...options,
+    }),
+  40006: options =>
+    fullScreen(`ApiError:StoreNotFoundDescription`, {
+      title: `ApiError:StoreNotFoundTitle`,
+      closeButtonText: i18next.t('Common:BackToHome'),
+      onClose: () => {
+        if (Utils.isWebview()) {
+          NativeMethods.gotoHome();
 
-        return;
-      }
-      window.location.href = config.beepitComUrl;
-    },
-    closeButtonText: i18next.t('Common:BackToHome'),
-  },
-  40012: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40013: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40015: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40016: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40017: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40018: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40019: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40020: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40022: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40024: {
-    closeButtonText: 'Common:Dismiss',
-  },
-  40025: {
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  40026: {
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  41000: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  41014: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
-    },
-    closeButtonText: i18next.t('Common:Reorder'),
-  },
-  54012: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
-    },
-  },
-  54013: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
-    },
-  },
-  57008: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  57009: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
-    },
-  },
-  57010: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
-    },
-    closeButtonText: i18next.t('Common:Continue'),
-  },
-  57011: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_PAYMENT}`;
-    },
-  },
-  57013: {
-    onClose: () => {
-      window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.CONTACT_DETAIL}`;
-    },
-  },
+          return;
+        }
+        window.location.href = config.beepitComUrl;
+      },
+      ...options,
+    }),
+  40007: options =>
+    fullScreen(`ApiError:StoreNotFoundDescription`, {
+      title: `ApiError:StoreNotFoundTitle`,
+      closeButtonText: i18next.t('Common:BackToHome'),
+      onClose: () => {
+        if (Utils.isWebview()) {
+          NativeMethods.gotoHome();
+
+          return;
+        }
+        window.location.href = config.beepitComUrl;
+      },
+      ...options,
+    }),
+  40008: options =>
+    alert(`ApiError:40008Description`, {
+      title: `ApiError:40008Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
+      },
+      ...options,
+    }),
+  40009: options =>
+    alert(`ApiError:40009Description`, {
+      title: `ApiError:40009Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`;
+      },
+      ...options,
+    }),
+  40010: options =>
+    alert(`ApiError:CreateOrderErrorDescription`, {
+      title: `ApiError:40010Title`,
+      ...options,
+    }),
+  40011: options =>
+    fullScreen(`ApiError:StoreNotFoundDescription`, {
+      title: `ApiError:StoreNotFoundTitle`,
+      closeButtonText: i18next.t('Common:BackToHome'),
+      onClose: () => {
+        if (Utils.isWebview()) {
+          NativeMethods.gotoHome();
+
+          return;
+        }
+        window.location.href = config.beepitComUrl;
+      },
+      ...options,
+    }),
+  40012: options =>
+    alert(`ApiError:40012Description`, {
+      title: `ApiError:40012Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
+      },
+      ...options,
+    }),
+  40013: options =>
+    alert(`ApiError:40013Description`, {
+      title: `ApiError:40013Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
+      },
+      ...options,
+    }),
+  40015: options =>
+    alert(`ApiError:40015Description`, {
+      title: `ApiError:40015Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  40016: options =>
+    alert(`ApiError:40016Description`, {
+      title: `ApiError:40016Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+      },
+      ...options,
+    }),
+  40017: options =>
+    alert(`ApiError:40017Description`, {
+      title: `ApiError:40017Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
+      },
+      ...options,
+    }),
+  40018: options =>
+    alert(`ApiError:40018Description`, {
+      title: `ApiError:40018Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
+      },
+      ...options,
+    }),
+  40019: options =>
+    alert(`ApiError:40019Description`, {
+      title: `ApiError:40019Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
+      },
+      ...options,
+    }),
+  40020: options =>
+    alert(`ApiError:40020Description`, {
+      title: `ApiError:40020Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  40022: options =>
+    alert(`ApiError:40022Description`, {
+      title: `ApiError:40022Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
+      },
+      ...options,
+    }),
+  40024: options =>
+    alert(`ApiError:40022Description`, {
+      title: `ApiError:40022Title`,
+      closeButtonText: 'Common:Dismiss',
+      ...options,
+    }),
+  40025: options =>
+    alert(`ApiError:40025Description`, {
+      title: `ApiError:40025Title`,
+      ...options,
+    }),
+  40026: options =>
+    alert(`ApiError:40026Description`, {
+      title: `ApiError:40026Title`,
+      ...options,
+    }),
+  41000: options =>
+    alert(`ApiError:41000Description`, {
+      title: `ApiError:41000Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
+      },
+      ...options,
+    }),
+  41014: options =>
+    alert(`ApiError:41000Description`, {
+      title: `ApiError:41000Title`,
+      closeButtonText: 'Common:Reorder',
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
+      },
+      ...options,
+    }),
+  41016: options =>
+    alert(`ApiError:41016Description`, {
+      title: `ApiError:41016Title`,
+      closeButtonText: 'Common:OK',
+      ...options,
+    }),
+  41017: options =>
+    alert(`ApiError:41017Description`, {
+      title: `ApiError:41017Title`,
+      closeButtonText: 'Common:OK',
+      ...options,
+    }),
+  51000: options =>
+    fullScreen(`ApiError:51000Description`, {
+      title: `ApiError:51000Description`,
+      closeButtonText: i18next.t('Common:BackToHome'),
+      onClose: () => {
+        window.location.reload();
+      },
+      ...options,
+    }),
+  51001: options =>
+    alert(`ApiError:51001Description`, {
+      title: `ApiError:51001Title`,
+      closeButtonText: 'Common:OK',
+      ...options,
+    }),
+  51002: options =>
+    alert(`ApiError:51002Description`, {
+      title: `ApiError:51002Title`,
+      closeButtonText: 'Common:OK',
+      ...options,
+    }),
+  51003: options =>
+    alert(`ApiError:51003Description`, {
+      title: `ApiError:51003Title`,
+      closeButtonText: 'Common:OK',
+      ...options,
+    }),
+  51004: options =>
+    alert(`ApiError:51004Description`, {
+      title: `ApiError:51004Title`,
+      closeButtonText: 'Common:OK',
+      ...options,
+    }),
+  54011: options =>
+    alert(`ApiError:CreateOrderErrorDescription`, {
+      title: `ApiError:54011Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  54012: options =>
+    alert(`ApiError:54012Description`, {
+      title: `ApiError:54012Title`,
+      closeButtonText: 'Common:EditCart',
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  54013: options =>
+    alert(`ApiError:54013Description`, {
+      title: `ApiError:54013Title`,
+      closeButtonText: 'Common:EditCart',
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  54014: options =>
+    alert(`ApiError:54014Description`, {
+      title: `ApiError:54014Title`,
+      closeButtonText: 'Common:EditCart',
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  54020: options =>
+    alert(`ApiError:54020Description`, {
+      title: `ApiError:54020Title`,
+      ...options,
+    }),
+  54023: options =>
+    alert(`ApiError:54023Description`, {
+      title: `ApiError:54023Title`,
+      ...options,
+    }),
+  54025: options =>
+    fullScreen(`ApiError:StoreNotFoundDescription`, {
+      title: `ApiError:StoreNotFoundTitle`,
+      closeButtonText: i18next.t('Common:BackToHome'),
+      onClose: () => {
+        window.location.reload();
+      },
+      ...options,
+    }),
+  54040: options =>
+    fullScreen(`ApiError:StoreNotFoundDescription`, {
+      title: `ApiError:StoreNotFoundTitle`,
+      closeButtonText: i18next.t('Common:BackToHome'),
+      onClose: () => {
+        window.location.reload();
+      },
+      ...options,
+    }),
+  57008: options =>
+    alert(`ApiError:57008Description`, {
+      title: `ApiError:57008Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  57009: options =>
+    alert(`ApiError:57009Description`, {
+      title: `ApiError:57009Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
+      },
+      ...options,
+    }),
+  57010: options =>
+    alert(`ApiError:57010Description`, {
+      title: `ApiError:57010Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  57011: options =>
+    alert(`ApiError:57011Description`, {
+      title: `ApiError:57011Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_PAYMENT}`;
+      },
+      ...options,
+    }),
+  57013: options =>
+    alert(`ApiError:57013Description`, {
+      title: `ApiError:57013Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.CONTACT_DETAIL}`;
+      },
+      ...options,
+    }),
+  58050: options =>
+    alert(`ApiError:58050Description`, {
+      title: `ApiError:58050Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
+  58053: options =>
+    alert(`ApiError:58053Description`, {
+      title: `ApiError:58053Title`,
+      onClose: () => {
+        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+      },
+      ...options,
+    }),
 };

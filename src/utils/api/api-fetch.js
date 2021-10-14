@@ -1,8 +1,6 @@
-import i18next from 'i18next';
 import originalKy from 'ky';
 import qs from 'qs';
 import { ERROR_MAPPING } from '../feedback';
-import { alert } from '../../common/feedback';
 import { getClientSource } from './api-utils';
 
 export const ky = originalKy.create({
@@ -23,18 +21,15 @@ async function parseResponse(resp) {
   let body = resp;
 
   if (!rawContentType) {
+    /**
+     * The data returned by BFF must be guaranteed to be in json format
+     */
+    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
+
     return body;
   }
 
-  if (rawContentType.includes('application/json')) {
-    body = await resp.json();
-  } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
-    body = await resp.text();
-  } else {
-    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
-  }
-
-  return body;
+  return await body.json();
 }
 
 function convertOptions(options) {
@@ -118,25 +113,18 @@ async function _fetch(url, opts) {
      * {errorCode}
      * {code}
      * {errors:[{code}]}
-     * string
      *  */
-    const body = await parseResponse(e.response || e);
+    const body = await parseResponse(e.response || {});
     const errorBody = (body.errors ? body.errors[0] : body) || {};
     const error = {
+      ...errorBody,
       status: e.status,
       code: errorBody.errorCode || '50000',
-      message: typeof errorBody === 'string' ? errorBody : JSON.stringify(errorBody.message),
-      ...(typeof errorBody === 'string' ? {} : errorBody),
+      message: JSON.stringify(errorBody.message),
     };
 
-    // Call feedback API
-    const feedbackContent = i18next.t(`ApiError:${error.code}Description`);
-
-    if (feedbackContent && !opts.customizeError) {
-      const { api: errorApi, ...options } = ERROR_MAPPING[errorBody.code];
-      const errorApiFunction = errorApi || alert;
-
-      errorApiFunction(feedbackContent, options || {});
+    if (ERROR_MAPPING[error.code]) {
+      ERROR_MAPPING[error.code]();
     }
 
     // Send log to Loggly
