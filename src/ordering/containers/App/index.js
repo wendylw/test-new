@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
-  getMessageModal,
   getError,
   getUser,
   getApiError,
@@ -104,23 +103,7 @@ class App extends Component {
       }
 
       const { user, businessInfo } = this.props;
-      const { isLogin } = user || {};
       const { onlineStoreInfo } = responseGql.data || {};
-
-      if (isLogin) {
-        appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
-          const { data = {} } = responseGql;
-          this.setGtmData({
-            userInfo: data.user,
-            businessInfo,
-          });
-
-          this.setGtmData({
-            userInfo: data.user,
-            businessInfo,
-          });
-        });
-      }
 
       const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
 
@@ -150,8 +133,8 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { appActions, user, pageError, businessInfo } = this.props;
-    const { isExpired, isWebview, isLogin, isFetching } = user || {};
+    const { user, pageError } = this.props;
+    const { isExpired, isWebview } = user || {};
     const { code } = prevProps.pageError || {};
 
     if (pageError.code && pageError.code !== code) {
@@ -160,16 +143,6 @@ class App extends Component {
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       // this.postAppMessage(user);
-    }
-
-    if (isLogin && !isFetching && prevProps.user.isLogin !== isLogin && businessInfo) {
-      appActions.loadCustomerProfile().then(({ responseGql = {} }) => {
-        const { data = {} } = responseGql;
-        this.setGtmData({
-          userInfo: data.user,
-          businessInfo,
-        });
-      });
     }
   }
 
@@ -215,12 +188,11 @@ class App extends Component {
   };
 
   render() {
-    let { messageModal, onlineStoreInfo, apiErrorMessage } = this.props;
+    let { onlineStoreInfo, apiErrorMessage } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
-        {messageModal.show ? <MessageModal data={messageModal} onHide={this.handleCloseMessageModal} /> : null}
         {apiErrorMessage.show ? (
           <MessageModal
             data={apiErrorMessage}
@@ -247,7 +219,6 @@ export default compose(
         user: getUser(state),
         error: getError(state),
         pageError: getPageError(state),
-        messageModal: getMessageModal(state),
         apiErrorMessage: getApiError(state),
       };
     },

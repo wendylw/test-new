@@ -28,9 +28,9 @@ import {
 } from '../../../../../utils/gtm';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import Utils from '../../../../../utils/utils';
+import { alert } from '../../../../../common/feedback';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
-  actions as appActionCreators,
   getBusiness,
   getBusinessInfo,
   getBusinessUTCOffset,
@@ -415,16 +415,6 @@ export class ThankYou extends PureComponent {
     Utils.removeCookieVariable('__ty_source', '');
   };
 
-  showRiderHasFoundMessageModal() {
-    const { showMessageModal, t } = this.props;
-
-    showMessageModal({
-      message: t('YourFoodIsOnTheWay'),
-      description: t('OrderCannotBeCancelledAsARiderFound'),
-      buttonText: t('GotIt'),
-    });
-  }
-
   handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
     history.push({
@@ -633,10 +623,13 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
+    const { t, receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
 
     if (!isOrderCancellable) {
-      this.showRiderHasFoundMessageModal();
+      alert(t('OrderCannotBeCancelledAsARiderFound'), {
+        title: t('YourFoodIsOnTheWay'),
+        closeButtonContent: t('GotIt'),
+      });
       return;
     }
 
@@ -766,7 +759,7 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, businessInfo, businessUTCOffset, showMessageModal, onlineStoreInfo } = this.props;
+    const { t, history, match, order, businessInfo, businessUTCOffset, onlineStoreInfo } = this.props;
     const date = new Date();
     const { total } = order || {};
     const { enableCashback } = businessInfo || {};
@@ -815,7 +808,6 @@ export class ThankYou extends PureComponent {
             <CashbackInfo enableCashback={enableCashback} />
             <OrderSummary
               history={history}
-              showMessageModal={showMessageModal}
               businessUTCOffset={businessUTCOffset}
               onlineStoreInfo={onlineStoreInfo}
               onClickCancelOrderButton={this.handleClickCancelOrderButton}
@@ -881,7 +873,6 @@ export default compose(
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
-      showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
     })
   )
 )(ThankYou);

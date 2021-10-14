@@ -94,12 +94,6 @@ export const initialState = {
     noWhatsAppAccount: true,
   },
   error: null, // network error
-  messageModal: {
-    show: false,
-    message: '',
-    description: '',
-    buttonText: '',
-  }, // message modal
   apiError: {
     show: false,
     message: '',
@@ -155,17 +149,6 @@ const fetchCoreBusiness = variables => ({
     types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
     endpoint: Url.apiGql('CoreBusiness'),
     variables,
-  },
-});
-
-const fetchCustomerProfile = consumerId => ({
-  [API_REQUEST]: {
-    types: [
-      types.FETCH_CUSTOMER_PROFILE_REQUEST,
-      types.FETCH_CUSTOMER_PROFILE_SUCCESS,
-      types.FETCH_CUSTOMER_PROFILE_FAILURE,
-    ],
-    ...Url.API_URLS.GET_CUSTOMER_PROFILE(consumerId),
   },
 });
 
@@ -374,16 +357,6 @@ export const actions = {
     prompt,
   }),
 
-  showMessageModal: ({ message, description, buttonText = '' }) => ({
-    type: types.SET_MESSAGE_INFO,
-    message,
-    description,
-    buttonText,
-  }),
-
-  hideMessageModal: () => ({
-    type: types.HIDE_MESSAGE_MODAL,
-  }),
   hideApiMessageModal: () => ({
     type: types.CLEAR_API_ERROR,
   }),
@@ -424,16 +397,6 @@ export const actions = {
     const { storeId, business } = config;
 
     return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
-  },
-
-  loadCustomerProfile: () => (dispatch, getState) => {
-    const { app } = getState();
-
-    if (app.user.consumerId) {
-      document.cookie = `consumerId=${app.user.consumerId}`;
-    }
-
-    return dispatch(fetchCustomerProfile(app.user.consumerId || config.consumerId));
   },
 
   // load shopping cart
@@ -636,10 +599,6 @@ const user = (state = initialState.user, action) => {
       return { ...state, isFetching: false };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
-    case types.FETCH_CUSTOMER_PROFILE_SUCCESS:
-      const { storeCreditsBalance, customerId } = response || {};
-
-      return { ...state, storeCreditsBalance, customerId };
     case types.UPDATE_PROFILE_INFO:
       return {
         ...state,
@@ -768,20 +727,6 @@ const apiError = (state = initialState.apiError, action) => {
   }
 };
 
-const messageModal = (state = initialState.messageModal, action) => {
-  switch (action.type) {
-    case types.SET_MESSAGE_INFO: {
-      const { message, description, buttonText } = action;
-      return { ...state, show: true, message, description, buttonText };
-    }
-    case types.HIDE_MESSAGE_MODAL: {
-      return { ...state, show: false, message: '', description: '', buttonText: '' };
-    }
-    default:
-      return state;
-  }
-};
-
 const requestInfo = (state = initialState.requestInfo) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
@@ -879,7 +824,6 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
 export default combineReducers({
   user,
   error,
-  messageModal,
   business,
   onlineStoreInfo,
   requestInfo,
@@ -898,7 +842,6 @@ export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
 export const getRequestInfo = state => state.app.requestInfo;
-export const getMessageModal = state => state.app.messageModal;
 export const getMerchantCountry = state => {
   if (state.entities.businesses[state.app.business]) {
     return state.entities.businesses[state.app.business].country;
