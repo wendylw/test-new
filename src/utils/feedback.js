@@ -7,18 +7,6 @@ import { alert, fullScreen } from '../common/feedback';
 
 const { ROUTER_PATHS } = Constants;
 
-const PaymentFailedCode = {
-  AmountTooLarge: 'AmountTooLarge',
-  AmountTooSmall: 'AmountTooSmall',
-  AuthenticationRequired: 'AuthenticationRequired',
-  BalanceInsufficient: 'BalanceInsufficient',
-  CardExpired: 'CardExpired',
-  BankDeclined: 'BankDeclined',
-  IncorrectCvc: 'IncorrectCvc',
-  PaymentGatewayError: 'PaymentGatewayError',
-  UnknownError: 'UnknownError',
-};
-
 export const ERROR_MAPPING = {
   40000: options =>
     alert(`ApiError:40000Description`, {
@@ -126,13 +114,13 @@ export const ERROR_MAPPING = {
       ...options,
     }),
   40010: options =>
-    alert(`ApiError:CreateOrderErrorDescription`, {
+    alert(`ApiError:40010Description`, {
       title: `ApiError:40010Title`,
       ...options,
     }),
   40011: options =>
-    fullScreen(`ApiError:StoreNotFoundDescription`, {
-      title: `ApiError:StoreNotFoundTitle`,
+    fullScreen(`ApiError:40011Description`, {
+      title: `ApiError:40011Title`,
       closeButtonText: i18next.t('Common:BackToHome'),
       onClose: () => {
         if (Utils.isWebview()) {
