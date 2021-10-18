@@ -40,19 +40,6 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
       };
       return expect(actions.resetOtpStatus()).toEqual(expectedAction);
     });
-    // it('showMessageModal', () => {
-    //   const reqParams = { message: 'hello', description: 'hello', buttonText: 'hello' };
-    //   const expectedAction = {
-    //     type: types.SET_MESSAGE_INFO,
-    //     message: reqParams.message,
-    //     description: reqParams.description,
-    //     buttonText: reqParams.buttonText,
-    //   };
-    //   return expect(actions.showMessageModal(reqParams)).toEqual(expectedAction);
-    // });
-    // it('hideMessageModal', () => {
-    //   return expect(actions.hideMessageModal()).toEqual({ type: types.HIDE_MESSAGE_MODAL });
-    // });
   });
 
   describe('Async Action Creators', () => {
@@ -199,30 +186,6 @@ describe('src/ordering/redux/modules/app.js:actions', () => {
           { type: types.FETCH_COREBUSINESS_FAILURE, code: mockErrorCode, message: mockErrorMsg },
         ];
         return expectedActionsCheck(actions.loadCoreBusiness(), expectedActions);
-      });
-    });
-    describe('loadCustomerProfile', () => {
-      it(':Success', () => {
-        successMockFetch();
-        const caseStore = configureMiddlewareStore(orderingStore);
-        const expectedActions = [
-          { type: types.FETCH_CUSTOMER_PROFILE_REQUEST },
-          { type: types.FETCH_CUSTOMER_PROFILE_SUCCESS, response: commonSuccessData, params: {} },
-        ];
-        return caseStore.dispatch(actions.loadCustomerProfile()).then(() => {
-          expect(caseStore.getActions()).toEqual(expectedActions);
-        });
-      });
-      it(':Fail', () => {
-        failMockFetch();
-        const caseStore = configureMiddlewareStore(orderingStore);
-        const expectedActions = [
-          { type: types.FETCH_CUSTOMER_PROFILE_REQUEST },
-          { type: types.FETCH_CUSTOMER_PROFILE_FAILURE, code: mockErrorCode, message: mockErrorMsg },
-        ];
-        return caseStore.dispatch(actions.loadCustomerProfile()).then(() => {
-          expect(caseStore.getActions()).toEqual(expectedActions);
-        });
       });
     });
   });
