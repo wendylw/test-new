@@ -182,7 +182,6 @@ class App extends Component {
       Utils.removeExpectedDeliveryTime();
     }
 
-    this.visitErrorPage();
     fetchOnlineStoreInfo().then(({ responseGql }) => {
       const { data } = responseGql || {};
       const { onlineStoreInfo } = data || {};
@@ -211,15 +210,6 @@ class App extends Component {
     return this.props.match.path === Constants.ROUTER_PATHS.DINE;
   }
 
-  componentDidUpdate(prevProps) {
-    const { pageError } = this.props;
-    const { code } = prevProps.pageError || {};
-
-    if (pageError.code && pageError.code !== code) {
-      this.visitErrorPage();
-    }
-  }
-
   handleClearError = () => {
     this.props.appActions.clearError();
   };
@@ -227,14 +217,6 @@ class App extends Component {
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
   };
-
-  visitErrorPage() {
-    const { pageError } = this.props;
-
-    if (pageError && pageError.code) {
-      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
-    }
-  }
 
   renderDeliveryOrDineMethods() {
     const { enableDelivery, stores, currentStoreId } = this.props;

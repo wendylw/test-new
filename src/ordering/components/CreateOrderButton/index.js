@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/modules/app';
+import { getUser, getRequestInfo, getCartBilling } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
@@ -174,7 +174,6 @@ export default compose(
     state => {
       return {
         user: getUser(state),
-        error: getError(state),
         requestInfo: getRequestInfo(state),
         cartBilling: getCartBilling(state),
       };

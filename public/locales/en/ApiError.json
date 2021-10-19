@@ -1,4 +1,6 @@
 {
+  "401Title": "System Unauthorized (#401)",
+  "401Description": "Server Error, please try again to login",
   "54011Title": "Service error (#54011)",
   "CreateOrderErrorDescription": "Create order error",
   "54017Title": "No Response from Payment Provider (#54017)",
@@ -70,6 +72,10 @@
   "54023Description": "Your order cannot be cancelled. Please contact customer support if you wish to proceed.",
   "54028Title": "Cancellation Error (Error: 54028)",
   "54028Description": "Your order cannot be cancelled. Please contact customer support if you wish to proceed.",
+  "54050Title": "Promo Limit Exceeded (#54050)",
+  "54050Description": "Apologies, the promo code has exceeded its limit.",
+  "54051Title": "Invalid Promo (#54051)",
+  "54051Description": "This promo code is no longer valid.",
   "51001Title": "You’ve submitted a report",
   "51001Description": "Rest assured we have received your previous submission. We sincerely apologise for the inconvenience caused and our Customer Care team will be in touch shortly.",
   "51002Title": "Submission failed",

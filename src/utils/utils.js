@@ -29,7 +29,8 @@ Utils.getQueryString = key => {
 };
 
 Utils.getApiRequestShippingType = () => {
-  const type = Utils.getQueryVariable('type');
+  const type = Utils.getQueryString('type');
+
   return type ? Utils.mapString2camelCase(type) : undefined;
 };
 
@@ -52,18 +53,6 @@ Utils.isIOSWebview = function isIOSWebview() {
 
 Utils.isAndroidWebview = function isAndroidWebview() {
   return window.webViewSource === WEB_VIEW_SOURCE.Android;
-};
-
-Utils.getQueryVariable = variable => {
-  var query = window.location.search.substring(1);
-  var vars = query.split('&');
-  for (var i = 0; i < vars.length; i++) {
-    var pair = vars[i].split('=');
-    if (pair[0] === variable) {
-      return pair[1];
-    }
-  }
-  return false;
 };
 
 Utils.debounce = function debounce(fn, timeout = 50) {
@@ -286,16 +275,6 @@ Utils.getValidAddress = function getValidAddress(addressInfo, splitLength) {
   });
 
   return addressList.join(', ');
-};
-
-Utils.getQueryObject = function getQueryObject(history, paramName) {
-  if (!history.location.search) {
-    return null;
-  }
-
-  const params = new URLSearchParams(history.location.search);
-
-  return params.get(paramName);
 };
 
 Utils.initSmoothAnimation = function initSmoothAnimation() {

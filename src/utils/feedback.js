@@ -7,11 +7,25 @@ import { alert, fullScreen } from '../common/feedback';
 
 const { ROUTER_PATHS } = Constants;
 
+function getRedirectUrl(path, otherQueryString) {
+  const h = Utils.getQueryString('h');
+  const type = Utils.getQueryString('type');
+
+  return `${window.location.origin}${path}?h=${h}&type=${type}${otherQueryString}`;
+}
+
 export const ERROR_MAPPING = {
+  401: options =>
+    alert(`ApiError:401Description`, {
+      onClose: () => {
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`);
+      },
+      ...options,
+    }),
   40000: options =>
     alert(`ApiError:40000Description`, {
       title: `ApiError:40000Title`,
-      closeButtonText: i18next.t('Common:TryAgain'),
+      closeButtonContent: i18next.t('Common:TryAgain'),
       onClose: () => {
         window.location.reload();
       },
@@ -21,7 +35,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40001Description`, {
       title: `ApiError:40001Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`);
       },
       ...options,
     }),
@@ -29,7 +43,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40002Description`, {
       title: `ApiError:40002Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`);
       },
       ...options,
     }),
@@ -37,14 +51,14 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40003Description`, {
       title: `ApiError:40003Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`);
       },
       ...options,
     }),
   40004: options =>
     fullScreen(`ApiError:40004Description`, {
       title: `ApiError:40004Title`,
-      closeButtonText: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:BackToHome'),
       onClose: () => {
         if (Utils.isWebview()) {
           NativeMethods.gotoHome();
@@ -58,7 +72,7 @@ export const ERROR_MAPPING = {
   40005: options =>
     fullScreen(`ApiError:StoreNotFoundDescription`, {
       title: `ApiError:StoreNotFoundTitle`,
-      closeButtonText: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:BackToHome'),
       onClose: () => {
         if (Utils.isWebview()) {
           NativeMethods.gotoHome();
@@ -72,7 +86,7 @@ export const ERROR_MAPPING = {
   40006: options =>
     fullScreen(`ApiError:StoreNotFoundDescription`, {
       title: `ApiError:StoreNotFoundTitle`,
-      closeButtonText: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:BackToHome'),
       onClose: () => {
         if (Utils.isWebview()) {
           NativeMethods.gotoHome();
@@ -86,7 +100,7 @@ export const ERROR_MAPPING = {
   40007: options =>
     fullScreen(`ApiError:StoreNotFoundDescription`, {
       title: `ApiError:StoreNotFoundTitle`,
-      closeButtonText: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:BackToHome'),
       onClose: () => {
         if (Utils.isWebview()) {
           NativeMethods.gotoHome();
@@ -101,7 +115,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40008Description`, {
       title: `ApiError:40008Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`);
       },
       ...options,
     }),
@@ -109,7 +123,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40009Description`, {
       title: `ApiError:40009Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`);
       },
       ...options,
     }),
@@ -121,7 +135,7 @@ export const ERROR_MAPPING = {
   40011: options =>
     fullScreen(`ApiError:40011Description`, {
       title: `ApiError:40011Title`,
-      closeButtonText: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:BackToHome'),
       onClose: () => {
         if (Utils.isWebview()) {
           NativeMethods.gotoHome();
@@ -136,7 +150,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40012Description`, {
       title: `ApiError:40012Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`);
       },
       ...options,
     }),
@@ -144,7 +158,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40013Description`, {
       title: `ApiError:40013Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`);
       },
       ...options,
     }),
@@ -152,7 +166,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40015Description`, {
       title: `ApiError:40015Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
@@ -160,7 +174,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40016Description`, {
       title: `ApiError:40016Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOGIN}`);
       },
       ...options,
     }),
@@ -168,7 +182,12 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40017Description`, {
       title: `ApiError:40017Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
+        const callbackUrl = encodeURIComponent(ROUTER_PATHS.ORDERING_HOME);
+
+        window.location.href = getRedirectUrl(
+          `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+          `&callbackUrl=${callbackUrl}`
+        );
       },
       ...options,
     }),
@@ -176,7 +195,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40018Description`, {
       title: `ApiError:40018Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}`);
       },
       ...options,
     }),
@@ -184,7 +203,12 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40019Description`, {
       title: `ApiError:40019Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
+        const callbackUrl = encodeURIComponent(ROUTER_PATHS.ORDERING_HOME);
+
+        window.location.href = getRedirectUrl(
+          `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+          `&callbackUrl=${callbackUrl}`
+        );
       },
       ...options,
     }),
@@ -192,7 +216,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40020Description`, {
       title: `ApiError:40020Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
@@ -200,14 +224,19 @@ export const ERROR_MAPPING = {
     alert(`ApiError:40022Description`, {
       title: `ApiError:40022Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
+        const callbackUrl = encodeURIComponent(ROUTER_PATHS.ORDERING_HOME);
+
+        window.location.href = getRedirectUrl(
+          `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+          `&callbackUrl=${callbackUrl}`
+        );
       },
       ...options,
     }),
   40024: options =>
     alert(`ApiError:40022Description`, {
       title: `ApiError:40022Title`,
-      closeButtonText: 'Common:Dismiss',
+      closeButtonContent: i18next.t('Common:Dismiss'),
       ...options,
     }),
   40025: options =>
@@ -224,35 +253,40 @@ export const ERROR_MAPPING = {
     alert(`ApiError:41000Description`, {
       title: `ApiError:41000Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`;
+        const callbackUrl = encodeURIComponent(ROUTER_PATHS.ORDERING_HOME);
+
+        window.location.href = getRedirectUrl(
+          `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION_AND_DATE}`,
+          `&callbackUrl=${callbackUrl}`
+        );
       },
       ...options,
     }),
   41014: options =>
     alert(`ApiError:41000Description`, {
       title: `ApiError:41000Title`,
-      closeButtonText: 'Common:Reorder',
+      closeButtonContent: i18next.t('Common:Reorder'),
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`);
       },
       ...options,
     }),
   41016: options =>
     alert(`ApiError:41016Description`, {
       title: `ApiError:41016Title`,
-      closeButtonText: 'Common:OK',
+      closeButtonContent: i18next.t('Common:OK'),
       ...options,
     }),
   41017: options =>
     alert(`ApiError:41017Description`, {
       title: `ApiError:41017Title`,
-      closeButtonText: 'Common:OK',
+      closeButtonContent: i18next.t('Common:OK'),
       ...options,
     }),
   51000: options =>
     fullScreen(`ApiError:51000Description`, {
       title: `ApiError:51000Description`,
-      closeButtonText: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:BackToHome'),
       onClose: () => {
         window.location.reload();
       },
@@ -261,59 +295,59 @@ export const ERROR_MAPPING = {
   51001: options =>
     alert(`ApiError:51001Description`, {
       title: `ApiError:51001Title`,
-      closeButtonText: 'Common:OK',
+      closeButtonContent: i18next.t('Common:OK'),
       ...options,
     }),
   51002: options =>
     alert(`ApiError:51002Description`, {
       title: `ApiError:51002Title`,
-      closeButtonText: 'Common:OK',
+      closeButtonContent: i18next.t('Common:OK'),
       ...options,
     }),
   51003: options =>
     alert(`ApiError:51003Description`, {
       title: `ApiError:51003Title`,
-      closeButtonText: 'Common:OK',
+      closeButtonContent: i18next.t('Common:OK'),
       ...options,
     }),
   51004: options =>
     alert(`ApiError:51004Description`, {
       title: `ApiError:51004Title`,
-      closeButtonText: 'Common:OK',
+      closeButtonContent: i18next.t('Common:OK'),
       ...options,
     }),
   54011: options =>
     alert(`ApiError:CreateOrderErrorDescription`, {
       title: `ApiError:54011Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
   54012: options =>
     alert(`ApiError:54012Description`, {
       title: `ApiError:54012Title`,
-      closeButtonText: 'Common:EditCart',
+      closeButtonContent: i18next.t('Common:EditCart'),
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
   54013: options =>
     alert(`ApiError:54013Description`, {
       title: `ApiError:54013Title`,
-      closeButtonText: 'Common:EditCart',
+      closeButtonContent: i18next.t('Common:EditCart'),
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
   54014: options =>
     alert(`ApiError:54014Description`, {
       title: `ApiError:54014Title`,
-      closeButtonText: 'Common:EditCart',
+      closeButtonContent: i18next.t('Common:EditCart'),
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
@@ -330,7 +364,7 @@ export const ERROR_MAPPING = {
   54025: options =>
     fullScreen(`ApiError:StoreNotFoundDescription`, {
       title: `ApiError:StoreNotFoundTitle`,
-      closeButtonText: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:BackToHome'),
       onClose: () => {
         window.location.reload();
       },
@@ -339,9 +373,25 @@ export const ERROR_MAPPING = {
   54040: options =>
     fullScreen(`ApiError:StoreNotFoundDescription`, {
       title: `ApiError:StoreNotFoundTitle`,
-      closeButtonText: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:BackToHome'),
       onClose: () => {
         window.location.reload();
+      },
+      ...options,
+    }),
+  54050: options =>
+    alert(`ApiError:54050Description`, {
+      title: `ApiError:54050Title`,
+      onClose: () => {
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
+      },
+      ...options,
+    }),
+  54051: options =>
+    alert(`ApiError:54051Description`, {
+      title: `ApiError:54051Title`,
+      onClose: () => {
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
@@ -349,7 +399,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:57008Description`, {
       title: `ApiError:57008Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
@@ -357,7 +407,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:57009Description`, {
       title: `ApiError:57009Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`);
       },
       ...options,
     }),
@@ -365,7 +415,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:57010Description`, {
       title: `ApiError:57010Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
@@ -373,7 +423,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:57011Description`, {
       title: `ApiError:57011Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_PAYMENT}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_PAYMENT}`);
       },
       ...options,
     }),
@@ -381,7 +431,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:57013Description`, {
       title: `ApiError:57013Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.CONTACT_DETAIL}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.CONTACT_DETAIL}`);
       },
       ...options,
     }),
@@ -389,7 +439,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:58050Description`, {
       title: `ApiError:58050Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),
@@ -397,7 +447,7 @@ export const ERROR_MAPPING = {
     alert(`ApiError:58053Description`, {
       title: `ApiError:58053Title`,
       onClose: () => {
-        window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`;
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
       },
       ...options,
     }),

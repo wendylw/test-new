@@ -13,7 +13,7 @@ import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { post, get } from '../../../utils/request';
-import i18next from 'i18next';
+// import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -92,15 +92,6 @@ export const initialState = {
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
-  },
-  error: null, // network error
-  apiError: {
-    show: false,
-    message: '',
-    description: '',
-    buttonText: '',
-    code: null,
-    redirectUrl: '',
   },
   business: config.business,
   onlineStoreInfo: {
@@ -644,32 +635,6 @@ const user = (state = initialState.user, action) => {
   }
 };
 
-const error = (state = initialState.error, action) => {
-  const { type, code, message } = action;
-
-  if (type === types.CLEAR_ERROR || code === 200) {
-    return null;
-  } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
-    let errorMessage = message;
-
-    return {
-      ...state,
-      code,
-      message: errorMessage,
-    };
-  } else if (code && code !== 401 && type === types.CREATE_OTP_FAILURE) {
-    let errorMessage = Constants.LOGIN_PROMPT[code];
-
-    return {
-      ...state,
-      code,
-      message: errorMessage,
-    };
-  }
-
-  return state;
-};
-
 const business = (state = initialState.business) => state;
 
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
@@ -688,42 +653,6 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
       return { ...state, isFetching: false };
     default:
       return state;
-  }
-};
-
-const apiError = (state = initialState.apiError, action) => {
-  const { type, code, response, responseGql, payload } = action;
-  const { error: payloadError } = payload || {};
-  const result = response || (responseGql || {}).data || payloadError;
-  const errorCode = code || (result || {}).code;
-  const { ERROR_CODE_MAP } = Constants;
-  const error = ERROR_CODE_MAP[errorCode];
-
-  if (type === types.CLEAR_API_ERROR) {
-    return {
-      ...state,
-      show: false,
-      message: '',
-      description: '',
-      buttonText: '',
-      code: null,
-      redirectUrl: '',
-    };
-  }
-
-  if (error) {
-    return {
-      ...state,
-      show: error.showModal,
-      code: errorCode,
-      message: i18next.t(error.title, { error_code: errorCode }),
-      description: i18next.t(error.desc),
-      buttonText: i18next.t(error.buttonText),
-      redirectUrl: error.redirectUrl,
-    };
-  } else {
-    // TODO add default error message
-    return state;
   }
 };
 
@@ -823,11 +752,9 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
 
 export default combineReducers({
   user,
-  error,
   business,
   onlineStoreInfo,
   requestInfo,
-  apiError,
   shoppingCart,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
@@ -837,7 +764,6 @@ export default combineReducers({
 export const getUser = state => state.app.user;
 export const getOtpType = state => state.app.user.otpType;
 export const getBusiness = state => state.app.business;
-export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
@@ -849,7 +775,6 @@ export const getMerchantCountry = state => {
 
   return null;
 };
-export const getApiError = state => state.app.apiError;
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);

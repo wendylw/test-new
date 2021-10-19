@@ -2,20 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import {
-  actions as appActionCreators,
-  getOnlineStoreInfo,
-  getError,
-  getUser,
-  getApiError,
-  getBusinessInfo,
-} from '../../redux/modules/app';
-import { getPageError } from '../../../redux/modules/entities/error';
+import { actions as appActionCreators, getOnlineStoreInfo, getUser, getBusinessInfo } from '../../redux/modules/app';
 import Constants from '../../../utils/constants';
 import '../../../Common.scss';
 import Routes from '../Routes';
 import DocumentFavicon from '../../../components/DocumentFavicon';
-import MessageModal from '../../components/MessageModal';
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import Utils from '../../../utils/utils';
@@ -92,7 +83,6 @@ class App extends Component {
       document.body.style.overflow = 'hidden';
     }
 
-    // this.visitErrorPage();
     try {
       await appActions.initDeliveryDetails();
       await appActions.getLoginStatus();
@@ -133,74 +123,20 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { user /*pageError,*/ } = this.props;
+    const { user } = this.props;
     const { isExpired, isWebview } = user || {};
-    // const { code } = prevProps.pageError || {};
-
-    // if (pageError.code && pageError.code !== code) {
-    //   this.visitErrorPage();
-    // }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       // this.postAppMessage(user);
     }
   }
 
-  // visitErrorPage() {
-  //   const { pageError } = this.props;
-  //   const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${
-  //     pageError && pageError.code && pageError.code !== '40011'
-  //       ? Constants.ROUTER_PATHS.ERROR
-  //       : `/${window.location.search}`
-  //   }`;
-
-  //   if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
-  //     Utils.setSessionVariable('errorMessage', pageError.message);
-
-  //     return (window.location.href = errorPageUrl);
-  //   }
-  // }
-
-  handleCloseMessageModal = () => {
-    this.props.appActions.hideMessageModal();
-  };
-
-  handleApiErrorHide = apiErrorMessage => {
-    const { appActions } = this.props;
-    const { redirectUrl } = apiErrorMessage;
-    const { ROUTER_PATHS } = Constants;
-    const { ORDERING_BASE, ORDERING_LOCATION_AND_DATE, ORDERING_HOME } = ROUTER_PATHS;
-    const h = Utils.getQueryVariable('h');
-    const type = Utils.getQueryVariable('type');
-    let callback_url;
-
-    appActions.hideApiMessageModal();
-    if (redirectUrl && window.location.pathname !== redirectUrl) {
-      switch (redirectUrl) {
-        case ORDERING_BASE + ORDERING_LOCATION_AND_DATE:
-          callback_url = encodeURIComponent(ORDERING_HOME);
-          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}&callbackUrl=${callback_url}`;
-          break;
-        default:
-          window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
-      }
-    }
-  };
-
   render() {
-    let { onlineStoreInfo, apiErrorMessage } = this.props;
+    let { onlineStoreInfo } = this.props;
     const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
-        {apiErrorMessage.show ? (
-          <MessageModal
-            data={apiErrorMessage}
-            onHide={() => {
-              this.handleApiErrorHide(apiErrorMessage);
-            }}
-          />
-        ) : null}
         <Routes />
         <DocumentFavicon icon={favicon || faviconImage} />
       </main>
@@ -217,9 +153,6 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         businessInfo: getBusinessInfo(state),
         user: getUser(state),
-        error: getError(state),
-        pageError: getPageError(state),
-        apiErrorMessage: getApiError(state),
       };
     },
     dispatch => ({

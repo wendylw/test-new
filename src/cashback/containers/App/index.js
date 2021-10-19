@@ -8,8 +8,6 @@ import {
   getError,
   getUser,
 } from '../../redux/modules/app';
-import { getPageError } from '../../../redux/modules/entities/error';
-import Constants from '../../../utils/constants';
 import '../../../Common.scss';
 import './Loyalty.scss';
 import Routes from '../Routes';
@@ -32,7 +30,6 @@ class App extends Component {
 
   async componentDidMount() {
     const { appActions } = this.props;
-    this.visitErrorPage();
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
     await appActions.fetchBusiness();
@@ -63,13 +60,8 @@ class App extends Component {
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, user, pageError } = this.props;
+    const { appActions, user } = this.props;
     const { isExpired, isLogin } = user || {};
-    const { code } = prevProps.pageError || {};
-
-    if (pageError.code && pageError.code !== code) {
-      this.visitErrorPage();
-    }
 
     // token过期重新发postMessage
     if (isExpired && prevProps.user.isExpired !== isExpired && Utils.isWebview()) {
@@ -100,14 +92,6 @@ class App extends Component {
       });
     }
   };
-
-  visitErrorPage() {
-    const { pageError } = this.props;
-
-    if (pageError && pageError.code) {
-      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
-    }
-  }
 
   handleClearError = () => {
     this.props.appActions.clearError();
@@ -157,7 +141,6 @@ export default connect(
     onlineStoreInfo: getOnlineStoreInfo(state),
     messageInfo: getMessageInfo(state),
     error: getError(state),
-    pageError: getPageError(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
