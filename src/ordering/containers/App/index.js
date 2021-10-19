@@ -92,7 +92,7 @@ class App extends Component {
       document.body.style.overflow = 'hidden';
     }
 
-    this.visitErrorPage();
+    // this.visitErrorPage();
     try {
       await appActions.initDeliveryDetails();
       await appActions.getLoginStatus();
@@ -133,33 +133,33 @@ class App extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { user, pageError } = this.props;
+    const { user /*pageError,*/ } = this.props;
     const { isExpired, isWebview } = user || {};
-    const { code } = prevProps.pageError || {};
+    // const { code } = prevProps.pageError || {};
 
-    if (pageError.code && pageError.code !== code) {
-      this.visitErrorPage();
-    }
+    // if (pageError.code && pageError.code !== code) {
+    //   this.visitErrorPage();
+    // }
 
     if (isExpired && prevProps.user.isExpired !== isExpired && isWebview) {
       // this.postAppMessage(user);
     }
   }
 
-  visitErrorPage() {
-    const { pageError } = this.props;
-    const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${
-      pageError && pageError.code && pageError.code !== '40011'
-        ? Constants.ROUTER_PATHS.ERROR
-        : `/${window.location.search}`
-    }`;
+  // visitErrorPage() {
+  //   const { pageError } = this.props;
+  //   const errorPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${
+  //     pageError && pageError.code && pageError.code !== '40011'
+  //       ? Constants.ROUTER_PATHS.ERROR
+  //       : `/${window.location.search}`
+  //   }`;
 
-    if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
-      Utils.setSessionVariable('errorMessage', pageError.message);
+  //   if (pageError && pageError.code && window.location.pathname !== errorPageUrl) {
+  //     Utils.setSessionVariable('errorMessage', pageError.message);
 
-      return (window.location.href = errorPageUrl);
-    }
-  }
+  //     return (window.location.href = errorPageUrl);
+  //   }
+  // }
 
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
