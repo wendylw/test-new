@@ -16,9 +16,9 @@ const WEEK_DAYS_MAPPING = {
 };
 
 const PROMOTION_CLIENT_TYPES_DISPLAY_NAME_MAPPING = {
-  [PROMOTION_CLIENT_TYPES.WEB]: 'Web',
-  [PROMOTION_CLIENT_TYPES.APP]: 'Beep app',
-  [PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM]: 'Beep Mini Program via the Touch ’n Go eWallet app',
+  [PROMOTION_CLIENT_TYPES.WEB]: i18next.t('Beepit.com'),
+  [PROMOTION_CLIENT_TYPES.APP]: i18next.t('BeepApp'),
+  [PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM]: i18next.t('BeepTngMiniProgram'),
 };
 
 export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo) {
@@ -71,7 +71,10 @@ export function getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, o
       const promotionClientTypesDisplayName = promotionClientTypes.map(
         clientType => PROMOTION_CLIENT_TYPES_DISPLAY_NAME_MAPPING[clientType]
       );
-      return i18next.t(translationKey, { supportClient: promotionClientTypesDisplayName.join(' and ') });
+
+      // TODO: Support translation
+      const supportClientJoinedDisplayName = promotionClientTypesDisplayName.join(' or ');
+      return i18next.t(translationKey, { supportClient: supportClientJoinedDisplayName });
     }
 
     return i18next.t(translationKey);
