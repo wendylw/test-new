@@ -1,3 +1,4 @@
+import React from 'react';
 import { captureException } from '@sentry/react';
 import i18next from 'i18next';
 
@@ -14,7 +15,6 @@ import {
   getBusiness,
   getOnlineStoreInfo,
   getRequestInfo,
-  actions as appActions,
   getBusinessUTCOffset,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
@@ -25,6 +25,7 @@ import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
+import { alert } from '../../../../../../common/feedback';
 const { DELIVERY_METHOD } = Constants;
 
 const POLLING_INTERVAL = 3000;
@@ -103,10 +104,10 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         // action type.
         dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
       } else {
-        dispatch(
-          appActions.showMessageModal({
-            message: i18next.t('OrderingPayment:PlaceOrderFailedDescription'),
-          })
+        alert.raw(
+          <p className="padding-small text-size-biggest text-weight-bolder">
+            {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}
+          </p>
         );
       }
     }
@@ -250,10 +251,10 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       // action type.
       dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
     } else {
-      dispatch(
-        appActions.showMessageModal({
-          message: i18next.t('OrderingPayment:PlaceOrderFailedDescription'),
-        })
+      alert.raw(
+        <p className="padding-small text-size-biggest text-weight-bolder">
+          {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}
+        </p>
       );
     }
   }

@@ -14,11 +14,16 @@ import '../home/index.scss';
 import './CollectionPage.scss';
 import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
-import { collectionCardActionCreators, getCurrentCollection } from '../redux/modules/entities/storeCollections';
+import {
+  collectionCardActionCreators,
+  getCurrentCollection,
+  getCurrentCollectionStatus,
+} from '../redux/modules/entities/storeCollections';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
-
-const { COLLECTIONS_TYPE } = constants;
+import ErrorComponent from '../../components/Error';
+import PageLoader from '../../../src/components/PageLoader';
+const { API_REQUEST_STATUS } = constants;
 
 class CollectionPage extends React.Component {
   renderId = `${Date.now()}`;
@@ -28,8 +33,9 @@ class CollectionPage extends React.Component {
   componentDidMount = async () => {
     await this.props.collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
     if (!this.props.currentCollection) {
-      await this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
+      return;
     }
+
     const { currentCollection } = this.props;
     const { shippingType, urlPath, name, beepCollectionId } = currentCollection;
     if (!checkStateRestoreStatus()) {
@@ -154,12 +160,38 @@ class CollectionPage extends React.Component {
       </div>
     );
   };
+  handleErrorScreenBackToHomeButtonClick = () => {
+    document.location.href = '/';
+  };
+
+  renderError() {
+    const { t } = this.props;
+    return (
+      <main className="fixed-wrapper fixed-wrapper__main collection-page__render-error">
+        <ErrorComponent title={t('CollectionNotFoundErrorTitle')} description={t('CollectionNotFoundErrorContent')}>
+          <footer className="footer footer__white flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
+            <button
+              className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
+              onClick={this.handleErrorScreenBackToHomeButtonClick}
+            >
+              {t('SatisfyYourCravingsHere')}
+            </button>
+          </footer>
+        </ErrorComponent>
+      </main>
+    );
+  }
 
   render() {
-    const { currentCollection } = this.props;
-    if (Object.keys(currentCollection).length === 0) {
-      return null;
+    const { currentCollection, currentCollectionStatus } = this.props;
+    if (!currentCollectionStatus || currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
+      return <PageLoader />;
     }
+
+    if (!currentCollection) {
+      return this.renderError();
+    }
+
     return (
       <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
         {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
@@ -183,6 +215,7 @@ export default compose(
   connect(
     state => ({
       currentCollection: getCurrentCollection(state),
+      currentCollectionStatus: getCurrentCollectionStatus(state),
       stores: getStoreList(state),
       pageInfo: getPageInfo(state),
       storeLinkInfo: getStoreLinkInfo(state),
