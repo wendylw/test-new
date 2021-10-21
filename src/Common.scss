@@ -705,6 +705,7 @@ img {
   background-color: transparent;
   border-color: transparent;
   border-radius: $border-radius-base;
+  color: $main-color;
 
   &__block {
     width: 100%;
@@ -802,6 +803,7 @@ img {
     box-shadow: none;
     outline: none;
     z-index: 1;
+    color: $main-color;
   }
 
   &__error-message {

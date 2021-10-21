@@ -13,7 +13,7 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import AddressChangeModal from '../../components/AddressChangeModal';
-
+import { getAddressList } from '../../redux/common/selectors';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -26,7 +26,7 @@ import {
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
-import { selectAvailableAddress } from '../../redux/common/thunks';
+import { selectAvailableAddress, loadAddressList } from '../../redux/common/thunks';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
@@ -40,8 +40,9 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    const { appActions, selectAvailableAddress } = this.props;
+    const { appActions, selectAvailableAddress, loadAddressList } = this.props;
 
+    await loadAddressList();
     await selectAvailableAddress();
     appActions.loadShoppingCart();
   }
@@ -139,6 +140,27 @@ class CustomerInfo extends Component {
     }
   };
 
+  handleAddressClick = () => {
+    const { history, addressList, storeInfoForCleverTap } = this.props;
+    CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
+    if (addressList.length === 0) {
+      history.push({
+        pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
+        search: window.location.search,
+        state: {
+          type: 'add',
+        },
+      });
+      return;
+    }
+
+    history.push({
+      pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
+      search: window.location.search,
+    });
+    return;
+  };
+
   renderDeliveryPickupDetail() {
     if (Utils.isDineInType() || Utils.isTakeAwayType()) {
       return null;
@@ -169,15 +191,11 @@ class CustomerInfo extends Component {
               } flex-space-between padding-left-right-small`}
             >
               {isDeliveryType ? (
-                <Link
+                <button
                   onClick={() => {
-                    CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
+                    this.handleAddressClick();
                   }}
-                  to={{
-                    pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
-                    search: window.location.search,
-                  }}
-                  className="ordering-customer__button-link button__link"
+                  className="ordering-customer__address-button button button__link text-left"
                 >
                   {Boolean(addressName) ? (
                     <React.Fragment>
@@ -195,7 +213,7 @@ class CustomerInfo extends Component {
                       </p>
                     </React.Fragment>
                   )}
-                </Link>
+                </button>
               ) : (
                 <Link
                   to={{
@@ -226,7 +244,7 @@ class CustomerInfo extends Component {
                 pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
                 search: window.location.search,
                 state: {
-                  fromCustomer: true,
+                  type: 'edit',
                 },
               }}
               className="ordering-customer__address-detail-container button__link flex flex-start padding-top-bottom-smaller padding-left-right-small"
@@ -421,10 +439,12 @@ export default compose(
       requestInfo: getRequestInfo(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      addressList: getAddressList(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       selectAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
+      loadAddressList: bindActionCreators(loadAddressList, dispatch),
     })
   )
 )(CustomerInfo);

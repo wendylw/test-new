@@ -884,6 +884,10 @@ export const getStoreInfoForCleverTap = state => {
 
 export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
 
+export const getUserName = createSelector(getUser, user => _get(user, 'profile.name', ''));
+
+export const getUserPhone = createSelector(getUser, user => _get(user, 'profile.phone', ''));
+
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
 
 const mergeWithShoppingCart = (onlineCategory, carts) => {
