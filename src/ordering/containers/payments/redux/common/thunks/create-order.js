@@ -317,12 +317,7 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
         // action type.
         dispatch({ type: 'ordering/payments/common/createTngdPaymentDetailFailure', ...e });
       } else {
-        dispatch(
-          appActions.showMessageModal({
-            message: i18next.t('PaymentFailed'),
-            description: i18next.t('PaymentFailedDescription'),
-          })
-        );
+        alert(i18next.t('PaymentFailedDescription'), { title: i18next.t('PaymentFailed') });
       }
 
       return;
