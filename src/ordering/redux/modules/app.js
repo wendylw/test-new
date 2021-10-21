@@ -140,6 +140,7 @@ const fetchCoreBusiness = variables => ({
     types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
     endpoint: Url.apiGql('CoreBusiness'),
     variables,
+    options: { enableDefaultError: true },
   },
 });
 
@@ -158,6 +159,7 @@ export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) =
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
+      options: { enableDefaultError: true },
       ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
     },
   };
@@ -175,6 +177,7 @@ const removeShoppingCartItem = variables => {
       ],
       endpoint,
       variables,
+      options: { enableDefaultError: true },
     },
   };
 };
@@ -190,6 +193,7 @@ const addOrUpdateShoppingCartItem = variables => {
       ],
       endpoint,
       variables,
+      options: { enableDefaultError: true },
     },
   };
 };
@@ -200,6 +204,7 @@ export const emptyShoppingCart = () => {
     [FETCH_GRAPHQL]: {
       types: [types.CLEARALL_REQUEST, types.CLEARALL_SUCCESS, types.CLEARALL_FAILURE],
       endpoint,
+      options: { enableDefaultError: true },
     },
   };
 };
@@ -216,6 +221,7 @@ const fetchOnlineCategory = variables => {
       ],
       endpoint,
       variables,
+      options: { enableDefaultError: true },
     },
   };
 };
@@ -227,9 +233,8 @@ const fetchProductDetail = variables => {
     [FETCH_GRAPHQL]: {
       types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
       endpoint,
-      variables: {
-        ...variables,
-      },
+      variables,
+      options: { enableDefaultError: true },
     },
   };
 };
@@ -249,14 +254,18 @@ export const actions = {
 
     return dispatch({
       types: [types.CREATE_LOGIN_REQUEST, types.CREATE_LOGIN_SUCCESS, types.CREATE_LOGIN_FAILURE],
-      requestPromise: post(Url.API_URLS.POST_LOGIN.url, {
-        accessToken,
-        refreshToken,
-        fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-        shippingType: Utils.getApiRequestShippingType(),
-        registrationTouchpoint: Utils.getRegistrationTouchPoint(),
-        registrationSource: Utils.getRegistrationSource(),
-      }).then(resp => {
+      requestPromise: post(
+        Url.API_URLS.POST_LOGIN.url,
+        {
+          accessToken,
+          refreshToken,
+          fulfillDate: Utils.getFulfillDate(businessUTCOffset),
+          shippingType: Utils.getApiRequestShippingType(),
+          registrationTouchpoint: Utils.getRegistrationTouchPoint(),
+          registrationSource: Utils.getRegistrationSource(),
+        },
+        { enableDefaultError: true }
+      ).then(resp => {
         if (resp && resp.consumerId) {
           const phone = Utils.getLocalStorageVariable('user.p');
           if (phone) {
@@ -295,6 +304,7 @@ export const actions = {
         type,
         phone,
       },
+      options: { enableDefaultError: true },
     },
   }),
 
@@ -309,32 +319,35 @@ export const actions = {
         username: Utils.getLocalStorageVariable('user.p'),
         password: otp,
       },
+      options: { enableDefaultError: true },
     },
   }),
 
   getLoginStatus: () => dispatch => {
     return dispatch({
       types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-      requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
+      requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url, { enableDefaultError: true }).then(resp => {
         if (resp) {
           if (resp.consumerId) {
             if (resp.login) {
-              get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
-                const userInfo = {
-                  Name: profile.firstName,
-                  Phone: profile.phone,
-                  Email: profile.email,
-                  Identity: resp.consumerId,
-                };
+              get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url, { enableDefaultError: true }).then(
+                profile => {
+                  const userInfo = {
+                    Name: profile.firstName,
+                    Phone: profile.phone,
+                    Email: profile.email,
+                    Identity: resp.consumerId,
+                  };
 
-                if (profile.birthday) {
-                  userInfo.DOB = new Date(profile.birthday);
+                  if (profile.birthday) {
+                    userInfo.DOB = new Date(profile.birthday);
+                  }
+
+                  CleverTap.onUserLogin(userInfo);
+
+                  dispatch({ type: types.FETCH_PROFILE_SUCCESS, response: profile });
                 }
-
-                CleverTap.onUserLogin(userInfo);
-
-                dispatch({ type: types.FETCH_PROFILE_SUCCESS, response: profile });
-              });
+              );
             }
           }
         }
@@ -365,6 +378,7 @@ export const actions = {
     [API_REQUEST]: {
       types: [types.FETCH_PROFILE_REQUEST, types.FETCH_PROFILE_SUCCESS, types.FETCH_PROFILE_FAILURE],
       ...url.API_URLS.GET_CONSUMER_PROFILE(consumerId),
+      options: { enableDefaultError: true },
     },
   }),
 
@@ -381,6 +395,7 @@ export const actions = {
         types.FETCH_ONLINESTOREINFO_FAILURE,
       ],
       endpoint: Url.apiGql('OnlineStoreInfo'),
+      options: { enableDefaultError: true },
     },
   }),
 
@@ -421,14 +436,6 @@ export const actions = {
   addOrUpdateShoppingCartItem: variables => dispatch => {
     return dispatch(addOrUpdateShoppingCartItem(variables));
   },
-
-  // TODO: This type is actually not used, because apiError does not respect action type,
-  // which is a bad practice, we will fix it in the future, for now we just keep a useless
-  // action type.
-  showApiErrorModal: code => ({
-    type: 'ordering/app/showApiErrorModal',
-    code,
-  }),
 
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
@@ -476,6 +483,7 @@ export const actions = {
         types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
         endpoint: Url.apiGql('CoreStores'),
         variables: { business, ...address },
+        options: { enableDefaultError: true },
       },
     });
   },
@@ -488,6 +496,7 @@ export const actions = {
         types.FETCH_STORE_HASHCODE_FAILURE,
       ],
       ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
+      options: { enableDefaultError: true },
     },
   }),
 

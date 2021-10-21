@@ -17,6 +17,10 @@
     margin: 4vh 0;
   }
 
+  &__description {
+    color: $new-grey-1-1;
+  }
+
   &__button-group button {
     min-width: 120px;
   }

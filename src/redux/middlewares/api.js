@@ -10,7 +10,7 @@ export default store => next => action => {
     return next(action);
   }
 
-  const { url, method, mode, types, params, payload } = callAPI;
+  const { url, method, mode, types, params, payload, options: requestOptions } = callAPI;
   const requestParamsStr = params
     ? '?' +
       Object.keys(params)
@@ -41,10 +41,10 @@ export default store => next => action => {
   next(actionWith({ type: requestType }));
 
   const methodMapToRequest = {
-    get: url => get(url),
-    post: (url, payload, options) => post(url, payload, options),
-    del: (url, payload, options) => del(url, payload, options),
-    put: (url, payload, options) => put(url, payload, options),
+    get: url => get(url, requestOptions),
+    post: (url, payload, options) => post(url, payload, { ...(requestOptions || {}), ...options }),
+    del: (url, payload, options) => del(url, payload, { ...(requestOptions || {}), ...options }),
+    put: (url, payload, options) => put(url, payload, { ...(requestOptions || {}), ...options }),
   };
 
   return methodMapToRequest[method](requestUrl, payload, { mode })

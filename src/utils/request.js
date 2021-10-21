@@ -112,7 +112,7 @@ function del(url, data, options) {
   });
 }
 
-async function handleResponse(url, response, method, requestStart) {
+async function handleResponse(url, response, method, requestStart, requestOptions) {
   const customEventDetail = {
     type: method,
     request: url,
@@ -152,9 +152,12 @@ async function handleResponse(url, response, method, requestStart) {
           message: REQUEST_ERROR_KEYS[body.code],
           code: body.code || response.status,
         };
+        const { enableDefaultError = false } = requestOptions || {};
+        const showDefaultError =
+          typeof enableDefaultError === 'function' ? enableDefaultError(error.code) || false : enableDefaultError;
 
         // Call feedback API
-        if (ERROR_MAPPING[error.code]) {
+        if (showDefaultError && ERROR_MAPPING[error.code]) {
           ERROR_MAPPING[error.code]();
         }
 

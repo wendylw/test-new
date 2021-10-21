@@ -18,7 +18,7 @@ export const isSourceBeepitCom = () => {
 // todo: this should be global use
 export const fetchRedirectPageState = async () => {
   try {
-    return await get('/go2page/state');
+    return await get('/go2page/state', { enableDefaultError: true });
   } catch (e) {
     console.error(e);
     return {};

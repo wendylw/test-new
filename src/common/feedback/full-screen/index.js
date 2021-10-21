@@ -16,13 +16,19 @@ const STATUS_IMAGE_MAPPING = {
 const FullScreenStandardContent = ({ status, image, content, title }) => (
   // eslint-disable-next-line react/jsx-filename-extension
   <div className="padding-top-bottom-normal">
-    {image ? (
-      <figure className="full-screen__image-container">
-        <img src={image || STATUS_IMAGE_MAPPING[status]} alt={`beep ${status}`} />
-      </figure>
+    <figure className="full-screen__image-container margin-top-bottom-normal">
+      <img src={image || STATUS_IMAGE_MAPPING[status]} alt={`beep ${status}`} />
+    </figure>
+    {title ? (
+      <h4 className="padding-left-right-normal margin-top-bottom-normal text-size-biggest text-weight-bolder">
+        {title}
+      </h4>
     ) : null}
-    {title ? <h4 className="padding-left-right-normal text-size-biggest text-weight-bolder">{title}</h4> : null}
-    {content ? <div className="padding-top-bottom-normal">{content}</div> : null}
+    {content ? (
+      <div className="full-screen__description padding-normal margin-left-right-normal text-size-big text-line-height-base">
+        {content}
+      </div>
+    ) : null}
   </div>
 );
 FullScreenStandardContent.displayName = 'FullScreenStandardContent';
@@ -33,7 +39,7 @@ FullScreenStandardContent.propTypes = {
   title: PropTypes.string,
 };
 FullScreenStandardContent.defaultProps = {
-  status: null,
+  status: FEEDBACK_STATUS.ERROR,
   image: null,
   content: null,
   title: null,
@@ -49,7 +55,6 @@ const normalizeButtons = buttons =>
 const normalizeFullScreenOptions = ({ buttons, ...restOptions }) => ({
   container: document.body,
   show: true,
-  content: null,
   closeButtonContent: null,
   className: '',
   style: {},

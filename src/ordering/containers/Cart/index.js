@@ -125,7 +125,7 @@ class Cart extends Component {
     } else {
       if (isLogin && consumerId) {
         let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
-        let { firstName, email, birthday, phone } = await get(request.url);
+        let { firstName, email, birthday, phone } = await get(request.url, { enableDefaultError: true });
         this.props.appActions.updateProfileInfo({
           name: firstName,
           email,

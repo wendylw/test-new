@@ -30,6 +30,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import { ERROR_MAPPING } from '../../../utils/feedback';
 import { findNearestAvailableStore } from '../../../utils/store-utils';
 import qs from 'qs';
 import config from '../../../config';
@@ -182,6 +183,7 @@ class App extends Component {
       Utils.removeExpectedDeliveryTime();
     }
 
+    this.visitErrorPage();
     fetchOnlineStoreInfo().then(({ responseGql }) => {
       const { data } = responseGql || {};
       const { onlineStoreInfo } = data || {};
@@ -210,6 +212,15 @@ class App extends Component {
     return this.props.match.path === Constants.ROUTER_PATHS.DINE;
   }
 
+  componentDidUpdate(prevProps) {
+    const { pageError } = this.props;
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
+    }
+  }
+
   handleClearError = () => {
     this.props.appActions.clearError();
   };
@@ -217,6 +228,14 @@ class App extends Component {
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
   };
+
+  visitErrorPage() {
+    const { pageError } = this.props;
+
+    if (pageError && pageError.code) {
+      ERROR_MAPPING[pageError.code]();
+    }
+  }
 
   renderDeliveryOrDineMethods() {
     const { enableDelivery, stores, currentStoreId } = this.props;

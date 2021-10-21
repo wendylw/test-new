@@ -123,7 +123,12 @@ async function _fetch(url, opts) {
       message: JSON.stringify(errorBody.message),
     };
 
-    if (ERROR_MAPPING[error.code]) {
+    // Call feedback API
+    const { enableDefaultError = true } = opts || {};
+    const showDefaultError =
+      typeof enableDefaultError === 'function' ? enableDefaultError(error.code) || true : enableDefaultError;
+
+    if (showDefaultError && ERROR_MAPPING[error.code]) {
       ERROR_MAPPING[error.code]();
     }
 

@@ -8,6 +8,8 @@ import {
   getError,
   getUser,
 } from '../../redux/modules/app';
+import { getPageError } from '../../../redux/modules/entities/error';
+import Constants from '../../../utils/constants';
 import '../../../Common.scss';
 import './Loyalty.scss';
 import Routes from '../Routes';
@@ -19,6 +21,7 @@ import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import * as NativeMethods from '../../../utils/native-methods';
 import Utils from '../../../utils/utils';
+import { ERROR_MAPPING } from '../../../utils/feedback';
 import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 import NativeHeader from '../../../components/NativeHeader';
@@ -30,6 +33,7 @@ class App extends Component {
 
   async componentDidMount() {
     const { appActions } = this.props;
+    this.visitErrorPage();
     await appActions.getLoginStatus();
     await appActions.fetchOnlineStoreInfo();
     await appActions.fetchBusiness();
@@ -60,8 +64,13 @@ class App extends Component {
   }
 
   componentDidUpdate = async prevProps => {
-    const { appActions, user } = this.props;
+    const { appActions, user, pageError } = this.props;
     const { isExpired, isLogin } = user || {};
+    const { code } = prevProps.pageError || {};
+
+    if (pageError.code && pageError.code !== code) {
+      this.visitErrorPage();
+    }
 
     // token过期重新发postMessage
     if (isExpired && prevProps.user.isExpired !== isExpired && Utils.isWebview()) {
@@ -92,6 +101,14 @@ class App extends Component {
       });
     }
   };
+
+  visitErrorPage() {
+    const { pageError } = this.props;
+
+    if (pageError && pageError.code) {
+      ERROR_MAPPING[pageError.code]();
+    }
+  }
 
   handleClearError = () => {
     this.props.appActions.clearError();
@@ -141,6 +158,7 @@ export default connect(
     onlineStoreInfo: getOnlineStoreInfo(state),
     messageInfo: getMessageInfo(state),
     error: getError(state),
+    pageError: getPageError(state),
   }),
   dispatch => ({
     appActions: bindActionCreators(appActionCreators, dispatch),
