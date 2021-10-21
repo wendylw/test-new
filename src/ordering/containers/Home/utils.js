@@ -1,9 +1,11 @@
+import config from '../../../config';
 import { get } from '../../../utils/request';
 
 // todo: this should be global use
 export const fetchRedirectPageState = async () => {
   try {
-    return await get('/go2page/state');
+    const beepSiteUrl = config.beepitComUrl;
+    return await get(`${beepSiteUrl}/go2page/state`);
   } catch (e) {
     console.error(e);
     return {};

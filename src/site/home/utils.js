@@ -133,28 +133,14 @@ export const submitStoreMenu = async ({ deliveryAddress, store, source, shipping
   };
   const redirectUrl = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
 
-  let form = document.createElement('form');
-  let input1 = document.createElement('input');
-  let input2 = document.createElement('input');
-
-  form.action = config.beepOnlineStoreUrl(store.business) + '/go2page';
-  form.method = 'POST';
-
-  input1.name = 'target';
-  input1.value = redirectUrl;
-  form.appendChild(input1);
-
   if (!Boolean(deliveryAddress)) {
     loggly.error('beepit.to-store-failure', { message: 'delivery address is empty' });
     console.error('delivery address is empty');
     return;
   }
 
-  input2.name = 'deliveryAddress';
-  input2.value = JSON.stringify(deliveryAddress);
-  form.appendChild(input2);
-
-  document.body.append(form);
-  form.submit();
-  document.body.removeChild(form);
+  Utils.submitForm('/go2page', {
+    target: redirectUrl,
+    deliveryAddress: JSON.stringify(deliveryAddress),
+  });
 };

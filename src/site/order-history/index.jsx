@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React from 'react';
+import qs from 'qs';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -66,7 +67,12 @@ class OrderHistory extends React.Component {
       'store name': _get(order, 'store.storeDisplayName', ''),
     });
 
-    window.location.href = urlObj.toString();
+    // '/go2page' will response 302 status and redirect to ${target} url
+    // we add this for disabled IOS app link in Beep tng mini program
+    // this is workaround way, TNGD side will fix IOS app link issue in the future
+    Utils.submitForm('/go2page', {
+      target: urlObj.toString(),
+    });
   };
 
   handleRefresh = async () => {
