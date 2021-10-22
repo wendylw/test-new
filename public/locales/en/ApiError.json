@@ -82,6 +82,8 @@
   "51004Description": "You are unable to submit a report as this is not a delivery order. Please send us an email to support@beepit.com if you've got any feedback.",
   "54020Title": "Out of Range (#54020)",
   "54020Description": "The delivery address is out of range, please key in your address again. ",
+  "54040Title": "We're sorry, item not available (#54040) ",
+  "54040Description": "The item you selected is unavailable as the merchant may have removed it.",
   "57001Title": "Change shipping type error (#57001)",
   "57001Description": "Rider has been found",
   "57002Title": "Change shipping type error (#57002)",

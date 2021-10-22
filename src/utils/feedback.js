@@ -371,11 +371,10 @@ export const ERROR_MAPPING = {
       ...options,
     }),
   54040: options =>
-    fullScreen(i18next.t(`ApiError:StoreNotFoundDescription`), {
-      title: i18next.t(`ApiError:StoreNotFoundTitle`),
-      closeButtonContent: i18next.t('Common:BackToHome'),
+    alert(i18next.t(`ApiError:54040Description`), {
+      title: i18next.t(`ApiError:54040Title`),
       onClose: () => {
-        window.location.reload();
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`);
       },
       ...options,
     }),
