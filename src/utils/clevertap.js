@@ -1,10 +1,13 @@
 import Utils from './utils';
 import config from '../config';
+import debug from './debug';
 
 const businessName = Utils.isSiteApp() ? 'beepit.com' : config.business;
 
 const pushEvent = (eventName, attributes) => {
   try {
+    debug('[CleverTap]\nEvent: %s\nAttributes: %o', eventName, attributes);
+
     if (Utils.isWebview()) {
       if (Utils.isIOSWebview()) {
         if (eventName === 'Charged') {
@@ -66,6 +69,8 @@ const pushEvent = (eventName, attributes) => {
 const onUserLogin = userProfileProps => {
   try {
     if (!Utils.isWebview()) {
+      debug('[CleverTap]\nEvent: %s\nAttributes: %o', 'onUserLogin', userProfileProps);
+
       window.clevertap?.onUserLogin.push({
         Site: {
           ...userProfileProps,
