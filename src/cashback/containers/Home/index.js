@@ -19,6 +19,7 @@ import Utils from '../../../utils/utils';
 const cashbackDownloadLink = 'https://dl.beepit.com/ocNj';
 const cashbackDownloadText = 'Download the Beep app to keep track of your cashback!';
 const isWebview = Utils.isWebview();
+const isTNGMiniProgram = Utils.isTNGMiniProgram();
 class PageLoyalty extends React.Component {
   state = {
     showRecentActivities: false,
@@ -72,6 +73,8 @@ class PageLoyalty extends React.Component {
     const { displayBusinessName, name } = businessInfo || {};
     const { logo } = onlineStoreInfo || {};
     const { showRecentActivities } = this.state;
+    const hideDownloadBanner = isWebview || isTNGMiniProgram;
+
     return !showRecentActivities ? (
       <section className="loyalty-home__container flex flex-column" data-heap-name="cashback.home.container">
         <article className="loyalty-home__article text-center margin-top-bottom-normal">
@@ -92,7 +95,7 @@ class PageLoyalty extends React.Component {
             buttonText={t('HowToUseCashback')}
           />
         </article>
-        {!isWebview && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
+        {!hideDownloadBanner && <DownloadBanner link={cashbackDownloadLink} text={cashbackDownloadText} />}
         <ReceiptList history={history} />
       </section>
     ) : (

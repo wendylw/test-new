@@ -18,6 +18,7 @@ const pushEvent = (eventName, attributes) => {
             chargeDetails: {
               ...chargeDetails,
               'account name': businessName,
+              Source: 'Mobile',
             },
             items: items,
           });
@@ -28,6 +29,7 @@ const pushEvent = (eventName, attributes) => {
             props: {
               ...attributes,
               'account name': businessName,
+              Source: 'Mobile',
             },
           });
         }
@@ -41,6 +43,7 @@ const pushEvent = (eventName, attributes) => {
             JSON.stringify({
               ...chargeDetails,
               'account name': businessName,
+              Source: 'Mobile',
             }),
             JSON.stringify(Items)
           );
@@ -50,6 +53,7 @@ const pushEvent = (eventName, attributes) => {
             JSON.stringify({
               ...attributes,
               'account name': businessName,
+              Source: 'Mobile',
             })
           );
         }
@@ -58,6 +62,7 @@ const pushEvent = (eventName, attributes) => {
       window.clevertap?.event.push(eventName, {
         ...attributes,
         'account name': businessName,
+        Source: Utils.isTNGMiniProgram() ? 'TNG Mini Program' : 'Web',
       });
     }
   } catch (error) {

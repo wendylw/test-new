@@ -6,6 +6,8 @@ import { SHIPPING_TYPES_MAPPING, DELIVERY_METHOD } from './constants';
 import PromotionContent from './components/PromotionContent';
 import PromotionDetails from './components/PromotionDetails';
 import '../PromotionsBar.scss';
+import Utils from '../../../../../utils/utils';
+import { PROMOTION_CLIENT_TYPES } from '../../../../../utils/constants';
 
 const PROMOTIONS_MAX_DISPLAY_COUNT = 2;
 class PromotionsBar extends PureComponent {
@@ -13,9 +15,23 @@ class PromotionsBar extends PureComponent {
     detailsVisible: false,
   };
 
+  getCurrentClientType = () => {
+    if (Utils.isTNGMiniProgram()) {
+      return PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM;
+    }
+
+    if (Utils.isWebview()) {
+      return PROMOTION_CLIENT_TYPES.APP;
+    }
+
+    return PROMOTION_CLIENT_TYPES.WEB;
+  };
+
   checkPromotionVisible = promotion => {
-    const { shippingType, inApp } = this.props;
+    const { shippingType } = this.props;
     const { appliedSources, appliedClientTypes } = promotion;
+
+    const currentClientType = this.getCurrentClientType();
 
     const source = SHIPPING_TYPES_MAPPING[shippingType || DELIVERY_METHOD.DELIVERY];
 
@@ -23,7 +39,14 @@ class PromotionsBar extends PureComponent {
       return false;
     }
 
-    if (inApp && !appliedClientTypes.includes('app')) {
+    if (!appliedClientTypes.includes(currentClientType)) {
+      const isAppOnly = appliedClientTypes.length === 1 && appliedClientTypes[0] === PROMOTION_CLIENT_TYPES.APP;
+
+      // will display app only promotion
+      if (isAppOnly) {
+        return true;
+      }
+
       return false;
     }
 
