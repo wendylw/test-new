@@ -1,9 +1,10 @@
 @import "src/Variables";
 
-.profile {
+.profile__content {
   height: 100vh;
   position: absolute;
   background: #fff;
+
   &__fixed-wrapper {
     height: 0;
   }
@@ -61,5 +62,11 @@
       border: 1px solid $status-red;
       height: auto;
     }
+  }
+}
+
+.profile {
+  &.active {
+    z-index: 101;
   }
 }

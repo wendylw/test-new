@@ -23,7 +23,6 @@ const initialState = {
     isValid: false,
     isComplete: false,
   },
-  showModal: false,
   updateProfileResult: {
     status: null,
     error: null,
@@ -108,11 +107,7 @@ export const { actions, reducer } = createSlice({
         },
       };
     },
-    setModal(state, action) {
-      state.showModal = action.payload;
-    },
     doNotAskAgain(state) {
-      state.showModal = false;
       state.updateProfileResult = {
         ...state.updateProfileResult,
         ...initialState.updateProfileResult,

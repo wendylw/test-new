@@ -7,10 +7,10 @@ import constants from '../../../../../utils/constants';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../../../redux/modules/app';
-import { actions as ContactDetailActions, getPhone, getUsername } from './redux';
+import { actions as ContactDetailActions } from './redux';
 import 'react-phone-number-input/style.css';
 import './ContactDetail.scss';
-
+import { updateContactDetail, getUsername, getPhone } from './redux';
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class ContactDetail extends Component {
@@ -29,14 +29,12 @@ class ContactDetail extends Component {
   };
 
   handleClickContinue = async () => {
-    const { username, phone } = this.props;
-    await this.props.updateDeliveryDetails({ username: username && username.trim(), phone });
+    this.props.updateContactDetail();
     this.handleClickBack();
   };
 
   render() {
-    const { t, country, phone, username, updateUserName, updatePhone } = this.props;
-
+    const { t, country, username, phone, updateUserName, updatePhone } = this.props;
     return (
       <div className="contact-details flex flex-column">
         <HybridHeader
@@ -118,15 +116,15 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
-      deliveryDetails: getDeliveryDetails(state),
       username: getUsername(state),
       phone: getPhone(state),
+      deliveryDetails: getDeliveryDetails(state),
     }),
     {
-      updateDeliveryDetails: appActionCreators.updateDeliveryDetails,
       init: ContactDetailActions.init,
       updateUserName: ContactDetailActions.updateUserName,
       updatePhone: ContactDetailActions.updatePhone,
+      updateContactDetail,
     }
   )
 )(ContactDetail);

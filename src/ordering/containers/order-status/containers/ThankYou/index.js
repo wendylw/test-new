@@ -48,6 +48,7 @@ import {
   getIsPreOrder,
   getIsUseStorehubLogistics,
 } from '../../redux/selector';
+import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
 import {
@@ -63,6 +64,7 @@ import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
+import { actions as appActionCreators } from '../../../../redux/modules/app';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 const BEFORE_PAID_STATUS_LIST = [
@@ -115,6 +117,23 @@ export class ThankYou extends PureComponent {
   }
 
   componentDidMount = async () => {
+    const { appActions, user } = this.props;
+    const { consumerId } = user || {};
+    const getCookieAsk = Utils.getCookieVariable('do_not_ask');
+    if (getCookieAsk === '1' || !consumerId) {
+      return;
+    }
+
+    this.props.user.profile.status === 'fulfilled' && (await appActions.getProfileInfo(consumerId));
+
+    const { name, email, birthday } = this.props.user.profile || {};
+
+    if (!name || !email || !birthday) {
+      this.timer = setTimeout(() => {
+        this.props.setModal(true);
+      }, 3000);
+    }
+
     const from = Utils.getCookieVariable('__ty_source');
 
     this.setState({
@@ -128,7 +147,7 @@ export class ThankYou extends PureComponent {
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
     window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
-    const { user, loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo } = this.props;
+    const { loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
@@ -155,6 +174,10 @@ export class ThankYou extends PureComponent {
       this.promptUserEnableAppNotification();
     }
   };
+
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+  }
 
   promptUserEnableAppNotification() {
     try {
@@ -727,12 +750,17 @@ export class ThankYou extends PureComponent {
   }
 
   handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history, orderStatus } = this.props;
+    const { order, storeHashCode, history, orderStatus, showProfileVisibility } = this.props;
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
     const type = Utils.getOrderTypeFromUrl();
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
+
+    if (showProfileVisibility) {
+      this.props.setModal(false);
+      return;
+    }
 
     if (isOrderBeforePaid) {
       history.goBack();
@@ -762,6 +790,10 @@ export class ThankYou extends PureComponent {
     return;
   };
 
+  handleModal = () => {
+    this.props.setModal(false);
+  };
+
   render() {
     const { t, history, match, order, businessInfo, businessUTCOffset, onlineStoreInfo } = this.props;
     const date = new Date();
@@ -775,7 +807,12 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {order && this.state.from === 'payment' && <CompleteProfileModal />}
+        {order && this.state.from === 'payment' && (
+          <CompleteProfileModal
+            closeModal={this.handleModal}
+            showProfileVisibility={this.props.showProfileVisibility}
+          />
+        )}
         <React.Fragment>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
@@ -865,13 +902,14 @@ export default compose(
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      showProfileVisibility: getshowProfileVisibility(state),
     }),
     dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
       updateCancellationReasonVisibleState: bindActionCreators(
         thankYouActionCreators.updateCancellationReasonVisibleState,
         dispatch
       ),
+      setModal: bindActionCreators(thankYouActionCreators.setModal, dispatch),
       loadStoreIdHashCode: bindActionCreators(loadStoreIdHashCode, dispatch),
       loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
@@ -879,6 +917,7 @@ export default compose(
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(ThankYou);

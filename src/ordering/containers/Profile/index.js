@@ -15,36 +15,51 @@ import {
   getProfileBirthday,
   getEmailInvalidErrorVisibility,
   getbirthdayInvalidErrorVisibility,
-  getShowModal,
 } from './redux/selectors';
 import { saveProfileInfo } from './redux/thunk';
+import * as NativeMethods from '../../../utils/native-methods';
 class CompleteProfileModal extends Component {
   state = {
-    error: false,
-    message: '',
+    nativeMethodExist: true,
   };
   async componentDidMount() {
     const { appActions, profileAction, user } = this.props;
     const { consumerId } = user || {};
-    const getCookieAsk = Utils.getCookieVariable('do_not_ask');
-    if (getCookieAsk === '1' || !consumerId) {
-      return;
-    }
 
-    await appActions.getProfileInfo(consumerId);
+    this.props.user.profile.status === 'fulfilled' && (await appActions.getProfileInfo(consumerId));
 
     const { name, email, birthday } = this.props.user.profile || {};
-
-    this.timer = setTimeout(() => {
-      const showProfile = !name || !email || !birthday;
-      this.props.profileAction.setModal(showProfile);
-    }, 3000);
 
     profileAction.init({ name, email, birthday });
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.showProfileVisibility !== prevProps.showProfileVisibility) {
+      if (Utils.isWebview() && this.props.showProfileVisibility) {
+        this.showNativeCompleteProfilePage();
+      }
+    }
+  }
+
   componentWillUnmount() {
     clearTimeout(this.timer);
+  }
+
+  async showNativeCompleteProfilePage() {
+    try {
+      const result = await NativeMethods.showCompleteProfilePageAsync();
+      const { appActions, user } = this.props;
+      const { consumerId } = user || {};
+      if (result?.fulfilled) {
+        appActions.getProfileInfo(consumerId);
+      }
+      this.closeProfileModal();
+    } catch (error) {
+      const nativeMethodNotExist = error.code === NativeMethods.NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST;
+      this.setState({
+        nativeMethodExist: !nativeMethodNotExist,
+      });
+    }
   }
 
   handleClickBack = () => {
@@ -74,7 +89,7 @@ class CompleteProfileModal extends Component {
   };
 
   closeProfileModal = () => {
-    this.props.profileAction.setModal(false);
+    this.props.closeModal();
   };
 
   handleDoNotAsk = () => {
@@ -85,6 +100,7 @@ class CompleteProfileModal extends Component {
     });
 
     this.props.profileAction.doNotAskAgain();
+    this.closeProfileModal();
   };
 
   handleBackEdit = () => {
@@ -116,14 +132,18 @@ class CompleteProfileModal extends Component {
   };
 
   render() {
-    const { t, showModal } = this.props;
+    const { t, showProfileVisibility } = this.props;
     const email = this.props.profileEmail;
     const birthday = this.props.profileBirthday;
     const name = this.props.profileName;
 
     const className = ['aside fixed-wrapper', 'profile flex flex-column flex-end'];
 
-    if (showModal) {
+    if (Utils.isWebview() && this.state.nativeMethodExist) {
+      return null;
+    }
+
+    if (showProfileVisibility) {
       className.push('active cover');
     }
 
@@ -135,12 +155,8 @@ class CompleteProfileModal extends Component {
           onBackEdit={this.handleBackEdit}
           t={this.props.t}
         />
-        <aside
-          className={className.join(' ')}
-          data-heap-name="ordering.home.profile.container"
-          style={{ zIndex: '101' }}
-        >
-          <div className="profile flex flex-column flex-space-between aside__content">
+        <aside className={className.join(' ')} data-heap-name="ordering.home.profile.container">
+          <div className="profile__content flex flex-column flex-space-between aside__content">
             <section>
               <div className="padding-top-bottom-smaller padding-left-right-normal text-right">
                 <button
@@ -151,21 +167,23 @@ class CompleteProfileModal extends Component {
                 </button>
               </div>
               <div className="padding-top-bottom-smaller padding-left-right-normal">
-                <h2 className="profile__title padding-top-bottom-normal text-size-huge text-weight-bolder">
+                <h2 className="profile__content__title padding-top-bottom-normal text-size-huge text-weight-bolder">
                   {t('CompleteYourProfile')}
                 </h2>
-                <p className="profile__tip-color text-size-big text-line-height-base">{t('CompleteProfileTip')}</p>
+                <p className="profile__content__tip-color text-size-big text-line-height-base">
+                  {t('CompleteProfileTip')}
+                </p>
               </div>
               <div className="padding-left-right-normal">
                 <div className="padding-top-bottom-smaller margin-top-bottom-normal">
                   <div className="form__group padding-small border-radius-base padding-left-right-normal ">
-                    <div className="profile__label profile__input--required">
-                      <label className="profile__label text-size-small text-top">{t('Name')}</label>
+                    <div className="profile__content__label profile__content__input--required">
+                      <label className="profile__content__label text-size-small text-top">{t('Name')}</label>
                     </div>
                     <input
                       name="consumerName"
                       value={name}
-                      className="profile__input form__input"
+                      className="profile__content__input form__input"
                       type="text"
                       required={true}
                       onChange={this.handleInputChange}
@@ -180,40 +198,40 @@ class CompleteProfileModal extends Component {
                   ${this.props.emailInvalidErrorVisibility ? 'error' : ''}
                    `}
                   >
-                    <div className=" profile__label profile__input--required">
-                      <label className="profile__label text-size-small text-top">{t('EmailAddress')}</label>
+                    <div className=" profile__content__label profile__content__input--required">
+                      <label className="profile__content__label text-size-small text-top">{t('EmailAddress')}</label>
                     </div>
                     <input
                       name="consumerEmail"
                       value={email}
                       onChange={this.handleInputChange}
                       onBlur={this.handleEmailInputBlur}
-                      className={`profile__input form__input
+                      className={`profile__content__input form__input
                   ${this.props.emailInvalidErrorVisibility ? 'text-error' : ''}
                    `}
                       onFocus={this.handleEmailInputFocus}
                     />
                   </div>
                   {this.props.emailInvalidErrorVisibility && (
-                    <p className="profile__input-message--error form__error-message padding-top-bottom-smaller">
+                    <p className="profile__content__input-message--error form__error-message padding-top-bottom-smaller">
                       {t('NotValidEmail')}
                     </p>
                   )}
                 </div>
                 <div className="padding-top-bottom-small margin-top-bottom-normal ">
                   <div
-                    className={`profile__birthday profile__input-next padding-small border-radius-base padding-left-right-normal
+                    className={`profile__content__birthday profile__content__input-next padding-small border-radius-base padding-left-right-normal
                     ${this.props.birthdayInvalidErrorVisibility ? 'error' : ''}
                      `}
                   >
-                    <div className=" profile__label profile__input--required">
-                      <label className="profile__label text-size-small text-top">{t('DateOfBirth')}</label>
+                    <div className=" profile__content__label profile__content__input--required">
+                      <label className="profile__content__label text-size-small text-top">{t('DateOfBirth')}</label>
                     </div>
                     <input
                       name="consumerBirthday"
                       value={birthday}
                       onBlur={this.handleBirthdayInputBlur}
-                      className={`profile__input form__input
+                      className={`profile__content__input form__input
                   ${this.props.birthdayInvalidErrorVisibility ? 'text-error' : ''}
                    `}
                       placeholder="DD/MM"
@@ -223,7 +241,7 @@ class CompleteProfileModal extends Component {
                     />
                   </div>
                   {this.props.birthdayInvalidErrorVisibility && (
-                    <p className="profile__input-message--error form__error-message padding-top-bottom-smaller">
+                    <p className="profile__content__input-message--error form__error-message padding-top-bottom-smaller">
                       {t('NotValidBirthday')}
                     </p>
                   )}
@@ -261,7 +279,6 @@ export default compose(
       profileName: getProfileName(state),
       profileEmail: getProfileEmail(state),
       profileBirthday: getProfileBirthday(state),
-      showModal: getShowModal(state),
       deliveryDetails: getDeliveryDetails(state),
       updateProfileError: getUpdateProfileError(state),
       emailInvalidErrorVisibility: getEmailInvalidErrorVisibility(state),
