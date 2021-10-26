@@ -30,6 +30,7 @@ const normalizeAlertOptions = options => ({
   onClose: () => {},
   ...options,
 });
+
 const createAlert = (content, options) =>
   new Promise(resolve => {
     const { container, onClose, ...restOptions } = options;
@@ -44,8 +45,9 @@ const createAlert = (content, options) =>
       onClose: () => {
         render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => {
           destroyTarget(rootDOM);
-          onClose();
           resolve();
+          // Alert component will trigger onModalVisibilityChanged() when destroyTarget. If onClose function is not on async queue, redirection URL will be assignment
+          setTimeout(() => onClose(), 0);
         });
       },
     });

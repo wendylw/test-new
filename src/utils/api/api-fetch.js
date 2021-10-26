@@ -1,7 +1,7 @@
 import originalKy from 'ky';
 import qs from 'qs';
 import { ERROR_MAPPING } from '../feedback';
-import { getClientSource } from './api-utils';
+import { getClientSource, ApiError } from './api-utils';
 
 export const ky = originalKy.create({
   hooks: {
@@ -114,14 +114,20 @@ async function _fetch(url, opts) {
      * {code}
      * {errors:[{code}]}
      *  */
-    const body = await parseResponse(e.response || {});
-    const errorBody = (body.errors ? body.errors[0] : body) || {};
-    const error = {
-      ...errorBody,
-      status: e.status,
-      code: errorBody.errorCode || '50000',
-      message: JSON.stringify(errorBody.message),
-    };
+    let error = new ApiError('90000', 'Network error');
+
+    if (e.response) {
+      const body = await parseResponse(e.response);
+      const errorBody = body.errors && body.errors[0] ? body.errors[0] : body;
+      const apiErrorCode = errorBody.code || errorBody.errorCode || '50000';
+
+      error = new ApiError(apiErrorCode, errorBody.message, {
+        status: errorBody.status,
+        extraInfo: errorBody.extraInfo,
+        response: e.response,
+        responseBody: body,
+      });
+    }
 
     // Call feedback API
     const { enableDefaultError = true } = opts || {};
@@ -133,8 +139,8 @@ async function _fetch(url, opts) {
     }
 
     // Send log to Loggly
-    if (errorBody.code || errorBody.errorCode) {
-      customEventDetail.code = errorBody.code || errorBody.errorCode;
+    if (error.code) {
+      customEventDetail.code = error.code;
     }
 
     window.dispatchEvent(

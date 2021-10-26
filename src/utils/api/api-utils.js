@@ -1,5 +1,17 @@
 import Utils from '../../utils/utils';
 
+export class ApiError extends Error {
+  constructor(code, message, { extraInfo, response, responseBody } = {}) {
+    super();
+
+    this.code = code;
+    this.message = message;
+    this.extraInfo = extraInfo;
+    this.response = response;
+    this.responseBody = responseBody;
+  }
+}
+
 export const API_INFO = {
   getStores: (businessName, storeId) => ({
     url: `/api/stores/${businessName}${storeId ? `/${storeId}` : ''}`,

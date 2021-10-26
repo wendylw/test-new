@@ -76,8 +76,9 @@ const createFullScreen = (content, options) =>
       onClose: () => {
         render(React.cloneElement(fullScreenInstance, { show: false }), rootDOM, () => {
           destroyTarget(rootDOM);
-          onClose();
           resolve();
+          // FullScreen component will trigger onModalVisibilityChanged() when destroyTarget. If onClose function is not on async queue, redirection URL will be assignment
+          setTimeout(() => onClose(), 0);
         });
       },
     });

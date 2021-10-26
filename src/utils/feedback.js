@@ -11,7 +11,7 @@ function getRedirectUrl(path, otherQueryString) {
   const h = Utils.getQueryString('h');
   const type = Utils.getQueryString('type');
 
-  return `${window.location.origin}${path}?h=${h}&type=${type}${otherQueryString}`;
+  return `${window.location.origin}${path}?h=${h}&type=${type}${otherQueryString || ''}`;
 }
 
 export const ERROR_MAPPING = {

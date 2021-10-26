@@ -243,9 +243,9 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       throw error;
     }
   } catch (error) {
-    if (error.code) {
+    if (error.code && CREATE_ORDER_ERROR[error.code]) {
       CREATE_ORDER_ERROR[error.code]();
-    } else {
+    } else if (!error.code) {
       alert.raw(
         <p className="padding-small text-size-biggest text-weight-bolder">
           {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}

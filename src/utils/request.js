@@ -126,6 +126,7 @@ async function handleResponse(url, response, method, requestStart, requestOption
           detail: customEventDetail,
         })
       );
+
       return Promise.resolve(data);
     });
   } else {
