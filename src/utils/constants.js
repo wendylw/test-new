@@ -45,6 +45,7 @@ const ROUTER_PATHS = {
   // site
   SITE_HOME: '/home',
   QRSCAN: '/qrscan',
+  SHOPPING_CART: '/shopping-cart',
   SCAN: '/scan',
   SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',

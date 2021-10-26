@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
+import qs from 'qs';
 import Constants from '../../../../utils/constants';
 import {
   actions as appActionCreators,
@@ -21,6 +22,31 @@ import loggly from '../../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 
 export class Footer extends Component {
+  componentDidMount = () => {
+    this.showCartListDrawerIfNeeded();
+  };
+
+  showCartListDrawerIfNeeded = () => {
+    const {
+      history,
+      location: { search },
+      onShownCartListDrawer,
+    } = this.props;
+    const { ROUTER_PATHS } = Constants;
+    const { source = '' } = qs.parse(search, { ignoreQueryPrefix: true });
+
+    if (!source.includes(ROUTER_PATHS.SHOPPING_CART)) return;
+
+    onShownCartListDrawer();
+
+    const encodePathURI = qs.stringify(ROUTER_PATHS.SHOPPING_CART);
+    const regex = new RegExp(`&source=.*${encodePathURI}`, 'gi');
+    history.replace({
+      pathname: history.pathname,
+      search: search.replace(regex, ''),
+    });
+  };
+
   componentDidUpdate = async prevProps => {
     const { user } = this.props;
     const { isExpired, isLogin } = user || {};
