@@ -18,6 +18,7 @@ import {
 } from './redux/selectors';
 import { saveProfileInfo } from './redux/thunk';
 import * as NativeMethods from '../../../utils/native-methods';
+import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 class CompleteProfileModal extends Component {
   state = {
     nativeMethodExist: true,
@@ -35,6 +36,7 @@ class CompleteProfileModal extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.showProfileVisibility !== prevProps.showProfileVisibility) {
+      this.props.onModalVisibilityChanged(this.props.showProfileVisibility);
       if (Utils.isWebview() && this.props.showProfileVisibility) {
         this.showNativeCompleteProfilePage();
       }
@@ -85,6 +87,10 @@ class CompleteProfileModal extends Component {
   };
 
   closeProfileModal = () => {
+    this.props.closeModal();
+  };
+
+  onHistoryBackReceived = () => {
     this.props.closeModal();
   };
 
@@ -285,5 +291,6 @@ export default compose(
       profileAction: bindActionCreators(profileActionCreators, dispatch),
       saveProfileInfo: bindActionCreators(saveProfileInfo, dispatch),
     })
-  )
+  ),
+  withBackButtonSupport
 )(CompleteProfileModal);
