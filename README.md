@@ -11,13 +11,14 @@
    4. [Start F&B && Loyalty](#start-ordering-loyalty)
    5. [Start Beep Entrance](#beep-entrance)
    6. [Online Debug](#online-debug)
-4. [Customize Workbox Service Workers](#customize-workbox-service-workers)
-5. [I18N JSON File Style Guide](#i18n-json-style-guide)
-6. [Style Guide](#style-guide)
-7. [Analyzing bundle size](#analyzing-bundle-size)
-8. [Trouble Shooting](#trouble-shooting)
-9. [Heap name convention for loggly](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
-10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
+4. [How to use Mock Server](https://github.com/storehubnet/frontend-dev-mock-server#usage)
+5. [Customize Workbox Service Workers](#customize-workbox-service-workers)
+6. [I18N JSON File Style Guide](#i18n-json-style-guide)
+7. [Style Guide](#style-guide)
+8. [Analyzing bundle size](#analyzing-bundle-size)
+9. [Trouble Shooting](#trouble-shooting)
+10. [Heap name convention for loggly](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
+11. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>
 
