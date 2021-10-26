@@ -130,7 +130,7 @@ export class ThankYou extends PureComponent {
 
     if (!name || !email || !birthday) {
       this.timer = setTimeout(() => {
-        this.props.setModal(true);
+        this.props.setShowProfileVisibility(true);
       }, 3000);
     }
 
@@ -758,7 +758,7 @@ export class ThankYou extends PureComponent {
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
 
     if (showProfileVisibility) {
-      this.props.setModal(false);
+      this.props.setShowProfileVisibility(false);
       return;
     }
 
@@ -790,8 +790,8 @@ export class ThankYou extends PureComponent {
     return;
   };
 
-  handleModal = () => {
-    this.props.setModal(false);
+  handleCompleteProfileModalClose = () => {
+    this.props.setShowProfileVisibility(false);
   };
 
   render() {
@@ -809,7 +809,7 @@ export class ThankYou extends PureComponent {
       >
         {order && this.state.from === 'payment' && (
           <CompleteProfileModal
-            closeModal={this.handleModal}
+            closeModal={this.handleCompleteProfileModalClose}
             showProfileVisibility={this.props.showProfileVisibility}
           />
         )}
@@ -909,7 +909,7 @@ export default compose(
         thankYouActionCreators.updateCancellationReasonVisibleState,
         dispatch
       ),
-      setModal: bindActionCreators(thankYouActionCreators.setModal, dispatch),
+      setShowProfileVisibility: bindActionCreators(thankYouActionCreators.setShowProfileVisibility, dispatch),
       loadStoreIdHashCode: bindActionCreators(loadStoreIdHashCode, dispatch),
       loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),

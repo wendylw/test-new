@@ -32,7 +32,7 @@ const { reducer, actions } = createSlice({
     updateCancellationReasonVisibleState(state, action) {
       state.orderCancellationReasonAsideVisible = action.payload;
     },
-    setModal(state, action) {
+    setShowProfileVisibility(state, action) {
       state.showProfileVisibility = action.payload;
     },
   },

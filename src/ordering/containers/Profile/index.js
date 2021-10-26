@@ -41,10 +41,6 @@ class CompleteProfileModal extends Component {
     }
   }
 
-  componentWillUnmount() {
-    clearTimeout(this.timer);
-  }
-
   async showNativeCompleteProfilePage() {
     try {
       const result = await NativeMethods.showCompleteProfilePageAsync();
