@@ -11,7 +11,7 @@ debug('Start setup proxy');
 const target = process.env.PROXY;
 let proxy;
 if (target) {
-  proxy = createProxyMiddleware({ target, changeOrigin: process.env.PROXY_CHANGE_ORIGIN !== 'false', onProxyReq });
+  proxy = createProxyMiddleware({ target, changeOrigin: true, onProxyReq });
   debug(`proxy to ${target}`);
 } else {
   debug(`Not config target for proxy`);
