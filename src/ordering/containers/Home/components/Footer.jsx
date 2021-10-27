@@ -26,11 +26,7 @@ export class Footer extends Component {
   };
 
   showCartListDrawerIfNeeded = () => {
-    const {
-      history,
-      location: { search },
-      onShownCartListDrawer,
-    } = this.props;
+    const { history, onShownCartListDrawer } = this.props;
     const { ROUTER_PATHS } = Constants;
     const source = Utils.getQueryString('source');
 
@@ -38,11 +34,11 @@ export class Footer extends Component {
 
     onShownCartListDrawer();
 
-    const newSearch = Utils.removeParam('source', search);
+    const search = Utils.removeParam('source', window.location.search);
 
     history.replace({
-      pathname: history.pathname,
-      search: newSearch,
+      pathname: ROUTER_PATHS.ORDERING_HOME,
+      search,
     });
   };
 
