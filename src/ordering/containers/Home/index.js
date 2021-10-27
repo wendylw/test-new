@@ -483,6 +483,11 @@ export class Home extends Component {
       return;
     }
 
+    if (Utils.isWebview()) {
+      NativeMethods.goBack();
+      return;
+    }
+
     this.props.history.goBack();
   };
 
