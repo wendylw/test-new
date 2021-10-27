@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
-import qs from 'qs';
 import Constants from '../../../../utils/constants';
 import {
   actions as appActionCreators,
@@ -33,17 +32,17 @@ export class Footer extends Component {
       onShownCartListDrawer,
     } = this.props;
     const { ROUTER_PATHS } = Constants;
-    const { source = '' } = qs.parse(search, { ignoreQueryPrefix: true });
+    const source = Utils.getQueryString('source');
 
-    if (!source.includes(ROUTER_PATHS.SHOPPING_CART)) return;
+    if (!source || !source.includes(ROUTER_PATHS.SHOPPING_CART)) return;
 
     onShownCartListDrawer();
 
-    const encodePathURI = qs.stringify(ROUTER_PATHS.SHOPPING_CART);
-    const regex = new RegExp(`&source=.*${encodePathURI}`, 'gi');
+    const newSearch = Utils.removeParam('source', search);
+
     history.replace({
       pathname: history.pathname,
-      search: search.replace(regex, ''),
+      search: newSearch,
     });
   };
 
