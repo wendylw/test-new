@@ -56,6 +56,8 @@
   "54012Description": "One or more items in your cart are currently out of stock. Please edit your cart and checkout again (#54012).",
   "54013Title": "Out of Stock",
   "54013Description": "One or more items in your cart are currently out of stock. Please edit your cart and checkout again (#54013).",
+  "54014Title": "We're sorry, some items are unavailable (#54014)",
+  "54014Description": "Some items in your cart are sold out or unavailable. Please edit the cart and try again.",
   "41016Title": "Cancellation Error (#41016)",
   "41016Description": "Please select a valid cancellation reason and try again.",
   "41017Title": "Cancellation Error (#41017)",
