@@ -66,9 +66,16 @@ describe('utils/utils', () => {
       search: mockQuery,
     };
 
+    // Test no key case
+    expect(getFilteredQueryString()).toBe(mockQuery);
+    // Test nonexistent case
+    expect(getFilteredQueryString('')).toBe(mockQuery);
+    // Test 1 key case
     expect(getFilteredQueryString('source')).toBe(
       '?h=U2FsdGVkX1%2FQuvwwVAwo86zaksrs1CTAp%2FtwS25fgiHhftafA8po%2Fy0SAmPH2JQc&type=delivery'
     );
+    // Test multiple key test
+    expect(getFilteredQueryString('h', 'source')).toBe('?type=delivery');
 
     // Reset to original state
     window.location = oldLocation;
