@@ -1,11 +1,11 @@
 import originalKy from 'ky';
 import qs from 'qs';
-import { getClientSource } from './api-utils';
+import Utils from '../utils';
 
 export const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
-    beforeRequest: [req => req.headers.set('client', getClientSource().name)],
+    beforeRequest: [req => req.headers.set('client', Utils.getClient())],
     retry: {
       limit: 1,
       methods: ['get'],

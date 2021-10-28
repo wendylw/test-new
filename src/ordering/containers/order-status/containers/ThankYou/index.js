@@ -284,10 +284,6 @@ export class ThankYou extends PureComponent {
         };
       }) || [];
 
-    const orderSourceType = Utils.getOrderSource();
-    const orderSource =
-      orderSourceType === 'BeepApp' ? 'App' : orderSourceType === 'BeepSite' ? 'beepit.com' : 'Store URL';
-
     let preOrderPeriod = 0;
     if (order.isPreOrder) {
       preOrderPeriod = (new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / (60 * 60 * 1000);
@@ -305,7 +301,7 @@ export class ThankYou extends PureComponent {
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
-      'Order Source': orderSource,
+      'Order Source': Utils.getOrderSourceForCleverTab(),
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
@@ -631,10 +627,10 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    const { user, shippingType } = this.props;
-    const { isWebview } = user || {};
+    const { shippingType } = this.props;
+    const hideDownloadBanner = Utils.isTNGMiniProgram() || Utils.isWebview();
 
-    if (isWebview) {
+    if (hideDownloadBanner) {
       return null;
     }
 
@@ -690,6 +686,8 @@ export class ThankYou extends PureComponent {
     const { user, order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
     const userEmail = _get(user, 'profile.email', '');
+    const userPhone = _get(user, 'profile.phone', '');
+    const userName = _get(user, 'profile.name', '');
     const orderId = _get(order, 'orderId', '');
     const tableId = _get(order, 'tableId', '');
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
@@ -701,6 +699,14 @@ export class ThankYou extends PureComponent {
     if (!order) {
       return null;
     }
+
+    // TODO: doesn't ensure the user already login on thankyou page
+    // so possible getting empty value from user profile
+    const userInfoForLiveChat = {
+      email: userEmail,
+      phone: orderUserPhone || userPhone,
+      name: orderUserName || userName,
+    };
 
     const rightContentOfTableId = {
       text: tableId ? t('TableIdText', { tableId }) : '',
@@ -725,9 +731,9 @@ export class ThankYou extends PureComponent {
         onClick: () => {
           NativeMethods.startChat({
             orderId,
-            name: orderUserName,
-            phone: orderUserPhone,
-            email: userEmail,
+            name: userInfoForLiveChat.name,
+            phone: userInfoForLiveChat.phone,
+            email: userInfoForLiveChat.email,
             storeName: orderStoreName,
           });
         },
@@ -746,7 +752,14 @@ export class ThankYou extends PureComponent {
       return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
+    return (
+      <LiveChat
+        orderId={orderId}
+        email={userInfoForLiveChat.email}
+        name={userInfoForLiveChat.name}
+        phone={userInfoForLiveChat.phone}
+      />
+    );
   }
 
   handleHeaderNavFunc = () => {
@@ -756,6 +769,7 @@ export class ThankYou extends PureComponent {
     const type = Utils.getOrderTypeFromUrl();
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (showProfileVisibility) {
       this.props.setShowProfileVisibility(false);
@@ -769,6 +783,11 @@ export class ThankYou extends PureComponent {
 
     if (isWebview) {
       NativeMethods.closeWebView();
+      return;
+    }
+
+    if (Utils.isTNGMiniProgram() && sourceUrl) {
+      window.location.href = sourceUrl;
       return;
     }
 

@@ -1,10 +1,13 @@
 import Utils from './utils';
 import config from '../config';
+import debug from './debug';
 
 const businessName = Utils.isSiteApp() ? 'beepit.com' : config.business;
 
 const pushEvent = (eventName, attributes) => {
   try {
+    debug('[CleverTap]\nEvent: %s\nAttributes: %o', eventName, attributes);
+
     if (Utils.isWebview()) {
       if (Utils.isIOSWebview()) {
         if (eventName === 'Charged') {
@@ -15,6 +18,7 @@ const pushEvent = (eventName, attributes) => {
             chargeDetails: {
               ...chargeDetails,
               'account name': businessName,
+              Source: 'Mobile',
             },
             items: items,
           });
@@ -25,6 +29,7 @@ const pushEvent = (eventName, attributes) => {
             props: {
               ...attributes,
               'account name': businessName,
+              Source: 'Mobile',
             },
           });
         }
@@ -38,6 +43,7 @@ const pushEvent = (eventName, attributes) => {
             JSON.stringify({
               ...chargeDetails,
               'account name': businessName,
+              Source: 'Mobile',
             }),
             JSON.stringify(Items)
           );
@@ -47,6 +53,7 @@ const pushEvent = (eventName, attributes) => {
             JSON.stringify({
               ...attributes,
               'account name': businessName,
+              Source: 'Mobile',
             })
           );
         }
@@ -55,6 +62,7 @@ const pushEvent = (eventName, attributes) => {
       window.clevertap?.event.push(eventName, {
         ...attributes,
         'account name': businessName,
+        Source: Utils.isTNGMiniProgram() ? 'TNG Mini Program' : 'Web',
       });
     }
   } catch (error) {
@@ -66,6 +74,8 @@ const pushEvent = (eventName, attributes) => {
 const onUserLogin = userProfileProps => {
   try {
     if (!Utils.isWebview()) {
+      debug('[CleverTap]\nEvent: %s\nAttributes: %o', 'onUserLogin', userProfileProps);
+
       window.clevertap?.onUserLogin.push({
         Site: {
           ...userProfileProps,
