@@ -189,8 +189,6 @@ class Cart extends Component {
   }
 
   handleClickBack = async () => {
-    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
-
     if (this.additionalCommentsEl) {
       await this.additionalCommentsEl.blur();
     }
@@ -201,8 +199,7 @@ class Cart extends Component {
 
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-        // search: window.location.search,
-        search: newSearchParams,
+        search: window.location.search,
       });
     }, 100);
   };
