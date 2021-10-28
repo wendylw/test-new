@@ -23,4 +23,4 @@ export const getbirthdayInvalidErrorVisibility = createSelector(
   (isValid, isComplete) => !isValid && isComplete
 );
 
-export const getShowModal = state => state.profile.showModal;
+export const getDuplicatedEmailAlertVisibile = state => state.profile.updateProfileResult.error?.code === '40024';

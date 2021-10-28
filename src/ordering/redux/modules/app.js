@@ -88,6 +88,7 @@ export const initialState = {
       name: '',
       email: '',
       birthday: null,
+      status: '',
     },
     isError: false,
     otpType: 'otp',
@@ -641,6 +642,16 @@ const user = (state = initialState.user, action) => {
           ...fields,
         },
       };
+
+    case types.FETCH_PROFILE_REQUEST: {
+      return {
+        ...state,
+        profile: {
+          status: API_REQUEST_STATUS.PENDING,
+        },
+      };
+    }
+
     case types.FETCH_PROFILE_SUCCESS: {
       const { firstName, email, birthday, phone } = response || {};
       return {
@@ -651,6 +662,15 @@ const user = (state = initialState.user, action) => {
           birthday,
           phone,
           status: API_REQUEST_STATUS.FULFILLED,
+        },
+      };
+    }
+
+    case types.FETCH_PROFILE_FAILURE: {
+      return {
+        ...state,
+        profile: {
+          status: API_REQUEST_STATUS.REJECTED,
         },
       };
     }
@@ -885,6 +905,8 @@ export const getApiError = state => state.app.apiError;
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
 export const getUserLoginRequestStatus = state => state.app.user.loginRequestStatus;
+
+export const getUserProfileStatus = state => state.app.user.profile.status;
 
 export const getIsUserLoginRequestStatusInPending = createSelector(
   getUserLoginRequestStatus,

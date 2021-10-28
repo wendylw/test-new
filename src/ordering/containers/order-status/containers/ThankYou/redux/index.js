@@ -22,7 +22,7 @@ const initialState = {
   updateShippingTypeStatus: null, // pending || fulfilled || rejected
   updateShippingTypeError: null,
   cancelOrderStatus: null, // pending || fulfilled || rejected
-  showProfileVisibility: false,
+  profileModalVisibility: false,
 };
 
 const { reducer, actions } = createSlice({
@@ -33,7 +33,7 @@ const { reducer, actions } = createSlice({
       state.orderCancellationReasonAsideVisible = action.payload;
     },
     setShowProfileVisibility(state, action) {
-      state.showProfileVisibility = action.payload;
+      state.profileModalVisibility = action.payload;
     },
   },
   extraReducers: {

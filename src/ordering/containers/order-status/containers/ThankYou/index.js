@@ -116,22 +116,20 @@ export class ThankYou extends PureComponent {
     });
   }
 
-  componentDidMount = async () => {
+  showCompleteProfile = async () => {
     const { appActions, user } = this.props;
     const { consumerId } = user || {};
-    const getCookieAsk = Utils.getCookieVariable('do_not_ask');
-    if (getCookieAsk === '1' || !consumerId) {
-      return;
-    }
 
-    this.props.user.profile.status === 'fulfilled' && (await appActions.getProfileInfo(consumerId));
+    await appActions.getProfileInfo(consumerId);
 
-    const { name, email, birthday } = this.props.user.profile || {};
+    if (this.props.user.profile.status === 'fulfilled') {
+      const { name, email, birthday } = this.props.user.profile || {};
 
-    if (!name || !email || !birthday) {
-      this.timer = setTimeout(() => {
-        this.props.setShowProfileVisibility(true);
-      }, 3000);
+      if (!name || !email || !birthday) {
+        this.timer = setTimeout(() => {
+          this.props.setShowProfileVisibility(true);
+        }, 3000);
+      }
     }
 
     const from = Utils.getCookieVariable('__ty_source');
@@ -142,6 +140,23 @@ export class ThankYou extends PureComponent {
 
     // immidiately remove __ty_source cookie after setting in the state.
     Utils.removeCookieVariable('__ty_source');
+  };
+
+  componentDidMount = async () => {
+    const { user, history } = this.props;
+    const { consumerId } = user || {};
+    const getCookieAsk = Utils.getCookieVariable('do_not_ask');
+    if (!consumerId) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        search: window.location.search,
+      });
+      return;
+    }
+
+    if (getCookieAsk !== '1') {
+      this.showCompleteProfile();
+    }
 
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
@@ -763,7 +778,7 @@ export class ThankYou extends PureComponent {
   }
 
   handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history, orderStatus, showProfileVisibility } = this.props;
+    const { order, storeHashCode, history, orderStatus, profileModalVisibility } = this.props;
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
     const type = Utils.getOrderTypeFromUrl();
@@ -771,7 +786,7 @@ export class ThankYou extends PureComponent {
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
-    if (showProfileVisibility) {
+    if (profileModalVisibility) {
       this.props.setShowProfileVisibility(false);
       return;
     }
@@ -829,10 +844,10 @@ export class ThankYou extends PureComponent {
         {order && this.state.from === 'payment' && (
           <CompleteProfileModal
             closeModal={this.handleCompleteProfileModalClose}
-            showProfileVisibility={this.props.showProfileVisibility}
+            showProfileVisibility={this.props.profileModalVisibility}
           />
         )}
-        <React.Fragment>
+        <>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
             className="flex-middle border__bottom-divider"
@@ -888,7 +903,7 @@ export class ThankYou extends PureComponent {
               </a>
             </footer>
           </div>
-        </React.Fragment>
+        </>
 
         <OrderCancellationReasonsAside
           show={this.props.orderCancellationReasonAsideVisible}
@@ -921,7 +936,7 @@ export default compose(
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
-      showProfileVisibility: getshowProfileVisibility(state),
+      profileModalVisibility: getshowProfileVisibility(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
