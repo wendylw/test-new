@@ -34,7 +34,7 @@ export class Footer extends Component {
 
     onShownCartListDrawer();
 
-    const search = Utils.removeParam('source', window.location.search);
+    const search = Utils.getFilteredQueryString('source');
 
     history.replace({
       pathname: ROUTER_PATHS.ORDERING_HOME,

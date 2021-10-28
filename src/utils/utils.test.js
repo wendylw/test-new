@@ -9,6 +9,7 @@ beforeEach(() => {
 describe('utils/utils', () => {
   const {
     getQueryString,
+    getFilteredQueryString,
     isWebview,
     debounce,
     elementPartialOffsetTop,
@@ -52,6 +53,25 @@ describe('utils/utils', () => {
     // --Begin-- Refer to https://github.com/facebook/jest/issues/5124 @jackharrhy
     window.location = oldLocation;
     // ---End--- Refer to https://github.com/facebook/jest/issues/5124 @jackharrhy
+  });
+
+  it('getFilteredQueryString', () => {
+    const mockQuery =
+      '?h=U2FsdGVkX1%2FQuvwwVAwo86zaksrs1CTAp%2FtwS25fgiHhftafA8po%2Fy0SAmPH2JQc&type=delivery&source=http%3A%2F%2Fwww.beep.local.shub.us%3A3100%2Fshopping-cart';
+    const oldLocation = window.location;
+
+    delete window.location;
+    window.location = {
+      ...oldLocation,
+      search: mockQuery,
+    };
+
+    expect(getFilteredQueryString('source')).toBe(
+      '?h=U2FsdGVkX1%2FQuvwwVAwo86zaksrs1CTAp%2FtwS25fgiHhftafA8po%2Fy0SAmPH2JQc&type=delivery'
+    );
+
+    // Reset to original state
+    window.location = oldLocation;
   });
 
   it('queryString back to normal', () => {

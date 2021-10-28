@@ -28,6 +28,12 @@ Utils.getQueryString = key => {
   return queries;
 };
 
+Utils.getFilteredQueryString = (...keys) => {
+  const query = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+  keys.forEach(key => delete query[key]);
+  return qs.stringify(query, { addQueryPrefix: true });
+};
+
 Utils.getApiRequestShippingType = () => {
   const type = Utils.getQueryVariable('type');
   return type ? Utils.mapString2camelCase(type) : undefined;
