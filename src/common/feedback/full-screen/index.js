@@ -16,14 +16,10 @@ const STATUS_IMAGE_MAPPING = {
 const FullScreenStandardContent = ({ status, image, content, title }) => (
   // eslint-disable-next-line react/jsx-filename-extension
   <div className="padding-top-bottom-normal">
-    <figure className="full-screen__image-container margin-top-bottom-normal">
+    <figure className="full-screen__image-container padding-top-bottom-smaller margin-top-bottom-normal">
       <img src={image || STATUS_IMAGE_MAPPING[status]} alt={`beep ${status}`} />
     </figure>
-    {title ? (
-      <h4 className="padding-left-right-normal margin-top-bottom-normal text-size-biggest text-weight-bolder">
-        {title}
-      </h4>
-    ) : null}
+    {title ? <h4 className="full-screen__title padding-left-right-normal text-size-large">{title}</h4> : null}
     {content ? (
       <div className="full-screen__description padding-normal margin-left-right-normal text-size-big text-line-height-base">
         {content}

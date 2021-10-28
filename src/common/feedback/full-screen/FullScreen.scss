@@ -8,17 +8,17 @@
 
   &__image-container {
     margin: auto;
-    max-width: 50%;
+    max-width: 40%;
+  }
+
+  &__title {
+    color: $gray-2;
   }
 
   &__content {
     padding-top: 14vh;
     padding-bottom: 14vh;
     margin: 4vh 0;
-  }
-
-  &__description {
-    color: $new-grey-1-1;
   }
 
   &__button-group button {

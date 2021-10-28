@@ -34,7 +34,7 @@ function get(url, options = {}) {
       if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
         window.location = response.url;
       }
-      return handleResponse(url, response, 'get', requestStart, options);
+      return handleResponse(url, response, 'get', requestStart, options.options);
     })
     .catch(error => {
       if (error instanceof TypeError) {
@@ -69,7 +69,7 @@ const fetchData = function(url, requestOptions) {
       if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
         window.location = response.url;
       }
-      return handleResponse(url, response, method.toLowerCase(), requestStart, requestOptions);
+      return handleResponse(url, response, method.toLowerCase(), requestStart, options);
     })
     .catch(error => {
       if (error instanceof TypeError) {
@@ -156,6 +156,9 @@ async function handleResponse(url, response, method, requestStart, requestOption
         const { enableDefaultError = false } = requestOptions || {};
         const showDefaultError =
           typeof enableDefaultError === 'function' ? enableDefaultError(error.code) || false : enableDefaultError;
+
+        console.log(requestOptions);
+        console.log(ERROR_MAPPING[error.code]);
 
         // Call feedback API
         if (showDefaultError && ERROR_MAPPING[error.code]) {
