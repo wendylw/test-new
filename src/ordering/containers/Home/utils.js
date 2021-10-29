@@ -22,13 +22,11 @@ export const isSourceFromShoppingCart = () => {
 
   try {
     const { pathname } = new URL(source);
-    if (pathname !== ROUTER_PATHS.SHOPPING_CART) return false;
+    return pathname === ROUTER_PATHS.SHOPPING_CART;
   } catch {
     // source is invalid URL
     return false;
   }
-
-  return true;
 };
 
 // todo: this should be global use
