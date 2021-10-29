@@ -75,7 +75,7 @@ describe('utils/utils', () => {
       '?h=U2FsdGVkX1%2FQuvwwVAwo86zaksrs1CTAp%2FtwS25fgiHhftafA8po%2Fy0SAmPH2JQc&type=delivery'
     );
     // Test multiple key test
-    expect(getFilteredQueryString('h', 'source')).toBe('?type=delivery');
+    expect(getFilteredQueryString(['h', 'source'])).toBe('?type=delivery');
 
     // Reset to original state
     window.location = oldLocation;

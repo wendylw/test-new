@@ -21,27 +21,6 @@ import loggly from '../../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 
 export class Footer extends Component {
-  componentDidMount = () => {
-    this.showCartListDrawerIfNeeded();
-  };
-
-  showCartListDrawerIfNeeded = () => {
-    const { history, onShownCartListDrawer } = this.props;
-    const { ROUTER_PATHS } = Constants;
-    const source = Utils.getQueryString('source');
-
-    if (!source || !source.includes(ROUTER_PATHS.SHOPPING_CART)) return;
-
-    onShownCartListDrawer();
-
-    const search = Utils.getFilteredQueryString('source');
-
-    history.replace({
-      pathname: ROUTER_PATHS.ORDERING_HOME,
-      search,
-    });
-  };
-
   componentDidUpdate = async prevProps => {
     const { user } = this.props;
     const { isExpired, isLogin } = user || {};

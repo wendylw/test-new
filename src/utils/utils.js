@@ -28,9 +28,17 @@ Utils.getQueryString = key => {
   return queries;
 };
 
-Utils.getFilteredQueryString = (...keys) => {
+Utils.getFilteredQueryString = keys => {
   const query = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-  keys.forEach(key => delete query[key]);
+
+  // Only deal with string or array.
+  if (typeof keys === 'string') {
+    delete query[keys];
+  }
+  if (Array.isArray(keys)) {
+    keys.forEach(key => delete query[key]);
+  }
+
   return qs.stringify(query, { addQueryPrefix: true });
 };
 

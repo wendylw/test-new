@@ -24,7 +24,14 @@ import {
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
+import {
+  fetchRedirectPageState,
+  isSourceBeepitCom,
+  isSourceFromShoppingCart,
+  windowSize,
+  mainTop,
+  marginBottom,
+} from './utils';
 import config from '../../../config';
 import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
@@ -169,6 +176,8 @@ export class Home extends Component {
     window.addEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
+
+    this.showCartListDrawerIfNeeded();
   };
 
   checkDeliveryBar() {
@@ -198,6 +207,22 @@ export class Home extends Component {
       return;
     }
   }
+
+  showCartListDrawerIfNeeded = () => {
+    const { history } = this.props;
+    const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
+
+    if (!isSourceFromShoppingCart()) return;
+
+    this.handleToggleAside(ASIDE_NAMES.CART);
+
+    const search = Utils.getFilteredQueryString('source');
+
+    history.replace({
+      pathname: ROUTER_PATHS.ORDERING_HOME,
+      search,
+    });
+  };
 
   componentDidUpdate(prevProps, prevState) {
     const { deliveryInfo: prevDeliveryInfo } = prevProps;
