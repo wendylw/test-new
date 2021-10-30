@@ -647,6 +647,7 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         profile: {
+          ...state.profile,
           status: API_REQUEST_STATUS.PENDING,
         },
       };
@@ -670,6 +671,7 @@ const user = (state = initialState.user, action) => {
       return {
         ...state,
         profile: {
+          ...state.profile,
           status: API_REQUEST_STATUS.REJECTED,
         },
       };

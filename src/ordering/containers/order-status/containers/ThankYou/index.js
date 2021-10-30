@@ -116,15 +116,15 @@ export class ThankYou extends PureComponent {
     });
   }
 
-  showCompleteProfile = async () => {
+  showCompleteProfileIfNeeded = async () => {
     const { appActions, user } = this.props;
     const { consumerId } = user || {};
 
     await appActions.getProfileInfo(consumerId);
 
-    if (this.props.user.profile.status === 'fulfilled') {
-      const { name, email, birthday } = this.props.user.profile || {};
+    const { name, email, birthday, status } = this.props.user.profile || {};
 
+    if (status === 'fulfilled') {
       if (!name || !email || !birthday) {
         this.timer = setTimeout(() => {
           this.props.setShowProfileVisibility(true);
@@ -143,19 +143,11 @@ export class ThankYou extends PureComponent {
   };
 
   componentDidMount = async () => {
-    const { user, history } = this.props;
-    const { consumerId } = user || {};
+    const { user } = this.props;
     const getCookieAsk = Utils.getCookieVariable('do_not_ask');
-    if (!consumerId) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-        search: window.location.search,
-      });
-      return;
-    }
 
     if (getCookieAsk !== '1') {
-      this.showCompleteProfile();
+      this.showCompleteProfileIfNeeded();
     }
 
     // expected delivery time is for pre order
@@ -189,10 +181,6 @@ export class ThankYou extends PureComponent {
       this.promptUserEnableAppNotification();
     }
   };
-
-  componentWillUnmount() {
-    clearTimeout(this.timer);
-  }
 
   promptUserEnableAppNotification() {
     try {
@@ -405,6 +393,7 @@ export class ThankYou extends PureComponent {
   componentWillUnmount = () => {
     clearInterval(this.pollOrderStatusTimer);
     this.closeMap();
+    clearTimeout(this.timer);
   };
 
   handleGtmEventTracking = ({ order = {} }) => {

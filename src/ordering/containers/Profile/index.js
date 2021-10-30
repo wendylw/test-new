@@ -24,24 +24,30 @@ class CompleteProfileModal extends Component {
   state = {
     nativeMethodExist: true,
   };
+
   async componentDidMount() {
-    const { profileAction } = this.props;
-
-    if (this.props.user.profile.status === 'fulfilled') {
-      const { name, email, birthday } = this.props.user.profile || {};
-
-      profileAction.init({ name, email, birthday });
-    }
+    this.initCompleteProfileIfNeeded();
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.showProfileVisibility !== prevProps.showProfileVisibility) {
+      this.initCompleteProfileIfNeeded();
       this.props.onModalVisibilityChanged(this.props.showProfileVisibility);
       if (Utils.isWebview() && this.props.showProfileVisibility) {
         this.showNativeCompleteProfilePage();
       }
     }
   }
+
+  initCompleteProfileIfNeeded = () => {
+    const { profileAction } = this.props;
+
+    const { name, email, birthday, status } = this.props.user.profile || {};
+
+    if (status === 'fulfilled') {
+      profileAction.init({ name, email, birthday });
+    }
+  };
 
   async showNativeCompleteProfilePage() {
     try {
@@ -142,9 +148,6 @@ class CompleteProfileModal extends Component {
       profileBirthday: birthday,
       profileName: name,
     } = this.props;
-    // const email = this.props.profileEmail;
-    // const birthday = this.props.profileBirthday;
-    // const name = this.props.profileName;
 
     const className = ['aside fixed-wrapper', 'profile flex flex-column flex-end'];
 
