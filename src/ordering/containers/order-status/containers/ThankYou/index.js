@@ -123,7 +123,7 @@ export class ThankYou extends PureComponent {
       const { name, email, birthday, status } = this.props.user.profile || {};
 
       if (status === 'fulfilled') {
-        if (!name || !email || !birthday || true) {
+        if (!name || !email || !birthday) {
           this.timer = setTimeout(() => {
             this.props.setShowProfileVisibility(true);
           }, 3000);
