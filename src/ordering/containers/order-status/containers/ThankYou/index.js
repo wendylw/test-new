@@ -117,17 +117,19 @@ export class ThankYou extends PureComponent {
   }
 
   showCompleteProfileIfNeeded = async () => {
-    const getCookieAsk = Utils.getCookieVariable('do_not_ask');
+    const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
 
-    if (getCookieAsk !== '1') {
-      const { name, email, birthday, status } = this.props.user.profile || {};
+    if (isDoNotAsk === '1') {
+      return;
+    }
 
-      if (status === 'fulfilled') {
-        if (!name || !email || !birthday) {
-          this.timer = setTimeout(() => {
-            this.props.setShowProfileVisibility(true);
-          }, 3000);
-        }
+    const { name, email, birthday, status } = this.props.user.profile || {};
+
+    if (status === 'fulfilled') {
+      if (!name || !email || !birthday) {
+        this.timer = setTimeout(() => {
+          this.props.setShowProfileVisibility(true);
+        }, 3000);
       }
     }
   };
@@ -356,7 +358,7 @@ export class ThankYou extends PureComponent {
       loadStoreIdHashCode,
     } = this.props;
 
-    if (this.props.user.profile?.status !== prevProps.user.profile?.status) {
+    if (this.props.user.profile !== prevProps.user.profile) {
       this.showCompleteProfileIfNeeded();
     }
 

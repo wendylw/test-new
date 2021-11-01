@@ -37,7 +37,7 @@ class CompleteProfileModal extends Component {
       }
     }
 
-    if (this.props.user.profile?.status !== prevProps.user.profile?.status) {
+    if (this.props.user.profile !== prevProps.user.profile) {
       this.initCompleteProfileIfNeeded();
     }
   }
