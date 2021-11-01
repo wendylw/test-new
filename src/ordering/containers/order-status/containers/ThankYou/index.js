@@ -117,20 +117,25 @@ export class ThankYou extends PureComponent {
   }
 
   showCompleteProfileIfNeeded = async () => {
-    const { appActions, user } = this.props;
-    const { consumerId } = user || {};
+    const getCookieAsk = Utils.getCookieVariable('do_not_ask');
 
-    await appActions.getProfileInfo(consumerId);
+    if (getCookieAsk !== '1') {
+      const { name, email, birthday, status } = this.props.user.profile || {};
 
-    const { name, email, birthday, status } = this.props.user.profile || {};
-
-    if (status === 'fulfilled') {
-      if (!name || !email || !birthday) {
-        this.timer = setTimeout(() => {
-          this.props.setShowProfileVisibility(true);
-        }, 3000);
+      if (status === 'fulfilled') {
+        if (!name || !email || !birthday || true) {
+          this.timer = setTimeout(() => {
+            this.props.setShowProfileVisibility(true);
+          }, 3000);
+        }
       }
     }
+  };
+
+  componentDidMount = async () => {
+    const { user } = this.props;
+
+    this.showCompleteProfileIfNeeded();
 
     const from = Utils.getCookieVariable('__ty_source');
 
@@ -140,15 +145,6 @@ export class ThankYou extends PureComponent {
 
     // immidiately remove __ty_source cookie after setting in the state.
     Utils.removeCookieVariable('__ty_source');
-  };
-
-  componentDidMount = async () => {
-    const { user } = this.props;
-    const getCookieAsk = Utils.getCookieVariable('do_not_ask');
-
-    if (getCookieAsk !== '1') {
-      this.showCompleteProfileIfNeeded();
-    }
 
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
@@ -359,6 +355,11 @@ export class ThankYou extends PureComponent {
       loadStoreIdTableIdHashCode,
       loadStoreIdHashCode,
     } = this.props;
+
+    if (this.props.user.profile?.status !== prevProps.user.profile?.status) {
+      this.showCompleteProfileIfNeeded();
+    }
+
     const { storeId } = order || {};
     const { enableCashback } = businessInfo || {};
     const canUpdateCashback =

@@ -31,11 +31,14 @@ class CompleteProfileModal extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.showProfileVisibility !== prevProps.showProfileVisibility) {
-      this.initCompleteProfileIfNeeded();
       this.props.onModalVisibilityChanged(this.props.showProfileVisibility);
       if (Utils.isWebview() && this.props.showProfileVisibility) {
         this.showNativeCompleteProfilePage();
       }
+    }
+
+    if (this.props.user.profile?.status !== prevProps.user.profile?.status) {
+      this.initCompleteProfileIfNeeded();
     }
   }
 
