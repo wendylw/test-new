@@ -91,6 +91,11 @@ class Payment extends Component {
         break;
       case DELIVERY_METHOD.DINE_IN:
       case DELIVERY_METHOD.TAKE_AWAY:
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_CART,
+          search: window.location.search,
+        });
+        break;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
       default:
@@ -110,7 +115,8 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    if (!Utils.isDigitalType() && !user.consumerId) {
+    const shouldSkipLogin = Utils.isQROrder() || Utils.isDigitalType() || user.consumerId;
+    if (!shouldSkipLogin) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,

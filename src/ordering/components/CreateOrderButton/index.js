@@ -17,11 +17,14 @@ class CreateOrderButton extends React.Component {
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
     const { isFetching } = user || {};
+    const { isLogin } = this.props.user;
 
-    if (!Utils.isDigitalType()) {
-      if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
-        this.visitLoginPage();
-      }
+    const isLoginFree = Utils.isDigitalType() || Utils.isQROrder();
+    const isBeginFetching = isFetching && isFetching !== this.props.user.isFetching;
+    const shouldAskUserLogin = !isLogin && !isLoginFree && isBeginFetching;
+
+    if (shouldAskUserLogin) {
+      this.visitLoginPage();
     }
   }
 
@@ -72,8 +75,8 @@ class CreateOrderButton extends React.Component {
 
     //   return;
     // }
-
-    if ((isLogin || type === 'digital') && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
+    const hasLoginCheckPassed = isLogin || Utils.isQROrder() || Utils.isDigitalType();
+    if (hasLoginCheckPassed && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
