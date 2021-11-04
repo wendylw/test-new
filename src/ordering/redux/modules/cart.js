@@ -129,6 +129,9 @@ export const getPendingTransactionIds = state => state.cart.pendingTransactionsI
 
 export const getCheckingInventoryPendingState = ({ cart }) => cart.cartInventory.status === 'pending';
 
+export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
+export const getIsDeliveryType = state => Utils.isDeliveryType();
+
 const getTotalPrice = createSelector(getShoppingCart, shoppingCart => {
   const { items } = shoppingCart || {};
   let totalPrice = 0;
@@ -147,22 +150,27 @@ export const getMinConsumptionPrice = createSelector(getBusinessInfo, businessIn
   return Math.max(Number(minimumConsumption || 0), defaultPrice);
 });
 
-export const getIsValidCreateOrder = createSelector(getCartBilling, cartBilling => {
-  const { total } = cartBilling || {};
-  const isFree = !total;
-  return Utils.isTNGMiniProgram() || isFree;
-});
+export const getIsValidCreateOrder = createSelector(
+  getCartBilling,
+  getIsTNGMiniProgram,
+  (cartBilling, isTNGMiniProgram) => {
+    const { total } = cartBilling || {};
+    const isFree = !total;
+    return isTNGMiniProgram || isFree;
+  }
+);
 
 export const getIsBillingTotalInvalid = createSelector(
+  getTotalPrice,
   getCartBilling,
   getBusinessInfo,
-  getTotalPrice,
-  (cartBilling, businessInfo, totalPrice) => {
+  getIsDeliveryType,
+  (totalPrice, cartBilling, businessInfo, isDeliveryType) => {
     const { total } = cartBilling || {};
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
 
-    const hasMinConsumptionNotReached = Utils.isDeliveryType() && totalPrice < Number(minimumConsumption || 0);
+    const hasMinConsumptionNotReached = isDeliveryType && totalPrice < Number(minimumConsumption || 0);
     const isTotalCostTooSmall = total > 0 && total < 1;
 
     return hasMinConsumptionNotReached || isTotalCostTooSmall;
