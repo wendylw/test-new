@@ -133,6 +133,12 @@ $total-text-size: 1.7142rem;
     max-width: 300px;
   }
 
+  &__card-prompt-button {
+    height: 6vh;
+    position: relative;
+    z-index: 2;
+  }
+
   &__address,
   &__time {
     color: $gray-2;

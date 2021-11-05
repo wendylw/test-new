@@ -1,6 +1,8 @@
 import _get from 'lodash/get';
+import _isNumber from 'lodash/isNumber';
 import { createSelector } from 'reselect';
 import Constants from '../../../../../../utils/constants';
+import { BEFORE_PAID_STATUS_LIST, CASHBACK_CAN_CLAIM } from '../constants';
 import {
   getOrder,
   getOrderStatus,
@@ -11,7 +13,7 @@ import {
   getOrderOriginalShippingType,
   getOrderStoreInfo,
 } from '../../../redux/selector';
-import { getMerchantCountry } from '../../../../../redux/modules/app';
+import { getMerchantCountry, getBusinessInfo, getUserIsLogin } from '../../../../../redux/modules/app';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -76,4 +78,30 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
     expectDeliveryDateRange: [expectDeliveryDateFrom, expectDeliveryDateTo],
     ...responseDeliveryInformation,
   };
+});
+
+export const getCashback = createSelector(getCashbackInfo, ({ cashback }) =>
+  _isNumber(Number(cashback)) ? Number(cashback) : 0
+);
+
+export const getShouldCheckCashbackInfo = createSelector(
+  getOrderStatus,
+  getBusinessInfo,
+  (orderStatus, businessInfo) => {
+    const { enableCashback } = businessInfo || {};
+    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+    return enableCashback && hasOrderPaid;
+  }
+);
+
+export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInfo, (cashback, businessInfo) => {
+  const { enableCashback } = businessInfo || {};
+  const hasCashback = !!cashback;
+  return enableCashback && hasCashback;
+});
+
+export const getIsCashbackClaimable = createSelector(getUserIsLogin, getCashbackInfo, (isLogin, cashbackInfo) => {
+  const { status } = cashbackInfo;
+  const hasCashbackClaimed = status === CASHBACK_CAN_CLAIM;
+  return isLogin && !hasCashbackClaimed;
 });

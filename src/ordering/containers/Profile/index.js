@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { put } from '../../../utils/request';
 import url from '../../../utils/url';
+import { isFromQROrderThankYouPage } from '../../utils';
 import './Profile.scss';
 
 // import DayPicker from 'react-day-picker';
@@ -26,17 +27,31 @@ class Profile extends Component {
   }
 
   handleClickBack = () => {
-    this.props.history.push({
+    const { history, location } = this.props;
+    const { fromPath } = location;
+    const { ROUTER_PATHS } = Constants;
+
+    if (isFromQROrderThankYouPage(fromPath)) {
+      history.push({
+        pathname: ROUTER_PATHS.THANK_YOU,
+        search: window.location.search,
+      });
+      return;
+    }
+
+    history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
       search: window.location.search,
     });
   };
 
   saveProfile = async () => {
-    const { user, history, deliveryDetails, appActions } = this.props;
+    const { user, history, location, deliveryDetails, appActions } = this.props;
     const { consumerId, profile } = user || {};
     const { name, email, phone } = profile || {};
     const { username, phone: orderPhone } = deliveryDetails || {};
+    const { fromPath } = location;
+    const { ROUTER_PATHS } = Constants;
 
     let data = {};
     let createdUrl = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
@@ -51,10 +66,18 @@ class Profile extends Component {
       const response = await put(createdUrl.url, data);
       const { success } = response;
       if (success) {
+        if (isFromQROrderThankYouPage(fromPath)) {
+          history.push({
+            pathname: ROUTER_PATHS.THANK_YOU,
+            search: window.location.search,
+          });
+          return;
+        }
+
         !username && (await appActions.updateDeliveryDetails({ username: name }));
         !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
         history.push({
-          pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+          pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
           search: window.location.search,
         });
       }

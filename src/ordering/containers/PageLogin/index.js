@@ -16,6 +16,7 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
+import { isFromQROrderThankYouPage } from '../../utils';
 
 class PageLogin extends React.Component {
   state = {
@@ -40,25 +41,36 @@ class PageLogin extends React.Component {
   visitNextPage = async () => {
     const { history, location, user, deliveryDetails, appActions } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
-    const { nextPage } = location;
+    const { nextPage, fromPath } = location;
     const { profile } = user || {};
     const { name, phone } = profile || {};
+    const { ROUTER_PATHS } = Constants;
+
     if (nextPage && name) {
+      if (isFromQROrderThankYouPage(fromPath)) {
+        history.push({
+          pathname: ROUTER_PATHS.THANK_YOU,
+          search: window.location.search,
+        });
+        return;
+      }
+
       !username && (await appActions.updateDeliveryDetails({ username: name }));
       !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
 
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
       });
     } else if (nextPage && !name) {
       history.push({
-        pathname: Constants.ROUTER_PATHS.PROFILE,
+        pathname: ROUTER_PATHS.PROFILE,
         search: window.location.search,
+        fromPath,
       });
     } else {
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+        pathname: ROUTER_PATHS.ORDERING_CART,
         search: window.location.search,
       });
     }

@@ -20,6 +20,7 @@ import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from './utils';
 import Constants from '../../../../../utils/constants';
+import { BEFORE_PAID_STATUS_LIST } from './constants';
 import {
   gtmEventTracking,
   gtmSetPageViewData,
@@ -50,26 +51,14 @@ import {
 } from '../../redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
-import {
-  loadStoreIdHashCode,
-  loadStoreIdTableIdHashCode,
-  cancelOrder,
-  loadCashbackInfo,
-  createCashbackInfo,
-} from './redux/thunks';
-import { getCashbackInfo, getStoreHashCode, getOrderCancellationReasonAsideVisible } from './redux/selector';
+import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder } from './redux/thunks';
+import { getStoreHashCode, getOrderCancellationReasonAsideVisible, getIsCashbackAvailable } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
-const BEFORE_PAID_STATUS_LIST = [
-  ORDER_STATUS.CREATED,
-  ORDER_STATUS.PENDING_PAYMENT,
-  ORDER_STATUS.PENDING_VERIFICATION,
-  ORDER_STATUS.PAYMENT_CANCELLED,
-];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -91,27 +80,6 @@ export class ThankYou extends PureComponent {
 
   pollOrderStatusTimer = null;
 
-  // TODO: Will move to cashbackInfo component
-  async canClaimCheck() {
-    const { history, user, createCashbackInfo, businessInfo, orderStatus, loadCashbackInfo } = this.props;
-    const { enableCashback } = businessInfo || {};
-    const { isLogin } = user || {};
-
-    if (!enableCashback || !isLogin || !orderStatus || BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
-      return;
-    }
-
-    const { phone } = this.state;
-    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    loadCashbackInfo(receiptNumber);
-
-    createCashbackInfo({
-      receiptNumber,
-      phone,
-    });
-  }
-
   componentDidMount = async () => {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
@@ -129,8 +97,6 @@ export class ThankYou extends PureComponent {
     if (onlineStoreInfo && onlineStoreInfo.id) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
-
-    this.canClaimCheck();
 
     await this.loadOrder();
 
@@ -227,7 +193,7 @@ export class ThankYou extends PureComponent {
 
   // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
   recordChargedEvent = () => {
-    const { order, business, onlineStoreInfo } = this.props;
+    const { order, business, onlineStoreInfo, isCashbackAvailable } = this.props;
 
     let totalQuantity = 0;
     let totalDiscount = 0;
@@ -271,6 +237,7 @@ export class ThankYou extends PureComponent {
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
+      'has cashback': isCashbackAvailable,
       'promo/voucher applied': _get(order, 'displayPromotions[0].promotionCode'),
     });
   };
@@ -309,29 +276,10 @@ export class ThankYou extends PureComponent {
   };
 
   async componentDidUpdate(prevProps) {
-    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo, businessInfo: prevBusinessInfo } = prevProps;
+    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
-    const { enableCashback: prevEnableCashback } = prevBusinessInfo;
-    const {
-      order,
-      orderStatus,
-      onlineStoreInfo,
-      businessInfo,
-      user,
-      shippingType,
-      loadStoreIdTableIdHashCode,
-      loadStoreIdHashCode,
-    } = this.props;
+    const { order, onlineStoreInfo, user, shippingType, loadStoreIdTableIdHashCode, loadStoreIdHashCode } = this.props;
     const { storeId } = order || {};
-    const { enableCashback } = businessInfo || {};
-    const canUpdateCashback =
-      prevEnableCashback !== enableCashback ||
-      prevProps.orderStatus !== orderStatus ||
-      prevProps.user.isLogin !== user.isLogin;
-
-    if (canUpdateCashback) {
-      await this.canClaimCheck();
-    }
 
     if (storeId && prevStoreId !== storeId) {
       shippingType === DELIVERY_METHOD.DINE_IN
@@ -655,6 +603,18 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  handleClickLoginButton = () => {
+    const { history } = this.props;
+    const { ROUTER_PATHS } = Constants;
+    CleverTap.pushEvent('Thank you page - Click I want cashback button');
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      nextPage: true,
+      fromPath: ROUTER_PATHS.THANK_YOU,
+    });
+  };
+
   getRightContentOfHeader() {
     const { user, order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
@@ -778,10 +738,9 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, businessInfo, businessUTCOffset, onlineStoreInfo } = this.props;
+    const { t, history, match, order, businessUTCOffset, onlineStoreInfo } = this.props;
     const date = new Date();
     const { total } = order || {};
-    const { enableCashback } = businessInfo || {};
 
     const orderId = _get(order, 'orderId', '');
 
@@ -824,7 +783,7 @@ export class ThankYou extends PureComponent {
             />
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
-            <CashbackInfo enableCashback={enableCashback} />
+            <CashbackInfo onLoginButtonClick={this.handleClickLoginButton} />
             <OrderSummary
               history={history}
               businessUTCOffset={businessUTCOffset}
@@ -866,7 +825,6 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
-      cashbackInfo: getCashbackInfo(state),
       businessInfo: getBusinessInfo(state),
       business: getBusiness(state),
       user: getUser(state),
@@ -879,6 +837,7 @@ export default compose(
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      isCashbackAvailable: getIsCashbackAvailable(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -890,8 +849,6 @@ export default compose(
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
-      loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
-      createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
     })
   )
 )(ThankYou);
