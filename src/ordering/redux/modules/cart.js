@@ -129,6 +129,7 @@ export const getPendingTransactionIds = state => state.cart.pendingTransactionsI
 
 export const getCheckingInventoryPendingState = ({ cart }) => cart.cartInventory.status === 'pending';
 
+// TODO: add isTNGMiniProgram & isDeliveryType to state rather than using Utils
 export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
 export const getIsDeliveryType = state => Utils.isDeliveryType();
 
