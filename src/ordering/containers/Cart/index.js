@@ -24,14 +24,14 @@ import {
   getCartBilling,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
+  getValidBillingTotal,
+  getIsValidCreateOrder,
+  getIsBillingTotalInvalid,
 } from '../../redux/modules/app';
 import {
   actions as cartActionCreators,
   getCheckingInventoryPendingState,
-  getIsBillingTotalInvalid,
-  getIsValidCreateOrder,
   getShouldDisablePayButton,
-  getMinConsumptionPrice,
 } from '../../redux/modules/cart';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
@@ -369,26 +369,33 @@ class Cart extends Component {
     );
   }
 
-  renderPayButtonChildren = () => {
-    const { t, pendingCheckingInventory, isBillingTotalInvalid, minConsumptionPrice } = this.props;
+  getOrderButtonContent = () => {
+    const { t, pendingCheckingInventory, isBillingTotalInvalid, validBillingTotal } = this.props;
 
-    const hintContent = !isBillingTotalInvalid ? (
+    const buttonContent = !isBillingTotalInvalid ? (
       <span className="text-weight-bolder" key="pay-now">
         {t('PayNow')}
       </span>
     ) : (
       <span key="min-total">
+        *
         <Trans i18nKey="MinimumConsumption">
-          <span className="text-weight-bolder">*Min</span>
-          <CurrencyNumber className="text-weight-bolder" money={minConsumptionPrice} />
+          <span className="text-weight-bolder">Min</span>
+          <CurrencyNumber className="text-weight-bolder" money={validBillingTotal} />
         </Trans>
       </span>
     );
 
-    return pendingCheckingInventory ? t('Processing') : hintContent;
+    const processingContent = (
+      <span className="text-weight-bolder" key="pay-wait">
+        {t('Processing')}
+      </span>
+    );
+
+    return pendingCheckingInventory ? processingContent : buttonContent;
   };
 
-  renderPayButton = () => {
+  renderPayOrderButton = () => {
     const { shouldDisablePayButton } = this.props;
     return (
       <button
@@ -398,13 +405,13 @@ class Cart extends Component {
         onClick={this.handleClickPayButton}
         disabled={shouldDisablePayButton}
       >
-        {this.renderPayButtonChildren()}
+        {this.getOrderButtonContent()}
       </button>
     );
   };
 
   renderCreateOrderButton = () => {
-    const { t, history, isValidCreateOrder, shouldDisablePayButton } = this.props;
+    const { t, history, isValidCreateOrder, pendingCheckingInventory, shouldDisablePayButton } = this.props;
     return (
       <CreateOrderButton
         className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
@@ -414,11 +421,10 @@ class Cart extends Component {
         disabled={shouldDisablePayButton}
         validCreateOrder={isValidCreateOrder}
         beforeCreateOrder={this.handleBeforeCreateOrder}
-        afterCreateOrder={this.handleAfterCreateOrder}
         loaderText={t('Processing')}
-        processing={shouldDisablePayButton}
+        processing={pendingCheckingInventory}
       >
-        {this.renderPayButtonChildren()}
+        {this.getOrderButtonContent()}
       </CreateOrderButton>
     );
   };
@@ -466,20 +472,16 @@ class Cart extends Component {
   };
 
   handleBeforeCreateOrder = () => {
+    const { history, isValidCreateOrder } = this.props;
     loggly.log('cart.create-order-attempt');
     this.handleClickPayButtonEventTracking();
-    this.handleGtmEventTracking();
-  };
-
-  handleAfterCreateOrder = () => {
-    const { history, isValidCreateOrder } = this.props;
-
-    if (!isValidCreateOrder) {
+    this.handleGtmEventTracking(() => {
+      if (isValidCreateOrder) return;
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
       });
-    }
+    });
   };
 
   render() {
@@ -575,7 +577,7 @@ class Cart extends Component {
           >
             {t('Back')}
           </button>
-          {Utils.isQROrder() ? this.renderCreateOrderButton() : this.renderPayButton()}
+          {Utils.isQROrder() ? this.renderCreateOrderButton() : this.renderPayOrderButton()}
         </footer>
         <ProductSoldOutModal
           show={isHaveProductSoldOut}
@@ -607,7 +609,7 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
-        minConsumptionPrice: getMinConsumptionPrice(state),
+        validBillingTotal: getValidBillingTotal(state),
         isValidCreateOrder: getIsValidCreateOrder(state),
         shouldDisablePayButton: getShouldDisablePayButton(state),
         isBillingTotalInvalid: getIsBillingTotalInvalid(state),

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/modules/app';
+import { getRequestInfo, getError, getCartBilling, getShouldAskUserLogin } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
@@ -14,69 +14,37 @@ import loggly from '../../../utils/monitoring/loggly';
 const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
-  componentDidUpdate(prevProps) {
-    const { user } = prevProps;
-    const { isFetching } = user || {};
-    const { isLogin } = this.props.user;
-
-    const isLoginFree = Utils.isDigitalType() || Utils.isQROrder();
-    const isBeginFetching = isFetching && isFetching !== this.props.user.isFetching;
-    const shouldAskUserLogin = !isLogin && !isLoginFree && isBeginFetching;
-
-    if (shouldAskUserLogin) {
-      this.visitLoginPage();
-    }
-  }
-
-  visitLoginPage = () => {
-    const { history, user } = this.props;
-    const { isLogin } = user || {};
-
-    if (!isLogin) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-      });
-    }
-  };
-
   handleCreateOrder = async () => {
     const {
       history,
       createOrder,
-      user,
       requestInfo,
       cartBilling,
       afterCreateOrder,
       beforeCreateOrder,
+      shouldAskUserLogin,
       paymentName,
       gotoPayment,
     } = this.props;
-    const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
     let currentOrder;
 
+    if (shouldAskUserLogin) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+      });
+      return;
+    }
+
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
     const { validCreateOrder } = this.props;
-    // if (!Boolean(storeId)) {
-    //   if (type === 'dine' || type === 'takeaway') {
-    //     window.location.href = Constants.ROUTER_PATHS.DINE;
-    //   } else {
-    //     history.push({
-    //       pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-    //       search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
-    //     });
-    //   }
-
-    //   return;
-    // }
-    const hasLoginCheckPassed = isLogin || Utils.isQROrder() || Utils.isDigitalType();
-    if (hasLoginCheckPassed && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
+    if (paymentName !== 'SHOfflinePayment' && validCreateOrder) {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
@@ -145,7 +113,6 @@ class CreateOrderButton extends React.Component {
 CreateOrderButton.displayName = 'CreateOrderButton';
 
 CreateOrderButton.propTypes = {
-  user: PropTypes.object,
   history: PropTypes.object,
   className: PropTypes.string,
   buttonType: PropTypes.string,
@@ -158,6 +125,8 @@ CreateOrderButton.propTypes = {
   paymentExtraData: PropTypes.object,
   processing: PropTypes.bool,
   loaderText: PropTypes.string,
+  cartBilling: PropTypes.object,
+  shouldAskUserLogin: PropTypes.bool,
 };
 
 CreateOrderButton.defaultProps = {
@@ -167,6 +136,8 @@ CreateOrderButton.defaultProps = {
   disabled: true,
   sentOtp: false,
   processing: false,
+  cartBilling: {},
+  shouldAskUserLogin: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };
@@ -176,10 +147,10 @@ export default compose(
   connect(
     state => {
       return {
-        user: getUser(state),
         error: getError(state),
         requestInfo: getRequestInfo(state),
         cartBilling: getCartBilling(state),
+        shouldAskUserLogin: getShouldAskUserLogin(state),
       };
     },
     {

@@ -6,7 +6,7 @@ import { API_INFO } from '../../../utils/api/api-utils';
 import { get } from '../../../utils/api/api-fetch';
 import { CART_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { getBusinessUTCOffset, getCartItems, getCartBilling, getBusinessInfo, getShoppingCart } from './app';
+import { getBusinessUTCOffset, getCartItems, getIsBillingTotalInvalid } from './app';
 
 const initialState = {
   pendingTransactionsIds: [],
@@ -128,55 +128,6 @@ export default combineReducers({
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
 export const getCheckingInventoryPendingState = ({ cart }) => cart.cartInventory.status === 'pending';
-
-// TODO: add isTNGMiniProgram & isDeliveryType to state rather than using Utils
-export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
-export const getIsDeliveryType = state => Utils.isDeliveryType();
-
-const getTotalPrice = createSelector(getShoppingCart, shoppingCart => {
-  const { items } = shoppingCart || {};
-  let totalPrice = 0;
-
-  (items || []).forEach(item => {
-    totalPrice += item.displayPrice * item.quantity;
-  });
-
-  return totalPrice;
-});
-
-export const getMinConsumptionPrice = createSelector(getBusinessInfo, businessInfo => {
-  const { qrOrderingSettings } = businessInfo || {};
-  const { minimumConsumption } = qrOrderingSettings || {};
-  const defaultPrice = 1;
-  return Math.max(Number(minimumConsumption || 0), defaultPrice);
-});
-
-export const getIsValidCreateOrder = createSelector(
-  getCartBilling,
-  getIsTNGMiniProgram,
-  (cartBilling, isTNGMiniProgram) => {
-    const { total } = cartBilling || {};
-    const isFree = !total;
-    return isTNGMiniProgram || isFree;
-  }
-);
-
-export const getIsBillingTotalInvalid = createSelector(
-  getTotalPrice,
-  getCartBilling,
-  getBusinessInfo,
-  getIsDeliveryType,
-  (totalPrice, cartBilling, businessInfo, isDeliveryType) => {
-    const { total } = cartBilling || {};
-    const { qrOrderingSettings } = businessInfo || {};
-    const { minimumConsumption } = qrOrderingSettings || {};
-
-    const hasMinConsumptionNotReached = isDeliveryType && totalPrice < Number(minimumConsumption || 0);
-    const isTotalCostTooSmall = total > 0 && total < 1;
-
-    return hasMinConsumptionNotReached || isTotalCostTooSmall;
-  }
-);
 
 export const getShouldDisablePayButton = createSelector(
   getCartItems,
