@@ -27,6 +27,12 @@ class App extends Component {
         loggly.error('ordering.get-address', { message: e });
       }
     }
+
+    const source = Utils.getQueryString('source');
+
+    if (source) {
+      Utils.saveSourceUrlToSessionStorage(source);
+    }
   }
   state = {};
 
@@ -72,10 +78,11 @@ class App extends Component {
     const isOrderDetailPage = pathname.includes(`${ROUTER_PATHS.ORDER_DETAILS}`);
     const isMerchantInfPage = pathname.includes(`${ROUTER_PATHS.MERCHANT_INFO}`);
     const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
+    const browser = Utils.getUserAgentInfo().browser;
 
     if (
       !(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
-      (Utils.getUserAgentInfo().browser.includes('Safari') || Utils.isIOSWebview())
+      (browser.includes('Safari') || browser.includes('AppleWebKit') || Utils.isIOSWebview())
     ) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';

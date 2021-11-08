@@ -167,7 +167,7 @@ class Carousel extends Component {
               <div className="flex flex-space-between flex-middle padding-left-right-normal">
                 <h3 className="text-size-bigger text-weight-bolder">{name}</h3>
                 <span
-                  className="carousel__see-all flex flex-middle"
+                  className="carousel__see-all flex flex-middle flex__shrink-fixed"
                   data-heap-name="site.home.carousel.see-all-btn"
                   onClick={() => {
                     CleverTap.pushEvent('Homepage - Click Carousel See All', {

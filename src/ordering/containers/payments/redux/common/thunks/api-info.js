@@ -1,3 +1,5 @@
+import { post } from '../../../../../../utils/api/api-fetch';
+
 export const API_INFO = {
   getPayments: (storeId, shippingType) => ({
     url: '/payment/online/options',
@@ -8,3 +10,6 @@ export const API_INFO = {
     queryParams: { provider: paymentProvider },
   }),
 };
+
+export const createPaymentDetails = ({ orderId, orderSource, paymentProvider, webhookURL }) =>
+  post('/payment', { receiptNumber: orderId, orderSource, paymentProvider, webhookURL });

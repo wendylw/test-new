@@ -6,7 +6,7 @@ const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
   Accept: 'application/json',
   'Content-Type': 'application/json',
-  client: Utils.getHeaderClient(),
+  client: Utils.getClient(),
 });
 
 const MAINTENANCE_PAGE_URL = process.env.REACT_APP_MAINTENANCE_PAGE_URL;

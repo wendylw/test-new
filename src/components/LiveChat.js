@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './LiveChat.scss';
 import Utils from '../utils/utils';
+import _isFunction from 'lodash/isFunction';
 
 const zendeskDepartmentId = Number(process.env.REACT_APP_ZENDESK_DEPARTMENT_ID);
 class LiveChat extends Component {
@@ -11,23 +12,33 @@ class LiveChat extends Component {
   componentDidMount() {
     this.loadZendeskWidget().then(() => {
       window.zE('webWidget', 'show');
+      this.prefillUserInfo();
     });
   }
 
   componentDidUpdate(prevProps) {
-    const { name, phone } = this.props;
-
-    if (prevProps.name !== name && prevProps.phone !== phone && window.zE) {
-      window.zE('webWidget', 'prefill', {
-        name: {
-          value: name,
-        },
-        phone: {
-          value: phone,
-        },
-      });
+    const { name, phone, email } = this.props;
+    if (prevProps.name !== name || prevProps.phone !== phone || prevProps.email !== email) {
+      this.prefillUserInfo();
     }
   }
+
+  prefillUserInfo = () => {
+    const { name, phone, email } = this.props;
+
+    window.zE &&
+      window.zE('webWidget', 'prefill', {
+        name: {
+          value: name || '',
+        },
+        phone: {
+          value: phone || '',
+        },
+        email: {
+          value: email || '',
+        },
+      });
+  };
 
   componentWillUnmount() {
     window.zE && window.zE('webWidget', 'hide');
@@ -150,7 +161,10 @@ class LiveChat extends Component {
   };
 
   handleClick = () => {
+    const { onClick } = this.props;
     const { waitingZendeskScript } = this.state;
+
+    _isFunction(onClick) && onClick();
 
     if (!waitingZendeskScript) {
       window.zE('webWidget', 'toggle');
@@ -182,6 +196,8 @@ LiveChat.propTypes = {
   orderId: PropTypes.string,
   name: PropTypes.string,
   phone: PropTypes.string,
+  email: PropTypes.string,
+  onClick: PropTypes.func,
 };
 
 LiveChat.displayName = 'LiveChat';

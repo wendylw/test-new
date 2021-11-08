@@ -150,7 +150,7 @@ class ProductList extends Component {
     const { t } = this.props;
 
     if (['outOfStock', 'unavailable'].includes(stockStatus)) {
-      return <Tag text={t('SoldOut')} className="product-list-item__tag tag tag__default text-size-big" />;
+      return <Tag text={t('SoldOut')} className="product-list-item__tag tag tag__default tag__small margin-small" />;
     }
 
     return (

@@ -218,6 +218,9 @@ class Cart extends Component {
 
   handleClearAll = () => {
     loggly.log('cart.clear-all-attempt');
+
+    CleverTap.pushEvent('Cart page - click clear all', this.props.storeInfoForCleverTap);
+
     this.props.appActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,

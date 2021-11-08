@@ -1,6 +1,5 @@
 {
   "StoreHub": "StoreHub",
-  "StoreHubBeep": "StoreHub | Beep",
   "OK": "OK",
   "Open": "Open",
   "Close": "Close",
@@ -195,5 +194,13 @@
   "ErrorId": "Error ID: {{ id }}",
   "LowStockProductQuantity": "only {{quantityOnHand}} left",
   "EmailAddress": "Email Address (optional)",
+  "MyOrderHistory": "My Order History",
+  "TermsOfService": "Terms of Service",
+  "PrivacyPolicy": "Privacy Policy",
+  "Beep": "Beep",
+  "GotIt": "Got It",
+  "Beepit.com": "Beepit.com",
+  "BeepApp": "Beep App",
+  "BeepTngMiniProgram": "Beep Mini Program via the Touch ’n Go eWallet app",
   "EditCart": "Edit cart"
 }

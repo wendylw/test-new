@@ -6,9 +6,15 @@ import DocumentHeadInfo from '../components/DocumentHeadInfo';
 
 import '../Common.scss';
 import Utils from '../utils/utils';
-
+import HybridHeader from '../components/HybridHeader';
+import './TermsPrivacy.scss';
 // Example1 URL: http://nike.storehub.local:3000/#/terms-conditions
 // Example1 URL: http://nike.storehub.local:3000/#/privacy
+
+const PAGE_NAMES = {
+  TERMS: 'terms',
+  PRIVACY: 'privacy',
+};
 
 export class TermsPrivacy extends Component {
   state = {
@@ -47,14 +53,44 @@ export class TermsPrivacy extends Component {
     this.setState({ termsPrivacyData: data });
   }
 
+  getHeaderTitle() {
+    const { pageName, t } = this.props;
+    if (pageName === PAGE_NAMES.TERMS) {
+      return t('TermsOfService');
+    }
+
+    if (pageName === PAGE_NAMES.PRIVACY) {
+      return t('PrivacyPolicy');
+    }
+
+    return window.document.title;
+  }
+
+  handleContentClick = event => {
+    if (event.target?.nodeName.toLowerCase() === 'a') {
+      // block link in beep tng mini program because user can't back this page from third page
+      if (Utils.isTNGMiniProgram()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
+  };
+
   render() {
     const { t } = this.props;
     const { termsPrivacyData } = this.state;
     const content = { __html: termsPrivacyData };
+    const headerVisible = Utils.isTNGMiniProgram() || Utils.isWebview();
 
     return (
-      <DocumentHeadInfo title={t('StoreHubBeep')}>
-        <div dangerouslySetInnerHTML={content} />
+      <DocumentHeadInfo title={t('Beep')}>
+        {headerVisible && <HybridHeader title={this.getHeaderTitle()} />}
+        {/* remove link style in tng mini program */}
+        <div
+          className={Utils.isTNGMiniProgram() ? 'terms-privacy__remove-link-style' : ''}
+          onClick={this.handleContentClick}
+          dangerouslySetInnerHTML={content}
+        />
       </DocumentHeadInfo>
     );
   }
