@@ -326,7 +326,7 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:54012Title',
     desc: 'ApiError:54012Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
-    buttonText: 'Common:OK',
+    buttonText: 'Common:EditCart',
     showModal: true,
   },
   54013: {
