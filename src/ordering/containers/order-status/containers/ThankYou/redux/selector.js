@@ -102,6 +102,6 @@ export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInf
 
 export const getIsCashbackClaimable = createSelector(getUserIsLogin, getCashbackInfo, (isLogin, cashbackInfo) => {
   const { status } = cashbackInfo;
-  const hasCashbackClaimed = status === CASHBACK_CAN_CLAIM;
-  return isLogin && !hasCashbackClaimed;
+  const canCashbackClaim = status === CASHBACK_CAN_CLAIM;
+  return isLogin && canCashbackClaim;
 });
