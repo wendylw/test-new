@@ -40,7 +40,7 @@ class PromotionsBar extends PureComponent {
     }
 
     if (!appliedClientTypes.includes(currentClientType)) {
-      // Beep web will display app-only promotion
+      // Beep web can display app-only promotion
       if (currentClientType === PROMOTION_CLIENT_TYPES.WEB) {
         const isAppOnly = appliedClientTypes.length === 1 && appliedClientTypes[0] === PROMOTION_CLIENT_TYPES.APP;
 
