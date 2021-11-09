@@ -28,7 +28,7 @@ class Profile extends Component {
 
   handleClickBack = () => {
     const { history, location } = this.props;
-    const { fromPath } = location.state;
+    const { fromPath } = location.state || {};
     const { ROUTER_PATHS } = Constants;
 
     if (isFromQROrderThankYouPage(fromPath)) {
@@ -50,7 +50,7 @@ class Profile extends Component {
     const { consumerId, profile } = user || {};
     const { name, email, phone } = profile || {};
     const { username, phone: orderPhone } = deliveryDetails || {};
-    const { fromPath } = location.state;
+    const { fromPath } = location.state || {};
     const { ROUTER_PATHS } = Constants;
 
     let data = {};
