@@ -29,13 +29,16 @@ class CreateOrderButton extends React.Component {
       createOrder,
       requestInfo,
       cartBilling,
+      validCreateOrder,
       afterCreateOrder,
       beforeCreateOrder,
+      shouldAskUserLogin,
       paymentName,
       gotoPayment,
     } = this.props;
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartBilling || {};
+    const hasUserLoggedIn = !shouldAskUserLogin;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
     let currentOrder;
@@ -43,8 +46,8 @@ class CreateOrderButton extends React.Component {
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
-    const { validCreateOrder } = this.props;
-    if (paymentName !== 'SHOfflinePayment' && validCreateOrder) {
+
+    if (hasUserLoggedIn && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
