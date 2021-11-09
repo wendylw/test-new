@@ -22,7 +22,6 @@ class CreateOrderButton extends React.Component {
       cartBilling,
       afterCreateOrder,
       beforeCreateOrder,
-      shouldAskUserLogin,
       paymentName,
       gotoPayment,
     } = this.props;
@@ -31,14 +30,6 @@ class CreateOrderButton extends React.Component {
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
     let currentOrder;
-
-    if (shouldAskUserLogin) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-      });
-      return;
-    }
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
@@ -86,8 +77,26 @@ class CreateOrderButton extends React.Component {
   };
 
   render() {
-    const { children, className, buttonType, disabled, dataAttributes, loaderText, processing } = this.props;
+    const {
+      history,
+      children,
+      className,
+      buttonType,
+      disabled,
+      dataAttributes,
+      loaderText,
+      processing,
+      shouldAskUserLogin,
+    } = this.props;
     const classList = ['button button__fill button__block text-weight-bolder'];
+
+    if (shouldAskUserLogin) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+      });
+      return;
+    }
 
     if (className) {
       classList.push(className);
