@@ -11,8 +11,8 @@ import {
   getBusiness,
   getMerchantCountry,
   getBusinessInfo,
-  getUser,
   getDeliveryInfo,
+  getShouldAskUserLogin,
 } from '../../../../redux/modules/app';
 import {
   getPaymentsPendingState,
@@ -108,15 +108,20 @@ class Payment extends Component {
   };
 
   handleBeforeCreateOrder = async () => {
-    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user, paymentActions } = this.props;
+    const {
+      history,
+      currentPaymentOption,
+      currentPaymentSupportSaveCard,
+      shouldAskUserLogin,
+      paymentActions,
+    } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
       payNowLoading: true,
     });
 
-    const shouldSkipLogin = Utils.isQROrder() || Utils.isDigitalType() || user.consumerId;
-    if (!shouldSkipLogin) {
+    if (shouldAskUserLogin) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
@@ -269,8 +274,8 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         businessInfo: getBusinessInfo(state),
         merchantCountry: getMerchantCountry(state),
-        user: getUser(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        shouldAskUserLogin: getShouldAskUserLogin(state),
       };
     },
     dispatch => ({
