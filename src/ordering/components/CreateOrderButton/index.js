@@ -14,6 +14,15 @@ import loggly from '../../../utils/monitoring/loggly';
 const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
+  componentDidUpdate() {
+    const { shouldAskUserLogin, history } = this.props;
+    if (!shouldAskUserLogin) return;
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+    });
+  }
+
   handleCreateOrder = async () => {
     const {
       history,
@@ -77,26 +86,8 @@ class CreateOrderButton extends React.Component {
   };
 
   render() {
-    const {
-      history,
-      children,
-      className,
-      buttonType,
-      disabled,
-      dataAttributes,
-      loaderText,
-      processing,
-      shouldAskUserLogin,
-    } = this.props;
+    const { children, className, buttonType, disabled, dataAttributes, loaderText, processing } = this.props;
     const classList = ['button button__fill button__block text-weight-bolder'];
-
-    if (shouldAskUserLogin) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-      });
-      return;
-    }
 
     if (className) {
       classList.push(className);

@@ -42,7 +42,7 @@ class CustomerInfo extends Component {
 
   async componentDidMount() {
     const { appActions, selectAvailableAddress, loadAddressList } = this.props;
-
+    this.redirectToLoginPageIfNeeded();
     await loadAddressList();
     await selectAvailableAddress();
     appActions.loadShoppingCart();
@@ -60,6 +60,16 @@ class CustomerInfo extends Component {
 
   componentWillUnmount() {
     this.setState({ processing: false });
+  }
+
+  redirectToLoginPageIfNeeded() {
+    const { user, history } = this.props;
+    const { isLogin } = user || {};
+    if (isLogin) return;
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+    });
   }
 
   getBusinessCountry = () => {
