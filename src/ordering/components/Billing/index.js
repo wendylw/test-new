@@ -58,7 +58,7 @@ export class Billing extends Component {
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
       search: window.location.search,
-      nextPage: false,
+      state: { nextPage: false },
     });
   };
 

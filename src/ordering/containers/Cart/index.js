@@ -111,7 +111,7 @@ class Cart extends Component {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
-        nextPage: true,
+        state: { nextPage: true },
       });
     }
 

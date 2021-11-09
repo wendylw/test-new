@@ -41,7 +41,7 @@ class PageLogin extends React.Component {
   visitNextPage = async () => {
     const { history, location, user, deliveryDetails, appActions } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
-    const { nextPage, fromPath } = location;
+    const { nextPage, fromPath } = location.state;
     const { profile } = user || {};
     const { name, phone } = profile || {};
     const { ROUTER_PATHS } = Constants;
@@ -66,7 +66,7 @@ class PageLogin extends React.Component {
       history.push({
         pathname: ROUTER_PATHS.PROFILE,
         search: window.location.search,
-        fromPath,
+        state: { fromPath },
       });
     } else {
       history.push({
