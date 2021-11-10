@@ -1096,11 +1096,15 @@ export const getIsLoginFree = createSelector(getIsDigitalType, getIsQROrder, (is
   return isDigitalType || isQROrder;
 });
 
-export const getShouldAskUserLogin = createSelector(getUser, getIsLoginFree, (user, isLoginFree) => {
-  const { isLogin, isFetching } = user || {};
-  const isFetchingDone = !isFetching;
-  const hasLoginGuardPassed = isLogin || isLoginFree;
-  return isFetchingDone && !hasLoginGuardPassed;
+export const getHasLoginGuardPassed = createSelector(
+  getUserIsLogin,
+  getIsLoginFree,
+  (isUserLogin, isLoginFree) => isUserLogin || isLoginFree
+);
+
+export const getShouldAskUserLogin = createSelector(getUser, getHasLoginGuardPassed, (user, hasLoginGuardPassed) => {
+  const { isFetching } = user || {};
+  return !(isFetching || hasLoginGuardPassed);
 });
 
 export const getIsValidCreateOrder = createSelector(

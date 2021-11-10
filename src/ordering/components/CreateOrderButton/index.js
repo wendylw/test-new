@@ -4,7 +4,13 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getRequestInfo, getError, getCartBilling, getShouldAskUserLogin } from '../../redux/modules/app';
+import {
+  getRequestInfo,
+  getError,
+  getCartBilling,
+  getHasLoginGuardPassed,
+  getShouldAskUserLogin,
+} from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
@@ -32,13 +38,12 @@ class CreateOrderButton extends React.Component {
       validCreateOrder,
       afterCreateOrder,
       beforeCreateOrder,
-      shouldAskUserLogin,
+      hasLoginGuardPassed,
       paymentName,
       gotoPayment,
     } = this.props;
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartBilling || {};
-    const hasLoginGuardPassed = !shouldAskUserLogin;
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let newOrderId;
     let currentOrder;
@@ -129,6 +134,7 @@ CreateOrderButton.propTypes = {
   processing: PropTypes.bool,
   loaderText: PropTypes.string,
   cartBilling: PropTypes.object,
+  getHasLoginGuardPassed: PropTypes.bool,
   shouldAskUserLogin: PropTypes.bool,
 };
 
@@ -140,6 +146,7 @@ CreateOrderButton.defaultProps = {
   sentOtp: false,
   processing: false,
   cartBilling: {},
+  getHasLoginGuardPassed: false,
   shouldAskUserLogin: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
@@ -153,6 +160,7 @@ export default compose(
         error: getError(state),
         requestInfo: getRequestInfo(state),
         cartBilling: getCartBilling(state),
+        hasLoginGuardPassed: getHasLoginGuardPassed(state),
         shouldAskUserLogin: getShouldAskUserLogin(state),
       };
     },

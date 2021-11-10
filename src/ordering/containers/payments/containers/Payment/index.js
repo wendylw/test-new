@@ -12,7 +12,7 @@ import {
   getMerchantCountry,
   getBusinessInfo,
   getDeliveryInfo,
-  getShouldAskUserLogin,
+  getHasLoginGuardPassed,
 } from '../../../../redux/modules/app';
 import {
   getPaymentsPendingState,
@@ -112,7 +112,7 @@ class Payment extends Component {
       history,
       currentPaymentOption,
       currentPaymentSupportSaveCard,
-      shouldAskUserLogin,
+      hasLoginGuardPassed,
       paymentActions,
     } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
@@ -121,7 +121,7 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    if (shouldAskUserLogin) {
+    if (hasLoginGuardPassed) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
@@ -275,7 +275,7 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         merchantCountry: getMerchantCountry(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        shouldAskUserLogin: getShouldAskUserLogin(state),
+        hasLoginGuardPassed: getHasLoginGuardPassed(state),
       };
     },
     dispatch => ({
