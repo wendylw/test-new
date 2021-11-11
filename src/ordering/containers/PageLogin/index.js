@@ -38,30 +38,46 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, user, deliveryDetails, appActions } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
-    const { nextPage } = location;
+    const { history, location, user } = this.props;
+    const { profile } = user || {};
+    const { name: hasProfileCompleted } = profile || {};
+    const { shouldDirectGoBack = true } = location.state || {};
+
+    if (shouldDirectGoBack) {
+      history.goBack();
+      return;
+    }
+
+    if (hasProfileCompleted) {
+      await this.gotoCustomerInfoPageIfNeeded();
+      return;
+    }
+
+    history.replace({
+      pathname: Constants.ROUTER_PATHS.PROFILE,
+      search: window.location.search,
+    });
+  };
+
+  gotoCustomerInfoPageIfNeeded = async () => {
+    const { history, user, deliveryDetails, appActions } = this.props;
+
+    if (Utils.isQROrder()) {
+      history.goBack();
+      return;
+    }
+
     const { profile } = user || {};
     const { name, phone } = profile || {};
-    if (nextPage && name) {
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
+    const { username, phone: orderPhone } = deliveryDetails || {};
 
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    } else if (nextPage && !name) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.PROFILE,
-        search: window.location.search,
-      });
-    } else {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: window.location.search,
-      });
-    }
+    !username && (await appActions.updateDeliveryDetails({ username: name }));
+    !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      search: window.location.search,
+    });
   };
 
   handleCloseOtpModal() {

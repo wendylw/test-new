@@ -1102,11 +1102,6 @@ export const getHasLoginGuardPassed = createSelector(
   (isUserLogin, isLoginFree) => isUserLogin || isLoginFree
 );
 
-export const getShouldAskUserLogin = createSelector(getUser, getHasLoginGuardPassed, (user, hasLoginGuardPassed) => {
-  const { isFetching } = user || {};
-  return !(isFetching || hasLoginGuardPassed);
-});
-
 export const getIsValidCreateOrder = createSelector(
   getCartBilling,
   getIsTNGMiniProgram,

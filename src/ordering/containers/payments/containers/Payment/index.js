@@ -121,7 +121,7 @@ class Payment extends Component {
       payNowLoading: true,
     });
 
-    if (hasLoginGuardPassed) {
+    if (!hasLoginGuardPassed) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,

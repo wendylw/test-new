@@ -4,13 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import {
-  getRequestInfo,
-  getError,
-  getCartBilling,
-  getHasLoginGuardPassed,
-  getShouldAskUserLogin,
-} from '../../redux/modules/app';
+import { getRequestInfo, getError, getUser, getCartBilling, getHasLoginGuardPassed } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
@@ -20,14 +14,26 @@ import loggly from '../../../utils/monitoring/loggly';
 const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
-  componentDidUpdate() {
-    const { shouldAskUserLogin, history } = this.props;
+  componentDidUpdate = prevProps => {
+    const { user: prevUser } = prevProps;
+    const { user: currentUser, hasLoginGuardPassed } = this.props;
+    const { isFetching: isPrevFetching } = prevUser || {};
+    const { isFetching: isCurrentFetching } = currentUser || {};
+    const isFetchingJustDone = isPrevFetching && !isCurrentFetching;
+    const shouldAskUserLogin = isFetchingJustDone && !hasLoginGuardPassed;
+
     if (!shouldAskUserLogin) return;
+    this.gotoLoginPage();
+  };
+
+  gotoLoginPage = () => {
+    const { history } = this.props;
+
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOGIN,
       search: window.location.search,
     });
-  }
+  };
 
   handleCreateOrder = async () => {
     const {
@@ -35,7 +41,6 @@ class CreateOrderButton extends React.Component {
       createOrder,
       requestInfo,
       cartBilling,
-      validCreateOrder,
       afterCreateOrder,
       beforeCreateOrder,
       hasLoginGuardPassed,
@@ -51,6 +56,8 @@ class CreateOrderButton extends React.Component {
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
+
+    const { validCreateOrder } = this.props;
 
     if (hasLoginGuardPassed && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
@@ -121,6 +128,7 @@ class CreateOrderButton extends React.Component {
 CreateOrderButton.displayName = 'CreateOrderButton';
 
 CreateOrderButton.propTypes = {
+  user: PropTypes.object,
   history: PropTypes.object,
   className: PropTypes.string,
   buttonType: PropTypes.string,
@@ -135,7 +143,6 @@ CreateOrderButton.propTypes = {
   loaderText: PropTypes.string,
   cartBilling: PropTypes.object,
   getHasLoginGuardPassed: PropTypes.bool,
-  shouldAskUserLogin: PropTypes.bool,
 };
 
 CreateOrderButton.defaultProps = {
@@ -147,7 +154,6 @@ CreateOrderButton.defaultProps = {
   processing: false,
   cartBilling: {},
   getHasLoginGuardPassed: false,
-  shouldAskUserLogin: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };
@@ -157,11 +163,11 @@ export default compose(
   connect(
     state => {
       return {
+        user: getUser(state),
         error: getError(state),
         requestInfo: getRequestInfo(state),
         cartBilling: getCartBilling(state),
         hasLoginGuardPassed: getHasLoginGuardPassed(state),
-        shouldAskUserLogin: getShouldAskUserLogin(state),
       };
     },
     {

@@ -21,6 +21,7 @@ import {
   getBusiness,
   getBusinessInfo,
   getShoppingCart,
+  getHasLoginGuardPassed,
   getCartBilling,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
@@ -103,15 +104,12 @@ class Cart extends Component {
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
     const { name, phone } = profile || {};
-
     const { status } = await cartActions.checkCartInventory();
 
     if (status === 'reject') {
       await appActions.loadShoppingCart();
-
       return;
     }
-
     if (!isLogin) {
       CleverTap.pushEvent('Login - view login screen', {
         'Screen Name': 'Cart Page',
@@ -119,7 +117,7 @@ class Cart extends Component {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
-        nextPage: true,
+        state: { shouldDirectGoBack: false },
       });
     }
 
@@ -472,14 +470,18 @@ class Cart extends Component {
   };
 
   handleBeforeCreateOrder = () => {
-    const { history, isValidCreateOrder } = this.props;
+    const { ROUTER_PATHS } = Constants;
+    const { history, isValidCreateOrder, hasLoginGuardPassed } = this.props;
+    const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
+
     loggly.log('cart.create-order-attempt');
     this.handleClickPayButtonEventTracking();
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
+        pathname,
         search: window.location.search,
+        state: { shouldDirectGoBack: false },
       });
     });
   };
@@ -611,6 +613,7 @@ export default compose(
         deliveryDetails: getDeliveryDetails(state),
         validBillingTotal: getValidBillingTotal(state),
         isValidCreateOrder: getIsValidCreateOrder(state),
+        hasLoginGuardPassed: getHasLoginGuardPassed(state),
         shouldDisablePayButton: getShouldDisablePayButton(state),
         isBillingTotalInvalid: getIsBillingTotalInvalid(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),

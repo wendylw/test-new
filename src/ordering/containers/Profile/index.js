@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { put } from '../../../utils/request';
 import url from '../../../utils/url';
+import Utils from '../../../utils/utils';
 import './Profile.scss';
 
 // import DayPicker from 'react-day-picker';
@@ -26,18 +27,34 @@ class Profile extends Component {
   }
 
   handleClickBack = () => {
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+    const { history } = this.props;
+    history.goBack();
+  };
+
+  gotoContactDetailPageIfNeeded = async () => {
+    const { user, history, deliveryDetails, appActions } = this.props;
+
+    if (Utils.isQROrder()) {
+      history.goBack();
+      return;
+    }
+
+    const { profile } = user || {};
+    const { name, phone } = profile || {};
+    const { username, phone: orderPhone } = deliveryDetails || {};
+    const { ROUTER_PATHS } = Constants;
+    !username && (await appActions.updateDeliveryDetails({ username: name }));
+    !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
       search: window.location.search,
     });
   };
 
   saveProfile = async () => {
-    const { user, history, deliveryDetails, appActions } = this.props;
+    const { user, appActions } = this.props;
     const { consumerId, profile } = user || {};
-    const { name, email, phone } = profile || {};
-    const { username, phone: orderPhone } = deliveryDetails || {};
-
+    const { name, email } = profile || {};
     let data = {};
     let createdUrl = API_URLS.CREATE_AND_UPDATE_PROFILE(consumerId);
     // let dateFormat = /^\d{4}-(\d{2})-(\d{2})$/;
@@ -51,12 +68,7 @@ class Profile extends Component {
       const response = await put(createdUrl.url, data);
       const { success } = response;
       if (success) {
-        !username && (await appActions.updateDeliveryDetails({ username: name }));
-        !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-        history.push({
-          pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-          search: window.location.search,
-        });
+        await this.gotoContactDetailPageIfNeeded();
       }
     } catch (e) {
       if (e.code) {

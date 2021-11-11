@@ -42,7 +42,9 @@ class CustomerInfo extends Component {
 
   async componentDidMount() {
     const { appActions, selectAvailableAddress, loadAddressList } = this.props;
+
     this.redirectToLoginPageIfNeeded();
+    await this.updateDeliveryDetailsIfNeeded();
     await loadAddressList();
     await selectAvailableAddress();
     appActions.loadShoppingCart();
@@ -65,12 +67,23 @@ class CustomerInfo extends Component {
   redirectToLoginPageIfNeeded() {
     const { user, history } = this.props;
     const { isLogin } = user || {};
+
     if (isLogin) return;
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOGIN,
       search: window.location.search,
     });
   }
+
+  updateDeliveryDetailsIfNeeded = async () => {
+    const { deliveryDetails, user, appActions } = this.props;
+    const { username, phone: orderPhone } = deliveryDetails || {};
+    const { profile } = user || {};
+    const { name, phone } = profile || {};
+
+    !username && (await appActions.updateDeliveryDetails({ username: name }));
+    !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
+  };
 
   getBusinessCountry = () => {
     try {

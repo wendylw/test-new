@@ -133,8 +133,8 @@ export const getShouldDisablePayButton = createSelector(
   getCartItems,
   getIsBillingTotalInvalid,
   getCheckingInventoryPendingState,
-  (items, isBillingTotalInvalid, pendingCheckingInventory) => {
-    const hasNoItem = !items || !items.length;
-    return hasNoItem || isBillingTotalInvalid || pendingCheckingInventory;
+  (cartItems, isBillingTotalInvalid, pendingCheckingInventory) => {
+    const hasNoCartItem = !cartItems || !cartItems.length;
+    return hasNoCartItem || isBillingTotalInvalid || pendingCheckingInventory;
   }
 );
