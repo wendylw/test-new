@@ -286,7 +286,7 @@ export const ERROR_MAPPING = {
   51000: options =>
     fullScreen(i18next.t(`ApiError:51000Description`), {
       title: i18next.t(`ApiError:51000Title`),
-      closeButtonContent: i18next.t('Common:BackToHome'),
+      closeButtonContent: i18next.t('Common:TryAgain'),
       onClose: () => {
         window.location.reload();
       },
