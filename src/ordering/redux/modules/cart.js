@@ -105,14 +105,12 @@ const cartInventory = (state = initialState.cartInventory, action) => {
   const { type, payload } = action;
 
   if (type === cartActionTypes.checkInventory) {
-    state = Object.assign({}, state, payload);
+    // eslint-disable-next-line no-param-reassign
+    state = { ...state, ...payload };
   } else if (type === cartActionTypes.checkInventorySuccess) {
-    state = Object.assign({}, state, payload);
+    return { ...state, ...payload };
   } else if (type === cartActionTypes.checkInventoryFailed) {
-    state = Object.assign({}, state, {
-      status: payload.status,
-      error: payload.error,
-    });
+    return { ...state, status: payload.status, error: payload.error };
   }
 
   return state;
