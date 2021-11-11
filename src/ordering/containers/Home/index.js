@@ -895,12 +895,7 @@ export class Home extends Component {
         )}
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar
-          promotionRef={this.getPromotionsBarRef}
-          promotions={promotions}
-          shippingType={shippingType}
-          inApp={Utils.isWebview()}
-        />
+        <PromotionsBar promotionRef={this.getPromotionsBarRef} promotions={promotions} shippingType={shippingType} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <p
             ref={ref => (this.deliveryFeeEl = ref)}
