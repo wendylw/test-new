@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
 import { compose } from 'redux';
 import HybridHeader from '../../../../../components/HybridHeader';
 import Utils from '../../../../../utils/utils';
 import { ProductSoldOutModal } from '../../components/ProductSoldOutModal';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import CleverTap from '../../../../../utils/clevertap';
-import { getCartBilling, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import PayFirst from '../PayFirst';
 import PayLater from '../PayLater';
 
@@ -68,10 +66,4 @@ class Cart extends Component {
 Cart.displayName = 'Cart';
 
 /* TODO: backend data */
-export default compose(
-  withTranslation(['OrderingCart', 'OrderingPromotion']),
-  connect(state => ({
-    cartBilling: getCartBilling(state),
-    storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-  }))
-)(Cart);
+export default compose(withTranslation(['OrderingCart', 'OrderingPromotion']))(Cart);

@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
-import { withTranslation, Trans } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import Utils from '../../../../../utils/utils';
 import {
-  getUser,
   getBusinessInfo,
   getShoppingCart,
   getCartBilling,
@@ -15,7 +14,6 @@ import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
 import CartList from '../../components/CartList';
 import { IconClose } from '../../../../../components/Icons';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
 
 class PayLater extends Component {
   // eslint-disable-next-line react/state-in-constructor
@@ -64,32 +62,16 @@ class PayLater extends Component {
   }
 
   render() {
-    const { cartBilling, shoppingCart, businessInfo, t, storeInfoForCleverTap, pendingCheckingInventory } = this.props;
+    const { shoppingCart, businessInfo, t, storeInfoForCleverTap, pendingCheckingInventory } = this.props;
     const { cartContainerHeight, productsContainerHeight } = this.state;
-    const { qrOrderingSettings, name } = businessInfo || {};
-    const { minimumConsumption } = qrOrderingSettings || {};
+    const { name } = businessInfo || {};
     const { items } = shoppingCart || {};
-    const { total } = cartBilling || {};
 
-    const isInvalidTotal =
-      (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
-    const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-    const buttonText = !isInvalidTotal ? (
-      <span className="text-weight-bolder" key="pay-now">
+    const buttonText = (
+      <span className="text-weight-bolder" key="place-order">
         {t('PlaceOrder')}
       </span>
-    ) : (
-      <span key="min-total">
-        <Trans i18nKey="MinimumConsumption">
-          <span className="text-weight-bolder">Min</span>
-          <CurrencyNumber className="text-weight-bolder" money={minTotal} />
-        </Trans>
-      </span>
     );
-
-    if (!(cartBilling && items)) {
-      return null;
-    }
 
     return (
       <>
@@ -131,16 +113,6 @@ class PayLater extends Component {
           className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
         >
           <button
-            className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
-            onClick={() => {
-              CleverTap.pushEvent('Cart Page - click back button(bottom)');
-              this.handleClickBack();
-            }}
-            data-heap-name="ordering.cart.back-btn"
-          >
-            {t('Back')}
-          </button>
-          <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.cart.pay-btn"
@@ -155,9 +127,9 @@ class PayLater extends Component {
                 await this.handleClickContinue();
               });
             }}
-            disabled={!items || !items.length || isInvalidTotal || pendingCheckingInventory}
+            disabled={!items || !items.length || pendingCheckingInventory}
           >
-            {pendingCheckingInventory ? t('Processing') : isInvalidTotal && `*`}
+            {pendingCheckingInventory ? t('Processing') : `*`}
             {!pendingCheckingInventory && buttonText}
           </button>
         </footer>
@@ -172,7 +144,6 @@ PayLater.displayName = 'PayLater';
 export default compose(
   withTranslation(['OrderingCart', 'OrderingPromotion']),
   connect(state => ({
-    user: getUser(state),
     cartBilling: getCartBilling(state),
     shoppingCart: getShoppingCart(state),
     businessInfo: getBusinessInfo(state),
