@@ -122,7 +122,7 @@ class CustomerInfo extends Component {
     const error = this.validateFields();
 
     if (error.show) {
-      alert(error);
+      alert(error.description, { title: error.message });
     } else {
       this.setState({ processing: true });
     }
