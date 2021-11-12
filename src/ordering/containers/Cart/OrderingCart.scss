@@ -9,6 +9,17 @@
     color: $gray-2;
   }
 
+  &__warning {
+    height: 41px;
+    background-color: #fffbe6;
+  }
+
+  &__warning-text {
+    line-height: 41px;
+    text-align: center;
+    color: #303030;
+  }
+
   &__container {
     height: 100%;
     width: 100%;

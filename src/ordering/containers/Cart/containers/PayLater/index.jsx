@@ -198,8 +198,8 @@ class PayLater extends Component {
 
     return (
       <>
-        <div>
-          <p>Check items before placing your order</p>
+        <div className="ordering-cart__warning">
+          <p className="ordering-cart__warning-text">{t('CheckItemsBeforePlaceYourOrder')}</p>
         </div>
         <div
           className="ordering-cart__container"
@@ -275,7 +275,7 @@ PayLater.displayName = 'PayLater';
 
 /* TODO: backend data */
 export default compose(
-  withTranslation(['OrderingCart', 'OrderingPromotion']),
+  withTranslation(['OrderingCart']),
   connect(state => ({
     shoppingCart: getShoppingCart(state),
     businessInfo: getBusinessInfo(state),

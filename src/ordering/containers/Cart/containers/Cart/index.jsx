@@ -10,7 +10,7 @@ import { ProductSoldOutModal } from '../../components/ProductSoldOutModal';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
-import PayFirst from '../PayFirst';
+import PayLater from '../PayLater';
 import loggly from '../../../../../utils/monitoring/loggly';
 import '../../OrderingCart.scss';
 
@@ -86,7 +86,7 @@ class Cart extends Component {
             onClick: this.handleClearAll,
           }}
         />
-        <PayFirst history={this.props.history} />
+        <PayLater history={this.props.history} />
         <ProductSoldOutModal
           t={t}
           show={isHaveProductSoldOut}
