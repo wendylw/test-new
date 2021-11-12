@@ -2,7 +2,7 @@ import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
 import Utils from '../../utils/utils';
 import Home from './Home';
-import Cart from './Cart';
+import Cart from './cart/containers/Cart/index';
 import Payment from './payments/containers/Payment';
 import CustomerInfo from './Customer/containers/CustomerInfo';
 import Constants from '../../utils/constants';

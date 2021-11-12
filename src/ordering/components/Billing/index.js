@@ -77,6 +77,7 @@ export class Billing extends Component {
       isLogin,
       children,
     } = this.props;
+
     const { stores = [], enableCashback } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
     const classList = ['billing'];
