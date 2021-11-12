@@ -317,7 +317,7 @@ export const ERROR_MAPPING = {
       ...options,
     }),
   54011: options =>
-    alert(i18next.t(`ApiError:CreateOrderErrorDescription`), {
+    alert(i18next.t(`ApiError:54011Description`), {
       title: i18next.t(`ApiError:54011Title`),
       onClose: () => {
         window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
@@ -348,6 +348,22 @@ export const ERROR_MAPPING = {
       closeButtonContent: i18next.t('Common:EditCart'),
       onClose: () => {
         window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`);
+      },
+      ...options,
+    }),
+  54017: options =>
+    alert(i18next.t(`ApiError:PaymentFailedDescription`), {
+      title: i18next.t(`ApiError:54017Title`),
+      onClose: () => {
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_PAYMENT}`);
+      },
+      ...options,
+    }),
+  54018: options =>
+    alert(i18next.t(`ApiError:PaymentFailedDescription`), {
+      title: i18next.t(`ApiError:54018Title`),
+      onClose: () => {
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_PAYMENT}`);
       },
       ...options,
     }),
@@ -434,6 +450,11 @@ export const ERROR_MAPPING = {
       onClose: () => {
         window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.CONTACT_DETAIL}`);
       },
+      ...options,
+    }),
+  58010: options =>
+    alert(i18next.t(`ApiError:58010Description`), {
+      title: i18next.t(`ApiError:58010Title`),
       ...options,
     }),
   58050: options =>
