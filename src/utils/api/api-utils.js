@@ -9,3 +9,9 @@ export const API_INFO = {
     url: `/api/transactions/${orderId}/change-shipping-type`,
   }),
 };
+
+export const API_REQUEST_STATUS = {
+  PENDING: 'pending',
+  FULFILLED: 'fulfilled',
+  REJECTED: 'rejected',
+};
