@@ -15,35 +15,49 @@ const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidMount = async () => {
-    const { history, user, hasLoginGuardPassed } = this.props;
+    const { user, hasLoginGuardPassed } = this.props;
     const { isFetching } = user || {};
-    const isInCartPage = history.location.pathname === ROUTER_PATHS.ORDERING_CART;
-    const shouldAskUserLogin = !(hasLoginGuardPassed || isInCartPage || isFetching);
+    const canAskUserLogin = !(hasLoginGuardPassed || isFetching);
 
-    if (!shouldAskUserLogin) return;
-    this.gotoLoginPage();
+    if (!canAskUserLogin) return;
+    this.gotoLoginPageIfNeeded();
   };
 
   componentDidUpdate = prevProps => {
     const { user: prevUser } = prevProps;
-    const { user: currentUser, hasLoginGuardPassed, history } = this.props;
+    const { user: currentUser, hasLoginGuardPassed } = this.props;
     const { isFetching: isPrevFetching } = prevUser || {};
     const { isFetching: isCurrentFetching } = currentUser || {};
     const isFetchingJustDone = isPrevFetching && !isCurrentFetching;
-    const isInCartPage = history.location.pathname === ROUTER_PATHS.ORDERING_CART;
-    const shouldAskUserLogin = isFetchingJustDone && !(hasLoginGuardPassed || isInCartPage);
+    const canAskUserLogin = isFetchingJustDone && !hasLoginGuardPassed;
 
-    if (!shouldAskUserLogin) return;
-    this.gotoLoginPage();
+    if (!canAskUserLogin) return;
+    this.gotoLoginPageIfNeeded();
   };
 
-  gotoLoginPage = () => {
-    const { history } = this.props;
+  gotoLoginPageIfNeeded = () => {
+    const { history, user } = this.props;
+    const { pathname } = history.location;
+    const { isLogin } = user || {};
 
-    history.push({
-      pathname: ROUTER_PATHS.ORDERING_LOGIN,
-      search: window.location.search,
-    });
+    switch (pathname) {
+      case ROUTER_PATHS.ORDERING_CART:
+        // Cart page do not require login
+        break;
+      case ROUTER_PATHS.ORDERING_CUSTOMER_INFO:
+        if (isLogin) break;
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_LOGIN,
+          search: window.location.search,
+        });
+        break;
+      default:
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_LOGIN,
+          search: window.location.search,
+        });
+        break;
+    }
   };
 
   handleCreateOrder = async () => {
