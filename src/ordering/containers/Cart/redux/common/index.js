@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { loadStockStatus } from './thunks';
 
@@ -21,8 +22,8 @@ const { reducer, actions } = createSlice({
       state.cartInventory.status = 'fulfilled';
     },
     [loadStockStatus.rejected.type]: (state, { error }) => {
-      state.updateShippingTypeError = error;
-      state.updateShippingTypeStatus = 'rejected';
+      state.cartInventory.error = error;
+      state.cartInventory.status = 'rejected';
     },
   },
 });
