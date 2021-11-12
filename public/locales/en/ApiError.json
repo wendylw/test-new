@@ -48,6 +48,8 @@
   "41000Description": "The selected time slot is no longer available. We have selected the next available time.",
   "41014Title": "No items in cart (#41014)",
   "41014Description": "There are no items in your cart, please reorder again.",
+  "41015Title": "No items in cart (#41015)",
+  "41015Description": "There are no items in your cart, please reorder again.",
   "40025Title": "Unable to access storage",
   "40025Description": "Cookie is not available.",
   "40026Title": "Unable to save data",

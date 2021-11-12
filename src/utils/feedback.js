@@ -263,8 +263,17 @@ export const ERROR_MAPPING = {
       ...options,
     }),
   41014: options =>
-    alert(i18next.t(`ApiError:41000Description`), {
-      title: i18next.t(`ApiError:41000Title`),
+    alert(i18next.t(`ApiError:41014Description`), {
+      title: i18next.t(`ApiError:41014Title`),
+      closeButtonContent: i18next.t('Common:Reorder'),
+      onClose: () => {
+        window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`);
+      },
+      ...options,
+    }),
+  41015: options =>
+    alert(i18next.t(`ApiError:41015Description`), {
+      title: i18next.t(`ApiError:41015Title`),
       closeButtonContent: i18next.t('Common:Reorder'),
       onClose: () => {
         window.location.href = getRedirectUrl(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_HOME}`);
