@@ -44,7 +44,6 @@ class CustomerInfo extends Component {
     const { appActions, selectAvailableAddress, loadAddressList } = this.props;
 
     this.redirectToLoginPageIfNeeded();
-    await this.updateDeliveryDetailsIfNeeded();
     await loadAddressList();
     await selectAvailableAddress();
     appActions.loadShoppingCart();
@@ -74,16 +73,6 @@ class CustomerInfo extends Component {
       search: window.location.search,
     });
   }
-
-  updateDeliveryDetailsIfNeeded = async () => {
-    const { deliveryDetails, user, appActions } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
-    const { profile } = user || {};
-    const { name, phone } = profile || {};
-
-    !username && (await appActions.updateDeliveryDetails({ username: name }));
-    !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-  };
 
   getBusinessCountry = () => {
     try {
