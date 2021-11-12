@@ -24,7 +24,6 @@ import {
   getHasLoginGuardPassed,
   getCartBilling,
   getStoreInfoForCleverTap,
-  getDeliveryDetails,
   getValidBillingTotal,
   getIsValidCreateOrder,
   getIsBillingTotalInvalid,
@@ -100,59 +99,32 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, appActions, cartActions, deliveryDetails } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
-    const { consumerId, isLogin, profile } = user || {};
-    const { name, phone } = profile || {};
+    const { user, history, appActions, cartActions } = this.props;
+    const { isLogin } = user || {};
+    const { ROUTER_PATHS } = Constants;
     const { status } = await cartActions.checkCartInventory();
 
     if (status === 'reject') {
       await appActions.loadShoppingCart();
       return;
     }
+
     if (!isLogin) {
       CleverTap.pushEvent('Login - view login screen', {
         'Screen Name': 'Cart Page',
       });
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
         state: { shouldDirectGoBack: false },
       });
+      return;
     }
 
-    // if have name, redirect to customer page
-    // if have consumerId, get profile first and update consumer profile, then redirect to next page
-    if (isLogin && name) {
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    } else {
-      if (isLogin && consumerId) {
-        let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
-        let { firstName, email, birthday, phone } = await get(request.url);
-        this.props.appActions.updateProfileInfo({
-          name: firstName,
-          email,
-          birthday,
-          phone,
-        });
-        !username && (await appActions.updateDeliveryDetails({ username: firstName }));
-        !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-        firstName
-          ? history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-              search: window.location.search,
-            })
-          : history.push({
-              pathname: Constants.ROUTER_PATHS.PROFILE,
-              search: window.location.search,
-            });
-      }
-    }
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      search: window.location.search,
+    });
   };
 
   handleResizeEvent() {
@@ -481,7 +453,6 @@ class Cart extends Component {
       history.push({
         pathname,
         search: window.location.search,
-        state: { shouldDirectGoBack: false },
       });
     });
   };
@@ -610,7 +581,6 @@ export default compose(
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        deliveryDetails: getDeliveryDetails(state),
         validBillingTotal: getValidBillingTotal(state),
         isValidCreateOrder: getIsValidCreateOrder(state),
         hasLoginGuardPassed: getHasLoginGuardPassed(state),

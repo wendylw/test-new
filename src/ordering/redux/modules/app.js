@@ -1092,9 +1092,16 @@ export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsQROrder = state => Utils.isQROrder();
 
-export const getIsLoginFree = createSelector(getIsDigitalType, getIsQROrder, (isDigitalType, isQROrder) => {
-  return isDigitalType || isQROrder;
-});
+export const getIsLoginFree = createSelector(
+  getBusinessInfo,
+  getIsDigitalType,
+  getIsQROrder,
+  (businessInfo, isDigitalType, isQROrder) => {
+    const { allowAnonymousQROrdering = false } = businessInfo;
+    const isQROrderingLoginFree = isQROrder && allowAnonymousQROrdering;
+    return isDigitalType || isQROrderingLoginFree;
+  }
+);
 
 export const getHasLoginGuardPassed = createSelector(
   getUserIsLogin,

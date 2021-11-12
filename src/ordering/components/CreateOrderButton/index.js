@@ -14,13 +14,24 @@ import loggly from '../../../utils/monitoring/loggly';
 const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
+  componentDidMount = async () => {
+    const { history, user, hasLoginGuardPassed } = this.props;
+    const { isFetching } = user || {};
+    const isInCartPage = history.location.pathname === ROUTER_PATHS.ORDERING_CART;
+    const shouldAskUserLogin = !(hasLoginGuardPassed || isInCartPage || isFetching);
+
+    if (!shouldAskUserLogin) return;
+    this.gotoLoginPage();
+  };
+
   componentDidUpdate = prevProps => {
     const { user: prevUser } = prevProps;
-    const { user: currentUser, hasLoginGuardPassed } = this.props;
+    const { user: currentUser, hasLoginGuardPassed, history } = this.props;
     const { isFetching: isPrevFetching } = prevUser || {};
     const { isFetching: isCurrentFetching } = currentUser || {};
     const isFetchingJustDone = isPrevFetching && !isCurrentFetching;
-    const shouldAskUserLogin = isFetchingJustDone && !hasLoginGuardPassed;
+    const isInCartPage = history.location.pathname === ROUTER_PATHS.ORDERING_CART;
+    const shouldAskUserLogin = isFetchingJustDone && !(hasLoginGuardPassed || isInCartPage);
 
     if (!shouldAskUserLogin) return;
     this.gotoLoginPage();

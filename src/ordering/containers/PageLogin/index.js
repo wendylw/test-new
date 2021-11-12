@@ -38,9 +38,7 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, user } = this.props;
-    const { profile } = user || {};
-    const { name: hasProfileCompleted } = profile || {};
+    const { history, location } = this.props;
     const { shouldDirectGoBack = true } = location.state || {};
 
     if (shouldDirectGoBack) {
@@ -48,24 +46,11 @@ class PageLogin extends React.Component {
       return;
     }
 
-    if (hasProfileCompleted) {
-      await this.gotoCustomerInfoPageIfNeeded();
-      return;
-    }
-
-    history.replace({
-      pathname: Constants.ROUTER_PATHS.PROFILE,
-      search: window.location.search,
-    });
+    await this.gotoCustomerInfoPage();
   };
 
-  gotoCustomerInfoPageIfNeeded = async () => {
+  gotoCustomerInfoPage = async () => {
     const { history, user, deliveryDetails, appActions } = this.props;
-
-    if (Utils.isQROrder()) {
-      history.goBack();
-      return;
-    }
 
     const { profile } = user || {};
     const { name, phone } = profile || {};
