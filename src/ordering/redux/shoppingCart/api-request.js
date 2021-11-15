@@ -1,6 +1,6 @@
-import { get } from '../../../../../utils/api/api-fetch';
+import { get } from '../../../utils/api/api-fetch';
 
-export const fetchStockStatus = ({ fulfillDate, shippingType, cartItemIds }) =>
+export const fetchCart = ({ fulfillDate, shippingType, cartItemIds }) =>
   get(`/api/cart/checkInventory`, {
     queryParams: {
       /** fulfillDate must be a string */

@@ -7,41 +7,22 @@ const CartItemModel = {
   productId: null,
   title: '',
   variationTexts: [],
-  displayPrice: 0,
-  originalDisplayPrice: 0,
+  variations: [],
+  price: 0,
+  originalPrice: 0,
   image: null,
-  stockStatus: '',
+  stock: 0,
+  stockStatus: null,
   quantity: 0,
-  quantityOnHand: 0,
 };
 
 const initialState = {
-  status: 'pending',
-  isFetching: false,
+  id: null,
+  status: API_REQUEST_STATUS.PENDING,
+  cartStatus: 'pending',
+  version: 0,
   items: [],
   unavailableItems: [],
-  billing: {
-    discount: 0,
-    subtotal: 0,
-    total: 0,
-    tax: 0,
-    totalCashback: 0,
-    serviceCharge: 0,
-    shippingFee: 0,
-    promotion: {
-      promoCode: null,
-      discount: 0,
-      promoType: '',
-      status: '',
-    },
-    voucher: {
-      promoCode: null,
-      status: '',
-      discount: 0,
-      validFrom: null,
-      promoType: '',
-    },
-  },
 };
 
 export const { reducer, actions } = createSlice({

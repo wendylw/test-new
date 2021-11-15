@@ -30,10 +30,11 @@ export const getShoppingCart = createSelector(
       };
     };
 
-    cartBilling.count = [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0);
-
     return {
-      cartBilling,
+      cartBilling: {
+        ...cartBilling,
+        count: [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0),
+      },
       items: items.map(item => ({
         ...item,
         ...categoryInfo(item),
