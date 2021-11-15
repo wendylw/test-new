@@ -1,0 +1,51 @@
+// eslint-disable-next-line no-unused-vars
+import React, { Component } from 'react';
+import { compose } from 'redux';
+import { withTranslation } from 'react-i18next';
+// import orderSuccessImage from '../../../../../images/order-success.png';
+// import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
+import './Submission.scss';
+
+class Submission extends Component {
+  componentDidMount() {}
+
+  render() {
+    const { t } = this.props;
+    return (
+      <session className="flex flex-column">
+        {/* pending status */}
+        <div className="ordering-submission__pending text-center">
+          <p className="ordering-submission__loading-redirect text-size-big margin-left-right-small">
+            {t('LoadingRedirecting')}
+          </p>
+        </div>
+
+        {/* success status */}
+        {/* <div className="text-center">
+          <img className="ordering-submission__image-container" src={orderSuccessImage} alt="order success" />
+          <p className="text-size-biggest text-weight-bold padding-left-right-smaller margin-top-bottom-smaller">
+            {t('OrderSubmitted')}
+          </p>
+          <p className="ordering-submission__loading-redirect text-size-big">{t('LoadingRedirecting')}</p>
+        </div> */}
+
+        {/* failure status */}
+        {/* <div className="text-center">
+          <img className="ordering-submission__image-container-failure" src={orderFailureImage} alt="order failure" />
+          <p className="text-size-biggest text-weight-bold padding-left-right-smaller padding-smaller">
+            {t('OrderSubmissedFailed')}
+          </p>
+          <p className="ordering-submission__failure-redirect text-size-big">{t('PleaseReturnMenuScanAgain')}</p>
+          <button className="button button__fill margin-top-bottom-normal  padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder">
+            {t('ReturnToCart')}
+          </button>
+        </div> */}
+      </session>
+    );
+  }
+}
+
+Submission.displayName = 'Submission';
+
+/* TODO: backend data */
+export default compose(withTranslation(['OrderingSubmissionStatus']))(Submission);

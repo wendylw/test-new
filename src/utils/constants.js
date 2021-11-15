@@ -23,6 +23,7 @@ const ROUTER_PATHS = {
   ORDERING_LOCATION: '/location',
   ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
+  ORDERING_Submission: '/submission',
   ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
