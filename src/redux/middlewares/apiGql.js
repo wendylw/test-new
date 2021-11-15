@@ -10,11 +10,7 @@ export default store => next => action => {
     return next(action);
   }
 
-  const {
-    endpoint,
-    types,
-    variables,
-  } = callAPI;
+  const { endpoint, types, variables, options } = callAPI;
 
   if (typeof endpoint !== 'string') {
     throw new Error('endpoint is required as string');
@@ -31,33 +27,39 @@ export default store => next => action => {
 
     delete finalAction[FETCH_GRAPHQL];
     return finalAction;
-  }
+  };
 
   const [requestType, successType, failureType] = types;
 
   next(actionWith({ type: requestType }));
 
-  return post(endpoint, variables).then(
-    responseGql => {
+  return post(endpoint, variables, options)
+    .then(responseGql => {
       const { error } = responseGql;
 
       // handle error filed when 200 status
       if (error) {
-        return next(actionWith({
-          type: failureType,
-          ...error,
-        }));
+        return next(
+          actionWith({
+            type: failureType,
+            ...error,
+          })
+        );
       }
 
-      return next(actionWith({
-        type: successType,
-        responseGql
-      }));
-    },
-  ).catch(error => {
-    return next(actionWith({
-      type: failureType,
-      ...error,
-    }));
-  });
-}
+      return next(
+        actionWith({
+          type: successType,
+          responseGql,
+        })
+      );
+    })
+    .catch(error => {
+      return next(
+        actionWith({
+          type: failureType,
+          ...error,
+        })
+      );
+    });
+};

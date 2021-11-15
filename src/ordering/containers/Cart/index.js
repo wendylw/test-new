@@ -26,7 +26,6 @@ import {
 } from '../../redux/modules/app';
 import { actions as cartActionCreators, getCheckingInventoryPendingState } from '../../redux/modules/cart';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
-import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
 import Url from '../../../utils/url';
 import { get } from '../../../utils/request';
@@ -39,7 +38,6 @@ class Cart extends Component {
   state = {
     expandBilling: true,
     additionalComments: Utils.getSessionVariable('additionalComments'),
-    isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
     productsContainerHeight: '0px',
   };
@@ -50,7 +48,7 @@ class Cart extends Component {
   }
 
   async componentDidMount() {
-    const { appActions } = this.props;
+    const { t, appActions } = this.props;
 
     await appActions.loadShoppingCart();
 
@@ -127,7 +125,7 @@ class Cart extends Component {
     } else {
       if (isLogin && consumerId) {
         let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
-        let { firstName, email, birthday, phone } = await get(request.url);
+        let { firstName, email, birthday, phone } = await get(request.url, { enableDefaultError: true });
         this.props.appActions.updateProfileInfo({
           name: firstName,
           email,
@@ -404,7 +402,7 @@ class Cart extends Component {
       storeInfoForCleverTap,
       pendingCheckingInventory,
     } = this.props;
-    const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
+    const { cartContainerHeight, productsContainerHeight } = this.state;
     const { qrOrderingSettings, name } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -535,15 +533,6 @@ class Cart extends Component {
             {!pendingCheckingInventory && buttonText}
           </button>
         </footer>
-        <ProductSoldOutModal
-          show={isHaveProductSoldOut}
-          editHandler={() => {
-            this.setState({
-              isHaveProductSoldOut: null,
-            });
-            Utils.removeSessionVariable('isHaveProductSoldOut');
-          }}
-        />
       </section>
     );
   }

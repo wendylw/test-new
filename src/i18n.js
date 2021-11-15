@@ -8,7 +8,7 @@ import config from './config';
 const i18nextConfig = {
   fallbackLng: 'en', // this will lead an extra request for en translation file for each namespace
   defaultNS: 'Common', // this defines which namespace to use when no namespace is provided (to withTranslation, etc.)
-  ns: ['Common'], // this is the preloaded namespace when page first loads.
+  ns: ['Common', 'ApiError'], // this is the preloaded namespace when page first loads.
   fallbackNS: 'Common',
   load: 'languageOnly', // setting to 'languageOnly' will avoid loading 'en' when current language is 'en-US'.
   preload: ['en'], // array of languages to preload. Important on serverside to assert translations are loaded before rendering views.

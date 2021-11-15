@@ -59,6 +59,7 @@ export const actions = {
         status,
         receiptNumbers,
       },
+      options: { enableDefaultError: true },
     },
   }),
 

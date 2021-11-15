@@ -1,29 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  customerError: {
-    show: false,
-    message: '',
-    description: '',
-    buttonText: '',
-  },
-};
+const initialState = {};
 
 export const { actions, reducer } = createSlice({
   name: 'ordering/customer/customerInfo',
   initialState,
-  reducers: {
-    setCustomerError(state, action) {
-      state.customerError = action.payload;
-    },
-
-    clearCustomerError(state) {
-      state.customerError = initialState.customerError;
-    },
-  },
+  reducers: {},
 });
 
 export default reducer;
-
-export const getCustomerError = state => state.customer.customerInfo.customerError;

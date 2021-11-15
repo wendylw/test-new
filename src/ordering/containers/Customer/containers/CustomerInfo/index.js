@@ -5,11 +5,11 @@ import { bindActionCreators, compose } from 'redux';
 import { Link } from 'react-router-dom';
 import { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
 import Utils from '../../../../../utils/utils';
+import { alert } from '../../../../../common/feedback';
 import Constants from '../../../../../utils/constants';
 import { formatToDeliveryTime } from '../../../../../utils/datetime-lib';
 
 import HybridHeader from '../../../../../components/HybridHeader';
-import MessageModal from '../../../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import AddressChangeModal from '../../components/AddressChangeModal';
@@ -26,7 +26,6 @@ import {
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
-import { getCustomerError, actions as customerInfoActionCreators } from './redux';
 import { selectAvailableAddress, loadAddressList } from '../../redux/common/thunks';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -120,21 +119,14 @@ class CustomerInfo extends Component {
   handleBeforeCreateOrder = () => {
     loggly.log('customer.create-order-attempt');
 
-    const { customerInfoActions } = this.props;
     const error = this.validateFields();
 
     if (error.show) {
-      customerInfoActions.setCustomerError(error);
+      alert(error.description, { title: error.message });
     } else {
       this.setState({ processing: true });
     }
   };
-
-  handleErrorHide() {
-    const { customerInfoActions } = this.props;
-
-    customerInfoActions.clearCustomerError();
-  }
 
   visitPaymentPage = () => {
     const { history, cartBilling } = this.props;
@@ -305,7 +297,7 @@ class CustomerInfo extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartBilling, customerError, storeInfoForCleverTap } = this.props;
+    const { t, history, deliveryDetails, cartBilling, storeInfoForCleverTap } = this.props;
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
@@ -427,14 +419,6 @@ class CustomerInfo extends Component {
             {processing ? t('Processing') : t('Continue')}
           </CreateOrderButton>
         </footer>
-        {customerError.show ? (
-          <MessageModal
-            data={customerError}
-            onHide={() => {
-              this.handleErrorHide();
-            }}
-          />
-        ) : null}
         <AddressChangeModal deliveryFee={shippingFee} addressChange={addressChange} />
       </section>
     );
@@ -453,7 +437,6 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
       cartBilling: getCartBilling(state),
       requestInfo: getRequestInfo(state),
-      customerError: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       addressList: getAddressList(state),
@@ -462,7 +445,6 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       selectAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
       loadAddressList: bindActionCreators(loadAddressList, dispatch),
-      customerInfoActions: bindActionCreators(customerInfoActionCreators, dispatch),
     })
   )
 )(CustomerInfo);

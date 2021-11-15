@@ -29,6 +29,12 @@ import { alert } from '../../../../../../common/feedback';
 const { DELIVERY_METHOD } = Constants;
 
 const POLLING_INTERVAL = 3000;
+const CREATE_ORDER_ERROR = {
+  80000: options =>
+    alert(i18next.t('ApiError:80000Description'), { title: i18next.t('ApiError:80000Title'), ...options }),
+  80001: options =>
+    alert(i18next.t('ApiError:80001Description'), { title: i18next.t('ApiError:80001Title'), ...options }),
+};
 
 const pollingOrderStatus = (callback, orderId, timeout) => {
   if (timeout <= 0) {
@@ -98,12 +104,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       const order = await createVoucherOrderRequest(payload);
       return { order };
     } catch (error) {
-      if (error.code) {
-        // TODO: This type is actually not used, because apiError does not respect action type,
-        // which is a bad practice, we will fix it in the future, for now we just keep a useless
-        // action type.
-        dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
-      } else {
+      if (!error.code) {
         alert.raw(
           <p className="padding-small text-size-biggest text-weight-bolder">
             {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}
@@ -245,12 +246,9 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       throw error;
     }
   } catch (error) {
-    if (error.code) {
-      // TODO: This type is actually not used, because apiError does not respect action type,
-      // which is a bad practice, we will fix it in the future, for now we just keep a useless
-      // action type.
-      dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
-    } else {
+    if (error.code && CREATE_ORDER_ERROR[error.code]) {
+      CREATE_ORDER_ERROR[error.code]();
+    } else if (!error.code) {
       alert.raw(
         <p className="padding-small text-size-biggest text-weight-bolder">
           {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}

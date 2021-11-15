@@ -30,6 +30,7 @@ import DineMethods from '../DineMethods';
 
 import { gtmSetUserProperties } from '../../../utils/gtm';
 import Utils from '../../../utils/utils';
+import { ERROR_MAPPING } from '../../../utils/feedback';
 import { findNearestAvailableStore } from '../../../utils/store-utils';
 import qs from 'qs';
 import config from '../../../config';
@@ -232,7 +233,7 @@ class App extends Component {
     const { pageError } = this.props;
 
     if (pageError && pageError.code) {
-      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
+      ERROR_MAPPING[pageError.code]();
     }
   }
 

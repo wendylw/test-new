@@ -1,11 +1,12 @@
 import originalKy from 'ky';
 import qs from 'qs';
-import Utils from '../utils';
+import { ERROR_MAPPING } from '../feedback';
+import { getClientSource, ApiError } from './api-utils';
 
 export const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
-    beforeRequest: [req => req.headers.set('client', Utils.getClient())],
+    beforeRequest: [req => req.headers.set('client', getClientSource().name)],
     retry: {
       limit: 1,
       methods: ['get'],
@@ -20,18 +21,15 @@ async function parseResponse(resp) {
   let body = resp;
 
   if (!rawContentType) {
+    /**
+     * The data returned by BFF must be guaranteed to be in json format
+     */
+    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
+
     return body;
   }
 
-  if (rawContentType.includes('application/json')) {
-    body = await resp.json();
-  } else if (['text/plain', 'text/html'].some(type => rawContentType.includes(type))) {
-    body = await resp.text();
-  } else {
-    console.warn(`Unexpected content type: ${rawContentType}, will respond with raw Response object.`);
-  }
-
-  return body;
+  return await body.json();
 }
 
 function convertOptions(options) {
@@ -91,73 +89,68 @@ function formatResponseData(url, result) {
 async function _fetch(url, opts) {
   const queryStr = qs.stringify(opts.searchParams, { addQueryPrefix: true });
   const requestStart = new Date().valueOf();
-  const requestUrl = queryStr.length === 0 ? url : `${url}${queryStr}`;
+  const requestUrl = `${url}${queryStr.length === 0 ? '' : queryStr}`;
+  const customEventDetail = {
+    type: opts.method,
+    request: requestUrl,
+    requestStart,
+  };
+
   try {
     const resp = await ky(url, opts);
 
     // Send log to Loggly
     window.dispatchEvent(
       new CustomEvent('sh-api-success', {
-        detail: {
-          type: opts.method,
-          request: requestUrl,
-          requestStart,
-        },
+        detail: customEventDetail,
       })
     );
 
     return formatResponseData(url, await parseResponse(resp));
   } catch (e) {
-    let error = {};
+    /**
+     * error data structures:
+     * {errorCode}
+     * {code}
+     * {errors:[{code}]}
+     *  */
+    let error = new ApiError('90000', 'Network error');
 
     if (e.response) {
       const body = await parseResponse(e.response);
+      const errorBody = body.errors && body.errors[0] ? body.errors[0] : body;
+      const apiErrorCode = errorBody.code || errorBody.errorCode || '50000';
 
-      if (typeof body === 'object' && body.code) {
-        error = body;
-        // Send log to Loggly
-        window.dispatchEvent(
-          new CustomEvent('sh-api-failure', {
-            detail: {
-              type: opts.method,
-              request: requestUrl,
-              code: body.code,
-              error: body.message,
-              requestStart,
-            },
-          })
-        );
-      } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
-        error = {
-          code: '50000',
-          status: e.status,
-          message: typeof body === 'string' ? body : JSON.stringify(body),
-        };
-        // Send log to Loggly
-        window.dispatchEvent(
-          new CustomEvent('sh-api-failure', {
-            detail: {
-              type: opts.method,
-              request: requestUrl,
-              requestStart,
-              error: error.message,
-            },
-          })
-        );
-      }
-    } else {
-      // Send log to Loggly
-      window.dispatchEvent(
-        new CustomEvent('sh-fetch-error', {
-          detail: {
-            type: opts.method,
-            request: requestUrl,
-            error: e.message,
-            requestStart,
-          },
-        })
-      );
+      error = new ApiError(apiErrorCode, errorBody.message, {
+        status: errorBody.status,
+        extraInfo: errorBody.extraInfo,
+        response: e.response,
+        responseBody: body,
+      });
     }
+
+    // Call feedback API
+    const { enableDefaultError = true } = opts || {};
+    const showDefaultError =
+      typeof enableDefaultError === 'function' ? enableDefaultError(error.code) || true : enableDefaultError;
+
+    if (showDefaultError && ERROR_MAPPING[error.code]) {
+      ERROR_MAPPING[error.code]();
+    }
+
+    // Send log to Loggly
+    if (error.code) {
+      customEventDetail.code = error.code;
+    }
+
+    window.dispatchEvent(
+      new CustomEvent(e.response ? 'sh-api-failure' : 'sh-fetch-error', {
+        detail: {
+          ...customEventDetail,
+          error: error.message,
+        },
+      })
+    );
 
     throw error;
   }
