@@ -2,15 +2,13 @@ import { createSelector } from 'reselect';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 
-export const getCartItems = state => state.app.shoppingCart.items;
+export const getCartItems = state => state.app.cart.items;
 
-export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
-
-export const getCartBilling = state => state.app.shoppingCart.billing;
+export const getCartUnavailableItems = state => state.app.cart.unavailableItems;
 
 export const getShoppingCart = createSelector(
-  [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
-  (cartBilling, items, unavailableItems, allProducts, categories) => {
+  [getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
+  (items, unavailableItems, allProducts, categories) => {
     const categoriesKeys = Object.keys(categories) || [];
     const allProductIds = Object.keys(allProducts) || [];
     const categoryInfo = function(selectedProductObject) {
@@ -31,10 +29,6 @@ export const getShoppingCart = createSelector(
     };
 
     return {
-      cartBilling: {
-        ...cartBilling,
-        count: [...items, ...unavailableItems].reduce((sumCount, item) => sumCount + item.quantity, 0),
-      },
       items: items.map(item => ({
         ...item,
         ...categoryInfo(item),
