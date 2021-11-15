@@ -3,8 +3,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import _floor from 'lodash/floor';
-import _replace from 'lodash/replace';
 import { compose } from 'redux';
 import _isNil from 'lodash/isNil';
 import Utils from '../../../../../utils/utils';
@@ -16,41 +14,13 @@ import CartList from '../../components/CartList';
 import { IconClose } from '../../../../../components/Icons';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 
-const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
-
 class PayLater extends Component {
   // eslint-disable-next-line react/state-in-constructor
   state = {
-    expandBilling: true,
-    cartContainerHeight: '100%',
-    productsContainerHeight: '0px',
+    additionalComments: Utils.getSessionVariable('additionalComments'),
   };
 
-  componentDidMount() {
-    window.scrollTo(0, 0);
-    this.handleResizeEvent();
-    this.setCartContainerHeight();
-    this.setProductsContainerHeight();
-  }
-
-  handleResizeEvent() {
-    window.addEventListener(
-      'resize',
-      () => {
-        const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
-        if (resizeHeight < originHeight) {
-          this.setState({
-            expandBilling: false,
-          });
-        } else {
-          this.setState({
-            expandBilling: true,
-          });
-        }
-      },
-      false
-    );
-  }
+  componentDidMount() {}
 
   handleChangeAdditionalComments(e) {
     this.setState({
@@ -64,34 +34,6 @@ class PayLater extends Component {
     Utils.removeSessionVariable('additionalComments');
     this.setState({ additionalComments: null });
   }
-
-  setCartContainerHeight = preContainerHeight => {
-    const containerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.footerEl],
-    });
-
-    if (preContainerHeight !== containerHeight) {
-      this.setState({
-        cartContainerHeight: containerHeight,
-      });
-    }
-  };
-
-  setProductsContainerHeight = preProductsContainerHeight => {
-    const productsContainerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.footerEl, this.billingEl],
-    });
-    const preHeightNumber = _floor(_replace(preProductsContainerHeight, 'px', ''));
-    const currentHeightNumber = _floor(_replace(productsContainerHeight, 'px', ''));
-
-    if (productsContainerHeight > '0px' && Math.abs(currentHeightNumber - preHeightNumber) > 10) {
-      this.setState({
-        productsContainerHeight,
-      });
-    }
-  };
 
   handleClickContinue = async () => {};
 
@@ -198,8 +140,8 @@ class PayLater extends Component {
 
     return (
       <>
-        <div className="ordering-cart__warning">
-          <p className="ordering-cart__warning-text">{t('CheckItemsBeforePlaceYourOrder')}</p>
+        <div className="ordering-cart__warning padding-small">
+          <p className="text-center">{t('CheckItemsBeforePlaceYourOrder')}</p>
         </div>
         <div
           className="ordering-cart__container"

@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unused-state */
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable react/jsx-fragments */
 /* eslint-disable react/destructuring-assignment */
@@ -6,11 +5,9 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import { withTranslation, Trans } from 'react-i18next';
-import _floor from 'lodash/floor';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import _isNil from 'lodash/isNil';
-import _replace from 'lodash/replace';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import Url from '../../../../../utils/url';
@@ -33,29 +30,16 @@ import loggly from '../../../../../utils/monitoring/loggly';
 import CartList from '../../components/CartList';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 
-const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
-
 class PayFirst extends Component {
   // eslint-disable-next-line react/state-in-constructor
   state = {
-    expandBilling: true,
     additionalComments: Utils.getSessionVariable('additionalComments'),
-    isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
-    cartContainerHeight: '100%',
-    productsContainerHeight: '0px',
   };
 
   async componentDidMount() {
     const { appActions } = this.props;
 
     await appActions.loadShoppingCart();
-
-    window.scrollTo(0, 0);
-    this.handleResizeEvent();
-    this.setCartContainerHeight();
-    this.setProductsContainerHeight();
-
-    CleverTap.pushEvent('Cart page - view cart page', this.props.storeInfoForCleverTap);
   }
 
   handleClearAdditionalComments() {
@@ -70,53 +54,6 @@ class PayFirst extends Component {
 
     Utils.setSessionVariable('additionalComments', e.target.value);
   }
-
-  handleResizeEvent() {
-    window.addEventListener(
-      'resize',
-      () => {
-        const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
-        if (resizeHeight < originHeight) {
-          this.setState({
-            expandBilling: false,
-          });
-        } else {
-          this.setState({
-            expandBilling: true,
-          });
-        }
-      },
-      false
-    );
-  }
-
-  setCartContainerHeight = preContainerHeight => {
-    const containerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.footerEl],
-    });
-
-    if (preContainerHeight !== containerHeight) {
-      this.setState({
-        cartContainerHeight: containerHeight,
-      });
-    }
-  };
-
-  setProductsContainerHeight = preProductsContainerHeight => {
-    const productsContainerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.footerEl, this.billingEl],
-    });
-    const preHeightNumber = _floor(_replace(preProductsContainerHeight, 'px', ''));
-    const currentHeightNumber = _floor(_replace(productsContainerHeight, 'px', ''));
-
-    if (productsContainerHeight > '0px' && Math.abs(currentHeightNumber - preHeightNumber) > 10) {
-      this.setState({
-        productsContainerHeight,
-      });
-    }
-  };
 
   getDisplayPrice() {
     // eslint-disable-next-line react/prop-types

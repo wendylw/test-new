@@ -1,7 +1,10 @@
+/* eslint-disable react/no-unused-state */
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import _floor from 'lodash/floor';
 import { compose, bindActionCreators } from 'redux';
+import _replace from 'lodash/replace';
 import { connect } from 'react-redux';
 import { actions as appActionCreators } from '../../../../redux/modules/app';
 import HybridHeader from '../../../../../components/HybridHeader';
@@ -12,13 +15,27 @@ import CleverTap from '../../../../../utils/clevertap';
 import Constants from '../../../../../utils/constants';
 import PayLater from '../PayLater';
 import loggly from '../../../../../utils/monitoring/loggly';
-import '../../OrderingCart.scss';
+import './OrderingCart.scss';
 
+const originHeight = document.documentElement.clientHeight || document.body.clientHeight;
 class Cart extends Component {
   // eslint-disable-next-line react/state-in-constructor
   state = {
+    expandBilling: true,
     isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
+    cartContainerHeight: '100%',
+    productsContainerHeight: '0px',
   };
+
+  componentDidMount() {
+    window.scrollTo(0, 0);
+    this.handleResizeEvent();
+    this.setCartContainerHeight();
+    this.setProductsContainerHeight();
+
+    // eslint-disable-next-line react/prop-types
+    CleverTap.pushEvent('Cart page - view cart page', this.props.storeInfoForCleverTap);
+  }
 
   handleClickBack = async () => {
     const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
@@ -38,6 +55,53 @@ class Cart extends Component {
         search: newSearchParams,
       });
     }, 100);
+  };
+
+  handleResizeEvent() {
+    window.addEventListener(
+      'resize',
+      () => {
+        const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        if (resizeHeight < originHeight) {
+          this.setState({
+            expandBilling: false,
+          });
+        } else {
+          this.setState({
+            expandBilling: true,
+          });
+        }
+      },
+      false
+    );
+  }
+
+  setCartContainerHeight = preContainerHeight => {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl],
+    });
+
+    if (preContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
+  };
+
+  setProductsContainerHeight = preProductsContainerHeight => {
+    const productsContainerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl, this.billingEl],
+    });
+    const preHeightNumber = _floor(_replace(preProductsContainerHeight, 'px', ''));
+    const currentHeightNumber = _floor(_replace(productsContainerHeight, 'px', ''));
+
+    if (productsContainerHeight > '0px' && Math.abs(currentHeightNumber - preHeightNumber) > 10) {
+      this.setState({
+        productsContainerHeight,
+      });
+    }
   };
 
   handleClearAll = () => {

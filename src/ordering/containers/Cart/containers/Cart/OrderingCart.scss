@@ -1,4 +1,4 @@
-@import "../../../Variables.scss";
+@import "../../../../../Variables.scss";
 
 .ordering-cart {
   height: 100vh;
@@ -10,14 +10,7 @@
   }
 
   &__warning {
-    height: 41px;
-    background-color: #fffbe6;
-  }
-
-  &__warning-text {
-    line-height: 41px;
-    text-align: center;
-    color: #303030;
+    background-color: $status-yellow;
   }
 
   &__container {
