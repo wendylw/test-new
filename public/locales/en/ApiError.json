@@ -1,7 +1,7 @@
 {
   "401Title": "System Unauthorized (#401)",
   "401Description": "Server Error, please try again to login",
-  "54011Title": "Service error (#54011)",
+  "54011Title": "Unable to process order (#54011)",
   "54011Description": "An error has occurred while processing the order. Please try again.",
   "54017Title": "No Response from Payment Provider (#54017)",
   "54018Title": "No Response from Payment Provider (#54018)",
