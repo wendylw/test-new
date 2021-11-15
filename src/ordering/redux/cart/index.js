@@ -18,8 +18,8 @@ const CartItemModel = {
 
 const initialState = {
   id: null,
-  status: API_REQUEST_STATUS.PENDING,
-  cartStatus: 'pending',
+  requestStatus: API_REQUEST_STATUS.PENDING,
+  status: 0,
   version: 0,
   items: [],
   unavailableItems: [],
