@@ -4,9 +4,9 @@ import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 // import orderSuccessImage from '../../../../../images/order-success.png';
 // import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
-import './Submission.scss';
+import './CartSubmissionStatus.scss';
 
-class Submission extends Component {
+class CartSubmissionStatus extends Component {
   componentDidMount() {}
 
   render() {
@@ -45,7 +45,7 @@ class Submission extends Component {
   }
 }
 
-Submission.displayName = 'Submission';
+CartSubmissionStatus.displayName = 'CartSubmissionStatus';
 
 /* TODO: backend data */
-export default compose(withTranslation(['OrderingSubmissionStatus']))(Submission);
+export default compose(withTranslation(['OrderingSubmissionStatus']))(CartSubmissionStatus);
