@@ -34,7 +34,6 @@ const ROUTER_PATHS = {
   ORDERING_ONLINE_CVV: '/payment/cvv',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
-  PROFILE: '/profile',
   ADDRESS_LIST: '/addressList',
   ADDRESS_DETAIL: '/addressDetail',
   CONTACT_DETAIL: '/contactDetails',
@@ -326,7 +325,7 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:54012Title',
     desc: 'ApiError:54012Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
-    buttonText: 'Common:OK',
+    buttonText: 'Common:EditCart',
     showModal: true,
   },
   54013: {

@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { SHIPPING_TYPES_MAPPING, DELIVERY_METHOD, PROMOTIONS_TYPES } from '../constants';
+import { PROMOTION_CLIENT_TYPES } from '../../../../../../utils/constants';
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
+import { getCurrentPromotionClientType } from '../../../utils';
 
 const appDownloadLink = 'https://dl.beepit.com/ocNj';
 const ADDITIONAL_MAPPING = components => ({
@@ -100,15 +102,30 @@ class PromotionContent extends PureComponent {
     }
   }
 
+  checkIfShowBeepAppOnly() {
+    const { appliedClientTypes } = this.props.promotion;
+    const currentClientType = getCurrentPromotionClientType();
+
+    if (appliedClientTypes.includes(currentClientType)) {
+      return false;
+    }
+
+    // the "beep app only" text only display on beep web
+    if (currentClientType !== PROMOTION_CLIENT_TYPES.WEB) {
+      return false;
+    }
+
+    return appliedClientTypes.includes(PROMOTION_CLIENT_TYPES.APP);
+  }
+
   getPromotionPrompt() {
-    const { promotion, t, inApp } = this.props;
+    const { promotion, t } = this.props;
     const {
       id,
       discountProductList,
       validDate,
       maxDiscountAmount,
       minOrderAmount,
-      appliedClientTypes,
       appliedSources,
       requireFirstPurchase,
     } = promotion;
@@ -117,7 +134,6 @@ class PromotionContent extends PureComponent {
     if (discountProductList || validDate) {
       return null;
     }
-
     const maxDiscountAmountEl = <CurrencyNumber money={maxDiscountAmount || 0} />;
     const minOrderAmountEl = <CurrencyNumber money={minOrderAmount || 0} />;
 
@@ -136,7 +152,7 @@ class PromotionContent extends PureComponent {
     );
     const deliveryOnly =
       appliedSources.length === 1 && appliedSources[0] === SHIPPING_TYPES_MAPPING[DELIVERY_METHOD.DELIVERY];
-    const showBeepAppOnly = appliedClientTypes.length === 1 && appliedClientTypes[0] === 'app' && !inApp;
+    const showBeepAppOnly = this.checkIfShowBeepAppOnly();
     const additionalList = { requireFirstPurchase, deliveryOnly, showBeepAppOnly };
     const additionalMap = ADDITIONAL_MAPPING([appDownloadLinkEl]);
 

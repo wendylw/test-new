@@ -36,8 +36,6 @@ import {
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
-import Url from '../../../utils/url';
-import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
 import _isNil from 'lodash/isNil';
 import loggly from '../../../utils/monitoring/loggly';

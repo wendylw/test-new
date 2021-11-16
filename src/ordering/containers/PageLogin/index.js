@@ -46,19 +46,6 @@ class PageLogin extends React.Component {
       return;
     }
 
-    await this.gotoCustomerInfoPage();
-  };
-
-  gotoCustomerInfoPage = async () => {
-    const { history, user, deliveryDetails, appActions } = this.props;
-
-    const { profile } = user || {};
-    const { name, phone } = profile || {};
-    const { username, phone: orderPhone } = deliveryDetails || {};
-
-    !username && (await appActions.updateDeliveryDetails({ username: name }));
-    !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
       search: window.location.search,
