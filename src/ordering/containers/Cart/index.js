@@ -101,6 +101,10 @@ class Cart extends Component {
     const { isLogin } = user || {};
     const { ROUTER_PATHS } = Constants;
     const { status } = await cartActions.checkCartInventory();
+    const redirectLocation = {
+      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      search: window.location.search,
+    };
 
     if (status === 'reject') {
       await appActions.loadShoppingCart();
@@ -114,15 +118,12 @@ class Cart extends Component {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
-        state: { shouldDirectGoBack: false },
+        state: { shouldGoBack: false, redirectLocation },
       });
       return;
     }
 
-    history.push({
-      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-      search: window.location.search,
-    });
+    history.push(redirectLocation);
   };
 
   handleResizeEvent() {
@@ -229,6 +230,7 @@ class Cart extends Component {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
+        state: { shouldGoBack: true },
       });
     }
   };
@@ -451,6 +453,7 @@ class Cart extends Component {
       history.push({
         pathname,
         search: window.location.search,
+        state: { shouldGoBack: true },
       });
     });
   };

@@ -15,49 +15,48 @@ const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidMount = async () => {
-    const { user, hasLoginGuardPassed } = this.props;
-    const { isFetching } = user || {};
-    const canAskUserLogin = !(hasLoginGuardPassed || isFetching);
-
-    if (!canAskUserLogin) return;
-    this.gotoLoginPageIfNeeded();
+    if (this.shouldAskUserLogin()) {
+      this.gotoLoginPage();
+    }
   };
 
   componentDidUpdate = prevProps => {
     const { user: prevUser } = prevProps;
-    const { user: currentUser, hasLoginGuardPassed } = this.props;
+    const { user: currentUser } = this.props;
     const { isFetching: isPrevFetching } = prevUser || {};
     const { isFetching: isCurrentFetching } = currentUser || {};
-    const isFetchingJustDone = isPrevFetching && !isCurrentFetching;
-    const canAskUserLogin = isFetchingJustDone && !hasLoginGuardPassed;
 
-    if (!canAskUserLogin) return;
-    this.gotoLoginPageIfNeeded();
+    if (isPrevFetching !== isCurrentFetching) {
+      if (this.shouldAskUserLogin()) {
+        this.gotoLoginPage();
+      }
+    }
   };
 
-  gotoLoginPageIfNeeded = () => {
-    const { history, user } = this.props;
+  shouldAskUserLogin = () => {
+    const { user, history, hasLoginGuardPassed } = this.props;
     const { pathname } = history.location;
-    const { isLogin } = user || {};
+    const { isFetching } = user || {};
 
-    switch (pathname) {
-      case ROUTER_PATHS.ORDERING_CART:
-        // Cart page do not require login
-        break;
-      case ROUTER_PATHS.ORDERING_CUSTOMER_INFO:
-        if (isLogin) break;
-        history.push({
-          pathname: ROUTER_PATHS.ORDERING_LOGIN,
-          search: window.location.search,
-        });
-        break;
-      default:
-        history.push({
-          pathname: ROUTER_PATHS.ORDERING_LOGIN,
-          search: window.location.search,
-        });
-        break;
+    if (hasLoginGuardPassed || isFetching) {
+      return false;
     }
+
+    if (pathname === ROUTER_PATHS.ORDERING_CART) {
+      // Cart page do not require login
+      return false;
+    }
+
+    return true;
+  };
+
+  gotoLoginPage = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
   };
 
   handleCreateOrder = async () => {

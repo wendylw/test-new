@@ -125,6 +125,7 @@ class Payment extends Component {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
+        state: { shouldGoBack: true },
       });
       return;
     }

@@ -39,17 +39,14 @@ class PageLogin extends React.Component {
 
   visitNextPage = async () => {
     const { history, location } = this.props;
-    const { shouldDirectGoBack = true } = location.state || {};
+    const { redirectLocation } = location.state || {};
 
-    if (shouldDirectGoBack) {
-      history.goBack();
+    if (redirectLocation) {
+      history.replace(redirectLocation);
       return;
     }
 
-    history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-      search: window.location.search,
-    });
+    this.goBack();
   };
 
   handleCloseOtpModal() {
@@ -95,7 +92,19 @@ class PageLogin extends React.Component {
   }
 
   goBack = () => {
-    this.props.history.goBack();
+    const { history, location } = this.props;
+    const { shouldGoBack } = location.state || {};
+
+    if (shouldGoBack) {
+      history.goBack();
+      return;
+    }
+
+    // Default route
+    history.replace({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
+    });
   };
 
   loginInTngMiniProgram = async () => {
