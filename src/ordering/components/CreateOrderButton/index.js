@@ -48,11 +48,7 @@ class CreateOrderButton extends React.Component {
       return false;
     }
 
-    if (hasLoginGuardPassed || isFetching) {
-      return false;
-    }
-
-    return true;
+    return !(hasLoginGuardPassed || isFetching);
   };
 
   gotoLoginPage = () => {
