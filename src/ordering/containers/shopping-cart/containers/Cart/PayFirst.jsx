@@ -24,6 +24,7 @@ import {
   getStoreInfoForCleverTap,
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
+import { IconError } from '../../../../../components/Icons';
 import { actions as cartActionCreators, getCheckingInventoryPendingState } from '../../../../redux/modules/cart';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import ProductSoldOutModal from '../../components/ProductSoldOutModal/index';
@@ -464,6 +465,10 @@ class PayFirst extends Component {
             height: cartContainerHeight,
           }}
         >
+          <div className="ordering-cart__warning padding-small text-center">
+            <IconError className="icon icon__primary icon__smaller" />
+            <span>{t('PayNowToPlaceYourOrder')}</span>
+          </div>
           <div
             className="ordering-cart__products-container"
             style={{

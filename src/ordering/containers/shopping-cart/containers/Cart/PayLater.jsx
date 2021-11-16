@@ -14,6 +14,7 @@ import { actions as appActionCreators, getOnlineStoreInfo, getShoppingCart } fro
 import { actions as cartActionCreators } from '../../../../redux/modules/cart';
 import ProductSoldOutModal from '../../components/ProductSoldOutModal/index';
 // import ShoppingCartEmpty from '../../components/ShoppingCartEmpty';
+import { IconError } from '../../../../../components/Icons';
 
 class PayLater extends Component {
   state = {
@@ -198,6 +199,10 @@ class PayLater extends Component {
             height: cartContainerHeight,
           }}
         >
+          <div className="ordering-cart__warning padding-small text-center">
+            <IconError className="icon icon__primary icon__smaller" />
+            <span>{t('CheckItemsBeforePlaceYourOrder')}</span>
+          </div>
           <div
             className="ordering-cart__products-container"
             style={{
