@@ -674,6 +674,15 @@ export class Home extends Component {
     }
   }
 
+  getContentClassName = ({ isValidTimeToOrder, isPreOrderEnabled, shippingType, isDisplayedStoreInfoIcon }) => {
+    return !isValidTimeToOrder &&
+      isPreOrderEnabled &&
+      (shippingType === DELIVERY_METHOD.PICKUP || shippingType === DELIVERY_METHOD.DELIVERY) &&
+      isDisplayedStoreInfoIcon
+      ? 'ordering-home__store-info--enabled'
+      : '';
+  };
+
   isBackHomeSiteButtonVisibilityOnHeader = () => {
     // The back button has already display on delivery bar
     // no need display on header
@@ -696,7 +705,8 @@ export class Home extends Component {
   };
 
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartBilling, deliveryInfo, requestInfo } = this.props;
+    const { onlineStoreInfo, businessInfo, cartBilling, deliveryInfo, requestInfo, allStore } = this.props;
+    const { search } = this.state;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const isDeliveryType = Utils.isDeliveryType();
@@ -705,8 +715,15 @@ export class Home extends Component {
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
     const deliveryFee = cartBilling ? cartBilling.shippingFee : legacyDeliveryFee;
     const { tableId } = requestInfo || {};
-
     const backHomeSiteButtonVisibility = this.isBackHomeSiteButtonVisibilityOnHeader();
+    const isValidTimeToOrder = this.isValidTimeToOrder();
+    const isPreOrderEnabled = this.isPreOrderEnabled();
+    const contentClassName = this.getContentClassName({
+      isValidTimeToOrder,
+      isPreOrderEnabled,
+      shippingType: Utils.getOrderTypeFromUrl(),
+      isDisplayedStoreInfoIcon: search.h || (allStore && allStore.length === 1),
+    });
 
     return (
       <Header
@@ -716,7 +733,7 @@ export class Home extends Component {
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
             : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
-        contentClassName={`${
+        contentClassName={`${contentClassName} ${
           isDeliveryType || isPickUpType
             ? enableCashback && defaultLoyaltyRatio
               ? 'flex-top'
@@ -734,8 +751,8 @@ export class Home extends Component {
         enableCashback={enableCashback}
         defaultLoyaltyRatio={defaultLoyaltyRatio}
         navFunc={this.handleNavBack}
-        isValidTimeToOrder={this.isValidTimeToOrder()}
-        enablePreOrder={this.isPreOrderEnabled()}
+        isValidTimeToOrder={isValidTimeToOrder}
+        enablePreOrder={isPreOrderEnabled}
         storeAddress={storeAddress}
         backHomeSiteButtonVisibility={backHomeSiteButtonVisibility}
       >
@@ -878,12 +895,7 @@ export class Home extends Component {
         )}
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar
-          promotionRef={this.getPromotionsBarRef}
-          promotions={promotions}
-          shippingType={shippingType}
-          inApp={Utils.isWebview()}
-        />
+        <PromotionsBar promotionRef={this.getPromotionsBarRef} promotions={promotions} shippingType={shippingType} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <p
             ref={ref => (this.deliveryFeeEl = ref)}

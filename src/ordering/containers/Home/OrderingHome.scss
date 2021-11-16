@@ -34,7 +34,8 @@ $gray-nav-item-text: #707070;
     width: 85%;
   }
 
-  &__dine-in-header .header__content {
+  &__dine-in-header .header__content,
+  &__store-info--enabled .icon ~ .header__store-info {
     width: 75%;
   }
 

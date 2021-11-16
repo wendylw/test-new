@@ -1,5 +1,7 @@
 import config from '../../../config';
 import { get } from '../../../utils/request';
+import Utils from '../../../utils/utils';
+import { PROMOTION_CLIENT_TYPES } from '../../../utils/constants';
 
 // todo: this should be global use
 export const fetchRedirectPageState = async () => {
@@ -39,4 +41,16 @@ export const marginBottom = ({ footerEls = [] }) => {
   }
 
   return bottom;
+};
+
+export const getCurrentPromotionClientType = () => {
+  if (Utils.isTNGMiniProgram()) {
+    return PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM;
+  }
+
+  if (Utils.isWebview()) {
+    return PROMOTION_CLIENT_TYPES.APP;
+  }
+
+  return PROMOTION_CLIENT_TYPES.WEB;
 };
