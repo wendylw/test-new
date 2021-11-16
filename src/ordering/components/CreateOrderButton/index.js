@@ -36,14 +36,19 @@ class CreateOrderButton extends React.Component {
   shouldAskUserLogin = () => {
     const { user, history, hasLoginGuardPassed } = this.props;
     const { pathname } = history.location;
-    const { isFetching } = user || {};
+    const { isFetching, isLogin } = user || {};
 
-    if (hasLoginGuardPassed || isFetching) {
-      return false;
+    if (pathname === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      // Customer Info Page has login required
+      return !isLogin;
     }
 
     if (pathname === ROUTER_PATHS.ORDERING_CART) {
       // Cart page do not require login
+      return false;
+    }
+
+    if (hasLoginGuardPassed || isFetching) {
       return false;
     }
 
