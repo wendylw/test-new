@@ -2,6 +2,14 @@ import { createSelector } from 'reselect';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 
+export const getCartVersion = state => state.app.cart.version;
+
+export const getCartSource = state => state.app.cart.source;
+
+export const getCartShippingType = state => state.app.cart.shippingType;
+
+export const getCartSubmission = state => state.app.cart.submission;
+
 export const getCartItems = state => state.app.cart.items;
 
 export const getCartUnavailableItems = state => state.app.cart.unavailableItems;
