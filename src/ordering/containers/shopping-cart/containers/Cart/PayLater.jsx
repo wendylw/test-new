@@ -79,6 +79,7 @@ class PayLater extends Component {
     // TODO: need to be changed
     try {
       const { history, cartActions } = this.props;
+      await cartActions.submitCart();
       await cartActions.queryCartSubmissionStatus();
       const { submissionId } = window.location;
       history.push({
@@ -116,12 +117,12 @@ class PayLater extends Component {
 
   handleClearAll = () => {
     // TODO: need to be changed
-    // this.props.appActions.clearAll().then(() => {
-    //   this.props.history.push({
-    //     pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-    //     search: window.location.search,
-    //   });
-    // });
+    this.props.appActions.clearCart().then(() => {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        search: window.location.search,
+      });
+    });
   };
 
   renderCartList = () => {
@@ -172,11 +173,11 @@ class PayLater extends Component {
     // }
   };
 
-  getUpdateShoppingCartItemData = ({ productId, variations }, currentQuantity) => {
+  getUpdateShoppingCartItemData = ({ productId, variations }, quantityChange) => {
     return {
       action: 'edit',
       productId,
-      quantity: currentQuantity,
+      quantity: quantityChange,
       variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
         variationId,
         optionId,
@@ -191,11 +192,9 @@ class PayLater extends Component {
     const { quantity } = cartItem;
 
     this.handleGtmEventTracking(cartItem);
-    this.props.appActions
-      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity + 1))
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
+    this.props.appActions.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity + 1)).then(() => {
+      this.props.appActions.loadShoppingCart();
+    });
   };
 
   handleDecreaseCartItem = cartItem => {
@@ -207,22 +206,19 @@ class PayLater extends Component {
       return this.handleRemoveCartItem(cartItem);
     }
 
-    this.props.appActions
-      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity - 1))
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
+    this.props.appActions.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity - 1)).then(() => {
+      this.props.appActions.loadShoppingCart();
+    });
   };
 
   handleRemoveCartItem = cartItem => {
     // TODO: need to be changed
     loggly.log('cart-list.item-operate-attempt');
-    const { productId, variations } = cartItem;
+    const { id } = cartItem;
 
     this.props.appActions
-      .removeShoppingCartItem({
-        productId,
-        variations,
+      .removeCartItemsById({
+        id,
       })
       .then(() => {
         this.props.appActions.loadShoppingCart();
@@ -263,9 +259,10 @@ class PayLater extends Component {
   }
 
   render() {
-    const { t, shoppingCart } = this.props;
+    const { t, shoppingCart, getCount } = this.props;
     const { isHaveProductSoldOut, cartContainerHeight, submittedStatus } = this.state;
     const { items } = shoppingCart || {};
+    const { count } = getCount || 0;
     const buttonText = (
       <span className="text-weight-bolder" key="place-order">
         {t('PlaceOrder')}
@@ -290,7 +287,7 @@ class PayLater extends Component {
           contentClassName="flex-middle"
           data-heap-name="ordering.cart.header"
           isPage={true}
-          title={t('ProductsInOrderText', { count: 0 })}
+          title={t('ProductsInOrderText', { count: count })}
           navFunc={() => {
             this.handleClickBack();
           }}
