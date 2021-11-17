@@ -16,7 +16,6 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
-import { isFromQROrderThankYouPage } from '../../utils';
 
 class PageLogin extends React.Component {
   state = {

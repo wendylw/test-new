@@ -643,7 +643,7 @@ export class ThankYou extends PureComponent {
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOGIN,
       search: window.location.search,
-      state: { nextPage: true, fromPath: ROUTER_PATHS.THANK_YOU },
+      state: { shouldGoBack: true },
     });
   };
 
