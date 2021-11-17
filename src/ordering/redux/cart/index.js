@@ -52,7 +52,12 @@ const VoucherModel = {
 };
 
 const initialState = {
-  requestStatus: API_REQUEST_STATUS.PENDING,
+  requestStatus: {
+    queryCartAndStatus: API_REQUEST_STATUS.FULFILLED,
+    updateCartItems: API_REQUEST_STATUS.FULFILLED,
+    removeCartItemsById: API_REQUEST_STATUS.FULFILLED,
+    clearCart: API_REQUEST_STATUS.FULFILLED,
+  },
   id: null,
   status: 0,
   version: 0,
@@ -100,20 +105,10 @@ export const { reducer, actions } = createSlice({
         items: items.map(item => {
           const cartItem = { ...CartItemModel, ...item };
 
-          cartItem.price = item.displayPrice;
-          cartItem.originalPrice = item.originalDisplayPrice;
-          cartItem.inventory = item.quantityOnHand;
-          cartItem.inventoryStatus = item.stockStatus;
-
           return cartItem;
         }),
         unavailableItems: unavailableItems.map(unavailableItem => {
           const unavailableCartItem = { ...CartItemModel, ...unavailableItem };
-
-          unavailableCartItem.price = unavailableItem.displayPrice;
-          unavailableCartItem.originalPrice = unavailableItem.originalDisplayPrice;
-          unavailableCartItem.inventory = unavailableItem.quantityOnHand;
-          unavailableCartItem.inventoryStatus = unavailableItem.stockStatus;
 
           return unavailableCartItem;
         }),
@@ -123,45 +118,45 @@ export const { reducer, actions } = createSlice({
       state.submission = { ...state.submission, ...payload };
     },
     [queryCartAndStatus.pending.type]: state => {
-      state.updateCartStatus = API_REQUEST_STATUS.PENDING;
+      state.requestStatus.queryCartAndStatus = API_REQUEST_STATUS.PENDING;
     },
     [queryCartAndStatus.fulfilled.type]: state => {
-      state.updateCartStatus = API_REQUEST_STATUS.FULFILLED;
+      state.requestStatus.queryCartAndStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [queryCartAndStatus.rejected.type]: (state, { error }) => {
       state.error = error;
-      state.updateCartStatus = API_REQUEST_STATUS.REJECTED;
+      state.requestStatus.queryCartAndStatus = API_REQUEST_STATUS.REJECTED;
     },
     [updateCartItems.pending.type]: state => {
-      state.updateCartStatus = API_REQUEST_STATUS.PENDING;
+      state.requestStatus.updateCartItems = API_REQUEST_STATUS.PENDING;
     },
     [updateCartItems.fulfilled.type]: state => {
-      state.updateCartStatus = API_REQUEST_STATUS.FULFILLED;
+      state.requestStatus.updateCartItems = API_REQUEST_STATUS.FULFILLED;
     },
     [updateCartItems.rejected.type]: (state, { error }) => {
       state.error = error;
-      state.updateCartStatus = API_REQUEST_STATUS.REJECTED;
+      state.requestStatus.updateCartItems = API_REQUEST_STATUS.REJECTED;
     },
     [removeCartItemsById.pending.type]: state => {
-      state.updateCartStatus = API_REQUEST_STATUS.PENDING;
+      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.PENDING;
     },
     [removeCartItemsById.fulfilled.type]: state => {
-      state.updateCartStatus = API_REQUEST_STATUS.FULFILLED;
+      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.FULFILLED;
     },
     [removeCartItemsById.rejected.type]: (state, { error }) => {
       state.error = error;
-      state.updateCartStatus = API_REQUEST_STATUS.REJECTED;
+      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.REJECTED;
     },
     [clearCart.pending.type]: state => {
-      state.updateCartStatus = API_REQUEST_STATUS.PENDING;
+      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.PENDING;
     },
     [clearCart.fulfilled.type]: state => {
       state = initialState;
-      state.updateCartStatus = API_REQUEST_STATUS.FULFILLED;
+      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.FULFILLED;
     },
     [clearCart.rejected.type]: (state, { error }) => {
       state.error = error;
-      state.updateCartStatus = API_REQUEST_STATUS.REJECTED;
+      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.REJECTED;
     },
     [submitCart.pending.type]: state => {
       state.submission.requestStatus = API_REQUEST_STATUS.PENDING;
