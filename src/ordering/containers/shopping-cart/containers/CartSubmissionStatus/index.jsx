@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -7,7 +6,12 @@ import { withTranslation } from 'react-i18next';
 import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
-  componentDidMount() {}
+  componentDidMount = async () => {
+    const { submissionId } = window.location;
+    const { cartActions } = this.props;
+    // TODO: need to be changed
+    await cartActions.queryCartSubmissionStatus(submissionId);
+  };
 
   render() {
     const { t } = this.props;

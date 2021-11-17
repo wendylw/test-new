@@ -2,20 +2,12 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
-import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import cartIsEmpty from '../../../../../images/mvp-no-search.svg';
 import './ShoppingCartEmpty.scss';
 
-// eslint-disable-next-line react/prefer-stateless-function
 class ShoppingCartEmpty extends Component {
   handleClickBack = async () => {
-    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
-
-    if (this.additionalCommentsEl) {
-      await this.additionalCommentsEl.blur();
-    }
-
     // Fixed lazy loading issue. The first item emptied when textarea focused and back to ordering page
     const timer = setTimeout(() => {
       clearTimeout(timer);
@@ -23,8 +15,7 @@ class ShoppingCartEmpty extends Component {
       // eslint-disable-next-line react/destructuring-assignment
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-        // search: window.location.search,
-        search: newSearchParams,
+        search: window.location.search,
       });
     }, 100);
   };
@@ -33,7 +24,7 @@ class ShoppingCartEmpty extends Component {
     const { t, history } = this.props;
     return (
       // eslint-disable-next-line react/jsx-filename-extension
-      <session className="flex flex-column shopping-cart__container">
+      <section className="flex flex-column shopping-cart__container">
         <HybridHeader
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
@@ -55,7 +46,7 @@ class ShoppingCartEmpty extends Component {
             {t('ReturnToMenu')}
           </button>
         </div>
-      </session>
+      </section>
     );
   }
 }

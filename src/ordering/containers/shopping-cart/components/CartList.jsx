@@ -40,60 +40,6 @@ class CartList extends Component {
     return ['outOfStock', 'unavailable'].includes(stockStatus);
   }
 
-  getUpdateShoppingCartItemData({ productId, variations }, currentQuantity) {
-    return {
-      action: 'edit',
-      productId,
-      quantity: currentQuantity,
-      variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
-        variationId,
-        optionId,
-        quantity,
-      })),
-    };
-  }
-
-  handleRemoveCartItem = cartItem => {
-    loggly.log('cart-list.item-operate-attempt');
-    const { productId, variations } = cartItem;
-
-    this.props.appActions
-      .removeShoppingCartItem({
-        productId,
-        variations,
-      })
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
-  };
-
-  handleDecreaseCartItem = cartItem => {
-    loggly.log('cart-list.item-operate-attempt');
-    const { quantity } = cartItem;
-
-    if (quantity <= 1) {
-      return this.handleRemoveCartItem(cartItem);
-    }
-
-    this.props.appActions
-      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity - 1))
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
-  };
-
-  handleIncreaseCartItem = cartItem => {
-    loggly.log('cart-list.item-operate-attempt');
-    const { quantity } = cartItem;
-
-    this.handleGtmEventTracking(cartItem);
-    this.props.appActions
-      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity + 1))
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
-  };
-
   renderImageCover(stockStatus) {
     const { t } = this.props;
 
@@ -128,7 +74,7 @@ class CartList extends Component {
   }
 
   renderProductItemRightController(cartItem) {
-    const { t, onIncreaseCartItem, onDecreaseCartItem } = this.props;
+    const { t, onIncreaseCartItem, onDecreaseCartItem, onRemoveCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
     const inventoryShortage = Boolean(
       stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand
@@ -141,7 +87,7 @@ class CartList extends Component {
       return (
         <button
           className="button padding-top-bottom-smaller padding-left-right-normal"
-          onClick={() => this.handleRemoveCartItem(cartItem)}
+          onClick={() => onRemoveCartItem(cartItem)}
           data-testid="removeCartItem"
           data-heap-name="ordering.home.mini-cart.remove-item-btn"
         >
@@ -159,20 +105,8 @@ class CartList extends Component {
           quantity={quantity}
           decreaseDisabled={!Boolean(quantity)}
           increaseDisabled={disabledIncreaseQuantity}
-          onDecrease={() => {
-            if (onDecreaseCartItem) {
-              onDecreaseCartItem(cartItem);
-            }
-
-            this.handleDecreaseCartItem(cartItem);
-          }}
-          onIncrease={() => {
-            if (onIncreaseCartItem) {
-              onIncreaseCartItem(cartItem);
-            }
-
-            this.handleIncreaseCartItem(cartItem);
-          }}
+          onDecrease={() => onDecreaseCartItem(cartItem)}
+          onIncrease={() => onIncreaseCartItem(cartItem)}
         />
         {stockStatus === 'lowStock' || disabledIncreaseQuantity ? (
           <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>

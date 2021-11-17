@@ -161,6 +161,7 @@ export class Footer extends Component {
           </div>
 
           <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
+            {/* TODO  */}
             {true ? null : <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />}
             {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
               <label className="home-cart__money-minimum margin-top-bottom-smaller">

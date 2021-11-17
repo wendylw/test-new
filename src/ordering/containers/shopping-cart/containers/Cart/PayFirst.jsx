@@ -285,6 +285,60 @@ class PayFirst extends Component {
     }
   }
 
+  getUpdateShoppingCartItemData = ({ productId, variations }, currentQuantity) => {
+    return {
+      action: 'edit',
+      productId,
+      quantity: currentQuantity,
+      variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
+        variationId,
+        optionId,
+        quantity,
+      })),
+    };
+  };
+
+  handleIncreaseCartItem = cartItem => {
+    loggly.log('cart-list.item-operate-attempt');
+    const { quantity } = cartItem;
+
+    this.handleGtmEventTracking(cartItem);
+    this.props.appActions
+      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity + 1))
+      .then(() => {
+        this.props.appActions.loadShoppingCart();
+      });
+  };
+
+  handleDecreaseCartItem = cartItem => {
+    loggly.log('cart-list.item-operate-attempt');
+    const { quantity } = cartItem;
+
+    if (quantity <= 1) {
+      return this.handleRemoveCartItem(cartItem);
+    }
+
+    this.props.appActions
+      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity - 1))
+      .then(() => {
+        this.props.appActions.loadShoppingCart();
+      });
+  };
+
+  handleRemoveCartItem = cartItem => {
+    loggly.log('cart-list.item-operate-attempt');
+    const { productId, variations } = cartItem;
+
+    this.props.appActions
+      .removeShoppingCartItem({
+        productId,
+        variations,
+      })
+      .then(() => {
+        this.props.appActions.loadShoppingCart();
+      });
+  };
+
   AdditionalCommentsFocus = () => {
     CleverTap.pushEvent('Cart page - click special instructions');
     setTimeout(() => {
@@ -393,6 +447,28 @@ class PayFirst extends Component {
     CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
   };
 
+  renderCartList = () => {
+    const { shoppingCart } = this.props;
+    const { productsContainerHeight } = this.state;
+    return (
+      <div
+        className="ordering-cart__products-container"
+        style={{
+          minHeight: productsContainerHeight,
+        }}
+      >
+        <CartList
+          isLazyLoad={true}
+          shoppingCart={shoppingCart}
+          onIncreaseCartItem={this.handleIncreaseCartItem}
+          onDecreaseCartItem={this.handleDecreaseCartItem}
+          onRemoveCartItem={this.handleRemoveCartItem}
+        />
+        {this.renderAdditionalComments()}
+      </div>
+    );
+  };
+
   render() {
     const {
       t,
@@ -469,24 +545,7 @@ class PayFirst extends Component {
             <IconError className="icon icon__primary icon__smaller" />
             <span>{t('PayNowToPlaceYourOrder')}</span>
           </div>
-          <div
-            className="ordering-cart__products-container"
-            style={{
-              minHeight: productsContainerHeight,
-            }}
-          >
-            <CartList
-              isLazyLoad={true}
-              shoppingCart={shoppingCart}
-              onIncreaseCartItem={(product = {}) => {
-                this.cleverTapTrack('Cart page - Increase quantity', this.formatCleverTapAttributes(product));
-              }}
-              onDecreaseCartItem={(product = {}) => {
-                this.cleverTapTrack('Cart page - Decrease quantity', this.formatCleverTapAttributes(product));
-              }}
-            />
-            {this.renderAdditionalComments()}
-          </div>
+          {this.renderCartList()}
           <Billing
             billingRef={ref => (this.billingEl = ref)}
             tax={tax}

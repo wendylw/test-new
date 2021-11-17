@@ -13,8 +13,9 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getShoppingCart } from '../../../../redux/modules/app';
 import { actions as cartActionCreators } from '../../../../redux/modules/cart';
 import ProductSoldOutModal from '../../components/ProductSoldOutModal/index';
-// import ShoppingCartEmpty from '../../components/ShoppingCartEmpty';
+import ShoppingCartEmpty from '../../components/ShoppingCartEmpty';
 import { IconError } from '../../../../../components/Icons';
+import loggly from '../../../../../utils/monitoring/loggly';
 
 class PayLater extends Component {
   state = {
@@ -30,14 +31,20 @@ class PayLater extends Component {
   }
 
   async componentDidMount() {
-    const { appActions } = this.props;
+    const { cartActions } = this.props;
 
     // TODO: Change to new load shopping cart API
-    await appActions.loadShoppingCart();
+    // await cartActions.queryCartAndStatus();
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
+  }
+
+  componentWillUnmount() {
+    const { cartActions } = this.props;
+    // TODO: stop polling
+    // cartActions.stopQueryCartAndStatus();
   }
 
   setCartContainerHeight = preContainerHeight => {
@@ -68,7 +75,20 @@ class PayLater extends Component {
     }
   };
 
-  handleClickContinue = async () => {};
+  handleClickContinue = async () => {
+    // TODO: need to be changed
+    try {
+      const { history, cartActions } = this.props;
+      await cartActions.queryCartSubmissionStatus();
+      const { submissionId } = window.location;
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CartSubmissionStatus,
+        search: `submissionId=${submissionId}`,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   handleChangeAdditionalComments(e) {
     this.setState({
@@ -79,8 +99,6 @@ class PayLater extends Component {
   }
 
   handleClickBack = async () => {
-    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
-
     if (this.additionalCommentsEl) {
       await this.additionalCommentsEl.blur();
     }
@@ -91,13 +109,42 @@ class PayLater extends Component {
 
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-        // search: window.location.search,
-        search: newSearchParams,
+        search: window.location.search,
       });
     }, 100);
   };
 
-  handleClearAll = () => {};
+  handleClearAll = () => {
+    // TODO: need to be changed
+    // this.props.appActions.clearAll().then(() => {
+    //   this.props.history.push({
+    //     pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+    //     search: window.location.search,
+    //   });
+    // });
+  };
+
+  renderCartList = () => {
+    const { shoppingCart } = this.props;
+    const { productsContainerHeight } = this.state;
+    return (
+      <div
+        className="ordering-cart__products-container"
+        style={{
+          minHeight: productsContainerHeight,
+        }}
+      >
+        <CartList
+          isLazyLoad={true}
+          shoppingCart={shoppingCart}
+          onIncreaseCartItem={this.handleIncreaseCartItem}
+          onDecreaseCartItem={this.handleDecreaseCartItem}
+          onRemoveCartItem={this.handleRemoveCartItem}
+        />
+        {this.renderAdditionalComments()}
+      </div>
+    );
+  };
 
   handleClearAdditionalComments() {
     Utils.removeSessionVariable('additionalComments');
@@ -114,6 +161,72 @@ class PayLater extends Component {
           productContainer.clientHeight - container.clientHeight - (document.body.clientHeight - window.innerHeight);
       }
     }, 300);
+  };
+
+  ifShoppingCartEmpty = async () => {
+    // TODO: ShoppingCartEmpty
+    // const { t, cartActions, shoppingCartEmpty } = this.props;
+    // const { status } = await cartActions.queryCartSubmissionStatus();
+    // if (shoppingCartEmpty && status === 'submited') {
+    //   return <ShoppingCartEmpty t={t} history={this.props.history} />;
+    // }
+  };
+
+  getUpdateShoppingCartItemData = ({ productId, variations }, currentQuantity) => {
+    return {
+      action: 'edit',
+      productId,
+      quantity: currentQuantity,
+      variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
+        variationId,
+        optionId,
+        quantity,
+      })),
+    };
+  };
+
+  handleIncreaseCartItem = cartItem => {
+    // TODO: need to be changed
+    loggly.log('cart-list.item-operate-attempt');
+    const { quantity } = cartItem;
+
+    this.handleGtmEventTracking(cartItem);
+    this.props.appActions
+      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity + 1))
+      .then(() => {
+        this.props.appActions.loadShoppingCart();
+      });
+  };
+
+  handleDecreaseCartItem = cartItem => {
+    // TODO: need to be changed
+    loggly.log('cart-list.item-operate-attempt');
+    const { quantity } = cartItem;
+
+    if (quantity <= 1) {
+      return this.handleRemoveCartItem(cartItem);
+    }
+
+    this.props.appActions
+      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity - 1))
+      .then(() => {
+        this.props.appActions.loadShoppingCart();
+      });
+  };
+
+  handleRemoveCartItem = cartItem => {
+    // TODO: need to be changed
+    loggly.log('cart-list.item-operate-attempt');
+    const { productId, variations } = cartItem;
+
+    this.props.appActions
+      .removeShoppingCartItem({
+        productId,
+        variations,
+      })
+      .then(() => {
+        this.props.appActions.loadShoppingCart();
+      });
   };
 
   renderAdditionalComments() {
@@ -151,22 +264,25 @@ class PayLater extends Component {
 
   render() {
     const { t, shoppingCart } = this.props;
-    const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
+    const { isHaveProductSoldOut, cartContainerHeight, submittedStatus } = this.state;
     const { items } = shoppingCart || {};
     const buttonText = (
-      <span className="text-weight-bolder" key="pay-now">
+      <span className="text-weight-bolder" key="place-order">
         {t('PlaceOrder')}
       </span>
     );
 
-    if (!items) {
-      return null;
+    // TODO
+    if (!items && submittedStatus === 'submitted') {
+      this.props.history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_TableSummary,
+        search: window.location.search,
+      });
     }
 
-    return (
-      // TODO: ShoppingCartEmpty
-      // <ShoppingCartEmpty t={t} history={this.props.history} />
+    this.ifShoppingCartEmpty();
 
+    return (
       <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
         <HybridHeader
           headerRef={ref => (this.headerEl = ref)}
@@ -203,20 +319,7 @@ class PayLater extends Component {
             <IconError className="icon icon__primary icon__smaller" />
             <span>{t('CheckItemsBeforePlaceYourOrder')}</span>
           </div>
-          <div
-            className="ordering-cart__products-container"
-            style={{
-              minHeight: productsContainerHeight,
-            }}
-          >
-            <CartList
-              isLazyLoad={true}
-              shoppingCart={shoppingCart}
-              onIncreaseCartItem={(product = {}) => {}}
-              onDecreaseCartItem={(product = {}) => {}}
-            />
-            {this.renderAdditionalComments()}
-          </div>
+          {this.renderCartList()}
         </div>
         <footer
           ref={ref => (this.footerEl = ref)}
@@ -259,7 +362,6 @@ class PayLater extends Component {
 
 PayLater.displayName = 'PayLater';
 
-/* TODO: backend data */
 export default compose(
   withTranslation(['OrderingCart']),
   connect(
@@ -271,6 +373,7 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      // TODO: need to change new functions
       cartActions: bindActionCreators(cartActionCreators, dispatch),
     })
   )

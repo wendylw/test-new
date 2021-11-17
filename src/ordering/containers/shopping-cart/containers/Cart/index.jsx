@@ -5,7 +5,8 @@ import './OrderingCart.scss';
 
 function Cart(props) {
   const { history } = props;
-  return <div>{false ? <PayFirst history={history} /> : <PayLater history={history} />}</div>;
+  // TODO
+  return <div>{true ? <PayFirst history={history} /> : <PayLater history={history} />}</div>;
 }
 
 Cart.displayName = 'Cart';
