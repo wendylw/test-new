@@ -151,11 +151,11 @@ class AddressDetail extends Component {
     let response;
     if (type === actions.ADD) {
       requestUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
-      response = await post(requestUrl.url, data, { enableDefaultError: true });
+      response = await post(requestUrl.url, data);
     }
     if (type === actions.EDIT) {
       requestUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, id);
-      response = await put(requestUrl.url, data, { enableDefaultError: true });
+      response = await put(requestUrl.url, data);
     }
 
     const savedAddressName = _get(response, 'addressName', name);

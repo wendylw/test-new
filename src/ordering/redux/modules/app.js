@@ -13,7 +13,8 @@ import CleverTap from '../../../utils/clevertap';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { post, get } from '../../../utils/request';
+import { get } from '../../../utils/request';
+import i18next from 'i18next';
 import url from '../../../utils/url';
 import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -95,6 +96,15 @@ export const initialState = {
     noWhatsAppAccount: true,
     loginRequestStatus: null,
   },
+  error: null, // network error
+  apiError: {
+    show: false,
+    message: '',
+    description: '',
+    buttonText: '',
+    code: null,
+    redirectUrl: '',
+  },
   business: config.business,
   onlineStoreInfo: {
     id: '',
@@ -142,7 +152,6 @@ const fetchCoreBusiness = variables => ({
     types: [types.FETCH_COREBUSINESS_REQUEST, types.FETCH_COREBUSINESS_SUCCESS, types.FETCH_COREBUSINESS_FAILURE],
     endpoint: Url.apiGql('CoreBusiness'),
     variables,
-    options: { enableDefaultError: true },
   },
 });
 
@@ -161,7 +170,6 @@ export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) =
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      options: { enableDefaultError: true },
       ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
     },
   };
@@ -179,7 +187,6 @@ const removeShoppingCartItem = variables => {
       ],
       endpoint,
       variables,
-      options: { enableDefaultError: true },
     },
   };
 };
@@ -195,7 +202,6 @@ const addOrUpdateShoppingCartItem = variables => {
       ],
       endpoint,
       variables,
-      options: { enableDefaultError: true },
     },
   };
 };
@@ -206,7 +212,6 @@ export const emptyShoppingCart = () => {
     [FETCH_GRAPHQL]: {
       types: [types.CLEARALL_REQUEST, types.CLEARALL_SUCCESS, types.CLEARALL_FAILURE],
       endpoint,
-      options: { enableDefaultError: true },
     },
   };
 };
@@ -223,7 +228,6 @@ const fetchOnlineCategory = variables => {
       ],
       endpoint,
       variables,
-      options: { enableDefaultError: true },
     },
   };
 };
@@ -235,8 +239,9 @@ const fetchProductDetail = variables => {
     [FETCH_GRAPHQL]: {
       types: [types.FETCH_PRODUCTDETAIL_REQUEST, types.FETCH_PRODUCTDETAIL_SUCCESS, types.FETCH_PRODUCTDETAIL_FAILURE],
       endpoint,
-      variables,
-      options: { enableDefaultError: true },
+      variables: {
+        ...variables,
+      },
     },
   };
 };
@@ -289,7 +294,6 @@ export const actions = {
         type,
         phone,
       },
-      options: { enableDefaultError: true },
     },
   }),
 
@@ -304,35 +308,32 @@ export const actions = {
         username: Utils.getLocalStorageVariable('user.p'),
         password: otp,
       },
-      options: { enableDefaultError: true },
     },
   }),
 
   getLoginStatus: () => dispatch => {
     return dispatch({
       types: [types.FETCH_LOGIN_STATUS_REQUEST, types.FETCH_LOGIN_STATUS_SUCCESS, types.FETCH_LOGIN_STATUS_FAILURE],
-      requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url, { enableDefaultError: true }).then(resp => {
+      requestPromise: get(Url.API_URLS.GET_LOGIN_STATUS.url).then(resp => {
         if (resp) {
           if (resp.consumerId) {
             if (resp.login) {
-              get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url, { enableDefaultError: true }).then(
-                profile => {
-                  const userInfo = {
-                    Name: profile.firstName,
-                    Phone: profile.phone,
-                    Email: profile.email,
-                    Identity: resp.consumerId,
-                  };
+              get(Url.API_URLS.GET_CONSUMER_PROFILE(resp.consumerId).url).then(profile => {
+                const userInfo = {
+                  Name: profile.firstName,
+                  Phone: profile.phone,
+                  Email: profile.email,
+                  Identity: resp.consumerId,
+                };
 
-                  if (profile.birthday) {
-                    userInfo.DOB = new Date(profile.birthday);
-                  }
-
-                  CleverTap.onUserLogin(userInfo);
-
-                  dispatch({ type: types.FETCH_PROFILE_SUCCESS, response: profile });
+                if (profile.birthday) {
+                  userInfo.DOB = new Date(profile.birthday);
                 }
-              );
+
+                CleverTap.onUserLogin(userInfo);
+
+                dispatch({ type: types.FETCH_PROFILE_SUCCESS, response: profile });
+              });
             }
           }
         }
@@ -363,7 +364,6 @@ export const actions = {
     [API_REQUEST]: {
       types: [types.FETCH_PROFILE_REQUEST, types.FETCH_PROFILE_SUCCESS, types.FETCH_PROFILE_FAILURE],
       ...url.API_URLS.GET_CONSUMER_PROFILE(consumerId),
-      options: { enableDefaultError: true },
     },
   }),
 
@@ -380,7 +380,6 @@ export const actions = {
         types.FETCH_ONLINESTOREINFO_FAILURE,
       ],
       endpoint: Url.apiGql('OnlineStoreInfo'),
-      options: { enableDefaultError: true },
     },
   }),
 
@@ -421,6 +420,14 @@ export const actions = {
   addOrUpdateShoppingCartItem: variables => dispatch => {
     return dispatch(addOrUpdateShoppingCartItem(variables));
   },
+
+  // TODO: This type is actually not used, because apiError does not respect action type,
+  // which is a bad practice, we will fix it in the future, for now we just keep a useless
+  // action type.
+  showApiErrorModal: code => ({
+    type: 'ordering/app/showApiErrorModal',
+    code,
+  }),
 
   clearAll: () => dispatch => {
     return dispatch(emptyShoppingCart());
@@ -468,7 +475,6 @@ export const actions = {
         types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
         endpoint: Url.apiGql('CoreStores'),
         variables: { business, ...address },
-        options: { enableDefaultError: true },
       },
     });
   },
@@ -481,7 +487,6 @@ export const actions = {
         types.FETCH_STORE_HASHCODE_FAILURE,
       ],
       ...Url.API_URLS.GET_STORE_HASH_DATA(storeId),
-      options: { enableDefaultError: true },
     },
   }),
 
@@ -673,6 +678,32 @@ const user = (state = initialState.user, action) => {
   }
 };
 
+const error = (state = initialState.error, action) => {
+  const { type, code, message } = action;
+
+  if (type === types.CLEAR_ERROR || code === 200) {
+    return null;
+  } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
+    let errorMessage = message;
+
+    return {
+      ...state,
+      code,
+      message: errorMessage,
+    };
+  } else if (code && code !== 401 && type === types.CREATE_OTP_FAILURE) {
+    let errorMessage = Constants.LOGIN_PROMPT[code];
+
+    return {
+      ...state,
+      code,
+      message: errorMessage,
+    };
+  }
+
+  return state;
+};
+
 const business = (state = initialState.business) => state;
 
 const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
@@ -691,6 +722,42 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
       return { ...state, isFetching: false };
     default:
       return state;
+  }
+};
+
+const apiError = (state = initialState.apiError, action) => {
+  const { type, code, response, responseGql, payload } = action;
+  const { error: payloadError } = payload || {};
+  const result = response || (responseGql || {}).data || payloadError;
+  const errorCode = code || (result || {}).code;
+  const { ERROR_CODE_MAP } = Constants;
+  const error = ERROR_CODE_MAP[errorCode];
+
+  if (type === types.CLEAR_API_ERROR) {
+    return {
+      ...state,
+      show: false,
+      message: '',
+      description: '',
+      buttonText: '',
+      code: null,
+      redirectUrl: '',
+    };
+  }
+
+  if (error) {
+    return {
+      ...state,
+      show: error.showModal,
+      code: errorCode,
+      message: i18next.t(error.title, { error_code: errorCode }),
+      description: i18next.t(error.desc),
+      buttonText: i18next.t(error.buttonText),
+      redirectUrl: error.redirectUrl,
+    };
+  } else {
+    // TODO add default error message
+    return state;
   }
 };
 
@@ -790,9 +857,11 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
 
 export default combineReducers({
   user,
+  error,
   business,
   onlineStoreInfo,
   requestInfo,
+  apiError,
   shoppingCart,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
@@ -802,6 +871,7 @@ export default combineReducers({
 export const getUser = state => state.app.user;
 export const getOtpType = state => state.app.user.otpType;
 export const getBusiness = state => state.app.business;
+export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
@@ -813,6 +883,7 @@ export const getMerchantCountry = state => {
 
   return null;
 };
+export const getApiError = state => state.app.apiError;
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 

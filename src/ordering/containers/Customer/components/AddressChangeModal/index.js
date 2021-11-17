@@ -4,7 +4,7 @@ import Modal from '../../../../../components/Modal';
 import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
-import './AddressChangeModal.scss';
+import '../../../../components/MessageModal/MessageModal.scss';
 export class AddressChangeModal extends React.Component {
   state = {
     show: true,

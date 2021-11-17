@@ -88,6 +88,10 @@ const API_URLS = {
     url: `/api/consumers/${consumerId}/customer`,
     method: 'get',
   }),
+  // GET_PENDING_TRANSACTIONS: {
+  //   url: '/api/transactions/status/pending',
+  //   method: 'get',
+  // },
   PUT_TRANSACTIONS_STATUS: {
     url: '/api/transactions/status',
     method: 'put',
@@ -167,6 +171,10 @@ const API_URLS = {
   },
   GET_CONSUMER_PROFILE: consumerId => ({
     url: `/api/consumers/${consumerId}/profile`,
+    method: 'get',
+  }),
+  GET_ORDER_STATUS: ({ orderId }) => ({
+    url: `/api/transactions/${orderId}/status`,
     method: 'get',
   }),
   GET_COLLECTION: {

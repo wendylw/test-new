@@ -11,4 +11,3 @@
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
 export { alert } from './alert';
-export { fullScreen } from './full-screen';

@@ -7,7 +7,7 @@ import { API_INFO } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from '../utils';
-import { getBusinessInfo } from '../../../../../redux/modules/app';
+import { actions as appActions, getBusinessInfo } from '../../../../../redux/modules/app';
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
 import { error as logglyError } from '../../../../../../utils/monitoring/loggly';
@@ -61,7 +61,7 @@ export const loadStoreIdTableIdHashCode = createAsyncThunk(
 
 export const cancelOrder = createAsyncThunk(
   'ordering/orderStatus/common/cancelOrder',
-  async ({ orderId, reason, detail }, { getState }) => {
+  async ({ orderId, reason, detail }, { dispatch, getState }) => {
     const order = getOrder(getState());
     const businessInfo = getBusinessInfo(getState());
 
@@ -82,7 +82,12 @@ export const cancelOrder = createAsyncThunk(
     } catch (e) {
       logglyError('Cancel order error: ', e);
 
-      if (!e.code) {
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch(appActions.showApiErrorModal(e.code));
+      } else {
         alert(i18next.t('OrderingThankYou:SomethingWentWrongWhenCancelingYourOrder'), {
           title: i18next.t('OrderingThankYou:CancellationError'),
         });
@@ -100,12 +105,13 @@ export const updateOrderShippingType = createAsyncThunk(
       await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
       await dispatch(loadOrder(orderId));
     } catch (e) {
-      logglyError('Switch to self-pickup error: ', e);
-
-      if (!e.code) {
-        alert(i18next.t('OrderingThankYou:SelfPickUpErrorDescription'), {
-          title: i18next.t('OrderingThankYou:SelfPickUpErrorTitle'),
-        });
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch(appActions.showApiErrorModal(e.code));
+      } else {
+        alert(i18next.t('ApiError:57002Description'), { title: i18next.t('ApiError:57002Title') });
       }
 
       throw e;

@@ -48,7 +48,7 @@ class Profile extends Component {
     // }
 
     try {
-      const response = await put(createdUrl.url, data, { enableDefaultError: true });
+      const response = await put(createdUrl.url, data);
       const { success } = response;
       if (success) {
         !username && (await appActions.updateDeliveryDetails({ username: name }));
@@ -59,6 +59,10 @@ class Profile extends Component {
         });
       }
     } catch (e) {
+      if (e.code) {
+        appActions.showApiErrorModal(e.code);
+      }
+
       this.setState({ error: true, message: e.message });
       this.timeoutId = setTimeout(() => {
         this.setState({ error: false });

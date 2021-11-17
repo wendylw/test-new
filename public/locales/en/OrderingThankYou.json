@@ -80,8 +80,6 @@
   "SelfPickUpDescription": "Skip the delivery queue by switching to self-pickup and get your delivery fee refunded!",
   "SwitchToSelfPickUp": "Switch to self-pickup",
   "SelfPickUpPromptDescription": "You will need to head to the store to pick up your order.",
-  "SelfPickUpErrorTitle": "Change shipping type error",
-  "SelfPickUpErrorDescription": "Change shipping type failed",
   "GoBack": "Go back",
   "SelfPickUpPromptConfirmedText": "Yes, switch",
   "PromptUserEnableAppNotificationTitle": "Track Your Order Status",

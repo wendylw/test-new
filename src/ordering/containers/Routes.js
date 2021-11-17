@@ -15,6 +15,7 @@ const CreditCard = lazy(() => Utils.attemptLoad(() => import('./payments/contain
 const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/OnlineBanking')));
 const ThankYou = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ThankYou')));
 const Sorry = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/Sorry')));
+const ErrorPage = lazy(() => Utils.attemptLoad(() => import('./Error')));
 const LocationAndDate = lazy(() => Utils.attemptLoad(() => import('./LocationAndDate')));
 const Promotion = lazy(() => Utils.attemptLoad(() => import('./Promotion')));
 const ReportDriver = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ReportDriver')));
@@ -53,6 +54,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_CVV} component={CardCvv} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
+            <Route exact path={ROUTER_PATHS.ERROR} component={ErrorPage} />
             <Route exact path={ROUTER_PATHS.MERCHANT_INFO} component={MerchantInfo} />
             <Route exact path={ROUTER_PATHS.ORDER_DETAILS} component={OrderDetails} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />

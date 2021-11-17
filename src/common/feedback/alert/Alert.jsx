@@ -29,7 +29,7 @@ const Alert = forwardRef((props, ref) => {
         <div className="padding-small">
           {/* TODO： close button UI will be customize */}
           <button className="button button__fill button__block text-uppercase text-weight-bolder" onClick={onClose}>
-            {closeButtonContent || t('Continue')}
+            {closeButtonContent || t('OK')}
           </button>
         </div>
       </div>

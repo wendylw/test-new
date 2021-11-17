@@ -91,7 +91,12 @@ export const thunks = {
     } catch (e) {
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
       loggly.error('order-status.report-driver.submit-error', { message: e.message });
-      if (!e.code) {
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch({ type: 'ordering/orderStatus/reportDriver/submitReportFailure', ...e });
+      } else {
         alert.raw(<p className="padding-small text-size-biggest text-weight-bolder">{i18next.t('ConnectionIssue')}</p>);
       }
     }

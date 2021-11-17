@@ -21,7 +21,6 @@ import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import * as NativeMethods from '../../../utils/native-methods';
 import Utils from '../../../utils/utils';
-import { ERROR_MAPPING } from '../../../utils/feedback';
 import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 import NativeHeader from '../../../components/NativeHeader';
@@ -125,7 +124,7 @@ class App extends Component {
     const { pageError } = this.props;
 
     if (pageError && pageError.code) {
-      ERROR_MAPPING[pageError.code]();
+      return (window.location.href = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ERROR}`);
     }
   }
 

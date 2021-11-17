@@ -276,7 +276,7 @@ export const actions = {
   loadTimeSlotSoldData: ({ deliveryType, selectedDay, storeId }) => async dispatch => {
     try {
       const { method, url } = API_URLS.GET_TIME_SLOT(deliveryType, selectedDay.toISOString(), storeId);
-      const timeSlotSoldData = await apiRequest[method](url, { enableDefaultError: true });
+      const timeSlotSoldData = await apiRequest[method](url);
       const payload = timeSlotSoldData.map(({ timeSlotStartDate, count }) => ({
         date: new Date(timeSlotStartDate),
         count,

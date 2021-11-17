@@ -59,7 +59,7 @@ class LocationPage extends Component {
       if (!business || !storeId) {
         return;
       }
-      const response = await post('/api/gql/CoreBusiness', { business, storeId }, { enableDefaultError: true });
+      const response = await post('/api/gql/CoreBusiness', { business, storeId });
       const { qrOrderingSettings, country } = response.data.business;
       const {
         stores: [store],

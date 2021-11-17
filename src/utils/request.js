@@ -1,6 +1,5 @@
 import Constants from './constants';
 import Utils from './utils';
-import { ERROR_MAPPING } from './feedback.js';
 
 const { REQUEST_ERROR_KEYS } = Constants;
 const headers = new Headers({
@@ -34,7 +33,7 @@ function get(url, options = {}) {
       if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
         window.location = response.url;
       }
-      return handleResponse(url, response, 'get', requestStart, options.options);
+      return handleResponse(url, response, 'get', requestStart);
     })
     .catch(error => {
       if (error instanceof TypeError) {
@@ -69,7 +68,7 @@ const fetchData = function(url, requestOptions) {
       if (MAINTENANCE_PAGE_URL && response.redirected === true && response.url.startsWith(MAINTENANCE_PAGE_URL)) {
         window.location = response.url;
       }
-      return handleResponse(url, response, method.toLowerCase(), requestStart, options);
+      return handleResponse(url, response, method.toLowerCase(), requestStart);
     })
     .catch(error => {
       if (error instanceof TypeError) {
@@ -112,73 +111,84 @@ function del(url, data, options) {
   });
 }
 
-async function handleResponse(url, response, method, requestStart, requestOptions) {
-  const customEventDetail = {
-    type: method,
-    request: url,
-    requestStart,
-  };
-
+async function handleResponse(url, response, method, requestStart) {
   if (response.status === 200) {
     return response.json().then(data => {
       window.dispatchEvent(
         new CustomEvent('sh-api-success', {
-          detail: customEventDetail,
+          detail: {
+            type: method,
+            request: url,
+            requestStart,
+          },
         })
       );
-
       return Promise.resolve(data);
     });
+  } else if (response.status === 401) {
+    return response
+      .json()
+      .catch(e => {
+        console.error(e);
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              error: e.message,
+              requestStart,
+            },
+          })
+        );
+        return Promise.reject(new RequestError('Error Page', '50000'));
+      })
+      .then(function(body) {
+        const code = response.status;
+        window.dispatchEvent(
+          new CustomEvent('sh-api-failure', {
+            detail: {
+              type: method,
+              request: url,
+              error: REQUEST_ERROR_KEYS[code],
+              code,
+              requestStart,
+            },
+          })
+        );
+        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code));
+      });
   } else {
     return response
       .json()
       .catch(e => {
         console.error(e);
-
-        // Send log to Loggly
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
-              ...customEventDetail,
+              type: method,
+              request: url,
               error: e.message,
+              requestStart,
             },
           })
         );
-
         return Promise.reject(new RequestError('Error Page', '50000'));
       })
       .then(function(body) {
+        const code = body.code || response.status;
         const { extraInfo } = body;
-        const error = {
-          message: REQUEST_ERROR_KEYS[body.code],
-          code: body.code || response.status,
-        };
-        const { enableDefaultError = false } = requestOptions || {};
-        const showDefaultError =
-          typeof enableDefaultError === 'function' ? enableDefaultError(error.code) || false : enableDefaultError;
-
-        console.log(requestOptions);
-        console.log(ERROR_MAPPING[error.code]);
-
-        // Call feedback API
-        if (showDefaultError && ERROR_MAPPING[error.code]) {
-          ERROR_MAPPING[error.code]();
-        }
-
-        // Send log to Loggly
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
-              ...customEventDetail,
-              error: error.message,
-              code: error.code,
+              type: method,
+              request: url,
+              error: REQUEST_ERROR_KEYS[code],
+              code,
+              requestStart,
             },
           })
         );
-
-        const requestError = new RequestError(error.message, error.code, extraInfo);
-
-        return Promise.reject(requestError);
+        return Promise.reject(new RequestError(REQUEST_ERROR_KEYS[code], code, extraInfo));
       });
   }
 }

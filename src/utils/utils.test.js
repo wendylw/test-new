@@ -25,6 +25,7 @@ describe('utils/utils', () => {
     getFormatPhoneNumber,
     DateFormatter,
     getValidAddress,
+    getQueryObject,
     initSmoothAnimation,
     getUserAgentInfo,
     checkEmailIsValid,
@@ -205,6 +206,15 @@ describe('utils/utils', () => {
     expect(DateFormatter('15/10')).toBe('12 / 10');
     expect(DateFormatter('12/101')).toBe('12 / 10');
     expect(DateFormatter('13/993')).toBe('12 / 99');
+  });
+
+  it('getQueryObject', () => {
+    const search = '?utm_source=infoq_web&utm_medium=menu';
+    const history = {
+      location: { search },
+    };
+    expect(getQueryObject(history, 'utm_source')).toBe('infoq_web');
+    expect(getQueryObject(history, 'not_exist')).toBeNull();
   });
 
   it('getValidAddress', () => {
