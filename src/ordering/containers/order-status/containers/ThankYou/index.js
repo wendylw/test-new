@@ -11,6 +11,7 @@ import OrderStatusDescription from './components/OrderStatusDescription';
 import LogisticsProcessing from './components/LogisticsProcessing';
 import RiderInfo from './components/RiderInfo';
 import CashbackInfo from './components/CashbackInfo';
+import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 
@@ -53,7 +54,14 @@ import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
 import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder } from './redux/thunks';
-import { getStoreHashCode, getOrderCancellationReasonAsideVisible, getIsCashbackAvailable } from './redux/selector';
+import {
+  getCashback,
+  getStoreHashCode,
+  getOrderCancellationReasonAsideVisible,
+  getIsCashbackAvailable,
+  getShouldShowCashbackInfo,
+  getShouldShowCashbackBanner,
+} from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
@@ -139,6 +147,8 @@ export class ThankYou extends PureComponent {
     this.setContainerHeight();
 
     this.pollOrderStatus();
+
+    this.recordPageLoadEvent();
 
     if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
       this.promptUserEnableAppNotification();
@@ -636,6 +646,20 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  recordPageLoadEvent = () => {
+    const { order, cashback, businessInfo, isCashbackAvailable, shouldShowCashbackBanner } = this.props;
+    CleverTap.pushEvent('Thank you page - View thank you page', {
+      'offer cashback': isCashbackAvailable,
+      'has login button': shouldShowCashbackBanner,
+      'cashback amount': cashback,
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'order amount': _get(order, 'total', ''),
+      country: _get(businessInfo, 'country', ''),
+      'shipping type': order.shippingType,
+    });
+  };
+
   handleClickLoginButton = () => {
     const { history } = this.props;
     const { ROUTER_PATHS } = Constants;
@@ -645,6 +669,14 @@ export class ThankYou extends PureComponent {
       search: window.location.search,
       state: { shouldGoBack: true },
     });
+  };
+
+  handleShowCashbackBanner = () => {
+    CleverTap.pushEvent('Thank you page - Click cashback floating button');
+  };
+
+  handleShowCashbackBanner = () => {
+    CleverTap.pushEvent('Thank you page - Click close cashback notification banner button');
   };
 
   getRightContentOfHeader() {
@@ -779,7 +811,16 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, businessUTCOffset, onlineStoreInfo } = this.props;
+    const {
+      t,
+      history,
+      match,
+      order,
+      businessUTCOffset,
+      onlineStoreInfo,
+      shouldShowCashbackInfo,
+      shouldShowCashbackBanner,
+    } = this.props;
     const date = new Date();
     const { total } = order || {};
 
@@ -830,7 +871,7 @@ export class ThankYou extends PureComponent {
             />
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
-            <CashbackInfo onLoginButtonClick={this.handleClickLoginButton} />
+            {shouldShowCashbackInfo && <CashbackInfo />}
             <OrderSummary
               history={history}
               businessUTCOffset={businessUTCOffset}
@@ -855,6 +896,13 @@ export class ThankYou extends PureComponent {
                 </a>
               )}
             </footer>
+            {shouldShowCashbackBanner && (
+              <CashbackBanner
+                onLoginButtonClick={this.handleClickLoginButton}
+                onShowBannerClick={this.handleShowCashbackBanner}
+                onHideBannerClick={this.handleHideCashbackBanner}
+              />
+            )}
           </div>
         </>
 
@@ -879,6 +927,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       business: getBusiness(state),
       user: getUser(state),
+      cashback: getCashback(state),
       receiptNumber: getReceiptNumber(state),
       orderStatus: getOrderStatus(state),
       isPreOrder: getIsPreOrder(state),
@@ -889,6 +938,8 @@ export default compose(
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       isCashbackAvailable: getIsCashbackAvailable(state),
+      shouldShowCashbackInfo: getShouldShowCashbackInfo(state),
+      shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
       profileModalVisibility: getshowProfileVisibility(state),
     }),
     dispatch => ({

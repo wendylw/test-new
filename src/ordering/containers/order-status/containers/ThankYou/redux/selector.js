@@ -1,5 +1,4 @@
 import _get from 'lodash/get';
-import _isNumber from 'lodash/isNumber';
 import { createSelector } from 'reselect';
 import Constants from '../../../../../../utils/constants';
 import { BEFORE_PAID_STATUS_LIST, CASHBACK_CAN_CLAIM } from '../constants';
@@ -13,7 +12,14 @@ import {
   getOrderOriginalShippingType,
   getOrderStoreInfo,
 } from '../../../redux/selector';
-import { getMerchantCountry, getBusinessInfo, getUserIsLogin } from '../../../../../redux/modules/app';
+import {
+  getIsSafari,
+  getMerchantCountry,
+  getBusinessInfo,
+  getUserIsLogin,
+  getIsQROrderingLoginFree,
+  getOnlineStoreInfo,
+} from '../../../../../redux/modules/app';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -82,17 +88,16 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
   };
 });
 
-export const getCashback = createSelector(getCashbackInfo, ({ cashback }) =>
-  _isNumber(Number(cashback)) ? Number(cashback) : 0
-);
+export const getCashback = createSelector(getCashbackInfo, ({ cashback }) => (Number(cashback) ? Number(cashback) : 0));
 
-export const getShouldCheckCashbackInfo = createSelector(
-  getOrderStatus,
-  getBusinessInfo,
-  (orderStatus, businessInfo) => {
-    const { enableCashback } = businessInfo || {};
-    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
-    return enableCashback && hasOrderPaid;
+export const getCashbackCurrency = createSelector(
+  getCashback,
+  getIsSafari,
+  getOnlineStoreInfo,
+  (cashback, isSafari, { locale, currency, country }) => {
+    if (!(locale && currency)) return cashback;
+    const money = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(cashback));
+    return country === 'MY' && isSafari ? money.replace(/^(\D+)/, '$1 ') : money;
   }
 );
 
@@ -107,3 +112,25 @@ export const getIsCashbackClaimable = createSelector(getUserIsLogin, getCashback
   const canCashbackClaim = status === CASHBACK_CAN_CLAIM;
   return isLogin && canCashbackClaim;
 });
+
+export const getShouldShowCashbackInfo = createSelector(
+  getUserIsLogin,
+  getIsCashbackAvailable,
+  (isLogin, isCashbackAvailable) => isLogin && isCashbackAvailable
+);
+
+export const getShouldShowCashbackBanner = createSelector(
+  getUserIsLogin,
+  getIsQROrderingLoginFree,
+  (isLogin, isQROrderingLoginFree) => isQROrderingLoginFree && !isLogin
+);
+
+export const getShouldCheckCashbackInfo = createSelector(
+  getOrderStatus,
+  getBusinessInfo,
+  (orderStatus, businessInfo) => {
+    const { enableCashback } = businessInfo || {};
+    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+    return enableCashback && hasOrderPaid;
+  }
+);

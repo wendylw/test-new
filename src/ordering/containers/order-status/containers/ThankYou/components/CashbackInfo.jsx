@@ -3,13 +3,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getUserIsLogin } from '../../../../../redux/modules/app';
-import {
-  getCashback,
-  getShouldCheckCashbackInfo,
-  getIsCashbackAvailable,
-  getIsCashbackClaimable,
-} from '../redux/selector';
+import { getCashback, getShouldCheckCashbackInfo, getIsCashbackClaimable } from '../redux/selector';
 import { loadCashbackInfo, createCashbackInfo } from '../redux/thunks';
 import IconCelebration from '../../../../../../images/icon-celebration.svg';
 import Utils from '../../../../../../utils/utils';
@@ -18,16 +12,7 @@ import CurrencyNumber from '../../../../../components/CurrencyNumber';
 
 const ANIMATION_TIME = 3600;
 
-function CashbackInfo({
-  cashback,
-  hasUserLoggedIn,
-  isCashbackClaimable,
-  shouldCheckCashbackInfo,
-  isCashbackAvailable,
-  checkCashbackInfo,
-  claimCashback,
-  onLoginButtonClick,
-}) {
+function CashbackInfo({ cashback, isCashbackClaimable, shouldCheckCashbackInfo, checkCashbackInfo, claimCashback }) {
   const timeoutRef = useRef(null);
   const { t } = useTranslation('OrderingThankYou');
   const [cashbackSuccessImageVisibility, setCashbackSuccessImageVisibility] = useState(true);
@@ -58,20 +43,6 @@ function CashbackInfo({
     };
   }, [imgLoaded, handleHideCashbackSuccessImage]);
 
-  if (!isCashbackAvailable) {
-    return null;
-  }
-
-  const { title, description } = hasUserLoggedIn
-    ? {
-        title: t('EarnedCashBackTitle'),
-        description: t('EarnedCashBackDescription'),
-      }
-    : {
-        title: t('GotCashBackTitle'),
-        description: t('GotCashBackDescription'),
-      };
-
   return (
     <div className="ordering-thanks__card-prompt card text-center padding-small margin-small">
       {cashbackSuccessImageVisibility ? (
@@ -87,18 +58,12 @@ function CashbackInfo({
         money={cashback}
       />
       <h3 className="flex flex-middle flex-center">
-        <span className="text-size-big text-weight-bolder">{title}</span>
+        <span className="text-size-big text-weight-bolder">{t('EarnedCashBackTitle')}</span>
         <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
       </h3>
-      <p className="margin-left-right-normal margin-top-bottom-small text-line-height-base">{description}</p>
-      {!hasUserLoggedIn && (
-        <button
-          className="button button__fill ordering-thanks__card-prompt-button text-size-small text-weight-bolder text-uppercase margin-top-bottom-small padding-left-right-normal"
-          onClick={onLoginButtonClick}
-        >
-          {t('WantCashBackTitle')}
-        </button>
-      )}
+      <p className="margin-left-right-normal margin-top-bottom-small text-line-height-base">
+        {t('EarnedCashBackDescription')}
+      </p>
     </div>
   );
 }
@@ -108,31 +73,23 @@ CashbackInfo.displayName = 'CashbackInfo';
 CashbackInfo.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   cashback: PropTypes.number,
-  hasUserLoggedIn: PropTypes.bool,
   isCashbackClaimable: PropTypes.bool,
   shouldCheckCashbackInfo: PropTypes.bool,
-  isCashbackAvailable: PropTypes.bool,
   checkCashbackInfo: PropTypes.func,
   claimCashback: PropTypes.func,
-  onLoginButtonClick: PropTypes.func,
 };
 
 CashbackInfo.defaultProps = {
   cashback: 0,
-  hasUserLoggedIn: false,
   isCashbackClaimable: false,
   shouldCheckCashbackInfo: false,
-  isCashbackAvailable: false,
   checkCashbackInfo: () => {},
   claimCashback: () => {},
-  onLoginButtonClick: () => {},
 };
 
 export default connect(
   state => ({
     cashback: getCashback(state),
-    hasUserLoggedIn: getUserIsLogin(state),
-    isCashbackAvailable: getIsCashbackAvailable(state),
     isCashbackClaimable: getIsCashbackClaimable(state),
     shouldCheckCashbackInfo: getShouldCheckCashbackInfo(state),
   }),
