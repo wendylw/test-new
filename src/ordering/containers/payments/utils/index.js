@@ -131,8 +131,12 @@ export function creditCardDetector(cardNumberString) {
 export const getPaymentRedirectAndWebHookUrl = business => {
   const h = config.h();
   const tracker = Utils.getCookieVariable('__sh_tracker');
+
   const type = Utils.getOrderTypeFromUrl();
-  const queryString = qs.stringify({ h, type, tracker: tracker || undefined }, { addQueryPrefix: true });
+  const queryString = qs.stringify(
+    { h, type, tracker: tracker && tracker !== 'undefined' ? tracker : undefined },
+    { addQueryPrefix: true }
+  );
 
   const redirectURL = `${config.storehubPaymentResponseURL.replace('%business%', business)}${queryString}`;
 

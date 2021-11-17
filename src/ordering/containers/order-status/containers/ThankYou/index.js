@@ -49,6 +49,7 @@ import {
   getIsPreOrder,
   getIsUseStorehubLogistics,
 } from '../../redux/selector';
+import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
 import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder } from './redux/thunks';
@@ -57,6 +58,7 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
+import CompleteProfileModal from '../../../../containers/Profile/index';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
 const ANIMATION_TIME = 3600;
@@ -74,18 +76,50 @@ export class ThankYou extends PureComponent {
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
-      phone: Utils.getLocalStorageVariable('user.p'),
+      hasRecordedChargedEvent: false,
+      from: null,
     };
   }
 
   pollOrderStatusTimer = null;
 
+  showCompleteProfileIfNeeded = async () => {
+    const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
+
+    if (isDoNotAsk === '1') {
+      return;
+    }
+
+    const { name, email, birthday, status } = this.props.user.profile || {};
+
+    if (status === 'fulfilled') {
+      if (!name || !email || !birthday) {
+        this.timer = setTimeout(() => {
+          this.props.setShowProfileVisibility(true);
+        }, 3000);
+      }
+    }
+  };
+
   componentDidMount = async () => {
+    const { user } = this.props;
+
+    this.showCompleteProfileIfNeeded();
+
+    const from = Utils.getCookieVariable('__ty_source');
+
+    this.setState({
+      from,
+    });
+
+    // immidiately remove __ty_source cookie after setting in the state.
+    Utils.removeCookieVariable('__ty_source');
+
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
     window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
-    const { user, loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo } = this.props;
+    const { loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
@@ -279,6 +313,11 @@ export class ThankYou extends PureComponent {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const { order, onlineStoreInfo, user, shippingType, loadStoreIdTableIdHashCode, loadStoreIdHashCode } = this.props;
+
+    if (this.props.user.profile !== prevProps.user.profile) {
+      this.showCompleteProfileIfNeeded();
+    }
+
     const { storeId } = order || {};
 
     if (storeId && prevStoreId !== storeId) {
@@ -286,14 +325,16 @@ export class ThankYou extends PureComponent {
         ? loadStoreIdTableIdHashCode({ storeId, tableId: config.table })
         : loadStoreIdHashCode(storeId);
     }
-    const tySourceCookie = this.getThankYouSource();
+
     if (onlineStoreInfo && onlineStoreInfo !== prevOnlineStoreInfo) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
-    if (this.isSourceFromPayment(tySourceCookie) && this.props.order && onlineStoreInfo) {
+
+    if (!this.state.hasRecordedChargedEvent && this.state.from === 'payment' && this.props.order && onlineStoreInfo) {
       const orderInfo = this.props.order;
       this.recordChargedEvent();
       this.handleGtmEventTracking({ order: orderInfo });
+      this.setState({ hasRecordedChargedEvent: true });
     }
 
     this.setContainerHeight();
@@ -302,14 +343,9 @@ export class ThankYou extends PureComponent {
   componentWillUnmount = () => {
     clearInterval(this.pollOrderStatusTimer);
     this.closeMap();
+    clearTimeout(this.timer);
   };
 
-  getThankYouSource = () => {
-    return Utils.getCookieVariable('__ty_source', '');
-  };
-  isSourceFromPayment = source => {
-    return source === 'payment';
-  };
   handleGtmEventTracking = ({ order = {} }) => {
     const { onlineStoreInfo } = this.props;
     const productsInOrder = order.items || [];
@@ -354,9 +390,6 @@ export class ThankYou extends PureComponent {
     };
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
     gtmSetPageViewData(pageViewData);
-
-    // immidiately remove __ty_source cookie after send the request.
-    Utils.removeCookieVariable('__ty_source', '');
   };
 
   handleVisitMerchantInfoPage = () => {
@@ -695,13 +728,18 @@ export class ThankYou extends PureComponent {
   }
 
   handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history, orderStatus } = this.props;
+    const { order, storeHashCode, history, orderStatus, profileModalVisibility } = this.props;
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
     const type = Utils.getOrderTypeFromUrl();
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+
+    if (profileModalVisibility) {
+      this.props.setShowProfileVisibility(false);
+      return;
+    }
 
     if (isOrderBeforePaid) {
       history.goBack();
@@ -736,6 +774,10 @@ export class ThankYou extends PureComponent {
     return;
   };
 
+  handleCompleteProfileModalClose = () => {
+    this.props.setShowProfileVisibility(false);
+  };
+
   render() {
     const { t, history, match, order, businessUTCOffset, onlineStoreInfo } = this.props;
     const date = new Date();
@@ -748,6 +790,12 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
+        {order && this.state.from === 'payment' && (
+          <CompleteProfileModal
+            closeModal={this.handleCompleteProfileModalClose}
+            showProfileVisibility={this.props.profileModalVisibility}
+          />
+        )}
         <>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
@@ -795,13 +843,17 @@ export class ThankYou extends PureComponent {
               className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
             >
               <span>&copy; {date.getFullYear()} </span>
-              <a
-                className="ordering-thanks__button-footer-link button button__link padding-small"
-                href="https://www.storehub.com/"
-                data-heap-name="ordering.thank-you.storehub-link"
-              >
-                {t('StoreHub')}
-              </a>
+              {Utils.isTNGMiniProgram() ? (
+                <span className="padding-small">{t('StoreHub')}</span>
+              ) : (
+                <a
+                  className="ordering-thanks__button-footer-link button button__link padding-small"
+                  href="https://www.storehub.com/"
+                  data-heap-name="ordering.thank-you.storehub-link"
+                >
+                  {t('StoreHub')}
+                </a>
+              )}
             </footer>
           </div>
         </>
@@ -837,12 +889,14 @@ export default compose(
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       isCashbackAvailable: getIsCashbackAvailable(state),
+      profileModalVisibility: getshowProfileVisibility(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
         thankYouActionCreators.updateCancellationReasonVisibleState,
         dispatch
       ),
+      setShowProfileVisibility: bindActionCreators(thankYouActionCreators.setShowProfileVisibility, dispatch),
       loadStoreIdHashCode: bindActionCreators(loadStoreIdHashCode, dispatch),
       loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),

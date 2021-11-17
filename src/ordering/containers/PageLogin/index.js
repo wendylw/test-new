@@ -39,41 +39,15 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, user, deliveryDetails, appActions } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
-    const { nextPage, fromPath } = location.state || {};
-    const { profile } = user || {};
-    const { name, phone } = profile || {};
-    const { ROUTER_PATHS } = Constants;
+    const { history, location } = this.props;
+    const { redirectLocation } = location.state || {};
 
-    if (nextPage && name) {
-      if (isFromQROrderThankYouPage(fromPath)) {
-        history.push({
-          pathname: ROUTER_PATHS.THANK_YOU,
-          search: window.location.search,
-        });
-        return;
-      }
-
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    } else if (nextPage && !name) {
-      history.push({
-        pathname: ROUTER_PATHS.PROFILE,
-        search: window.location.search,
-        state: { fromPath },
-      });
-    } else {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_CART,
-        search: window.location.search,
-      });
+    if (redirectLocation) {
+      history.replace(redirectLocation);
+      return;
     }
+
+    this.goBack();
   };
 
   handleCloseOtpModal() {
@@ -119,7 +93,19 @@ class PageLogin extends React.Component {
   }
 
   goBack = () => {
-    this.props.history.goBack();
+    const { history, location } = this.props;
+    const { shouldGoBack } = location.state || {};
+
+    if (shouldGoBack) {
+      history.goBack();
+      return;
+    }
+
+    // Default route
+    history.replace({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
+    });
   };
 
   loginInTngMiniProgram = async () => {

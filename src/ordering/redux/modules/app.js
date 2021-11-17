@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
+import dayjs from 'dayjs';
 import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
@@ -16,7 +17,6 @@ import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { get } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
-import { toISODateString } from '../../../utils/datetime-lib';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
@@ -88,6 +88,7 @@ export const initialState = {
       name: '',
       email: '',
       birthday: null,
+      status: '',
     },
     isError: false,
     otpType: 'otp',
@@ -608,7 +609,7 @@ const user = (state = initialState.user, action) => {
           phone: user.phone,
           name: user.firstName,
           email: user.email,
-          birthday: toISODateString(user.birthday),
+          birthday: user.birthday,
         },
         isLogin: true,
         hasOtp: false,
@@ -641,7 +642,18 @@ const user = (state = initialState.user, action) => {
           ...fields,
         },
       };
-    case types.FETCH_PROFILE_SUCCESS:
+
+    case types.FETCH_PROFILE_REQUEST: {
+      return {
+        ...state,
+        profile: {
+          ...state.profile,
+          status: API_REQUEST_STATUS.PENDING,
+        },
+      };
+    }
+
+    case types.FETCH_PROFILE_SUCCESS: {
       const { firstName, email, birthday, phone } = response || {};
       return {
         ...state,
@@ -650,15 +662,21 @@ const user = (state = initialState.user, action) => {
           email,
           birthday,
           phone,
+          status: API_REQUEST_STATUS.FULFILLED,
         },
       };
+    }
 
-    case types.CREATE_OR_UPDATE_PROFILE_SUCCESS:
-      const { success } = response || {};
+    case types.FETCH_PROFILE_FAILURE: {
       return {
         ...state,
-        success,
+        profile: {
+          ...state.profile,
+          status: API_REQUEST_STATUS.REJECTED,
+        },
       };
+    }
+
     case types.UPDATE_USER:
       return Object.assign({}, state, action.user);
     case types.FETCH_ONLINESTOREINFO_SUCCESS:
@@ -673,6 +691,7 @@ const user = (state = initialState.user, action) => {
       } else {
         return state;
       }
+
     default:
       return state;
   }
@@ -889,6 +908,8 @@ export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogi
 
 export const getUserLoginRequestStatus = state => state.app.user.loginRequestStatus;
 
+export const getUserProfileStatus = state => state.app.user.profile.status;
+
 export const getIsUserLoginRequestStatusInPending = createSelector(
   getUserLoginRequestStatus,
   status => status === API_REQUEST_STATUS.PENDING
@@ -1083,5 +1104,73 @@ export const getCategoryProductList = createSelector(
       .filter(c => c.products.length);
 
     return mergeWithShoppingCart(newCategories, carts);
+  }
+);
+
+// TODO: add Utils methods to state rather than using Utils
+export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
+export const getIsDeliveryType = state => Utils.isDeliveryType();
+export const getIsDigitalType = state => Utils.isDigitalType();
+export const getIsQROrder = state => Utils.isQROrder();
+
+export const getIsLoginFree = createSelector(
+  getBusinessInfo,
+  getIsDigitalType,
+  getIsQROrder,
+  (businessInfo, isDigitalType, isQROrder) => {
+    const { allowAnonymousQROrdering = false } = businessInfo;
+    const isQROrderingLoginFree = isQROrder && allowAnonymousQROrdering;
+    return isDigitalType || isQROrderingLoginFree;
+  }
+);
+
+export const getHasLoginGuardPassed = createSelector(
+  getUserIsLogin,
+  getIsLoginFree,
+  (isUserLogin, isLoginFree) => isUserLogin || isLoginFree
+);
+
+export const getIsValidCreateOrder = createSelector(
+  getCartBilling,
+  getIsTNGMiniProgram,
+  (cartBilling, isTNGMiniProgram) => {
+    const { total } = cartBilling || {};
+    const isFree = !total;
+    return isTNGMiniProgram || isFree;
+  }
+);
+
+export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCart => {
+  const { items } = shoppingCart || {};
+  let totalPrice = 0;
+
+  (items || []).forEach(item => {
+    totalPrice += item.displayPrice * item.quantity;
+  });
+
+  return totalPrice;
+});
+
+export const getMinimumConsumption = createSelector(getBusinessInfo, businessInfo => {
+  const { qrOrderingSettings } = businessInfo || {};
+  const { minimumConsumption } = qrOrderingSettings || {};
+  return Number(minimumConsumption || 0);
+});
+
+export const getValidBillingTotal = createSelector(getMinimumConsumption, minimumConsumption => {
+  const minimumBillingTotal = 1;
+  return Math.max(minimumConsumption, minimumBillingTotal);
+});
+
+export const getIsBillingTotalInvalid = createSelector(
+  getTotalItemPrice,
+  getCartBilling,
+  getIsDeliveryType,
+  getMinimumConsumption,
+  (totalItemPrice, cartBilling, isDeliveryType, minimumConsumption) => {
+    const { total: billingTotal } = cartBilling || {};
+    const hasMinConsumptionNotReached = isDeliveryType && totalItemPrice < minimumConsumption;
+    const isTotalBillingTooSmall = billingTotal > 0 && billingTotal < 1;
+    return hasMinConsumptionNotReached || isTotalBillingTooSmall;
   }
 );
