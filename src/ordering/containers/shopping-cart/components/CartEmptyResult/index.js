@@ -4,9 +4,9 @@ import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
 import Constants from '../../../../../utils/constants';
 import cartIsEmpty from '../../../../../images/mvp-no-search.svg';
-import './ShoppingCartEmpty.scss';
+import './CartEmptyResult.scss';
 
-class ShoppingCartEmpty extends Component {
+class CartEmptyResult extends Component {
   handleClickBack = async () => {
     // Fixed lazy loading issue. The first item emptied when textarea focused and back to ordering page
     const timer = setTimeout(() => {
@@ -39,9 +39,9 @@ class ShoppingCartEmpty extends Component {
         <div className="text-center">
           <img className="shopping-cart-empty__image-container" src={cartIsEmpty} alt="order failure" />
           <p className="text-size-biggest text-weight-bold padding-left-right-smaller padding-smaller">
-            {t('YourCartIsEmpty')}
+            {t('CartEmptyTitle')}
           </p>
-          <p className="shopping-cart-empty__text text-size-big">{t('ReturnToTheMainMenuAndOrderAgain')}</p>
+          <p className="shopping-cart-empty__text text-size-big">{t('CartEmptyContentDescription')}</p>
           <button className="button button__fill margin-top-bottom-normal  padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder">
             {t('ReturnToMenu')}
           </button>
@@ -51,5 +51,5 @@ class ShoppingCartEmpty extends Component {
   }
 }
 
-ShoppingCartEmpty.displayName = 'ShoppingCartEmpty';
-export default compose(withTranslation(['OrderingShoppingCartEmpty']))(ShoppingCartEmpty);
+CartEmptyResult.displayName = 'CartEmptyResult';
+export default compose(withTranslation(['OrderingCart']))(CartEmptyResult);

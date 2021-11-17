@@ -13,9 +13,10 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getShoppingCart } from '../../../../redux/modules/app';
 import { actions as cartActionCreators } from '../../../../redux/modules/cart';
 import ProductSoldOutModal from '../../components/ProductSoldOutModal/index';
-import ShoppingCartEmpty from '../../components/ShoppingCartEmpty';
+import CartEmptyResult from '../../components/CartEmptyResult';
 import { IconError } from '../../../../../components/Icons';
 import loggly from '../../../../../utils/monitoring/loggly';
+import { alert } from '../../../../../common/feedback';
 
 class PayLater extends Component {
   state = {
@@ -41,11 +42,11 @@ class PayLater extends Component {
     this.setProductsContainerHeight();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount = async () => {
     const { cartActions } = this.props;
     // TODO: stop polling
-    // cartActions.stopQueryCartAndStatus();
-  }
+    await cartActions.clearQueryCartAndStatus();
+  };
 
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
@@ -164,15 +165,6 @@ class PayLater extends Component {
     }, 300);
   };
 
-  ifShoppingCartEmpty = async () => {
-    // TODO: ShoppingCartEmpty
-    // const { t, cartActions, shoppingCartEmpty } = this.props;
-    // const { status } = await cartActions.queryCartSubmissionStatus();
-    // if (shoppingCartEmpty && status === 'submited') {
-    //   return <ShoppingCartEmpty t={t} history={this.props.history} />;
-    // }
-  };
-
   getUpdateShoppingCartItemData = ({ productId, variations }, quantityChange) => {
     return {
       action: 'edit',
@@ -263,6 +255,14 @@ class PayLater extends Component {
     const { isHaveProductSoldOut, cartContainerHeight, submittedStatus } = this.state;
     const { items } = shoppingCart || {};
     const { count } = getCount || 0;
+
+    const sortFn = (l, r) => {
+      if (l.id < r.id) return -1;
+      if (l.id > r.id) return 1;
+      return 0;
+    };
+    let cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
+
     const buttonText = (
       <span className="text-weight-bolder" key="place-order">
         {t('PlaceOrder')}
@@ -270,89 +270,98 @@ class PayLater extends Component {
     );
 
     // TODO
-    if (!items && submittedStatus === 'submitted') {
-      this.props.history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_TableSummary,
-        search: window.location.search,
+    if (!cartItems.length && submittedStatus === 'submitted') {
+      alert(t('HasBeenPlacedContentDescription'), {
+        title: t('ThisOrderIsPlaced'),
+        closeButtonContent: t('ViewOrder'),
+        onClose: () =>
+          this.props.history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_TableSummary,
+            search: window.location.search,
+          }),
       });
     }
 
-    this.ifShoppingCartEmpty();
-
     return (
-      <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
-        <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
-          className="flex-middle border__bottom-divider"
-          contentClassName="flex-middle"
-          data-heap-name="ordering.cart.header"
-          isPage={true}
-          title={t('ProductsInOrderText', { count: count })}
-          navFunc={() => {
-            this.handleClickBack();
-          }}
-          rightContent={{
-            icon: IconDeleteImage,
-            text: t('ClearAll'),
-            style: {
-              color: '#fa4133',
-            },
-            attributes: {
-              'data-heap-name': 'ordering.cart.clear-btn',
-            },
-            onClick: this.handleClearAll,
-          }}
-        ></HybridHeader>
-        <div
-          className="ordering-cart__container"
-          style={{
-            top: `${Utils.mainTop({
-              headerEls: [this.headerEl],
-            })}px`,
-            height: cartContainerHeight,
-          }}
-        >
-          <div className="ordering-cart__warning padding-small text-center">
-            <IconError className="icon icon__primary icon__smaller" />
-            <span>{t('CheckItemsBeforePlaceYourOrder')}</span>
-          </div>
-          {this.renderCartList()}
-        </div>
-        <footer
-          ref={ref => (this.footerEl = ref)}
-          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
-        >
-          <button
-            className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
-            onClick={() => {
-              this.handleClickBack();
-            }}
-            data-heap-name="ordering.cart.back-btn"
-          >
-            {t('Back')}
-          </button>
-          <button
-            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
-            data-testid="pay"
-            data-heap-name="ordering.cart.pay-btn"
-            onClick={async () => {
-              await this.handleClickContinue();
-            }}
-            disabled={!items || !items.length}
-          >
-            {buttonText || t('Processing')}
-          </button>
-        </footer>
-        <ProductSoldOutModal
-          show={isHaveProductSoldOut}
-          editHandler={() => {
-            this.setState({
-              isHaveProductSoldOut: null,
-            });
-            Utils.removeSessionVariable('isHaveProductSoldOut');
-          }}
-        />
-      </section>
+      <>
+        {!cartItems.length && submittedStatus === 'pending' ? (
+          <CartEmptyResult />
+        ) : (
+          <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
+            <HybridHeader
+              headerRef={ref => (this.headerEl = ref)}
+              className="flex-middle border__bottom-divider"
+              contentClassName="flex-middle"
+              data-heap-name="ordering.cart.header"
+              isPage={true}
+              title={t('ProductsInOrderText', { count: count })}
+              navFunc={() => {
+                this.handleClickBack();
+              }}
+              rightContent={{
+                icon: IconDeleteImage,
+                text: t('ClearAll'),
+                style: {
+                  color: '#fa4133',
+                },
+                attributes: {
+                  'data-heap-name': 'ordering.cart.clear-btn',
+                },
+                onClick: this.handleClearAll,
+              }}
+            ></HybridHeader>
+            <div
+              className="ordering-cart__container"
+              style={{
+                top: `${Utils.mainTop({
+                  headerEls: [this.headerEl],
+                })}px`,
+                height: cartContainerHeight,
+              }}
+            >
+              <div className="ordering-cart__warning padding-small text-center">
+                <IconError className="icon icon__primary icon__smaller" />
+                <span>{t('CheckItemsBeforePlaceYourOrder')}</span>
+              </div>
+              {this.renderCartList()}
+            </div>
+            <footer
+              ref={ref => (this.footerEl = ref)}
+              className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+            >
+              <button
+                className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+                onClick={() => {
+                  this.handleClickBack();
+                }}
+                data-heap-name="ordering.cart.back-btn"
+              >
+                {t('Back')}
+              </button>
+              <button
+                className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+                data-testid="pay"
+                data-heap-name="ordering.cart.pay-btn"
+                onClick={async () => {
+                  await this.handleClickContinue();
+                }}
+                disabled={!items || !items.length}
+              >
+                {buttonText || t('Processing')}
+              </button>
+            </footer>
+            <ProductSoldOutModal
+              show={isHaveProductSoldOut}
+              editHandler={() => {
+                this.setState({
+                  isHaveProductSoldOut: null,
+                });
+                Utils.removeSessionVariable('isHaveProductSoldOut');
+              }}
+            />
+          </section>
+        )}
+      </>
     );
   }
 }
