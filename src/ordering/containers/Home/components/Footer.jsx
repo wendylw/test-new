@@ -161,7 +161,7 @@ export class Footer extends Component {
           </div>
 
           <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
-            {/* TODO  */}
+            {/* PAY_LATER_DEBUG  */}
             {true ? null : <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />}
             {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
               <label className="home-cart__money-minimum margin-top-bottom-smaller">
@@ -204,8 +204,9 @@ export class Footer extends Component {
               this.handleRedirect();
             }}
           >
-            {6
-              ? t('PlaceOrder')
+            {/* PAY_LATER_DEBUG */}
+            {true
+              ? t('ReviewCart')
               : isLiveOnline
               ? !isValidTimeToOrder && enablePreOrder
                 ? t('PreOrderNow')

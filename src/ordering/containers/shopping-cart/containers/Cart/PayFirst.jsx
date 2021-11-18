@@ -27,7 +27,6 @@ import {
 import { IconError } from '../../../../../components/Icons';
 import { actions as cartActionCreators, getCheckingInventoryPendingState } from '../../../../redux/modules/cart';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
-import ProductSoldOutModal from '../../components/ProductSoldOutModal/index';
 import Url from '../../../../../utils/url';
 import { get } from '../../../../../utils/request';
 import CleverTap from '../../../../../utils/clevertap';
@@ -39,7 +38,6 @@ class PayFirst extends Component {
   state = {
     expandBilling: true,
     additionalComments: Utils.getSessionVariable('additionalComments'),
-    isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
     productsContainerHeight: '0px',
   };
@@ -480,7 +478,7 @@ class PayFirst extends Component {
       storeInfoForCleverTap,
       pendingCheckingInventory,
     } = this.props;
-    const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
+    const { cartContainerHeight } = this.state;
     const { qrOrderingSettings, name } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
@@ -598,15 +596,6 @@ class PayFirst extends Component {
             {!pendingCheckingInventory && buttonText}
           </button>
         </footer>
-        <ProductSoldOutModal
-          show={isHaveProductSoldOut}
-          editHandler={() => {
-            this.setState({
-              isHaveProductSoldOut: null,
-            });
-            Utils.removeSessionVariable('isHaveProductSoldOut');
-          }}
-        />
       </section>
     );
   }

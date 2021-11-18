@@ -8,22 +8,25 @@ import './CartEmptyResult.scss';
 
 class CartEmptyResult extends Component {
   handleClickBack = async () => {
-    // Fixed lazy loading issue. The first item emptied when textarea focused and back to ordering page
-    const timer = setTimeout(() => {
-      clearTimeout(timer);
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
+    });
+  };
 
-      // eslint-disable-next-line react/destructuring-assignment
-      this.props.history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-        search: window.location.search,
-      });
-    }, 100);
+  handleReturnClick = () => {
+    const { submittedStatus, handleReturnToMenu, handleReturnToTableSummary } = this.props;
+    if (submittedStatus) {
+      return handleReturnToMenu();
+    } else {
+      return handleReturnToTableSummary();
+    }
   };
 
   render() {
-    const { t, history } = this.props;
+    const { t, history, submittedStatus } = this.props;
+
     return (
-      // eslint-disable-next-line react/jsx-filename-extension
       <section className="flex flex-column shopping-cart__container">
         <HybridHeader
           className="flex-middle border__bottom-divider"
@@ -42,8 +45,12 @@ class CartEmptyResult extends Component {
             {t('CartEmptyTitle')}
           </p>
           <p className="shopping-cart-empty__text text-size-big">{t('CartEmptyContentDescription')}</p>
-          <button className="button button__fill margin-top-bottom-normal  padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder">
-            {t('ReturnToMenu')}
+          <button
+            onClick={this.handleReturnClick}
+            className="button button__fill margin-top-bottom-normal  padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+          >
+            {/* PAY_LATER_DEBUG */}
+            {!submittedStatus ? t('ReturnToMenu') : t('ReturnToTableSummary')}
           </button>
         </div>
       </section>

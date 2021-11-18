@@ -22,5 +22,6 @@
   "LoadingRedirectingDescription": "Please do not close this window while we are redirecting you",
   "OrderSubmissedFailedTitle": "Oops, order submissed failed",
   "ScanQRDescription": "Please return to the main menu or scan the QR again. If this problem persists, please reach out to the staff",
-  "ReturnToCart": "Return to cart"
+  "ReturnToCart": "Return to cart",
+  "ReturnToTableSummary": "Return to table summary"
 }

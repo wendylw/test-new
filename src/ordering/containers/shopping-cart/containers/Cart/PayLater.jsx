@@ -12,7 +12,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getShoppingCart } from '../../../../redux/modules/app';
 import { actions as cartActionCreators } from '../../../../redux/modules/cart';
-import ProductSoldOutModal from '../../components/ProductSoldOutModal/index';
 import CartEmptyResult from '../../components/CartEmptyResult';
 import { IconError } from '../../../../../components/Icons';
 import loggly from '../../../../../utils/monitoring/loggly';
@@ -21,7 +20,6 @@ import { alert } from '../../../../../common/feedback';
 class PayLater extends Component {
   state = {
     additionalComments: Utils.getSessionVariable('additionalComments'),
-    isHaveProductSoldOut: Utils.getSessionVariable('isHaveProductSoldOut'),
     cartContainerHeight: '100%',
     productsContainerHeight: '0px',
   };
@@ -34,7 +32,7 @@ class PayLater extends Component {
   async componentDidMount() {
     const { cartActions } = this.props;
 
-    // TODO: Change to new load shopping cart API
+    // PAY_LATER_DEBUG: Change to new load shopping cart API
     // await cartActions.queryCartAndStatus();
 
     window.scrollTo(0, 0);
@@ -44,8 +42,8 @@ class PayLater extends Component {
 
   componentWillUnmount = async () => {
     const { cartActions } = this.props;
-    // TODO: stop polling
-    await cartActions.clearQueryCartAndStatus();
+    // PAY_LATER_DEBUG: stop polling
+    // await cartActions.clearQueryCartAndStatus();
   };
 
   setCartContainerHeight = preContainerHeight => {
@@ -77,12 +75,10 @@ class PayLater extends Component {
   };
 
   handleClickContinue = async () => {
-    // TODO: need to be changed
+    // PAY_LATER_DEBUG: need to be changed
     try {
       const { history, cartActions } = this.props;
-      await cartActions.submitCart();
-      await cartActions.queryCartSubmissionStatus();
-      const { submissionId } = window.location;
+      const { submissionId } = await cartActions.submitCart();
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CartSubmissionStatus,
         search: `submissionId=${submissionId}`,
@@ -117,7 +113,7 @@ class PayLater extends Component {
   };
 
   handleClearAll = () => {
-    // TODO: need to be changed
+    // PAY_LATER_DEBUG: need to be changed
     this.props.appActions.clearCart().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
@@ -179,42 +175,33 @@ class PayLater extends Component {
   };
 
   handleIncreaseCartItem = cartItem => {
-    // TODO: need to be changed
-    loggly.log('cart-list.item-operate-attempt');
+    // PAY_LATER_DEBUG: need to be changed
+    loggly.log('pay-later-cart.item-operate-attempt');
     const { quantity } = cartItem;
 
-    this.handleGtmEventTracking(cartItem);
-    this.props.appActions.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity + 1)).then(() => {
-      this.props.appActions.loadShoppingCart();
-    });
+    this.props.appActions.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity + 1));
   };
 
   handleDecreaseCartItem = cartItem => {
-    // TODO: need to be changed
-    loggly.log('cart-list.item-operate-attempt');
+    // PAY_LATER_DEBUG: need to be changed
+    loggly.log('pay-later-cart.item-operate-attempt');
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
       return this.handleRemoveCartItem(cartItem);
     }
 
-    this.props.appActions.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity - 1)).then(() => {
-      this.props.appActions.loadShoppingCart();
-    });
+    this.props.appActions.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity - 1));
   };
 
   handleRemoveCartItem = cartItem => {
-    // TODO: need to be changed
-    loggly.log('cart-list.item-operate-attempt');
+    // PAY_LATER_DEBUG: need to be changed
+    loggly.log('pay-later-cart.item-operate-attempt');
     const { id } = cartItem;
 
-    this.props.appActions
-      .removeCartItemsById({
-        id,
-      })
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
+    this.props.appActions.removeCartItemsById({
+      id,
+    });
   };
 
   renderAdditionalComments() {
@@ -250,18 +237,26 @@ class PayLater extends Component {
     );
   }
 
+  handleReturnToMenu = () => {
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
+    });
+  };
+
+  handleReturnToTableSummary = () => {
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_TABLESUMMARY,
+      search: window.location.search,
+    });
+  };
+
   render() {
-    const { t, shoppingCart, getCount } = this.props;
-    const { isHaveProductSoldOut, cartContainerHeight, submittedStatus } = this.state;
+    // PAY_LATER_DEBUG need selector to get getCount, cartItems, submittedStatus
+    const { t, shoppingCart, getCount, cartItems, submittedStatus } = this.props;
+    const { cartContainerHeight } = this.state;
     const { items } = shoppingCart || {};
     const { count } = getCount || 0;
-
-    const sortFn = (l, r) => {
-      if (l.id < r.id) return -1;
-      if (l.id > r.id) return 1;
-      return 0;
-    };
-    let cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
 
     const buttonText = (
       <span className="text-weight-bolder" key="place-order">
@@ -269,14 +264,14 @@ class PayLater extends Component {
       </span>
     );
 
-    // TODO
+    // PAY_LATER_DEBUG
     if (!cartItems.length && submittedStatus === 'submitted') {
       alert(t('HasBeenPlacedContentDescription'), {
         title: t('ThisOrderIsPlaced'),
         closeButtonContent: t('ViewOrder'),
         onClose: () =>
           this.props.history.push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_TableSummary,
+            pathname: Constants.ROUTER_PATHS.ORDERING_TABLESUMMARY,
             search: window.location.search,
           }),
       });
@@ -284,8 +279,13 @@ class PayLater extends Component {
 
     return (
       <>
+        {/* PAY_LATER_DEBUG */}
         {!cartItems.length && submittedStatus === 'pending' ? (
-          <CartEmptyResult />
+          <CartEmptyResult
+            submittedStatus={submittedStatus === 'submitted'}
+            handleReturnToMenu={this.handleReturnToMenu}
+            handleReturnToTableSummary={this.handleReturnToTableSummary}
+          />
         ) : (
           <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
             <HybridHeader
@@ -350,15 +350,6 @@ class PayLater extends Component {
                 {buttonText || t('Processing')}
               </button>
             </footer>
-            <ProductSoldOutModal
-              show={isHaveProductSoldOut}
-              editHandler={() => {
-                this.setState({
-                  isHaveProductSoldOut: null,
-                });
-                Utils.removeSessionVariable('isHaveProductSoldOut');
-              }}
-            />
           </section>
         )}
       </>
@@ -379,7 +370,7 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      // TODO: need to change new functions
+      // PAY_LATER_DEBUG: need to change new functions
       cartActions: bindActionCreators(cartActionCreators, dispatch),
     })
   )
