@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getCashback, getShouldCheckCashbackInfo, getIsCashbackClaimable } from '../redux/selector';
-import { loadCashbackInfo, createCashbackInfo } from '../redux/thunks';
+import { getCashback, getIsCashbackClaimable } from '../redux/selector';
+import { createCashbackInfo } from '../redux/thunks';
 import IconCelebration from '../../../../../../images/icon-celebration.svg';
 import Utils from '../../../../../../utils/utils';
 import cashbackSuccessImage from '../../../../../../images/succeed-animation.gif';
@@ -12,7 +12,7 @@ import CurrencyNumber from '../../../../../components/CurrencyNumber';
 
 const ANIMATION_TIME = 3600;
 
-function CashbackInfo({ cashback, isCashbackClaimable, shouldCheckCashbackInfo, checkCashbackInfo, claimCashback }) {
+function CashbackInfo({ cashback, isCashbackClaimable, claimCashback }) {
   const timeoutRef = useRef(null);
   const { t } = useTranslation('OrderingThankYou');
   const [cashbackSuccessImageVisibility, setCashbackSuccessImageVisibility] = useState(true);
@@ -20,12 +20,6 @@ function CashbackInfo({ cashback, isCashbackClaimable, shouldCheckCashbackInfo, 
   const handleHideCashbackSuccessImage = useCallback(() => setCashbackSuccessImageVisibility(false), []);
   const phone = Utils.getLocalStorageVariable('user.p');
   const receiptNumber = Utils.getQueryString('receiptNumber') || '';
-
-  useEffect(() => {
-    if (shouldCheckCashbackInfo) {
-      checkCashbackInfo(receiptNumber);
-    }
-  }, [receiptNumber, shouldCheckCashbackInfo, checkCashbackInfo]);
 
   useEffect(() => {
     if (isCashbackClaimable) {
@@ -74,16 +68,12 @@ CashbackInfo.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   cashback: PropTypes.number,
   isCashbackClaimable: PropTypes.bool,
-  shouldCheckCashbackInfo: PropTypes.bool,
-  checkCashbackInfo: PropTypes.func,
   claimCashback: PropTypes.func,
 };
 
 CashbackInfo.defaultProps = {
   cashback: 0,
   isCashbackClaimable: false,
-  shouldCheckCashbackInfo: false,
-  checkCashbackInfo: () => {},
   claimCashback: () => {},
 };
 
@@ -91,10 +81,8 @@ export default connect(
   state => ({
     cashback: getCashback(state),
     isCashbackClaimable: getIsCashbackClaimable(state),
-    shouldCheckCashbackInfo: getShouldCheckCashbackInfo(state),
   }),
   dispatch => ({
-    checkCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
     claimCashback: bindActionCreators(createCashbackInfo, dispatch),
   })
 )(CashbackInfo);

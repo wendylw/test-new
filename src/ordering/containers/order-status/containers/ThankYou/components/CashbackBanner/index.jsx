@@ -15,7 +15,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
       prevBannerVisible ? onHideBannerClick() : onShowBannerClick();
       return !prevBannerVisible;
     });
-  }, []);
+  }, [onHideBannerClick, onShowBannerClick]);
   const { t } = useTranslation('OrderingThankYou');
 
   const { title, description } = isCashbackAvailable

@@ -23,3 +23,4 @@ export const BEFORE_PAID_STATUS_LIST = [
 ];
 
 export const CASHBACK_CAN_CLAIM = 'Can_Claim';
+export const CASHBACK_HAS_CLAIMED = 'Invalid';

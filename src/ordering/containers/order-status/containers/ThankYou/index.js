@@ -53,13 +53,13 @@ import {
 import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
-import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder } from './redux/thunks';
+import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder, loadCashbackInfo } from './redux/thunks';
 import {
   getCashback,
   getStoreHashCode,
   getOrderCancellationReasonAsideVisible,
   getIsCashbackAvailable,
-  getShouldShowCashbackInfo,
+  getShouldShowCashbackCard,
   getShouldShowCashbackBanner,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
@@ -110,7 +110,10 @@ export class ThankYou extends PureComponent {
   };
 
   componentDidMount = async () => {
-    const { user } = this.props;
+    const { user, loadCashbackInfo } = this.props;
+    const receiptNumber = Utils.getQueryString('receiptNumber') || '';
+
+    loadCashbackInfo(receiptNumber);
 
     this.showCompleteProfileIfNeeded();
 
@@ -674,7 +677,7 @@ export class ThankYou extends PureComponent {
     CleverTap.pushEvent('Thank you page - Click cashback floating button');
   };
 
-  handleShowCashbackBanner = () => {
+  handleHideCashbackBanner = () => {
     CleverTap.pushEvent('Thank you page - Click close cashback notification banner button');
   };
 
@@ -817,7 +820,7 @@ export class ThankYou extends PureComponent {
       order,
       businessUTCOffset,
       onlineStoreInfo,
-      shouldShowCashbackInfo,
+      shouldShowCashbackCard,
       shouldShowCashbackBanner,
     } = this.props;
     const date = new Date();
@@ -870,7 +873,7 @@ export class ThankYou extends PureComponent {
             />
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
-            {shouldShowCashbackInfo && <CashbackInfo />}
+            {shouldShowCashbackCard && <CashbackInfo />}
             <OrderSummary
               history={history}
               businessUTCOffset={businessUTCOffset}
@@ -937,7 +940,7 @@ export default compose(
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       isCashbackAvailable: getIsCashbackAvailable(state),
-      shouldShowCashbackInfo: getShouldShowCashbackInfo(state),
+      shouldShowCashbackCard: getShouldShowCashbackCard(state),
       shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
       profileModalVisibility: getshowProfileVisibility(state),
     }),
@@ -952,6 +955,7 @@ export default compose(
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
+      loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
     })
   )
 )(ThankYou);
