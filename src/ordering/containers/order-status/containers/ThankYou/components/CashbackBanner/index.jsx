@@ -18,14 +18,16 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
   }, [onHideBannerClick, onShowBannerClick]);
   const { t } = useTranslation('OrderingThankYou');
 
-  const { title, description } = isCashbackAvailable
+  const { title, description, buttonText } = isCashbackAvailable
     ? {
         title: t('GotCashBackTitle', { currency }),
         description: t('GotCashBackDescription'),
+        buttonText: t('WantCashBackTitle'),
       }
     : {
-        title: t('WantFutureCashbackTitle'),
-        description: t('WantFutureCashbackDescription'),
+        title: t('GetDeliveryOrderDiscountTitle'),
+        description: t('GetDeliveryOrderDiscountDescription'),
+        buttonText: t('RedeemNow'),
       };
 
   return (
@@ -38,7 +40,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
         <img src={IconGiveCashBag} className="icon icon__small" alt="Beep Cash Bag" />
         <div className="cashback-banner__content-wrapper flex flex-column flex-top">
           <h1 className="cashback-banner__title flex flex-middle margin-top-bottom-smaller">
-            <span className="text-size-big text-weight-bolder">{title}</span>
+            <span className="text-weight-bolder">{title}</span>
             {isCashbackAvailable && <img src={IconCelebration} className="icon" alt="Beep Celebration" />}
           </h1>
           <p>{description}</p>
@@ -46,7 +48,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
             className="cashback-banner__login-button button button__fill text-weight-bolder text-uppercase padding-left-right-normal"
             onClick={onLoginButtonClick}
           >
-            {t('WantCashBackTitle')}
+            {buttonText}
           </button>
         </div>
         <IconClose className="cashback-banner__close-button icon" onClick={toggleBannerHandler} />

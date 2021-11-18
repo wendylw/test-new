@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../../../utils/constants';
-import { CASHBACK_CAN_CLAIM, CASHBACK_HAS_CLAIMED } from '../constants';
+import { CASHBACK_CAN_CLAIM } from '../constants';
 import {
   getOrder,
   getOrderStatus,
@@ -26,8 +26,6 @@ const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 export const getStoreHashCode = state => state.orderStatus.thankYou.storeHashCode;
 
 export const getCashbackInfo = state => state.orderStatus.thankYou.cashbackInfo;
-
-export const getCashbackInfoStatus = createSelector(getCashbackInfo, cashbackInfo => cashbackInfo.status);
 
 export const getOrderCancellationReasonAsideVisible = state =>
   state.orderStatus.thankYou.orderCancellationReasonAsideVisible;
@@ -98,10 +96,15 @@ export const getCashbackCurrency = createSelector(
   getOnlineStoreInfo,
   (cashback, isSafari, onlineStoreInfo) => {
     const { locale, currency, country } = onlineStoreInfo || {};
-    if (!(locale && currency)) return cashback;
+    if (!(locale && currency)) return `RM ${cashback}`;
     const money = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(cashback));
     return country === 'MY' && isSafari ? money.replace(/^(\D+)/, '$1 ') : money;
   }
+);
+
+export const getCanCashbackClaim = createSelector(
+  getCashbackInfo,
+  cashbackInfo => cashbackInfo.status === CASHBACK_CAN_CLAIM
 );
 
 export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInfo, (cashback, businessInfo) => {
@@ -112,23 +115,14 @@ export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInf
 
 export const getIsCashbackClaimable = createSelector(
   getUserIsLogin,
-  getCashbackInfoStatus,
-  (isLogin, cashbackInfoStatus) => {
-    const canCashbackClaim = cashbackInfoStatus === CASHBACK_CAN_CLAIM;
-    return isLogin && canCashbackClaim;
-  }
-);
-
-export const getHasCashbackClaimed = createSelector(
-  getCashbackInfoStatus,
-  cashbackInfoStatus => cashbackInfoStatus === CASHBACK_HAS_CLAIMED
+  getCanCashbackClaim,
+  (isLogin, canCashbackClaim) => isLogin && canCashbackClaim
 );
 
 export const getShouldShowCashbackBanner = createSelector(
   getUserIsLogin,
-  getHasCashbackClaimed,
   getIsQROrderingLoginFree,
-  (isLogin, hasCashbackClaimed, isQROrderingLoginFree) => !isLogin && isQROrderingLoginFree && !hasCashbackClaimed
+  (isLogin, isQROrderingLoginFree) => !isLogin && isQROrderingLoginFree
 );
 
 export const getShouldShowCashbackCard = createSelector(
