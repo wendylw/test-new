@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset, getShippingType } from '../modules/app';
 import { getCartVersion, getCartSource, getCartShippingType, getCartSubmission } from './selectors';
@@ -127,7 +127,7 @@ const pollingCartSubmissionStatus = (callback, { submissionId, status, internal,
         return;
       }
 
-      setTimeout(
+      pollingCartSubmissionStatus.timer = setTimeout(
         () =>
           pollingCartSubmissionStatus(callback, {
             submissionId,
@@ -169,3 +169,9 @@ export const queryCartSubmissionStatus = createAsyncThunk(
     }
   }
 );
+
+export const clearQueryCartSubmissionStatus = createAction('ordering/app/cart/clearQueryCartSubmissionStatus', () => {
+  if (pollingCartSubmissionStatus.timer) {
+    clearTimeout(pollingCartSubmissionStatus.timer);
+  }
+});
