@@ -2,7 +2,7 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset } from '../modules/app';
-import { getCartVersion, getCartSource, getCartSubmission } from './selectors';
+import { getCartVersion, getCartSource, getCartSubmissionId } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
   fetchCart,
@@ -18,7 +18,7 @@ const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
 const CART_SUBMISSION_INTERVAL = 2 * 1000;
 const CART_VERSION_AND_STATUS_INTERVAL = 2 * 1000;
 
-const loadCart = createAsyncThunk('ordering/app/cart/fetchCart', async (_, { dispatch, getState }) => {
+export const loadCart = createAsyncThunk('ordering/app/cart/fetchCart', async (_, { dispatch, getState }) => {
   const state = getState();
   const businessUTCOffset = getBusinessUTCOffset(state);
   const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
@@ -52,22 +52,26 @@ export const queryCartAndStatus = createAsyncThunk('ordering/app/cart/queryCartA
   }
 
   try {
-    const pollingCartStatus = () => {
+    const pollingCartStatus = callback => {
       pollingCartStatus.timer = setTimeout(async () => {
         const prevCartVersion = getCartVersion(state);
+        const { version, receiptNumber } = await fetchCartStatus(options);
 
-        await fetchCartStatus(options).then(({ version }) => {
-          if (version !== prevCartVersion) {
-            loadCart();
-          }
-        });
+        if (receiptNumber) {
+          callback({ receiptNumber });
+        }
+
+        if (version !== prevCartVersion) {
+          loadCart();
+        }
 
         pollingCartStatus();
       }, CART_VERSION_AND_STATUS_INTERVAL);
     };
 
     loadCart();
-    pollingCartStatus();
+
+    return await new Promise(resolve => pollingCartStatus(resolve));
   } catch (error) {
     console.error(error);
   }
@@ -201,19 +205,23 @@ const pollingCartSubmissionStatus = (callback, { submissionId, status, initialTi
 export const queryCartSubmissionStatus = createAsyncThunk(
   'ordering/app/cart/queryCartSubmissionStatus',
   async (submissionId, { dispatch, getState }) => {
-    const submission = getCartSubmission(getState());
+    const prevSubmissionId = getCartSubmissionId(getState());
 
     try {
-      if (!submission.submissionId) {
+      if (!prevSubmissionId) {
         dispatch(cartActionCreators.updateCartSubmission({ submissionId }));
       }
 
       const result = await new Promise((resolve, reject) => {
-        pollingCartSubmissionStatus((error, submissionStatus) => (error ? reject(error) : resolve(submissionStatus)), {
-          submissionId,
-          initialTimestamp: Date.parse(new Date()),
-          timeout: TIMEOUT_CART_SUBMISSION_TIME,
-        });
+        pollingCartSubmissionStatus(
+          submissionStatus =>
+            submissionStatus.status === 'failed' ? reject(submissionStatus) : resolve(submissionStatus),
+          {
+            submissionId,
+            initialTimestamp: Date.parse(new Date()),
+            timeout: TIMEOUT_CART_SUBMISSION_TIME,
+          }
+        );
       });
 
       dispatch(cartActionCreators.updateCartSubmission(result));

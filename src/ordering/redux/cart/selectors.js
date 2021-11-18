@@ -12,7 +12,9 @@ export const getCartItems = state => state.app.cart.items;
 
 export const getCartUnavailableItems = state => state.app.cart.unavailableItems;
 
-export const getCartSubmission = state => state.app.cart.submission;
+export const getCartSubmissionId = state => state.app.cart.submission.submissionId;
+
+export const getCartSubmittedStatus = state => state.app.cart.submission.status;
 
 export const getShoppingCart = createSelector(
   [getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
