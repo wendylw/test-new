@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions as cartActionCreators } from '../../../../redux/modules/cart';
+import { actions as cartActionCreators } from '../../../../redux/cart';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
 import orderSuccessImage from '../../../../../images/order-success.png';

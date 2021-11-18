@@ -76,7 +76,7 @@ const initialState = {
   items: [],
   unavailableItems: [],
   shippingType: Utils.getOrderTypeFromUrl(),
-  source: Utils.orderSource(),
+  source: Utils.getOrderSource(),
   submission: CartSubmissionModel,
   error: {
     loadCart: null,

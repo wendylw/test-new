@@ -25,7 +25,8 @@ import {
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
 import { IconError } from '../../../../../components/Icons';
-import { actions as cartActionCreators, getCheckingInventoryPendingState } from '../../../../redux/modules/cart';
+import { actions as cartActionCreators } from '../../redux/common';
+import { getCheckingInventoryPendingState } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import Url from '../../../../../utils/url';
 import { get } from '../../../../../utils/request';
@@ -94,7 +95,7 @@ class PayFirst extends Component {
     const { consumerId, isLogin, profile } = user || {};
     const { name, phone } = profile || {};
 
-    const { status } = await cartActions.checkCartInventory();
+    const { status } = await cartActions.loadStockStatus();
 
     if (status === 'reject') {
       await appActions.loadShoppingCart();

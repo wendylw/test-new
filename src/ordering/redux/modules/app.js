@@ -21,6 +21,7 @@ import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/enti
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
+import CartReducer from '../cart';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
@@ -863,6 +864,7 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  cart: CartReducer,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
 });

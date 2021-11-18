@@ -7,8 +7,6 @@ export const getCartVersion = state => state.app.cart.version;
 
 export const getCartSource = state => state.app.cart.source;
 
-export const getCartShippingType = state => state.app.cart.shippingType;
-
 export const getCartItemsCount = state => state.app.cart.count;
 
 const getOriginalCartItems = state => state.app.cart.items;
@@ -87,6 +85,8 @@ export const getCartSubmissionId = state => state.app.cart.submission.submission
 
 export const getCartSubmittedStatus = state => state.app.cart.submission.status === CART_SUBMISSION_STATUS.COMPLETED;
 
-export const getCartSubmissionPending = state => state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
+export const getCartSubmissionPendingStatus = state =>
+  state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
 
-export const getCartSubmissionFailed = state => state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED;
+export const getCartSubmissionFailedStatus = state =>
+  state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED;

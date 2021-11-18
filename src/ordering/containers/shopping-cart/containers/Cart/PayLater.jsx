@@ -11,7 +11,7 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getOnlineStoreInfo, getShoppingCart } from '../../../../redux/modules/app';
-import { actions as cartActionCreators } from '../../../../redux/modules/cart';
+import { actions as cartActionCreators } from '../../../../redux/cart';
 import CartEmptyResult from '../../components/CartEmptyResult';
 import { IconError } from '../../../../../components/Icons';
 import loggly from '../../../../../utils/monitoring/loggly';
