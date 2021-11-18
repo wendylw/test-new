@@ -1,7 +1,9 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
+/* eslint-disable import/no-cycle */
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset, getShippingType } from '../modules/app';
 import { getCartVersion, getCartSource, getCartShippingType, getCartSubmission } from './selectors';
+import { actions as cartActionCreators } from '.';
 import {
   postCartItems,
   deleteCartItemsById,
@@ -11,15 +13,7 @@ import {
 } from './api-request';
 
 const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
-const CART_SUBMISSION_INTERNAL = 2 * 1000;
-
-export const updateCart = createAction('ordering/app/cart/updateCart', payload => {
-  payload;
-});
-
-export const updateCartSubmission = createAction('ordering/app/cart/updateCartSubmission', payload => {
-  payload;
-});
+const CART_SUBMISSION_INTERVAL = 2 * 1000;
 
 export const queryCartAndStatus = createAsyncThunk('ordering/app/cart/queryCartAndStatus', () => {});
 
@@ -39,7 +33,7 @@ export const updateCartItems = createAsyncThunk(
     try {
       const result = await postCartItems(options);
 
-      return dispatch(updateCart(result));
+      return dispatch(cartActionCreators.updateCart(result));
     } catch (error) {
       console.error(error);
 
@@ -64,7 +58,7 @@ export const removeCartItemsById = createAsyncThunk(
     try {
       const result = await deleteCartItemsById(options);
 
-      return dispatch(updateCart(result));
+      return dispatch(cartActionCreators.updateCart(result));
     } catch (error) {
       console.error(error);
 
@@ -109,7 +103,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
   try {
     const result = await postCartSubmission(options);
 
-    return dispatch(updateCartSubmission(result));
+    return dispatch(cartActionCreators.updateCartSubmission(result));
   } catch (error) {
     console.error(error);
 
@@ -153,19 +147,19 @@ export const queryCartSubmissionStatus = createAsyncThunk(
 
     try {
       if (!submission.submissionId) {
-        dispatch(updateCartSubmission({ submissionId }));
+        dispatch(cartActionCreators.updateCartSubmission({ submissionId }));
       }
 
       const result = await new Promise((resolve, reject) => {
         pollingCartSubmissionStatus((error, submissionStatus) => (error ? reject(error) : resolve(submissionStatus)), {
           submissionId,
-          internal: CART_SUBMISSION_INTERNAL,
+          internal: CART_SUBMISSION_INTERVAL,
           initialTimestamp: Date.parse(new Date()),
           timeout: TIMEOUT_CART_SUBMISSION_TIME,
         });
       });
 
-      dispatch(updateCartSubmission(result));
+      dispatch(cartActionCreators.updateCartSubmission(result));
 
       return result;
     } catch (error) {

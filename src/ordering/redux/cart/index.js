@@ -1,10 +1,10 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { API_REQUEST_STATUS } from '../../../utils/api/api-utils';
+import { CART_SUBMISSION_STATUS } from './constants';
 import {
-  updateCart,
-  updateCartSubmission,
   queryCartAndStatus,
   updateCartItems,
   removeCartItemsById,
@@ -59,7 +59,7 @@ const initialState = {
     clearCart: API_REQUEST_STATUS.FULFILLED,
   },
   id: null,
-  status: 0,
+  cartSubmissionStatus: 0,
   version: 0,
   total: 0,
   subtotal: 0,
@@ -77,46 +77,38 @@ const initialState = {
   shippingType: Utils.getOrderTypeFromUrl(),
   source: Utils.orderSource(),
   submission: CartSubmissionModel,
-  error: {},
+  error: {
+    queryCartAndStatus: null,
+    updateCartItems: null,
+    removeCartItemsById: null,
+    clearCart: null,
+  },
 };
 
 export const { reducer, actions } = createSlice({
   name: 'ordering/app/cart',
   initialState,
-  reducers: {},
-  extraReducers: {
-    [updateCart]: (state, { payload }) => {
-      const {
-        items = [],
-        unavailableItems = [],
-        displayPromotions: promotions = [],
-        voucher,
-        displayDiscount: discount,
-        totalCashback: cashback,
-        ...others
-      } = { ...state, ...payload };
+  reducers: {
+    updateCart(state, { payload }) {
+      const { items = [], unavailableItems = [], promotions = [], status, voucher, ...others } = {
+        ...state,
+        ...payload,
+      };
 
       return {
         ...others,
-        discount,
-        cashback,
+        cartSubmissionStatus: CART_SUBMISSION_STATUS[status],
         promotions: (promotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
         voucher: { ...VoucherModel, ...voucher },
-        items: items.map(item => {
-          const cartItem = { ...CartItemModel, ...item };
-
-          return cartItem;
-        }),
-        unavailableItems: unavailableItems.map(unavailableItem => {
-          const unavailableCartItem = { ...CartItemModel, ...unavailableItem };
-
-          return unavailableCartItem;
-        }),
+        items: items.map(item => ({ ...CartItemModel, ...item })),
+        unavailableItems: unavailableItems.map(unavailableItem => ({ ...CartItemModel, ...unavailableItem })),
       };
     },
-    [updateCartSubmission]: (state, { payload }) => {
+    updateCartSubmission(state, { payload }) {
       state.submission = { ...state.submission, ...payload };
     },
+  },
+  extraReducers: {
     [queryCartAndStatus.pending.type]: state => {
       state.requestStatus.queryCartAndStatus = API_REQUEST_STATUS.PENDING;
     },
@@ -124,7 +116,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.queryCartAndStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [queryCartAndStatus.rejected.type]: (state, { error }) => {
-      state.error = error;
+      state.error.queryCartAndStatus = error;
       state.requestStatus.queryCartAndStatus = API_REQUEST_STATUS.REJECTED;
     },
     [updateCartItems.pending.type]: state => {
@@ -134,7 +126,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.updateCartItems = API_REQUEST_STATUS.FULFILLED;
     },
     [updateCartItems.rejected.type]: (state, { error }) => {
-      state.error = error;
+      state.error.updateCartItems = error;
       state.requestStatus.updateCartItems = API_REQUEST_STATUS.REJECTED;
     },
     [removeCartItemsById.pending.type]: state => {
@@ -144,7 +136,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.FULFILLED;
     },
     [removeCartItemsById.rejected.type]: (state, { error }) => {
-      state.error = error;
+      state.error.removeCartItemsById = error;
       state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.REJECTED;
     },
     [clearCart.pending.type]: state => {
@@ -155,7 +147,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.FULFILLED;
     },
     [clearCart.rejected.type]: (state, { error }) => {
-      state.error = error;
+      state.error.removeCartItemsById = error;
       state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.REJECTED;
     },
     [submitCart.pending.type]: state => {
