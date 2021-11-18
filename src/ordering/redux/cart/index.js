@@ -3,8 +3,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { API_REQUEST_STATUS } from '../../../utils/api/api-utils';
-import { CART_SUBMISSION_STATUS } from './constants';
 import {
+  loadCart,
   queryCartAndStatus,
   updateCartItems,
   removeCartItemsById,
@@ -53,6 +53,7 @@ const VoucherModel = {
 
 const initialState = {
   requestStatus: {
+    loadCart: API_REQUEST_STATUS.FULFILLED,
     queryCartAndStatus: API_REQUEST_STATUS.FULFILLED,
     updateCartItems: API_REQUEST_STATUS.FULFILLED,
     removeCartItemsById: API_REQUEST_STATUS.FULFILLED,
@@ -78,6 +79,7 @@ const initialState = {
   source: Utils.orderSource(),
   submission: CartSubmissionModel,
   error: {
+    loadCart: null,
     queryCartAndStatus: null,
     updateCartItems: null,
     removeCartItemsById: null,
@@ -90,14 +92,13 @@ export const { reducer, actions } = createSlice({
   initialState,
   reducers: {
     updateCart(state, { payload }) {
-      const { items = [], unavailableItems = [], promotions = [], status, voucher, ...others } = {
+      const { items = [], unavailableItems = [], promotions = [], voucher, ...others } = {
         ...state,
         ...payload,
       };
 
       return {
         ...others,
-        cartSubmissionStatus: CART_SUBMISSION_STATUS[status],
         promotions: (promotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
         voucher: { ...VoucherModel, ...voucher },
         items: items.map(item => ({ ...CartItemModel, ...item })),
@@ -109,6 +110,16 @@ export const { reducer, actions } = createSlice({
     },
   },
   extraReducers: {
+    [loadCart.pending.type]: state => {
+      state.requestStatus.loadCart = API_REQUEST_STATUS.PENDING;
+    },
+    [loadCart.fulfilled.type]: state => {
+      state.requestStatus.loadCart = API_REQUEST_STATUS.FULFILLED;
+    },
+    [loadCart.rejected.type]: (state, { error }) => {
+      state.error.loadCart = error;
+      state.requestStatus.loadCart = API_REQUEST_STATUS.REJECTED;
+    },
     [queryCartAndStatus.pending.type]: state => {
       state.requestStatus.queryCartAndStatus = API_REQUEST_STATUS.PENDING;
     },

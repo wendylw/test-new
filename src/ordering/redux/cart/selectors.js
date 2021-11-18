@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
+import { CART_SUBMISSION_STATUS } from './constants';
 
 export const getCartVersion = state => state.app.cart.version;
 
@@ -8,25 +9,21 @@ export const getCartSource = state => state.app.cart.source;
 
 export const getCartShippingType = state => state.app.cart.shippingType;
 
-export const getCartItems = state => state.app.cart.items;
+export const getCartItemsCount = state => state.app.cart.count;
 
-export const getCartUnavailableItems = state => state.app.cart.unavailableItems;
+const getOriginalCartItems = state => state.app.cart.items;
 
-export const getCartSubmissionId = state => state.app.cart.submission.submissionId;
-
-export const getCartSubmittedStatus = state => state.app.cart.submission.status;
-
-export const getShoppingCart = createSelector(
-  [getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
-  (items, unavailableItems, allProducts, categories) => {
+export const getCartItems = createSelector(
+  [getOriginalCartItems, getAllProducts, getAllCategories],
+  (items, allProducts, categories) => {
     const categoriesKeys = Object.keys(categories) || [];
     const allProductIds = Object.keys(allProducts) || [];
-    const categoryInfo = function(selectedProductObject) {
+    const categoryInfo = currentCartItem => {
       let categoryName = '';
       let categoryRank = '';
 
       categoriesKeys.forEach((key, index) => {
-        if ((categories[key].products || []).find(productId => productId === selectedProductObject.productId)) {
+        if ((categories[key].products || []).find(productId => productId === currentCartItem.productId)) {
           categoryName = categories[key].name;
           categoryRank = index + 1;
         }
@@ -38,25 +35,58 @@ export const getShoppingCart = createSelector(
       };
     };
 
-    return {
-      items: items.map(item => ({
-        ...item,
-        ...categoryInfo(item),
-        rank: allProductIds.findIndex(id => id === item.productId) + 1,
-        isFeaturedProduct:
-          allProducts[item.productId] && allProducts[item.productId].isFeaturedProduct
-            ? allProducts[item.productId].isFeaturedProduct
-            : false,
-      })),
-      unavailableItems: unavailableItems.map(unavailableItem => ({
-        ...unavailableItem,
-        ...categoryInfo(unavailableItem),
-        rank: allProductIds.findIndex(id => id === unavailableItem.productId) + 1,
-        isFeaturedProduct:
-          allProducts[unavailableItem.productId] && allProducts[unavailableItem.productId].isFeaturedProduct
-            ? allProducts[unavailableItem.productId].isFeaturedProduct
-            : false,
-      })),
-    };
+    return items.map(item => ({
+      ...item,
+      ...categoryInfo(item),
+      rank: allProductIds.findIndex(id => id === item.productId) + 1,
+      isFeaturedProduct:
+        allProducts[item.productId] && allProducts[item.productId].isFeaturedProduct
+          ? allProducts[item.productId].isFeaturedProduct
+          : false,
+    }));
   }
 );
+
+export const getOriginalCartUnavailableItems = state => state.app.cart.unavailableItems;
+
+export const getCartUnavailableItems = createSelector(
+  [getOriginalCartUnavailableItems, getAllProducts, getAllCategories],
+  (unavailableItems, allProducts, categories) => {
+    const categoriesKeys = Object.keys(categories) || [];
+    const allProductIds = Object.keys(allProducts) || [];
+    const categoryInfo = currentCartUnavailableItem => {
+      let categoryName = '';
+      let categoryRank = '';
+
+      categoriesKeys.forEach((key, index) => {
+        if ((categories[key].products || []).find(productId => productId === currentCartUnavailableItem.productId)) {
+          categoryName = categories[key].name;
+          categoryRank = index + 1;
+        }
+      });
+
+      return {
+        categoryName,
+        categoryRank,
+      };
+    };
+
+    return unavailableItems.map(unavailableItem => ({
+      ...unavailableItem,
+      ...categoryInfo(unavailableItem),
+      rank: allProductIds.findIndex(id => id === unavailableItem.productId) + 1,
+      isFeaturedProduct:
+        allProducts[unavailableItem.productId] && allProducts[unavailableItem.productId].isFeaturedProduct
+          ? allProducts[unavailableItem.productId].isFeaturedProduct
+          : false,
+    }));
+  }
+);
+
+export const getCartSubmissionId = state => state.app.cart.submission.submissionId;
+
+export const getCartSubmittedStatus = state => state.app.cart.submission.status === CART_SUBMISSION_STATUS.COMPLETED;
+
+export const getCartSubmissionPending = state => state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
+
+export const getCartSubmissionFailed = state => state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED;

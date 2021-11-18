@@ -2,6 +2,7 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset } from '../modules/app';
+import { CART_SUBMISSION_STATUS } from './constants';
 import { getCartVersion, getCartSource, getCartSubmissionId } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
@@ -40,6 +41,23 @@ export const loadCart = createAsyncThunk('ordering/app/cart/fetchCart', async (_
   }
 });
 
+const pollingCartStatus = (callback, { state, shippingType, fulfillDate }) => {
+  pollingCartStatus.timer = setTimeout(async () => {
+    const prevCartVersion = getCartVersion(state);
+    const { version, receiptNumber } = await fetchCartStatus({ shippingType, fulfillDate });
+
+    if (receiptNumber) {
+      callback({ receiptNumber });
+    }
+
+    if (version !== prevCartVersion) {
+      loadCart();
+    }
+
+    pollingCartStatus(callback);
+  }, CART_VERSION_AND_STATUS_INTERVAL);
+};
+
 export const queryCartAndStatus = createAsyncThunk('ordering/app/cart/queryCartAndStatus', async (_, { getState }) => {
   const state = getState();
   const businessUTCOffset = getBusinessUTCOffset(state);
@@ -52,28 +70,19 @@ export const queryCartAndStatus = createAsyncThunk('ordering/app/cart/queryCartA
   }
 
   try {
-    const pollingCartStatus = callback => {
-      pollingCartStatus.timer = setTimeout(async () => {
-        const prevCartVersion = getCartVersion(state);
-        const { version, receiptNumber } = await fetchCartStatus(options);
-
-        if (receiptNumber) {
-          callback({ receiptNumber });
-        }
-
-        if (version !== prevCartVersion) {
-          loadCart();
-        }
-
-        pollingCartStatus();
-      }, CART_VERSION_AND_STATUS_INTERVAL);
-    };
-
     loadCart();
 
-    return await new Promise(resolve => pollingCartStatus(resolve));
+    return await new Promise(resolve => pollingCartStatus(resolve, { state, shippingType, fulfillDate }));
   } catch (error) {
     console.error(error);
+
+    throw error;
+  }
+});
+
+export const clearQueryCartStatus = createAction('ordering/app/cart/clearQueryCartStatus', () => {
+  if (pollingCartStatus.timer) {
+    clearTimeout(pollingCartStatus.timer);
   }
 });
 
@@ -173,7 +182,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
 
 const pollingCartSubmissionStatus = (callback, { submissionId, status, initialTimestamp, timeout }) => {
   if (timeout <= 0) {
-    callback({ status: 'failed' });
+    callback({ status: CART_SUBMISSION_STATUS.FAILED });
     return;
   }
 
@@ -183,7 +192,7 @@ const pollingCartSubmissionStatus = (callback, { submissionId, status, initialTi
         callback(submission);
       }
 
-      if (submission.status !== 'completed') {
+      if (submission.status !== CART_SUBMISSION_STATUS.COMPLETED) {
         return;
       }
 
@@ -215,7 +224,9 @@ export const queryCartSubmissionStatus = createAsyncThunk(
       const result = await new Promise((resolve, reject) => {
         pollingCartSubmissionStatus(
           submissionStatus =>
-            submissionStatus.status === 'failed' ? reject(submissionStatus) : resolve(submissionStatus),
+            submissionStatus.status === CART_SUBMISSION_STATUS.FAILED
+              ? reject(submissionStatus)
+              : resolve(submissionStatus),
           {
             submissionId,
             initialTimestamp: Date.parse(new Date()),
@@ -228,6 +239,7 @@ export const queryCartSubmissionStatus = createAsyncThunk(
 
       return result;
     } catch (error) {
+      dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
       console.error(error);
 
       throw error;
