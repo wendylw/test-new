@@ -252,11 +252,10 @@ class PayLater extends Component {
   };
 
   render() {
-    // PAY_LATER_DEBUG need selector to get getCount, cartItems, submittedStatus
-    const { t, shoppingCart, getCount, cartItems, submittedStatus } = this.props;
+    // PAY_LATER_DEBUG need selector to get count, cartItems, cartSubmitted,cartSubmissionPending
+    const { t, shoppingCart, count, cartItems, cartSubmitted, cartSubmissionPending } = this.props;
     const { cartContainerHeight } = this.state;
     const { items } = shoppingCart || {};
-    const { count } = getCount || 0;
 
     const buttonText = (
       <span className="text-weight-bolder" key="place-order">
@@ -265,7 +264,7 @@ class PayLater extends Component {
     );
 
     // PAY_LATER_DEBUG
-    if (!cartItems.length && submittedStatus === 'submitted') {
+    if (!cartItems.length && cartSubmitted) {
       alert(t('HasBeenPlacedContentDescription'), {
         title: t('ThisOrderIsPlaced'),
         closeButtonContent: t('ViewOrder'),
@@ -280,9 +279,9 @@ class PayLater extends Component {
     return (
       <>
         {/* PAY_LATER_DEBUG */}
-        {!cartItems.length && submittedStatus === 'pending' ? (
+        {!cartItems.length && cartSubmissionPending ? (
           <CartEmptyResult
-            submittedStatus={submittedStatus === 'submitted'}
+            submittedStatus={cartSubmitted}
             handleReturnToMenu={this.handleReturnToMenu}
             handleReturnToTableSummary={this.handleReturnToTableSummary}
           />

@@ -16,7 +16,7 @@ class CartEmptyResult extends Component {
 
   handleReturnClick = () => {
     const { submittedStatus, handleReturnToMenu, handleReturnToTableSummary } = this.props;
-    if (submittedStatus) {
+    if (!submittedStatus) {
       return handleReturnToMenu();
     } else {
       return handleReturnToTableSummary();

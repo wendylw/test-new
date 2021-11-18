@@ -23,12 +23,12 @@ class CartSubmissionStatus extends Component {
   };
 
   render() {
-    const { t, submissionStatus } = this.props;
+    const { t, cartSubmissionPending, cartSubmitted, cartSubmissionFailed } = this.props;
     return (
       // TODO
       <section className="flex flex-column">
         {/* pending status */}
-        {submissionStatus === 'pending' && (
+        {cartSubmissionPending && (
           <div className="ordering-submission__pending text-center">
             <p className="ordering-submission__loading-redirect text-size-big margin-left-right-small">
               {t('LoadingRedirectingDescription')}
@@ -37,7 +37,7 @@ class CartSubmissionStatus extends Component {
         )}
 
         {/* success status */}
-        {/* {submissionStatus==='success' && <div className="text-center">
+        {/* {cartSubmitted && <div className="text-center">
           <img className="ordering-submission__image-container" src={orderSuccessImage} alt="order success" />
           <p className="text-size-biggest text-weight-bold padding-left-right-smaller margin-top-bottom-smaller">
             {t('OrderSubmitted')}
@@ -46,7 +46,7 @@ class CartSubmissionStatus extends Component {
         </div>} */}
 
         {/* failure status */}
-        {/* {submissionStatus==='failure' &&  <div className="text-center">
+        {/* {cartSubmissionFailed &&  <div className="text-center">
           <img className="ordering-submission__image-container-failure" src={orderFailureImage} alt="order failure" />
           <p className="text-size-biggest text-weight-bold padding-left-right-smaller padding-smaller">
             {t('OrderSubmissedFailedTitle')}
