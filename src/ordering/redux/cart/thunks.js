@@ -5,17 +5,73 @@ import { getBusinessUTCOffset } from '../modules/app';
 import { getCartVersion, getCartSource, getCartSubmission } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
+  fetchCart,
   postCartItems,
   deleteCartItemsById,
   deleteCart,
   postCartSubmission,
   fetchCartSubmissionStatus,
+  fetchCartStatus,
 } from './api-request';
 
 const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
 const CART_SUBMISSION_INTERVAL = 2 * 1000;
+const CART_VERSION_AND_STATUS_INTERVAL = 2 * 1000;
 
-export const queryCartAndStatus = createAsyncThunk('ordering/app/cart/queryCartAndStatus', () => {});
+const loadCart = createAsyncThunk('ordering/app/cart/fetchCart', async (_, { dispatch, getState }) => {
+  const state = getState();
+  const businessUTCOffset = getBusinessUTCOffset(state);
+  const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+  const shippingType = Utils.getApiRequestShippingType();
+  const options = { shippingType };
+
+  if (fulfillDate) {
+    options.fulfillDate = fulfillDate;
+  }
+
+  try {
+    const result = await fetchCart(options);
+
+    return dispatch(cartActionCreators.updateCart(result));
+  } catch (error) {
+    console.error(error);
+
+    throw error;
+  }
+});
+
+export const queryCartAndStatus = createAsyncThunk('ordering/app/cart/queryCartAndStatus', async (_, { getState }) => {
+  const state = getState();
+  const businessUTCOffset = getBusinessUTCOffset(state);
+  const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+  const shippingType = Utils.getApiRequestShippingType();
+  const options = { shippingType };
+
+  if (fulfillDate) {
+    options.fulfillDate = fulfillDate;
+  }
+
+  try {
+    const pollingCartStatus = () => {
+      pollingCartStatus.timer = setTimeout(async () => {
+        const prevCartVersion = getCartVersion(state);
+
+        await fetchCartStatus(options).then(({ version }) => {
+          if (version !== prevCartVersion) {
+            loadCart();
+          }
+        });
+
+        pollingCartStatus();
+      }, CART_VERSION_AND_STATUS_INTERVAL);
+    };
+
+    loadCart();
+    pollingCartStatus();
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 export const updateCartItems = createAsyncThunk(
   'ordering/app/cart/updateCartItems',
@@ -111,7 +167,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
   }
 });
 
-const pollingCartSubmissionStatus = (callback, { submissionId, status, internal, initialTimestamp, timeout }) => {
+const pollingCartSubmissionStatus = (callback, { submissionId, status, initialTimestamp, timeout }) => {
   if (timeout <= 0) {
     callback({ status: 'failed' });
     return;
@@ -131,9 +187,11 @@ const pollingCartSubmissionStatus = (callback, { submissionId, status, internal,
         () =>
           pollingCartSubmissionStatus(callback, {
             submissionId,
+            status,
+            initialTimestamp,
             timeout: timeout + initialTimestamp - Date.parse(new Date()),
           }),
-        internal
+        CART_SUBMISSION_INTERVAL
       );
     },
     error => callback(error)
@@ -153,7 +211,6 @@ export const queryCartSubmissionStatus = createAsyncThunk(
       const result = await new Promise((resolve, reject) => {
         pollingCartSubmissionStatus((error, submissionStatus) => (error ? reject(error) : resolve(submissionStatus)), {
           submissionId,
-          internal: CART_SUBMISSION_INTERVAL,
           initialTimestamp: Date.parse(new Date()),
           timeout: TIMEOUT_CART_SUBMISSION_TIME,
         });
