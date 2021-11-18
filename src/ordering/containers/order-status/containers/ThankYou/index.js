@@ -237,7 +237,7 @@ export class ThankYou extends PureComponent {
 
   // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
   recordChargedEvent = () => {
-    const { order, business, onlineStoreInfo, isCashbackAvailable } = this.props;
+    const { order, business, onlineStoreInfo } = this.props;
 
     let totalQuantity = 0;
     let totalDiscount = 0;
@@ -281,7 +281,6 @@ export class ThankYou extends PureComponent {
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
-      'has cashback': isCashbackAvailable,
       'promo/voucher applied': _get(order, 'displayPromotions[0].promotionCode'),
     });
   };
