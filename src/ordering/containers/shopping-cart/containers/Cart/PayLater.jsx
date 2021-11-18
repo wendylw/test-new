@@ -27,6 +27,21 @@ class PayLater extends Component {
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
+
+    const { cartSubmitted, cartItems, t } = this.props;
+    const { cartSubmitted: prevCartSubmitted } = prevProps;
+
+    if (cartSubmitted && cartSubmitted !== prevCartSubmitted && !cartItems.length) {
+      alert(t('HasBeenPlacedContentDescription'), {
+        title: t('ThisOrderIsPlaced'),
+        closeButtonContent: t('ViewOrder'),
+        onClose: () =>
+          this.props.history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+            search: window.location.search,
+          }),
+      });
+    }
   }
 
   async componentDidMount() {
@@ -40,10 +55,10 @@ class PayLater extends Component {
     this.setProductsContainerHeight();
   }
 
-  componentWillUnmount = async () => {
+  componentWillUnmount = () => {
     const { cartActions } = this.props;
     // PAY_LATER_DEBUG: stop polling
-    // await cartActions.clearQueryCartAndStatus();
+    //  cartActions.clearQueryCartAndStatus();
   };
 
   setCartContainerHeight = preContainerHeight => {
@@ -80,7 +95,7 @@ class PayLater extends Component {
       const { history, cartActions } = this.props;
       const { submissionId } = await cartActions.submitCart();
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CartSubmissionStatus,
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
         search: `submissionId=${submissionId}`,
       });
     } catch (e) {
@@ -246,7 +261,7 @@ class PayLater extends Component {
 
   handleReturnToTableSummary = () => {
     this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_TABLESUMMARY,
+      pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
       search: window.location.search,
     });
   };
@@ -262,19 +277,6 @@ class PayLater extends Component {
         {t('PlaceOrder')}
       </span>
     );
-
-    // PAY_LATER_DEBUG
-    if (!cartItems.length && cartSubmitted) {
-      alert(t('HasBeenPlacedContentDescription'), {
-        title: t('ThisOrderIsPlaced'),
-        closeButtonContent: t('ViewOrder'),
-        onClose: () =>
-          this.props.history.push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_TABLESUMMARY,
-            search: window.location.search,
-          }),
-      });
-    }
 
     return (
       <>

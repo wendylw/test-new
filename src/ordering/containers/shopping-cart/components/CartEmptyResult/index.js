@@ -27,6 +27,7 @@ class CartEmptyResult extends Component {
     const { t, history, submittedStatus } = this.props;
 
     return (
+      // TODO: can remove
       <section className="flex flex-column shopping-cart__container">
         <HybridHeader
           className="flex-middle border__bottom-divider"

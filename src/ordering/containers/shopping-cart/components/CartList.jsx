@@ -9,7 +9,6 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import { IconDelete } from '../../../../components/Icons';
 import ProductItem from '../../../components/ProductItem';
 import ItemOperator from '../../../../components/ItemOperator';
-import loggly from '../../../../utils/monitoring/loggly';
 
 class CartList extends Component {
   handleGtmEventTracking = product => {

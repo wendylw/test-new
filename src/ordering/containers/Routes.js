@@ -42,7 +42,7 @@ class Routes extends Component {
           <Switch>
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
-            <Route exact path={ROUTER_PATHS.ORDERING_CARTSUBMISSIONSTATUS} component={CartSubmissionStatus} />
+            <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />
             <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
             <Route exact path={ROUTER_PATHS.ORDERING_CUSTOMER_INFO} component={CustomerInfo} />
             <Route exact path={ROUTER_PATHS.ORDERING_PAYMENT} component={Payment} />
