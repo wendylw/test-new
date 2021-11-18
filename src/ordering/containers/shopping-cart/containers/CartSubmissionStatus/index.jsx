@@ -11,17 +11,17 @@ import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
-    const { submissionId } = window.location;
-    const { cartActions } = this.props;
+    // const { submissionId } = window.location;
+    const { cartActions, cartSubmissionId } = this.props;
     // PAY_LATER_DEBUG: need to be changed
-    await cartActions.queryCartSubmissionStatus(submissionId);
+    await cartActions.queryCartSubmissionStatus(cartSubmissionId);
   };
 
   componentDidUpdate = prevProps => {
-    const { cartSubmitted } = this.props;
-    const { cartSubmitted: prevCartSubmitted } = prevProps;
+    const { cartSubmittedStatus } = this.props;
+    const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
-    if (cartSubmitted && cartSubmitted !== prevCartSubmitted) {
+    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
       this.timer = setTimeout(() => {
         this.props.history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
@@ -39,12 +39,12 @@ class CartSubmissionStatus extends Component {
   };
 
   render() {
-    const { t, cartSubmissionPending, cartSubmitted, cartSubmissionFailed } = this.props;
+    const { t, cartSubmissionPendingStatus, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
     return (
       // PAY_LATER_DEBUG
       <section className="flex flex-column">
         {/* pending status */}
-        {cartSubmissionPending && (
+        {cartSubmissionPendingStatus && (
           <div className="ordering-submission__pending text-center">
             <p className="ordering-submission__loading-redirect text-size-big margin-left-right-small">
               {t('LoadingRedirectingDescription')}
@@ -53,7 +53,7 @@ class CartSubmissionStatus extends Component {
         )}
 
         {/* success status */}
-        {cartSubmitted && (
+        {cartSubmittedStatus && (
           <div className="text-center">
             <img className="ordering-submission__image-container" src={orderSuccessImage} alt="order success" />
             <p className="text-size-biggest text-weight-bold padding-left-right-smaller margin-top-bottom-smaller">
@@ -64,7 +64,7 @@ class CartSubmissionStatus extends Component {
         )}
 
         {/* failure status */}
-        {cartSubmissionFailed && (
+        {cartSubmissionFailedStatus && (
           <div className="text-center">
             <img className="ordering-submission__image-container-failure" src={orderFailureImage} alt="order failure" />
             <p className="text-size-biggest text-weight-bold padding-left-right-smaller padding-smaller">
@@ -87,7 +87,12 @@ export default compose(
   withTranslation(['OrderingCart']),
   connect(
     state => {
-      return {};
+      return {
+        // cartSubmissionId: getCartSubmissionId(state),
+        // cartSubmittedStatus: getCartSubmittedStatus(state),
+        // cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
+        // cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state)
+      };
     },
     dispatch => ({
       // PAY_LATER_DEBUG: need to change new functions

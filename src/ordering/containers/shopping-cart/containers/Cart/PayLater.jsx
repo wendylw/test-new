@@ -10,7 +10,7 @@ import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getOnlineStoreInfo, getShoppingCart } from '../../../../redux/modules/app';
+import { actions as appActionCreators, getShoppingCart } from '../../../../redux/modules/app';
 import { actions as cartActionCreators } from '../../../../redux/modules/cart';
 import CartEmptyResult from '../../components/CartEmptyResult';
 import { IconError } from '../../../../../components/Icons';
@@ -28,12 +28,12 @@ class PayLater extends Component {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
 
-    const { cartSubmitted, cartItems, t } = this.props;
-    const { cartSubmitted: prevCartSubmitted } = prevProps;
+    const { cartSubmittedStatus, cartItems, t } = this.props;
+    const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
-    if (cartSubmitted && cartSubmitted !== prevCartSubmitted && !cartItems.length) {
+    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus && !cartItems.length) {
       alert(t('HasBeenPlacedContentDescription'), {
-        title: t('ThisOrderIsPlaced'),
+        title: t('UnableToPlaceOrder'),
         closeButtonContent: t('ViewOrder'),
         onClose: () =>
           this.props.history.push({
@@ -267,8 +267,8 @@ class PayLater extends Component {
   };
 
   render() {
-    // PAY_LATER_DEBUG need selector to get count, cartItems, cartSubmitted,cartSubmissionPending
-    const { t, shoppingCart, count, cartItems, cartSubmitted, cartSubmissionPending } = this.props;
+    // PAY_LATER_DEBUG need selector to get count, cartItems, cartSubmittedStatus,cartSubmissionPending
+    const { t, shoppingCart, count, cartItems, cartSubmittedStatus, cartSubmissionPendingStatus } = this.props;
     const { cartContainerHeight } = this.state;
     const { items } = shoppingCart || {};
 
@@ -281,9 +281,9 @@ class PayLater extends Component {
     return (
       <>
         {/* PAY_LATER_DEBUG */}
-        {!cartItems.length && cartSubmissionPending ? (
+        {!cartItems.length && cartSubmissionPendingStatus ? (
           <CartEmptyResult
-            submittedStatus={cartSubmitted}
+            submittedStatus={cartSubmittedStatus}
             handleReturnToMenu={this.handleReturnToMenu}
             handleReturnToTableSummary={this.handleReturnToTableSummary}
           />
@@ -366,7 +366,10 @@ export default compose(
     state => {
       return {
         shoppingCart: getShoppingCart(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
+        // CartItems: getCartItems(state),
+        // count: getCartItemsCount(state),
+        // cartSubmittedStatus: getCartSubmittedStatus(state),
+        // cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
       };
     },
     dispatch => ({
