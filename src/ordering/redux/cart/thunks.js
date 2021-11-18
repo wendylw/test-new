@@ -1,8 +1,8 @@
 /* eslint-disable import/no-cycle */
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
-import { getBusinessUTCOffset, getShippingType } from '../modules/app';
-import { getCartVersion, getCartSource, getCartShippingType, getCartSubmission } from './selectors';
+import { getBusinessUTCOffset } from '../modules/app';
+import { getCartVersion, getCartSource, getCartSubmission } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
   postCartItems,
@@ -23,7 +23,7 @@ export const updateCartItems = createAsyncThunk(
     const state = getState();
     const businessUTCOffset = getBusinessUTCOffset(state);
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-    const shippingType = getCartShippingType(state);
+    const shippingType = Utils.getApiRequestShippingType();
     const options = { productId, quantityChange, variations: variations || [], shippingType };
 
     if (fulfillDate) {
@@ -48,7 +48,7 @@ export const removeCartItemsById = createAsyncThunk(
     const state = getState();
     const businessUTCOffset = getBusinessUTCOffset(state);
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-    const shippingType = getCartShippingType(state);
+    const shippingType = Utils.getApiRequestShippingType();
     const options = { id, shippingType };
 
     if (fulfillDate) {
@@ -71,7 +71,7 @@ export const clearCart = createAsyncThunk('ordering/app/cart/clearCart', async (
   const state = getState();
   const businessUTCOffset = getBusinessUTCOffset(state);
   const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-  const shippingType = getCartShippingType(state);
+  const shippingType = Utils.getApiRequestShippingType();
   const options = { shippingType };
 
   if (fulfillDate) {
@@ -93,7 +93,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
   const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
   const version = getCartVersion(state);
   const source = getCartSource(state);
-  const shippingType = getShippingType(state);
+  const shippingType = Utils.getApiRequestShippingType();
   const options = { version, source, shippingType };
 
   if (fulfillDate) {
