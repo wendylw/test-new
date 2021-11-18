@@ -1,0 +1,15 @@
+@import "../../../../../Variables.scss";
+
+.shopping-cart-empty {
+  &__container {
+    background: $white;
+  }
+  &__image-container {
+    margin-top: 125px;
+  }
+  &__text {
+    color: $gray-3;
+    margin-left: 4.4vw;
+    margin-right: 4.4vw;
+  }
+}

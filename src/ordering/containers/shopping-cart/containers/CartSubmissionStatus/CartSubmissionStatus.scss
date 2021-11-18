@@ -1,0 +1,23 @@
+@import "../../../../../Variables.scss";
+
+.ordering-submission {
+  &__pending {
+    padding-top: 411px;
+  }
+  &__image-container {
+    padding-top: 181px;
+  }
+  &__loading-redirect {
+    color: $gray-3;
+    margin-left: 12.4vw;
+    margin-right: 12.4vw;
+  }
+  &__failure-redirect {
+    color: $gray-3;
+    margin-left: 4.4vw;
+    margin-right: 4.4vw;
+  }
+  &__image-container-failure {
+    padding-top: 175px;
+  }
+}

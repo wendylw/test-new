@@ -872,6 +872,9 @@ export class Home extends Component {
     const { tableId, shippingType } = requestInfo || {};
     const { promotions } = businessInfo || {};
     const isWebview = Utils.isWebview();
+    // PAY_LATER_DEBUG 后端给接口添加字段判断是否为 payLater
+    const { store } = this.props;
+    const { payLaterEnabled } = 'store';
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -1023,6 +1026,7 @@ export class Home extends Component {
                 footerEls: [this.footerEl],
               })}px`,
           }}
+          payLaterEnabled={payLaterEnabled}
           footerRef={ref => (this.footerEl = ref)}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}

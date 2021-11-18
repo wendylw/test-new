@@ -1,4 +1,4 @@
-@import "../../../Variables.scss";
+@import "../../../../../Variables.scss";
 
 .ordering-cart {
   height: 100vh;
@@ -7,6 +7,10 @@
   .billing__label,
   .billing__text {
     color: $gray-2;
+  }
+
+  &__warning {
+    background-color: #fffbe6;
   }
 
   &__container {

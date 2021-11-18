@@ -139,6 +139,7 @@ export class Footer extends Component {
       footerRef,
       style,
       isUserLoginRequestStatusInPending,
+      payLaterEnabled,
     } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
@@ -161,7 +162,10 @@ export class Footer extends Component {
           </div>
 
           <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
-            <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
+            {/* PAY_LATER_DEBUG  */}
+            {payLaterEnabled ? null : (
+              <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
+            )}
             {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
               <label className="home-cart__money-minimum margin-top-bottom-smaller">
                 {count ? (
@@ -203,7 +207,10 @@ export class Footer extends Component {
               this.handleRedirect();
             }}
           >
-            {isLiveOnline
+            {/* PAY_LATER_DEBUG */}
+            {payLaterEnabled
+              ? t('ReviewCart')
+              : isLiveOnline
               ? !isValidTimeToOrder && enablePreOrder
                 ? t('PreOrderNow')
                 : t('OrderNow')
