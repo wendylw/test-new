@@ -9,24 +9,27 @@
 }
 
 .cashback-banner {
-  background-color: #fff2e3;
+  background-color: $status-yellow-1;
   box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.08);
 
-  &__fixed-wrapper {
-    position: fixed;
+  &__absolute-wrapper {
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
   }
 
+  &__content {
+    padding-right: 0;
+  }
+
   &__login-button {
-    align-self: center;
     max-height: 40px;
-    margin-top: 3.8vw;
   }
 
   &__close-button {
     fill: $gray-3;
+    padding: 1.4vw;
   }
 }
 
@@ -48,5 +51,13 @@
     color: $white;
     background-color: $theme-color;
     max-width: 18vw;
+  }
+}
+
+@media (min-width: 414px) {
+  .cashback-banner {
+    &__close-button {
+      padding: 8px;
+    }
   }
 }

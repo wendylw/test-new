@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { getCashbackCurrency, getIsCashbackAvailable } from '../../redux/selector';
 import IconGiveCashBag from '../../../../../../../images/icon-give-cash-bag.svg';
-import IconCelebration from '../../../../../../../images/icon-celebration.svg';
 import { IconClose } from '../../../../../../../components/Icons';
 import './index.scss';
 
@@ -46,25 +45,33 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
       <div
         className={`${
           isBannerVisible ? 'visible' : 'invisible'
-        } cashback-banner cashback-banner__fixed-wrapper card margin-small padding-normal flex flex-column`}
+        } cashback-banner cashback-banner__absolute-wrapper card padding-top-bottom-small margin-small`}
       >
         <div className="flex flex-top">
-          <img src={IconGiveCashBag} className="icon icon__small" alt="Beep Cash Bag" />
-          <div className="flex flex-column flex__fluid-content flex-top padding-top-bottom-smaller">
-            <h2 className="flex flex-middle margin-top-bottom-smaller text-line-height-base">
-              <span className="text-weight-bolder">{title}</span>
-              {isCashbackAvailable && <img src={IconCelebration} className="icon" alt="Beep Celebration" />}
-            </h2>
-            <p>{description}</p>
+          <div className="cashback-banner__content flex flex-top flex__fluid-content padding-small">
+            <img src={IconGiveCashBag} className="icon icon__small" alt="Beep Cash Bag" />
+            <div className="margin-left-right-smaller">
+              <h2 className="flex flex-middle">
+                <span className="text-weight-bolder">{title}</span>
+                {isCashbackAvailable && (
+                  <span role="img" aria-label="celebration">
+                    🎉
+                  </span>
+                )}
+              </h2>
+              <p className="text-line-height-base">{description}</p>
+            </div>
           </div>
           <IconClose className="cashback-banner__close-button icon icon__small" onClick={toggleBannerHandler} />
         </div>
-        <button
-          className="cashback-banner__login-button button button__fill text-weight-bolder text-uppercase padding-left-right-normal"
-          onClick={onLoginButtonClick}
-        >
-          {buttonText}
-        </button>
+        <div className="padding-small text-center">
+          <button
+            className="cashback-banner__login-button button button__fill text-weight-bolder text-uppercase padding-left-right-normal"
+            onClick={onLoginButtonClick}
+          >
+            {buttonText}
+          </button>
+        </div>
       </div>
     </>
   );
