@@ -870,11 +870,9 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId, shippingType } = requestInfo || {};
-    const { promotions } = businessInfo || {};
+    const { promotions, qrOrderingSettings } = businessInfo || {};
+    const { enablePayLater } = qrOrderingSettings || {};
     const isWebview = Utils.isWebview();
-    // PAY_LATER_DEBUG 后端给接口添加字段判断是否为 payLater
-    const { store } = this.props;
-    const { payLaterEnabled } = 'store';
 
     if (!onlineStoreInfo || !categories) {
       return null;
@@ -1026,7 +1024,7 @@ export class Home extends Component {
                 footerEls: [this.footerEl],
               })}px`,
           }}
-          payLaterEnabled={payLaterEnabled}
+          enablePayLater={enablePayLater}
           footerRef={ref => (this.footerEl = ref)}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}

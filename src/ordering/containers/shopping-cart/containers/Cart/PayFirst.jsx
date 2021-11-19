@@ -25,7 +25,7 @@ import {
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
 import { IconError } from '../../../../../components/Icons';
-import { actions as cartActionCreators } from '../../redux/common';
+import { loadStockStatus } from '../../redux/common/thunks';
 import { getCheckingInventoryPendingState } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import Url from '../../../../../utils/url';
@@ -90,12 +90,12 @@ class PayFirst extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, appActions, cartActions, deliveryDetails } = this.props;
+    const { user, history, appActions, loadStockStatus, deliveryDetails } = this.props;
     const { username, phone: orderPhone } = deliveryDetails || {};
     const { consumerId, isLogin, profile } = user || {};
     const { name, phone } = profile || {};
 
-    const { status } = await cartActions.loadStockStatus();
+    const { status } = await loadStockStatus();
 
     if (status === 'reject') {
       await appActions.loadShoppingCart();
@@ -622,8 +622,8 @@ export default compose(
       };
     },
     dispatch => ({
+      loadStockStatus: bindActionCreators(loadStockStatus, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
-      cartActions: bindActionCreators(cartActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
     })
   )

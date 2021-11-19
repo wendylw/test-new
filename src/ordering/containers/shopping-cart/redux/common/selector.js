@@ -1,1 +1,1 @@
-export const getCheckingInventoryPendingState = ({ cart }) => cart.cartInventory.status === 'pending';
+export const getCheckingInventoryPendingState = ({ cart }) => cart.common.cartInventory.status === 'pending';

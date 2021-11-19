@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import {
+  getCartSubmissionId,
+  getCartSubmissionFailedStatus,
+  getCartSubmittedStatus,
+  getCartSubmissionPendingStatus,
+} from '../../../../redux/cart/selectors';
+import { queryCartSubmissionStatus, clearQueryCartSubmissionStatus } from '../../../../redux/cart/thunks';
 import { actions as cartActionCreators } from '../../../../redux/cart';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
@@ -11,10 +18,9 @@ import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
-    // const { submissionId } = window.location;
-    const { cartActions, cartSubmissionId } = this.props;
+    const { queryCartSubmissionStatus, cartSubmissionId } = this.props;
     // PAY_LATER_DEBUG: need to be changed
-    await cartActions.queryCartSubmissionStatus(cartSubmissionId);
+    await queryCartSubmissionStatus(cartSubmissionId);
   };
 
   componentDidUpdate = prevProps => {
@@ -32,9 +38,9 @@ class CartSubmissionStatus extends Component {
   };
 
   componentWillUnmount = () => {
-    const { cartActions } = this.props;
+    // const { clearQueryCartSubmissionStatus } = this.props;
     // PAY_LATER_DEBUG: stop polling
-    cartActions.clearQueryCartSubmissonStatus();
+    // clearQueryCartSubmissionStatus();
     clearTimeout(this.timer);
   };
 
@@ -88,13 +94,15 @@ export default compose(
   connect(
     state => {
       return {
-        // cartSubmissionId: getCartSubmissionId(state),
-        // cartSubmittedStatus: getCartSubmittedStatus(state),
-        // cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
-        // cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state)
+        cartSubmissionId: getCartSubmissionId(state),
+        cartSubmittedStatus: getCartSubmittedStatus(state),
+        cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
+        cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
       };
     },
     dispatch => ({
+      clearQueryCartSubmissionStatus: bindActionCreators(clearQueryCartSubmissionStatus, dispatch),
+      queryCartSubmissionStatus: bindActionCreators(queryCartSubmissionStatus, dispatch),
       // PAY_LATER_DEBUG: need to change new functions
       cartActions: bindActionCreators(cartActionCreators, dispatch),
     })
