@@ -3,6 +3,20 @@ import { withTranslation } from 'react-i18next';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import CartList from '../../components/CartList';
+import {
+  queryCartAndStatus,
+  clearQueryCartStatus,
+  clearCart,
+  submitCart,
+  updateCartItems,
+  removeCartItemsById,
+} from '../../../../redux/cart/thunks';
+import {
+  getCartItems,
+  getCartItemsCount,
+  getCartSubmittedStatus,
+  getCartSubmissionPendingStatus,
+} from '../../../../redux/cart/selectors';
 import { IconClose } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils.js';
@@ -11,7 +25,6 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getShoppingCart } from '../../../../redux/modules/app';
-import { actions as cartActionCreators } from '../../../../redux/modules/cart';
 import CartEmptyResult from '../../components/CartEmptyResult';
 import { IconError } from '../../../../../components/Icons';
 import loggly from '../../../../../utils/monitoring/loggly';
@@ -44,21 +57,25 @@ class PayLater extends Component {
     }
   }
 
-  async componentDidMount() {
-    const { cartActions } = this.props;
+  componentDidMount = async () => {
+    // const { queryCartAndStatus } = this.props;
 
-    // PAY_LATER_DEBUG: Change to new load shopping cart API
-    // await cartActions.queryCartAndStatus();
+    // // PAY_LATER_DEBUG: Change to new load shopping cart API
+    // await queryCartAndStatus();
+
+    const { appActions } = this.props;
+
+    await appActions.loadShoppingCart();
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
-  }
+  };
 
   componentWillUnmount = () => {
-    const { cartActions } = this.props;
-    // PAY_LATER_DEBUG: stop polling
-    //  cartActions.clearQueryCartAndStatus();
+    // const { clearQueryCartStatus } = this.props;
+    // // PAY_LATER_DEBUG: stop polling
+    // clearQueryCartStatus();
   };
 
   setCartContainerHeight = preContainerHeight => {
@@ -92,8 +109,8 @@ class PayLater extends Component {
   handleClickContinue = async () => {
     // PAY_LATER_DEBUG: need to be changed
     try {
-      const { history, cartActions } = this.props;
-      const { submissionId } = await cartActions.submitCart();
+      const { history, submitCart } = this.props;
+      const { submissionId } = await submitCart();
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
         search: `submissionId=${submissionId}`,
@@ -129,7 +146,7 @@ class PayLater extends Component {
 
   handleClearAll = () => {
     // PAY_LATER_DEBUG: need to be changed
-    this.props.appActions.clearCart().then(() => {
+    this.props.clearCart().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
         search: window.location.search,
@@ -194,7 +211,7 @@ class PayLater extends Component {
     loggly.log('pay-later-cart.item-operate-attempt');
     const { quantity } = cartItem;
 
-    this.props.appActions.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity + 1));
+    this.props.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity + 1));
   };
 
   handleDecreaseCartItem = cartItem => {
@@ -206,7 +223,7 @@ class PayLater extends Component {
       return this.handleRemoveCartItem(cartItem);
     }
 
-    this.props.appActions.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity - 1));
+    this.props.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity - 1));
   };
 
   handleRemoveCartItem = cartItem => {
@@ -214,7 +231,7 @@ class PayLater extends Component {
     loggly.log('pay-later-cart.item-operate-attempt');
     const { id } = cartItem;
 
-    this.props.appActions.removeCartItemsById({
+    this.props.removeCartItemsById({
       id,
     });
   };
@@ -283,6 +300,7 @@ class PayLater extends Component {
         {/* PAY_LATER_DEBUG */}
         {!cartItems.length && cartSubmissionPendingStatus ? (
           <CartEmptyResult
+            history={this.props.history}
             submittedStatus={cartSubmittedStatus}
             handleReturnToMenu={this.handleReturnToMenu}
             handleReturnToTableSummary={this.handleReturnToTableSummary}
@@ -366,16 +384,21 @@ export default compose(
     state => {
       return {
         shoppingCart: getShoppingCart(state),
-        // CartItems: getCartItems(state),
-        // count: getCartItemsCount(state),
-        // cartSubmittedStatus: getCartSubmittedStatus(state),
-        // cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
+        cartItems: getCartItems(state),
+        count: getCartItemsCount(state),
+        cartSubmittedStatus: getCartSubmittedStatus(state),
+        cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
       };
     },
     dispatch => ({
+      removeCartItemsById: bindActionCreators(removeCartItemsById, dispatch),
+      updateCartItems: bindActionCreators(updateCartItems, dispatch),
+      submitCart: bindActionCreators(submitCart, dispatch),
+      clearCart: bindActionCreators(clearCart, dispatch),
+      clearQueryCartStatus: bindActionCreators(clearQueryCartStatus, dispatch),
+      queryCartAndStatus: bindActionCreators(queryCartAndStatus, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       // PAY_LATER_DEBUG: need to change new functions
-      cartActions: bindActionCreators(cartActionCreators, dispatch),
     })
   )
 )(PayLater);

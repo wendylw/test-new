@@ -21,6 +21,7 @@ import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/enti
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
+import CartReducer from '../cart';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
@@ -863,6 +864,7 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  cart: CartReducer,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
 });
@@ -987,10 +989,6 @@ export const getShoppingCart = createSelector(
   }
 );
 
-export const getCartItemList = state => {
-  return state.app.shoppingCart.items;
-};
-
 // This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
 export const getStoreInfoForCleverTap = state => {
   const business = getBusiness(state);
@@ -1058,7 +1056,7 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 };
 
 export const getCategoryProductList = createSelector(
-  [getAllProducts, getAllCategories, getCartItemList],
+  [getAllProducts, getAllCategories, getCartItems],
   (allProducts, categories, carts) => {
     if (!allProducts || !categories || !Array.isArray(carts)) {
       return [];
