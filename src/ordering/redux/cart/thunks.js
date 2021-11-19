@@ -19,7 +19,7 @@ const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
 const CART_SUBMISSION_INTERVAL = 2 * 1000;
 const CART_VERSION_AND_STATUS_INTERVAL = 2 * 1000;
 
-export const loadCart = createAsyncThunk('ordering/app/cart/fetchCart', async (_, { dispatch, getState }) => {
+export const loadCart = createAsyncThunk('ordering/app/cart/loadCart', async (_, { dispatch, getState }) => {
   const state = getState();
   const businessUTCOffset = getBusinessUTCOffset(state);
   const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
@@ -41,48 +41,61 @@ export const loadCart = createAsyncThunk('ordering/app/cart/fetchCart', async (_
   }
 });
 
-const pollingCartStatus = (callback, { state, shippingType, fulfillDate }) => {
-  pollingCartStatus.timer = setTimeout(async () => {
+export const loadCartStatus = createAsyncThunk(
+  'ordering/app/cart/loadCartStatus',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
     const prevCartVersion = getCartVersion(state);
-    const { version, receiptNumber } = await fetchCartStatus({ shippingType, fulfillDate });
+    const businessUTCOffset = getBusinessUTCOffset(state);
+    const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+    const shippingType = Utils.getApiRequestShippingType();
+    const options = { shippingType };
 
-    if (receiptNumber) {
-      callback({ receiptNumber });
+    if (fulfillDate) {
+      options.fulfillDate = fulfillDate;
     }
 
-    if (version !== prevCartVersion) {
-      loadCart();
+    try {
+      const result = await fetchCartStatus(options);
+
+      dispatch(cartActionCreators.updateCart(result));
+
+      return { prevCartVersion, ...result };
+    } catch (error) {
+      console.error(error);
+
+      throw error;
     }
-
-    pollingCartStatus(callback);
-  }, CART_VERSION_AND_STATUS_INTERVAL);
-};
-
-export const queryCartAndStatus = createAsyncThunk('ordering/app/cart/queryCartAndStatus', async (_, { getState }) => {
-  const state = getState();
-  const businessUTCOffset = getBusinessUTCOffset(state);
-  const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-  const shippingType = Utils.getApiRequestShippingType();
-  const options = { shippingType };
-
-  if (fulfillDate) {
-    options.fulfillDate = fulfillDate;
   }
+);
 
+export const queryCartAndStatus = async () => {
   try {
-    loadCart();
+    await loadCart();
 
-    return await new Promise(resolve => pollingCartStatus(resolve, { state, shippingType, fulfillDate }));
+    queryCartAndStatus.timer = setTimeout(() => {
+      const { prevCartVersion, version, receiptNumber } = loadCartStatus();
+
+      if (receiptNumber) {
+        clearTimeout(queryCartAndStatus.timer);
+
+        return;
+      }
+
+      if (prevCartVersion !== version) {
+        queryCartAndStatus();
+      }
+    }, CART_VERSION_AND_STATUS_INTERVAL);
   } catch (error) {
     console.error(error);
 
     throw error;
   }
-});
+};
 
 export const clearQueryCartStatus = createAction('ordering/app/cart/clearQueryCartStatus', () => {
-  if (pollingCartStatus.timer) {
-    clearTimeout(pollingCartStatus.timer);
+  if (queryCartAndStatus.timer) {
+    clearTimeout(queryCartAndStatus.timer);
   }
 });
 
