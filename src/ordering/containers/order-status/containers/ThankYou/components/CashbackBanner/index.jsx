@@ -32,27 +32,6 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
 
   return (
     <>
-      <div
-        className={`${
-          isBannerVisible ? 'visible' : 'invisible'
-        } cashback-banner cashback-banner__fixed-wrapper card margin-small padding-normal flex flex-top`}
-      >
-        <img src={IconGiveCashBag} className="icon icon__small" alt="Beep Cash Bag" />
-        <div className="cashback-banner__content-wrapper flex flex-column flex-top">
-          <h1 className="cashback-banner__title flex flex-middle margin-top-bottom-smaller">
-            <span className="text-weight-bolder">{title}</span>
-            {isCashbackAvailable && <img src={IconCelebration} className="icon" alt="Beep Celebration" />}
-          </h1>
-          <p>{description}</p>
-          <button
-            className="cashback-banner__login-button button button__fill text-weight-bolder text-uppercase padding-left-right-normal"
-            onClick={onLoginButtonClick}
-          >
-            {buttonText}
-          </button>
-        </div>
-        <IconClose className="cashback-banner__close-button icon" onClick={toggleBannerHandler} />
-      </div>
       <button
         className={`${
           isBannerVisible ? 'invisible' : 'visible'
@@ -64,6 +43,29 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
           {t('ClaimMyCashback')}
         </div>
       </button>
+      <div
+        className={`${
+          isBannerVisible ? 'visible' : 'invisible'
+        } cashback-banner cashback-banner__fixed-wrapper card margin-small padding-normal flex flex-column`}
+      >
+        <div className="flex flex-top">
+          <img src={IconGiveCashBag} className="icon icon__small" alt="Beep Cash Bag" />
+          <div className="flex flex-column flex__fluid-content flex-top padding-top-bottom-smaller">
+            <h2 className="flex flex-middle margin-top-bottom-smaller text-line-height-base">
+              <span className="text-weight-bolder">{title}</span>
+              {isCashbackAvailable && <img src={IconCelebration} className="icon" alt="Beep Celebration" />}
+            </h2>
+            <p>{description}</p>
+          </div>
+          <IconClose className="cashback-banner__close-button icon icon__small" onClick={toggleBannerHandler} />
+        </div>
+        <button
+          className="cashback-banner__login-button button button__fill text-weight-bolder text-uppercase padding-left-right-normal"
+          onClick={onLoginButtonClick}
+        >
+          {buttonText}
+        </button>
+      </div>
     </>
   );
 }
