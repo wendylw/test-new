@@ -4,7 +4,7 @@ import Constants from '../../../utils/constants';
 import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../redux/modules/app';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getStoreInfoForCleverTap } from '../../../utils/store-utils';
+import { getStoreInfoForCleverTap } from '../../redux/modules/app';
 import CleverTap from '../../../utils/clevertap';
 import './Profile.scss';
 import Utils from '../../../utils/utils';
