@@ -5,7 +5,7 @@ import { actions as appActionCreators, getUser, getDeliveryDetails } from '../..
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getStoreInfoForCleverTap } from '../../../utils/store-utils';
-import CleverTap from '../../../../../utils/clevertap';
+import CleverTap from '../../../utils/clevertap';
 import './Profile.scss';
 import Utils from '../../../utils/utils';
 import DuplicatedEmailAlert from '../Profile/components/DuplicatedEmailAlert/DuplicatedEmailAlert.jsx';
