@@ -19,7 +19,7 @@ export const fetchCart = ({ shippingType, fulfillDate }) => {
     queryParams.fulfillDate = fulfillDate;
   }
 
-  return get(`/api/v3/cart`, { queryParams });
+  return get(`/api/v3/cart:query`, { queryParams });
 };
 
 // update cart items
