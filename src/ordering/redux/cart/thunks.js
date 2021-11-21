@@ -169,7 +169,7 @@ export const clearCart = createAsyncThunk('ordering/app/cart/clearCart', async (
   }
 });
 
-export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async (_, { dispatch, getState }) => {
+export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async (_, { getState }) => {
   const state = getState();
   const businessUTCOffset = getBusinessUTCOffset(state);
   const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
@@ -185,7 +185,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
   try {
     const result = await postCartSubmission(options);
 
-    return dispatch(cartActionCreators.updateCartSubmission(result));
+    return result;
   } catch (error) {
     console.error(error);
 
@@ -226,14 +226,8 @@ const pollingCartSubmissionStatus = (callback, { submissionId, status, initialTi
 
 export const queryCartSubmissionStatus = createAsyncThunk(
   'ordering/app/cart/queryCartSubmissionStatus',
-  async (submissionId, { dispatch, getState }) => {
-    const prevSubmissionId = getCartSubmissionId(getState());
-
+  async (submissionId, { dispatch }) => {
     try {
-      if (!prevSubmissionId) {
-        dispatch(cartActionCreators.updateCartSubmission({ submissionId }));
-      }
-
       const result = await new Promise((resolve, reject) => {
         pollingCartSubmissionStatus(
           submissionStatus =>

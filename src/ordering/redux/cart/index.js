@@ -15,7 +15,6 @@ import {
 
 const CartSubmissionModel = {
   requestStatus: API_REQUEST_STATUS.PENDING,
-  submissionId: null,
   status: null,
   receiptNumber: null,
 };
