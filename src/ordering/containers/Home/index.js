@@ -46,6 +46,8 @@ import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
 
+import { queryCartAndStatus } from '../../redux/cart/thunks';
+
 const localState = {
   blockScrollTop: 0,
 };

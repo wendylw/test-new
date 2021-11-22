@@ -3,7 +3,7 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
-import { getCartVersion, getCartSource, getCartSubmissionId } from './selectors';
+import { getCartVersion, getCartSource } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
   fetchCart,
@@ -33,7 +33,9 @@ export const loadCart = createAsyncThunk('ordering/app/cart/loadCart', async (_,
   try {
     const result = await fetchCart(options);
 
-    return dispatch(cartActionCreators.updateCart(result));
+    dispatch(cartActionCreators.updateCart(result));
+
+    return result;
   } catch (error) {
     console.error(error);
 
@@ -115,7 +117,9 @@ export const updateCartItems = createAsyncThunk(
     try {
       const result = await postCartItems(options);
 
-      return dispatch(cartActionCreators.updateCart(result));
+      dispatch(cartActionCreators.updateCart(result));
+
+      return result;
     } catch (error) {
       console.error(error);
 
@@ -140,7 +144,9 @@ export const removeCartItemsById = createAsyncThunk(
     try {
       const result = await deleteCartItemsById(options);
 
-      return dispatch(cartActionCreators.updateCart(result));
+      dispatch(cartActionCreators.updateCart(result));
+
+      return result;
     } catch (error) {
       console.error(error);
 
