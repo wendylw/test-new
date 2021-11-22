@@ -837,13 +837,17 @@ export class ThankYou extends PureComponent {
               className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
             >
               <span>&copy; {date.getFullYear()} </span>
-              <a
-                className="ordering-thanks__button-footer-link button button__link padding-small"
-                href="https://www.storehub.com/"
-                data-heap-name="ordering.thank-you.storehub-link"
-              >
-                {t('StoreHub')}
-              </a>
+              {Utils.isTNGMiniProgram() ? (
+                <span className="padding-small">{t('StoreHub')}</span>
+              ) : (
+                <a
+                  className="ordering-thanks__button-footer-link button button__link padding-small"
+                  href="https://www.storehub.com/"
+                  data-heap-name="ordering.thank-you.storehub-link"
+                >
+                  {t('StoreHub')}
+                </a>
+              )}
             </footer>
           </div>
         </>
