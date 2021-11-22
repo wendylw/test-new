@@ -60,9 +60,11 @@ export const loadCartStatus = createAsyncThunk(
     try {
       const result = await fetchCartStatus(options);
 
-      dispatch(cartActionCreators.updateCart(result));
+      if (prevCartVersion !== result.version) {
+        await dispatch(loadCart());
+      }
 
-      return { prevCartVersion, ...result };
+      return result;
     } catch (error) {
       console.error(error);
 
@@ -71,23 +73,24 @@ export const loadCartStatus = createAsyncThunk(
   }
 );
 
-export const queryCartAndStatus = async () => {
+export const queryCartAndStatus = () => async dispatch => {
   try {
-    await loadCart();
+    const queryCartStatus = () => {
+      queryCartAndStatus.timer = setTimeout(async () => {
+        const { receiptNumber } = await dispatch(loadCartStatus());
 
-    queryCartAndStatus.timer = setTimeout(() => {
-      const { prevCartVersion, version, receiptNumber } = loadCartStatus();
+        if (receiptNumber) {
+          clearTimeout(queryCartAndStatus.timer);
 
-      if (receiptNumber) {
-        clearTimeout(queryCartAndStatus.timer);
+          return;
+        }
 
-        return;
-      }
+        queryCartStatus();
+      }, CART_VERSION_AND_STATUS_INTERVAL);
+    };
 
-      if (prevCartVersion !== version) {
-        queryCartAndStatus();
-      }
-    }, CART_VERSION_AND_STATUS_INTERVAL);
+    await dispatch(loadCart());
+    queryCartStatus();
   } catch (error) {
     console.error(error);
 
