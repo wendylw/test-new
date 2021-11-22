@@ -15,7 +15,6 @@ import {
 
 const CartSubmissionModel = {
   requestStatus: API_REQUEST_STATUS.PENDING,
-  submissionId: null,
   status: null,
   receiptNumber: null,
 };
@@ -60,7 +59,7 @@ const initialState = {
     clearCart: API_REQUEST_STATUS.FULFILLED,
   },
   id: null,
-  cartSubmissionStatus: 0,
+  receiptNumber: null,
   version: 0,
   total: 0,
   subtotal: 0,
