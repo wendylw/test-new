@@ -98,11 +98,11 @@ export const queryCartAndStatus = () => async dispatch => {
   }
 };
 
-export const clearQueryCartStatus = createAction('ordering/app/cart/clearQueryCartStatus', () => {
+export const clearQueryCartStatus = () => () => {
   if (queryCartAndStatus.timer) {
     clearTimeout(queryCartAndStatus.timer);
   }
-});
+};
 
 export const updateCartItems = createAsyncThunk(
   'ordering/app/cart/updateCartItems',
@@ -203,18 +203,15 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
 });
 
 const pollingCartSubmissionStatus = (callback, { submissionId, status, initialTimestamp, timeout }) => {
-  if (timeout <= 0) {
+  if (timeout >= 0) {
     callback({ status: CART_SUBMISSION_STATUS.FAILED });
     return;
   }
 
   fetchCartSubmissionStatus({ submissionId }).then(
     submission => {
-      if (status !== submission.status) {
+      if (submission.status && submission.status !== CART_SUBMISSION_STATUS.PENDING) {
         callback(submission);
-      }
-
-      if (submission.status !== CART_SUBMISSION_STATUS.COMPLETED) {
         return;
       }
 
@@ -224,7 +221,7 @@ const pollingCartSubmissionStatus = (callback, { submissionId, status, initialTi
             submissionId,
             status,
             initialTimestamp,
-            timeout: timeout + initialTimestamp - Date.parse(new Date()),
+            timeout: Date.parse(new Date()) - TIMEOUT_CART_SUBMISSION_TIME - initialTimestamp,
           }),
         CART_SUBMISSION_INTERVAL
       );
@@ -246,7 +243,6 @@ export const queryCartSubmissionStatus = createAsyncThunk(
           {
             submissionId,
             initialTimestamp: Date.parse(new Date()),
-            timeout: TIMEOUT_CART_SUBMISSION_TIME,
           }
         );
       });

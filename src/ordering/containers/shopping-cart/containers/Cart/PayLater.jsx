@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { withTranslation } from 'react-i18next';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
@@ -13,6 +14,7 @@ import {
 } from '../../../../redux/cart/thunks';
 import {
   getCartItems,
+  getCartUnavailableItems,
   getCartItemsCount,
   getCartSubmittedStatus,
   getCartSubmissionPendingStatus,
@@ -35,6 +37,7 @@ class PayLater extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
     cartContainerHeight: '100%',
     productsContainerHeight: '0px',
+    processing: false,
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -58,14 +61,12 @@ class PayLater extends Component {
   }
 
   componentDidMount = async () => {
-    // const { queryCartAndStatus } = this.props;
+    const { queryCartAndStatus, updateCartItems } = this.props;
+    // PAY_LATER_DEBUG
+    updateCartItems({ productId: '60acbd396a0a440006661da5', quantityChange: 1 });
 
-    // // PAY_LATER_DEBUG: Change to new load shopping cart API
-    // await queryCartAndStatus();
-
-    const { appActions } = this.props;
-
-    await appActions.loadShoppingCart();
+    //  PAY_LATER_DEBUG: Change to new load shopping cart API
+    await queryCartAndStatus();
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
@@ -73,9 +74,10 @@ class PayLater extends Component {
   };
 
   componentWillUnmount = () => {
-    // const { clearQueryCartStatus } = this.props;
+    const { clearQueryCartStatus } = this.props;
     // // PAY_LATER_DEBUG: stop polling
-    // clearQueryCartStatus();
+    clearQueryCartStatus();
+    this.setState({ processing: false });
   };
 
   setCartContainerHeight = preContainerHeight => {
@@ -109,14 +111,39 @@ class PayLater extends Component {
   handleClickContinue = async () => {
     // PAY_LATER_DEBUG: need to be changed
     try {
+      this.setState({ processing: true });
       const { history, submitCart } = this.props;
-      const { submissionId } = await submitCart();
+      const result = await submitCart().then(unwrapResult);
+      const { submissionId } = result;
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
         search: `submissionId=${submissionId}`,
       });
     } catch (e) {
-      console.error(e);
+      // TODO alert some one place ordered
+      if (e.code === 'place ordered') {
+        const { t, history } = this.props;
+        alert(t('HasBeenPlacedToViewSummary'), {
+          title: t('ThisOrderIsPlaced'),
+          closeButtonContent: t('viewOrder'),
+          onClose: () =>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+              search: window.location.search,
+            }),
+        });
+      } else if (e.code === 'other error refresh cart') {
+        const { t, history } = this.props;
+        alert(t('OrderHasBeenAddedOrRemoved'), {
+          title: t('RefreshCartToContinue'),
+          closeButtonContent: t('RefreshCart'),
+          onClose: () =>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+              search: window.location.search,
+            }),
+        });
+      }
     }
   };
 
@@ -166,7 +193,8 @@ class PayLater extends Component {
       >
         <CartList
           isLazyLoad={true}
-          shoppingCart={shoppingCart}
+          items={shoppingCart?.items}
+          unavailableItems={shoppingCart?.unavailableItems}
           onIncreaseCartItem={this.handleIncreaseCartItem}
           onDecreaseCartItem={this.handleDecreaseCartItem}
           onRemoveCartItem={this.handleRemoveCartItem}
@@ -195,27 +223,22 @@ class PayLater extends Component {
 
   getUpdateShoppingCartItemData = ({ productId, variations }, quantityChange) => {
     return {
-      action: 'edit',
       productId,
-      quantity: quantityChange,
-      variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
+      quantityChange,
+      variations: (variations || []).map(({ variationId, optionId }) => ({
         variationId,
         optionId,
-        quantity,
       })),
     };
   };
 
   handleIncreaseCartItem = cartItem => {
-    // PAY_LATER_DEBUG: need to be changed
     loggly.log('pay-later-cart.item-operate-attempt');
-    const { quantity } = cartItem;
 
-    this.props.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity + 1));
+    this.props.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, 1));
   };
 
   handleDecreaseCartItem = cartItem => {
-    // PAY_LATER_DEBUG: need to be changed
     loggly.log('pay-later-cart.item-operate-attempt');
     const { quantity } = cartItem;
 
@@ -223,17 +246,14 @@ class PayLater extends Component {
       return this.handleRemoveCartItem(cartItem);
     }
 
-    this.props.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, quantity - 1));
+    this.props.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, -1));
   };
 
   handleRemoveCartItem = cartItem => {
     // PAY_LATER_DEBUG: need to be changed
     loggly.log('pay-later-cart.item-operate-attempt');
     const { id } = cartItem;
-
-    this.props.removeCartItemsById({
-      id,
-    });
+    this.props.removeCartItemsById(id);
   };
 
   renderAdditionalComments() {
@@ -286,12 +306,12 @@ class PayLater extends Component {
   render() {
     // PAY_LATER_DEBUG need selector to get count, cartItems, cartSubmittedStatus,cartSubmissionPending
     const { t, shoppingCart, count, cartItems, cartSubmittedStatus, cartSubmissionPendingStatus } = this.props;
-    const { cartContainerHeight } = this.state;
+    const { cartContainerHeight, processing } = this.state;
     const { items } = shoppingCart || {};
 
     const buttonText = (
       <span className="text-weight-bolder" key="place-order">
-        {t('PlaceOrder')}
+        {processing ? t('Processing') : t('PlaceOrder')}
       </span>
     );
 
@@ -364,9 +384,9 @@ class PayLater extends Component {
                 onClick={async () => {
                   await this.handleClickContinue();
                 }}
-                disabled={!items || !items.length}
+                disabled={!items || !items.length || processing}
               >
-                {buttonText || t('Processing')}
+                {buttonText}
               </button>
             </footer>
           </section>
@@ -383,8 +403,12 @@ export default compose(
   connect(
     state => {
       return {
-        shoppingCart: getShoppingCart(state),
+        shoppingCart: {
+          items: getCartItems(state),
+          unavailableItems: getCartUnavailableItems(state),
+        },
         cartItems: getCartItems(state),
+        unavailableCartItems: getCartUnavailableItems(state),
         count: getCartItemsCount(state),
         cartSubmittedStatus: getCartSubmittedStatus(state),
         cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),

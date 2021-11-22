@@ -115,17 +115,14 @@ class CartList extends Component {
   }
 
   render() {
-    const { shoppingCart, style } = this.props;
-    if (!shoppingCart) {
-      return null;
-    }
+    const { items = [], unavailableItems = [], style } = this.props;
 
     const sortFn = (l, r) => {
       if (l.id < r.id) return -1;
       if (l.id > r.id) return 1;
       return 0;
     };
-    let cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
+    let cartItems = [...unavailableItems, ...items].sort(sortFn);
 
     return (
       <ul style={style} data-heap-name="ordering.cart.cart-list">

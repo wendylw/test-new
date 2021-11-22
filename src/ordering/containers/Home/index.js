@@ -9,7 +9,7 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { loadCart } from '../shopping-cart/redux/common/thunks';
+// import { loadCart } from '../shopping-cart/redux/common/thunks';
 import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
@@ -146,7 +146,7 @@ export class Home extends Component {
     const { enablePayLater } = qrOrderingSettings || {};
 
     if (enablePayLater) {
-      await loadCart();
+      // await loadCart();
     } else {
       await appActions.loadProductList();
     }

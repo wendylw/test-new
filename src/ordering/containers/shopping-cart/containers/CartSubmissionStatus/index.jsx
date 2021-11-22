@@ -3,7 +3,6 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  getCartSubmissionId,
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
   getCartSubmissionPendingStatus,
@@ -11,6 +10,7 @@ import {
 import { queryCartSubmissionStatus, clearQueryCartSubmissionStatus } from '../../../../redux/cart/thunks';
 import { actions as cartActionCreators } from '../../../../redux/cart';
 import { withTranslation } from 'react-i18next';
+import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import orderSuccessImage from '../../../../../images/order-success.png';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
@@ -18,9 +18,10 @@ import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
-    const { queryCartSubmissionStatus, cartSubmissionId } = this.props;
+    const { queryCartSubmissionStatus } = this.props;
     // PAY_LATER_DEBUG: need to be changed
-    await queryCartSubmissionStatus(cartSubmissionId);
+    const submissionId = Utils.getQueryString('submissionId');
+    await queryCartSubmissionStatus(submissionId);
   };
 
   componentDidUpdate = prevProps => {
@@ -94,7 +95,6 @@ export default compose(
   connect(
     state => {
       return {
-        cartSubmissionId: getCartSubmissionId(state),
         cartSubmittedStatus: getCartSubmittedStatus(state),
         cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
         cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),

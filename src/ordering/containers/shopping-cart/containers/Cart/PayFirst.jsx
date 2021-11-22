@@ -458,7 +458,8 @@ class PayFirst extends Component {
       >
         <CartList
           isLazyLoad={true}
-          shoppingCart={shoppingCart}
+          items={shoppingCart?.items}
+          unavailableItems={shoppingCart?.unavailableItems}
           onIncreaseCartItem={this.handleIncreaseCartItem}
           onDecreaseCartItem={this.handleDecreaseCartItem}
           onRemoveCartItem={this.handleRemoveCartItem}
