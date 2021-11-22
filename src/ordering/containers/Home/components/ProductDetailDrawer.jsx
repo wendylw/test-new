@@ -20,6 +20,7 @@ import { bindActionCreators, compose } from 'redux';
 import { getSelectedProductDetail } from '../redux/common/selectors';
 import { actions as appActionCreators } from '../../../redux/modules/app';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
+import { loadCart, updateCartItems } from '../../../redux/cart/thunks';
 import { withRouter } from 'react-router-dom';
 import loggly from '../../../../utils/monitoring/loggly';
 import 'swiper/swiper.scss';
@@ -469,10 +470,18 @@ class ProductDetailDrawer extends Component {
 
     const { appActions } = this.props;
 
-    this.handleGtmEventTracking(variables);
-
-    await appActions.addOrUpdateShoppingCartItem(variables);
+    await appActions.updateCartItems(variables);
     await appActions.loadShoppingCart();
+
+    this.handleHideProductDetail();
+  };
+
+  /* PAY_LATER_DEBUG */
+  handlePayLaterAddOrUpdateShoppingCartItem = async variables => {
+    loggly.log('product-detail.item-operate-attempt');
+
+    await updateCartItems(variables);
+    await loadCart();
 
     this.handleHideProductDetail();
   };
@@ -534,7 +543,7 @@ class ProductDetailDrawer extends Component {
   }
 
   renderProductOperator() {
-    const { t, selectedProduct = {}, onUpdateCartOnProductDetail } = this.props;
+    const { t, selectedProduct = {}, onUpdateCartOnProductDetail, enablePayLater } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
     const { id: productId } = selectedProduct || {};
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
@@ -599,11 +608,18 @@ class ProductDetailDrawer extends Component {
                 onUpdateCartOnProductDetail(selectedProduct);
               }
 
-              this.handleAddOrUpdateShoppingCartItem({
-                action: 'add',
-                business: config.business,
+              !enablePayLater &&
+                this.handleAddOrUpdateShoppingCartItem({
+                  action: 'add',
+                  business: config.business,
+                  productId: (childrenProduct && childrenProduct.childId) || productId,
+                  quantity: cartQuantity,
+                  variations,
+                });
+
+              this.handlePayLaterAddOrUpdateShoppingCartItem({
                 productId: (childrenProduct && childrenProduct.childId) || productId,
-                quantity: cartQuantity,
+                quantityChange: cartQuantity,
                 variations,
               });
             }}

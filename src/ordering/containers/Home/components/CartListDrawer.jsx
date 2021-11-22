@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getShoppingCart, getCartBilling } from '../../../redux/modules/app';
 import { getSelectedProductDetail } from '../redux/common/selectors';
+import { clearCart } from '../../../redux/cart/thunks';
 import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { IconDelete, IconCart } from '../../../../components/Icons';
@@ -71,13 +72,17 @@ class CartListDrawer extends Component {
   handleClearCart = async () => {
     loggly.log('cart-list-drawer.clear-all-attempt');
 
-    const { appActions, onClearCart } = this.props;
+    const { appActions, onClearCart, enablePayLater } = this.props;
 
     if (onClearCart) {
       onClearCart();
     }
 
-    await appActions.clearAll().then(() => appActions.loadShoppingCart());
+    if (!enablePayLater) {
+      await appActions.clearAll().then(() => appActions.loadShoppingCart());
+    } else {
+      await clearCart();
+    }
   };
 
   handleRemoveCartItem = cartItem => {
@@ -230,9 +235,9 @@ class CartListDrawer extends Component {
   }
 
   renderCartList() {
-    const { viewAside, selectedProduct, shoppingCart } = this.props;
+    const { viewAside, selectedProduct, shoppingCart, enablePayLater, newShoppingCart } = this.props;
 
-    if (!shoppingCart || viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE) {
+    if (!shoppingCart || !newShoppingCart || viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE) {
       return null;
     }
 
@@ -241,7 +246,12 @@ class CartListDrawer extends Component {
       if (l.id > r.id) return 1;
       return 0;
     };
-    let cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
+
+    if (enablePayLater) {
+      var cartItems = [...newShoppingCart.unavailableItems, ...newShoppingCart.items].sort(sortFn);
+    } else {
+      var cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
+    }
 
     if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
       cartItems = cartItems.filter(
@@ -345,6 +355,8 @@ export default compose(
     state => {
       return {
         shoppingCart: getShoppingCart(state),
+        // PAY_LATER_DEBUG
+        newShoppingCart: getShoppingCart(state),
         cartBilling: getCartBilling(state),
         selectedProduct: getSelectedProductDetail(state),
       };

@@ -9,6 +9,7 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import { loadCart } from '../shopping-cart/redux/common/thunks';
 import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
@@ -123,14 +124,12 @@ export class Home extends Component {
   };
 
   componentDidMount = async () => {
-    const { deliveryInfo, appActions } = this.props;
+    const { deliveryInfo, appActions, businessInfo } = this.props;
 
     if (Utils.isFromBeepSite()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
-
-    await appActions.loadProductList();
 
     const pageRf = this.getPageRf();
 
@@ -139,6 +138,18 @@ export class Home extends Component {
     }
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
+
+    {
+      /* PAY_LATER_DEBUG */
+    }
+    const { qrOrderingSettings } = businessInfo || {};
+    const { enablePayLater } = qrOrderingSettings || {};
+
+    if (enablePayLater) {
+      await loadCart();
+    } else {
+      await appActions.loadProductList();
+    }
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -955,6 +966,7 @@ export class Home extends Component {
           />
         </div>
         <CartListDrawer
+          enablePayLater={enablePayLater}
           footerEl={this.footerEl}
           viewAside={viewAside}
           show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
@@ -976,6 +988,7 @@ export class Home extends Component {
           }}
         />
         <ProductDetailDrawer
+          enablePayLater={enablePayLater}
           footerEl={this.footerEl}
           onlineStoreInfo={onlineStoreInfo}
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
