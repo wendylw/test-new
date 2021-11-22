@@ -3,7 +3,7 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
-import { getCartVersion, getCartSource, getCartSubmissionId } from './selectors';
+import { getCartVersion, getCartSource } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
   fetchCart,
@@ -33,7 +33,9 @@ export const loadCart = createAsyncThunk('ordering/app/cart/loadCart', async (_,
   try {
     const result = await fetchCart(options);
 
-    return dispatch(cartActionCreators.updateCart(result));
+    dispatch(cartActionCreators.updateCart(result));
+
+    return result;
   } catch (error) {
     console.error(error);
 
@@ -58,9 +60,11 @@ export const loadCartStatus = createAsyncThunk(
     try {
       const result = await fetchCartStatus(options);
 
-      dispatch(cartActionCreators.updateCart(result));
+      if (prevCartVersion !== result.version) {
+        await dispatch(loadCart());
+      }
 
-      return { prevCartVersion, ...result };
+      return result;
     } catch (error) {
       console.error(error);
 
@@ -69,23 +73,24 @@ export const loadCartStatus = createAsyncThunk(
   }
 );
 
-export const queryCartAndStatus = async () => {
+export const queryCartAndStatus = () => async dispatch => {
   try {
-    await loadCart();
+    const queryCartStatus = () => {
+      queryCartAndStatus.timer = setTimeout(async () => {
+        const { receiptNumber } = await dispatch(loadCartStatus());
 
-    queryCartAndStatus.timer = setTimeout(() => {
-      const { prevCartVersion, version, receiptNumber } = loadCartStatus();
+        if (receiptNumber) {
+          clearTimeout(queryCartAndStatus.timer);
 
-      if (receiptNumber) {
-        clearTimeout(queryCartAndStatus.timer);
+          return;
+        }
 
-        return;
-      }
+        queryCartStatus();
+      }, CART_VERSION_AND_STATUS_INTERVAL);
+    };
 
-      if (prevCartVersion !== version) {
-        queryCartAndStatus();
-      }
-    }, CART_VERSION_AND_STATUS_INTERVAL);
+    await dispatch(loadCart());
+    queryCartStatus();
   } catch (error) {
     console.error(error);
 
@@ -115,7 +120,9 @@ export const updateCartItems = createAsyncThunk(
     try {
       const result = await postCartItems(options);
 
-      return dispatch(cartActionCreators.updateCart(result));
+      dispatch(cartActionCreators.updateCart(result));
+
+      return result;
     } catch (error) {
       console.error(error);
 
@@ -140,7 +147,9 @@ export const removeCartItemsById = createAsyncThunk(
     try {
       const result = await deleteCartItemsById(options);
 
-      return dispatch(cartActionCreators.updateCart(result));
+      dispatch(cartActionCreators.updateCart(result));
+
+      return result;
     } catch (error) {
       console.error(error);
 
