@@ -35,6 +35,7 @@ const ROUTER_PATHS = {
   ORDERING_ONLINE_SAVED_CARDS: '/payment/cards',
   ORDERING_ONLINE_CVV: '/payment/cvv',
   MERCHANT_INFO: '/need-help',
+  TABLE_SUMMARY: '/table-summary',
   ORDERING_STORE_LIST: '/storeList',
   PROFILE: '/profile',
   ADDRESS_LIST: '/addressList',
