@@ -26,7 +26,7 @@ import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getShoppingCart } from '../../../../redux/modules/app';
+import { actions as appActionCreators } from '../../../../redux/modules/app';
 import CartEmptyResult from '../../components/CartEmptyResult';
 import { IconError } from '../../../../../components/Icons';
 import loggly from '../../../../../utils/monitoring/loggly';
@@ -37,7 +37,6 @@ class PayLater extends Component {
     additionalComments: Utils.getSessionVariable('additionalComments'),
     cartContainerHeight: '100%',
     productsContainerHeight: '0px',
-    processing: false,
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -77,7 +76,6 @@ class PayLater extends Component {
     const { clearQueryCartStatus } = this.props;
     // // PAY_LATER_DEBUG: stop polling
     clearQueryCartStatus();
-    this.setState({ processing: false });
   };
 
   setCartContainerHeight = preContainerHeight => {
@@ -111,8 +109,8 @@ class PayLater extends Component {
   handleClickContinue = async () => {
     // PAY_LATER_DEBUG: need to be changed
     try {
-      this.setState({ processing: true });
       const { history, submitCart } = this.props;
+      // TODO: Move unwrapResult to redux
       const result = await submitCart().then(unwrapResult);
       const { submissionId } = result;
       history.push({
@@ -182,7 +180,7 @@ class PayLater extends Component {
   };
 
   renderCartList = () => {
-    const { shoppingCart } = this.props;
+    const { cartItems, unavailableCartItems } = this.props;
     const { productsContainerHeight } = this.state;
     return (
       <div
@@ -193,8 +191,8 @@ class PayLater extends Component {
       >
         <CartList
           isLazyLoad={true}
-          items={shoppingCart?.items}
-          unavailableItems={shoppingCart?.unavailableItems}
+          items={cartItems}
+          unavailableItems={unavailableCartItems}
           onIncreaseCartItem={this.handleIncreaseCartItem}
           onDecreaseCartItem={this.handleDecreaseCartItem}
           onRemoveCartItem={this.handleRemoveCartItem}
@@ -257,11 +255,10 @@ class PayLater extends Component {
   };
 
   renderAdditionalComments() {
-    const { t, shoppingCart } = this.props;
+    const { t, cartItems } = this.props;
     const { additionalComments } = this.state;
-    const { items } = shoppingCart || {};
 
-    if (!shoppingCart || !items.length) {
+    if (!cartItems.length) {
       return null;
     }
 
@@ -305,13 +302,12 @@ class PayLater extends Component {
 
   render() {
     // PAY_LATER_DEBUG need selector to get count, cartItems, cartSubmittedStatus,cartSubmissionPending
-    const { t, shoppingCart, count, cartItems, cartSubmittedStatus, cartSubmissionPendingStatus } = this.props;
-    const { cartContainerHeight, processing } = this.state;
-    const { items } = shoppingCart || {};
+    const { t, count, cartItems, cartSubmittedStatus, cartSubmissionPendingStatus, cartSubmissionPending } = this.props;
+    const { cartContainerHeight } = this.state;
 
     const buttonText = (
       <span className="text-weight-bolder" key="place-order">
-        {processing ? t('Processing') : t('PlaceOrder')}
+        {cartSubmissionPendingStatus ? t('Processing') : t('PlaceOrder')}
       </span>
     );
 
@@ -384,7 +380,7 @@ class PayLater extends Component {
                 onClick={async () => {
                   await this.handleClickContinue();
                 }}
-                disabled={!items || !items.length || processing}
+                disabled={!cartItems.length || cartSubmissionPendingStatus}
               >
                 {buttonText}
               </button>
@@ -403,10 +399,6 @@ export default compose(
   connect(
     state => {
       return {
-        shoppingCart: {
-          items: getCartItems(state),
-          unavailableItems: getCartUnavailableItems(state),
-        },
         cartItems: getCartItems(state),
         unavailableCartItems: getCartUnavailableItems(state),
         count: getCartItemsCount(state),
