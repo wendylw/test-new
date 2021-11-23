@@ -1,18 +1,11 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
+import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import Constants from '../../../../../utils/constants';
 import cartIsEmpty from '../../../../../images/mvp-no-search.svg';
 import './CartEmptyResult.scss';
 
 class CartEmptyResult extends Component {
-  handleClickBack = async () => {
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      search: window.location.search,
-    });
-  };
-
   handleReturnClick = () => {
     const { submittedStatus, handleReturnToMenu, handleReturnToTableSummary } = this.props;
     if (!submittedStatus) {
@@ -49,4 +42,16 @@ class CartEmptyResult extends Component {
 }
 
 CartEmptyResult.displayName = 'CartEmptyResult';
+
+CartEmptyResult.propTypes = {
+  enablePayLater: PropTypes.bool,
+  handleReturnToMenu: PropTypes.func,
+  handleReturnToTableSummary: PropTypes.func,
+};
+
+CartEmptyResult.defaultProps = {
+  submittedStatus: false,
+  handleReturnToMenu: () => {},
+  handleReturnToTableSummary: () => {},
+};
 export default compose(withTranslation(['OrderingCart']))(CartEmptyResult);

@@ -36,10 +36,17 @@ class CartSubmissionStatus extends Component {
     }
   };
 
-  componentWillUnmount = () => {
+  componentWillUnmount = async () => {
     const { clearQueryCartSubmissionStatus } = this.props;
-    clearQueryCartSubmissionStatus();
-    clearTimeout(this.timer);
+    await clearQueryCartSubmissionStatus();
+    await clearTimeout(this.timer);
+  };
+
+  handleClickBack = async () => {
+    this.props.history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+      search: window.location.search,
+    });
   };
 
   render() {
@@ -81,7 +88,10 @@ class CartSubmissionStatus extends Component {
               </p>
             </div>
             <div className="padding-top-bottom-normal margin-smaller">
-              <button className="button button__fill padding-normal text-uppercase text-weight-bolder">
+              <button
+                onClick={this.handleClickBack}
+                className="button button__fill padding-normal text-uppercase text-weight-bolder"
+              >
                 {t('ReturnToCart')}
               </button>
             </div>
