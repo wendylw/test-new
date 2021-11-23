@@ -113,6 +113,12 @@ export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInf
   return enableCashback && hasCashback;
 });
 
+export const getHasCashbackClaimed = createSelector(
+  getCanCashbackClaim,
+  getIsCashbackAvailable,
+  (canCashbackClaim, isCashbackAvailable) => isCashbackAvailable && !canCashbackClaim
+);
+
 export const getIsCashbackClaimable = createSelector(
   getUserIsLogin,
   getCanCashbackClaim,
@@ -121,8 +127,9 @@ export const getIsCashbackClaimable = createSelector(
 
 export const getShouldShowCashbackBanner = createSelector(
   getUserIsLogin,
+  getHasCashbackClaimed,
   getIsQROrderingLoginFree,
-  (isLogin, isQROrderingLoginFree) => !isLogin && isQROrderingLoginFree
+  (isLogin, hasCashbackClaimed, isQROrderingLoginFree) => !isLogin && isQROrderingLoginFree && !hasCashbackClaimed
 );
 
 export const getShouldShowCashbackCard = createSelector(

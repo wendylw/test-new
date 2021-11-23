@@ -23,3 +23,8 @@ export const BEFORE_PAID_STATUS_LIST = [
 ];
 
 export const CASHBACK_CAN_CLAIM = 'Can_Claim';
+
+export const REFERRER_SOURCE_TYPES = {
+  PAYMENT: 'payment',
+  LOGIN: 'login',
+};

@@ -610,6 +610,7 @@ const user = (state = initialState.user, action) => {
           name: user.firstName,
           email: user.email,
           birthday: user.birthday,
+          status: API_REQUEST_STATUS.FULFILLED,
         },
         isLogin: true,
         hasOtp: false,

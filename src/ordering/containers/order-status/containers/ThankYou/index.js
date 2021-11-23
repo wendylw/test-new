@@ -21,7 +21,7 @@ import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from './utils';
 import Constants from '../../../../../utils/constants';
-import { BEFORE_PAID_STATUS_LIST } from './constants';
+import { BEFORE_PAID_STATUS_LIST, REFERRER_SOURCE_TYPES } from './constants';
 import {
   gtmEventTracking,
   gtmSetPageViewData,
@@ -93,6 +93,7 @@ export class ThankYou extends PureComponent {
 
   showCompleteProfileIfNeeded = async () => {
     const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
+    const delay = this.state.from === REFERRER_SOURCE_TYPES.PAYMENT ? 3000 : 1000;
 
     if (isDoNotAsk === '1') {
       return;
@@ -104,9 +105,17 @@ export class ThankYou extends PureComponent {
       if (!name || !email || !birthday) {
         this.timer = setTimeout(() => {
           this.props.setShowProfileVisibility(true);
-        }, 3000);
+        }, delay);
       }
     }
+  };
+
+  shouldShowProfilePage = () => {
+    const { order } = this.props;
+    const { from } = this.state;
+    const isSourceTypeValid = from === REFERRER_SOURCE_TYPES.PAYMENT || from === REFERRER_SOURCE_TYPES.LOGIN;
+
+    return order && isSourceTypeValid;
   };
 
   componentDidMount = async () => {
@@ -665,7 +674,9 @@ export class ThankYou extends PureComponent {
   handleClickLoginButton = () => {
     const { history } = this.props;
     const { ROUTER_PATHS } = Constants;
+
     CleverTap.pushEvent('Thank you page - Click I want cashback button');
+    Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.LOGIN);
     history.push({
       pathname: ROUTER_PATHS.ORDERING_LOGIN,
       search: window.location.search,
@@ -833,7 +844,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {order && this.state.from === 'payment' && (
+        {this.shouldShowProfilePage() && (
           <CompleteProfileModal
             closeModal={this.handleCompleteProfileModalClose}
             showProfileVisibility={this.props.profileModalVisibility}
