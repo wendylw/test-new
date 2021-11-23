@@ -152,7 +152,7 @@ export class Footer extends Component {
         data-heap-name="ordering.home.footer.container"
       >
         <button
-          className="button button__block text-left margin-top-bottom-smaller margin-left-right-small flex flex-middle"
+          className="button text-left margin-top-bottom-smaller margin-left-right-small flex flex-middle flex-center flex__shrink-fixed"
           data-heap-name="ordering.home.footer.cart-btn"
           onClick={onShownCartListDrawer}
         >
@@ -160,38 +160,36 @@ export class Footer extends Component {
             <IconCart className={`home-cart__icon-cart icon icon__white ${count !== 0 ? 'non-empty' : ''}`} />
             {count ? <span className="home-cart__items-number text-center">{count}</span> : null}
           </div>
-
-          <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
-            {/* PAY_LATER_DEBUG  */}
-            {enablePayLater ? null : (
+          {enablePayLater ? null : (
+            <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
               <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
-            )}
-            {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
-              <label className="home-cart__money-minimum margin-top-bottom-smaller">
-                {count ? (
-                  <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
-                    <span className="text-opacity">Remaining</span>
-                    <CurrencyNumber
-                      className="text-opacity"
-                      money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
-                    />
-                  </Trans>
-                ) : (
-                  <Trans i18nKey="MinimumConsumption" minimumConsumption={minimumConsumption}>
-                    <span className="text-opacity">Min</span>
-                    <CurrencyNumber
-                      className="text-opacity"
-                      money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
-                    />
-                  </Trans>
-                )}
-              </label>
-            ) : null}
-          </div>
+              {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
+                <label className="home-cart__money-minimum margin-top-bottom-smaller">
+                  {count ? (
+                    <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
+                      <span className="text-opacity">Remaining</span>
+                      <CurrencyNumber
+                        className="text-opacity"
+                        money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                      />
+                    </Trans>
+                  ) : (
+                    <Trans i18nKey="MinimumConsumption" minimumConsumption={minimumConsumption}>
+                      <span className="text-opacity">Min</span>
+                      <CurrencyNumber
+                        className="text-opacity"
+                        money={Number(minimumConsumption || 0) - this.getDisplayPrice()}
+                      />
+                    </Trans>
+                  )}
+                </label>
+              ) : null}
+            </div>
+          )}
         </button>
         {tableId !== 'DEMO' ? (
           <button
-            className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder flex__shrink-fixed"
+            className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder flex__fluid-content"
             data-testid="orderNow"
             data-heap-name="ordering.home.footer.order-btn"
             disabled={
@@ -207,7 +205,6 @@ export class Footer extends Component {
               this.handleRedirect();
             }}
           >
-            {/* PAY_LATER_DEBUG */}
             {enablePayLater
               ? t('ReviewCart')
               : isLiveOnline
@@ -225,6 +222,7 @@ Footer.displayName = 'OrderingFooter';
 
 Footer.propTypes = {
   footerRef: PropTypes.any,
+  enablePayLater: PropTypes.bool,
   tableId: PropTypes.string,
   onToggle: PropTypes.func,
   onShownCartListDrawer: PropTypes.func,
@@ -235,6 +233,7 @@ Footer.propTypes = {
 };
 
 Footer.defaultProps = {
+  enablePayLater: false,
   onToggle: () => {},
   onShownCartListDrawer: () => {},
   onClickOrderNowButton: () => {},

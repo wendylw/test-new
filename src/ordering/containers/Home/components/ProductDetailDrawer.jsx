@@ -19,8 +19,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getSelectedProductDetail } from '../redux/common/selectors';
 import { actions as appActionCreators } from '../../../redux/modules/app';
+import { updateCartItems as updateCartItemsThunk } from '../../../redux/cart/thunks';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
-import { loadCart, updateCartItems } from '../../../redux/cart/thunks';
 import { withRouter } from 'react-router-dom';
 import loggly from '../../../../utils/monitoring/loggly';
 import 'swiper/swiper.scss';
@@ -465,23 +465,27 @@ class ProductDetailDrawer extends Component {
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventData);
   };
 
+  handleUpdateCartItems = async variables => {
+    loggly.log('product-detail.item-operate-attempt');
+
+    const { updateCartItems } = this.props;
+
+    this.handleGtmEventTracking(variables);
+
+    await updateCartItems(variables);
+
+    this.handleHideProductDetail();
+  };
+
   handleAddOrUpdateShoppingCartItem = async variables => {
     loggly.log('product-detail.item-operate-attempt');
 
     const { appActions } = this.props;
 
-    await appActions.updateCartItems(variables);
+    this.handleGtmEventTracking(variables);
+
+    await appActions.addOrUpdateShoppingCartItem(variables);
     await appActions.loadShoppingCart();
-
-    this.handleHideProductDetail();
-  };
-
-  /* PAY_LATER_DEBUG */
-  handlePayLaterAddOrUpdateShoppingCartItem = async variables => {
-    loggly.log('product-detail.item-operate-attempt');
-
-    await updateCartItems(variables);
-    await loadCart();
 
     this.handleHideProductDetail();
   };
@@ -608,7 +612,13 @@ class ProductDetailDrawer extends Component {
                 onUpdateCartOnProductDetail(selectedProduct);
               }
 
-              !enablePayLater &&
+              if (enablePayLater) {
+                this.handleUpdateCartItems({
+                  productId: (childrenProduct && childrenProduct.childId) || productId,
+                  quantity: cartQuantity,
+                  variations,
+                });
+              } else {
                 this.handleAddOrUpdateShoppingCartItem({
                   action: 'add',
                   business: config.business,
@@ -616,12 +626,7 @@ class ProductDetailDrawer extends Component {
                   quantity: cartQuantity,
                   variations,
                 });
-
-              this.handlePayLaterAddOrUpdateShoppingCartItem({
-                productId: (childrenProduct && childrenProduct.childId) || productId,
-                quantityChange: cartQuantity,
-                variations,
-              });
+              }
             }}
           >
             {increasingProductOnCat ? (
@@ -828,6 +833,7 @@ ProductDetailDrawer.displayName = 'ProductDetailDrawer';
 
 ProductDetailDrawer.propTypes = {
   show: PropTypes.bool,
+  enablePayLater: PropTypes.bool,
   viewAside: PropTypes.string,
   footerEl: PropTypes.any,
   onToggle: PropTypes.func,
@@ -836,6 +842,7 @@ ProductDetailDrawer.propTypes = {
 
 ProductDetailDrawer.defaultProps = {
   show: false,
+  enablePayLater: false,
   viewAside: '',
   onToggle: () => {},
   hideCloseButton: false,
@@ -851,6 +858,7 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      updateCartItems: bindActionCreators(updateCartItemsThunk, dispatch),
     })
   )
 )(withRouter(withBackButtonSupport(ProductDetailDrawer)));
