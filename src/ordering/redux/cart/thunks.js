@@ -219,7 +219,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
   }
 );
 
-const queryCartSubmissionStatus = submissionId => dispatch => {
+export const queryCartSubmissionStatus = submissionId => dispatch => {
   const targetTimestamp = Date.parse(new Date()) + TIMEOUT_CART_SUBMISSION_TIME;
 
   try {
