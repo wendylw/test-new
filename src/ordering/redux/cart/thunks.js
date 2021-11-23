@@ -77,9 +77,9 @@ export const queryCartAndStatus = () => async dispatch => {
   try {
     const queryCartStatus = () => {
       queryCartAndStatus.timer = setTimeout(async () => {
-        const { receiptNumber } = await dispatch(loadCartStatus());
+        const { payload } = await dispatch(loadCartStatus());
 
-        if (receiptNumber) {
+        if (payload.receiptNumber) {
           clearTimeout(queryCartAndStatus.timer);
 
           return;
@@ -232,7 +232,7 @@ export const queryCartSubmissionStatus = submissionId => dispatch => {
           return;
         }
 
-        const submission = await dispatch(cartActionCreators.loadCartSubmissionStatus(submissionId));
+        const { payload: submission } = await dispatch(loadCartSubmissionStatus(submissionId));
 
         if (submission.status !== CART_SUBMISSION_STATUS.PENDING) {
           clearTimeout(queryCartSubmissionStatus.timer);
