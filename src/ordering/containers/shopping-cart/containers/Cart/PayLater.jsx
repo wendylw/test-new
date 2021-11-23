@@ -64,7 +64,6 @@ class PayLater extends Component {
     // PAY_LATER_DEBUG
     updateCartItems({ productId: '60acbd396a0a440006661da5', quantityChange: 1 });
 
-    //  PAY_LATER_DEBUG: Change to new load shopping cart API
     await queryCartAndStatus();
 
     window.scrollTo(0, 0);
@@ -74,7 +73,6 @@ class PayLater extends Component {
 
   componentWillUnmount = () => {
     const { clearQueryCartStatus } = this.props;
-    // // PAY_LATER_DEBUG: stop polling
     clearQueryCartStatus();
   };
 
@@ -107,7 +105,6 @@ class PayLater extends Component {
   };
 
   handleClickContinue = async () => {
-    // PAY_LATER_DEBUG: need to be changed
     try {
       const { history, submitCart } = this.props;
       // TODO: Move unwrapResult to redux
@@ -118,7 +115,6 @@ class PayLater extends Component {
         search: `submissionId=${submissionId}`,
       });
     } catch (e) {
-      // TODO alert some one place ordered
       if (e.code === 'place ordered') {
         const { t, history } = this.props;
         alert(t('HasBeenPlacedContentDescription'), {
@@ -170,7 +166,6 @@ class PayLater extends Component {
   };
 
   handleClearAll = () => {
-    // PAY_LATER_DEBUG: need to be changed
     this.props.clearCart().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
@@ -248,7 +243,6 @@ class PayLater extends Component {
   };
 
   handleRemoveCartItem = cartItem => {
-    // PAY_LATER_DEBUG: need to be changed
     loggly.log('pay-later-cart.item-operate-attempt');
     const { id } = cartItem;
     this.props.removeCartItemsById(id);
@@ -301,7 +295,6 @@ class PayLater extends Component {
   };
 
   render() {
-    // PAY_LATER_DEBUG need selector to get count, cartItems, cartSubmittedStatus
     const { t, count, cartItems, cartSubmittedStatus, cartSubmissionPendingStatus } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -411,8 +404,6 @@ export default compose(
       clearCart: bindActionCreators(clearCart, dispatch),
       clearQueryCartStatus: bindActionCreators(clearQueryCartStatus, dispatch),
       queryCartAndStatus: bindActionCreators(queryCartAndStatus, dispatch),
-      appActions: bindActionCreators(appActionCreators, dispatch),
-      // PAY_LATER_DEBUG: need to change new functions
     })
   )
 )(PayLater);
