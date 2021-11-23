@@ -49,11 +49,12 @@ class CartSubmissionStatus extends Component {
     const { t, cartSubmissionPendingStatus, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
     return (
       // PAY_LATER_DEBUG
-      <section className="flex flex-column">
+      <section className="ordering-submission absolute-wrapper flex flex-column flex-center flex-middle">
         {/* pending status */}
         {cartSubmissionPendingStatus && (
-          <div className="ordering-submission__pending text-center">
-            <p className="ordering-submission__loading-redirect text-size-big margin-left-right-small">
+          <div className="margin-smaller">
+            <div className="ordering-submission__loader loader default"></div>
+            <p className="ordering-submission__pending-description margin-top-bottom-normal text-center text-size-big text-line-height-base">
               {t('LoadingRedirectingDescription')}
             </p>
           </div>

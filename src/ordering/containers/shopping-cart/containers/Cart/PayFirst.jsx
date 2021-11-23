@@ -541,7 +541,7 @@ class PayFirst extends Component {
             height: cartContainerHeight,
           }}
         >
-          <div className="ordering-cart__warning padding-small text-center">
+          <div className="ordering-cart__warning padding-small flex flex-middle flex-center">
             <IconError className="icon icon__primary icon__smaller" />
             <span>{t('PayNowToPlaceYourOrder')}</span>
           </div>

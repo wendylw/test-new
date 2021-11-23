@@ -3,13 +3,17 @@
 .shopping-cart-empty {
   &__container {
     background: $white;
+    width: 100%;
+    height: 100%;
   }
+
   &__image-container {
-    margin-top: 125px;
+    width: 50%;
+    max-width: 200px;
   }
-  &__text {
+
+  &__description {
+    max-width: 360px;
     color: $gray-3;
-    margin-left: 4.4vw;
-    margin-right: 4.4vw;
   }
 }

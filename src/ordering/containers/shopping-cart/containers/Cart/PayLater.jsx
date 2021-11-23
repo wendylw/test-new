@@ -121,9 +121,9 @@ class PayLater extends Component {
       // TODO alert some one place ordered
       if (e.code === 'place ordered') {
         const { t, history } = this.props;
-        alert(t('HasBeenPlacedToViewSummary'), {
-          title: t('ThisOrderIsPlaced'),
-          closeButtonContent: t('viewOrder'),
+        alert(t('HasBeenPlacedContentDescription'), {
+          title: t('UnableToPlaceOrder'),
+          closeButtonContent: t('ViewOrder'),
           onClose: () =>
             history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
@@ -301,8 +301,8 @@ class PayLater extends Component {
   };
 
   render() {
-    // PAY_LATER_DEBUG need selector to get count, cartItems, cartSubmittedStatus,cartSubmissionPending
-    const { t, count, cartItems, cartSubmittedStatus, cartSubmissionPendingStatus, cartSubmissionPending } = this.props;
+    // PAY_LATER_DEBUG need selector to get count, cartItems, cartSubmittedStatus
+    const { t, count, cartItems, cartSubmittedStatus, cartSubmissionPendingStatus } = this.props;
     const { cartContainerHeight } = this.state;
 
     const buttonText = (
@@ -312,82 +312,80 @@ class PayLater extends Component {
     );
 
     return (
-      <>
-        {/* PAY_LATER_DEBUG */}
-        {!cartItems.length && cartSubmissionPendingStatus ? (
+      <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
+        <HybridHeader
+          headerRef={ref => (this.headerEl = ref)}
+          className="flex-middle border__bottom-divider"
+          contentClassName="flex-middle"
+          data-heap-name="ordering.cart.header"
+          isPage={true}
+          title={t('ProductsInOrderText', { count: count })}
+          navFunc={() => {
+            this.handleClickBack();
+          }}
+          rightContent={
+            !cartSubmissionPendingStatus && {
+              icon: IconDeleteImage,
+              text: t('ClearAll'),
+              style: {
+                color: '#fa4133',
+              },
+              attributes: {
+                'data-heap-name': 'ordering.cart.clear-btn',
+              },
+              onClick: this.handleClearAll,
+            }
+          }
+        ></HybridHeader>
+        <div
+          className="ordering-cart__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: cartContainerHeight,
+          }}
+        >
+          <div className="ordering-cart__warning padding-small flex flex-middle flex-center">
+            <IconError className="icon icon__primary icon__smaller" />
+            <span>{t('CheckItemsBeforePlaceYourOrder')}</span>
+          </div>
+          {this.renderCartList()}
+        </div>
+        <footer
+          ref={ref => (this.footerEl = ref)}
+          className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
+        >
+          <button
+            className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
+            onClick={() => {
+              this.handleClickBack();
+            }}
+            data-heap-name="ordering.cart.back-btn"
+          >
+            {t('Back')}
+          </button>
+          <button
+            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+            data-testid="pay"
+            data-heap-name="ordering.cart.pay-btn"
+            onClick={async () => {
+              await this.handleClickContinue();
+            }}
+            disabled={!cartItems.length || cartSubmissionPendingStatus}
+          >
+            {buttonText}
+          </button>
+        </footer>
+        {!cartItems.length && cartSubmissionPendingStatus && (
           <CartEmptyResult
             history={this.props.history}
             submittedStatus={cartSubmittedStatus}
             handleReturnToMenu={this.handleReturnToMenu}
             handleReturnToTableSummary={this.handleReturnToTableSummary}
           />
-        ) : (
-          <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
-            <HybridHeader
-              headerRef={ref => (this.headerEl = ref)}
-              className="flex-middle border__bottom-divider"
-              contentClassName="flex-middle"
-              data-heap-name="ordering.cart.header"
-              isPage={true}
-              title={t('ProductsInOrderText', { count: count })}
-              navFunc={() => {
-                this.handleClickBack();
-              }}
-              rightContent={{
-                icon: IconDeleteImage,
-                text: t('ClearAll'),
-                style: {
-                  color: '#fa4133',
-                },
-                attributes: {
-                  'data-heap-name': 'ordering.cart.clear-btn',
-                },
-                onClick: this.handleClearAll,
-              }}
-            ></HybridHeader>
-            <div
-              className="ordering-cart__container"
-              style={{
-                top: `${Utils.mainTop({
-                  headerEls: [this.headerEl],
-                })}px`,
-                height: cartContainerHeight,
-              }}
-            >
-              <div className="ordering-cart__warning padding-small text-center">
-                <IconError className="icon icon__primary icon__smaller" />
-                <span>{t('CheckItemsBeforePlaceYourOrder')}</span>
-              </div>
-              {this.renderCartList()}
-            </div>
-            <footer
-              ref={ref => (this.footerEl = ref)}
-              className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
-            >
-              <button
-                className="ordering-cart__button-back button button__fill dark text-uppercase text-weight-bolder flex__shrink-fixed"
-                onClick={() => {
-                  this.handleClickBack();
-                }}
-                data-heap-name="ordering.cart.back-btn"
-              >
-                {t('Back')}
-              </button>
-              <button
-                className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
-                data-testid="pay"
-                data-heap-name="ordering.cart.pay-btn"
-                onClick={async () => {
-                  await this.handleClickContinue();
-                }}
-                disabled={!cartItems.length || cartSubmissionPendingStatus}
-              >
-                {buttonText}
-              </button>
-            </footer>
-          </section>
         )}
-      </>
+      </section>
     );
   }
 }
