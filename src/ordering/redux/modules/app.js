@@ -22,6 +22,7 @@ import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import cartReducer from '../cart';
+import { getCartItems as getNewCartItems } from '../cart/selectors';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
@@ -494,11 +495,7 @@ export const actions = {
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
-
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-    config.storeId && dispatch(actions.loadShoppingCart());
-
     const shippingType = Utils.getApiRequestShippingType();
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
@@ -912,6 +909,10 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
   return _get(businessInfo, 'timezoneOffset', 480);
 });
 
+export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'qrOrderingSettings.enablePayLater', false)
+);
+
 export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
   const deliveryTypes = stores.reduce((types, store) => {
     return types.concat(store.fulfillmentOptions);
@@ -1056,8 +1057,10 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 };
 
 export const getCategoryProductList = createSelector(
-  [getAllProducts, getAllCategories, getCartItems],
-  (allProducts, categories, carts) => {
+  [getAllProducts, getAllCategories, getCartItems, getNewCartItems, getEnablePayLater],
+  (allProducts, categories, cartItems, newCartItems, enablePayLater) => {
+    const carts = enablePayLater ? newCartItems : cartItems;
+
     if (!allProducts || !categories || !Array.isArray(carts)) {
       return [];
     }

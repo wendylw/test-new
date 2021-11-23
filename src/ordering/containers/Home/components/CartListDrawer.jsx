@@ -4,8 +4,13 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getShoppingCart, getCartBilling } from '../../../redux/modules/app';
+import {
+  removeCartItemsById as removeCartItemsByIdThunk,
+  updateCartItems as updateCartItemsThunk,
+  clearCart as clearCartThunk,
+} from '../../../redux/cart/thunks';
+import { getCartItems, getCartUnavailableItems, getCartItemsCount } from '../../../redux/cart/selectors';
 import { getSelectedProductDetail } from '../redux/common/selectors';
-import { clearCart } from '../../../redux/cart/thunks';
 import Constants from '../../../../utils/constants';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { IconDelete, IconCart } from '../../../../components/Icons';
@@ -17,15 +22,16 @@ import './CartListDrawer.scss';
 import { withBackButtonSupport } from '../../../../utils/modal-back-button-support';
 
 class CartListDrawer extends Component {
-  onHistoryBackReceived = e => {
+  onHistoryBackReceived = () => {
     this.closeCartAside();
   };
 
   componentDidUpdate(prevProps) {
-    const { show } = this.props;
+    const { show, onModalVisibilityChanged } = this.props;
+
     if (show !== prevProps.show) {
       // show status changed
-      this.props.onModalVisibilityChanged(show);
+      onModalVisibilityChanged(show);
     }
   }
 
@@ -72,35 +78,42 @@ class CartListDrawer extends Component {
   handleClearCart = async () => {
     loggly.log('cart-list-drawer.clear-all-attempt');
 
-    const { appActions, onClearCart, enablePayLater } = this.props;
+    const { appActions, onClearCart, enablePayLater, clearCart } = this.props;
 
     if (onClearCart) {
       onClearCart();
     }
 
-    if (!enablePayLater) {
-      await appActions.clearAll().then(() => appActions.loadShoppingCart());
-    } else {
+    if (enablePayLater) {
       await clearCart();
+    } else {
+      await appActions.clearAll().then(() => appActions.loadShoppingCart());
     }
   };
 
   handleRemoveCartItem = cartItem => {
+    const { appActions, enablePayLater, removeCartItemsById } = this.props;
+
     loggly.log('cart-list-drawer.item-operate-attempt');
 
-    const { productId, variations } = cartItem;
+    const { id, productId, variations } = cartItem;
 
-    this.props.appActions
-      .removeShoppingCartItem({
-        productId,
-        variations,
-      })
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
+    if (enablePayLater) {
+      removeCartItemsById(id);
+    } else {
+      appActions
+        .removeShoppingCartItem({
+          productId,
+          variations,
+        })
+        .then(() => {
+          appActions.loadShoppingCart();
+        });
+    }
   };
 
   handleDecreaseCartItem = cartItem => {
+    const { enablePayLater, updateCartItems } = this.props;
     loggly.log('cart-list-drawer.item-operate-attempt');
 
     const { quantity, productId, variations } = cartItem;
@@ -108,11 +121,55 @@ class CartListDrawer extends Component {
     if (quantity === 1) {
       this.handleRemoveCartItem(cartItem);
     } else {
+      enablePayLater
+        ? updateCartItems({
+            productId,
+            quantityChange: -1,
+            variations: (variations || []).map(({ variationId, optionId }) => ({
+              variationId,
+              optionId,
+            })),
+          })
+        : this.props.appActions
+            .addOrUpdateShoppingCartItem({
+              action: 'edit',
+              productId,
+              quantity: quantity - 1,
+              variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
+                variationId,
+                optionId,
+                quantity,
+              })),
+            })
+            .then(() => {
+              this.props.appActions.loadShoppingCart();
+            });
+    }
+  };
+
+  handleIncreaseCartItem = cartItem => {
+    const { enablePayLater, updateCartItems } = this.props;
+    loggly.log('cart-list-drawer.item-operate-attempt');
+
+    const { quantity, productId, variations } = cartItem;
+
+    this.handleGtmEventTracking(cartItem);
+
+    if (enablePayLater) {
+      updateCartItems({
+        productId,
+        quantityChange: 1,
+        variations: (variations || []).map(({ variationId, optionId }) => ({
+          variationId,
+          optionId,
+        })),
+      });
+    } else {
       this.props.appActions
         .addOrUpdateShoppingCartItem({
           action: 'edit',
           productId,
-          quantity: quantity - 1,
+          quantity: quantity + 1,
           variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
             variationId,
             optionId,
@@ -123,28 +180,6 @@ class CartListDrawer extends Component {
           this.props.appActions.loadShoppingCart();
         });
     }
-  };
-
-  handleIncreaseCartItem = cartItem => {
-    loggly.log('cart-list-drawer.item-operate-attempt');
-
-    const { quantity, productId, variations } = cartItem;
-
-    this.handleGtmEventTracking(cartItem);
-    this.props.appActions
-      .addOrUpdateShoppingCartItem({
-        action: 'edit',
-        productId,
-        quantity: quantity + 1,
-        variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
-          variationId,
-          optionId,
-          quantity,
-        })),
-      })
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
   };
 
   renderImageCover(stockStatus) {
@@ -235,9 +270,11 @@ class CartListDrawer extends Component {
   }
 
   renderCartList() {
-    const { viewAside, selectedProduct, shoppingCart, enablePayLater, newShoppingCart } = this.props;
+    const { viewAside, shoppingCart, enablePayLater, cartAvailableItems, cartUnavailableItems } = this.props;
+    const emptyCart = enablePayLater ? !cartAvailableItems.length && !cartUnavailableItems.length : !shoppingCart;
+    const hiddenMiniCart = viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE;
 
-    if (!shoppingCart || !newShoppingCart || viewAside === Constants.ASIDE_NAMES.CARTMODAL_HIDE) {
+    if (emptyCart || hiddenMiniCart) {
       return null;
     }
 
@@ -246,18 +283,10 @@ class CartListDrawer extends Component {
       if (l.id > r.id) return 1;
       return 0;
     };
-
-    if (enablePayLater) {
-      var cartItems = [...newShoppingCart.unavailableItems, ...newShoppingCart.items].sort(sortFn);
-    } else {
-      var cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
-    }
-
-    if (viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM) {
-      cartItems = cartItems.filter(
-        cartItem => cartItem.productId === selectedProduct.id || cartItem.parentProductId === selectedProduct.id
-      );
-    }
+    const cartItems = (enablePayLater
+      ? [...cartUnavailableItems, ...cartAvailableItems]
+      : [...shoppingCart.unavailableItems, ...shoppingCart.items]
+    ).sort(sortFn);
 
     return (
       <div
@@ -292,7 +321,7 @@ class CartListDrawer extends Component {
   }
 
   render() {
-    const { t, show, cartBilling, footerEl } = this.props;
+    const { t, show, enablePayLater, cartBilling, cartProductsCount, footerEl } = this.props;
     let { count } = cartBilling || {};
 
     const className = ['cart-list-aside aside fixed-wrapper'];
@@ -316,7 +345,7 @@ class CartListDrawer extends Component {
             <div className="cart-list-aside__icon-cart padding-left-right-small margin-left-right-smaller">
               <IconCart className="icon icon__small text-middle" />
               <span className="cart-list-aside__item-number text-middle margin-left-right-smaller text-weight-bolder">
-                {t('CartItemsInCategory', { cartQuantity: count })}
+                {t('CartItemsInCategory', { cartQuantity: enablePayLater ? cartProductsCount : count })}
               </span>
             </div>
             <button
@@ -340,29 +369,49 @@ CartListDrawer.displayName = 'CartListDrawer';
 CartListDrawer.propTypes = {
   show: PropTypes.bool,
   onToggle: PropTypes.func,
+  onModalVisibilityChanged: PropTypes.func,
+  onClearCart: PropTypes.func,
+  onDecreaseCartItem: PropTypes.func,
+  onIncreaseCartItem: PropTypes.func,
   viewAside: PropTypes.string,
   footerEl: PropTypes.any,
+  enablePayLater: PropTypes.bool,
+  appActions: PropTypes.node,
+  removeCartItemsById: PropTypes.func,
+  updateCartItems: PropTypes.func,
+  clearCart: PropTypes.func,
 };
 
 CartListDrawer.defaultProps = {
   show: false,
+  enablePayLater: false,
   onToggle: () => {},
+  onModalVisibilityChanged: () => {},
+  onDecreaseCartItem: () => {},
+  onIncreaseCartItem: () => {},
+  onClearCart: () => {},
+  appActions: null,
+  removeCartItemsById: () => {},
+  updateCartItems: () => {},
+  clearCart: () => {},
 };
 
 export default compose(
   withTranslation(['OrderingHome']),
   connect(
-    state => {
-      return {
-        shoppingCart: getShoppingCart(state),
-        // PAY_LATER_DEBUG
-        newShoppingCart: getShoppingCart(state),
-        cartBilling: getCartBilling(state),
-        selectedProduct: getSelectedProductDetail(state),
-      };
-    },
+    state => ({
+      shoppingCart: getShoppingCart(state),
+      cartBilling: getCartBilling(state),
+      selectedProduct: getSelectedProductDetail(state),
+      cartAvailableItems: getCartItems(state),
+      cartUnavailableItems: getCartUnavailableItems(state),
+      cartProductsCount: getCartItemsCount(state),
+    }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      removeCartItemsById: bindActionCreators(removeCartItemsByIdThunk, dispatch),
+      updateCartItems: bindActionCreators(updateCartItemsThunk, dispatch),
+      clearCart: bindActionCreators(clearCartThunk, dispatch),
     })
   ),
   withBackButtonSupport

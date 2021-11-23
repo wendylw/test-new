@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import HybridHeader from '../../../../../components/HybridHeader';
 import Constants from '../../../../../utils/constants';
 import cartIsEmpty from '../../../../../images/mvp-no-search.svg';
 import './CartEmptyResult.scss';
@@ -24,37 +23,27 @@ class CartEmptyResult extends Component {
   };
 
   render() {
-    const { t, history, submittedStatus } = this.props;
+    const { t, submittedStatus } = this.props;
 
     return (
-      // TODO: can remove
-      <section className="flex flex-column shopping-cart__container">
-        <HybridHeader
-          className="flex-middle border__bottom-divider"
-          contentClassName="flex-middle"
-          data-heap-name="ordering.cart.header"
-          isPage
-          history={history}
-          title={t('ProductsInOrderText', { count: 0 })}
-          navFunc={() => {
-            this.handleClickBack();
-          }}
-        />
-        <div className="text-center">
-          <img className="shopping-cart-empty__image-container" src={cartIsEmpty} alt="order failure" />
-          <p className="text-size-biggest text-weight-bold padding-left-right-smaller padding-smaller">
-            {t('CartEmptyTitle')}
+      <div className="shopping-cart-empty__container absolute-wrapper flex flex-column flex-center flex-middle">
+        <img className="shopping-cart-empty__image-container" src={cartIsEmpty} alt="order failure" />
+        <div className="margin-smaller text-center">
+          <h2 className="text-size-biggest text-weight-bold text-line-height-base">{t('CartEmptyTitle')}</h2>
+          <p className="shopping-cart-empty__description text-center margin-top-bottom-smaller text-size-big text-line-height-base">
+            {t('CartEmptyContentDescription')}
           </p>
-          <p className="shopping-cart-empty__text text-size-big">{t('CartEmptyContentDescription')}</p>
+        </div>
+        <div className="padding-top-bottom-normal margin-smaller">
           <button
             onClick={this.handleReturnClick}
-            className="button button__fill margin-top-bottom-normal  padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+            className="button button__fill padding-normal text-uppercase text-weight-bolder"
           >
             {/* PAY_LATER_DEBUG */}
             {!submittedStatus ? t('ReturnToMenu') : t('ReturnToTableSummary')}
           </button>
         </div>
-      </section>
+      </div>
     );
   }
 }

@@ -124,7 +124,8 @@ class ProductList extends Component {
     }
 
     this.handleGtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, productDetail);
-    await this.props.appActions.loadShoppingCart();
+    /* 需要确定 删除的可行性 */
+    // await this.props.appActions.loadShoppingCart();
   };
 
   renderProductItemPrice(displayPrice, originalDisplayPrice) {

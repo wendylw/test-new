@@ -9,11 +9,11 @@ import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { loadCart } from '../shopping-cart/redux/common/thunks';
 import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
   getStore,
+  getEnablePayLater,
   getBusinessInfo,
   getOnlineStoreInfo,
   getRequestInfo,
@@ -23,6 +23,7 @@ import {
   getDeliveryInfo,
   getCategoryProductList,
 } from '../../redux/modules/app';
+import { queryCartAndStatus as queryCartAndStatusThunk } from '../../redux/cart/thunks';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
@@ -124,12 +125,14 @@ export class Home extends Component {
   };
 
   componentDidMount = async () => {
-    const { deliveryInfo, appActions, businessInfo } = this.props;
+    const { deliveryInfo, appActions, queryCartAndStatus } = this.props;
 
     if (Utils.isFromBeepSite()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
+
+    await appActions.loadProductList();
 
     const pageRf = this.getPageRf();
 
@@ -139,16 +142,10 @@ export class Home extends Component {
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
-    {
-      /* PAY_LATER_DEBUG */
-    }
-    const { qrOrderingSettings } = businessInfo || {};
-    const { enablePayLater } = qrOrderingSettings || {};
+    const { enablePayLater } = this.props;
 
-    if (enablePayLater) {
-      await loadCart();
-    } else {
-      await appActions.loadProductList();
+    if (config.storeId) {
+      enablePayLater ? queryCartAndStatus() : appActions.loadShoppingCart();
     }
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
@@ -865,6 +862,7 @@ export class Home extends Component {
       history,
       freeDeliveryFee,
       deliveryInfo,
+      enablePayLater,
       ...otherProps
     } = this.props;
     const {
@@ -881,8 +879,7 @@ export class Home extends Component {
     } = deliveryInfo;
     const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId, shippingType } = requestInfo || {};
-    const { promotions, qrOrderingSettings } = businessInfo || {};
-    const { enablePayLater } = qrOrderingSettings || {};
+    const { promotions } = businessInfo || {};
     const isWebview = Utils.isWebview();
 
     if (!onlineStoreInfo || !categories) {
@@ -955,7 +952,6 @@ export class Home extends Component {
                   : '0',
             }}
             onToggle={this.handleToggleAside.bind(this)}
-            onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
             onClickProductItem={({ product = {} }) => {
               this.cleverTapTrack('Menu Page - Click product', this.formatCleverTapAttributes(product));
@@ -966,10 +962,9 @@ export class Home extends Component {
           />
         </div>
         <CartListDrawer
-          enablePayLater={enablePayLater}
           footerEl={this.footerEl}
           viewAside={viewAside}
-          show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
+          enablePayLater={enablePayLater}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
           onClearCart={() => {
             this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
@@ -988,10 +983,10 @@ export class Home extends Component {
           }}
         />
         <ProductDetailDrawer
-          enablePayLater={enablePayLater}
           footerEl={this.footerEl}
           onlineStoreInfo={onlineStoreInfo}
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
+          enablePayLater={enablePayLater}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
           hideCloseButton={isWebview}
@@ -1019,7 +1014,6 @@ export class Home extends Component {
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
             enablePreOrder={this.isPreOrderEnabled()}
-            onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
             breakTimeFrom={this.getItemFromStore(breakTimeFrom, 'breakTimeFrom')}
             breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
@@ -1037,8 +1031,8 @@ export class Home extends Component {
                 footerEls: [this.footerEl],
               })}px`,
           }}
-          enablePayLater={enablePayLater}
           footerRef={ref => (this.footerEl = ref)}
+          enablePayLater={enablePayLater}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
           onShownCartListDrawer={() => {
@@ -1083,10 +1077,12 @@ export default compose(
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         store: getStore(state),
+        enablePayLater: getEnablePayLater(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionsCreators, dispatch),
+      queryCartAndStatus: bindActionCreators(queryCartAndStatusThunk, dispatch),
     })
   )
 )(Home);

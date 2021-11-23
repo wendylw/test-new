@@ -77,9 +77,9 @@ export const queryCartAndStatus = () => async dispatch => {
   try {
     const queryCartStatus = () => {
       queryCartAndStatus.timer = setTimeout(async () => {
-        const { receiptNumber } = await dispatch(loadCartStatus());
+        const { payload } = await dispatch(loadCartStatus());
 
-        if (receiptNumber) {
+        if (payload.receiptNumber) {
           clearTimeout(queryCartAndStatus.timer);
 
           return;
@@ -98,12 +98,15 @@ export const queryCartAndStatus = () => async dispatch => {
   }
 };
 
-export const clearQueryCartStatus = createAction('ordering/app/cart/clearQueryCartStatus', () => {
+export const clearQueryCartStatus = () => () => {
   if (queryCartAndStatus.timer) {
     clearTimeout(queryCartAndStatus.timer);
   }
-});
+};
 
+/**
+ * @param {variations} [{"variationId", "optionId"}]
+ */
 export const updateCartItems = createAsyncThunk(
   'ordering/app/cart/updateCartItems',
   async ({ productId, quantityChange, variations = [] }, { dispatch, getState }) => {
@@ -202,60 +205,16 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
   }
 });
 
-const pollingCartSubmissionStatus = (callback, { submissionId, status, initialTimestamp, timeout }) => {
-  if (timeout <= 0) {
-    callback({ status: CART_SUBMISSION_STATUS.FAILED });
-    return;
-  }
-
-  fetchCartSubmissionStatus({ submissionId }).then(
-    submission => {
-      if (status !== submission.status) {
-        callback(submission);
-      }
-
-      if (submission.status !== CART_SUBMISSION_STATUS.COMPLETED) {
-        return;
-      }
-
-      pollingCartSubmissionStatus.timer = setTimeout(
-        () =>
-          pollingCartSubmissionStatus(callback, {
-            submissionId,
-            status,
-            initialTimestamp,
-            timeout: timeout + initialTimestamp - Date.parse(new Date()),
-          }),
-        CART_SUBMISSION_INTERVAL
-      );
-    },
-    error => callback(error)
-  );
-};
-
-export const queryCartSubmissionStatus = createAsyncThunk(
-  'ordering/app/cart/queryCartSubmissionStatus',
+export const loadCartSubmissionStatus = createAsyncThunk(
+  'ordering/app/cart/loadCartSubmissionStatus',
   async (submissionId, { dispatch }) => {
     try {
-      const result = await new Promise((resolve, reject) => {
-        pollingCartSubmissionStatus(
-          submissionStatus =>
-            submissionStatus.status === CART_SUBMISSION_STATUS.FAILED
-              ? reject(submissionStatus)
-              : resolve(submissionStatus),
-          {
-            submissionId,
-            initialTimestamp: Date.parse(new Date()),
-            timeout: TIMEOUT_CART_SUBMISSION_TIME,
-          }
-        );
-      });
+      const result = await fetchCartSubmissionStatus({ submissionId });
 
       dispatch(cartActionCreators.updateCartSubmission(result));
 
       return result;
     } catch (error) {
-      dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
       console.error(error);
 
       throw error;
@@ -263,8 +222,40 @@ export const queryCartSubmissionStatus = createAsyncThunk(
   }
 );
 
+export const queryCartSubmissionStatus = submissionId => dispatch => {
+  const targetTimestamp = Date.parse(new Date()) + TIMEOUT_CART_SUBMISSION_TIME;
+
+  try {
+    const pollingCartSubmissionStatus = () => {
+      queryCartSubmissionStatus.timer = setTimeout(async () => {
+        if (targetTimestamp - Date.parse(new Date()) <= 0) {
+          clearTimeout(queryCartSubmissionStatus.timer);
+          dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
+
+          return;
+        }
+
+        const { payload: submission } = await dispatch(loadCartSubmissionStatus(submissionId));
+
+        if (submission.status !== CART_SUBMISSION_STATUS.PENDING) {
+          clearTimeout(queryCartSubmissionStatus.timer);
+          return;
+        }
+
+        pollingCartSubmissionStatus();
+      }, CART_SUBMISSION_INTERVAL);
+    };
+
+    pollingCartSubmissionStatus();
+  } catch (error) {
+    console.error(error);
+
+    throw error;
+  }
+};
+
 export const clearQueryCartSubmissionStatus = createAction('ordering/app/cart/clearQueryCartSubmissionStatus', () => {
-  if (pollingCartSubmissionStatus.timer) {
-    clearTimeout(pollingCartSubmissionStatus.timer);
+  if (queryCartSubmissionStatus.timer) {
+    clearTimeout(queryCartSubmissionStatus.timer);
   }
 });
