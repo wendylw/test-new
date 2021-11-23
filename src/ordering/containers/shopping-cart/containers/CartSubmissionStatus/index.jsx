@@ -3,7 +3,6 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  getCartSubmissionId,
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
   getCartSubmissionPendingStatus,
@@ -94,7 +93,6 @@ export default compose(
   connect(
     state => {
       return {
-        cartSubmissionId: getCartSubmissionId(state),
         cartSubmittedStatus: getCartSubmittedStatus(state),
         cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
         cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
