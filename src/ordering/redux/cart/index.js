@@ -10,7 +10,7 @@ import {
   removeCartItemsById,
   clearCart,
   submitCart,
-  queryCartSubmissionStatus,
+  loadCartSubmissionStatus,
 } from './thunks';
 
 const CartSubmissionModel = {
@@ -170,13 +170,13 @@ export const { reducer, actions } = createSlice({
       state.submission.error = error;
       state.submission.requestStatus = API_REQUEST_STATUS.REJECTED;
     },
-    [queryCartSubmissionStatus.pending.type]: state => {
+    [loadCartSubmissionStatus.pending.type]: state => {
       state.submission.requestStatus = API_REQUEST_STATUS.PENDING;
     },
-    [queryCartSubmissionStatus.fulfilled.type]: state => {
+    [loadCartSubmissionStatus.fulfilled.type]: state => {
       state.submission.requestStatus = API_REQUEST_STATUS.FULFILLED;
     },
-    [queryCartSubmissionStatus.rejected.type]: (state, { error }) => {
+    [loadCartSubmissionStatus.rejected.type]: (state, { error }) => {
       state.submission.error = error;
       state.submission.requestStatus = API_REQUEST_STATUS.REJECTED;
     },
