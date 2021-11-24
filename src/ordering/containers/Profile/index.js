@@ -4,7 +4,6 @@ import Constants from '../../../utils/constants';
 import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../redux/modules/app';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { getStoreInfoForCleverTap } from '../../redux/modules/app';
 import CleverTap from '../../../utils/clevertap';
 import './Profile.scss';
 import Utils from '../../../utils/utils';
@@ -32,7 +31,7 @@ class CompleteProfileModal extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { duplicatedEmailAlertVisibile, storeInfoForCleverTap } = this.props;
+    const { duplicatedEmailAlertVisibile } = this.props;
     if (this.props.showProfileVisibility !== prevProps.showProfileVisibility) {
       this.props.onModalVisibilityChanged(this.props.showProfileVisibility);
       if (Utils.isWebview() && this.props.showProfileVisibility) {
@@ -45,7 +44,7 @@ class CompleteProfileModal extends Component {
     }
 
     if (duplicatedEmailAlertVisibile && duplicatedEmailAlertVisibile !== prevProps.duplicatedEmailAlertVisibile) {
-      CleverTap.pushEvent('Complete profile page - Email duplicate pop up', storeInfoForCleverTap);
+      CleverTap.pushEvent('Complete profile page - Email duplicate pop up');
     }
   }
 
@@ -84,8 +83,7 @@ class CompleteProfileModal extends Component {
   };
 
   saveProfile = async () => {
-    const { saveProfileInfo, storeInfoForCleverTap } = this.props;
-    CleverTap.pushEvent('Complete profile page - Click continue', storeInfoForCleverTap);
+    CleverTap.pushEvent('Complete profile page - Click continue');
     await saveProfileInfo();
     if (!this.props.updateProfileError) {
       this.closeProfileModal();
@@ -104,8 +102,7 @@ class CompleteProfileModal extends Component {
   };
 
   closeProfileModal = () => {
-    const { storeInfoForCleverTap } = this.props;
-    CleverTap.pushEvent('Complete profile page - Click skip for now', storeInfoForCleverTap);
+    CleverTap.pushEvent('Complete profile page - Click skip for now');
     this.props.closeModal();
   };
 
@@ -114,8 +111,7 @@ class CompleteProfileModal extends Component {
   };
 
   handleDoNotAsk = () => {
-    const { storeInfoForCleverTap } = this.props;
-    CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again", storeInfoForCleverTap);
+    CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again");
     Utils.setCookieVariable('do_not_ask', '1', {
       expires: 3650,
       path: '/',
@@ -127,8 +123,7 @@ class CompleteProfileModal extends Component {
   };
 
   handleBackEdit = () => {
-    const { storeInfoForCleverTap } = this.props;
-    CleverTap.pushEvent('Complete profile page email duplicate pop up - Click back to edit', storeInfoForCleverTap);
+    CleverTap.pushEvent('Complete profile page email duplicate pop up - Click back to edit');
     this.props.profileAction.resetUpdateProfileResult();
   };
 
@@ -311,7 +306,6 @@ export default compose(
       emailInvalidErrorVisibility: getEmailInvalidErrorVisibility(state),
       birthdayInvalidErrorVisibility: getbirthdayInvalidErrorVisibility(state),
       duplicatedEmailAlertVisibile: getDuplicatedEmailAlertVisibile(state),
-      storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
