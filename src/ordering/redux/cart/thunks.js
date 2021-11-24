@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
@@ -254,8 +254,8 @@ export const queryCartSubmissionStatus = submissionId => dispatch => {
   }
 };
 
-export const clearQueryCartSubmissionStatus = createAction('ordering/app/cart/clearQueryCartSubmissionStatus', () => {
+export const clearQueryCartSubmissionStatus = () => () => {
   if (queryCartSubmissionStatus.timer) {
     clearTimeout(queryCartSubmissionStatus.timer);
   }
-});
+};
