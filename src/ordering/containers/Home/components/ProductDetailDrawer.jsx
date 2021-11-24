@@ -615,7 +615,7 @@ class ProductDetailDrawer extends Component {
               if (enablePayLater) {
                 this.handleUpdateCartItems({
                   productId: (childrenProduct && childrenProduct.childId) || productId,
-                  quantity: cartQuantity,
+                  quantityChange: cartQuantity,
                   variations,
                 });
               } else {
