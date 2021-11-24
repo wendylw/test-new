@@ -17,9 +17,17 @@ import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
-    const { queryCartSubmissionStatus } = this.props;
+    const { queryCartSubmissionStatus, cartSubmittedStatus, history } = this.props;
     const submissionId = Utils.getQueryString('submissionId');
     await queryCartSubmissionStatus(submissionId);
+
+    // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
+    if (cartSubmittedStatus) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+        search: window.location.search,
+      });
+    }
   };
 
   componentDidUpdate = prevProps => {
@@ -36,13 +44,13 @@ class CartSubmissionStatus extends Component {
     }
   };
 
-  componentWillUnmount = async () => {
+  componentWillUnmount = () => {
     const { clearQueryCartSubmissionStatus } = this.props;
-    await clearQueryCartSubmissionStatus();
-    await clearTimeout(this.timer);
+    clearQueryCartSubmissionStatus();
+    clearTimeout(this.timer);
   };
 
-  handleClickBack = async () => {
+  handleClickBack = () => {
     this.props.history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
       search: window.location.search,
