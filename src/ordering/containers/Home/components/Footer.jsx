@@ -15,6 +15,7 @@ import {
   getUserIsLogin,
   getIsUserLoginRequestStatusInPending,
 } from '../../../redux/modules/app';
+import { getCartItemsCount } from '../../../redux/cart/selectors';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
@@ -139,11 +140,21 @@ export class Footer extends Component {
       footerRef,
       style,
       isUserLoginRequestStatusInPending,
+      cartProductsCount,
       enablePayLater,
     } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartBilling || {};
+    const cartItemsCount = enablePayLater ? cartProductsCount : count;
+    const disabledViewCartButton = enablePayLater
+      ? cartItemsCount <= 0
+      : (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
+        this.getDisplayPrice() <= 0 ||
+        (!isValidTimeToOrder && !enablePreOrder) ||
+        !isLiveOnline ||
+        isUserLoginRequestStatusInPending;
+
     return (
       <footer
         ref={footerRef}
@@ -157,15 +168,15 @@ export class Footer extends Component {
           onClick={onShownCartListDrawer}
         >
           <div className="home-cart__icon-container text-middle">
-            <IconCart className={`home-cart__icon-cart icon icon__white ${count !== 0 ? 'non-empty' : ''}`} />
-            {count ? <span className="home-cart__items-number text-center">{count}</span> : null}
+            <IconCart className={`home-cart__icon-cart icon icon__white ${cartItemsCount !== 0 ? 'non-empty' : ''}`} />
+            {cartItemsCount ? <span className="home-cart__items-number text-center">{cartItemsCount}</span> : null}
           </div>
           {enablePayLater ? null : (
             <div className="home-cart__amount padding-left-right-normal text-middle text-left text-weight-bolder">
               <CurrencyNumber className="text-weight-bolder" money={this.getDisplayPrice() || 0} />
               {Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0) ? (
                 <label className="home-cart__money-minimum margin-top-bottom-smaller">
-                  {count ? (
+                  {cartItemsCount ? (
                     <Trans i18nKey="RemainingConsumption" minimumConsumption={minimumConsumption}>
                       <span className="text-opacity">Remaining</span>
                       <CurrencyNumber
@@ -192,13 +203,7 @@ export class Footer extends Component {
             className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder flex__fluid-content"
             data-testid="orderNow"
             data-heap-name="ordering.home.footer.order-btn"
-            disabled={
-              (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
-              this.getDisplayPrice() <= 0 ||
-              (!isValidTimeToOrder && !enablePreOrder) ||
-              !isLiveOnline ||
-              isUserLoginRequestStatusInPending
-            }
+            disabled={disabledViewCartButton}
             onClick={() => {
               onClickOrderNowButton();
               onToggle();
@@ -246,7 +251,6 @@ export default compose(
   connect(
     state => {
       return {
-        // cartBilling: getCartSummary(state),
         cartBilling: getCartBilling(state),
         businessInfo: getBusinessInfo(state),
         shoppingCart: getShoppingCart(state),
@@ -255,6 +259,7 @@ export default compose(
         isLogin: getUserIsLogin(state),
         deliverInfo: getDeliveryInfo(state),
         isUserLoginRequestStatusInPending: getIsUserLoginRequestStatusInPending(state),
+        cartProductsCount: getCartItemsCount(state),
       };
     },
     dispatch => ({

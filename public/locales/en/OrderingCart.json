@@ -20,7 +20,7 @@
   "CartEmptyContentDescription":"Please return to the main menu and order again. Some items may have been removed.",
   "OrderSubmitted": "Order Submitted",
   "LoadingRedirectingDescription": "Please do not close this window while we are redirecting you",
-  "OrderSubmissedFailedTitle": "Oops, order submissed failed",
+  "OrderSubmittedFailedTitle": "Oops, order submissed failed",
   "ScanQRDescription": "Please return to the main menu or scan the QR again. If this problem persists, please reach out to the staff",
   "ReturnToCart": "Return to cart",
   "ReturnToTableSummary": "Return to table summary"
