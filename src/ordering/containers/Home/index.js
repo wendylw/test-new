@@ -964,6 +964,7 @@ export class Home extends Component {
         <CartListDrawer
           footerEl={this.footerEl}
           viewAside={viewAside}
+          show={viewAside === Constants.ASIDE_NAMES.CART}
           enablePayLater={enablePayLater}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
           onClearCart={() => {
