@@ -251,7 +251,6 @@ export default compose(
   connect(
     state => {
       return {
-        // cartBilling: getCartSummary(state),
         cartBilling: getCartBilling(state),
         businessInfo: getBusinessInfo(state),
         shoppingCart: getShoppingCart(state),
