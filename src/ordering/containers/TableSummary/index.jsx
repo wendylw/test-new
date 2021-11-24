@@ -3,10 +3,10 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import HybridHeader from '../../../../../components/HybridHeader';
-import CurrencyNumber from '../../../../components/CurrencyNumber';
-import Image from '../../../../../components/Image';
-import Billing from '../../../../components/Billing';
+import HybridHeader from '../../../components/HybridHeader';
+import CurrencyNumber from '../../components/CurrencyNumber';
+import Image from '../../../components/Image';
+import Billing from '../../components/Billing';
 import './TableSummary.scss';
 
 export class TableSummary extends React.Component {
