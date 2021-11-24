@@ -30,7 +30,7 @@ const SavedCards = lazy(() => Utils.attemptLoad(() => import('./payments/contain
 const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards/CVV')));
 const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
 const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
-const TableSummary = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/TableSummary')));
+const TableSummary = lazy(() => Utils.attemptLoad(() => import('./TableSummary')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -59,7 +59,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />
             <Route exact path={ROUTER_PATHS.ERROR} component={ErrorPage} />
             <Route exact path={ROUTER_PATHS.MERCHANT_INFO} component={MerchantInfo} />
-            <Route exact path={ROUTER_PATHS.TABLE_SUMMARY} component={TableSummary} />
+            <Route exact path={ROUTER_PATHS.ORDERING_TABLE_SUMMARY} component={TableSummary} />
             <Route exact path={ROUTER_PATHS.ORDER_DETAILS} component={OrderDetails} />
             <Route exact path={ROUTER_PATHS.SORRY} component={Sorry} />
             <Route exact path={ROUTER_PATHS.REPORT_DRIVER} component={ReportDriver} />

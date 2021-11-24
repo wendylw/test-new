@@ -3,28 +3,87 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import _floor from 'lodash/floor';
+import _replace from 'lodash/replace';
+import Utils from '../../../utils/utils';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Image from '../../../components/Image';
+import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import './TableSummary.scss';
 
 export class TableSummary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      cartContainerHeight: '100%',
+      productsContainerHeight: '0px',
+    };
+  }
+
+  componentDidMount() {
+    window.scrollTo(0, 0);
+    this.setCartContainerHeight();
+    this.setProductsContainerHeight();
+  }
+
+  componentDidUpdate(prevProps, prevStates) {
+    this.setCartContainerHeight(prevStates.cartContainerHeight);
+    this.setProductsContainerHeight(prevStates.productsContainerHeight);
+  }
+
+  setCartContainerHeight = preContainerHeight => {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl],
+    });
+
+    if (preContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
+  };
+
+  setProductsContainerHeight = preProductsContainerHeight => {
+    const productsContainerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl, this.billingEl],
+    });
+    const preHeightNumber = _floor(_replace(preProductsContainerHeight, 'px', ''));
+    const currentHeightNumber = _floor(_replace(productsContainerHeight, 'px', ''));
+
+    if (productsContainerHeight > '0px' && Math.abs(currentHeightNumber - preHeightNumber) > 10) {
+      this.setState({
+        productsContainerHeight,
+      });
+    }
+  };
+
   renderBaseInfo() {
     return (
-      <div>
-        <div>
-          <span>Order Placed</span>
-        </div>
-        <div>
-          <ul>
-            <li className="flex flex-middle flex-space-between">
-              <h5 className="text-size-small">Order Number</h5>
+      <div className="table-summary__base-info">
+        {true ? (
+          <div className="table-summary__base-info-status--created flex flex-middle padding-small">
+            <IconChecked className="icon icon__success padding-small" />
+            <span className="margin-left-right-smaller text-size-big">Order Placed</span>
+          </div>
+        ) : (
+          <div className="table-summary__base-info-status--locked flex flex-middle padding-small">
+            <IconError className="icon icon__primary padding-small" />
+            <span className="margin-left-right-smaller text-size-big theme-color">Pending Payment</span>
+          </div>
+        )}
+        <div className="padding-left-right-normal padding-top-bottom-small">
+          <ul className="table-summary__base-info-list">
+            <li className="flex flex-middle flex-space-between padding-top-bottom-normal">
+              <h5 className="text-size-small text-opacity">Order Number</h5>
               <span className="text-size-small">6789</span>
             </li>
-            <li className="flex flex-middle flex-space-between">
-              <h5 className="text-size-small">Table Number</h5>
-              <span className="text-size-small">6789</span>
+            <li className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider">
+              <h5 className="text-size-small text-opacity">Table Number</h5>
+              <span className="text-size-small">T-45</span>
             </li>
           </ul>
         </div>
@@ -34,16 +93,15 @@ export class TableSummary extends React.Component {
 
   renderSubOrder() {
     return (
-      <div>
-        <div className="flex flex-middle flex-space-between padding-small">
-          <h2 className="margin-small">New sub-order</h2>
+      <div className="table-summary__sub-order padding-top-bottom-small">
+        <div className="text-right padding-small">
           <span className="margin-small text-opacity">Created at 15:30</span>
         </div>
         <ul>
           <li key="" className="flex flex-middle flex-space-between padding-left-right-small">
             <div className="flex">
-              <div className="product-item__image-container flex__shrink-fixed margin-small">
-                <Image className="product-item__image card__image" src={null} alt="" />
+              <div className="table-summary__image-container flex__shrink-fixed margin-small">
+                <Image className="table-summary__image card__image" src={null} alt="" />
               </div>
               <div className="padding-small flex flex-column flex-space-between">
                 <span className="table-summary__item-title">title</span>
@@ -70,22 +128,41 @@ export class TableSummary extends React.Component {
 
   render() {
     const { t, history } = this.props;
+    const { cartContainerHeight } = this.state;
 
     return (
-      <section className="table-summary" data-heap-name="ordering.order-status.table-summary.container">
+      <section
+        className="table-summary flex flex-column"
+        data-heap-name="ordering.order-status.table-summary.container"
+      >
         <HybridHeader
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle"
-          contentClassName="flex-middle text-capitalize"
+          contentClassName="table-summary__header-content flex-middle flex-center flex-space-between text-capitalize"
           data-heap-name="ordering.need-help.header"
           isPage={false}
           title={t('TableSummary')}
           navFunc={() => {}}
         />
 
-        <div className="table-summary__container">
+        <div
+          className="table-summary__container"
+          style={{
+            top: `${Utils.mainTop({
+              headerEls: [this.headerEl],
+            })}px`,
+            height: cartContainerHeight,
+          }}
+        >
           {this.renderBaseInfo()}
           {this.renderSubOrder()}
+          {this.renderSubOrder()}
           <Billing
+            billingRef={ref => {
+              this.billingEl = ref;
+            }}
             className="table-summary__billing-container"
             history={history}
             tax={1}
@@ -94,18 +171,23 @@ export class TableSummary extends React.Component {
             total={20}
             isLogin
           />
-          <footer className="footer padding-small flex flex-middle">
-            <button
-              className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
-              data-testid="pay"
-              data-heap-name="ordering.order-status.table-summary.pay-btn"
-              onClick={() => {}}
-              disabled={false}
-            >
-              {t('PayNow')}
-            </button>
-          </footer>
         </div>
+        <footer
+          ref={ref => {
+            this.footerEl = ref;
+          }}
+          className="footer padding-small flex flex-middle"
+        >
+          <button
+            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+            data-testid="pay"
+            data-heap-name="ordering.order-status.table-summary.pay-btn"
+            onClick={() => {}}
+            disabled={false}
+          >
+            {t('PayNow')}
+          </button>
+        </footer>
       </section>
     );
   }

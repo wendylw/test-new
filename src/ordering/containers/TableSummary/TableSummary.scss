@@ -1,11 +1,19 @@
-@import "../../../../../Variables.scss";
+@import "../../../Variables.scss";
 
 .table-summary {
   height: 100vh;
+  background-color: $gray-5;
 
   .billing__label,
   .billing__text {
-    color: $gray-2;
+    opacity: 0.5;
+  }
+
+  &__header-content::after {
+    content: "";
+    width: 24px;
+    height: 24px;
+    padding: 3.8vw;
   }
 
   &__container {
@@ -13,6 +21,24 @@
     width: 100%;
     overflow-y: auto;
     padding-bottom: 120px;
+  }
+
+  &__base-info {
+    background-color: $white;
+  }
+
+  &__base-info-status--locked {
+    color: $theme-color;
+  }
+
+  &__base-info-list {
+    border-top: 1px dashed $gray-4;
+    border-bottom: 1px dashed $gray-4;
+  }
+
+  &__sub-order {
+    margin-bottom: 2.4vw;
+    background-color: $white;
   }
 
   &__items {
@@ -43,20 +69,37 @@
     color: $theme-color;
   }
 
-  &__billing-container {
-    margin-top: 3.8vw;
-  }
-
   &__textarea {
     width: 100%;
     border: 0;
   }
+
+  &__billing-container {
+    margin-top: 2.4vw;
+  }
 }
 
 @media (min-width: 420px) {
-  .ordering-details {
+  .table-summary {
+    &__header-content::after {
+      padding: 12px;
+    }
+
+    &__sub-order {
+      margin-bottom: 8px;
+    }
+
     &__billing-container {
-      margin-top: 12px;
+      margin-top: 8px;
+    }
+  }
+}
+
+@media (min-width: 770px) {
+  .table-summary {
+    &__image-container {
+      width: 72px;
+      height: 72px;
     }
   }
 }
