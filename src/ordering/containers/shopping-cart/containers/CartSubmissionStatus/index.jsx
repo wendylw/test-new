@@ -51,6 +51,7 @@ class CartSubmissionStatus extends Component {
 
   render() {
     const { t, cartSubmissionPendingStatus, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
+
     return (
       <section className="ordering-submission absolute-wrapper flex flex-column flex-center flex-middle">
         {cartSubmissionPendingStatus && (
@@ -65,11 +66,9 @@ class CartSubmissionStatus extends Component {
         {cartSubmittedStatus && (
           <>
             <img className="ordering-submission__image-container-common" src={orderSuccessImage} alt="order success" />
-            <div className="margin-smaller text-center">
-              <h2 className="text-size-biggest text-weight-bold text-line-height-base">{t('OrderSubmitted')}</h2>
-            </div>
+            <h2 className="text-size-biggest text-weight-bold text-line-height-base">{t('OrderSubmitted')}</h2>
             <div className="padding-bottom-normal">
-              <p className="ordering-submission__success-description text-center margin-bottom-smaller text-size-big text-line-height-base">
+              <p className="ordering-submission__success-description text-center margin-top-bottom-smaller text-size-big text-line-height-base">
                 {t('LoadingRedirectingDescription')}
               </p>
             </div>
@@ -81,9 +80,9 @@ class CartSubmissionStatus extends Component {
             <img className="ordering-submission__image-container-common" src={orderFailureImage} alt="order failure" />
             <div className="margin-smaller text-center">
               <h2 className="text-size-biggest text-weight-bold text-line-height-base">
-                {t('OrderSubmissedFailedTitle')}
+                {t('OrderSubmittedFailedTitle')}
               </h2>
-              <p className="ordering-submission__failure-description margin-bottom-normal text-center text-size-big text-line-height-base">
+              <p className="ordering-submission__failure-description margin-top-bottom-smaller text-center text-size-big text-line-height-base">
                 {t('ScanQRDescription')}
               </p>
             </div>
