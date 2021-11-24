@@ -81,7 +81,9 @@ export const getCartUnavailableItems = createSelector(
   }
 );
 
-export const getCartSubmittedStatus = state => state.app.cart.submission.status === CART_SUBMISSION_STATUS.COMPLETED;
+export const getCartSubmittedStatus = state =>
+  state.app.cart.submission.status === CART_SUBMISSION_STATUS.COMPLETED ||
+  state.app.cart.status === CART_SUBMISSION_STATUS.COMPLETED;
 
 export const getCartSubmissionPendingStatus = state =>
   state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;

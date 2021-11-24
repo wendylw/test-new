@@ -23,7 +23,10 @@ import {
   getDeliveryInfo,
   getCategoryProductList,
 } from '../../redux/modules/app';
-import { queryCartAndStatus as queryCartAndStatusThunk } from '../../redux/cart/thunks';
+import {
+  queryCartAndStatus as queryCartAndStatusThunk,
+  clearQueryCartStatus as clearQueryCartStatusThunk,
+} from '../../redux/cart/thunks';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
@@ -217,9 +220,13 @@ export class Home extends Component {
   }
 
   componentWillUnmount() {
+    const { clearQueryCartStatus } = this.props;
+
     window.removeEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
+
+    clearQueryCartStatus();
   }
 
   getStatusFromMultipleStore = () => {
@@ -1084,6 +1091,7 @@ export default compose(
     dispatch => ({
       appActions: bindActionCreators(appActionsCreators, dispatch),
       queryCartAndStatus: bindActionCreators(queryCartAndStatusThunk, dispatch),
+      clearQueryCartStatus: bindActionCreators(clearQueryCartStatusThunk, dispatch),
     })
   )
 )(Home);
