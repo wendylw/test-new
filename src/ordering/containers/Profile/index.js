@@ -32,6 +32,7 @@ class CompleteProfileModal extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { duplicatedEmailAlertVisibile, storeInfoForCleverTap } = this.props;
     if (this.props.showProfileVisibility !== prevProps.showProfileVisibility) {
       this.props.onModalVisibilityChanged(this.props.showProfileVisibility);
       if (Utils.isWebview() && this.props.showProfileVisibility) {
@@ -41,6 +42,10 @@ class CompleteProfileModal extends Component {
 
     if (this.props.user.profile !== prevProps.user.profile) {
       this.initCompleteProfileIfNeeded();
+    }
+
+    if (duplicatedEmailAlertVisibile && duplicatedEmailAlertVisibile !== prevProps.duplicatedEmailAlertVisibile) {
+      CleverTap.pushEvent('Complete profile page - Email duplicate pop up', storeInfoForCleverTap);
     }
   }
 
@@ -159,11 +164,7 @@ class CompleteProfileModal extends Component {
       profileEmail: email,
       profileBirthday: birthday,
       profileName: name,
-      storeInfoForCleverTap,
     } = this.props;
-
-    duplicatedEmailAlertVisibile &&
-      CleverTap.pushEvent('Complete profile page - Email duplicate pop up', storeInfoForCleverTap);
 
     const className = ['aside fixed-wrapper', 'profile flex flex-column flex-end'];
 
