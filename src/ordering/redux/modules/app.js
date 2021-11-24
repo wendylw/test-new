@@ -1113,7 +1113,6 @@ export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
 export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsQROrder = state => Utils.isQROrder();
-export const getIsSafari = state => Utils.isSafari();
 
 export const getIsQROrderingLoginFree = createSelector(getBusinessInfo, getIsQROrder, (businessInfo, isQROrder) => {
   const { allowAnonymousQROrdering = false } = businessInfo;

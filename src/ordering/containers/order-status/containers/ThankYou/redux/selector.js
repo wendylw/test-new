@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants from '../../../../../../utils/constants';
 import { CASHBACK_CAN_CLAIM } from '../constants';
 import {
@@ -13,7 +14,6 @@ import {
   getOrderStoreInfo,
 } from '../../../redux/selector';
 import {
-  getIsSafari,
   getMerchantCountry,
   getBusinessInfo,
   getUserIsLogin,
@@ -90,17 +90,11 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
 
 export const getCashback = createSelector(getCashbackInfo, ({ cashback }) => (Number(cashback) ? Number(cashback) : 0));
 
-export const getCashbackCurrency = createSelector(
-  getCashback,
-  getIsSafari,
-  getOnlineStoreInfo,
-  (cashback, isSafari, onlineStoreInfo) => {
-    const { locale, currency, country } = onlineStoreInfo || {};
-    if (!(locale && currency)) return `RM ${cashback}`;
-    const money = Intl.NumberFormat(locale, { style: 'currency', currency }).format(parseFloat(cashback));
-    return country === 'MY' && isSafari ? money.replace(/^(\D+)/, '$1 ') : money;
-  }
-);
+export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInfo, (cashback, onlineStoreInfo) => {
+  const { currency } = onlineStoreInfo || {};
+  const currencyFormatter = createCurrencyFormatter({ currencyCode: currency });
+  return currencyFormatter.format(cashback);
+});
 
 export const getCanCashbackClaim = createSelector(
   getCashbackInfo,
