@@ -147,6 +147,13 @@ export class Footer extends Component {
     const { minimumConsumption } = qrOrderingSettings || {};
     const { count } = cartBilling || {};
     const cartItemsCount = enablePayLater ? cartProductsCount : count;
+    const disabledViewCartButton = enablePayLater
+      ? cartItemsCount <= 0
+      : (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
+        this.getDisplayPrice() <= 0 ||
+        (!isValidTimeToOrder && !enablePreOrder) ||
+        !isLiveOnline ||
+        isUserLoginRequestStatusInPending;
 
     return (
       <footer
@@ -196,13 +203,7 @@ export class Footer extends Component {
             className="home-cart__order-button button button__fill padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder flex__fluid-content"
             data-testid="orderNow"
             data-heap-name="ordering.home.footer.order-btn"
-            disabled={
-              (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
-              this.getDisplayPrice() <= 0 ||
-              (!isValidTimeToOrder && !enablePreOrder) ||
-              !isLiveOnline ||
-              isUserLoginRequestStatusInPending
-            }
+            disabled={disabledViewCartButton}
             onClick={() => {
               onClickOrderNowButton();
               onToggle();
