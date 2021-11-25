@@ -610,6 +610,7 @@ const user = (state = initialState.user, action) => {
           name: user.firstName,
           email: user.email,
           birthday: user.birthday,
+          status: API_REQUEST_STATUS.FULFILLED,
         },
         isLogin: true,
         hasOtp: false,
@@ -1113,15 +1114,15 @@ export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsQROrder = state => Utils.isQROrder();
 
+export const getIsQROrderingLoginFree = createSelector(getBusinessInfo, getIsQROrder, (businessInfo, isQROrder) => {
+  const { allowAnonymousQROrdering = false } = businessInfo;
+  return isQROrder && allowAnonymousQROrdering;
+});
+
 export const getIsLoginFree = createSelector(
-  getBusinessInfo,
   getIsDigitalType,
-  getIsQROrder,
-  (businessInfo, isDigitalType, isQROrder) => {
-    const { allowAnonymousQROrdering = false } = businessInfo;
-    const isQROrderingLoginFree = isQROrder && allowAnonymousQROrdering;
-    return isDigitalType || isQROrderingLoginFree;
-  }
+  getIsQROrderingLoginFree,
+  (isDigitalType, isQROrderingLoginFree) => isDigitalType || isQROrderingLoginFree
 );
 
 export const getHasLoginGuardPassed = createSelector(

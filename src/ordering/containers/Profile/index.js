@@ -74,26 +74,6 @@ class CompleteProfileModal extends Component {
     history.goBack();
   };
 
-  gotoContactDetailPageIfNeeded = async () => {
-    const { user, history, deliveryDetails, appActions } = this.props;
-
-    if (Utils.isQROrder()) {
-      history.goBack();
-      return;
-    }
-
-    const { profile } = user || {};
-    const { name, phone } = profile || {};
-    const { username, phone: orderPhone } = deliveryDetails || {};
-    const { ROUTER_PATHS } = Constants;
-    !username && (await appActions.updateDeliveryDetails({ username: name }));
-    !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-    history.push({
-      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-      search: window.location.search,
-    });
-  };
-
   saveProfile = async () => {
     const { saveProfileInfo } = this.props;
     await saveProfileInfo();

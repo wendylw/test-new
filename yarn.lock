@@ -3563,6 +3563,16 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@storehub/frontend-utils@^0.0.7":
+  version "0.0.7"
+  resolved "https://npm-proxy.fury.io/storehub/~/up/ver_hsHCm/%40storehub%2Ffrontend-utils-0.0.7.tgz#9a951da8037f535f184dce15103a456714c2f2ed"
+  integrity sha1-mpUdqAN/U18YTc4VEDpFZxTC8u0=
+  dependencies:
+    lodash "^4.17.20"
+    lodash-es "^4.17.15"
+    tiny-invariant "^1.1.0"
+    tiny-warning "^1.0.3"
+
 "@storybook/addon-actions@^6.0.14":
   version "6.0.14"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.0.14.tgz#43a021f3cfcd34ee124f60d2f8c53b5ec8f131fe"
@@ -14017,6 +14027,11 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
+lodash-es@^4.17.15:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
+  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
+
 lodash._reinterpolate@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
@@ -20051,6 +20066,11 @@ tiny-invariant@^1.0.2:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.1.0.tgz#634c5f8efdc27714b7f386c35e6760991d230875"
   integrity sha512-ytxQvrb1cPc9WBEI/HSeYYoGD0kWnGEOR8RY6KomWLBVhqz0RgTwVO9dLrGz7dC+nN9llyI7OKAgRq8Vq4ZBSw==
+
+tiny-invariant@^1.1.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.2.0.tgz#a1141f86b672a9148c72e978a19a73b9b94a15a9"
+  integrity sha512-1Uhn/aqw5C6RI4KejVeTg6mIS7IqxnLJ8Mv2tV5rTc0qWobay7pDUz6Wi392Cnc8ak1H0F2cjoRzb2/AW4+Fvg==
 
 tiny-warning@^1.0.0, tiny-warning@^1.0.3:
   version "1.0.3"
