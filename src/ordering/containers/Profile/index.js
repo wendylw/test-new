@@ -83,6 +83,7 @@ class CompleteProfileModal extends Component {
   };
 
   saveProfile = async () => {
+    const { saveProfileInfo } = this.props;
     CleverTap.pushEvent('Complete profile page - Click continue');
     await saveProfileInfo();
     if (!this.props.updateProfileError) {
@@ -119,7 +120,7 @@ class CompleteProfileModal extends Component {
     });
 
     this.props.profileAction.doNotAskAgain();
-    this.closeProfileModal();
+    this.props.closeModal();
   };
 
   handleBackEdit = () => {
