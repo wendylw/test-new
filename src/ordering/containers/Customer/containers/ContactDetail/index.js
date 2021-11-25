@@ -20,7 +20,7 @@ class ContactDetail extends Component {
     init({ phone, username });
   }
 
-  handleClickBack = async () => {
+  handleClickBack = () => {
     const { history } = this.props;
 
     history.push({
