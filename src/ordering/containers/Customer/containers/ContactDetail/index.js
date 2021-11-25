@@ -20,8 +20,12 @@ class ContactDetail extends Component {
     init({ phone, username });
   }
 
-  handleClickBack = () => {
-    const { history } = this.props;
+  handleClickBack = async () => {
+    const { history, updateUserName, deliveryDetails } = this.props;
+    const { username } = deliveryDetails;
+    const userNameEmptyFromDeliveryDetails = null;
+    !username && updateUserName(userNameEmptyFromDeliveryDetails);
+
     history.push({
       pathname: constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
       search: window.location.search,
