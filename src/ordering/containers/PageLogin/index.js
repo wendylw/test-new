@@ -38,30 +38,18 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, user, deliveryDetails, appActions } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
-    const { nextPage } = location;
-    const { profile } = user || {};
-    const { name, phone } = profile || {};
-    if (nextPage && name) {
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
+    const { history, location } = this.props;
+    const { shouldDirectGoBack = true } = location.state || {};
 
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    } else if (nextPage && !name) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.PROFILE,
-        search: window.location.search,
-      });
-    } else {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: window.location.search,
-      });
+    if (shouldDirectGoBack) {
+      history.goBack();
+      return;
     }
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      search: window.location.search,
+    });
   };
 
   handleCloseOtpModal() {

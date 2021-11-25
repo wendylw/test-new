@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/modules/app';
+import { getRequestInfo, getError, getUser, getCartBilling, getHasLoginGuardPassed } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
@@ -14,26 +14,49 @@ import loggly from '../../../utils/monitoring/loggly';
 const { ROUTER_PATHS } = Constants;
 
 class CreateOrderButton extends React.Component {
-  componentDidUpdate(prevProps) {
-    const { user } = prevProps;
+  componentDidMount = async () => {
+    const { user, hasLoginGuardPassed } = this.props;
     const { isFetching } = user || {};
+    const canAskUserLogin = !(hasLoginGuardPassed || isFetching);
 
-    if (!Utils.isDigitalType()) {
-      if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
-        this.visitLoginPage();
-      }
-    }
-  }
+    if (!canAskUserLogin) return;
+    this.gotoLoginPageIfNeeded();
+  };
 
-  visitLoginPage = () => {
+  componentDidUpdate = prevProps => {
+    const { user: prevUser } = prevProps;
+    const { user: currentUser, hasLoginGuardPassed } = this.props;
+    const { isFetching: isPrevFetching } = prevUser || {};
+    const { isFetching: isCurrentFetching } = currentUser || {};
+    const isFetchingJustDone = isPrevFetching && !isCurrentFetching;
+    const canAskUserLogin = isFetchingJustDone && !hasLoginGuardPassed;
+
+    if (!canAskUserLogin) return;
+    this.gotoLoginPageIfNeeded();
+  };
+
+  gotoLoginPageIfNeeded = () => {
     const { history, user } = this.props;
+    const { pathname } = history.location;
     const { isLogin } = user || {};
 
-    if (!isLogin) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-      });
+    switch (pathname) {
+      case ROUTER_PATHS.ORDERING_CART:
+        // Cart page do not require login
+        break;
+      case ROUTER_PATHS.ORDERING_CUSTOMER_INFO:
+        if (isLogin) break;
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_LOGIN,
+          search: window.location.search,
+        });
+        break;
+      default:
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_LOGIN,
+          search: window.location.search,
+        });
+        break;
     }
   };
 
@@ -41,15 +64,14 @@ class CreateOrderButton extends React.Component {
     const {
       history,
       createOrder,
-      user,
       requestInfo,
       cartBilling,
       afterCreateOrder,
       beforeCreateOrder,
+      hasLoginGuardPassed,
       paymentName,
       gotoPayment,
     } = this.props;
-    const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -59,21 +81,10 @@ class CreateOrderButton extends React.Component {
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
+
     const { validCreateOrder } = this.props;
-    // if (!Boolean(storeId)) {
-    //   if (type === 'dine' || type === 'takeaway') {
-    //     window.location.href = Constants.ROUTER_PATHS.DINE;
-    //   } else {
-    //     history.push({
-    //       pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-    //       search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
-    //     });
-    //   }
 
-    //   return;
-    // }
-
-    if ((isLogin || type === 'digital') && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
+    if (hasLoginGuardPassed && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
@@ -155,6 +166,8 @@ CreateOrderButton.propTypes = {
   paymentExtraData: PropTypes.object,
   processing: PropTypes.bool,
   loaderText: PropTypes.string,
+  cartBilling: PropTypes.object,
+  getHasLoginGuardPassed: PropTypes.bool,
 };
 
 CreateOrderButton.defaultProps = {
@@ -164,6 +177,8 @@ CreateOrderButton.defaultProps = {
   disabled: true,
   sentOtp: false,
   processing: false,
+  cartBilling: {},
+  getHasLoginGuardPassed: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };
@@ -177,6 +192,7 @@ export default compose(
         error: getError(state),
         requestInfo: getRequestInfo(state),
         cartBilling: getCartBilling(state),
+        hasLoginGuardPassed: getHasLoginGuardPassed(state),
       };
     },
     {
