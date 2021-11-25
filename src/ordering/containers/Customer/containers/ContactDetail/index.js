@@ -21,10 +21,7 @@ class ContactDetail extends Component {
   }
 
   handleClickBack = async () => {
-    const { history, updateUserName, deliveryDetails } = this.props;
-    const { username } = deliveryDetails;
-    const userNameEmptyFromDeliveryDetails = null;
-    !username && updateUserName(userNameEmptyFromDeliveryDetails);
+    const { history } = this.props;
 
     history.push({
       pathname: constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
@@ -61,7 +58,7 @@ class ContactDetail extends Component {
                     data-heap-name="ordering.contact-details.name-input"
                     type="text"
                     placeholder={t('Name')}
-                    value={username}
+                    value={username || ''}
                     onChange={e => {
                       updateUserName(e.target.value);
                     }}
