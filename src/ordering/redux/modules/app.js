@@ -909,6 +909,7 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
   return _get(businessInfo, 'timezoneOffset', 480);
 });
 
+// TODO: Utils.getOrderTypeFromUrl() will replace be selector
 export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo => {
   return (
     _get(businessInfo, 'qrOrderingSettings.enablePayLater', false) &&
