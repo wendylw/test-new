@@ -11,6 +11,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import Image from '../../../components/Image';
 import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
+import SubmitOrderConfirm from './components/SubmitOrderConfirm';
 import './TableSummary.scss';
 
 export class TableSummary extends React.Component {
@@ -171,6 +172,7 @@ export class TableSummary extends React.Component {
             total={20}
             isLogin
           />
+          <SubmitOrderConfirm />
         </div>
         <footer
           ref={ref => {
