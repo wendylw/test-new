@@ -8,7 +8,8 @@ import './OrderingCart.scss';
 
 function Cart(props) {
   const { history, enablePayLater } = props;
-  return <>{!enablePayLater ? <PayFirst history={history} /> : <PayLater history={history} />}</>;
+
+  return enablePayLater ? <PayLater history={history} /> : <PayFirst history={history} />;
 }
 
 Cart.displayName = 'Cart';

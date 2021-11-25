@@ -60,6 +60,8 @@ export const loadCartStatus = createAsyncThunk(
     try {
       const result = await fetchCartStatus(options);
 
+      dispatch(cartActionCreators.updateCart(result));
+
       if (prevCartVersion !== result.version) {
         await dispatch(loadCart());
       }
@@ -77,10 +79,10 @@ export const queryCartAndStatus = () => async dispatch => {
   try {
     const queryCartStatus = () => {
       queryCartAndStatus.timer = setTimeout(async () => {
-        const { payload } = await dispatch(loadCartStatus());
+        const { receiptNumber } = await dispatch(loadCartStatus()).unwrap();
 
-        if (payload.receiptNumber) {
-          clearTimeout(queryCartAndStatus.timer);
+        if (receiptNumber) {
+          await clearTimeout(queryCartAndStatus.timer);
 
           return;
         }
@@ -235,7 +237,7 @@ export const queryCartSubmissionStatus = submissionId => dispatch => {
           return;
         }
 
-        const { payload: submission } = await dispatch(loadCartSubmissionStatus(submissionId));
+        const submission = await dispatch(loadCartSubmissionStatus(submissionId)).unwrap();
 
         if (submission.status !== CART_SUBMISSION_STATUS.PENDING) {
           clearTimeout(queryCartSubmissionStatus.timer);

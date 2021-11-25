@@ -909,9 +909,13 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
   return _get(businessInfo, 'timezoneOffset', 480);
 });
 
-export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo =>
-  _get(businessInfo, 'qrOrderingSettings.enablePayLater', false)
-);
+// TODO: Utils.getOrderTypeFromUrl() will replace be selector
+export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo => {
+  return (
+    _get(businessInfo, 'qrOrderingSettings.enablePayLater', false) &&
+    Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN
+  );
+});
 
 export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
   const deliveryTypes = stores.reduce((types, store) => {

@@ -59,6 +59,7 @@ const initialState = {
     clearCart: API_REQUEST_STATUS.FULFILLED,
   },
   id: null,
+  status: null,
   receiptNumber: null,
   version: 0,
   total: 0,
