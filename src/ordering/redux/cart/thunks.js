@@ -175,7 +175,9 @@ export const clearCart = createAsyncThunk('ordering/app/cart/clearCart', async (
   }
 
   try {
-    await deleteCart(options);
+    const result = await deleteCart(options);
+
+    return result;
   } catch (error) {
     console.error(error);
 
