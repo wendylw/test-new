@@ -37,10 +37,10 @@
   border: none;
   background: transparent;
 
-  &__fixed-wrapper {
-    position: fixed;
-    bottom: 3.8vw;
-    right: 3.8vw;
+  &__absolute-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
 
   &__icon {

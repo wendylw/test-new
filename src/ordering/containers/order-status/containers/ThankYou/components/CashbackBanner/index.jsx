@@ -34,7 +34,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
       <button
         className={`${
           isBannerVisible ? 'invisible' : 'visible'
-        } cashback-floating-button cashback-floating-button__fixed-wrapper flex flex-column flex-middle margin-bottom-normal`}
+        } cashback-floating-button cashback-floating-button__absolute-wrapper flex flex-column flex-middle margin-normal`}
         onClick={toggleBannerHandler}
       >
         <img src={IconGiveCashBag} className="cashback-floating-button__icon" alt="Beep Cash Bag" />
