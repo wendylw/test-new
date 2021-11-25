@@ -120,7 +120,7 @@ class CompleteProfileModal extends Component {
     });
 
     this.props.profileAction.doNotAskAgain();
-    this.closeProfileModal();
+    this.props.closeModal();
   };
 
   handleBackEdit = () => {
