@@ -86,7 +86,9 @@ export const getCartSubmittedStatus = state =>
   state.app.cart.status === CART_SUBMISSION_STATUS.COMPLETED;
 
 export const getCartSubmissionPendingStatus = state =>
-  state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
+  state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING ||
+  state.app.cart.status === CART_SUBMISSION_STATUS.PENDING;
 
 export const getCartSubmissionFailedStatus = state =>
-  state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED;
+  state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED ||
+  state.app.cart.status === CART_SUBMISSION_STATUS.FAILED;
