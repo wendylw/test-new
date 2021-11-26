@@ -151,15 +151,16 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.REJECTED;
     },
     [clearCart.pending.type]: state => {
-      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.PENDING;
+      state.requestStatus.clearCart = API_REQUEST_STATUS.PENDING;
     },
     [clearCart.fulfilled.type]: state => {
       state = initialState;
-      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.FULFILLED;
+
+      return state;
     },
     [clearCart.rejected.type]: (state, { error }) => {
-      state.error.removeCartItemsById = error;
-      state.requestStatus.removeCartItemsById = API_REQUEST_STATUS.REJECTED;
+      state.error.clearCart = error;
+      state.requestStatus.clearCart = API_REQUEST_STATUS.REJECTED;
     },
     [submitCart.pending.type]: state => {
       state.submission.requestStatus = API_REQUEST_STATUS.PENDING;
