@@ -103,6 +103,10 @@ class CompleteProfileModal extends Component {
   };
 
   closeProfileModal = () => {
+    this.props.closeModal();
+  };
+
+  clickSkipForNow = () => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
     this.props.closeModal();
   };
@@ -186,7 +190,7 @@ class CompleteProfileModal extends Component {
               <div className="padding-top-bottom-smaller padding-left-right-normal text-right">
                 <button
                   className="button button__link text-size-big padding-top-bottom-normal flex__shrink-fixed"
-                  onClick={this.closeProfileModal}
+                  onClick={this.clickSkipForNow}
                 >
                   {t('SkipForNow')}
                 </button>
