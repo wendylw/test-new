@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants from '../../../../../../utils/constants';
-import { CASHBACK_CAN_CLAIM } from '../constants';
+import { CASHBACK_CAN_CLAIM, BEFORE_PAID_STATUS_LIST } from '../constants';
 import {
   getOrder,
   getOrderStatus,
@@ -101,11 +101,17 @@ export const getCanCashbackClaim = createSelector(
   cashbackInfo => cashbackInfo.status === CASHBACK_CAN_CLAIM
 );
 
-export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInfo, (cashback, businessInfo) => {
-  const { enableCashback } = businessInfo || {};
-  const hasCashback = !!cashback;
-  return enableCashback && hasCashback;
-});
+export const getIsCashbackAvailable = createSelector(
+  getCashback,
+  getOrderStatus,
+  getBusinessInfo,
+  (cashback, orderStatus, businessInfo) => {
+    const { enableCashback } = businessInfo || {};
+    const hasCashback = !!cashback;
+    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+    return enableCashback && hasCashback && hasOrderPaid;
+  }
+);
 
 export const getHasCashbackClaimed = createSelector(
   getCanCashbackClaim,
