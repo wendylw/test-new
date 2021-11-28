@@ -690,6 +690,12 @@ export const PROMOTION_CLIENT_TYPES = {
   WEB: 'web',
 };
 
+export const ORDER_FINISH_WAY = {
+  PAYMENT: 'payment',
+  CASHBACK: 'cashback',
+  PAYATCOUNTER: 'payAtCounter',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -740,4 +746,5 @@ export default {
   ORDER_SOURCE,
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
   PROMOTION_CLIENT_TYPES,
+  ORDER_FINISH_WAY,
 };

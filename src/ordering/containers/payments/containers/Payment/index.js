@@ -210,7 +210,12 @@ class Payment extends Component {
           }}
         >
           {this.renderPaymentList()}
-          <PayByCash onPayWithCash={redirectUrl => (window.location = redirectUrl)} />
+          <PayByCash
+            onPayWithCash={redirectUrl => {
+              Utils.setCookieVariable('__ty_source', 'payAtCounter');
+              window.location = redirectUrl;
+            }}
+          />
         </div>
 
         <footer

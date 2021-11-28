@@ -96,6 +96,7 @@ class CreateOrderButton extends React.Component {
       }
 
       if (thankYouPageUrl) {
+        Utils.setCookieVariable('__ty_source', 'cashback');
         loggly.log('ordering.to-thank-you', { orderId });
         window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
 

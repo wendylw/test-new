@@ -66,13 +66,14 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { actions as appActionCreators } from '../../../../redux/modules/app';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, ORDER_FINISH_WAY } = Constants;
 const BEFORE_PAID_STATUS_LIST = [
   ORDER_STATUS.CREATED,
   ORDER_STATUS.PENDING_PAYMENT,
   ORDER_STATUS.PENDING_VERIFICATION,
   ORDER_STATUS.PAYMENT_CANCELLED,
 ];
+const AFTER_PAID_STATUS_LIST = [ORDER_FINISH_WAY.PAYMENT, ORDER_FINISH_WAY.CASHBACK, ORDER_FINISH_WAY.PAYATCOUNTER];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -117,6 +118,11 @@ export class ThankYou extends PureComponent {
   }
 
   showCompleteProfileIfNeeded = async () => {
+    const { orderStatus } = this.props;
+    if (this.state.from === 'payAtCounter' && BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
+      return;
+    }
+
     const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
 
     if (isDoNotAsk === '1') {
@@ -125,7 +131,7 @@ export class ThankYou extends PureComponent {
 
     const { name, email, birthday, status } = this.props.user.profile || {};
 
-    if (status === 'fulfilled') {
+    if (status === 'fulfilled' && AFTER_PAID_STATUS_LIST.includes(this.state.from)) {
       if (!name || !email || !birthday) {
         this.timer = setTimeout(() => {
           this.props.setShowProfileVisibility(true);
@@ -358,7 +364,7 @@ export class ThankYou extends PureComponent {
       loadStoreIdHashCode,
     } = this.props;
 
-    if (this.props.user.profile !== prevProps.user.profile) {
+    if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
       this.showCompleteProfileIfNeeded();
     }
 
@@ -833,7 +839,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {order && this.state.from === 'payment' && (
+        {order && (
           <CompleteProfileModal
             closeModal={this.handleCompleteProfileModalClose}
             showProfileVisibility={this.props.profileModalVisibility}
