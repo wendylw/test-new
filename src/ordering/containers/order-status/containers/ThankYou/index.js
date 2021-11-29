@@ -731,6 +731,7 @@ export class ThankYou extends PureComponent {
         email={userInfoForLiveChat.email}
         name={userInfoForLiveChat.name}
         phone={userInfoForLiveChat.phone}
+        storeName={orderStoreName}
       />
     );
   }

@@ -313,6 +313,7 @@ export class OrderDetails extends Component {
         email={userInfoForLiveChat.email}
         name={userInfoForLiveChat.name}
         phone={userInfoForLiveChat.phone}
+        storeName={orderStoreName}
       />
     );
   }

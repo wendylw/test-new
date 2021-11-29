@@ -29,3 +29,12 @@
 iframe#launcher {
   display: none;
 }
+
+.button {
+  &:disabled,
+  &__disabled {
+    color: #00b0ff;
+    background-color: transparent;
+    opacity: 0.5;
+  }
+}
