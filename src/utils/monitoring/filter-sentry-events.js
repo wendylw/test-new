@@ -95,7 +95,7 @@ const isGoogleAnalytics = event => {
   }
 };
 
-const isIgnoreObjectNotFoundMatchingId = hint => {
+const isIgnoreObjectNotFoundMatchingId = (event, hint) => {
   // it seems to be a error caused by Microsoft's crawler. Refer to: https://forum.sentry.io/t/unhandledrejection-non-error-promise-rejection-captured-with-value/14062,
   // so we can ignore it.
   try {
