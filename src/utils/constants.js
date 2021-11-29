@@ -690,10 +690,11 @@ export const PROMOTION_CLIENT_TYPES = {
   WEB: 'web',
 };
 
-export const ORDER_FINISH_WAY = {
+export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',
   CASHBACK: 'cashback',
   PAYATCOUNTER: 'payAtCounter',
+  LOGIN: 'login',
 };
 
 export default {
@@ -746,5 +747,5 @@ export default {
   ORDER_SOURCE,
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
   PROMOTION_CLIENT_TYPES,
-  ORDER_FINISH_WAY,
+  REFERRER_SOURCE_TYPES,
 };

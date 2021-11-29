@@ -56,7 +56,10 @@ const getNotDeliveryTitleAndDescription = (orderStatus, shippingType, paymentMet
     };
   }
 
-  if (paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE && orderStatus === ORDER_STATUS.PENDING_PAYMENT) {
+  if (
+    paymentMethod === '' ||
+    (paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE && orderStatus === ORDER_STATUS.PENDING_PAYMENT)
+  ) {
     return {
       titleKey: 'PayAtCounter',
       descriptionKey: 'PendingPaymentDescription',

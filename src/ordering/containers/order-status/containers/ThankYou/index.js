@@ -66,14 +66,18 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { actions as appActionCreators } from '../../../../redux/modules/app';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, ORDER_FINISH_WAY } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
 const BEFORE_PAID_STATUS_LIST = [
   ORDER_STATUS.CREATED,
   ORDER_STATUS.PENDING_PAYMENT,
   ORDER_STATUS.PENDING_VERIFICATION,
   ORDER_STATUS.PAYMENT_CANCELLED,
 ];
-const AFTER_PAID_STATUS_LIST = [ORDER_FINISH_WAY.PAYMENT, ORDER_FINISH_WAY.CASHBACK, ORDER_FINISH_WAY.PAYATCOUNTER];
+const AFTER_PAID_STATUS_LIST = [
+  REFERRER_SOURCE_TYPES.PAYMENT,
+  REFERRER_SOURCE_TYPES.CASHBACK,
+  REFERRER_SOURCE_TYPES.PAYATCOUNTER,
+];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
