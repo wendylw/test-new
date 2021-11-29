@@ -23,6 +23,7 @@ import {
   getCartBilling,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
+  getShippingType,
 } from '../../../../redux/modules/app';
 import { IconError } from '../../../../../components/Icons';
 import { loadStockStatus } from '../../redux/common/thunks';
@@ -479,6 +480,7 @@ class PayFirst extends Component {
       history,
       storeInfoForCleverTap,
       pendingCheckingInventory,
+      shippingType,
     } = this.props;
     const { cartContainerHeight } = this.state;
     const { qrOrderingSettings, name } = businessInfo || {};
@@ -541,10 +543,12 @@ class PayFirst extends Component {
             height: cartContainerHeight,
           }}
         >
-          <div className="ordering-cart__warning padding-small flex flex-middle flex-center">
-            <IconError className="icon icon__primary icon__smaller" />
-            <span>{t('PayNowToPlaceYourOrder')}</span>
-          </div>
+          {shippingType === Constants.DELIVERY_METHOD.DINE_IN ? (
+            <div className="ordering-cart__warning padding-small flex flex-middle flex-center">
+              <IconError className="icon icon__primary icon__smaller" />
+              <span>{t('PayNowToPlaceYourOrder')}</span>
+            </div>
+          ) : null}
           {this.renderCartList()}
           <Billing
             billingRef={ref => (this.billingEl = ref)}
@@ -619,6 +623,7 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
+        shippingType: getShippingType(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
