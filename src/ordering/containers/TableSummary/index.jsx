@@ -185,7 +185,6 @@ export class TableSummary extends React.Component {
       total,
       cashback,
       shippingFee,
-      enableSubmissionOrderStatus,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
