@@ -693,7 +693,7 @@ export const PROMOTION_CLIENT_TYPES = {
 export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',
   CASHBACK: 'cashback',
-  PAYATCOUNTER: 'payAtCounter',
+  PAY_AT_COUNTER: 'payAtCounter',
   LOGIN: 'login',
 };
 

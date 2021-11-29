@@ -73,10 +73,10 @@ const BEFORE_PAID_STATUS_LIST = [
   ORDER_STATUS.PENDING_VERIFICATION,
   ORDER_STATUS.PAYMENT_CANCELLED,
 ];
-const AFTER_PAID_STATUS_LIST = [
+const REFERRERS_REQUIRING_PROFILE = [
   REFERRER_SOURCE_TYPES.PAYMENT,
   REFERRER_SOURCE_TYPES.CASHBACK,
-  REFERRER_SOURCE_TYPES.PAYATCOUNTER,
+  REFERRER_SOURCE_TYPES.PAY_AT_COUNTER,
 ];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
@@ -124,7 +124,7 @@ export class ThankYou extends PureComponent {
   showCompleteProfileIfNeeded = async () => {
     const { orderStatus } = this.props;
     //Explain: The profile page is not displayed before the order is paid
-    if (this.state.from === 'payAtCounter' && BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
+    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
       return;
     }
 
@@ -136,7 +136,7 @@ export class ThankYou extends PureComponent {
 
     const { name, email, birthday, status } = this.props.user.profile || {};
 
-    if (status === 'fulfilled' && AFTER_PAID_STATUS_LIST.includes(this.state.from)) {
+    if (status === 'fulfilled' && REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
       if (!name || !email || !birthday) {
         this.timer = setTimeout(() => {
           this.props.setShowProfileVisibility(true);
