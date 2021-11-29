@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
 
-function SubmitOrderConfirm({ modalDisplay }) {
+function SubmitOrderConfirm({ processing }) {
   const { t } = useTranslation('OrderingDelivery');
+  const [modalDisplayState, setModalDisplayState] = useState(false);
+
+  const handleToggleModal = useCallback(status => {
+    setModalDisplayState(status);
+  }, []);
 
   return (
     <>
-      <Modal className="submit-order-confirm" show={modalDisplay}>
+      <Modal className="submit-order-confirm" show={modalDisplayState}>
         <Modal.Body className="text-center padding-small">
           <h2 className="padding-small text-size-biggest text-line-height-base text-weight-bolder text-capitalize">
             {t('PayNow')}
@@ -22,7 +28,7 @@ function SubmitOrderConfirm({ modalDisplay }) {
         <Modal.Footer className="flex flex-stretch">
           <button
             className="submit-order-confirm__default-button button button__link flex__fluid-content text-weight-bolder text-uppercase"
-            onClick={() => {}}
+            onClick={() => handleToggleModal(false)}
           >
             {t('GoBack')}
           </button>
@@ -34,7 +40,7 @@ function SubmitOrderConfirm({ modalDisplay }) {
           </button>
         </Modal.Footer>
       </Modal>
-      <PageProcessingLoader show={false} loaderText={t('Processing')} />
+      <PageProcessingLoader show={processing} loaderText={t('Processing')} />
     </>
   );
 }
@@ -42,11 +48,11 @@ function SubmitOrderConfirm({ modalDisplay }) {
 SubmitOrderConfirm.displayName = 'SubmitOrderConfirm';
 
 SubmitOrderConfirm.propTypes = {
-  modalDisplay: PropTypes.bool,
+  processing: PropTypes.bool,
 };
 
 SubmitOrderConfirm.defaultProps = {
-  modalDisplay: false,
+  processing: false,
 };
 
-export default SubmitOrderConfirm;
+export default connect(() => ({}), {})(SubmitOrderConfirm);

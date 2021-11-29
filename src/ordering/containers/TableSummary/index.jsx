@@ -1,11 +1,14 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
+import * as NativeMethods from '../../../utils/native-methods';
+import { getUserIsLogin, getBusinessInfo, getShippingType } from '../../redux/modules/app';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Image from '../../../components/Image';
@@ -13,6 +16,8 @@ import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import SubmitOrderConfirm from './components/SubmitOrderConfirm';
 import './TableSummary.scss';
+
+const { DELIVERY_METHOD } = Constants;
 
 export class TableSummary extends React.Component {
   constructor(props) {
@@ -62,73 +67,126 @@ export class TableSummary extends React.Component {
     }
   };
 
+  handleHeaderNavFunc = () => {
+    const isWebview = Utils.isWebview();
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+
+    if (isWebview) {
+      NativeMethods.closeWebView();
+      return;
+    }
+
+    if (Utils.isTNGMiniProgram() && sourceUrl) {
+      window.location.href = sourceUrl;
+    }
+  };
+
   renderBaseInfo() {
+    const { t, orderPlacedStatus, orderPendingPaymentStatus, orderNumber, tableNumber } = this.props;
+
     return (
       <div className="table-summary__base-info">
-        {true ? (
+        {orderPlacedStatus ? (
           <div className="table-summary__base-info-status--created flex flex-middle padding-small">
             <IconChecked className="icon icon__success padding-small" />
-            <span className="margin-left-right-smaller text-size-big">Order Placed</span>
+            <span className="margin-left-right-smaller text-size-big text-capitalize">{t('OrderPlaced')}</span>
           </div>
-        ) : (
+        ) : null}
+        {orderPendingPaymentStatus ? (
           <div className="table-summary__base-info-status--locked flex flex-middle padding-small">
             <IconError className="icon icon__primary padding-small" />
-            <span className="margin-left-right-smaller text-size-big theme-color">Pending Payment</span>
+            <span className="margin-left-right-smaller text-size-big text-capitalize theme-color">
+              {t('PendingPayment')}
+            </span>
           </div>
-        )}
+        ) : null}
         <div className="padding-left-right-normal padding-top-bottom-small">
           <ul className="table-summary__base-info-list">
-            <li className="flex flex-middle flex-space-between padding-top-bottom-normal">
-              <h5 className="text-size-small text-opacity">Order Number</h5>
-              <span className="text-size-small">6789</span>
-            </li>
-            <li className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider">
-              <h5 className="text-size-small text-opacity">Table Number</h5>
-              <span className="text-size-small">T-45</span>
-            </li>
+            {orderNumber ? (
+              <li className="flex flex-middle flex-space-between padding-top-bottom-normal">
+                <h5 className="text-size-small text-opacity text-capitalize">{t('OrderNumber')}</h5>
+                <span className="text-size-small">{orderNumber}</span>
+              </li>
+            ) : null}
+            {tableNumber ? (
+              <li className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider">
+                <h5 className="text-size-small text-opacity text-capitalize">{t('TableNumber')}</h5>
+                <span className="text-size-small">{tableNumber}</span>
+              </li>
+            ) : null}
           </ul>
         </div>
       </div>
     );
   }
 
-  renderSubOrder() {
+  renderSubOrders() {
+    const { subOrdersMapping } = this.props;
+    const subOrderIds = Object.keys(subOrdersMapping);
+
+    if (!subOrderIds) {
+      return null;
+    }
+
     return (
-      <div className="table-summary__sub-order padding-top-bottom-small">
-        <div className="text-right padding-small">
-          <span className="margin-small text-opacity">Created at 15:30</span>
-        </div>
-        <ul>
-          <li key="" className="flex flex-middle flex-space-between padding-left-right-small">
-            <div className="flex">
-              <div className="table-summary__image-container flex__shrink-fixed margin-small">
-                <Image className="table-summary__image card__image" src={null} alt="" />
+      <>
+        {subOrderIds.map(subOrderId => {
+          const { submittedTime, items: subOrderItems, comments } = subOrdersMapping[subOrderId];
+
+          return (
+            <div className="table-summary__sub-order padding-top-bottom-small">
+              <div className="text-right padding-small">
+                <span className="margin-small text-opacity">Created at {submittedTime}</span>
               </div>
-              <div className="padding-small flex flex-column flex-space-between">
-                <span className="table-summary__item-title">title</span>
-                <p>
-                  <span className="table-summary__item-variations">variationTexts, variationTexts</span>
-                </p>
-                <CurrencyNumber
-                  className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
-                  money={100 * 1}
-                  numberOnly
-                />
+              <ul>
+                {subOrderItems.map(({ title, variationTexts, displayPrice, quantity }) => (
+                  <li key="" className="flex flex-middle flex-space-between padding-left-right-small">
+                    <div className="flex">
+                      <div className="table-summary__image-container flex__shrink-fixed margin-small">
+                        <Image className="table-summary__image card__image" src={null} alt="" />
+                      </div>
+                      <div className="padding-small flex flex-column flex-space-between">
+                        <span className="table-summary__item-title">{title}</span>
+                        <p className="table-summary__item-variations">{variationTexts.join(', ')}</p>
+                        <CurrencyNumber
+                          className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
+                          money={displayPrice * quantity}
+                          numberOnly
+                        />
+                      </div>
+                    </div>
+                    <span className="padding-top-bottom-small flex__shrink-fixed margin-small text-opacity">
+                      x {quantity}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="border__top-divider margin-top-bottom-small margin-left-right-normal text-opacity">
+                <p className="padding-top-bottom-normal text-line-height-base">{comments}</p>
               </div>
             </div>
-            <span className="padding-top-bottom-small flex__shrink-fixed margin-small text-opacity">x 1</span>
-          </li>
-        </ul>
-
-        <div className="border__top-divider margin-top-bottom-small margin-left-right-normal text-opacity">
-          <p className="padding-top-bottom-normal text-line-height-base">No tomatoes, more garlic</p>
-        </div>
-      </div>
+          );
+        })}
+      </>
     );
   }
 
   render() {
-    const { t, history } = this.props;
+    const {
+      t,
+      history,
+      userIsLogin,
+      businessInfo,
+      shippingType,
+      tax,
+      serviceCharge,
+      subtotal,
+      total,
+      cashback,
+      shippingFee,
+      enableSubmissionOrderStatus,
+    } = this.props;
     const { cartContainerHeight } = this.state;
 
     return (
@@ -145,7 +203,7 @@ export class TableSummary extends React.Component {
           data-heap-name="ordering.need-help.header"
           isPage={false}
           title={t('TableSummary')}
-          navFunc={() => {}}
+          navFunc={this.handleHeaderNavFunc}
         />
 
         <div
@@ -158,21 +216,24 @@ export class TableSummary extends React.Component {
           }}
         >
           {this.renderBaseInfo()}
-          {this.renderSubOrder()}
-          {this.renderSubOrder()}
+          {this.renderSubOrders()}
           <Billing
             billingRef={ref => {
               this.billingEl = ref;
             }}
             className="table-summary__billing-container"
+            tax={tax}
+            serviceCharge={serviceCharge}
+            subtotal={subtotal}
+            total={total}
+            creditsBalance={cashback}
+            shippingFee={shippingFee}
+            businessInfo={businessInfo}
+            isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
+            isLogin={userIsLogin}
             history={history}
-            tax={1}
-            serviceCharge={20}
-            subtotal={20}
-            total={20}
-            isLogin
           />
-          <SubmitOrderConfirm />
+          <SubmitOrderConfirm onSubmitOrder={() => {}} />
         </div>
         <footer
           ref={ref => {
@@ -197,11 +258,50 @@ export class TableSummary extends React.Component {
 
 TableSummary.displayName = 'TableSummary';
 
-TableSummary.propTypes = {};
+TableSummary.propTypes = {
+  orderPlacedStatus: PropTypes.bool,
+  orderPendingPaymentStatus: PropTypes.bool,
+  orderNumber: PropTypes.string,
+  tableNumber: PropTypes.string,
+  tax: PropTypes.number,
+  serviceCharge: PropTypes.number,
+  subtotal: PropTypes.number,
+  total: PropTypes.number,
+  cashback: PropTypes.number,
+  shippingFee: PropTypes.number,
+  // eslint-disable-next-line react/forbid-prop-types
+  subOrdersMapping: PropTypes.object,
+  userIsLogin: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  businessInfo: PropTypes.object,
+  shippingType: PropTypes.string,
+};
 
-TableSummary.defaultProps = {};
+TableSummary.defaultProps = {
+  orderPlacedStatus: false,
+  orderPendingPaymentStatus: false,
+  orderNumber: null,
+  tableNumber: null,
+  tax: 0,
+  serviceCharge: 0,
+  subtotal: 0,
+  total: 0,
+  cashback: 0,
+  shippingFee: 0,
+  subOrdersMapping: {},
+  userIsLogin: false,
+  businessInfo: {},
+  shippingType: null,
+};
 
 export default compose(
-  withTranslation(['OrderingDelivery']),
-  connect(() => ({}), {})
+  withTranslation(['OrderingTableSummary']),
+  connect(
+    state => ({
+      userIsLogin: getUserIsLogin(state),
+      businessInfo: getBusinessInfo(state),
+      shippingType: getShippingType(state),
+    }),
+    {}
+  )
 )(TableSummary);
