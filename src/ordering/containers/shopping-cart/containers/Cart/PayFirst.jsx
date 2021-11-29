@@ -543,7 +543,7 @@ class PayFirst extends Component {
             height: cartContainerHeight,
           }}
         >
-          {shippingType === Constants.DELIVERY_METHOD.DELIVERY ? (
+          {shippingType === Constants.DELIVERY_METHOD.DINE_IN ? (
             <div className="ordering-cart__warning padding-small flex flex-middle flex-center">
               <IconError className="icon icon__primary icon__smaller" />
               <span>{t('PayNowToPlaceYourOrder')}</span>
