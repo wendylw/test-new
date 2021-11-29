@@ -24,9 +24,7 @@ function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptD
     <>
       <Modal className="payment-item-prompt" show={modalDisplay}>
         <Modal.Body className="text-center padding-small">
-          <h2 className="padding-small text-size-biggest text-line-height-base text-weight-bolder">
-            {t('PayAtTheCashier')}
-          </h2>
+          <h2 className="padding-small text-size-biggest text-line-height-base text-weight-bolder">{t('Cash')}</h2>
           <p className="payment-item-prompt__description padding-small text-size-big text-line-height-higher">
             {t('PayByCashPromptDescription')}
           </p>

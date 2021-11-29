@@ -6,6 +6,7 @@ import Constants from '../../../../../../utils/constants';
 import { formatPickupTime } from '../../../../../../utils/datetime-lib';
 import { getBusinessDateTime } from '../../../../../../utils/store-utils';
 import Utils from '../../../../../../utils/utils';
+import { alert } from '../../../../../../common/feedback';
 import {
   getOrderStoreInfo,
   getOrderStatus,
@@ -185,7 +186,6 @@ function OrderSummary({
   businessUTCOffset,
   updateCancellationReasonVisibleState,
   onClickCancelOrderButton,
-  showMessageModal,
 }) {
   const { t } = useTranslation('OrderingThankYou');
 
@@ -197,10 +197,9 @@ function OrderSummary({
   const { total, createdTime } = order || {};
   const handleOrderCancellationButtonClick = () => {
     if (!isOrderCancellable) {
-      showMessageModal({
-        message: t('YourFoodIsOnTheWay'),
-        description: t('OrderCannotBeCancelledAsARiderFound'),
-        buttonText: t('GotIt'),
+      alert(t('OrderCannotBeCancelledAsARiderFound'), {
+        title: t('YourFoodIsOnTheWay'),
+        closeButtonContent: t('GotIt'),
       });
 
       return;
@@ -277,7 +276,6 @@ OrderSummary.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   order: PropTypes.object,
   updateCancellationReasonVisibleState: PropTypes.func,
-  showMessageModal: PropTypes.func,
   businessUTCOffset: PropTypes.number,
   // eslint-disable-next-line react/forbid-prop-types
   orderDeliveryInfo: PropTypes.object,
@@ -300,7 +298,6 @@ OrderSummary.defaultProps = {
   storeInfo: {},
   onClickCancelOrderButton: () => {},
   updateCancellationReasonVisibleState: () => {},
-  showMessageModal: () => {},
   businessUTCOffset: 480,
   onlineStoreInfo: {},
 };

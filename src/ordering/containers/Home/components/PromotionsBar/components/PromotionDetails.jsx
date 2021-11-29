@@ -6,7 +6,7 @@ import PromotionContent from './PromotionContent';
 import _isFunction from 'lodash/isFunction';
 import { withBackButtonSupport } from '../../../../../../utils/modal-back-button-support';
 
-function PromotionDetails({ onHide, promotions, show, inApp, onModalVisibilityChanged }, ref) {
+function PromotionDetails({ onHide, promotions, show, onModalVisibilityChanged }, ref) {
   const { t } = useTranslation('OrderingHome');
   const handleHide = useCallback(() => {
     _isFunction(onHide) && onHide();
@@ -40,7 +40,7 @@ function PromotionDetails({ onHide, promotions, show, inApp, onModalVisibilityCh
                 key={promo.id}
                 className="padding-top-bottom-normal padding-left-right-small text-line-height-base margin-left-right-normal border__bottom-divider"
               >
-                <PromotionContent promotion={promo} inApp={inApp} />
+                <PromotionContent promotion={promo} />
               </li>
             );
           })}

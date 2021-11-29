@@ -12,6 +12,8 @@ import {
   getBusinessInfo,
   getDeliveryInfo,
   getCategoryProductList,
+  getUserIsLogin,
+  getIsUserLoginRequestStatusInPending,
 } from '../../../redux/modules/app';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
@@ -48,32 +50,50 @@ export class Footer extends Component {
 
   postAppMessage = async () => {
     const { appActions, user } = this.props;
-    const { isLogin, isExpired } = user || {};
+    const { isExpired } = user || {};
 
-    if (isLogin) {
-      this.handleWebRedirect();
+    const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
+    if (_isNil(res)) {
+      loggly.error('ordering.home.footer', { message: 'native token is invalid' });
     } else {
-      const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
-      if (_isNil(res)) {
-        loggly.error('ordering.home.footer', { message: 'native token is invalid' });
-      } else {
-        const { access_token, refresh_token } = res;
-        await appActions.loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        });
-      }
+      const { access_token, refresh_token } = res;
+      await appActions.loginApp({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      });
+    }
+  };
+
+  loginInTngMiniProgram = async () => {
+    // TODO: handle login fail
+    await this.props.appActions.loginByTngMiniProgram();
+
+    if (this.props.isLogin) {
+      this.handleWebRedirect();
     }
   };
 
   handleRedirect = () => {
     loggly.log('footer.place-order');
 
-    if (Utils.isWebview()) {
-      this.postAppMessage();
-    } else {
-      this.handleWebRedirect();
+    if (Utils.isWebview() || Utils.isTNGMiniProgram()) {
+      if (this.props.isLogin) {
+        this.handleWebRedirect();
+        return;
+      }
+
+      if (Utils.isWebview()) {
+        this.postAppMessage();
+        return;
+      }
+
+      if (Utils.isTNGMiniProgram()) {
+        this.loginInTngMiniProgram();
+        return;
+      }
     }
+
+    this.handleWebRedirect();
   };
 
   handleWebRedirect = () => {
@@ -115,6 +135,7 @@ export class Footer extends Component {
       enablePreOrder,
       footerRef,
       style,
+      isUserLoginRequestStatusInPending,
     } = this.props;
     const { qrOrderingSettings } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
@@ -170,7 +191,8 @@ export class Footer extends Component {
               (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) ||
               this.getDisplayPrice() <= 0 ||
               (!isValidTimeToOrder && !enablePreOrder) ||
-              !isLiveOnline
+              !isLiveOnline ||
+              isUserLoginRequestStatusInPending
             }
             onClick={() => {
               onClickOrderNowButton();
@@ -221,7 +243,9 @@ export default compose(
         shoppingCart: getShoppingCart(state),
         categories: getCategoryProductList(state),
         user: getUser(state),
+        isLogin: getUserIsLogin(state),
         deliverInfo: getDeliveryInfo(state),
+        isUserLoginRequestStatusInPending: getIsUserLoginRequestStatusInPending(state),
       };
     },
     dispatch => ({

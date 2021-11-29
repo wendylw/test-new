@@ -95,6 +95,17 @@ const isGoogleAnalytics = event => {
   }
 };
 
+const isIgnoreObjectNotFoundMatchingId = event => {
+  // it seems to be a error caused by Microsoft's crawler. Refer to: https://forum.sentry.io/t/unhandledrejection-non-error-promise-rejection-captured-with-value/14062,
+  // so we can ignore it.
+  try {
+    const err = event.exception.values[0];
+    return err.value.startsWith('Object Not Found Matching Id');
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -105,7 +116,8 @@ const shouldFilter = (event, hint) => {
       isChargeEventStructureInvalid(event, hint) ||
       isDuplicateChargeId(event, hint) ||
       isTokenExpired(event, hint) ||
-      isGoogleAnalytics(event)
+      isGoogleAnalytics(event) ||
+      isIgnoreObjectNotFoundMatchingId(event)
     );
   } catch {
     return false;

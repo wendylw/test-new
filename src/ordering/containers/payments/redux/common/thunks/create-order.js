@@ -1,3 +1,4 @@
+import React from 'react';
 import { captureException } from '@sentry/react';
 import i18next from 'i18next';
 
@@ -6,13 +7,14 @@ import Utils from '../../../../../../utils/utils';
 import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
+import { callTradePay } from '../../../../../../utils/tng-utils';
+import { createPaymentDetails } from './api-info';
 
 import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
   getBusiness,
   getOnlineStoreInfo,
   getRequestInfo,
-  actions as appActions,
   getBusinessUTCOffset,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
@@ -23,6 +25,7 @@ import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import config from '../../../../../../config';
+import { alert } from '../../../../../../common/feedback';
 const { DELIVERY_METHOD } = Constants;
 
 const POLLING_INTERVAL = 3000;
@@ -101,10 +104,10 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         // action type.
         dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
       } else {
-        dispatch(
-          appActions.showMessageModal({
-            message: i18next.t('OrderingPayment:PlaceOrderFailedDescription'),
-          })
+        alert.raw(
+          <p className="padding-small text-size-biggest text-weight-bolder">
+            {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}
+          </p>
         );
       }
     }
@@ -127,7 +130,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
 
   // expectedDeliveryHour & expectedDeliveryDate will always be there if
   // there is preOrder in url
-  const orderSource = getOrderSource();
+  const orderSource = Utils.getOrderSource();
   const business = getBusiness(getState());
   const businessInfo = getBusinessByName(getState(), business);
   const { qrOrderingSettings = {} } = businessInfo || {};
@@ -229,14 +232,15 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         redirectUrl,
       },
     } = resp;
+    const result = {
+      order,
+      redirectUrl,
+    };
 
     try {
       await checkCreatedOrderStatus(order.orderId);
 
-      return {
-        order,
-        redirectUrl,
-      };
+      return result;
     } catch (error) {
       throw error;
     }
@@ -247,25 +251,13 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       // action type.
       dispatch({ type: 'ordering/payments/common/createOrderFailure', ...error });
     } else {
-      dispatch(
-        appActions.showMessageModal({
-          message: i18next.t('OrderingPayment:PlaceOrderFailedDescription'),
-        })
+      alert.raw(
+        <p className="padding-small text-size-biggest text-weight-bolder">
+          {i18next.t('OrderingPayment:PlaceOrderFailedDescription')}
+        </p>
       );
     }
   }
-};
-
-const getOrderSource = () => {
-  let orderSource = '';
-  if (Utils.isWebview()) {
-    orderSource = 'BeepApp';
-  } else if (sessionStorage.getItem('orderSource')) {
-    orderSource = 'BeepSite';
-  } else {
-    orderSource = 'BeepStore';
-  }
-  return orderSource;
 };
 
 const createVoucherOrderRequest = async payload => {
@@ -290,35 +282,47 @@ export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) =>
   const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
   const source = Utils.getOrderSource();
   const planId = getBusinessByName(state, business).planId || '';
+  const { orderId, total: amount } = order;
+  const isInternal = planId.startsWith('internal');
+  const isTNGPayment = Utils.isTNGMiniProgram();
+  const action = isTNGPayment ? redirectURL : config.storeHubPaymentEntryURL;
   const basicArgs = {
-    amount: order.total,
+    amount,
     currency: currency,
-    receiptNumber: order.orderId,
+    receiptNumber: orderId,
     businessName: business,
-    redirectURL: redirectURL,
-    webhookURL: webhookURL,
-    // paymentName: paymentProvider,
-    source: source,
-    isInternal: planId.startsWith('internal'),
+    redirectURL,
+    webhookURL,
+    source,
+    isInternal,
   };
-  submitForm(config.storeHubPaymentEntryURL, { ...basicArgs, ...paymentArgs });
-};
 
-const submitForm = (action, data) => {
-  const form = document.createElement('form');
-  form.action = action;
-  form.method = 'POST';
-  form.style.height = 0;
-  form.style.width = 0;
-  form.style.overflow = 'hidden';
-  form.style.visibility = 'hidden';
-  Object.keys(data).forEach(key => {
-    const input = document.createElement('input');
-    input.name = key;
-    input.value = data[key];
-    input.type = 'hidden';
-    form.appendChild(input);
-  });
-  document.body.appendChild(form);
-  form.submit();
+  if (isTNGPayment) {
+    try {
+      const { paymentData, paymentId } = await createPaymentDetails({
+        orderId,
+        orderSource: source,
+        paymentProvider: 'TNGMiniProgram',
+        webhookURL,
+      });
+      const { redirectionUrl: paymentUrl } = paymentData?.actionForm || {};
+
+      basicArgs.paymentId = paymentId;
+      basicArgs.paymentMethod = 'TNGMiniProgram';
+      await callTradePay(paymentUrl);
+    } catch (e) {
+      if (e.code) {
+        // TODO: This type is actually not used, because apiError does not respect action type,
+        // which is a bad practice, we will fix it in the future, for now we just keep a useless
+        // action type.
+        dispatch({ type: 'ordering/payments/common/createTngdPaymentDetailFailure', ...e });
+      } else {
+        alert(i18next.t('PaymentFailedDescription'), { title: i18next.t('PaymentFailed') });
+      }
+
+      return;
+    }
+  }
+
+  Utils.submitForm(action, { ...basicArgs, ...paymentArgs });
 };

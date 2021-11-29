@@ -13,7 +13,7 @@ import MessageModal from '../../../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import AddressChangeModal from '../../components/AddressChangeModal';
-
+import { getAddressList } from '../../redux/common/selectors';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -27,7 +27,7 @@ import {
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import { getCustomerError, actions as customerInfoActionCreators } from './redux';
-import { selectAvailableAddress } from '../../redux/common/thunks';
+import { selectAvailableAddress, loadAddressList } from '../../redux/common/thunks';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
@@ -41,8 +41,9 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    const { appActions, selectAvailableAddress } = this.props;
+    const { appActions, selectAvailableAddress, loadAddressList } = this.props;
 
+    await loadAddressList();
     await selectAvailableAddress();
     appActions.loadShoppingCart();
   }
@@ -139,12 +140,33 @@ class CustomerInfo extends Component {
     const { history, cartBilling } = this.props;
     const { total } = cartBilling || {};
 
-    if (total && !this.validateFields().show) {
+    if (total && !this.validateFields().show && !Utils.isTNGMiniProgram()) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
       });
     }
+  };
+
+  handleAddressClick = () => {
+    const { history, addressList, storeInfoForCleverTap } = this.props;
+    CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
+    if (addressList.length === 0) {
+      history.push({
+        pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
+        search: window.location.search,
+        state: {
+          type: 'add',
+        },
+      });
+      return;
+    }
+
+    history.push({
+      pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
+      search: window.location.search,
+    });
+    return;
   };
 
   renderDeliveryPickupDetail() {
@@ -177,15 +199,11 @@ class CustomerInfo extends Component {
               } flex-space-between padding-left-right-small`}
             >
               {isDeliveryType ? (
-                <Link
+                <button
                   onClick={() => {
-                    CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
+                    this.handleAddressClick();
                   }}
-                  to={{
-                    pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`,
-                    search: window.location.search,
-                  }}
-                  className="ordering-customer__button-link button__link"
+                  className="ordering-customer__address-button button button__link text-left"
                 >
                   {Boolean(addressName) ? (
                     <React.Fragment>
@@ -203,7 +221,7 @@ class CustomerInfo extends Component {
                       </p>
                     </React.Fragment>
                   )}
-                </Link>
+                </button>
               ) : (
                 <Link
                   to={{
@@ -234,7 +252,7 @@ class CustomerInfo extends Component {
                 pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
                 search: window.location.search,
                 state: {
-                  fromCustomer: true,
+                  type: 'edit',
                 },
               }}
               className="ordering-customer__address-detail-container button__link flex flex-start padding-top-bottom-smaller padding-left-right-small"
@@ -397,7 +415,7 @@ class CustomerInfo extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={processing}
-            validCreateOrder={!total && !this.validateFields().show}
+            validCreateOrder={(Utils.isTNGMiniProgram() || !total) && !this.validateFields().show}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
               this.handleBeforeCreateOrder();
@@ -438,10 +456,12 @@ export default compose(
       customerError: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      addressList: getAddressList(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       selectAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
+      loadAddressList: bindActionCreators(loadAddressList, dispatch),
       customerInfoActions: bindActionCreators(customerInfoActionCreators, dispatch),
     })
   )

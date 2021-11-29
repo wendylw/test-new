@@ -15,6 +15,7 @@ const {
   ROUTER_PATHS,
   REGISTRATION_SOURCE,
   REGISTRATION_TOUCH_POINT,
+  ORDER_SOURCE,
 } = Constants;
 const Utils = {};
 
@@ -798,27 +799,48 @@ Utils.getOpeningHours = function({
 };
 
 Utils.getOrderSource = () => {
-  let orderSource = '';
-  if (Utils.isWebview()) {
-    orderSource = 'BeepApp';
-  } else if (Utils.isFromBeepSite()) {
-    orderSource = 'BeepSite';
-  } else {
-    orderSource = 'BeepStore';
+  if (Utils.isTNGMiniProgram()) {
+    return ORDER_SOURCE.TNG_MINI_PROGRAM;
   }
-  return orderSource;
+
+  if (Utils.isWebview()) {
+    return ORDER_SOURCE.BEEP_APP;
+  }
+
+  if (Utils.isFromBeepSite()) {
+    return ORDER_SOURCE.BEEP_SITE;
+  }
+
+  return ORDER_SOURCE.BEEP_STORE;
 };
 
-Utils.getHeaderClient = () => {
-  let headerClient = '';
-  if (Utils.isAndroidWebview()) {
-    headerClient = CLIENTS.ANDROID;
-  } else if (Utils.isIOSWebview()) {
-    headerClient = CLIENTS.IOS;
-  } else {
-    headerClient = CLIENTS.WEB;
+Utils.getOrderSourceForCleverTab = () => {
+  const orderSource = Utils.getOrderSource();
+
+  const mapping = {
+    [ORDER_SOURCE.TNG_MINI_PROGRAM]: 'TNG Mini Program',
+    [ORDER_SOURCE.BEEP_APP]: 'App',
+    [ORDER_SOURCE.BEEP_SITE]: 'beepit.com',
+    [ORDER_SOURCE.BEEP_STORE]: 'Store URL',
+  };
+
+  return mapping[orderSource];
+};
+
+Utils.getClient = () => {
+  if (Utils.isTNGMiniProgram()) {
+    return CLIENTS.TNG_MINI_PROGRAM;
   }
-  return headerClient;
+
+  if (Utils.isAndroidWebview()) {
+    return CLIENTS.ANDROID;
+  }
+
+  if (Utils.isIOSWebview()) {
+    return CLIENTS.IOS;
+  }
+
+  return CLIENTS.WEB;
 };
 
 export const copyDataToClipboard = async text => {
@@ -849,18 +871,35 @@ export const copyDataToClipboard = async text => {
 };
 
 Utils.isFromBeepSite = () => {
-  // TODO: no check the value, it's a bad way
-  return Boolean(sessionStorage.getItem('orderSource'));
+  try {
+    const beepOrderingSourceUrl = Utils.getSourceUrlFromSessionStorage();
+    if (!beepOrderingSourceUrl) {
+      return false;
+    }
+    const urlObj = new URL(beepOrderingSourceUrl);
+    const hostname = urlObj.hostname;
+
+    return Utils.isSiteApp(hostname);
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 };
 
 Utils.getRegistrationTouchPoint = () => {
   const isOnCashbackPage = window.location.pathname.startsWith(ROUTER_PATHS.CASHBACK_BASE);
+  const isOnOrderHistory = window.location.pathname.startsWith(ROUTER_PATHS.ORDER_HISTORY);
+
   if (isOnCashbackPage) {
     return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
   }
 
   if (Utils.isQROrder()) {
     return REGISTRATION_TOUCH_POINT.QR_ORDER;
+  }
+
+  if (Utils.isTNGMiniProgram() && isOnOrderHistory) {
+    return REGISTRATION_TOUCH_POINT.TNG;
   }
 
   return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
@@ -880,6 +919,10 @@ Utils.getRegistrationSource = () => {
     case REGISTRATION_TOUCH_POINT.QR_ORDER:
     case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
     default:
+      if (Utils.isTNGMiniProgram()) {
+        return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
+      }
+
       if (Utils.isWebview()) {
         return REGISTRATION_SOURCE.BEEP_APP;
       }
@@ -890,6 +933,39 @@ Utils.getRegistrationSource = () => {
 
       return REGISTRATION_SOURCE.BEEP_STORE;
   }
+};
+
+Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
+
+Utils.saveSourceUrlToSessionStorage = sourceUrl => {
+  Utils.setSessionVariable('BeepOrderingSourceUrl', sourceUrl);
+};
+
+Utils.getSourceUrlFromSessionStorage = () => {
+  return Utils.getSessionVariable('BeepOrderingSourceUrl');
+};
+
+Utils.submitForm = (action, data) => {
+  const form = document.createElement('form');
+  form.action = action;
+  form.method = 'POST';
+  form.style.height = 0;
+  form.style.width = 0;
+  form.style.overflow = 'hidden';
+  form.style.visibility = 'hidden';
+
+  Object.keys(data).forEach(key => {
+    const input = document.createElement('input');
+    input.name = key;
+    input.value = data[key];
+    input.type = 'hidden';
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+
+  document.body.removeChild(form);
 };
 
 export default Utils;

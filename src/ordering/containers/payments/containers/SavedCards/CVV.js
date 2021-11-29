@@ -9,10 +9,9 @@ import CurrencyNumber from '../../../../components/CurrencyNumber';
 import Loader from '../../components/Loader';
 import Utils from '../../../../../utils/utils';
 
-import { bindActionCreators, compose } from 'redux';
+import { compose } from 'redux';
 import { getCardLabel } from '../../utils';
 import {
-  actions as appActionCreators,
   getUser,
   getOnlineStoreInfo,
   getBusiness,
@@ -25,6 +24,7 @@ import StripeCVV from './components/StripeCVV';
 import '../../styles/PaymentCreditCard.scss';
 import './CVV.scss';
 import { STRIPE_LOAD_TIME_OUT } from '../Stripe/constants';
+import { alert } from '../../../../../common/feedback';
 
 class CardCVV extends Component {
   state = {
@@ -59,14 +59,11 @@ class CardCVV extends Component {
     if (this.state.isCvvComponentReady) {
       return;
     }
-    const { t, history, showMessageModal } = this.props;
+    const { t, history } = this.props;
 
     console.error('Load Stripe time out');
 
-    showMessageModal({
-      message: t('TimeOut'),
-      description: t('ConnectionIssue'),
-    });
+    alert(t('ConnectionIssue'), { title: t('TimeOut') });
 
     history.goBack();
   };
@@ -216,21 +213,16 @@ CardCVV.displayName = 'CardCVV';
 
 export default compose(
   withTranslation(['OrderingPayment']),
-  connect(
-    state => {
-      return {
-        merchantCountry: getMerchantCountry(state),
-        cardList: getCardList(state),
-        cartBilling: getCartBilling(state),
-        selectedPaymentCard: getSelectedPaymentCard(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        user: getUser(state),
-        business: getBusiness(state),
-        businessInfo: getBusinessInfo(state),
-      };
-    },
-    dispatch => ({
-      showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
-    })
-  )
+  connect(state => {
+    return {
+      merchantCountry: getMerchantCountry(state),
+      cardList: getCardList(state),
+      cartBilling: getCartBilling(state),
+      selectedPaymentCard: getSelectedPaymentCard(state),
+      onlineStoreInfo: getOnlineStoreInfo(state),
+      user: getUser(state),
+      business: getBusiness(state),
+      businessInfo: getBusinessInfo(state),
+    };
+  })
 )(CardCVV);

@@ -1,5 +1,7 @@
+import dsBridge from 'dsbridge';
 import tids from './tracing-id';
 import _isPlainObject from 'lodash/isPlainObject';
+import _once from 'lodash/once';
 import businessName from '../business-name';
 import Utils from '../utils';
 import debug from '../debug';
@@ -7,7 +9,29 @@ const { REACT_APP_LOGGLY_SERVICE_URL, REACT_APP_LOGGLY_TOKEN, REACT_APP_LOGGLY_T
 
 const IS_DEV_ENV = process.env.NODE_ENV === 'development';
 
+const getDeviceId = _once(() => {
+  try {
+    if (!Utils.isWebview()) {
+      return;
+    }
+
+    const stringifyResult = dsBridge.call('callNative', { method: 'userModule-getUserInfo' });
+
+    debug('Get deviceId from Native\nresult: %s', stringifyResult);
+
+    const { data } = JSON.parse(stringifyResult);
+
+    return data?.deviceId || undefined;
+  } catch {
+    return;
+  }
+});
+
 const getAppPlatform = () => {
+  if (Utils.isTNGMiniProgram()) {
+    return 'tng-mini-program';
+  }
+
   return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
 };
 
@@ -55,6 +79,7 @@ const track = async (name, data, meta = {}) => {
       path: window.location.pathname,
       app_plt: getAppPlatform(),
       ts: new Date().valueOf(),
+      deviceId: getDeviceId(),
       data,
     };
     // todo: business name, page url, user agent, env, client timestamp, ...

@@ -24,9 +24,8 @@ import {
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { fetchRedirectPageState, isSourceBeepitCom, windowSize, mainTop, marginBottom } from './utils';
+import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';
-import { BackPosition, showBackButton } from '../../../utils/backHelper';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
@@ -76,11 +75,6 @@ export class Home extends Component {
     if (Utils.isDineInType()) {
       this.checkTableId();
     }
-
-    if (isSourceBeepitCom()) {
-      const source = Utils.getQueryString('source');
-      sessionStorage.setItem('orderSource', source);
-    }
   }
   deliveryEntryEl = null;
   headerEl = null;
@@ -128,17 +122,9 @@ export class Home extends Component {
     }
   };
 
-  get navBackUrl() {
-    const source = Utils.getQueryString('source');
-    if (source) {
-      return source;
-    }
-    return config.beepitComUrl;
-  }
-
   componentDidMount = async () => {
     const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent } = this.props;
-    if (isSourceBeepitCom()) {
+    if (Utils.isFromBeepSite()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
     }
@@ -174,6 +160,13 @@ export class Home extends Component {
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
     if (!isDeliveryType && !isPickUpType) {
+      this.setState({
+        deliveryBar: false,
+      });
+      return;
+    }
+
+    if (!config.storeId) {
       this.setState({
         deliveryBar: false,
       });
@@ -460,7 +453,18 @@ export class Home extends Component {
   }
 
   handleNavBack = () => {
-    window.location.href = this.navBackUrl;
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+    if (sourceUrl) {
+      window.location.href = sourceUrl;
+      return;
+    }
+
+    if (Utils.isWebview()) {
+      NativeMethods.goBack();
+      return;
+    }
+
+    this.props.history.goBack();
   };
 
   handleToggleAside(asideName) {
@@ -486,11 +490,6 @@ export class Home extends Component {
   renderDeliverToBar() {
     const { history, deliveryInfo, storeInfoForCleverTap } = this.props;
 
-    // table ordering situation
-    if (!deliveryInfo || (!Utils.isDeliveryType() && !Utils.isPickUpType())) {
-      return null;
-    }
-
     const isValidTimeToOrder = this.isValidTimeToOrder();
     const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
 
@@ -510,10 +509,8 @@ export class Home extends Component {
     const { t, businessInfo } = this.props;
     const { stores = [] } = businessInfo;
     const pickupAddress = stores.length ? Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY) : '';
-
-    if (!config.storeId) {
-      return null;
-    }
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+    const backHomeSiteButtonVisibility = Boolean(sourceUrl) && !Utils.isWebview();
 
     return (
       <DeliverToBar
@@ -527,7 +524,7 @@ export class Home extends Component {
             data-heap-name="order.home.delivery-bar-back-btn"
             onClick={event => {
               event.preventDefault();
-              window.location.href = this.navBackUrl;
+              this.handleNavBack();
               event.stopPropagation();
             }}
           />
@@ -535,11 +532,7 @@ export class Home extends Component {
         extraInfo={`${Utils.isDeliveryType() ? t('DeliverAt') : t('PickUpOn')}${
           enablePreOrder ? ` . ${this.getExpectedDeliveryTime()}` : ` . ${t('DeliverNow', { separator: ' .' })}`
         }`}
-        showBackButton={showBackButton({
-          isValidTimeToOrder,
-          enablePreOrder,
-          backPosition: BackPosition.DELIVERY_TO,
-        })}
+        showBackButton={backHomeSiteButtonVisibility}
         gotoLocationPage={fillInDeliverToAddress}
         icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
       >
@@ -625,7 +618,7 @@ export class Home extends Component {
   };
 
   renderHeaderChildren() {
-    const { requestInfo, t } = this.props;
+    const { requestInfo, t, storeInfoForCleverTap } = this.props;
     const type = Utils.getOrderTypeFromUrl();
     const { allStore } = this.props;
     const { search } = this.state;
@@ -644,23 +637,52 @@ export class Home extends Component {
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
         return h || (allStore && allStore.length === 1) ? (
-          <IconInfoOutline className="icon icon__big text-middle flex__shrink-fixed" />
+          <IconInfoOutline
+            onClick={() => {
+              CleverTap.pushEvent('Menu Page - Click info button', storeInfoForCleverTap);
+              this.handleToggleAside(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
+            }}
+            className="icon icon__big text-middle flex__shrink-fixed"
+          />
         ) : null;
       default:
         return null;
     }
   }
 
+  getContentClassName = ({ isValidTimeToOrder, isPreOrderEnabled, shippingType, isDisplayedStoreInfoIcon }) => {
+    return !isValidTimeToOrder &&
+      isPreOrderEnabled &&
+      (shippingType === DELIVERY_METHOD.PICKUP || shippingType === DELIVERY_METHOD.DELIVERY) &&
+      isDisplayedStoreInfoIcon
+      ? 'ordering-home__store-info--enabled'
+      : '';
+  };
+
+  isBackHomeSiteButtonVisibilityOnHeader = () => {
+    // The back button has already display on delivery bar
+    // no need display on header
+    if (this.state.deliveryBar) {
+      return false;
+    }
+
+    // Only display back button for delivery order
+    if (!Utils.isDeliveryOrder()) {
+      return false;
+    }
+
+    if (Utils.isWebview()) {
+      return false;
+    }
+
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+
+    return Boolean(sourceUrl);
+  };
+
   renderHeader() {
-    const {
-      onlineStoreInfo,
-      businessInfo,
-      cartBilling,
-      deliveryInfo,
-      allStore,
-      requestInfo,
-      storeInfoForCleverTap,
-    } = this.props;
+    const { onlineStoreInfo, businessInfo, cartBilling, deliveryInfo, requestInfo, allStore } = this.props;
+    const { search } = this.state;
     const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
     const isDeliveryType = Utils.isDeliveryType();
@@ -669,10 +691,15 @@ export class Home extends Component {
     const { deliveryFee: legacyDeliveryFee, storeAddress } = deliveryInfo || {};
     const deliveryFee = cartBilling ? cartBilling.shippingFee : legacyDeliveryFee;
     const { tableId } = requestInfo || {};
-
-    const { search } = this.state;
-    const { h } = search;
-    const isCanClickHandler = !h ? !h && allStore.length && allStore.length === 1 : true;
+    const backHomeSiteButtonVisibility = this.isBackHomeSiteButtonVisibilityOnHeader();
+    const isValidTimeToOrder = this.isValidTimeToOrder();
+    const isPreOrderEnabled = this.isPreOrderEnabled();
+    const contentClassName = this.getContentClassName({
+      isValidTimeToOrder,
+      isPreOrderEnabled,
+      shippingType: Utils.getOrderTypeFromUrl(),
+      isDisplayedStoreInfoIcon: search.h || (allStore && allStore.length === 1),
+    });
 
     return (
       <Header
@@ -682,7 +709,7 @@ export class Home extends Component {
             ? `${enableCashback && defaultLoyaltyRatio ? 'flex-top' : 'flex-middle'} ordering-home__header`
             : `flex-middle border__bottom-divider ${tableId ? 'ordering-home__dine-in-header' : ''}`
         }
-        contentClassName={`${
+        contentClassName={`${contentClassName} ${
           isDeliveryType || isPickUpType
             ? enableCashback && defaultLoyaltyRatio
               ? 'flex-top'
@@ -695,22 +722,15 @@ export class Home extends Component {
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
         title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
-        onClickHandler={
-          isCanClickHandler
-            ? asideName => {
-                CleverTap.pushEvent('Menu Page - Click info button', storeInfoForCleverTap);
-                this.handleToggleAside(asideName);
-              }
-            : () => {}
-        }
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
         defaultLoyaltyRatio={defaultLoyaltyRatio}
         navFunc={this.handleNavBack}
-        isValidTimeToOrder={this.isValidTimeToOrder()}
-        enablePreOrder={this.isPreOrderEnabled()}
+        isValidTimeToOrder={isValidTimeToOrder}
+        enablePreOrder={isPreOrderEnabled}
         storeAddress={storeAddress}
+        backHomeSiteButtonVisibility={backHomeSiteButtonVisibility}
       >
         {this.renderHeaderChildren()}
       </Header>
@@ -796,6 +816,10 @@ export class Home extends Component {
     this.promotionEl = ref;
   };
 
+  handleConfirmAlcoholDenied = () => {
+    this.handleNavBack();
+  };
+
   render() {
     const {
       categories,
@@ -847,12 +871,7 @@ export class Home extends Component {
         )}
         {this.state.deliveryBar && this.renderDeliverToBar()}
         {this.renderHeader()}
-        <PromotionsBar
-          promotionRef={this.getPromotionsBarRef}
-          promotions={promotions}
-          shippingType={shippingType}
-          inApp={Utils.isWebview()}
-        />
+        <PromotionsBar promotionRef={this.getPromotionsBarRef} promotions={promotions} shippingType={shippingType} />
         {this.isRenderDeliveryFee(enableConditionalFreeShipping, freeShippingMinAmount) ? (
           <p
             ref={ref => (this.deliveryFeeEl = ref)}
@@ -996,7 +1015,11 @@ export class Home extends Component {
           enablePreOrder={this.isPreOrderEnabled()}
         />
         {shouldShowAlcoholModal ? (
-          <AlcoholModal handleLegalAge={this.handleLegalAge} country={this.getBusinessCountry()} />
+          <AlcoholModal
+            onConfirmAlcoholDenied={this.handleConfirmAlcoholDenied}
+            handleLegalAge={this.handleLegalAge}
+            country={this.getBusinessCountry()}
+          />
         ) : null}
         {this.renderOfflineModal(enableLiveOnline)}
       </section>

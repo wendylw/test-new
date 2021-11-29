@@ -84,6 +84,7 @@ const { reducer, actions } = createSlice({
     },
     [updateOrderShippingType.rejected.type]: (state, { error }) => {
       state.updateShippingTypeError = error;
+      state.updateShippingTypeStatus = 'rejected';
     },
   },
 });

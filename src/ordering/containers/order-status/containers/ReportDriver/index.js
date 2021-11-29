@@ -34,6 +34,7 @@ import { IconClose } from '../../../../../components/Icons';
 import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
+import { alert } from '../../../../../common/feedback';
 import loggly from '../../../../../utils/monitoring/loggly';
 
 const NOTE_MAX_LENGTH = 140;
@@ -48,14 +49,20 @@ class ReportDriver extends Component {
 
     await loadOrder(receiptNumber);
 
-    if (Utils.isWebview() && !user?.isLogin) {
-      const result = await NativeMethods.getTokenAsync();
-      await this.loginAppWithNativeToken(result);
-
-      const { user } = this.props;
-      if (!user.isLogin && user.isExpired) {
-        const result = await NativeMethods.tokenExpiredAsync();
+    if (!user?.isLogin) {
+      if (Utils.isWebview()) {
+        const result = await NativeMethods.getTokenAsync();
         await this.loginAppWithNativeToken(result);
+
+        const { user } = this.props;
+        if (!user.isLogin && user.isExpired) {
+          const result = await NativeMethods.tokenExpiredAsync();
+          await this.loginAppWithNativeToken(result);
+        }
+      }
+
+      if (Utils.isTNGMiniProgram()) {
+        await this.props.loginByTngMiniProgram();
       }
     }
 
@@ -99,9 +106,18 @@ class ReportDriver extends Component {
   goBack() {
     if (Utils.isWebview()) {
       NativeMethods.goBack();
-    } else {
-      this.gotoThankYourPage();
+      return;
     }
+
+    const from = Utils.getQueryString('from');
+
+    if (from === 'orderDetails') {
+      this.props.history.goBack();
+      return;
+    }
+
+    // from sms
+    this.gotoThankYourPage();
   }
 
   gotoThankYourPage = () => {
@@ -140,13 +156,17 @@ class ReportDriver extends Component {
   };
 
   handleUploadPhoto = e => {
+    const { t } = this.props;
     // File Object https://developer.mozilla.org/en-US/docs/Web/API/File
     const file = e.target.files[0];
 
     if (file.size > UPLOAD_FILE_MAX_SIZE) {
-      this.props.showMessageModal({
-        message: this.props.t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) }),
-      });
+      alert.raw(
+        <p className="padding-small text-size-biggest text-weight-bolder">
+          {t('UploadPhotoTooLarge', { maxFileSize: UPLOAD_FILE_MAX_SIZE / (1024 * 1024) })}
+        </p>
+      );
+
       // clear the select file
       e.target.value = '';
       return;
@@ -472,12 +492,12 @@ export default compose(
       fetchReport: reportDriverThunks.fetchReport,
       submitReport: reportDriverThunks.submitReport,
       loadOrder,
-      showMessageModal: appActionCreators.showMessageModal,
       updateInputEmail: reportDriverActionCreators.updateInputEmail,
       inputEmailCompleted: reportDriverActionCreators.inputEmailCompleted,
       initialEmail: reportDriverActionCreators.initialEmail,
       getProfileInfo: appActionCreators.getProfileInfo,
       loginApp: appActionCreators.loginApp,
+      loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
     }
   )
 )(ReportDriver);

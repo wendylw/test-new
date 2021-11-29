@@ -28,9 +28,9 @@ import {
 } from '../../../../../utils/gtm';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import Utils from '../../../../../utils/utils';
+import { alert } from '../../../../../common/feedback';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import {
-  actions as appActionCreators,
   getBusiness,
   getBusinessInfo,
   getBusinessUTCOffset,
@@ -250,10 +250,6 @@ export class ThankYou extends PureComponent {
         };
       }) || [];
 
-    const orderSourceType = Utils.getOrderSource();
-    const orderSource =
-      orderSourceType === 'BeepApp' ? 'App' : orderSourceType === 'BeepSite' ? 'beepit.com' : 'Store URL';
-
     let preOrderPeriod = 0;
     if (order.isPreOrder) {
       preOrderPeriod = (new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / (60 * 60 * 1000);
@@ -271,7 +267,7 @@ export class ThankYou extends PureComponent {
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
-      'Order Source': orderSource,
+      'Order Source': Utils.getOrderSourceForCleverTab(),
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
@@ -414,16 +410,6 @@ export class ThankYou extends PureComponent {
     // immidiately remove __ty_source cookie after send the request.
     Utils.removeCookieVariable('__ty_source', '');
   };
-
-  showRiderHasFoundMessageModal() {
-    const { showMessageModal, t } = this.props;
-
-    showMessageModal({
-      message: t('YourFoodIsOnTheWay'),
-      description: t('OrderCannotBeCancelledAsARiderFound'),
-      buttonText: t('GotIt'),
-    });
-  }
 
   handleVisitMerchantInfoPage = () => {
     const { history } = this.props;
@@ -614,10 +600,10 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    const { user, shippingType } = this.props;
-    const { isWebview } = user || {};
+    const { shippingType } = this.props;
+    const hideDownloadBanner = Utils.isTNGMiniProgram() || Utils.isWebview();
 
-    if (isWebview) {
+    if (hideDownloadBanner) {
       return null;
     }
 
@@ -633,10 +619,13 @@ export class ThankYou extends PureComponent {
   }
 
   handleOrderCancellation = async ({ reason, detail }) => {
-    const { receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
+    const { t, receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
 
     if (!isOrderCancellable) {
-      this.showRiderHasFoundMessageModal();
+      alert(t('OrderCannotBeCancelledAsARiderFound'), {
+        title: t('YourFoodIsOnTheWay'),
+        closeButtonContent: t('GotIt'),
+      });
       return;
     }
 
@@ -670,6 +659,8 @@ export class ThankYou extends PureComponent {
     const { user, order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
     const userEmail = _get(user, 'profile.email', '');
+    const userPhone = _get(user, 'profile.phone', '');
+    const userName = _get(user, 'profile.name', '');
     const orderId = _get(order, 'orderId', '');
     const tableId = _get(order, 'tableId', '');
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
@@ -681,6 +672,14 @@ export class ThankYou extends PureComponent {
     if (!order) {
       return null;
     }
+
+    // TODO: doesn't ensure the user already login on thankyou page
+    // so possible getting empty value from user profile
+    const userInfoForLiveChat = {
+      email: userEmail,
+      phone: orderUserPhone || userPhone,
+      name: orderUserName || userName,
+    };
 
     const rightContentOfTableId = {
       text: tableId ? t('TableIdText', { tableId }) : '',
@@ -705,9 +704,9 @@ export class ThankYou extends PureComponent {
         onClick: () => {
           NativeMethods.startChat({
             orderId,
-            name: orderUserName,
-            phone: orderUserPhone,
-            email: userEmail,
+            name: userInfoForLiveChat.name,
+            phone: userInfoForLiveChat.phone,
+            email: userInfoForLiveChat.email,
             storeName: orderStoreName,
           });
         },
@@ -726,7 +725,14 @@ export class ThankYou extends PureComponent {
       return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
+    return (
+      <LiveChat
+        orderId={orderId}
+        email={userInfoForLiveChat.email}
+        name={userInfoForLiveChat.name}
+        phone={userInfoForLiveChat.phone}
+      />
+    );
   }
 
   handleHeaderNavFunc = () => {
@@ -736,6 +742,7 @@ export class ThankYou extends PureComponent {
     const type = Utils.getOrderTypeFromUrl();
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (isOrderBeforePaid) {
       history.goBack();
@@ -744,6 +751,11 @@ export class ThankYou extends PureComponent {
 
     if (isWebview) {
       NativeMethods.closeWebView();
+      return;
+    }
+
+    if (Utils.isTNGMiniProgram() && sourceUrl) {
+      window.location.href = sourceUrl;
       return;
     }
 
@@ -766,7 +778,7 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, businessInfo, businessUTCOffset, showMessageModal, onlineStoreInfo } = this.props;
+    const { t, history, match, order, businessInfo, businessUTCOffset, onlineStoreInfo } = this.props;
     const date = new Date();
     const { total } = order || {};
     const { enableCashback } = businessInfo || {};
@@ -815,7 +827,6 @@ export class ThankYou extends PureComponent {
             <CashbackInfo enableCashback={enableCashback} />
             <OrderSummary
               history={history}
-              showMessageModal={showMessageModal}
               businessUTCOffset={businessUTCOffset}
               onlineStoreInfo={onlineStoreInfo}
               onClickCancelOrderButton={this.handleClickCancelOrderButton}
@@ -826,13 +837,17 @@ export class ThankYou extends PureComponent {
               className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
             >
               <span>&copy; {date.getFullYear()} </span>
-              <a
-                className="ordering-thanks__button-footer-link button button__link padding-small"
-                href="https://www.storehub.com/"
-                data-heap-name="ordering.thank-you.storehub-link"
-              >
-                {t('StoreHub')}
-              </a>
+              {Utils.isTNGMiniProgram() ? (
+                <span className="padding-small">{t('StoreHub')}</span>
+              ) : (
+                <a
+                  className="ordering-thanks__button-footer-link button button__link padding-small"
+                  href="https://www.storehub.com/"
+                  data-heap-name="ordering.thank-you.storehub-link"
+                >
+                  {t('StoreHub')}
+                </a>
+              )}
             </footer>
           </div>
         </>
@@ -881,7 +896,6 @@ export default compose(
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
-      showMessageModal: bindActionCreators(appActionCreators.showMessageModal, dispatch),
     })
   )
 )(ThankYou);

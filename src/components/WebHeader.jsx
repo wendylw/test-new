@@ -58,7 +58,7 @@ class WebHeader extends Component {
             <IconClose className={iconClassName} data-heap-name="common.header.close-btn" onClick={navFunc} />
           )}
           <h2
-            className="header__title text-size-big text-weight-bolder text-middle text-middle text-omit__single-line"
+            className="header__title text-size-big text-weight-bolder text-middle text-omit__single-line"
             data-testid="headerTitle"
           >
             {title}
@@ -89,14 +89,16 @@ WebHeader.propTypes = {
 
 WebHeader.defaultProps = {
   headerRef: null,
-  className: '',
+  className: 'flex-middle border__bottom-divider',
+  contentClassName: 'flex-middle',
   style: {},
-  isPage: false,
-  title: '',
-  navFunc: () => {},
+  isPage: true,
+  title: window.document.title,
+  navFunc: () => {
+    window.history.back();
+  },
   dataAttributes: {},
   rightContent: null,
-  contentClassName: null,
 };
 
 export const WebHeaderComponent = WebHeader;

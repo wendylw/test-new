@@ -1,9 +1,9 @@
 {
   "StoreHub": "StoreHub",
-  "StoreHubBeep": "StoreHub | Beep",
   "OK": "OK",
   "Open": "Open",
   "Close": "Close",
+  "Cancel": "Cancel",
   "Remove": "Remove",
   "PreOrder": "Pre-Order",
   "Continue": "Continue",
@@ -166,7 +166,7 @@
   "CompleteYourProfile": "Complete Your Profile",
   "CompleteProfileTip": "Complete your profile to get updated on relevant offers & promotions by our partner merchants!",
   "DeliveryTo": "Delivery To",
-  "AddNewAddress": "Add new address",
+  "AddNewAddress": "Add New Address",
   "SavedAddress": "Saved Address",
   "OutOfRange": "OUT OF RANGE",
   "ContactDetails": "Contact Details",
@@ -193,5 +193,14 @@
   "CommonErrorMessage": "Whoops, this page isn't available",
   "ErrorId": "Error ID: {{ id }}",
   "LowStockProductQuantity": "only {{quantityOnHand}} left",
-  "EmailAddress": "Email Address (optional)"
+  "EmailAddress": "Email Address (optional)",
+  "MyOrderHistory": "My Order History",
+  "TermsOfService": "Terms of Service",
+  "PrivacyPolicy": "Privacy Policy",
+  "Beep": "Beep",
+  "GotIt": "Got It",
+  "Beepit.com": "Beepit.com",
+  "BeepApp": "Beep App",
+  "BeepTngMiniProgram": "Beep Mini Program via the Touch ’n Go eWallet app",
+  "EditCart": "Edit Cart"
 }
