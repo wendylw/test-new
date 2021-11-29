@@ -212,7 +212,7 @@ class Payment extends Component {
           {this.renderPaymentList()}
           <PayByCash
             onPayWithCash={redirectUrl => {
-              Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAYATCOUNTER);
+              Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
               window.location = redirectUrl;
             }}
           />

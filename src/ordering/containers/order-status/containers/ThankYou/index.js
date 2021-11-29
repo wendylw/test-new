@@ -76,7 +76,7 @@ const BEFORE_PAID_STATUS_LIST = [
 const REFERRERS_REQUIRING_PROFILE = [
   REFERRER_SOURCE_TYPES.PAYMENT,
   REFERRER_SOURCE_TYPES.CASHBACK,
-  REFERRER_SOURCE_TYPES.PAYATCOUNTER,
+  REFERRER_SOURCE_TYPES.PAY_AT_COUNTER,
 ];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
@@ -124,7 +124,7 @@ export class ThankYou extends PureComponent {
   showCompleteProfileIfNeeded = async () => {
     const { orderStatus } = this.props;
     //Explain: The profile page is not displayed before the order is paid
-    if (this.state.from === REFERRER_SOURCE_TYPES.PAYATCOUNTER && BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
+    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
       return;
     }
 
