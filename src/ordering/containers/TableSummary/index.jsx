@@ -128,6 +128,7 @@ export class TableSummary extends React.Component {
       return;
     }
 
+    // TODO: May be need complete other status behavior
     console.error('order status is not created or pending payment');
   };
 
