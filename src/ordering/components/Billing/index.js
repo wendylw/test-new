@@ -5,7 +5,7 @@ import CurrencyNumber from '../CurrencyNumber';
 import Constants from '../../../utils/constants';
 import CleverTap from '../../../utils/clevertap';
 import './Billing.scss';
-export class Billing extends Component {
+class Billing extends Component {
   renderServiceCharge() {
     const { t, serviceCharge, businessInfo } = this.props;
     const { enableServiceCharge = false, serviceChargeRate = 0 } = businessInfo;
