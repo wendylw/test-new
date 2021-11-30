@@ -14,7 +14,8 @@ class LiveChat extends Component {
   }
 
   launchIntercomMessenger() {
-    const { name, phone, email, userId, hasUserLoggedIn } = this.props;
+    const { name, phone, email, userId, hasUserLoggedIn, orderId, storeName } = this.props;
+    const orderInfo = { order_id: orderId, store_name: storeName };
 
     const userModeInfo = hasUserLoggedIn ? { user_id: userId, name, email, phone } : {};
 
@@ -22,7 +23,9 @@ class LiveChat extends Component {
       app_id: process.env.REACT_APP_INTERCOM_APP_ID,
       custom_launcher_selector: '#beep-live-chat-launcher',
       hide_default_launcher: true,
+      department: 'beep',
       ...userModeInfo,
+      ...orderInfo,
     };
 
     const loadHandler = () => {
@@ -77,13 +80,9 @@ class LiveChat extends Component {
   }
 
   handleClick = () => {
-    const { t, orderId, storeName } = this.props;
     const { orderSent } = this.state;
     if (!orderSent) {
-      window.Intercom(
-        'showNewMessage',
-        `Order number: ${orderId}\nStore name: ${storeName}\n${t('ClickSendButtonHint', { ns: 'LiveChat' })}`
-      );
+      window.Intercom('showNewMessage');
       this.setState({ orderSent: true });
     }
   };
