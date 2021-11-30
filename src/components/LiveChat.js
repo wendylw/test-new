@@ -85,9 +85,7 @@ class LiveChat extends Component {
 
     return (
       <button
-        className={
-          'button live-chat flex flex-middle flex__shrink-fixed padding-left-right-small padding-top-bottom-normal'
-        }
+        className="button live-chat flex flex-middle flex__shrink-fixed padding-left-right-small padding-top-bottom-normal"
         onClick={this.handleClick}
         id="beep-live-chat-launcher"
         disabled={!hasIntercomLoaded}
