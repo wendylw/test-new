@@ -6,24 +6,17 @@ import { IconLeftArrow, IconClose, IconMotorcycle, IconWallet } from './Icons';
 import Tag from './Tag';
 import Image from './Image';
 import Utils from '../utils/utils';
-import Constants from '../utils/constants';
 import CurrencyNumber from '../ordering/components/CurrencyNumber';
-import { BackPosition, showBackButton } from '../utils/backHelper';
 import withDataAttributes from './withDataAttributes';
 import './Header.scss';
 
+// TODO: This Header component will be deprecated
 class Header extends Component {
   renderLogoAndNavDom() {
-    const { isStoreHome, isPage, logo, title, isValidTimeToOrder, enablePreOrder, navFunc } = this.props;
+    const { isStoreHome, isPage, logo, title, backHomeSiteButtonVisibility, navFunc } = this.props;
 
     const renderPageAction = () => {
-      const isHomePageBack =
-        isStoreHome &&
-        showBackButton({
-          isValidTimeToOrder,
-          enablePreOrder,
-          backPosition: BackPosition.STORE_NAME,
-        });
+      const isHomePageBack = isStoreHome && backHomeSiteButtonVisibility;
 
       if (!isStoreHome || isHomePageBack) {
         const iconClassName = `icon ${
@@ -61,7 +54,6 @@ class Header extends Component {
       isStoreHome,
       title,
       children,
-      onClickHandler,
       deliveryFee,
       isValidTimeToOrder,
       enablePreOrder,
@@ -87,17 +79,7 @@ class Header extends Component {
     }
 
     return (
-      <header
-        ref={headerRef}
-        style={style}
-        className={classList.join(' ')}
-        {...dataAttributes}
-        onClick={() => {
-          if (isDeliveryType || isPickUpType) {
-            onClickHandler(Constants.ASIDE_NAMES.DELIVERY_DETAIL);
-          }
-        }}
-      >
+      <header ref={headerRef} style={style} className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')}>
           {this.renderLogoAndNavDom()}
           {isDeliveryHomePage ? (
@@ -163,7 +145,6 @@ Header.propTypes = {
   title: PropTypes.string,
   storeAddress: PropTypes.string,
   navFunc: PropTypes.func,
-  onClickHandler: PropTypes.func,
   isValidTimeToOrder: PropTypes.bool,
   enableCashback: PropTypes.bool,
   defaultLoyaltyRatio: PropTypes.number,
@@ -180,7 +161,6 @@ Header.defaultProps = {
   storeAddress: '',
   defaultLoyaltyRatio: 0,
   navFunc: () => {},
-  onClickHandler: () => {},
   isDeliveryType: Utils.isDeliveryType(),
   isPickUpType: Utils.isPickUpType(),
 };

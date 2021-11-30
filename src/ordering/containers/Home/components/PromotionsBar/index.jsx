@@ -6,6 +6,8 @@ import { SHIPPING_TYPES_MAPPING, DELIVERY_METHOD } from './constants';
 import PromotionContent from './components/PromotionContent';
 import PromotionDetails from './components/PromotionDetails';
 import '../PromotionsBar.scss';
+import { PROMOTION_CLIENT_TYPES } from '../../../../../utils/constants';
+import { getCurrentPromotionClientType } from '../../utils';
 
 const PROMOTIONS_MAX_DISPLAY_COUNT = 2;
 class PromotionsBar extends PureComponent {
@@ -14,8 +16,10 @@ class PromotionsBar extends PureComponent {
   };
 
   checkPromotionVisible = promotion => {
-    const { shippingType, inApp } = this.props;
+    const { shippingType } = this.props;
     const { appliedSources, appliedClientTypes } = promotion;
+
+    const currentClientType = getCurrentPromotionClientType();
 
     const source = SHIPPING_TYPES_MAPPING[shippingType || DELIVERY_METHOD.DELIVERY];
 
@@ -23,7 +27,16 @@ class PromotionsBar extends PureComponent {
       return false;
     }
 
-    if (inApp && !appliedClientTypes.includes('app')) {
+    if (!appliedClientTypes.includes(currentClientType)) {
+      // Beep web can display app promotion
+      if (currentClientType === PROMOTION_CLIENT_TYPES.WEB) {
+        const hasAppClient = appliedClientTypes.includes(PROMOTION_CLIENT_TYPES.APP);
+
+        if (hasAppClient) {
+          return true;
+        }
+      }
+
       return false;
     }
 
@@ -31,13 +44,11 @@ class PromotionsBar extends PureComponent {
   };
 
   renderSingle(promotion) {
-    const { inApp } = this.props;
-
     return (
       <div className="flex flex-middle padding-small">
         <IconLocalOffer className="icon icon__primary icon__smaller" />
         <p className="margin-left-right-smaller text-line-height-base padding-left-right-smaller">
-          <PromotionContent inApp={inApp} promotion={promotion} />
+          <PromotionContent promotion={promotion} />
         </p>
       </div>
     );
@@ -56,7 +67,7 @@ class PromotionsBar extends PureComponent {
   };
 
   renderMultiple(promotions) {
-    const { inApp, t } = this.props;
+    const { t } = this.props;
 
     return (
       <React.Fragment>
@@ -66,7 +77,7 @@ class PromotionsBar extends PureComponent {
               <li key={promo.id} className="flex flex-middle">
                 <IconLocalOffer className="icon icon__primary icon__smaller" />
                 <p className="text-line-height-base text-omit__single-line padding-left-right-smaller">
-                  <PromotionContent singleLine={true} inApp={inApp} promotion={promo} />
+                  <PromotionContent singleLine={true} promotion={promo} />
                 </p>
               </li>
             ))}
@@ -78,12 +89,7 @@ class PromotionsBar extends PureComponent {
             {t('ViewPromo')}
           </button>
         </div>
-        <PromotionDetails
-          onHide={this.handleHideDetails}
-          show={this.state.detailsVisible}
-          promotions={promotions}
-          inApp={inApp}
-        />
+        <PromotionDetails onHide={this.handleHideDetails} show={this.state.detailsVisible} promotions={promotions} />
       </React.Fragment>
     );
   }
@@ -117,12 +123,10 @@ PromotionsBar.propTypes = {
   ]),
   promotions: PropTypes.array,
   shippingType: PropTypes.oneOf(Object.values(DELIVERY_METHOD)),
-  inApp: PropTypes.bool,
 };
 
 PromotionsBar.defaultProps = {
   promotions: [],
-  inApp: false,
 };
 
 export default withTranslation('OrderingHome')(PromotionsBar);

@@ -6,6 +6,7 @@ import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
+import Cookies from 'js-cookie';
 dayjs.extend(utc);
 
 const {
@@ -15,6 +16,7 @@ const {
   ROUTER_PATHS,
   REGISTRATION_SOURCE,
   REGISTRATION_TOUCH_POINT,
+  ORDER_SOURCE,
 } = Constants;
 const Utils = {};
 
@@ -96,33 +98,13 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return top + height - windowScrolledTop - topAdjustment;
 };
 
-Utils.getCookieVariable = function getCookieVariable(name, scope) {
-  let keyEQ = scope + name + '=';
-  let ca = document.cookie.split(';');
-
-  for (let i = 0, len = ca.length; i < len; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(keyEQ) === 0 && c.substring(keyEQ.length, c.length) !== '')
-      return c.substring(keyEQ.length, c.length);
-  }
-
-  return null;
-};
-
-Utils.setCookieVariable = function setCookieVariable(name, value, scope = '') {
-  document.cookie = scope + name + '=' + value + '; path=/';
-};
-
-Utils.removeCookieVariable = function removeCookieVariable(name, scope) {
-  document.cookie = scope + name + '=; path=/';
-};
-
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
-    Utils.getCookieVariable(name, 'localStorage_');
+    const { getCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    getCookieVariable(cookieNameOfLocalStorage);
   }
 };
 
@@ -131,7 +113,9 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    Utils.setCookieVariable(name, value, 'localStorage_');
+    const { setCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    setCookieVariable(cookieNameOfLocalStorage, value);
   }
 };
 
@@ -139,7 +123,9 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    Utils.removeCookieVariable(name, 'localStorage_');
+    const { removeCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    removeCookieVariable(cookieNameOfLocalStorage);
   }
 };
 
@@ -147,7 +133,9 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   try {
     return sessionStorage.getItem(name);
   } catch (e) {
-    Utils.getCookieVariable(name, 'sessionStorage_');
+    const { getCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    getCookieVariable(cookieNameOfSessionStorage);
   }
 };
 
@@ -156,7 +144,9 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
-    Utils.setCookieVariable(name, value, 'sessionStorage_');
+    const { setCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    setCookieVariable(cookieNameOfSessionStorage, value);
   }
 };
 
@@ -164,7 +154,9 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
     sessionStorage.removeItem(name);
   } catch (e) {
-    Utils.removeCookieVariable(name, 'sessionStorage_');
+    const { removeCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    removeCookieVariable(cookieNameOfSessionStorage);
   }
 };
 
@@ -817,27 +809,48 @@ Utils.getOpeningHours = function({
 };
 
 Utils.getOrderSource = () => {
-  let orderSource = '';
-  if (Utils.isWebview()) {
-    orderSource = 'BeepApp';
-  } else if (Utils.isFromBeepSite()) {
-    orderSource = 'BeepSite';
-  } else {
-    orderSource = 'BeepStore';
+  if (Utils.isTNGMiniProgram()) {
+    return ORDER_SOURCE.TNG_MINI_PROGRAM;
   }
-  return orderSource;
+
+  if (Utils.isWebview()) {
+    return ORDER_SOURCE.BEEP_APP;
+  }
+
+  if (Utils.isFromBeepSite()) {
+    return ORDER_SOURCE.BEEP_SITE;
+  }
+
+  return ORDER_SOURCE.BEEP_STORE;
 };
 
-Utils.getHeaderClient = () => {
-  let headerClient = '';
-  if (Utils.isAndroidWebview()) {
-    headerClient = CLIENTS.ANDROID;
-  } else if (Utils.isIOSWebview()) {
-    headerClient = CLIENTS.IOS;
-  } else {
-    headerClient = CLIENTS.WEB;
+Utils.getOrderSourceForCleverTab = () => {
+  const orderSource = Utils.getOrderSource();
+
+  const mapping = {
+    [ORDER_SOURCE.TNG_MINI_PROGRAM]: 'TNG Mini Program',
+    [ORDER_SOURCE.BEEP_APP]: 'App',
+    [ORDER_SOURCE.BEEP_SITE]: 'beepit.com',
+    [ORDER_SOURCE.BEEP_STORE]: 'Store URL',
+  };
+
+  return mapping[orderSource];
+};
+
+Utils.getClient = () => {
+  if (Utils.isTNGMiniProgram()) {
+    return CLIENTS.TNG_MINI_PROGRAM;
   }
-  return headerClient;
+
+  if (Utils.isAndroidWebview()) {
+    return CLIENTS.ANDROID;
+  }
+
+  if (Utils.isIOSWebview()) {
+    return CLIENTS.IOS;
+  }
+
+  return CLIENTS.WEB;
 };
 
 export const copyDataToClipboard = async text => {
@@ -868,18 +881,35 @@ export const copyDataToClipboard = async text => {
 };
 
 Utils.isFromBeepSite = () => {
-  // TODO: no check the value, it's a bad way
-  return Boolean(sessionStorage.getItem('orderSource'));
+  try {
+    const beepOrderingSourceUrl = Utils.getSourceUrlFromSessionStorage();
+    if (!beepOrderingSourceUrl) {
+      return false;
+    }
+    const urlObj = new URL(beepOrderingSourceUrl);
+    const hostname = urlObj.hostname;
+
+    return Utils.isSiteApp(hostname);
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 };
 
 Utils.getRegistrationTouchPoint = () => {
   const isOnCashbackPage = window.location.pathname.startsWith(ROUTER_PATHS.CASHBACK_BASE);
+  const isOnOrderHistory = window.location.pathname.startsWith(ROUTER_PATHS.ORDER_HISTORY);
+
   if (isOnCashbackPage) {
     return REGISTRATION_TOUCH_POINT.CLAIM_CASHBACK;
   }
 
   if (Utils.isQROrder()) {
     return REGISTRATION_TOUCH_POINT.QR_ORDER;
+  }
+
+  if (Utils.isTNGMiniProgram() && isOnOrderHistory) {
+    return REGISTRATION_TOUCH_POINT.TNG;
   }
 
   return REGISTRATION_TOUCH_POINT.ONLINE_ORDER;
@@ -899,6 +929,10 @@ Utils.getRegistrationSource = () => {
     case REGISTRATION_TOUCH_POINT.QR_ORDER:
     case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
     default:
+      if (Utils.isTNGMiniProgram()) {
+        return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
+      }
+
       if (Utils.isWebview()) {
         return REGISTRATION_SOURCE.BEEP_APP;
       }
@@ -909,6 +943,60 @@ Utils.getRegistrationSource = () => {
 
       return REGISTRATION_SOURCE.BEEP_STORE;
   }
+};
+
+Utils.getMainDomain = () => {
+  const hostName = window.location.hostname;
+  const arr = hostName.split('.');
+  arr.shift();
+  const result = arr.join('.');
+  return result;
+};
+
+Utils.getCookieVariable = name => {
+  return Cookies.get(name);
+};
+
+Utils.setCookieVariable = (name, value, attributes) => {
+  return Cookies.set(name, value, attributes);
+};
+
+// IMPORTANT! When deleting a cookie and you're not relying on the default attributes, you must pass the exact same path and domain attributes that were used to set the cookie
+Utils.removeCookieVariable = (name, attributes) => {
+  return Cookies.remove(name, attributes);
+};
+
+Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
+
+Utils.saveSourceUrlToSessionStorage = sourceUrl => {
+  Utils.setSessionVariable('BeepOrderingSourceUrl', sourceUrl);
+};
+
+Utils.getSourceUrlFromSessionStorage = () => {
+  return Utils.getSessionVariable('BeepOrderingSourceUrl');
+};
+
+Utils.submitForm = (action, data) => {
+  const form = document.createElement('form');
+  form.action = action;
+  form.method = 'POST';
+  form.style.height = 0;
+  form.style.width = 0;
+  form.style.overflow = 'hidden';
+  form.style.visibility = 'hidden';
+
+  Object.keys(data).forEach(key => {
+    const input = document.createElement('input');
+    input.name = key;
+    input.value = data[key];
+    input.type = 'hidden';
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+
+  document.body.removeChild(form);
 };
 
 export default Utils;

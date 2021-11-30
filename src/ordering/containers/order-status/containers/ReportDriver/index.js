@@ -49,14 +49,20 @@ class ReportDriver extends Component {
 
     await loadOrder(receiptNumber);
 
-    if (Utils.isWebview() && !user?.isLogin) {
-      const result = await NativeMethods.getTokenAsync();
-      await this.loginAppWithNativeToken(result);
-
-      const { user } = this.props;
-      if (!user.isLogin && user.isExpired) {
-        const result = await NativeMethods.tokenExpiredAsync();
+    if (!user?.isLogin) {
+      if (Utils.isWebview()) {
+        const result = await NativeMethods.getTokenAsync();
         await this.loginAppWithNativeToken(result);
+
+        const { user } = this.props;
+        if (!user.isLogin && user.isExpired) {
+          const result = await NativeMethods.tokenExpiredAsync();
+          await this.loginAppWithNativeToken(result);
+        }
+      }
+
+      if (Utils.isTNGMiniProgram()) {
+        await this.props.loginByTngMiniProgram();
       }
     }
 
@@ -100,9 +106,18 @@ class ReportDriver extends Component {
   goBack() {
     if (Utils.isWebview()) {
       NativeMethods.goBack();
-    } else {
-      this.gotoThankYourPage();
+      return;
     }
+
+    const from = Utils.getQueryString('from');
+
+    if (from === 'orderDetails') {
+      this.props.history.goBack();
+      return;
+    }
+
+    // from sms
+    this.gotoThankYourPage();
   }
 
   gotoThankYourPage = () => {
@@ -265,7 +280,7 @@ class ReportDriver extends Component {
     );
   }
 
-  renderEmailFiled({ t, inputEmail, disabled }) {
+  renderEmailField({ t, inputEmail, disabled }) {
     const { value, isCompleted, isValid } = inputEmail;
 
     const showInvalidError = isCompleted && !isValid;
@@ -374,8 +389,8 @@ class ReportDriver extends Component {
         ></HybridHeader>
 
         <div className="ordering-report-driver__container padding-top-bottom-small">
-          <div className="card padding-small margin-small">
-            {this.renderEmailFiled({
+          <div className="card padding-small margin-normal">
+            {this.renderEmailField({
               t,
               disabled,
               inputEmail,
@@ -482,6 +497,7 @@ export default compose(
       initialEmail: reportDriverActionCreators.initialEmail,
       getProfileInfo: appActionCreators.getProfileInfo,
       loginApp: appActionCreators.loginApp,
+      loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
     }
   )
 )(ReportDriver);

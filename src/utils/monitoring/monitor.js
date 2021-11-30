@@ -92,11 +92,11 @@ const trackError = (event, hint) => {
   try {
     const errorMessage = getErrorMessageFromHint(hint);
     loggly.error('common.error', { message: errorMessage, sentryId: event?.event_id });
-    try {
-      throw new SentryCapturedError(errorMessage);
-    } catch (err) {
-      window.newrelic?.noticeError(err, { sentryId: event?.event_id });
-    }
+
+    window.newrelic?.addPageAction('common.error', {
+      message: errorMessage,
+      sentryId: event?.event_id,
+    });
   } catch (e) {
     console.log(e);
   }

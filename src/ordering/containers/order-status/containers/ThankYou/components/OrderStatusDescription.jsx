@@ -58,7 +58,7 @@ const getNotDeliveryTitleAndDescription = (orderStatus, shippingType, paymentMet
 
   if (paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE && orderStatus === ORDER_STATUS.PENDING_PAYMENT) {
     return {
-      titleKey: 'PayAtTheCashier',
+      titleKey: 'PayAtCounter',
       descriptionKey: 'PendingPaymentDescription',
       emoji: null,
     };
