@@ -9,6 +9,25 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import * as NativeMethods from '../../../utils/native-methods';
 import { getUserIsLogin, getBusinessInfo, getShippingType } from '../../redux/modules/app';
+import {
+  querySubOrders as querySubOrdersThunk,
+  updateSubmitOrderConfirmDisplay as updateSubmitOrderConfirmDisplayThunk,
+} from './redux/thunks';
+import {
+  getOrderNumber,
+  getTableNumber,
+  getOrderTax,
+  getOrderServiceCharge,
+  getOrderSubtotal,
+  getOrderTotal,
+  getOrderCashback,
+  getOrderShippingFee,
+  getOrderPlacedStatus,
+  getOrderPendingPaymentStatus,
+  getOrderCompletedStatus,
+  getSubOrdersMapping,
+  getThankYouPageUrl,
+} from './redux/selector';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Image from '../../../components/Image';
@@ -17,7 +36,7 @@ import Billing from '../../components/Billing';
 import SubmitOrderConfirm from './components/SubmitOrderConfirm';
 import './TableSummary.scss';
 
-const { DELIVERY_METHOD } = Constants;
+const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
 export class TableSummary extends React.Component {
   constructor(props) {
@@ -28,7 +47,11 @@ export class TableSummary extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    const { querySubOrders } = this.props;
+
+    await querySubOrders();
+
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
@@ -37,6 +60,12 @@ export class TableSummary extends React.Component {
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
+
+    const { orderCompletedStatus, thankYouPageUrl } = this.props;
+
+    if (orderCompletedStatus && thankYouPageUrl) {
+      window.location.href = thankYouPageUrl;
+    }
   }
 
   setCartContainerHeight = preContainerHeight => {
@@ -79,6 +108,27 @@ export class TableSummary extends React.Component {
     if (Utils.isTNGMiniProgram() && sourceUrl) {
       window.location.href = sourceUrl;
     }
+  };
+
+  handleConfirmOrderSubmissionOrGotoPaymentPage = () => {
+    const { history, orderPlacedStatus, orderPendingPaymentStatus, updateSubmitOrderConfirmDisplay } = this.props;
+
+    if (orderPlacedStatus) {
+      updateSubmitOrderConfirmDisplay(true);
+
+      return;
+    }
+
+    if (orderPendingPaymentStatus) {
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+
+      return;
+    }
+
+    console.error('order status is not created or pending payment');
   };
 
   renderBaseInfo() {
@@ -139,11 +189,11 @@ export class TableSummary extends React.Component {
                 <span className="margin-small text-opacity">Created at {submittedTime}</span>
               </div>
               <ul>
-                {subOrderItems.map(({ title, variationTexts, displayPrice, quantity }) => (
+                {subOrderItems.map(({ title, variationTexts, displayPrice, quantity, image }) => (
                   <li key="" className="flex flex-middle flex-space-between padding-left-right-small">
                     <div className="flex">
                       <div className="table-summary__image-container flex__shrink-fixed margin-small">
-                        <Image className="table-summary__image card__image" src={null} alt="" />
+                        <Image className="table-summary__image card__image" src={image} alt="" />
                       </div>
                       <div className="padding-small flex flex-column flex-space-between">
                         <span className="table-summary__item-title">{title}</span>
@@ -185,6 +235,7 @@ export class TableSummary extends React.Component {
       total,
       cashback,
       shippingFee,
+      orderPendingPaymentStatus,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -244,10 +295,9 @@ export class TableSummary extends React.Component {
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
-            onClick={() => {}}
-            disabled={false}
+            onClick={this.handleConfirmOrderSubmissionOrGotoPaymentPage}
           >
-            {t('PayNow')}
+            {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
           </button>
         </footer>
       </section>
@@ -260,6 +310,7 @@ TableSummary.displayName = 'TableSummary';
 TableSummary.propTypes = {
   orderPlacedStatus: PropTypes.bool,
   orderPendingPaymentStatus: PropTypes.bool,
+  orderCompletedStatus: PropTypes.bool,
   orderNumber: PropTypes.string,
   tableNumber: PropTypes.string,
   tax: PropTypes.number,
@@ -274,11 +325,15 @@ TableSummary.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   businessInfo: PropTypes.object,
   shippingType: PropTypes.string,
+  thankYouPageUrl: PropTypes.string,
+  querySubOrders: PropTypes.func,
+  updateSubmitOrderConfirmDisplay: PropTypes.func,
 };
 
 TableSummary.defaultProps = {
   orderPlacedStatus: false,
   orderPendingPaymentStatus: false,
+  orderCompletedStatus: false,
   orderNumber: null,
   tableNumber: null,
   tax: 0,
@@ -291,16 +346,35 @@ TableSummary.defaultProps = {
   userIsLogin: false,
   businessInfo: {},
   shippingType: null,
+  thankYouPageUrl: null,
+  querySubOrders: () => {},
+  updateSubmitOrderConfirmDisplay: () => {},
 };
 
 export default compose(
   withTranslation(['OrderingTableSummary']),
   connect(
     state => ({
+      orderPlacedStatus: getOrderPlacedStatus(state),
+      orderPendingPaymentStatus: getOrderPendingPaymentStatus(state),
+      orderCompletedStatus: getOrderCompletedStatus(state),
+      orderNumber: getOrderNumber(state),
+      tableNumber: getTableNumber(state),
+      tax: getOrderTax(state),
+      serviceCharge: getOrderServiceCharge(state),
+      subtotal: getOrderSubtotal(state),
+      total: getOrderTotal(state),
+      cashback: getOrderCashback(state),
+      shippingFee: getOrderShippingFee(state),
+      subOrdersMapping: getSubOrdersMapping(state),
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
+      thankYouPageUrl: getThankYouPageUrl(state),
     }),
-    {}
+    {
+      querySubOrders: querySubOrdersThunk,
+      updateSubmitOrderConfirmDisplay: updateSubmitOrderConfirmDisplayThunk,
+    }
   )
 )(TableSummary);

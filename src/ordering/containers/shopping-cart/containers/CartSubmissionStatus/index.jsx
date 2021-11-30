@@ -9,7 +9,6 @@ import {
 } from '../../../../redux/cart/selectors';
 import { queryCartSubmissionStatus, clearQueryCartSubmissionStatus } from '../../../../redux/cart/thunks';
 import { withTranslation } from 'react-i18next';
-import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import orderSuccessImage from '../../../../../images/order-success.png';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
@@ -18,8 +17,7 @@ import './CartSubmissionStatus.scss';
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
     const { queryCartSubmissionStatus, cartSubmittedStatus, history } = this.props;
-    const submissionId = Utils.getQueryString('submissionId');
-    await queryCartSubmissionStatus(submissionId);
+    await queryCartSubmissionStatus();
 
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
