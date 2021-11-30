@@ -7,11 +7,16 @@ import { getUserConsumerId, getUserIsLogin } from '../ordering/redux/modules/app
 import './LiveChat.scss';
 
 class LiveChat extends Component {
-  state = { hasIntercomLoaded: false, orderSent: false };
+  state = { hasScriptLoaded: false, orderSent: false };
 
-  componentDidMount() {
-    this.launchIntercomMessenger();
-  }
+  componentDidMount = async () => {
+    try {
+      await this.launchIntercomMessenger();
+      this.setState({ hasScriptLoaded: true });
+    } catch (e) {
+      this.setState({ hasScriptLoaded: false });
+    }
+  };
 
   launchIntercomMessenger() {
     const { name, phone, email, userId, hasUserLoggedIn } = this.props;
@@ -19,7 +24,7 @@ class LiveChat extends Component {
     const userModeInfo = hasUserLoggedIn ? { user_id: userId, name, email, phone } : {};
 
     window.intercomSettings = {
-      app_id: 'v2axofpf',
+      app_id: process.env.REACT_APP_INTERCOM_APP_ID,
       custom_launcher_selector: '#beep-live-chat-launcher',
       hide_default_launcher: true,
       ...userModeInfo,
@@ -30,12 +35,14 @@ class LiveChat extends Component {
     if (typeof intercom === 'function') {
       intercom('reattach_activator');
       intercom('update', window.intercomSettings);
+      return Promise.resolve();
     } else {
-      this.loadIntercomScript();
+      return this.loadIntercomScript();
     }
   }
 
   loadIntercomScript() {
+    // Copy from official script
     const i = function(...args) {
       i.c(args);
     };
@@ -44,27 +51,21 @@ class LiveChat extends Component {
       i.q.push(args);
     };
     window.Intercom = i;
-    if (document.readyState === 'complete') {
-      this.createIntercomScript();
-    } else if (window.attachEvent) {
-      window.attachEvent('onload', this.createIntercomScript());
-    } else {
-      window.addEventListener('load', this.createIntercomScript(), false);
-    }
-  }
 
-  createIntercomScript() {
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.src = 'https://widget.intercom.io/widget/v2axofpf';
-    const element = document.getElementsByTagName('script')[0];
-    element.parentNode.insertBefore(script, element);
-    script.addEventListener('load', () => this.setState({ hasIntercomLoaded: true }), false);
+    const intercomScript = document.createElement('script');
+    intercomScript.src = process.env.REACT_APP_INTERCOM_SCRIPT_URL;
+    intercomScript.async = true;
+    intercomScript.defer = true;
+    document.body.appendChild(intercomScript);
+
+    return new Promise((resolve, reject) => {
+      intercomScript.onload = resolve;
+      intercomScript.onerror = reject;
+    });
   }
 
   componentWillUnmount() {
-    window.Intercom('shutdown');
+    window.Intercom && window.Intercom('shutdown');
   }
 
   handleClick = () => {
@@ -81,16 +82,16 @@ class LiveChat extends Component {
 
   render() {
     const { t } = this.props;
-    const { hasIntercomLoaded } = this.state;
+    const { hasScriptLoaded } = this.state;
 
     return (
       <button
         className="button live-chat flex flex-middle flex__shrink-fixed padding-left-right-small padding-top-bottom-normal"
         onClick={this.handleClick}
         id="beep-live-chat-launcher"
-        disabled={!hasIntercomLoaded}
+        disabled={!hasScriptLoaded}
       >
-        {!hasIntercomLoaded && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
+        {!hasScriptLoaded && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
         <div className="live-chat__loading-text margin-left-right-smaller">{`${t('NeedHelp')}?`}</div>
       </button>
     );
