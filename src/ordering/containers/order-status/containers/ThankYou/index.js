@@ -37,7 +37,7 @@ import {
   getOnlineStoreInfo,
   getUser,
 } from '../../../../redux/modules/app';
-import { loadOrder } from '../../redux/thunks';
+import { loadOrder, loadOrderStatus } from '../../redux/thunks';
 import {
   getOrder,
   getOrderStatus,
@@ -61,8 +61,6 @@ import {
 import { getCashbackInfo, getStoreHashCode, getOrderCancellationReasonAsideVisible } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
-import OrderStatusDescription from './components/OrderStatusDescription';
-import LogisticsProcessing from './components/LogisticsProcessing';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
@@ -325,7 +323,7 @@ export class ThankYou extends PureComponent {
   };
 
   loadOrder = async () => {
-    const { loadOrder, receiptNumber } = this.props;
+    const { loadOrder, loadOrderStatus, receiptNumber } = this.props;
 
     await loadOrder(receiptNumber);
 
