@@ -6,6 +6,7 @@ import {
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
   getCartSubmissionPendingStatus,
+  getCartSubmissionReceiptNumber,
 } from '../../../../redux/cart/selectors';
 import { queryCartSubmissionStatus, clearQueryCartSubmissionStatus } from '../../../../redux/cart/thunks';
 import { withTranslation } from 'react-i18next';
@@ -16,27 +17,27 @@ import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
-    const { queryCartSubmissionStatus, cartSubmittedStatus, history } = this.props;
+    const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber } = this.props;
     await queryCartSubmissionStatus();
 
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-        search: window.location.search,
+        search: `${window.location.search}&receiptNumber=${receiptNumber}`,
       });
     }
   };
 
   componentDidUpdate = prevProps => {
-    const { cartSubmittedStatus } = this.props;
+    const { cartSubmittedStatus, receiptNumber } = this.props;
     const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
     if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
       this.timer = setTimeout(() => {
         this.props.history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-          search: window.location.search,
+          search: `${window.location.search}&receiptNumber=${receiptNumber}`,
         });
       }, 1500);
     }
@@ -117,6 +118,7 @@ export default compose(
         cartSubmittedStatus: getCartSubmittedStatus(state),
         cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
         cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
+        receiptNumber: getCartSubmissionReceiptNumber(state),
       };
     },
     dispatch => ({
