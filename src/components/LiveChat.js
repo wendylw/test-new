@@ -9,14 +9,9 @@ import './LiveChat.scss';
 class LiveChat extends Component {
   state = { hasScriptLoaded: false, orderSent: false };
 
-  componentDidMount = async () => {
-    try {
-      await this.launchIntercomMessenger();
-      this.setState({ hasScriptLoaded: true });
-    } catch (e) {
-      this.setState({ hasScriptLoaded: false });
-    }
-  };
+  componentDidMount() {
+    this.launchIntercomMessenger();
+  }
 
   launchIntercomMessenger() {
     const { name, phone, email, userId, hasUserLoggedIn } = this.props;
@@ -30,38 +25,51 @@ class LiveChat extends Component {
       ...userModeInfo,
     };
 
-    const intercom = window.Intercom;
-
-    if (typeof intercom === 'function') {
-      intercom('reattach_activator');
-      intercom('update', window.intercomSettings);
-      return Promise.resolve();
-    } else {
-      return this.loadIntercomScript();
-    }
-  }
-
-  loadIntercomScript() {
-    // Copy from official script
-    const i = function(...args) {
-      i.c(args);
+    const loadHandler = () => {
+      this.setState({ hasScriptLoaded: true });
     };
-    i.q = [];
-    i.c = args => {
-      i.q.push(args);
+
+    const errorHandler = () => {
+      delete window.Intercom;
+      this.setState({ hasScriptLoaded: false });
     };
-    window.Intercom = i;
 
-    const intercomScript = document.createElement('script');
-    intercomScript.src = process.env.REACT_APP_INTERCOM_SCRIPT_URL;
-    intercomScript.async = true;
-    intercomScript.defer = true;
-    document.body.appendChild(intercomScript);
-
-    return new Promise((resolve, reject) => {
-      intercomScript.onload = resolve;
-      intercomScript.onerror = reject;
-    });
+    // Copy from intercom JS library
+    (function() {
+      var w = window;
+      var ic = w.Intercom;
+      if (typeof ic === 'function') {
+        ic('reattach_activator');
+        ic('update', w.intercomSettings);
+      } else {
+        var d = document;
+        var i = function() {
+          i.c(arguments);
+        };
+        i.q = [];
+        i.c = function(args) {
+          i.q.push(args);
+        };
+        w.Intercom = i;
+        var l = function() {
+          var s = d.createElement('script');
+          s.type = 'text/javascript';
+          s.async = true;
+          s.src = process.env.REACT_APP_INTERCOM_SCRIPT_URL;
+          var x = d.getElementsByTagName('script')[0];
+          x.parentNode.insertBefore(s, x);
+          s.onload = loadHandler;
+          s.onerror = errorHandler;
+        };
+        if (document.readyState === 'complete') {
+          l();
+        } else if (w.attachEvent) {
+          w.attachEvent('onload', l);
+        } else {
+          w.addEventListener('load', l, false);
+        }
+      }
+    })();
   }
 
   componentWillUnmount() {
