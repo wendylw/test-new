@@ -124,7 +124,8 @@ export class ThankYou extends PureComponent {
   showCompleteProfileIfNeeded = async () => {
     const { orderStatus } = this.props;
     //Explain: The profile page is not displayed before the order is paid
-    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
+    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && !hasOrderPaid) {
       return;
     }
 
