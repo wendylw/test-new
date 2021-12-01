@@ -14,18 +14,17 @@ class LiveChat extends Component {
   }
 
   launchIntercomMessenger() {
-    const { name, phone, email, userId, hasUserLoggedIn, orderId, storeName } = this.props;
-    const orderInfo = { order_id: orderId, store_name: storeName };
-
-    const userModeInfo = hasUserLoggedIn ? { user_id: userId, name, email, phone } : {};
+    const { name, phone, email, userId, hasUserLoggedIn, orderId: order_id, storeName: store_name } = this.props;
+    const userInfo = hasUserLoggedIn ? { user_id: userId, name, email, phone } : {};
 
     window.intercomSettings = {
       app_id: process.env.REACT_APP_INTERCOM_APP_ID,
       custom_launcher_selector: '#beep-live-chat-launcher',
       hide_default_launcher: true,
+      order_id,
+      store_name,
       department: 'beep',
-      ...userModeInfo,
-      ...orderInfo,
+      ...userInfo,
     };
 
     const loadHandler = () => {
