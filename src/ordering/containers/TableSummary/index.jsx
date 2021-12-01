@@ -28,6 +28,7 @@ import {
   getOrderCompletedStatus,
   getSubOrdersMapping,
   getThankYouPageUrl,
+  getOrderSubmissionRequestingStatus,
 } from './redux/selector';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -256,6 +257,7 @@ export class TableSummary extends React.Component {
       cashback,
       shippingFee,
       orderPendingPaymentStatus,
+      orderSubmissionRequestingStatus,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -316,6 +318,7 @@ export class TableSummary extends React.Component {
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
             onClick={this.handleConfirmOrderSubmissionOrGotoPaymentPage}
+            disabled={orderSubmissionRequestingStatus}
           >
             {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
           </button>
@@ -347,6 +350,7 @@ TableSummary.propTypes = {
   businessUTCOffset: PropTypes.number,
   shippingType: PropTypes.string,
   thankYouPageUrl: PropTypes.string,
+  orderSubmissionRequestingStatus: PropTypes.bool,
   querySubOrders: PropTypes.func,
   updateSubmitOrderConfirmDisplay: PropTypes.func,
 };
@@ -369,6 +373,7 @@ TableSummary.defaultProps = {
   businessUTCOffset: 480,
   shippingType: null,
   thankYouPageUrl: null,
+  orderSubmissionRequestingStatus: false,
   querySubOrders: () => {},
   updateSubmitOrderConfirmDisplay: () => {},
 };
@@ -394,6 +399,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
       thankYouPageUrl: getThankYouPageUrl(state),
+      orderSubmissionRequestingStatus: getOrderSubmissionRequestingStatus(state),
     }),
     {
       querySubOrders: querySubOrdersThunk,
