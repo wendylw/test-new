@@ -132,25 +132,44 @@ export class TableSummary extends React.Component {
     console.error('order status is not created or pending payment');
   };
 
+  getOrderStatusOptionsEl = () => {
+    const { t, orderPlacedStatus, orderPendingPaymentStatus } = this.props;
+    let options = null;
+
+    if (orderPlacedStatus) {
+      options = {
+        className: 'table-summary__base-info-status--created',
+        icon: <IconChecked className="icon icon__success padding-small" />,
+        title: <span className="margin-left-right-smaller text-size-big text-capitalize">{t('OrderPlaced')}</span>,
+      };
+    } else if (orderPendingPaymentStatus) {
+      options = {
+        className: 'table-summary__base-info-status--locked',
+        icon: <IconError className="icon icon__primary padding-small" />,
+        title: (
+          <span className="margin-left-right-smaller text-size-big text-capitalize theme-color">
+            {t('PendingPayment')}
+          </span>
+        ),
+      };
+    }
+
+    return (
+      options && (
+        <div className={`${options.className} flex flex-middle padding-small`}>
+          {options.icon}
+          {options.title}
+        </div>
+      )
+    );
+  };
+
   renderBaseInfo() {
-    const { t, orderPlacedStatus, orderPendingPaymentStatus, orderNumber, tableNumber } = this.props;
+    const { t, orderNumber, tableNumber } = this.props;
 
     return (
       <div className="table-summary__base-info">
-        {orderPlacedStatus ? (
-          <div className="table-summary__base-info-status--created flex flex-middle padding-small">
-            <IconChecked className="icon icon__success padding-small" />
-            <span className="margin-left-right-smaller text-size-big text-capitalize">{t('OrderPlaced')}</span>
-          </div>
-        ) : null}
-        {orderPendingPaymentStatus ? (
-          <div className="table-summary__base-info-status--locked flex flex-middle padding-small">
-            <IconError className="icon icon__primary padding-small" />
-            <span className="margin-left-right-smaller text-size-big text-capitalize theme-color">
-              {t('PendingPayment')}
-            </span>
-          </div>
-        ) : null}
+        {this.getOrderStatusOptionsEl()}
         <div className="padding-left-right-normal padding-top-bottom-small">
           <ul className="table-summary__base-info-list">
             {orderNumber ? (
@@ -174,10 +193,6 @@ export class TableSummary extends React.Component {
   renderSubOrders() {
     const { subOrdersMapping } = this.props;
     const subOrderIds = Object.keys(subOrdersMapping);
-
-    if (!subOrderIds) {
-      return null;
-    }
 
     return (
       <>
