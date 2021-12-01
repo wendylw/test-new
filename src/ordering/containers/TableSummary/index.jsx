@@ -14,7 +14,7 @@ import {
   updateSubmitOrderConfirmDisplay as updateSubmitOrderConfirmDisplayThunk,
 } from './redux/thunks';
 import {
-  getOrderNumber,
+  getOrderNumber as getOrderReceiptNumber,
   getTableNumber,
   getOrderTax,
   getOrderServiceCharge,
@@ -359,7 +359,7 @@ export default compose(
       orderPlacedStatus: getOrderPlacedStatus(state),
       orderPendingPaymentStatus: getOrderPendingPaymentStatus(state),
       orderCompletedStatus: getOrderCompletedStatus(state),
-      orderNumber: getOrderNumber(state),
+      orderReceiptNumber: getOrderReceiptNumber(state),
       tableNumber: getTableNumber(state),
       tax: getOrderTax(state),
       serviceCharge: getOrderServiceCharge(state),
