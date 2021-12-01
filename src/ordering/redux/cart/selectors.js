@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
-import { CART_SUBMISSION_STATUS } from './constants';
+import { CART_SUBMISSION_STATUS, CART_STATUS } from './constants';
 
 export const getCartVersion = state => state.app.cart.version;
 
@@ -87,12 +87,10 @@ export const getCartSubmissionReceiptNumber = state => state.app.cart.submission
 
 export const getCartSubmittedStatus = state =>
   state.app.cart.submission.status === CART_SUBMISSION_STATUS.COMPLETED ||
-  state.app.cart.status === CART_SUBMISSION_STATUS.COMPLETED;
+  state.app.cart.status === CART_STATUS.COMPLETED;
 
 export const getCartSubmissionPendingStatus = state =>
-  state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING ||
-  state.app.cart.status === CART_SUBMISSION_STATUS.PENDING;
+  state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING || state.app.cart.status === CART_STATUS.PENDING;
 
 export const getCartSubmissionFailedStatus = state =>
-  state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED ||
-  state.app.cart.status === CART_SUBMISSION_STATUS.FAILED;
+  state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED || state.app.cart.status === CART_STATUS.FAILED;

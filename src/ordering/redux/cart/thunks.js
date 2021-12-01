@@ -79,13 +79,7 @@ export const queryCartAndStatus = () => async dispatch => {
   try {
     const queryCartStatus = () => {
       queryCartAndStatus.timer = setTimeout(async () => {
-        const { receiptNumber } = await dispatch(loadCartStatus()).unwrap();
-
-        if (receiptNumber) {
-          await clearTimeout(queryCartAndStatus.timer);
-
-          return;
-        }
+        await dispatch(loadCartStatus());
 
         queryCartStatus();
       }, CART_VERSION_AND_STATUS_INTERVAL);
