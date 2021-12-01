@@ -8,6 +8,7 @@ import payments from '../../containers/payments/redux';
 import customer from '../../containers/Customer/redux';
 import locationAndDate from './locationAndDate';
 import orderStatus from '../../containers/order-status/redux';
+import tableSummary from '../../containers/TableSummary/redux';
 
 const rootReducer = combineReducers({
   entities,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   promotion,
   locationAndDate,
   orderStatus,
+  tableSummary,
 });
 
 export default rootReducer;
