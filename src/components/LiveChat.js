@@ -7,7 +7,7 @@ import { getUserConsumerId, getUserIsLogin } from '../ordering/redux/modules/app
 import './LiveChat.scss';
 
 class LiveChat extends Component {
-  state = { hasScriptLoaded: false, orderSent: false };
+  state = { hasScriptLoaded: false };
 
   componentDidMount() {
     this.launchIntercomMessenger();
