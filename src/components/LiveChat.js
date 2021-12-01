@@ -80,11 +80,7 @@ class LiveChat extends Component {
   }
 
   handleClick = () => {
-    const { orderSent } = this.state;
-    if (!orderSent) {
-      window.Intercom('showNewMessage');
-      this.setState({ orderSent: true });
-    }
+    window.Intercom('show');
   };
 
   render() {
