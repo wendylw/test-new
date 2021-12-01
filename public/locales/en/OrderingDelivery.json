@@ -18,5 +18,7 @@
   "PickUpTimeAndAddressTitle": "Pickup Time & Address",
   "AddressChangeTitle": "Your delivery address has been changed",
   "AddressChangeDescription": "Based on the new address location, the delivery charges is now ",
-  "ReportDriver": "Report Driver"
+  "ReportDriver": "Report Driver",
+  "TableSummary": "Table summary",
+  "SubmitOrderPromptDescription": "Cart will be locked until payment is completed"
 }

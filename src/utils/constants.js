@@ -24,7 +24,7 @@ const ROUTER_PATHS = {
   ORDERING_CUSTOMER_INFO: '/customer',
   ORDERING_CART: '/cart',
   ORDERING_CART_SUBMISSION_STATUS: '/cart/cart-submission',
-  ORDERING_TABLE_SUMMARY: '/cart/table-summary',
+  ORDERING_TABLE_SUMMARY: '/table-summary',
   ORDERING_PROMOTION: '/promotion',
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
