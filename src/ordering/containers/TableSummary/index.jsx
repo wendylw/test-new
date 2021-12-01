@@ -284,7 +284,7 @@ export class TableSummary extends React.Component {
             isLogin={userIsLogin}
             history={history}
           />
-          <SubmitOrderConfirm onSubmitOrder={() => {}} />
+          <SubmitOrderConfirm />
         </div>
         <footer
           ref={ref => {

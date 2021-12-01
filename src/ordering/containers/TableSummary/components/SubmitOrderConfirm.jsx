@@ -16,7 +16,6 @@ function SubmitOrderConfirm({
   updateSubmitOrderConfirmDisplay,
   processing,
   submitSubOrders,
-  onSubmitOrder,
 }) {
   const { t } = useTranslation('OrderingDelivery');
 
@@ -53,7 +52,6 @@ function SubmitOrderConfirm({
             className="submit-order-confirm__fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
             onClick={() => {
               submitSubOrders();
-              onSubmitOrder();
             }}
           >
             {t('PayNow')}
@@ -72,7 +70,6 @@ SubmitOrderConfirm.propTypes = {
   updateSubmitOrderConfirmDisplay: PropTypes.func,
   processing: PropTypes.bool,
   submitSubOrders: PropTypes.func,
-  onSubmitOrder: PropTypes.func,
 };
 
 SubmitOrderConfirm.defaultProps = {
@@ -80,7 +77,6 @@ SubmitOrderConfirm.defaultProps = {
   updateSubmitOrderConfirmDisplay: () => {},
   processing: false,
   submitSubOrders: () => {},
-  onSubmitOrder: () => {},
 };
 
 export default connect(
