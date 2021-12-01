@@ -3,5 +3,6 @@
   "SubmitOrderPromptDescription": "Cart will be locked until payment is completed",
   "OrderPlaced": "Order placed",
   "PendingPayment": "Pending payment",
-  "SelectPaymentMethod": "Select payment method"
+  "SelectPaymentMethod": "Select payment method",
+  "CreatedOrderTime": "Created at {{submittedTime}}"
 }

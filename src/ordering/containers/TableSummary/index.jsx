@@ -6,9 +6,10 @@ import { compose } from 'redux';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import Utils from '../../../utils/utils';
+import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
 import * as NativeMethods from '../../../utils/native-methods';
-import { getUserIsLogin, getBusinessInfo, getShippingType } from '../../redux/modules/app';
+import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import {
   querySubOrders as querySubOrdersThunk,
   updateSubmitOrderConfirmDisplay as updateSubmitOrderConfirmDisplayThunk,
@@ -191,18 +192,21 @@ export class TableSummary extends React.Component {
   }
 
   renderSubOrders() {
-    const { subOrdersMapping } = this.props;
+    const { t, subOrdersMapping, businessUTCOffset } = this.props;
     const subOrderIds = Object.keys(subOrdersMapping);
 
     return (
       <>
         {subOrderIds.map(subOrderId => {
           const { submittedTime, items: subOrderItems, comments } = subOrdersMapping[subOrderId];
+          const localeSubmittedTime = getLocaleTimeTo24hour(submittedTime, businessUTCOffset);
 
           return (
             <div className="table-summary__sub-order padding-top-bottom-small">
               <div className="text-right padding-small">
-                <span className="margin-small text-opacity">Created at {submittedTime}</span>
+                <span className="margin-small text-opacity">
+                  {t('CreatedOrderTime', { submittedTime: localeSubmittedTime })}
+                </span>
               </div>
               <ul>
                 {subOrderItems.map(({ title, variationTexts, displayPrice, quantity, image }) => (
@@ -340,6 +344,7 @@ TableSummary.propTypes = {
   userIsLogin: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   businessInfo: PropTypes.object,
+  businessUTCOffset: PropTypes.number,
   shippingType: PropTypes.string,
   thankYouPageUrl: PropTypes.string,
   querySubOrders: PropTypes.func,
@@ -361,6 +366,7 @@ TableSummary.defaultProps = {
   subOrdersMapping: {},
   userIsLogin: false,
   businessInfo: {},
+  businessUTCOffset: 480,
   shippingType: null,
   thankYouPageUrl: null,
   querySubOrders: () => {},
@@ -383,6 +389,7 @@ export default compose(
       cashback: getOrderCashback(state),
       shippingFee: getOrderShippingFee(state),
       subOrdersMapping: getSubOrdersMapping(state),
+      businessUTCOffset: getBusinessUTCOffset(state),
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
