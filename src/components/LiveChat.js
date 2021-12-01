@@ -114,7 +114,7 @@ LiveChat.propTypes = {
 LiveChat.displayName = 'LiveChat';
 
 export default compose(
-  withTranslation(['Common', 'LiveChat']),
+  withTranslation('Common'),
   connect(state => ({
     hasUserLoggedIn: getUserIsLogin(state),
     userId: getUserConsumerId(state),
