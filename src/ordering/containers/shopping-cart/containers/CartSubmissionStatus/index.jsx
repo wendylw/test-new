@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import {
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
-  getCartNotSubmittedStatus,
+  getCartSubmissionPendingStatus,
 } from '../../../../redux/cart/selectors';
 import { queryCartSubmissionStatus, clearQueryCartSubmissionStatus } from '../../../../redux/cart/thunks';
 import { withTranslation } from 'react-i18next';
@@ -58,11 +58,11 @@ class CartSubmissionStatus extends Component {
   };
 
   render() {
-    const { t, cartNotSubmittedStatus, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
+    const { t, cartSubmissionPendingStatus, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
 
     return (
       <section className="ordering-submission absolute-wrapper flex flex-column flex-center flex-middle">
-        {cartNotSubmittedStatus && (
+        {cartSubmissionPendingStatus && (
           <div className="margin-smaller">
             <div className="ordering-submission__loader loader default"></div>
             <p className="ordering-submission__pending-description margin-top-bottom-normal text-center text-size-big text-line-height-base">
@@ -117,7 +117,7 @@ export default compose(
     state => {
       return {
         cartSubmittedStatus: getCartSubmittedStatus(state),
-        cartNotSubmittedStatus: getCartNotSubmittedStatus(state),
+        cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
         cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
       };
     },
