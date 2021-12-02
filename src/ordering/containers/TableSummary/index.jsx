@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import _floor from 'lodash/floor';
@@ -120,7 +120,7 @@ export class TableSummary extends React.Component {
       window.location.href = sourceUrl;
     }
 
-    alert(t('UnableBackMenuDescription'), {
+    alert(<Trans t={t} i18nKey="UnableBackMenuDescription" components={{ bold: <strong /> }} />, {
       title: t('UnableBackMenuTitle'),
       closeButtonContent: t('GotIt'),
     });

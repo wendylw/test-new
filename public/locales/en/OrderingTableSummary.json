@@ -6,5 +6,5 @@
   "SelectPaymentMethod": "Select payment method",
   "CreatedOrderTime": "Created at {{submittedTime}}",
   "UnableBackMenuTitle": "Want to view the menu?",
-  "UnableBackMenuDescription": "You may only return to the menu once you completed your payment. Select ‘Pay Now’ to proceed."
+  "UnableBackMenuDescription": "You may only return to the menu once you <bold>completed your payment</bold>. Select ‘Pay Now’ to proceed."
 }
