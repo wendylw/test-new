@@ -11,6 +11,7 @@ import {
 import { queryCartSubmissionStatus, clearQueryCartSubmissionStatus } from '../../../../redux/cart/thunks';
 import { withTranslation } from 'react-i18next';
 import Constants from '../../../../../utils/constants';
+import Utils from '../../../../../utils/utils';
 import orderSuccessImage from '../../../../../images/order-success.png';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
 import './CartSubmissionStatus.scss';
@@ -24,7 +25,7 @@ class CartSubmissionStatus extends Component {
     if (cartSubmittedStatus) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-        search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+        search: `${Utils.getQueryString(undefined, ['submissionId'])}&receiptNumber=${receiptNumber}`,
       });
     }
   };
@@ -37,7 +38,7 @@ class CartSubmissionStatus extends Component {
       this.timer = setTimeout(() => {
         this.props.history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-          search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+          search: `${Utils.getQueryString(undefined, ['submissionId'])}&receiptNumber=${receiptNumber}`,
         });
       }, 1500);
     }
