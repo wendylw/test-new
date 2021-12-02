@@ -10,13 +10,13 @@ import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
 import * as NativeMethods from '../../../utils/native-methods';
 import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
+import { actions } from './redux';
 import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
-  updateSubmitOrderConfirmDisplay as updateSubmitOrderConfirmDisplayThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
 } from './redux/thunks';
 import {
-  getOrderNumber as getOrderReceiptNumber,
+  getOrderReceiptNumber,
   getTableNumber,
   getOrderTax,
   getOrderServiceCharge,
@@ -30,7 +30,7 @@ import {
   getSubOrdersMapping,
   getThankYouPageUrl,
   getOrderSubmissionRequestingStatus,
-} from './redux/selector';
+} from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { alert } from '../../../common/feedback';
@@ -123,10 +123,14 @@ export class TableSummary extends React.Component {
       return;
     }
 
-    alert(<Trans t={t} i18nKey="UnableBackMenuDescription" components={{ bold: <strong /> }} />, {
-      title: t('UnableBackMenuTitle'),
-      closeButtonContent: t('GotIt'),
-    });
+    alert(
+      <Trans t={t} i18nKey="UnableBackMenuDescription" components={{ bold: <strong className="text-size-big" /> }} />,
+      {
+        title: t('UnableBackMenuTitle'),
+        closeButtonContent: t('GotIt'),
+        className: 'table-summary__back-menu-alert',
+      }
+    );
   };
 
   handleConfirmOrderSubmissionOrGotoPaymentPage = () => {
@@ -317,7 +321,7 @@ export class TableSummary extends React.Component {
             total={total}
             creditsBalance={cashback}
             shippingFee={shippingFee}
-            businessInfo={businessInfo}
+            businessInfo={{ ...businessInfo, enableCashback: false }}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
             isLogin={userIsLogin}
             history={history}
@@ -423,7 +427,7 @@ export default compose(
     {
       queryOrdersAndStatus: queryOrdersAndStatusThunk,
       clearQueryOrdersAndStatus: clearQueryOrdersAndStatusThunk,
-      updateSubmitOrderConfirmDisplay: updateSubmitOrderConfirmDisplayThunk,
+      updateSubmitOrderConfirmDisplay: actions.updateSubmitOrderConfirmDisplay,
     }
   )
 )(TableSummary);

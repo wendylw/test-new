@@ -2,12 +2,10 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {
-  submitOrders as submitOrdersThunk,
-  updateSubmitOrderConfirmDisplay as updateSubmitOrderConfirmDisplayThunk,
-} from '../redux/thunks';
+import { actions } from '../redux';
+import { submitOrders as submitOrdersThunk } from '../redux/thunks';
 
-import { getOrderSubmissionPendingStatus, getSubmitOrderConfirmDisplayStatus } from '../redux/selector';
+import { getOrderSubmissionRequestingStatus, getSubmitOrderConfirmDisplayStatus } from '../redux/selectors';
 import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
 
@@ -77,10 +75,10 @@ SubmitOrderConfirm.defaultProps = {
 export default connect(
   state => ({
     displaySubmitOrderConfirm: getSubmitOrderConfirmDisplayStatus(state),
-    processing: getOrderSubmissionPendingStatus(state),
+    processing: getOrderSubmissionRequestingStatus(state),
   }),
   {
     submitOrders: submitOrdersThunk,
-    updateSubmitOrderConfirmDisplay: updateSubmitOrderConfirmDisplayThunk,
+    updateSubmitOrderConfirmDisplay: actions.updateSubmitOrderConfirmDisplay,
   }
 )(SubmitOrderConfirm);

@@ -112,7 +112,7 @@ class PayLater extends Component {
       const { submissionId } = result;
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
-        search: `submissionId=${submissionId}`,
+        search: `${window.location.search}&submissionId=${submissionId}`,
       });
     } catch (e) {
       if (e.code === 'place ordered') {
