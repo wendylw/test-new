@@ -217,14 +217,14 @@ export class TableSummary extends React.Component {
                 </span>
               </div>
               <ul>
-                {subOrderItems.map(({ title, variationTexts, displayPrice, quantity, image }) => (
+                {subOrderItems.map(({ productInfo, variationTexts, displayPrice, image, quantity }) => (
                   <li key="" className="flex flex-middle flex-space-between padding-left-right-small">
                     <div className="flex">
                       <div className="table-summary__image-container flex__shrink-fixed margin-small">
                         <Image className="table-summary__image card__image" src={image} alt="" />
                       </div>
                       <div className="padding-small flex flex-column flex-space-between">
-                        <span className="table-summary__item-title">{title}</span>
+                        <span className="table-summary__item-title">{productInfo.title}</span>
                         <p className="table-summary__item-variations">{variationTexts.join(', ')}</p>
                         <CurrencyNumber
                           className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
