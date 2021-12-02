@@ -31,7 +31,7 @@ import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
 
-const { ROUTER_PATHS, DELIVERY_METHOD, PAYMENT_PROVIDERS } = Constants;
+const { ROUTER_PATHS, DELIVERY_METHOD, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } = Constants;
 
 class Payment extends Component {
   state = {
@@ -210,7 +210,12 @@ class Payment extends Component {
           }}
         >
           {this.renderPaymentList()}
-          <PayByCash onPayWithCash={redirectUrl => (window.location = redirectUrl)} />
+          <PayByCash
+            onPayWithCash={redirectUrl => {
+              Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
+              window.location = redirectUrl;
+            }}
+          />
         </div>
 
         <footer

@@ -1,0 +1,13 @@
+{
+    "EmailAddress": "Email Address",
+    "DateOfBirth": "Date of Birth",
+    "CompleteYourProfile": "Complete Your Profile",
+    "NotValidEmail": "Please try again or enter a valid email address",
+    "NotValidBirthday": "Please enter a valid date of birth(dd/mm)",
+    "SkipForNow": "Skip for now",
+    "DuplicatedEmailAlertTitle": "OOPS! THIS IS AWKWARD…",
+    "DuplicatedEmailAlertEmial": "Looks like you’ve entered this email before. Please use a different email address.",
+    "DuplicatedEmailAlertDoNotAskAgain": "DON’T ASK AGAIN",
+    "DuplicatedEmailAlertBackToEdit": "BACK TO EDIT"
+  }
+  

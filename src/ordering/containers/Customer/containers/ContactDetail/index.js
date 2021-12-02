@@ -22,6 +22,7 @@ class ContactDetail extends Component {
 
   handleClickBack = () => {
     const { history } = this.props;
+
     history.push({
       pathname: constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
       search: window.location.search,
@@ -57,7 +58,7 @@ class ContactDetail extends Component {
                     data-heap-name="ordering.contact-details.name-input"
                     type="text"
                     placeholder={t('Name')}
-                    value={username}
+                    value={username || ''}
                     onChange={e => {
                       updateUserName(e.target.value);
                     }}
