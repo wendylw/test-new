@@ -38,22 +38,11 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, user, deliveryDetails, appActions } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
+    const { history, location } = this.props;
     const { nextPage } = location;
-    const { profile } = user || {};
-    const { name, phone } = profile || {};
-    if (nextPage && name) {
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-
+    if (nextPage) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    } else if (nextPage && !name) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.PROFILE,
         search: window.location.search,
       });
     } else {

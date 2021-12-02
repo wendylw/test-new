@@ -61,6 +61,8 @@ export const getOrderPaymentMethod = createSelector(getOrder, order => _get(orde
 
 export const getCancelOrderStatus = state => state.orderStatus.thankYou.cancelOrderStatus;
 
+export const getshowProfileVisibility = state => state.orderStatus.thankYou.profileModalVisibility;
+
 export const getUpdateShippingTypePendingStatus = state =>
   state.orderStatus.thankYou.updateShippingTypeStatus === 'pending';
 

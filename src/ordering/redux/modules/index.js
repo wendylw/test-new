@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import entities from '../../../redux/modules/entities';
 import app from './app';
 import home from '../../containers/Home/redux/index';
+import profile from '../../containers/Profile/redux/index';
 import cart from '../../containers/shopping-cart/redux';
 import promotion from './promotion';
 import payments from '../../containers/payments/redux';
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   promotion,
   locationAndDate,
   orderStatus,
+  profile,
 });
 
 export default rootReducer;
