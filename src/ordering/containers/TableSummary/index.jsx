@@ -227,15 +227,15 @@ export class TableSummary extends React.Component {
                 </span>
               </div>
               <ul>
-                {subOrderItems.map(({ productInfo, variationTexts, displayPrice, image, quantity }) => (
+                {subOrderItems.map(({ productInfo, displayPrice, quantity }) => (
                   <li key="" className="flex flex-middle flex-space-between padding-left-right-small">
                     <div className="flex">
                       <div className="table-summary__image-container flex__shrink-fixed margin-small">
-                        <Image className="table-summary__image card__image" src={image} alt="" />
+                        <Image className="table-summary__image card__image" src={productInfo?.image} alt="" />
                       </div>
                       <div className="padding-small flex flex-column flex-space-between">
-                        <span className="table-summary__item-title">{productInfo.title}</span>
-                        <p className="table-summary__item-variations">{variationTexts.join(', ')}</p>
+                        <span className="table-summary__item-title">{productInfo?.title}</span>
+                        <p className="table-summary__item-variations">{productInfo?.variationTexts.join(', ')}</p>
                         <CurrencyNumber
                           className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
                           money={displayPrice * quantity}
