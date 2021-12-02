@@ -11,7 +11,7 @@ import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import loggly from '../../../utils/monitoring/loggly';
 
-const { ROUTER_PATHS } = Constants;
+const { ROUTER_PATHS, REFERRER_SOURCE_TYPES } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidUpdate(prevProps) {
@@ -96,6 +96,7 @@ class CreateOrderButton extends React.Component {
       }
 
       if (thankYouPageUrl) {
+        Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.CASHBACK);
         loggly.log('ordering.to-thank-you', { orderId });
         window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
 
