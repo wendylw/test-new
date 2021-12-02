@@ -17,8 +17,8 @@ import {
   getCartUnavailableItems,
   getCartItemsCount,
   getCartSubmittedStatus,
-  getCartSubmissionPendingStatus,
-  getCartSubmissionReceiptNumber,
+  getCartNotSubmittedAndEmpty,
+  getCartSubmissionRequestingStatus,
 } from '../../../../redux/cart/selectors';
 import { IconClose } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
@@ -297,12 +297,12 @@ class PayLater extends Component {
   };
 
   render() {
-    const { t, count, cartItems, cartSubmittedStatus, cartSubmissionPendingStatus } = this.props;
+    const { t, count, cartItems, cartSubmittedStatus, cartNotSubmittedAndEmpty, cartSubmissionRequesting } = this.props;
     const { cartContainerHeight } = this.state;
 
     const buttonText = (
       <span className="text-weight-bolder" key="place-order">
-        {cartSubmissionPendingStatus ? t('Processing') : t('PlaceOrder')}
+        {cartSubmissionRequesting ? t('Processing') : t('PlaceOrder')}
       </span>
     );
 
@@ -319,17 +319,19 @@ class PayLater extends Component {
             this.handleClickBack();
           }}
           rightContent={
-            !cartSubmissionPendingStatus && {
-              icon: IconDeleteImage,
-              text: t('ClearAll'),
-              style: {
-                color: '#fa4133',
-              },
-              attributes: {
-                'data-heap-name': 'ordering.cart.clear-btn',
-              },
-              onClick: this.handleClearAll,
-            }
+            cartNotSubmittedAndEmpty
+              ? {
+                  icon: IconDeleteImage,
+                  text: t('ClearAll'),
+                  style: {
+                    color: '#fa4133',
+                  },
+                  attributes: {
+                    'data-heap-name': 'ordering.cart.clear-btn',
+                  },
+                  onClick: this.handleClearAll,
+                }
+              : null
           }
         ></HybridHeader>
         <div
@@ -367,19 +369,19 @@ class PayLater extends Component {
             onClick={async () => {
               await this.handleClickContinue();
             }}
-            disabled={!cartItems.length || cartSubmissionPendingStatus}
+            disabled={!cartItems.length || cartSubmissionRequesting}
           >
             {buttonText}
           </button>
         </footer>
-        {!cartItems.length && cartSubmissionPendingStatus && (
+        {cartNotSubmittedAndEmpty ? (
           <CartEmptyResult
             history={this.props.history}
             submittedStatus={cartSubmittedStatus}
             handleReturnToMenu={this.handleReturnToMenu}
             handleReturnToTableSummary={this.handleReturnToTableSummary}
           />
-        )}
+        ) : null}
       </section>
     );
   }
@@ -396,8 +398,8 @@ export default compose(
         unavailableCartItems: getCartUnavailableItems(state),
         count: getCartItemsCount(state),
         cartSubmittedStatus: getCartSubmittedStatus(state),
-        cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
-        receiptNumber: getCartSubmissionReceiptNumber(state),
+        cartNotSubmittedAndEmpty: getCartNotSubmittedAndEmpty(state),
+        cartSubmissionRequesting: getCartSubmissionRequestingStatus(state),
       };
     },
     dispatch => ({

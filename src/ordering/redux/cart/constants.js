@@ -5,7 +5,7 @@ export const CART_SUBMISSION_STATUS = {
 };
 
 export const CART_STATUS = {
-  PENDING: 0,
+  CREATED: 0,
   FAILED: 1,
   COMPLETED: 2,
 };
