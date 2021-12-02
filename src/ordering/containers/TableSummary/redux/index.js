@@ -30,23 +30,8 @@ const initialState = {
     modifiedTime: null,
     serviceCharge: 0,
     shippingFee: 0,
-    subOrders: [
-      {
-        submitId: null,
-        submittedTime: null,
-        comments: null,
-      },
-    ],
-    items: [
-      {
-        title: [],
-        subtotal: 0,
-        variationTexts: [],
-        displayPrice: 0,
-        quantity: 0,
-        image: null,
-      },
-    ],
+    subOrders: [],
+    items: [],
   },
 
   submission: {
@@ -75,7 +60,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
     },
     [loadOrders.fulfilled.type]: (state, { payload }) => {
-      const { items = [], subOrders = [], promotions = [], ...others } = {
+      const { promotions = [], ...others } = {
         ...state,
         ...payload,
       };
@@ -83,8 +68,6 @@ export const { reducer, actions } = createSlice({
       state = {
         ...others,
         promotions: (promotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
-        items: items.map(item => ({ ...items, ...item })),
-        subOrders: subOrders.map(subOrder => ({ ...subOrders, ...subOrder })),
       };
       state.requestStatus.loadOrders = API_REQUEST_STATUS.FULFILLED;
     },
