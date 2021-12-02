@@ -33,6 +33,7 @@ import {
 } from './redux/selector';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
@@ -106,6 +107,7 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
+    const { t } = this.props;
     const isWebview = Utils.isWebview();
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
@@ -117,6 +119,11 @@ export class TableSummary extends React.Component {
     if (Utils.isTNGMiniProgram() && sourceUrl) {
       window.location.href = sourceUrl;
     }
+
+    alert(t('UnableBackMenuDescription'), {
+      title: t('UnableBackMenuTitle'),
+      closeButtonContent: t('GotIt'),
+    });
   };
 
   handleConfirmOrderSubmissionOrGotoPaymentPage = () => {
@@ -280,7 +287,7 @@ export class TableSummary extends React.Component {
           className="flex-middle"
           contentClassName="table-summary__header-content flex-middle flex-center flex-space-between text-capitalize"
           data-heap-name="ordering.need-help.header"
-          isPage={false}
+          isPage
           title={t('TableSummary')}
           navFunc={this.handleHeaderNavFunc}
         />
