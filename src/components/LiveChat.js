@@ -27,12 +27,13 @@ class LiveChat extends Component {
       ...userInfo,
     };
 
-    const loadHandler = () => {
+    const loadSuccessHandler = () => {
       this.setState({ hasScriptLoaded: true });
     };
 
-    const errorHandler = () => {
+    const loadFailedHandler = e => {
       delete window.Intercom;
+      console.error('Fail to load Intercom script', e);
       this.setState({ hasScriptLoaded: false });
     };
 
@@ -43,6 +44,7 @@ class LiveChat extends Component {
       if (typeof ic === 'function') {
         ic('reattach_activator');
         ic('update', w.intercomSettings);
+        loadSuccessHandler();
       } else {
         var d = document;
         var i = function() {
@@ -60,8 +62,8 @@ class LiveChat extends Component {
           s.src = process.env.REACT_APP_INTERCOM_SCRIPT_URL;
           var x = d.getElementsByTagName('script')[0];
           x.parentNode.insertBefore(s, x);
-          s.onload = loadHandler;
-          s.onerror = errorHandler;
+          s.onload = loadSuccessHandler;
+          s.onerror = loadFailedHandler;
         };
         if (document.readyState === 'complete') {
           l();
