@@ -1,52 +1,64 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
-import { loadSubOrders, loadSubOrdersStatus, submitSubOrders } from './thunks';
+import { loadOrders, loadOrdersStatus, submitOrders } from './thunks';
+
+const PromotionItemModel = {
+  code: null,
+  name: null,
+  status: null,
+  discount: 0,
+  discountType: null,
+};
 
 const initialState = {
   requestStatus: {
-    loadSubOrders: API_REQUEST_STATUS.FULFILLED,
-    loadSubOrdersStatus: API_REQUEST_STATUS.FULFILLED,
-    submitSubOrders: API_REQUEST_STATUS.FULFILLED,
+    loadOrders: API_REQUEST_STATUS.FULFILLED,
+    loadOrdersStatus: API_REQUEST_STATUS.FULFILLED,
+    submitOrders: API_REQUEST_STATUS.FULFILLED,
   },
-  status: null,
-  receiptNumber: null,
-  tableId: null,
-  tax: 0,
-  cashback: 0,
-  promotions: [],
-  total: 0,
-  subtotal: 0,
-  modifiedTime: null,
-  serviceCharge: 0,
-  shippingFee: 0,
-  subOrders: [
-    {
-      submitId: null,
-      submittedTime: null,
-      comments: null,
-    },
-  ],
-  items: [
-    {
-      title: [],
-      subtotal: 0,
-      variationTexts: [],
-      displayPrice: 0,
-      quantity: 0,
-      image: null,
-    },
-  ],
+
+  order: {
+    status: null,
+    receiptNumber: null,
+    tableId: null,
+    tax: 0,
+    cashback: 0,
+    promotions: [],
+    total: 0,
+    subtotal: 0,
+    modifiedTime: null,
+    serviceCharge: 0,
+    shippingFee: 0,
+    subOrders: [
+      {
+        submitId: null,
+        submittedTime: null,
+        comments: null,
+      },
+    ],
+    items: [
+      {
+        title: [],
+        subtotal: 0,
+        variationTexts: [],
+        displayPrice: 0,
+        quantity: 0,
+        image: null,
+      },
+    ],
+  },
+
   submission: {
     thankYouPageUrl: null,
   },
-  domStates: {
+  uiStates: {
     displaySubmitOrderConfirm: false,
   },
   error: {
-    loadSubOrders: null,
-    loadSubOrdersStatus: null,
-    submitSubOrders: null,
+    loadOrders: null,
+    loadOrdersStatus: null,
+    submitOrders: null,
   },
 };
 
@@ -55,14 +67,14 @@ export const { reducer, actions } = createSlice({
   initialState,
   reducers: {
     updateSubmitOrderConfirmDisplay(state, { payload }) {
-      state.domStates.displaySubmitOrderConfirm = payload;
+      state.uiStates.displaySubmitOrderConfirm = payload;
     },
   },
   extraReducers: {
-    [loadSubOrders.pending.type]: state => {
-      state.requestStatus.loadSubOrders = API_REQUEST_STATUS.PENDING;
+    [loadOrders.pending.type]: state => {
+      state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
     },
-    [loadSubOrders.fulfilled.type]: (state, { payload }) => {
+    [loadOrders.fulfilled.type]: (state, { payload }) => {
       const { items = [], subOrders = [], promotions = [], ...others } = {
         ...state,
         ...payload,
@@ -70,41 +82,38 @@ export const { reducer, actions } = createSlice({
 
       state = {
         ...others,
-        promotions: (promotions || []).map(promotion => ({ ...promotions, ...promotion })),
+        promotions: (promotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
         items: items.map(item => ({ ...items, ...item })),
         subOrders: subOrders.map(subOrder => ({ ...subOrders, ...subOrder })),
       };
-      state.requestStatus.loadSubOrders = API_REQUEST_STATUS.FULFILLED;
+      state.requestStatus.loadOrders = API_REQUEST_STATUS.FULFILLED;
     },
-    [loadSubOrders.rejected.type]: (state, { error }) => {
-      state.error.loadSubOrders = error;
-      state.requestStatus.loadSubOrders = API_REQUEST_STATUS.REJECTED;
-    },
-
-    [loadSubOrdersStatus.pending.type]: state => {
-      state.requestStatus.loadSubOrdersStatus = API_REQUEST_STATUS.PENDING;
-    },
-    [loadSubOrdersStatus.fulfilled.type]: (state, { payload }) => {
-      state = { ...state, ...payload };
-      state.requestStatus.loadSubOrdersStatus = API_REQUEST_STATUS.FULFILLED;
-    },
-    [loadSubOrdersStatus.rejected.type]: (state, { error }) => {
-      state.error = error.loadSubOrdersStatus;
-      state.requestStatus.loadSubOrdersStatus = API_REQUEST_STATUS.REJECTED;
+    [loadOrders.rejected.type]: (state, { error }) => {
+      state.error.loadOrders = error;
+      state.requestStatus.loadOrders = API_REQUEST_STATUS.REJECTED;
     },
 
-    [submitSubOrders.pending.type]: state => {
-      state.requestStatus.submitSubOrders = API_REQUEST_STATUS.PENDING;
+    [loadOrdersStatus.pending.type]: state => {
+      state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.PENDING;
     },
-    [submitSubOrders.fulfilled.type]: (state, { payload }) => {
-      const { thankYouPageUrl } = payload;
+    [loadOrdersStatus.fulfilled.type]: (state, { payload }) => {
+      state.order.status = payload.status;
+      state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.FULFILLED;
+    },
+    [loadOrdersStatus.rejected.type]: (state, { error }) => {
+      state.error = error.loadOrdersStatus;
+      state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.REJECTED;
+    },
 
-      state.submission.thankYouPageUrl = thankYouPageUrl;
-      state.requestStatus.submitSubOrders = API_REQUEST_STATUS.FULFILLED;
+    [submitOrders.pending.type]: state => {
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.PENDING;
     },
-    [submitSubOrders.rejected.type]: (state, { error }) => {
-      state.error = error.submitSubOrders;
-      state.requestStatus.submitSubOrders = API_REQUEST_STATUS.REJECTED;
+    [submitOrders.fulfilled.type]: state => {
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.FULFILLED;
+    },
+    [submitOrders.rejected.type]: (state, { error }) => {
+      state.error = error.submitOrders;
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.REJECTED;
     },
   },
 });

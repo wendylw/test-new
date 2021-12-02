@@ -5,7 +5,7 @@ import { getOrderReceiptNumber, getOrderModifiedTime } from './selectors';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
-export const loadSubOrders = createAsyncThunk('ordering/tableSummary/loadSubOrders', async (_, { getState }) => {
+export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', async (_, { getState }) => {
   try {
     const receiptNumber = getOrderReceiptNumber(getState());
     const result = await fetchOrder({ receiptNumber });
@@ -18,7 +18,7 @@ export const loadSubOrders = createAsyncThunk('ordering/tableSummary/loadSubOrde
   }
 });
 
-export const loadSubOrdersStatus = createAsyncThunk('ordering/tableSummary/loadSubOrdersStatus', async () => {
+export const loadOrdersStatus = createAsyncThunk('ordering/tableSummary/loadOrdersStatus', async () => {
   try {
     const result = await fetchOrderSubmissionStatus();
 
@@ -30,17 +30,17 @@ export const loadSubOrdersStatus = createAsyncThunk('ordering/tableSummary/loadS
   }
 });
 
-export const queryOrderAndStatus = () => async dispatch => {
+export const queryOrdersAndStatus = () => async dispatch => {
   try {
     const queryOrderStatus = () => {
-      queryOrderAndStatus.timer = setTimeout(async () => {
-        await dispatch(loadSubOrdersStatus());
+      queryOrdersAndStatus.timer = setTimeout(async () => {
+        await dispatch(loadOrdersStatus());
 
         queryOrderStatus();
       }, ORDER_STATUS_INTERVAL);
     };
 
-    dispatch(loadSubOrders());
+    dispatch(loadOrders());
     queryOrderStatus();
   } catch (error) {
     console.error(error);
@@ -49,13 +49,13 @@ export const queryOrderAndStatus = () => async dispatch => {
   }
 };
 
-export const clearQueryOrderStatus = () => () => {
-  if (queryOrderAndStatus.timer) {
-    clearTimeout(queryOrderAndStatus.timer);
+export const clearQueryOrdersAndStatus = () => () => {
+  if (queryOrdersAndStatus.timer) {
+    clearTimeout(queryOrdersAndStatus.timer);
   }
 };
 
-export const submitSubOrders = createAsyncThunk('ordering/tableSummary/submitSubOrders', async (_, { getState }) => {
+export const submitOrders = createAsyncThunk('ordering/tableSummary/submitOrders', async (_, { getState }) => {
   const receiptNumber = getOrderReceiptNumber(getState());
   const modifiedTime = getOrderModifiedTime(getState());
 
