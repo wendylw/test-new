@@ -24,7 +24,7 @@ const initialState = {
     tableId: null,
     tax: 0,
     cashback: 0,
-    promotions: [],
+    displayPromotions: [],
     total: 0,
     subtotal: 0,
     modifiedTime: null,
@@ -60,14 +60,14 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
     },
     [loadOrders.fulfilled.type]: (state, { payload }) => {
-      const { promotions = [], ...others } = {
+      const { displayPromotions = [], ...others } = {
         ...state,
         ...payload,
       };
 
       state = {
         ...others,
-        promotions: (promotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
+        displayPromotions: (displayPromotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
       };
       state.requestStatus.loadOrders = API_REQUEST_STATUS.FULFILLED;
     },
