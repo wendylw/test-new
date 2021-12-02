@@ -11,8 +11,9 @@ import Constants from '../../../utils/constants';
 import * as NativeMethods from '../../../utils/native-methods';
 import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import {
-  querySubOrders as querySubOrdersThunk,
+  queryOrdersAndStatus as queryOrdersAndStatusThunk,
   updateSubmitOrderConfirmDisplay as updateSubmitOrderConfirmDisplayThunk,
+  clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
 } from './redux/thunks';
 import {
   getOrderNumber as getOrderReceiptNumber,
@@ -50,9 +51,9 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
-    const { querySubOrders } = this.props;
+    const { queryOrdersAndStatus } = this.props;
 
-    await querySubOrders();
+    await queryOrdersAndStatus();
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
@@ -68,6 +69,12 @@ export class TableSummary extends React.Component {
     if (orderCompletedStatus && thankYouPageUrl) {
       window.location.href = thankYouPageUrl;
     }
+  }
+
+  async componentWillUnmount() {
+    const { clearQueryOrdersAndStatus } = this.props;
+
+    await clearQueryOrdersAndStatus();
   }
 
   setCartContainerHeight = preContainerHeight => {
@@ -351,7 +358,8 @@ TableSummary.propTypes = {
   shippingType: PropTypes.string,
   thankYouPageUrl: PropTypes.string,
   orderSubmissionRequestingStatus: PropTypes.bool,
-  querySubOrders: PropTypes.func,
+  queryOrdersAndStatus: PropTypes.func,
+  clearQueryOrdersAndStatus: PropTypes.func,
   updateSubmitOrderConfirmDisplay: PropTypes.func,
 };
 
@@ -374,7 +382,8 @@ TableSummary.defaultProps = {
   shippingType: null,
   thankYouPageUrl: null,
   orderSubmissionRequestingStatus: false,
-  querySubOrders: () => {},
+  queryOrdersAndStatus: () => {},
+  clearQueryOrdersAndStatus: () => {},
   updateSubmitOrderConfirmDisplay: () => {},
 };
 
@@ -402,7 +411,8 @@ export default compose(
       orderSubmissionRequestingStatus: getOrderSubmissionRequestingStatus(state),
     }),
     {
-      querySubOrders: querySubOrdersThunk,
+      queryOrdersAndStatus: queryOrdersAndStatusThunk,
+      clearQueryOrdersAndStatus: clearQueryOrdersAndStatusThunk,
       updateSubmitOrderConfirmDisplay: updateSubmitOrderConfirmDisplayThunk,
     }
   )

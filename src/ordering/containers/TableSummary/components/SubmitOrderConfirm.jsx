@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
-  submitSubOrders as submitSubOrdersThunk,
+  submitOrders as submitOrdersThunk,
   updateSubmitOrderConfirmDisplay as updateSubmitOrderConfirmDisplayThunk,
 } from '../redux/thunks';
 
@@ -11,12 +11,7 @@ import { getOrderSubmissionPendingStatus, getSubmitOrderConfirmDisplayStatus } f
 import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
 
-function SubmitOrderConfirm({
-  displaySubmitOrderConfirm,
-  updateSubmitOrderConfirmDisplay,
-  processing,
-  submitSubOrders,
-}) {
+function SubmitOrderConfirm({ displaySubmitOrderConfirm, updateSubmitOrderConfirmDisplay, processing, submitOrders }) {
   const { t } = useTranslation('OrderingDelivery');
 
   const handleToggleModal = useCallback(
@@ -51,7 +46,7 @@ function SubmitOrderConfirm({
           <button
             className="submit-order-confirm__fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
             onClick={() => {
-              submitSubOrders();
+              submitOrders();
             }}
           >
             {t('PayNow')}
@@ -69,14 +64,14 @@ SubmitOrderConfirm.propTypes = {
   displaySubmitOrderConfirm: PropTypes.bool,
   updateSubmitOrderConfirmDisplay: PropTypes.func,
   processing: PropTypes.bool,
-  submitSubOrders: PropTypes.func,
+  submitOrders: PropTypes.func,
 };
 
 SubmitOrderConfirm.defaultProps = {
   displaySubmitOrderConfirm: false,
   updateSubmitOrderConfirmDisplay: () => {},
   processing: false,
-  submitSubOrders: () => {},
+  submitOrders: () => {},
 };
 
 export default connect(
@@ -85,7 +80,7 @@ export default connect(
     processing: getOrderSubmissionPendingStatus(state),
   }),
   {
-    submitSubOrders: submitSubOrdersThunk,
+    submitOrders: submitOrdersThunk,
     updateSubmitOrderConfirmDisplay: updateSubmitOrderConfirmDisplayThunk,
   }
 )(SubmitOrderConfirm);
