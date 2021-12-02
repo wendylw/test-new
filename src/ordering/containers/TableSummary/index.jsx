@@ -113,11 +113,14 @@ export class TableSummary extends React.Component {
 
     if (isWebview) {
       NativeMethods.closeWebView();
+
       return;
     }
 
     if (Utils.isTNGMiniProgram() && sourceUrl) {
       window.location.href = sourceUrl;
+
+      return;
     }
 
     alert(<Trans t={t} i18nKey="UnableBackMenuDescription" components={{ bold: <strong /> }} />, {
