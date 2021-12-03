@@ -318,7 +318,8 @@ class PayLater extends Component {
           }}
           rightContent={
             cartNotSubmittedAndEmpty
-              ? {
+              ? null
+              : {
                   icon: IconDeleteImage,
                   text: t('ClearAll'),
                   style: {
@@ -329,7 +330,6 @@ class PayLater extends Component {
                   },
                   onClick: this.handleClearAll,
                 }
-              : null
           }
         ></HybridHeader>
         <div
