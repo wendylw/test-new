@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import _floor from 'lodash/floor';
-import _replace from 'lodash/replace';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
@@ -47,23 +45,20 @@ export class TableSummary extends React.Component {
     super(props);
     this.state = {
       cartContainerHeight: '100%',
-      productsContainerHeight: '0px',
     };
   }
 
   async componentDidMount() {
     const { queryOrdersAndStatus } = this.props;
 
-    await queryOrdersAndStatus();
-
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
-    this.setProductsContainerHeight();
+
+    await queryOrdersAndStatus();
   }
 
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
-    this.setProductsContainerHeight(prevStates.productsContainerHeight);
 
     const { orderCompletedStatus, thankYouPageUrl } = this.props;
 
@@ -87,21 +82,6 @@ export class TableSummary extends React.Component {
     if (preContainerHeight !== containerHeight) {
       this.setState({
         cartContainerHeight: containerHeight,
-      });
-    }
-  };
-
-  setProductsContainerHeight = preProductsContainerHeight => {
-    const productsContainerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.footerEl, this.billingEl],
-    });
-    const preHeightNumber = _floor(_replace(preProductsContainerHeight, 'px', ''));
-    const currentHeightNumber = _floor(_replace(productsContainerHeight, 'px', ''));
-
-    if (productsContainerHeight > '0px' && Math.abs(currentHeightNumber - preHeightNumber) > 10) {
-      this.setState({
-        productsContainerHeight,
       });
     }
   };

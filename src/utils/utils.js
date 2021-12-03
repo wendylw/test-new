@@ -32,19 +32,21 @@ Utils.getQueryString = key => {
 
 /**
  *
- * @param {string array} filterOutKeys,
+ * @param {string or string array} keys,
  * @returns {string}
  */
-Utils.getFilteredQueryString = filterOutKeys => {
-  const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+Utils.getFilteredQueryString = keys => {
+  const query = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
-  if (filterOutKeys) {
-    const availableKeys = Object.keys(queries).filter(queryKey => !filterOutKeys.includes(queryKey));
-
-    return qs.stringify(queries, { filter: availableKeys });
+  // Only deal with string or array.
+  if (typeof keys === 'string') {
+    delete query[keys];
+  }
+  if (Array.isArray(keys)) {
+    keys.forEach(key => delete query[key]);
   }
 
-  return queries;
+  return qs.stringify(query, { addQueryPrefix: true });
 };
 
 Utils.getApiRequestShippingType = () => {
