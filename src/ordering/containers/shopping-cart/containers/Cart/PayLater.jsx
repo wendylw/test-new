@@ -105,8 +105,9 @@ class PayLater extends Component {
   handleClickContinue = async () => {
     try {
       const { history, submitCart } = this.props;
+      const { additionalComments } = this.state;
       // TODO: Move unwrapResult to redux
-      const result = await submitCart().then(unwrapResult);
+      const result = await submitCart(additionalComments).then(unwrapResult);
       const { submissionId } = result;
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,

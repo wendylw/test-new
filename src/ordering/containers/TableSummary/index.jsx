@@ -24,9 +24,7 @@ import {
   getOrderShippingFee,
   getOrderPlacedStatus,
   getOrderPendingPaymentStatus,
-  getOrderCompletedStatus,
   getSubOrdersMapping,
-  getThankYouPageUrl,
   getOrderSubmissionRequestingStatus,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
@@ -59,12 +57,6 @@ export class TableSummary extends React.Component {
 
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
-
-    const { orderCompletedStatus, thankYouPageUrl } = this.props;
-
-    if (orderCompletedStatus && thankYouPageUrl) {
-      window.location.href = thankYouPageUrl;
-    }
   }
 
   async componentWillUnmount() {
@@ -328,7 +320,6 @@ TableSummary.displayName = 'TableSummary';
 TableSummary.propTypes = {
   orderPlacedStatus: PropTypes.bool,
   orderPendingPaymentStatus: PropTypes.bool,
-  orderCompletedStatus: PropTypes.bool,
   orderNumber: PropTypes.string,
   tableNumber: PropTypes.string,
   tax: PropTypes.number,
@@ -344,7 +335,6 @@ TableSummary.propTypes = {
   businessInfo: PropTypes.object,
   businessUTCOffset: PropTypes.number,
   shippingType: PropTypes.string,
-  thankYouPageUrl: PropTypes.string,
   orderSubmissionRequestingStatus: PropTypes.bool,
   queryOrdersAndStatus: PropTypes.func,
   clearQueryOrdersAndStatus: PropTypes.func,
@@ -354,7 +344,6 @@ TableSummary.propTypes = {
 TableSummary.defaultProps = {
   orderPlacedStatus: false,
   orderPendingPaymentStatus: false,
-  orderCompletedStatus: false,
   orderNumber: null,
   tableNumber: null,
   tax: 0,
@@ -368,7 +357,6 @@ TableSummary.defaultProps = {
   businessInfo: {},
   businessUTCOffset: 480,
   shippingType: null,
-  thankYouPageUrl: null,
   orderSubmissionRequestingStatus: false,
   queryOrdersAndStatus: () => {},
   clearQueryOrdersAndStatus: () => {},
@@ -381,7 +369,6 @@ export default compose(
     state => ({
       orderPlacedStatus: getOrderPlacedStatus(state),
       orderPendingPaymentStatus: getOrderPendingPaymentStatus(state),
-      orderCompletedStatus: getOrderCompletedStatus(state),
       orderReceiptNumber: getOrderReceiptNumber(state),
       tableNumber: getTableNumber(state),
       tax: getOrderTax(state),
@@ -395,7 +382,6 @@ export default compose(
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
-      thankYouPageUrl: getThankYouPageUrl(state),
       orderSubmissionRequestingStatus: getOrderSubmissionRequestingStatus(state),
     }),
     {
