@@ -1,13 +1,14 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchOrder, fetchOrderSubmissionStatus, postOrderSubmitted } from './api-request';
-import { getOrderReceiptNumber, getOrderModifiedTime } from './selectors';
+import { getOrderModifiedTime } from './selectors';
+import { getCartSubmissionReceiptNumber } from '../../../redux/cart/selectors';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
 export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', async (_, { getState }) => {
   try {
-    const receiptNumber = getOrderReceiptNumber(getState());
+    const receiptNumber = getCartSubmissionReceiptNumber(getState());
     const result = await fetchOrder({ receiptNumber });
 
     return result;
@@ -56,7 +57,7 @@ export const clearQueryOrdersAndStatus = () => () => {
 };
 
 export const submitOrders = createAsyncThunk('ordering/tableSummary/submitOrders', async (_, { getState }) => {
-  const receiptNumber = getOrderReceiptNumber(getState());
+  const receiptNumber = getCartSubmissionReceiptNumber(getState());
   const modifiedTime = getOrderModifiedTime(getState());
 
   try {

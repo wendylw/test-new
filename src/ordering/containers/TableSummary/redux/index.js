@@ -65,7 +65,7 @@ export const { reducer, actions } = createSlice({
         ...payload,
       };
 
-      state = {
+      state.order = {
         ...others,
         displayPromotions: (displayPromotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
       };
@@ -84,7 +84,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [loadOrdersStatus.rejected.type]: (state, { error }) => {
-      state.error = error.loadOrdersStatus;
+      state.error.loadOrdersStatus = error;
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.REJECTED;
     },
 
@@ -95,7 +95,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.submitOrders = API_REQUEST_STATUS.FULFILLED;
     },
     [submitOrders.rejected.type]: (state, { error }) => {
-      state.error = error.submitOrders;
+      state.error.submitOrders = error;
       state.requestStatus.submitOrders = API_REQUEST_STATUS.REJECTED;
     },
   },

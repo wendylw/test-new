@@ -60,9 +60,7 @@ class PayLater extends Component {
   }
 
   componentDidMount = async () => {
-    const { queryCartAndStatus, updateCartItems } = this.props;
-    // PAY_LATER_DEBUG
-    updateCartItems({ productId: '60acbd396a0a440006661da5', quantityChange: 1 });
+    const { queryCartAndStatus } = this.props;
 
     await queryCartAndStatus();
 
