@@ -31,9 +31,11 @@ class LiveChat extends Component {
       this.setState({ hasScriptLoaded: true });
     };
 
-    const loadFailedHandler = e => {
+    const loadFailedHandler = err => {
       delete window.Intercom;
-      console.error('Fail to load Intercom script', e);
+      window.newrelic?.addPageAction('common.intercom-load-failure', {
+        error: err?.message,
+      });
       this.setState({ hasScriptLoaded: false });
     };
 
@@ -77,11 +79,11 @@ class LiveChat extends Component {
   }
 
   componentWillUnmount() {
-    window.Intercom && window.Intercom('shutdown');
+    window.Intercom?.('shutdown');
   }
 
   handleClick = () => {
-    window.Intercom('show');
+    window.Intercom?.('show');
   };
 
   render() {
