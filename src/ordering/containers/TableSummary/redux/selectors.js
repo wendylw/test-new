@@ -6,7 +6,7 @@ export const getOrderReceiptNumber = state => state.tableSummary.order.receiptNu
 
 export const getOrderModifiedTime = state => state.tableSummary.order.modifiedTime;
 
-export const getTableNumber = state => state.tableSummary.order.tableNumber;
+export const getTableNumber = state => state.tableSummary.order.tableId;
 
 export const getOrderTax = state => state.tableSummary.order.tax;
 
@@ -20,9 +20,10 @@ export const getOrderCashback = state => state.tableSummary.order.cashback;
 
 export const getOrderShippingFee = state => state.tableSummary.order.shippingFee;
 
-export const getOrderPlacedStatus = state => state.tableSummary.order.status === ORDER_STATUS.CREATED;
+export const getOrderPlacedStatus = state => state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED;
 
-export const getOrderPendingPaymentStatus = state => state.tableSummary.order.status === ORDER_STATUS.PENDING_PAYMENT;
+export const getOrderPendingPaymentStatus = state =>
+  state.tableSummary.order.orderStatus === ORDER_STATUS.PENDING_PAYMENT;
 
 export const getSubOrders = state => state.tableSummary.order.subOrders;
 
@@ -53,7 +54,8 @@ export const getOrderSubmissionRequestingStatus = state =>
   state.tableSummary.requestStatus.submitSubOrders === API_REQUEST_STATUS.PENDING;
 
 export const getSubmitOrderConfirmDisplayStatus = state =>
-  state.tableSummary.order.status === ORDER_STATUS.CREATED && state.tableSummary.uiStates.displaySubmitOrderConfirm;
+  state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED &&
+  state.tableSummary.uiStates.displaySubmitOrderConfirm;
 
 export const getOrderCompletedStatus = state =>
   [
@@ -66,6 +68,6 @@ export const getOrderCompletedStatus = state =>
     ORDER_STATUS.CONFIRMED,
     ORDER_STATUS.DELIVERED,
     ORDER_STATUS.PICKED_UP,
-  ].includes(state.tableSummary.order.status);
+  ].includes(state.tableSummary.order.orderStatus);
 
 export const getThankYouPageUrl = state => state.tableSummary.submission.thankYouPageUrl;
