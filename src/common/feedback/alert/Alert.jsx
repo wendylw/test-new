@@ -26,9 +26,12 @@ const Alert = forwardRef((props, ref) => {
     <div className={`alert absolute-wrapper flex flex-column flex-middle flex-center ${className}`} style={style}>
       <div className="alert__content border-radius-large">
         <div className="alert__body text-center padding-small">{content}</div>
-        <div className="padding-small">
+        <div className="alert__buttons-group padding-small">
           {/* TODO： close button UI will be customize */}
-          <button className="button button__fill button__block text-uppercase text-weight-bolder" onClick={onClose}>
+          <button
+            className="alert__button button button__fill button__block text-uppercase text-weight-bolder"
+            onClick={onClose}
+          >
             {closeButtonContent || t('OK')}
           </button>
         </div>

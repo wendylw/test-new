@@ -50,7 +50,7 @@ export const getSubOrdersMapping = createSelector([getSubOrders, getOrderItems],
 });
 
 export const getOrderSubmissionRequestingStatus = state =>
-  state.requestStatus.submitSubOrders === API_REQUEST_STATUS.PENDING;
+  state.tableSummary.requestStatus.submitSubOrders === API_REQUEST_STATUS.PENDING;
 
 export const getSubmitOrderConfirmDisplayStatus = state =>
   state.tableSummary.order.status === ORDER_STATUS.CREATED && state.tableSummary.uiStates.displaySubmitOrderConfirm;

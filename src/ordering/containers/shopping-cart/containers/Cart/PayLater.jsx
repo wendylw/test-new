@@ -39,28 +39,8 @@ class PayLater extends Component {
     productsContainerHeight: '0px',
   };
 
-  componentDidUpdate(prevProps, prevStates) {
-    this.setCartContainerHeight(prevStates.cartContainerHeight);
-    this.setProductsContainerHeight(prevStates.productsContainerHeight);
-
-    const { cartSubmittedStatus, cartItems, t } = this.props;
-    const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
-
-    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus && !cartItems.length) {
-      alert(t('HasBeenPlacedContentDescription'), {
-        title: t('UnableToPlaceOrder'),
-        closeButtonContent: t('ViewOrder'),
-        onClose: () =>
-          this.props.history.push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-            search: window.location.search,
-          }),
-      });
-    }
-  }
-
   componentDidMount = async () => {
-    const { queryCartAndStatus } = this.props;
+    const { t, queryCartAndStatus } = this.props;
 
     await queryCartAndStatus();
 
@@ -68,6 +48,26 @@ class PayLater extends Component {
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
   };
+
+  componentDidUpdate(prevProps, prevStates) {
+    this.setCartContainerHeight(prevStates.cartContainerHeight);
+    this.setProductsContainerHeight(prevStates.productsContainerHeight);
+
+    const { receiptNumber, cartSubmittedStatus, cartItems, t } = this.props;
+    const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
+
+    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus && !cartItems.length) {
+      alert(t('ApiError:HasBeenPlacedContentDescription'), {
+        title: t('ApiError:UnableToPlaceOrder'),
+        closeButtonContent: t('ApiError:ViewOrder'),
+        onClose: () =>
+          this.props.history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+            search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+          }),
+      });
+    }
+  }
 
   componentWillUnmount = () => {
     const { clearQueryCartStatus } = this.props;
@@ -110,29 +110,29 @@ class PayLater extends Component {
       const { submissionId } = result;
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
-        search: `submissionId=${submissionId}`,
+        search: `${window.location.search}&submissionId=${submissionId}`,
       });
     } catch (e) {
       if (e.code === 'place ordered') {
-        const { t, history } = this.props;
-        alert(t('HasBeenPlacedContentDescription'), {
-          title: t('UnableToPlaceOrder'),
-          closeButtonContent: t('ViewOrder'),
+        const { t, history, receiptNumber } = this.props;
+        alert(t('ApiError:HasBeenPlacedContentDescription'), {
+          title: t('ApiError:UnableToPlaceOrder'),
+          closeButtonContent: t('ApiError:ViewOrder'),
           onClose: () =>
             history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-              search: window.location.search,
+              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
             }),
         });
       } else if (e.code === 'other error refresh cart') {
-        const { t, history } = this.props;
+        const { t, history, receiptNumber } = this.props;
         alert(t('OrderHasBeenAddedOrRemoved'), {
           title: t('RefreshCartToContinue'),
           closeButtonContent: t('RefreshCart'),
           onClose: () =>
             history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-              search: window.location.search,
+              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
             }),
         });
       }
@@ -286,9 +286,11 @@ class PayLater extends Component {
   };
 
   handleReturnToTableSummary = () => {
-    this.props.history.push({
+    const { history, receiptNumber } = this.props;
+
+    history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-      search: window.location.search,
+      search: `${window.location.search}&receiptNumber=${receiptNumber}`,
     });
   };
 

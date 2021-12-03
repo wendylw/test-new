@@ -8,8 +8,10 @@ import '../Feedback.scss';
 const AlertStandardContent = ({ content, title }) => (
   // eslint-disable-next-line react/jsx-filename-extension
   <>
-    {title ? <h4 className="padding-small text-size-biggest text-weight-bolder">{title}</h4> : null}
-    {content ? <div className="padding-top-bottom-small">{content}</div> : null}
+    {title ? <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">{title}</h4> : null}
+    {content ? (
+      <div className="alert__description padding-top-bottom-small text-line-height-base">{content}</div>
+    ) : null}
   </>
 );
 AlertStandardContent.displayName = 'AlertStandardContent';
