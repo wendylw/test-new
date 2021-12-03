@@ -319,3 +319,15 @@ export const padZero = num => {
   }
   return str;
 };
+
+/**
+ * get locale time format to `HH:MM`
+ * @param {string} dateTime (e.g. `2021-11-30T14:58:30+08:00`)
+ * @param {number} utcOffset
+ * @returns {string} of locale time
+ */
+export const getLocaleTimeTo24hour = (dateTime, utcOffset) => {
+  const dateTimeDayjs = dayjs(dateTime).utcOffset(utcOffset);
+
+  return dateTimeDayjs.format('HH:MM');
+};

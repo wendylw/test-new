@@ -203,5 +203,7 @@
   "Beepit.com": "Beepit.com",
   "BeepApp": "Beep App",
   "BeepTngMiniProgram": "Beep Mini Program via the Touch ’n Go eWallet app",
-  "EditCart": "Edit Cart"
+  "EditCart": "Edit Cart",
+  "TableNumber": "Table Number",
+  "OrderNumber": "Order Number"
 }

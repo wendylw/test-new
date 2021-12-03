@@ -30,6 +30,25 @@ Utils.getQueryString = key => {
   return queries;
 };
 
+/**
+ *
+ * @param {string or string array} keys,
+ * @returns {string}
+ */
+Utils.getFilteredQueryString = keys => {
+  const query = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
+  // Only deal with string or array.
+  if (typeof keys === 'string') {
+    delete query[keys];
+  }
+  if (Array.isArray(keys)) {
+    keys.forEach(key => delete query[key]);
+  }
+
+  return qs.stringify(query, { addQueryPrefix: true });
+};
+
 Utils.getApiRequestShippingType = () => {
   const type = Utils.getQueryVariable('type');
   return type ? Utils.mapString2camelCase(type) : undefined;
