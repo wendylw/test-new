@@ -19,10 +19,6 @@ function SubmitOrderConfirm({ displaySubmitOrderConfirm, updateSubmitOrderConfir
     [updateSubmitOrderConfirmDisplay]
   );
 
-  if (!displaySubmitOrderConfirm) {
-    return null;
-  }
-
   return (
     <>
       <Modal className="submit-order-confirm" show={displaySubmitOrderConfirm}>
