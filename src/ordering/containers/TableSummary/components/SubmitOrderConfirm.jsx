@@ -5,11 +5,21 @@ import { connect } from 'react-redux';
 import { actions } from '../redux';
 import { submitOrders as submitOrdersThunk } from '../redux/thunks';
 
-import { getOrderSubmissionRequestingStatus, getSubmitOrderConfirmDisplayStatus } from '../redux/selectors';
+import {
+  getOrderSubmissionRequestingStatus,
+  getSubmitOrderConfirmDisplayStatus,
+  getOrderCompletedStatus,
+} from '../redux/selectors';
 import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
 
-function SubmitOrderConfirm({ displaySubmitOrderConfirm, updateSubmitOrderConfirmDisplay, processing, submitOrders }) {
+function SubmitOrderConfirm({
+  displaySubmitOrderConfirm,
+  updateSubmitOrderConfirmDisplay,
+  processing,
+  orderCompletedStatus,
+  submitOrders,
+}) {
   const { t } = useTranslation('OrderingDelivery');
 
   const handleToggleModal = useCallback(
@@ -39,8 +49,16 @@ function SubmitOrderConfirm({ displaySubmitOrderConfirm, updateSubmitOrderConfir
           </button>
           <button
             className="submit-order-confirm__fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
-            onClick={() => {
-              submitOrders();
+            onClick={async () => {
+              try {
+                const { thankYouPageUrl } = await submitOrders().unwrap();
+
+                if (orderCompletedStatus && thankYouPageUrl) {
+                  window.location.href = thankYouPageUrl;
+                }
+              } catch (error) {
+                console.error(error);
+              }
             }}
           >
             {t('PayNow')}
@@ -58,6 +76,7 @@ SubmitOrderConfirm.propTypes = {
   displaySubmitOrderConfirm: PropTypes.bool,
   updateSubmitOrderConfirmDisplay: PropTypes.func,
   processing: PropTypes.bool,
+  orderCompletedStatus: PropTypes.bool,
   submitOrders: PropTypes.func,
 };
 
@@ -65,6 +84,7 @@ SubmitOrderConfirm.defaultProps = {
   displaySubmitOrderConfirm: false,
   updateSubmitOrderConfirmDisplay: () => {},
   processing: false,
+  orderCompletedStatus: false,
   submitOrders: () => {},
 };
 
@@ -72,6 +92,7 @@ export default connect(
   state => ({
     displaySubmitOrderConfirm: getSubmitOrderConfirmDisplayStatus(state),
     processing: getOrderSubmissionRequestingStatus(state),
+    orderCompletedStatus: getOrderCompletedStatus(state),
   }),
   {
     submitOrders: submitOrdersThunk,

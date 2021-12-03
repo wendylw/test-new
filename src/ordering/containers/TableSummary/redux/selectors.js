@@ -67,5 +67,3 @@ export const getOrderCompletedStatus = state =>
     ORDER_STATUS.DELIVERED,
     ORDER_STATUS.PICKED_UP,
   ].includes(state.tableSummary.order.status);
-
-export const getThankYouPageUrl = state => state.tableSummary.submission.thankYouPageUrl;

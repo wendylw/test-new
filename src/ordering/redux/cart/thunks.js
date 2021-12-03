@@ -3,7 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
-import { getCartVersion, getCartSource } from './selectors';
+import { getCartVersion, getCartSource, getCartItems } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
   fetchCart,
@@ -177,14 +177,21 @@ export const clearCart = createAsyncThunk('ordering/app/cart/clearCart', async (
   }
 });
 
-export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async (_, { getState }) => {
+export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async (comments, { getState }) => {
   const state = getState();
   const businessUTCOffset = getBusinessUTCOffset(state);
   const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
   const version = getCartVersion(state);
   const source = getCartSource(state);
+  const cartItems = getCartItems(state) || [];
   const shippingType = Utils.getApiRequestShippingType();
-  const options = { version, source, shippingType };
+  const options = {
+    version,
+    source,
+    comments,
+    selectedItemIds: (cartItems || []).map(cartItem => cartItem.id),
+    shippingType,
+  };
 
   if (fulfillDate) {
     options.fulfillDate = fulfillDate;
