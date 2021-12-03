@@ -19,13 +19,15 @@ import './CartSubmissionStatus.scss';
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
     const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber } = this.props;
-    await queryCartSubmissionStatus();
+    const submissionId = Utils.getQueryString('submissionId');
+
+    await queryCartSubmissionStatus(submissionId);
 
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-        search: `${Utils.getQueryString(undefined, ['submissionId'])}&receiptNumber=${receiptNumber}`,
+        search: `${Utils.getFilteredQueryString(['submissionId'])}&receiptNumber=${receiptNumber}`,
       });
     }
   };
@@ -38,7 +40,7 @@ class CartSubmissionStatus extends Component {
       this.timer = setTimeout(() => {
         this.props.history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-          search: `${Utils.getQueryString(undefined, ['submissionId'])}&receiptNumber=${receiptNumber}`,
+          search: `${Utils.getFilteredQueryString(['submissionId'])}&receiptNumber=${receiptNumber}`,
         });
       }, 1500);
     }
