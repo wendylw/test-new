@@ -1,6 +1,6 @@
 import Utils from '../../../../utils/utils';
 import { createSlice } from '@reduxjs/toolkit';
-import { loadOrder, loadOrderStatus } from './thunks';
+import { loadOrder } from './thunks';
 
 const initialState = {
   receiptNumber: Utils.getQueryString('receiptNumber'),
@@ -26,16 +26,6 @@ const { reducer, actions } = createSlice({
     [loadOrder.rejected.type]: (state, { error }) => {
       state.error = error;
       state.updateOrderStatus = 'rejected';
-    },
-    [loadOrderStatus.fulfilled.type]: (state, { payload }) => {
-      state.order = {
-        ...state.order,
-        status: payload.status,
-        riderLocations: payload.riderLocations,
-      };
-    },
-    [loadOrderStatus.rejected.type]: (state, { error }) => {
-      state.error = error;
     },
   },
 });
