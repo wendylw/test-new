@@ -608,6 +608,10 @@ const ORDER_STATUS = {
   LOGISTICS_CONFIRMED: 'logisticsConfirmed',
   CONFIRMED: 'confirmed',
   DELIVERED: 'delivered',
+  /**
+   * If shipping type is delivery, pickedUp means picked up by rider.
+   * if shipping type is self-pickup, pickedUp means picked up by customer
+   * */
   PICKED_UP: 'pickedUp',
 };
 
@@ -690,6 +694,13 @@ export const PROMOTION_CLIENT_TYPES = {
   WEB: 'web',
 };
 
+export const REFERRER_SOURCE_TYPES = {
+  PAYMENT: 'payment',
+  CASHBACK: 'cashback',
+  PAY_AT_COUNTER: 'payAtCounter',
+  LOGIN: 'login',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -740,4 +751,5 @@ export default {
   ORDER_SOURCE,
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
   PROMOTION_CLIENT_TYPES,
+  REFERRER_SOURCE_TYPES,
 };
