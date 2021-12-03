@@ -2,20 +2,60 @@
 
 .profile {
   height: 100vh;
+  position: absolute;
+  background: #fff;
+
+  &.active {
+    z-index: 101;
+  }
+
+  &__fixed-wrapper {
+    height: 0;
+  }
+
+  &__title {
+    width: 70%;
+  }
+
+  &__tip-color {
+    color: $new-grey-1-1;
+  }
+
+  &__input {
+    padding: 0;
+    line-height: 24px;
+    height: 24px;
+  }
+
+  &__input-message--error {
+    float: left;
+  }
 
   &__container {
-    height: 100%;
+    height: 100vh;
     width: 100%;
     overflow: auto;
     color: $gray-3;
   }
 
-  &__error-message {
-    color: $status-red;
+  &__label {
+    color: $gray-3;
   }
 
-  &__input {
-    margin-bottom: 8px;
+  &__input--required &__label::after {
+    content: "*";
+    color: $status-red;
+    line-height: 1em;
+    font-size: 0.8571rem;
+    vertical-align: top;
+    margin-left: 0.3em;
+  }
+
+  &__margin-top {
+    margin-top: -32px;
+  }
+
+  &__input-next {
     border: 1px solid $gray-4;
 
     input {

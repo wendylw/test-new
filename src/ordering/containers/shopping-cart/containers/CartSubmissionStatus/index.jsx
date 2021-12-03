@@ -6,39 +6,39 @@ import {
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
   getCartSubmissionPendingStatus,
+  getCartSubmissionReceiptNumber,
 } from '../../../../redux/cart/selectors';
 import { queryCartSubmissionStatus, clearQueryCartSubmissionStatus } from '../../../../redux/cart/thunks';
 import { withTranslation } from 'react-i18next';
-import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
+import Utils from '../../../../../utils/utils';
 import orderSuccessImage from '../../../../../images/order-success.png';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
 import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
-    const { queryCartSubmissionStatus, cartSubmittedStatus, history } = this.props;
-    const submissionId = Utils.getQueryString('submissionId');
-    await queryCartSubmissionStatus(submissionId);
+    const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber } = this.props;
+    await queryCartSubmissionStatus();
 
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-        search: window.location.search,
+        search: `${Utils.getQueryString(undefined, ['submissionId'])}&receiptNumber=${receiptNumber}`,
       });
     }
   };
 
   componentDidUpdate = prevProps => {
-    const { cartSubmittedStatus } = this.props;
+    const { cartSubmittedStatus, receiptNumber } = this.props;
     const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
     if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
       this.timer = setTimeout(() => {
         this.props.history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-          search: window.location.search,
+          search: `${Utils.getQueryString(undefined, ['submissionId'])}&receiptNumber=${receiptNumber}`,
         });
       }, 1500);
     }
@@ -119,6 +119,7 @@ export default compose(
         cartSubmittedStatus: getCartSubmittedStatus(state),
         cartSubmissionPendingStatus: getCartSubmissionPendingStatus(state),
         cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
+        receiptNumber: getCartSubmissionReceiptNumber(state),
       };
     },
     dispatch => ({

@@ -9,6 +9,27 @@
     opacity: 0.5;
   }
 
+  &__back-menu-alert {
+    .alert__content {
+      max-width: 340px;
+    }
+
+    .alert__description {
+      margin: auto;
+      max-width: 270px;
+      font-size: 1.1428rem;
+      color: $gray-2;
+    }
+
+    .alert__buttons-group {
+      padding: 0;
+    }
+
+    .alert__button {
+      border-radius: 0;
+    }
+  }
+
   &__header-content::after {
     content: "";
     width: 24px;
