@@ -20,23 +20,28 @@ const {
 } = Constants;
 const Utils = {};
 
-/**
- *
- * @param {string} key: not getting vale of specific key, please set key is `undefined`
- * @param {string array} filteredKeys
- * @returns {string or params object}
- */
-Utils.getQueryString = (key, filteredKeys) => {
+Utils.getQueryString = key => {
   const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
 
   if (key) {
     return queries[key] || null;
   }
 
-  if (filteredKeys) {
-    const availableKeys = Object.keys(queries).filter(queryKey => !filteredKeys.includes(queryKey));
+  return queries;
+};
 
-    return qs.stringify(queries, availableKeys);
+/**
+ *
+ * @param {string array} filterOutKeys,
+ * @returns {string}
+ */
+Utils.getFilteredQueryString = filterOutKeys => {
+  const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
+  if (filterOutKeys) {
+    const availableKeys = Object.keys(queries).filter(queryKey => !filterOutKeys.includes(queryKey));
+
+    return qs.stringify(queries, { filter: availableKeys });
   }
 
   return queries;

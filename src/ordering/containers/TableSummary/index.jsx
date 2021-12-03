@@ -109,16 +109,9 @@ export class TableSummary extends React.Component {
   handleHeaderNavFunc = () => {
     const { t } = this.props;
     const isWebview = Utils.isWebview();
-    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (isWebview) {
       NativeMethods.closeWebView();
-
-      return;
-    }
-
-    if (Utils.isTNGMiniProgram() && sourceUrl) {
-      window.location.href = sourceUrl;
 
       return;
     }
@@ -291,6 +284,7 @@ export class TableSummary extends React.Component {
           headerRef={ref => {
             this.headerEl = ref;
           }}
+          titleAlignment="center"
           className="flex-middle"
           contentClassName="table-summary__header-content flex-middle flex-center flex-space-between text-capitalize"
           data-heap-name="ordering.need-help.header"

@@ -3,7 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
-import { getCartVersion, getCartSource, getCartSubmissionId } from './selectors';
+import { getCartVersion, getCartSource } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
   fetchCart,
@@ -218,8 +218,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
   }
 );
 
-export const queryCartSubmissionStatus = () => (dispatch, getState) => {
-  const submissionId = getCartSubmissionId(getState());
+export const queryCartSubmissionStatus = submissionId => dispatch => {
   const targetTimestamp = Date.parse(new Date()) + TIMEOUT_CART_SUBMISSION_TIME;
 
   try {
