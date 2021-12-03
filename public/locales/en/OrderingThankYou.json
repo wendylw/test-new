@@ -1,7 +1,5 @@
 {
   "OrderPaid": "Order Paid",
-  "TableNumber": "Table Number",
-  "OrderNumber": "Order Number",
   "PingStaffTitle": "Ping the staff for a receipt",
   "ThankYou": "Thank You",
   "PayAtCounter": "Pay at Counter",
@@ -21,6 +19,7 @@
   "MerchantAccepted": "Looking for rider",
   "RiderFound": "Rider Found",
   "FindingRider": "2-10 mins",
+  "BadWeatherDescriptionKey": "It’s rainy now, might take a little longer",
   "RiderAssigned": "Rider is on the way to the store",
   "TrackYourOrder": "Track your order here",
   "RiderPickUp": "Rider is on the way to you",

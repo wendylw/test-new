@@ -22,7 +22,6 @@ const Promotion = lazy(() => Utils.attemptLoad(() => import('./Promotion')));
 const ReportDriver = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ReportDriver')));
 const PageLogin = lazy(() => Utils.attemptLoad(() => import('./PageLogin')));
 const StoreList = lazy(() => Utils.attemptLoad(() => import('./StoreList')));
-const Profile = lazy(() => Utils.attemptLoad(() => import('./Profile')));
 const AddressList = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressList')));
 const AddressDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressDetail')));
 const ContactDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/ContactDetail')));
@@ -65,7 +64,6 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.REPORT_DRIVER} component={ReportDriver} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOGIN} component={PageLogin} />
             <Route exact path={ROUTER_PATHS.ORDERING_STORE_LIST} component={StoreList} />
-            <Route exact path={ROUTER_PATHS.PROFILE} component={Profile} />
             <Route
               exact
               path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`}

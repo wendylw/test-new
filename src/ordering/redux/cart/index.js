@@ -17,6 +17,7 @@ const CartSubmissionModel = {
   requestStatus: API_REQUEST_STATUS.PENDING,
   status: null,
   receiptNumber: null,
+  submissionId: null,
 };
 
 const CartItemModel = {
@@ -77,7 +78,7 @@ const initialState = {
   unavailableItems: [],
   shippingType: Utils.getOrderTypeFromUrl(),
   source: Utils.getOrderSource(),
-  submission: CartSubmissionModel,
+  submission: { ...CartSubmissionModel, submissionId: Utils.getQueryString('submissionId') },
   error: {
     loadCart: null,
     loadCartStatus: null,

@@ -9,4 +9,5 @@ export const ORDER_CANCELLATION_REASONS = {
 
 export const ORDER_DELAY_REASON_CODES = {
   RAMADAN: 'ramadan',
+  BAD_WEATHER: 'badWeather',
 };

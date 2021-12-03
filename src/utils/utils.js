@@ -6,6 +6,7 @@ import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
+import Cookies from 'js-cookie';
 dayjs.extend(utc);
 
 const {
@@ -27,6 +28,25 @@ Utils.getQueryString = key => {
   }
 
   return queries;
+};
+
+/**
+ *
+ * @param {string or string array} keys,
+ * @returns {string}
+ */
+Utils.getFilteredQueryString = keys => {
+  const query = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
+  // Only deal with string or array.
+  if (typeof keys === 'string') {
+    delete query[keys];
+  }
+  if (Array.isArray(keys)) {
+    keys.forEach(key => delete query[key]);
+  }
+
+  return qs.stringify(query, { addQueryPrefix: true });
 };
 
 Utils.getApiRequestShippingType = () => {
@@ -97,33 +117,13 @@ Utils.elementPartialOffsetTop = function elementPartialOffsetTop(el, topAdjustme
   return top + height - windowScrolledTop - topAdjustment;
 };
 
-Utils.getCookieVariable = function getCookieVariable(name, scope) {
-  let keyEQ = scope + name + '=';
-  let ca = document.cookie.split(';');
-
-  for (let i = 0, len = ca.length; i < len; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(keyEQ) === 0 && c.substring(keyEQ.length, c.length) !== '')
-      return c.substring(keyEQ.length, c.length);
-  }
-
-  return null;
-};
-
-Utils.setCookieVariable = function setCookieVariable(name, value, scope = '') {
-  document.cookie = scope + name + '=' + value + '; path=/';
-};
-
-Utils.removeCookieVariable = function removeCookieVariable(name, scope) {
-  document.cookie = scope + name + '=; path=/';
-};
-
 Utils.getLocalStorageVariable = function getLocalStorageVariable(name) {
   try {
     return localStorage.getItem(name);
   } catch (e) {
-    Utils.getCookieVariable(name, 'localStorage_');
+    const { getCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    getCookieVariable(cookieNameOfLocalStorage);
   }
 };
 
@@ -132,7 +132,9 @@ Utils.setLocalStorageVariable = function setLocalStorageVariable(name, value) {
   try {
     localStorage.setItem(name, value || '');
   } catch (e) {
-    Utils.setCookieVariable(name, value, 'localStorage_');
+    const { setCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    setCookieVariable(cookieNameOfLocalStorage, value);
   }
 };
 
@@ -140,7 +142,9 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   try {
     localStorage.removeItem(name);
   } catch (e) {
-    Utils.removeCookieVariable(name, 'localStorage_');
+    const { removeCookieVariable } = Utils;
+    const cookieNameOfLocalStorage = 'localStorage_' + name;
+    removeCookieVariable(cookieNameOfLocalStorage);
   }
 };
 
@@ -148,7 +152,9 @@ Utils.getSessionVariable = function getSessionVariable(name) {
   try {
     return sessionStorage.getItem(name);
   } catch (e) {
-    Utils.getCookieVariable(name, 'sessionStorage_');
+    const { getCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    getCookieVariable(cookieNameOfSessionStorage);
   }
 };
 
@@ -157,7 +163,9 @@ Utils.setSessionVariable = function setSessionVariable(name, value) {
   try {
     sessionStorage.setItem(name, value || '');
   } catch (e) {
-    Utils.setCookieVariable(name, value, 'sessionStorage_');
+    const { setCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    setCookieVariable(cookieNameOfSessionStorage, value);
   }
 };
 
@@ -165,7 +173,9 @@ Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
     sessionStorage.removeItem(name);
   } catch (e) {
-    Utils.removeCookieVariable(name, 'sessionStorage_');
+    const { removeCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    removeCookieVariable(cookieNameOfSessionStorage);
   }
 };
 
@@ -952,6 +962,27 @@ Utils.getRegistrationSource = () => {
 
       return REGISTRATION_SOURCE.BEEP_STORE;
   }
+};
+
+Utils.getMainDomain = () => {
+  const hostName = window.location.hostname;
+  const arr = hostName.split('.');
+  arr.shift();
+  const result = arr.join('.');
+  return result;
+};
+
+Utils.getCookieVariable = name => {
+  return Cookies.get(name);
+};
+
+Utils.setCookieVariable = (name, value, attributes) => {
+  return Cookies.set(name, value, attributes);
+};
+
+// IMPORTANT! When deleting a cookie and you're not relying on the default attributes, you must pass the exact same path and domain attributes that were used to set the cookie
+Utils.removeCookieVariable = (name, attributes) => {
+  return Cookies.remove(name, attributes);
 };
 
 Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
