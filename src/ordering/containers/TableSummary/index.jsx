@@ -50,11 +50,12 @@ export class TableSummary extends React.Component {
 
   async componentDidMount() {
     const { queryOrdersAndStatus } = this.props;
+    const receiptNumber = Utils.getQueryString('receiptNumber');
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
 
-    await queryOrdersAndStatus();
+    await queryOrdersAndStatus(receiptNumber);
   }
 
   componentDidUpdate(prevProps, prevStates) {
@@ -169,13 +170,19 @@ export class TableSummary extends React.Component {
         <div className="padding-left-right-normal padding-top-bottom-small">
           <ul className="table-summary__base-info-list">
             {orderNumber ? (
-              <li className="flex flex-middle flex-space-between padding-top-bottom-normal">
+              <li
+                key="table-summary-order-number"
+                className="flex flex-middle flex-space-between padding-top-bottom-normal"
+              >
                 <h5 className="text-size-small text-opacity text-capitalize">{t('OrderNumber')}</h5>
                 <span className="text-size-small">{orderNumber}</span>
               </li>
             ) : null}
             {tableNumber ? (
-              <li className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider">
+              <li
+                key="table-summary-table-number"
+                className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider"
+              >
                 <h5 className="text-size-small text-opacity text-capitalize">{t('TableNumber')}</h5>
                 <span className="text-size-small">{tableNumber}</span>
               </li>
@@ -197,22 +204,27 @@ export class TableSummary extends React.Component {
           const localeSubmittedTime = getLocaleTimeTo24hour(submittedTime, businessUTCOffset);
 
           return (
-            <div className="table-summary__sub-order padding-top-bottom-small">
+            <div key={`sub-order-${subOrderId}`} className="table-summary__sub-order padding-top-bottom-small">
               <div className="text-right padding-small">
                 <span className="margin-small text-opacity">
                   {t('CreatedOrderTime', { submittedTime: localeSubmittedTime })}
                 </span>
               </div>
               <ul>
-                {subOrderItems.map(({ productInfo, displayPrice, quantity }) => (
-                  <li key="" className="flex flex-middle flex-space-between padding-left-right-small">
+                {subOrderItems.map(({ id, productInfo, displayPrice, quantity }) => (
+                  <li
+                    key={`product-item-${id}`}
+                    className="flex flex-middle flex-space-between padding-left-right-small"
+                  >
                     <div className="flex">
                       <div className="table-summary__image-container flex__shrink-fixed margin-small">
                         <Image className="table-summary__image card__image" src={productInfo?.image} alt="" />
                       </div>
                       <div className="padding-small flex flex-column flex-space-between">
                         <span className="table-summary__item-title">{productInfo?.title}</span>
-                        <p className="table-summary__item-variations">{productInfo?.variationTexts.join(', ')}</p>
+                        <p className="table-summary__item-variations">
+                          {(productInfo?.variationTexts || []).join(', ')}
+                        </p>
                         <CurrencyNumber
                           className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
                           money={displayPrice * quantity}
@@ -382,7 +394,7 @@ export default compose(
       orderPlacedStatus: getOrderPlacedStatus(state),
       orderPendingPaymentStatus: getOrderPendingPaymentStatus(state),
       orderCompletedStatus: getOrderCompletedStatus(state),
-      orderReceiptNumber: getOrderReceiptNumber(state),
+      orderNumber: getOrderReceiptNumber(state),
       tableNumber: getTableNumber(state),
       tax: getOrderTax(state),
       serviceCharge: getOrderServiceCharge(state),

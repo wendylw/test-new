@@ -19,7 +19,7 @@ const initialState = {
   },
 
   order: {
-    status: null,
+    orderStatus: null,
     receiptNumber: null,
     tableId: null,
     tax: 0,
@@ -60,13 +60,14 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
     },
     [loadOrders.fulfilled.type]: (state, { payload }) => {
-      const { displayPromotions = [], ...others } = {
-        ...state,
+      const { displayPromotions = [], status: orderStatus, ...others } = {
+        ...state.order,
         ...payload,
       };
 
       state.order = {
         ...others,
+        orderStatus,
         displayPromotions: (displayPromotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
       };
       state.requestStatus.loadOrders = API_REQUEST_STATUS.FULFILLED;
@@ -80,7 +81,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.PENDING;
     },
     [loadOrdersStatus.fulfilled.type]: (state, { payload }) => {
-      state.order.status = payload.status;
+      state.order.orderStatus = payload.status;
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [loadOrdersStatus.rejected.type]: (state, { error }) => {
