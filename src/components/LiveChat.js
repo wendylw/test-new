@@ -3,7 +3,7 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getUserConsumerId, getUserIsLogin } from '../ordering/redux/modules/app';
+import { getUserConsumerId, getUserIsLogin, getUserProfile } from '../ordering/redux/modules/app';
 import './LiveChat.scss';
 
 class LiveChat extends Component {
@@ -78,6 +78,22 @@ class LiveChat extends Component {
     })();
   }
 
+  updateIntercomSettings(profileInfo) {
+    const prevSettings = window.intercomSettings;
+    window.intercomSettings = { ...prevSettings, ...profileInfo };
+    window.Intercom?.('update', window.intercomSettings);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { userProfile: prevUserProfile } = prevProps;
+    const { userProfile: currUserProfile } = this.props;
+
+    if (prevUserProfile !== currUserProfile) {
+      const { name, phone, email } = currUserProfile;
+      this.updateIntercomSettings({ name, phone, email });
+    }
+  }
+
   componentWillUnmount() {
     window.Intercom?.('shutdown');
   }
@@ -121,5 +137,6 @@ export default compose(
   connect(state => ({
     hasUserLoggedIn: getUserIsLogin(state),
     userId: getUserConsumerId(state),
+    userProfile: getUserProfile(state),
   }))
 )(LiveChat);

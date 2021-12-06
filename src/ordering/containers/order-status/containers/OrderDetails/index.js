@@ -252,9 +252,6 @@ export class OrderDetails extends Component {
     const userPhone = _get(user, 'profile.phone', '');
     const userName = _get(user, 'profile.name', '');
     const orderId = _get(order, 'orderId', '');
-    const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
-    const orderUserName = _get(deliveryAddress, 'name', '');
-    const orderUserPhone = _get(deliveryAddress, 'phone', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
     const eventName = 'Order Details - click contact us';
 
@@ -266,8 +263,8 @@ export class OrderDetails extends Component {
     // so possible getting empty value from user profile
     const userInfoForLiveChat = {
       email: userEmail,
-      phone: orderUserPhone || userPhone,
-      name: orderUserName || userName,
+      phone: userPhone,
+      name: userName,
     };
 
     if (isWebview) {

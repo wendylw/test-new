@@ -709,9 +709,6 @@ export class ThankYou extends PureComponent {
     const userName = _get(user, 'profile.name', '');
     const orderId = _get(order, 'orderId', '');
     const tableId = _get(order, 'tableId', '');
-    const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
-    const orderUserName = _get(deliveryAddress, 'name', '');
-    const orderUserPhone = _get(deliveryAddress, 'phone', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
     const isDineInType = shippingType === DELIVERY_METHOD.DINE_IN;
 
@@ -723,8 +720,8 @@ export class ThankYou extends PureComponent {
     // so possible getting empty value from user profile
     const userInfoForLiveChat = {
       email: userEmail,
-      phone: orderUserPhone || userPhone,
-      name: orderUserName || userName,
+      phone: userPhone,
+      name: userName,
     };
 
     const rightContentOfTableId = {
