@@ -14,7 +14,10 @@ import {
 } from './thunks';
 
 const CartSubmissionModel = {
-  requestStatus: API_REQUEST_STATUS.PENDING,
+  requestStatus: {
+    submitCart: API_REQUEST_STATUS.FULFILLED,
+    loadCartSubmissionStatus: API_REQUEST_STATUS.FULFILLED,
+  },
   status: null,
   receiptNumber: null,
   submissionId: null,
@@ -107,6 +110,9 @@ export const { reducer, actions } = createSlice({
       };
     },
     updateCartSubmission(state, { payload }) {
+      console.log('updateCartSubmission===>', state);
+      console.log(payload);
+
       state.submission = { ...state.submission, ...payload };
     },
   },
@@ -164,24 +170,24 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.clearCart = API_REQUEST_STATUS.REJECTED;
     },
     [submitCart.pending.type]: state => {
-      state.submission.requestStatus = API_REQUEST_STATUS.PENDING;
+      state.submission.requestStatus.submitCart = API_REQUEST_STATUS.PENDING;
     },
     [submitCart.fulfilled.type]: state => {
-      state.submission.requestStatus = API_REQUEST_STATUS.FULFILLED;
+      state.submission.requestStatus.submitCart = API_REQUEST_STATUS.FULFILLED;
     },
     [submitCart.rejected.type]: (state, { error }) => {
       state.submission.error = error;
-      state.submission.requestStatus = API_REQUEST_STATUS.REJECTED;
+      state.submission.requestStatus.submitCart = API_REQUEST_STATUS.REJECTED;
     },
     [loadCartSubmissionStatus.pending.type]: state => {
-      state.submission.requestStatus = API_REQUEST_STATUS.PENDING;
+      state.submission.requestStatus.loadCartSubmissionStatus = API_REQUEST_STATUS.PENDING;
     },
     [loadCartSubmissionStatus.fulfilled.type]: state => {
-      state.submission.requestStatus = API_REQUEST_STATUS.FULFILLED;
+      state.submission.requestStatus.loadCartSubmissionStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [loadCartSubmissionStatus.rejected.type]: (state, { error }) => {
       state.submission.error = error;
-      state.submission.requestStatus = API_REQUEST_STATUS.REJECTED;
+      state.submission.requestStatus.loadCartSubmissionStatus = API_REQUEST_STATUS.REJECTED;
     },
   },
 });

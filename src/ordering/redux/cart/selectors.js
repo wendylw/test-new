@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { CART_SUBMISSION_STATUS, CART_STATUS } from './constants';
-import { API_REQUEST } from '../../../redux/middlewares/api';
+import { API_REQUEST_STATUS } from '../../../utils/api/api-utils';
 
 export const getCartVersion = state => state.app.cart.version;
 
@@ -98,10 +98,19 @@ export const getCartSubmissionFailedStatus = state =>
 
 export const getCartStatusNotSubmitted = state => state.app.cart.status !== CART_STATUS.COMPLETED;
 
+export const getCartQueryRequestingStatus = state =>
+  state.app.cart.requestStatus.loadCart === API_REQUEST_STATUS.PENDING;
+
 export const getCartNotSubmittedAndEmpty = createSelector(
-  [getCartItems, getCartStatusNotSubmitted],
-  (cartItems, cartNotSubmitted) => !cartItems.length && cartNotSubmitted
+  [getCartItems, getCartStatusNotSubmitted, getCartQueryRequestingStatus],
+  (cartItems, cartNotSubmitted, cartQueryRequestingStatus) => {
+    console.log(cartItems);
+    console.log(cartNotSubmitted);
+    console.log(cartQueryRequestingStatus);
+
+    !cartItems.length && cartNotSubmitted && !cartQueryRequestingStatus;
+  }
 );
 
 export const getCartSubmissionRequestingStatus = state =>
-  state.app.cart.submission.requestStatus === API_REQUEST.PENDING;
+  state.app.cart.submission.requestStatus.submitCart === API_REQUEST_STATUS.PENDING;

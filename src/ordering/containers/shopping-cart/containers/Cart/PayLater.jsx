@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { withTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 import CartList from '../../components/CartList';
 import {
-  queryCartAndStatus,
-  clearQueryCartStatus,
-  clearCart,
-  submitCart,
-  updateCartItems,
-  removeCartItemsById,
+  queryCartAndStatus as queryCartAndStatusThunk,
+  clearQueryCartStatus as clearQueryCartStatusThunk,
+  clearCart as clearCartThunk,
+  submitCart as submitCartThunk,
+  updateCartItems as updateCartItemsThunk,
+  removeCartItemsById as removeCartItemsByIdThunk,
 } from '../../../../redux/cart/thunks';
 import {
   getCartItems,
@@ -20,27 +23,28 @@ import {
   getCartNotSubmittedAndEmpty,
   getCartSubmissionRequestingStatus,
 } from '../../../../redux/cart/selectors';
-import { IconClose } from '../../../../../components/Icons';
+import { IconClose, IconError } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
-import Utils from '../../../../../utils/utils.js';
+import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
 import CartEmptyResult from '../../components/CartEmptyResult';
-import { IconError } from '../../../../../components/Icons';
-import loggly from '../../../../../utils/monitoring/loggly';
+
+import { log } from '../../../../../utils/monitoring/loggly';
 import { alert } from '../../../../../common/feedback';
 
 class PayLater extends Component {
-  state = {
-    additionalComments: Utils.getSessionVariable('additionalComments'),
-    cartContainerHeight: '100%',
-    productsContainerHeight: '0px',
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      additionalComments: Utils.getSessionVariable('additionalComments'),
+      cartContainerHeight: '100%',
+      productsContainerHeight: '0px',
+    };
+  }
 
   componentDidMount = async () => {
-    const { t, queryCartAndStatus } = this.props;
+    const { queryCartAndStatus } = this.props;
 
     await queryCartAndStatus();
 
@@ -53,15 +57,15 @@ class PayLater extends Component {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
 
-    const { receiptNumber, cartSubmittedStatus, cartItems, t } = this.props;
+    const { receiptNumber, cartSubmittedStatus, t, history } = this.props;
     const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
-    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus && !cartItems.length) {
+    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
       alert(t('ApiError:HasBeenPlacedContentDescription'), {
         title: t('ApiError:UnableToPlaceOrder'),
         closeButtonContent: t('ApiError:ViewOrder'),
         onClose: () =>
-          this.props.history.push({
+          history.push({
             pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
             search: `${window.location.search}&receiptNumber=${receiptNumber}`,
           }),
@@ -74,17 +78,51 @@ class PayLater extends Component {
     clearQueryCartStatus();
   };
 
-  setCartContainerHeight = preContainerHeight => {
-    const containerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.footerEl],
+  handleClickContinue = async () => {
+    try {
+      const { history, submitCart } = this.props;
+      const { additionalComments } = this.state;
+      const { submissionId } = await submitCart(additionalComments).then(unwrapResult);
+
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
+        search: `${window.location.search}&submissionId=${submissionId}`,
+      });
+    } catch (e) {
+      if (e.code === 'place ordered') {
+        const { t, history, receiptNumber } = this.props;
+
+        alert(t('ApiError:HasBeenPlacedContentDescription'), {
+          title: t('ApiError:UnableToPlaceOrder'),
+          closeButtonContent: t('ApiError:ViewOrder'),
+          onClose: () =>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+            }),
+        });
+      } else if (e.code === 'other error refresh cart') {
+        const { t, history, receiptNumber } = this.props;
+
+        alert(t('OrderHasBeenAddedOrRemoved'), {
+          title: t('RefreshCartToContinue'),
+          closeButtonContent: t('RefreshCart'),
+          onClose: () =>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+            }),
+        });
+      }
+    }
+  };
+
+  handleChangeAdditionalComments = e => {
+    this.setState({
+      additionalComments: e.target.value,
     });
 
-    if (preContainerHeight !== containerHeight) {
-      this.setState({
-        cartContainerHeight: containerHeight,
-      });
-    }
+    Utils.setSessionVariable('additionalComments', e.target.value);
   };
 
   setProductsContainerHeight = preProductsContainerHeight => {
@@ -102,51 +140,18 @@ class PayLater extends Component {
     }
   };
 
-  handleClickContinue = async () => {
-    try {
-      const { history, submitCart } = this.props;
-      const { additionalComments } = this.state;
-      // TODO: Move unwrapResult to redux
-      const result = await submitCart(additionalComments).then(unwrapResult);
-      const { submissionId } = result;
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
-        search: `${window.location.search}&submissionId=${submissionId}`,
-      });
-    } catch (e) {
-      if (e.code === 'place ordered') {
-        const { t, history, receiptNumber } = this.props;
-        alert(t('ApiError:HasBeenPlacedContentDescription'), {
-          title: t('ApiError:UnableToPlaceOrder'),
-          closeButtonContent: t('ApiError:ViewOrder'),
-          onClose: () =>
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
-            }),
-        });
-      } else if (e.code === 'other error refresh cart') {
-        const { t, history, receiptNumber } = this.props;
-        alert(t('OrderHasBeenAddedOrRemoved'), {
-          title: t('RefreshCartToContinue'),
-          closeButtonContent: t('RefreshCart'),
-          onClose: () =>
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
-            }),
-        });
-      }
-    }
-  };
-
-  handleChangeAdditionalComments(e) {
-    this.setState({
-      additionalComments: e.target.value,
+  setCartContainerHeight = preContainerHeight => {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl],
     });
 
-    Utils.setSessionVariable('additionalComments', e.target.value);
-  }
+    if (preContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
+  };
 
   handleClickBack = async () => {
     if (this.additionalCommentsEl) {
@@ -156,8 +161,9 @@ class PayLater extends Component {
     // Fixed lazy loading issue. The first item emptied when textarea focused and back to ordering page
     const timer = setTimeout(() => {
       clearTimeout(timer);
+      const { history } = this.props;
 
-      this.props.history.push({
+      history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
         search: window.location.search,
       });
@@ -165,12 +171,19 @@ class PayLater extends Component {
   };
 
   handleClearAll = () => {
-    this.props.clearCart().then(() => {
-      this.props.history.push({
+    const { clearCart, history } = this.props;
+
+    clearCart().then(() => {
+      history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
         search: window.location.search,
       });
     });
+  };
+
+  handleClearAdditionalComments = () => {
+    Utils.removeSessionVariable('additionalComments');
+    this.setState({ additionalComments: null });
   };
 
   renderCartList = () => {
@@ -184,7 +197,7 @@ class PayLater extends Component {
         }}
       >
         <CartList
-          isLazyLoad={true}
+          isLazyLoad
           items={cartItems}
           unavailableItems={unavailableCartItems}
           onIncreaseCartItem={this.handleIncreaseCartItem}
@@ -195,11 +208,6 @@ class PayLater extends Component {
       </div>
     );
   };
-
-  handleClearAdditionalComments() {
-    Utils.removeSessionVariable('additionalComments');
-    this.setState({ additionalComments: null });
-  }
 
   AdditionalCommentsFocus = () => {
     setTimeout(() => {
@@ -213,74 +221,44 @@ class PayLater extends Component {
     }, 300);
   };
 
-  getUpdateShoppingCartItemData = ({ productId, variations }, quantityChange) => {
-    return {
-      productId,
-      quantityChange,
-      variations: (variations || []).map(({ variationId, optionId }) => ({
-        variationId,
-        optionId,
-      })),
-    };
-  };
-
-  handleIncreaseCartItem = cartItem => {
-    loggly.log('pay-later-cart.item-operate-attempt');
-
-    this.props.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, 1));
-  };
+  getUpdateShoppingCartItemData = ({ productId, variations }, quantityChange) => ({
+    productId,
+    quantityChange,
+    variations: (variations || []).map(({ variationId, optionId }) => ({
+      variationId,
+      optionId,
+    })),
+  });
 
   handleDecreaseCartItem = cartItem => {
-    loggly.log('pay-later-cart.item-operate-attempt');
+    const { updateCartItems } = this.props;
+    log('pay-later-cart.item-operate-attempt');
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
-      return this.handleRemoveCartItem(cartItem);
+      this.handleRemoveCartItem(cartItem);
     }
 
-    this.props.updateCartItems(this.getUpdateShoppingCartItemData(cartItem, -1));
+    updateCartItems(this.getUpdateShoppingCartItemData(cartItem, -1));
+  };
+
+  handleIncreaseCartItem = cartItem => {
+    const { updateCartItems } = this.props;
+    log('pay-later-cart.item-operate-attempt');
+
+    updateCartItems(this.getUpdateShoppingCartItemData(cartItem, 1));
   };
 
   handleRemoveCartItem = cartItem => {
-    loggly.log('pay-later-cart.item-operate-attempt');
+    log('pay-later-cart.item-operate-attempt');
     const { id } = cartItem;
-    this.props.removeCartItemsById(id);
+    const { removeCartItemsById } = this.props;
+    removeCartItemsById(id);
   };
 
-  renderAdditionalComments() {
-    const { t, cartItems } = this.props;
-    const { additionalComments } = this.state;
-
-    if (!cartItems.length) {
-      return null;
-    }
-
-    return (
-      <div className="ordering-cart__additional-comments flex flex-middle flex-space-between">
-        <textarea
-          ref={ref => (this.additionalCommentsEl = ref)}
-          className="ordering-cart__textarea form__textarea padding-small margin-left-right-small"
-          rows="2"
-          placeholder={t('OrderNotesPlaceholder')}
-          maxLength="140"
-          value={additionalComments || ''}
-          data-heap-name="ordering.cart.additional-msg"
-          onChange={this.handleChangeAdditionalComments.bind(this)}
-          onFocus={this.AdditionalCommentsFocus}
-        ></textarea>
-        {additionalComments ? (
-          <IconClose
-            className="icon icon__big icon__default flex__shrink-fixed"
-            data-heap-name="ordering.cart.clear-additional-msg"
-            onClick={this.handleClearAdditionalComments.bind(this)}
-          />
-        ) : null}
-      </div>
-    );
-  }
-
   handleReturnToMenu = () => {
-    this.props.history.push({
+    const { history } = this.props;
+    history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
       search: window.location.search,
     });
@@ -295,8 +273,50 @@ class PayLater extends Component {
     });
   };
 
+  renderAdditionalComments() {
+    const { t, cartItems } = this.props;
+    const { additionalComments } = this.state;
+
+    if (!cartItems.length) {
+      return null;
+    }
+
+    return (
+      <div className="ordering-cart__additional-comments flex flex-middle flex-space-between">
+        <textarea
+          ref={ref => {
+            this.additionalCommentsEl = ref;
+          }}
+          className="ordering-cart__textarea form__textarea padding-small margin-left-right-small"
+          rows="2"
+          placeholder={t('OrderNotesPlaceholder')}
+          maxLength="140"
+          value={additionalComments || ''}
+          data-heap-name="ordering.cart.additional-msg"
+          onChange={this.handleChangeAdditionalComments}
+          onFocus={this.AdditionalCommentsFocus}
+        />
+        {additionalComments ? (
+          <IconClose
+            className="icon icon__big icon__default flex__shrink-fixed"
+            data-heap-name="ordering.cart.clear-additional-msg"
+            onClick={this.handleClearAdditionalComments}
+          />
+        ) : null}
+      </div>
+    );
+  }
+
   render() {
-    const { t, count, cartItems, cartSubmittedStatus, cartNotSubmittedAndEmpty, cartSubmissionRequesting } = this.props;
+    const {
+      t,
+      history,
+      count,
+      cartItems,
+      cartSubmittedStatus,
+      cartNotSubmittedAndEmpty,
+      cartSubmissionRequesting,
+    } = this.props;
     const { cartContainerHeight } = this.state;
 
     const buttonText = (
@@ -308,12 +328,14 @@ class PayLater extends Component {
     return (
       <section className="ordering-cart flex flex-column" data-heap-name="ordering.cart.container">
         <HybridHeader
-          headerRef={ref => (this.headerEl = ref)}
+          headerRef={ref => {
+            this.headerEl = ref;
+          }}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.cart.header"
-          isPage={true}
-          title={t('ProductsInOrderText', { count: count })}
+          isPage
+          title={t('ProductsInOrderText', { count })}
           navFunc={() => {
             this.handleClickBack();
           }}
@@ -332,7 +354,7 @@ class PayLater extends Component {
                   onClick: this.handleClearAll,
                 }
           }
-        ></HybridHeader>
+        />
         <div
           className="ordering-cart__container"
           style={{
@@ -349,7 +371,9 @@ class PayLater extends Component {
           {this.renderCartList()}
         </div>
         <footer
-          ref={ref => (this.footerEl = ref)}
+          ref={ref => {
+            this.footerEl = ref;
+          }}
           className="footer padding-small flex flex-middle flex-space-between flex__shrink-fixed"
         >
           <button
@@ -375,7 +399,7 @@ class PayLater extends Component {
         </footer>
         {cartNotSubmittedAndEmpty ? (
           <CartEmptyResult
-            history={this.props.history}
+            history={history}
             submittedStatus={cartSubmittedStatus}
             handleReturnToMenu={this.handleReturnToMenu}
             handleReturnToTableSummary={this.handleReturnToTableSummary}
@@ -388,26 +412,58 @@ class PayLater extends Component {
 
 PayLater.displayName = 'PayLater';
 
+PayLater.propTypes = {
+  queryCartAndStatus: PropTypes.func,
+  receiptNumber: PropTypes.string,
+  cartSubmittedStatus: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  cartItems: PropTypes.array,
+  clearQueryCartStatus: PropTypes.func,
+  submitCart: PropTypes.func,
+  clearCart: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  unavailableCartItems: PropTypes.array,
+  updateCartItems: PropTypes.func,
+  removeCartItemsById: PropTypes.func,
+  count: PropTypes.number,
+  cartNotSubmittedAndEmpty: PropTypes.bool,
+  cartSubmissionRequesting: PropTypes.bool,
+};
+
+PayLater.defaultProps = {
+  queryCartAndStatus: () => {},
+  receiptNumber: null,
+  cartSubmittedStatus: false,
+  cartItems: [],
+  clearQueryCartStatus: () => {},
+  submitCart: () => {},
+  clearCart: () => {},
+  unavailableCartItems: [],
+  updateCartItems: () => {},
+  removeCartItemsById: () => {},
+  count: 0,
+  cartNotSubmittedAndEmpty: false,
+  cartSubmissionRequesting: false,
+};
+
 export default compose(
   withTranslation(['OrderingCart']),
   connect(
-    state => {
-      return {
-        cartItems: getCartItems(state),
-        unavailableCartItems: getCartUnavailableItems(state),
-        count: getCartItemsCount(state),
-        cartSubmittedStatus: getCartSubmittedStatus(state),
-        cartNotSubmittedAndEmpty: getCartNotSubmittedAndEmpty(state),
-        cartSubmissionRequesting: getCartSubmissionRequestingStatus(state),
-      };
-    },
-    dispatch => ({
-      removeCartItemsById: bindActionCreators(removeCartItemsById, dispatch),
-      updateCartItems: bindActionCreators(updateCartItems, dispatch),
-      submitCart: bindActionCreators(submitCart, dispatch),
-      clearCart: bindActionCreators(clearCart, dispatch),
-      clearQueryCartStatus: bindActionCreators(clearQueryCartStatus, dispatch),
-      queryCartAndStatus: bindActionCreators(queryCartAndStatus, dispatch),
-    })
+    state => ({
+      cartItems: getCartItems(state),
+      unavailableCartItems: getCartUnavailableItems(state),
+      count: getCartItemsCount(state),
+      cartSubmittedStatus: getCartSubmittedStatus(state),
+      cartNotSubmittedAndEmpty: getCartNotSubmittedAndEmpty(state),
+      cartSubmissionRequesting: getCartSubmissionRequestingStatus(state),
+    }),
+    {
+      removeCartItemsById: removeCartItemsByIdThunk,
+      updateCartItems: updateCartItemsThunk,
+      submitCart: submitCartThunk,
+      clearCart: clearCartThunk,
+      clearQueryCartStatus: clearQueryCartStatusThunk,
+      queryCartAndStatus: queryCartAndStatusThunk,
+    }
   )
 )(PayLater);
