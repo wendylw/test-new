@@ -60,13 +60,13 @@ class CartList extends Component {
           <CurrencyNumber
             className="cart-item__price text-size-small text-line-through"
             money={originalDisplayPrice}
-            numberOnly={true}
+            numberOnly
           />
         ) : null}
         <CurrencyNumber
           className={`cart-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
           money={price || 0}
-          numberOnly={true}
+          numberOnly
         />
       </div>
     );
@@ -102,7 +102,7 @@ class CartList extends Component {
           className="flex-middle"
           data-heap-name="ordering.home.mini-cart.item-operator"
           quantity={quantity}
-          decreaseDisabled={!Boolean(quantity)}
+          decreaseDisabled={!quantity}
           increaseDisabled={disabledIncreaseQuantity}
           onDecrease={() => onDecreaseCartItem(cartItem)}
           onIncrease={() => onIncreaseCartItem(cartItem)}
@@ -122,7 +122,7 @@ class CartList extends Component {
       if (l.id > r.id) return 1;
       return 0;
     };
-    let cartItems = [...unavailableItems, ...items].sort(sortFn);
+    const cartItems = [...unavailableItems, ...items].sort(sortFn);
 
     return (
       <ul style={style} data-heap-name="ordering.cart.cart-list">
@@ -153,13 +153,24 @@ class CartList extends Component {
 CartList.displayName = 'CartList';
 
 CartList.propTypes = {
-  isList: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  items: PropTypes.array,
+  // eslint-disable-next-line react/forbid-prop-types
+  unavailableItems: PropTypes.array,
+  onIncreaseCartItem: PropTypes.func,
+  onDecreaseCartItem: PropTypes.func,
+  onRemoveCartItem: PropTypes.func,
 };
 
 CartList.defaultProps = {
-  isList: false,
   style: {},
+  items: [],
+  unavailableItems: [],
+  onIncreaseCartItem: () => {},
+  onDecreaseCartItem: () => {},
+  onRemoveCartItem: () => {},
 };
 
 export default compose(

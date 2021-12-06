@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import withDataAttributes from './withDataAttributes';
 import './ItemOperator.scss';
 
-export class ItemOperator extends Component {
+class ItemOperator extends Component {
   render() {
     const {
       quantity,

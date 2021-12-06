@@ -407,7 +407,6 @@ class PayFirst extends Component {
         }}
       >
         <CartList
-          isLazyLoad
           items={shoppingCart?.items}
           unavailableItems={shoppingCart?.unavailableItems}
           onIncreaseCartItem={this.handleIncreaseCartItem}
