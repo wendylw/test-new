@@ -21,7 +21,7 @@ import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from './utils';
 import Constants from '../../../../../utils/constants';
-import { BEFORE_PAID_STATUS_LIST, REFERRER_SOURCE_TYPES } from './constants';
+import { BEFORE_PAID_STATUS_LIST, REFERRERS_REQUIRING_PROFILE } from './constants';
 import {
   gtmEventTracking,
   gtmSetPageViewData,
@@ -68,7 +68,7 @@ import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -92,8 +92,15 @@ export class ThankYou extends PureComponent {
   pollOrderStatusTimer = null;
 
   showCompleteProfileIfNeeded = async () => {
+    const { orderStatus } = this.props;
+    //Explain: The profile page is not displayed before the order is paid
+    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && !hasOrderPaid) {
+      return;
+    }
+
     const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
-    const delay = this.state.from === REFERRER_SOURCE_TYPES.PAYMENT ? 3000 : 1000;
+    const delay = this.state.from === REFERRER_SOURCE_TYPES.LOGIN ? 1000 : 3000;
 
     if (isDoNotAsk === '1') {
       return;
@@ -101,7 +108,7 @@ export class ThankYou extends PureComponent {
 
     const { name, email, birthday, status } = this.props.user.profile || {};
 
-    if (status === 'fulfilled') {
+    if (status === 'fulfilled' && REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
       if (!name || !email || !birthday) {
         this.timer = setTimeout(() => {
           this.props.setShowProfileVisibility(true);
@@ -110,27 +117,15 @@ export class ThankYou extends PureComponent {
     }
   };
 
-  shouldShowProfilePage = () => {
-    const { order } = this.props;
-    const { from } = this.state;
-    const isSourceTypeValid = from === REFERRER_SOURCE_TYPES.PAYMENT || from === REFERRER_SOURCE_TYPES.LOGIN;
-
-    return order && isSourceTypeValid;
-  };
-
   componentDidMount = async () => {
     const { user, loadCashbackInfo } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
 
-    this.showCompleteProfileIfNeeded();
-
     const from = Utils.getCookieVariable('__ty_source');
 
-    this.setState({
-      from,
-    });
+    this.setState({ from }, () => this.showCompleteProfileIfNeeded());
 
     // immidiately remove __ty_source cookie after setting in the state.
     Utils.removeCookieVariable('__ty_source');
@@ -335,7 +330,7 @@ export class ThankYou extends PureComponent {
     const { storeId: prevStoreId } = prevOrder || {};
     const { order, onlineStoreInfo, user, shippingType, loadStoreIdTableIdHashCode, loadStoreIdHashCode } = this.props;
 
-    if (this.props.user.profile !== prevProps.user.profile) {
+    if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
       this.showCompleteProfileIfNeeded();
     }
 
@@ -844,7 +839,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {this.shouldShowProfilePage() && (
+        {order && (
           <CompleteProfileModal
             closeModal={this.handleCompleteProfileModalClose}
             showProfileVisibility={this.props.profileModalVisibility}

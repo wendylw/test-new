@@ -1,6 +1,6 @@
 import Constants from '../../../../../utils/constants';
 
-const { ORDER_STATUS } = Constants;
+const { ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
 
 export const ORDER_CANCELLATION_REASONS = {
   TAKING_TOO_LONG_TO_FIND_RIDER: 'takingTooLongToFindRider',
@@ -13,6 +13,7 @@ export const ORDER_CANCELLATION_REASONS = {
 
 export const ORDER_DELAY_REASON_CODES = {
   RAMADAN: 'ramadan',
+  BAD_WEATHER: 'badWeather',
 };
 
 export const BEFORE_PAID_STATUS_LIST = [
@@ -24,7 +25,9 @@ export const BEFORE_PAID_STATUS_LIST = [
 
 export const CASHBACK_CAN_CLAIM = 'Can_Claim';
 
-export const REFERRER_SOURCE_TYPES = {
-  PAYMENT: 'payment',
-  LOGIN: 'login',
-};
+export const REFERRERS_REQUIRING_PROFILE = [
+  REFERRER_SOURCE_TYPES.PAYMENT,
+  REFERRER_SOURCE_TYPES.CASHBACK,
+  REFERRER_SOURCE_TYPES.PAY_AT_COUNTER,
+  REFERRER_SOURCE_TYPES.LOGIN,
+];
