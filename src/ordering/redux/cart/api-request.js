@@ -63,8 +63,15 @@ export const deleteCart = ({ shippingType, fulfillDate }) => {
 };
 
 // submit cart
-export const postCartSubmission = ({ version, source: orderSource, shippingType, fulfillDate }) => {
-  const payload = { version, orderSource };
+export const postCartSubmission = ({
+  version,
+  source: orderSource,
+  comments,
+  selectedItemIds,
+  shippingType,
+  fulfillDate,
+}) => {
+  const payload = { version, orderSource, comments, selectedItemIds };
   const queryParams = { shippingType };
 
   if (fulfillDate) {
