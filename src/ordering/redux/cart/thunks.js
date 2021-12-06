@@ -1,6 +1,9 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import i18next from 'i18next';
 import Utils from '../../../utils/utils';
+import Constants from '../../../utils/constants';
+import { alert } from '../../../common/feedback';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
 import { getCartVersion, getCartSource, getCartItems } from './selectors';
@@ -203,6 +206,31 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
     return result;
   } catch (error) {
     console.error(error);
+
+    const NEW_ERROR_CODE_MAPPING = {
+      393478: '54012',
+    };
+
+    if (NEW_ERROR_CODE_MAPPING[error.code]) {
+      const {
+        desc: descriptionKey,
+        title: titleKey,
+        buttonText: closeButtonContent,
+        redirectUrl,
+      } = Constants.ERROR_CODE_MAP[NEW_ERROR_CODE_MAPPING[error.code]];
+      const h = Utils.getQueryVariable('h');
+      const type = Utils.getQueryVariable('type');
+
+      alert(i18next.t(descriptionKey), {
+        title: i18next.t(titleKey),
+        closeButtonContent,
+        onClose: () => {
+          if (redirectUrl) {
+            window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
+          }
+        },
+      });
+    }
 
     throw error;
   }
