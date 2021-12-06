@@ -57,10 +57,10 @@ class PayLater extends Component {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
 
-    const { receiptNumber, cartSubmittedStatus, cartItems, t, history } = this.props;
+    const { receiptNumber, cartSubmittedStatus, t, history } = this.props;
     const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
-    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus && !cartItems.length) {
+    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
       alert(t('ApiError:HasBeenPlacedContentDescription'), {
         title: t('ApiError:UnableToPlaceOrder'),
         closeButtonContent: t('ApiError:ViewOrder'),

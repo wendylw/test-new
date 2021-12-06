@@ -15,8 +15,8 @@ import {
 
 const CartSubmissionModel = {
   requestStatus: {
-    submitCart: API_REQUEST_STATUS.PENDING,
-    loadCartSubmissionStatus: API_REQUEST_STATUS.PENDING,
+    submitCart: API_REQUEST_STATUS.FULFILLED,
+    loadCartSubmissionStatus: API_REQUEST_STATUS.FULFILLED,
   },
   status: null,
   receiptNumber: null,
@@ -110,6 +110,9 @@ export const { reducer, actions } = createSlice({
       };
     },
     updateCartSubmission(state, { payload }) {
+      console.log('updateCartSubmission===>', state);
+      console.log(payload);
+
       state.submission = { ...state.submission, ...payload };
     },
   },

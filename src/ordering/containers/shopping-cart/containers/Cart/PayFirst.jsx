@@ -564,11 +564,11 @@ class PayFirst extends Component {
 PayFirst.displayName = 'PayFirst';
 
 PayFirst.propTypes = {
-  appActions: PropTypes.instanceOf({
+  appActions: PropTypes.shape({
     loadShoppingCart: PropTypes.func,
     clearAll: PropTypes.func,
   }),
-  promotionActions: PropTypes.instanceOf({
+  promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
   }),
   loadStockStatus: PropTypes.func,
