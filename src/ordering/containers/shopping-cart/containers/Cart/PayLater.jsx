@@ -82,9 +82,8 @@ class PayLater extends Component {
     try {
       const { history, submitCart } = this.props;
       const { additionalComments } = this.state;
-      // TODO: Move unwrapResult to redux
-      const result = await submitCart(additionalComments).then(unwrapResult);
-      const { submissionId } = result;
+      const { submissionId } = await submitCart(additionalComments).then(unwrapResult);
+
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
         search: `${window.location.search}&submissionId=${submissionId}`,
@@ -92,6 +91,7 @@ class PayLater extends Component {
     } catch (e) {
       if (e.code === 'place ordered') {
         const { t, history, receiptNumber } = this.props;
+
         alert(t('ApiError:HasBeenPlacedContentDescription'), {
           title: t('ApiError:UnableToPlaceOrder'),
           closeButtonContent: t('ApiError:ViewOrder'),
@@ -103,6 +103,7 @@ class PayLater extends Component {
         });
       } else if (e.code === 'other error refresh cart') {
         const { t, history, receiptNumber } = this.props;
+
         alert(t('OrderHasBeenAddedOrRemoved'), {
           title: t('RefreshCartToContinue'),
           closeButtonContent: t('RefreshCart'),
