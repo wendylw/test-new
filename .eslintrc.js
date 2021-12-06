@@ -85,7 +85,6 @@ const legacyFiles = [
   'src/ordering/components/MessageModal/index.js',
   'src/ordering/components/ProductItem.jsx',
   'src/ordering/containers/App/index.js',
-  'src/ordering/containers/shopping-cart/components/ProductSoldOutModal/index.js',
   'src/ordering/containers/shopping-cart/components/CartEmptyResult/index.js',
   'src/ordering/containers/shopping-cart/containers/Cart/PayLater.jsx',
   'src/ordering/containers/shopping-cart/containers/CartSubmissionStatus/index.jsx',
