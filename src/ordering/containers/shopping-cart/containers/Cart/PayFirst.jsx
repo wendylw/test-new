@@ -567,6 +567,8 @@ PayFirst.propTypes = {
   appActions: PropTypes.shape({
     loadShoppingCart: PropTypes.func,
     clearAll: PropTypes.func,
+    addOrUpdateShoppingCartItem: PropTypes.func,
+    removeShoppingCartItem: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
@@ -590,6 +592,8 @@ PayFirst.defaultProps = {
   appActions: {
     loadShoppingCart: () => {},
     clearAll: () => {},
+    addOrUpdateShoppingCartItem: () => {},
+    removeShoppingCartItem: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},
