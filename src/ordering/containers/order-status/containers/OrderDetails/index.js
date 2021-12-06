@@ -23,6 +23,7 @@ import {
   getReceiptNumber,
   getServiceCharge,
   getOrderShippingType,
+  getLiveChatUserProfile,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -246,11 +247,8 @@ export class OrderDetails extends Component {
   }
 
   getRightContentOfHeader() {
-    const { user, order, t } = this.props;
-    const isWebview = _get(user, 'isWebview', false);
-    const userEmail = _get(user, 'profile.email', '');
-    const userPhone = _get(user, 'profile.phone', '');
-    const userName = _get(user, 'profile.name', '');
+    const { order, t, liveChatUserProfile } = this.props;
+    const isWebview = Utils.isWebview();
     const orderId = _get(order, 'orderId', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
     const eventName = 'Order Details - click contact us';
@@ -258,14 +256,6 @@ export class OrderDetails extends Component {
     if (!order) {
       return null;
     }
-
-    // TODO: doesn't ensure the user already login on thankyou page
-    // so possible getting empty value from user profile
-    const userInfoForLiveChat = {
-      email: userEmail,
-      phone: userPhone,
-      name: userName,
-    };
 
     if (isWebview) {
       const rightContentOfNativeLiveChat = {
@@ -278,10 +268,8 @@ export class OrderDetails extends Component {
 
           NativeMethods.startChat({
             orderId,
-            name: userInfoForLiveChat.name,
-            phone: userInfoForLiveChat.phone,
-            email: userInfoForLiveChat.email,
             storeName: orderStoreName,
+            ...liveChatUserProfile,
           });
         },
       };
@@ -307,9 +295,6 @@ export class OrderDetails extends Component {
           this.pushCleverTapEvent(eventName);
         }}
         orderId={orderId}
-        email={userInfoForLiveChat.email}
-        name={userInfoForLiveChat.name}
-        phone={userInfoForLiveChat.phone}
         storeName={orderStoreName}
       />
     );
@@ -454,6 +439,7 @@ export default compose(
       isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      liveChatUserProfile: getLiveChatUserProfile(state),
     }),
     {
       loadOrder,

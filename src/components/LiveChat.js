@@ -3,7 +3,8 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getUserConsumerId, getUserIsLogin, getUserProfile } from '../ordering/redux/modules/app';
+import { getUserConsumerId, getUserIsLogin } from '../ordering/redux/modules/app';
+import { getLiveChatUserProfile } from '../ordering/containers/order-status/redux/selector';
 import './LiveChat.scss';
 
 class LiveChat extends Component {
@@ -14,8 +15,8 @@ class LiveChat extends Component {
   }
 
   launchIntercomMessenger() {
-    const { name, phone, email, userId, hasUserLoggedIn, orderId: order_id, storeName: store_name } = this.props;
-    const userInfo = hasUserLoggedIn ? { user_id: userId, name, email, phone } : {};
+    const { userId, hasUserLoggedIn, orderId: order_id, storeName: store_name, userProfile } = this.props;
+    const userInfo = hasUserLoggedIn ? { user_id: userId, ...userProfile } : {};
 
     window.intercomSettings = {
       app_id: process.env.REACT_APP_INTERCOM_APP_ID,
@@ -137,6 +138,6 @@ export default compose(
   connect(state => ({
     hasUserLoggedIn: getUserIsLogin(state),
     userId: getUserConsumerId(state),
-    userProfile: getUserProfile(state),
+    userProfile: getLiveChatUserProfile(state),
   }))
 )(LiveChat);

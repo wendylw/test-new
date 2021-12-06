@@ -47,6 +47,7 @@ import {
   getOrderShippingType,
   getIsPreOrder,
   getIsUseStorehubLogistics,
+  getLiveChatUserProfile,
 } from '../../redux/selector';
 import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
@@ -702,11 +703,8 @@ export class ThankYou extends PureComponent {
   };
 
   getRightContentOfHeader() {
-    const { user, order, shippingType, t } = this.props;
+    const { order, shippingType, t, liveChatUserProfile } = this.props;
     const isWebview = Utils.isWebview();
-    const userEmail = _get(user, 'profile.email', '');
-    const userPhone = _get(user, 'profile.phone', '');
-    const userName = _get(user, 'profile.name', '');
     const orderId = _get(order, 'orderId', '');
     const tableId = _get(order, 'tableId', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
@@ -715,14 +713,6 @@ export class ThankYou extends PureComponent {
     if (!order) {
       return null;
     }
-
-    // TODO: doesn't ensure the user already login on thankyou page
-    // so possible getting empty value from user profile
-    const userInfoForLiveChat = {
-      email: userEmail,
-      phone: userPhone,
-      name: userName,
-    };
 
     const rightContentOfTableId = {
       text: tableId ? t('TableIdText', { tableId }) : '',
@@ -747,10 +737,8 @@ export class ThankYou extends PureComponent {
         onClick: () => {
           NativeMethods.startChat({
             orderId,
-            name: userInfoForLiveChat.name,
-            phone: userInfoForLiveChat.phone,
-            email: userInfoForLiveChat.email,
             storeName: orderStoreName,
+            ...liveChatUserProfile,
           });
         },
       };
@@ -768,15 +756,7 @@ export class ThankYou extends PureComponent {
       return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    return (
-      <LiveChat
-        orderId={orderId}
-        email={userInfoForLiveChat.email}
-        name={userInfoForLiveChat.name}
-        phone={userInfoForLiveChat.phone}
-        storeName={orderStoreName}
-      />
-    );
+    return <LiveChat orderId={orderId} storeName={orderStoreName} />;
   }
 
   handleHeaderNavFunc = () => {
@@ -943,6 +923,7 @@ export default compose(
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
       profileModalVisibility: getshowProfileVisibility(state),
+      liveChatUserProfile: getLiveChatUserProfile(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
