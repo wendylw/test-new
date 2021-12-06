@@ -279,6 +279,14 @@ export const nativeLayout = (area, config) => {
   return dsBridgeCall(data);
 };
 
+export const showCompleteProfilePageAsync = () => {
+  const data = {
+    method: 'routerModule-showCompleteProfilePage',
+    mode: MODE.ASYNC,
+  };
+  return dsBridgeCall(data);
+};
+
 export const gotoHome = () => {
   const data = {
     method: 'routerModule-gotoHome',

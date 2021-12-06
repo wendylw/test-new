@@ -356,6 +356,13 @@ const legacyFiles = [
   'src/voucher/redux/store.js',
   'src/voucher/redux/types.js',
   'src/voucher/utils.js',
+  'src/ordering/components/PageProcessingLoader.jsx',
+  'src/ordering/containers/order-status/containers/ThankYou/components/SelfPickup.jsx',
+  'src/ordering/containers/order-status/containers/ThankYou/utils.js',
+  'src/ordering/containers/order-status/redux/api-info.js',
+  'src/ordering/containers/order-status/redux/selector.js',
+  'src/ordering/containers/order-status/redux/thunks.js',
+  'src/ordering/containers/order-status/redux/selector.js',
 ];
 
 module.exports = {
