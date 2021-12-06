@@ -19,12 +19,12 @@ const initialState = {
   },
 
   order: {
-    status: null,
+    orderStatus: null,
     receiptNumber: null,
     tableId: null,
     tax: 0,
     cashback: 0,
-    promotions: [],
+    displayPromotions: [],
     total: 0,
     subtotal: 0,
     modifiedTime: null,
@@ -60,14 +60,15 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
     },
     [loadOrders.fulfilled.type]: (state, { payload }) => {
-      const { promotions = [], ...others } = {
-        ...state,
+      const { displayPromotions = [], status: orderStatus, ...others } = {
+        ...state.order,
         ...payload,
       };
 
-      state = {
+      state.order = {
         ...others,
-        promotions: (promotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
+        orderStatus,
+        displayPromotions: (displayPromotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
       };
       state.requestStatus.loadOrders = API_REQUEST_STATUS.FULFILLED;
     },
@@ -80,11 +81,11 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.PENDING;
     },
     [loadOrdersStatus.fulfilled.type]: (state, { payload }) => {
-      state.order.status = payload.status;
+      state.order.orderStatus = payload.status;
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.FULFILLED;
     },
     [loadOrdersStatus.rejected.type]: (state, { error }) => {
-      state.error = error.loadOrdersStatus;
+      state.error.loadOrdersStatus = error;
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.REJECTED;
     },
 
@@ -95,7 +96,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.submitOrders = API_REQUEST_STATUS.FULFILLED;
     },
     [submitOrders.rejected.type]: (state, { error }) => {
-      state.error = error.submitOrders;
+      state.error.submitOrders = error;
       state.requestStatus.submitOrders = API_REQUEST_STATUS.REJECTED;
     },
   },
