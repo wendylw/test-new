@@ -108,4 +108,4 @@ export const getCartNotSubmittedAndEmpty = createSelector(
 );
 
 export const getCartSubmissionRequestingStatus = state =>
-  state.app.cart.submission.requestStatus === API_REQUEST_STATUS.PENDING;
+  state.app.cart.submission.requestStatus.submitCart === API_REQUEST_STATUS.PENDING;
