@@ -3,6 +3,7 @@ import { withTranslation } from 'react-i18next';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import _isFunction from 'lodash/isFunction';
 import { getUserConsumerId, getUserIsLogin } from '../ordering/redux/modules/app';
 import { getLiveChatUserProfile } from '../ordering/containers/order-status/redux/selector';
 import './LiveChat.scss';
@@ -100,6 +101,8 @@ class LiveChat extends Component {
   }
 
   handleClick = () => {
+    const { onClick } = this.props;
+    _isFunction(onClick) && onClick();
     window.Intercom?.('show');
   };
 
@@ -122,13 +125,21 @@ class LiveChat extends Component {
 }
 
 LiveChat.propTypes = {
-  name: PropTypes.string,
-  phone: PropTypes.string,
-  email: PropTypes.string,
   storeName: PropTypes.string,
   orderId: PropTypes.string,
   userId: PropTypes.string,
   onClick: PropTypes.func,
+  hasUserLoggedIn: PropTypes.bool,
+  userProfile: PropTypes.object,
+};
+
+LiveChat.defaultProps = {
+  storeName: '',
+  orderId: '',
+  userId: '',
+  onClick: () => {},
+  hasUserLoggedIn: false,
+  userProfile: {},
 };
 
 LiveChat.displayName = 'LiveChat';
