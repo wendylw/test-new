@@ -30,7 +30,7 @@ import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
 
-import loggly from '../../../../../utils/monitoring/loggly';
+import { log } from '../../../../../utils/monitoring/loggly';
 import { alert } from '../../../../../common/feedback';
 
 class PayLater extends Component {
@@ -125,7 +125,6 @@ class PayLater extends Component {
     Utils.setSessionVariable('additionalComments', e.target.value);
   };
 
-  // eslint-disable-next-line react/sort-comp
   setProductsContainerHeight = preProductsContainerHeight => {
     const productsContainerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
@@ -233,8 +232,7 @@ class PayLater extends Component {
 
   handleDecreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
-    // eslint-disable-next-line import/no-named-as-default-member
-    loggly.log('pay-later-cart.item-operate-attempt');
+    log('pay-later-cart.item-operate-attempt');
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -246,15 +244,13 @@ class PayLater extends Component {
 
   handleIncreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
-    // eslint-disable-next-line import/no-named-as-default-member
-    loggly.log('pay-later-cart.item-operate-attempt');
+    log('pay-later-cart.item-operate-attempt');
 
     updateCartItems(this.getUpdateShoppingCartItemData(cartItem, 1));
   };
 
   handleRemoveCartItem = cartItem => {
-    // eslint-disable-next-line import/no-named-as-default-member
-    loggly.log('pay-later-cart.item-operate-attempt');
+    log('pay-later-cart.item-operate-attempt');
     const { id } = cartItem;
     const { removeCartItemsById } = this.props;
     removeCartItemsById(id);
