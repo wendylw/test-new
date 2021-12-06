@@ -90,7 +90,6 @@ const legacyFiles = [
   'src/ordering/containers/shopping-cart/components/CartEmptyResult/index.js',
   'src/ordering/containers/shopping-cart/index.js',
   'src/ordering/containers/shopping-cart/containers/Cart/PayFirst.jsx',
-  'src/ordering/containers/shopping-cart/containers/Cart/PayLater.jsx',
   'src/ordering/containers/shopping-cart/containers/CartSubmissionStatus/index.jsx',
   'src/ordering/containers/Customer/components/AddressChangeModal/index.js',
   'src/ordering/containers/Customer/containers/AddressDetail/index.js',
