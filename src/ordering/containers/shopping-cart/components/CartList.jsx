@@ -175,10 +175,7 @@ CartList.defaultProps = {
 
 export default compose(
   withTranslation(),
-  connect(
-    state => ({}),
-    dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
-    })
-  )
+  connect(dispatch => ({
+    appActions: bindActionCreators(appActionCreators, dispatch),
+  }))
 )(CartList);
