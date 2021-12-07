@@ -233,9 +233,10 @@ class PayLater extends Component {
   getUpdateShoppingCartItemData = ({ productId, variations }, quantityChange) => ({
     productId,
     quantityChange,
-    variations: (variations || []).map(({ variationId, optionId }) => ({
+    variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
       variationId,
       optionId,
+      quantity,
     })),
   });
 
