@@ -459,6 +459,7 @@ class Cart extends Component {
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
+            isTakeAwayType={Utils.isTakeAwayType()}
             takeawayCharges={takeawayCharges}
             subtotal={subtotal}
             total={total}
