@@ -130,6 +130,10 @@ $gray-nav-item-text: #707070;
   &__money-minimum {
     display: block;
   }
+
+  &__back-button {
+    min-width: 30%;
+  }
 }
 
 @media (min-width: 770px) {

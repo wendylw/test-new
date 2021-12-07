@@ -163,7 +163,7 @@ export class Footer extends Component {
         data-heap-name="ordering.home.footer.container"
       >
         <button
-          className="button text-left margin-top-bottom-smaller margin-left-right-small flex flex-middle flex-center flex__shrink-fixed"
+          className="home-cart__back-button button text-left margin-top-bottom-smaller margin-left-right-small flex flex-middle flex-center flex__shrink-fixed"
           data-heap-name="ordering.home.footer.cart-btn"
           onClick={onShownCartListDrawer}
         >
