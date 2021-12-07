@@ -121,25 +121,24 @@ class CartListDrawer extends Component {
     if (quantity === 1) {
       this.handleRemoveCartItem(cartItem);
     } else {
+      const selectedOptions = (variations || []).map(({ variationId, optionId, quantity }) => ({
+        variationId,
+        optionId,
+        quantity,
+      }));
+
       enablePayLater
         ? updateCartItems({
             productId,
             quantityChange: -1,
-            variations: (variations || []).map(({ variationId, optionId }) => ({
-              variationId,
-              optionId,
-            })),
+            variations: selectedOptions,
           })
         : this.props.appActions
             .addOrUpdateShoppingCartItem({
               action: 'edit',
               productId,
               quantity: quantity - 1,
-              variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
-                variationId,
-                optionId,
-                quantity,
-              })),
+              variations: selectedOptions,
             })
             .then(() => {
               this.props.appActions.loadShoppingCart();
@@ -152,6 +151,11 @@ class CartListDrawer extends Component {
     loggly.log('cart-list-drawer.item-operate-attempt');
 
     const { quantity, productId, variations } = cartItem;
+    const selectedOptions = (variations || []).map(({ variationId, optionId, quantity }) => ({
+      variationId,
+      optionId,
+      quantity,
+    }));
 
     this.handleGtmEventTracking(cartItem);
 
@@ -159,10 +163,7 @@ class CartListDrawer extends Component {
       updateCartItems({
         productId,
         quantityChange: 1,
-        variations: (variations || []).map(({ variationId, optionId }) => ({
-          variationId,
-          optionId,
-        })),
+        variations: selectedOptions,
       });
     } else {
       this.props.appActions
@@ -170,11 +171,7 @@ class CartListDrawer extends Component {
           action: 'edit',
           productId,
           quantity: quantity + 1,
-          variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
-            variationId,
-            optionId,
-            quantity,
-          })),
+          variations: selectedOptions,
         })
         .then(() => {
           this.props.appActions.loadShoppingCart();

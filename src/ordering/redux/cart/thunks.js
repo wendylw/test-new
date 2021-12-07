@@ -104,7 +104,7 @@ export const clearQueryCartStatus = () => () => {
 };
 
 /**
- * @param {variations} [{"variationId", "optionId"}]
+ * @param {variations} [{"variationId", "optionId", "quantity"}]
  */
 export const updateCartItems = createAsyncThunk(
   'ordering/app/cart/updateCartItems',
