@@ -17,16 +17,18 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
   }, [onHideBannerClick, onShowBannerClick]);
   const { t } = useTranslation('OrderingThankYou');
 
-  const { title, description, buttonText } = isCashbackAvailable
+  const { title, description, bannerButtonText, floatingButtonText } = isCashbackAvailable
     ? {
         title: t('GotCashBackTitle', { currency }),
         description: t('GotCashBackDescription'),
-        buttonText: t('WantCashBackTitle'),
+        bannerButtonText: t('WantCashBackTitle'),
+        floatingButtonText: t('ClaimMyCashback'),
       }
     : {
         title: t('GetDeliveryOrderDiscountTitle'),
         description: t('GetDeliveryOrderDiscountDescription'),
-        buttonText: t('RedeemNow'),
+        bannerButtonText: t('RedeemNow'),
+        floatingButtonText: t('ExclusiveOffers'),
       };
 
   return (
@@ -39,7 +41,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
       >
         <img src={IconGiveCashBag} className="cashback-floating-button__icon" alt="Beep Cash Bag" />
         <div className="cashback-floating-button__content text-size-smaller text-weight-bolder text-uppercase card padding-smaller">
-          {t('ClaimMyCashback')}
+          {floatingButtonText}
         </div>
       </button>
       <div
@@ -54,7 +56,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
               <h2 className="flex flex-middle">
                 <span className="text-weight-bolder">{title}</span>
                 {isCashbackAvailable && (
-                  <span role="img" aria-label="celebration">
+                  <span role="img" aria-label="celebration" className="padding-left-right-smaller">
                     🎉
                   </span>
                 )}
@@ -69,7 +71,7 @@ function CashbackBanner({ currency, isCashbackAvailable, onLoginButtonClick, onS
             className="cashback-banner__login-button button button__fill text-weight-bolder text-uppercase padding-left-right-normal"
             onClick={onLoginButtonClick}
           >
-            {buttonText}
+            {bannerButtonText}
           </button>
         </div>
       </div>
