@@ -47,7 +47,6 @@ const createAlert = (content, options) =>
         render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => {
           destroyTarget(rootDOM);
           resolve();
-
           /* If there is some operation to url in onClose function, this operation will be overwritten when the feedback is closed. Putting onClose in the asynchronous queue can solve this problem */
           setTimeout(() => onClose(), 0);
         });
