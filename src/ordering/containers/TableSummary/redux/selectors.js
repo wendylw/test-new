@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
-import ORDER_STATUS from '../../../../utils/constants';
+import Constants from '../../../../utils/constants';
+
+const { ORDER_STATUS } = Constants;
 
 export const getOrderReceiptNumber = state => state.tableSummary.order.receiptNumber;
 
@@ -20,7 +22,9 @@ export const getOrderCashback = state => state.tableSummary.order.cashback;
 
 export const getOrderShippingFee = state => state.tableSummary.order.shippingFee;
 
-export const getOrderPlacedStatus = state => state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED;
+export const getOrderPlacedStatus = state =>
+  state.tableSummary.requestStatus.loadOrders !== API_REQUEST_STATUS.PENDING &&
+  state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED;
 
 export const getOrderPendingPaymentStatus = state =>
   state.tableSummary.order.orderStatus === ORDER_STATUS.PENDING_PAYMENT;
@@ -51,7 +55,7 @@ export const getSubOrdersMapping = createSelector([getSubOrders, getOrderItems],
 });
 
 export const getOrderSubmissionRequestingStatus = state =>
-  state.tableSummary.requestStatus.submitSubOrders === API_REQUEST_STATUS.PENDING;
+  state.tableSummary.requestStatus.submitOrders === API_REQUEST_STATUS.PENDING;
 
 export const getSubmitOrderConfirmDisplayStatus = state =>
   state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED &&
