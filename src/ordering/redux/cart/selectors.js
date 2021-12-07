@@ -103,13 +103,8 @@ export const getCartQueryRequestingStatus = state =>
 
 export const getCartNotSubmittedAndEmpty = createSelector(
   [getCartItems, getCartStatusNotSubmitted, getCartQueryRequestingStatus],
-  (cartItems, cartNotSubmitted, cartQueryRequestingStatus) => {
-    console.log(cartItems);
-    console.log(cartNotSubmitted);
-    console.log(cartQueryRequestingStatus);
-
-    !cartItems.length && cartNotSubmitted && !cartQueryRequestingStatus;
-  }
+  (cartItems, cartNotSubmitted, cartQueryRequestingStatus) =>
+    !cartItems.length && cartNotSubmitted && !cartQueryRequestingStatus
 );
 
 export const getCartSubmissionRequestingStatus = state =>
