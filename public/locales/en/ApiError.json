@@ -86,6 +86,6 @@
   "57013Title": "Unable to process order (#57013)",
   "57013Description": "The selected shipping method is not supported. Please select another shipping method and try again",
   "UnableToPlaceOrder": "Unable to place order",
-  "HasBeenPlacedContentDescription": "Someone from your table is in the process of checking out, please complete payment before placing a new order",
+  "HasBeenPlacedContentDescription": "Someone from your table is in the process of checking out, please <bold>complete payment</bold> before placing a new order",
   "ViewOrder": "View order"
 }
