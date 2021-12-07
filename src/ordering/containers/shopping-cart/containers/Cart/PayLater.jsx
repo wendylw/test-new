@@ -22,6 +22,7 @@ import {
   getCartSubmittedStatus,
   getCartNotSubmittedAndEmpty,
   getCartSubmissionRequestingStatus,
+  getCartReceiptNumber,
 } from '../../../../redux/cart/selectors';
 import { IconClose, IconError } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
@@ -441,19 +442,19 @@ PayLater.propTypes = {
 };
 
 PayLater.defaultProps = {
-  queryCartAndStatus: () => {},
-  receiptNumber: null,
-  cartSubmittedStatus: false,
   cartItems: [],
+  unavailableCartItems: [],
+  count: 0,
+  cartSubmittedStatus: false,
+  cartNotSubmittedAndEmpty: false,
+  cartSubmissionRequesting: false,
+  receiptNumber: null,
+  queryCartAndStatus: () => {},
   clearQueryCartStatus: () => {},
   submitCart: () => {},
   clearCart: () => {},
-  unavailableCartItems: [],
   updateCartItems: () => {},
   removeCartItemsById: () => {},
-  count: 0,
-  cartNotSubmittedAndEmpty: false,
-  cartSubmissionRequesting: false,
 };
 
 export default compose(
@@ -466,6 +467,7 @@ export default compose(
       cartSubmittedStatus: getCartSubmittedStatus(state),
       cartNotSubmittedAndEmpty: getCartNotSubmittedAndEmpty(state),
       cartSubmissionRequesting: getCartSubmissionRequestingStatus(state),
+      receiptNumber: getCartReceiptNumber(state),
     }),
     {
       removeCartItemsById: removeCartItemsByIdThunk,

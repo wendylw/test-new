@@ -84,6 +84,8 @@ export const getCartUnavailableItems = createSelector(
 
 export const getCartSubmissionId = state => state.app.cart.submission.submissionId;
 
+export const getCartReceiptNumber = state => state.app.cart.receiptNumber;
+
 export const getCartSubmissionReceiptNumber = state => state.app.cart.submission.receiptNumber;
 
 export const getCartSubmittedStatus = state =>
