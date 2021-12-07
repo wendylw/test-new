@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
 import Constants from '../../../utils/constants';
 import CleverTap from '../../../utils/clevertap';
+import Utils from '../../../utils/utils';
 import './Billing.scss';
 export class Billing extends Component {
   renderServiceCharge() {
@@ -68,6 +69,7 @@ export class Billing extends Component {
       billingRef,
       className,
       subtotal,
+      takeawayCharges,
       total,
       tax,
       creditsBalance,
@@ -92,6 +94,12 @@ export class Billing extends Component {
             <label className="billing__label margin-top-bottom-smaller text-size-big">{t('Subtotal')}</label>
             <CurrencyNumber className="billing__text text-size-big" money={subtotal || 0} />
           </li>
+          {Utils.isTakeAwayType() ? (
+            <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+              <label className="billing__label margin-top-bottom-smaller text-size-big">{t('TakeawayFee')}</label>
+              <CurrencyNumber className="billing__text text-size-big" money={takeawayCharges || 0} />
+            </li>
+          ) : null}
           <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
             <label className="billing__label text-size-big">{(receiptTemplateData || {}).taxName || t('Tax')}</label>
             <CurrencyNumber className="billing__text text-size-big" money={tax || 0} />
@@ -152,6 +160,7 @@ Billing.propTypes = {
   serviceCharge: PropTypes.number,
   businessInfo: PropTypes.object,
   subtotal: PropTypes.number,
+  takeawayCharges: PropTypes.number,
   total: PropTypes.number,
   creditsBalance: PropTypes.number,
   shippingFee: PropTypes.number,
@@ -168,6 +177,7 @@ Billing.defaultProps = {
   businessInfo: {},
   serviceChargeRate: 0,
   subtotal: 0,
+  takeawayCharges: 0,
   total: 0,
   creditsBalance: 0,
   shippingFee: 0,
