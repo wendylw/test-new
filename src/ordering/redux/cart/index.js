@@ -110,9 +110,6 @@ export const { reducer, actions } = createSlice({
       };
     },
     updateCartSubmission(state, { payload }) {
-      console.log('updateCartSubmission===>', state);
-      console.log(payload);
-
       state.submission = { ...state.submission, ...payload };
     },
   },
