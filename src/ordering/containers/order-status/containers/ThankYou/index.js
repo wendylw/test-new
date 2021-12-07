@@ -428,7 +428,7 @@ export class ThankYou extends PureComponent {
     };
 
     const productsDetails = [];
-    order.items.forEach(item => {
+    productsInOrder.forEach(item => {
       productsDetails.push({
         id: item.productId,
         price: item.displayPrice,
