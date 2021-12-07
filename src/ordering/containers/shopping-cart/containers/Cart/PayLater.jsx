@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import PropTypes from 'prop-types';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
@@ -61,15 +61,24 @@ class PayLater extends Component {
     const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
     if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
-      alert(t('ApiError:HasBeenPlacedContentDescription'), {
-        title: t('ApiError:UnableToPlaceOrder'),
-        closeButtonContent: t('ApiError:ViewOrder'),
-        onClose: () =>
-          history.push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-            search: `${window.location.search}&receiptNumber=${receiptNumber}`,
-          }),
-      });
+      alert(
+        <Trans
+          t={t}
+          ns="ApiError"
+          i18nKey="HasBeenPlacedContentDescription"
+          components={{ bold: <strong className="text-size-big" /> }}
+        />,
+        {
+          className: 'ordering-cart__alert',
+          title: t('ApiError:UnableToPlaceOrder'),
+          closeButtonContent: t('ApiError:ViewOrder'),
+          onClose: () =>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+            }),
+        }
+      );
     }
   }
 

@@ -9,6 +9,27 @@
     color: $gray-2;
   }
 
+  &__alert {
+    .alert__content {
+      max-width: 340px;
+    }
+
+    .alert__description {
+      margin: auto;
+      max-width: 270px;
+      font-size: 1.1428rem;
+      color: $gray-2;
+    }
+
+    .alert__buttons-group {
+      padding: 0;
+    }
+
+    .alert__button {
+      border-radius: 0;
+    }
+  }
+
   &__warning {
     background-color: #fffbe6;
   }
