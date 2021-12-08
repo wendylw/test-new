@@ -99,19 +99,28 @@ class PayLater extends Component {
         search: `${window.location.search}&submissionId=${submissionId}`,
       });
     } catch (e) {
-      if (e.code === 'place ordered') {
+      if (e.code === '41020') {
         const { t, history, receiptNumber } = this.props;
 
-        alert(t('ApiError:HasBeenPlacedContentDescription'), {
-          title: t('ApiError:UnableToPlaceOrder'),
-          closeButtonContent: t('ApiError:ViewOrder'),
-          onClose: () =>
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
-            }),
-        });
-      } else if (e.code === 'other error refresh cart') {
+        alert(
+          <Trans
+            t={t}
+            ns="ApiError"
+            i18nKey="HasBeenPlacedContentDescription"
+            components={{ bold: <strong className="text-size-big" /> }}
+          />,
+          {
+            className: 'ordering-cart__alert',
+            title: t('ApiError:UnableToPlaceOrder'),
+            closeButtonContent: t('ApiError:ViewOrder'),
+            onClose: () =>
+              history.push({
+                pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+                search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+              }),
+          }
+        );
+      } else if (e.code === '393476') {
         const { t, history, receiptNumber } = this.props;
 
         alert(t('OrderHasBeenAddedOrRemoved'), {
