@@ -324,6 +324,7 @@ class PayLater extends Component {
       history,
       count,
       cartItems,
+      unavailableCartItems,
       cartSubmittedStatus,
       cartNotSubmittedAndEmpty,
       cartSubmissionRequesting,
@@ -403,7 +404,7 @@ class PayLater extends Component {
             onClick={async () => {
               await this.handleClickContinue();
             }}
-            disabled={!cartItems.length || cartSubmissionRequesting}
+            disabled={!cartItems.length || !!unavailableCartItems.length || cartSubmissionRequesting}
           >
             {buttonText}
           </button>

@@ -88,15 +88,21 @@ export const getCartReceiptNumber = state => state.app.cart.receiptNumber;
 
 export const getCartSubmissionReceiptNumber = state => state.app.cart.submission.receiptNumber;
 
+export const getCartSubmissionPendingStatus = state =>
+  state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
+
 export const getCartSubmittedStatus = state =>
   state.app.cart.submission.status === CART_SUBMISSION_STATUS.COMPLETED ||
   state.app.cart.status === CART_STATUS.COMPLETED;
 
-export const getCartSubmissionPendingStatus = state =>
-  state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
-
 export const getCartSubmissionFailedStatus = state =>
   state.app.cart.submission.status === CART_SUBMISSION_STATUS.FAILED;
+
+export const getCartSubmissionHasNotResult = createSelector(
+  [getCartSubmissionPendingStatus, getCartSubmittedStatus, getCartSubmissionFailedStatus],
+  (cartSubmissionPendingStatus, cartSubmittedStatus, cartSubmissionFailedStatus) =>
+    cartSubmissionPendingStatus || (!cartSubmittedStatus && !cartSubmissionFailedStatus)
+);
 
 export const getCartStatusNotSubmitted = state => state.app.cart.status !== CART_STATUS.COMPLETED;
 
