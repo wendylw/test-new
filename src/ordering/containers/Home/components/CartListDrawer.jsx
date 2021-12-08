@@ -218,7 +218,7 @@ class CartListDrawer extends Component {
     const inventoryShortage = Boolean(
       stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand
     );
-    const quantityEqualStock = quantityOnHand && quantity === quantityOnHand;
+    const quantityEqualStock = !!quantityOnHand && quantity === quantityOnHand;
     const disabledIncreaseQuantity = inventoryShortage || quantityEqualStock;
     const classList = ['text-center', ...(inventoryShortage ? ['text-error'] : [])];
 

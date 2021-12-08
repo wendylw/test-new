@@ -10,9 +10,9 @@ class CartEmptyResult extends Component {
     const { submittedStatus, handleReturnToMenu, handleReturnToTableSummary } = this.props;
     if (!submittedStatus) {
       return handleReturnToMenu();
-    } else {
-      return handleReturnToTableSummary();
     }
+
+    return handleReturnToTableSummary();
   };
 
   render() {
@@ -44,7 +44,7 @@ class CartEmptyResult extends Component {
 CartEmptyResult.displayName = 'CartEmptyResult';
 
 CartEmptyResult.propTypes = {
-  enablePayLater: PropTypes.bool,
+  submittedStatus: PropTypes.bool,
   handleReturnToMenu: PropTypes.func,
   handleReturnToTableSummary: PropTypes.func,
 };
@@ -54,4 +54,5 @@ CartEmptyResult.defaultProps = {
   handleReturnToMenu: () => {},
   handleReturnToTableSummary: () => {},
 };
+
 export default compose(withTranslation(['OrderingCart']))(CartEmptyResult);
