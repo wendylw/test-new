@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import {
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
   getCartSubmissionHasNotResult,
   getCartSubmissionReceiptNumber,
 } from '../../../../redux/cart/selectors';
-import { queryCartSubmissionStatus, clearQueryCartSubmissionStatus } from '../../../../redux/cart/thunks';
-import { withTranslation } from 'react-i18next';
+import {
+  queryCartSubmissionStatus as queryCartSubmissionStatusThunk,
+  clearQueryCartSubmissionStatus as clearQueryCartSubmissionStatusThunk,
+} from '../../../../redux/cart/thunks';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import orderSuccessImage from '../../../../../images/order-success.png';
@@ -33,12 +36,12 @@ class CartSubmissionStatus extends Component {
   };
 
   componentDidUpdate = prevProps => {
-    const { cartSubmittedStatus, receiptNumber } = this.props;
+    const { history, cartSubmittedStatus, receiptNumber } = this.props;
     const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
     if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
       this.timer = setTimeout(() => {
-        this.props.history.push({
+        history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
           search: `${Utils.getFilteredQueryString(['submissionId'])}&receiptNumber=${receiptNumber}`,
         });
@@ -48,14 +51,17 @@ class CartSubmissionStatus extends Component {
 
   componentWillUnmount = () => {
     const { clearQueryCartSubmissionStatus } = this.props;
+
     clearQueryCartSubmissionStatus();
     clearTimeout(this.timer);
   };
 
   handleClickBack = () => {
-    this.props.history.push({
+    const { history } = this.props;
+
+    history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-      search: window.location.search,
+      search: `${Utils.getFilteredQueryString(['submissionId'])}`,
     });
   };
 
@@ -66,7 +72,7 @@ class CartSubmissionStatus extends Component {
       <section className="ordering-submission absolute-wrapper flex flex-column flex-center flex-middle">
         {pendingCartSubmissionResult && (
           <div className="margin-smaller">
-            <div className="ordering-submission__loader loader default"></div>
+            <i className="ordering-submission__loader loader default" />
             <p className="ordering-submission__pending-description margin-top-bottom-normal text-center text-size-big text-line-height-base">
               {t('LoadingRedirectingDescription')}
             </p>
@@ -113,20 +119,36 @@ class CartSubmissionStatus extends Component {
 
 CartSubmissionStatus.displayName = 'CartSubmissionStatus';
 
+CartSubmissionStatus.propTypes = {
+  cartSubmittedStatus: PropTypes.bool,
+  pendingCartSubmissionResult: PropTypes.bool,
+  cartSubmissionFailedStatus: PropTypes.bool,
+  receiptNumber: PropTypes.string,
+  clearQueryCartSubmissionStatus: PropTypes.func,
+  queryCartSubmissionStatus: PropTypes.func,
+};
+
+CartSubmissionStatus.defaultProps = {
+  cartSubmittedStatus: false,
+  pendingCartSubmissionResult: false,
+  cartSubmissionFailedStatus: false,
+  receiptNumber: null,
+  clearQueryCartSubmissionStatus: () => {},
+  queryCartSubmissionStatus: () => {},
+};
+
 export default compose(
   withTranslation(['OrderingCart']),
   connect(
-    state => {
-      return {
-        cartSubmittedStatus: getCartSubmittedStatus(state),
-        pendingCartSubmissionResult: getCartSubmissionHasNotResult(state),
-        cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
-        receiptNumber: getCartSubmissionReceiptNumber(state),
-      };
-    },
-    dispatch => ({
-      clearQueryCartSubmissionStatus: bindActionCreators(clearQueryCartSubmissionStatus, dispatch),
-      queryCartSubmissionStatus: bindActionCreators(queryCartSubmissionStatus, dispatch),
+    state => ({
+      cartSubmittedStatus: getCartSubmittedStatus(state),
+      pendingCartSubmissionResult: getCartSubmissionHasNotResult(state),
+      cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
+      receiptNumber: getCartSubmissionReceiptNumber(state),
+    }),
+    () => ({
+      clearQueryCartSubmissionStatus: clearQueryCartSubmissionStatusThunk,
+      queryCartSubmissionStatus: queryCartSubmissionStatusThunk,
     })
   )
 )(CartSubmissionStatus);
