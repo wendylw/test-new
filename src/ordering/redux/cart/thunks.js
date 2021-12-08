@@ -180,7 +180,7 @@ export const clearCart = createAsyncThunk('ordering/app/cart/clearCart', async (
   }
 });
 
-export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async (comments, { getState }) => {
+export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async (comments, { getState, dispatch }) => {
   const state = getState();
   const businessUTCOffset = getBusinessUTCOffset(state);
   const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
@@ -207,11 +207,14 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
   } catch (error) {
     console.error(error);
 
+    // new stock status error code maps to old code
     const NEW_ERROR_CODE_MAPPING = {
       393478: '54012',
     };
 
     if (NEW_ERROR_CODE_MAPPING[error.code]) {
+      dispatch(loadCart());
+
       const {
         desc: descriptionKey,
         title: titleKey,
