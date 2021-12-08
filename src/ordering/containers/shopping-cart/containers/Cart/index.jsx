@@ -9,7 +9,7 @@ import PageLoader from '../../../../../components/PageLoader';
 
 function Cart(props) {
   const { history, businessInfo, enablePayLater } = props;
-  const businessInfoKeysLength = Object.keys(businessInfo).length;
+  const businessInfoKeysLength = Object.keys(businessInfo || {}).length;
 
   if (!businessInfoKeysLength) {
     return <PageLoader />;
