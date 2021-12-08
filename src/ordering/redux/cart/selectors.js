@@ -104,9 +104,9 @@ export const getCartQueryRequestingStatus = state =>
   state.app.cart.requestStatus.loadCart === API_REQUEST_STATUS.PENDING;
 
 export const getCartNotSubmittedAndEmpty = createSelector(
-  [getCartItems, getCartStatusNotSubmitted, getCartQueryRequestingStatus],
-  (cartItems, cartNotSubmitted, cartQueryRequestingStatus) =>
-    !cartItems.length && cartNotSubmitted && !cartQueryRequestingStatus
+  [getCartItems, getCartUnavailableItems, getCartStatusNotSubmitted, getCartQueryRequestingStatus],
+  (cartItems, unavailableCartItems, cartNotSubmitted, cartQueryRequestingStatus) =>
+    !cartItems.length && !unavailableCartItems.length && cartNotSubmitted && !cartQueryRequestingStatus
 );
 
 export const getCartSubmissionRequestingStatus = state =>
