@@ -5,12 +5,14 @@ import PayLater from './PayLater';
 import PayFirst from './PayFirst';
 import { getBusinessInfo, getEnablePayLater } from '../../../../redux/modules/app';
 import './OrderingCart.scss';
+import PageLoader from '../../../../../components/PageLoader';
 
 function Cart(props) {
   const { history, businessInfo, enablePayLater } = props;
+  const businessInfoKeysLength = Object.keys(businessInfo).length;
 
-  if (JSON.stringify(businessInfo) === '{}') {
-    return null;
+  if (!businessInfoKeysLength) {
+    return <PageLoader />;
   }
 
   return enablePayLater ? <PayLater history={history} /> : <PayFirst history={history} />;
