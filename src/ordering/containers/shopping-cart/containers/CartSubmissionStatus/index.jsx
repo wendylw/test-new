@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { compose } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
@@ -146,9 +146,9 @@ export default compose(
       cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
       receiptNumber: getCartSubmissionReceiptNumber(state),
     }),
-    () => ({
-      clearQueryCartSubmissionStatus: clearQueryCartSubmissionStatusThunk,
-      queryCartSubmissionStatus: queryCartSubmissionStatusThunk,
+    dispatch => ({
+      clearQueryCartSubmissionStatus: bindActionCreators(clearQueryCartSubmissionStatusThunk, dispatch),
+      queryCartSubmissionStatus: bindActionCreators(queryCartSubmissionStatusThunk, dispatch),
     })
   )
 )(CartSubmissionStatus);
