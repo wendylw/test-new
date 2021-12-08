@@ -4,14 +4,13 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 const createDebug = require('debug');
 const debug = createDebug('setupProxy:');
-const { URL } = require('url');
 
 debug('Start setup proxy');
 
 const target = process.env.PROXY;
 let proxy;
 if (target) {
-  proxy = createProxyMiddleware({ target, changeOrigin: true, onProxyReq });
+  proxy = createProxyMiddleware({ target, changeOrigin: process.env.PROXY_CHANGE_ORIGIN !== 'false' });
   debug(`proxy to ${target}`);
 } else {
   debug(`Not config target for proxy`);
@@ -29,41 +28,6 @@ if (process.env.PUBLIC_URL) {
 }
 const sockPath = process.env.WDS_SOCKET_PATH || '/sockjs-node';
 const isDefaultSockHost = !process.env.WDS_SOCKET_HOST;
-
-function resolveBusinessName(hostname) {
-  const hostnames = hostname.split('.');
-
-  return hostnames[0];
-}
-
-function replaceHostBusiness(requestHost, targetHost) {
-  // if it's beep site host name then no need replace business name
-  if (!requestHost || isBeepSite(requestHost) || requestHost.toLowerCase() === 'localhost') {
-    return targetHost;
-  }
-
-  const businessName = resolveBusinessName(requestHost);
-
-  return targetHost.replace(/^[^.]+/, businessName);
-}
-
-function isBeepSite(domain) {
-  const domainList = (process.env.REACT_APP_QR_SCAN_DOMAINS || '')
-    .split(',')
-    .map(d => d.trim())
-    .filter(d => d);
-  return domainList.some(d => domain.toLowerCase() === d.toLowerCase());
-}
-
-function onProxyReq(proxyReq, req, res) {
-  const targetUrl = new URL(target);
-  const replacedHost = replaceHostBusiness(req.hostname, targetUrl.host);
-  targetUrl.host = replacedHost;
-
-  proxyReq.setHeader('Host', replacedHost);
-
-  debug(`${req.originalUrl} proxy to ${targetUrl.toString()}`);
-}
 
 function mayProxy(pathname) {
   const isStaticPath = pathname.startsWith('/static/') || pathname.endsWith('hot-update.js');
@@ -96,21 +60,13 @@ const setCookie = async (req, res, next) => {
 
   try {
     debug(`${original} Start set cookie`);
-    const targetUrlObj = new URL(target);
-    const replacedHost = replaceHostBusiness(req.hostname, targetUrlObj.host);
 
-    targetUrlObj.host = replacedHost;
-
-    const targetUrl = targetUrlObj.toString();
-
-    debug(`replaced host target url ${targetUrl}`);
-
-    const backendUrl = new URL(original, targetUrl).toString();
+    const url = new URL(original, `http://${req.headers.host}`);
+    const backendUrl = target + url.search;
     const cookie = req.headers.cookie;
 
     debug(`${original} Cookie is ${cookie}`);
 
-    debug(`request backend url: ${backendUrl}`);
     const response = await fetch(backendUrl, {
       headers: {
         Cookie: cookie,
@@ -139,6 +95,8 @@ const setCookie = async (req, res, next) => {
 
 const backendProxy = (req, res, next) => {
   if (proxy && shouldForward(req)) {
+    debug(`${req.originalUrl} proxy to ${target}`);
+
     return proxy(req, res, next);
   }
 

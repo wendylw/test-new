@@ -117,7 +117,7 @@ const shouldFilter = (event, hint) => {
       isDuplicateChargeId(event, hint) ||
       isTokenExpired(event, hint) ||
       isGoogleAnalytics(event) ||
-      isIgnoreObjectNotFoundMatchingId(event, hint)
+      isIgnoreObjectNotFoundMatchingId(event)
     );
   } catch {
     return false;

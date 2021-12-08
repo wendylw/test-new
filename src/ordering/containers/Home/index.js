@@ -30,8 +30,6 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
-import { getUserHasReachedLegalDrinkingAge, getAlcoholModalDisplayResult } from './redux/common/selectors';
-import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
 import Header from '../../../components/Header';
 import NativeHeader from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
@@ -60,9 +58,11 @@ export class Home extends Component {
     super(props);
     this.state = {
       viewAside: null,
+      alcoholModal: false,
       offlineStoreModal: false,
       dScrollY: 0,
       deliveryBar: false,
+      alcoholModalHide: Utils.getSessionVariable('AlcoholHide'),
       callApiFinish: false,
       enablePreOrderFroMultipleStore: false,
       isValidToOrderFromMultipleStore: false,
@@ -123,7 +123,8 @@ export class Home extends Component {
   };
 
   componentDidMount = async () => {
-    const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent } = this.props;
+    const { deliveryInfo, appActions } = this.props;
+
     if (Utils.isFromBeepSite()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
@@ -131,8 +132,11 @@ export class Home extends Component {
 
     await appActions.loadProductList();
 
-    // Double-checking with backend only if user is not in legal drinking age
-    if (!hasUserReachedLegalDrinkingAge) getUserAlcoholConsent();
+    const pageRf = this.getPageRf();
+
+    if (deliveryInfo && deliveryInfo.sellAlcohol && !pageRf) {
+      this.setAlcoholModalState(deliveryInfo.sellAlcohol);
+    }
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
@@ -189,12 +193,16 @@ export class Home extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { shouldShowAlcoholModal: prevShouldShowAlcoholModal } = prevProps;
-    const { shouldShowAlcoholModal: newShouldShowAlcoholModal } = this.props;
+    const { deliveryInfo: prevDeliveryInfo } = prevProps;
     const { containerHeight } = prevState;
+    const { deliveryInfo } = this.props;
+    const pageRf = this.getPageRf();
+    const { sellAlcohol } = deliveryInfo;
 
-    if (prevShouldShowAlcoholModal !== newShouldShowAlcoholModal) {
-      this.toggleBodyScroll(newShouldShowAlcoholModal);
+    if (!prevDeliveryInfo.sellAlcohol && deliveryInfo.sellAlcohol && !pageRf) {
+      if (sellAlcohol) {
+        this.setAlcoholModalState(sellAlcohol);
+      }
     }
 
     this.setMainContainerHeight(containerHeight);
@@ -313,6 +321,22 @@ export class Home extends Component {
 
       Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
     }
+  };
+
+  setAlcoholModalState = val => {
+    this.setState({
+      alcoholModal: val,
+    });
+
+    if (val && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide) {
+      this.toggleBodyScroll(true);
+    } else {
+      this.toggleBodyScroll(false);
+    }
+  };
+
+  getPageRf = () => {
+    return Utils.getQueryString('pageRefer');
   };
 
   setMainContainerHeight = containerHeight => {
@@ -738,17 +762,17 @@ export class Home extends Component {
   }
 
   handleLegalAge = isAgeLegal => {
-    const { storeInfoForCleverTap, setUserAlcoholConsent } = this.props;
+    const { storeInfoForCleverTap } = this.props;
 
     CleverTap.pushEvent('Menu Page - Alcohol Counsent - Pop up', storeInfoForCleverTap);
 
     if (isAgeLegal) {
       CleverTap.pushEvent('Menu Page - Alcohol Consent - Click yes', storeInfoForCleverTap);
-      // No need to wait for response
-      setUserAlcoholConsent();
     } else {
       CleverTap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
     }
+    isAgeLegal && Utils.setSessionVariable('AlcoholHide', true);
+    this.setAlcoholModalState(!isAgeLegal);
   };
 
   isCountryNeedAlcoholPop = country => {
@@ -830,7 +854,6 @@ export class Home extends Component {
       history,
       freeDeliveryFee,
       deliveryInfo,
-      shouldShowAlcoholModal,
       ...otherProps
     } = this.props;
     const {
@@ -845,7 +868,7 @@ export class Home extends Component {
       breakTimeFrom,
       breakTimeTo,
     } = deliveryInfo;
-    const { viewAside, callApiFinish, windowSize } = this.state;
+    const { viewAside, alcoholModal, callApiFinish, windowSize } = this.state;
     const { tableId, shippingType } = requestInfo || {};
     const { promotions } = businessInfo || {};
     const isWebview = Utils.isWebview();
@@ -853,6 +876,7 @@ export class Home extends Component {
     if (!onlineStoreInfo || !categories) {
       return null;
     }
+
     return (
       <section className="ordering-home flex flex-column">
         {isWebview && (
@@ -1014,7 +1038,7 @@ export class Home extends Component {
           isLiveOnline={enableLiveOnline}
           enablePreOrder={this.isPreOrderEnabled()}
         />
-        {shouldShowAlcoholModal ? (
+        {alcoholModal && this.isCountryNeedAlcoholPop(this.getBusinessCountry()) && !this.state.alcoholModalHide ? (
           <AlcoholModal
             onConfirmAlcoholDenied={this.handleConfirmAlcoholDenied}
             handleLegalAge={this.handleLegalAge}
@@ -1043,15 +1067,11 @@ export default compose(
         allStore: getStoresList(state),
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-        hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
-        shouldShowAlcoholModal: getAlcoholModalDisplayResult(state),
         store: getStore(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionsCreators, dispatch),
-      getUserAlcoholConsent: bindActionCreators(getUserAlcoholConsent, dispatch),
-      setUserAlcoholConsent: bindActionCreators(setUserAlcoholConsent, dispatch),
     })
   )
 )(Home);
