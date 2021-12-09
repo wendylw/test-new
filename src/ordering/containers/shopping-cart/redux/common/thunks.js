@@ -25,6 +25,7 @@ export const loadStockStatus = createAsyncThunk('ordering/cart/common/fetchStock
 
     if (e.code && ERROR_CODE_MAP[e.code]) {
       const { desc, title, buttonText, redirectUrl } = ERROR_CODE_MAP[e.code];
+
       alert(i18next.t(desc), {
         title: i18next.t(title),
         closeButtonContent: i18next.t(buttonText),
