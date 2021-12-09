@@ -41,7 +41,7 @@ const Alert = forwardRef((props, ref) => {
             }}
             disabled={processing}
           >
-            {closeButtonContent || t('OK')}
+            {processing ? t('Processing') : closeButtonContent || t('OK')}
           </button>
         </div>
       </div>
