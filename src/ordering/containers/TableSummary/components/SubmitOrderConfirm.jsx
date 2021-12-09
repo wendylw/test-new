@@ -13,6 +13,7 @@ import {
 import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
 import { alert } from '../../../../common/feedback';
+import Utils from '../../../../utils/utils';
 
 function SubmitOrderConfirm({
   displaySubmitOrderConfirm,
@@ -20,7 +21,7 @@ function SubmitOrderConfirm({
   processing,
   orderCompletedStatus,
   submitOrders,
-  props,
+  history,
 }) {
   const { t } = useTranslation('OrderingDelivery');
 
@@ -60,18 +61,18 @@ function SubmitOrderConfirm({
                 }
               } catch (e) {
                 if (e.code === '393731' || e.code === '393732') {
-                  const { history } = props;
+                  const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+
                   alert(t('SorryDescription'), {
                     title: t('Sorry'),
                     closeButtonContent: t('BackToMenu'),
                     onClose: () =>
                       history.push({
                         pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
-                        search: window.location.search,
+                        search: removeReceiptNumberUrl,
                       }),
                   });
                 } else if (e.code === '393735') {
-                  const { history } = props;
                   alert(t('SomeoneElseIsPayingDescription'), {
                     title: t('SomeoneElseIsPaying'),
                     closeButtonContent: t('BackToTableSummary'),
@@ -108,7 +109,8 @@ SubmitOrderConfirm.propTypes = {
   processing: PropTypes.bool,
   orderCompletedStatus: PropTypes.bool,
   submitOrders: PropTypes.func,
-  props: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  history: PropTypes.object,
 };
 
 SubmitOrderConfirm.defaultProps = {
@@ -117,7 +119,7 @@ SubmitOrderConfirm.defaultProps = {
   processing: false,
   orderCompletedStatus: false,
   submitOrders: () => {},
-  props: () => {},
+  history: {},
 };
 
 export default connect(

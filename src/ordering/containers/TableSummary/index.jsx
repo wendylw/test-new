@@ -14,7 +14,7 @@ import {
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
 } from './redux/thunks';
 import {
-  getOrderReceiptNumber,
+  getOrderPickUpCode,
   getTableNumber,
   getOrderTax,
   getOrderServiceCharge,
@@ -304,7 +304,7 @@ export class TableSummary extends React.Component {
             isLogin={userIsLogin}
             history={history}
           />
-          <SubmitOrderConfirm props={this.props} />
+          <SubmitOrderConfirm history={history} />
         </div>
         <footer
           ref={ref => {
@@ -381,7 +381,7 @@ export default compose(
     state => ({
       orderPlacedStatus: getOrderPlacedStatus(state),
       orderPendingPaymentStatus: getOrderPendingPaymentStatus(state),
-      orderNumber: getOrderReceiptNumber(state),
+      orderNumber: getOrderPickUpCode(state),
       tableNumber: getTableNumber(state),
       tax: getOrderTax(state),
       serviceCharge: getOrderServiceCharge(state),
