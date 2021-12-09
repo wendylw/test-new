@@ -304,7 +304,7 @@ export class TableSummary extends React.Component {
             isLogin={userIsLogin}
             history={history}
           />
-          <SubmitOrderConfirm />
+          <SubmitOrderConfirm props={this.props} />
         </div>
         <footer
           ref={ref => {

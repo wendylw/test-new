@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { actions } from '../redux';
 import { submitOrders as submitOrdersThunk } from '../redux/thunks';
-
+import Constants from '../../../../utils/constants';
 import {
   getOrderSubmissionRequestingStatus,
   getSubmitOrderConfirmDisplayStatus,
@@ -12,6 +12,7 @@ import {
 } from '../redux/selectors';
 import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
+import { alert } from '../../../../common/feedback';
 
 function SubmitOrderConfirm({
   displaySubmitOrderConfirm,
@@ -19,6 +20,7 @@ function SubmitOrderConfirm({
   processing,
   orderCompletedStatus,
   submitOrders,
+  props,
 }) {
   const { t } = useTranslation('OrderingDelivery');
 
@@ -56,8 +58,36 @@ function SubmitOrderConfirm({
                 if (orderCompletedStatus && thankYouPageUrl) {
                   window.location.href = thankYouPageUrl;
                 }
-              } catch (error) {
-                console.error(error);
+              } catch (e) {
+                if (e.code === '393731' || e.code === '393732') {
+                  const { history } = props;
+                  alert(t('SorryDescription'), {
+                    title: t('Sorry'),
+                    closeButtonContent: t('BackToMenu'),
+                    onClose: () =>
+                      history.push({
+                        pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+                        search: window.location.search,
+                      }),
+                  });
+                } else if (e.code === '393735') {
+                  const { history } = props;
+                  alert(t('SomeoneElseIsPayingDescription'), {
+                    title: t('SomeoneElseIsPaying'),
+                    closeButtonContent: t('BackToTableSummary'),
+                    onClose: () =>
+                      history.push({
+                        pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+                        search: window.location.search,
+                      }),
+                  });
+                } else if (e.code === '393738') {
+                  alert(t('RefreshTableSummaryDescription'), {
+                    title: t('RefreshTableSummary'),
+                    closeButtonContent: t('Refresh'),
+                    onClose: () => window.location.reload(),
+                  });
+                }
               }
             }}
           >
@@ -78,6 +108,7 @@ SubmitOrderConfirm.propTypes = {
   processing: PropTypes.bool,
   orderCompletedStatus: PropTypes.bool,
   submitOrders: PropTypes.func,
+  props: PropTypes.func,
 };
 
 SubmitOrderConfirm.defaultProps = {
@@ -86,6 +117,7 @@ SubmitOrderConfirm.defaultProps = {
   processing: false,
   orderCompletedStatus: false,
   submitOrders: () => {},
+  props: () => {},
 };
 
 export default connect(
