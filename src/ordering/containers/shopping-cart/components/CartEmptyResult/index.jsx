@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { compose } from 'redux';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import cartIsEmpty from '../../../../../images/mvp-no-search.svg';
@@ -55,4 +54,4 @@ CartEmptyResult.defaultProps = {
   handleReturnToTableSummary: () => {},
 };
 
-export default compose(withTranslation(['OrderingCart']))(CartEmptyResult);
+export default withTranslation('OrderingCart')(CartEmptyResult);

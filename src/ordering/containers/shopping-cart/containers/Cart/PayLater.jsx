@@ -14,6 +14,7 @@ import {
   submitCart as submitCartThunk,
   updateCartItems as updateCartItemsThunk,
   removeCartItemsById as removeCartItemsByIdThunk,
+  loadCartStatus as loadCartStatusThunk,
 } from '../../../../redux/cart/thunks';
 import {
   getCartItems,
@@ -58,7 +59,7 @@ class PayLater extends Component {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
 
-    const { receiptNumber, cartSubmittedStatus, t, history } = this.props;
+    const { cartSubmittedStatus, t } = this.props;
     const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
 
     if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
@@ -73,11 +74,9 @@ class PayLater extends Component {
           className: 'ordering-cart__alert',
           title: t('ApiError:UnableToPlaceOrder'),
           closeButtonContent: t('ApiError:ViewOrder'),
-          onClose: () =>
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
-            }),
+          onClose: () => {
+            this.goToTableSummaryPage();
+          },
         }
       );
     }
@@ -100,7 +99,7 @@ class PayLater extends Component {
       });
     } catch (e) {
       if (e.code === '41020') {
-        const { t, history, receiptNumber } = this.props;
+        const { t, receiptNumber, loadCartStatus } = this.props;
 
         alert(
           <Trans
@@ -113,15 +112,17 @@ class PayLater extends Component {
             className: 'ordering-cart__alert',
             title: t('ApiError:UnableToPlaceOrder'),
             closeButtonContent: t('ApiError:ViewOrder'),
-            onClose: () =>
-              history.push({
-                pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-                search: `${window.location.search}&receiptNumber=${receiptNumber}`,
-              }),
+            onClose: async () => {
+              if (!receiptNumber) {
+                await loadCartStatus();
+              }
+
+              this.goToTableSummaryPage();
+            },
           }
         );
       } else if (e.code === '393476') {
-        const { t, history, receiptNumber } = this.props;
+        const { t, history } = this.props;
 
         alert(t('OrderHasBeenAddedOrRemoved'), {
           title: t('RefreshCartToContinue'),
@@ -129,7 +130,7 @@ class PayLater extends Component {
           onClose: () =>
             history.push({
               pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-              search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+              search: window.location.search,
             }),
         });
       }
@@ -250,6 +251,15 @@ class PayLater extends Component {
     })),
   });
 
+  goToTableSummaryPage = () => {
+    const { history, receiptNumber } = this.props;
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+      search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+    });
+  };
+
   handleDecreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
     log('pay-later-cart.item-operate-attempt');
@@ -285,12 +295,7 @@ class PayLater extends Component {
   };
 
   handleReturnToTableSummary = () => {
-    const { history, receiptNumber } = this.props;
-
-    history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-      search: `${window.location.search}&receiptNumber=${receiptNumber}`,
-    });
+    this.goToTableSummaryPage();
   };
 
   renderAdditionalComments() {
@@ -435,6 +440,7 @@ PayLater.displayName = 'PayLater';
 
 PayLater.propTypes = {
   queryCartAndStatus: PropTypes.func,
+  loadCartStatus: PropTypes.func,
   receiptNumber: PropTypes.string,
   cartSubmittedStatus: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
@@ -460,6 +466,7 @@ PayLater.defaultProps = {
   cartSubmissionRequesting: false,
   receiptNumber: null,
   queryCartAndStatus: () => {},
+  loadCartStatus: () => {},
   clearQueryCartStatus: () => {},
   submitCart: () => {},
   clearCart: () => {},
@@ -486,6 +493,7 @@ export default compose(
       clearCart: clearCartThunk,
       clearQueryCartStatus: clearQueryCartStatusThunk,
       queryCartAndStatus: queryCartAndStatusThunk,
+      loadCartStatus: loadCartStatusThunk,
     }
   )
 )(PayLater);

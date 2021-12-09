@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { usePrevious } from 'react-use';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,17 @@ import './Alert.scss';
 
 const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();
-  const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
+  const {
+    content,
+    show,
+    disabledCloseButton,
+    closeButtonContent,
+    className,
+    style,
+    onClose,
+    onModalVisibilityChanged,
+  } = props;
+  const [processing, setProcessing] = useState(false);
   useImperativeHandle(ref, () => ({
     onHistoryBackReceived: () => false,
   }));
@@ -16,6 +26,10 @@ const Alert = forwardRef((props, ref) => {
     if (show !== prevShow) {
       onModalVisibilityChanged(show);
     }
+
+    return () => {
+      setProcessing(false);
+    };
   }, [show, onModalVisibilityChanged, prevShow]);
 
   if (!show) {
@@ -30,7 +44,11 @@ const Alert = forwardRef((props, ref) => {
           {/* TODO： close button UI will be customize */}
           <button
             className="alert__button button button__fill button__block text-uppercase text-weight-bolder"
-            onClick={onClose}
+            onClick={() => {
+              setProcessing(true);
+              onClose();
+            }}
+            disabled={disabledCloseButton || processing}
           >
             {closeButtonContent || t('OK')}
           </button>
@@ -45,6 +63,7 @@ Alert.displayName = 'Alert';
 Alert.propTypes = {
   content: PropTypes.node,
   show: PropTypes.bool,
+  disabledCloseButton: PropTypes.bool,
   closeButtonContent: PropTypes.node,
   className: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
@@ -56,6 +75,7 @@ Alert.propTypes = {
 Alert.defaultProps = {
   content: null,
   show: false,
+  disabledCloseButton: false,
   closeButtonContent: null,
   className: '',
   style: {},
