@@ -221,14 +221,15 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
         buttonText: buttonTextKey,
         redirectUrl,
       } = Constants.ERROR_CODE_MAP[NEW_ERROR_CODE_MAPPING[error.code]];
-      const h = Utils.getQueryVariable('h');
-      const type = Utils.getQueryVariable('type');
 
       alert(i18next.t(descriptionKey), {
         title: i18next.t(titleKey),
         closeButtonContent: i18next.t(buttonTextKey),
         onClose: () => {
           if (redirectUrl) {
+            const h = Utils.getQueryVariable('h');
+            const type = Utils.getQueryVariable('type');
+
             window.location.href = `${window.location.origin}${redirectUrl}?h=${h}&type=${type}`;
           }
         },
