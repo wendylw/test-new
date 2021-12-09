@@ -30,7 +30,7 @@ class CartSubmissionStatus extends Component {
     if (cartSubmittedStatus) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-        search: `${Utils.getFilteredQueryString(['submissionId'])}&receiptNumber=${receiptNumber}`,
+        search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}&receiptNumber=${receiptNumber}`,
       });
     }
   };
@@ -43,7 +43,7 @@ class CartSubmissionStatus extends Component {
       this.timer = setTimeout(() => {
         history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-          search: `${Utils.getFilteredQueryString(['submissionId'])}&receiptNumber=${receiptNumber}`,
+          search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}&receiptNumber=${receiptNumber}`,
         });
       }, 1500);
     }
@@ -61,7 +61,7 @@ class CartSubmissionStatus extends Component {
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-      search: `${Utils.getFilteredQueryString(['submissionId'])}`,
+      search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}`,
     });
   };
 
