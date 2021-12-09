@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { usePrevious } from 'react-use';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import './Alert.scss';
 const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();
   const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
+  const [processing, setProcessing] = useState(false);
   useImperativeHandle(ref, () => ({
     onHistoryBackReceived: () => false,
   }));
@@ -16,6 +17,10 @@ const Alert = forwardRef((props, ref) => {
     if (show !== prevShow) {
       onModalVisibilityChanged(show);
     }
+
+    return () => {
+      setProcessing(false);
+    };
   }, [show, onModalVisibilityChanged, prevShow]);
 
   if (!show) {
@@ -30,9 +35,13 @@ const Alert = forwardRef((props, ref) => {
           {/* TODO： close button UI will be customize */}
           <button
             className="alert__button button button__fill button__block text-uppercase text-weight-bolder"
-            onClick={onClose}
+            onClick={() => {
+              setProcessing(true);
+              onClose();
+            }}
+            disabled={processing}
           >
-            {closeButtonContent || t('OK')}
+            {processing ? t('Processing') : closeButtonContent || t('OK')}
           </button>
         </div>
       </div>
