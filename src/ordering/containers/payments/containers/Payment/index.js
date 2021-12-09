@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import qs from 'qs';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
@@ -27,7 +26,12 @@ import {
   getTotal,
   getCashback,
 } from '../../redux/common/selectors';
-import { loadBilling, loadPaymentOptions, createOrder as createOrderThunkCreator } from '../../redux/common/thunks';
+import {
+  loadBilling,
+  loadPaymentOptions,
+  createOrder as createOrderThunkCreator,
+  gotoPayment as gotoPaymentThunkCreator,
+} from '../../redux/common/thunks';
 import { actions as paymentActions } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
 import PaymentItem from '../../components/PaymentItem';
@@ -37,7 +41,7 @@ import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
 
-const { ROUTER_PATHS, DELIVERY_METHOD, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } = Constants;
+const { PAYMENT_PROVIDERS } = Constants;
 
 class Payment extends Component {
   state = {
@@ -82,8 +86,7 @@ class Payment extends Component {
     const { paymentProvider } = currentPaymentOption;
 
     return {
-      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
-      paymentName: paymentProvider,
+      paymentProvider,
     };
   };
 
@@ -117,6 +120,9 @@ class Payment extends Component {
       if (this.props.receiptNumber) {
         this.handlePayWithCash();
       } else {
+        this.setState({
+          payNowLoading: false,
+        });
         paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
       }
 
@@ -149,7 +155,7 @@ class Payment extends Component {
   // TODO: This place logic almost same as the “handleCreateOrder” function that in CreateOrderButton component
   handlePayWithCash = async () => {
     try {
-      const { shippingType, cashback, currentPaymentOption, createOrder } = this.props;
+      const { shippingType, cashback, currentPaymentOption, createOrder, total, gotoPayment } = this.props;
       this.setState({
         payNowLoading: true,
       });
@@ -181,17 +187,12 @@ class Payment extends Component {
       }
 
       if (orderId) {
-        const params = {
-          h: Utils.getStoreHashCode(),
-          receiptNumber: orderId,
-          type: shippingType,
-        };
-        const queryString = qs.stringify(params, { addQueryPrefix: true });
-        const thankYouPageUrl = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}${queryString}`;
-
-        Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
-        loggly.log('ordering.to-thank-you', { orderId });
-        window.location = thankYouPageUrl;
+        await gotoPayment(
+          { orderId, total },
+          {
+            paymentProvider,
+          }
+        );
       }
     } catch (error) {
       console.error('Got a error in handlePayWithCash function', error);
@@ -332,6 +333,7 @@ export default compose(
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       createOrder: bindActionCreators(createOrderThunkCreator, dispatch),
+      gotoPayment: bindActionCreators(gotoPaymentThunkCreator, dispatch),
     })
   )
 )(Payment);

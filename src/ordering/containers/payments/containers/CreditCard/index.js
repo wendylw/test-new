@@ -87,8 +87,7 @@ class CreditCard extends Component {
 
     return {
       payActionWay: 1,
-      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
-      paymentName: paymentProvider,
+      paymentProvider,
       cardholderName,
       encryptedCardInfo,
       expYearCardInfo,
