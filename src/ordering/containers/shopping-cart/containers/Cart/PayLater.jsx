@@ -95,7 +95,7 @@ class PayLater extends Component {
 
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
-        search: `${window.location.search}&submissionId=${submissionId}`,
+        search: `${Utils.getFilteredQueryString(['submissionId'])}&submissionId=${submissionId}`,
       });
     } catch (e) {
       if (e.code === '41020') {
@@ -256,7 +256,7 @@ class PayLater extends Component {
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-      search: `${window.location.search}&receiptNumber=${receiptNumber}`,
+      search: `${Utils.getFilteredQueryString(['receiptNumber', 'submissionId'])}&receiptNumber=${receiptNumber}`,
     });
   };
 
