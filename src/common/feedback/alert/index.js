@@ -26,7 +26,6 @@ AlertStandardContent.defaultProps = {
 const normalizeAlertOptions = options => ({
   container: document.body,
   show: true,
-  disabledCloseButton: false,
   closeButtonContent: null,
   className: '',
   style: {},

@@ -7,16 +7,7 @@ import './Alert.scss';
 
 const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();
-  const {
-    content,
-    show,
-    disabledCloseButton,
-    closeButtonContent,
-    className,
-    style,
-    onClose,
-    onModalVisibilityChanged,
-  } = props;
+  const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
   const [processing, setProcessing] = useState(false);
   useImperativeHandle(ref, () => ({
     onHistoryBackReceived: () => false,
@@ -48,7 +39,7 @@ const Alert = forwardRef((props, ref) => {
               setProcessing(true);
               onClose();
             }}
-            disabled={disabledCloseButton || processing}
+            disabled={processing}
           >
             {closeButtonContent || t('OK')}
           </button>
@@ -63,7 +54,6 @@ Alert.displayName = 'Alert';
 Alert.propTypes = {
   content: PropTypes.node,
   show: PropTypes.bool,
-  disabledCloseButton: PropTypes.bool,
   closeButtonContent: PropTypes.node,
   className: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
@@ -75,7 +65,6 @@ Alert.propTypes = {
 Alert.defaultProps = {
   content: null,
   show: false,
-  disabledCloseButton: false,
   closeButtonContent: null,
   className: '',
   style: {},
