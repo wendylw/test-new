@@ -4,6 +4,7 @@
   height: 100vh;
   position: absolute;
   background: #fff;
+  overflow: hidden;
 
   &.active {
     z-index: 101;
