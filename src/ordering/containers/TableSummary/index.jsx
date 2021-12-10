@@ -62,7 +62,6 @@ export class TableSummary extends React.Component {
 
     const { thankYouPageUrl } = this.props;
 
-    // TODO: if need to add parameter
     if (thankYouPageUrl) {
       window.location.href = thankYouPageUrl;
     }
