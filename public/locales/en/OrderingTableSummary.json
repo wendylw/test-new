@@ -8,7 +8,7 @@
   "UnableBackMenuTitle": "Want to view the menu?",
   "UnableBackMenuDescription": "You may only return to the menu once you <bold>completed your payment</bold>. Select ‘Pay Now’ to proceed.",
   "Sorry":" Sorry!",
-  "SorryDescription":"Ops, order cannot be found. Please refresh the page",
+  "SorryDescription":"Oops, order cannot be found. Please refresh the page",
   "BackToMenu":"Back to Menu",
   "SomeoneElseIsPaying":"Someone else is paying",
   "SomeoneElseIsPayingDescription":"Order is being checked out by someone else on the table, please try again later.",
