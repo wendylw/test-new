@@ -11,7 +11,7 @@ import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import loggly from '../../../utils/monitoring/loggly';
 
-const { ROUTER_PATHS, REFERRER_SOURCE_TYPES } = Constants;
+const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS, DELIVERY_METHOD } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidUpdate(prevProps) {
@@ -48,32 +48,45 @@ class CreateOrderButton extends React.Component {
       beforeCreateOrder,
       paymentName,
       gotoPayment,
+      orderId: createdOrderId,
+      total: createdOrderTotal,
     } = this.props;
     const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-    let newOrderId;
-    let currentOrder;
+    let orderId = createdOrderId,
+      total = createdOrderTotal;
 
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
     const { validCreateOrder } = this.props;
-    // if (!Boolean(storeId)) {
-    //   if (type === 'dine' || type === 'takeaway') {
-    //     window.location.href = Constants.ROUTER_PATHS.DINE;
-    //   } else {
-    //     history.push({
-    //       pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-    //       search: `${window.location.search}&callbackUrl=${history.location.pathname}`,
-    //     });
-    //   }
 
-    //   return;
-    // }
+    const isValidToCreateOrder = () => {
+      if (!validCreateOrder) {
+        return false;
+      }
 
-    if ((isLogin || type === 'digital') && paymentName !== 'SHOfflinePayment' && validCreateOrder) {
+      // for Pay at counter it will handle order creation logic by itself
+      if (paymentName === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
+        return false;
+      }
+
+      // must login before creating order (excluded creating voucher(type=='digital') order)
+      if (!isLogin && type !== DELIVERY_METHOD.DIGITAL) {
+        return false;
+      }
+
+      return true;
+    };
+
+    if (!isValidToCreateOrder()) {
+      afterCreateOrder && afterCreateOrder();
+      return;
+    }
+
+    if (!orderId) {
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
         paymentName: paymentName || 'N/A',
       });
@@ -84,11 +97,12 @@ class CreateOrderButton extends React.Component {
       });
 
       const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
-      currentOrder = order;
-      const { orderId } = currentOrder || {};
-      loggly.log('ordering.order-created', { orderId });
+      if (order) {
+        orderId = order.orderId;
+        total = order.total;
+      }
 
-      newOrderId = orderId;
+      loggly.log('ordering.order-created', { orderId });
 
       if (orderId) {
         Utils.removeSessionVariable('additionalComments');
@@ -105,13 +119,13 @@ class CreateOrderButton extends React.Component {
     }
 
     if (afterCreateOrder) {
-      afterCreateOrder(newOrderId);
+      afterCreateOrder(orderId);
     }
 
-    if (currentOrder) {
+    if (orderId) {
       // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
       // paymentExtraData could be changed after beforeCreateOrder is executed.
-      gotoPayment(currentOrder, this.props.paymentExtraData);
+      gotoPayment({ orderId, total }, this.props.paymentExtraData);
     }
   };
 

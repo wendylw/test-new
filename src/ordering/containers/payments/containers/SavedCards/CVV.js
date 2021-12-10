@@ -16,7 +16,6 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getBusinessInfo,
-  getCartBilling,
   getMerchantCountry,
 } from '../../../../redux/modules/app';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
@@ -25,6 +24,7 @@ import '../../styles/PaymentCreditCard.scss';
 import './CVV.scss';
 import { STRIPE_LOAD_TIME_OUT } from '../Stripe/constants';
 import { alert } from '../../../../../common/feedback';
+import { getTotal, getReceiptNumber } from '../../redux/common/selectors';
 
 class CardCVV extends Component {
   state = {
@@ -124,8 +124,7 @@ class CardCVV extends Component {
   };
 
   render() {
-    const { t, history, cartBilling, selectedPaymentCard, merchantCountry } = this.props;
-    const { total } = cartBilling;
+    const { t, history, total, selectedPaymentCard, merchantCountry, receiptNumber } = this.props;
     const { isCvvComponentReady, payNowLoading, isCvvValid } = this.state;
 
     if (!selectedPaymentCard || !selectedPaymentCard.cardInfo) return null;
@@ -185,6 +184,8 @@ class CardCVV extends Component {
             className="margin-top-bottom-smaller"
             history={history}
             buttonType="submit"
+            orderId={receiptNumber}
+            total={total}
             disabled={!isCvvComponentReady || !isCvvValid || payNowLoading}
             beforeCreateOrder={this.handleOrderBeforeCreate}
             validCreateOrder={this.isValidCreateOrder}
@@ -217,12 +218,13 @@ export default compose(
     return {
       merchantCountry: getMerchantCountry(state),
       cardList: getCardList(state),
-      cartBilling: getCartBilling(state),
+      total: getTotal(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       user: getUser(state),
       business: getBusiness(state),
       businessInfo: getBusinessInfo(state),
+      receiptNumber: getReceiptNumber(state),
     };
   })
 )(CardCVV);

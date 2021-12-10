@@ -47,7 +47,7 @@ const CartItemModel = {
 };
 
 const CartModel = {
-  status: 'pending',
+  status: API_REQUEST_STATUS.PENDING,
   isFetching: false,
   items: [],
   unavailableItems: [],
@@ -782,9 +782,9 @@ const requestInfo = (state = initialState.requestInfo) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
-    return { ...state, ...CartModel, isFetching: false, status: 'fulfilled' };
+    return { ...state, ...CartModel, isFetching: false, status: API_REQUEST_STATUS.FULFILLED };
   } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
-    return { ...state, isFetching: true, status: 'pending' };
+    return { ...state, isFetching: true, status: API_REQUEST_STATUS.PENDING };
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
     const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...cartBilling } =
       action.response || {};
@@ -810,7 +810,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     return {
       ...state,
       isFetching: false,
-      status: 'fulfilled',
+      status: API_REQUEST_STATUS.FULFILLED,
       items: items.map(item => ({ ...CartItemModel, ...item })),
       unavailableItems: unavailableItems.map(unavailableItem => ({ ...CartItemModel, ...unavailableItem })),
       billing: {
@@ -819,7 +819,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       },
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
-    return { ...state, isFetching: false, status: 'reject' };
+    return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED };
   }
 
   return state;
@@ -894,13 +894,7 @@ export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
 export const getRequestInfo = state => state.app.requestInfo;
-export const getMerchantCountry = state => {
-  if (state.entities.businesses[state.app.business]) {
-    return state.entities.businesses[state.app.business].country;
-  }
 
-  return null;
-};
 export const getApiError = state => state.app.apiError;
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
@@ -919,6 +913,8 @@ export const getBusinessInfo = state => {
 
   return getBusinessByName(state, business) || {};
 };
+
+export const getMerchantCountry = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'country', null));
 
 export const getStoresList = state => getCoreStoreList(state);
 
@@ -948,6 +944,7 @@ export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => 
 
 export const getStoreId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'storeId', null));
 export const getShippingType = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'shippingType', null));
+export const getTableId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'tableId', null));
 
 export const getStore = state => {
   const storeId = getStoreId(state);
@@ -965,7 +962,16 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
+export const getCartStatus = state => state.app.shoppingCart.status;
+
 export const getDeliveryDetails = state => state.app.deliveryDetails;
+
+export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
+export const getCartSubtotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'subtotal', null));
+export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'totalCashback', null)
+);
+export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
 
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
@@ -1031,6 +1037,44 @@ export const getUserName = createSelector(getUser, user => _get(user, 'profile.n
 export const getUserPhone = createSelector(getUser, user => _get(user, 'profile.phone', ''));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
+
+export const getStoreName = createSelector(getStore, store => _get(store, 'name', ''));
+
+export const getEnableCashback = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'enableCashback', null)
+);
+
+export const getQROrderingSettings = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'qrOrderingSettings', null)
+);
+
+export const getFreeShippingMinAmount = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.freeShippingMinAmount', null)
+);
+
+export const getDefaultLoyaltyRatio = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'defaultLoyaltyRatio', null)
+);
+
+export const getCashbackRate = createSelector(
+  getDefaultLoyaltyRatio,
+  getEnableCashback,
+  (defaultLoyaltyRatio, enableCashback) => {
+    if (!enableCashback) {
+      return null;
+    }
+
+    return Math.floor((1 / defaultLoyaltyRatio) * 100) / 100;
+  }
+);
+
+export const getMinimumConsumption = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'minimumConsumption', null)
+);
+
+export const getEnableConditionalFreeShipping = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.enableConditionalFreeShipping', null)
+);
 
 const mergeWithShoppingCart = (onlineCategory, carts) => {
   if (!Array.isArray(onlineCategory)) {
