@@ -49,9 +49,15 @@ Utils.getFilteredQueryString = keys => {
   return qs.stringify(query, { addQueryPrefix: true });
 };
 
-Utils.getApiRequestShippingType = () => {
-  const type = Utils.getQueryVariable('type');
-  return type ? Utils.mapString2camelCase(type) : undefined;
+Utils.getApiRequestShippingType = shippingType => {
+  const type = shippingType || Utils.getQueryString('type');
+
+  switch (type) {
+    case Constants.DELIVERY_METHOD.DINE_IN:
+      return 'dineIn';
+    default:
+      return type;
+  }
 };
 
 Utils.hasNativeSavedAddress = () => {
@@ -612,18 +618,6 @@ Utils.addParamToSearch = (key, value) => {
   }
 };
 
-Utils.mapString2camelCase = string => {
-  const stringList = string.split('-');
-  if (stringList.length > 1) {
-    for (let i = 1; i < stringList.length; i++) {
-      const itemList = stringList[i].split('');
-      itemList[0] = itemList[0].toUpperCase();
-      stringList[i] = itemList.join('');
-    }
-  }
-  return stringList.join('');
-};
-
 Utils.removeParam = (key, sourceURL) => {
   let rtn = sourceURL.split('?')[0];
   let param;
@@ -1016,6 +1010,10 @@ Utils.submitForm = (action, data) => {
   form.submit();
 
   document.body.removeChild(form);
+};
+
+Utils.getStoreHashCode = () => {
+  return Utils.getCookieVariable('__h');
 };
 
 export default Utils;

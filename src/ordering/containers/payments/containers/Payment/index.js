@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import qs from 'qs';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
+import { actions as appActionCreators } from '../../../../redux/modules/app';
 import {
   getOnlineStoreInfo,
   getBusiness,
@@ -13,15 +14,20 @@ import {
   getBusinessInfo,
   getUser,
   getDeliveryInfo,
+  getShippingType,
 } from '../../../../redux/modules/app';
 import {
-  getPaymentsPendingState,
+  getLoaderVisibility,
   getAllPaymentsOptions,
   getSelectedPaymentOption,
   getAllOptionsUnavailableState,
   getSelectedPaymentOptionSupportSaveCard,
+  getCleverTapAttributes,
+  getReceiptNumber,
+  getTotal,
+  getCashback,
 } from '../../redux/common/selectors';
-import * as paymentCommonThunks from '../../redux/common/thunks';
+import { loadBilling, loadPaymentOptions, createOrder as createOrderThunkCreator } from '../../redux/common/thunks';
 import { actions as paymentActions } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
 import PaymentItem from '../../components/PaymentItem';
@@ -42,16 +48,16 @@ class Payment extends Component {
   willUnmount = false;
 
   componentDidMount = async () => {
-    const { paymentsActions, paymentActions } = this.props;
+    const { loadPaymentOptions, loadBilling, paymentActions } = this.props;
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
-    await this.props.appActions.loadShoppingCart();
+    await loadBilling();
 
     /**
      * Load all payment options action and except saved card list
      */
-    paymentsActions.loadPaymentOptions();
+    loadPaymentOptions();
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -83,23 +89,7 @@ class Payment extends Component {
 
   handleClickBack = () => {
     const { history } = this.props;
-    const type = Utils.getOrderTypeFromUrl();
-
-    switch (type) {
-      case DELIVERY_METHOD.DIGITAL:
-        window.location.href = ROUTER_PATHS.VOUCHER_CONTACT;
-        break;
-      case DELIVERY_METHOD.DINE_IN:
-      case DELIVERY_METHOD.TAKE_AWAY:
-      case DELIVERY_METHOD.DELIVERY:
-      case DELIVERY_METHOD.PICKUP:
-      default:
-        history.push({
-          pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-          search: window.location.search,
-        });
-        break;
-    }
+    history.goBack();
   };
 
   handleBeforeCreateOrder = async () => {
@@ -122,8 +112,13 @@ class Payment extends Component {
       return;
     }
 
-    if (currentPaymentOption.paymentProvider === 'SHOfflinePayment') {
-      paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
+    if (currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
+      // If order has created, no need to display the confirmation modal
+      if (this.props.receiptNumber) {
+        this.handlePayWithCash();
+      } else {
+        paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
+      }
 
       return;
     }
@@ -148,6 +143,62 @@ class Payment extends Component {
       });
 
       return;
+    }
+  };
+
+  // TODO: This place logic almost same as the “handleCreateOrder” function that in CreateOrderButton component
+  handlePayWithCash = async () => {
+    try {
+      const { shippingType, cashback, currentPaymentOption, createOrder } = this.props;
+      this.setState({
+        payNowLoading: true,
+      });
+
+      const paymentProvider = currentPaymentOption.paymentProvider;
+      loggly.log('payment.pay-attempt', { method: paymentProvider });
+
+      let orderId = this.props.receiptNumber;
+
+      if (!orderId) {
+        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
+          paymentName: paymentProvider,
+        });
+
+        const { order } = await createOrder({ cashback, shippingType });
+
+        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
+          paymentName: paymentProvider,
+        });
+
+        orderId = order.orderId;
+
+        loggly.log('ordering.order-created', { orderId });
+
+        if (orderId) {
+          Utils.removeSessionVariable('additionalComments');
+          Utils.removeSessionVariable('deliveryComments');
+        }
+      }
+
+      if (orderId) {
+        const params = {
+          h: Utils.getStoreHashCode(),
+          receiptNumber: orderId,
+          type: shippingType,
+        };
+        const queryString = qs.stringify(params, { addQueryPrefix: true });
+        const thankYouPageUrl = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}${queryString}`;
+
+        Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
+        loggly.log('ordering.to-thank-you', { orderId });
+        window.location = thankYouPageUrl;
+      }
+    } catch (error) {
+      console.error('Got a error in handlePayWithCash function', error);
+
+      this.setState({
+        payNowLoading: false,
+      });
     }
   };
 
@@ -180,8 +231,10 @@ class Payment extends Component {
       t,
       currentPaymentOption,
       areAllOptionsUnavailable,
-      pendingPaymentOptions,
-      storeInfoForCleverTap,
+      loaderVisibility,
+      cleverTapAttributes,
+      receiptNumber,
+      total,
     } = this.props;
     const { payNowLoading, cartContainerHeight } = this.state;
 
@@ -210,12 +263,7 @@ class Payment extends Component {
           }}
         >
           {this.renderPaymentList()}
-          <PayByCash
-            onPayWithCash={redirectUrl => {
-              Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
-              window.location = redirectUrl;
-            }}
-          />
+          <PayByCash loading={payNowLoading} onPayWithCash={this.handlePayWithCash} />
         </div>
 
         <footer
@@ -227,11 +275,13 @@ class Payment extends Component {
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-testid="payNow"
             data-heap-name="ordering.payment.pay-btn"
+            orderId={receiptNumber}
+            total={total}
             disabled={payNowLoading || areAllOptionsUnavailable}
             validCreateOrder={!currentPaymentOption || !currentPaymentOption.pathname}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Payment Method - click continue', {
-                ...storeInfoForCleverTap,
+                ...cleverTapAttributes,
                 'payment method': currentPaymentOption?.paymentName,
               });
               this.handleBeforeCreateOrder();
@@ -246,7 +296,7 @@ class Payment extends Component {
           </CreateOrderButton>
         </footer>
 
-        <Loader className={'loading-cover opacity'} loaded={!pendingPaymentOptions} />
+        <Loader className={'loading-cover opacity'} loaded={!loaderVisibility} />
       </section>
     );
   }
@@ -258,7 +308,7 @@ export default compose(
   connect(
     state => {
       return {
-        pendingPaymentOptions: getPaymentsPendingState(state),
+        loaderVisibility: getLoaderVisibility(state),
         allPaymentOptions: getAllPaymentsOptions(state),
         currentPaymentOption: getSelectedPaymentOption(state),
         currentPaymentSupportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
@@ -269,13 +319,19 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         merchantCountry: getMerchantCountry(state),
         user: getUser(state),
-        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        cleverTapAttributes: getCleverTapAttributes(state),
+        receiptNumber: getReceiptNumber(state),
+        total: getTotal(state),
+        shippingType: getShippingType(state),
+        cashback: getCashback(state),
       };
     },
     dispatch => ({
       paymentActions: bindActionCreators(paymentActions, dispatch),
-      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
+      loadBilling: bindActionCreators(loadBilling, dispatch),
+      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
+      createOrder: bindActionCreators(createOrderThunkCreator, dispatch),
     })
   )
 )(Payment);

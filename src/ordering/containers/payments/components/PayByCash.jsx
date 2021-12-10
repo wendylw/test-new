@@ -1,18 +1,15 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import Utils from '../../../../utils/utils';
-import { createOrder as createOrderThunk } from '../redux/common/thunks';
 import { actions as paymentActions } from '../redux/common/index';
-import { getTotalCashbackFromCartBilling, getPayByCashPromptDisplayStatus } from '../redux/common/selectors';
-import PageProcessingLoader from '../../../components/PageProcessingLoader';
+import { getPayByCashPromptDisplayStatus } from '../redux/common/selectors';
 import Modal from '../../../../components/Modal';
+import PageProcessingLoader from '../../../components/PageProcessingLoader';
 
-function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptDisplayStatus, onPayWithCash }) {
+function PayByCash({ modalDisplay, updatePayByCashPromptDisplayStatus, onPayWithCash, loading }) {
   const { t } = useTranslation('OrderingPayment');
-  const [creatingOrder, setCreatingOrder] = useState(false);
   const handleToggleModal = useCallback(
     status => {
       updatePayByCashPromptDisplayStatus({ status });
@@ -38,32 +35,13 @@ function PayByCash({ modalDisplay, cashback, createOrder, updatePayByCashPromptD
           </button>
           <button
             className="payment-item-prompt__fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
-            onClick={async () => {
-              setCreatingOrder(true);
-
-              try {
-                const shippingType = Utils.getOrderTypeFromUrl();
-                const createOrderResult = await createOrder({ cashback, shippingType });
-                const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
-                const { tableId } = order;
-
-                if (thankYouPageUrl) {
-                  onPayWithCash(
-                    `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${
-                      shippingType ? `&type=${shippingType}` : ''
-                    }`
-                  );
-                }
-              } finally {
-                setCreatingOrder(false);
-              }
-            }}
+            onClick={onPayWithCash}
           >
             {t('PayByCashPromptConfirmedText')}
           </button>
         </Modal.Footer>
       </Modal>
-      <PageProcessingLoader show={creatingOrder} loaderText={t('Processing')} />
+      <PageProcessingLoader show={loading} loaderText={t('Processing')} />
     </>
   );
 }
@@ -72,27 +50,23 @@ PayByCash.displayName = 'PayByCash';
 
 PayByCash.propTypes = {
   modalDisplay: PropTypes.bool,
-  cashback: PropTypes.number,
-  createOrder: PropTypes.func,
   onPayWithCash: PropTypes.func,
   updatePayByCashPromptDisplayStatus: PropTypes.func,
+  loading: PropTypes.bool,
 };
 
 PayByCash.defaultProps = {
   modalDisplay: false,
-  cashback: 0,
-  createOrder: () => {},
   onPayWithCash: () => {},
   updatePayByCashPromptDisplayStatus: () => {},
+  loading: false,
 };
 
 export default connect(
   state => ({
     modalDisplay: getPayByCashPromptDisplayStatus(state),
-    cashback: getTotalCashbackFromCartBilling(state),
   }),
   {
-    createOrder: createOrderThunk,
     updatePayByCashPromptDisplayStatus: paymentActions.updatePayByCashPromptDisplayStatus,
   }
 )(PayByCash);

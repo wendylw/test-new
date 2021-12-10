@@ -1,19 +1,53 @@
 import { createSelector } from 'reselect';
 import _some from 'lodash/some';
 import _every from 'lodash/every';
-import { getUser, getCartBilling } from '../../../../redux/modules/app';
+import _get from 'lodash/get';
+import {
+  getBusinessInfo,
+  getCashbackRate,
+  getEnableCashback,
+  getEnableConditionalFreeShipping,
+  getFreeShippingMinAmount,
+  getMerchantCountry,
+  getMinimumConsumption,
+  getShippingType,
+  getUser,
+} from '../../../../redux/modules/app';
+import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 export const getSelectedPaymentProvider = ({ payments }) => payments.common.selectedOptionProvider;
 export const getPayByCashPromptDisplayStatus = ({ payments }) => payments.common.payByCashPromptDisplay;
-export const getPaymentsPendingState = ({ payments }) => payments.common.status === 'pending';
+export const getPaymentOptionsStatus = ({ payments }) => payments.common.status;
+
+export const getBilling = state => state.payments.common.billing;
+export const getBillingData = createSelector(getBilling, billing => billing.data);
+export const getBillingStatus = createSelector(getBilling, billing => billing.status);
+export const getBillingError = createSelector(getBilling, billing => billing.error);
+
+export const getReceiptNumber = createSelector(getBillingData, data => data.receiptNumber);
+export const getTotal = createSelector(getBillingData, data => data.total);
+export const getSubtotal = createSelector(getBillingData, data => data.subtotal);
+export const getCashback = createSelector(getBillingData, data => data.cashback);
+export const getItemsQuantity = createSelector(getBillingData, data => data.itemsQuantity);
+
+export const getBillingLoadedComplete = createSelector(
+  getBillingStatus,
+  status => status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getLoaderVisibility = createSelector(
+  getPaymentOptionsStatus,
+  getBillingStatus,
+  (paymentOptionsStatus, billingStatus) =>
+    paymentOptionsStatus === API_REQUEST_STATUS.PENDING || billingStatus === API_REQUEST_STATUS.PENDING
+);
 
 export const getOriginalPaymentOptions = ({ payments }) => payments.common.options;
 
 export const getAllPaymentsOptions = createSelector(
   getOriginalPaymentOptions,
-  getCartBilling,
-  (originalPaymentOptions, cartBilling) => {
-    const { total } = cartBilling;
+  getTotal,
+  (originalPaymentOptions, total) => {
     return originalPaymentOptions.map(originalOption => {
       const option = { ...originalOption };
       const { available, minAmount } = option;
@@ -61,4 +95,42 @@ export const getAllOptionsUnavailableState = createSelector(getAllPaymentsOption
   );
 });
 
-export const getTotalCashbackFromCartBilling = createSelector(getCartBilling, cartBilling => cartBilling.totalCashback);
+export const getCleverTapAttributes = createSelector(
+  getBusinessInfo,
+  getFreeShippingMinAmount,
+  getShippingType,
+  getMerchantCountry,
+  getEnableCashback,
+  getCashbackRate,
+  getEnableConditionalFreeShipping,
+  getMinimumConsumption,
+  getItemsQuantity,
+  getTotal,
+  getSubtotal,
+  (
+    businessInfo,
+    freeShippingMinAmount,
+    shippingType,
+    country,
+    enableCashback,
+    cashbackRate,
+    enableConditionalFreeShipping,
+    minimumConsumption,
+    itemsQuantity,
+    total,
+    subtotal
+  ) => {
+    return {
+      'store name': _get(businessInfo, 'stores.0.name', ''),
+      'store id': _get(businessInfo, 'stores.0.id', ''),
+      'free delivery above': freeShippingMinAmount,
+      'shipping type': shippingType,
+      country: country,
+      cashback: enableCashback ? cashbackRate : undefined,
+      'minimum order value': enableConditionalFreeShipping ? minimumConsumption : undefined,
+      'cart items quantity': itemsQuantity,
+      'cart amount': total,
+      'has met minimum order value': subtotal >= minimumConsumption,
+    };
+  }
+);

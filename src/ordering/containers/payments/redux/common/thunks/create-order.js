@@ -212,7 +212,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
     variables = {
       ...variables,
-      shippingType: Utils.mapString2camelCase(shippingType),
+      shippingType: Utils.getApiRequestShippingType(shippingType),
       contactDetail,
     };
   }
@@ -275,19 +275,18 @@ const createOrderStatusRequest = async orderId => {
   return get(url);
 };
 
-export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) => {
+export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
   const state = getState();
   const { currency } = getOnlineStoreInfo(state);
   const business = getBusiness(state);
   const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
   const source = Utils.getOrderSource();
   const planId = getBusinessByName(state, business).planId || '';
-  const { orderId, total: amount } = order;
   const isInternal = planId.startsWith('internal');
   const isTNGPayment = Utils.isTNGMiniProgram();
   const action = isTNGPayment ? redirectURL : config.storeHubPaymentEntryURL;
   const basicArgs = {
-    amount,
+    amount: total,
     currency: currency,
     receiptNumber: orderId,
     businessName: business,

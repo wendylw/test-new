@@ -11,6 +11,7 @@ import {
   getOrderShippingType,
   getIsPreOrder,
   getCancelOperator,
+  getIsPayLater,
 } from '../../../redux/selector';
 import { getDeliverySwitchedToSelfPickupState, getOrderStoreName, getOrderPaymentMethod } from '../redux/selector';
 import orderStatusAccepted from '../../../../../../images/order-status-accepted.gif';
@@ -47,7 +48,13 @@ const NOT_DELIVERY_STATUS_IMAGES_MAPPING = {
   [ORDER_STATUS.CANCELLED]: orderStatusCancelled,
   [ORDER_STATUS.PAYMENT_CANCELLED]: orderStatusCancelled,
 };
-const getNotDeliveryTitleAndDescription = (orderStatus, shippingType, paymentMethod, deliveryToSelfPickup) => {
+const getNotDeliveryTitleAndDescription = (
+  orderStatus,
+  shippingType,
+  paymentMethod,
+  deliveryToSelfPickup,
+  isPayLater
+) => {
   if (orderStatus === ORDER_STATUS.PAYMENT_CANCELLED) {
     return {
       titleKey: 'SessionExpired',
@@ -59,7 +66,7 @@ const getNotDeliveryTitleAndDescription = (orderStatus, shippingType, paymentMet
   if (paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE && orderStatus === ORDER_STATUS.PENDING_PAYMENT) {
     return {
       titleKey: 'PayAtCounter',
-      descriptionKey: 'PendingPaymentDescription',
+      descriptionKey: isPayLater ? 'PendingPaymentDescriptionForPayLater' : 'PendingPaymentDescription',
       emoji: null,
     };
   }
@@ -107,6 +114,7 @@ function OrderStatusDescription(props) {
     deliveryToSelfPickup,
     cancelAmountEl,
     inApp,
+    isPayLater,
   } = props;
   const delayByBadWeatherImageSource =
     orderDelayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER ? RAINY_IMAGES_MAPPING[orderStatus] : null;
@@ -123,7 +131,8 @@ function OrderStatusDescription(props) {
     orderStatus,
     shippingType,
     paymentMethod,
-    deliveryToSelfPickup
+    deliveryToSelfPickup,
+    isPayLater
   );
 
   return (
@@ -179,6 +188,7 @@ OrderStatusDescription.propTypes = {
   paymentMethod: PropTypes.string,
   cancelAmountEl: PropTypes.element,
   inApp: PropTypes.bool,
+  isPayLater: PropTypes.bool,
 };
 
 OrderStatusDescription.defaultProps = {
@@ -192,6 +202,7 @@ OrderStatusDescription.defaultProps = {
   paymentMethod: null,
   cancelAmountEl: <span />,
   inApp: false,
+  isPayLater: false,
 };
 
 export default connect(state => ({
@@ -203,4 +214,5 @@ export default connect(state => ({
   deliveryToSelfPickup: getDeliverySwitchedToSelfPickupState(state),
   storeName: getOrderStoreName(state),
   paymentMethod: getOrderPaymentMethod(state),
+  isPayLater: getIsPayLater(state),
 }))(OrderStatusDescription);

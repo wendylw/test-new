@@ -10,13 +10,17 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
-  getStoreInfoForCleverTap,
   getUser,
-  getCartBilling,
   getBusinessInfo,
 } from '../../../../redux/modules/app';
-import { getSelectedPaymentOptionSupportSaveCard, getSelectedPaymentProvider } from '../../redux/common/selectors';
-import * as paymentCommonThunks from '../../redux/common/thunks';
+import {
+  getCleverTapAttributes,
+  getSelectedPaymentOptionSupportSaveCard,
+  getSelectedPaymentProvider,
+  getTotal,
+  getReceiptNumber,
+} from '../../redux/common/selectors';
+import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';
 
@@ -58,7 +62,7 @@ class Stripe extends Component {
     try {
       await this.ensurePaymentProvider();
 
-      this.props.appActions.loadShoppingCart();
+      this.props.loadBilling();
     } catch (error) {
       // TODO: handle this error in Payment 2.0
       console.error(error);
@@ -66,10 +70,10 @@ class Stripe extends Component {
   }
 
   ensurePaymentProvider = async () => {
-    const { paymentProvider, paymentsActions } = this.props;
+    const { paymentProvider, loadPaymentOptions } = this.props;
     // refresh page will lost state
     if (!paymentProvider) {
-      await paymentsActions.loadPaymentOptions(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+      await loadPaymentOptions(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
     }
   };
 
@@ -85,7 +89,16 @@ class Stripe extends Component {
   };
 
   render() {
-    const { t, match, history, cartBilling, merchantCountry, supportSaveCard, storeInfoForCleverTap } = this.props;
+    const {
+      t,
+      match,
+      history,
+      total,
+      merchantCountry,
+      supportSaveCard,
+      cleverTapAttributes,
+      receiptNumber,
+    } = this.props;
     const isAddCardPath = ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE === history.location.pathname;
 
     return (
@@ -96,8 +109,9 @@ class Stripe extends Component {
           history={history}
           isAddCardPath={isAddCardPath}
           country={merchantCountry}
-          cartSummary={cartBilling}
-          storeInfoForCleverTap={storeInfoForCleverTap}
+          total={total}
+          receiptNumber={receiptNumber}
+          cleverTapAttributes={cleverTapAttributes}
           supportSaveCard={supportSaveCard}
           paymentExtraData={this.getPaymentEntryRequestData()}
         />
@@ -114,18 +128,20 @@ export default compose(
       return {
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartBilling: getCartBilling(state),
+        total: getTotal(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         merchantCountry: getMerchantCountry(state),
         user: getUser(state),
         paymentProvider: getSelectedPaymentProvider(state),
         supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
-        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        cleverTapAttributes: getCleverTapAttributes(state),
+        receiptNumber: getReceiptNumber(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      paymentsActions: bindActionCreators(paymentCommonThunks, dispatch),
+      loadBilling: bindActionCreators(loadBilling, dispatch),
+      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
     })
   )
 )(Stripe);
