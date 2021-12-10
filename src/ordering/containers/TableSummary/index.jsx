@@ -14,7 +14,7 @@ import {
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
 } from './redux/thunks';
 import {
-  getOrderReceiptNumber,
+  getOrderPickUpCode,
   getTableNumber,
   getOrderTax,
   getOrderServiceCharge,
@@ -26,6 +26,7 @@ import {
   getOrderPendingPaymentStatus,
   getSubOrdersMapping,
   getOrderSubmissionRequestingStatus,
+  getThankYouPageUrl,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -58,6 +59,12 @@ export class TableSummary extends React.Component {
 
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
+
+    const { thankYouPageUrl } = this.props;
+
+    if (thankYouPageUrl) {
+      window.location.href = thankYouPageUrl;
+    }
   }
 
   async componentWillUnmount() {
@@ -231,9 +238,11 @@ export class TableSummary extends React.Component {
                 ))}
               </ul>
 
-              <div className="border__top-divider margin-top-bottom-small margin-left-right-normal text-opacity">
-                <p className="padding-top-bottom-normal text-line-height-base">{comments}</p>
-              </div>
+              {comments && (
+                <div className="border__top-divider margin-top-bottom-small margin-left-right-normal text-opacity">
+                  <p className="padding-top-bottom-normal text-line-height-base">{comments}</p>
+                </div>
+              )}
             </div>
           );
         })}
@@ -304,7 +313,7 @@ export class TableSummary extends React.Component {
             isLogin={userIsLogin}
             history={history}
           />
-          <SubmitOrderConfirm />
+          <SubmitOrderConfirm history={history} />
         </div>
         <footer
           ref={ref => {
@@ -351,6 +360,7 @@ TableSummary.propTypes = {
   queryOrdersAndStatus: PropTypes.func,
   clearQueryOrdersAndStatus: PropTypes.func,
   updateSubmitOrderConfirmDisplay: PropTypes.func,
+  thankYouPageUrl: PropTypes.string,
 };
 
 TableSummary.defaultProps = {
@@ -373,6 +383,7 @@ TableSummary.defaultProps = {
   queryOrdersAndStatus: () => {},
   clearQueryOrdersAndStatus: () => {},
   updateSubmitOrderConfirmDisplay: () => {},
+  thankYouPageUrl: '',
 };
 
 export default compose(
@@ -381,9 +392,10 @@ export default compose(
     state => ({
       orderPlacedStatus: getOrderPlacedStatus(state),
       orderPendingPaymentStatus: getOrderPendingPaymentStatus(state),
-      orderNumber: getOrderReceiptNumber(state),
+      orderNumber: getOrderPickUpCode(state),
       tableNumber: getTableNumber(state),
       tax: getOrderTax(state),
+      thankYouPageUrl: getThankYouPageUrl(state),
       serviceCharge: getOrderServiceCharge(state),
       subtotal: getOrderSubtotal(state),
       total: getOrderTotal(state),
@@ -394,6 +406,7 @@ export default compose(
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
+
       orderSubmissionRequestingStatus: getOrderSubmissionRequestingStatus(state),
     }),
     {

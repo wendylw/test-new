@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { actions } from '../redux';
 import { submitOrders as submitOrdersThunk } from '../redux/thunks';
-
+import Constants from '../../../../utils/constants';
 import {
   getOrderSubmissionRequestingStatus,
   getSubmitOrderConfirmDisplayStatus,
@@ -12,6 +12,10 @@ import {
 } from '../redux/selectors';
 import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
+import { alert } from '../../../../common/feedback';
+import Utils from '../../../../utils/utils';
+
+const { ROUTER_PATHS } = Constants;
 
 function SubmitOrderConfirm({
   displaySubmitOrderConfirm,
@@ -19,6 +23,7 @@ function SubmitOrderConfirm({
   processing,
   orderCompletedStatus,
   submitOrders,
+  history,
 }) {
   const { t } = useTranslation('OrderingDelivery');
 
@@ -51,13 +56,48 @@ function SubmitOrderConfirm({
             className="submit-order-confirm__fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
             onClick={async () => {
               try {
-                const { thankYouPageUrl } = await submitOrders().unwrap();
+                const { redirectUrl: thankYouPageUrl } = await submitOrders().unwrap();
 
                 if (orderCompletedStatus && thankYouPageUrl) {
                   window.location.href = thankYouPageUrl;
+                } else {
+                  history.push({
+                    pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+                    search: window.location.search,
+                  });
                 }
-              } catch (error) {
-                console.error(error);
+              } catch (e) {
+                // '393731' means missing parameter, '393732' means order not found
+                // '393735' means order payment locked,'393738' means order not latest
+                if (e.code === '393731' || e.code === '393732') {
+                  const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+
+                  alert(t('SorryDescription'), {
+                    title: t('Sorry'),
+                    closeButtonContent: t('BackToMenu'),
+                    onClose: () =>
+                      history.push({
+                        pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+                        search: removeReceiptNumberUrl,
+                      }),
+                  });
+                } else if (e.code === '393735') {
+                  alert(t('SomeoneElseIsPayingDescription'), {
+                    title: t('SomeoneElseIsPaying'),
+                    closeButtonContent: t('BackToTableSummary'),
+                    onClose: () =>
+                      history.push({
+                        pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+                        search: window.location.search,
+                      }),
+                  });
+                } else if (e.code === '393738') {
+                  alert(t('RefreshTableSummaryDescription'), {
+                    title: t('RefreshTableSummary'),
+                    closeButtonContent: t('Refresh'),
+                    onClose: () => window.location.reload(),
+                  });
+                }
               }
             }}
           >
@@ -78,6 +118,8 @@ SubmitOrderConfirm.propTypes = {
   processing: PropTypes.bool,
   orderCompletedStatus: PropTypes.bool,
   submitOrders: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  history: PropTypes.object,
 };
 
 SubmitOrderConfirm.defaultProps = {
@@ -86,6 +128,7 @@ SubmitOrderConfirm.defaultProps = {
   processing: false,
   orderCompletedStatus: false,
   submitOrders: () => {},
+  history: {},
 };
 
 export default connect(
