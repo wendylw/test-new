@@ -102,6 +102,10 @@ class LiveChat extends Component {
 
   handleClick = () => {
     const { onClick } = this.props;
+    const { hasScriptLoaded } = this.state;
+
+    if (!hasScriptLoaded) return;
+
     _isFunction(onClick) && onClick();
     window.Intercom?.('show');
   };
@@ -112,10 +116,11 @@ class LiveChat extends Component {
 
     return (
       <button
-        className="button live-chat flex flex-middle flex__shrink-fixed padding-left-right-small padding-top-bottom-normal"
+        className={`button live-chat flex flex-middle flex__shrink-fixed padding-left-right-small padding-top-bottom-normal ${
+          hasScriptLoaded ? '' : 'text-opacity'
+        }`}
         onClick={this.handleClick}
         id="beep-live-chat-launcher"
-        disabled={!hasScriptLoaded}
       >
         {!hasScriptLoaded && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
         <div className="live-chat__loading-text margin-left-right-smaller">{`${t('NeedHelp')}?`}</div>
