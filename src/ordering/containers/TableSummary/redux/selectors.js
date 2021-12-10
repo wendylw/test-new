@@ -6,6 +6,8 @@ const { ORDER_STATUS } = Constants;
 
 export const getOrderReceiptNumber = state => state.tableSummary.order.receiptNumber;
 
+export const getOrderPickUpCode = state => state.tableSummary.order.pickUpCode;
+
 export const getOrderModifiedTime = state => state.tableSummary.order.modifiedTime;
 
 export const getTableNumber = state => state.tableSummary.order.tableId;
