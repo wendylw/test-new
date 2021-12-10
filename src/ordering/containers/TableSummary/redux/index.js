@@ -83,7 +83,7 @@ export const { reducer, actions } = createSlice({
     [loadOrdersStatus.fulfilled.type]: (state, { payload }) => {
       state.order.orderStatus = payload.status;
       if (payload.redirectUrl) {
-        state.order.submission.thankYouPageUrl = payload.redirectUrl;
+        state.submission.thankYouPageUrl = payload.redirectUrl;
       }
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.FULFILLED;
     },
