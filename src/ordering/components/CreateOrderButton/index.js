@@ -153,7 +153,7 @@ class CreateOrderButton extends React.Component {
           className={classList.join(' ')}
           type={buttonType}
           disabled={disabled}
-          onClick={this.handleCreateOrder.bind(this)}
+          onClick={this.handleCreateOrderSafety}
           {...dataAttributes}
         >
           {children}
