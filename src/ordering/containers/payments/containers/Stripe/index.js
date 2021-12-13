@@ -81,7 +81,7 @@ class Stripe extends Component {
     const { user } = this.props;
 
     return {
-      paymentName: PAYMENT_PROVIDERS.STRIPE,
+      paymentProvider: PAYMENT_PROVIDERS.STRIPE,
       paymentOption: null,
       paymentMethodId: '',
       userId: user.consumerId,

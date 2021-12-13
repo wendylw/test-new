@@ -119,8 +119,7 @@ class AdyenPage extends Component {
     const { saveCard } = this.state;
 
     return {
-      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
-      paymentName: paymentProvider,
+      paymentProvider,
       browserInfo: JSON.stringify(browserInfo || {}),
       userId: user.consumerId,
       ...paymentMethod,

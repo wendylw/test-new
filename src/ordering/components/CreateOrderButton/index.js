@@ -37,6 +37,15 @@ class CreateOrderButton extends React.Component {
     }
   };
 
+  handleCreateOrderSafety = async () => {
+    try {
+      await this.handleCreateOrder();
+    } catch (error) {
+      console.error(error);
+      this.props.afterCreateOrder && this.props.afterCreateOrder();
+    }
+  };
+
   handleCreateOrder = async () => {
     const {
       history,
@@ -61,15 +70,16 @@ class CreateOrderButton extends React.Component {
     if (beforeCreateOrder) {
       await beforeCreateOrder();
     }
+
+    // for Pay at counter it will handle order creation logic by itself in beforeCreateOrder
+    if (paymentName === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
+      return false;
+    }
+
     const { validCreateOrder } = this.props;
 
     const isValidToCreateOrder = () => {
       if (!validCreateOrder) {
-        return false;
-      }
-
-      // for Pay at counter it will handle order creation logic by itself
-      if (paymentName === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
         return false;
       }
 
@@ -125,7 +135,7 @@ class CreateOrderButton extends React.Component {
     if (orderId) {
       // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
       // paymentExtraData could be changed after beforeCreateOrder is executed.
-      gotoPayment({ orderId, total }, this.props.paymentExtraData);
+      await gotoPayment({ orderId, total }, this.props.paymentExtraData);
     }
   };
 

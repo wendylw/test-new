@@ -219,14 +219,14 @@ export class Home extends Component {
     this.setMainContainerHeight(containerHeight);
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
     const { clearQueryCartStatus } = this.props;
 
     window.removeEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
 
-    clearQueryCartStatus();
+    await clearQueryCartStatus();
   }
 
   getStatusFromMultipleStore = () => {
