@@ -61,9 +61,9 @@ class PayFirst extends Component {
     const { user, history, appActions, loadStockStatus } = this.props;
     const { isLogin } = user || {};
 
-    try {
-      await loadStockStatus();
-    } catch (e) {
+    const { error } = await loadStockStatus();
+
+    if (error) {
       await appActions.loadShoppingCart();
 
       return;
