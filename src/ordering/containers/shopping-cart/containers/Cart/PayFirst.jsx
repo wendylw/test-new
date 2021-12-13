@@ -61,9 +61,9 @@ class PayFirst extends Component {
     const { user, history, appActions, loadStockStatus } = this.props;
     const { isLogin } = user || {};
 
-    const { status } = await loadStockStatus();
-
-    if (status === 'reject') {
+    try {
+      await loadStockStatus();
+    } catch (e) {
       await appActions.loadShoppingCart();
 
       return;
@@ -78,6 +78,7 @@ class PayFirst extends Component {
         search: window.location.search,
         nextPage: true,
       });
+
       return;
     }
 
