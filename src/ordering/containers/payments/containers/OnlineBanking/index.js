@@ -14,12 +14,17 @@ import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getBusiness,
-  getCartBilling,
   getBusinessInfo,
-  getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
-import { getPaymentsPendingState, getSelectedPaymentOption, getOnlineBankList } from '../../redux/common/selectors';
-import { loadPaymentOptions } from '../../redux/common/thunks';
+import {
+  getLoaderVisibility,
+  getSelectedPaymentOption,
+  getOnlineBankList,
+  getTotal,
+  getCleverTapAttributes,
+  getReceiptNumber,
+} from '../../redux/common/selectors';
+import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import { actions } from './redux';
 import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';
@@ -35,9 +40,9 @@ class OnlineBanking extends Component {
   };
 
   async componentDidMount() {
-    const { loadPaymentOptions } = this.props;
+    const { loadPaymentOptions, loadBilling } = this.props;
 
-    await this.props.appActions.loadShoppingCart();
+    await loadBilling();
 
     /**
      * Load all payment options action and except saved card list
@@ -51,8 +56,7 @@ class OnlineBanking extends Component {
     const { agentCode } = currentOnlineBanking;
 
     return {
-      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
-      paymentName: paymentProvider,
+      paymentProvider,
       agentCode,
     };
   };
@@ -107,15 +111,13 @@ class OnlineBanking extends Component {
       t,
       match,
       history,
-      cartBilling,
-      onlineStoreInfo,
-      pendingPaymentOptions,
+      total,
+      loaderVisibility,
       currentPaymentOption,
       currentOnlineBanking,
-      storeInfoForCleverTap,
+      cleverTapAttributes,
+      receiptNumber,
     } = this.props;
-    const { total } = cartBilling || {};
-    const { logo } = onlineStoreInfo || {};
     const { payNowLoading } = this.state;
 
     return (
@@ -131,10 +133,7 @@ class OnlineBanking extends Component {
           title={t('PayViaOnlineBanking')}
           navFunc={() => {
             CleverTap.pushEvent('online banking - click back arrow');
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
-              search: window.location.search,
-            });
+            history.goBack();
           }}
         />
 
@@ -168,13 +167,15 @@ class OnlineBanking extends Component {
         <footer className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal">
           <CreateOrderButton
             history={history}
+            orderId={receiptNumber}
+            total={total}
             className="button button__block button__fill padding-normal margin-top-bottom-smaller text-weight-bolder text-uppercase"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('online banking - click continue', {
-                ...storeInfoForCleverTap,
+                ...cleverTapAttributes,
                 'payment method': currentPaymentOption?.paymentName,
                 'bank name': currentPaymentOption?.paymentProvider,
               });
@@ -205,7 +206,7 @@ class OnlineBanking extends Component {
           </CreateOrderButton>
         </footer>
 
-        <Loader className={'loading-cover opacity'} loaded={!pendingPaymentOptions} />
+        <Loader className={'loading-cover opacity'} loaded={!loaderVisibility} />
       </section>
     );
   }
@@ -218,21 +219,23 @@ export default compose(
     state => {
       return {
         onlineBankingList: getOnlineBankList(state),
-        pendingPaymentOptions: getPaymentsPendingState(state),
+        loaderVisibility: getLoaderVisibility(state),
         currentOnlineBanking: getSelectedOnlineBanking(state),
         currentPaymentOption: getSelectedPaymentOption(state),
 
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartBilling: getCartBilling(state),
+        total: getTotal(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
-        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        cleverTapAttributes: getCleverTapAttributes(state),
+        receiptNumber: getReceiptNumber(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
       updateBankingSelected: bindActionCreators(actions.updateBankingSelected, dispatch),
+      loadBilling: bindActionCreators(loadBilling, dispatch),
     })
   )
 )(OnlineBanking);

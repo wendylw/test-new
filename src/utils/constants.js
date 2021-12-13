@@ -103,6 +103,8 @@ const PAYMENT_PROVIDERS = {
   BEEP_TH_LINE_PAY: 'BeepTHLinePay',
   BEEP_PH_CREDIT_CARD: 'BeepPHCreditCard',
   BEEP_PH_CCPP_GCASH: 'BeepPHCCPPGcash',
+  SH_OFFLINE_PAYMENT: 'SHOfflinePayment', // Pay at counter
+  TNG_MINI_PROGRAM: 'TNGMiniProgram',
 };
 
 const CREDIT_CARD_BRANDS = {

@@ -8,7 +8,7 @@ import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
-import { createPaymentDetails } from './api-info';
+import { createPaymentDetails, initPayment } from './api-info';
 
 import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
@@ -24,9 +24,10 @@ import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../vouc
 import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
-import config from '../../../../../../config';
 import { alert } from '../../../../../../common/feedback';
-const { DELIVERY_METHOD } = Constants;
+import loggly from '../../../../../../utils/monitoring/loggly';
+
+const { DELIVERY_METHOD, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } = Constants;
 
 const POLLING_INTERVAL = 3000;
 
@@ -212,7 +213,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   } else if (shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY) {
     variables = {
       ...variables,
-      shippingType: Utils.mapString2camelCase(shippingType),
+      shippingType: Utils.getApiRequestShippingType(shippingType),
       contactDetail,
     };
   }
@@ -257,6 +258,8 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
         </p>
       );
     }
+
+    throw error;
   }
 };
 
@@ -275,54 +278,101 @@ const createOrderStatusRequest = async orderId => {
   return get(url);
 };
 
-export const gotoPayment = (order, paymentArgs) => async (dispatch, getState) => {
-  const state = getState();
-  const { currency } = getOnlineStoreInfo(state);
-  const business = getBusiness(state);
-  const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
-  const source = Utils.getOrderSource();
-  const planId = getBusinessByName(state, business).planId || '';
-  const { orderId, total: amount } = order;
-  const isInternal = planId.startsWith('internal');
-  const isTNGPayment = Utils.isTNGMiniProgram();
-  const action = isTNGPayment ? redirectURL : config.storeHubPaymentEntryURL;
-  const basicArgs = {
+export const callTNGMiniProgramPayment = async ({
+  amount,
+  currency,
+  receiptNumber,
+  businessName,
+  redirectURL,
+  webhookURL,
+  source,
+  isInternal,
+}) => {
+  const { paymentData, paymentId } = await createPaymentDetails({
+    orderId: receiptNumber,
+    orderSource: source,
+    paymentProvider: PAYMENT_PROVIDERS.TNG_MINI_PROGRAM,
+    webhookURL,
+  });
+
+  const { redirectionUrl: paymentUrl } = paymentData?.actionForm || {};
+
+  await callTradePay(paymentUrl);
+
+  const data = {
     amount,
-    currency: currency,
-    receiptNumber: orderId,
-    businessName: business,
+    currency,
+    receiptNumber,
+    businessName,
     redirectURL,
     webhookURL,
     source,
     isInternal,
+    paymentMethod: 'TNGMiniProgram',
+    paymentId,
   };
 
-  if (isTNGPayment) {
-    try {
-      const { paymentData, paymentId } = await createPaymentDetails({
-        orderId,
-        orderSource: source,
-        paymentProvider: 'TNGMiniProgram',
-        webhookURL,
-      });
-      const { redirectionUrl: paymentUrl } = paymentData?.actionForm || {};
+  Utils.submitForm(redirectURL, data);
 
-      basicArgs.paymentId = paymentId;
-      basicArgs.paymentMethod = 'TNGMiniProgram';
-      await callTradePay(paymentUrl);
-    } catch (e) {
-      if (e.code) {
-        // TODO: This type is actually not used, because apiError does not respect action type,
-        // which is a bad practice, we will fix it in the future, for now we just keep a useless
-        // action type.
-        dispatch({ type: 'ordering/payments/common/createTngdPaymentDetailFailure', ...e });
-      } else {
-        alert(i18next.t('PaymentFailedDescription'), { title: i18next.t('PaymentFailed') });
-      }
+  return;
+};
+
+export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
+  try {
+    const state = getState();
+    const { currency } = getOnlineStoreInfo(state);
+    const business = getBusiness(state);
+    const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
+    const source = Utils.getOrderSource();
+    const planId = getBusinessByName(state, business).planId || '';
+    const isInternal = planId.startsWith('internal');
+    const paymentProvider = paymentArgs?.paymentProvider;
+
+    if (Utils.isTNGMiniProgram()) {
+      await callTNGMiniProgramPayment({
+        amount: total,
+        currency,
+        receiptNumber: orderId,
+        businessName: business,
+        redirectURL,
+        webhookURL,
+        source,
+        isInternal,
+      });
 
       return;
     }
-  }
 
-  Utils.submitForm(action, { ...basicArgs, ...paymentArgs });
+    const data = {
+      receiptNumber: orderId,
+      orderSource: source,
+      webhookURL,
+      redirectURL,
+      ...paymentArgs,
+    };
+
+    const result = await initPayment(data);
+
+    if (paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
+      Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
+      loggly.log('ordering.to-thank-you', { orderId });
+      window.location.href = result.redirectURL;
+      return;
+    }
+
+    window.location.href = result.paymentUrl;
+  } catch (error) {
+    console.error('Catch an error in gotoPayment function', error);
+
+    if (error.code) {
+      // TODO: This type is actually not used, because apiError does not respect action type,
+      // which is a bad practice, we will fix it in the future, for now we just keep a useless
+      // action type.
+      dispatch({ type: 'ordering/payments/common/gotoPaymentFailure', ...error });
+    } else {
+      alert(i18next.t('PaymentFailedDescription'), { title: i18next.t('PaymentFailed') });
+    }
+
+    throw error;
+  }
 };

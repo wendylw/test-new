@@ -1,4 +1,4 @@
-import { post } from './api/api-fetch';
+import { get, post } from './api/api-fetch';
 import Utils from './utils';
 import CleverTap from './clevertap';
 
@@ -36,3 +36,5 @@ export const login = ({ accessToken, refreshToken, fulfillDate }) =>
 
     return data;
   });
+
+export const fetchOrder = receiptNumber => get(`/api/v3/transactions/${receiptNumber}`);
