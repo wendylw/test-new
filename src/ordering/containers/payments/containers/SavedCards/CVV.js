@@ -74,7 +74,7 @@ class CardCVV extends Component {
     return {
       userId: user.consumerId,
       cardToken: selectedPaymentCard.cardToken,
-      paymentName: Constants.PAYMENT_PROVIDERS.STRIPE,
+      paymentProvider: Constants.PAYMENT_PROVIDERS.STRIPE,
       paymentOption: Constants.PAYMENT_API_PAYMENT_OPTIONS.TOKENIZATION,
       cvcToken: this.state.cvcToken,
     };
