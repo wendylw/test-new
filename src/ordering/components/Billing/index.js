@@ -94,7 +94,7 @@ export class Billing extends Component {
             <label className="billing__label margin-top-bottom-smaller text-size-big">{t('Subtotal')}</label>
             <CurrencyNumber className="billing__text text-size-big" money={subtotal || 0} />
           </li>
-          {isTakeAwayType ? (
+          {isTakeAwayType && takeawayCharges ? (
             <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
               <label className="billing__label margin-top-bottom-smaller text-size-big">{t('TakeawayFee')}</label>
               <CurrencyNumber className="billing__text text-size-big" money={takeawayCharges || 0} />

@@ -347,8 +347,9 @@ export class OrderDetails extends Component {
   };
 
   render() {
-    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton } = this.props;
-    const { shippingFee, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } = order || '';
+    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton, shippingType } = this.props;
+    const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
+      order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
     return (
@@ -379,6 +380,12 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('Tax')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={tax || 0} />
               </li>
+              {shippingType === 'takeaway' && takeawayCharges && (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('TakeawayCharge')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={takeawayCharges || 0} />
+                </li>
+              )}
               <li className="flex flex-space-between flex-middle">
                 <span className="padding-top-bottom-small text-opacity">{t('DeliveryCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
