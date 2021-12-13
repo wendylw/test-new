@@ -82,9 +82,10 @@ class PayLater extends Component {
     }
   }
 
-  componentWillUnmount = () => {
+  componentWillUnmount = async () => {
     const { clearQueryCartStatus } = this.props;
-    clearQueryCartStatus();
+
+    await clearQueryCartStatus();
   };
 
   handleClickContinue = async () => {
