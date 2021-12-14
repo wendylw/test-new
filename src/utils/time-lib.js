@@ -329,5 +329,5 @@ export const padZero = num => {
 export const getLocaleTimeTo24hour = (dateTime, utcOffset) => {
   const dateTimeDayjs = dayjs(dateTime).utcOffset(utcOffset);
 
-  return dateTimeDayjs.format('HH:MM');
+  return dateTimeDayjs.format('HH:mm');
 };
