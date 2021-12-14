@@ -53,6 +53,29 @@
   &__icon-next svg {
     fill: $gray-3;
   }
+
+  .PhoneInput {
+    margin: 0;
+    border: none;
+  }
+
+  .PhoneInput .PhoneInputCountry {
+    margin-left: 0;
+  }
+
+  .PhoneInput .PhoneInputCountryIcon,
+  .PhoneInput .PhoneInputCountrySelect + .PhoneInputCountryIcon--border {
+    width: calc(0.51em * 3.5);
+    height: calc(0.51em * 2.5);
+  }
+
+  .PhoneInput .PhoneInputInput,
+  .PhoneInput .PhoneInputInput:focus {
+    padding: 0;
+    height: 24px;
+    line-height: 24px;
+    font-size: 1.1428rem;
+  }
 }
 
 @media (min-width: 420px) {

@@ -17,6 +17,12 @@
     color: initial;
   }
 
+  &__address-button {
+    max-height: none;
+    height: auto;
+    width: 100%;
+  }
+
   &__detail ~ &__detail::before {
     content: "";
     display: block;

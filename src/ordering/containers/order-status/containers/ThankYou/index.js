@@ -48,6 +48,7 @@ import {
   getIsPreOrder,
   getIsUseStorehubLogistics,
 } from '../../redux/selector';
+import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
 import {
@@ -62,13 +63,20 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
+import CompleteProfileModal from '../../../../containers/Profile/index';
+import { actions as appActionCreators } from '../../../../redux/modules/app';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
 const BEFORE_PAID_STATUS_LIST = [
   ORDER_STATUS.CREATED,
   ORDER_STATUS.PENDING_PAYMENT,
   ORDER_STATUS.PENDING_VERIFICATION,
   ORDER_STATUS.PAYMENT_CANCELLED,
+];
+const REFERRERS_REQUIRING_PROFILE = [
+  REFERRER_SOURCE_TYPES.PAYMENT,
+  REFERRER_SOURCE_TYPES.CASHBACK,
+  REFERRER_SOURCE_TYPES.PAY_AT_COUNTER,
 ];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
@@ -85,7 +93,8 @@ export class ThankYou extends PureComponent {
       showPhoneCopy: false,
       phoneCopyTitle: '',
       phoneCopyContent: '',
-      phone: Utils.getLocalStorageVariable('user.p'),
+      hasRecordedChargedEvent: false,
+      from: null,
     };
   }
 
@@ -112,12 +121,50 @@ export class ThankYou extends PureComponent {
     });
   }
 
+  showCompleteProfileIfNeeded = async () => {
+    const { orderStatus } = this.props;
+    //Explain: The profile page is not displayed before the order is paid
+    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && !hasOrderPaid) {
+      return;
+    }
+
+    const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
+
+    if (isDoNotAsk === '1') {
+      return;
+    }
+
+    const { name, email, birthday, status } = this.props.user.profile || {};
+
+    if (status === 'fulfilled' && REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
+      if (!name || !email || !birthday) {
+        this.timer = setTimeout(() => {
+          this.props.setShowProfileVisibility(true);
+        }, 3000);
+      }
+    }
+  };
+
   componentDidMount = async () => {
+    const { user } = this.props;
+
+    this.showCompleteProfileIfNeeded();
+
+    const from = Utils.getCookieVariable('__ty_source');
+
+    this.setState({
+      from,
+    });
+
+    // immidiately remove __ty_source cookie after setting in the state.
+    Utils.removeCookieVariable('__ty_source');
+
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
     window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
-    const { user, loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo } = this.props;
+    const { loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo } = this.props;
     const { storeId } = order || {};
 
     if (storeId) {
@@ -250,10 +297,6 @@ export class ThankYou extends PureComponent {
         };
       }) || [];
 
-    const orderSourceType = Utils.getOrderSource();
-    const orderSource =
-      orderSourceType === 'BeepApp' ? 'App' : orderSourceType === 'BeepSite' ? 'beepit.com' : 'Store URL';
-
     let preOrderPeriod = 0;
     if (order.isPreOrder) {
       preOrderPeriod = (new Date(order.expectDeliveryDateFrom) - new Date(order.createdTime)) / (60 * 60 * 1000);
@@ -271,7 +314,7 @@ export class ThankYou extends PureComponent {
       'Store Name': _get(order, 'storeInfo.name', ''),
       'Charged ID': order.orderId,
       Items: itemsList,
-      'Order Source': orderSource,
+      'Order Source': Utils.getOrderSourceForCleverTab(),
       'Pre-order Period': preOrderPeriod,
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
@@ -326,6 +369,11 @@ export class ThankYou extends PureComponent {
       loadStoreIdTableIdHashCode,
       loadStoreIdHashCode,
     } = this.props;
+
+    if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
+      this.showCompleteProfileIfNeeded();
+    }
+
     const { storeId } = order || {};
     const { enableCashback } = businessInfo || {};
     const canUpdateCashback =
@@ -342,14 +390,16 @@ export class ThankYou extends PureComponent {
         ? loadStoreIdTableIdHashCode({ storeId, tableId: config.table })
         : loadStoreIdHashCode(storeId);
     }
-    const tySourceCookie = this.getThankYouSource();
+
     if (onlineStoreInfo && onlineStoreInfo !== prevOnlineStoreInfo) {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
-    if (this.isSourceFromPayment(tySourceCookie) && this.props.order && onlineStoreInfo) {
+
+    if (!this.state.hasRecordedChargedEvent && this.state.from === 'payment' && this.props.order && onlineStoreInfo) {
       const orderInfo = this.props.order;
       this.recordChargedEvent();
       this.handleGtmEventTracking({ order: orderInfo });
+      this.setState({ hasRecordedChargedEvent: true });
     }
 
     this.setContainerHeight();
@@ -358,14 +408,9 @@ export class ThankYou extends PureComponent {
   componentWillUnmount = () => {
     clearInterval(this.pollOrderStatusTimer);
     this.closeMap();
+    clearTimeout(this.timer);
   };
 
-  getThankYouSource = () => {
-    return Utils.getCookieVariable('__ty_source', '');
-  };
-  isSourceFromPayment = source => {
-    return source === 'payment';
-  };
   handleGtmEventTracking = ({ order = {} }) => {
     const { onlineStoreInfo } = this.props;
     const productsInOrder = order.items || [];
@@ -410,9 +455,6 @@ export class ThankYou extends PureComponent {
     };
     gtmEventTracking(GTM_TRACKING_EVENTS.ORDER_CONFIRMATION, gtmEventData);
     gtmSetPageViewData(pageViewData);
-
-    // immidiately remove __ty_source cookie after send the request.
-    Utils.removeCookieVariable('__ty_source', '');
   };
 
   handleVisitMerchantInfoPage = () => {
@@ -604,10 +646,10 @@ export class ThankYou extends PureComponent {
   }
 
   renderDownloadBanner() {
-    const { user, shippingType } = this.props;
-    const { isWebview } = user || {};
+    const { shippingType } = this.props;
+    const hideDownloadBanner = Utils.isTNGMiniProgram() || Utils.isWebview();
 
-    if (isWebview) {
+    if (hideDownloadBanner) {
       return null;
     }
 
@@ -663,6 +705,8 @@ export class ThankYou extends PureComponent {
     const { user, order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
     const userEmail = _get(user, 'profile.email', '');
+    const userPhone = _get(user, 'profile.phone', '');
+    const userName = _get(user, 'profile.name', '');
     const orderId = _get(order, 'orderId', '');
     const tableId = _get(order, 'tableId', '');
     const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
@@ -674,6 +718,14 @@ export class ThankYou extends PureComponent {
     if (!order) {
       return null;
     }
+
+    // TODO: doesn't ensure the user already login on thankyou page
+    // so possible getting empty value from user profile
+    const userInfoForLiveChat = {
+      email: userEmail,
+      phone: orderUserPhone || userPhone,
+      name: orderUserName || userName,
+    };
 
     const rightContentOfTableId = {
       text: tableId ? t('TableIdText', { tableId }) : '',
@@ -698,9 +750,9 @@ export class ThankYou extends PureComponent {
         onClick: () => {
           NativeMethods.startChat({
             orderId,
-            name: orderUserName,
-            phone: orderUserPhone,
-            email: userEmail,
+            name: userInfoForLiveChat.name,
+            phone: userInfoForLiveChat.phone,
+            email: userInfoForLiveChat.email,
             storeName: orderStoreName,
           });
         },
@@ -719,16 +771,29 @@ export class ThankYou extends PureComponent {
       return NativeMethods.isLiveChatAvailable() ? rightContentOfNativeLiveChat : rightContentOfContactUs;
     }
 
-    return <LiveChat orderId={orderId} name={orderUserName} phone={orderUserPhone} />;
+    return (
+      <LiveChat
+        orderId={orderId}
+        email={userInfoForLiveChat.email}
+        name={userInfoForLiveChat.name}
+        phone={userInfoForLiveChat.phone}
+      />
+    );
   }
 
   handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history, orderStatus } = this.props;
+    const { order, storeHashCode, history, orderStatus, profileModalVisibility } = this.props;
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
     const type = Utils.getOrderTypeFromUrl();
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+
+    if (profileModalVisibility) {
+      this.props.setShowProfileVisibility(false);
+      return;
+    }
 
     if (isOrderBeforePaid) {
       history.goBack();
@@ -737,6 +802,11 @@ export class ThankYou extends PureComponent {
 
     if (isWebview) {
       NativeMethods.closeWebView();
+      return;
+    }
+
+    if (Utils.isTNGMiniProgram() && sourceUrl) {
+      window.location.href = sourceUrl;
       return;
     }
 
@@ -758,6 +828,10 @@ export class ThankYou extends PureComponent {
     return;
   };
 
+  handleCompleteProfileModalClose = () => {
+    this.props.setShowProfileVisibility(false);
+  };
+
   render() {
     const { t, history, match, order, businessInfo, businessUTCOffset, onlineStoreInfo } = this.props;
     const date = new Date();
@@ -771,6 +845,12 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
+        {order && (
+          <CompleteProfileModal
+            closeModal={this.handleCompleteProfileModalClose}
+            showProfileVisibility={this.props.profileModalVisibility}
+          />
+        )}
         <>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
@@ -818,13 +898,17 @@ export class ThankYou extends PureComponent {
               className="footer__transparent flex flex-middle flex-center flex__shrink-fixed"
             >
               <span>&copy; {date.getFullYear()} </span>
-              <a
-                className="ordering-thanks__button-footer-link button button__link padding-small"
-                href="https://www.storehub.com/"
-                data-heap-name="ordering.thank-you.storehub-link"
-              >
-                {t('StoreHub')}
-              </a>
+              {Utils.isTNGMiniProgram() ? (
+                <span className="padding-small">{t('StoreHub')}</span>
+              ) : (
+                <a
+                  className="ordering-thanks__button-footer-link button button__link padding-small"
+                  href="https://www.storehub.com/"
+                  data-heap-name="ordering.thank-you.storehub-link"
+                >
+                  {t('StoreHub')}
+                </a>
+              )}
             </footer>
           </div>
         </>
@@ -860,12 +944,14 @@ export default compose(
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      profileModalVisibility: getshowProfileVisibility(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
         thankYouActionCreators.updateCancellationReasonVisibleState,
         dispatch
       ),
+      setShowProfileVisibility: bindActionCreators(thankYouActionCreators.setShowProfileVisibility, dispatch),
       loadStoreIdHashCode: bindActionCreators(loadStoreIdHashCode, dispatch),
       loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
@@ -873,6 +959,7 @@ export default compose(
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
+      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(ThankYou);

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import _isFunction from 'lodash/isFunction';
 import beepAlcoholImage from '../../../../../images/beep-alcohol-consent.png';
 import Modal from '../../../../../components/Modal';
 import { withTranslation } from 'react-i18next';
@@ -20,6 +21,12 @@ export class AlcoholModal extends PureComponent {
         confirmNotLegal: true,
       });
     }
+  };
+
+  handleGotIt = () => {
+    const { onConfirmAlcoholDenied } = this.props;
+
+    _isFunction(onConfirmAlcoholDenied) && onConfirmAlcoholDenied();
   };
 
   renderAskContent() {
@@ -78,6 +85,17 @@ export class AlcoholModal extends PureComponent {
             {t('AlcoholNotAllowed')}
           </p>
         </Modal.Body>
+        <Modal.Footer>
+          <div className="flex flex-middle">
+            <button
+              className="button button__fill button__block margin-small text-uppercase text-weight-bolder"
+              data-heap-name="ordering.home.alcohol-modal.got"
+              onClick={this.handleGotIt}
+            >
+              {t('GotIt')}
+            </button>
+          </div>
+        </Modal.Footer>
       </Modal>
     );
   }

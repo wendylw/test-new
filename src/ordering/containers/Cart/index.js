@@ -28,8 +28,6 @@ import { actions as cartActionCreators, getCheckingInventoryPendingState } from 
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
-import Url from '../../../utils/url';
-import { get } from '../../../utils/request';
 import CleverTap from '../../../utils/clevertap';
 import _isNil from 'lodash/isNil';
 import loggly from '../../../utils/monitoring/loggly';
@@ -91,10 +89,8 @@ class Cart extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, appActions, cartActions, deliveryDetails } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
-    const { consumerId, isLogin, profile } = user || {};
-    const { name, phone } = profile || {};
+    const { user, history, appActions, cartActions } = this.props;
+    const { isLogin } = user || {};
 
     const { status } = await cartActions.checkCartInventory();
 
@@ -113,40 +109,13 @@ class Cart extends Component {
         search: window.location.search,
         nextPage: true,
       });
+      return;
     }
 
-    // if have name, redirect to customer page
-    // if have consumerId, get profile first and update consumer profile, then redirect to next page
-    if (isLogin && name) {
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    } else {
-      if (isLogin && consumerId) {
-        let request = Url.API_URLS.GET_CONSUMER_PROFILE(consumerId);
-        let { firstName, email, birthday, phone } = await get(request.url);
-        this.props.appActions.updateProfileInfo({
-          name: firstName,
-          email,
-          birthday,
-          phone,
-        });
-        !username && (await appActions.updateDeliveryDetails({ username: firstName }));
-        !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
-        firstName
-          ? history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-              search: window.location.search,
-            })
-          : history.push({
-              pathname: Constants.ROUTER_PATHS.PROFILE,
-              search: window.location.search,
-            });
-      }
-    }
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      search: window.location.search,
+    });
   };
 
   handleResizeEvent() {
@@ -220,6 +189,9 @@ class Cart extends Component {
 
   handleClearAll = () => {
     loggly.log('cart.clear-all-attempt');
+
+    CleverTap.pushEvent('Cart page - click clear all', this.props.storeInfoForCleverTap);
+
     this.props.appActions.clearAll().then(() => {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,

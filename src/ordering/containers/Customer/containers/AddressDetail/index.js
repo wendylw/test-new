@@ -4,7 +4,6 @@ import Constants from '../../../../../utils/constants';
 import { IconNext } from '../../../../../components/Icons';
 import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
-import './AddressDetail.scss';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -13,13 +12,19 @@ import {
   getStoreInfoForCleverTap,
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
-import { actions as customerActionCreators, getAddressInfo } from './redux';
+import { actions as customerActionCreators } from './redux';
+import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
+import { init } from './redux/thunk';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
-
+import _trim from 'lodash/trim';
+import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
+import 'react-phone-number-input/style.css';
+import './AddressDetail.scss';
+const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const actions = {
   EDIT: 'edit',
   ADD: 'add',
@@ -38,67 +43,8 @@ class AddressDetail extends Component {
   }
 
   componentDidMount = async () => {
-    const { deliveryDetails, addressInfo, customerActions, location } = this.props;
-    const {
-      addressId,
-      addressName,
-      deliveryToAddress,
-      addressDetails,
-      deliveryComments,
-      deliveryToLocation,
-      deliveryToCity,
-    } = deliveryDetails || {};
-    const { address: savedAddress, coords: savedCoords, addressComponents: savedAddressComponents } = addressInfo || {};
-    const { address, coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    const deliveryAddressUpdate = Boolean(Utils.getSessionVariable('deliveryAddressUpdate'));
-
-    Utils.removeSessionVariable('deliveryAddressUpdate');
-
-    this.setState({
-      hasAnyChanges: deliveryAddressUpdate,
-    });
-
-    // if choose a new location, update the addressInfo
-    if (
-      address !== savedAddress ||
-      coords.lat !== savedCoords.latitude ||
-      coords.lng !== savedCoords.longitude ||
-      addressComponents.city !== savedAddressComponents.city
-    ) {
-      customerActions.updateAddressInfo({
-        address: address,
-        coords: {
-          latitude: coords.lat,
-          longitude: coords.lng,
-        },
-        addressComponents,
-      });
-    }
-
-    if (location.state && location.state.fromCustomer) {
-      customerActions.updateAddressInfo({
-        id: addressId,
-        type: actions.EDIT,
-        name: addressName,
-        address: deliveryToAddress,
-        details: addressDetails,
-        comments: deliveryComments,
-        coords: deliveryToLocation,
-        addressComponents: {
-          ...addressComponents,
-          city: deliveryToCity,
-        },
-      });
-    }
-
-    if (location.state && location.state.fromAddressList) {
-      customerActions.updateAddressInfo({
-        type: actions.ADD,
-        address,
-        coords: { longitude: coords.lng, latitude: coords.lat },
-        addressComponents,
-      });
-    }
+    const { init, location } = this.props;
+    await init({ actionType: location.state?.type });
   };
 
   handleClickBack = () => {
@@ -124,40 +70,77 @@ class AddressDetail extends Component {
       this.props.customerActions.updateAddressInfo({ name: inputValue });
     } else if (e.target.name === 'addressDetails') {
       this.props.customerActions.updateAddressInfo({ details: inputValue });
+    } else if (e.target.name === 'contactName') {
+      this.props.customerActions.updateAddressInfo({ contactName: inputValue });
     } else if (e.target.name === 'deliveryComments') {
       this.props.customerActions.updateAddressInfo({ comments: inputValue });
     }
+  };
+
+  phoneInputChange = phone => {
+    const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
+    const phoneInput =
+      (metadataMobile.countries[selectedCountry] &&
+        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0])) ||
+      '';
+    this.props.customerActions.updatePhoneNumber(phoneInput);
+    this.setState({
+      hasAnyChanges: true,
+    });
+  };
+
+  checkSaveButtonDisabled = () => {
+    const { addressInfo, contactNumberInvalidErrorVisibility } = this.props;
+    const { name, details, address, contactName } = addressInfo;
+    if (!name || !details || !address) {
+      return true;
+    }
+
+    if (!_trim(contactName) || contactNumberInvalidErrorVisibility || !_trim(details) || !_trim(name)) {
+      return true;
+    }
+
+    return false;
   };
 
   handleAddressDetailClick = () => {
     const { history, location } = this.props;
     const { search } = location;
 
-    const callbackUrl = encodeURIComponent(
-      `${Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${Constants.ROUTER_PATHS.ADDRESS_DETAIL}${search}`
-    );
-
     CleverTap.pushEvent('Address details - click location row');
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-      search: `${search}&callbackUrl=${callbackUrl}`,
+      search,
     });
   };
 
   createOrUpdateAddress = async () => {
     const { history, user, addressInfo, customerActions, appActions } = this.props;
-    const { id, type, name, address, details, comments, coords, addressComponents } = addressInfo;
+    const {
+      id,
+      type,
+      name,
+      address,
+      details,
+      comments,
+      coords,
+      addressComponents,
+      contactName,
+      contactNumber,
+    } = addressInfo;
     const { consumerId } = user || {};
     const postCode = _get(addressComponents, 'postCode', '');
     const city = _get(addressComponents, 'city', '');
     const countryCode = _get(addressComponents, 'countryCode', '');
 
     const data = {
-      addressName: name,
-      deliveryTo: address,
-      addressDetails: details,
-      comments: comments,
+      contactName: _trim(contactName),
+      contactNumber: contactNumber,
+      addressName: _trim(name),
+      deliveryTo: _trim(address),
+      addressDetails: _trim(details),
+      comments: _trim(comments),
       location: coords,
       city,
       countryCode,
@@ -182,10 +165,12 @@ class AddressDetail extends Component {
       addressName: savedAddressName,
       addressDetails: _get(response, 'addressDetails', details),
       deliveryComments: _get(response, 'comments', comments),
-      deliveryToAddress: _get(response, 'address', address),
+      deliveryToAddress: _get(response, 'deliveryTo', address),
       deliveryToLocation: _get(response, 'location', coords),
       deliveryToCity: _get(response, 'city', city),
       postCode: _get(response, 'postCode', postCode),
+      username: _get(response, 'contactName', contactName),
+      phone: _get(response, 'contactNumber', contactNumber),
     });
 
     customerActions.removeAddressInfo();
@@ -203,10 +188,17 @@ class AddressDetail extends Component {
     }
   };
 
+  handlePhoneNumberFocus = () => {
+    this.props.customerActions.startEditPhoneNumber();
+  };
+
+  handleNameInputBlur = () => {
+    this.props.customerActions.completePhoneNumber();
+  };
+
   render() {
-    const { hasAnyChanges } = this.state;
-    const { t, addressInfo } = this.props;
-    const { type, name, address, details, comments } = addressInfo || {};
+    const { addressInfo, t } = this.props;
+    const { type, name, address, details, comments, contactNumber, contactName, country } = addressInfo || {};
 
     return (
       <div className="flex flex-column address-detail">
@@ -215,7 +207,7 @@ class AddressDetail extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
-          title={type === actions.EDIT ? t('EditAddress') : t('AddNewAddress')}
+          title={type === actions.EDIT ? t('DeliveryTo') : t('AddNewAddress')}
           navFunc={this.handleClickBack.bind(this)}
         />
         <section
@@ -237,7 +229,64 @@ class AddressDetail extends Component {
             <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
               <div className="flex__fluid-content">
                 <div className="address-detail__title required">
-                  <span className="text-size-small text-top">{t('Name')}</span>
+                  <span className="text-size-small text-top">{t('ContactName')}</span>
+                </div>
+                <input
+                  className="address-detail__input form__input text-size-big text-line-height-base"
+                  data-heap-name="ordering.customer.delivery-address-name"
+                  type="text"
+                  maxLength="140"
+                  value={contactName}
+                  name="contactName"
+                  placeholder={t('Name')}
+                  onChange={this.handleInputChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="margin-normal padding-top-bottom-small" style={{ position: 'relative' }}>
+            <div
+              className={` ${
+                this.props.contactNumberInvalidErrorVisibility ? 'error' : ''
+              } form__group border-radius-normal`}
+            >
+              <div className=" address-detail__field flex flex-middle padding-top-bottom-small padding-left-right-normal ">
+                <div className="flex__fluid-content">
+                  <div className="address-detail__title required">
+                    <span className="text-size-small text-top">{t('ContactNumber')}</span>
+                  </div>
+                  <PhoneInput
+                    international // If input want to show country code when phone number is empty, pls add international on props
+                    smartCaret={false}
+                    data-heap-name="ordering.contact-details.phone-input"
+                    placeholder={t('EnterPhoneNumber')}
+                    value={formatPhoneNumberIntl(contactNumber)}
+                    country={country}
+                    metadata={metadataMobile}
+                    onChange={this.phoneInputChange}
+                    onFocus={this.handlePhoneNumberFocus}
+                    onBlur={this.handleNameInputBlur}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {this.props.contactNumberInvalidErrorVisibility && (
+              <p
+                className="text-size-big  form__error-message padding-top-bottom-smaller "
+                style={{ position: 'absolute' }}
+              >
+                {t('PleaseEnterValidPhoneNumber')}
+              </p>
+            )}
+          </div>
+
+          <div className="margin-normal padding-top-bottom-smaller">
+            <div className="address-detail__field form__group flex flex-middle padding-top-bottom-small padding-left-right-normal">
+              <div className="flex__fluid-content">
+                <div className="address-detail__title required">
+                  <span className="text-size-small text-top">{t('AddressName')}</span>
                 </div>
                 <input
                   className="address-detail__input form__input text-size-big text-line-height-base"
@@ -313,13 +362,13 @@ class AddressDetail extends Component {
         <footer className="footer footer__transparent margin-normal" ref={ref => (this.footerEl = ref)}>
           <button
             className="address-detail__save-button button button__fill button__block padding-small text-weight-bolder text-uppercase"
-            disabled={!name || !details || !address || (type === actions.EDIT && !hasAnyChanges)}
+            disabled={this.checkSaveButtonDisabled()}
             onClick={() => {
               CleverTap.pushEvent('Address details - click save changes');
               this.createOrUpdateAddress();
             }}
           >
-            {type === actions.EDIT ? t('SaveChanges') : t('Save')}
+            {t('Save')}
           </button>
         </footer>
       </div>
@@ -336,10 +385,12 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
       addressInfo: getAddressInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      contactNumberInvalidErrorVisibility: getContactNumberInvalidErrorVisibility(state),
     }),
     dispatch => ({
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
+      init: bindActionCreators(init, dispatch),
     })
   )
 )(AddressDetail);
