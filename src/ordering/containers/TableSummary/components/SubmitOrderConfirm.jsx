@@ -25,7 +25,7 @@ function SubmitOrderConfirm({
   submitOrders,
   history,
 }) {
-  const { t } = useTranslation('OrderingDelivery');
+  const { t } = useTranslation('OrderingTableSummary');
 
   const handleToggleModal = useCallback(
     status => {

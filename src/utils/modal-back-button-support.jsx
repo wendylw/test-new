@@ -27,16 +27,24 @@ export const addModalIdHash = modalId => {
 
 let preventHashPoppedId = null;
 
-export const removeModalIdHash = modalId => {
-  const modalIdSet = getModalIdsFromHash();
-  if (modalIdSet.has(modalId)) {
-    // removing hash will cause hash change be triggered once more, so we add this flag
-    // to prevent redundant sh-modal-history-back dispatched unexpectedly.
-    preventHashPoppedId = modalId;
-    window.history.go(-1);
-  }
-};
-
+export const removeModalIdHash = modalId =>
+  new Promise(resolve => {
+    const modalIdSet = getModalIdsFromHash();
+    if (modalIdSet.has(modalId)) {
+      // removing hash will cause hash change be triggered once more, so we add this flag
+      // to prevent redundant sh-modal-history-back dispatched unexpectedly.
+      preventHashPoppedId = modalId;
+      // history.go is a async function, so we need to find a way to notice the caller that the url has been changed.
+      const onPopState = () => {
+        window.removeEventListener('popstate', onPopState);
+        resolve();
+      };
+      window.addEventListener('popstate', onPopState);
+      window.history.go(-1);
+    } else {
+      resolve();
+    }
+  });
 window.addEventListener(
   'hashchange',
   e => {
@@ -105,11 +113,11 @@ export const withBackButtonSupport = WrappedComponent => {
       }
     };
 
-    onModalVisibilityChanged = visibility => {
+    onModalVisibilityChanged = async visibility => {
       if (visibility) {
         addModalIdHash(this.modalId);
       } else {
-        removeModalIdHash(this.modalId);
+        await removeModalIdHash(this.modalId);
       }
     };
 

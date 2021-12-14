@@ -40,16 +40,22 @@ const createAlert = (content, options) =>
     rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
     container.appendChild(rootDOM);
 
+    // Because history.back (which is called when the modal is closed) is an async method, we have to wait
+    // the url to be actually changed. Otherwise, there will be problem if the onClose callback contains
+    // logic to change the url.
+    const onModalHashChanged = show => {
+      if (!show) {
+        destroyTarget(rootDOM);
+        resolve();
+        onClose();
+      }
+    };
+
     const alertInstance = React.createElement(Alert, {
       content,
       ...restOptions,
       onClose: () => {
-        render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => {
-          destroyTarget(rootDOM);
-          resolve();
-          /* If there is some operation to url in onClose function, this operation will be overwritten when the feedback is closed. Putting onClose in the asynchronous queue can solve this problem */
-          setTimeout(() => onClose(), 0);
-        });
+        render(React.cloneElement(alertInstance, { show: false, onModalHashChanged }), rootDOM);
       },
     });
 
