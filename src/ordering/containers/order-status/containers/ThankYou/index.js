@@ -782,10 +782,9 @@ export class ThankYou extends PureComponent {
   }
 
   handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history, orderStatus, profileModalVisibility } = this.props;
+    const { order, storeHashCode, history, orderStatus, profileModalVisibility, shippingType } = this.props;
     const isWebview = Utils.isWebview();
     const tableId = _get(order, 'tableId', '');
-    const type = Utils.getOrderTypeFromUrl();
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
@@ -816,8 +815,8 @@ export class ThankYou extends PureComponent {
       options.push(`table=${tableId}`);
     }
 
-    if (type) {
-      options.push(`type=${type}`);
+    if (shippingType) {
+      options.push(`type=${shippingType}`);
     }
 
     history.replace({
