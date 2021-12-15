@@ -71,9 +71,9 @@ class CreateOrderButton extends React.Component {
       await beforeCreateOrder();
     }
 
-    // for Pay at counter it will handle order creation logic by itself in beforeCreateOrder
+    // for Pay at counter it will fully handle order creation logic by itself in beforeCreateOrder
     if (paymentName === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
-      return false;
+      return;
     }
 
     const { validCreateOrder } = this.props;
