@@ -7,6 +7,7 @@
   "CreatedOrderTime": "Created at {{submittedTime}}",
   "UnableBackMenuTitle": "Want to view the menu?",
   "UnableBackMenuDescription": "You may only return to the menu once you <bold>completed your payment</bold>. Select ‘Pay Now’ to proceed.",
+  "UnableBackMenuAndPendingPaymentDescription": "You may only return to the menu once you <bold>completed your payment</bold>. Select payment method to proceed",
   "Sorry":"Oh no :(",
   "SorryDescription":" Your order cannot be found.",
   "OrderNotFoundDescription": " Your order cannot be found. Please contact customer support if you wish to proceed.",

@@ -87,7 +87,7 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { t } = this.props;
+    const { t, orderPendingPaymentStatus } = this.props;
     const isWebview = Utils.isWebview();
 
     if (isWebview) {
@@ -97,7 +97,11 @@ export class TableSummary extends React.Component {
     }
 
     alert(
-      <Trans t={t} i18nKey="UnableBackMenuDescription" components={{ bold: <strong className="text-size-big" /> }} />,
+      <Trans
+        t={t}
+        i18nKey={orderPendingPaymentStatus ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
+        components={{ bold: <strong className="text-size-big" /> }}
+      />,
       {
         title: t('UnableBackMenuTitle'),
         closeButtonContent: t('GotIt'),
