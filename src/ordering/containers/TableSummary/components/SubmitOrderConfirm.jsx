@@ -25,7 +25,7 @@ function SubmitOrderConfirm({
   submitOrders,
   history,
 }) {
-  const { t } = useTranslation('OrderingDelivery');
+  const { t } = useTranslation('OrderingTableSummary');
 
   const handleToggleModal = useCallback(
     status => {
@@ -69,10 +69,21 @@ function SubmitOrderConfirm({
               } catch (e) {
                 // '393731' means missing parameter, '393732' means order not found
                 // '393735' means order payment locked,'393738' means order not latest
-                if (e.code === '393731' || e.code === '393732') {
+                if (e.code === '393731') {
                   const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
 
                   alert(t('SorryDescription'), {
+                    title: t('Sorry'),
+                    closeButtonContent: t('BackToMenu'),
+                    onClose: () =>
+                      history.push({
+                        pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+                        search: removeReceiptNumberUrl,
+                      }),
+                  });
+                } else if (e.code === '393732') {
+                  const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+                  alert(t('OrderNotFoundDescription'), {
                     title: t('Sorry'),
                     closeButtonContent: t('BackToMenu'),
                     onClose: () =>

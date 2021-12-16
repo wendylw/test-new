@@ -7,7 +7,16 @@ import './Alert.scss';
 
 const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();
-  const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
+  const {
+    content,
+    show,
+    closeButtonContent,
+    className,
+    style,
+    onClose,
+    onModalVisibilityChanged,
+    onModalHashChanged,
+  } = props;
   const [processing, setProcessing] = useState(false);
   useImperativeHandle(ref, () => ({
     onHistoryBackReceived: () => false,
@@ -15,13 +24,19 @@ const Alert = forwardRef((props, ref) => {
   const prevShow = usePrevious(show);
   useEffect(() => {
     if (show !== prevShow) {
-      onModalVisibilityChanged(show);
+      const callOnModalVisibilityChanged = async () => {
+        await onModalVisibilityChanged(show);
+        if (onModalHashChanged) {
+          onModalHashChanged(show);
+        }
+      };
+      callOnModalVisibilityChanged();
     }
 
     return () => {
       setProcessing(false);
     };
-  }, [show, onModalVisibilityChanged, prevShow]);
+  }, [show, onModalVisibilityChanged, onModalHashChanged, prevShow]);
 
   if (!show) {
     return null;
@@ -60,6 +75,7 @@ Alert.propTypes = {
   style: PropTypes.object,
   onClose: PropTypes.func,
   onModalVisibilityChanged: PropTypes.func,
+  onModalHashChanged: PropTypes.func,
 };
 
 Alert.defaultProps = {
@@ -70,6 +86,7 @@ Alert.defaultProps = {
   style: {},
   onClose: () => {},
   onModalVisibilityChanged: () => {},
+  onModalHashChanged: () => {},
 };
 
 export default withBackButtonSupport(Alert);

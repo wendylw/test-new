@@ -83,16 +83,13 @@ class CreditCard extends Component {
 
     // TODO: to read window.encryptedCardData actually make the function impure, which is bad practice, since this function
     // is called from render. We should move it to state.
-    const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData || {};
+    const { encryptedCardInfo } = window.encryptedCardData || {};
 
     return {
       payActionWay: 1,
       paymentProvider,
       cardholderName,
       encryptedCardInfo,
-      expYearCardInfo,
-      expMonthCardInfo,
-      maskedCardInfo,
     };
   };
 

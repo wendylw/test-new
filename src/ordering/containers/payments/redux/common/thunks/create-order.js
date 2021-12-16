@@ -351,16 +351,16 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       ...paymentArgs,
     };
 
-    const result = await initPayment(data);
+    const { redirectURL: thankYouPageUrl, paymentUrl } = await initPayment(data);
 
     if (paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
       Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
-      loggly.log('ordering.to-thank-you', { orderId });
-      window.location.href = result.redirectURL;
+      loggly.log('create-order.offline-payment.to-thank-you', { orderId });
+      window.location.href = thankYouPageUrl;
       return;
     }
 
-    window.location.href = result.paymentUrl;
+    window.location.href = paymentUrl;
   } catch (error) {
     console.error('Catch an error in gotoPayment function', error);
 
