@@ -99,6 +99,7 @@ export class Footer extends Component {
   handleWebRedirect = () => {
     const { history, deliverInfo } = this.props;
     const { enablePreOrder } = deliverInfo;
+    const { search } = window.location;
     if (enablePreOrder) {
       const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
@@ -107,21 +108,17 @@ export class Footer extends Component {
         (Utils.isDeliveryType() && (!deliveryToAddress || !date.date || !hour)) ||
         (Utils.isPickUpType() && (!date.date || !hour.from))
       ) {
-        const { search } = window.location;
-        const newSearch = Utils.removeParam('pageRefer', search);
-
-        const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CART}${newSearch}`);
+        const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CART}${search}`);
 
         history.push({
           pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-          search: `${newSearch}&callbackUrl=${callbackUrl}`,
+          search: `${search}&callbackUrl=${callbackUrl}`,
         });
         return;
       }
     }
-    const newSearchParams = Utils.removeParam('pageRefer', window.location.search);
 
-    return history && history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search: newSearchParams });
+    return history && history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_CART, search });
   };
 
   render() {
