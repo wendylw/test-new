@@ -19,16 +19,23 @@ import {
   getUser,
   getBusinessInfo,
   getShoppingCart,
+  getHasLoginGuardPassed,
   getCartBilling,
   getStoreInfoForCleverTap,
   getShippingType,
+  getValidBillingTotal,
+  getIsValidCreateOrder,
+  getIsBillingTotalInvalid,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
-import { getCheckingInventoryPendingState } from '../../redux/common/selector';
+import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import CleverTap from '../../../../../utils/clevertap';
 import { log } from '../../../../../utils/monitoring/loggly';
+import CreateOrderButton from '../../../../components/CreateOrderButton';
+
+const { ROUTER_PATHS } = Constants;
 
 class PayFirst extends Component {
   constructor(props) {
@@ -62,6 +69,10 @@ class PayFirst extends Component {
     const { isLogin } = user || {};
 
     const { error } = await loadStockStatus();
+    const redirectLocation = {
+      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      search: window.location.search,
+    };
 
     if (error) {
       await appActions.loadShoppingCart();
@@ -74,18 +85,15 @@ class PayFirst extends Component {
         'Screen Name': 'Cart Page',
       });
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
-        nextPage: true,
+        state: { shouldGoBack: false, redirectLocation },
       });
 
       return;
     }
 
-    history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-      search: window.location.search,
-    });
+    history.push(redirectLocation);
   };
 
   handleChangeAdditionalComments(e) {
@@ -98,6 +106,7 @@ class PayFirst extends Component {
 
   handleClickBack = async () => {
     const { history } = this.props;
+    const newSearchParams = Utils.addParamToSearch('pageRefer', 'cart');
 
     if (this.additionalCommentsEl) {
       await this.additionalCommentsEl.blur();
@@ -109,9 +118,16 @@ class PayFirst extends Component {
 
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-        search: window.location.search,
+        search: newSearchParams,
       });
     }, 100);
+  };
+
+  handleClickPayButton = () => {
+    this.handleClickPayButtonEventTracking();
+    this.handleGtmEventTracking(async () => {
+      await this.handleClickContinue();
+    });
   };
 
   handleGtmEventTracking = async callback => {
@@ -144,18 +160,6 @@ class PayFirst extends Component {
     Utils.removeSessionVariable('additionalComments');
     this.setState({ additionalComments: null });
   };
-
-  getDisplayPrice() {
-    const { shoppingCart } = this.props;
-    const { items } = shoppingCart || {};
-    let totalPrice = 0;
-
-    (items || []).forEach(item => {
-      totalPrice += item.displayPrice * item.quantity;
-    });
-
-    return totalPrice;
-  }
 
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
@@ -214,6 +218,7 @@ class PayFirst extends Component {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
+        state: { shouldGoBack: true },
       });
     }
   };
@@ -292,6 +297,97 @@ class PayFirst extends Component {
     const { storeInfoForCleverTap } = this.props;
 
     CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
+  };
+
+  handleClickPayButtonEventTracking = () => {
+    const { cartBilling, businessInfo, storeInfoForCleverTap } = this.props;
+    const { name } = businessInfo || {};
+    const { cashback, promotion } = cartBilling || {};
+    const { promoCode } = promotion || {};
+
+    log('cart.pay-now');
+    CleverTap.pushEvent('Cart Page - click pay now', {
+      ...storeInfoForCleverTap,
+      'promo/voucher applied': promoCode || '',
+      'Cashback Amount': cashback || 0,
+      'Cashback Store': name || '',
+    });
+  };
+
+  renderPayOrderButton = () => {
+    const { shouldDisablePayButton } = this.props;
+    return (
+      <button
+        className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+        data-testid="pay"
+        data-heap-name="ordering.cart.pay-btn"
+        onClick={this.handleClickPayButton}
+        disabled={shouldDisablePayButton}
+      >
+        {this.getOrderButtonContent()}
+      </button>
+    );
+  };
+
+  renderCreateOrderButton = () => {
+    const { t, history, isValidCreateOrder, pendingCheckingInventory, shouldDisablePayButton } = this.props;
+    return (
+      <CreateOrderButton
+        className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+        history={history}
+        data-testid="pay"
+        data-heap-name="ordering.cart.pay-btn"
+        disabled={shouldDisablePayButton}
+        validCreateOrder={isValidCreateOrder}
+        beforeCreateOrder={this.handleBeforeCreateOrder}
+        loaderText={t('Processing')}
+        processing={pendingCheckingInventory}
+      >
+        {this.getOrderButtonContent()}
+      </CreateOrderButton>
+    );
+  };
+
+  handleBeforeCreateOrder = () => {
+    const { history, isValidCreateOrder, hasLoginGuardPassed } = this.props;
+    const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
+
+    log('cart.create-order-attempt');
+    this.handleClickPayButtonEventTracking();
+    this.handleGtmEventTracking(() => {
+      if (isValidCreateOrder) return;
+      history.push({
+        pathname,
+        search: window.location.search,
+        state: { shouldGoBack: true },
+      });
+    });
+  };
+
+  getOrderButtonContent = () => {
+    const { t, pendingCheckingInventory, isBillingTotalInvalid, validBillingTotal } = this.props;
+
+    const buttonContent = !isBillingTotalInvalid ? (
+      <span className="text-weight-bolder" key="pay-now">
+        {t('PayNow')}
+      </span>
+    ) : (
+      <span key="min-total">
+        *
+        <Trans i18nKey="MinimumConsumption">
+          <span className="text-weight-bolder">Min</span>
+          <CurrencyNumber className="text-weight-bolder" money={validBillingTotal} />
+        </Trans>
+      </span>
+    );
+
+    const processingContent = (
+      <span className="text-weight-bolder" key="pay-wait">
+        {t('Processing')}
+      </span>
+    );
+
+    return pendingCheckingInventory ? processingContent : buttonContent;
   };
 
   formatCleverTapAttributes(product) {
@@ -427,31 +523,12 @@ class PayFirst extends Component {
       user,
       history,
       storeInfoForCleverTap,
-      pendingCheckingInventory,
       shippingType,
     } = this.props;
     const { cartContainerHeight } = this.state;
-    const { qrOrderingSettings, name } = businessInfo || {};
-    const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
-    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee, promotion } = cartBilling || {};
-    const { promoCode } = promotion || {};
+    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
     const { isLogin } = user || {};
-    const isInvalidTotal =
-      (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
-    const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-    const buttonText = !isInvalidTotal ? (
-      <span className="text-weight-bolder" key="pay-now">
-        {t('PayNow')}
-      </span>
-    ) : (
-      <span key="min-total">
-        <Trans i18nKey="MinimumConsumption">
-          <span className="text-weight-bolder">Min</span>
-          <CurrencyNumber className="text-weight-bolder" money={minTotal} />
-        </Trans>
-      </span>
-    );
 
     if (!(cartBilling && items)) {
       return null;
@@ -534,27 +611,7 @@ class PayFirst extends Component {
           >
             {t('Back')}
           </button>
-          <button
-            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
-            data-testid="pay"
-            data-heap-name="ordering.cart.pay-btn"
-            onClick={() => {
-              log('cart.pay-now');
-              CleverTap.pushEvent('Cart Page - click pay now', {
-                ...storeInfoForCleverTap,
-                'promo/voucher applied': promoCode || '',
-                'Cashback Amount': cashback || 0,
-                'Cashback Store': name || '',
-              });
-              this.handleGtmEventTracking(async () => {
-                await this.handleClickContinue();
-              });
-            }}
-            disabled={!items || !items.length || isInvalidTotal || pendingCheckingInventory}
-          >
-            {pendingCheckingInventory ? t('Processing') : isInvalidTotal && `*`}
-            {!pendingCheckingInventory && buttonText}
-          </button>
+          {Utils.isQROrder() ? this.renderCreateOrderButton() : this.renderPayOrderButton()}
         </footer>
       </section>
     );
@@ -586,6 +643,11 @@ PayFirst.propTypes = {
   shippingType: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   storeInfoForCleverTap: PropTypes.object,
+  isValidCreateOrder: PropTypes.bool,
+  shouldDisablePayButton: PropTypes.bool,
+  hasLoginGuardPassed: PropTypes.bool,
+  isBillingTotalInvalid: PropTypes.bool,
+  validBillingTotal: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -606,6 +668,11 @@ PayFirst.defaultProps = {
   businessInfo: {},
   shippingType: null,
   storeInfoForCleverTap: {},
+  isValidCreateOrder: false,
+  shouldDisablePayButton: false,
+  hasLoginGuardPassed: false,
+  isBillingTotalInvalid: false,
+  validBillingTotal: false,
 };
 
 /* TODO: backend data */
@@ -619,6 +686,11 @@ export default compose(
       shoppingCart: getShoppingCart(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
+      validBillingTotal: getValidBillingTotal(state),
+      isValidCreateOrder: getIsValidCreateOrder(state),
+      shouldDisablePayButton: getShouldDisablePayButton(state),
+      hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isBillingTotalInvalid: getIsBillingTotalInvalid(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
     }),
     dispatch => ({

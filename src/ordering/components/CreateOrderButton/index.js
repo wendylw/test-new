@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getUser, getRequestInfo, getError, getCartBilling } from '../../redux/modules/app';
+import { getRequestInfo, getError, getUser, getCartBilling, getHasLoginGuardPassed } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
@@ -14,27 +14,50 @@ import loggly from '../../../utils/monitoring/loggly';
 const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS, DELIVERY_METHOD } = Constants;
 
 class CreateOrderButton extends React.Component {
-  componentDidUpdate(prevProps) {
-    const { user } = prevProps;
-    const { isFetching } = user || {};
+  componentDidMount = async () => {
+    if (this.shouldAskUserLogin()) {
+      this.gotoLoginPage();
+    }
+  };
 
-    if (!Utils.isDigitalType()) {
-      if (isFetching && !this.props.user.isLogin && isFetching !== this.props.user.isFetching) {
-        this.visitLoginPage();
+  componentDidUpdate = prevProps => {
+    const { user: prevUser } = prevProps;
+    const { user: currentUser } = this.props;
+    const { isFetching: isPrevFetching } = prevUser || {};
+    const { isFetching: isCurrentFetching } = currentUser || {};
+
+    if (isPrevFetching !== isCurrentFetching) {
+      if (this.shouldAskUserLogin()) {
+        this.gotoLoginPage();
       }
     }
-  }
+  };
 
-  visitLoginPage = () => {
-    const { history, user } = this.props;
-    const { isLogin } = user || {};
+  shouldAskUserLogin = () => {
+    const { user, history, hasLoginGuardPassed } = this.props;
+    const { pathname } = history.location;
+    const { isFetching, isLogin } = user || {};
 
-    if (!isLogin) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-      });
+    if (pathname === ROUTER_PATHS.ORDERING_CART) {
+      // Cart page do not require login
+      return false;
     }
+
+    if (pathname === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      // Customer Info Page has login required
+      return !isLogin;
+    }
+
+    return !(hasLoginGuardPassed || isFetching);
+  };
+
+  gotoLoginPage = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
   };
 
   handleCreateOrderSafety = async () => {
@@ -50,17 +73,16 @@ class CreateOrderButton extends React.Component {
     const {
       history,
       createOrder,
-      user,
       requestInfo,
       cartBilling,
       afterCreateOrder,
       beforeCreateOrder,
+      hasLoginGuardPassed,
       paymentName,
       gotoPayment,
       orderId: createdOrderId,
       total: createdOrderTotal,
     } = this.props;
-    const { isLogin } = user || {};
     const { tableId /*storeId*/ } = requestInfo;
     const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -83,8 +105,7 @@ class CreateOrderButton extends React.Component {
         return false;
       }
 
-      // must login before creating order (excluded creating voucher(type=='digital') order)
-      if (!isLogin && type !== DELIVERY_METHOD.DIGITAL) {
+      if (!hasLoginGuardPassed) {
         return false;
       }
 
@@ -180,6 +201,8 @@ CreateOrderButton.propTypes = {
   paymentExtraData: PropTypes.object,
   processing: PropTypes.bool,
   loaderText: PropTypes.string,
+  cartBilling: PropTypes.object,
+  getHasLoginGuardPassed: PropTypes.bool,
 };
 
 CreateOrderButton.defaultProps = {
@@ -189,6 +212,8 @@ CreateOrderButton.defaultProps = {
   disabled: true,
   sentOtp: false,
   processing: false,
+  cartBilling: {},
+  getHasLoginGuardPassed: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
 };
@@ -202,6 +227,7 @@ export default compose(
         error: getError(state),
         requestInfo: getRequestInfo(state),
         cartBilling: getCartBilling(state),
+        hasLoginGuardPassed: getHasLoginGuardPassed(state),
       };
     },
     {

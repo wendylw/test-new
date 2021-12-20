@@ -11,6 +11,7 @@ import OrderStatusDescription from './components/OrderStatusDescription';
 import LogisticsProcessing from './components/LogisticsProcessing';
 import RiderInfo from './components/RiderInfo';
 import CashbackInfo from './components/CashbackInfo';
+import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 
@@ -20,6 +21,7 @@ import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from './utils';
 import Constants from '../../../../../utils/constants';
+import { BEFORE_PAID_STATUS_LIST, REFERRERS_REQUIRING_PROFILE } from './constants';
 import {
   gtmEventTracking,
   gtmSetPageViewData,
@@ -51,33 +53,22 @@ import {
 import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
+import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder, loadCashbackInfo } from './redux/thunks';
 import {
-  loadStoreIdHashCode,
-  loadStoreIdTableIdHashCode,
-  cancelOrder,
-  loadCashbackInfo,
-  createCashbackInfo,
-} from './redux/thunks';
-import { getCashbackInfo, getStoreHashCode, getOrderCancellationReasonAsideVisible } from './redux/selector';
+  getCashback,
+  getStoreHashCode,
+  getOrderCancellationReasonAsideVisible,
+  getIsCashbackAvailable,
+  getShouldShowCashbackCard,
+  getShouldShowCashbackBanner,
+} from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
-import { actions as appActionCreators } from '../../../../redux/modules/app';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
-const BEFORE_PAID_STATUS_LIST = [
-  ORDER_STATUS.CREATED,
-  ORDER_STATUS.PENDING_PAYMENT,
-  ORDER_STATUS.PENDING_VERIFICATION,
-  ORDER_STATUS.PAYMENT_CANCELLED,
-];
-const REFERRERS_REQUIRING_PROFILE = [
-  REFERRER_SOURCE_TYPES.PAYMENT,
-  REFERRER_SOURCE_TYPES.CASHBACK,
-  REFERRER_SOURCE_TYPES.PAY_AT_COUNTER,
-];
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -100,27 +91,6 @@ export class ThankYou extends PureComponent {
 
   pollOrderStatusTimer = null;
 
-  // TODO: Will move to cashbackInfo component
-  async canClaimCheck() {
-    const { history, user, createCashbackInfo, businessInfo, orderStatus, loadCashbackInfo } = this.props;
-    const { enableCashback } = businessInfo || {};
-    const { isLogin } = user || {};
-
-    if (!enableCashback || !isLogin || !orderStatus || BEFORE_PAID_STATUS_LIST.includes(orderStatus)) {
-      return;
-    }
-
-    const { phone } = this.state;
-    const { receiptNumber = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    loadCashbackInfo(receiptNumber);
-
-    createCashbackInfo({
-      receiptNumber,
-      phone,
-    });
-  }
-
   showCompleteProfileIfNeeded = async () => {
     const { orderStatus } = this.props;
     //Explain: The profile page is not displayed before the order is paid
@@ -130,6 +100,7 @@ export class ThankYou extends PureComponent {
     }
 
     const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
+    const delay = this.state.from === REFERRER_SOURCE_TYPES.LOGIN ? 1000 : 3000;
 
     if (isDoNotAsk === '1') {
       return;
@@ -141,21 +112,20 @@ export class ThankYou extends PureComponent {
       if (!name || !email || !birthday) {
         this.timer = setTimeout(() => {
           this.props.setShowProfileVisibility(true);
-        }, 3000);
+        }, delay);
       }
     }
   };
 
   componentDidMount = async () => {
-    const { user } = this.props;
+    const { user, loadCashbackInfo } = this.props;
+    const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
-    this.showCompleteProfileIfNeeded();
+    loadCashbackInfo(receiptNumber);
 
     const from = Utils.getCookieVariable('__ty_source');
 
-    this.setState({
-      from,
-    });
+    this.setState({ from }, () => this.showCompleteProfileIfNeeded());
 
     // immidiately remove __ty_source cookie after setting in the state.
     Utils.removeCookieVariable('__ty_source');
@@ -177,8 +147,6 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    this.canClaimCheck();
-
     await this.loadOrder();
 
     const { shippingType } = this.props;
@@ -186,6 +154,8 @@ export class ThankYou extends PureComponent {
     this.setContainerHeight();
 
     this.pollOrderStatus();
+
+    this.recordPageLoadEvent();
 
     if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
       this.promptUserEnableAppNotification();
@@ -356,34 +326,15 @@ export class ThankYou extends PureComponent {
   };
 
   async componentDidUpdate(prevProps) {
-    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo, businessInfo: prevBusinessInfo } = prevProps;
+    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
-    const { enableCashback: prevEnableCashback } = prevBusinessInfo;
-    const {
-      order,
-      orderStatus,
-      onlineStoreInfo,
-      businessInfo,
-      user,
-      shippingType,
-      loadStoreIdTableIdHashCode,
-      loadStoreIdHashCode,
-    } = this.props;
+    const { order, onlineStoreInfo, user, shippingType, loadStoreIdTableIdHashCode, loadStoreIdHashCode } = this.props;
 
     if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
       this.showCompleteProfileIfNeeded();
     }
 
     const { storeId } = order || {};
-    const { enableCashback } = businessInfo || {};
-    const canUpdateCashback =
-      prevEnableCashback !== enableCashback ||
-      prevProps.orderStatus !== orderStatus ||
-      prevProps.user.isLogin !== user.isLogin;
-
-    if (canUpdateCashback) {
-      await this.canClaimCheck();
-    }
 
     if (storeId && prevStoreId !== storeId) {
       shippingType === DELIVERY_METHOD.DINE_IN
@@ -701,6 +652,41 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  recordPageLoadEvent = () => {
+    const { order, cashback, businessInfo, isCashbackAvailable, shouldShowCashbackBanner } = this.props;
+    CleverTap.pushEvent('Thank you page - View thank you page', {
+      'offer cashback': isCashbackAvailable,
+      'has login button': shouldShowCashbackBanner,
+      'cashback amount': cashback,
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'order amount': _get(order, 'total', ''),
+      country: _get(businessInfo, 'country', ''),
+      'shipping type': order.shippingType,
+    });
+  };
+
+  handleClickLoginButton = () => {
+    const { history } = this.props;
+    const { ROUTER_PATHS } = Constants;
+
+    CleverTap.pushEvent('Thank you page - Click I want cashback button');
+    Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.LOGIN);
+    history.push({
+      pathname: ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
+  handleShowCashbackBanner = () => {
+    CleverTap.pushEvent('Thank you page - Click cashback floating button');
+  };
+
+  handleHideCashbackBanner = () => {
+    CleverTap.pushEvent('Thank you page - Click close cashback notification banner button');
+  };
+
   getRightContentOfHeader() {
     const { user, order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
@@ -832,10 +818,18 @@ export class ThankYou extends PureComponent {
   };
 
   render() {
-    const { t, history, match, order, businessInfo, businessUTCOffset, onlineStoreInfo } = this.props;
+    const {
+      t,
+      history,
+      match,
+      order,
+      businessUTCOffset,
+      onlineStoreInfo,
+      shouldShowCashbackCard,
+      shouldShowCashbackBanner,
+    } = this.props;
     const date = new Date();
     const { total } = order || {};
-    const { enableCashback } = businessInfo || {};
 
     const orderId = _get(order, 'orderId', '');
 
@@ -884,7 +878,7 @@ export class ThankYou extends PureComponent {
             />
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
-            <CashbackInfo enableCashback={enableCashback} />
+            {shouldShowCashbackCard && <CashbackInfo />}
             <OrderSummary
               history={history}
               businessUTCOffset={businessUTCOffset}
@@ -909,6 +903,13 @@ export class ThankYou extends PureComponent {
                 </a>
               )}
             </footer>
+            {shouldShowCashbackBanner && (
+              <CashbackBanner
+                onLoginButtonClick={this.handleClickLoginButton}
+                onShowBannerClick={this.handleShowCashbackBanner}
+                onHideBannerClick={this.handleHideCashbackBanner}
+              />
+            )}
           </div>
         </>
 
@@ -930,10 +931,10 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
-      cashbackInfo: getCashbackInfo(state),
       businessInfo: getBusinessInfo(state),
       business: getBusiness(state),
       user: getUser(state),
+      cashback: getCashback(state),
       receiptNumber: getReceiptNumber(state),
       orderStatus: getOrderStatus(state),
       isPreOrder: getIsPreOrder(state),
@@ -943,6 +944,9 @@ export default compose(
       orderCancellationReasonAsideVisible: getOrderCancellationReasonAsideVisible(state),
       shippingType: getOrderShippingType(state),
       isUseStorehubLogistics: getIsUseStorehubLogistics(state),
+      isCashbackAvailable: getIsCashbackAvailable(state),
+      shouldShowCashbackCard: getShouldShowCashbackCard(state),
+      shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
       profileModalVisibility: getshowProfileVisibility(state),
     }),
     dispatch => ({
@@ -957,8 +961,6 @@ export default compose(
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
-      createCashbackInfo: bindActionCreators(createCashbackInfo, dispatch),
-      appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )
 )(ThankYou);
