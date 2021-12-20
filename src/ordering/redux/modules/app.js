@@ -910,6 +910,8 @@ export const getUserLoginRequestStatus = state => state.app.user.loginRequestSta
 
 export const getUserProfileStatus = state => state.app.user.profile.status;
 
+export const getUserProfile = state => state.app.user.profile;
+
 export const getIsUserLoginRequestStatusInPending = createSelector(
   getUserLoginRequestStatus,
   status => status === API_REQUEST_STATUS.PENDING
