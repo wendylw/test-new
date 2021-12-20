@@ -99,7 +99,7 @@ class PayLater extends Component {
         search: `${Utils.getFilteredQueryString(['submissionId'])}&submissionId=${submissionId}`,
       });
     } catch (e) {
-      if (e.code === '41020') {
+      if (e.code === '41022') {
         const { t, receiptNumber, loadCartStatus } = this.props;
 
         alert(
