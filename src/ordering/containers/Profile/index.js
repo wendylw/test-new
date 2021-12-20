@@ -76,10 +76,8 @@ class CompleteProfileModal extends Component {
   }
 
   handleClickBack = () => {
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-      search: window.location.search,
-    });
+    const { history } = this.props;
+    history.goBack();
   };
 
   saveProfile = async () => {

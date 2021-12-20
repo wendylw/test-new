@@ -1,11 +1,12 @@
 import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
 import { API_INFO } from '../../../utils/api/api-utils';
 import { get } from '../../../utils/api/api-fetch';
 import { CART_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { getBusinessUTCOffset } from './app';
+import { getBusinessUTCOffset, getCartItems, getIsBillingTotalInvalid } from './app';
 
 const initialState = {
   pendingTransactionsIds: [],
@@ -127,3 +128,13 @@ export default combineReducers({
 export const getPendingTransactionIds = state => state.cart.pendingTransactionsIds;
 
 export const getCheckingInventoryPendingState = ({ cart }) => cart.cartInventory.status === 'pending';
+
+export const getShouldDisablePayButton = createSelector(
+  getCartItems,
+  getIsBillingTotalInvalid,
+  getCheckingInventoryPendingState,
+  (cartItems, isBillingTotalInvalid, pendingCheckingInventory) => {
+    const hasNoCartItem = !cartItems || !cartItems.length;
+    return hasNoCartItem || isBillingTotalInvalid || pendingCheckingInventory;
+  }
+);

@@ -610,6 +610,7 @@ const user = (state = initialState.user, action) => {
           name: user.firstName,
           email: user.email,
           birthday: user.birthday,
+          status: API_REQUEST_STATUS.FULFILLED,
         },
         isLogin: true,
         hasOtp: false,
@@ -1106,5 +1107,73 @@ export const getCategoryProductList = createSelector(
       .filter(c => c.products.length);
 
     return mergeWithShoppingCart(newCategories, carts);
+  }
+);
+
+// TODO: add Utils methods to state rather than using Utils
+export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
+export const getIsDeliveryType = state => Utils.isDeliveryType();
+export const getIsDigitalType = state => Utils.isDigitalType();
+export const getIsQROrder = state => Utils.isQROrder();
+
+export const getIsQROrderingLoginFree = createSelector(getBusinessInfo, getIsQROrder, (businessInfo, isQROrder) => {
+  const { allowAnonymousQROrdering = false } = businessInfo;
+  return isQROrder && allowAnonymousQROrdering;
+});
+
+export const getIsLoginFree = createSelector(
+  getIsDigitalType,
+  getIsQROrderingLoginFree,
+  (isDigitalType, isQROrderingLoginFree) => isDigitalType || isQROrderingLoginFree
+);
+
+export const getHasLoginGuardPassed = createSelector(
+  getUserIsLogin,
+  getIsLoginFree,
+  (isUserLogin, isLoginFree) => isUserLogin || isLoginFree
+);
+
+export const getIsValidCreateOrder = createSelector(
+  getCartBilling,
+  getIsTNGMiniProgram,
+  (cartBilling, isTNGMiniProgram) => {
+    const { total } = cartBilling || {};
+    const isFree = !total;
+    return isTNGMiniProgram || isFree;
+  }
+);
+
+export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCart => {
+  const { items } = shoppingCart || {};
+  let totalPrice = 0;
+
+  (items || []).forEach(item => {
+    totalPrice += item.displayPrice * item.quantity;
+  });
+
+  return totalPrice;
+});
+
+export const getMinimumConsumption = createSelector(getBusinessInfo, businessInfo => {
+  const { qrOrderingSettings } = businessInfo || {};
+  const { minimumConsumption } = qrOrderingSettings || {};
+  return Number(minimumConsumption || 0);
+});
+
+export const getValidBillingTotal = createSelector(getMinimumConsumption, minimumConsumption => {
+  const minimumBillingTotal = 1;
+  return Math.max(minimumConsumption, minimumBillingTotal);
+});
+
+export const getIsBillingTotalInvalid = createSelector(
+  getTotalItemPrice,
+  getCartBilling,
+  getIsDeliveryType,
+  getMinimumConsumption,
+  (totalItemPrice, cartBilling, isDeliveryType, minimumConsumption) => {
+    const { total: billingTotal } = cartBilling || {};
+    const hasMinConsumptionNotReached = isDeliveryType && totalItemPrice < minimumConsumption;
+    const isTotalBillingTooSmall = billingTotal > 0 && billingTotal < 1;
+    return hasMinConsumptionNotReached || isTotalBillingTooSmall;
   }
 );
