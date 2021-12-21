@@ -254,11 +254,11 @@ class PayFirst extends Component {
 
     if (quantity <= 1) {
       this.handleRemoveCartItem(cartItem);
+    } else {
+      appActions.addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity - 1)).then(() => {
+        appActions.loadShoppingCart();
+      });
     }
-
-    appActions.addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity - 1)).then(() => {
-      appActions.loadShoppingCart();
-    });
   };
 
   handleRemoveCartItem = cartItem => {
