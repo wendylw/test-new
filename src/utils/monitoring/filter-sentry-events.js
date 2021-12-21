@@ -106,6 +106,19 @@ const isIgnoreObjectNotFoundMatchingId = (event, hint) => {
   }
 };
 
+const isTikTokMonitoring = event => {
+  try {
+    const stacktraceFrames = event.stacktrace?.frames || [];
+    const absPaths = stacktraceFrames.filter(
+      frame => frame.abs_path && frame.abs_path.includes('https://analytics.tiktok.com')
+    );
+
+    return !!absPaths.length;
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -117,7 +130,8 @@ const shouldFilter = (event, hint) => {
       isDuplicateChargeId(event, hint) ||
       isTokenExpired(event, hint) ||
       isGoogleAnalytics(event) ||
-      isIgnoreObjectNotFoundMatchingId(event, hint)
+      isIgnoreObjectNotFoundMatchingId(event, hint) ||
+      isTikTokMonitoring(event, hint)
     );
   } catch {
     return false;
