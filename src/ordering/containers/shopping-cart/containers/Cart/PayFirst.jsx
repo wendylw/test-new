@@ -647,7 +647,7 @@ PayFirst.propTypes = {
   shouldDisablePayButton: PropTypes.bool,
   hasLoginGuardPassed: PropTypes.bool,
   isBillingTotalInvalid: PropTypes.bool,
-  validBillingTotal: PropTypes.bool,
+  validBillingTotal: PropTypes.number,
 };
 
 PayFirst.defaultProps = {
@@ -672,7 +672,7 @@ PayFirst.defaultProps = {
   shouldDisablePayButton: false,
   hasLoginGuardPassed: false,
   isBillingTotalInvalid: false,
-  validBillingTotal: false,
+  validBillingTotal: 0,
 };
 
 /* TODO: backend data */

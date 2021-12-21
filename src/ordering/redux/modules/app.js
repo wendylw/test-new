@@ -113,6 +113,9 @@ export const initialState = {
     id: '',
     isFetching: false,
   },
+  coreBusiness: {
+    status: null,
+  },
   requestInfo: {
     tableId: config.table,
     storeId: config.storeId,
@@ -743,6 +746,21 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   }
 };
 
+const coreBusiness = (state = initialState.coreBusiness, action) => {
+  const { type } = action;
+
+  switch (type) {
+    case types.FETCH_COREBUSINESS_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_COREBUSINESS_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_COREBUSINESS_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
 const apiError = (state = initialState.apiError, action) => {
   const { type, code, response, responseGql, payload } = action;
   const { error: payloadError } = payload || {};
@@ -884,6 +902,7 @@ export default combineReducers({
   cart: cartReducer,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
+  coreBusiness,
 });
 
 // selectors
@@ -926,6 +945,17 @@ export const getDeliveryInfo = createSelector(getBusinessInfo, businessInfo => U
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
 });
+
+export const getCoreBusinessAPIStatus = state => state.app.coreBusiness.status;
+
+export const getIsCoreBusinessAPIPending = createSelector(
+  getCoreBusinessAPIStatus,
+  status => status === API_REQUEST_STATUS.PENDING
+);
+export const getIsCoreBusinessAPIFulfilled = createSelector(
+  getCoreBusinessAPIStatus,
+  status => status === API_REQUEST_STATUS.FULFILLED
+);
 
 // TODO: Utils.getOrderTypeFromUrl() will replace be selector
 export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo => {
@@ -1164,10 +1194,19 @@ export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsQROrder = state => Utils.isQROrder();
 
-export const getIsQROrderingLoginFree = createSelector(getBusinessInfo, getIsQROrder, (businessInfo, isQROrder) => {
-  const { allowAnonymousQROrdering = false } = businessInfo;
-  return isQROrder && allowAnonymousQROrdering;
-});
+export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'allowAnonymousQROrdering', false)
+);
+
+export const getIsQROrderingLoginFree = createSelector(
+  getAllowAnonymousQROrdering,
+  getIsQROrder,
+  getEnablePayLater,
+  (allowAnonymousQROrdering, isQROrder, enablePayLater) => {
+    // The pay later of phase 1 support allow Anonymous QR Ordering on default
+    return isQROrder && (allowAnonymousQROrdering || enablePayLater);
+  }
+);
 
 export const getIsLoginFree = createSelector(
   getIsDigitalType,

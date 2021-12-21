@@ -12,6 +12,8 @@ import {
   getMinimumConsumption,
   getShippingType,
   getUser,
+  getIsCoreBusinessAPIPending,
+  getIsUserLoginRequestStatusInPending,
 } from '../../../../redux/modules/app';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
@@ -38,8 +40,13 @@ export const getBillingLoadedComplete = createSelector(
 export const getLoaderVisibility = createSelector(
   getPaymentOptionsStatus,
   getBillingStatus,
-  (paymentOptionsStatus, billingStatus) =>
-    paymentOptionsStatus === API_REQUEST_STATUS.PENDING || billingStatus === API_REQUEST_STATUS.PENDING
+  getIsCoreBusinessAPIPending,
+  getIsUserLoginRequestStatusInPending,
+  (paymentOptionsStatus, billingStatus, isCoreBusinessAPIPending, isUserLoginRequestStatusInPending) =>
+    paymentOptionsStatus === API_REQUEST_STATUS.PENDING ||
+    billingStatus === API_REQUEST_STATUS.PENDING ||
+    isCoreBusinessAPIPending ||
+    isUserLoginRequestStatusInPending
 );
 
 export const getOriginalPaymentOptions = ({ payments }) => payments.common.options;

@@ -4,14 +4,21 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import qs from 'qs';
 import Utils from '../../../utils/utils';
-import { getRequestInfo, getError, getUser, getCartBilling, getHasLoginGuardPassed } from '../../redux/modules/app';
+import {
+  getRequestInfo,
+  getError,
+  getUser,
+  getCartBilling,
+  getHasLoginGuardPassed,
+  getIsCoreBusinessAPIFulfilled,
+} from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import loggly from '../../../utils/monitoring/loggly';
 
-const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS, DELIVERY_METHOD } = Constants;
+const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidMount = async () => {
@@ -26,7 +33,10 @@ class CreateOrderButton extends React.Component {
     const { isFetching: isPrevFetching } = prevUser || {};
     const { isFetching: isCurrentFetching } = currentUser || {};
 
-    if (isPrevFetching !== isCurrentFetching) {
+    if (
+      isPrevFetching !== isCurrentFetching ||
+      prevProps.isCoreBusinessFulfilled !== this.props.isCoreBusinessFulfilled
+    ) {
       if (this.shouldAskUserLogin()) {
         this.gotoLoginPage();
       }
@@ -34,7 +44,7 @@ class CreateOrderButton extends React.Component {
   };
 
   shouldAskUserLogin = () => {
-    const { user, history, hasLoginGuardPassed } = this.props;
+    const { user, history, hasLoginGuardPassed, isCoreBusinessFulfilled } = this.props;
     const { pathname } = history.location;
     const { isFetching, isLogin } = user || {};
 
@@ -43,12 +53,17 @@ class CreateOrderButton extends React.Component {
       return false;
     }
 
+    if (!isCoreBusinessFulfilled || isFetching) {
+      // the request of core business and ping API isn't fulfilled
+      return false;
+    }
+
     if (pathname === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       // Customer Info Page has login required
       return !isLogin;
     }
 
-    return !(hasLoginGuardPassed || isFetching);
+    return !hasLoginGuardPassed;
   };
 
   gotoLoginPage = () => {
@@ -228,6 +243,7 @@ export default compose(
         requestInfo: getRequestInfo(state),
         cartBilling: getCartBilling(state),
         hasLoginGuardPassed: getHasLoginGuardPassed(state),
+        isCoreBusinessFulfilled: getIsCoreBusinessAPIFulfilled(state),
       };
     },
     {
