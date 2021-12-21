@@ -28,7 +28,7 @@ import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING, DELIVERY_METHOD } = Constants;
 
 export class OrderDetails extends Component {
   state = {};
@@ -351,6 +351,7 @@ export class OrderDetails extends Component {
     const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
       order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
+    const isTakeAwayType = shippingType === DELIVERY_METHOD.TAKE_AWAY;
 
     return (
       <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
@@ -380,7 +381,7 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('Tax')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={tax || 0} />
               </li>
-              {shippingType === 'takeaway' && takeawayCharges && (
+              {isTakeAwayType && takeawayCharges && (
                 <li className="flex flex-space-between flex-middle">
                   <span className="padding-top-bottom-small text-opacity">{t('TakeawayCharge')}</span>
                   <CurrencyNumber className="padding-top-bottom-small text-opacity" money={takeawayCharges || 0} />
