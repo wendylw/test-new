@@ -271,8 +271,11 @@ export const actions = {
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
       });
 
+      const { phone: deliveryDetailsPhone } = getDeliveryDetails(getState());
+      const localStoragePhone = Utils.getLocalStorageVariable('user.p') || '';
+
       // BEEP-1554: update the delivery phone detail in case we miss sending phone number in contact detail when posting 'createOrder' API.
-      dispatch(actions.updateDeliveryDetails({ phone: localePhoneNumber || '' }));
+      dispatch(actions.updateDeliveryDetails({ phone: deliveryDetailsPhone || localStoragePhone }));
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
