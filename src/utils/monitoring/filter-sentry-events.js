@@ -107,8 +107,6 @@ const isIgnoreObjectNotFoundMatchingId = (event, hint) => {
 };
 
 const isTikTokIssues = (event, hint) => {
-  console.log(event);
-  console.log(hint);
   try {
     const message = getErrorMessageFromHint(hint);
     // If error message includes `sendAnalyticsEvent not support`, this error is from `tiktok analysis` issue instead of beep issue.
