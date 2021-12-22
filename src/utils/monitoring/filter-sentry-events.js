@@ -106,14 +106,19 @@ const isIgnoreObjectNotFoundMatchingId = (event, hint) => {
   }
 };
 
-const isTikTokMonitoring = event => {
+const isTikTokIssues = (event, hint) => {
+  console.log(event);
+  console.log(hint);
   try {
-    const stacktraceFrames = event.stacktrace?.frames || [];
-    const absPaths = stacktraceFrames.filter(
-      frame => frame.abs_path && frame.abs_path.includes('https://analytics.tiktok.com')
-    );
+    const message = getErrorMessageFromHint(hint);
+    const err = event.exception.values[0];
+    // If error message includes `path: /api/v2/monitor` and `/""app_name"":""tiktok""/`, this error is from `tiktok analysis` issue instead of beep issue.
+    const monitorIssue = /path: \/api\/v2\/monitor/.test(message) && /""app_name"":""tiktok""/.test(message);
+    // In this case, the chunk file of tiktok failed to load, not because of the failure to load the Beep file.
+    const chunkLoadFailed =
+      /https:\/\/analytics.tiktok.com/.test(err.value) && err.mechanism?.type === 'onunhandledrejection';
 
-    return !!absPaths.length;
+    return monitorIssue || chunkLoadFailed;
   } catch {
     return false;
   }
@@ -131,7 +136,7 @@ const shouldFilter = (event, hint) => {
       isTokenExpired(event, hint) ||
       isGoogleAnalytics(event) ||
       isIgnoreObjectNotFoundMatchingId(event, hint) ||
-      isTikTokMonitoring(event, hint)
+      isTikTokIssues(event, hint)
     );
   } catch {
     return false;
