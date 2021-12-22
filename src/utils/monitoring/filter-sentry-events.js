@@ -111,12 +111,10 @@ const isTikTokIssues = (event, hint) => {
   console.log(hint);
   try {
     const message = getErrorMessageFromHint(hint);
-    const err = event.exception.values[0];
-    // If error message includes `path: /api/v2/monitor` and `/""app_name"":""tiktok""/`, this error is from `tiktok analysis` issue instead of beep issue.
-    const monitorIssue = /path: \/api\/v2\/monitor/.test(message) && /""app_name"":""tiktok""/.test(message);
+    // If error message includes `sendAnalyticsEvent not support`, this error is from `tiktok analysis` issue instead of beep issue.
+    const monitorIssue = /sendAnalyticsEvent not support/.test(message);
     // In this case, the chunk file of tiktok failed to load, not because of the failure to load the Beep file.
-    const chunkLoadFailed =
-      /https:\/\/analytics.tiktok.com/.test(err.value) && err.mechanism?.type === 'onunhandledrejection';
+    const chunkLoadFailed = /https:\/\/analytics.tiktok.com/.test(message) && /Loading chunk/.test(message);
 
     return monitorIssue || chunkLoadFailed;
   } catch {
