@@ -65,7 +65,11 @@ export const getLocation = () =>
 
 export const getAccessToken = data => callMessagePortal('getAccessToken', data);
 
-export const getEnv = () => callMessagePortal('getEnv');
+export const getEnv = async () => {
+  const messagePortal = getMessagePortal();
+  const result = await messagePortal.call('getEnv');
+  return result;
+};
 
 export const isRequiredDevTools = async () => {
   if (!Utils.isTNGMiniProgram()) {
