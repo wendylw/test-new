@@ -12,6 +12,7 @@ import { getAddressList } from './selectors';
 import { findAvailableAddressById, findNearbyAvailableAddress } from '../../utils';
 import Utils from '../../../../../utils/utils';
 
+// eslint-disable-next-line import/no-named-as-default-member
 const { DELIVERY_METHOD } = Constants;
 
 export const loadAddressList = createAsyncThunk('ordering/customer/common/loadAddressList', async (_, { getState }) => {
