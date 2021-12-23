@@ -21,6 +21,7 @@ import {
   getBusiness,
   getBusinessInfo,
   getShoppingCart,
+  getDeliveryDetails,
   getHasLoginGuardPassed,
   getCartBilling,
   getStoreInfoForCleverTap,
@@ -441,9 +442,19 @@ class Cart extends Component {
     });
   };
 
-  handleBeforeCreateOrder = () => {
+  handleBeforeCreateOrder = async () => {
     const { ROUTER_PATHS } = Constants;
-    const { history, isValidCreateOrder, hasLoginGuardPassed } = this.props;
+    const { history, user, deliveryDetails, appActions, isValidCreateOrder, hasLoginGuardPassed } = this.props;
+
+    // BEEP-1561 && BEEP-1554: Update user's delivery details before calling create order api.
+    const { consumerId } = user || {};
+    consumerId && (await appActions.getProfileInfo(consumerId));
+    const { profile } = user || {};
+    await appActions.updateDeliveryDetails({
+      username: deliveryDetails.username || profile.name,
+      phone: deliveryDetails.phone || profile.phone,
+    });
+
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
 
     loggly.log('cart.create-order-attempt');
@@ -581,6 +592,7 @@ export default compose(
         cartBilling: getCartBilling(state),
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
+        deliveryDetails: getDeliveryDetails(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         validBillingTotal: getValidBillingTotal(state),
         isValidCreateOrder: getIsValidCreateOrder(state),
