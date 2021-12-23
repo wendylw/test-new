@@ -374,7 +374,9 @@ class Cart extends Component {
     const { qrOrderingSettings, name } = businessInfo || {};
     const { minimumConsumption } = qrOrderingSettings || {};
     const { items } = shoppingCart || {};
-    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee, promotion } = cartBilling || {};
+    const { count, subtotal, takeawayCharges, total, tax, serviceCharge, cashback, shippingFee, promotion } =
+      cartBilling || {};
+
     const { promoCode } = promotion || {};
     const { isLogin } = user || {};
     const isInvalidTotal =
@@ -454,6 +456,8 @@ class Cart extends Component {
             tax={tax}
             serviceCharge={serviceCharge}
             businessInfo={businessInfo}
+            isTakeAwayType={Utils.isTakeAwayType()}
+            takeawayCharges={takeawayCharges}
             subtotal={subtotal}
             total={total}
             creditsBalance={cashback}
