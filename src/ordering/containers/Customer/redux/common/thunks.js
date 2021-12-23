@@ -7,10 +7,12 @@ import {
   getShippingType,
 } from '../../../../redux/modules/app';
 import { fetchAddressList } from './api-request';
-import { DELIVERY_METHOD } from '../../../../../utils/constants';
+import Constants from '../../../../../utils/constants';
 import { getAddressList } from './selectors';
 import { findAvailableAddressById, findNearbyAvailableAddress } from '../../utils';
 import Utils from '../../../../../utils/utils';
+
+const { DELIVERY_METHOD } = Constants;
 
 export const loadAddressList = createAsyncThunk('ordering/customer/common/loadAddressList', async (_, { getState }) => {
   const state = getState();
