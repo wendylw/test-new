@@ -13,7 +13,6 @@ import * as NativeMethods from './utils/native-methods';
 import loggly from './utils/monitoring/loggly';
 import { initDevTools } from './utils/dev-tools';
 import { isRequiredDevTools } from './utils/tng-utils';
-import TngMiniProgramTabBar from './components/TngMiniProgramTabBar';
 
 const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
 
@@ -151,7 +150,6 @@ class Bootstrap extends Component {
     return (
       <ErrorBoundary fallback={this.renderError} onError={this.handleError}>
         <Router key={this.state.remountKey}>
-          {Utils.isTNGMiniProgram() && <TngMiniProgramTabBar />}
           {Utils.isSiteApp() ? this.renderSitePages() : this.renderMerchantPages()}
         </Router>
       </ErrorBoundary>
