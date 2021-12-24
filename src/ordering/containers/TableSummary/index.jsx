@@ -87,11 +87,21 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { t, orderPendingPaymentStatus } = this.props;
+    const { t, history, orderPlacedStatus, orderPendingPaymentStatus, tableNumber, shippingType } = this.props;
     const isWebview = Utils.isWebview();
 
     if (isWebview) {
       NativeMethods.closeWebView();
+
+      return;
+    }
+
+    // TODO: get store hash code to update h
+    if (orderPlacedStatus) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+        search: `?table=${tableNumber}&type=${shippingType}`,
+      });
 
       return;
     }
@@ -267,6 +277,7 @@ export class TableSummary extends React.Component {
       total,
       cashback,
       shippingFee,
+      orderPlacedStatus,
       orderPendingPaymentStatus,
       orderSubmissionRequestingStatus,
     } = this.props;
@@ -325,8 +336,14 @@ export class TableSummary extends React.Component {
           }}
           className="footer padding-small flex flex-middle"
         >
+          {orderPlacedStatus ? (
+            <button className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder">
+              {t('AddItems')}
+            </button>
+          ) : null}
+
           <button
-            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+            className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
             onClick={this.handleConfirmOrderSubmissionOrGotoPaymentPage}
