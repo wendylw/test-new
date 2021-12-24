@@ -837,6 +837,7 @@ export class Home extends Component {
 
   render() {
     const {
+      t,
       categories,
       onlineStoreInfo,
       businessInfo,
@@ -1007,6 +1008,17 @@ export class Home extends Component {
         {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
           <div className="ordering-home__close-cover"></div>
         ) : null}
+        <div className="ordering-home__table-summary-banner flex flex__fluid-content flex-space-between padding-normal">
+          <div className="flex flex-middle">
+            <i className="ordering-home__icon" />
+            <span className="ordering-home__table-summary-banner-text margin-left-right-smaller">
+              {t('OrderOngoing')}
+            </span>
+          </div>
+          <button className="ordering-home__view-order-button button button__link text-uppercase text-weight-bolder">
+            {t('ViewOrder')}
+          </button>
+        </div>
         <Footer
           {...otherProps}
           style={{
