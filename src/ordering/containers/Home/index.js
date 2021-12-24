@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { Link } from 'react-router-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
@@ -1015,9 +1016,9 @@ export class Home extends Component {
               {t('OrderOngoing')}
             </span>
           </div>
-          <button className="ordering-home__view-order-button button button__link text-uppercase text-weight-bolder">
+          <Link className="ordering-home__view-order-button button button__link text-uppercase text-weight-bolder">
             {t('ViewOrder')}
-          </button>
+          </Link>
         </div>
         <Footer
           {...otherProps}

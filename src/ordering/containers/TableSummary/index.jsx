@@ -73,6 +73,16 @@ export class TableSummary extends React.Component {
     await clearQueryOrdersAndStatus();
   }
 
+  goToMenuPage = () => {
+    const { history, tableNumber, shippingType } = this.props;
+
+    // TODO: get store hash code to update h
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: `?table=${tableNumber}&type=${shippingType}`,
+    });
+  };
+
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
@@ -87,7 +97,7 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { t, history, orderPlacedStatus, orderPendingPaymentStatus, tableNumber, shippingType } = this.props;
+    const { t, orderPlacedStatus, orderPendingPaymentStatus } = this.props;
     const isWebview = Utils.isWebview();
 
     if (isWebview) {
@@ -98,10 +108,7 @@ export class TableSummary extends React.Component {
 
     // TODO: get store hash code to update h
     if (orderPlacedStatus) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-        search: `?table=${tableNumber}&type=${shippingType}`,
-      });
+      this.goToMenuPage();
 
       return;
     }
@@ -337,7 +344,10 @@ export class TableSummary extends React.Component {
           className="footer padding-small flex flex-middle"
         >
           {orderPlacedStatus ? (
-            <button className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder">
+            <button
+              className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+              onClick={this.goToMenuPage}
+            >
               {t('AddItems')}
             </button>
           ) : null}
