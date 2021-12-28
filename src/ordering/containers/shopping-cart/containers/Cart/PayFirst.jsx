@@ -364,10 +364,12 @@ class PayFirst extends Component {
     } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
 
-    if (!deliveryDetails.username || !deliveryDetails.phone) {
-      // BEEP-1561 && BEEP-1554: Update user's delivery details before calling create order api.
+    // if user login, and one of user name or phone is empty from delivery details data,
+    // then update them from user profile.
+    // Resolve bugs of BEEP-1561 && BEEP-1554
+    if (consumerId && (!deliveryDetails.username || !deliveryDetails.phone)) {
       if (!isUserProfileStatusFulfilled) {
-        consumerId && (await appActions.getProfileInfo(consumerId));
+        await appActions.getProfileInfo(consumerId);
       }
       const { userProfile } = this.props;
 
