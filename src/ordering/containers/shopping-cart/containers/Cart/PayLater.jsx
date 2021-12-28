@@ -58,28 +58,6 @@ class PayLater extends Component {
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
-
-    const { cartSubmittedStatus, t } = this.props;
-    const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
-
-    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
-      alert(
-        <Trans
-          t={t}
-          ns="ApiError"
-          i18nKey="HasBeenPlacedContentDescription"
-          components={{ bold: <strong className="text-size-big" /> }}
-        />,
-        {
-          className: 'ordering-cart__alert',
-          title: t('ApiError:UnableToPlaceOrder'),
-          closeButtonContent: t('ApiError:ViewOrder'),
-          onClose: () => {
-            this.goToTableSummaryPage();
-          },
-        }
-      );
-    }
   }
 
   componentWillUnmount = async () => {
@@ -99,7 +77,7 @@ class PayLater extends Component {
         search: `${Utils.getFilteredQueryString(['submissionId'])}&submissionId=${submissionId}`,
       });
     } catch (e) {
-      if (e.code === '41022') {
+      if (e.code === '393735') {
         const { t, receiptNumber, loadCartStatus } = this.props;
 
         alert(
@@ -122,18 +100,6 @@ class PayLater extends Component {
             },
           }
         );
-      } else if (e.code === '393476') {
-        const { t, history } = this.props;
-
-        alert(t('OrderHasBeenAddedOrRemoved'), {
-          title: t('RefreshCartToContinue'),
-          closeButtonContent: t('RefreshCart'),
-          onClose: () =>
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-              search: window.location.search,
-            }),
-        });
       }
     }
   };

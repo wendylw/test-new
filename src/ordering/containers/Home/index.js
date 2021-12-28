@@ -22,6 +22,7 @@ import {
   getStoresList,
   getDeliveryInfo,
   getCategoryProductList,
+  getReceiptNumber,
 } from '../../redux/modules/app';
 import {
   queryCartAndStatus as queryCartAndStatusThunk,
@@ -847,6 +848,7 @@ export class Home extends Component {
       deliveryInfo,
       enablePayLater,
       shouldShowAlcoholModal,
+      receiptNumber,
       ...otherProps
     } = this.props;
     const {
@@ -1007,6 +1009,7 @@ export class Home extends Component {
         {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
           <div className="ordering-home__close-cover"></div>
         ) : null}
+        {receiptNumber ? <div>table summary banner </div> : null}
         <Footer
           {...otherProps}
           style={{
@@ -1064,6 +1067,7 @@ export default compose(
         shouldShowAlcoholModal: getAlcoholModalDisplayResult(state),
         store: getStore(state),
         enablePayLater: getEnablePayLater(state),
+        receiptNumber: getReceiptNumber(state),
       };
     },
     dispatch => ({

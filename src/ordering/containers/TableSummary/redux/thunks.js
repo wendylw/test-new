@@ -2,6 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchOrder, fetchOrderSubmissionStatus, postOrderSubmitted } from './api-request';
 import { getOrderModifiedTime, getOrderReceiptNumber } from './selectors';
+import Utils from '../../../../utils/utils';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
@@ -17,17 +18,29 @@ export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', a
   }
 });
 
-export const loadOrdersStatus = createAsyncThunk('ordering/tableSummary/loadOrdersStatus', async receiptNumber => {
-  try {
-    const result = await fetchOrderSubmissionStatus({ receiptNumber });
+export const loadOrdersStatus = createAsyncThunk(
+  'ordering/tableSummary/loadOrdersStatus',
+  async (_, { dispatch, getState }) => {
+    try {
+      const state = getState();
+      const receiptNumber = getOrderReceiptNumber(state);
+      const prevModifiedTime = getOrderModifiedTime(state);
+      const result = await fetchOrderSubmissionStatus({ receiptNumber });
+      const prevModifiedTimeFormat = Utils.getFormatTime(prevModifiedTime);
+      const modifiedTimeFormat = Utils.getFormatTime(result.modifiedTime);
 
-    return result;
-  } catch (error) {
-    console.error(error);
+      if (prevModifiedTimeFormat !== modifiedTimeFormat) {
+        await dispatch(loadOrders(receiptNumber));
+      }
 
-    throw error;
+      return result;
+    } catch (error) {
+      console.error(error);
+
+      throw error;
+    }
   }
-});
+);
 
 export const queryOrdersAndStatus = receiptNumber => async dispatch => {
   try {

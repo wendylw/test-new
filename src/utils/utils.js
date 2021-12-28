@@ -997,4 +997,14 @@ Utils.getStoreHashCode = () => {
   return Utils.getCookieVariable('__h');
 };
 
+Utils.getFormatTime = t => {
+  const time = new Date(t);
+  const formatTime =
+    [time.getMonth() + 1, time.getDate(), time.getFullYear()].join('/') +
+    ' ' +
+    [time.getHours(), time.getMinutes(), time.getSeconds()].join(':');
+
+  return formatTime;
+};
+
 export default Utils;
