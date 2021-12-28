@@ -65,7 +65,7 @@ export const loadCartStatus = createAsyncThunk(
 
       dispatch(cartActionCreators.updateCart(result));
 
-      if (prevCartVersion !== result.version) {
+      if (result.version > prevCartVersion) {
         await dispatch(loadCart());
       }
 
