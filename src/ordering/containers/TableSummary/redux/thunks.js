@@ -1,8 +1,8 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import dayjs from 'dayjs';
 import { fetchOrder, fetchOrderSubmissionStatus, postOrderSubmitted } from './api-request';
 import { getOrderModifiedTime, getOrderReceiptNumber } from './selectors';
-import Utils from '../../../../utils/utils';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
@@ -26,10 +26,10 @@ export const loadOrdersStatus = createAsyncThunk(
       const receiptNumber = getOrderReceiptNumber(state);
       const prevModifiedTime = getOrderModifiedTime(state);
       const result = await fetchOrderSubmissionStatus({ receiptNumber });
-      const prevModifiedTimeFormat = Utils.getFormatTime(prevModifiedTime);
-      const modifiedTimeFormat = Utils.getFormatTime(result.modifiedTime);
+      const prevModifiedTimeDate = dayjs(prevModifiedTime);
+      const modifiedTimeDate = dayjs(result.modifiedTime);
 
-      if (prevModifiedTimeFormat !== modifiedTimeFormat) {
+      if (dayjs(modifiedTimeDate).isAfter(prevModifiedTimeDate, 'second')) {
         await dispatch(loadOrders(receiptNumber));
       }
 

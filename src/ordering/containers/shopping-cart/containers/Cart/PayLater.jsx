@@ -100,6 +100,18 @@ class PayLater extends Component {
             },
           }
         );
+      } else if (e.code === '393476') {
+        const { t, history } = this.props;
+
+        alert(t('OrderHasBeenAddedOrRemoved'), {
+          title: t('RefreshCartToContinue'),
+          closeButtonContent: t('RefreshCart'),
+          onClose: () =>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+              search: window.location.search,
+            }),
+        });
       }
     }
   };

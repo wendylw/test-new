@@ -967,6 +967,14 @@ export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo =>
   );
 });
 
+export const getOrderingOngoingBannerVisibility = createSelector(
+  getReceiptNumber,
+  getEnablePayLater,
+  (receiptNumber, enablePayLater) => {
+    return receiptNumber && enablePayLater;
+  }
+);
+
 export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
   const deliveryTypes = stores.reduce((types, store) => {
     return types.concat(store.fulfillmentOptions);
