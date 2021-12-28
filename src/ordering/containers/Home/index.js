@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { Link } from 'react-router-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
@@ -23,6 +24,7 @@ import {
   getDeliveryInfo,
   getCategoryProductList,
   getOrderingOngoingBannerVisibility,
+  getReceiptNumber,
 } from '../../redux/modules/app';
 import {
   queryCartAndStatus as queryCartAndStatusThunk,
@@ -838,6 +840,7 @@ export class Home extends Component {
 
   render() {
     const {
+      t,
       categories,
       onlineStoreInfo,
       businessInfo,
@@ -849,6 +852,7 @@ export class Home extends Component {
       enablePayLater,
       shouldShowAlcoholModal,
       orderingOngoingBannerVisibility,
+      receiptNumber,
       ...otherProps
     } = this.props;
     const {
@@ -871,6 +875,7 @@ export class Home extends Component {
     if (!onlineStoreInfo || !categories) {
       return null;
     }
+
     return (
       <section className="ordering-home flex flex-column">
         {isWebview && (
@@ -1005,11 +1010,28 @@ export class Home extends Component {
             breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
           />
         )}
-
         {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
           <div className="ordering-home__close-cover"></div>
         ) : null}
-        {orderingOngoingBannerVisibility ? <div>table summary banner </div> : null}
+        {orderingOngoingBannerVisibility ? (
+          <div className="ordering-home__table-summary-banner flex flex__fluid-content flex-space-between padding-normal">
+            <div className="flex flex-middle">
+              <i className="ordering-home__icon" />
+              <span className="ordering-home__table-summary-banner-text margin-left-right-smaller">
+                {t('OrderOngoing')}
+              </span>
+            </div>
+            <Link
+              className="ordering-home__view-order-button button button__link text-uppercase text-weight-bolder"
+              to={{
+                pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+                search: `&receiptNumber=${receiptNumber}`,
+              }}
+            >
+              {t('ViewOrder')}
+            </Link>
+          </div>
+        ) : null}
         <Footer
           {...otherProps}
           style={{
@@ -1068,6 +1090,7 @@ export default compose(
         store: getStore(state),
         enablePayLater: getEnablePayLater(state),
         orderingOngoingBannerVisibility: getOrderingOngoingBannerVisibility(state),
+        receiptNumber: getReceiptNumber(state),
       };
     },
     dispatch => ({

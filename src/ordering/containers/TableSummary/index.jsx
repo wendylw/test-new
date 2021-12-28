@@ -1,4 +1,5 @@
 import React from 'react';
+import qs from 'qs';
 import PropTypes from 'prop-types';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -73,6 +74,23 @@ export class TableSummary extends React.Component {
     await clearQueryOrdersAndStatus();
   }
 
+  goToMenuPage = () => {
+    const { history, shippingType } = this.props;
+    const hashCode = Utils.getStoreHashCode();
+    const search = qs.stringify(
+      {
+        h: hashCode,
+        type: shippingType,
+      },
+      { addQueryPrefix: true }
+    );
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search,
+    });
+  };
+
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
@@ -86,15 +104,8 @@ export class TableSummary extends React.Component {
     }
   };
 
-  handleHeaderNavFunc = () => {
+  showUnableBackMenuPageAlert = () => {
     const { t, orderPendingPaymentStatus } = this.props;
-    const isWebview = Utils.isWebview();
-
-    if (isWebview) {
-      NativeMethods.closeWebView();
-
-      return;
-    }
 
     alert(
       <Trans
@@ -108,6 +119,25 @@ export class TableSummary extends React.Component {
         className: 'table-summary__back-menu-alert',
       }
     );
+  };
+
+  handleHeaderNavFunc = () => {
+    const { orderPlacedStatus } = this.props;
+    const isWebview = Utils.isWebview();
+
+    if (orderPlacedStatus) {
+      this.goToMenuPage();
+
+      return;
+    }
+
+    if (isWebview) {
+      NativeMethods.closeWebView();
+
+      return;
+    }
+
+    this.showUnableBackMenuPageAlert();
   };
 
   handleConfirmOrderSubmissionOrGotoPaymentPage = () => {
@@ -267,6 +297,7 @@ export class TableSummary extends React.Component {
       total,
       cashback,
       shippingFee,
+      orderPlacedStatus,
       orderPendingPaymentStatus,
       orderSubmissionRequestingStatus,
     } = this.props;
@@ -325,8 +356,17 @@ export class TableSummary extends React.Component {
           }}
           className="footer padding-small flex flex-middle"
         >
+          {orderPlacedStatus ? (
+            <button
+              className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+              onClick={this.goToMenuPage}
+            >
+              {t('AddItems')}
+            </button>
+          ) : null}
+
           <button
-            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+            className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
             onClick={this.handleConfirmOrderSubmissionOrGotoPaymentPage}
