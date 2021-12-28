@@ -1,4 +1,5 @@
 import React from 'react';
+import qs from 'qs';
 import PropTypes from 'prop-types';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -74,12 +75,19 @@ export class TableSummary extends React.Component {
   }
 
   goToMenuPage = () => {
-    const { history, tableNumber, shippingType } = this.props;
+    const { history, shippingType } = this.props;
+    const hashCode = Utils.getStoreHashCode();
+    const search = qs.stringify(
+      {
+        h: hashCode,
+        type: shippingType,
+      },
+      { addQueryPrefix: true }
+    );
 
-    // TODO: get store hash code to update h
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      search: `?table=${tableNumber}&type=${shippingType}`,
+      search,
     });
   };
 
@@ -96,22 +104,8 @@ export class TableSummary extends React.Component {
     }
   };
 
-  handleHeaderNavFunc = () => {
-    const { t, orderPlacedStatus, orderPendingPaymentStatus } = this.props;
-    const isWebview = Utils.isWebview();
-
-    if (isWebview) {
-      NativeMethods.closeWebView();
-
-      return;
-    }
-
-    // TODO: get store hash code to update h
-    if (orderPlacedStatus) {
-      this.goToMenuPage();
-
-      return;
-    }
+  showUnableBackMenuPageAlert = () => {
+    const { t, orderPendingPaymentStatus } = this.props;
 
     alert(
       <Trans
@@ -125,6 +119,25 @@ export class TableSummary extends React.Component {
         className: 'table-summary__back-menu-alert',
       }
     );
+  };
+
+  handleHeaderNavFunc = () => {
+    const { orderPlacedStatus } = this.props;
+    const isWebview = Utils.isWebview();
+
+    if (orderPlacedStatus) {
+      this.goToMenuPage();
+
+      return;
+    }
+
+    if (isWebview) {
+      NativeMethods.closeWebView();
+
+      return;
+    }
+
+    this.showUnableBackMenuPageAlert();
   };
 
   handleConfirmOrderSubmissionOrGotoPaymentPage = () => {
