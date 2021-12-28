@@ -19,6 +19,7 @@ import {
   getUser,
   getBusinessInfo,
   getShoppingCart,
+  getDeliveryDetails,
   getHasLoginGuardPassed,
   getCartBilling,
   getStoreInfoForCleverTap,
@@ -26,6 +27,9 @@ import {
   getValidBillingTotal,
   getIsValidCreateOrder,
   getIsBillingTotalInvalid,
+  getUserConsumerId,
+  getUserProfile,
+  getIsUserProfileStatusFulfilled,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
@@ -348,9 +352,30 @@ class PayFirst extends Component {
     );
   };
 
-  handleBeforeCreateOrder = () => {
-    const { history, isValidCreateOrder, hasLoginGuardPassed } = this.props;
+  handleBeforeCreateOrder = async () => {
+    const {
+      history,
+      isValidCreateOrder,
+      hasLoginGuardPassed,
+      deliveryDetails,
+      consumerId,
+      appActions,
+      isUserProfileStatusFulfilled,
+    } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
+
+    if (!deliveryDetails.username || !deliveryDetails.phone) {
+      // BEEP-1561 && BEEP-1554: Update user's delivery details before calling create order api.
+      if (!isUserProfileStatusFulfilled) {
+        consumerId && (await appActions.getProfileInfo(consumerId));
+      }
+      const { userProfile } = this.props;
+
+      await appActions.updateDeliveryDetails({
+        username: deliveryDetails.username || userProfile.name,
+        phone: deliveryDetails.phone || userProfile.phone,
+      });
+    }
 
     log('cart.create-order-attempt');
     this.handleClickPayButtonEventTracking();
@@ -626,6 +651,8 @@ PayFirst.propTypes = {
     clearAll: PropTypes.func,
     addOrUpdateShoppingCartItem: PropTypes.func,
     removeShoppingCartItem: PropTypes.func,
+    getProfileInfo: PropTypes.func,
+    updateDeliveryDetails: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
@@ -648,6 +675,14 @@ PayFirst.propTypes = {
   hasLoginGuardPassed: PropTypes.bool,
   isBillingTotalInvalid: PropTypes.bool,
   validBillingTotal: PropTypes.number,
+  // eslint-disable-next-line react/forbid-prop-types
+  deliveryDetails: PropTypes.object,
+  userProfile: PropTypes.shape({
+    name: PropTypes.string,
+    phone: PropTypes.string,
+  }),
+  isUserProfileStatusFulfilled: PropTypes.bool,
+  consumerId: PropTypes.string,
 };
 
 PayFirst.defaultProps = {
@@ -656,6 +691,8 @@ PayFirst.defaultProps = {
     clearAll: () => {},
     addOrUpdateShoppingCartItem: () => {},
     removeShoppingCartItem: () => {},
+    getProfileInfo: () => {},
+    updateDeliveryDetails: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},
@@ -673,6 +710,13 @@ PayFirst.defaultProps = {
   hasLoginGuardPassed: false,
   isBillingTotalInvalid: false,
   validBillingTotal: 0,
+  deliveryDetails: {},
+  userProfile: {
+    name: '',
+    phone: '',
+  },
+  isUserProfileStatusFulfilled: false,
+  consumerId: '',
 };
 
 /* TODO: backend data */
@@ -692,6 +736,10 @@ export default compose(
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
       isBillingTotalInvalid: getIsBillingTotalInvalid(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      deliveryDetails: getDeliveryDetails(state),
+      consumerId: getUserConsumerId(state),
+      userProfile: getUserProfile(state),
+      isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),
