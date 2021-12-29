@@ -30,7 +30,7 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
-import { getUserHasReachedLegalDrinkingAge, getAlcoholModalDisplayResult } from './redux/common/selectors';
+import { getUserHasReachedLegalDrinkingAge, getShouldShowAlcoholModal } from './redux/common/selectors';
 import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
 import Header from '../../../components/Header';
 import NativeHeader from '../../../components/NativeHeader';
@@ -1044,7 +1044,7 @@ export default compose(
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
-        shouldShowAlcoholModal: getAlcoholModalDisplayResult(state),
+        shouldShowAlcoholModal: getShouldShowAlcoholModal(state),
         store: getStore(state),
       };
     },
