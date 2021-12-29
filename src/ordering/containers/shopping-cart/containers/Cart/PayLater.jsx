@@ -58,28 +58,6 @@ class PayLater extends Component {
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
-
-    const { cartSubmittedStatus, t } = this.props;
-    const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
-
-    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
-      alert(
-        <Trans
-          t={t}
-          ns="ApiError"
-          i18nKey="HasBeenPlacedContentDescription"
-          components={{ bold: <strong className="text-size-big" /> }}
-        />,
-        {
-          className: 'ordering-cart__alert',
-          title: t('ApiError:UnableToPlaceOrder'),
-          closeButtonContent: t('ApiError:ViewOrder'),
-          onClose: () => {
-            this.goToTableSummaryPage();
-          },
-        }
-      );
-    }
   }
 
   componentWillUnmount = async () => {

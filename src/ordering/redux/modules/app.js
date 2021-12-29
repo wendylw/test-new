@@ -947,6 +947,8 @@ export const getStoreHashCode = state => state.app.storeHashCode.data;
 
 export const getDeliveryInfo = createSelector(getBusinessInfo, businessInfo => Utils.getDeliveryInfo(businessInfo));
 
+export const getReceiptNumber = state => state.app.cart.receiptNumber;
+
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
 });
@@ -969,6 +971,14 @@ export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo =>
     Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN
   );
 });
+
+export const getOrderingOngoingBannerVisibility = createSelector(
+  getReceiptNumber,
+  getEnablePayLater,
+  (receiptNumber, enablePayLater) => {
+    return receiptNumber && enablePayLater;
+  }
+);
 
 export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
   const deliveryTypes = stores.reduce((types, store) => {
