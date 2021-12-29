@@ -1025,7 +1025,14 @@ export class Home extends Component {
               className="ordering-home__view-order-button button button__link text-uppercase text-weight-bolder"
               to={{
                 pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-                search: `&receiptNumber=${receiptNumber}`,
+                search: qs.stringify(
+                  {
+                    h: Utils.getStoreHashCode(),
+                    type: Utils.getOrderTypeFromUrl(),
+                    receiptNumber: receiptNumber,
+                  },
+                  { addQueryPrefix: true }
+                ),
               }}
             >
               {t('ViewOrder')}
