@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../../../redux/modules/entities/products';
-import { getBusinessInfo, getDeliveryInfo } from '../../../../redux/modules/app';
+import { getMerchantCountry, getDeliveryInfo } from '../../../../redux/modules/app';
 import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
@@ -36,8 +36,8 @@ export const getDeliveryHasAlcohol = createSelector(
 );
 
 export const getCountryHasDrinkingAgeRestriction = createSelector(
-  getBusinessInfo,
-  businessInfo => !ALCOHOL_FREE_COUNTRY_LIST.includes(businessInfo)
+  getMerchantCountry,
+  country => !ALCOHOL_FREE_COUNTRY_LIST.includes(country)
 );
 
 export const getUserAlcoholConsent = state => state.home.common.alcoholConsent;
