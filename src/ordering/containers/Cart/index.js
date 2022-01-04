@@ -10,6 +10,7 @@ import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import CreateOrderButton from '../../components/CreateOrderButton';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { actions as promotionActionCreators } from '../../redux/modules/promotion';
@@ -20,11 +21,19 @@ import {
   getBusiness,
   getBusinessInfo,
   getShoppingCart,
+  getDeliveryDetails,
+  getHasLoginGuardPassed,
   getCartBilling,
   getStoreInfoForCleverTap,
-  getDeliveryDetails,
+  getValidBillingTotal,
+  getIsValidCreateOrder,
+  getIsBillingTotalInvalid,
 } from '../../redux/modules/app';
-import { actions as cartActionCreators, getCheckingInventoryPendingState } from '../../redux/modules/cart';
+import {
+  actions as cartActionCreators,
+  getCheckingInventoryPendingState,
+  getShouldDisablePayButton,
+} from '../../redux/modules/cart';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../utils/gtm';
 import ProductSoldOutModal from './components/ProductSoldOutModal/index';
 import './OrderingCart.scss';
@@ -91,12 +100,15 @@ class Cart extends Component {
   handleClickContinue = async () => {
     const { user, history, appActions, cartActions } = this.props;
     const { isLogin } = user || {};
-
+    const { ROUTER_PATHS } = Constants;
     const { status } = await cartActions.checkCartInventory();
+    const redirectLocation = {
+      pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
+      search: window.location.search,
+    };
 
     if (status === 'reject') {
       await appActions.loadShoppingCart();
-
       return;
     }
 
@@ -105,17 +117,14 @@ class Cart extends Component {
         'Screen Name': 'Cart Page',
       });
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        pathname: ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
-        nextPage: true,
+        state: { shouldGoBack: false, redirectLocation },
       });
       return;
     }
 
-    history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-      search: window.location.search,
-    });
+    history.push(redirectLocation);
   };
 
   handleResizeEvent() {
@@ -135,18 +144,6 @@ class Cart extends Component {
       },
       false
     );
-  }
-
-  getDisplayPrice() {
-    const { shoppingCart } = this.props;
-    const { items } = shoppingCart || {};
-    let totalPrice = 0;
-
-    (items || []).forEach(item => {
-      totalPrice += item.displayPrice * item.quantity;
-    });
-
-    return totalPrice;
   }
 
   handleChangeAdditionalComments(e) {
@@ -231,6 +228,7 @@ class Cart extends Component {
       this.props.history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
+        state: { shouldGoBack: true },
       });
     }
   };
@@ -339,6 +337,66 @@ class Cart extends Component {
     );
   }
 
+  getOrderButtonContent = () => {
+    const { t, pendingCheckingInventory, isBillingTotalInvalid, validBillingTotal } = this.props;
+
+    const buttonContent = !isBillingTotalInvalid ? (
+      <span className="text-weight-bolder" key="pay-now">
+        {t('PayNow')}
+      </span>
+    ) : (
+      <span key="min-total">
+        *
+        <Trans i18nKey="MinimumConsumption">
+          <span className="text-weight-bolder">Min</span>
+          <CurrencyNumber className="text-weight-bolder" money={validBillingTotal} />
+        </Trans>
+      </span>
+    );
+
+    const processingContent = (
+      <span className="text-weight-bolder" key="pay-wait">
+        {t('Processing')}
+      </span>
+    );
+
+    return pendingCheckingInventory ? processingContent : buttonContent;
+  };
+
+  renderPayOrderButton = () => {
+    const { shouldDisablePayButton } = this.props;
+    return (
+      <button
+        className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+        data-testid="pay"
+        data-heap-name="ordering.cart.pay-btn"
+        onClick={this.handleClickPayButton}
+        disabled={shouldDisablePayButton}
+      >
+        {this.getOrderButtonContent()}
+      </button>
+    );
+  };
+
+  renderCreateOrderButton = () => {
+    const { t, history, isValidCreateOrder, pendingCheckingInventory, shouldDisablePayButton } = this.props;
+    return (
+      <CreateOrderButton
+        className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+        history={history}
+        data-testid="pay"
+        data-heap-name="ordering.cart.pay-btn"
+        disabled={shouldDisablePayButton}
+        validCreateOrder={isValidCreateOrder}
+        beforeCreateOrder={this.handleBeforeCreateOrder}
+        loaderText={t('Processing')}
+        processing={pendingCheckingInventory}
+      >
+        {this.getOrderButtonContent()}
+      </CreateOrderButton>
+    );
+  };
+
   formatCleverTapAttributes(product) {
     return {
       'category name': product.categoryName,
@@ -359,39 +417,61 @@ class Cart extends Component {
     CleverTap.pushEvent(eventName, { ...storeInfoForCleverTap, ...attributes });
   };
 
-  render() {
-    const {
-      t,
-      cartBilling,
-      shoppingCart,
-      businessInfo,
-      user,
-      history,
-      storeInfoForCleverTap,
-      pendingCheckingInventory,
-    } = this.props;
-    const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
-    const { qrOrderingSettings, name } = businessInfo || {};
-    const { minimumConsumption } = qrOrderingSettings || {};
-    const { items } = shoppingCart || {};
-    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee, promotion } = cartBilling || {};
+  handleClickPayButtonEventTracking = () => {
+    const { cartBilling, businessInfo, storeInfoForCleverTap } = this.props;
+    const { name } = businessInfo || {};
+    const { cashback, promotion } = cartBilling || {};
     const { promoCode } = promotion || {};
+
+    loggly.log('cart.pay-now');
+    CleverTap.pushEvent('Cart Page - click pay now', {
+      ...storeInfoForCleverTap,
+      'promo/voucher applied': promoCode || '',
+      'Cashback Amount': cashback || 0,
+      'Cashback Store': name || '',
+    });
+  };
+
+  handleClickPayButton = () => {
+    this.handleClickPayButtonEventTracking();
+    this.handleGtmEventTracking(async () => {
+      await this.handleClickContinue();
+    });
+  };
+
+  handleBeforeCreateOrder = async () => {
+    const { ROUTER_PATHS } = Constants;
+    const { history, user, deliveryDetails, appActions, isValidCreateOrder, hasLoginGuardPassed } = this.props;
+
+    // BEEP-1561 && BEEP-1554: Update user's delivery details before calling create order api.
+    const { consumerId } = user || {};
+    consumerId && (await appActions.getProfileInfo(consumerId));
+    const { profile } = user || {};
+    await appActions.updateDeliveryDetails({
+      username: deliveryDetails.username || profile.name,
+      phone: deliveryDetails.phone || profile.phone,
+    });
+
+    const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
+
+    loggly.log('cart.create-order-attempt');
+    this.handleClickPayButtonEventTracking();
+    this.handleGtmEventTracking(() => {
+      if (isValidCreateOrder) return;
+      history.push({
+        pathname,
+        search: window.location.search,
+        state: { shouldGoBack: true },
+      });
+    });
+  };
+
+  render() {
+    const { t, cartBilling, shoppingCart, businessInfo, user, history, storeInfoForCleverTap } = this.props;
+    const { isHaveProductSoldOut, cartContainerHeight, productsContainerHeight } = this.state;
+    const { items } = shoppingCart || {};
+    const { count, subtotal, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
     const { isLogin } = user || {};
-    const isInvalidTotal =
-      (Utils.isDeliveryType() && this.getDisplayPrice() < Number(minimumConsumption || 0)) || (total > 0 && total < 1);
-    const minTotal = Utils.isDeliveryType() && Number(minimumConsumption || 0) > 1 ? minimumConsumption : 1;
-    const buttonText = !isInvalidTotal ? (
-      <span className="text-weight-bolder" key="pay-now">
-        {t('PayNow')}
-      </span>
-    ) : (
-      <span key="min-total">
-        <Trans i18nKey="MinimumConsumption">
-          <span className="text-weight-bolder">Min</span>
-          <CurrencyNumber className="text-weight-bolder" money={minTotal} />
-        </Trans>
-      </span>
-    );
 
     if (!(cartBilling && items)) {
       return null;
@@ -479,27 +559,7 @@ class Cart extends Component {
           >
             {t('Back')}
           </button>
-          <button
-            className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
-            data-testid="pay"
-            data-heap-name="ordering.cart.pay-btn"
-            onClick={() => {
-              loggly.log('cart.pay-now');
-              CleverTap.pushEvent('Cart Page - click pay now', {
-                ...storeInfoForCleverTap,
-                'promo/voucher applied': promoCode || '',
-                'Cashback Amount': cashback || 0,
-                'Cashback Store': name || '',
-              });
-              this.handleGtmEventTracking(async () => {
-                await this.handleClickContinue();
-              });
-            }}
-            disabled={!items || !items.length || isInvalidTotal || pendingCheckingInventory}
-          >
-            {pendingCheckingInventory ? t('Processing') : isInvalidTotal && `*`}
-            {!pendingCheckingInventory && buttonText}
-          </button>
+          {Utils.isQROrder() ? this.renderCreateOrderButton() : this.renderPayOrderButton()}
         </footer>
         <ProductSoldOutModal
           show={isHaveProductSoldOut}
@@ -529,8 +589,13 @@ export default compose(
         cartBilling: getCartBilling(state),
         shoppingCart: getShoppingCart(state),
         businessInfo: getBusinessInfo(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
         deliveryDetails: getDeliveryDetails(state),
+        onlineStoreInfo: getOnlineStoreInfo(state),
+        validBillingTotal: getValidBillingTotal(state),
+        isValidCreateOrder: getIsValidCreateOrder(state),
+        hasLoginGuardPassed: getHasLoginGuardPassed(state),
+        shouldDisablePayButton: getShouldDisablePayButton(state),
+        isBillingTotalInvalid: getIsBillingTotalInvalid(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       };
     },
