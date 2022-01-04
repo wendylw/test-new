@@ -2,8 +2,9 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../../../redux/modules/entities/products';
-import { getBusinessInfo, getDeliveryInfo } from '../../../../redux/modules/app';
+import { getMerchantCountry, getDeliveryInfo } from '../../../../redux/modules/app';
 import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
+import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 export const getSelectedProductId = state => state.home.common.selectedProductDetail.productId;
 
@@ -35,16 +36,27 @@ export const getDeliveryHasAlcohol = createSelector(
 );
 
 export const getCountryHasDrinkingAgeRestriction = createSelector(
-  getBusinessInfo,
-  businessInfo => !ALCOHOL_FREE_COUNTRY_LIST.includes(businessInfo)
+  getMerchantCountry,
+  country => !ALCOHOL_FREE_COUNTRY_LIST.includes(country)
 );
 
-export const getUserHasReachedLegalDrinkingAge = state => !!state.home.common.alcoholConsent.data;
+export const getUserAlcoholConsent = state => state.home.common.alcoholConsent;
 
-export const getAlcoholModalDisplayResult = createSelector(
+export const getUserHasReachedLegalDrinkingAge = createSelector(
+  getUserAlcoholConsent,
+  alcoholConsent => !!alcoholConsent.data
+);
+
+export const getHasUserAlcoholConsentRequestFulfilled = createSelector(
+  getUserAlcoholConsent,
+  alcoholConsent => alcoholConsent.status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getShouldShowAlcoholModal = createSelector(
   getDeliveryHasAlcohol,
   getCountryHasDrinkingAgeRestriction,
   getUserHasReachedLegalDrinkingAge,
-  (hasAlcohol, hasDrinkingAgeRestriction, hasReachedLegalDrinkingAge) =>
-    hasAlcohol && hasDrinkingAgeRestriction && !hasReachedLegalDrinkingAge
+  getHasUserAlcoholConsentRequestFulfilled,
+  (hasAlcohol, hasDrinkingAgeRestriction, hasReachedLegalDrinkingAge, hasRequestFulfilled) =>
+    hasAlcohol && hasDrinkingAgeRestriction && hasRequestFulfilled && !hasReachedLegalDrinkingAge
 );

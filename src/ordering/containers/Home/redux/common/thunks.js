@@ -15,7 +15,7 @@ export const showProductDetail = createAsyncThunk(
 );
 
 export const getUserAlcoholConsent = createAsyncThunk('ordering/home/common/getUserAlcoholConsent', async () => {
-  const { alcoholConsentTime } = await getAlcoholConsent();
+  const { alcoholConsentTime = null } = await getAlcoholConsent();
   return alcoholConsentTime;
 });
 
