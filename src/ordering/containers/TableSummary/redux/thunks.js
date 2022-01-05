@@ -47,6 +47,10 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
     const queryOrderStatus = () => {
       queryOrdersAndStatus.timer = setTimeout(async () => {
         await dispatch(loadOrdersStatus(receiptNumber));
+        // Loop has been stopped
+        if (!queryOrdersAndStatus.timer) {
+          return;
+        }
 
         queryOrderStatus();
       }, ORDER_STATUS_INTERVAL);
@@ -62,9 +66,8 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
 };
 
 export const clearQueryOrdersAndStatus = () => () => {
-  if (queryOrdersAndStatus.timer) {
-    clearTimeout(queryOrdersAndStatus.timer);
-  }
+  clearTimeout(queryOrdersAndStatus.timer);
+  queryOrdersAndStatus.timer = null;
 };
 
 export const submitOrders = createAsyncThunk('ordering/tableSummary/submitOrders', async (_, { getState }) => {

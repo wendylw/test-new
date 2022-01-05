@@ -84,6 +84,11 @@ export const queryCartAndStatus = () => async dispatch => {
       queryCartAndStatus.timer = setTimeout(async () => {
         await dispatch(loadCartStatus());
 
+        // Loop has been stopped
+        if (!queryCartAndStatus.timer) {
+          return;
+        }
+
         queryCartStatus();
       }, CART_VERSION_AND_STATUS_INTERVAL);
     };
@@ -98,9 +103,8 @@ export const queryCartAndStatus = () => async dispatch => {
 };
 
 export const clearQueryCartStatus = () => () => {
-  if (queryCartAndStatus.timer) {
-    clearTimeout(queryCartAndStatus.timer);
-  }
+  clearTimeout(queryCartAndStatus.timer);
+  queryCartAndStatus.timer = null;
 };
 
 /**
