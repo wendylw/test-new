@@ -62,6 +62,7 @@ $table-summary-background: #fffbe6;
   }
 
   &__table-summary-banner {
+    position: sticky;
     background-color: $table-summary-background;
     box-shadow: 0px -4px 24px 0 rgba(0, 0, 0, 0.08);
     z-index: 1;

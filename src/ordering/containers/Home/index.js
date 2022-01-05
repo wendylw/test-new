@@ -1022,6 +1022,9 @@ export class Home extends Component {
                 marginBottom({
                   footerEls: [this.footerEl, this.tableSummaryBannerEl],
                 })}px`,
+              bottom: `${marginBottom({
+                footerEls: [this.footerEl, this.tableSummaryBannerEl],
+              })}px`,
             }}
             className="ordering-home__table-summary-banner flex flex-middle flex__fluid-content flex-space-between padding-normal"
           >
