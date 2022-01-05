@@ -1023,7 +1023,7 @@ export class Home extends Component {
                   footerEls: [this.footerEl, this.tableSummaryBannerEl],
                 })}px`,
             }}
-            className="ordering-home__table-summary-banner flex flex__fluid-content flex-space-between padding-normal"
+            className="ordering-home__table-summary-banner flex flex-middle flex__fluid-content flex-space-between padding-normal"
           >
             <div className="flex flex-middle">
               <i className="ordering-home__icon" />
@@ -1032,7 +1032,7 @@ export class Home extends Component {
               </span>
             </div>
             <Link
-              className="ordering-home__view-order-button flex flex-middle button button__link text-uppercase text-weight-bolder"
+              className="ordering-home__view-order-button button button__link text-uppercase text-weight-bolder"
               to={{
                 pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
                 search: qs.stringify(
