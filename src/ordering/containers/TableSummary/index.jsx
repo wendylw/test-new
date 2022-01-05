@@ -3,13 +3,14 @@ import qs from 'qs';
 import PropTypes from 'prop-types';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, bindActionCreators } from 'redux';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
 import * as NativeMethods from '../../../utils/native-methods';
 import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import { actions } from './redux';
+import { actions as resetCartSubmissionCreators } from '../../redux/cart/index';
 import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
@@ -69,9 +70,10 @@ export class TableSummary extends React.Component {
   }
 
   async componentWillUnmount() {
-    const { clearQueryOrdersAndStatus } = this.props;
+    const { clearQueryOrdersAndStatus, resetCartSubmissionAction } = this.props;
 
     await clearQueryOrdersAndStatus();
+    resetCartSubmissionAction.resetCartSubmission();
   }
 
   goToMenuPage = () => {
@@ -405,6 +407,7 @@ TableSummary.propTypes = {
   clearQueryOrdersAndStatus: PropTypes.func,
   updateSubmitOrderConfirmDisplay: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
+  resetCartSubmissionAction: PropTypes.func,
 };
 
 TableSummary.defaultProps = {
@@ -427,6 +430,7 @@ TableSummary.defaultProps = {
   queryOrdersAndStatus: () => {},
   clearQueryOrdersAndStatus: () => {},
   updateSubmitOrderConfirmDisplay: () => {},
+  resetCartSubmissionAction: () => {},
   thankYouPageUrl: '',
 };
 
@@ -453,10 +457,12 @@ export default compose(
 
       orderSubmissionRequestingStatus: getOrderSubmissionRequestingStatus(state),
     }),
-    {
-      queryOrdersAndStatus: queryOrdersAndStatusThunk,
-      clearQueryOrdersAndStatus: clearQueryOrdersAndStatusThunk,
-      updateSubmitOrderConfirmDisplay: actions.updateSubmitOrderConfirmDisplay,
-    }
+
+    dispatch => ({
+      queryOrdersAndStatus: bindActionCreators(queryOrdersAndStatusThunk, dispatch),
+      clearQueryOrdersAndStatus: bindActionCreators(clearQueryOrdersAndStatusThunk, dispatch),
+      updateSubmitOrderConfirmDisplay: bindActionCreators(actions.updateSubmitOrderConfirmDisplay, dispatch),
+      resetCartSubmissionAction: bindActionCreators(resetCartSubmissionCreators, dispatch),
+    })
   )
 )(TableSummary);
