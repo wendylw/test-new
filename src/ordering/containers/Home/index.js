@@ -1013,8 +1013,18 @@ export class Home extends Component {
         {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
           <div className="ordering-home__close-cover"></div>
         ) : null}
-        {orderingOngoingBannerVisibility ? (
-          <div className="ordering-home__table-summary-banner flex flex__fluid-content flex-space-between padding-normal">
+
+        {orderingOngoingBannerVisibility && (
+          <div
+            ref={ref => (this.tableSummaryBannerEl = ref)}
+            style={{
+              top: `${windowSize.height -
+                marginBottom({
+                  footerEls: [this.footerEl, this.tableSummaryBannerEl],
+                })}px`,
+            }}
+            className="ordering-home__table-summary-banner flex flex-middle flex__fluid-content flex-space-between padding-normal"
+          >
             <div className="flex flex-middle">
               <i className="ordering-home__icon" />
               <span className="ordering-home__table-summary-banner-text margin-left-right-smaller">
@@ -1038,7 +1048,8 @@ export class Home extends Component {
               {t('ViewOrder')}
             </Link>
           </div>
-        ) : null}
+        )}
+
         <Footer
           {...otherProps}
           style={{
