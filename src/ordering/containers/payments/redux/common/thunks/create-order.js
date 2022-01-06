@@ -370,7 +370,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       // action type.
       dispatch({ type: 'ordering/payments/common/gotoPaymentFailure', ...error });
     } else {
-      alert(i18next.t('PaymentFailedDescription'), { title: i18next.t('PaymentFailed') });
+      alert(i18next.t('GotoPaymentFailedDescription'), { title: i18next.t('PaymentFailed') });
     }
 
     throw error;
