@@ -507,8 +507,9 @@ export const actions = {
   loadProductDetail: productId => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+    const shippingType = Utils.getApiRequestShippingType();
 
-    return dispatch(fetchProductDetail({ productId, fulfillDate }));
+    return dispatch(fetchProductDetail({ productId, fulfillDate, shippingType }));
   },
 
   loginByTngMiniProgram: () => async (dispatch, getState) => {
