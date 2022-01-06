@@ -62,6 +62,7 @@ import {
   getIsCashbackAvailable,
   getShouldShowCashbackCard,
   getShouldShowCashbackBanner,
+  getHasOrderPaid,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -93,9 +94,8 @@ export class ThankYou extends PureComponent {
   pollOrderStatusTimer = null;
 
   showCompleteProfileIfNeeded = async () => {
-    const { orderStatus } = this.props;
+    const { hasOrderPaid } = this.props;
     //Explain: The profile page is not displayed before the order is paid
-    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && !hasOrderPaid) {
       return;
     }
@@ -927,6 +927,7 @@ export default compose(
       shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
       profileModalVisibility: getshowProfileVisibility(state),
       liveChatUserProfile: getLiveChatUserProfile(state),
+      hasOrderPaid: getHasOrderPaid(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(

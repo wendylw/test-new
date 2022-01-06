@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants from '../../../../../../utils/constants';
-import { CASHBACK_CAN_CLAIM, BEFORE_PAID_STATUS_LIST } from '../constants';
+import { CASHBACK_CAN_CLAIM_STATUS_LIST, AFTER_PAID_STATUS_LIST, CASHBACK_CLAIMED_STATUS_LIST } from '../constants';
 import {
   getOrder,
   getOrderStatus,
@@ -17,7 +17,6 @@ import {
   getMerchantCountry,
   getBusinessInfo,
   getUserIsLogin,
-  getIsQROrderingLoginFree,
   getOnlineStoreInfo,
 } from '../../../../../redux/modules/app';
 
@@ -88,9 +87,8 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
   };
 });
 
-export const getHasOrderPaid = createSelector(
-  getOrderStatus,
-  orderStatus => orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus)
+export const getHasOrderPaid = createSelector(getOrderStatus, orderStatus =>
+  AFTER_PAID_STATUS_LIST.includes(orderStatus)
 );
 
 export const getCashback = createSelector(getCashbackInfo, ({ cashback }) => (Number(cashback) ? Number(cashback) : 0));
@@ -101,9 +99,10 @@ export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInf
   return currencyFormatter.format(cashback);
 });
 
-export const getCanCashbackClaim = createSelector(
-  getCashbackInfo,
-  cashbackInfo => cashbackInfo.status === CASHBACK_CAN_CLAIM
+export const getCashbackStatus = createSelector(getCashbackInfo, cashbackInfo => _get(cashbackInfo, 'status', null));
+
+export const getCanCashbackClaim = createSelector(getCashbackStatus, cashbackStatus =>
+  CASHBACK_CAN_CLAIM_STATUS_LIST.includes(cashbackStatus)
 );
 
 export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInfo, (cashback, businessInfo) => {
@@ -112,31 +111,26 @@ export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInf
   return enableCashback && hasCashback;
 });
 
-export const getHasCashbackClaimed = createSelector(
-  getCanCashbackClaim,
-  getIsCashbackAvailable,
-  (canCashbackClaim, isCashbackAvailable) => isCashbackAvailable && !canCashbackClaim
+export const getHasCashbackClaimed = createSelector(getCashbackStatus, cashbackStatus =>
+  CASHBACK_CLAIMED_STATUS_LIST.includes(cashbackStatus)
 );
 
 export const getIsCashbackClaimable = createSelector(
+  getHasOrderPaid,
   getUserIsLogin,
   getCanCashbackClaim,
-  (isLogin, canCashbackClaim) => isLogin && canCashbackClaim
+  (hasOrderPaid, isLogin, canCashbackClaim) => hasOrderPaid && isLogin && canCashbackClaim
 );
 
 export const getShouldShowCashbackBanner = createSelector(
   getUserIsLogin,
   getHasOrderPaid,
   getHasCashbackClaimed,
-  getIsQROrderingLoginFree,
-  (isLogin, hasOrderPaid, hasCashbackClaimed, isQROrderingLoginFree) =>
-    hasOrderPaid && !isLogin && isQROrderingLoginFree && !hasCashbackClaimed
+  (isLogin, hasOrderPaid, hasCashbackClaimed) => hasOrderPaid && !isLogin && !hasCashbackClaimed
 );
 
 export const getShouldShowCashbackCard = createSelector(
-  getHasOrderPaid,
-  getShouldShowCashbackBanner,
-  getIsCashbackAvailable,
-  (hasOrderPaid, shouldShowCashbackBanner, isCashbackAvailable) =>
-    hasOrderPaid && !shouldShowCashbackBanner && isCashbackAvailable
+  getIsCashbackClaimable,
+  getHasCashbackClaimed,
+  (isCashbackClaimable, hasCashbackClaimed) => isCashbackClaimable || hasCashbackClaimed
 );
