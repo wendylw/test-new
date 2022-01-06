@@ -103,11 +103,15 @@ export const { reducer, actions } = createSlice({
 
       return {
         ...others,
+        receiptNumber: payload.receiptNumber || null,
         promotions: (promotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
         voucher: { ...VoucherModel, ...voucher },
         items: items.map(item => ({ ...CartItemModel, ...item })),
         unavailableItems: unavailableItems.map(unavailableItem => ({ ...CartItemModel, ...unavailableItem })),
       };
+    },
+    resetCartSubmission(state) {
+      state.submission = CartSubmissionModel;
     },
     updateCartSubmission(state, { payload }) {
       console.log(state.submission);

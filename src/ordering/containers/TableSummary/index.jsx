@@ -10,6 +10,7 @@ import Constants from '../../../utils/constants';
 import * as NativeMethods from '../../../utils/native-methods';
 import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import { actions } from './redux';
+import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
@@ -69,9 +70,10 @@ export class TableSummary extends React.Component {
   }
 
   async componentWillUnmount() {
-    const { clearQueryOrdersAndStatus } = this.props;
+    const { clearQueryOrdersAndStatus, resetCartSubmission } = this.props;
 
     await clearQueryOrdersAndStatus();
+    resetCartSubmission();
   }
 
   goToMenuPage = () => {
@@ -405,6 +407,7 @@ TableSummary.propTypes = {
   clearQueryOrdersAndStatus: PropTypes.func,
   updateSubmitOrderConfirmDisplay: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
+  resetCartSubmission: PropTypes.func,
 };
 
 TableSummary.defaultProps = {
@@ -427,6 +430,7 @@ TableSummary.defaultProps = {
   queryOrdersAndStatus: () => {},
   clearQueryOrdersAndStatus: () => {},
   updateSubmitOrderConfirmDisplay: () => {},
+  resetCartSubmission: () => {},
   thankYouPageUrl: '',
 };
 
@@ -453,10 +457,12 @@ export default compose(
 
       orderSubmissionRequestingStatus: getOrderSubmissionRequestingStatus(state),
     }),
+
     {
       queryOrdersAndStatus: queryOrdersAndStatusThunk,
       clearQueryOrdersAndStatus: clearQueryOrdersAndStatusThunk,
       updateSubmitOrderConfirmDisplay: actions.updateSubmitOrderConfirmDisplay,
+      resetCartSubmission: resetCartSubmissionActions.resetCartSubmission,
     }
   )
 )(TableSummary);
