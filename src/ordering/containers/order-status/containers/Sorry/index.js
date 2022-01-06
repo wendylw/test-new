@@ -23,11 +23,13 @@ class Sorry extends Component {
   async componentDidMount() {
     const { t } = this.props;
     const queryParams = Utils.getQueryString();
+    const isPayLater = queryParams.isPayLater === 'true';
+    const errorDescription = isPayLater ? this.getDescriptionOfPayLater() : this.getDescription();
 
-    alert(this.getDescription(), { title: t('PaymentFailed') });
+    alert(errorDescription, { title: t('PaymentFailed') });
 
     // for pay later order, the page will redirect to Table Summary
-    if (queryParams.isPayLater === 'true') {
+    if (isPayLater) {
       const queryObject = _pick(queryParams, ['h', 'type', 'receiptNumber']);
 
       this.props.history.push({
@@ -62,6 +64,28 @@ class Sorry extends Component {
     return errorCode && paymentProvider
       ? t('Description', { paymentMethod: methods[provideMethod], error: t(errorCode) })
       : t('PaymentFailedDescription');
+  };
+
+  getDescriptionOfPayLater = () => {
+    const params = Utils.getQueryString();
+    const { errorCode, paymentProvider } = params || {};
+    const { t } = this.props;
+
+    if (errorCode && paymentProvider) {
+      const methods = {
+        onlineBanking: t('OnlineBanking'),
+        creditCard: t('CreditAndDebitCard'),
+      };
+
+      const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
+
+      return t('SpecificPaymentFailedDescriptionOfPayLater', {
+        paymentMethod: methods[provideMethod],
+        error: t(errorCode),
+      });
+    }
+
+    return t('GeneralPaymentFailedDescriptionOfPayLater');
   };
 
   shouldComponentUpdate(nextProps) {
