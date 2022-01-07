@@ -105,14 +105,17 @@ export const getCanCashbackClaim = createSelector(getCashbackStatus, cashbackSta
   CASHBACK_CAN_CLAIM_STATUS_LIST.includes(cashbackStatus)
 );
 
-export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInfo, (cashback, businessInfo) => {
+export const getHasCashback = createSelector(getCashback, cashback => cashback > 0);
+
+export const getIsCashbackAvailable = createSelector(getHasCashback, getBusinessInfo, (hasCashback, businessInfo) => {
   const { enableCashback } = businessInfo || {};
-  const hasCashback = !!cashback;
   return enableCashback && hasCashback;
 });
 
-export const getHasCashbackClaimed = createSelector(getCashbackStatus, cashbackStatus =>
-  CASHBACK_CLAIMED_STATUS_LIST.includes(cashbackStatus)
+export const getHasCashbackClaimed = createSelector(
+  getCashbackStatus,
+  getHasCashback,
+  (cashbackStatus, hasCashback) => CASHBACK_CLAIMED_STATUS_LIST.includes(cashbackStatus) && hasCashback
 );
 
 export const getIsCashbackClaimable = createSelector(
