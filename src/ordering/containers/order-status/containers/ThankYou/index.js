@@ -654,7 +654,7 @@ export class ThankYou extends PureComponent {
   };
 
   recordPageLoadEvent = () => {
-    const { order, cashback, businessInfo, isCashbackAvailable, shouldShowCashbackBanner } = this.props;
+    const { order, cashback, shippingType, businessInfo, isCashbackAvailable, shouldShowCashbackBanner } = this.props;
     CleverTap.pushEvent('Thank you page - View thank you page', {
       'offer cashback': isCashbackAvailable,
       'has login button': shouldShowCashbackBanner,
@@ -663,7 +663,7 @@ export class ThankYou extends PureComponent {
       'store id': _get(order, 'storeId', ''),
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
-      'shipping type': order.shippingType,
+      'shipping type': shippingType,
     });
   };
 
