@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { usePrevious } from 'react-use';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import './Alert.scss';
+import { log } from '../../../utils/monitoring/loggly';
 
 const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ const Alert = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     onHistoryBackReceived: () => false,
   }));
+  const contentContainerRef = useRef(null);
   const prevShow = usePrevious(show);
   useEffect(() => {
     if (show !== prevShow) {
@@ -38,6 +40,12 @@ const Alert = forwardRef((props, ref) => {
     };
   }, [show, onModalVisibilityChanged, onModalHashChanged, prevShow]);
 
+  useEffect(() => {
+    if (show && contentContainerRef.current) {
+      log('alert.show', { content: contentContainerRef.current.innerText });
+    }
+  }, [content, show]);
+
   if (!show) {
     return null;
   }
@@ -45,7 +53,9 @@ const Alert = forwardRef((props, ref) => {
   return (
     <div className={`alert absolute-wrapper flex flex-column flex-middle flex-center ${className}`} style={style}>
       <div className="alert__content border-radius-large">
-        <div className="alert__body text-center padding-small">{content}</div>
+        <div ref={contentContainerRef} className="alert__body text-center padding-small">
+          {content}
+        </div>
         <div className="alert__buttons-group padding-small">
           {/* TODO： close button UI will be customize */}
           <button
