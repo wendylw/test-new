@@ -956,7 +956,7 @@ Utils.removeCookieVariable = (name, attributes) => {
 Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
 Utils.isSharedLink = () => {
-  return !!Utils.getSessionVariable('BeepOrderingSource');
+  return Utils.getSessionVariable('BeepOrderingSource') === REGISTRATION_SOURCE.SHARED_LINK;
 };
 
 Utils.saveSourceUrlToSessionStorage = sourceUrl => {
@@ -974,7 +974,7 @@ Utils.dealWithSourceFromQuery = source => {
     Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.TNGD_MINI_PROGRAM);
   } else if (Utils.isWebview()) {
     Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.BEEP_APP);
-  } else if (Utils.isSharedLink()) {
+  } else if (source === REGISTRATION_SOURCE.SHARED_LINK) {
     Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.SHARED_LINK);
   } else {
     Utils.saveSourceUrlToSessionStorage(source);
