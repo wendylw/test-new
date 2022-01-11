@@ -91,7 +91,7 @@ const dsBridgeAsyncCall = (method, params) =>
     throw error;
   });
 
-const hasMethodInNative = method => {
+export const hasMethodInNative = method => {
   try {
     return dsBridgeSyncCall('hasNativeMethod', {
       methodName: method,
@@ -139,6 +139,19 @@ export const startChat = ({ orderId, phone, name, email, storeName }) => {
       message,
       orderId,
       storeName,
+    },
+    mode: MODE.SYNC,
+  };
+
+  return dsBridgeCall(data);
+};
+
+export const shareLink = ({ link, title }) => {
+  const data = {
+    method: 'beepModule-shareLink',
+    params: {
+      link,
+      title,
     },
     mode: MODE.SYNC,
   };

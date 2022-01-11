@@ -666,6 +666,7 @@ export const REGISTRATION_SOURCE = {
   BEEP_STORE: 'BeepStore',
   BEEP_SITE: 'BeepSite',
   TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
+  SHARED_LINK: 'Shared link',
 };
 
 export const API_REQUEST_STATUS = {
@@ -699,6 +700,13 @@ export const REFERRER_SOURCE_TYPES = {
   CASHBACK: 'cashback',
   PAY_AT_COUNTER: 'payAtCounter',
   LOGIN: 'login',
+};
+
+export const SHARE_LINK_URL = {
+  SHARE_LINK: 'shareLink',
+  STORE_LINK: 'store_link',
+  SHARE: 'share',
+  BEEP_MODULE_SHARE_LINK: 'beepModule-shareLink',
 };
 
 export default {
@@ -752,4 +760,5 @@ export default {
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
   PROMOTION_CLIENT_TYPES,
   REFERRER_SOURCE_TYPES,
+  SHARE_LINK_URL,
 };

@@ -39,9 +39,7 @@ class App extends Component {
 
     const source = Utils.getQueryString('source');
 
-    if (source) {
-      Utils.saveSourceUrlToSessionStorage(source);
-    }
+    Utils.dealWithSourceFromQuery(source);
   }
   state = {};
 

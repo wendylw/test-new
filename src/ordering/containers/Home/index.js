@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
+import _get from 'lodash/get';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import Utils from '../../../utils/utils';
@@ -820,6 +821,55 @@ export class Home extends Component {
     this.handleNavBack();
   };
 
+  handleClickShare = async () => {
+    try {
+      const { SHARE_LINK, STORE_LINK, SHARE } = Constants.SHARE_LINK_URL;
+      const storeUrl = window.location.href;
+      const completeStoreUrl = `${storeUrl}&source=${SHARE_LINK}&utm_source=${STORE_LINK}&utm_medium=${SHARE}`;
+      //TO DO use short link need a API from BE
+      let storeName = window.document.title;
+      if (storeName.length > 30) {
+        storeName = storeName.slice(0, 30) + `...`;
+      }
+      const para = {
+        link: `${completeStoreUrl}`,
+        title: `Hey foodie! Did you know (${storeName}) is on Beep? Jom, let's order`,
+      };
+      await NativeMethods.shareLink(para);
+
+      const { businessInfo, freeShippingMinAmount } = this.props;
+      const { defaultLoyaltyRatio } = businessInfo;
+      CleverTap.pushEvent('Menu page - Click share store link', {
+        'account name': businessInfo.name,
+        country: _get(businessInfo, 'country', ''),
+        'free delivery above': freeShippingMinAmount || 0,
+        'shipping type': Utils.getOrderTypeFromUrl(),
+        cashback: `${defaultLoyaltyRatio}%`,
+        source: Utils.getOrderSourceForCleverTab(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  getRightContentOfHeader = () => {
+    try {
+      const isDeliveryOrder = Utils.isDeliveryOrder();
+      const { BEEP_MODULE_SHARE_LINK, SHARE } = Constants.SHARE_LINK_URL;
+
+      if (isDeliveryOrder && NativeMethods.hasMethodInNative(BEEP_MODULE_SHARE_LINK)) {
+        return {
+          iconRes: SHARE,
+          onClick: this.handleClickShare,
+        };
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   render() {
     const {
       categories,
@@ -858,6 +908,7 @@ export class Home extends Component {
         {isWebview && (
           <NativeHeader
             isPage={true}
+            rightContent={this.getRightContentOfHeader()}
             title={window.document.title}
             navFunc={() => {
               if (viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL) {

@@ -31,13 +31,14 @@ function getNativeHeaderParams(props) {
   };
 
   if (rightContent) {
-    const { icon, text, style } = rightContent;
+    const { icon, text, style, iconRes } = rightContent;
     const textColor = _get(style, 'color', '#303030');
 
     headerParams.right = {
       type: 'button',
       id: 'headerRightButton',
       iconUrl: icon,
+      iconRes,
       text,
       textColor,
       events: ['onClick'],
