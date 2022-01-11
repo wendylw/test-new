@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import { log } from '../../../../utils/monitoring/loggly';
 import { fetchOrder, fetchOrderSubmissionStatus, postOrderSubmitted } from './api-request';
 import { getOrderModifiedTime, getOrderReceiptNumber } from './selectors';
 
@@ -43,12 +44,14 @@ export const loadOrdersStatus = createAsyncThunk(
 );
 
 export const queryOrdersAndStatus = receiptNumber => async dispatch => {
+  log('table-summary.query-orders-and-status', { action: 'start', receiptNumber });
   try {
     const queryOrderStatus = () => {
       queryOrdersAndStatus.timer = setTimeout(async () => {
         await dispatch(loadOrdersStatus(receiptNumber));
         // Loop has been stopped
         if (!queryOrdersAndStatus.timer) {
+          log('table-summary.query-orders-and-status', { action: 'quit-silently', receiptNumber });
           return;
         }
 
@@ -67,6 +70,7 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
 
 export const clearQueryOrdersAndStatus = () => () => {
   clearTimeout(queryOrdersAndStatus.timer);
+  log('table-summary.query-orders-and-status', { action: 'stop' });
   queryOrdersAndStatus.timer = null;
 };
 

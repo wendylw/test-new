@@ -114,8 +114,6 @@ export const { reducer, actions } = createSlice({
       state.submission = CartSubmissionModel;
     },
     updateCartSubmission(state, { payload }) {
-      console.log(state.submission);
-      console.log(payload);
       state.submission = { ...state.submission, ...payload };
 
       return state;
