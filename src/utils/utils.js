@@ -981,6 +981,14 @@ Utils.dealWithSourceFromQuery = source => {
   }
 };
 
+Utils.shortName = name => {
+  if (name.length > 30) {
+    return name.slice(0, 30) + `...`;
+  } else {
+    return name;
+  }
+};
+
 Utils.submitForm = (action, data) => {
   const form = document.createElement('form');
   form.action = action;

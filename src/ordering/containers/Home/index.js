@@ -48,6 +48,7 @@ import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
+import { get } from '../../../utils/api/api-fetch';
 
 const localState = {
   blockScrollTop: 0,
@@ -823,16 +824,20 @@ export class Home extends Component {
 
   handleClickShare = async () => {
     try {
+      let storeName = window.document.title;
+      storeName = Utils.shortName(storeName);
+
       const { SHARE_LINK, STORE_LINK, SHARE } = Constants.SHARE_LINK_URL;
       const storeUrl = window.location.href;
-      const completeStoreUrl = `${storeUrl}&source=${SHARE_LINK}&utm_source=${STORE_LINK}&utm_medium=${SHARE}`;
-      //TO DO use short link need a API from BE
-      let storeName = window.document.title;
-      if (storeName.length > 30) {
-        storeName = storeName.slice(0, 30) + `...`;
-      }
+      const shareLinkUrl = encodeURIComponent(
+        `${storeUrl}&source=${SHARE_LINK}&utm_source=${STORE_LINK}&utm_medium=${SHARE}`
+      );
+
+      const fetchShortUrl = url => get(`/api/shrink?url=${url}`);
+      const { url_short } = await fetchShortUrl(shareLinkUrl);
+
       const para = {
-        link: `${completeStoreUrl}`,
+        link: `${url_short}`,
         title: `Hey foodie! Did you know (${storeName}) is on Beep? Jom, let's order`,
       };
       await NativeMethods.shareLink(para);
