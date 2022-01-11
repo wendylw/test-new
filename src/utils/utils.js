@@ -968,6 +968,7 @@ Utils.getSourceUrlFromSessionStorage = () => {
 };
 
 Utils.dealWithSourceFromQuery = source => {
+  Utils.saveSourceUrlToSessionStorage(source);
   if (Utils.isFromBeepSite()) {
     Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.BEEP_SITE);
   } else if (Utils.isTNGMiniProgram()) {
@@ -976,8 +977,6 @@ Utils.dealWithSourceFromQuery = source => {
     Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.BEEP_APP);
   } else if (source === REGISTRATION_SOURCE.SHARED_LINK) {
     Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.SHARED_LINK);
-  } else {
-    Utils.saveSourceUrlToSessionStorage(source);
   }
 };
 
