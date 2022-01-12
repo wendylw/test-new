@@ -87,6 +87,8 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
   };
 });
 
+export const getIsPayLater = createSelector(getOrder, order => _get(order, 'isPayLater', false));
+
 export const getHasOrderPaid = createSelector(getOrderStatus, orderStatus =>
   AFTER_PAID_STATUS_LIST.includes(orderStatus)
 );

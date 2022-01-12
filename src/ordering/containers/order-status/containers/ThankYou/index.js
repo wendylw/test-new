@@ -50,6 +50,7 @@ import {
   getIsPreOrder,
   getIsUseStorehubLogistics,
   getLiveChatUserProfile,
+  getIsPayLater,
 } from '../../redux/selector';
 import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
@@ -745,16 +746,43 @@ export class ThankYou extends PureComponent {
     return <LiveChat orderId={orderId} storeName={orderStoreName} />;
   }
 
-  handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history, orderStatus, profileModalVisibility, shippingType } = this.props;
-    const isWebview = Utils.isWebview();
-    const tableId = _get(order, 'tableId', '');
-    const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+  goToOrderingHomePage = () => {
+    const { storeHashCode, shippingType, order, history } = this.props;
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
+
+    const tableId = _get(order, 'tableId', '');
+
+    const options = [`h=${storeHashCode}`];
+
+    if (tableId) {
+      options.push(`table=${tableId}`);
+    }
+
+    if (shippingType) {
+      options.push(`type=${shippingType}`);
+    }
+
+    history.replace({
+      pathname,
+      search: `?${options.join('&')}`,
+    });
+  };
+
+  handleHeaderNavFunc = () => {
+    const { history, orderStatus, profileModalVisibility, isPayLater } = this.props;
+    const isWebview = Utils.isWebview();
+
+    const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (profileModalVisibility) {
       this.props.setShowProfileVisibility(false);
+      return;
+    }
+
+    // For fixing FB-3458 bug
+    if (isPayLater && orderStatus === ORDER_STATUS.PAYMENT_CANCELLED) {
+      this.goToOrderingHomePage();
       return;
     }
 
@@ -773,20 +801,7 @@ export class ThankYou extends PureComponent {
       return;
     }
 
-    const options = [`h=${storeHashCode}`];
-
-    if (tableId) {
-      options.push(`table=${tableId}`);
-    }
-
-    if (shippingType) {
-      options.push(`type=${shippingType}`);
-    }
-
-    history.replace({
-      pathname,
-      search: `?${options.join('&')}`,
-    });
+    this.goToOrderingHomePage();
 
     return;
   };
@@ -928,6 +943,7 @@ export default compose(
       profileModalVisibility: getshowProfileVisibility(state),
       liveChatUserProfile: getLiveChatUserProfile(state),
       hasOrderPaid: getHasOrderPaid(state),
+      isPayLater: getIsPayLater(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
