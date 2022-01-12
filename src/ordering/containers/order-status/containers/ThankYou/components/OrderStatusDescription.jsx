@@ -85,7 +85,7 @@ const getNotDeliveryTitleAndDescription = (
 
   return {
     titleKey: 'ThankYou',
-    descriptionKey: 'PrepareOrderDescription',
+    descriptionKey: isPayLater ? 'HopeYouEnjoyedYourMeal' : 'PrepareOrderDescription',
     emoji: (
       <span role="img" aria-label="Goofy">
         😋
