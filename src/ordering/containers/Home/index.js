@@ -36,7 +36,7 @@ import CleverTap from '../../../utils/clevertap';
 import { getUserHasReachedLegalDrinkingAge, getShouldShowAlcoholModal } from './redux/common/selectors';
 import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
 import Header from '../../../components/Header';
-import NativeHeader from '../../../components/NativeHeader';
+import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
@@ -845,12 +845,10 @@ export class Home extends Component {
       const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;
       CleverTap.pushEvent('Menu page - Click share store link', {
-        'account name': businessInfo.name,
         country: _get(businessInfo, 'country', ''),
         'free delivery above': freeShippingMinAmount || 0,
         'shipping type': Utils.getOrderTypeFromUrl(),
         cashback: Math.floor((1 / defaultLoyaltyRatio) * 100) / 100,
-        source: Utils.getOrderSourceForCleverTab(),
       });
     } catch (error) {
       console.error(`failed to share store link: ${error.message}`);
@@ -860,7 +858,7 @@ export class Home extends Component {
   getRightContentOfHeader = () => {
     try {
       const isDeliveryOrder = Utils.isDeliveryOrder();
-      const { SHARE } = Constants.ICON_RES;
+      const { SHARE } = ICON_RES;
 
       if (isDeliveryOrder && NativeMethods.hasMethodInNative('beepModule-shareLink')) {
         return {

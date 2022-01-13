@@ -7,7 +7,7 @@ import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 import * as NativeMethods from '../utils/native-methods';
 
-const ICON_RES = {
+export const ICON_RES = {
   BACK: 'back',
   CLOSE: 'close',
   SHARE: 'share',
