@@ -11,8 +11,8 @@ import {
   getBusiness,
   getMerchantCountry,
   getBusinessInfo,
-  getUser,
   getDeliveryInfo,
+  getHasLoginGuardPassed,
 } from '../../../../redux/modules/app';
 import {
   getPaymentsPendingState,
@@ -31,7 +31,7 @@ import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
 
-const { ROUTER_PATHS, DELIVERY_METHOD, PAYMENT_PROVIDERS } = Constants;
+const { ROUTER_PATHS, DELIVERY_METHOD, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } = Constants;
 
 class Payment extends Component {
   state = {
@@ -91,6 +91,11 @@ class Payment extends Component {
         break;
       case DELIVERY_METHOD.DINE_IN:
       case DELIVERY_METHOD.TAKE_AWAY:
+        history.push({
+          pathname: ROUTER_PATHS.ORDERING_CART,
+          search: window.location.search,
+        });
+        break;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
       default:
@@ -103,17 +108,24 @@ class Payment extends Component {
   };
 
   handleBeforeCreateOrder = async () => {
-    const { history, currentPaymentOption, currentPaymentSupportSaveCard, user, paymentActions } = this.props;
+    const {
+      history,
+      currentPaymentOption,
+      currentPaymentSupportSaveCard,
+      hasLoginGuardPassed,
+      paymentActions,
+    } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
       payNowLoading: true,
     });
 
-    if (!Utils.isDigitalType() && !user.consumerId) {
+    if (!hasLoginGuardPassed) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
+        state: { shouldGoBack: true },
       });
       return;
     }
@@ -210,7 +222,12 @@ class Payment extends Component {
           }}
         >
           {this.renderPaymentList()}
-          <PayByCash onPayWithCash={redirectUrl => (window.location = redirectUrl)} />
+          <PayByCash
+            onPayWithCash={redirectUrl => {
+              Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
+              window.location = redirectUrl;
+            }}
+          />
         </div>
 
         <footer
@@ -263,8 +280,8 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         businessInfo: getBusinessInfo(state),
         merchantCountry: getMerchantCountry(state),
-        user: getUser(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        hasLoginGuardPassed: getHasLoginGuardPassed(state),
       };
     },
     dispatch => ({

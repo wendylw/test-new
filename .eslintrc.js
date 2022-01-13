@@ -310,7 +310,6 @@ const legacyFiles = [
   'src/utils/api/api-fetch.js',
   'src/utils/api/api-utils.js',
   'src/utils/aws-s3.js',
-  'src/utils/backHelper.js',
   'src/utils/business-name.js',
   'src/utils/clevertap.js',
   'src/utils/constants.js',
@@ -357,6 +356,13 @@ const legacyFiles = [
   'src/voucher/redux/store.js',
   'src/voucher/redux/types.js',
   'src/voucher/utils.js',
+  'src/ordering/components/PageProcessingLoader.jsx',
+  'src/ordering/containers/order-status/containers/ThankYou/components/SelfPickup.jsx',
+  'src/ordering/containers/order-status/containers/ThankYou/utils.js',
+  'src/ordering/containers/order-status/redux/api-info.js',
+  'src/ordering/containers/order-status/redux/selector.js',
+  'src/ordering/containers/order-status/redux/thunks.js',
+  'src/ordering/containers/order-status/redux/selector.js',
 ];
 
 module.exports = {

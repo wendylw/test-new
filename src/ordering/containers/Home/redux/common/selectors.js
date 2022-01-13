@@ -2,6 +2,9 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../../../redux/modules/entities/products';
+import { getMerchantCountry, getDeliveryInfo } from '../../../../redux/modules/app';
+import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
+import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 export const getSelectedProductId = state => state.home.common.selectedProductDetail.productId;
 
@@ -26,3 +29,34 @@ export const getSelectedProductDetail = createSelector(getSelectedProduct, getSe
     categoryRank: _get(category, 'rank', null),
   };
 });
+
+export const getDeliveryHasAlcohol = createSelector(
+  getDeliveryInfo,
+  deliveryInfo => !!(deliveryInfo && deliveryInfo.sellAlcohol)
+);
+
+export const getCountryHasDrinkingAgeRestriction = createSelector(
+  getMerchantCountry,
+  country => !ALCOHOL_FREE_COUNTRY_LIST.includes(country)
+);
+
+export const getUserAlcoholConsent = state => state.home.common.alcoholConsent;
+
+export const getUserHasReachedLegalDrinkingAge = createSelector(
+  getUserAlcoholConsent,
+  alcoholConsent => !!alcoholConsent.data
+);
+
+export const getHasUserAlcoholConsentRequestFulfilled = createSelector(
+  getUserAlcoholConsent,
+  alcoholConsent => alcoholConsent.status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getShouldShowAlcoholModal = createSelector(
+  getDeliveryHasAlcohol,
+  getCountryHasDrinkingAgeRestriction,
+  getUserHasReachedLegalDrinkingAge,
+  getHasUserAlcoholConsentRequestFulfilled,
+  (hasAlcohol, hasDrinkingAgeRestriction, hasReachedLegalDrinkingAge, hasRequestFulfilled) =>
+    hasAlcohol && hasDrinkingAgeRestriction && hasRequestFulfilled && !hasReachedLegalDrinkingAge
+);

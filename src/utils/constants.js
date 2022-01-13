@@ -34,7 +34,6 @@ const ROUTER_PATHS = {
   ORDERING_ONLINE_CVV: '/payment/cvv',
   MERCHANT_INFO: '/need-help',
   ORDERING_STORE_LIST: '/storeList',
-  PROFILE: '/profile',
   ADDRESS_LIST: '/addressList',
   ADDRESS_DETAIL: '/addressDetail',
   CONTACT_DETAIL: '/contactDetails',
@@ -48,6 +47,7 @@ const ROUTER_PATHS = {
   SCAN: '/scan',
   SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
+  ORDER_HISTORY: '/order-history',
   // voucher
   VOUCHER_HOME: '/voucher',
   VOUCHER_CONTACT: '/voucher/contact',
@@ -325,7 +325,7 @@ const ERROR_CODE_MAP = {
     title: 'ApiError:54012Title',
     desc: 'ApiError:54012Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
-    buttonText: 'Common:OK',
+    buttonText: 'Common:EditCart',
     showModal: true,
   },
   54013: {
@@ -608,6 +608,10 @@ const ORDER_STATUS = {
   LOGISTICS_CONFIRMED: 'logisticsConfirmed',
   CONFIRMED: 'confirmed',
   DELIVERED: 'delivered',
+  /**
+   * If shipping type is delivery, pickedUp means picked up by rider.
+   * if shipping type is self-pickup, pickedUp means picked up by customer
+   * */
   PICKED_UP: 'pickedUp',
 };
 
@@ -646,12 +650,14 @@ const CLIENTS = {
   WEB: 'web',
   IOS: 'iOS',
   ANDROID: 'Android',
+  TNG_MINI_PROGRAM: 'tngMiniProgram',
 };
 
 export const REGISTRATION_TOUCH_POINT = {
   CLAIM_CASHBACK: 'ClaimCashback',
   ONLINE_ORDER: 'OnlineOrder',
   QR_ORDER: 'QROrder',
+  TNG: 'TNG',
 };
 
 export const REGISTRATION_SOURCE = {
@@ -659,12 +665,40 @@ export const REGISTRATION_SOURCE = {
   RECEIPT: 'Receipt',
   BEEP_STORE: 'BeepStore',
   BEEP_SITE: 'BeepSite',
+  TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
 };
 
 export const API_REQUEST_STATUS = {
   PENDING: 'pending',
   FULFILLED: 'fulfilled',
   REJECTED: 'rejected',
+};
+
+export const ORDER_SOURCE = {
+  TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
+  BEEP_APP: 'BeepApp',
+  BEEP_SITE: 'BeepSite',
+  BEEP_STORE: 'BeepStore',
+};
+
+export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
+  [DELIVERY_METHOD.DINE_IN]: 'dine in',
+  [DELIVERY_METHOD.PICKUP]: 'self pickup',
+  [DELIVERY_METHOD.DELIVERY]: 'delivery',
+  [DELIVERY_METHOD.TAKE_AWAY]: 'take away',
+};
+
+export const PROMOTION_CLIENT_TYPES = {
+  TNG_MINI_PROGRAM: 'tngMiniProgram',
+  APP: 'app',
+  WEB: 'web',
+};
+
+export const REFERRER_SOURCE_TYPES = {
+  PAYMENT: 'payment',
+  CASHBACK: 'cashback',
+  PAY_AT_COUNTER: 'payAtCounter',
+  LOGIN: 'login',
 };
 
 export default {
@@ -714,4 +748,8 @@ export default {
   REGISTRATION_TOUCH_POINT,
   REGISTRATION_SOURCE,
   API_REQUEST_STATUS,
+  ORDER_SOURCE,
+  ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
+  PROMOTION_CLIENT_TYPES,
+  REFERRER_SOURCE_TYPES,
 };

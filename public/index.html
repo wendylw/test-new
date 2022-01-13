@@ -35,6 +35,27 @@
     <meta property="al:web:should_fallback" content="true" />
     <meta property="fb:app_id" content="1808145769328485" />
 
+    <script>
+      var userAgent = navigator.userAgent || "";
+      var isInTngMiniProgram = userAgent.indexOf('TNGKit') > -1 && userAgent.indexOf('MiniProgram') > -1;
+      var isInTngIDE = userAgent.indexOf('AlipayIDE') > -1 && userAgent.indexOf('AlipayClient') > -1;
+
+      window._isTNGMiniProgram_ = isInTngMiniProgram || isInTngIDE;
+
+      if(window._isTNGMiniProgram_) {
+        document.writeln('<script src="https://appx/web-view.min.js"></' + 'script>');
+      }
+
+    </script>
+    <script>
+      if (document.cookie.indexOf('sh_devtools_enabled=true') > -1) {
+        // toggle to commented code to toggle devtools. please also toggle the one in DevToolsTrigger.jsx
+        // document.writeln('<script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></' + 'script>');
+        // document.writeln('<script>window.vConsoleInstance = new window.VConsole();</' + 'script>')
+        document.writeln('<script src="https://cdn.jsdelivr.net/npm/eruda"></' + 'script>');
+        document.writeln('<script>window.eruda.init();</' + 'script>')
+      }
+    </script>
     <script type="text/javascript">
       var url = window.location.href; 
       var appLinkMeta1 = document.createElement('meta')
@@ -139,7 +160,7 @@
     </script>
 
     <!-- NOTE: If you want add some polyfill, please check whether it's already included in the polyfill collections like `default` or `es2015`, etc. -->
-    <script src="https://polyfill-service.pro.mymyhub.com/v3/polyfill.min.js?features=default%2Ces2015%2Ces2016%2Ces2017%2Cnavigator.geolocation%2CglobalThis%2CIntl.~locale.en%2CIntl.~locale.th" crossorigin="anonymous" onerror="logScriptLoadError('polyfill-service')"></script>
+    <script src="https://polyfills.io/v3/polyfill.min.js?features=default%2Ces2015%2Ces2016%2Ces2017%2Cnavigator.geolocation%2CglobalThis%2CIntl.~locale.en%2CIntl.~locale.th" crossorigin="anonymous" onerror="logScriptLoadError('polyfill-service')"></script>
 
     <script>
       (function () {

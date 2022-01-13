@@ -22,7 +22,7 @@
   "54415NoSourceProperty": "This promo code is invalid (Error: 54415)",
   "54416AppliedSourceDoesNotMatch": "This promotion is only for {{supportedChannel}} order (Error: 54416)",
   "54417NotMatchMinSubtotalConsumingPromo": "This promotion cannot be used because the minimum order value is not matched ({{minSubtotalConsumingPromo}}) (Error: 54417)",
-  "54418NotMatchAppliedClientType": "This promotion can only be use on {{supportClient}} (Error: 54418)",
+  "54418NotMatchAppliedClientType": "This promo code can only be used on {{supportClient}} (#54418)",
   "54419OnlyApplicableForParticipating": "Sorry, this promo code is only applicable for participating restaurants (#54419)",
   "54420ReachMaxBusinessClaimCount": "Sorry, this promo code has been fully redeemed (#54420)",
   "60001NotExisted": "This voucher code does not exist",

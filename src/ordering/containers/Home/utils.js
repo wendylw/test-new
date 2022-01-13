@@ -1,20 +1,8 @@
-import Utils from '../../../utils/utils';
+import config from '../../../config';
 import { get } from '../../../utils/request';
 import { sourceType } from './constants';
-
-export const isSourceBeepitCom = () => {
-  const source = Utils.getQueryString('source');
-
-  if (source) {
-    const match = source.match(/^(?:https?:\/\/)?([^:/?#]+)/im);
-    if (match) {
-      const domain = match[1];
-      return Utils.isSiteApp(domain);
-    }
-  }
-
-  return false;
-};
+import Utils from '../../../utils/utils';
+import { PROMOTION_CLIENT_TYPES } from '../../../utils/constants';
 
 export const isSourceFromShoppingCart = () => {
   const source = Utils.getQueryString('source');
@@ -24,7 +12,8 @@ export const isSourceFromShoppingCart = () => {
 // todo: this should be global use
 export const fetchRedirectPageState = async () => {
   try {
-    return await get('/go2page/state');
+    const beepSiteUrl = config.beepitComUrl;
+    return await get(`${beepSiteUrl}/go2page/state`);
   } catch (e) {
     console.error(e);
     return {};
@@ -58,4 +47,16 @@ export const marginBottom = ({ footerEls = [] }) => {
   }
 
   return bottom;
+};
+
+export const getCurrentPromotionClientType = () => {
+  if (Utils.isTNGMiniProgram()) {
+    return PROMOTION_CLIENT_TYPES.TNG_MINI_PROGRAM;
+  }
+
+  if (Utils.isWebview()) {
+    return PROMOTION_CLIENT_TYPES.APP;
+  }
+
+  return PROMOTION_CLIENT_TYPES.WEB;
 };

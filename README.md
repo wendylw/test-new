@@ -4,20 +4,21 @@
 
 1. [Abstraction](#abstraction)
 2. [Environments](#environments)
-3. [Get started](#get-started)
+3. [Setup](#setup)
+4. [Get started](#get-started)
    1. [Installation](#installation)
    2. [Test environment .ENV](#env)
    3. [Set local domain](#set-local-domain)
    4. [Start F&B && Loyalty](#start-ordering-loyalty)
    5. [Start Beep Entrance](#beep-entrance)
    6. [Online Debug](#online-debug)
-4. [Customize Workbox Service Workers](#customize-workbox-service-workers)
-5. [I18N JSON File Style Guide](#i18n-json-style-guide)
-6. [Style Guide](#style-guide)
-7. [Analyzing bundle size](#analyzing-bundle-size)
-8. [Trouble Shooting](#trouble-shooting)
-9. [Heap name convention for loggly](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
-10. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
+5. [Customize Workbox Service Workers](#customize-workbox-service-workers)
+6. [I18N JSON File Style Guide](#i18n-json-style-guide)
+7. [Style Guide](#style-guide)
+8. [Analyzing bundle size](#analyzing-bundle-size)
+9. [Trouble Shooting](#trouble-shooting)
+10. [Heap name convention for loggly](https://storehub.atlassian.net/wiki/spaces/SHFET/pages/617087695/Heap+name+convention)
+11. [Test URL](https://github.com/storehubnet/beep-v1-web/wiki/Test-URL)
 
 <a name="abstraction"></a>
 
@@ -32,6 +33,20 @@ Front end of this project is bootstrapped by [CRA (Create React App)](https://cr
 - nvm
 - node 12.17.x
 - yarn
+
+<a name="setup"></a>
+
+## Setup
+```
+# Install npm-cli-login package on global
+npm install npm-cli-login -g
+
+# setup the StoreHub private register
+npm config set registry https://npm-proxy.fury.io/byP2nuz4Las5rf72y98D/storehub/ && npm config set ca ""
+
+# Login on the register
+npm-cli-login -u storehub -e developer@storehub.com -p "a[RF8zZy" -r https://npm-proxy.fury.io/byP2nuz4Las5rf72y98D/storehub/
+```
 
 <a name="get-started"></a>
 

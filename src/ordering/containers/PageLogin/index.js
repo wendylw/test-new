@@ -6,6 +6,7 @@ import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
+import PageLoader from '../../../components/PageLoader';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
@@ -14,11 +15,18 @@ import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
+import Utils from '../../../utils/utils';
 
 class PageLogin extends React.Component {
   state = {
     sendOtp: false,
   };
+
+  componentDidMount() {
+    if (Utils.isTNGMiniProgram()) {
+      this.loginInTngMiniProgram();
+    }
+  }
 
   componentDidUpdate(prevProps) {
     const { user } = prevProps;
@@ -30,30 +38,15 @@ class PageLogin extends React.Component {
   }
 
   visitNextPage = async () => {
-    const { history, location, user, deliveryDetails, appActions } = this.props;
-    const { username, phone: orderPhone } = deliveryDetails || {};
-    const { nextPage } = location;
-    const { profile } = user || {};
-    const { name, phone } = profile || {};
-    if (nextPage && name) {
-      !username && (await appActions.updateDeliveryDetails({ username: name }));
-      !orderPhone && (await appActions.updateDeliveryDetails({ phone: phone }));
+    const { history, location } = this.props;
+    const { redirectLocation } = location.state || {};
 
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
-        search: window.location.search,
-      });
-    } else if (nextPage && !name) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.PROFILE,
-        search: window.location.search,
-      });
-    } else {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-        search: window.location.search,
-      });
+    if (redirectLocation) {
+      history.replace(redirectLocation);
+      return;
     }
+
+    this.goBack();
   };
 
   handleCloseOtpModal() {
@@ -98,6 +91,34 @@ class PageLogin extends React.Component {
     }
   }
 
+  goBack = () => {
+    const { history, location } = this.props;
+    const { shouldGoBack } = location.state || {};
+
+    if (shouldGoBack) {
+      history.goBack();
+      return;
+    }
+
+    // Default route
+    history.replace({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: window.location.search,
+    });
+  };
+
+  loginInTngMiniProgram = async () => {
+    const { appActions } = this.props;
+    const isLogin = await appActions.loginByTngMiniProgram();
+
+    if (!isLogin) {
+      this.goBack();
+      return;
+    }
+
+    this.visitNextPage();
+  };
+
   renderOtpModal() {
     const { t, user } = this.props;
     const { isFetching, isResending, isLogin, hasOtp, isError, phone, noWhatsAppAccount, country } = user || {};
@@ -126,9 +147,13 @@ class PageLogin extends React.Component {
   }
 
   render() {
-    const { t, user, className, history } = this.props;
+    const { t, user, className } = this.props;
     const { isLogin, showLoginPage, hasOtp, isFetching, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
+
+    if (Utils.isTNGMiniProgram()) {
+      return <PageLoader />;
+    }
 
     if (isLogin) {
       return null;
@@ -151,12 +176,7 @@ class PageLogin extends React.Component {
             data-heap-name="ordering.login.header"
             title="Login or Create Account"
             isPage={true}
-            navFunc={() => {
-              history.push({
-                pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-                search: window.location.search,
-              });
-            }}
+            navFunc={this.goBack}
           />
           <div className="page-login__container">
             <figure className="page-login__image-container padding-top-bottom-normal margin-top-bottom-small">

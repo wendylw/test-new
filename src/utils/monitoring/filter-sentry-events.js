@@ -95,6 +95,32 @@ const isGoogleAnalytics = event => {
   }
 };
 
+const isIgnoreObjectNotFoundMatchingId = (event, hint) => {
+  // it seems to be a error caused by Microsoft's crawler. Refer to: https://forum.sentry.io/t/unhandledrejection-non-error-promise-rejection-captured-with-value/14062,
+  // so we can ignore it.
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('Object Not Found Matching Id');
+  } catch {
+    return false;
+  }
+};
+
+const isTikTokIssues = (event, hint) => {
+  // These issues cause by tiktok monitoring script.
+  try {
+    const message = getErrorMessageFromHint(hint);
+    // If error message includes `sendAnalyticsEvent not support`, this error is from `tiktok analysis` issue instead of beep issue.
+    const monitorIssue = /sendAnalyticsEvent not support/.test(message);
+    // In this case, the chunk file of tiktok failed to load, not because of the failure to load the Beep file.
+    const chunkLoadFailed = /https:\/\/analytics.tiktok.com/.test(message) && /Loading chunk/.test(message);
+
+    return monitorIssue || chunkLoadFailed;
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -105,7 +131,9 @@ const shouldFilter = (event, hint) => {
       isChargeEventStructureInvalid(event, hint) ||
       isDuplicateChargeId(event, hint) ||
       isTokenExpired(event, hint) ||
-      isGoogleAnalytics(event)
+      isGoogleAnalytics(event) ||
+      isIgnoreObjectNotFoundMatchingId(event, hint) ||
+      isTikTokIssues(event, hint)
     );
   } catch {
     return false;

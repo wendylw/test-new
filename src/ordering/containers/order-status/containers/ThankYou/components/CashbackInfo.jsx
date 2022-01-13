@@ -1,24 +1,31 @@
-import _isNumber from 'lodash/isNumber';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { getCashbackInfo } from '../redux/selector';
+import { bindActionCreators } from 'redux';
+import { getCashback, getIsCashbackClaimable } from '../redux/selector';
+import { createCashbackInfo } from '../redux/thunks';
 import IconCelebration from '../../../../../../images/icon-celebration.svg';
+import Utils from '../../../../../../utils/utils';
 import cashbackSuccessImage from '../../../../../../images/succeed-animation.gif';
 import CurrencyNumber from '../../../../../components/CurrencyNumber';
 
 const ANIMATION_TIME = 3600;
-const GET_CASHBACK_STATUS_LIST = ['Claimed_NotFirstTime', 'Claimed_Repeat', 'Claimed_FirstTime'];
 
-function CashbackInfo({ enableCashback, cashbackInfo }) {
+function CashbackInfo({ cashback, isCashbackClaimable, claimCashback }) {
   const timeoutRef = useRef(null);
   const { t } = useTranslation('OrderingThankYou');
-  const { cashback: originalCashback, status: cashbackStatus } = cashbackInfo;
-  const cashback = _isNumber(Number(originalCashback)) ? Number(originalCashback) : 0;
   const [cashbackSuccessImageVisibility, setCashbackSuccessImageVisibility] = useState(true);
   const [imgLoaded, setImageLoaded] = useState(false);
   const handleHideCashbackSuccessImage = useCallback(() => setCashbackSuccessImageVisibility(false), []);
+  const phone = Utils.getLocalStorageVariable('user.p');
+  const receiptNumber = Utils.getQueryString('receiptNumber') || '';
+
+  useEffect(() => {
+    if (isCashbackClaimable) {
+      claimCashback({ phone, receiptNumber });
+    }
+  }, [phone, receiptNumber, isCashbackClaimable, claimCashback]);
 
   useEffect(() => {
     if (imgLoaded) {
@@ -30,53 +37,52 @@ function CashbackInfo({ enableCashback, cashbackInfo }) {
     };
   }, [imgLoaded, handleHideCashbackSuccessImage]);
 
-  if (!enableCashback || !cashback) {
-    return null;
-  }
-
   return (
-    GET_CASHBACK_STATUS_LIST.includes(cashbackStatus) && (
-      <div className="ordering-thanks__card-prompt card text-center padding-small margin-small">
-        {cashbackSuccessImageVisibility ? (
-          <img
-            src={cashbackSuccessImage}
-            alt="cashback Earned"
-            onLoad={() => setImageLoaded(true)}
-            className="ordering-thanks__card-prompt-congratulation absolute-wrapper"
-          />
-        ) : null}
-        <CurrencyNumber
-          className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
-          money={cashback}
+    <div className="ordering-thanks__card-prompt card text-center padding-small margin-small">
+      {cashbackSuccessImageVisibility ? (
+        <img
+          src={cashbackSuccessImage}
+          alt="cashback Earned"
+          onLoad={() => setImageLoaded(true)}
+          className="ordering-thanks__card-prompt-congratulation absolute-wrapper"
         />
-        <h3 className="flex flex-middle flex-center">
-          <span className="text-size-big text-weight-bolder">{t('EarnedCashBackTitle')}</span>
-          <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
-        </h3>
-        <p className="ordering-thanks__card-prompt-description margin-top-bottom-small text-line-height-base">
-          {t('EarnedCashBackDescription')}
-        </p>
-      </div>
-    )
+      ) : null}
+      <CurrencyNumber
+        className="ordering-thanks__card-prompt-total padding-top-bottom-normal text-size-huge text-weight-bolder"
+        money={cashback}
+      />
+      <h3 className="flex flex-middle flex-center">
+        <span className="text-size-big text-weight-bolder">{t('EarnedCashBackTitle')}</span>
+        <img src={IconCelebration} className="icon icon__small" alt="Beep Celebration" />
+      </h3>
+      <p className="margin-left-right-normal margin-top-bottom-small text-line-height-base">
+        {t('EarnedCashBackDescription')}
+      </p>
+    </div>
   );
 }
 
 CashbackInfo.displayName = 'CashbackInfo';
 
 CashbackInfo.propTypes = {
-  enableCashback: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
-  cashbackInfo: PropTypes.object,
+  cashback: PropTypes.number,
+  isCashbackClaimable: PropTypes.bool,
+  claimCashback: PropTypes.func,
 };
 
 CashbackInfo.defaultProps = {
-  enableCashback: false,
-  cashbackInfo: {},
+  cashback: 0,
+  isCashbackClaimable: false,
+  claimCashback: () => {},
 };
 
 export default connect(
   state => ({
-    cashbackInfo: getCashbackInfo(state),
+    cashback: getCashback(state),
+    isCashbackClaimable: getIsCashbackClaimable(state),
   }),
-  {}
+  dispatch => ({
+    claimCashback: bindActionCreators(createCashbackInfo, dispatch),
+  })
 )(CashbackInfo);
