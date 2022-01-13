@@ -666,7 +666,7 @@ export const REGISTRATION_SOURCE = {
   BEEP_STORE: 'BeepStore',
   BEEP_SITE: 'BeepSite',
   TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
-  SHARED_LINK: 'Shared link',
+  SHARED_LINK: 'SharedLink',
 };
 
 export const API_REQUEST_STATUS = {
@@ -700,12 +700,6 @@ export const REFERRER_SOURCE_TYPES = {
   CASHBACK: 'cashback',
   PAY_AT_COUNTER: 'payAtCounter',
   LOGIN: 'login',
-};
-
-export const ICON_RES = {
-  BACK: 'back',
-  CLOSE: 'close',
-  SHARE: 'share',
 };
 
 export default {
@@ -759,5 +753,4 @@ export default {
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
   PROMOTION_CLIENT_TYPES,
   REFERRER_SOURCE_TYPES,
-  ICON_RES,
 };

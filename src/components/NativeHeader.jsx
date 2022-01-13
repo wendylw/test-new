@@ -6,7 +6,12 @@ import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 import * as NativeMethods from '../utils/native-methods';
-import { ICON_RES } from '../utils/constants';
+
+const ICON_RES = {
+  BACK: 'back',
+  CLOSE: 'close',
+  SHARE: 'share',
+};
 
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;

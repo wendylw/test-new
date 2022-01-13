@@ -832,7 +832,7 @@ export class Home extends Component {
       storeName = _truncate(`${storeName}`, { length: 33 });
 
       const storeUrl = window.location.href;
-      const shareLinkUrl = `${storeUrl}&source=shareLink&utm_source=store_link&utm_medium=share`;
+      const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
 
       const { url_short } = await fetchShortUrl(shareLinkUrl);
 
@@ -840,15 +840,17 @@ export class Home extends Component {
         link: `${url_short}`,
         title: t('shareTitle', { storeName }),
       };
-      await NativeMethods.shareLink(para);
+      NativeMethods.shareLink(para);
 
       const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;
       CleverTap.pushEvent('Menu page - Click share store link', {
+        'account name': businessInfo.name,
         country: _get(businessInfo, 'country', ''),
         'free delivery above': freeShippingMinAmount || 0,
         'shipping type': Utils.getOrderTypeFromUrl(),
         cashback: Math.floor((1 / defaultLoyaltyRatio) * 100) / 100,
+        source: Utils.getOrderSourceForCleverTab(),
       });
     } catch (error) {
       console.error(`failed to share store link: ${error.message}`);
