@@ -37,9 +37,13 @@ class App extends Component {
       }
     }
 
+    const { REGISTRATION_SOURCE } = Constants;
     const source = Utils.getQueryString('source');
 
-    Utils.dealWithSourceFromQuery(source);
+    Utils.saveSourceUrlToSessionStorage(source);
+    if (source === REGISTRATION_SOURCE.SHARED_LINK) {
+      Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.SHARED_LINK);
+    }
   }
   state = {};
 

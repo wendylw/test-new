@@ -702,11 +702,10 @@ export const REFERRER_SOURCE_TYPES = {
   LOGIN: 'login',
 };
 
-export const SHARE_LINK_URL = {
-  SHARE_LINK: 'shareLink',
-  STORE_LINK: 'store_link',
+export const ICON_RES = {
+  BACK: 'back',
+  CLOSE: 'close',
   SHARE: 'share',
-  BEEP_MODULE_SHARE_LINK: 'beepModule-shareLink',
 };
 
 export default {
@@ -760,5 +759,5 @@ export default {
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
   PROMOTION_CLIENT_TYPES,
   REFERRER_SOURCE_TYPES,
-  SHARE_LINK_URL,
+  ICON_RES,
 };

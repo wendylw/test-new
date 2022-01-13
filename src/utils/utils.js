@@ -908,11 +908,11 @@ Utils.getRegistrationSource = () => {
       }
 
     case REGISTRATION_TOUCH_POINT.QR_ORDER:
-      if (Utils.isWebview() && Utils.isSharedLink()) {
+      if (Utils.isSharedLink()) {
         return REGISTRATION_SOURCE.SHARED_LINK;
       }
     case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
-      if (Utils.isWebview() && Utils.isSharedLink()) {
+      if (Utils.isSharedLink()) {
         return REGISTRATION_SOURCE.SHARED_LINK;
       }
     default:
@@ -965,27 +965,6 @@ Utils.saveSourceUrlToSessionStorage = sourceUrl => {
 
 Utils.getSourceUrlFromSessionStorage = () => {
   return Utils.getSessionVariable('BeepOrderingSourceUrl');
-};
-
-Utils.dealWithSourceFromQuery = source => {
-  Utils.saveSourceUrlToSessionStorage(source);
-  if (Utils.isFromBeepSite()) {
-    Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.BEEP_SITE);
-  } else if (Utils.isTNGMiniProgram()) {
-    Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.TNGD_MINI_PROGRAM);
-  } else if (Utils.isWebview()) {
-    Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.BEEP_APP);
-  } else if (source === REGISTRATION_SOURCE.SHARED_LINK) {
-    Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.SHARED_LINK);
-  }
-};
-
-Utils.shortName = name => {
-  if (name.length > 30) {
-    return name.slice(0, 30) + `...`;
-  } else {
-    return name;
-  }
 };
 
 Utils.submitForm = (action, data) => {

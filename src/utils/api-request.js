@@ -1,4 +1,4 @@
-import { post } from './api/api-fetch';
+import { post, get } from './api/api-fetch';
 import Utils from './utils';
 import CleverTap from './clevertap';
 
@@ -35,4 +35,11 @@ export const login = ({ accessToken, refreshToken, fulfillDate }) =>
     CleverTap.onUserLogin(userInfo);
 
     return data;
+  });
+
+export const fetchShortUrl = url =>
+  get('/api/shrink', {
+    queryParams: {
+      url,
+    },
   });

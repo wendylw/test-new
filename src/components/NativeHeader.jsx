@@ -6,9 +6,11 @@ import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 import * as NativeMethods from '../utils/native-methods';
+import { ICON_RES } from '../utils/constants';
 
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;
+  const { BACK, CLOSE } = ICON_RES;
   const headerParams = {
     left: null,
     center: null,
@@ -18,7 +20,7 @@ function getNativeHeaderParams(props) {
   headerParams.left = {
     type: 'button',
     id: 'headerBackButton',
-    iconRes: isPage ? 'back' : 'close',
+    iconRes: isPage ? BACK : CLOSE,
     events: ['onClick'],
   };
 

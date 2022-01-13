@@ -91,11 +91,19 @@ const dsBridgeAsyncCall = (method, params) =>
     throw error;
   });
 
+const NATIVE_METHOD_SUPPORT_MAP = {};
+
 export const hasMethodInNative = method => {
   try {
-    return dsBridgeSyncCall('hasNativeMethod', {
-      methodName: method,
-    });
+    const isInMap = Object.prototype.hasOwnProperty.call(NATIVE_METHOD_SUPPORT_MAP, method);
+
+    if (!isInMap) {
+      NATIVE_METHOD_SUPPORT_MAP[method] = dsBridgeSyncCall('hasNativeMethod', {
+        methodName: method,
+      });
+    }
+
+    return NATIVE_METHOD_SUPPORT_MAP[method];
   } catch (error) {
     return false;
   }

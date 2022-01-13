@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import _get from 'lodash/get';
+import _truncate from 'lodash/truncate';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import Utils from '../../../utils/utils';
@@ -23,6 +24,7 @@ import {
   getDeliveryInfo,
   getCategoryProductList,
 } from '../../redux/modules/app';
+import { fetchShortUrl } from '../../../../src/utils/api-request';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
@@ -48,7 +50,6 @@ import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
-import { get } from '../../../utils/api/api-fetch';
 
 const localState = {
   blockScrollTop: 0,
@@ -824,45 +825,42 @@ export class Home extends Component {
 
   handleClickShare = async () => {
     try {
-      let storeName = window.document.title;
-      storeName = Utils.shortName(storeName);
+      const { onlineStoreInfo, businessInfo, t } = this.props;
+      const { stores, multipleStores } = businessInfo || {};
+      const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+      let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
+      storeName = _truncate(`${storeName}`, { length: 33 });
 
-      const { SHARE_LINK, STORE_LINK, SHARE } = Constants.SHARE_LINK_URL;
       const storeUrl = window.location.href;
-      const shareLinkUrl = encodeURIComponent(
-        `${storeUrl}&source=${SHARE_LINK}&utm_source=${STORE_LINK}&utm_medium=${SHARE}`
-      );
+      const shareLinkUrl = `${storeUrl}&source=shareLink&utm_source=store_link&utm_medium=share`;
 
-      const fetchShortUrl = url => get(`/api/shrink?url=${url}`);
       const { url_short } = await fetchShortUrl(shareLinkUrl);
 
       const para = {
         link: `${url_short}`,
-        title: `Hey foodie! Did you know (${storeName}) is on Beep? Jom, let's order`,
+        title: t('shareTitle', { storeName }),
       };
       await NativeMethods.shareLink(para);
 
-      const { businessInfo, freeShippingMinAmount } = this.props;
+      const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;
       CleverTap.pushEvent('Menu page - Click share store link', {
-        'account name': businessInfo.name,
         country: _get(businessInfo, 'country', ''),
         'free delivery above': freeShippingMinAmount || 0,
         'shipping type': Utils.getOrderTypeFromUrl(),
-        cashback: `${defaultLoyaltyRatio}%`,
-        source: Utils.getOrderSourceForCleverTab(),
+        cashback: Math.floor((1 / defaultLoyaltyRatio) * 100) / 100,
       });
     } catch (error) {
-      console.log(error);
+      console.error(`failed to share store link: ${error.message}`);
     }
   };
 
   getRightContentOfHeader = () => {
     try {
       const isDeliveryOrder = Utils.isDeliveryOrder();
-      const { BEEP_MODULE_SHARE_LINK, SHARE } = Constants.SHARE_LINK_URL;
+      const { SHARE } = Constants.ICON_RES;
 
-      if (isDeliveryOrder && NativeMethods.hasMethodInNative(BEEP_MODULE_SHARE_LINK)) {
+      if (isDeliveryOrder && NativeMethods.hasMethodInNative('beepModule-shareLink')) {
         return {
           iconRes: SHARE,
           onClick: this.handleClickShare,
@@ -871,7 +869,7 @@ export class Home extends Component {
         return null;
       }
     } catch (error) {
-      console.log(error);
+      console.error(`failed to share store link: ${error.message}`);
     }
   };
 
