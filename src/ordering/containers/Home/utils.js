@@ -1,6 +1,6 @@
 import Utils from '../../../utils/utils';
 import { get } from '../../../utils/request';
-import Constants from '../../../utils/constants';
+import { sourceType } from './constants';
 
 export const isSourceBeepitCom = () => {
   const source = Utils.getQueryString('source');
@@ -17,16 +17,8 @@ export const isSourceBeepitCom = () => {
 };
 
 export const isSourceFromShoppingCart = () => {
-  const { ROUTER_PATHS } = Constants;
   const source = Utils.getQueryString('source');
-
-  try {
-    const { pathname } = new URL(source);
-    return pathname === ROUTER_PATHS.SHOPPING_CART;
-  } catch {
-    // source is invalid URL
-    return false;
-  }
+  return source === sourceType.SHOPPING_CART;
 };
 
 // todo: this should be global use

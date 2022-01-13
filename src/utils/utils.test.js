@@ -57,7 +57,7 @@ describe('utils/utils', () => {
 
   it('getFilteredQueryString', () => {
     const mockQuery =
-      '?h=U2FsdGVkX1%2FQuvwwVAwo86zaksrs1CTAp%2FtwS25fgiHhftafA8po%2Fy0SAmPH2JQc&type=delivery&source=http%3A%2F%2Fwww.beep.local.shub.us%3A3100%2Fshopping-cart';
+      '?h=U2FsdGVkX1%2FQuvwwVAwo86zaksrs1CTAp%2FtwS25fgiHhftafA8po%2Fy0SAmPH2JQc&type=delivery&source=shoppingCart';
     const oldLocation = window.location;
 
     delete window.location;
