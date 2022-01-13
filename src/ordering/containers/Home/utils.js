@@ -1,13 +1,7 @@
 import config from '../../../config';
 import { get } from '../../../utils/request';
-import { sourceType } from './constants';
 import Utils from '../../../utils/utils';
 import { PROMOTION_CLIENT_TYPES } from '../../../utils/constants';
-
-export const isSourceFromShoppingCart = () => {
-  const source = Utils.getQueryString('source');
-  return source === sourceType.SHOPPING_CART;
-};
 
 // todo: this should be global use
 export const fetchRedirectPageState = async () => {

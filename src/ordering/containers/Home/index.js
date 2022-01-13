@@ -24,7 +24,7 @@ import {
 } from '../../redux/modules/app';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { fetchRedirectPageState, isSourceFromShoppingCart, windowSize, mainTop, marginBottom } from './utils';
+import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
@@ -45,6 +45,7 @@ import CurrentCategoryBar from './components/CurrentCategoryBar';
 import ProductList from './components/ProductList';
 import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
+import { sourceType } from './constants';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
 
@@ -193,8 +194,9 @@ export class Home extends Component {
   showCartListDrawerIfNeeded = () => {
     const { history } = this.props;
     const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
+    const source = Utils.getQueryString('source');
 
-    if (!isSourceFromShoppingCart()) return;
+    if (source !== sourceType.SHOPPING_CART) return;
 
     this.handleToggleAside(ASIDE_NAMES.CART);
 
