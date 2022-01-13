@@ -240,7 +240,7 @@ export class TableSummary extends React.Component {
 
           return (
             <div key={`sub-order-${subOrderId}`} className="table-summary__sub-order padding-top-bottom-small">
-              <div className="text-right padding-small">
+              <div className="text-right padding-left-right-small padding-top-bottom-smaller">
                 <span className="margin-small text-opacity">
                   {t('CreatedOrderTime', { submittedTime: localeSubmittedTime })}
                 </span>
