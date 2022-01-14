@@ -209,5 +209,7 @@
   "BeepTngMiniProgram": "Beep Mini Program via the Touch ’n Go eWallet app",
   "EditCart": "Edit Cart",
   "TableNumber": "Table Number",
-  "OrderNumber": "Order Number"
+  "OrderNumber": "Order Number",
+  "OrderHasPaidAlertTitle": "Order paid",
+  "OrderHasPaidAlertDescription": " Someone from your table has paid for this order."
 }
