@@ -76,7 +76,13 @@ describe('utils/utils', () => {
     );
     // Test multiple key test
     expect(getFilteredQueryString(['h', 'source'])).toBe('?type=delivery');
-
+    // Test use different query string
+    expect(
+      getFilteredQueryString(
+        'source',
+        '?h=U2FsdGVkX19g2yqZcB3ycUaQWivvXMyIGg7nE5XUc%2Btit3ww3UbRHImfI1koRLPb&type=dine-in&source=shoppingCart'
+      )
+    ).toBe('?h=U2FsdGVkX19g2yqZcB3ycUaQWivvXMyIGg7nE5XUc%2Btit3ww3UbRHImfI1koRLPb&type=dine-in');
     // Reset to original state
     window.location = oldLocation;
   });
