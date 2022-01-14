@@ -61,10 +61,14 @@ export class TableSummary extends React.Component {
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
 
-    const { thankYouPageUrl } = this.props;
+    const { thankYouPageUrl, shippingType } = this.props;
 
     if (thankYouPageUrl) {
-      window.location.href = thankYouPageUrl;
+      // Add "type" into thankYouPageUrl query
+      const urlObj = new URL(thankYouPageUrl, window.location.origin);
+      urlObj.searchParams.set('type', shippingType);
+
+      window.location.href = urlObj.toString();
     }
   }
 

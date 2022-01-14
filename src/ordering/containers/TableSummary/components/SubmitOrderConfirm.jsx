@@ -14,6 +14,7 @@ import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
 import { alert } from '../../../../common/feedback';
 import Utils from '../../../../utils/utils';
+import { getShippingType } from '../../../redux/modules/app';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -24,6 +25,7 @@ function SubmitOrderConfirm({
   orderCompletedStatus,
   submitOrders,
   history,
+  shippingType,
 }) {
   const { t } = useTranslation('OrderingTableSummary');
 
@@ -59,7 +61,11 @@ function SubmitOrderConfirm({
                 const { redirectUrl: thankYouPageUrl } = await submitOrders().unwrap();
 
                 if (orderCompletedStatus && thankYouPageUrl) {
-                  window.location.href = thankYouPageUrl;
+                  // Add "type" into thankYouPageUrl query
+                  const urlObj = new URL(thankYouPageUrl, window.location.origin);
+                  urlObj.set('type', shippingType);
+
+                  window.location.href = urlObj.toString();
                 } else {
                   history.push({
                     pathname: ROUTER_PATHS.ORDERING_PAYMENT,
@@ -131,6 +137,7 @@ SubmitOrderConfirm.propTypes = {
   submitOrders: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
   history: PropTypes.object,
+  shippingType: PropTypes.string,
 };
 
 SubmitOrderConfirm.defaultProps = {
@@ -140,6 +147,7 @@ SubmitOrderConfirm.defaultProps = {
   orderCompletedStatus: false,
   submitOrders: () => {},
   history: {},
+  shippingType: '',
 };
 
 export default connect(
@@ -147,6 +155,7 @@ export default connect(
     displaySubmitOrderConfirm: getSubmitOrderConfirmDisplayStatus(state),
     processing: getOrderSubmissionRequestingStatus(state),
     orderCompletedStatus: getOrderCompletedStatus(state),
+    shippingType: getShippingType(state),
   }),
   {
     submitOrders: submitOrdersThunk,

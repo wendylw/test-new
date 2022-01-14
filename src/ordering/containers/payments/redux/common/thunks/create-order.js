@@ -10,7 +10,7 @@ import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
 import { createPaymentDetails, initPayment } from './api-info';
 
-import { getCartItems, getDeliveryDetails } from '../../../../../redux/modules/app';
+import { getCartItems, getDeliveryDetails, getShippingType } from '../../../../../redux/modules/app';
 import {
   getBusiness,
   getOnlineStoreInfo,
@@ -320,6 +320,7 @@ export const callTNGMiniProgramPayment = async ({
 export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
   try {
     const state = getState();
+    const shippingType = getShippingType(state);
     const { currency } = getOnlineStoreInfo(state);
     const business = getBusiness(state);
     const { redirectURL, webhookURL } = getPaymentRedirectAndWebHookUrl(business);
@@ -354,10 +355,23 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
     const { redirectURL: thankYouPageUrl, paymentUrl } = await initPayment(data);
 
     if (paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
+      if (!thankYouPageUrl) {
+        throw new Error('Pay at counter payment failure, because the thankyou page url is empty');
+      }
+
       Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
       loggly.log('create-order.offline-payment.to-thank-you', { orderId });
-      window.location.href = thankYouPageUrl;
+
+      // Add "type" in thankYouPageUrl query
+      const urlObj = new URL(thankYouPageUrl, window.location.origin);
+      urlObj.searchParams.set('type', shippingType);
+
+      window.location.href = urlObj.toString();
       return;
+    }
+
+    if (!paymentUrl) {
+      throw new Error('Goto payment failure, because the payment url is empty');
     }
 
     window.location.href = paymentUrl;
