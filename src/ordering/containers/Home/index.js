@@ -853,20 +853,16 @@ export class Home extends Component {
 
   shortenUrl = async url => {
     if (!SHORTEN_URL_MAP.has(url)) {
-      await fetchShortUrl(url)
-        .then(res => {
-          const { url_short } = res;
-          SHORTEN_URL_MAP.set(url, url_short);
-        })
-        .catch(() => {
-          SHORTEN_URL_MAP.delete(url);
-        });
+      await fetchShortUrl(url).then(res => {
+        const { url_short } = res;
+        SHORTEN_URL_MAP.set(url, url_short);
+      });
     }
 
     return SHORTEN_URL_MAP.get(url);
   };
 
-  handleClickShare = () => {
+  handleClickShare = async () => {
     try {
       const { onlineStoreInfo, businessInfo } = this.props;
       const { stores, multipleStores } = businessInfo || {};
@@ -874,7 +870,9 @@ export class Home extends Component {
       let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
       storeName = _truncate(`${storeName}`, { length: 33 });
 
-      this.getShareLinkUrl(storeName);
+      await this.getShareLinkUrl(storeName).catch(e => {
+        console.log(e);
+      });
 
       const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;
