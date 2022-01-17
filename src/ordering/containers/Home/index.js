@@ -71,6 +71,7 @@ export class Home extends Component {
       isValidToOrderFromMultipleStore: false,
       search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
       windowSize: windowSize(),
+      shortUrl: '',
     };
 
     this.checkUrlType();
@@ -138,6 +139,11 @@ export class Home extends Component {
     if (!hasUserReachedLegalDrinkingAge) getUserAlcoholConsent();
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
+
+    const shareLinkUrl = this.getShareLinkUrl();
+
+    const url_short = await this.shortenUrl(shareLinkUrl);
+    this.setState({ url_short });
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -823,6 +829,37 @@ export class Home extends Component {
     this.handleNavBack();
   };
 
+  getShareLinkUrl = () => {
+    const storeUrl = window.location.href;
+    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+    return shareLinkUrl;
+  };
+
+  useShareLink = (url, storeName) => {
+    const { t } = this.props;
+    const para = {
+      link: `${url}`,
+      title: t('shareTitle', { storeName }),
+    };
+    NativeMethods.shareLink(para);
+  };
+
+  shortenUrl = async url => {
+    const SHORTEN_URL_MAP = new Map();
+    if (!SHORTEN_URL_MAP.has(url)) {
+      await fetchShortUrl(url)
+        .then(res => {
+          const { url_short } = res;
+          SHORTEN_URL_MAP.set(url, url_short);
+        })
+        .catch(() => {
+          SHORTEN_URL_MAP.delete(url);
+        });
+    }
+
+    return SHORTEN_URL_MAP.get(url);
+  };
+
   handleClickShare = async () => {
     try {
       const { onlineStoreInfo, businessInfo, t } = this.props;
@@ -831,16 +868,14 @@ export class Home extends Component {
       let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
       storeName = _truncate(`${storeName}`, { length: 33 });
 
-      const storeUrl = window.location.href;
-      const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+      const shareLinkUrl = this.getShareLinkUrl();
 
-      const { url_short } = await fetchShortUrl(shareLinkUrl);
-
-      const para = {
-        link: `${url_short}`,
-        title: t('shareTitle', { storeName }),
-      };
-      NativeMethods.shareLink(para);
+      if (this.state.url_short) {
+        this.useShareLink(this.state.url_short, storeName);
+      } else {
+        const url_short = await this.shortenUrl(shareLinkUrl);
+        this.useShareLink(url_short, storeName);
+      }
 
       const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;
@@ -860,7 +895,8 @@ export class Home extends Component {
       const isDeliveryOrder = Utils.isDeliveryOrder();
       const { SHARE } = ICON_RES;
 
-      if (isDeliveryOrder && NativeMethods.hasMethodInNative('beepModule-shareLink')) {
+      // The return value of hasMethodInNative is 'false'
+      if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
         return {
           iconRes: SHARE,
           onClick: this.handleClickShare,
@@ -906,6 +942,7 @@ export class Home extends Component {
     if (!onlineStoreInfo || !categories) {
       return null;
     }
+
     return (
       <section className="ordering-home flex flex-column">
         {isWebview && (
