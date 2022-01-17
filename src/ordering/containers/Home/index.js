@@ -58,6 +58,8 @@ const localState = {
 const SCROLL_DEPTH_DENOMINATOR = 4;
 
 const { DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
+
+const SHORTEN_URL_MAP = new Map();
 export class Home extends Component {
   constructor(props) {
     super(props);
@@ -71,7 +73,6 @@ export class Home extends Component {
       isValidToOrderFromMultipleStore: false,
       search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
       windowSize: windowSize(),
-      shortUrl: '',
     };
 
     this.checkUrlType();
@@ -140,10 +141,10 @@ export class Home extends Component {
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
-    const shareLinkUrl = this.getShareLinkUrl();
+    const storeUrl = window.location.href;
+    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
 
-    const url_short = await this.shortenUrl(shareLinkUrl);
-    this.setState({ url_short });
+    this.shortenUrl(shareLinkUrl);
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -829,10 +830,16 @@ export class Home extends Component {
     this.handleNavBack();
   };
 
-  getShareLinkUrl = () => {
+  getShareLinkUrl = async storeName => {
     const storeUrl = window.location.href;
     const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
-    return shareLinkUrl;
+
+    if (SHORTEN_URL_MAP.get(shareLinkUrl)) {
+      this.useShareLink(SHORTEN_URL_MAP.get(shareLinkUrl), storeName);
+    } else {
+      const url_short = await this.shortenUrl(shareLinkUrl);
+      this.useShareLink(url_short, storeName);
+    }
   };
 
   useShareLink = (url, storeName) => {
@@ -845,7 +852,6 @@ export class Home extends Component {
   };
 
   shortenUrl = async url => {
-    const SHORTEN_URL_MAP = new Map();
     if (!SHORTEN_URL_MAP.has(url)) {
       await fetchShortUrl(url)
         .then(res => {
@@ -860,22 +866,15 @@ export class Home extends Component {
     return SHORTEN_URL_MAP.get(url);
   };
 
-  handleClickShare = async () => {
+  handleClickShare = () => {
     try {
-      const { onlineStoreInfo, businessInfo, t } = this.props;
+      const { onlineStoreInfo, businessInfo } = this.props;
       const { stores, multipleStores } = businessInfo || {};
       const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
       let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
       storeName = _truncate(`${storeName}`, { length: 33 });
 
-      const shareLinkUrl = this.getShareLinkUrl();
-
-      if (this.state.url_short) {
-        this.useShareLink(this.state.url_short, storeName);
-      } else {
-        const url_short = await this.shortenUrl(shareLinkUrl);
-        this.useShareLink(url_short, storeName);
-      }
+      this.getShareLinkUrl(storeName);
 
       const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;
