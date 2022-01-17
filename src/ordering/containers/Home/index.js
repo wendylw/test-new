@@ -144,7 +144,9 @@ export class Home extends Component {
     const storeUrl = window.location.href;
     const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
 
-    this.shortenUrl(shareLinkUrl);
+    this.shortenUrl(shareLinkUrl).catch(error => {
+      console.error(`failed to fetch short url: ${error.message}`);
+    });
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -870,9 +872,7 @@ export class Home extends Component {
       let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
       storeName = _truncate(`${storeName}`, { length: 33 });
 
-      await this.getShareLinkUrl(storeName).catch(e => {
-        console.log(e);
-      });
+      await this.getShareLinkUrl(storeName);
 
       const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;
