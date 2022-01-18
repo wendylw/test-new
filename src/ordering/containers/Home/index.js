@@ -6,7 +6,7 @@ import _truncate from 'lodash/truncate';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import Utils from '../../../utils/utils';
-import { shortenUrl, getShareLinkUrl } from '../../../utils/shortenUrl';
+import { shortenUrl } from '../../../utils/shortenUrl';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
@@ -139,8 +139,7 @@ export class Home extends Component {
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
-    const storeUrl = window.location.href;
-    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+    const shareLinkUrl = this.getShareLinkUrl();
 
     shortenUrl(shareLinkUrl);
 
@@ -828,6 +827,13 @@ export class Home extends Component {
     this.handleNavBack();
   };
 
+  getShareLinkUrl = () => {
+    const storeUrl = window.location.href;
+    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+
+    return shareLinkUrl;
+  };
+
   handleClickShare = async () => {
     try {
       const { onlineStoreInfo, businessInfo, t } = this.props;
@@ -836,7 +842,15 @@ export class Home extends Component {
       let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
       storeName = _truncate(`${storeName}`, { length: 33 });
 
-      await getShareLinkUrl(storeName, t);
+      const shareLinkUrl = this.getShareLinkUrl();
+
+      const { url_short } = await shortenUrl(shareLinkUrl);
+
+      const para = {
+        link: `${url_short}`,
+        title: t('shareTitle', { storeName }),
+      };
+      NativeMethods.shareLink(para);
 
       const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;

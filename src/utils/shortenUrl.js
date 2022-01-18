@@ -1,17 +1,13 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable camelcase */
-import { fetchShortUrl } from './api-request';
-import * as NativeMethods from './native-methods';
+import { get } from './api/api-fetch';
 
 const SHORTEN_URL_MAP = new Map();
 
-const useShareLink = (url, storeName, t) => {
-  const para = {
-    link: `${url}`,
-    title: t('shareTitle', { storeName }),
-  };
-  NativeMethods.shareLink(para);
-};
+const fetchShortUrl = url =>
+  get('/api/shrink', {
+    queryParams: {
+      url,
+    },
+  });
 
 export const shortenUrl = async url => {
   if (!SHORTEN_URL_MAP.has(url)) {
@@ -25,18 +21,5 @@ export const shortenUrl = async url => {
     });
   }
 
-  SHORTEN_URL_MAP.get(url);
-};
-
-export const getShareLinkUrl = async (storeName, t) => {
-  const storeUrl = window.location.href;
-  const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
-
-  if (SHORTEN_URL_MAP.get(shareLinkUrl)) {
-    const { url_short } = await SHORTEN_URL_MAP.get(shareLinkUrl);
-    useShareLink(url_short, storeName, t);
-  } else {
-    const url_short = await shortenUrl(shareLinkUrl);
-    useShareLink(url_short, storeName, t);
-  }
+  return SHORTEN_URL_MAP.get(url);
 };
