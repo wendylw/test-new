@@ -6,6 +6,7 @@ import _truncate from 'lodash/truncate';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import Utils from '../../../utils/utils';
+import { shortenUrl, getShareLinkUrl } from '../../../utils/shortenUrl';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
@@ -24,7 +25,6 @@ import {
   getDeliveryInfo,
   getCategoryProductList,
 } from '../../redux/modules/app';
-import { fetchShortUrl } from '../../../../src/utils/api-request';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
@@ -58,8 +58,6 @@ const localState = {
 const SCROLL_DEPTH_DENOMINATOR = 4;
 
 const { DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
-
-const SHORTEN_URL_MAP = new Map();
 export class Home extends Component {
   constructor(props) {
     super(props);
@@ -144,9 +142,7 @@ export class Home extends Component {
     const storeUrl = window.location.href;
     const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
 
-    this.shortenUrl(shareLinkUrl).catch(error => {
-      console.error(`failed to fetch short url: ${error.message}`);
-    });
+    shortenUrl(shareLinkUrl);
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -832,47 +828,15 @@ export class Home extends Component {
     this.handleNavBack();
   };
 
-  getShareLinkUrl = async storeName => {
-    const storeUrl = window.location.href;
-    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
-
-    if (SHORTEN_URL_MAP.get(shareLinkUrl)) {
-      this.useShareLink(SHORTEN_URL_MAP.get(shareLinkUrl), storeName);
-    } else {
-      const url_short = await this.shortenUrl(shareLinkUrl);
-      this.useShareLink(url_short, storeName);
-    }
-  };
-
-  useShareLink = (url, storeName) => {
-    const { t } = this.props;
-    const para = {
-      link: `${url}`,
-      title: t('shareTitle', { storeName }),
-    };
-    NativeMethods.shareLink(para);
-  };
-
-  shortenUrl = async url => {
-    if (!SHORTEN_URL_MAP.has(url)) {
-      await fetchShortUrl(url).then(res => {
-        const { url_short } = res;
-        SHORTEN_URL_MAP.set(url, url_short);
-      });
-    }
-
-    return SHORTEN_URL_MAP.get(url);
-  };
-
   handleClickShare = async () => {
     try {
-      const { onlineStoreInfo, businessInfo } = this.props;
+      const { onlineStoreInfo, businessInfo, t } = this.props;
       const { stores, multipleStores } = businessInfo || {};
       const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
       let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
       storeName = _truncate(`${storeName}`, { length: 33 });
 
-      await this.getShareLinkUrl(storeName);
+      await getShareLinkUrl(storeName, t);
 
       const { freeShippingMinAmount } = this.props;
       const { defaultLoyaltyRatio } = businessInfo;
