@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { Link } from 'react-router-dom';
 import { withTranslation, Trans } from 'react-i18next';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
@@ -13,6 +14,7 @@ import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
   getStore,
+  getEnablePayLater,
   getBusinessInfo,
   getOnlineStoreInfo,
   getRequestInfo,
@@ -21,7 +23,13 @@ import {
   getStoresList,
   getDeliveryInfo,
   getCategoryProductList,
+  getOrderingOngoingBannerVisibility,
+  getReceiptNumber,
 } from '../../redux/modules/app';
+import {
+  queryCartAndStatus as queryCartAndStatusThunk,
+  clearQueryCartStatus as clearQueryCartStatusThunk,
+} from '../../redux/cart/thunks';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
@@ -123,7 +131,7 @@ export class Home extends Component {
   };
 
   componentDidMount = async () => {
-    const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent } = this.props;
+    const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent, queryCartAndStatus } = this.props;
     if (Utils.isFromBeepSite()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
@@ -135,6 +143,12 @@ export class Home extends Component {
     if (!hasUserReachedLegalDrinkingAge) getUserAlcoholConsent();
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
+
+    const { enablePayLater } = this.props;
+
+    if (config.storeId) {
+      enablePayLater ? queryCartAndStatus() : appActions.loadShoppingCart();
+    }
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -200,10 +214,14 @@ export class Home extends Component {
     this.setMainContainerHeight(containerHeight);
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
+    const { clearQueryCartStatus } = this.props;
+
     window.removeEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
+
+    await clearQueryCartStatus();
   }
 
   getStatusFromMultipleStore = () => {
@@ -822,6 +840,7 @@ export class Home extends Component {
 
   render() {
     const {
+      t,
       categories,
       onlineStoreInfo,
       businessInfo,
@@ -830,7 +849,10 @@ export class Home extends Component {
       history,
       freeDeliveryFee,
       deliveryInfo,
+      enablePayLater,
       shouldShowAlcoholModal,
+      orderingOngoingBannerVisibility,
+      receiptNumber,
       ...otherProps
     } = this.props;
     const {
@@ -853,6 +875,7 @@ export class Home extends Component {
     if (!onlineStoreInfo || !categories) {
       return null;
     }
+
     return (
       <section className="ordering-home flex flex-column">
         {isWebview && (
@@ -919,7 +942,6 @@ export class Home extends Component {
                   : '0',
             }}
             onToggle={this.handleToggleAside.bind(this)}
-            onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
             onClickProductItem={({ product = {} }) => {
               this.cleverTapTrack('Menu Page - Click product', this.formatCleverTapAttributes(product));
@@ -932,7 +954,8 @@ export class Home extends Component {
         <CartListDrawer
           footerEl={this.footerEl}
           viewAside={viewAside}
-          show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
+          show={viewAside === Constants.ASIDE_NAMES.CART}
+          enablePayLater={enablePayLater}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
           onClearCart={() => {
             this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
@@ -954,6 +977,7 @@ export class Home extends Component {
           footerEl={this.footerEl}
           onlineStoreInfo={onlineStoreInfo}
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
+          enablePayLater={enablePayLater}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
           hideCloseButton={isWebview}
@@ -981,16 +1005,54 @@ export class Home extends Component {
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
             enablePreOrder={this.isPreOrderEnabled()}
-            onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
             breakTimeFrom={this.getItemFromStore(breakTimeFrom, 'breakTimeFrom')}
             breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
           />
         )}
-
         {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
           <div className="ordering-home__close-cover"></div>
         ) : null}
+
+        {orderingOngoingBannerVisibility && (
+          <div
+            ref={ref => (this.tableSummaryBannerEl = ref)}
+            style={{
+              top: `${windowSize.height -
+                marginBottom({
+                  footerEls: [this.footerEl, this.tableSummaryBannerEl],
+                })}px`,
+              bottom: `${marginBottom({
+                footerEls: [this.footerEl],
+              })}px`,
+            }}
+            className="ordering-home__table-summary-banner flex flex-middle flex__fluid-content flex-space-between padding-normal"
+          >
+            <div className="flex flex-middle">
+              <i className="ordering-home__icon" />
+              <span className="ordering-home__table-summary-banner-text margin-left-right-smaller">
+                {t('OrderOngoing')}
+              </span>
+            </div>
+            <Link
+              className="ordering-home__view-order-button button button__link text-uppercase text-weight-bolder"
+              to={{
+                pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+                search: qs.stringify(
+                  {
+                    h: Utils.getStoreHashCode(),
+                    type: Utils.getOrderTypeFromUrl(),
+                    receiptNumber: receiptNumber,
+                  },
+                  { addQueryPrefix: true }
+                ),
+              }}
+            >
+              {t('ViewOrder')}
+            </Link>
+          </div>
+        )}
+
         <Footer
           {...otherProps}
           style={{
@@ -1000,6 +1062,7 @@ export class Home extends Component {
               })}px`,
           }}
           footerRef={ref => (this.footerEl = ref)}
+          enablePayLater={enablePayLater}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
           onShownCartListDrawer={() => {
@@ -1046,10 +1109,15 @@ export default compose(
         hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
         shouldShowAlcoholModal: getShouldShowAlcoholModal(state),
         store: getStore(state),
+        enablePayLater: getEnablePayLater(state),
+        orderingOngoingBannerVisibility: getOrderingOngoingBannerVisibility(state),
+        receiptNumber: getReceiptNumber(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionsCreators, dispatch),
+      queryCartAndStatus: bindActionCreators(queryCartAndStatusThunk, dispatch),
+      clearQueryCartStatus: bindActionCreators(clearQueryCartStatusThunk, dispatch),
       getUserAlcoholConsent: bindActionCreators(getUserAlcoholConsent, dispatch),
       setUserAlcoholConsent: bindActionCreators(setUserAlcoholConsent, dispatch),
     })

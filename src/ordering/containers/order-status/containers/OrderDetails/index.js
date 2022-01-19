@@ -23,6 +23,7 @@ import {
   getReceiptNumber,
   getServiceCharge,
   getOrderShippingType,
+  getIsPayLater,
   getLiveChatUserProfile,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
@@ -230,9 +231,9 @@ export class OrderDetails extends Component {
   }
 
   renderPromotion() {
-    const { promotion, t } = this.props;
+    const { isPayLater, promotion, t } = this.props;
 
-    if (!promotion) {
+    if (!promotion || isPayLater) {
       return null;
     }
 
@@ -330,7 +331,7 @@ export class OrderDetails extends Component {
   };
 
   render() {
-    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton } = this.props;
+    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton, isPayLater } = this.props;
     const { shippingFee, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } = order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
 
@@ -370,10 +371,12 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('ServiceCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={serviceCharge || 0} />
               </li>
-              <li className="flex flex-space-between flex-middle">
-                <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
-                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
-              </li>
+              {isPayLater ? null : (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
+                </li>
+              )}
               {paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE ? (
                 <li className="flex flex-space-between flex-middle">
                   <span className="padding-top-bottom-small text-opacity">{t('Rounding')}</span>
@@ -439,6 +442,7 @@ export default compose(
       isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      isPayLater: getIsPayLater(state),
       liveChatUserProfile: getLiveChatUserProfile(state),
     }),
     {

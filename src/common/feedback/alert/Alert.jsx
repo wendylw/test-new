@@ -1,22 +1,52 @@
-import React, { useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { usePrevious } from 'react-use';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import './Alert.scss';
+import { log } from '../../../utils/monitoring/loggly';
 
 const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();
-  const { content, show, closeButtonContent, className, style, onClose, onModalVisibilityChanged } = props;
+  const {
+    content,
+    show,
+    closeButtonContent,
+    className,
+    style,
+    onClose,
+    onModalVisibilityChanged,
+    onModalHashChanged,
+  } = props;
+  const [processing, setProcessing] = useState(false);
   useImperativeHandle(ref, () => ({
     onHistoryBackReceived: () => false,
   }));
+  const contentContainerRef = useRef(null);
   const prevShow = usePrevious(show);
   useEffect(() => {
     if (show !== prevShow) {
-      onModalVisibilityChanged(show);
+      const callOnModalVisibilityChanged = async () => {
+        await onModalVisibilityChanged(show);
+        if (onModalHashChanged) {
+          onModalHashChanged(show);
+        }
+      };
+      callOnModalVisibilityChanged();
     }
-  }, [show, onModalVisibilityChanged, prevShow]);
+
+    return () => {
+      setProcessing(false);
+    };
+  }, [show, onModalVisibilityChanged, onModalHashChanged, prevShow]);
+
+  useEffect(() => {
+    if (show && contentContainerRef.current) {
+      const text = contentContainerRef.current.innerHTML;
+      log('feedback.alert.show', { text });
+      window.newrelic?.addPageAction('feedback.alert.show', { text });
+    }
+  }, [content, show]);
 
   if (!show) {
     return null;
@@ -25,11 +55,20 @@ const Alert = forwardRef((props, ref) => {
   return (
     <div className={`alert absolute-wrapper flex flex-column flex-middle flex-center ${className}`} style={style}>
       <div className="alert__content border-radius-large">
-        <div className="alert__body text-center padding-small">{content}</div>
-        <div className="padding-small">
+        <div ref={contentContainerRef} className="alert__body text-center padding-small">
+          {content}
+        </div>
+        <div className="alert__buttons-group padding-small">
           {/* TODO： close button UI will be customize */}
-          <button className="button button__fill button__block text-uppercase text-weight-bolder" onClick={onClose}>
-            {closeButtonContent || t('OK')}
+          <button
+            className="alert__button button button__fill button__block text-uppercase text-weight-bolder"
+            onClick={() => {
+              setProcessing(true);
+              onClose();
+            }}
+            disabled={processing}
+          >
+            {processing ? t('Processing') : closeButtonContent || t('OK')}
           </button>
         </div>
       </div>
@@ -48,6 +87,7 @@ Alert.propTypes = {
   style: PropTypes.object,
   onClose: PropTypes.func,
   onModalVisibilityChanged: PropTypes.func,
+  onModalHashChanged: PropTypes.func,
 };
 
 Alert.defaultProps = {
@@ -58,6 +98,7 @@ Alert.defaultProps = {
   style: {},
   onClose: () => {},
   onModalVisibilityChanged: () => {},
+  onModalHashChanged: () => {},
 };
 
 export default withBackButtonSupport(Alert);

@@ -11,12 +11,17 @@ import Loader from '../../components/Loader';
 import _get from 'lodash/get';
 
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getUser, getCartBilling } from '../../../../redux/modules/app';
+import { actions as appActionCreators, getUser } from '../../../../redux/modules/app';
 import IconAddNew from '../../../../../images/icon-add-new.svg';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
-import { getSelectedPaymentOptionSupportSaveCard, getSelectedPaymentProvider } from '../../redux/common/selectors';
-import * as paymentCommonThunks from '../../redux/common/thunks';
+import {
+  getSelectedPaymentOptionSupportSaveCard,
+  getSelectedPaymentProvider,
+  getTotal,
+  getReceiptNumber,
+} from '../../redux/common/selectors';
+import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
 import '../../styles/PaymentCreditCard.scss';
 
@@ -44,7 +49,7 @@ class SavedCards extends Component {
       });
       await this.ensurePaymentProvider();
 
-      const { paymentProvider, history, cardList, supportSaveCard } = this.props;
+      const { paymentProvider, history, cardList, supportSaveCard, loadBilling } = this.props;
 
       if (!supportSaveCard) {
         history.replace({
@@ -67,7 +72,7 @@ class SavedCards extends Component {
         return;
       }
 
-      await this.loadShoppingCart();
+      await loadBilling();
     } catch (error) {
       // TODO: Handle this error in Payment 2.0
       console.error(error);
@@ -94,10 +99,6 @@ class SavedCards extends Component {
       userId: userInfo.consumerId,
       paymentName: paymentProvider,
     });
-  };
-
-  loadShoppingCart = async () => {
-    await this.props.appActions.loadShoppingCart();
   };
 
   setPaymentCard = card => {
@@ -169,8 +170,7 @@ class SavedCards extends Component {
   }
 
   render() {
-    const { t, history, cartBilling, selectedPaymentCard } = this.props;
-    const { total } = cartBilling;
+    const { t, history, total, selectedPaymentCard, receiptNumber } = this.props;
     const cardToken = _get(selectedPaymentCard, 'cardToken', null);
 
     return (
@@ -215,6 +215,8 @@ class SavedCards extends Component {
             className="margin-top-bottom-smaller"
             history={history}
             buttonType="submit"
+            orderId={receiptNumber}
+            total={total}
             disabled={!cardToken}
             beforeCreateOrder={async () => {
               history.push({
@@ -244,16 +246,18 @@ export default compose(
   withTranslation(['OrderingPayment']),
   connect(
     state => ({
-      cartBilling: getCartBilling(state),
+      total: getTotal(state),
       user: getUser(state),
       cardList: getCardList(state),
       selectedPaymentCard: getSelectedPaymentCard(state),
       supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
       paymentProvider: getSelectedPaymentProvider(state),
+      receiptNumber: getReceiptNumber(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      loadPaymentOptions: bindActionCreators(paymentCommonThunks.loadPaymentOptions, dispatch),
+      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      loadBilling: bindActionCreators(loadBilling, dispatch),
       fetchSavedCard: bindActionCreators(savedCardsThunks.fetchSavedCard, dispatch),
       setPaymentCard: bindActionCreators(savedCardsActions.setPaymentCard, dispatch),
     })

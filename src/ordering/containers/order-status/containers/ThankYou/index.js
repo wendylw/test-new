@@ -50,6 +50,7 @@ import {
   getIsPreOrder,
   getIsUseStorehubLogistics,
   getLiveChatUserProfile,
+  getIsPayLater,
 } from '../../redux/selector';
 import { getshowProfileVisibility } from './redux/selector';
 import './OrderingThanks.scss';
@@ -62,6 +63,7 @@ import {
   getIsCashbackAvailable,
   getShouldShowCashbackCard,
   getShouldShowCashbackBanner,
+  getHasOrderPaid,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -93,9 +95,8 @@ export class ThankYou extends PureComponent {
   pollOrderStatusTimer = null;
 
   showCompleteProfileIfNeeded = async () => {
-    const { orderStatus } = this.props;
+    const { hasOrderPaid } = this.props;
     //Explain: The profile page is not displayed before the order is paid
-    const hasOrderPaid = orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && !hasOrderPaid) {
       return;
     }
@@ -380,7 +381,7 @@ export class ThankYou extends PureComponent {
     };
 
     const productsDetails = [];
-    order.items.forEach(item => {
+    productsInOrder.forEach(item => {
       productsDetails.push({
         id: item.productId,
         price: item.displayPrice,
@@ -745,17 +746,43 @@ export class ThankYou extends PureComponent {
     return <LiveChat orderId={orderId} storeName={orderStoreName} />;
   }
 
-  handleHeaderNavFunc = () => {
-    const { order, storeHashCode, history, orderStatus, profileModalVisibility } = this.props;
-    const isWebview = Utils.isWebview();
-    const tableId = _get(order, 'tableId', '');
-    const type = Utils.getOrderTypeFromUrl();
-    const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
+  goToOrderingHomePage = () => {
+    const { storeHashCode, shippingType, order, history } = this.props;
     const pathname = Constants.ROUTER_PATHS.ORDERING_HOME;
+
+    const tableId = _get(order, 'tableId', '');
+
+    const options = [`h=${storeHashCode}`];
+
+    if (tableId) {
+      options.push(`table=${tableId}`);
+    }
+
+    if (shippingType) {
+      options.push(`type=${shippingType}`);
+    }
+
+    history.replace({
+      pathname,
+      search: `?${options.join('&')}`,
+    });
+  };
+
+  handleHeaderNavFunc = () => {
+    const { history, orderStatus, profileModalVisibility, isPayLater } = this.props;
+    const isWebview = Utils.isWebview();
+
+    const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (profileModalVisibility) {
       this.props.setShowProfileVisibility(false);
+      return;
+    }
+
+    // For fixing FB-3458 bug
+    if (isPayLater && orderStatus === ORDER_STATUS.PAYMENT_CANCELLED) {
+      this.goToOrderingHomePage();
       return;
     }
 
@@ -774,20 +801,7 @@ export class ThankYou extends PureComponent {
       return;
     }
 
-    const options = [`h=${storeHashCode}`];
-
-    if (tableId) {
-      options.push(`table=${tableId}`);
-    }
-
-    if (type) {
-      options.push(`type=${type}`);
-    }
-
-    history.replace({
-      pathname,
-      search: `?${options.join('&')}`,
-    });
+    this.goToOrderingHomePage();
 
     return;
   };
@@ -928,6 +942,8 @@ export default compose(
       shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
       profileModalVisibility: getshowProfileVisibility(state),
       liveChatUserProfile: getLiveChatUserProfile(state),
+      hasOrderPaid: getHasOrderPaid(state),
+      isPayLater: getIsPayLater(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(

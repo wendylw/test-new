@@ -4,6 +4,7 @@ import qs from 'qs';
 import _difference from 'lodash/difference';
 import _uniqueId from 'lodash/uniqueId';
 import _once from 'lodash/once';
+import { log } from './monitoring/loggly';
 
 const parseHash = (hash = document.location.hash) => qs.parse(hash.replace(/^#/, ''));
 
@@ -23,20 +24,31 @@ export const addModalIdHash = modalId => {
   }
   // don't use `document.location.hash = `#${qs.stringify(newHashObj)}``, for it causes a weird issue on iOS (BEEP-1011)
   window.history.pushState(window.history.state, '', `#${qs.stringify(newHashObj)}`);
+  log('modal-back-button-support.add-modal-id-hash', { modalId });
 };
 
 let preventHashPoppedId = null;
 
-export const removeModalIdHash = modalId => {
-  const modalIdSet = getModalIdsFromHash();
-  if (modalIdSet.has(modalId)) {
-    // removing hash will cause hash change be triggered once more, so we add this flag
-    // to prevent redundant sh-modal-history-back dispatched unexpectedly.
-    preventHashPoppedId = modalId;
-    window.history.go(-1);
-  }
-};
-
+export const removeModalIdHash = modalId =>
+  new Promise(resolve => {
+    const modalIdSet = getModalIdsFromHash();
+    if (modalIdSet.has(modalId)) {
+      // removing hash will cause hash change be triggered once more, so we add this flag
+      // to prevent redundant sh-modal-history-back dispatched unexpectedly.
+      preventHashPoppedId = modalId;
+      // history.go is a async function, so we need to find a way to notice the caller that the url has been changed.
+      const onPopState = () => {
+        log('modal-back-button-support.remove-modal-id-hash.done', { modalId });
+        window.removeEventListener('popstate', onPopState);
+        resolve();
+      };
+      window.addEventListener('popstate', onPopState);
+      log('modal-back-button-support.remove-modal-id-hash.start', { modalId });
+      window.history.go(-1);
+    } else {
+      resolve();
+    }
+  });
 window.addEventListener(
   'hashchange',
   e => {
@@ -47,6 +59,7 @@ window.addEventListener(
     // poppedModalIds is expected to have no more than one item.
     if (poppedModalIds.length) {
       const modalId = poppedModalIds[0];
+      log('modal-back-button-support.on-hash-change', { modalId, preventHashPoppedId });
       if (modalId === preventHashPoppedId) {
         preventHashPoppedId = null;
         return;
@@ -105,11 +118,11 @@ export const withBackButtonSupport = WrappedComponent => {
       }
     };
 
-    onModalVisibilityChanged = visibility => {
+    onModalVisibilityChanged = async visibility => {
       if (visibility) {
         addModalIdHash(this.modalId);
       } else {
-        removeModalIdHash(this.modalId);
+        await removeModalIdHash(this.modalId);
       }
     };
 
