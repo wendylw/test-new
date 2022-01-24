@@ -36,12 +36,10 @@ class App extends Component {
         loggly.error('ordering.get-address', { message: e });
       }
     }
-
-    const { REGISTRATION_SOURCE } = Constants;
     const source = Utils.getQueryString('source');
 
     if (source === 'SharedLink') {
-      Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.SHARED_LINK);
+      Utils.setSessionVariable('BeepOrderingSource', 'SharedLink');
     } else {
       Utils.saveSourceUrlToSessionStorage(source);
     }

@@ -969,7 +969,7 @@ Utils.removeCookieVariable = (name, attributes) => {
 Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
 Utils.isSharedLink = () => {
-  return Utils.getSessionVariable('BeepOrderingSource') === REGISTRATION_SOURCE.SHARED_LINK;
+  return Utils.getSessionVariable('BeepOrderingSource') === 'SharedLink';
 };
 
 Utils.saveSourceUrlToSessionStorage = sourceUrl => {
