@@ -40,7 +40,7 @@ class App extends Component {
     const { REGISTRATION_SOURCE } = Constants;
     const source = Utils.getQueryString('source');
 
-    if (source === REGISTRATION_SOURCE.SHARED_LINK) {
+    if (source === 'SharedLink') {
       Utils.setSessionVariable('BeepOrderingSource', REGISTRATION_SOURCE.SHARED_LINK);
     } else {
       Utils.saveSourceUrlToSessionStorage(source);

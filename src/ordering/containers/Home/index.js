@@ -28,6 +28,10 @@ import {
   getCategoryProductList,
   getOrderingOngoingBannerVisibility,
   getReceiptNumber,
+  getFreeShippingMinAmount,
+  getCashbackRate,
+  getShippingType,
+  getMerchantCountry,
 } from '../../redux/modules/app';
 import {
   queryCartAndStatus as queryCartAndStatusThunk,
@@ -853,7 +857,15 @@ export class Home extends Component {
 
   handleClickShare = async () => {
     try {
-      const { onlineStoreInfo, businessInfo, t } = this.props;
+      const {
+        onlineStoreInfo,
+        businessInfo,
+        t,
+        freeShippingMinAmount,
+        cashbackRate,
+        shippingType,
+        merchantCountry,
+      } = this.props;
       const { stores, multipleStores } = businessInfo || {};
       const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
       let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
@@ -869,13 +881,11 @@ export class Home extends Component {
       };
       NativeMethods.shareLink(para);
 
-      const { freeShippingMinAmount } = this.props;
-      const { defaultLoyaltyRatio } = businessInfo;
       CleverTap.pushEvent('Menu page - Click share store link', {
-        country: _get(businessInfo, 'country', ''),
+        country: merchantCountry,
         'free delivery above': freeShippingMinAmount || 0,
-        'shipping type': Utils.getOrderTypeFromUrl(),
-        cashback: Math.floor((1 / defaultLoyaltyRatio) * 100) / 100,
+        'shipping type': shippingType,
+        cashback: cashbackRate,
       });
     } catch (error) {
       console.error(`failed to share store link: ${error.message}`);
@@ -1176,6 +1186,10 @@ export default compose(
         enablePayLater: getEnablePayLater(state),
         orderingOngoingBannerVisibility: getOrderingOngoingBannerVisibility(state),
         receiptNumber: getReceiptNumber(state),
+        freeShippingMinAmount: getFreeShippingMinAmount(state),
+        cashbackRate: getCashbackRate(state),
+        shippingType: getShippingType(state),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({
