@@ -22,15 +22,15 @@ const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS } = Constants;
 function CheckoutForm({
   t,
   history,
-  cartSummary,
+  total,
   country,
   match,
   supportSaveCard,
-  storeInfoForCleverTap,
+  cleverTapAttributes,
   isAddCardPath,
   paymentExtraData,
+  receiptNumber,
 }) {
-  const { total } = cartSummary || {};
   const stripe = useStripe();
   const elements = useElements();
 
@@ -112,7 +112,7 @@ function CheckoutForm({
   const handleBeforeCreateOrder = useCallback(async () => {
     try {
       CleverTap.pushEvent('Card Details - click continue', {
-        ...storeInfoForCleverTap,
+        ...cleverTapAttributes,
         'payment method': getPaymentName(country, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY),
       });
 
@@ -143,7 +143,7 @@ function CheckoutForm({
       setError(error);
       setProcessing(false);
     }
-  }, [storeInfoForCleverTap, country, cardComplete, stripe, elements, cardHolderName.value, saveCard]);
+  }, [cleverTapAttributes, country, cardComplete, stripe, elements, cardHolderName.value, saveCard]);
 
   const handleAfterCreateOrder = useCallback(async orderId => {
     setProcessing(!!orderId);
@@ -415,6 +415,8 @@ function CheckoutForm({
           className="margin-top-bottom-smaller text-uppercase"
           history={history}
           buttonType="submit"
+          total={total}
+          orderId={receiptNumber}
           data-heap-name="ordering.payment.stripe.pay-btn"
           disabled={createButtonDisabled}
           beforeCreateOrder={handleBeforeCreateOrder}

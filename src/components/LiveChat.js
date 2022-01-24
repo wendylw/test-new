@@ -21,7 +21,6 @@ class LiveChat extends Component {
 
     window.intercomSettings = {
       app_id: process.env.REACT_APP_INTERCOM_APP_ID,
-      custom_launcher_selector: '#beep-live-chat-launcher',
       hide_default_launcher: true,
       order_id,
       store_name,
@@ -120,7 +119,6 @@ class LiveChat extends Component {
           hasScriptLoaded ? '' : 'text-opacity'
         }`}
         onClick={this.handleClick}
-        id="beep-live-chat-launcher"
       >
         {!hasScriptLoaded && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
         <div className="live-chat__loading-text margin-left-right-smaller">{`${t('NeedHelp')}?`}</div>

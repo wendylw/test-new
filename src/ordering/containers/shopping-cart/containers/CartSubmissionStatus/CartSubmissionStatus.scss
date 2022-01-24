@@ -1,0 +1,28 @@
+@import "../../../../../Variables.scss";
+
+.ordering-submission {
+  width: 100%;
+  height: 100vh;
+
+  &__loader {
+    display: block;
+    font-size: 2.4rem;
+    margin-bottom: 3.5rem;
+  }
+
+  &__pending-description,
+  &__success-description {
+    color: $gray-3;
+    max-width: 285px;
+  }
+
+  &__failure-description {
+    color: $gray-3;
+    max-width: 340px;
+  }
+
+  &__image-container-common {
+    width: 50%;
+    max-width: 200px;
+  }
+}

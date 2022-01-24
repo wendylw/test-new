@@ -8,8 +8,10 @@ import '../Feedback.scss';
 const AlertStandardContent = ({ content, title }) => (
   // eslint-disable-next-line react/jsx-filename-extension
   <>
-    {title ? <h4 className="padding-small text-size-biggest text-weight-bolder">{title}</h4> : null}
-    {content ? <div className="padding-top-bottom-small">{content}</div> : null}
+    {title ? <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">{title}</h4> : null}
+    {content ? (
+      <div className="alert__description padding-top-bottom-small text-line-height-base">{content}</div>
+    ) : null}
   </>
 );
 AlertStandardContent.displayName = 'AlertStandardContent';
@@ -38,15 +40,22 @@ const createAlert = (content, options) =>
     rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
     container.appendChild(rootDOM);
 
+    // Because history.back (which is called when the modal is closed) is an async method, we have to wait
+    // the url to be actually changed. Otherwise, there will be problem if the onClose callback contains
+    // logic to change the url.
+    const onModalHashChanged = show => {
+      if (!show) {
+        destroyTarget(rootDOM);
+        resolve();
+        onClose();
+      }
+    };
+
     const alertInstance = React.createElement(Alert, {
       content,
       ...restOptions,
       onClose: () => {
-        render(React.cloneElement(alertInstance, { show: false }), rootDOM, () => {
-          destroyTarget(rootDOM);
-          onClose();
-          resolve();
-        });
+        render(React.cloneElement(alertInstance, { show: false, onModalHashChanged }), rootDOM);
       },
     });
 

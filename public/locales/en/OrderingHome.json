@@ -40,5 +40,8 @@
   "FirstDeliveryAppOnly": "first time delivery order on <0>Beep app</0> only",
   "ViewPromo": "View Promo",
   "PromoDetails": "Promo Details",
-  "shareTitle": "Hey foodie! Did you know {{storeName}} is on Beep? Jom, let's order"
+  "shareTitle": "Hey foodie! Did you know {{storeName}} is on Beep? Jom, let's order",
+  "ReviewCart": "Review cart",
+  "OrderOngoing": "Order ongoing",
+  "ViewOrder": "View order"
 }

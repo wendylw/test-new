@@ -1,11 +1,23 @@
-import { actions } from '..';
-import _findIndex from 'lodash/findIndex';
+import _sumBy from 'lodash/sumBy';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from './api-info';
-import { getCartBilling, getRequestInfo } from '../../../../../redux/modules/app';
+import {
+  actions as appActions,
+  getCartStatus,
+  getCartTotal,
+  getCartSubtotal,
+  getCartTotalCashback,
+  getCartCount,
+  getStoreId,
+  getShippingType,
+} from '../../../../../redux/modules/app';
 import Utils from '../../../../../../utils/utils';
+import { fetchOrder } from '../../../../../../utils/api-request';
+import Constants from '../../../../../../utils/constants';
+import { getTotal } from '../selectors';
 
-const { loadPaymentsPending, loadPaymentsSuccess, loadPaymentsFailed, updatePaymentSelected } = actions;
+const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
 
 /* Model */
 const PAYMENTS_MAPPING = {
@@ -115,49 +127,82 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) => {
 };
 /* end of Model */
 
-export const loadPaymentOptions = (selectedPaymentMethod = null) => async (dispatch, getState) => {
-  const { total } = getCartBilling(getState());
-  const { storeId } = getRequestInfo(getState());
-  const shippingType = Utils.getApiRequestShippingType();
+/**
+ * Billing is a abstract data, it has two source:
+ * For pay first order, update the Billing data by shopping cart data
+ * For pay later order, update the Billing data by order data
+ */
+export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', async (_, { dispatch, getState }) => {
+  const receiptNumber = Utils.getQueryString('receiptNumber');
+  // For Pay Later order, update Billing data by order data
+  if (receiptNumber) {
+    const data = await fetchOrder(receiptNumber);
+    const { total, subtotal, items } = data;
 
-  try {
-    dispatch(loadPaymentsPending());
-    const { url, queryParams } = API_INFO.getPayments(storeId, shippingType);
+    return {
+      receiptNumber,
+      total,
+      subtotal,
+      itemsQuantity: _sumBy(items, 'quantity'),
+      cashback: null,
+    };
+  }
 
+  // For Pay first order, update Billing data by shopping cart data
+  await dispatch(appActions.loadShoppingCart());
+  const loadShoppingCartStatus = getCartStatus(getState());
+  if (loadShoppingCartStatus !== API_REQUEST_STATUS.FULFILLED) {
+    throw new Error('Load shopping cart failure in loadBilling thunk');
+  }
+
+  return {
+    receiptNumber: null,
+    total: getCartTotal(getState()),
+    subtotal: getCartSubtotal(getState()),
+    itemsQuantity: getCartCount(getState()),
+    cashback: getCartTotalCashback(getState()), // create order api needs this
+  };
+});
+
+export const loadPaymentOptions = createAsyncThunk(
+  'ordering/payments/loadPaymentOptions',
+  async (selectedPaymentMethod, { dispatch, getState }) => {
+    const state = getState();
+    const total = getTotal(state);
+    const storeId = getStoreId(state);
+    const shippingType = getShippingType(state);
+
+    const { url, queryParams } = API_INFO.getPayments(storeId, Utils.getApiRequestShippingType(shippingType));
     const result = await get(url, { queryParams });
+    if (!result.data) {
+      throw result.error;
+    }
 
-    if (result.data) {
-      const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
-      const selectedPaymentOption =
-        paymentOptions.find(
-          option =>
-            (selectedPaymentMethod ? option.key === selectedPaymentMethod : true) &&
-            option.available &&
-            (!option.minAmount || (option.minAmount && total >= option.minAmount))
-        ) || {};
-      const onlineBankingIndex = _findIndex(paymentOptions, payment => payment.key === 'OnlineBanking');
-
-      if (onlineBankingIndex !== -1) {
-        paymentOptions[onlineBankingIndex].agentCodes = preprocessOnlineBankings(
-          paymentOptions[onlineBankingIndex].agentCodes || [],
-          OnlineBankModel
-        );
+    const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
+    const selectedPaymentOption = paymentOptions.find(option => {
+      if (selectedPaymentMethod && selectedPaymentMethod !== option.key) {
+        return false;
       }
 
-      dispatch(loadPaymentsSuccess(paymentOptions || []));
+      if (!option.available) {
+        return false;
+      }
 
-      return dispatch(updatePaymentSelected(selectedPaymentOption.paymentProvider || null));
-    } else {
-      return dispatch(loadPaymentsFailed(result.error || {}));
+      if (option.minAmount && total < option.minAmount) {
+        return false;
+      }
+
+      return true;
+    });
+
+    const onlineBankingOption = paymentOptions.find(option => option.key === PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
+
+    if (onlineBankingOption) {
+      onlineBankingOption.agentCodes = preprocessOnlineBankings(onlineBankingOption.agentCodes || [], OnlineBankModel);
     }
-  } catch (e) {
-    return dispatch(loadPaymentsFailed(e || {}));
-  }
-};
 
-// TODO: It's not necessary to have a thunk only to dispatch another action. We should remove it.
-export const updatePaymentOptionSelected = paymentProvider => dispatch => {
-  return dispatch(updatePaymentSelected(paymentProvider || null));
-};
+    return { paymentOptions, selectedPaymentOption };
+  }
+);
 
 export { createOrder, gotoPayment } from './create-order';
