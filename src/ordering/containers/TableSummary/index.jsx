@@ -7,7 +7,6 @@ import { compose } from 'redux';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
-import * as NativeMethods from '../../../utils/native-methods';
 import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import { actions } from './redux';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
@@ -62,11 +61,14 @@ export class TableSummary extends React.Component {
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
 
-    const { thankYouPageUrl } = this.props;
+    const { thankYouPageUrl, shippingType } = this.props;
 
     if (thankYouPageUrl) {
-      const typeFromUrl = Utils.getQueryString('type');
-      window.location.href = `${thankYouPageUrl}&type=${typeFromUrl}`;
+      // Add "type" into thankYouPageUrl query
+      const urlObj = new URL(thankYouPageUrl, window.location.origin);
+      urlObj.searchParams.set('type', shippingType);
+
+      window.location.href = urlObj.toString();
     }
   }
 
@@ -126,16 +128,9 @@ export class TableSummary extends React.Component {
 
   handleHeaderNavFunc = () => {
     const { orderPlacedStatus } = this.props;
-    const isWebview = Utils.isWebview();
 
     if (orderPlacedStatus) {
       this.goToMenuPage();
-
-      return;
-    }
-
-    if (isWebview) {
-      NativeMethods.closeWebView();
 
       return;
     }

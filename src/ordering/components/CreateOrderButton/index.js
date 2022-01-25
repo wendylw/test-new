@@ -17,8 +17,11 @@ import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import loggly from '../../../utils/monitoring/loggly';
+import { fetchOrder } from '../../../utils/api-request';
+import i18next from 'i18next';
+import { alert } from '../../../common/feedback/';
 
-const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS } = Constants;
+const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS, ORDER_STATUS } = Constants;
 
 class CreateOrderButton extends React.Component {
   componentDidMount = async () => {
@@ -84,6 +87,22 @@ class CreateOrderButton extends React.Component {
     }
   };
 
+  gotoThankyouPage = (orderId, type) => {
+    const thankYouPagePath = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`;
+    const queryString = qs.stringify(
+      {
+        h: Utils.getStoreHashCode(),
+        type,
+        receiptNumber: orderId,
+      },
+      {
+        addQueryPrefix: true,
+      }
+    );
+
+    window.location.href = `${thankYouPagePath}${queryString}`;
+  };
+
   handleCreateOrder = async () => {
     const {
       history,
@@ -130,6 +149,24 @@ class CreateOrderButton extends React.Component {
     if (!isValidToCreateOrder()) {
       afterCreateOrder && afterCreateOrder();
       return;
+    }
+
+    // For pay later order, if order has already been paid, then let user goto Thankyou page directly
+    if (orderId) {
+      const order = await fetchOrder(orderId);
+
+      if (order.status !== ORDER_STATUS.PENDING_PAYMENT) {
+        loggly.log('ordering.order-has-paid', { order });
+
+        alert(i18next.t('OrderHasPaidAlertDescription'), {
+          closeButtonContent: i18next.t('Continue'),
+          title: i18next.t('OrderHasPaidAlertTitle'),
+          onClose: () => {
+            this.gotoThankyouPage(orderId, type);
+          },
+        });
+        return;
+      }
     }
 
     if (!orderId) {

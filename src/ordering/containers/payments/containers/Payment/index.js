@@ -26,6 +26,7 @@ import {
   getTotal,
   getCashback,
 } from '../../redux/common/selectors';
+import qs from 'qs';
 import {
   loadBilling,
   loadPaymentOptions,
@@ -40,8 +41,10 @@ import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
+import { fetchOrder } from '../../../../../utils/api-request';
+import { alert } from '../../../../../common/feedback';
 
-const { PAYMENT_PROVIDERS } = Constants;
+const { PAYMENT_PROVIDERS, ORDER_STATUS, ROUTER_PATHS } = Constants;
 
 class Payment extends Component {
   state = {
@@ -159,10 +162,26 @@ class Payment extends Component {
     }
   };
 
+  gotoThankyouPage = (orderId, type) => {
+    const thankYouPagePath = `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.THANK_YOU}`;
+    const queryString = qs.stringify(
+      {
+        h: Utils.getStoreHashCode(),
+        type,
+        receiptNumber: orderId,
+      },
+      {
+        addQueryPrefix: true,
+      }
+    );
+
+    window.location.href = `${thankYouPagePath}${queryString}`;
+  };
+
   // TODO: This place logic almost same as the “handleCreateOrder” function that in CreateOrderButton component
   handlePayWithCash = async () => {
     try {
-      const { shippingType, cashback, currentPaymentOption, createOrder, total, gotoPayment } = this.props;
+      const { t, shippingType, cashback, currentPaymentOption, createOrder, total, gotoPayment } = this.props;
       this.setState({
         payNowLoading: true,
       });
@@ -171,6 +190,24 @@ class Payment extends Component {
       loggly.log('payment.pay-attempt', { method: paymentProvider });
 
       let orderId = this.props.receiptNumber;
+
+      // For pay later order, if order has already been paid, then let user goto Thankyou page directly
+      if (orderId) {
+        const order = await fetchOrder(orderId);
+
+        if (order.status !== ORDER_STATUS.PENDING_PAYMENT) {
+          loggly.log('ordering.order-has-paid', { order });
+
+          alert(t('OrderHasPaidAlertDescription'), {
+            closeButtonContent: t('Continue'),
+            title: t('OrderHasPaidAlertTitle'),
+            onClose: () => {
+              this.gotoThankyouPage(orderId, shippingType);
+            },
+          });
+          return;
+        }
+      }
 
       if (!orderId) {
         window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
