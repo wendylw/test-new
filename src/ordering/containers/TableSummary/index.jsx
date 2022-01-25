@@ -65,7 +65,8 @@ export class TableSummary extends React.Component {
     const { thankYouPageUrl } = this.props;
 
     if (thankYouPageUrl) {
-      window.location.href = thankYouPageUrl;
+      const typeFromUrl = Utils.getQueryString('type');
+      window.location.href = `${thankYouPageUrl}&type=${typeFromUrl}`;
     }
   }
 
@@ -345,10 +346,11 @@ export class TableSummary extends React.Component {
             total={total}
             creditsBalance={cashback}
             shippingFee={shippingFee}
-            businessInfo={{ ...businessInfo, enableCashback: false }}
+            businessInfo={{ ...businessInfo, enableCashback: true }}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
             isLogin={userIsLogin}
             history={history}
+            orderPendingPaymentStatus={orderPendingPaymentStatus}
           />
           <SubmitOrderConfirm history={history} />
         </div>

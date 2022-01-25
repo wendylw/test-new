@@ -76,6 +76,7 @@ class Billing extends Component {
       shippingFee,
       isLogin,
       children,
+      orderPendingPaymentStatus,
     } = this.props;
 
     const { stores = [], enableCashback } = businessInfo || {};
@@ -117,7 +118,7 @@ class Billing extends Component {
               }`}
             >
               <label className="margin-top-bottom-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</label>
-              {isLogin ? (
+              {orderPendingPaymentStatus || isLogin ? (
                 <span>
                   - <CurrencyNumber className="text-size-big text-weight-bolder" money={creditsBalance || 0} />
                 </span>
