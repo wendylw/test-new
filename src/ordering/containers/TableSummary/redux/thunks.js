@@ -11,7 +11,7 @@ export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', a
   try {
     const result = await fetchOrderIncludeCashback({ receiptNumber });
 
-    return result.order;
+    return result;
   } catch (error) {
     console.error(error);
 

@@ -5,7 +5,7 @@ export const fetchOrder = ({ receiptNumber }) => get(`/api/v3/transactions/${rec
 
 // post an order of cashback
 export const fetchOrderIncludeCashback = ({ receiptNumber }) =>
-  post(`/api/v3/transactions/${receiptNumber}/apply-discount`);
+  get(`/api/v3/transactions/${receiptNumber}/calculation`);
 
 // fetch order submission status
 export const fetchOrderSubmissionStatus = ({ receiptNumber }) => get(`/api/v3/transactions/${receiptNumber}/status`);
