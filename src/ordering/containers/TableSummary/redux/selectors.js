@@ -21,7 +21,7 @@ export const getOrderTotal = state => state.tableSummary.order.total;
 export const getOrderSubtotal = state => state.tableSummary.order.subtotal;
 
 export const getOrderCashback = state =>
-  state.tableSummary.order.loyaltyDiscounts?.map(item => item.displayDiscount) || 0;
+  Number(state.tableSummary.order.loyaltyDiscounts.map(item => item.displayDiscount)) || 0;
 
 export const getOrderShippingFee = state => state.tableSummary.order.shippingFee;
 
