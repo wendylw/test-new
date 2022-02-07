@@ -147,7 +147,10 @@ export const getShouldShowCashbackBanner = createSelector(
 );
 
 export const getShouldShowCashbackCard = createSelector(
-  getIsCashbackClaimable,
-  getHasCashbackClaimed,
-  (isCashbackClaimable, hasCashbackClaimed) => isCashbackClaimable || hasCashbackClaimed
+  getUserIsLogin,
+  getHasOrderPaid,
+  getShouldShowCashbackBanner,
+  getIsCashbackAvailable,
+  (isLogin, hasOrderPaid, shouldShowCashbackBanner, isCashbackAvailable) =>
+    isLogin && hasOrderPaid && !shouldShowCashbackBanner && isCashbackAvailable
 );
