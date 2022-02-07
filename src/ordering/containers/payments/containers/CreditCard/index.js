@@ -18,12 +18,15 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getMerchantCountry,
-  getCartBilling,
   getBusinessInfo,
-  getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
-import { getSelectedPaymentOption } from '../../redux/common/selectors';
-import { loadPaymentOptions } from '../../redux/common/thunks';
+import {
+  getCleverTapAttributes,
+  getSelectedPaymentOption,
+  getTotal,
+  getReceiptNumber,
+} from '../../redux/common/selectors';
+import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
 import PaymentCardBrands from '../../components/PaymentCardBrands';
 import '../../styles/PaymentCreditCard.scss';
@@ -67,7 +70,7 @@ class CreditCard extends Component {
 
     const { loadPaymentOptions } = this.props;
 
-    this.props.appActions.loadShoppingCart();
+    this.props.loadBilling();
 
     loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
   }
@@ -80,17 +83,13 @@ class CreditCard extends Component {
 
     // TODO: to read window.encryptedCardData actually make the function impure, which is bad practice, since this function
     // is called from render. We should move it to state.
-    const { encryptedCardInfo, expYearCardInfo, expMonthCardInfo, maskedCardInfo } = window.encryptedCardData || {};
+    const { encryptedCardInfo } = window.encryptedCardData || {};
 
     return {
       payActionWay: 1,
-      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
-      paymentName: paymentProvider,
+      paymentProvider,
       cardholderName,
       encryptedCardInfo,
-      expYearCardInfo,
-      expMonthCardInfo,
-      maskedCardInfo,
     };
   };
 
@@ -252,11 +251,11 @@ class CreditCard extends Component {
       payNowLoading: true,
     });
 
-    const { t, merchantCountry, cartBilling, storeInfoForCleverTap } = this.props;
+    const { t, merchantCountry, total, cleverTapAttributes } = this.props;
     const { cardInfoError } = this.state;
 
     CleverTap.pushEvent('Card Details - click continue', {
-      ...storeInfoForCleverTap,
+      ...cleverTapAttributes,
       'payment method': getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY),
     });
 
@@ -276,7 +275,7 @@ class CreditCard extends Component {
     if (isRisky) {
       CleverTap.pushEvent('Card details - potential fraud card entry', {
         country: merchantCountry,
-        'cart amount': cartBilling.total,
+        'cart amount': total,
         save_card: false,
       });
 
@@ -341,13 +340,13 @@ class CreditCard extends Component {
   checkCardRisky = async () => {
     try {
       const { card } = this.state;
-      const { merchantCountry, cartBilling } = this.props;
+      const { merchantCountry, total } = this.props;
 
       const result = await ApiFetch.get(Url.API_URLS.PAYMENT_RISK().url, {
         queryParams: {
           creditCardNum: card.cardNumber,
           countryCode: merchantCountry,
-          amount: cartBilling.total,
+          amount: total,
         },
       });
 
@@ -413,10 +412,9 @@ class CreditCard extends Component {
   }
 
   renderForm() {
-    const { t, cartBilling } = this.props;
+    const { t, total } = this.props;
     const { card, validDate, invalidCardInfoFields, cardInfoError, cardHolderNameError } = this.state;
     const { cardholderName, cardNumber, formattedCardNumber } = card || {};
-    const { total } = cartBilling || {};
 
     return (
       <form id="bank-2c2p-form" className="form">
@@ -536,9 +534,8 @@ class CreditCard extends Component {
   }
 
   render() {
-    const { t, match, history, cartBilling, merchantCountry } = this.props;
+    const { t, match, history, total, merchantCountry, receiptNumber } = this.props;
     const { payNowLoading, domLoaded } = this.state;
-    const { total } = cartBilling || {};
 
     return (
       <section
@@ -554,10 +551,7 @@ class CreditCard extends Component {
           title={t('PayViaCard')}
           navFunc={() => {
             CleverTap.pushEvent('Card Details - click back arrow');
-            history.replace({
-              pathname: Constants.ROUTER_PATHS.ORDERING_PAYMENT,
-              search: window.location.search,
-            });
+            history.goBack();
           }}
         />
         <div
@@ -579,6 +573,8 @@ class CreditCard extends Component {
         >
           <CreateOrderButton
             history={history}
+            orderId={receiptNumber}
+            total={total}
             className="margin-top-bottom-smaller text-uppercase"
             data-test-id="payMoney"
             data-heap-name="ordering.payment.credit-card.pay-btn"
@@ -623,15 +619,17 @@ export default compose(
 
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartBilling: getCartBilling(state),
+        total: getTotal(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         merchantCountry: getMerchantCountry(state),
-        storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        cleverTapAttributes: getCleverTapAttributes(state),
+        receiptNumber: getReceiptNumber(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      loadBilling: bindActionCreators(loadBilling, dispatch),
     })
   )
 )(CreditCard);

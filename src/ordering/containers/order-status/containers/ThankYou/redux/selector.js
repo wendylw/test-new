@@ -1,6 +1,8 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants from '../../../../../../utils/constants';
+import { CASHBACK_CAN_CLAIM_STATUS_LIST, AFTER_PAID_STATUS_LIST, CASHBACK_CLAIMED_STATUS_LIST } from '../constants';
 import {
   getOrder,
   getOrderStatus,
@@ -11,7 +13,13 @@ import {
   getOrderOriginalShippingType,
   getOrderStoreInfo,
 } from '../../../redux/selector';
-import { getMerchantCountry } from '../../../../../redux/modules/app';
+import {
+  getMerchantCountry,
+  getBusinessInfo,
+  getUserIsLogin,
+  getOnlineStoreInfo,
+  getAllowAnonymousQROrdering,
+} from '../../../../../redux/modules/app';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
 
@@ -79,3 +87,67 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
     ...responseDeliveryInformation,
   };
 });
+
+export const getIsPayLater = createSelector(getOrder, order => _get(order, 'isPayLater', false));
+
+export const getHasOrderPaid = createSelector(getOrderStatus, orderStatus =>
+  AFTER_PAID_STATUS_LIST.includes(orderStatus)
+);
+
+export const getCashback = createSelector(getCashbackInfo, ({ cashback }) => (Number(cashback) ? Number(cashback) : 0));
+
+export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInfo, (cashback, onlineStoreInfo) => {
+  const { currency } = onlineStoreInfo || {};
+  const currencyFormatter = createCurrencyFormatter({ currencyCode: currency });
+  return currencyFormatter.format(cashback);
+});
+
+export const getCashbackStatus = createSelector(getCashbackInfo, cashbackInfo => _get(cashbackInfo, 'status', null));
+
+export const getCanCashbackClaim = createSelector(getCashbackStatus, cashbackStatus =>
+  CASHBACK_CAN_CLAIM_STATUS_LIST.includes(cashbackStatus)
+);
+
+export const getHasCashback = createSelector(getCashback, cashback => cashback > 0);
+
+export const getIsCashbackAvailable = createSelector(getHasCashback, getBusinessInfo, (hasCashback, businessInfo) => {
+  const { enableCashback } = businessInfo || {};
+  return enableCashback && hasCashback;
+});
+
+export const getHasCashbackClaimed = createSelector(
+  getCashbackStatus,
+  getHasCashback,
+  (cashbackStatus, hasCashback) => CASHBACK_CLAIMED_STATUS_LIST.includes(cashbackStatus) && hasCashback
+);
+
+export const getIsCashbackClaimable = createSelector(
+  getHasOrderPaid,
+  getUserIsLogin,
+  getCanCashbackClaim,
+  (hasOrderPaid, isLogin, canCashbackClaim) => hasOrderPaid && isLogin && canCashbackClaim
+);
+
+export const getShouldShowCashbackBanner = createSelector(
+  getUserIsLogin,
+  getHasOrderPaid,
+  getHasCashbackClaimed,
+  getOrderShippingType,
+  getAllowAnonymousQROrdering,
+  getIsPayLater,
+  (isLogin, hasOrderPaid, hasCashbackClaimed, orderShippingType, allowAnonymousQROrdering, isPayLater) =>
+    hasOrderPaid &&
+    !isLogin &&
+    !hasCashbackClaimed &&
+    // Only Dine In order will display the cashback banner
+    orderShippingType === DELIVERY_METHOD.DINE_IN &&
+    // Only the store support allowAnonymousQROrdering will display the cashback banner
+    // The pay later order support allow Anonymous QR Ordering on default
+    (allowAnonymousQROrdering || isPayLater)
+);
+
+export const getShouldShowCashbackCard = createSelector(
+  getIsCashbackClaimable,
+  getHasCashbackClaimed,
+  (isCashbackClaimable, hasCashbackClaimed) => isCashbackClaimable || hasCashbackClaimed
+);

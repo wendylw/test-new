@@ -1,12 +1,11 @@
 {
   "OrderPaid": "Order Paid",
-  "TableNumber": "Table Number",
-  "OrderNumber": "Order Number",
   "PingStaffTitle": "Ping the staff for a receipt",
   "ThankYou": "Thank You",
   "PayAtCounter": "Pay at Counter",
   "SessionExpired": "Session Expired",
   "PrepareOrderDescription": "We're preparing your order now.",
+  "HopeYouEnjoyedYourMeal": "We hope you enjoyed your meal!",
   "PendingPaymentDescription": "Your meal will only be served after payment is completed.",
   "PaymentCancelledDescription": "Please return to the menu screen if you'd like to place your order again.",
   "OrderConfirmed": "Order Confirmed",
@@ -43,6 +42,14 @@
   "ThankYouForUpdatedToPickingUpForUS": "You've switched to self-pickup. The pickup details are below, we hope you enjoy your food!",
   "EarnedCashBackTitle": "You’ve earned cash back",
   "EarnedCashBackDescription": "This will automatically be used when you buy from us again!",
+  "GotCashBackTitle": "You’ve got {{currency}} cashback",
+  "GotCashBackDescription": "Login or sign up below to claim your cashback now!",
+  "WantCashBackTitle": "I want cashback",
+  "GetDeliveryOrderDiscountTitle": "Get up to RM10 OFF your next Beep delivery order",
+  "GetDeliveryOrderDiscountDescription": "Login or sign up below to redeem exclusive offers just for you!",
+  "RedeemNow": "Redeem now",
+  "ClaimMyCashback": "Claim my cashback",
+  "ExclusiveOffers": "Exclusive offers",
   "RefundDeliveryFee": "Delivery Fee Refund",
   "RefundDeliveryFeeDescription": "Upon choosing self-pickup, the delivery fee will be refunded as a <2>voucher</2> which could be used upon your next order.",
   "DeliveringTo": "Delivering to",
@@ -84,5 +91,6 @@
   "GoBack": "Go back",
   "SelfPickUpPromptConfirmedText": "Yes, switch",
   "PromptUserEnableAppNotificationTitle": "Track Your Order Status",
-  "PromptUserEnableAppNotificationContent": "No more SMS! Track your order status by enabling Beep notifications in your phone's Settings."
+  "PromptUserEnableAppNotificationContent": "No more SMS! Track your order status by enabling Beep notifications in your phone's Settings.",
+  "PendingPaymentDescriptionForPayLater": "Please show your table and order number to the cashier"
 }

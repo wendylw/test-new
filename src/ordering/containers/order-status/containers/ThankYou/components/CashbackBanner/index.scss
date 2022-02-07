@@ -1,0 +1,63 @@
+@import "../../../../../../../Variables.scss";
+
+.visible {
+  visibility: visible;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.cashback-banner {
+  background-color: $status-yellow-1;
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.08);
+
+  &__absolute-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  &__content {
+    padding-right: 0;
+  }
+
+  &__login-button {
+    max-height: 40px;
+  }
+
+  &__close-button {
+    fill: $gray-3;
+    padding: 1.4vw;
+  }
+}
+
+.cashback-floating-button {
+  border: none;
+  background: transparent;
+
+  &__absolute-wrapper {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  &__icon {
+    width: 48px;
+  }
+
+  &__content {
+    color: $white;
+    background-color: $theme-color;
+    max-width: 64px;
+  }
+}
+
+@media (min-width: 414px) {
+  .cashback-banner {
+    &__close-button {
+      padding: 8px;
+    }
+  }
+}

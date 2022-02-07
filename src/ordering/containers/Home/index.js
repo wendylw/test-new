@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { Link } from 'react-router-dom';
 import { withTranslation, Trans } from 'react-i18next';
+import _get from 'lodash/get';
+import _truncate from 'lodash/truncate';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import Utils from '../../../utils/utils';
+import { shortenUrl } from '../../../utils/shortenUrl';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
@@ -13,6 +17,7 @@ import {
   actions as appActionsCreators,
   getBusinessUTCOffset,
   getStore,
+  getEnablePayLater,
   getBusinessInfo,
   getOnlineStoreInfo,
   getRequestInfo,
@@ -21,7 +26,17 @@ import {
   getStoresList,
   getDeliveryInfo,
   getCategoryProductList,
+  getOrderingOngoingBannerVisibility,
+  getReceiptNumber,
+  getFreeShippingMinAmount,
+  getCashbackRate,
+  getShippingType,
+  getMerchantCountry,
 } from '../../redux/modules/app';
+import {
+  queryCartAndStatus as queryCartAndStatusThunk,
+  clearQueryCartStatus as clearQueryCartStatusThunk,
+} from '../../redux/cart/thunks';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
@@ -30,10 +45,10 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
-import { getUserHasReachedLegalDrinkingAge, getAlcoholModalDisplayResult } from './redux/common/selectors';
+import { getUserHasReachedLegalDrinkingAge, getShouldShowAlcoholModal } from './redux/common/selectors';
 import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
 import Header from '../../../components/Header';
-import NativeHeader from '../../../components/NativeHeader';
+import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
@@ -123,7 +138,7 @@ export class Home extends Component {
   };
 
   componentDidMount = async () => {
-    const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent } = this.props;
+    const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent, queryCartAndStatus } = this.props;
     if (Utils.isFromBeepSite()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
@@ -135,6 +150,15 @@ export class Home extends Component {
     if (!hasUserReachedLegalDrinkingAge) getUserAlcoholConsent();
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
+
+    const shareLinkUrl = this.getShareLinkUrl();
+
+    shortenUrl(shareLinkUrl);
+    const { enablePayLater } = this.props;
+
+    if (config.storeId) {
+      enablePayLater ? queryCartAndStatus() : appActions.loadShoppingCart();
+    }
 
     CleverTap.pushEvent('Menu Page - View page', this.props.storeInfoForCleverTap);
 
@@ -200,10 +224,14 @@ export class Home extends Component {
     this.setMainContainerHeight(containerHeight);
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
+    const { clearQueryCartStatus } = this.props;
+
     window.removeEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
+
+    await clearQueryCartStatus();
   }
 
   getStatusFromMultipleStore = () => {
@@ -820,8 +848,72 @@ export class Home extends Component {
     this.handleNavBack();
   };
 
+  getShareLinkUrl = () => {
+    const storeUrl = window.location.href;
+    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+
+    return shareLinkUrl;
+  };
+
+  handleClickShare = async () => {
+    try {
+      const {
+        onlineStoreInfo,
+        businessInfo,
+        t,
+        freeShippingMinAmount,
+        cashbackRate,
+        shippingType,
+        merchantCountry,
+      } = this.props;
+      const { stores, multipleStores } = businessInfo || {};
+      const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+      let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
+      storeName = _truncate(`${storeName}`, { length: 33 });
+
+      const shareLinkUrl = this.getShareLinkUrl();
+
+      const { url_short } = await shortenUrl(shareLinkUrl);
+
+      const para = {
+        link: `${url_short}`,
+        title: t('shareTitle', { storeName }),
+      };
+      NativeMethods.shareLink(para);
+
+      CleverTap.pushEvent('Menu page - Click share store link', {
+        country: merchantCountry,
+        'free delivery above': freeShippingMinAmount || 0,
+        'shipping type': shippingType,
+        cashback: cashbackRate,
+      });
+    } catch (error) {
+      console.error(`failed to share store link: ${error.message}`);
+    }
+  };
+
+  getRightContentOfHeader = () => {
+    try {
+      const isDeliveryOrder = Utils.isDeliveryOrder();
+      const { SHARE } = ICON_RES;
+
+      // The return value of hasMethodInNative is 'false'
+      if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
+        return {
+          iconRes: SHARE,
+          onClick: this.handleClickShare,
+        };
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(`failed to share store link: ${error.message}`);
+    }
+  };
+
   render() {
     const {
+      t,
       categories,
       onlineStoreInfo,
       businessInfo,
@@ -830,7 +922,10 @@ export class Home extends Component {
       history,
       freeDeliveryFee,
       deliveryInfo,
+      enablePayLater,
       shouldShowAlcoholModal,
+      orderingOngoingBannerVisibility,
+      receiptNumber,
       ...otherProps
     } = this.props;
     const {
@@ -853,11 +948,13 @@ export class Home extends Component {
     if (!onlineStoreInfo || !categories) {
       return null;
     }
+
     return (
       <section className="ordering-home flex flex-column">
         {isWebview && (
           <NativeHeader
             isPage={true}
+            rightContent={this.getRightContentOfHeader()}
             title={window.document.title}
             navFunc={() => {
               if (viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL) {
@@ -919,7 +1016,6 @@ export class Home extends Component {
                   : '0',
             }}
             onToggle={this.handleToggleAside.bind(this)}
-            onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
             onClickProductItem={({ product = {} }) => {
               this.cleverTapTrack('Menu Page - Click product', this.formatCleverTapAttributes(product));
@@ -932,7 +1028,8 @@ export class Home extends Component {
         <CartListDrawer
           footerEl={this.footerEl}
           viewAside={viewAside}
-          show={viewAside === Constants.ASIDE_NAMES.CART || viewAside === Constants.ASIDE_NAMES.PRODUCT_ITEM}
+          show={viewAside === Constants.ASIDE_NAMES.CART}
+          enablePayLater={enablePayLater}
           onToggle={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.CARTMODAL_HIDE)}
           onClearCart={() => {
             this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
@@ -954,6 +1051,7 @@ export class Home extends Component {
           footerEl={this.footerEl}
           onlineStoreInfo={onlineStoreInfo}
           show={viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL}
+          enablePayLater={enablePayLater}
           viewAside={viewAside}
           onToggle={this.handleToggleAside.bind(this)}
           hideCloseButton={isWebview}
@@ -981,16 +1079,54 @@ export class Home extends Component {
             show={viewAside === Constants.ASIDE_NAMES.DELIVERY_DETAIL}
             onToggle={this.handleToggleAside.bind(this)}
             enablePreOrder={this.isPreOrderEnabled()}
-            onShowCart={this.handleToggleAside.bind(this, Constants.ASIDE_NAMES.PRODUCT_ITEM)}
             isValidTimeToOrder={this.isValidTimeToOrder() || this.isPreOrderEnabled()}
             breakTimeFrom={this.getItemFromStore(breakTimeFrom, 'breakTimeFrom')}
             breakTimeTo={this.getItemFromStore(breakTimeTo, 'breakTimeTo')}
           />
         )}
-
         {!this.isValidTimeToOrder() && !this.isPreOrderEnabled() ? (
           <div className="ordering-home__close-cover"></div>
         ) : null}
+
+        {orderingOngoingBannerVisibility && (
+          <div
+            ref={ref => (this.tableSummaryBannerEl = ref)}
+            style={{
+              top: `${windowSize.height -
+                marginBottom({
+                  footerEls: [this.footerEl, this.tableSummaryBannerEl],
+                })}px`,
+              bottom: `${marginBottom({
+                footerEls: [this.footerEl],
+              })}px`,
+            }}
+            className="ordering-home__table-summary-banner flex flex-middle flex__fluid-content flex-space-between padding-normal"
+          >
+            <div className="flex flex-middle">
+              <i className="ordering-home__icon" />
+              <span className="ordering-home__table-summary-banner-text margin-left-right-smaller">
+                {t('OrderOngoing')}
+              </span>
+            </div>
+            <Link
+              className="ordering-home__view-order-button button button__link text-uppercase text-weight-bolder"
+              to={{
+                pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+                search: qs.stringify(
+                  {
+                    h: Utils.getStoreHashCode(),
+                    type: Utils.getOrderTypeFromUrl(),
+                    receiptNumber: receiptNumber,
+                  },
+                  { addQueryPrefix: true }
+                ),
+              }}
+            >
+              {t('ViewOrder')}
+            </Link>
+          </div>
+        )}
+
         <Footer
           {...otherProps}
           style={{
@@ -1000,6 +1136,7 @@ export class Home extends Component {
               })}px`,
           }}
           footerRef={ref => (this.footerEl = ref)}
+          enablePayLater={enablePayLater}
           onToggle={this.handleToggleAside.bind(this)}
           tableId={tableId}
           onShownCartListDrawer={() => {
@@ -1044,12 +1181,21 @@ export default compose(
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
-        shouldShowAlcoholModal: getAlcoholModalDisplayResult(state),
+        shouldShowAlcoholModal: getShouldShowAlcoholModal(state),
         store: getStore(state),
+        enablePayLater: getEnablePayLater(state),
+        orderingOngoingBannerVisibility: getOrderingOngoingBannerVisibility(state),
+        receiptNumber: getReceiptNumber(state),
+        freeShippingMinAmount: getFreeShippingMinAmount(state),
+        cashbackRate: getCashbackRate(state),
+        shippingType: getShippingType(state),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionsCreators, dispatch),
+      queryCartAndStatus: bindActionCreators(queryCartAndStatusThunk, dispatch),
+      clearQueryCartStatus: bindActionCreators(clearQueryCartStatusThunk, dispatch),
       getUserAlcoholConsent: bindActionCreators(getUserAlcoholConsent, dispatch),
       setUserAlcoholConsent: bindActionCreators(setUserAlcoholConsent, dispatch),
     })

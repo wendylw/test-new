@@ -5,7 +5,7 @@ import CurrencyNumber from '../CurrencyNumber';
 import Constants from '../../../utils/constants';
 import CleverTap from '../../../utils/clevertap';
 import './Billing.scss';
-export class Billing extends Component {
+class Billing extends Component {
   renderServiceCharge() {
     const { t, serviceCharge, businessInfo } = this.props;
     const { enableServiceCharge = false, serviceChargeRate = 0 } = businessInfo;
@@ -58,7 +58,7 @@ export class Billing extends Component {
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
       search: window.location.search,
-      nextPage: false,
+      state: { shouldGoBack: true },
     });
   };
 
@@ -79,6 +79,7 @@ export class Billing extends Component {
       isLogin,
       children,
     } = this.props;
+
     const { stores = [], enableCashback } = businessInfo || {};
     const { receiptTemplateData } = stores[0] || {};
     const classList = ['billing'];

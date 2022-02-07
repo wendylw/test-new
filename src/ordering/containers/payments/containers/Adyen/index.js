@@ -15,14 +15,13 @@ import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getBusiness,
-  getCartBilling,
   getBusinessInfo,
   getUser,
 } from '../../../../redux/modules/app';
 import SaveCardSwitch from '../../components/CreditCard/SaveCardSwitch';
 import CreditCardSecureInfo from '../../components/CreditCard/CreditCardSecureInfo';
-import { getSelectedPaymentOption } from '../../redux/common/selectors';
-import { loadPaymentOptions } from '../../redux/common/thunks';
+import { getSelectedPaymentOption, getTotal } from '../../redux/common/selectors';
+import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 
 /**
@@ -38,9 +37,9 @@ class AdyenPage extends Component {
   card = null;
 
   componentDidMount = async () => {
-    const { loadPaymentOptions } = this.props;
+    const { loadPaymentOptions, loadBilling } = this.props;
 
-    await this.props.appActions.loadShoppingCart();
+    await loadBilling();
 
     this.initAdyenCard();
     loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
@@ -120,8 +119,7 @@ class AdyenPage extends Component {
     const { saveCard } = this.state;
 
     return {
-      // paymentProvider is sent to payment api as paymentName as a parameter, which is the parameter name designed by payment api
-      paymentName: paymentProvider,
+      paymentProvider,
       browserInfo: JSON.stringify(browserInfo || {}),
       userId: user.consumerId,
       ...paymentMethod,
@@ -138,8 +136,7 @@ class AdyenPage extends Component {
   };
 
   render() {
-    const { t, history, cartBilling, currentPaymentOption } = this.props;
-    const { total } = cartBilling;
+    const { t, history, total, currentPaymentOption } = this.props;
 
     return (
       <section className={`ordering-payment flex flex-column`} data-heap-name="ordering.payment.adyen.container">
@@ -251,7 +248,7 @@ export default compose(
         currentPaymentOption: getSelectedPaymentOption(state),
         business: getBusiness(state),
         businessInfo: getBusinessInfo(state),
-        cartBilling: getCartBilling(state),
+        total: getTotal(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         user: getUser(state),
       };
@@ -259,6 +256,7 @@ export default compose(
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      loadBilling: bindActionCreators(loadBilling, dispatch),
     })
   )
 )(AdyenPage);

@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
+import { getUserProfile } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
 
 const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
@@ -21,6 +22,8 @@ export const getRefundShippingFee = createSelector(getOrder, order => _get(order
 export const getCancelOperator = createSelector(getOrder, order => _get(order, 'cancelOperator', null));
 
 export const getOrderStoreInfo = createSelector(getOrder, order => _get(order, 'storeInfo', null));
+
+export const getIsPayLater = createSelector(getOrder, order => _get(order, 'isPayLater', false));
 
 export const getOrderOriginalShippingType = createSelector(getOrder, order =>
   _get(order, 'originalShippingType', null)
@@ -82,3 +85,9 @@ export const getDisplayDiscount = createSelector(getOrder, order => {
 
   return displayDiscount;
 });
+
+export const getLiveChatUserProfile = createSelector(getUserProfile, profile => ({
+  phone: profile.phone || '',
+  name: profile.name || '',
+  email: profile.email || '',
+}));

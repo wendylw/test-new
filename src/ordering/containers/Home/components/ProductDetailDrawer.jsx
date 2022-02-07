@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { getSelectedProductDetail } from '../redux/common/selectors';
 import { actions as appActionCreators } from '../../../redux/modules/app';
+import { updateCartItems as updateCartItemsThunk } from '../../../redux/cart/thunks';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';
 import loggly from '../../../../utils/monitoring/loggly';
@@ -464,6 +465,18 @@ class ProductDetailDrawer extends Component {
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventData);
   };
 
+  handleUpdateCartItems = async variables => {
+    loggly.log('product-detail.item-operate-attempt');
+
+    const { updateCartItems } = this.props;
+
+    this.handleGtmEventTracking(variables);
+
+    await updateCartItems(variables);
+
+    this.handleHideProductDetail();
+  };
+
   handleAddOrUpdateShoppingCartItem = async variables => {
     loggly.log('product-detail.item-operate-attempt');
 
@@ -534,7 +547,7 @@ class ProductDetailDrawer extends Component {
   }
 
   renderProductOperator() {
-    const { t, selectedProduct = {}, onUpdateCartOnProductDetail } = this.props;
+    const { t, selectedProduct = {}, onUpdateCartOnProductDetail, enablePayLater } = this.props;
     const { cartQuantity, minimumVariations, increasingProductOnCat, childrenProduct } = this.state;
     const { id: productId } = selectedProduct || {};
     const hasMinimumVariations = minimumVariations && minimumVariations.length;
@@ -599,13 +612,21 @@ class ProductDetailDrawer extends Component {
                 onUpdateCartOnProductDetail(selectedProduct);
               }
 
-              this.handleAddOrUpdateShoppingCartItem({
-                action: 'add',
-                business: config.business,
-                productId: (childrenProduct && childrenProduct.childId) || productId,
-                quantity: cartQuantity,
-                variations,
-              });
+              if (enablePayLater) {
+                this.handleUpdateCartItems({
+                  productId: (childrenProduct && childrenProduct.childId) || productId,
+                  quantityChange: cartQuantity,
+                  variations,
+                });
+              } else {
+                this.handleAddOrUpdateShoppingCartItem({
+                  action: 'add',
+                  business: config.business,
+                  productId: (childrenProduct && childrenProduct.childId) || productId,
+                  quantity: cartQuantity,
+                  variations,
+                });
+              }
             }}
           >
             {increasingProductOnCat ? (
@@ -812,6 +833,7 @@ ProductDetailDrawer.displayName = 'ProductDetailDrawer';
 
 ProductDetailDrawer.propTypes = {
   show: PropTypes.bool,
+  enablePayLater: PropTypes.bool,
   viewAside: PropTypes.string,
   footerEl: PropTypes.any,
   onToggle: PropTypes.func,
@@ -820,6 +842,7 @@ ProductDetailDrawer.propTypes = {
 
 ProductDetailDrawer.defaultProps = {
   show: false,
+  enablePayLater: false,
   viewAside: '',
   onToggle: () => {},
   hideCloseButton: false,
@@ -835,6 +858,7 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
+      updateCartItems: bindActionCreators(updateCartItemsThunk, dispatch),
     })
   )
 )(withRouter(withBackButtonSupport(ProductDetailDrawer)));

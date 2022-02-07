@@ -9,7 +9,6 @@ import CurrencyNumber from '../../../components/CurrencyNumber';
 import { IconDelete } from '../../../../components/Icons';
 import ProductItem from '../../../components/ProductItem';
 import ItemOperator from '../../../../components/ItemOperator';
-import loggly from '../../../../utils/monitoring/loggly';
 
 class CartList extends Component {
   handleGtmEventTracking = product => {
@@ -40,60 +39,6 @@ class CartList extends Component {
     return ['outOfStock', 'unavailable'].includes(stockStatus);
   }
 
-  getUpdateShoppingCartItemData({ productId, variations }, currentQuantity) {
-    return {
-      action: 'edit',
-      productId,
-      quantity: currentQuantity,
-      variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
-        variationId,
-        optionId,
-        quantity,
-      })),
-    };
-  }
-
-  handleRemoveCartItem = cartItem => {
-    loggly.log('cart-list.item-operate-attempt');
-    const { productId, variations } = cartItem;
-
-    this.props.appActions
-      .removeShoppingCartItem({
-        productId,
-        variations,
-      })
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
-  };
-
-  handleDecreaseCartItem = cartItem => {
-    loggly.log('cart-list.item-operate-attempt');
-    const { quantity } = cartItem;
-
-    if (quantity <= 1) {
-      return this.handleRemoveCartItem(cartItem);
-    }
-
-    this.props.appActions
-      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity - 1))
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
-  };
-
-  handleIncreaseCartItem = cartItem => {
-    loggly.log('cart-list.item-operate-attempt');
-    const { quantity } = cartItem;
-
-    this.handleGtmEventTracking(cartItem);
-    this.props.appActions
-      .addOrUpdateShoppingCartItem(this.getUpdateShoppingCartItemData(cartItem, quantity + 1))
-      .then(() => {
-        this.props.appActions.loadShoppingCart();
-      });
-  };
-
   renderImageCover(stockStatus) {
     const { t } = this.props;
 
@@ -115,25 +60,25 @@ class CartList extends Component {
           <CurrencyNumber
             className="cart-item__price text-size-small text-line-through"
             money={originalDisplayPrice}
-            numberOnly={true}
+            numberOnly
           />
         ) : null}
         <CurrencyNumber
           className={`cart-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
           money={price || 0}
-          numberOnly={true}
+          numberOnly
         />
       </div>
     );
   }
 
   renderProductItemRightController(cartItem) {
-    const { t, onIncreaseCartItem, onDecreaseCartItem } = this.props;
+    const { t, onIncreaseCartItem, onDecreaseCartItem, onRemoveCartItem } = this.props;
     const { stockStatus, quantity, quantityOnHand } = cartItem;
     const inventoryShortage = Boolean(
       stockStatus !== 'notTrackInventory' && quantityOnHand && quantity > quantityOnHand
     );
-    const quantityEqualStock = quantityOnHand && quantity === quantityOnHand;
+    const quantityEqualStock = !!quantityOnHand && quantity === quantityOnHand;
     const disabledIncreaseQuantity = inventoryShortage || quantityEqualStock;
     const classList = ['text-center', ...(inventoryShortage ? ['text-error'] : [])];
 
@@ -141,7 +86,7 @@ class CartList extends Component {
       return (
         <button
           className="button padding-top-bottom-smaller padding-left-right-normal"
-          onClick={() => this.handleRemoveCartItem(cartItem)}
+          onClick={() => onRemoveCartItem(cartItem)}
           data-testid="removeCartItem"
           data-heap-name="ordering.home.mini-cart.remove-item-btn"
         >
@@ -157,22 +102,10 @@ class CartList extends Component {
           className="flex-middle"
           data-heap-name="ordering.home.mini-cart.item-operator"
           quantity={quantity}
-          decreaseDisabled={!Boolean(quantity)}
+          decreaseDisabled={!quantity}
           increaseDisabled={disabledIncreaseQuantity}
-          onDecrease={() => {
-            if (onDecreaseCartItem) {
-              onDecreaseCartItem(cartItem);
-            }
-
-            this.handleDecreaseCartItem(cartItem);
-          }}
-          onIncrease={() => {
-            if (onIncreaseCartItem) {
-              onIncreaseCartItem(cartItem);
-            }
-
-            this.handleIncreaseCartItem(cartItem);
-          }}
+          onDecrease={() => onDecreaseCartItem(cartItem)}
+          onIncrease={() => onIncreaseCartItem(cartItem)}
         />
         {stockStatus === 'lowStock' || disabledIncreaseQuantity ? (
           <span className="text-size-small text-weight-bolder">{t('LowStockProductQuantity', { quantityOnHand })}</span>
@@ -182,17 +115,14 @@ class CartList extends Component {
   }
 
   render() {
-    const { shoppingCart, style } = this.props;
-    if (!shoppingCart) {
-      return null;
-    }
+    const { items = [], unavailableItems = [], style } = this.props;
 
     const sortFn = (l, r) => {
       if (l.id < r.id) return -1;
       if (l.id > r.id) return 1;
       return 0;
     };
-    let cartItems = [...shoppingCart.unavailableItems, ...shoppingCart.items].sort(sortFn);
+    const cartItems = [...unavailableItems, ...items].sort(sortFn);
 
     return (
       <ul style={style} data-heap-name="ordering.cart.cart-list">
@@ -223,21 +153,29 @@ class CartList extends Component {
 CartList.displayName = 'CartList';
 
 CartList.propTypes = {
-  isList: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
   style: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  items: PropTypes.array,
+  // eslint-disable-next-line react/forbid-prop-types
+  unavailableItems: PropTypes.array,
+  onIncreaseCartItem: PropTypes.func,
+  onDecreaseCartItem: PropTypes.func,
+  onRemoveCartItem: PropTypes.func,
 };
 
 CartList.defaultProps = {
-  isList: false,
   style: {},
+  items: [],
+  unavailableItems: [],
+  onIncreaseCartItem: () => {},
+  onDecreaseCartItem: () => {},
+  onRemoveCartItem: () => {},
 };
 
 export default compose(
   withTranslation(),
-  connect(
-    state => ({}),
-    dispatch => ({
-      appActions: bindActionCreators(appActionCreators, dispatch),
-    })
-  )
+  connect(dispatch => ({
+    appActions: bindActionCreators(appActionCreators, dispatch),
+  }))
 )(CartList);

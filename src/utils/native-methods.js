@@ -91,11 +91,19 @@ const dsBridgeAsyncCall = (method, params) =>
     throw error;
   });
 
-const hasMethodInNative = method => {
+const NATIVE_METHOD_SUPPORT_MAP = {};
+
+export const hasMethodInNative = method => {
   try {
-    return dsBridgeSyncCall('hasNativeMethod', {
-      methodName: method,
-    });
+    const isInMap = Object.prototype.hasOwnProperty.call(NATIVE_METHOD_SUPPORT_MAP, method);
+
+    if (!isInMap) {
+      NATIVE_METHOD_SUPPORT_MAP[method] = dsBridgeSyncCall('hasNativeMethod', {
+        methodName: method,
+      });
+    }
+
+    return NATIVE_METHOD_SUPPORT_MAP[method];
   } catch (error) {
     return false;
   }
@@ -128,6 +136,7 @@ export const getWebviewSource = () => window.webViewSource;
 export const getBeepAppVersion = () => window.beepAppVersion;
 
 export const startChat = ({ orderId, phone, name, email, storeName }) => {
+  // TODO: remove phone, name, email, message after app forced update
   const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
   const data = {
     method: 'beepModule-startChat',
@@ -136,6 +145,21 @@ export const startChat = ({ orderId, phone, name, email, storeName }) => {
       name,
       email,
       message,
+      orderId,
+      storeName,
+    },
+    mode: MODE.SYNC,
+  };
+
+  return dsBridgeCall(data);
+};
+
+export const shareLink = ({ link, title }) => {
+  const data = {
+    method: 'beepModule-shareLink',
+    params: {
+      link,
+      title,
     },
     mode: MODE.SYNC,
   };

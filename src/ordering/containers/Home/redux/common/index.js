@@ -9,7 +9,7 @@ const initialState = {
     productId: null,
   },
   alcoholConsent: {
-    data: false,
+    data: null,
     status: null,
     error: null,
   },

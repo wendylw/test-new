@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { actions as commonActions } from '../../../redux/common/';
+import { loadPaymentOptions } from '../../../redux/common/thunks';
 
 const initialState = {
   selectedOnlineBankingAgentCode: null,
@@ -16,8 +16,8 @@ const { reducer, actions } = createSlice({
     },
   },
   extraReducers: {
-    [commonActions.loadPaymentsSuccess]: (state, { payload }) => {
-      const paymentOptions = payload;
+    [loadPaymentOptions.fulfilled]: (state, { payload }) => {
+      const paymentOptions = payload.paymentOptions;
       const onlineBankingOption = paymentOptions.find(payment => payment.key === 'OnlineBanking');
       if (onlineBankingOption) {
         const selectedOnlineBanking = onlineBankingOption.agentCodes.find(banking => banking.agentCode);

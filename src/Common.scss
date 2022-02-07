@@ -422,6 +422,10 @@ img {
     color: $theme-color;
   }
 
+  &.default {
+    color: $gray-3;
+  }
+
   &.full-page {
     position: absolute;
     left: 0;

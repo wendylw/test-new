@@ -23,6 +23,8 @@ import {
   getReceiptNumber,
   getServiceCharge,
   getOrderShippingType,
+  getIsPayLater,
+  getLiveChatUserProfile,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -229,9 +231,9 @@ export class OrderDetails extends Component {
   }
 
   renderPromotion() {
-    const { promotion, t } = this.props;
+    const { isPayLater, promotion, t } = this.props;
 
-    if (!promotion) {
+    if (!promotion || isPayLater) {
       return null;
     }
 
@@ -246,29 +248,15 @@ export class OrderDetails extends Component {
   }
 
   getRightContentOfHeader() {
-    const { user, order, t } = this.props;
-    const isWebview = _get(user, 'isWebview', false);
-    const userEmail = _get(user, 'profile.email', '');
-    const userPhone = _get(user, 'profile.phone', '');
-    const userName = _get(user, 'profile.name', '');
+    const { order, t, liveChatUserProfile } = this.props;
+    const isWebview = Utils.isWebview();
     const orderId = _get(order, 'orderId', '');
-    const deliveryAddress = _get(order, 'deliveryInformation.0.address', null);
-    const orderUserName = _get(deliveryAddress, 'name', '');
-    const orderUserPhone = _get(deliveryAddress, 'phone', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
     const eventName = 'Order Details - click contact us';
 
     if (!order) {
       return null;
     }
-
-    // TODO: doesn't ensure the user already login on thankyou page
-    // so possible getting empty value from user profile
-    const userInfoForLiveChat = {
-      email: userEmail,
-      phone: orderUserPhone || userPhone,
-      name: orderUserName || userName,
-    };
 
     if (isWebview) {
       const rightContentOfNativeLiveChat = {
@@ -281,10 +269,8 @@ export class OrderDetails extends Component {
 
           NativeMethods.startChat({
             orderId,
-            name: userInfoForLiveChat.name,
-            phone: userInfoForLiveChat.phone,
-            email: userInfoForLiveChat.email,
             storeName: orderStoreName,
+            ...liveChatUserProfile,
           });
         },
       };
@@ -310,9 +296,7 @@ export class OrderDetails extends Component {
           this.pushCleverTapEvent(eventName);
         }}
         orderId={orderId}
-        email={userInfoForLiveChat.email}
-        name={userInfoForLiveChat.name}
-        phone={userInfoForLiveChat.phone}
+        storeName={orderStoreName}
       />
     );
   }
@@ -347,7 +331,15 @@ export class OrderDetails extends Component {
   };
 
   render() {
-    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton, shippingType } = this.props;
+    const {
+      order,
+      t,
+      isUseStorehubLogistics,
+      serviceCharge,
+      isShowReorderButton,
+      shippingType,
+      isPayLater,
+    } = this.props;
     const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
       order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
@@ -395,10 +387,12 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('ServiceCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={serviceCharge || 0} />
               </li>
-              <li className="flex flex-space-between flex-middle">
-                <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
-                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
-              </li>
+              {isPayLater ? null : (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
+                </li>
+              )}
               {paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE ? (
                 <li className="flex flex-space-between flex-middle">
                   <span className="padding-top-bottom-small text-opacity">{t('Rounding')}</span>
@@ -464,6 +458,8 @@ export default compose(
       isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      isPayLater: getIsPayLater(state),
+      liveChatUserProfile: getLiveChatUserProfile(state),
     }),
     {
       loadOrder,
