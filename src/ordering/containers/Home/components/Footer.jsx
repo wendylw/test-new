@@ -37,22 +37,26 @@ export class Footer extends Component {
   }
 
   syncLoginFromNative = async () => {
-    const { appActions, userIsExpired } = this.props;
+    try {
+      const { appActions, userIsExpired } = this.props;
 
-    const tokens = await NativeMethods.getTokenAsync();
-    const { access_token, refresh_token } = tokens;
-    await appActions.loginApp({
-      accessToken: access_token,
-      refreshToken: refresh_token,
-    });
-
-    if (userIsExpired) {
-      const tokens = await NativeMethods.tokenExpiredAsync();
+      const tokens = await NativeMethods.getTokenAsync();
       const { access_token, refresh_token } = tokens;
       await appActions.loginApp({
         accessToken: access_token,
         refreshToken: refresh_token,
       });
+
+      if (userIsExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token, refresh_token } = tokens;
+        await appActions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      }
+    } catch (e) {
+      console.error('syncLoginFromNative error: ', e.message);
     }
 
     this.handleWebRedirect();
