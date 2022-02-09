@@ -102,6 +102,7 @@ class App extends Component {
     this.visitErrorPage();
     try {
       await appActions.initDeliveryDetails();
+      const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
       if (Utils.isWebview()) {
         try {
@@ -112,7 +113,6 @@ class App extends Component {
       }
 
       await appActions.getLoginStatus();
-      const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {
         await appActions.loadCoreBusiness();
