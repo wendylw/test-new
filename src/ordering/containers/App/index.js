@@ -102,8 +102,17 @@ class App extends Component {
     this.visitErrorPage();
     try {
       await appActions.initDeliveryDetails();
-      await appActions.getLoginStatus();
       const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
+
+      if (Utils.isWebview()) {
+        try {
+          await appActions.syncLoginFromNative();
+        } catch (error) {
+          console.error('syncLoginFromNative error: ', error.message);
+        }
+      }
+
+      await appActions.getLoginStatus();
 
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {
         await appActions.loadCoreBusiness();

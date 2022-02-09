@@ -14,6 +14,7 @@ import {
   getCategoryProductList,
   getUserIsLogin,
   getIsUserLoginRequestStatusInPending,
+  getUserIsExpired,
 } from '../../../redux/modules/app';
 import { getCartItemsCount } from '../../../redux/cart/selectors';
 import Utils from '../../../../utils/utils';
@@ -21,22 +22,8 @@ import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import * as NativeMethods from '../../../../utils/native-methods';
 import loggly from '../../../../utils/monitoring/loggly';
-import _isNil from 'lodash/isNil';
 
 export class Footer extends Component {
-  componentDidUpdate = async prevProps => {
-    const { user } = this.props;
-    const { isExpired, isLogin } = user || {};
-
-    // token过期重新发postMessage
-    if (isExpired && prevProps.user.isExpired !== isExpired && Utils.isWebview()) {
-      await this.postAppMessage();
-    }
-    if (isLogin && prevProps.user.isLogin !== isLogin && Utils.isWebview()) {
-      this.handleWebRedirect();
-    }
-  };
-
   getDisplayPrice() {
     const { shoppingCart } = this.props;
     const { items } = shoppingCart || {};
@@ -49,20 +36,30 @@ export class Footer extends Component {
     return totalPrice;
   }
 
-  postAppMessage = async () => {
-    const { appActions, user } = this.props;
-    const { isExpired } = user || {};
+  syncLoginFromNative = async () => {
+    try {
+      const { appActions, userIsExpired } = this.props;
 
-    const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
-    if (_isNil(res)) {
-      loggly.error('ordering.home.footer', { message: 'native token is invalid' });
-    } else {
-      const { access_token, refresh_token } = res;
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token, refresh_token } = tokens;
       await appActions.loginApp({
         accessToken: access_token,
         refreshToken: refresh_token,
       });
+
+      if (userIsExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token, refresh_token } = tokens;
+        await appActions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        });
+      }
+    } catch (e) {
+      console.error('syncLoginFromNative error: ', e.message);
     }
+
+    this.handleWebRedirect();
   };
 
   loginInTngMiniProgram = async () => {
@@ -84,7 +81,7 @@ export class Footer extends Component {
       }
 
       if (Utils.isWebview()) {
-        this.postAppMessage();
+        this.syncLoginFromNative();
         return;
       }
 
@@ -257,6 +254,7 @@ export default compose(
         deliverInfo: getDeliveryInfo(state),
         isUserLoginRequestStatusInPending: getIsUserLoginRequestStatusInPending(state),
         cartProductsCount: getCartItemsCount(state),
+        userIsExpired: getUserIsExpired(state),
       };
     },
     dispatch => ({
