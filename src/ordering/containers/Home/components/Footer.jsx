@@ -36,7 +36,7 @@ export class Footer extends Component {
     return totalPrice;
   }
 
-  postAppMessage = async () => {
+  syncLoginFromNative = async () => {
     const { appActions, userIsExpired } = this.props;
 
     const tokens = await NativeMethods.getTokenAsync();
@@ -77,7 +77,7 @@ export class Footer extends Component {
       }
 
       if (Utils.isWebview()) {
-        this.postAppMessage();
+        this.syncLoginFromNative();
         return;
       }
 
