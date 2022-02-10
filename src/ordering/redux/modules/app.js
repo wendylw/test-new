@@ -423,8 +423,12 @@ export const actions = {
     return dispatch(removeShoppingCartItem(variables));
   },
 
-  addOrUpdateShoppingCartItem: variables => dispatch => {
-    return dispatch(addOrUpdateShoppingCartItem(variables));
+  addOrUpdateShoppingCartItem: variables => (dispatch, getState) => {
+    const state = getState();
+    const businessUTCOffset = getBusinessUTCOffset(state);
+    const latestShippingType = getShippingType(state);
+    const latestFulfillDate = Utils.getFulfillDate(businessUTCOffset);
+    return dispatch(addOrUpdateShoppingCartItem({ ...variables, latestShippingType, latestFulfillDate }));
   },
 
   // TODO: This type is actually not used, because apiError does not respect action type,
