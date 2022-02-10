@@ -30,6 +30,11 @@ Utils.getQueryString = key => {
   return queries;
 };
 
+/**
+ *
+ * @param {string or string array} keys,
+ * @returns {string}
+ */
 Utils.getFilteredQueryString = (keys, queryString = window.location.search) => {
   const query = qs.parse(queryString, { ignoreQueryPrefix: true });
 
@@ -44,9 +49,15 @@ Utils.getFilteredQueryString = (keys, queryString = window.location.search) => {
   return qs.stringify(query, { addQueryPrefix: true });
 };
 
-Utils.getApiRequestShippingType = () => {
-  const type = Utils.getQueryVariable('type');
-  return type ? Utils.mapString2camelCase(type) : undefined;
+Utils.getApiRequestShippingType = shippingType => {
+  const type = shippingType || Utils.getQueryString('type');
+
+  switch (type) {
+    case Constants.DELIVERY_METHOD.DINE_IN:
+      return 'dineIn';
+    default:
+      return type;
+  }
 };
 
 Utils.hasNativeSavedAddress = () => {
@@ -607,18 +618,6 @@ Utils.addParamToSearch = (key, value) => {
   }
 };
 
-Utils.mapString2camelCase = string => {
-  const stringList = string.split('-');
-  if (stringList.length > 1) {
-    for (let i = 1; i < stringList.length; i++) {
-      const itemList = stringList[i].split('');
-      itemList[0] = itemList[0].toUpperCase();
-      stringList[i] = itemList.join('');
-    }
-  }
-  return stringList.join('');
-};
-
 Utils.notHomeOrLocationPath = pathname => {
   return !(
     ['/ordering/', '/ordering'].includes(pathname) ||
@@ -922,7 +921,13 @@ Utils.getRegistrationSource = () => {
       }
 
     case REGISTRATION_TOUCH_POINT.QR_ORDER:
+      if (Utils.isSharedLink()) {
+        return REGISTRATION_SOURCE.SHARED_LINK;
+      }
     case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
+      if (Utils.isSharedLink()) {
+        return REGISTRATION_SOURCE.SHARED_LINK;
+      }
     default:
       if (Utils.isTNGMiniProgram()) {
         return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
@@ -963,6 +968,10 @@ Utils.removeCookieVariable = (name, attributes) => {
 
 Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
+Utils.isSharedLink = () => {
+  return Utils.getSessionVariable('BeepOrderingSource') === 'SharedLink';
+};
+
 Utils.saveSourceUrlToSessionStorage = sourceUrl => {
   Utils.setSessionVariable('BeepOrderingSourceUrl', sourceUrl);
 };
@@ -992,6 +1001,10 @@ Utils.submitForm = (action, data) => {
   form.submit();
 
   document.body.removeChild(form);
+};
+
+Utils.getStoreHashCode = () => {
+  return Utils.getCookieVariable('__h');
 };
 
 export default Utils;

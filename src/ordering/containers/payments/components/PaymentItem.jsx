@@ -7,7 +7,7 @@ import _values from 'lodash/values';
 import _every from 'lodash/every';
 
 import { getSelectedPaymentOption } from '../redux/common/selectors';
-import { updatePaymentOptionSelected as updatePaymentOptionSelectedThunk } from '../redux/common/thunks';
+import { actions as paymentCommonActions } from '../redux/common/index';
 import PaymentLogo from './PaymentLogo';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import Radio from '../../../../components/Radio';
@@ -141,7 +141,7 @@ export default compose(
       currentPaymentOption: getSelectedPaymentOption(state),
     }),
     {
-      updatePaymentOptionSelected: updatePaymentOptionSelectedThunk,
+      updatePaymentOptionSelected: paymentCommonActions.updatePaymentOptionSelected,
     }
   )
 )(PaymentItem);

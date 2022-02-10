@@ -23,13 +23,14 @@ import {
   getReceiptNumber,
   getServiceCharge,
   getOrderShippingType,
+  getIsPayLater,
   getLiveChatUserProfile,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING } = Constants;
+const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING, DELIVERY_METHOD } = Constants;
 
 export class OrderDetails extends Component {
   state = {};
@@ -230,9 +231,9 @@ export class OrderDetails extends Component {
   }
 
   renderPromotion() {
-    const { promotion, t } = this.props;
+    const { isPayLater, promotion, t } = this.props;
 
-    if (!promotion) {
+    if (!promotion || isPayLater) {
       return null;
     }
 
@@ -330,9 +331,19 @@ export class OrderDetails extends Component {
   };
 
   render() {
-    const { order, t, isUseStorehubLogistics, serviceCharge, isShowReorderButton } = this.props;
-    const { shippingFee, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } = order || '';
+    const {
+      order,
+      t,
+      isUseStorehubLogistics,
+      serviceCharge,
+      isShowReorderButton,
+      shippingType,
+      isPayLater,
+    } = this.props;
+    const { shippingFee, takeawayCharges, subtotal, total, tax, loyaltyDiscounts, paymentMethod, roundedAmount } =
+      order || '';
     const { displayDiscount } = loyaltyDiscounts && loyaltyDiscounts.length > 0 ? loyaltyDiscounts[0] : '';
+    const isTakeAwayType = shippingType === DELIVERY_METHOD.TAKE_AWAY;
 
     return (
       <section className="ordering-details flex flex-column" data-heap-name="ordering.order-detail.container">
@@ -362,6 +373,12 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('Tax')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={tax || 0} />
               </li>
+              {isTakeAwayType && takeawayCharges && (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('TakeawayCharge')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={takeawayCharges || 0} />
+                </li>
+              )}
               <li className="flex flex-space-between flex-middle">
                 <span className="padding-top-bottom-small text-opacity">{t('DeliveryCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={shippingFee || 0} />
@@ -370,10 +387,12 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('ServiceCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={serviceCharge || 0} />
               </li>
-              <li className="flex flex-space-between flex-middle">
-                <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
-                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
-              </li>
+              {isPayLater ? null : (
+                <li className="flex flex-space-between flex-middle">
+                  <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
+                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
+                </li>
+              )}
               {paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE ? (
                 <li className="flex flex-space-between flex-middle">
                   <span className="padding-top-bottom-small text-opacity">{t('Rounding')}</span>
@@ -439,6 +458,7 @@ export default compose(
       isShowReorderButton: getIsShowReorderButton(state),
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+      isPayLater: getIsPayLater(state),
       liveChatUserProfile: getLiveChatUserProfile(state),
     }),
     {

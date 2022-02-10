@@ -21,6 +21,8 @@ import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/enti
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
+import cartReducer from '../cart';
+import { getCartItems as getNewCartItems } from '../cart/selectors';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
@@ -45,7 +47,7 @@ const CartItemModel = {
 };
 
 const CartModel = {
-  status: 'pending',
+  status: API_REQUEST_STATUS.PENDING,
   isFetching: false,
   items: [],
   unavailableItems: [],
@@ -110,6 +112,9 @@ export const initialState = {
   onlineStoreInfo: {
     id: '',
     isFetching: false,
+  },
+  coreBusiness: {
+    status: null,
   },
   requestInfo: {
     tableId: config.table,
@@ -494,11 +499,7 @@ export const actions = {
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
-
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
-
-    config.storeId && dispatch(actions.loadShoppingCart());
-
     const shippingType = Utils.getApiRequestShippingType();
 
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
@@ -507,8 +508,9 @@ export const actions = {
   loadProductDetail: productId => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+    const shippingType = Utils.getApiRequestShippingType();
 
-    return dispatch(fetchProductDetail({ productId, fulfillDate }));
+    return dispatch(fetchProductDetail({ productId, fulfillDate, shippingType }));
   },
 
   loginByTngMiniProgram: () => async (dispatch, getState) => {
@@ -745,6 +747,21 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
   }
 };
 
+const coreBusiness = (state = initialState.coreBusiness, action) => {
+  const { type } = action;
+
+  switch (type) {
+    case types.FETCH_COREBUSINESS_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_COREBUSINESS_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_COREBUSINESS_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
 const apiError = (state = initialState.apiError, action) => {
   const { type, code, response, responseGql, payload } = action;
   const { error: payloadError } = payload || {};
@@ -785,9 +802,9 @@ const requestInfo = (state = initialState.requestInfo) => state;
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
-    return { ...state, ...CartModel, isFetching: false, status: 'fulfilled' };
+    return { ...state, ...CartModel, isFetching: false, status: API_REQUEST_STATUS.FULFILLED };
   } else if (action.type === types.FETCH_SHOPPINGCART_REQUEST) {
-    return { ...state, isFetching: true, status: 'pending' };
+    return { ...state, isFetching: true, status: API_REQUEST_STATUS.PENDING };
   } else if (action.type === types.FETCH_SHOPPINGCART_SUCCESS) {
     const { items = [], unavailableItems = [], displayPromotions, voucher: voucherObject, ...cartBilling } =
       action.response || {};
@@ -813,7 +830,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     return {
       ...state,
       isFetching: false,
-      status: 'fulfilled',
+      status: API_REQUEST_STATUS.FULFILLED,
       items: items.map(item => ({ ...CartItemModel, ...item })),
       unavailableItems: unavailableItems.map(unavailableItem => ({ ...CartItemModel, ...unavailableItem })),
       billing: {
@@ -822,7 +839,7 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
       },
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
-    return { ...state, isFetching: false, status: 'reject' };
+    return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED };
   }
 
   return state;
@@ -883,8 +900,10 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  cart: cartReducer,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
+  coreBusiness,
 });
 
 // selectors
@@ -896,13 +915,7 @@ export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
 export const getRequestInfo = state => state.app.requestInfo;
-export const getMerchantCountry = state => {
-  if (state.entities.businesses[state.app.business]) {
-    return state.entities.businesses[state.app.business].country;
-  }
 
-  return null;
-};
 export const getApiError = state => state.app.apiError;
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
@@ -918,11 +931,16 @@ export const getIsUserLoginRequestStatusInPending = createSelector(
   status => status === API_REQUEST_STATUS.PENDING
 );
 
+export const getIsUserProfileStatusFulfilled =
+  (getUserProfileStatus, status => status === API_REQUEST_STATUS.FULFILLED);
+
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
 
   return getBusinessByName(state, business) || {};
 };
+
+export const getMerchantCountry = createSelector(getBusinessInfo, businessInfo => _get(businessInfo, 'country', null));
 
 export const getStoresList = state => getCoreStoreList(state);
 
@@ -930,9 +948,38 @@ export const getStoreHashCode = state => state.app.storeHashCode.data;
 
 export const getDeliveryInfo = createSelector(getBusinessInfo, businessInfo => Utils.getDeliveryInfo(businessInfo));
 
+export const getReceiptNumber = state => state.app.cart.receiptNumber;
+
 export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo => {
   return _get(businessInfo, 'timezoneOffset', 480);
 });
+
+export const getCoreBusinessAPIStatus = state => state.app.coreBusiness.status;
+
+export const getIsCoreBusinessAPIPending = createSelector(
+  getCoreBusinessAPIStatus,
+  status => status === API_REQUEST_STATUS.PENDING
+);
+export const getIsCoreBusinessAPIFulfilled = createSelector(
+  getCoreBusinessAPIStatus,
+  status => status === API_REQUEST_STATUS.FULFILLED
+);
+
+// TODO: Utils.getOrderTypeFromUrl() will replace be selector
+export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo => {
+  return (
+    _get(businessInfo, 'qrOrderingSettings.enablePayLater', false) &&
+    Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DINE_IN
+  );
+});
+
+export const getOrderingOngoingBannerVisibility = createSelector(
+  getReceiptNumber,
+  getEnablePayLater,
+  (receiptNumber, enablePayLater) => {
+    return receiptNumber && enablePayLater;
+  }
+);
 
 export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => {
   const deliveryTypes = stores.reduce((types, store) => {
@@ -944,6 +991,7 @@ export const getBusinessDeliveryTypes = createSelector(getStoresList, stores => 
 
 export const getStoreId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'storeId', null));
 export const getShippingType = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'shippingType', null));
+export const getTableId = createSelector(getRequestInfo, requestInfo => _get(requestInfo, 'tableId', null));
 
 export const getStore = state => {
   const storeId = getStoreId(state);
@@ -961,7 +1009,16 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
+export const getCartStatus = state => state.app.shoppingCart.status;
+
 export const getDeliveryDetails = state => state.app.deliveryDetails;
+
+export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
+export const getCartSubtotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'subtotal', null));
+export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'totalCashback', null)
+);
+export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
 
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
@@ -1011,10 +1068,6 @@ export const getShoppingCart = createSelector(
   }
 );
 
-export const getCartItemList = state => {
-  return state.app.shoppingCart.items;
-};
-
 // This selector is for Clever Tap only, don't change it unless you are working on Clever Tap feature.
 export const getStoreInfoForCleverTap = state => {
   const business = getBusiness(state);
@@ -1031,6 +1084,45 @@ export const getUserName = createSelector(getUser, user => _get(user, 'profile.n
 export const getUserPhone = createSelector(getUser, user => _get(user, 'profile.phone', ''));
 
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
+
+export const getStoreName = createSelector(getStore, store => _get(store, 'name', ''));
+
+export const getEnableCashback = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'enableCashback', null)
+);
+
+export const getQROrderingSettings = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'qrOrderingSettings', null)
+);
+
+export const getFreeShippingMinAmount = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.freeShippingMinAmount', null)
+);
+
+export const getDefaultLoyaltyRatio = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'defaultLoyaltyRatio', null)
+);
+
+export const getCashbackRate = createSelector(
+  getDefaultLoyaltyRatio,
+  getEnableCashback,
+  (defaultLoyaltyRatio, enableCashback) => {
+    if (!enableCashback) {
+      return null;
+    }
+
+    return Math.floor((1 / defaultLoyaltyRatio) * 100) / 100;
+  }
+);
+
+export const getMinimumConsumption = createSelector(getQROrderingSettings, qrOrderingSettings => {
+  const minimumConsumption = _get(qrOrderingSettings, 'minimumConsumption', null);
+  return Number(minimumConsumption || 0);
+});
+
+export const getEnableConditionalFreeShipping = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.enableConditionalFreeShipping', null)
+);
 
 const mergeWithShoppingCart = (onlineCategory, carts) => {
   if (!Array.isArray(onlineCategory)) {
@@ -1082,8 +1174,10 @@ const mergeWithShoppingCart = (onlineCategory, carts) => {
 };
 
 export const getCategoryProductList = createSelector(
-  [getAllProducts, getAllCategories, getCartItemList],
-  (allProducts, categories, carts) => {
+  [getAllProducts, getAllCategories, getCartItems, getNewCartItems, getEnablePayLater],
+  (allProducts, categories, cartItems, newCartItems, enablePayLater) => {
+    const carts = enablePayLater ? newCartItems : cartItems;
+
     if (!allProducts || !categories || !Array.isArray(carts)) {
       return [];
     }
@@ -1116,10 +1210,19 @@ export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsQROrder = state => Utils.isQROrder();
 
-export const getIsQROrderingLoginFree = createSelector(getBusinessInfo, getIsQROrder, (businessInfo, isQROrder) => {
-  const { allowAnonymousQROrdering = false } = businessInfo;
-  return isQROrder && allowAnonymousQROrdering;
-});
+export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'allowAnonymousQROrdering', false)
+);
+
+export const getIsQROrderingLoginFree = createSelector(
+  getAllowAnonymousQROrdering,
+  getIsQROrder,
+  getEnablePayLater,
+  (allowAnonymousQROrdering, isQROrder, enablePayLater) => {
+    // The pay later of phase 1 support allow Anonymous QR Ordering on default
+    return isQROrder && (allowAnonymousQROrdering || enablePayLater);
+  }
+);
 
 export const getIsLoginFree = createSelector(
   getIsDigitalType,
@@ -1152,12 +1255,6 @@ export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCart =>
   });
 
   return totalPrice;
-});
-
-export const getMinimumConsumption = createSelector(getBusinessInfo, businessInfo => {
-  const { qrOrderingSettings } = businessInfo || {};
-  const { minimumConsumption } = qrOrderingSettings || {};
-  return Number(minimumConsumption || 0);
 });
 
 export const getValidBillingTotal = createSelector(getMinimumConsumption, minimumConsumption => {

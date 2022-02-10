@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants from '../../../../../../utils/constants';
-import { CASHBACK_CAN_CLAIM, BEFORE_PAID_STATUS_LIST } from '../constants';
+import { CASHBACK_CAN_CLAIM_STATUS_LIST, AFTER_PAID_STATUS_LIST, CASHBACK_CLAIMED_STATUS_LIST } from '../constants';
 import {
   getOrder,
   getOrderStatus,
@@ -17,8 +17,8 @@ import {
   getMerchantCountry,
   getBusinessInfo,
   getUserIsLogin,
-  getIsQROrderingLoginFree,
   getOnlineStoreInfo,
+  getAllowAnonymousQROrdering,
 } from '../../../../../redux/modules/app';
 
 const { ORDER_STATUS, DELIVERY_METHOD } = Constants;
@@ -88,9 +88,10 @@ export const getOrderDeliveryInfo = createSelector(getOrder, order => {
   };
 });
 
-export const getHasOrderPaid = createSelector(
-  getOrderStatus,
-  orderStatus => orderStatus && !BEFORE_PAID_STATUS_LIST.includes(orderStatus)
+export const getIsPayLater = createSelector(getOrder, order => _get(order, 'isPayLater', false));
+
+export const getHasOrderPaid = createSelector(getOrderStatus, orderStatus =>
+  AFTER_PAID_STATUS_LIST.includes(orderStatus)
 );
 
 export const getCashback = createSelector(getCashbackInfo, ({ cashback }) => (Number(cashback) ? Number(cashback) : 0));
@@ -101,42 +102,52 @@ export const getCashbackCurrency = createSelector(getCashback, getOnlineStoreInf
   return currencyFormatter.format(cashback);
 });
 
-export const getCanCashbackClaim = createSelector(
-  getCashbackInfo,
-  cashbackInfo => cashbackInfo.status === CASHBACK_CAN_CLAIM
+export const getCashbackStatus = createSelector(getCashbackInfo, cashbackInfo => _get(cashbackInfo, 'status', null));
+
+export const getCanCashbackClaim = createSelector(getCashbackStatus, cashbackStatus =>
+  CASHBACK_CAN_CLAIM_STATUS_LIST.includes(cashbackStatus)
 );
 
-export const getIsCashbackAvailable = createSelector(getCashback, getBusinessInfo, (cashback, businessInfo) => {
+export const getHasCashback = createSelector(getCashback, cashback => cashback > 0);
+
+export const getIsCashbackAvailable = createSelector(getHasCashback, getBusinessInfo, (hasCashback, businessInfo) => {
   const { enableCashback } = businessInfo || {};
-  const hasCashback = !!cashback;
   return enableCashback && hasCashback;
 });
 
 export const getHasCashbackClaimed = createSelector(
-  getCanCashbackClaim,
-  getIsCashbackAvailable,
-  (canCashbackClaim, isCashbackAvailable) => isCashbackAvailable && !canCashbackClaim
+  getCashbackStatus,
+  getHasCashback,
+  (cashbackStatus, hasCashback) => CASHBACK_CLAIMED_STATUS_LIST.includes(cashbackStatus) && hasCashback
 );
 
 export const getIsCashbackClaimable = createSelector(
+  getHasOrderPaid,
   getUserIsLogin,
   getCanCashbackClaim,
-  (isLogin, canCashbackClaim) => isLogin && canCashbackClaim
+  (hasOrderPaid, isLogin, canCashbackClaim) => hasOrderPaid && isLogin && canCashbackClaim
 );
 
 export const getShouldShowCashbackBanner = createSelector(
   getUserIsLogin,
   getHasOrderPaid,
   getHasCashbackClaimed,
-  getIsQROrderingLoginFree,
-  (isLogin, hasOrderPaid, hasCashbackClaimed, isQROrderingLoginFree) =>
-    hasOrderPaid && !isLogin && isQROrderingLoginFree && !hasCashbackClaimed
+  getOrderShippingType,
+  getAllowAnonymousQROrdering,
+  getIsPayLater,
+  (isLogin, hasOrderPaid, hasCashbackClaimed, orderShippingType, allowAnonymousQROrdering, isPayLater) =>
+    hasOrderPaid &&
+    !isLogin &&
+    !hasCashbackClaimed &&
+    // Only Dine In order will display the cashback banner
+    orderShippingType === DELIVERY_METHOD.DINE_IN &&
+    // Only the store support allowAnonymousQROrdering will display the cashback banner
+    // The pay later order support allow Anonymous QR Ordering on default
+    (allowAnonymousQROrdering || isPayLater)
 );
 
 export const getShouldShowCashbackCard = createSelector(
-  getHasOrderPaid,
-  getShouldShowCashbackBanner,
-  getIsCashbackAvailable,
-  (hasOrderPaid, shouldShowCashbackBanner, isCashbackAvailable) =>
-    hasOrderPaid && !shouldShowCashbackBanner && isCashbackAvailable
+  getIsCashbackClaimable,
+  getHasCashbackClaimed,
+  (isCashbackClaimable, hasCashbackClaimed) => isCashbackClaimable || hasCashbackClaimed
 );
