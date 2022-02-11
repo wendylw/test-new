@@ -8,9 +8,9 @@ const MANIFEST = {
 };
 
 const ROUTER_PATHS = {
-  TERMS_OF_USE: '/terms-conditions',
+  TERMS_OF_USE: '/terms-of-use',
   THANK_YOU: '/thank-you',
-  PRIVACY: '/privacy',
+  PRIVACY: '/privacy-policy',
   ERROR: '/error',
   SORRY: '/sorry',
   REPORT_DRIVER: '/report-driver',
