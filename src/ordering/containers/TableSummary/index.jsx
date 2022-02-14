@@ -300,7 +300,7 @@ export class TableSummary extends React.Component {
       orderSubmissionRequestingStatus,
     } = this.props;
     const { cartContainerHeight } = this.state;
-
+    console.log('businessInfo', businessInfo);
     return (
       <section
         className="table-summary flex flex-column"
@@ -341,7 +341,7 @@ export class TableSummary extends React.Component {
             total={total}
             creditsBalance={cashback}
             shippingFee={shippingFee}
-            businessInfo={{ ...businessInfo, enableCashback: true }}
+            businessInfo={businessInfo}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
             isLogin={userIsLogin}
             history={history}
