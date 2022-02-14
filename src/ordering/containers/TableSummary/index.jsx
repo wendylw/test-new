@@ -300,7 +300,7 @@ export class TableSummary extends React.Component {
       orderSubmissionRequestingStatus,
     } = this.props;
     const { cartContainerHeight } = this.state;
-    console.log('businessInfo', businessInfo);
+
     return (
       <section
         className="table-summary flex flex-column"
