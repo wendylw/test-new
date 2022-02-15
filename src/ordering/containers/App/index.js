@@ -106,11 +106,7 @@ class App extends Component {
       const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
       if (Utils.isWebview()) {
-        try {
-          await appActions.syncLoginFromNative();
-        } catch (error) {
-          console.error('syncLoginFromNative error: ', error.message);
-        }
+        appActions.syncLoginFromNative();
       }
 
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {

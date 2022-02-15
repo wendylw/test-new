@@ -319,30 +319,19 @@ export const actions = {
   }),
 
   syncLoginFromNative: () => async (dispatch, getState) => {
-    const isLogin = getUserIsLogin(getState());
-    if (isLogin) {
-      return;
-    }
+    try {
+      const isLogin = getUserIsLogin(getState());
+      if (isLogin) {
+        return;
+      }
 
-    const isAppLogin = NativeMethods.getLoginStatus();
+      const isAppLogin = NativeMethods.getLoginStatus();
 
-    if (!isAppLogin) {
-      return;
-    }
+      if (!isAppLogin) {
+        return;
+      }
 
-    const tokens = await NativeMethods.getTokenAsync();
-    const { access_token, refresh_token } = tokens;
-    await dispatch(
-      actions.loginApp({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      })
-    );
-
-    const isExpired = getUserIsExpired(getState());
-
-    if (isExpired) {
-      const tokens = await NativeMethods.tokenExpiredAsync();
+      const tokens = await NativeMethods.getTokenAsync();
       const { access_token, refresh_token } = tokens;
       await dispatch(
         actions.loginApp({
@@ -350,6 +339,21 @@ export const actions = {
           refreshToken: refresh_token,
         })
       );
+
+      const isExpired = getUserIsExpired(getState());
+
+      if (isExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token, refresh_token } = tokens;
+        await dispatch(
+          actions.loginApp({
+            accessToken: access_token,
+            refreshToken: refresh_token,
+          })
+        );
+      }
+    } catch (error) {
+      console.error('syncLoginFromNative error: ', error?.message);
     }
   },
 
