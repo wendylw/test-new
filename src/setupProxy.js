@@ -133,6 +133,7 @@ const setCookie = async (req, res, next) => {
         const replacedDomain = hostName.replace(businessName, '');
         return cookie.replace(/Domain=(\.|\w)+;?/gi, `Domain=${replacedDomain};`);
       } else {
+        // For other cases, we don't need to take further actions
         return cookie.replace(/Domain=(\.|\w)+;?/gi, '');
       }
     });
