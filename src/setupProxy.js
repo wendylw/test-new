@@ -125,8 +125,7 @@ const setCookie = async (req, res, next) => {
     const cookies = response.headers.raw()['set-cookie'] || [];
     debug(`${original} Cookies from backend:\n${cookies.join('\n')}`);
 
-    // remove Domain
-    const removeDomainCookies = cookies.map(cookie => {
+    const updatedCookies = cookies.map(cookie => {
       const isSessionId = cookie.includes('sid=');
       if (isSessionId) {
         // In order to sync up sid across ordering and site, we need to replace hcbeep.beep.local.shub.us as .beep.local.shub.us.
@@ -138,8 +137,8 @@ const setCookie = async (req, res, next) => {
       }
     });
 
-    debug(`${original} Set Cookie:\n${removeDomainCookies.join('\n')}`);
-    res.setHeader('Set-Cookie', removeDomainCookies);
+    debug(`${original} Set Cookie:\n${updatedCookies.join('\n')}`);
+    res.setHeader('Set-Cookie', updatedCookies);
     debug(`${original} Set Cookie done`);
   } catch (e) {
     console.error('Set %s Cookie Error: %o', original, e);
