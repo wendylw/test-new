@@ -93,6 +93,7 @@ const shouldForward = function(req) {
 
 const setCookie = async (req, res, next) => {
   const original = req.originalUrl;
+  const hostName = req.hostname;
 
   try {
     debug(`${original} Start set cookie`);
@@ -125,7 +126,17 @@ const setCookie = async (req, res, next) => {
     debug(`${original} Cookies from backend:\n${cookies.join('\n')}`);
 
     // remove Domain
-    const removeDomainCookies = cookies.map(cookie => cookie.replace(/Domain=(\.|\w)+;?/gi, ''));
+    const removeDomainCookies = cookies.map(cookie => {
+      const isSessionId = cookie.includes('sid=');
+      if (isSessionId) {
+        // In order to sync up sid across ordering and site, we need to replace hcbeep.beep.local.shub.us as .beep.local.shub.us.
+        const businessName = resolveBusinessName(hostName);
+        const replacedDomain = hostName.replace(businessName, '');
+        return cookie.replace(/Domain=(\.|\w)+;?/gi, `Domain=${replacedDomain};`);
+      } else {
+        return cookie.replace(/Domain=(\.|\w)+;?/gi, '');
+      }
+    });
 
     debug(`${original} Set Cookie:\n${removeDomainCookies.join('\n')}`);
     res.setHeader('Set-Cookie', removeDomainCookies);
