@@ -1,4 +1,5 @@
 import { get } from './api/api-fetch';
+import loggly from './monitoring/loggly';
 
 const SHORTEN_URL_MAP = new Map();
 
@@ -16,7 +17,8 @@ export const shortenUrl = async url => {
     SHORTEN_URL_MAP.set(url, fetchShortUrlPromise);
 
     fetchShortUrlPromise.catch(error => {
-      console.error(`failed to share store link: ${error.message}`);
+      // eslint-disable-next-line import/no-named-as-default-member
+      loggly.error(`failed to share store link: ${error.message}`);
       SHORTEN_URL_MAP.delete(url);
     });
   }
