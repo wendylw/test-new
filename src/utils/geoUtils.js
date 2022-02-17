@@ -190,7 +190,7 @@ export const getPlacesFromCoordinates = coords => {
           error: status,
           location,
         });
-        reject(`Failed to get location from coordinates: ${status}`);
+        reject({ message: `Failed to get location from coordinates: ${status}` });
       }
     });
   });

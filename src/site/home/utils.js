@@ -109,7 +109,9 @@ export const getPlaceInfo = async ({
       placeInfo = await getPositionInfoBySource('ip', false);
       if (placeInfo) source = 'ip';
     } catch (e) {
-      console.error(e);
+      loggly.error('utils.get-place-info', {
+        message: e?.message,
+      });
     }
   }
 
