@@ -921,7 +921,13 @@ Utils.getRegistrationSource = () => {
       }
 
     case REGISTRATION_TOUCH_POINT.QR_ORDER:
+      if (Utils.isSharedLink()) {
+        return REGISTRATION_SOURCE.SHARED_LINK;
+      }
     case REGISTRATION_TOUCH_POINT.ONLINE_ORDER:
+      if (Utils.isSharedLink()) {
+        return REGISTRATION_SOURCE.SHARED_LINK;
+      }
     default:
       if (Utils.isTNGMiniProgram()) {
         return REGISTRATION_SOURCE.TNGD_MINI_PROGRAM;
@@ -961,6 +967,10 @@ Utils.removeCookieVariable = (name, attributes) => {
 };
 
 Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
+
+Utils.isSharedLink = () => {
+  return Utils.getSessionVariable('BeepOrderingSource') === 'SharedLink';
+};
 
 Utils.saveSourceUrlToSessionStorage = sourceUrl => {
   Utils.setSessionVariable('BeepOrderingSourceUrl', sourceUrl);

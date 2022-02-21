@@ -7,8 +7,15 @@ import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
 import * as NativeMethods from '../utils/native-methods';
 
+export const ICON_RES = {
+  BACK: 'back',
+  CLOSE: 'close',
+  SHARE: 'share',
+};
+
 function getNativeHeaderParams(props) {
   const { title, rightContent, titleAlignment, isPage } = props;
+  const { BACK, CLOSE } = ICON_RES;
   const headerParams = {
     left: null,
     center: null,
@@ -18,7 +25,7 @@ function getNativeHeaderParams(props) {
   headerParams.left = {
     type: 'button',
     id: 'headerBackButton',
-    iconRes: isPage ? 'back' : 'close',
+    iconRes: isPage ? BACK : CLOSE,
     events: ['onClick'],
   };
 
@@ -31,13 +38,14 @@ function getNativeHeaderParams(props) {
   };
 
   if (rightContent) {
-    const { icon, text, style } = rightContent;
+    const { icon, text, style, iconRes } = rightContent;
     const textColor = _get(style, 'color', '#303030');
 
     headerParams.right = {
       type: 'button',
       id: 'headerRightButton',
       iconUrl: icon,
+      iconRes,
       text,
       textColor,
       events: ['onClick'],

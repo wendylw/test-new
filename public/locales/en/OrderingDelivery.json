@@ -7,6 +7,7 @@
   "Subtotal": "Subtotal",
   "Tax": "Tax",
   "DeliveryCharge": "Delivery Charge",
+  "TakeawayCharge":"Takeaway Charge",
   "FailToLoadStoreInfo": "Failed to load store info. Please try again later.",
   "FailToGetPlaceInfo": "Failed to get detailed place info. Please try again later.",
   "OutOfDeliveryRange": "Sorry, the selected location is out of delivery range ({{distance}} KM).",

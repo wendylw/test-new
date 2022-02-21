@@ -463,8 +463,12 @@ export const actions = {
     return dispatch(removeShoppingCartItem(variables));
   },
 
-  addOrUpdateShoppingCartItem: variables => dispatch => {
-    return dispatch(addOrUpdateShoppingCartItem(variables));
+  addOrUpdateShoppingCartItem: variables => (dispatch, getState) => {
+    const state = getState();
+    const businessUTCOffset = getBusinessUTCOffset(state);
+    const latestShippingType = getShippingType(state);
+    const latestFulfillDate = Utils.getFulfillDate(businessUTCOffset);
+    return dispatch(addOrUpdateShoppingCartItem({ ...variables, latestShippingType, latestFulfillDate }));
   },
 
   // TODO: This type is actually not used, because apiError does not respect action type,
@@ -548,8 +552,9 @@ export const actions = {
   loadProductDetail: productId => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
+    const shippingType = Utils.getApiRequestShippingType();
 
-    return dispatch(fetchProductDetail({ productId, fulfillDate }));
+    return dispatch(fetchProductDetail({ productId, fulfillDate, shippingType }));
   },
 
   loginByTngMiniProgram: () => async (dispatch, getState) => {

@@ -8,9 +8,9 @@ const MANIFEST = {
 };
 
 const ROUTER_PATHS = {
-  TERMS_OF_USE: '/terms-conditions',
+  TERMS_OF_USE: '/terms-of-use',
   THANK_YOU: '/thank-you',
-  PRIVACY: '/privacy',
+  PRIVACY: '/privacy-policy',
   ERROR: '/error',
   SORRY: '/sorry',
   REPORT_DRIVER: '/report-driver',
@@ -669,6 +669,7 @@ export const REGISTRATION_SOURCE = {
   BEEP_STORE: 'BeepStore',
   BEEP_SITE: 'BeepSite',
   TNGD_MINI_PROGRAM: 'BeepTngMiniProgram',
+  SHARED_LINK: 'SharedLink',
 };
 
 export const API_REQUEST_STATUS = {

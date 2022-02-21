@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { withTranslation, Trans } from 'react-i18next';
+import _get from 'lodash/get';
+import _truncate from 'lodash/truncate';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import Utils from '../../../utils/utils';
+import { shortenUrl } from '../../../utils/shortenUrl';
 import Constants from '../../../utils/constants';
 import { formatToDeliveryTime } from '../../../utils/datetime-lib';
 import { isAvailableOrderTime, isAvailableOnDemandOrderTime, getBusinessDateTime } from '../../../utils/store-utils';
@@ -25,6 +28,10 @@ import {
   getCategoryProductList,
   getOrderingOngoingBannerVisibility,
   getReceiptNumber,
+  getFreeShippingMinAmount,
+  getCashbackRate,
+  getShippingType,
+  getMerchantCountry,
 } from '../../redux/modules/app';
 import {
   queryCartAndStatus as queryCartAndStatusThunk,
@@ -41,7 +48,7 @@ import CleverTap from '../../../utils/clevertap';
 import { getUserHasReachedLegalDrinkingAge, getShouldShowAlcoholModal } from './redux/common/selectors';
 import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
 import Header from '../../../components/Header';
-import NativeHeader from '../../../components/NativeHeader';
+import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
 import { IconEdit, IconInfoOutline, IconLocation, IconLeftArrow } from '../../../components/Icons';
 import DeliverToBar from '../../../components/DeliverToBar';
@@ -144,6 +151,9 @@ export class Home extends Component {
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
+    const shareLinkUrl = this.getShareLinkUrl();
+
+    shortenUrl(shareLinkUrl);
     const { enablePayLater } = this.props;
 
     if (config.storeId) {
@@ -838,6 +848,69 @@ export class Home extends Component {
     this.handleNavBack();
   };
 
+  getShareLinkUrl = () => {
+    const storeUrl = window.location.href;
+    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+
+    return shareLinkUrl;
+  };
+
+  handleClickShare = async () => {
+    try {
+      const {
+        onlineStoreInfo,
+        businessInfo,
+        t,
+        freeShippingMinAmount,
+        cashbackRate,
+        shippingType,
+        merchantCountry,
+      } = this.props;
+      const { stores, multipleStores } = businessInfo || {};
+      const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+      let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
+      storeName = _truncate(`${storeName}`, { length: 33 });
+
+      const shareLinkUrl = this.getShareLinkUrl();
+
+      const { url_short } = await shortenUrl(shareLinkUrl);
+
+      const para = {
+        link: `${url_short}`,
+        title: t('shareTitle', { storeName }),
+      };
+      NativeMethods.shareLink(para);
+
+      CleverTap.pushEvent('Menu page - Click share store link', {
+        country: merchantCountry,
+        'free delivery above': freeShippingMinAmount || 0,
+        'shipping type': shippingType,
+        cashback: cashbackRate,
+      });
+    } catch (error) {
+      console.error(`failed to share store link: ${error.message}`);
+    }
+  };
+
+  getRightContentOfHeader = () => {
+    try {
+      const isDeliveryOrder = Utils.isDeliveryOrder();
+      const { SHARE } = ICON_RES;
+
+      // The return value of hasMethodInNative is 'false'
+      if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
+        return {
+          iconRes: SHARE,
+          onClick: this.handleClickShare,
+        };
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(`failed to share store link: ${error.message}`);
+    }
+  };
+
   render() {
     const {
       t,
@@ -881,6 +954,7 @@ export class Home extends Component {
         {isWebview && (
           <NativeHeader
             isPage={true}
+            rightContent={this.getRightContentOfHeader()}
             title={window.document.title}
             navFunc={() => {
               if (viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL) {
@@ -1112,6 +1186,10 @@ export default compose(
         enablePayLater: getEnablePayLater(state),
         orderingOngoingBannerVisibility: getOrderingOngoingBannerVisibility(state),
         receiptNumber: getReceiptNumber(state),
+        freeShippingMinAmount: getFreeShippingMinAmount(state),
+        cashbackRate: getCashbackRate(state),
+        shippingType: getShippingType(state),
+        merchantCountry: getMerchantCountry(state),
       };
     },
     dispatch => ({

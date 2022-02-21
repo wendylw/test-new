@@ -220,7 +220,11 @@ class OtpModal extends React.Component {
         </section>
 
         <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
-          <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
+          <TermsAndPrivacy
+            buttonLinkClassName="page-login__button-link"
+            termsOfUseDataHeapName="ordering.common.login.term-link"
+            privacyPolicyDataHeapName="ordering.common.login.privacy-policy-link"
+          />
         </p>
       </div>
     );

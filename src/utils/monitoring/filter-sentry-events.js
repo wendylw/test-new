@@ -121,6 +121,16 @@ const isTikTokIssues = (event, hint) => {
   }
 };
 
+const isVivoAdblockProblem = (event, hint) => {
+  // BEEP-1622: This problem only occurs on Vivo browser. Seems to be a problem with Vivo's adblock service.
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('privateSpecialRepair is not defined');
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -133,7 +143,8 @@ const shouldFilter = (event, hint) => {
       isTokenExpired(event, hint) ||
       isGoogleAnalytics(event) ||
       isIgnoreObjectNotFoundMatchingId(event, hint) ||
-      isTikTokIssues(event, hint)
+      isTikTokIssues(event, hint) ||
+      isVivoAdblockProblem(event, hint)
     );
   } catch {
     return false;
