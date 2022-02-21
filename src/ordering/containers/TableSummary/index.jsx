@@ -341,10 +341,11 @@ export class TableSummary extends React.Component {
             total={total}
             creditsBalance={cashback}
             shippingFee={shippingFee}
-            businessInfo={{ ...businessInfo, enableCashback: false }}
+            businessInfo={businessInfo}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
             isLogin={userIsLogin}
             history={history}
+            orderPendingPaymentStatus={orderPendingPaymentStatus}
           />
           <SubmitOrderConfirm history={history} />
         </div>

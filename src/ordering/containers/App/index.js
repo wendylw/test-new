@@ -106,6 +106,10 @@ class App extends Component {
       await appActions.getLoginStatus();
       const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
+      if (Utils.isWebview()) {
+        appActions.syncLoginFromNative();
+      }
+
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {
         await appActions.loadCoreBusiness();
       }

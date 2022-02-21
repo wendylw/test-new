@@ -26,6 +26,7 @@ import { getCartItems as getNewCartItems } from '../cart/selectors';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
+import * as NativeMethods from '../../../utils/native-methods';
 
 const { AUTH_INFO } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -316,6 +317,45 @@ export const actions = {
       },
     },
   }),
+
+  syncLoginFromNative: () => async (dispatch, getState) => {
+    try {
+      const isLogin = getUserIsLogin(getState());
+      if (isLogin) {
+        return;
+      }
+
+      const isAppLogin = NativeMethods.getLoginStatus();
+
+      if (!isAppLogin) {
+        return;
+      }
+
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token, refresh_token } = tokens;
+      await dispatch(
+        actions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        })
+      );
+
+      const isExpired = getUserIsExpired(getState());
+
+      if (isExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token, refresh_token } = tokens;
+        await dispatch(
+          actions.loginApp({
+            accessToken: access_token,
+            refreshToken: refresh_token,
+          })
+        );
+      }
+    } catch (error) {
+      console.error('syncLoginFromNative error: ', error?.message);
+    }
+  },
 
   getLoginStatus: () => dispatch => {
     return dispatch({
@@ -913,6 +953,7 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpType = state => state.app.user.otpType;
+export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
