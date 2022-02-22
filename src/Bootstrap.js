@@ -14,8 +14,6 @@ import loggly from './utils/monitoring/loggly';
 import { initDevTools } from './utils/dev-tools';
 import { isRequiredDevTools } from './utils/tng-utils';
 
-const AsyncTermsPrivacy = lazy(() => Utils.attemptLoad(() => import('./containers/TermsPrivacy')));
-
 const AsyncStoresApp = lazy(() => Utils.attemptLoad(() => import('./stores')));
 
 const AsyncOrdering = lazy(() => Utils.attemptLoad(() => import('./ordering')));
@@ -112,8 +110,6 @@ class Bootstrap extends Component {
               );
             }}
           />
-          <Route path={ROUTER_PATHS.TERMS_OF_USE} render={props => <AsyncTermsPrivacy {...props} pageName="terms" />} />
-          <Route path={ROUTER_PATHS.PRIVACY} render={props => <AsyncTermsPrivacy {...props} pageName="privacy" />} />
           <Route path={ROUTER_PATHS.ORDERING_BASE} component={AsyncOrdering} />
           <Route path={ROUTER_PATHS.CASHBACK_BASE} component={AsyncCashbackApp} />
           <Route path={ROUTER_PATHS.QRSCAN} component={AsyncQRScanner} />
