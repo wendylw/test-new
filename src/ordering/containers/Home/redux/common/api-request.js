@@ -4,5 +4,5 @@ export const getAlcoholConsent = () => ApiFetch.get('/api/v3/alcohol/consent/ack
 export const setAlcoholConsent = () => ApiFetch.post('/api/v3/alcohol/consent/acknowledge');
 export const getStoreSaveStatus = ({ consumerId, storeId }) =>
   ApiFetch.get(`/api/consumers/${consumerId}/favorites/stores/${storeId}/status`);
-export const setStoreSaveStatus = ({ consumerId, storeId }) =>
+export const toggleStoreSaveStatus = ({ consumerId, storeId }) =>
   ApiFetch.post(`/api/consumers/${consumerId}/favorites/stores/${storeId}/status`);
