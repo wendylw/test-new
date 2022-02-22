@@ -2,6 +2,7 @@ import dsBridge from 'dsbridge';
 import _find from 'lodash/find';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
+import _isArray from 'lodash/isArray';
 import * as loggly from './monitoring/loggly';
 import debug from './debug';
 import Utils from './utils';
@@ -341,10 +342,11 @@ export const promptEnableAppNotification = ({ title, description, sourcePage }) 
 export const isLiveChatAvailable = () => window.liveChatAvailable;
 
 export const updateNativeHeader = ({ left, center, right } = {}) => {
+  const transformToArray = data => (_isArray(data) ? data : data ? [data] : []);
   const config = {
-    left: left ? [left] : [],
-    center: center ? [center] : [],
-    right: right ?? [],
+    left: transformToArray(left),
+    center: transformToArray(center),
+    right: transformToArray(right),
   };
   nativeLayout('header', config);
 };
