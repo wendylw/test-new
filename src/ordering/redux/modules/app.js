@@ -1212,7 +1212,9 @@ export const getCategoryProductList = createSelector(
 export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
 export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
+export const getIsDeliveryOrder = state => Utils.isDeliveryOrder();
 export const getIsQROrder = state => Utils.isQROrder();
+export const getIsWebview = state => Utils.isWebview();
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)

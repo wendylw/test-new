@@ -2,7 +2,13 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../../../redux/modules/entities/products';
-import { getMerchantCountry, getDeliveryInfo } from '../../../../redux/modules/app';
+import {
+  getMerchantCountry,
+  getDeliveryInfo,
+  getIsWebview,
+  getUserIsLogin,
+  getIsDeliveryOrder,
+} from '../../../../redux/modules/app';
 import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
@@ -60,3 +66,13 @@ export const getShouldShowAlcoholModal = createSelector(
   (hasAlcohol, hasDrinkingAgeRestriction, hasReachedLegalDrinkingAge, hasRequestFulfilled) =>
     hasAlcohol && hasDrinkingAgeRestriction && hasRequestFulfilled && !hasReachedLegalDrinkingAge
 );
+
+// TODO: Need to check version compatibility in Phase 2
+export const getShowFavoriteButton = createSelector(
+  getIsWebview,
+  getUserIsLogin,
+  getIsDeliveryOrder,
+  (isWebview, isLogin, isDeliveryOrder) => isWebview && isLogin && isDeliveryOrder
+);
+
+export const getHasUserSaveStore = state => state.home.common.storeSaveStatus.data;

@@ -45,8 +45,18 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
-import { getUserHasReachedLegalDrinkingAge, getShouldShowAlcoholModal } from './redux/common/selectors';
-import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
+import {
+  getUserHasReachedLegalDrinkingAge,
+  getShouldShowAlcoholModal,
+  getHasUserSaveStore,
+  getShowFavoriteButton,
+} from './redux/common/selectors';
+import {
+  getUserAlcoholConsent,
+  setUserAlcoholConsent,
+  getUserSaveStoreStatus,
+  toggleUserSaveStoreStatus,
+} from './redux/common/thunks';
 import Header from '../../../components/Header';
 import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
@@ -138,7 +148,14 @@ export class Home extends Component {
   };
 
   componentDidMount = async () => {
-    const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent, queryCartAndStatus } = this.props;
+    const {
+      appActions,
+      hasUserReachedLegalDrinkingAge,
+      getUserAlcoholConsent,
+      queryCartAndStatus,
+      shouldShowFavoriteButton,
+      getUserSaveStoreStatus,
+    } = this.props;
     if (Utils.isFromBeepSite()) {
       // sync deliveryAddress from beepit.com
       await this.setupDeliveryAddressByRedirectState();
@@ -148,6 +165,10 @@ export class Home extends Component {
 
     // Double-checking with backend only if user is not in legal drinking age
     if (!hasUserReachedLegalDrinkingAge) getUserAlcoholConsent();
+
+    if (shouldShowFavoriteButton) {
+      await getUserSaveStoreStatus();
+    }
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
@@ -212,17 +233,28 @@ export class Home extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { shouldShowAlcoholModal: prevShouldShowAlcoholModal } = prevProps;
-    const { shouldShowAlcoholModal: newShouldShowAlcoholModal } = this.props;
+  componentDidUpdate = async (prevProps, prevState) => {
+    const {
+      shouldShowAlcoholModal: prevShouldShowAlcoholModal,
+      shouldShowFavoriteButton: prevShouldShowFavoriteButton,
+    } = prevProps;
+    const {
+      shouldShowAlcoholModal: currShouldShowAlcoholModal,
+      shouldShowFavoriteButton: currShouldShowFavoriteButton,
+      getUserSaveStoreStatus,
+    } = this.props;
     const { containerHeight } = prevState;
 
-    if (prevShouldShowAlcoholModal !== newShouldShowAlcoholModal) {
-      this.toggleBodyScroll(newShouldShowAlcoholModal);
+    if (prevShouldShowAlcoholModal !== currShouldShowAlcoholModal) {
+      this.toggleBodyScroll(currShouldShowAlcoholModal);
     }
 
     this.setMainContainerHeight(containerHeight);
-  }
+
+    if (!prevShouldShowFavoriteButton && currShouldShowFavoriteButton) {
+      await getUserSaveStoreStatus();
+    }
+  };
 
   async componentWillUnmount() {
     const { clearQueryCartStatus } = this.props;
@@ -893,22 +925,46 @@ export class Home extends Component {
   };
 
   getRightContentOfHeader = () => {
-    try {
-      const isDeliveryOrder = Utils.isDeliveryOrder();
-      const { SHARE } = ICON_RES;
+    const rightContents = [];
 
+    rightContents.push(this.getShareLinkConfig());
+    rightContents.push(this.getSaveFavoriteStoreConfig());
+
+    // Filter out falsy values
+    return rightContents.filter(config => config);
+  };
+
+  getShareLinkConfig = () => {
+    const { SHARE } = ICON_RES;
+    const isDeliveryOrder = Utils.isDeliveryOrder();
+
+    if (!isDeliveryOrder) return null;
+
+    try {
       // The return value of hasMethodInNative is 'false'
-      if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
+      const hasShareLinkSupport = JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'));
+      if (hasShareLinkSupport) {
         return {
           iconRes: SHARE,
           onClick: this.handleClickShare,
         };
-      } else {
-        return null;
       }
     } catch (error) {
       console.error(`failed to share store link: ${error.message}`);
+      return null;
     }
+  };
+
+  getSaveFavoriteStoreConfig = () => {
+    const { FAVORITE, FAVORITE_BORDER } = ICON_RES;
+    const { hasUserSaveStore, toggleUserSaveStoreStatus, shouldShowFavoriteButton } = this.props;
+
+    if (!shouldShowFavoriteButton) return null;
+
+    return {
+      iconRes: hasUserSaveStore ? FAVORITE : FAVORITE_BORDER,
+      onClick: () => toggleUserSaveStoreStatus(),
+    };
   };
 
   render() {
@@ -1182,6 +1238,8 @@ export default compose(
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
         shouldShowAlcoholModal: getShouldShowAlcoholModal(state),
+        hasUserSaveStore: getHasUserSaveStore(state),
+        shouldShowFavoriteButton: getShowFavoriteButton(state),
         store: getStore(state),
         enablePayLater: getEnablePayLater(state),
         orderingOngoingBannerVisibility: getOrderingOngoingBannerVisibility(state),
@@ -1198,6 +1256,8 @@ export default compose(
       clearQueryCartStatus: bindActionCreators(clearQueryCartStatusThunk, dispatch),
       getUserAlcoholConsent: bindActionCreators(getUserAlcoholConsent, dispatch),
       setUserAlcoholConsent: bindActionCreators(setUserAlcoholConsent, dispatch),
+      getUserSaveStoreStatus: bindActionCreators(getUserSaveStoreStatus, dispatch),
+      toggleUserSaveStoreStatus: bindActionCreators(toggleUserSaveStoreStatus, dispatch),
     })
   )
 )(Home);

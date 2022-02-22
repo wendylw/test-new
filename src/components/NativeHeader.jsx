@@ -5,12 +5,15 @@ import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
+import _isArray from 'lodash/isArray';
 import * as NativeMethods from '../utils/native-methods';
 
 export const ICON_RES = {
   BACK: 'back',
   CLOSE: 'close',
   SHARE: 'share',
+  FAVORITE: 'favorite',
+  FAVORITE_BORDER: 'favorite_border',
 };
 
 function getNativeHeaderParams(props) {
@@ -38,18 +41,17 @@ function getNativeHeaderParams(props) {
   };
 
   if (rightContent) {
-    const { icon, text, style, iconRes } = rightContent;
-    const textColor = _get(style, 'color', '#303030');
+    const contents = _isArray(rightContent) ? rightContent : [rightContent];
 
-    headerParams.right = {
+    headerParams.right = contents.map(content => ({
       type: 'button',
       id: 'headerRightButton',
-      iconUrl: icon,
-      iconRes,
-      text,
-      textColor,
+      iconUrl: content.icon,
+      iconRes: content.iconRes,
+      text: content.text,
+      textColor: _get(content.style, 'color', '#303030'),
       events: ['onClick'],
-    };
+    }));
   }
 
   return headerParams;
@@ -118,7 +120,7 @@ NativeHeader.propTypes = {
   titleAlignment: PropTypes.oneOf(['left', 'center', 'right']),
   navFunc: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
-  rightContent: PropTypes.object,
+  rightContent: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
 NativeHeader.defaultProps = {

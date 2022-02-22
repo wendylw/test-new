@@ -344,7 +344,7 @@ export const updateNativeHeader = ({ left, center, right } = {}) => {
   const config = {
     left: left ? [left] : [],
     center: center ? [center] : [],
-    right: right ? [right] : [],
+    right: right ?? [],
   };
   nativeLayout('header', config);
 };
