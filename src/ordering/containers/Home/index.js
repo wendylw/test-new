@@ -32,6 +32,7 @@ import {
   getCashbackRate,
   getShippingType,
   getMerchantCountry,
+  getUserIsLogin,
 } from '../../redux/modules/app';
 import {
   queryCartAndStatus as queryCartAndStatusThunk,
@@ -924,6 +925,17 @@ export class Home extends Component {
     }
   };
 
+  handleClickSaveFavoriteStore = async () => {
+    const { appActions, hasUserLoggedIn, toggleUserSaveStoreStatus } = this.props;
+
+    if (!hasUserLoggedIn) {
+      await appActions.loginByBeepApp();
+      if (!this.props.hasUserLoggedIn) return;
+    }
+
+    toggleUserSaveStoreStatus();
+  };
+
   getRightContentOfHeader = () => {
     const rightContents = [];
 
@@ -957,13 +969,13 @@ export class Home extends Component {
 
   getSaveFavoriteStoreConfig = () => {
     const { FAVORITE, FAVORITE_BORDER } = ICON_RES;
-    const { hasUserSaveStore, toggleUserSaveStoreStatus, shouldShowFavoriteButton } = this.props;
+    const { hasUserSaveStore, shouldShowFavoriteButton } = this.props;
 
     if (!shouldShowFavoriteButton) return null;
 
     return {
       iconRes: hasUserSaveStore ? FAVORITE : FAVORITE_BORDER,
-      onClick: () => toggleUserSaveStoreStatus(),
+      onClick: this.handleClickSaveFavoriteStore,
     };
   };
 
@@ -1238,6 +1250,7 @@ export default compose(
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
         shouldShowAlcoholModal: getShouldShowAlcoholModal(state),
+        hasUserLoggedIn: getUserIsLogin(state),
         hasUserSaveStore: getHasUserSaveStore(state),
         shouldShowFavoriteButton: getShowFavoriteButton(state),
         store: getStore(state),

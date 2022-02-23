@@ -331,27 +331,7 @@ export const actions = {
         return;
       }
 
-      const tokens = await NativeMethods.getTokenAsync();
-      const { access_token, refresh_token } = tokens;
-      await dispatch(
-        actions.loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        })
-      );
-
-      const isExpired = getUserIsExpired(getState());
-
-      if (isExpired) {
-        const tokens = await NativeMethods.tokenExpiredAsync();
-        const { access_token, refresh_token } = tokens;
-        await dispatch(
-          actions.loginApp({
-            accessToken: access_token,
-            refreshToken: refresh_token,
-          })
-        );
-      }
+      await dispatch(actions.loginByBeepApp());
     } catch (error) {
       console.error('syncLoginFromNative error: ', error?.message);
     }
@@ -555,6 +535,25 @@ export const actions = {
     const shippingType = Utils.getApiRequestShippingType();
 
     return dispatch(fetchProductDetail({ productId, fulfillDate, shippingType }));
+  },
+
+  loginByBeepApp: () => async (dispatch, getState) => {
+    try {
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      await dispatch(actions.loginApp({ accessToken, refreshToken }));
+
+      const isTokenExpired = getUserIsExpired(getState());
+
+      if (isTokenExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+        await dispatch(actions.loginApp({ accessToken, refreshToken }));
+      }
+    } catch (e) {
+      console.error('Failed to get tokens from native: ', e.message);
+    }
   },
 
   loginByTngMiniProgram: () => async (dispatch, getState) => {

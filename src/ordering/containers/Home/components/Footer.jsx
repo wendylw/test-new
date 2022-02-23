@@ -14,13 +14,11 @@ import {
   getCategoryProductList,
   getUserIsLogin,
   getIsUserLoginRequestStatusInPending,
-  getUserIsExpired,
 } from '../../../redux/modules/app';
 import { getCartItemsCount } from '../../../redux/cart/selectors';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import * as NativeMethods from '../../../../utils/native-methods';
 import loggly from '../../../../utils/monitoring/loggly';
 
 export class Footer extends Component {
@@ -36,28 +34,8 @@ export class Footer extends Component {
     return totalPrice;
   }
 
-  syncLoginFromNative = async () => {
-    try {
-      const { appActions, userIsExpired } = this.props;
-
-      const tokens = await NativeMethods.getTokenAsync();
-      const { access_token, refresh_token } = tokens;
-      await appActions.loginApp({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      });
-
-      if (userIsExpired) {
-        const tokens = await NativeMethods.tokenExpiredAsync();
-        const { access_token, refresh_token } = tokens;
-        await appActions.loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        });
-      }
-    } catch (e) {
-      console.error('syncLoginFromNative error: ', e.message);
-    }
+  loginBeepApp = async () => {
+    await this.props.appActions.loginByBeepApp();
 
     this.handleWebRedirect();
   };
@@ -81,7 +59,7 @@ export class Footer extends Component {
       }
 
       if (Utils.isWebview()) {
-        this.syncLoginFromNative();
+        this.loginBeepApp();
         return;
       }
 
@@ -254,7 +232,6 @@ export default compose(
         deliverInfo: getDeliveryInfo(state),
         isUserLoginRequestStatusInPending: getIsUserLoginRequestStatusInPending(state),
         cartProductsCount: getCartItemsCount(state),
-        userIsExpired: getUserIsExpired(state),
       };
     },
     dispatch => ({
