@@ -62,6 +62,7 @@ import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
+import loggly from '../../../utils/monitoring/loggly';
 
 const localState = {
   blockScrollTop: 0,
@@ -153,7 +154,7 @@ export class Home extends Component {
 
     const shareLinkUrl = this.getShareLinkUrl();
 
-    shortenUrl(shareLinkUrl);
+    shortenUrl(shareLinkUrl).catch(error => loggly.error(`failed to share store link: ${error.message}`));
     const { enablePayLater } = this.props;
 
     if (config.storeId) {
@@ -888,7 +889,7 @@ export class Home extends Component {
         cashback: cashbackRate,
       });
     } catch (error) {
-      console.error(`failed to share store link: ${error.message}`);
+      loggly.error(`failed to share store link: ${error.message}`);
     }
   };
 
@@ -907,7 +908,7 @@ export class Home extends Component {
         return null;
       }
     } catch (error) {
-      console.error(`failed to share store link: ${error.message}`);
+      loggly.error(`failed to share store link: ${error.message}`);
     }
   };
 
