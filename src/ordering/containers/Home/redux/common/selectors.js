@@ -70,9 +70,14 @@ export const getShouldShowAlcoholModal = createSelector(
 // TODO: Need to check version compatibility in Phase 2
 export const getShowFavoriteButton = createSelector(
   getIsWebview,
-  getUserIsLogin,
   getIsDeliveryOrder,
-  (isWebview, isLogin, isDeliveryOrder) => isWebview && isLogin && isDeliveryOrder
+  (isWebview, isDeliveryOrder) => isWebview && isDeliveryOrder
+);
+
+export const getShouldCheckSaveStoreStatus = createSelector(
+  getUserIsLogin,
+  getShowFavoriteButton,
+  (isLogin, shouldShowFavoriteButton) => isLogin && shouldShowFavoriteButton
 );
 
 export const getHasUserSaveStore = state => state.home.common.storeSaveStatus.data;
