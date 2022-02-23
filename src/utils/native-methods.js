@@ -198,7 +198,8 @@ export const getLoginStatus = () => {
     method: 'userModule-isLogin',
     mode: MODE.SYNC,
   };
-  return dsBridgeCall(data);
+  // IOS return string value, android return boolean value,so it needs to compatible at this time
+  return JSON.parse(dsBridgeCall(data));
 };
 
 export const getTokenAsync = () => {

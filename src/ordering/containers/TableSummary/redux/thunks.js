@@ -1,15 +1,15 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import { fetchOrderIncludeCashback, fetchOrderSubmissionStatus, postOrderSubmitted } from './api-request';
 import { log } from '../../../../utils/monitoring/loggly';
-import { fetchOrder, fetchOrderSubmissionStatus, postOrderSubmitted } from './api-request';
 import { getOrderModifiedTime, getOrderReceiptNumber } from './selectors';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
 export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', async receiptNumber => {
   try {
-    const result = await fetchOrder({ receiptNumber });
+    const result = await fetchOrderIncludeCashback({ receiptNumber });
 
     return result;
   } catch (error) {

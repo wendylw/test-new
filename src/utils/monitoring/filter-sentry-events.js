@@ -131,6 +131,20 @@ const isVivoAdblockProblem = (event, hint) => {
   }
 };
 
+const isReadLatLngFromNullIssues = (event, hint) => {
+  // BEEP-1710: This problem is duplicated since it only occurs when Google Maps API is undefined. However, we have already logged the Google Maps API load failure case.
+  try {
+    const message = getErrorMessageFromHint(hint);
+    const readLatLngFromNullIssues = [
+      "TypeError: Cannot read property 'LatLng' of null",
+      "TypeError: Cannot read properties of null (reading 'LatLng')",
+    ];
+    return readLatLngFromNullIssues.includes(message);
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -144,7 +158,8 @@ const shouldFilter = (event, hint) => {
       isGoogleAnalytics(event) ||
       isIgnoreObjectNotFoundMatchingId(event, hint) ||
       isTikTokIssues(event, hint) ||
-      isVivoAdblockProblem(event, hint)
+      isVivoAdblockProblem(event, hint) ||
+      isReadLatLngFromNullIssues(event, hint)
     );
   } catch {
     return false;

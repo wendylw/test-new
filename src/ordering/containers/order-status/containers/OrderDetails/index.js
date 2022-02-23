@@ -387,12 +387,10 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('ServiceCharge')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={serviceCharge || 0} />
               </li>
-              {isPayLater ? null : (
-                <li className="flex flex-space-between flex-middle">
-                  <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
-                  <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
-                </li>
-              )}
+              <li className="flex flex-space-between flex-middle">
+                <span className="padding-top-bottom-small text-opacity">{t('Cashback')}</span>
+                <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-displayDiscount || 0} />
+              </li>
               {paymentMethod === ORDER_PAYMENT_METHODS.OFFLINE ? (
                 <li className="flex flex-space-between flex-middle">
                   <span className="padding-top-bottom-small text-opacity">{t('Rounding')}</span>
