@@ -154,7 +154,7 @@ export class Home extends Component {
 
     const shareLinkUrl = this.getShareLinkUrl();
 
-    shortenUrl(shareLinkUrl).catch(error => loggly.error(`failed to share store link: ${error.message}`));
+    shortenUrl(shareLinkUrl).catch(error => loggly.error(`failed to share store link(didMount): ${error.message}`));
     const { enablePayLater } = this.props;
 
     if (config.storeId) {
@@ -889,7 +889,7 @@ export class Home extends Component {
         cashback: cashbackRate,
       });
     } catch (error) {
-      loggly.error(`failed to share store link: ${error.message}`);
+      loggly.error(`failed to share store link(click): ${error.message}`);
     }
   };
 
