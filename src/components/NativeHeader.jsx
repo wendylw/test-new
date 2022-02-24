@@ -45,7 +45,7 @@ function getNativeHeaderParams(props) {
 
     headerParams.right = contents.map(content => ({
       type: 'button',
-      id: 'headerRightButton',
+      id: _get(content, 'id', 'headerRightButton'),
       iconUrl: content.icon,
       iconRes: content.iconRes,
       text: content.text,
