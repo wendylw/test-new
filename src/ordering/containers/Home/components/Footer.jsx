@@ -175,10 +175,10 @@ export class Footer extends Component {
             data-testid="orderNow"
             data-heap-name="ordering.home.footer.order-btn"
             disabled={disabledViewCartButton}
-            onClick={async () => {
+            onClick={() => {
               onClickOrderNowButton();
               onToggle();
-              await this.handleRedirect();
+              this.handleRedirect();
             }}
           >
             {enablePayLater
