@@ -894,21 +894,17 @@ export class Home extends Component {
   };
 
   getRightContentOfHeader = () => {
-    try {
-      const isDeliveryOrder = Utils.isDeliveryOrder();
-      const { SHARE } = ICON_RES;
+    const isDeliveryOrder = Utils.isDeliveryOrder();
+    const { SHARE } = ICON_RES;
 
-      // The return value of hasMethodInNative is 'false'
-      if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
-        return {
-          iconRes: SHARE,
-          onClick: this.handleClickShare,
-        };
-      } else {
-        return null;
-      }
-    } catch (error) {
-      loggly.error(`failed to share store link: ${error.message}`);
+    // The return value of hasMethodInNative is 'false'
+    if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
+      return {
+        iconRes: SHARE,
+        onClick: this.handleClickShare,
+      };
+    } else {
+      return null;
     }
   };
 
