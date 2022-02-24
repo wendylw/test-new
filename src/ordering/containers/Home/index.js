@@ -51,6 +51,7 @@ import {
   getShouldShowAlcoholModal,
   getHasUserSaveStore,
   getShowFavoriteButton,
+  getShouldCheckSaveStoreStatus,
 } from './redux/common/selectors';
 import {
   getUserAlcoholConsent,
@@ -154,7 +155,7 @@ export class Home extends Component {
       hasUserReachedLegalDrinkingAge,
       getUserAlcoholConsent,
       queryCartAndStatus,
-      shouldShowFavoriteButton,
+      shouldCheckSaveStoreStatus,
       getUserSaveStoreStatus,
     } = this.props;
     if (Utils.isFromBeepSite()) {
@@ -167,7 +168,7 @@ export class Home extends Component {
     // Double-checking with backend only if user is not in legal drinking age
     if (!hasUserReachedLegalDrinkingAge) getUserAlcoholConsent();
 
-    if (shouldShowFavoriteButton) {
+    if (shouldCheckSaveStoreStatus) {
       await getUserSaveStoreStatus();
     }
 
@@ -237,11 +238,11 @@ export class Home extends Component {
   componentDidUpdate = async (prevProps, prevState) => {
     const {
       shouldShowAlcoholModal: prevShouldShowAlcoholModal,
-      shouldShowFavoriteButton: prevShouldShowFavoriteButton,
+      shouldCheckSaveStoreStatus: prevShouldCheckSaveStoreStatus,
     } = prevProps;
     const {
       shouldShowAlcoholModal: currShouldShowAlcoholModal,
-      shouldShowFavoriteButton: currShouldShowFavoriteButton,
+      shouldCheckSaveStoreStatus: currShouldCheckSaveStoreStatus,
       getUserSaveStoreStatus,
     } = this.props;
     const { containerHeight } = prevState;
@@ -252,7 +253,7 @@ export class Home extends Component {
 
     this.setMainContainerHeight(containerHeight);
 
-    if (!prevShouldShowFavoriteButton && currShouldShowFavoriteButton) {
+    if (!prevShouldCheckSaveStoreStatus && currShouldCheckSaveStoreStatus) {
       await getUserSaveStoreStatus();
     }
   };
@@ -1253,6 +1254,7 @@ export default compose(
         hasUserLoggedIn: getUserIsLogin(state),
         hasUserSaveStore: getHasUserSaveStore(state),
         shouldShowFavoriteButton: getShowFavoriteButton(state),
+        shouldCheckSaveStoreStatus: getShouldCheckSaveStoreStatus(state),
         store: getStore(state),
         enablePayLater: getEnablePayLater(state),
         orderingOngoingBannerVisibility: getOrderingOngoingBannerVisibility(state),
