@@ -946,6 +946,7 @@ export class Home extends Component {
       const hasShareLinkSupport = JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'));
       if (hasShareLinkSupport) {
         return {
+          id: 'headerRightShareButton',
           iconRes: SHARE,
           onClick: this.handleClickShare,
         };
@@ -963,6 +964,7 @@ export class Home extends Component {
     if (!shouldShowFavoriteButton) return null;
 
     return {
+      id: 'headerRightFavoriteButton',
       iconRes: hasUserSaveStore ? FAVORITE : FAVORITE_BORDER,
       onClick: () => toggleUserSaveStoreStatus(),
     };
