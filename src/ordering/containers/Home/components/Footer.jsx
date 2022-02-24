@@ -21,6 +21,8 @@ import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import loggly from '../../../../utils/monitoring/loggly';
 
+const { CLIENTS } = Constants;
+
 export class Footer extends Component {
   getDisplayPrice() {
     const { shoppingCart } = this.props;
@@ -34,42 +36,39 @@ export class Footer extends Component {
     return totalPrice;
   }
 
-  loginBeepApp = async () => {
-    await this.props.appActions.loginByBeepApp();
+  getLoginStatus = async () => {
+    const { isLogin, appActions } = this.props;
 
-    this.handleWebRedirect();
-  };
+    if (isLogin) return true;
 
-  loginInTngMiniProgram = async () => {
-    // TODO: handle login fail
-    await this.props.appActions.loginByTngMiniProgram();
-
-    if (this.props.isLogin) {
-      this.handleWebRedirect();
+    if (Utils.isWebview()) {
+      await appActions.loginByBeepApp();
+      return this.props.isLogin;
     }
+
+    if (Utils.isTNGMiniProgram()) {
+      await appActions.loginByTngMiniProgram();
+      return this.props.isLogin;
+    }
+
+    // By default
+    return false;
   };
 
-  handleRedirect = () => {
+  handleRedirect = async () => {
     loggly.log('footer.place-order');
 
-    if (Utils.isWebview() || Utils.isTNGMiniProgram()) {
-      if (this.props.isLogin) {
-        this.handleWebRedirect();
-        return;
-      }
+    const client = Utils.getClient();
 
-      if (Utils.isWebview()) {
-        this.loginBeepApp();
-        return;
-      }
-
-      if (Utils.isTNGMiniProgram()) {
-        this.loginInTngMiniProgram();
-        return;
-      }
+    if (client === CLIENTS.WEB) {
+      this.handleWebRedirect();
+      return;
     }
 
-    this.handleWebRedirect();
+    // For non-web users, we need to check login status
+    const isLogin = await this.getLoginStatus();
+
+    if (isLogin) this.handleWebRedirect();
   };
 
   handleWebRedirect = () => {
@@ -176,10 +175,10 @@ export class Footer extends Component {
             data-testid="orderNow"
             data-heap-name="ordering.home.footer.order-btn"
             disabled={disabledViewCartButton}
-            onClick={() => {
+            onClick={async () => {
               onClickOrderNowButton();
               onToggle();
-              this.handleRedirect();
+              await this.handleRedirect();
             }}
           >
             {enablePayLater
