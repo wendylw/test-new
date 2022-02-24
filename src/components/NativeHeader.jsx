@@ -87,7 +87,7 @@ class NativeHeader extends Component {
   }
 
   registerEvents() {
-    NativeMethods.registerFunc([
+    const leftButtonHandlers = [
       {
         type: 'onClick',
         targetId: 'headerBackButton',
@@ -97,16 +97,26 @@ class NativeHeader extends Component {
           _isFunction(func) && func.call();
         },
       },
-      {
+    ];
+
+    const { rightContent } = this.props;
+    let rightButtonHandlers = [];
+
+    if (rightContent) {
+      const rightContents = _isArray(rightContent) ? rightContent : [rightContent];
+
+      rightButtonHandlers = rightContents.map(content => ({
         type: 'onClick',
-        targetId: 'headerRightButton',
+        targetId: content.id,
         handler: () => {
-          const func = _get(this.props, 'rightContent.onClick', null);
+          const func = _get(content, 'onClick', null);
 
           _isFunction(func) && func.call();
         },
-      },
-    ]);
+      }));
+    }
+
+    NativeMethods.registerFunc([...leftButtonHandlers, ...rightButtonHandlers]);
   }
 
   render() {
