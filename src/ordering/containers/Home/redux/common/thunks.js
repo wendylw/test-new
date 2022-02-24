@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { actions as appActions, getUserConsumerId, getStoreId } from '../../../../redux/modules/app';
 import { getHasUserSaveStore } from './selectors';
-import { getAlcoholConsent, setAlcoholConsent, getStoreSaveStatus, toggleStoreSaveStatus } from './api-request';
+import { getAlcoholConsent, setAlcoholConsent, getStoreSaveStatus, setStoreSaveStatus } from './api-request';
 
 export const showProductDetail = createAsyncThunk(
   'ordering/home/common/showProductDetail',
@@ -46,7 +46,7 @@ export const toggleUserSaveStoreStatus = createAsyncThunk(
     const storeId = getStoreId(state);
     const updatedSaveResult = !getHasUserSaveStore(state);
 
-    toggleStoreSaveStatus({ consumerId, storeId }).catch(error =>
+    setStoreSaveStatus({ consumerId, storeId, isFavorite: updatedSaveResult }).catch(error =>
       console.error(`Failed to ${updatedSaveResult ? 'save' : 'unsave'} store: ${error.message}`)
     );
 
