@@ -8,8 +8,9 @@ import {
   getIsWebview,
   getUserIsLogin,
   getIsDeliveryOrder,
+  getBeepAppVersion,
 } from '../../../../redux/modules/app';
-import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
+import { ALCOHOL_FREE_COUNTRY_LIST, BEEP_APP_MIN_SUPPORT_VERSIONS } from './constants';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 export const getSelectedProductId = state => state.home.common.selectedProductDetail.productId;
@@ -67,16 +68,17 @@ export const getShouldShowAlcoholModal = createSelector(
     hasAlcohol && hasDrinkingAgeRestriction && hasRequestFulfilled && !hasReachedLegalDrinkingAge
 );
 
-// TODO: Need to check version compatibility in Phase 2
-export const getShowFavoriteButton = createSelector(
+export const getShouldShowFavoriteButton = createSelector(
   getIsWebview,
   getIsDeliveryOrder,
-  (isWebview, isDeliveryOrder) => isWebview && isDeliveryOrder
+  getBeepAppVersion,
+  (isWebview, isDeliveryOrder, appVersion) =>
+    isWebview && isDeliveryOrder && appVersion >= BEEP_APP_MIN_SUPPORT_VERSIONS.SAVE_FAVORITE_STORE
 );
 
 export const getShouldCheckSaveStoreStatus = createSelector(
   getUserIsLogin,
-  getShowFavoriteButton,
+  getShouldShowFavoriteButton,
   (isLogin, shouldShowFavoriteButton) => isLogin && shouldShowFavoriteButton
 );
 

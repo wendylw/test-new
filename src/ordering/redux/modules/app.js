@@ -1256,6 +1256,7 @@ export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsDeliveryOrder = state => Utils.isDeliveryOrder();
 export const getIsQROrder = state => Utils.isQROrder();
 export const getIsWebview = state => Utils.isWebview();
+export const getBeepAppVersion = state => NativeMethods.getBeepAppVersion();
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)
