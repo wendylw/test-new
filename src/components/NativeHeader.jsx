@@ -84,6 +84,8 @@ class NativeHeader extends Component {
 
     this.prevNativeHeaderParams = this.nextNativeHeaderParams;
     this.nextNativeHeaderParams = null;
+
+    this.registerEvents();
   }
 
   registerEvents() {
@@ -92,6 +94,7 @@ class NativeHeader extends Component {
         type: 'onClick',
         targetId: 'headerBackButton',
         handler: () => {
+          // for getting the latest clicked event from this.props
           const func = _get(this.props, 'navFunc', null);
 
           _isFunction(func) && func.call();
@@ -105,11 +108,15 @@ class NativeHeader extends Component {
     if (rightContent) {
       const rightContents = _isArray(rightContent) ? rightContent : [rightContent];
 
-      rightButtonHandlers = rightContents.map(content => ({
+      rightButtonHandlers = rightContents.map((content, index) => ({
         type: 'onClick',
         targetId: content.id,
         handler: () => {
-          const func = _get(content, 'onClick', null);
+          // for getting the latest clicked event from this.props
+          const { rightContent: newRightContent } = this.props;
+          const newRightContents = _isArray(newRightContent) ? newRightContent : [newRightContent];
+
+          const func = _get(newRightContents, `${index}.onClick`, null);
 
           _isFunction(func) && func.call();
         },
