@@ -110,7 +110,7 @@ class NativeHeader extends Component {
 
       rightButtonHandlers = rightContents.map((content, index) => ({
         type: 'onClick',
-        targetId: content.id,
+        targetId: _get(content, 'id', 'headerRightButton'),
         handler: () => {
           // for getting the latest clicked event from this.props
           const { rightContent: newRightContent } = this.props;
