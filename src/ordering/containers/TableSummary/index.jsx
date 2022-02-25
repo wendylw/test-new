@@ -35,7 +35,7 @@ import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
-import SubmitOrderConfirm from './components/SubmitOrderConfirm';
+// import SubmitOrderConfirm from './components/SubmitOrderConfirm';
 import './TableSummary.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
@@ -138,27 +138,27 @@ export class TableSummary extends React.Component {
     this.showUnableBackMenuPageAlert();
   };
 
-  handleConfirmOrderSubmissionOrGotoPaymentPage = () => {
-    const { history, orderPlacedStatus, orderPendingPaymentStatus, updateSubmitOrderConfirmDisplay } = this.props;
+  // handleConfirmOrderSubmissionOrGotoPaymentPage = () => {
+  //   const { history, orderPlacedStatus, orderPendingPaymentStatus, updateSubmitOrderConfirmDisplay } = this.props;
 
-    if (orderPlacedStatus) {
-      updateSubmitOrderConfirmDisplay(true);
+  //   if (orderPlacedStatus) {
+  //     updateSubmitOrderConfirmDisplay(true);
 
-      return;
-    }
+  //     return;
+  //   }
 
-    if (orderPendingPaymentStatus) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-        search: window.location.search,
-      });
+  //   if (orderPendingPaymentStatus) {
+  //     history.push({
+  //       pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+  //       search: window.location.search,
+  //     });
 
-      return;
-    }
+  //     return;
+  //   }
 
-    // TODO: May be need complete other status behavior
-    console.error('order status is not created or pending payment');
-  };
+  //   // TODO: May be need complete other status behavior
+  //   console.error('order status is not created or pending payment');
+  // };
 
   getOrderStatusOptionsEl = () => {
     const { t, orderPlacedStatus, orderPendingPaymentStatus } = this.props;
@@ -347,7 +347,7 @@ export class TableSummary extends React.Component {
             history={history}
             orderPendingPaymentStatus={orderPendingPaymentStatus}
           />
-          <SubmitOrderConfirm history={history} />
+          {/* <SubmitOrderConfirm history={history} /> */}
         </div>
         <footer
           ref={ref => {
@@ -368,7 +368,13 @@ export class TableSummary extends React.Component {
             className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
-            onClick={this.handleConfirmOrderSubmissionOrGotoPaymentPage}
+            // onClick={this.handleConfirmOrderSubmissionOrGotoPaymentPage}
+            onClick={() => {
+              history.push({
+                pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+                search: window.location.search,
+              });
+            }}
             disabled={orderSubmissionRequestingStatus}
           >
             {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
@@ -402,7 +408,7 @@ TableSummary.propTypes = {
   orderSubmissionRequestingStatus: PropTypes.bool,
   queryOrdersAndStatus: PropTypes.func,
   clearQueryOrdersAndStatus: PropTypes.func,
-  updateSubmitOrderConfirmDisplay: PropTypes.func,
+  // updateSubmitOrderConfirmDisplay: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
   resetCartSubmission: PropTypes.func,
 };
@@ -426,7 +432,7 @@ TableSummary.defaultProps = {
   orderSubmissionRequestingStatus: false,
   queryOrdersAndStatus: () => {},
   clearQueryOrdersAndStatus: () => {},
-  updateSubmitOrderConfirmDisplay: () => {},
+  // updateSubmitOrderConfirmDisplay: () => {},
   resetCartSubmission: () => {},
   thankYouPageUrl: '',
 };

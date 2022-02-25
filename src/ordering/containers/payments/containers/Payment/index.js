@@ -26,6 +26,7 @@ import {
   getTotal,
   getCashback,
 } from '../../redux/common/selectors';
+import { submitOrders as submitOrdersThunk } from '../../../TableSummary/redux/thunks';
 import qs from 'qs';
 import {
   loadBilling,
@@ -105,8 +106,12 @@ class Payment extends Component {
       currentPaymentSupportSaveCard,
       hasLoginGuardPassed,
       paymentActions,
+      submitOrders,
     } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
+
+    const { redirectUrl: thankYouPageUrl } = await submitOrders().unwrap();
+    console.log(thankYouPageUrl);
 
     this.setState({
       payNowLoading: true,
@@ -378,6 +383,7 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       createOrder: bindActionCreators(createOrderThunkCreator, dispatch),
       gotoPayment: bindActionCreators(gotoPaymentThunkCreator, dispatch),
+      submitOrders: bindActionCreators(submitOrdersThunk, dispatch),
     })
   )
 )(Payment);
