@@ -59,6 +59,7 @@ const CartModel = {
     tax: 0,
     totalCashback: 0,
     serviceCharge: 0,
+    serviceChargeInfo: {},
     shippingFee: 0,
     promotion: {
       promoCode: null,

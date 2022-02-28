@@ -554,7 +554,8 @@ class PayFirst extends Component {
     } = this.props;
     const { cartContainerHeight } = this.state;
     const { items } = shoppingCart || {};
-    const { count, subtotal, takeawayCharges, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
+    const { count, subtotal, takeawayCharges, total, tax, serviceCharge, serviceChargeInfo, cashback, shippingFee } =
+      cartBilling || {};
     const { isLogin } = user || {};
 
     if (!(cartBilling && items)) {
@@ -610,6 +611,7 @@ class PayFirst extends Component {
             }}
             tax={tax}
             serviceCharge={serviceCharge}
+            serviceChargeRate={serviceChargeInfo.serviceChargeRate}
             businessInfo={businessInfo}
             isTakeAwayType={Utils.isTakeAwayType()}
             takeawayCharges={takeawayCharges}
