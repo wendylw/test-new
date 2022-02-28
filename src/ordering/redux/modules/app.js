@@ -1066,6 +1066,10 @@ export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =
 );
 export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
 
+export const getServiceChargeRate = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'serviceChargeInfo.serviceChargeRate', 0)
+);
+
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
   (cartBilling, items, unavailableItems, allProducts, categories) => {

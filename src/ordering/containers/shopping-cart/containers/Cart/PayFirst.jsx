@@ -19,6 +19,7 @@ import {
   getUser,
   getBusinessInfo,
   getShoppingCart,
+  getServiceChargeRate,
   getDeliveryDetails,
   getHasLoginGuardPassed,
   getCartBilling,
@@ -551,11 +552,11 @@ class PayFirst extends Component {
       history,
       storeInfoForCleverTap,
       shippingType,
+      serviceChargeRate,
     } = this.props;
     const { cartContainerHeight } = this.state;
     const { items } = shoppingCart || {};
-    const { count, subtotal, takeawayCharges, total, tax, serviceCharge, serviceChargeInfo, cashback, shippingFee } =
-      cartBilling || {};
+    const { count, subtotal, takeawayCharges, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
     const { isLogin } = user || {};
 
     if (!(cartBilling && items)) {
@@ -611,7 +612,7 @@ class PayFirst extends Component {
             }}
             tax={tax}
             serviceCharge={serviceCharge}
-            serviceChargeRate={serviceChargeInfo.serviceChargeRate}
+            serviceChargeRate={serviceChargeRate}
             businessInfo={businessInfo}
             isTakeAwayType={Utils.isTakeAwayType()}
             takeawayCharges={takeawayCharges}
@@ -689,6 +690,7 @@ PayFirst.propTypes = {
   }),
   isUserProfileStatusFulfilled: PropTypes.bool,
   consumerId: PropTypes.string,
+  serviceChargeRate: PropTypes.number,
 };
 
 PayFirst.defaultProps = {
@@ -723,6 +725,7 @@ PayFirst.defaultProps = {
   },
   isUserProfileStatusFulfilled: false,
   consumerId: '',
+  serviceChargeRate: 0,
 };
 
 /* TODO: backend data */
@@ -734,6 +737,7 @@ export default compose(
       user: getUser(state),
       cartBilling: getCartBilling(state),
       shoppingCart: getShoppingCart(state),
+      serviceChargeRate: getServiceChargeRate(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
       validBillingTotal: getValidBillingTotal(state),
