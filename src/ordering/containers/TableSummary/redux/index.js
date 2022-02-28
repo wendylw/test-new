@@ -35,6 +35,7 @@ const initialState = {
     subtotal: 0,
     modifiedTime: null,
     serviceCharge: 0,
+    serviceChargeInfo: {},
     shippingFee: 0,
     subOrders: [],
     items: [],

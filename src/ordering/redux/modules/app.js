@@ -59,6 +59,7 @@ const CartModel = {
     tax: 0,
     totalCashback: 0,
     serviceCharge: 0,
+    serviceChargeInfo: {},
     shippingFee: 0,
     promotion: {
       promoCode: null,
@@ -1064,6 +1065,10 @@ export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =
   _get(cartBilling, 'totalCashback', null)
 );
 export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
+
+export const getServiceChargeRate = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'serviceChargeInfo.serviceChargeRate', 0)
+);
 
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
