@@ -50,7 +50,7 @@ import {
   getUserHasReachedLegalDrinkingAge,
   getShouldShowAlcoholModal,
   getHasUserSaveStore,
-  getShowFavoriteButton,
+  getShouldShowFavoriteButton,
   getShouldCheckSaveStoreStatus,
 } from './redux/common/selectors';
 import {
@@ -1255,7 +1255,7 @@ export default compose(
         shouldShowAlcoholModal: getShouldShowAlcoholModal(state),
         hasUserLoggedIn: getUserIsLogin(state),
         hasUserSaveStore: getHasUserSaveStore(state),
-        shouldShowFavoriteButton: getShowFavoriteButton(state),
+        shouldShowFavoriteButton: getShouldShowFavoriteButton(state),
         shouldCheckSaveStoreStatus: getShouldCheckSaveStoreStatus(state),
         store: getStore(state),
         enablePayLater: getEnablePayLater(state),
