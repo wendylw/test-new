@@ -135,12 +135,14 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) => {
 export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', async (_, { dispatch, getState }) => {
   const receiptNumber = Utils.getQueryString('receiptNumber');
   // For Pay Later order, update Billing data by order data
+
   if (receiptNumber) {
     const data = await fetchOrder(receiptNumber);
-    const { total, subtotal, items } = data;
+    const { total, subtotal, items, modifiedTime } = data;
 
     return {
       receiptNumber,
+      modifiedTime,
       total,
       subtotal,
       itemsQuantity: _sumBy(items, 'quantity'),

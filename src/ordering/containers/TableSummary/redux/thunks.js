@@ -74,17 +74,20 @@ export const clearQueryOrdersAndStatus = () => () => {
   queryOrdersAndStatus.timer = null;
 };
 
-export const submitOrders = createAsyncThunk('ordering/tableSummary/submitOrders', async (_, { getState }) => {
-  const receiptNumber = getOrderReceiptNumber(getState());
-  const modifiedTime = getOrderModifiedTime(getState());
+export const submitOrders = createAsyncThunk(
+  'ordering/tableSummary/submitOrders',
+  async ({ receiptNumber, modifiedTime }) => {
+    // const receiptNumber = getOrderReceiptNumber(getState());
+    // const modifiedTime = getOrderModifiedTime(getState());
 
-  try {
-    const result = await postOrderSubmitted({ receiptNumber, modifiedTime });
+    try {
+      const result = await postOrderSubmitted({ receiptNumber, modifiedTime });
 
-    return result;
-  } catch (error) {
-    console.error(error);
+      return result;
+    } catch (error) {
+      console.error(error);
 
-    throw error;
+      throw error;
+    }
   }
-});
+);

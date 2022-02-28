@@ -23,6 +23,7 @@ import {
   getSelectedPaymentOptionSupportSaveCard,
   getCleverTapAttributes,
   getReceiptNumber,
+  getModifiedTime,
   getTotal,
   getCashback,
 } from '../../redux/common/selectors';
@@ -107,11 +108,13 @@ class Payment extends Component {
       hasLoginGuardPassed,
       paymentActions,
       submitOrders,
+      shippingType,
+      receiptNumber,
+      modifiedTime,
     } = this.props;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
-    const { redirectUrl: thankYouPageUrl } = await submitOrders().unwrap();
-    console.log(thankYouPageUrl);
+    await submitOrders({ receiptNumber, modifiedTime }).unwrap();
 
     this.setState({
       payNowLoading: true,
@@ -374,6 +377,7 @@ export default compose(
         shippingType: getShippingType(state),
         cashback: getCashback(state),
         hasLoginGuardPassed: getHasLoginGuardPassed(state),
+        modifiedTime: getModifiedTime(state),
       };
     },
     dispatch => ({
