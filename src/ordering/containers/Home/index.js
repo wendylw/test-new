@@ -60,6 +60,7 @@ import CurrentCategoryBar from './components/CurrentCategoryBar';
 import ProductList from './components/ProductList';
 import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
+import { sourceType } from './constants';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
 import loggly from '../../../utils/monitoring/loggly';
@@ -176,6 +177,8 @@ export class Home extends Component {
     window.addEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
+
+    this.showCartListDrawerIfNeeded();
   };
 
   checkDeliveryBar() {
@@ -212,6 +215,23 @@ export class Home extends Component {
       return;
     }
   }
+
+  showCartListDrawerIfNeeded = () => {
+    const { history } = this.props;
+    const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
+    const source = Utils.getQueryString('source');
+
+    if (source !== sourceType.SHOPPING_CART) return;
+
+    this.handleToggleAside(ASIDE_NAMES.CART);
+
+    const search = Utils.getFilteredQueryString('source');
+
+    history.replace({
+      pathname: ROUTER_PATHS.ORDERING_HOME,
+      search,
+    });
+  };
 
   componentDidUpdate(prevProps, prevState) {
     const { shouldShowAlcoholModal: prevShouldShowAlcoholModal } = prevProps;

@@ -35,8 +35,8 @@ Utils.getQueryString = key => {
  * @param {string or string array} keys,
  * @returns {string}
  */
-Utils.getFilteredQueryString = keys => {
-  const query = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+Utils.getFilteredQueryString = (keys, queryString = window.location.search) => {
+  const query = qs.parse(queryString, { ignoreQueryPrefix: true });
 
   // Only deal with string or array.
   if (typeof keys === 'string') {
