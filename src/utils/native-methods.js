@@ -135,10 +135,16 @@ export const getWebviewSource = () => window.webViewSource;
 
 export const getBeepAppVersion = () => window.beepAppVersion;
 
-export const startChat = ({ orderId, storeName }) => {
+export const startChat = ({ orderId, phone, name, email, storeName }) => {
+  // TODO: remove phone, name, email, message after app forced update
+  const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
   const data = {
     method: 'beepModule-startChat',
     params: {
+      phoneNumber: phone,
+      name,
+      email,
+      message,
       orderId,
       storeName,
     },
