@@ -9,6 +9,7 @@ import {
   getUserIsLogin,
   getIsDeliveryOrder,
   getBeepAppVersion,
+  getUserLoginByBeepAppStatus,
 } from '../../../../redux/modules/app';
 import { ALCOHOL_FREE_COUNTRY_LIST, BEEP_APP_MIN_SUPPORT_VERSIONS } from './constants';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
@@ -76,10 +77,17 @@ export const getShouldShowFavoriteButton = createSelector(
     isWebview && isDeliveryOrder && appVersion >= BEEP_APP_MIN_SUPPORT_VERSIONS.SAVE_FAVORITE_STORE
 );
 
+export const getHasUserLoginByBeepAppRequestFulfilled = createSelector(
+  getUserLoginByBeepAppStatus,
+  loginByBeepAppStatus => loginByBeepAppStatus === API_REQUEST_STATUS.FULFILLED
+);
+
 export const getShouldCheckSaveStoreStatus = createSelector(
   getUserIsLogin,
   getShouldShowFavoriteButton,
-  (isLogin, shouldShowFavoriteButton) => isLogin && shouldShowFavoriteButton
+  getHasUserLoginByBeepAppRequestFulfilled,
+  (isLogin, shouldShowFavoriteButton, hasBeepAppLoginRequestFulfilled) =>
+    isLogin && !hasBeepAppLoginRequestFulfilled && shouldShowFavoriteButton
 );
 
 export const getHasUserSaveStore = state => state.home.common.storeSaveStatus.data;
