@@ -30,6 +30,8 @@ function CheckoutForm({
   isAddCardPath,
   paymentExtraData,
   receiptNumber,
+  modifiedTime,
+  submitOrders,
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -125,6 +127,8 @@ function CheckoutForm({
       }
 
       setProcessing(true);
+
+      await submitOrders({ receiptNumber, modifiedTime });
 
       const payload = await stripe.createPaymentMethod({
         type: 'card',

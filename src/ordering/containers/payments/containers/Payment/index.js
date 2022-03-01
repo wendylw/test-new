@@ -108,13 +108,20 @@ class Payment extends Component {
       hasLoginGuardPassed,
       paymentActions,
       submitOrders,
-      shippingType,
       receiptNumber,
       modifiedTime,
     } = this.props;
+    const isPaidWithCreditOrOnlineBanking =
+      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE ||
+      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE_FPX;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
-    await submitOrders({ receiptNumber, modifiedTime }).unwrap();
+    if (!isPaidWithCreditOrOnlineBanking) {
+      // const timer = setTimeout(async () => {
+      //   clearTimeout(timer);
+      await submitOrders({ receiptNumber, modifiedTime });
+      // }, 0);
+    }
 
     this.setState({
       payNowLoading: true,
