@@ -154,8 +154,17 @@ class CreateOrderButton extends React.Component {
     // For pay later order, if order has already been paid, then let user goto Thankyou page directly
     if (orderId) {
       const order = await fetchOrder(orderId);
-
-      if (order.status !== ORDER_STATUS.PENDING_PAYMENT) {
+      console.log(order.status);
+      if (
+        ![
+          ORDER_STATUS.CREATED,
+          ORDER_STATUS.PENDING_PAYMENT,
+          ORDER_STATUS.PENDING_VERIFICATION,
+          ORDER_STATUS.FAILED,
+          ORDER_STATUS.CANCELLED,
+          ORDER_STATUS.PAYMENT_CANCELLED,
+        ].includes(order.status)
+      ) {
         loggly.log('ordering.order-has-paid', { order });
 
         alert(i18next.t('OrderHasPaidAlertDescription'), {
