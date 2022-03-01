@@ -1,7 +1,7 @@
 import _sumBy from 'lodash/sumBy';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get } from '../../../../../../utils/api/api-fetch';
-import { API_INFO } from './api-info';
+import { API_INFO, postOrderSubmitted } from './api-info';
 import {
   actions as appActions,
   getCartStatus,
@@ -204,6 +204,21 @@ export const loadPaymentOptions = createAsyncThunk(
     }
 
     return { paymentOptions, selectedPaymentOption };
+  }
+);
+
+export const submitOrders = createAsyncThunk(
+  'ordering/payments/submitOrders',
+  async ({ receiptNumber, modifiedTime }) => {
+    try {
+      const result = await postOrderSubmitted({ receiptNumber, modifiedTime });
+
+      return result;
+    } catch (error) {
+      console.error(error);
+
+      throw error;
+    }
   }
 );
 

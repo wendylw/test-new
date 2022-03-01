@@ -27,13 +27,13 @@ import {
   getTotal,
   getCashback,
 } from '../../redux/common/selectors';
-import { submitOrders as submitOrdersThunk } from '../../../TableSummary/redux/thunks';
 import qs from 'qs';
 import {
   loadBilling,
   loadPaymentOptions,
   createOrder as createOrderThunkCreator,
   gotoPayment as gotoPaymentThunkCreator,
+  submitOrders,
 } from '../../redux/common/thunks';
 import { actions as paymentActions } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
@@ -117,10 +117,7 @@ class Payment extends Component {
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     if (!isPaidWithCreditOrOnlineBanking) {
-      // const timer = setTimeout(async () => {
-      //   clearTimeout(timer);
       await submitOrders({ receiptNumber, modifiedTime });
-      // }, 0);
     }
 
     this.setState({
@@ -403,7 +400,7 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       createOrder: bindActionCreators(createOrderThunkCreator, dispatch),
       gotoPayment: bindActionCreators(gotoPaymentThunkCreator, dispatch),
-      submitOrders: bindActionCreators(submitOrdersThunk, dispatch),
+      submitOrders: bindActionCreators(submitOrders, dispatch),
     })
   )
 )(Payment);

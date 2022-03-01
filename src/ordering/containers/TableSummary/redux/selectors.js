@@ -60,10 +60,6 @@ export const getSubOrdersMapping = createSelector([getSubOrders, getOrderItems],
 export const getOrderSubmissionRequestingStatus = state =>
   state.tableSummary.requestStatus.submitOrders === API_REQUEST_STATUS.PENDING;
 
-export const getSubmitOrderConfirmDisplayStatus = state =>
-  state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED &&
-  state.tableSummary.uiStates.displaySubmitOrderConfirm;
-
 export const getOrderCompletedStatus = state =>
   [
     ORDER_STATUS.PAID,

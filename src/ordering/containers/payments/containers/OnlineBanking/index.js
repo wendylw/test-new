@@ -25,8 +25,7 @@ import {
   getReceiptNumber,
   getModifiedTime,
 } from '../../redux/common/selectors';
-import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
-import { submitOrders } from '../../../TableSummary/redux/thunks';
+import { loadPaymentOptions, loadBilling, submitOrders } from '../../redux/common/thunks';
 import { actions } from './redux';
 import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';

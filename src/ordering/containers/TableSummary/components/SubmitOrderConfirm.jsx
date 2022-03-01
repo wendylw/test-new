@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { actions } from '../redux';
-import { submitOrders as submitOrdersThunk } from '../redux/thunks';
+// import { submitOrders as submitOrdersThunk } from '../redux/thunks';
 import Constants from '../../../../utils/constants';
 import {
   getOrderSubmissionRequestingStatus,
@@ -158,7 +158,7 @@ export default connect(
     shippingType: getShippingType(state),
   }),
   {
-    submitOrders: submitOrdersThunk,
+    // submitOrders: submitOrdersThunk,
     updateSubmitOrderConfirmDisplay: actions.updateSubmitOrderConfirmDisplay,
   }
 )(SubmitOrderConfirm);

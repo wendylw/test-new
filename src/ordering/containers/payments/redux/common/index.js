@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
-import { loadBilling, loadPaymentOptions } from './thunks';
+import { loadBilling, loadPaymentOptions, submitOrders } from './thunks';
 
 const initialState = {
   options: [],
@@ -19,6 +19,9 @@ const initialState = {
     },
     status: null,
     error: null,
+  },
+  requestStatus: {
+    submitOrders: API_REQUEST_STATUS.PENDING,
   },
 };
 
@@ -66,6 +69,16 @@ const { reducer, actions } = createSlice({
     [loadPaymentOptions.rejected]: (state, { error }) => {
       state.status = API_REQUEST_STATUS.REJECTED;
       state.error = error;
+    },
+    [submitOrders.pending.type]: state => {
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.PENDING;
+    },
+    [submitOrders.fulfilled.type]: state => {
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.FULFILLED;
+    },
+    [submitOrders.rejected.type]: (state, { error }) => {
+      state.error.submitOrders = error;
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.REJECTED;
     },
   },
 });
