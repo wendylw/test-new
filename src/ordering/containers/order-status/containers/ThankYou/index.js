@@ -49,7 +49,6 @@ import {
   getOrderShippingType,
   getIsPreOrder,
   getIsUseStorehubLogistics,
-  getLiveChatUserProfile,
   getIsPayLater,
 } from '../../redux/selector';
 import { getshowProfileVisibility } from './redux/selector';
@@ -690,7 +689,7 @@ export class ThankYou extends PureComponent {
   };
 
   getRightContentOfHeader() {
-    const { order, shippingType, t, liveChatUserProfile } = this.props;
+    const { order, shippingType, t } = this.props;
     const isWebview = Utils.isWebview();
     const orderId = _get(order, 'orderId', '');
     const tableId = _get(order, 'tableId', '');
@@ -725,7 +724,6 @@ export class ThankYou extends PureComponent {
           NativeMethods.startChat({
             orderId,
             storeName: orderStoreName,
-            ...liveChatUserProfile,
           });
         },
       };
@@ -941,7 +939,6 @@ export default compose(
       shouldShowCashbackCard: getShouldShowCashbackCard(state),
       shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
       profileModalVisibility: getshowProfileVisibility(state),
-      liveChatUserProfile: getLiveChatUserProfile(state),
       hasOrderPaid: getHasOrderPaid(state),
       isPayLater: getIsPayLater(state),
     }),
