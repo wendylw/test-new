@@ -99,6 +99,7 @@ export const initialState = {
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
     loginRequestStatus: null,
+    loginByBeepAppStatus: null,
   },
   error: null, // network error
   apiError: {
@@ -331,7 +332,27 @@ export const actions = {
         return;
       }
 
-      await dispatch(actions.loginByBeepApp());
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token, refresh_token } = tokens;
+      await dispatch(
+        actions.loginApp({
+          accessToken: access_token,
+          refreshToken: refresh_token,
+        })
+      );
+
+      const isExpired = getUserIsExpired(getState());
+
+      if (isExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token, refresh_token } = tokens;
+        await dispatch(
+          actions.loginApp({
+            accessToken: access_token,
+            refreshToken: refresh_token,
+          })
+        );
+      }
     } catch (error) {
       console.error('syncLoginFromNative error: ', error?.message);
     }
