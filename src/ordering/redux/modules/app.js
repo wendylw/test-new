@@ -270,7 +270,7 @@ export const actions = {
 
       dispatch({
         type: types.CREATE_LOGIN_REQUEST,
-        payload: source,
+        payload: { source },
       });
 
       const result = await ApiRequest.login({
@@ -287,7 +287,7 @@ export const actions = {
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error: error,
-        payload: source,
+        payload: { source },
       });
     }
   },
