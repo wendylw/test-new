@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import dayjs from 'dayjs';
 import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
+import _isEmpty from 'lodash/isEmpty';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
@@ -564,6 +565,8 @@ export const actions = {
     try {
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
 
       const source = REGISTRATION_SOURCE.BEEP_APP;
 
