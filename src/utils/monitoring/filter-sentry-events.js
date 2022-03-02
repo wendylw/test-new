@@ -110,12 +110,17 @@ const isTikTokIssues = (event, hint) => {
   // These issues cause by tiktok monitoring script.
   try {
     const message = getErrorMessageFromHint(hint);
+    const stacktraceFrames = event.exception.stacktrace.frames;
+    const firstAbsPath = stacktraceFrames.find(frame => frame.abs_path)?.abs_path;
+
     // If error message includes `sendAnalyticsEvent not support`, this error is from `tiktok analysis` issue instead of beep issue.
     const monitorIssue = /sendAnalyticsEvent not support/.test(message);
     // In this case, the chunk file of tiktok failed to load, not because of the failure to load the Beep file.
     const chunkLoadFailed = /https:\/\/analytics.tiktok.com/.test(message) && /Loading chunk/.test(message);
+    // If abs_path of stacktrace includes tiktok i18n events path, exception will response `ePageWillLeave=function(){var t,n;Object.keys(this.context.methods.getUserInfo())` on /i18n/pixel/events.js
+    const contextNoMethodFuncIssue = !!firstAbsPath && /https:\/\/analytics.tiktok.com/.test(firstAbsPath);
 
-    return monitorIssue || chunkLoadFailed;
+    return monitorIssue || chunkLoadFailed || contextNoMethodFuncIssue;
   } catch {
     return false;
   }
