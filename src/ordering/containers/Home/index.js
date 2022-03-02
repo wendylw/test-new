@@ -45,7 +45,11 @@ import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
-import { getUserHasReachedLegalDrinkingAge, getShouldShowAlcoholModal } from './redux/common/selectors';
+import {
+  getUserHasReachedLegalDrinkingAge,
+  getShouldShowAlcoholModal,
+  getStoreDisplayTitle,
+} from './redux/common/selectors';
 import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
 import Header from '../../../components/Header';
 import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
@@ -926,6 +930,7 @@ export class Home extends Component {
       shouldShowAlcoholModal,
       orderingOngoingBannerVisibility,
       receiptNumber,
+      storeDisplayTitle,
       ...otherProps
     } = this.props;
     const {
@@ -955,7 +960,7 @@ export class Home extends Component {
           <NativeHeader
             isPage={true}
             rightContent={this.getRightContentOfHeader()}
-            title={window.document.title}
+            title={storeDisplayTitle}
             navFunc={() => {
               if (viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL) {
                 this.handleToggleAside();
@@ -1190,6 +1195,7 @@ export default compose(
         cashbackRate: getCashbackRate(state),
         shippingType: getShippingType(state),
         merchantCountry: getMerchantCountry(state),
+        storeDisplayTitle: getStoreDisplayTitle(state),
       };
     },
     dispatch => ({
