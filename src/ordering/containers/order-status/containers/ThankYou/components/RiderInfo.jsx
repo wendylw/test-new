@@ -16,6 +16,7 @@ import logisticsGrab from '../../../../../../images/beep-logistics-grab.jpg';
 import logisticsLalamove from '../../../../../../images/beep-logistics-lalamove.jpg';
 import logisticBeepOnFleet from '../../../../../../images/beep-logistics-on-fleet.jpg';
 import logisticsMrspeedy from '../../../../../../images/beep-logistics-rspeedy.jpg';
+import logisticsPandago from '../../../../../../images/beep-logistics-pamdago.jpg';
 import './RiderInfo.scss';
 
 const { ORDER_STATUS } = Constants;
@@ -25,6 +26,7 @@ const LOGISTICS_LOGOS_MAPPING = {
   lalamove: logisticsLalamove,
   mrspeedy: logisticsMrspeedy,
   onfleet: logisticBeepOnFleet,
+  pandago: logisticsPandago,
 };
 
 function getDeliveredTimeRange(bestLastMileETA, worstLastMileETA) {
