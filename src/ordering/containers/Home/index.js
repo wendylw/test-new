@@ -597,12 +597,8 @@ export class Home extends Component {
   };
 
   renderOfflineModal = enableLiveOnline => {
-    const { onlineStoreInfo, businessInfo } = this.props;
-    const { stores, multipleStores } = businessInfo || {};
-    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-    const currentStoreName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
-
-    return <OfflineStoreModal currentStoreName={currentStoreName} enableLiveOnline={enableLiveOnline} />;
+    const { storeDisplayTitle } = this.props;
+    return <OfflineStoreModal currentStoreName={storeDisplayTitle} enableLiveOnline={enableLiveOnline} />;
   };
 
   renderPickupAddress = () => {
@@ -713,10 +709,17 @@ export class Home extends Component {
   };
 
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartBilling, deliveryInfo, requestInfo, allStore } = this.props;
+    const {
+      onlineStoreInfo,
+      businessInfo,
+      cartBilling,
+      deliveryInfo,
+      requestInfo,
+      allStore,
+      storeDisplayTitle,
+    } = this.props;
     const { search } = this.state;
-    const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
-    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+    const { defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
@@ -753,7 +756,7 @@ export class Home extends Component {
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
-        title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
+        title={storeDisplayTitle}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -861,19 +864,8 @@ export class Home extends Component {
 
   handleClickShare = async () => {
     try {
-      const {
-        onlineStoreInfo,
-        businessInfo,
-        t,
-        freeShippingMinAmount,
-        cashbackRate,
-        shippingType,
-        merchantCountry,
-      } = this.props;
-      const { stores, multipleStores } = businessInfo || {};
-      const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-      let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
-      storeName = _truncate(`${storeName}`, { length: 33 });
+      const { t, freeShippingMinAmount, cashbackRate, shippingType, merchantCountry, storeDisplayTitle } = this.props;
+      const storeName = _truncate(`${storeDisplayTitle}`, { length: 33 });
 
       const shareLinkUrl = this.getShareLinkUrl();
 
