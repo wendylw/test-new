@@ -128,7 +128,7 @@ function CheckoutForm({
 
       setProcessing(true);
 
-      await submitOrders({ receiptNumber, modifiedTime });
+      await submitOrders({ receiptNumber, modifiedTime, history });
 
       const payload = await stripe.createPaymentMethod({
         type: 'card',

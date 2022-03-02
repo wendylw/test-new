@@ -186,7 +186,7 @@ class OnlineBanking extends Component {
                 payNowLoading: true,
               });
 
-              await submitOrders({ receiptNumber, modifiedTime });
+              await submitOrders({ receiptNumber, modifiedTime, history });
             }}
             afterCreateOrder={orderId => {
               loggly.log('online-banking.pay-attempt', { orderId, method: currentOnlineBanking.agentCode });

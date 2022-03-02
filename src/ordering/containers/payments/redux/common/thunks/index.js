@@ -16,6 +16,8 @@ import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
 import { getTotal } from '../selectors';
+import i18next from 'i18next';
+import { alert } from '../../../../../../common/feedback';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
 
@@ -209,15 +211,56 @@ export const loadPaymentOptions = createAsyncThunk(
 
 export const submitOrders = createAsyncThunk(
   'ordering/payments/submitOrders',
-  async ({ receiptNumber, modifiedTime }) => {
+  async ({ receiptNumber, modifiedTime, history }) => {
     try {
       const result = await postOrderSubmitted({ receiptNumber, modifiedTime });
 
       return result;
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      // '393731' means missing parameter, '393732' means order not found
+      // '393735' means order payment locked,'393738' means order not latest
+      if (e.code === '393731') {
+        const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
 
-      throw error;
+        alert(i18next.t('SorryDescription'), {
+          title: i18next.t('SorryEmo'),
+          closeButtonContent: i18next.t('BackToMenu'),
+          onClose: () =>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+              search: removeReceiptNumberUrl,
+            }),
+        });
+      } else if (e.code === '393732') {
+        const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+        alert(i18next.t('OrderNotFoundDescription'), {
+          title: i18next.t('SorryEmo'),
+          closeButtonContent: i18next.t('BackToMenu'),
+          onClose: () =>
+            history.push({
+              pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+              search: removeReceiptNumberUrl,
+            }),
+        });
+      } else if (e.code === '393738') {
+        alert(i18next.t('RefreshTableSummaryDescription'), {
+          title: i18next.t('RefreshTableSummary'),
+          closeButtonContent: i18next.t('Refresh'),
+          onClose: () => window.location.reload(),
+        });
+      }
+      // Do not need this one, because it can click pay more than once
+      // else if (e.code === '393735') {
+      //   alert(i18next.t('SomeoneElseIsPayingDescription'), {
+      //     title: i18next.t('SomeoneElseIsPaying'),
+      //     closeButtonContent: i18next.t('BackToTableSummary'),
+      //     onClose: () =>
+      //       history.push({
+      //         pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+      //         search: window.location.search,
+      //       }),
+      //   });
+      // }
     }
   }
 );

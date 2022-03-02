@@ -25,7 +25,6 @@ import {
   getOrderPlacedStatus,
   getOrderPendingPaymentStatus,
   getSubOrdersMapping,
-  getOrderSubmissionRequestingStatus,
   getThankYouPageUrl,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
@@ -273,7 +272,6 @@ export class TableSummary extends React.Component {
       shippingFee,
       orderPlacedStatus,
       orderPendingPaymentStatus,
-      orderSubmissionRequestingStatus,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -349,7 +347,6 @@ export class TableSummary extends React.Component {
                 search: window.location.search,
               });
             }}
-            disabled={orderSubmissionRequestingStatus}
           >
             {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
           </button>
@@ -379,7 +376,6 @@ TableSummary.propTypes = {
   businessInfo: PropTypes.object,
   businessUTCOffset: PropTypes.number,
   shippingType: PropTypes.string,
-  orderSubmissionRequestingStatus: PropTypes.bool,
   queryOrdersAndStatus: PropTypes.func,
   clearQueryOrdersAndStatus: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
@@ -402,7 +398,6 @@ TableSummary.defaultProps = {
   businessInfo: {},
   businessUTCOffset: 480,
   shippingType: null,
-  orderSubmissionRequestingStatus: false,
   queryOrdersAndStatus: () => {},
   clearQueryOrdersAndStatus: () => {},
   resetCartSubmission: () => {},
@@ -429,8 +424,6 @@ export default compose(
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
-
-      orderSubmissionRequestingStatus: getOrderSubmissionRequestingStatus(state),
     }),
 
     {

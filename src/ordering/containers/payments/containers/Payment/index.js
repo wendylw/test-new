@@ -117,7 +117,7 @@ class Payment extends Component {
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     if (!isPaidWithCreditOrOnlineBanking) {
-      await submitOrders({ receiptNumber, modifiedTime });
+      await submitOrders({ receiptNumber, modifiedTime, history });
     }
 
     this.setState({

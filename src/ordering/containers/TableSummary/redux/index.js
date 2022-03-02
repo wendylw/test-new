@@ -20,7 +20,6 @@ const initialState = {
   requestStatus: {
     loadOrders: API_REQUEST_STATUS.FULFILLED,
     loadOrdersStatus: API_REQUEST_STATUS.FULFILLED,
-    submitOrders: API_REQUEST_STATUS.FULFILLED,
   },
 
   order: {
@@ -46,7 +45,6 @@ const initialState = {
   error: {
     loadOrders: null,
     loadOrdersStatus: null,
-    submitOrders: null,
   },
 };
 
