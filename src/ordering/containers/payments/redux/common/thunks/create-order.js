@@ -119,7 +119,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
     const businessDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(dateValue));
-    const fromDate = timeLib.setDateTime(hour1, businessDayjs);
+    const fromDate = hour1 ? timeLib.setDateTime(hour1, businessDayjs) : null;
     const toDate = hour2 ? timeLib.setDateTime(hour2, businessDayjs) : null;
 
     return {
