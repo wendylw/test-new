@@ -134,7 +134,16 @@ function RiderInfo({
     return null;
   }
 
-  const logisticName = courier === 'onfleet' ? t('BeepFleet') : courier;
+  const logisticName = () => {
+    if (courier === 'onfleet') {
+      return t('BeepFleet');
+    }
+    if (courier === 'pandago') {
+      return t('PanDaGo');
+    }
+    return courier;
+  };
+
   const logisticPhone = isUseStorehubLogistics ? validDriverPhone : validStorePhone;
   const estimationInfo = {
     [ORDER_STATUS.PICKED_UP]: {
@@ -220,7 +229,7 @@ function RiderInfo({
             </div>
             <div className="padding-left-right-normal margin-top-bottom-smaller text-left flex flex-column flex-space-between">
               <p className="line-height-normal text-weight-bolder">
-                {isUseStorehubLogistics && logisticName ? logisticName : t('DeliveryBy', { name: storeName })}
+                {isUseStorehubLogistics && logisticName() ? logisticName() : t('DeliveryBy', { name: storeName })}
               </p>
               {logisticPhone ? <span className="text-gray line-height-normal">{logisticPhone}</span> : null}
             </div>
