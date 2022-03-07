@@ -1,6 +1,8 @@
 /* eslint-disable react/forbid-prop-types */
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import _trim from 'lodash/trim';
+import _nth from 'lodash/_baseNth';
 import _debounce from 'lodash/debounce';
 import PlaceSearchBox from '../../components/PlaceSearchBox';
 import LocationPicker from '../../components/LocationPicker';
@@ -85,6 +87,17 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
         city,
       };
 
+      const addressComponents = fullName.split(',');
+      const streetName = _trim(_nth(addressComponents, 1)) || '';
+      const state = _trim(_nth(addressComponents, -2)) || '';
+
+      CleverTap.pushEvent('Location Page - Click saved address', {
+        'street name': streetName,
+        postcode: postCode,
+        city,
+        state,
+      });
+
       onSelect(addressInfo);
     },
     [onSelect]
@@ -92,8 +105,33 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
 
   const selectSearchResultHandler = useCallback(
     (searchResult, index) => {
-      CleverTap.pushEvent('Location Page - Click location results', { rank: index + 1 });
+      const {
+        addressComponents: { street1, street2, postCode: postcode, city, state },
+      } = searchResult;
+      CleverTap.pushEvent('Location Page - Click location results', {
+        rank: index + 1,
+        'street name': street1 || street2,
+        postcode,
+        city,
+        state,
+      });
       selectPlaceInfoHandler(searchResult);
+    },
+    [selectPlaceInfoHandler]
+  );
+
+  const selectHistoricalResultHandler = useCallback(
+    historicalResult => {
+      const {
+        addressComponents: { street1, street2, postCode: postcode, city, state },
+      } = historicalResult;
+      CleverTap.pushEvent('Location Page - Click saved location', {
+        'street name': street1 || street2,
+        postcode,
+        city,
+        state,
+      });
+      selectPlaceInfoHandler(historicalResult);
     },
     [selectPlaceInfoHandler]
   );
@@ -121,7 +159,7 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
           <LocationPicker
             searchResultList={placeList}
             onSearchResultSelect={selectSearchResultHandler}
-            onHistoricalResultSelect={selectPlaceInfoHandler}
+            onHistoricalResultSelect={selectHistoricalResultHandler}
           />
         )}
       </div>
