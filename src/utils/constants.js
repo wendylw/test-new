@@ -705,6 +705,15 @@ export const REFERRER_SOURCE_TYPES = {
   LOGIN: 'login',
 };
 
+const LOGISTICS_RIDER_TYPE = {
+  GRAB: 'grab',
+  GO_GET: 'goget',
+  LA_LA_MOVE: 'lalamove',
+  MR_SPEEDY: 'mrspeedy',
+  ON_FLEET: 'onfleet',
+  PAN_DAGO: 'pandago',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -756,4 +765,5 @@ export default {
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
   PROMOTION_CLIENT_TYPES,
   REFERRER_SOURCE_TYPES,
+  LOGISTICS_RIDER_TYPE,
 };

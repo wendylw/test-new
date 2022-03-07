@@ -19,7 +19,7 @@ import logisticsMrspeedy from '../../../../../../images/beep-logistics-rspeedy.j
 import logisticsPandago from '../../../../../../images/beep-logistics-pamdago.jpg';
 import './RiderInfo.scss';
 
-const { ORDER_STATUS } = Constants;
+const { ORDER_STATUS, LOGISTICS_RIDER_TYPE } = Constants;
 const LOGISTICS_LOGOS_MAPPING = {
   grab: logisticsGrab,
   goget: logisticsGoget,
@@ -135,13 +135,22 @@ function RiderInfo({
   }
 
   const logisticName = () => {
-    if (courier === 'onfleet') {
-      return t('BeepFleet');
+    switch (courier) {
+      case courier === LOGISTICS_RIDER_TYPE.GRAB:
+        return t('Grab');
+      case courier === LOGISTICS_RIDER_TYPE.GO_GET:
+        return t('GoGet');
+      case courier === LOGISTICS_RIDER_TYPE.LA_LA_MOVE:
+        return t('LaLaMove');
+      case courier === LOGISTICS_RIDER_TYPE.MR_SPEEDY:
+        return t('MrSpeedy');
+      case courier === LOGISTICS_RIDER_TYPE.ON_FLEET:
+        return t('BeepFleet');
+      case courier === LOGISTICS_RIDER_TYPE.PAN_DAGO:
+        return t('PanDaGo');
+      default:
+        return courier;
     }
-    if (courier === 'pandago') {
-      return t('PanDaGo');
-    }
-    return courier;
   };
 
   const logisticPhone = isUseStorehubLogistics ? validDriverPhone : validStorePhone;
