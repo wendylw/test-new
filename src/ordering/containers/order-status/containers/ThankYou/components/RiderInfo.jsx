@@ -134,22 +134,23 @@ function RiderInfo({
     return null;
   }
 
+  // eslint-disable-next-line consistent-return
   const logisticName = () => {
     switch (courier) {
-      case courier === LOGISTICS_RIDER_TYPE.GRAB:
+      case LOGISTICS_RIDER_TYPE.GRAB:
         return t('Grab');
-      case courier === LOGISTICS_RIDER_TYPE.GO_GET:
+      case LOGISTICS_RIDER_TYPE.GO_GET:
         return t('GoGet');
-      case courier === LOGISTICS_RIDER_TYPE.LA_LA_MOVE:
+      case LOGISTICS_RIDER_TYPE.LA_LA_MOVE:
         return t('LaLaMove');
-      case courier === LOGISTICS_RIDER_TYPE.MR_SPEEDY:
+      case LOGISTICS_RIDER_TYPE.MR_SPEEDY:
         return t('MrSpeedy');
-      case courier === LOGISTICS_RIDER_TYPE.ON_FLEET:
-        return t('BeepFleet');
-      case courier === LOGISTICS_RIDER_TYPE.PAN_DAGO:
+      case LOGISTICS_RIDER_TYPE.ON_FLEET:
+        return 'BeepFleet';
+      case LOGISTICS_RIDER_TYPE.PAN_DAGO:
         return t('PanDaGo');
       default:
-        return courier;
+        courier;
     }
   };
 
