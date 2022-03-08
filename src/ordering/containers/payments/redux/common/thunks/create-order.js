@@ -119,12 +119,12 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
     const businessUTCOffset = getBusinessUTCOffset(getState());
 
     const businessDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, new Date(dateValue));
-    const fromDate = timeLib.setDateTime(hour1, businessDayjs);
+    const fromDate = hour1 ? timeLib.setDateTime(hour1, businessDayjs) : null;
     const toDate = hour2 ? timeLib.setDateTime(hour2, businessDayjs) : null;
 
     return {
       // format to ISO8601, e.g. '2021-01-21T10:00:00+08:00'
-      expectDeliveryDateFrom: fromDate.format(),
+      expectDeliveryDateFrom: fromDate && fromDate.format(),
       expectDeliveryDateTo: toDate && toDate.format(),
     };
   };
