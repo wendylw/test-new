@@ -124,7 +124,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
 
     return {
       // format to ISO8601, e.g. '2021-01-21T10:00:00+08:00'
-      expectDeliveryDateFrom: fromDate.format(),
+      expectDeliveryDateFrom: fromDate && fromDate.format(),
       expectDeliveryDateTo: toDate && toDate.format(),
     };
   };
