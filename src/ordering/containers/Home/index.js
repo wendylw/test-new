@@ -965,8 +965,8 @@ class Home extends Component {
     if (!isDeliveryOrder) return null;
 
     try {
-      // The return value of hasMethodInNative is 'false'
-      const hasShareLinkSupport = JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'));
+      const { BEEP_MODULE_METHODS } = NativeMethods;
+      const hasShareLinkSupport = NativeMethods.hasMethodInNative(BEEP_MODULE_METHODS.SHARE_LINK);
       if (hasShareLinkSupport) {
         return {
           id: 'headerRightShareButton',
