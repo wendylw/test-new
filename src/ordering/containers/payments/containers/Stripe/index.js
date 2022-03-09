@@ -12,6 +12,7 @@ import {
   getMerchantCountry,
   getUser,
   getBusinessInfo,
+  getEnablePayLater,
 } from '../../../../redux/modules/app';
 import {
   getCleverTapAttributes,
@@ -21,7 +22,7 @@ import {
   getReceiptNumber,
   getModifiedTime,
 } from '../../redux/common/selectors';
-import { loadPaymentOptions, loadBilling, submitOrders } from '../../redux/common/thunks';
+import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';
 
@@ -100,7 +101,7 @@ class Stripe extends Component {
       cleverTapAttributes,
       receiptNumber,
       modifiedTime,
-      submitOrders,
+      enablePayLater,
     } = this.props;
     const isAddCardPath = ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE === history.location.pathname;
 
@@ -118,7 +119,7 @@ class Stripe extends Component {
           cleverTapAttributes={cleverTapAttributes}
           supportSaveCard={supportSaveCard}
           paymentExtraData={this.getPaymentEntryRequestData()}
-          submitOrders={submitOrders}
+          enablePayLater={enablePayLater}
         />
       </Elements>
     );
@@ -142,13 +143,13 @@ export default compose(
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
         modifiedTime: getModifiedTime(state),
+        enablePayLater: getEnablePayLater(state),
       };
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       loadBilling: bindActionCreators(loadBilling, dispatch),
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
-      submitOrders: bindActionCreators(submitOrders, dispatch),
     })
   )
 )(Stripe);

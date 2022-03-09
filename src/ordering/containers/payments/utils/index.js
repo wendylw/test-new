@@ -1,5 +1,8 @@
 import _get from 'lodash/get';
 import qs from 'qs';
+import i18next from 'i18next';
+import { postOrderSubmitted } from '../redux/common/thunks/api-info';
+import { alert } from '../../../../common/feedback';
 import Constants from '../../../../utils/constants';
 import config from '../../../../config';
 import Utils from '../../../../utils/utils';
@@ -196,5 +199,43 @@ export const getCreditCardFormPathname = (paymentProvider, saveCard = false) => 
     default:
       console.error(`Wrong paymentProvider(${paymentProvider}) for CreditCard, will back to Payment page`);
       return ROUTER_PATHS.ORDERING_PAYMENT;
+  }
+};
+
+export const submitOrderErrorHandler = async ({ receiptNumber, modifiedTime, history }) => {
+  // '393731' means missing parameter, '393732' means order not found
+  // '393735' means order payment locked,'393738' means order not latest
+  try {
+    await postOrderSubmitted({ receiptNumber, modifiedTime });
+  } catch (e) {
+    if (e.code === '393731') {
+      const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+      alert(i18next.t('SorryDescription'), {
+        title: i18next.t('SorryEmo'),
+        closeButtonContent: i18next.t('BackToMenu'),
+        onClose: () =>
+          history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+            search: removeReceiptNumberUrl,
+          }),
+      });
+    } else if (e.code === '393732') {
+      const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+      alert(i18next.t('OrderNotFoundDescription'), {
+        title: i18next.t('SorryEmo'),
+        closeButtonContent: i18next.t('BackToMenu'),
+        onClose: () =>
+          history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+            search: removeReceiptNumberUrl,
+          }),
+      });
+    } else if (e.code === '393738') {
+      alert(i18next.t('RefreshTableSummaryDescription'), {
+        title: i18next.t('RefreshTableSummary'),
+        closeButtonContent: i18next.t('Refresh'),
+        onClose: () => window.location.reload(),
+      });
+    }
   }
 };

@@ -156,13 +156,15 @@ class CreateOrderButton extends React.Component {
       const order = await fetchOrder(orderId);
 
       if (
-        ![
-          ORDER_STATUS.CREATED,
-          ORDER_STATUS.PENDING_PAYMENT,
-          ORDER_STATUS.PENDING_VERIFICATION,
-          ORDER_STATUS.FAILED,
-          ORDER_STATUS.CANCELLED,
-          ORDER_STATUS.PAYMENT_CANCELLED,
+        [
+          ORDER_STATUS.PAID,
+          ORDER_STATUS.READY_FOR_DELIVERY,
+          ORDER_STATUS.READY_FOR_PICKUP,
+          ORDER_STATUS.SHIPPED,
+          ORDER_STATUS.ACCEPTED,
+          ORDER_STATUS.LOGISTICS_CONFIRMED,
+          ORDER_STATUS.CONFIRMED,
+          ORDER_STATUS.DELIVERED,
         ].includes(order.status)
       ) {
         loggly.log('ordering.order-has-paid', { order });

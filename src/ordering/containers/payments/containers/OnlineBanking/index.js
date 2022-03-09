@@ -15,6 +15,7 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getBusinessInfo,
+  getEnablePayLater,
 } from '../../../../redux/modules/app';
 import {
   getLoaderVisibility,
@@ -25,14 +26,14 @@ import {
   getReceiptNumber,
   getModifiedTime,
 } from '../../redux/common/selectors';
-import { loadPaymentOptions, loadBilling, submitOrders } from '../../redux/common/thunks';
+import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import { actions } from './redux';
 import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
+import { submitOrderErrorHandler } from '../../utils';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
-
 class OnlineBanking extends Component {
   order = {};
 
@@ -119,7 +120,7 @@ class OnlineBanking extends Component {
       cleverTapAttributes,
       receiptNumber,
       modifiedTime,
-      submitOrders,
+      enablePayLater,
     } = this.props;
     const { payNowLoading } = this.state;
 
@@ -186,7 +187,7 @@ class OnlineBanking extends Component {
                 payNowLoading: true,
               });
 
-              await submitOrders({ receiptNumber, modifiedTime, history });
+              enablePayLater ? await submitOrderErrorHandler({ receiptNumber, modifiedTime }) : null;
             }}
             afterCreateOrder={orderId => {
               loggly.log('online-banking.pay-attempt', { orderId, method: currentOnlineBanking.agentCode });
@@ -235,6 +236,7 @@ export default compose(
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
         modifiedTime: getModifiedTime(state),
+        enablePayLater: getEnablePayLater(state),
       };
     },
     dispatch => ({
@@ -242,7 +244,6 @@ export default compose(
       loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
       updateBankingSelected: bindActionCreators(actions.updateBankingSelected, dispatch),
       loadBilling: bindActionCreators(loadBilling, dispatch),
-      submitOrders: bindActionCreators(submitOrders, dispatch),
     })
   )
 )(OnlineBanking);

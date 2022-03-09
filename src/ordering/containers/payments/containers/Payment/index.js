@@ -14,6 +14,7 @@ import {
   getDeliveryInfo,
   getShippingType,
   getHasLoginGuardPassed,
+  getEnablePayLater,
 } from '../../../../redux/modules/app';
 import {
   getLoaderVisibility,
@@ -33,7 +34,6 @@ import {
   loadPaymentOptions,
   createOrder as createOrderThunkCreator,
   gotoPayment as gotoPaymentThunkCreator,
-  submitOrders,
 } from '../../redux/common/thunks';
 import { actions as paymentActions } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
@@ -45,6 +45,7 @@ import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
+import { submitOrderErrorHandler } from '../../utils';
 
 const { PAYMENT_PROVIDERS, ORDER_STATUS, ROUTER_PATHS } = Constants;
 
@@ -107,17 +108,17 @@ class Payment extends Component {
       currentPaymentSupportSaveCard,
       hasLoginGuardPassed,
       paymentActions,
-      submitOrders,
       receiptNumber,
       modifiedTime,
+      enablePayLater,
     } = this.props;
     const isPaidWithCreditOrOnlineBanking =
       currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE ||
       currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE_FPX;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
-    if (!isPaidWithCreditOrOnlineBanking) {
-      await submitOrders({ receiptNumber, modifiedTime, history });
+    if (!isPaidWithCreditOrOnlineBanking && enablePayLater) {
+      await submitOrderErrorHandler({ receiptNumber, modifiedTime });
     }
 
     this.setState({
@@ -208,13 +209,15 @@ class Payment extends Component {
         const order = await fetchOrder(orderId);
 
         if (
-          ![
-            ORDER_STATUS.CREATED,
-            ORDER_STATUS.PENDING_PAYMENT,
-            ORDER_STATUS.PENDING_VERIFICATION,
-            ORDER_STATUS.FAILED,
-            ORDER_STATUS.CANCELLED,
-            ORDER_STATUS.PAYMENT_CANCELLED,
+          [
+            ORDER_STATUS.PAID,
+            ORDER_STATUS.READY_FOR_DELIVERY,
+            ORDER_STATUS.READY_FOR_PICKUP,
+            ORDER_STATUS.SHIPPED,
+            ORDER_STATUS.ACCEPTED,
+            ORDER_STATUS.LOGISTICS_CONFIRMED,
+            ORDER_STATUS.CONFIRMED,
+            ORDER_STATUS.DELIVERED,
           ].includes(order.status)
         ) {
           loggly.log('ordering.order-has-paid', { order });
@@ -391,6 +394,7 @@ export default compose(
         cashback: getCashback(state),
         hasLoginGuardPassed: getHasLoginGuardPassed(state),
         modifiedTime: getModifiedTime(state),
+        enablePayLater: getEnablePayLater(state),
       };
     },
     dispatch => ({
@@ -400,7 +404,6 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       createOrder: bindActionCreators(createOrderThunkCreator, dispatch),
       gotoPayment: bindActionCreators(gotoPaymentThunkCreator, dispatch),
-      submitOrders: bindActionCreators(submitOrders, dispatch),
     })
   )
 )(Payment);

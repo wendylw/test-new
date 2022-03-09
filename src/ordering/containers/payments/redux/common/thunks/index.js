@@ -1,7 +1,7 @@
 import _sumBy from 'lodash/sumBy';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get } from '../../../../../../utils/api/api-fetch';
-import { API_INFO, postOrderSubmitted } from './api-info';
+import { API_INFO } from './api-info';
 import {
   actions as appActions,
   getCartStatus,
@@ -16,8 +16,6 @@ import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
 import { getTotal } from '../selectors';
-import i18next from 'i18next';
-import { alert } from '../../../../../../common/feedback';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
 
@@ -206,50 +204,6 @@ export const loadPaymentOptions = createAsyncThunk(
     }
 
     return { paymentOptions, selectedPaymentOption };
-  }
-);
-
-export const submitOrders = createAsyncThunk(
-  'ordering/payments/submitOrders',
-  async ({ receiptNumber, modifiedTime, history }) => {
-    try {
-      const result = await postOrderSubmitted({ receiptNumber, modifiedTime });
-
-      return result;
-    } catch (e) {
-      // '393731' means missing parameter, '393732' means order not found
-      // '393735' means order payment locked,'393738' means order not latest
-      if (e.code === '393731') {
-        const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
-
-        alert(i18next.t('SorryDescription'), {
-          title: i18next.t('SorryEmo'),
-          closeButtonContent: i18next.t('BackToMenu'),
-          onClose: () =>
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
-              search: removeReceiptNumberUrl,
-            }),
-        });
-      } else if (e.code === '393732') {
-        const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
-        alert(i18next.t('OrderNotFoundDescription'), {
-          title: i18next.t('SorryEmo'),
-          closeButtonContent: i18next.t('BackToMenu'),
-          onClose: () =>
-            history.push({
-              pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
-              search: removeReceiptNumberUrl,
-            }),
-        });
-      } else if (e.code === '393738') {
-        alert(i18next.t('RefreshTableSummaryDescription'), {
-          title: i18next.t('RefreshTableSummary'),
-          closeButtonContent: i18next.t('Refresh'),
-          onClose: () => window.location.reload(),
-        });
-      }
-    }
   }
 );
 
