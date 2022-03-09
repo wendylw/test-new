@@ -1,3 +1,12 @@
+/**
+ * @deprecated
+ * This file should ONLY be imported by v1 files. We will migrate the content
+ * to ../common/utils/constants.js when something is required by v2 pages, and
+ * changed the constant here to a reference.
+ */
+
+import * as ConstantsV2 from '../common/utils/constants';
+
 const DOCUMENT_ROOT_ID = 'root';
 
 const RESEND_OTP_TIME = 60;
@@ -7,58 +16,7 @@ const MANIFEST = {
   PATH: '/web/manifest.json',
 };
 
-const ROUTER_PATHS = {
-  TERMS_OF_USE: '/terms-of-use',
-  THANK_YOU: '/thank-you',
-  PRIVACY: '/privacy-policy',
-  ERROR: '/error',
-  SORRY: '/sorry',
-  REPORT_DRIVER: '/report-driver',
-  STORES_HOME: '/',
-  // ordering App basename
-  ORDERING_BASE: '/ordering',
-  ORDERING_HOME: '/',
-  ORDERING_LOGIN: '/login',
-  ORDERING_LOCATION_AND_DATE: '/location-date',
-  ORDERING_LOCATION: '/location',
-  ORDERING_CUSTOMER_INFO: '/customer',
-  ORDERING_CART: '/cart',
-  ORDERING_CART_SUBMISSION_STATUS: '/cart/cart-submission',
-  ORDERING_TABLE_SUMMARY: '/table-summary',
-  ORDERING_PROMOTION: '/promotion',
-  ORDERING_PAYMENT: '/payment',
-  ORDERING_STRIPE_PAYMENT: '/payment/stripe',
-  ORDERING_STRIPE_PAYMENT_SAVE: '/payment/stripe/save',
-  ORDERING_ADYEN_PAYMENT: '/payment/adyen',
-  ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
-  ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
-  ORDERING_ONLINE_SAVED_CARDS: '/payment/cards',
-  ORDERING_ONLINE_CVV: '/payment/cvv',
-  MERCHANT_INFO: '/need-help',
-  ORDERING_STORE_LIST: '/storeList',
-  ADDRESS_LIST: '/addressList',
-  ADDRESS_DETAIL: '/addressDetail',
-  CONTACT_DETAIL: '/contactDetails',
-  // cashback App basename
-  CASHBACK_BASE: '/loyalty',
-  CASHBACK_HOME: '/',
-  CASHBACK_CLAIM: '/claim',
-  // site
-  SITE_HOME: '/home',
-  QRSCAN: '/qrscan',
-  SCAN: '/scan',
-  SCAN_NOT_SUPPORT: '/scanNotSupport',
-  ORDER_DETAILS: '/orderdetails',
-  ORDER_HISTORY: '/order-history',
-  // voucher
-  VOUCHER_HOME: '/voucher',
-  VOUCHER_CONTACT: '/voucher/contact',
-  VOUCHER_THANK_YOU: '/voucher/thank-you',
-  VOUCHER_SORRY: '/voucher/sorry',
-  VOUCHER_PAYMENT: '/ordering/payment',
-  // dine
-  DINE: '/dine',
-};
+const ROUTER_PATHS = ConstantsV2.PATH_NAME_MAPPING;
 
 const CASHBACK_SOURCE = {
   REGISTER: 'REGISTER',
@@ -457,13 +415,7 @@ const ASIDE_NAMES = {
   ADD_MERCHANT_NOTE: 'ADD_MERCHANT_NOTE',
 };
 
-const DELIVERY_METHOD = {
-  DELIVERY: 'delivery',
-  PICKUP: 'pickup',
-  DINE_IN: 'dine-in',
-  TAKE_AWAY: 'takeaway',
-  DIGITAL: 'digital',
-};
+const DELIVERY_METHOD = ConstantsV2.SHIPPING_TYPES;
 
 const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -672,11 +624,7 @@ export const REGISTRATION_SOURCE = {
   SHARED_LINK: 'SharedLink',
 };
 
-export const API_REQUEST_STATUS = {
-  PENDING: 'pending',
-  FULFILLED: 'fulfilled',
-  REJECTED: 'rejected',
-};
+export const API_REQUEST_STATUS = ConstantsV2.API_REQUEST_STATUS;
 
 export const ORDER_SOURCE = {
   TNG_MINI_PROGRAM: 'BeepTngMiniProgram',
@@ -692,17 +640,22 @@ export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
   [DELIVERY_METHOD.TAKE_AWAY]: 'take away',
 };
 
-export const PROMOTION_CLIENT_TYPES = {
-  TNG_MINI_PROGRAM: 'tngMiniProgram',
-  APP: 'app',
-  WEB: 'web',
-};
+export const PROMOTION_CLIENT_TYPES = ConstantsV2.PROMOTION_CLIENT_TYPES;
 
 export const REFERRER_SOURCE_TYPES = {
   PAYMENT: 'payment',
   CASHBACK: 'cashback',
   PAY_AT_COUNTER: 'payAtCounter',
   LOGIN: 'login',
+};
+
+const LOGISTICS_RIDER_TYPE = {
+  GRAB: 'grab',
+  GO_GET: 'goget',
+  LA_LA_MOVE: 'lalamove',
+  MR_SPEEDY: 'mrspeedy',
+  ON_FLEET: 'onfleet',
+  PAN_DAGO: 'pandago',
 };
 
 export default {
@@ -751,9 +704,10 @@ export default {
   CLIENTS,
   REGISTRATION_TOUCH_POINT,
   REGISTRATION_SOURCE,
-  API_REQUEST_STATUS,
+  API_REQUEST_STATUS: ConstantsV2.API_REQUEST_STATUS,
   ORDER_SOURCE,
   ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
   PROMOTION_CLIENT_TYPES,
   REFERRER_SOURCE_TYPES,
+  LOGISTICS_RIDER_TYPE,
 };

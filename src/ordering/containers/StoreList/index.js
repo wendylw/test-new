@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import _get from 'lodash/get';
 import Constants from '../../../utils/constants';
 
 import { connect } from 'react-redux';
@@ -7,6 +8,7 @@ import { bindActionCreators, compose } from 'redux';
 import HybridHeader from '../../../components/HybridHeader';
 import Image from '../../../components/Image';
 import { IconChecked } from '../../../components/Icons';
+import { withAddressInfo } from '../Location/withAddressInfo';
 import {
   actions as appActionCreators,
   getOnlineStoreInfo,
@@ -14,6 +16,7 @@ import {
   getStoresList,
   getStoreHashCode,
 } from '../../redux/modules/app';
+import { getIfAddressInfoExists, getAddressCoords } from '../../../redux/modules/address/selectors';
 import Utils from '../../../utils/utils';
 import { IconLocation } from '../../../components/Icons';
 import Tag from '../../../components/Tag';
@@ -86,16 +89,15 @@ class StoreList extends Component {
   }
 
   async componentDidMount() {
-    let address = Utils.getSessionVariable('deliveryAddress');
-    if (address) {
-      address = JSON.parse(address);
-      address = {
-        location: {
-          longitude: address.coords.lng,
-          latitude: address.coords.lat,
-        },
-      };
-    }
+    const { addressCoords } = this.props;
+
+    const address = addressCoords && {
+      location: {
+        longitude: _get(addressCoords, 'lng', 0),
+        latitude: _get(addressCoords, 'lat', 0),
+      },
+    };
+
     await this.props.appActions.loadCoreStores(
       this.state.search.type === Constants.DELIVERY_METHOD.DELIVERY ? address : ''
     );
@@ -237,12 +239,15 @@ StoreList.displayName = 'StoreList';
 
 export default compose(
   withTranslation(),
+  withAddressInfo(),
   connect(
     state => ({
       allStore: getStoresList(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHash: getStoreHashCode(state),
       businessUTCOffset: getBusinessUTCOffset(state),
+      addressCoords: getAddressCoords(state),
+      ifAddressInfoExists: getIfAddressInfoExists(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

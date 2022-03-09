@@ -135,16 +135,10 @@ export const getWebviewSource = () => window.webViewSource;
 
 export const getBeepAppVersion = () => window.beepAppVersion;
 
-export const startChat = ({ orderId, phone, name, email, storeName }) => {
-  // TODO: remove phone, name, email, message after app forced update
-  const message = `Order number: ${orderId}\nStore Name: ${storeName}`;
+export const startChat = ({ orderId, storeName }) => {
   const data = {
     method: 'beepModule-startChat',
     params: {
-      phoneNumber: phone,
-      name,
-      email,
-      message,
       orderId,
       storeName,
     },
@@ -170,6 +164,34 @@ export const shareLink = ({ link, title }) => {
 export const getAddress = () => {
   const data = {
     method: 'beepModule-getAddress',
+    mode: MODE.SYNC,
+  };
+
+  return dsBridgeCall(data);
+};
+
+export const setAddress = addressInfo => {
+  const shortName = _get(addressInfo, 'shortName', '');
+  const fullName = _get(addressInfo, 'fullName', '');
+  const lat = _get(addressInfo, 'coords.lat', 0) || 0;
+  const lng = _get(addressInfo, 'coords.lng', 0) || 0;
+  const city = _get(addressInfo, 'city', '');
+  const postCode = _get(addressInfo, 'postCode', '');
+  const countryCode = _get(addressInfo, 'countryCode', '');
+  const savedAddressId = _get(addressInfo, 'savedAddressId', '');
+
+  const data = {
+    method: 'beepModule-setAddress',
+    params: {
+      address: fullName,
+      addressName: shortName,
+      lat,
+      lng,
+      countryCode,
+      savedAddressId,
+      postCode,
+      city,
+    },
     mode: MODE.SYNC,
   };
 

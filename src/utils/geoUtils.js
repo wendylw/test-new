@@ -5,6 +5,7 @@ import _get from 'lodash/get';
 import { get, post } from './request';
 import loggly from '../utils/monitoring/loggly';
 import { getLocation as getLocationFromTNG } from './tng-utils';
+import { ADDRESS_INFO_SOURCE_TYPE } from '../redux/modules/address/constants';
 
 const googleMaps = _get(window, 'google.maps', null);
 
@@ -392,7 +393,8 @@ export const fetchGeolocationByIp = () => {
 };
 
 export const getPositionInfoBySource = async (source, withCache = true) => {
-  const sources = ['device', 'ip'];
+  const { IP, DEVICE } = ADDRESS_INFO_SOURCE_TYPE;
+  const sources = [IP, DEVICE];
   if (!sources.includes(source)) throw new Error(`source must be one of ${source.json(',')}`);
 
   const CACHE_KEY = `{${source.toUpperCase()}_POSITION_INFO}`;
@@ -409,10 +411,10 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
 
   let coords = null;
 
-  if (source === 'device') {
+  if (source === DEVICE) {
     const position = await tryGetDeviceCoordinates();
     coords = { lat: position.latitude, lng: position.longitude };
-  } else if (source === 'ip') {
+  } else if (source === IP) {
     const result = await fetchGeolocationByIp();
     if (result.status === 'success') {
       coords = { lat: result.lat, lng: result.lon };
@@ -438,22 +440,18 @@ export const getPositionInfoBySource = async (source, withCache = true) => {
 
   const place = pickPreferredGeoCodeResult(candidates);
 
+  const addressComponents = standardizeGeoAddress(place.address_components);
+  const { street1, street2, city, state, country } = addressComponents;
+
   const result = {
     coords,
+    name: street1 || street2 || city || state || country,
     address: place.formatted_address,
-    addressComponents: standardizeGeoAddress(place.address_components),
+    addressComponents,
     placeId: place.place_id,
   };
 
   Utils.setSessionVariable(CACHE_KEY, JSON.stringify(result));
 
   return result;
-};
-
-export const getCountryCodeByPlaceInfo = placeInfo => {
-  try {
-    return placeInfo.addressComponents.countryCode;
-  } catch (e) {
-    return '';
-  }
 };

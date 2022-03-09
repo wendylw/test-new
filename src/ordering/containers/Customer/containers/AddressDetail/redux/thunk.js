@@ -1,67 +1,81 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import _get from 'lodash/get';
 import { getDeliveryDetails, getUserName, getUserPhone } from '../../../../../redux/modules/app';
-import Utils from '../../../../../../utils/utils';
+import {
+  getAddressFullName,
+  getAddressCoords,
+  getAddressCity,
+  getAddressPostCode,
+  getAddressCountryCode,
+} from '../../../../../../redux/modules/address/selectors';
+import { getAddressInfo } from './selectors';
 
-export const init = createAsyncThunk('ordering/customer/addressDetail', async ({ actionType }, { getState }) => {
-  const state = getState();
-  const deliveryDetails = getDeliveryDetails(state);
-  const {
-    addressId,
-    addressName,
-    deliveryToAddress,
-    addressDetails,
-    deliveryComments,
-    username,
-    phone,
-    deliveryToLocation,
-    deliveryToCity,
-  } = deliveryDetails || {};
+export const init = createAsyncThunk(
+  'ordering/customer/addressDetail',
+  async ({ actionType, selectedAddress }, { getState }) => {
+    const state = getState();
+    const deliveryDetails = getDeliveryDetails(state);
+    const addressDetails = getAddressInfo(state);
+    const {
+      addressId,
+      addressName,
+      deliveryToAddress,
+      addressDetails: details,
+      deliveryComments,
+      username,
+      phone,
+      deliveryToLocation,
+      deliveryToCity,
+      postCode,
+      countryCode,
+    } = deliveryDetails || {};
 
-  const { address, coords, addressComponents } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-  const payload = {
-    id: '',
-    type: actionType,
-    address: '',
-    coords: null,
-    addressComponents: null,
-    name: '',
-    details: '',
-    comments: '',
-    contactName: '',
-    contactNumber: '',
-  };
-
-  // if choose a new location, update the addressInfo
-  payload.address = address;
-  payload.coords = {
-    latitude: coords.lat,
-    longitude: coords.lng,
-  };
-  payload.addressComponents = addressComponents;
-
-  if (actionType === 'edit') {
-    payload.id = addressId;
-    payload.name = addressName;
-    payload.address = deliveryToAddress;
-    payload.details = addressDetails;
-    payload.comments = deliveryComments;
-    payload.coords = deliveryToLocation;
-    payload.contactName = username;
-    payload.contactNumber = phone;
-    payload.addressComponents = {
-      ...addressComponents,
-      city: deliveryToCity,
+    const payload = {
+      id: '',
+      type: actionType,
+      address: '',
+      coords: null,
+      name: '',
+      details: '',
+      comments: '',
+      contactName: '',
+      contactNumber: '',
+      city: '',
+      postCode: '',
+      countryCode: '',
     };
-  }
 
-  if (actionType === 'add') {
-    const userName = getUserName(getState());
-    const userPhone = getUserPhone(getState());
-    payload.contactName = userName;
-    payload.contactNumber = userPhone;
-    payload.address = address;
-    payload.coords = { longitude: coords.lng, latitude: coords.lat };
-    payload.addressComponents = addressComponents;
+    if (actionType === 'edit') {
+      payload.id = addressId;
+      payload.name = _get(addressDetails, 'name', '') || addressName;
+      payload.address = _get(selectedAddress, 'fullName', null) || deliveryToAddress;
+      payload.details = _get(addressDetails, 'details', '') || details;
+      payload.comments = _get(addressDetails, 'comments', '') || deliveryComments;
+      const longitude = _get(selectedAddress, 'coords.lng', 0) || _get(deliveryToLocation, 'lng', 0);
+      const latitude = _get(selectedAddress, 'coords.lat', 0) || _get(deliveryToLocation, 'lat', 0);
+      payload.coords = { longitude, latitude };
+      payload.contactName = _get(addressDetails, 'contactName', '') || username;
+      payload.contactNumber = _get(addressDetails, 'contactNumber', '') || phone;
+      payload.city = _get(selectedAddress, 'city', '') || deliveryToCity;
+      payload.postCode = _get(selectedAddress, 'postCode', '') || postCode;
+      payload.countryCode = _get(selectedAddress, 'countryCode', '') || countryCode;
+    }
+
+    if (actionType === 'add') {
+      payload.name = _get(addressDetails, 'name', '');
+      payload.address = _get(selectedAddress, 'fullName', null) || getAddressFullName(state);
+      payload.details = _get(addressDetails, 'details', '');
+      payload.comments = _get(addressDetails, 'comments', '');
+      const coords = getAddressCoords(state);
+      const longitude = _get(selectedAddress, 'coords.lng', 0) || _get(coords, 'lng', 0);
+      const latitude = _get(selectedAddress, 'coords.lat', 0) || _get(coords, 'lat', 0);
+      payload.coords = { longitude, latitude };
+      payload.contactName = _get(addressDetails, 'contactName', '') || getUserName(state);
+      payload.contactNumber = _get(addressDetails, 'contactNumber', '') || getUserPhone(state);
+      payload.city = _get(selectedAddress, 'city', '') || getAddressCity(state);
+      payload.postCode = _get(selectedAddress, 'postCode', '') || getAddressPostCode(state);
+      payload.countryCode = _get(selectedAddress, 'countryCode', '') || getAddressCountryCode(state);
+    }
+    return payload;
   }
-  return payload;
-});
+);

@@ -24,7 +24,6 @@ import {
   getServiceCharge,
   getOrderShippingType,
   getIsPayLater,
-  getLiveChatUserProfile,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -248,7 +247,7 @@ export class OrderDetails extends Component {
   }
 
   getRightContentOfHeader() {
-    const { order, t, liveChatUserProfile } = this.props;
+    const { order, t } = this.props;
     const isWebview = Utils.isWebview();
     const orderId = _get(order, 'orderId', '');
     const orderStoreName = _get(order, 'storeInfo.name', '');
@@ -270,7 +269,6 @@ export class OrderDetails extends Component {
           NativeMethods.startChat({
             orderId,
             storeName: orderStoreName,
-            ...liveChatUserProfile,
           });
         },
       };
@@ -457,7 +455,6 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       isPayLater: getIsPayLater(state),
-      liveChatUserProfile: getLiveChatUserProfile(state),
     }),
     {
       loadOrder,

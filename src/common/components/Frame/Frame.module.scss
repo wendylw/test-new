@@ -1,0 +1,56 @@
+@import "../../styles/variables.scss";
+
+// We originally want to use flex layout on the entire page, but the address bar cannot shrink in safari in this layout.
+// So we changed to normal layout which let the body scroll as normal. However, in early development stage I still want
+// to keep the possibility to use flex layout in case there's some other issue with the normal layout.
+
+// Hopefully this file will handle the difference between the two layouts using the same html structure.
+
+// But we may eventually deprecate one of them, because it's not easy to maintain.
+
+// Each layout has two major parts:
+// - mainContent: the main content of the page, normally it's scrollable.
+// - fixedContent: the part that won't scroll with the with the main content. Currently we have footer, in the future, we may
+//     also have header.
+
+.normalLayout {
+  @media (min-width: 770px) {
+    border: 1px solid #dededf;
+    min-height: 100vh;
+    width: $contentWidthInBigScreen + 2px; // 2px for the border
+    margin-left: auto;
+    margin-right: auto;
+  }
+  @apply tw-block;
+  .mainContent {
+    height: auto;
+  }
+  .fixedContent {
+    @apply tw-fixed;
+    @include fixed-width;
+    &.footer {
+      bottom: 0;
+    }
+  }
+}
+.flexLayout {
+  @apply tw-flex tw-flex-col tw-h-full;
+  .mainContent {
+    @apply tw-flex-1 tw-overflow-auto;
+  }
+  .fixedContent {
+    @apply tw-flex-none;
+  }
+}
+
+@supports ((height: constant(safe-area-inset-bottom)) or (height: env(safe-area-inset-bottom))) and
+  (-webkit-overflow-scrolling: touch) {
+  .normalLayout {
+    .fixedContent {
+      &.footer {
+        padding-bottom: constant(safe-area-inset-bottom);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    }
+  }
+}

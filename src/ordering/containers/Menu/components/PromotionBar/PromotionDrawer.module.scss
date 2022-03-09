@@ -1,0 +1,54 @@
+.promotionDrawer {
+  @apply tw-p-0;
+}
+.promotionCardWrapper {
+  @apply tw-overflow-hidden tw-m-16px;
+}
+.promotionCard {
+  @apply tw-border tw-border-solid tw-border-gray-400 tw-rounded
+    tw-py-16 sm:tw-py-16px
+    tw-relative
+    tw-flex;
+  &::before,
+  &::after {
+    @apply tw-border-gray-400 tw-absolute tw-bg-white;
+    content: "";
+    width: 16px;
+    height: 16px;
+    border-radius: 100%;
+    border-style: solid;
+    border-width: 1px;
+    left: 24px;
+    box-sizing: border-box;
+  }
+  &::before {
+    top: -8px;
+  }
+  &::after {
+    bottom: -8px;
+  }
+}
+.promotionCardLabelWrapper {
+  @apply tw-flex tw-flex-none tw-items-center tw-justify-center tw-border-gray-400;
+  border-right-style: dashed;
+  border-right-width: 1px;
+  width: 32px;
+}
+.promotionCardTextWrapper {
+  @apply tw-px-12 sm:tw-px-12px;
+}
+.promotionContentWrapper {
+  @apply tw-px-12 sm:tw-px-12px tw-flex-1;
+}
+.promotionText {
+  @apply tw-text-sm;
+  & * {
+    @apply tw-text-sm;
+  }
+}
+.promotionPrompt {
+  @apply tw-text-sm tw-block tw-mt-8px tw-text-gray-700;
+  & * {
+    @apply tw-text-sm tw-text-gray-700;
+  }
+}

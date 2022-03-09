@@ -9,6 +9,7 @@ beforeEach(() => {
 describe('utils/utils', () => {
   const {
     getQueryString,
+    getFilteredQueryString,
     isWebview,
     debounce,
     elementPartialOffsetTop,
@@ -52,6 +53,38 @@ describe('utils/utils', () => {
     // --Begin-- Refer to https://github.com/facebook/jest/issues/5124 @jackharrhy
     window.location = oldLocation;
     // ---End--- Refer to https://github.com/facebook/jest/issues/5124 @jackharrhy
+  });
+
+  it('getFilteredQueryString', () => {
+    const mockQuery =
+      '?h=U2FsdGVkX1%2FQuvwwVAwo86zaksrs1CTAp%2FtwS25fgiHhftafA8po%2Fy0SAmPH2JQc&type=delivery&source=shoppingCart';
+    const oldLocation = window.location;
+
+    delete window.location;
+    window.location = {
+      ...oldLocation,
+      search: mockQuery,
+    };
+
+    // Test no key case
+    expect(getFilteredQueryString()).toBe(mockQuery);
+    // Test nonexistent case
+    expect(getFilteredQueryString('')).toBe(mockQuery);
+    // Test 1 key case
+    expect(getFilteredQueryString('source')).toBe(
+      '?h=U2FsdGVkX1%2FQuvwwVAwo86zaksrs1CTAp%2FtwS25fgiHhftafA8po%2Fy0SAmPH2JQc&type=delivery'
+    );
+    // Test multiple key test
+    expect(getFilteredQueryString(['h', 'source'])).toBe('?type=delivery');
+    // Test use different query string
+    expect(
+      getFilteredQueryString(
+        'source',
+        '?h=U2FsdGVkX19g2yqZcB3ycUaQWivvXMyIGg7nE5XUc%2Btit3ww3UbRHImfI1koRLPb&type=dine-in&source=shoppingCart'
+      )
+    ).toBe('?h=U2FsdGVkX19g2yqZcB3ycUaQWivvXMyIGg7nE5XUc%2Btit3ww3UbRHImfI1koRLPb&type=dine-in');
+    // Reset to original state
+    window.location = oldLocation;
   });
 
   it('queryString back to normal', () => {

@@ -14,6 +14,7 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as homeActionCreators, getOneStoreInfo, getStoreHashCode } from '../../redux/modules/home';
 import Utils from '../../../utils/utils';
 import { getRemovedPickUpMerchantList, getDeliveryInfo } from '../../redux/modules/app';
+import { getIfAddressInfoExists } from '../../../redux/modules/address/selectors';
 import '../DineMethods/StoresTakingMealMethod.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
@@ -55,14 +56,13 @@ class DeliveryMethods extends Component {
   }
 
   async handleVisitStore(methodName) {
-    const { store, homeActions, deliveryInfo } = this.props;
+    const { store, homeActions, deliveryInfo, ifAddressInfoExists } = this.props;
     await homeActions.getStoreHashData(store.id);
     const { hashCode } = this.props;
     const currentMethod = METHODS_LIST.find(method => method.name === methodName);
 
     // isValid
     const { enablePreOrder } = deliveryInfo;
-    const deliveryTo = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
     if (enablePreOrder) {
       // remove delivery time write in session to prevent date inconsistence issus
       Utils.removeExpectedDeliveryTime();
@@ -75,11 +75,11 @@ class DeliveryMethods extends Component {
     }
 
     if (currentMethod.name === DELIVERY_METHOD.DELIVERY) {
-      if (store.id && deliveryTo) {
+      if (store.id && ifAddressInfoExists) {
         console.warn('storeId and deliveryTo info is enough for delivery, redirect to ordering home');
         window.location.href = `${ROUTER_PATHS.ORDERING_BASE}/?h=${hashCode || ''}&type=${methodName}`;
         return;
-      } else if (!deliveryTo) {
+      } else if (!ifAddressInfoExists) {
         const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_HOME}?h=${hashCode || ''}&type=${methodName}`);
 
         window.location.href = `${ROUTER_PATHS.ORDERING_BASE}${currentMethod.pathname}/?h=${hashCode ||
@@ -149,6 +149,7 @@ export default compose(
       removePickUpMerchantList: getRemovedPickUpMerchantList(state),
       currentStoreInfo: getOneStoreInfo(state, ownProps.store.id),
       deliveryInfo: getDeliveryInfo(state),
+      ifAddressInfoExists: getIfAddressInfoExists(state),
     }),
     dispatch => ({
       homeActions: bindActionCreators(homeActionCreators, dispatch),

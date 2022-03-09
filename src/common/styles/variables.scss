@@ -1,0 +1,10 @@
+$contentWidthInBigScreen: 412px; // not including the border
+
+@mixin fixed-width {
+  left: 0;
+  right: 0;
+  @media (min-width: 770px) {
+    left: calc(50% - ((#{$contentWidthInBigScreen}) / 2));
+    right: calc(50% - ((#{$contentWidthInBigScreen}) / 2));
+  }
+}

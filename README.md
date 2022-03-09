@@ -37,6 +37,7 @@ Front end of this project is bootstrapped by [CRA (Create React App)](https://cr
 <a name="setup"></a>
 
 ## Setup
+
 ```
 # Install npm-cli-login package on global
 npm install npm-cli-login -g
@@ -222,6 +223,16 @@ cd ./frontend && yarn && yarn chromatic --project-token=ejo2it5a6d
 <a name="analyzing-bundle-size"></a>
 
 ## Analyzing bundle size
+
+You need to comment some sentry settings on .env of frontend
+
+```shell script
+cd ./frontend
+# SENTRY_ORG=
+# SENTRY_PROJECT=
+# SENTRY_AUTH_TOKEN=
+# SENTRY_URL=
+```
 
 ```shell script
 yarn build && yarn analyze

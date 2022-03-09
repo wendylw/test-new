@@ -1,3 +1,4 @@
+import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
 import Constants from '../../../../utils/constants';
@@ -15,6 +16,9 @@ export const getTableNumber = state => state.tableSummary.order.tableId;
 export const getOrderTax = state => state.tableSummary.order.tax;
 
 export const getOrderServiceCharge = state => state.tableSummary.order.serviceCharge;
+
+export const getOrderServiceChargeRate = state =>
+  _get(state.tableSummary.order.serviceChargeInfo, 'serviceChargeRate', 0);
 
 export const getOrderTotal = state => state.tableSummary.order.total;
 
