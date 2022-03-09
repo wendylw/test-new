@@ -249,18 +249,6 @@ export const submitOrders = createAsyncThunk(
           onClose: () => window.location.reload(),
         });
       }
-      // Do not need this one, because it can click pay more than once
-      // else if (e.code === '393735') {
-      //   alert(i18next.t('SomeoneElseIsPayingDescription'), {
-      //     title: i18next.t('SomeoneElseIsPaying'),
-      //     closeButtonContent: i18next.t('BackToTableSummary'),
-      //     onClose: () =>
-      //       history.push({
-      //         pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-      //         search: window.location.search,
-      //       }),
-      //   });
-      // }
     }
   }
 );
