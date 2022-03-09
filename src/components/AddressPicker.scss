@@ -1,0 +1,21 @@
+@import "src/Variables";
+
+.address-picker {
+  &__title {
+    background-color: $gray-5;
+  }
+}
+
+.address-card {
+  &__disabled {
+    color: $gray-3;
+  }
+
+  &__book-mark {
+    padding-top: 1rem;
+  }
+
+  &__delivery-info {
+    flex: 1;
+  }
+}

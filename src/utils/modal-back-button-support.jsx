@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { Component } from 'react';
+import React, { Component, useEffect, useRef, useCallback } from 'react';
+import { useUpdateEffect } from 'react-use';
 import qs from 'qs';
 import _difference from 'lodash/difference';
 import _uniqueId from 'lodash/uniqueId';
@@ -138,6 +139,62 @@ export const withBackButtonSupport = WrappedComponent => {
   }
   WithBackButtonSupport.displayName = 'WithBackButtonSupport';
   return WithBackButtonSupport;
+};
+
+/**
+ *
+ * @param {*} visibility whether the modal is visible or not, used to determine whether to add or remove the modal id to the hash
+ * @param {*} onHistoryBackReceived called when the use presses the back button, used to notify the modal to close
+ * @param {*} onHistoryChangeCompleted called when the hash change is done (because the hash change is async)
+ * @returns
+ */
+export const useBackButtonSupport = ({
+  visibility,
+  onHistoryBackReceived,
+  onHistoryChangeCompleted,
+  disabled = false,
+}) => {
+  const modalIdRef = useRef(_uniqueId());
+  const onModalHistoryBack = useCallback(
+    e => {
+      if (disabled) return;
+      const { modalId } = e.detail;
+      if (modalId === modalIdRef.current) {
+        // const onHistoryBackReceived = this.childRef.current?.onHistoryBackReceived;
+        if (onHistoryBackReceived) {
+          const keepDefault = onHistoryBackReceived() ?? true;
+          if (keepDefault === false) {
+            e.preventDefault();
+          }
+        } else {
+          console.error(`onHistoryBackReceived is not defined`);
+        }
+      }
+    },
+    [onHistoryBackReceived, disabled]
+  );
+
+  useEffect(() => {
+    window.addEventListener('sh-modal-history-back', onModalHistoryBack);
+    return () => {
+      window.removeEventListener('sh-modal-history-back', onModalHistoryBack);
+    };
+  }, [onModalHistoryBack]);
+
+  useUpdateEffect(() => {
+    const execute = async () => {
+      if (disabled) return;
+      if (visibility) {
+        addModalIdHash(modalIdRef.current);
+      } else {
+        await removeModalIdHash(modalIdRef.current);
+      }
+      onHistoryChangeCompleted && onHistoryChangeCompleted(visibility);
+    };
+    execute();
+    // Do NOT add onHistoryChangeCompleted to dependency list, we don't want to re-run the effect when onHistoryChangeCompleted is updated.
+    // Otherwise we will get an infinite loop.
+  }, [visibility]);
 };
 
 // Currently we don't support to keep the modal open after the page is refresh,

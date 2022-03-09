@@ -13,7 +13,6 @@ import MessageModal from '../../../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import AddressChangeModal from '../../components/AddressChangeModal';
-import { getAddressList } from '../../redux/common/selectors';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -26,8 +25,9 @@ import {
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
-import { getCustomerError, actions as customerInfoActionCreators } from './redux';
-import { selectAvailableAddress, loadAddressList } from '../../redux/common/thunks';
+import { actions as customerInfoActionCreators } from './redux';
+import { getCustomerError, getShouldGoToAddNewAddressPage } from './redux/selectors';
+import { withAvailableAddressDetails } from './withAvailableAddressDetails';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
@@ -41,7 +41,7 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    const { user, deliveryDetails, appActions, selectAvailableAddress, loadAddressList } = this.props;
+    const { user, deliveryDetails, appActions } = this.props;
     const { consumerId } = user || {};
     consumerId && (await appActions.getProfileInfo(consumerId));
     const { profile } = user || {};
@@ -51,8 +51,6 @@ class CustomerInfo extends Component {
       phone: deliveryDetails.phone || profile.phone,
     });
 
-    await loadAddressList();
-    await selectAvailableAddress();
     appActions.loadShoppingCart();
   }
 
@@ -157,9 +155,9 @@ class CustomerInfo extends Component {
   };
 
   handleAddressClick = () => {
-    const { history, addressList, storeInfoForCleverTap } = this.props;
+    const { history, storeInfoForCleverTap, shouldGoToAddNewAddressPage } = this.props;
     CleverTap.pushEvent('Checkout page - click change address', storeInfoForCleverTap);
-    if (addressList.length === 0) {
+    if (shouldGoToAddNewAddressPage) {
       history.push({
         pathname: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
         search: window.location.search,
@@ -191,7 +189,7 @@ class CustomerInfo extends Component {
     return (
       <li>
         <h4 className="padding-top-bottom-small padding-left-right-normal text-line-height-higher text-weight-bolder text-capitalize">
-          {isDeliveryType ? t('DeliveryTo') : t('PickupOn')}
+          {isDeliveryType ? t('DeliverTo') : t('PickupOn')}
         </h4>
         {/* Address Info of Delivery or Pickup */}
         <div className="ordering-customer__detail padding-top-bottom-normal padding-left-right-smaller">
@@ -220,13 +218,9 @@ class CustomerInfo extends Component {
                     </React.Fragment>
                   ) : (
                     <React.Fragment>
-                      <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder">
-                        {t('DeliveryLocationLabel')}
-                      </h5>
-                      <p className="padding-top-bottom-smaller text-size-big text-weight-bolder text-capitalize">
-                        {' '}
+                      <h5 className="ordering-customer__title padding-top-bottom-smaller text-weight-bolder text-size-big text-capitalize">
                         {t('DeliveryLocationDescription')}
-                      </p>
+                      </h5>
                     </React.Fragment>
                   )}
                 </button>
@@ -452,6 +446,7 @@ CustomerInfo.displayName = 'CustomerInfo';
 
 export default compose(
   withTranslation(['OrderingCustomer']),
+  withAvailableAddressDetails(),
   connect(
     state => ({
       user: getUser(state),
@@ -464,12 +459,10 @@ export default compose(
       customerError: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
-      addressList: getAddressList(state),
+      shouldGoToAddNewAddressPage: getShouldGoToAddNewAddressPage(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      selectAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
-      loadAddressList: bindActionCreators(loadAddressList, dispatch),
       customerInfoActions: bindActionCreators(customerInfoActionCreators, dispatch),
     })
   )

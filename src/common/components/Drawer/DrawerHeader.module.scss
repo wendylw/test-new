@@ -1,0 +1,15 @@
+.header {
+  @apply tw-flex tw-relative tw-justify-center tw-items-center tw-border-b-gray-200 tw-font-bold;
+  min-height: 56px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+.buttonContainer {
+  @apply tw-absolute tw-top-0 tw-bottom-0 tw-flex tw-items-center tw-px-16 sm:tw-px-16px;
+}
+.left {
+  @apply tw-left-0;
+}
+.right {
+  @apply tw-right-0;
+}

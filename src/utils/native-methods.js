@@ -170,6 +170,34 @@ export const getAddress = () => {
   return dsBridgeCall(data);
 };
 
+export const setAddress = addressInfo => {
+  const shortName = _get(addressInfo, 'shortName', '');
+  const fullName = _get(addressInfo, 'fullName', '');
+  const lat = _get(addressInfo, 'coords.lat', 0) || 0;
+  const lng = _get(addressInfo, 'coords.lng', 0) || 0;
+  const city = _get(addressInfo, 'city', '');
+  const postCode = _get(addressInfo, 'postCode', '');
+  const countryCode = _get(addressInfo, 'countryCode', '');
+  const savedAddressId = _get(addressInfo, 'savedAddressId', '');
+
+  const data = {
+    method: 'beepModule-setAddress',
+    params: {
+      address: fullName,
+      addressName: shortName,
+      lat,
+      lng,
+      countryCode,
+      savedAddressId,
+      postCode,
+      city,
+    },
+    mode: MODE.SYNC,
+  };
+
+  return dsBridgeCall(data);
+};
+
 export const closeWebView = () => {
   const data = {
     method: 'routerModule-closeWebView',

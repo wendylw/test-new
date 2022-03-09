@@ -321,7 +321,7 @@ export const filterDeliveryAvailableStores = (stores, date, utcOffset) => {
  * @param {*} stores
  * @param {*} param1
  */
-export const findNearestAvailableStore = (stores, { coords: { lat, lng }, currentDate, utcOffset }) => {
+export const findNearestAvailableStore = (stores, { coords: { lat = 0, lng = 0 }, currentDate, utcOffset }) => {
   let nearlyStore = {
     distance: Infinity,
     store: null,

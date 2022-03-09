@@ -35,6 +35,9 @@ import {
   getStoreInfoForCleverTap,
   getStoreHashCode,
 } from '../../redux/modules/app';
+import { getAddressName, getAddressCoords } from '../../../redux/modules/address/selectors';
+import { setAddressInfo } from '../../../redux/modules/address/thunks';
+import { withAddressInfo } from '../Location/withAddressInfo';
 import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
 import loggly from '../../../utils/monitoring/loggly';
@@ -47,11 +50,18 @@ class LocationAndDate extends Component {
   footerEl = null;
   resetWhenWillUnmount = false;
 
-  componentDidMount = async () => {
-    const { actions } = this.props;
+  state = {
+    selectedAddress: null,
+  };
 
-    const deliveryAddressUpdate = Utils.getSessionVariable('deliveryAddressUpdate');
-    const deliveryAddress = Utils.getDeliveryAddress();
+  componentDidMount = async () => {
+    const { actions, location, addressName, addressCoords } = this.props;
+    const { selectedAddress = null } = location.state || {};
+
+    this.setState({ selectedAddress });
+
+    const selectedAddressName = _get(selectedAddress, 'shortName', '') || _get(selectedAddress, 'fullName', '');
+    const selectedAddressCoords = _get(selectedAddress, 'coords', null);
     const deliveryType = (this.query.type || '').toLowerCase();
     this.ensureDeliveryType(deliveryType);
     const expectedDeliveryDate = Utils.getExpectedDeliveryDateFromSession();
@@ -59,29 +69,24 @@ class LocationAndDate extends Component {
     const expectedDay = _get(expectedDeliveryDate, 'date.date', null);
     const expectedFromTime = _get(expectedDeliveryDate, 'hour.from', null);
     // if delivery address updated from location page, should trigger `initial action` find nearest store
-    const storeId = deliveryAddressUpdate && deliveryAddress.coords ? null : config.storeId;
-
-    if (deliveryType === DELIVERY_METHOD.DELIVERY) {
-      CleverTap.pushEvent(
-        `Shipping Details${
-          _get(deliveryAddress, 'address', undefined) ? '' : ' (missing delivery address)'
-        } - View Page`
-      );
-    }
+    const storeId = selectedAddressCoords ? null : config.storeId;
 
     await actions.initial({
       currentDate: new Date(),
       deliveryType: this.props.deliveryType || deliveryType,
       storeId: this.query.storeid || storeId,
-      deliveryAddress: deliveryAddress.address,
-      deliveryCoords: deliveryAddress.coords,
+      deliveryAddress: selectedAddressName || addressName,
+      deliveryCoords: selectedAddressCoords ?? addressCoords,
       expectedDay: this.props.selectedDay || expectedDay,
       expectedFromTime: this.props.selectedFromTime || expectedFromTime,
-      originalDeliveryType:
-        this.query.storeid || deliveryAddressUpdate ? this.props.originalDeliveryType : deliveryType,
+      originalDeliveryType: this.props.originalDeliveryType ?? deliveryType,
     });
 
-    Utils.removeSessionVariable('deliveryAddressUpdate');
+    if (deliveryType === DELIVERY_METHOD.DELIVERY) {
+      CleverTap.pushEvent(
+        `Shipping Details${this.props.deliveryAddress ? '' : ' (missing delivery address)'} - View Page`
+      );
+    }
 
     if (!this.props.storeId && deliveryType === DELIVERY_METHOD.PICKUP) {
       this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || config.storeId);
@@ -233,7 +238,9 @@ class LocationAndDate extends Component {
       deliveryType,
       location,
       history,
+      setAddressInfo,
     } = this.props;
+    const { selectedAddress } = this.state;
     const expectedDate = {
       date: selectedOrderDate.date.toISOString(),
       isOpen: selectedOrderDate.isOpen,
@@ -254,6 +261,10 @@ class LocationAndDate extends Component {
     });
     // reset redux store data when will unmount
     this.resetWhenWillUnmount = true;
+
+    if (selectedAddress) {
+      await setAddressInfo(selectedAddress);
+    }
 
     await appActions.getStoreHashData(storeId);
     const h = decodeURIComponent(this.props.storeHashCode);
@@ -352,9 +363,8 @@ class LocationAndDate extends Component {
   };
 
   gotoLocationSearch = () => {
-    const { deliveryType, history, location } = this.props;
+    const { deliveryType, history } = this.props;
     const { pathname } = history.location;
-    const from = _get(location, 'state.from', null);
 
     const callbackQueryString = qs.stringify(
       {
@@ -371,10 +381,10 @@ class LocationAndDate extends Component {
       callbackUrl: `${pathname}${callbackQueryString}`,
     };
 
-    history.push({
+    history.replace({
       pathname: ROUTER_PATHS.ORDERING_LOCATION,
       search: qs.stringify(queryParams, { addQueryPrefix: true }),
-      state: from ? { from } : null,
+      state: { updateAddressEnabled: false },
     });
   };
 
@@ -442,7 +452,7 @@ class LocationAndDate extends Component {
           {!deliveryAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
           <p
             className={`location-date__input form__input flex flex-middle text-size-big text-line-height-base text-omit__single-line ${
-              !deliveryAddress ? '' : 'padding-normal'
+              deliveryAddress ? 'padding-normal' : ''
             }`}
           >
             {deliveryAddress || t('WhereToDeliverFood')}
@@ -722,6 +732,7 @@ class LocationAndDate extends Component {
 LocationAndDate.displayName = 'LocationAndDate';
 
 export default compose(
+  withAddressInfo(),
   withTranslation(),
   connect(
     state => ({
@@ -741,9 +752,12 @@ export default compose(
       showLoading: isShowLoading(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       originalDeliveryType: getOriginalDeliveryType(state),
+      addressName: getAddressName(state),
+      addressCoords: getAddressCoords(state),
     }),
 
     dispatch => ({
+      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
       actions: bindActionCreators(locationAndDateActionCreator, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })

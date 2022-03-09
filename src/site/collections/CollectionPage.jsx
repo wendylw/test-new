@@ -9,16 +9,19 @@ import { collectionsActions, getPageInfo, getStoreList, getShippingType } from '
 import { submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
-import { appActionCreators, getCurrentPlaceInfo } from '../redux/modules/app';
+import { appActionCreators } from '../redux/modules/app';
+import { getAddressInfo, getAddressCoords } from '../../redux/modules/address/selectors';
+import { getAddressInfo as fetchAddressInfo } from '../../redux/modules/address/thunks';
 import '../home/index.scss';
 import './CollectionPage.scss';
-import withPlaceInfo from '../ordering/containers/Location/withPlaceInfo';
+import { withAddressInfo } from '../ordering/containers/Location/withAddressInfo';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 import {
   collectionCardActionCreators,
   getCurrentCollection,
   getCurrentCollectionStatus,
 } from '../redux/modules/entities/storeCollections';
+import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
 import ErrorComponent from '../../components/Error';
@@ -31,23 +34,62 @@ class CollectionPage extends React.Component {
   sectionRef = React.createRef();
 
   componentDidMount = async () => {
-    await this.props.collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
+    const { collectionCardActions, fetchAddressInfo } = this.props;
+    await collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
+
+    const hasReduxCache = checkStateRestoreStatus();
+
+    if (hasReduxCache) {
+      // Silently fetch address Info without blocking current process
+      fetchAddressInfo();
+    }
+
     if (!this.props.currentCollection) {
       return;
     }
 
     const { currentCollection } = this.props;
-    const { shippingType, urlPath, name, beepCollectionId } = currentCollection;
-    if (!checkStateRestoreStatus()) {
-      const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
-      this.props.collectionsActions.setShippingType(type);
-      this.props.collectionsActions.resetPageInfo(type);
+    const { urlPath, name, beepCollectionId } = currentCollection;
+    if (!hasReduxCache) {
+      this.resetCollectionData();
     }
     this.props.collectionsActions.getStoreList(urlPath);
     CleverTap.pushEvent('Collection Page - View Collection Page', {
       'collection name': name,
       'collection id': beepCollectionId,
     });
+  };
+
+  componentDidUpdate = async prevProps => {
+    const { addressCoords: prevAddressCoords } = prevProps;
+    const { addressCoords: currAddressCoords } = this.props;
+
+    if (!isSameAddressCoords(prevAddressCoords, currAddressCoords)) {
+      scrollTopPosition(this.sectionRef.current);
+      await this.reloadStoreListIfNeeded();
+    }
+  };
+
+  resetCollectionData = () => {
+    const { currentCollection, collectionsActions } = this.props;
+    const { shippingType } = currentCollection;
+    const type = shippingType.length === 1 ? shippingType[0].toLowerCase() : 'delivery';
+    collectionsActions.setShippingType(type);
+    collectionsActions.resetPageInfo(type);
+  };
+
+  reloadStoreListIfNeeded = async () => {
+    const { match, collectionsActions, collectionCardActions } = this.props;
+
+    await collectionCardActions.getCurrentCollection(match.params.urlPath);
+
+    const { currentCollection } = this.props;
+
+    if (!currentCollection) return;
+
+    const { urlPath } = currentCollection;
+
+    collectionsActions.getStoreList(urlPath);
   };
 
   backToPreviousPage = () => {
@@ -66,11 +108,11 @@ class CollectionPage extends React.Component {
   };
 
   backLeftPosition = async store => {
-    const { shippingType, collectionsActions, currentPlaceInfo } = this.props;
+    const { shippingType, collectionsActions, addressInfo } = this.props;
     collectionsActions.setPageInfo({ shippingType: shippingType, scrollTop: this.scrollTop });
     this.backupState();
     await submitStoreMenu({
-      deliveryAddress: currentPlaceInfo,
+      deliveryAddress: addressInfo,
       store: store,
       source: document.location.href,
       shippingType,
@@ -210,7 +252,7 @@ class CollectionPage extends React.Component {
 CollectionPage.displayName = 'CollectionPage';
 
 export default compose(
-  withPlaceInfo({ fromIp: true }),
+  withAddressInfo({ fromIp: true }),
   withTranslation('SiteHome'),
   connect(
     state => ({
@@ -220,9 +262,11 @@ export default compose(
       pageInfo: getPageInfo(state),
       storeLinkInfo: getStoreLinkInfo(state),
       shippingType: getShippingType(state),
-      currentPlaceInfo: getCurrentPlaceInfo(state),
+      addressInfo: getAddressInfo(state),
+      addressCoords: getAddressCoords(state),
     }),
     dispatch => ({
+      fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       collectionsActions: bindActionCreators(collectionsActions, dispatch),

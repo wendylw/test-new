@@ -1,4 +1,4 @@
-const { override, addWebpackPlugin } = require('customize-cra');
+const { override, addWebpackPlugin, addPostcssPlugins } = require('customize-cra');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
 const path = require('path');
@@ -26,7 +26,8 @@ const customization = override(
           path.join(process.env.PUBLIC_URL ? new URL(process.env.PUBLIC_URL).pathname : '', 'static/js'),
       })
     )
-  )
+  ),
+  addPostcssPlugins([require('tailwindcss')(), require('autoprefixer')()])
 );
 
 // refer to docs on https://github.com/timarney/react-app-rewired

@@ -60,6 +60,7 @@ class PayFirst extends Component {
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
+    this.addResizeEventHandler();
 
     CleverTap.pushEvent('Cart page - view cart page', storeInfoForCleverTap);
   }
@@ -68,6 +69,10 @@ class PayFirst extends Component {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
   }
+
+  componentWillUnmount = () => {
+    this.removeResizeEventHandler();
+  };
 
   handleClickContinue = async () => {
     const { user, history, appActions, loadStockStatus } = this.props;
@@ -164,6 +169,19 @@ class PayFirst extends Component {
   handleClearAdditionalComments = () => {
     Utils.removeSessionVariable('additionalComments');
     this.setState({ additionalComments: null });
+  };
+
+  handleResizeEvent = () => {
+    this.setCartContainerHeight();
+    this.setProductsContainerHeight();
+  };
+
+  addResizeEventHandler = () => {
+    window.addEventListener('resize', this.handleResizeEvent);
+  };
+
+  removeResizeEventHandler = () => {
+    window.removeEventListener('resize', this.handleResizeEvent);
   };
 
   setCartContainerHeight = preContainerHeight => {

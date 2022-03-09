@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import SwiperCore, { Autoplay } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { withRouter } from 'react-router-dom';
@@ -12,14 +14,15 @@ import './index.scss';
 import { submitStoreMenu } from '../../utils';
 import Tag from '../../../../components/Tag';
 import CleverTap from '../../../../utils/clevertap';
+import { getAddressInfo } from '../../../../redux/modules/address/selectors';
 
 SwiperCore.use([Autoplay]);
 
 class Carousel extends Component {
   handleStoreClicked = async (store, shippingType) => {
-    const { currentPlaceInfo } = this.props;
+    const { addressInfo } = this.props;
     await submitStoreMenu({
-      deliveryAddress: currentPlaceInfo,
+      deliveryAddress: addressInfo,
       store: store,
       source: document.location.href,
       shippingType: shippingType.toLowerCase(),
@@ -198,4 +201,7 @@ class Carousel extends Component {
 }
 Carousel.displayName = 'Carousel';
 
-export default withTranslation(['SiteHome'])(withRouter(Carousel));
+export default compose(
+  withTranslation(['SiteHome']),
+  connect(state => ({ addressInfo: getAddressInfo(state) }))
+)(withRouter(Carousel));

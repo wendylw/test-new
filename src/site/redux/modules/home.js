@@ -1,10 +1,15 @@
 import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
-import { getCurrentPlaceInfo } from './app';
+import { getIsTNGMiniProgram } from './app';
 import { getStoreById, storesActionCreators } from './entities/stores';
-import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
+import {
+  getAddressCoords,
+  getAddressCountryCode,
+  getIsMalaysianAddress,
+} from '../../../redux/modules/address/selectors';
 
 const initialState = {
   storeLinkInfo: {
@@ -88,9 +93,8 @@ const fetchStoreUrlHash = (storeId, context) => ({
 });
 
 const fetchStoreList = () => (dispatch, getState) => {
-  const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
-  const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
-  const { coords } = currentPlaceInfo;
+  const countryCode = getAddressCountryCode(getState());
+  const coords = getAddressCoords(getState()) || { lat: 0, lng: 0 };
   const { page, pageSize } = getPaginationInfo(getState());
   return dispatch({
     types: [
@@ -197,3 +201,9 @@ export default reducer;
 export const getPaginationInfo = state => state.home.paginationInfo;
 export const getAllCurrentStores = state => state.home.storeIds.map(storeId => getStoreById(state, storeId));
 export const getStoreLinkInfo = state => state.home.storeLinkInfo;
+
+export const getShouldShowCampaignBar = createSelector(
+  getIsMalaysianAddress,
+  getIsTNGMiniProgram,
+  (isMalaysianAddress, isTNGMiniProgram) => isMalaysianAddress && !isTNGMiniProgram
+);
