@@ -27,6 +27,18 @@ import loggly from '../../../utils/monitoring/loggly';
 const { ROUTER_PATHS } = Constants;
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    const source = Utils.getQueryString('source');
+
+    if (source === 'SharedLink') {
+      Utils.setSessionVariable('BeepOrderingSource', 'SharedLink');
+    } else {
+      Utils.saveSourceUrlToSessionStorage(source);
+    }
+  }
+
   state = {};
 
   initAddressInfo = async () => {
@@ -88,11 +100,6 @@ class App extends Component {
     const isMerchantInfPage = pathname.includes(`${ROUTER_PATHS.MERCHANT_INFO}`);
     const isReportIssuePage = pathname.includes(`${ROUTER_PATHS.REPORT_DRIVER}`);
     const browser = Utils.getUserAgentInfo().browser;
-    const source = Utils.getQueryString('source');
-
-    if (source) {
-      Utils.saveSourceUrlToSessionStorage(source);
-    }
 
     if (
       !(isThankYouPage || isOrderDetailPage || isMerchantInfPage || isReportIssuePage) &&
