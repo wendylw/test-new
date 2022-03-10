@@ -53,9 +53,6 @@ const dsBridgeSyncCall = (method, params) => {
 
     loggly.error(`dsBridge-methods.${method}`, errorData);
 
-    // eslint-disable-next-line no-console
-    console.error(error);
-
     throw error;
   }
 };
@@ -84,9 +81,6 @@ const dsBridgeAsyncCall = (method, params) =>
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
     loggly.error(`dsBridge-methods.${method}`, errorData);
-
-    // eslint-disable-next-line no-console
-    console.error(error);
 
     throw error;
   });
