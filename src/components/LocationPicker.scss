@@ -1,12 +1,8 @@
 @import "../Variables.scss";
 
 .location-picker {
-  &__search-box {
-    border-bottom: 8px solid $gray-5;
-  }
-
-  &__input {
-    height: 54px;
+  &__container {
+    border-top: 8px solid $gray-5;
   }
 
   &__detected-position {

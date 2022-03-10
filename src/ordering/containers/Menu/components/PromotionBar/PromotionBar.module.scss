@@ -1,0 +1,24 @@
+.promotionBar {
+  @apply tw-mx-16 sm:tw-mx-16px tw-mt-24 sm:tw-mt-24px tw-p-16 sm:tw-p-16px
+    tw-border tw-border-gray-400 tw-border-solid tw-rounded
+    tw-flex;
+}
+
+.promotionEntry {
+  @apply tw-my-8 sm:tw-my-8px first:tw-mt-0 last:tw-mb-0 tw-flex;
+}
+
+.labelContainer {
+  @apply tw-flex-none tw-flex tw-items-center;
+}
+
+.textContainer {
+  @apply tw-flex-1;
+  & * {
+    @apply tw-text-sm;
+  }
+}
+
+.arrowWrapper {
+  @apply tw-flex-none tw-flex tw-items-center tw-ml-16 sm:tw-ml-16px;
+}

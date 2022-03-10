@@ -35,28 +35,22 @@ class AddressDetail extends Component {
     hasAnyChanges: false,
   };
 
-  getShippingType() {
-    const { history } = this.props;
-    const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
-
-    return type;
-  }
-
   componentDidMount = async () => {
     const { init, location } = this.props;
-    await init({ actionType: location.state?.type });
+    const { type: actionType, selectedAddress } = location.state || {};
+    await init({ actionType, selectedAddress });
   };
 
   handleClickBack = () => {
     const { history, addressInfo, customerActions } = this.props;
-    const { type } = addressInfo || {};
-    const pathname = type === actions.ADD ? '/customer/addressList' : '/customer';
+    const { type: actionType } = addressInfo || {};
+    const pathname = actionType === actions.ADD ? '/customer/addressList' : '/customer';
 
     CleverTap.pushEvent('Address details - click back arrow');
     customerActions.removeAddressInfo();
     history.push({
       pathname,
-      search: window.location.search,
+      search: Utils.getFilteredQueryString('callbackUrl'),
     });
   };
 
@@ -105,13 +99,33 @@ class AddressDetail extends Component {
 
   handleAddressDetailClick = () => {
     const { history, location } = this.props;
-    const { search } = location;
+    const { pathname, search } = location;
+    const { type: actionType } = location.state || {};
+    const callbackPayload = { type: actionType };
+    const { ROUTER_PATHS } = Constants;
+    const { type, h } = qs.parse(search, { ignoreQueryPrefix: true });
+
+    const callbackQueryString = qs.stringify(
+      {
+        type,
+        h,
+        callbackUrl: `${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_DETAIL}`,
+      },
+      { addQueryPrefix: true }
+    );
+
+    const queryParams = {
+      type,
+      h,
+      callbackUrl: `${pathname}${callbackQueryString}`,
+    };
 
     CleverTap.pushEvent('Address details - click location row');
 
-    history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_LOCATION,
-      search,
+    history.replace({
+      pathname: ROUTER_PATHS.ORDERING_LOCATION,
+      search: qs.stringify(queryParams, { addQueryPrefix: true }),
+      state: { addressPickerAllowed: false, updateAddressEnabled: false, callbackPayload },
     });
   };
 
@@ -119,20 +133,19 @@ class AddressDetail extends Component {
     const { history, user, addressInfo, customerActions, appActions } = this.props;
     const {
       id,
-      type,
+      type: actionType,
       name,
       address,
       details,
       comments,
       coords,
-      addressComponents,
+      city,
+      postCode,
+      countryCode,
       contactName,
       contactNumber,
     } = addressInfo;
     const { consumerId } = user || {};
-    const postCode = _get(addressComponents, 'postCode', '');
-    const city = _get(addressComponents, 'city', '');
-    const countryCode = _get(addressComponents, 'countryCode', '');
 
     const data = {
       contactName: _trim(contactName),
@@ -149,11 +162,11 @@ class AddressDetail extends Component {
 
     let requestUrl;
     let response;
-    if (type === actions.ADD) {
+    if (actionType === actions.ADD) {
       requestUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
       response = await post(requestUrl.url, data);
     }
-    if (type === actions.EDIT) {
+    if (actionType === actions.EDIT) {
       requestUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, id);
       response = await put(requestUrl.url, data);
     }
@@ -169,21 +182,17 @@ class AddressDetail extends Component {
       deliveryToLocation: _get(response, 'location', coords),
       deliveryToCity: _get(response, 'city', city),
       postCode: _get(response, 'postCode', postCode),
+      countryCode: _get(response, 'countryCode', countryCode),
       username: _get(response, 'contactName', contactName),
       phone: _get(response, 'contactNumber', contactNumber),
     });
 
     customerActions.removeAddressInfo();
 
-    if (Utils.hasNativeSavedAddress()) {
-      const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
-      sessionStorage.setItem('deliveryAddress', JSON.stringify({ ...deliveryAddress, addressName: savedAddressName }));
-    }
-
     if (response) {
       history.push({
         pathname: '/customer',
-        search: window.location.search,
+        search: Utils.getFilteredQueryString('callbackUrl'),
       });
     }
   };
@@ -207,7 +216,7 @@ class AddressDetail extends Component {
           className="flex-middle"
           contentClassName="flex-middle"
           isPage={true}
-          title={type === actions.EDIT ? t('DeliveryTo') : t('AddNewAddress')}
+          title={type === actions.EDIT ? t('EditAddress') : t('AddNewAddress')}
           navFunc={this.handleClickBack.bind(this)}
         />
         <section

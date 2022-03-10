@@ -1,0 +1,26 @@
+.MenuHeader {
+  &__RightPlaceholder {
+    @apply tw-pr-24 sm:tw-pr-24px;
+  }
+}
+
+.MenuHeaderLogoContainer {
+  @apply tw-flex-shrink-0 tw-p-16 sm:tw-p-16px tw-w-3/10;
+
+  min-width: 116px;
+  max-width: 130px;
+}
+
+.MenuHeaderLogo {
+  width: 100%;
+}
+
+.MenuHeaderButton {
+  &__default:global(.type-text) {
+    @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-border-0 tw-text-black hover:tw-text-black active:tw-text-gray focus:tw-text-black focus:hover:tw-text-black  focus:active:tw-text-gray;
+  }
+
+  &__danger:global(.type-text-danger) {
+    @apply tw-p-16 sm:tw-p-16px tw-border-0;
+  }
+}

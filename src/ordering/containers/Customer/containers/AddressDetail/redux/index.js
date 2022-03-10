@@ -11,11 +11,10 @@ const initialState = {
   address: '',
   details: '',
   comments: '',
-  coords: {
-    longitude: 0,
-    latitude: 0,
-  },
-  addressComponents: {},
+  coords: null,
+  city: '',
+  postCode: '',
+  countryCode: '',
   contactNumber: '',
   contactName: '',
   contactNumberValidStatus: {
@@ -62,7 +61,9 @@ export const { actions, reducer } = createSlice({
       state.details = payload.details;
       state.comments = payload.comments;
       state.coords = payload.coords;
-      state.addressComponents = payload.addressComponents;
+      state.city = payload.city;
+      state.postCode = payload.postCode;
+      state.countryCode = payload.countryCode;
       state.contactName = payload.contactName;
     },
   },

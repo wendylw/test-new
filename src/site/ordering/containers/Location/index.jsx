@@ -1,13 +1,18 @@
 import React from 'react';
-import LocationPicker, {
-  setHistoricalDeliveryAddresses,
-  tryGetDeviceCoordinates,
-} from '../../../../components/LocationPicker';
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
+import { tryGetDeviceCoordinates } from '../../../../components/LocationPicker';
 import { withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../../../components/Icons';
+import { getAddressList } from '../../../redux/modules/addressList/selectors';
+import { getUserIsLogin } from '../../../redux/modules/app';
+import { loadAddressList } from '../../../redux/modules/addressList/thunks';
+import { setAddressInfo } from '../../../../redux/modules/address/thunks';
 import { defaultLocations, getDefaultCoords } from './utils';
+import AddressSelector from '../../../../containers/AddressSelector';
 import CleverTap from '../../../../utils/clevertap';
 import loggly from '../../../../utils/monitoring/loggly';
+import './index.scss';
 
 class Location extends React.Component {
   state = {
@@ -16,7 +21,8 @@ class Location extends React.Component {
   };
 
   componentDidMount = async () => {
-    const { state = {} } = this.props.location;
+    const { location, hasUserLoggedIn, loadAddressList } = this.props;
+    const { state = {} } = location;
     const { coords } = state;
 
     if (coords && coords.lng && coords.lat) {
@@ -50,24 +56,35 @@ class Location extends React.Component {
         throw e;
       }
     }
+
+    if (hasUserLoggedIn) {
+      await loadAddressList();
+    }
   };
 
-  backToPreviousPage = data => {
+  componentDidUpdate = async prevProps => {
+    const { hasUserLoggedIn: prevHasUserLoggedIn } = prevProps;
+    const { hasUserLoggedIn: currHasUserLoggedIn, loadAddressList } = this.props;
+
+    if (!prevHasUserLoggedIn && currHasUserLoggedIn) {
+      await loadAddressList();
+    }
+  };
+
+  backToPreviousPage = () => {
     const { history, location } = this.props;
     const pathname = (location.state && location.state.from && location.state.from.pathname) || '/home';
 
     history.push({
       pathname,
-      state: {
-        from: location,
-        data,
-      },
+      state: { from: location },
     });
   };
 
-  handleMapSelected = async placeInfo => {
-    await setHistoricalDeliveryAddresses(placeInfo);
-    this.backToPreviousPage({ placeInfo });
+  handleMapSelected = async addressInfo => {
+    const { setAddressInfo } = this.props;
+    await setAddressInfo(addressInfo);
+    this.backToPreviousPage();
   };
 
   handleBackClicked = () => {
@@ -76,14 +93,18 @@ class Location extends React.Component {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, addressList, hasUserLoggedIn } = this.props;
+    const { status, origin } = this.state;
 
-    if (this.state.status !== 'fetch_location_failed' && !this.state.origin) {
+    if (status !== 'fetch_location_failed' && !origin) {
       return <div>loading..</div>;
     }
 
     return (
-      <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.location.container">
+      <main
+        className="fixed-wrapper fixed-wrapper__main flex flex-column site-location__wrapper"
+        data-heap-name="site.location.container"
+      >
         <header className="header flex flex-space-between flex-middle sticky-wrapper">
           <div>
             <IconLeftArrow
@@ -96,8 +117,13 @@ class Location extends React.Component {
             </h2>
           </div>
         </header>
-        {this.state.origin ? (
-          <LocationPicker mode="ORIGIN_DEVICE" origin={this.state.origin} onSelect={this.handleMapSelected} />
+        {origin ? (
+          <AddressSelector
+            placeInfo={{ origin }}
+            addressList={addressList}
+            addressPickerEnabled={hasUserLoggedIn}
+            onSelect={this.handleMapSelected}
+          />
         ) : null}
       </main>
     );
@@ -105,4 +131,16 @@ class Location extends React.Component {
 }
 Location.displayName = 'Location';
 
-export default withTranslation(['OrderingDelivery'])(Location);
+export default compose(
+  withTranslation(['OrderingDelivery']),
+  connect(
+    state => ({
+      addressList: getAddressList(state),
+      hasUserLoggedIn: getUserIsLogin(state),
+    }),
+    dispatch => ({
+      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
+      loadAddressList: bindActionCreators(loadAddressList, dispatch),
+    })
+  )
+)(Location);

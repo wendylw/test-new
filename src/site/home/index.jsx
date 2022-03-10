@@ -7,7 +7,6 @@ import DeliverToBar from '../../components/DeliverToBar';
 import { IconSearch, IconScanner, IconLocation } from '../../components/Icons';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
-import { getCountryCodeByPlaceInfo } from '../../utils/geoUtils';
 import CleverTap from '../../utils/clevertap';
 import Banner from '../components/Banner';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
@@ -18,25 +17,40 @@ import {
   getBannerCollections,
   getCarouselCollections,
 } from '../redux/modules/entities/storeCollections';
-import { appActionCreators, getCurrentPlaceInfo, getCurrentPlaceId } from '../redux/modules/app';
-import { getAllCurrentStores, getPaginationInfo, getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
+import { appActionCreators } from '../redux/modules/app';
+import {
+  getAllCurrentStores,
+  getPaginationInfo,
+  getStoreLinkInfo,
+  homeActionCreators,
+  getShouldShowCampaignBar,
+} from '../redux/modules/home';
 import CollectionCard from './components/CollectionCard';
 import StoreList from './components/StoreList';
 // import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
+import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import { checkStateRestoreStatus } from '../redux/modules/index';
 import Banners from './components/Banners';
 import Carousel from './components/Carousel';
 import BeepAppLink from './containers/CampaignBar/components/images/beep-app-link.jpg';
 import DevToolsTrigger from '../../components/DevToolsTrigger';
 import Utils from '../../utils/utils';
+import {
+  getAddressInfo as getAddress,
+  getAddressId,
+  getAddressName,
+  getAddressCoords,
+  getIfAddressInfoExists,
+} from '../../redux/modules/address/selectors';
+import { getAddressInfo, setAddressInfo } from '../../redux/modules/address/thunks';
+import { ADDRESS_INFO_SOURCE_TYPE } from '../../redux/modules/address/constants';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
-const isCampaignActive = true; // feature switch
 
 class Home extends React.Component {
-  static lastUsedPlaceId = null;
+  static lastUsedAddressCoords = null;
 
   sectionRef = React.createRef();
   scrollTop = 0;
@@ -56,53 +70,100 @@ class Home extends React.Component {
 
   componentDidMount = async () => {
     if (checkStateRestoreStatus()) {
+      const { getAddressInfo, addressCoords } = this.props;
+      Home.lastUsedAddressCoords = addressCoords;
+      getAddressInfo();
       return;
     }
-    const { location } = this.props;
-    const { placeInfo, source } = await getPlaceInfo({ location, fromDevice: Utils.isTNGMiniProgram() });
 
-    // if no placeInfo at all
-    if (!placeInfo) {
+    const source = await this.loadAddressInfo();
+
+    // if no address info at all
+    if (!this.props.ifAddressInfoExists) {
       return this.gotoLocationPage();
     }
 
     // placeInfo ok
-    this.props.appActions.setCurrentPlaceInfo(placeInfo, source);
-
     this.reloadStoreListIfNecessary();
 
-    if (source === 'ip') {
-      this.getPlaceInfoByDevice();
-    }
+    await this.reloadAddressInfoByDeviceIfNeeded(source);
 
     CleverTap.pushEvent('Home Page - view home page');
   };
 
   componentDidUpdate(prevProps) {
-    if (this.props.currentPlaceId !== prevProps.currentPlaceId) {
+    const { addressCoords: prevAddressCoords } = prevProps;
+    const { addressCoords: currAddressCoords } = this.props;
+
+    if (!isSameAddressCoords(prevAddressCoords, currAddressCoords)) {
+      scrollTopPosition(this.sectionRef.current);
       this.reloadStoreListIfNecessary();
     }
   }
 
-  async getPlaceInfoByDevice() {
+  loadAddressInfo = async () => {
+    const { FRONTEND_CACHE, BACKEND_CACHE } = ADDRESS_INFO_SOURCE_TYPE;
+    const { getAddressInfo } = this.props;
+
+    if (this.props.ifAddressInfoExists) return FRONTEND_CACHE;
+
+    // Get address from Redis
+    await getAddressInfo();
+
+    if (this.props.ifAddressInfoExists) return BACKEND_CACHE;
+
+    // Get address from ip (or device for TNG Mini Program)
+    const { placeInfo, source } = await getPlaceInfo({ fromDevice: Utils.isTNGMiniProgram() });
+
+    const hasAddressInfo = !!placeInfo;
+    if (hasAddressInfo) await this.updateAddressInfo(placeInfo);
+
+    return source;
+  };
+
+  reloadAddressInfoByDeviceIfNeeded = async source => {
+    if (source !== ADDRESS_INFO_SOURCE_TYPE.IP) return;
+
     try {
       const placeInfo = await getPlaceInfoByDeviceByAskPermission();
-      if (placeInfo) {
-        this.props.appActions.setCurrentPlaceInfo(placeInfo, 'device');
-      }
+      if (placeInfo) await this.updateAddressInfo(placeInfo);
     } catch (e) {
       console.error('[Home] [didMount] error=%s', e);
     }
-  }
+  };
+
+  updateAddressInfo = async placeInfo => {
+    const { setAddressInfo } = this.props;
+    const {
+      placeId,
+      name: shortName,
+      coords,
+      address: fullName,
+      addressComponents: { countryCode, postCode, city },
+    } = placeInfo;
+
+    await setAddressInfo({
+      placeId,
+      shortName,
+      fullName,
+      coords,
+      countryCode,
+      postCode,
+      city,
+    });
+  };
 
   reloadStoreListIfNecessary = () => {
-    if (this.props.currentPlaceId !== Home.lastUsedPlaceId) {
-      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
-      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.BANNER);
-      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.CAROUSEL);
-      this.props.homeActions.reloadStoreList();
-      Home.lastUsedPlaceId = this.props.currentPlaceId;
-    }
+    const { addressCoords, homeActions, collectionCardActions } = this.props;
+
+    if (isSameAddressCoords(Home.lastUsedAddressCoords, addressCoords)) return;
+
+    collectionCardActions.getCollections(COLLECTIONS_TYPE.ICON);
+    collectionCardActions.getCollections(COLLECTIONS_TYPE.BANNER);
+    collectionCardActions.getCollections(COLLECTIONS_TYPE.CAROUSEL);
+    homeActions.reloadStoreList();
+
+    Home.lastUsedAddressCoords = addressCoords;
   };
 
   backupState = () => {
@@ -112,8 +173,7 @@ class Home extends React.Component {
   gotoLocationPage = () => {
     CleverTap.pushEvent('Homepage - Click Location Bar');
 
-    const { history, location, currentPlaceInfo } = this.props;
-    const coords = currentPlaceInfo && currentPlaceInfo.coords;
+    const { history, location, addressCoords: coords } = this.props;
 
     history.push({
       pathname: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`,
@@ -144,13 +204,13 @@ class Home extends React.Component {
       distance: store.geoDistance,
     });
 
-    const { homeActions, currentPlaceInfo } = this.props;
+    const { homeActions, addressInfo } = this.props;
 
     homeActions.setPaginationInfo({ scrollTop: this.scrollTop });
 
     // to backup whole redux state when click store item
     this.backupState();
-    await submitStoreMenu({ deliveryAddress: currentPlaceInfo, store: store, source: document.location.href });
+    await submitStoreMenu({ deliveryAddress: addressInfo, store: store, source: document.location.href });
   };
 
   handleQRCodeClicked = () => {
@@ -168,7 +228,7 @@ class Home extends React.Component {
     const {
       t,
       stores,
-      currentPlaceId,
+      addressId,
       paginationInfo: { hasMore, scrollTop },
     } = this.props;
 
@@ -181,7 +241,7 @@ class Home extends React.Component {
           onScroll={scrollTop => (this.scrollTop = scrollTop)}
         >
           <StoreList
-            key={`store-list-${currentPlaceId}`}
+            key={`store-list-${addressId}`}
             stores={stores}
             hasMore={hasMore}
             loadMoreStores={this.handleLoadMoreStores}
@@ -195,13 +255,20 @@ class Home extends React.Component {
   };
 
   render() {
-    const { t, currentPlaceInfo, storeCollections, bannerCollections, carouselCollections } = this.props;
+    const {
+      t,
+      addressName,
+      addressCoords,
+      storeCollections,
+      bannerCollections,
+      ifAddressInfoExists,
+      carouselCollections,
+      shouldShowCampaignBar,
+    } = this.props;
 
-    if (!currentPlaceInfo) {
+    if (!ifAddressInfoExists) {
       return <i className="loader theme full-page text-size-huge" />;
     }
-
-    const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
 
     return (
       <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
@@ -212,7 +279,7 @@ class Home extends React.Component {
           className={`entry__deliver-to base-box-shadow ${
             this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
           }`}
-          content={currentPlaceInfo ? currentPlaceInfo.address : ''}
+          content={addressName}
           gotoLocationPage={this.gotoLocationPage}
           backLeftPosition={this.backLeftPosition}
         >
@@ -254,7 +321,7 @@ class Home extends React.Component {
             </div>
           </Banner>
 
-          {isCampaignActive && countryCode.toUpperCase() === 'MY' && !Utils.isTNGMiniProgram() && (
+          {shouldShowCampaignBar && (
             <a
               className="offer-details__bar"
               data-heap-name="site.home.campaign-bar"
@@ -274,10 +341,10 @@ class Home extends React.Component {
 
           <Banners collections={bannerCollections} />
 
-          <Carousel collections={carouselCollections} currentPlaceInfo={currentPlaceInfo} />
+          <Carousel collections={carouselCollections} />
 
           <div className="store-card-list__container padding-normal">
-            {currentPlaceInfo.coords ? this.renderStoreList() : null}
+            {addressCoords ? this.renderStoreList() : null}
           </div>
         </section>
       </main>
@@ -291,16 +358,22 @@ export default compose(
   withTranslation(),
   connect(
     state => ({
-      currentPlaceId: getCurrentPlaceId(state),
-      currentPlaceInfo: getCurrentPlaceInfo(state),
-      paginationInfo: getPaginationInfo(state),
+      addressInfo: getAddress(state),
+      addressId: getAddressId(state),
+      addressName: getAddressName(state),
       stores: getAllCurrentStores(state),
+      addressCoords: getAddressCoords(state),
       storeLinkInfo: getStoreLinkInfo(state),
+      paginationInfo: getPaginationInfo(state),
       storeCollections: getIconCollections(state),
       bannerCollections: getBannerCollections(state),
       carouselCollections: getCarouselCollections(state),
+      ifAddressInfoExists: getIfAddressInfoExists(state),
+      shouldShowCampaignBar: getShouldShowCampaignBar(state),
     }),
     dispatch => ({
+      getAddressInfo: bindActionCreators(getAddressInfo, dispatch),
+      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),

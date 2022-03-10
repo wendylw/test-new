@@ -1,43 +1,13 @@
-import Constants from '../../utils/constants';
 import { getPositionInfoBySource } from '../../utils/geoUtils';
-import config from '../../config';
 import { get } from '../../utils/request';
 import Url from '../../utils/url';
 import Utils from '../../utils/utils';
 import loggly from '../../utils/monitoring/loggly';
-
-const { ROUTER_PATHS } = Constants;
-
-const getPlaceInfoFromLocation = ({ location }) => {
-  const { state = {} } = location || {};
-
-  if (state.from && state.from.pathname === `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`) {
-    return state.data && state.data.placeInfo;
-  }
-
-  return null;
-};
-
-export const savePlaceInfo = placeInfo => {
-  return localStorage.setItem('user.placeInfo', JSON.stringify(placeInfo));
-};
-
-export const removePlaceInfo = () => {
-  return localStorage.removeItem('user.placeInfo');
-};
-
-export const readPlaceInfo = () => {
-  try {
-    return JSON.parse(localStorage.getItem('user.placeInfo'));
-  } catch (e) {
-    return null;
-  }
-};
+import { ADDRESS_INFO_SOURCE_TYPE } from '../../redux/modules/address/constants';
 
 export const getPlaceInfoByDeviceByAskPermission = async () => {
   try {
-    const placeInfo = await getPositionInfoBySource('device', true);
-    await savePlaceInfo(placeInfo); // now save into localStorage
+    const placeInfo = await getPositionInfoBySource(ADDRESS_INFO_SOURCE_TYPE.DEVICE, true);
     return placeInfo;
   } catch (e) {
     console.warn(e);
@@ -47,53 +17,17 @@ export const getPlaceInfoByDeviceByAskPermission = async () => {
   }
 };
 
-export const getPlaceInfo = async ({
-  fromLocationPage = true,
-  fromCache = true,
-  fromDevice = true,
-  fromIp = true,
-  location,
-} = {}) => {
+export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) => {
   // first to use place from location picker
   let placeInfo = null;
   let source = '';
-  if (!placeInfo && fromLocationPage) {
-    if (location) {
-      placeInfo = getPlaceInfoFromLocation({ location });
-    }
-    if (placeInfo) {
-      source = 'location-page';
-    }
-  }
-  if (!placeInfo && fromCache) {
-    try {
-      placeInfo = readPlaceInfo();
-
-      // --Begin-- last version of cache doesn't have addressComponents field, we need it now
-      if (placeInfo && !placeInfo.addressComponents) {
-        removePlaceInfo();
-        placeInfo = null;
-      }
-      // ---End--- last version of cache doesn't have addressComponents field, we need it now
-
-      if (placeInfo) {
-        source = 'cache';
-      }
-    } catch (e) {
-      console.warn(e);
-      loggly.warn('utils.getPlaceInfo', {
-        message: e?.message,
-      });
-    }
-  }
+  const { IP, DEVICE } = ADDRESS_INFO_SOURCE_TYPE;
 
   // third to use device location when there is already have permission
   if (!placeInfo && fromDevice) {
     try {
-      placeInfo = await getPositionInfoBySource('device', true);
-      if (placeInfo) {
-        source = 'device';
-      }
+      placeInfo = await getPositionInfoBySource(DEVICE, true);
+      if (placeInfo) source = DEVICE;
     } catch (e) {
       console.warn(e);
       loggly.warn('utils.getPlaceInfo', {
@@ -106,16 +40,14 @@ export const getPlaceInfo = async ({
   if (!placeInfo && fromIp) {
     try {
       // tried device with cache already, so try ip without cache now
-      placeInfo = await getPositionInfoBySource('ip', false);
-      if (placeInfo) source = 'ip';
+      placeInfo = await getPositionInfoBySource(IP, false);
+      if (placeInfo) source = IP;
     } catch (e) {
       loggly.error('utils.get-place-info', {
         message: e?.message,
       });
     }
   }
-
-  savePlaceInfo(placeInfo); // now save into localStorage
 
   return { placeInfo, source };
 };

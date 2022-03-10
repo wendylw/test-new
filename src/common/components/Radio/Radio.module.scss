@@ -1,0 +1,38 @@
+$radioWidth: 24px;
+$radioDotWidth: $radioWidth - 10px;
+
+.radio {
+  @apply tw-relative tw-inline-block tw-appearance-none tw-cursor-pointer;
+  width: $radioWidth;
+  height: $radioWidth;
+
+  &::before {
+    content: "";
+    @apply tw-block tw-w-full tw-h-full tw-box-border tw-bg-white
+      tw-rounded-full tw-border tw-border-gray-500 tw-border-solid;
+  }
+  &::after {
+    content: "";
+    @apply tw-absolute tw-box-border tw-bg-transparent tw-rounded-full;
+    width: $radioDotWidth;
+    height: $radioDotWidth;
+    top: calc(50% - (#{$radioDotWidth} / 2));
+    left: calc(50% - (#{$radioDotWidth} / 2));
+  }
+  &:checked::before {
+    @apply tw-border-2 tw-border-orange;
+  }
+  &:checked::after {
+    @apply tw-bg-orange;
+  }
+  &:disabled::before {
+    @apply tw-border-gray-400;
+    @apply tw-bg-gray-200;
+  }
+  &:disabled::after {
+    @apply tw-bg-transparent;
+  }
+  &:disabled:checked::after {
+    @apply tw-bg-gray-400;
+  }
+}

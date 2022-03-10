@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#modal-mount-point {
+  @apply tw-font-sans;
+}

@@ -28,6 +28,7 @@ import {
   getSubOrdersMapping,
   getOrderSubmissionRequestingStatus,
   getThankYouPageUrl,
+  getOrderServiceChargeRate,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -291,6 +292,7 @@ export class TableSummary extends React.Component {
       shippingType,
       tax,
       serviceCharge,
+      serviceChargeRate,
       subtotal,
       total,
       cashback,
@@ -337,6 +339,7 @@ export class TableSummary extends React.Component {
             className="table-summary__billing-container"
             tax={tax}
             serviceCharge={serviceCharge}
+            serviceChargeRate={serviceChargeRate}
             subtotal={subtotal}
             total={total}
             creditsBalance={cashback}
@@ -388,6 +391,7 @@ TableSummary.propTypes = {
   tableNumber: PropTypes.string,
   tax: PropTypes.number,
   serviceCharge: PropTypes.number,
+  serviceChargeRate: PropTypes.number,
   subtotal: PropTypes.number,
   total: PropTypes.number,
   cashback: PropTypes.number,
@@ -414,6 +418,7 @@ TableSummary.defaultProps = {
   tableNumber: null,
   tax: 0,
   serviceCharge: 0,
+  serviceChargeRate: 0,
   subtotal: 0,
   total: 0,
   cashback: 0,
@@ -442,6 +447,7 @@ export default compose(
       tax: getOrderTax(state),
       thankYouPageUrl: getThankYouPageUrl(state),
       serviceCharge: getOrderServiceCharge(state),
+      serviceChargeRate: getOrderServiceChargeRate(state),
       subtotal: getOrderSubtotal(state),
       total: getOrderTotal(state),
       cashback: getOrderCashback(state),

@@ -1,0 +1,9 @@
+.backdrop {
+  @apply tw-h-full tw-w-full tw-overflow-hidden
+    tw-bg-black tw-bg-opacity-50
+    tw-flex tw-flex-row tw-justify-center tw-items-center;
+}
+.container {
+  @apply tw-rounded-xl tw-px-16 sm:tw-px-16px tw-py-24 sm:tw-py-24px tw-bg-white tw-w-10/12;
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.08);
+}
