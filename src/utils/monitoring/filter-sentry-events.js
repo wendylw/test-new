@@ -145,6 +145,7 @@ const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
       /Cannot read properties of null \(reading 'LatLng'\)/,
       /Cannot read property 'places' of null/,
       /Cannot read properties of null \(reading 'places'\)/,
+      /null is not an object \(evaluating 'new \w\.places'\)/,
     ];
     return readGoogleMapsPropertiesFromNullIssues.some(issue => issue.test(message));
   } catch {
