@@ -136,15 +136,17 @@ const isVivoAdblockProblem = (event, hint) => {
   }
 };
 
-const isReadLatLngFromNullIssues = (event, hint) => {
-  // BEEP-1710: This problem is duplicated since it only occurs when Google Maps API is undefined. However, we have already logged the Google Maps API load failure case.
+const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
+  // BEEP-1710 & BEEP-1947: This problem is duplicated since it only occurs when Google Maps API is undefined. However, we have already logged the Google Maps API load failure case.
   try {
     const message = getErrorMessageFromHint(hint);
-    const readLatLngFromNullIssues = [
+    const readGoogleMapsPropertiesFromNullIssues = [
       /Cannot read property 'LatLng' of null/,
       /Cannot read properties of null \(reading 'LatLng'\)/,
+      /Cannot read property 'places' of null/,
+      /Cannot read properties of null \(reading 'places'\)/,
     ];
-    return readLatLngFromNullIssues.some(issue => issue.test(message));
+    return readGoogleMapsPropertiesFromNullIssues.some(issue => issue.test(message));
   } catch {
     return false;
   }
@@ -164,7 +166,7 @@ const shouldFilter = (event, hint) => {
       isIgnoreObjectNotFoundMatchingId(event, hint) ||
       isTikTokIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
-      isReadLatLngFromNullIssues(event, hint)
+      isReadGoogleMapsPropertiesFromNullIssues(event, hint)
     );
   } catch {
     return false;
