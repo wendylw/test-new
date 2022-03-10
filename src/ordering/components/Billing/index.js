@@ -7,8 +7,8 @@ import CleverTap from '../../../utils/clevertap';
 import './Billing.scss';
 class Billing extends Component {
   renderServiceCharge() {
-    const { t, serviceCharge, businessInfo } = this.props;
-    const { enableServiceCharge = false, serviceChargeRate = 0 } = businessInfo;
+    const { t, serviceCharge, businessInfo, serviceChargeRate } = this.props;
+    const { enableServiceCharge = false } = businessInfo;
 
     // TODO: revert service charge after released BEEP-163
     if (!enableServiceCharge || !serviceCharge) {
@@ -160,6 +160,7 @@ Billing.propTypes = {
   className: PropTypes.string,
   tax: PropTypes.number,
   serviceCharge: PropTypes.number,
+  serviceChargeRate: PropTypes.number,
   businessInfo: PropTypes.object,
   subtotal: PropTypes.number,
   takeawayCharges: PropTypes.number,

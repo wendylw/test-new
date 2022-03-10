@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { withTranslation } from 'react-i18next';
-import { IconAddAddress, IconBookmark, IconNext } from '../../../../../components/Icons';
-import Tag from '../../../../../components/Tag';
+import { IconAddAddress } from '../../../../../components/Icons';
+import AddressPicker from '../../../../../components/AddressPicker';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -10,18 +10,19 @@ import {
   getStoreInfoForCleverTap,
   getDeliveryDetails,
 } from '../../../../redux/modules/app';
-import { loadAddressList } from '../../redux/common/thunks';
-import { getAddressList } from '../../redux/common/selectors';
+import { loadAddressList } from '../../../../redux/modules/addressList/thunks';
+import { getAddressList } from '../../../../redux/modules/addressList/selectors';
 import Utils from '../../../../../utils/utils';
+import { ADDRESS_DISPLAY_MODES } from '../../../../redux/modules/addressList/constants';
 import './AddressList.scss';
 import CleverTap from '../../../../../utils/clevertap';
 
 class AddressList extends Component {
-  componentDidMount() {
+  componentDidMount = async () => {
     const { loadAddressList } = this.props;
 
-    loadAddressList();
-  }
+    await loadAddressList();
+  };
 
   addNewAddress = () => {
     const { history, storeInfoForCleverTap } = this.props;
@@ -43,90 +44,48 @@ class AddressList extends Component {
     });
   };
 
-  renderAddressCard = () => {
-    const { t, addressList, history, updateDeliveryDetails, deliveryDetails } = this.props;
+  handleSelectAddress = async (address, index) => {
+    const { history, updateDeliveryDetails, deliveryDetails } = this.props;
+    const {
+      _id: addressId,
+      addressName,
+      deliveryTo: deliveryToAddress,
+      addressDetails,
+      comments: deliveryComments,
+      location: deliveryToLocation,
+      city: deliveryToCity,
+      postCode,
+      countryCode,
+      contactName,
+      contactNumber,
+    } = address;
 
-    return (addressList || []).map((address, index) => {
-      const {
-        _id: addressId,
-        addressName,
-        deliveryTo,
-        addressDetails,
-        comments,
-        availableStatus,
-        location,
-        city: deliveryToCity,
-        postCode,
-        contactName,
-        contactNumber,
-      } = address;
-      return (
-        <div
-          className={`flex flex-space-between margin-left-right-normal border__bottom-divider ${
-            availableStatus ? 'active' : 'address-list__disabled'
-          }`}
-          key={index}
-          onClick={
-            availableStatus
-              ? async () => {
-                  CleverTap.pushEvent('Address list - click existing address', {
-                    rank: index + 1,
-                  });
-                  await updateDeliveryDetails({
-                    addressId,
-                    addressName,
-                    addressDetails,
-                    deliveryComments: comments,
-                    deliveryToAddress: deliveryTo,
-                    deliveryToLocation: location,
-                    deliveryToCity,
-                    postCode,
-                    phone: contactNumber || deliveryDetails.phone,
-                    username: contactName || deliveryDetails.username,
-                  });
-                  if (Utils.hasNativeSavedAddress()) {
-                    const deliveryAddress = JSON.parse(sessionStorage.getItem('deliveryAddress'));
-                    sessionStorage.setItem(
-                      'deliveryAddress',
-                      JSON.stringify({ ...deliveryAddress, addressName: addressName })
-                    );
-                  }
-                  history.push({
-                    pathname: '/customer',
-                    search: window.location.search,
-                  });
-                }
-              : null
-          }
-        >
-          <div className="margin-top-bottom-normal">
-            <IconBookmark className={`icon address-list__book-mark ${availableStatus ? '' : 'icon__default'}`} />
-          </div>
-          <div className="address-list__delivery-info margin-normal">
-            <div>
-              <div>
-                <span>{addressName}</span>
-                {!availableStatus && (
-                  <Tag text={t('OutOfRange')} className="tag__primary tag__small margin-left-right-normal" />
-                )}
-              </div>
-              <p className="padding-top-bottom-small text-opacity">{deliveryTo}</p>
-            </div>
-            <div className="padding-top-bottom-small text-line-height-base">
-              <div>{addressDetails}</div>
-              <div>{comments}</div>
-            </div>
-          </div>
-          <div className="flex flex-middle">
-            <IconNext className={`icon ${availableStatus ? '' : 'icon__default'} icon__small `} />
-          </div>
-        </div>
-      );
+    CleverTap.pushEvent('Address list - click existing address', {
+      rank: index + 1,
+    });
+
+    await updateDeliveryDetails({
+      addressId,
+      addressName,
+      addressDetails,
+      deliveryComments,
+      deliveryToAddress,
+      deliveryToLocation,
+      deliveryToCity,
+      postCode,
+      countryCode,
+      phone: contactNumber || deliveryDetails.phone,
+      username: contactName || deliveryDetails.username,
+    });
+
+    history.push({
+      pathname: '/customer',
+      search: window.location.search,
     });
   };
 
   render() {
-    const { t } = this.props;
+    const { t, addressList } = this.props;
     return (
       <div>
         <HybridHeader
@@ -134,7 +93,7 @@ class AddressList extends Component {
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           isPage={true}
-          title={t('DeliveryTo')}
+          title={t('DeliverTo')}
           navFunc={() => {
             CleverTap.pushEvent('Address list - click back arrow');
             this.handleClickBack();
@@ -161,10 +120,11 @@ class AddressList extends Component {
             <IconAddAddress className="address-list__add-icon icon border-radius-base" />
             <span className="text-size-big text-weight-bolder padding-left-right-normal">{t('AddNewAddress')}</span>
           </div>
-          <div>
-            <p className="address-list__save-title padding-normal text-weight-bolder">{t('SavedAddress')}</p>
-            {this.renderAddressCard()}
-          </div>
+          <AddressPicker
+            displayMode={ADDRESS_DISPLAY_MODES.FULL}
+            onSelect={this.handleSelectAddress}
+            addressList={addressList}
+          />
         </section>
       </div>
     );

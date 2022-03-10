@@ -164,7 +164,8 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.clearCart = API_REQUEST_STATUS.PENDING;
     },
     [clearCart.fulfilled.type]: state => {
-      state = initialState;
+      const { status, receiptNumber, version } = state;
+      state = { ...initialState, status, receiptNumber, version };
 
       return state;
     },

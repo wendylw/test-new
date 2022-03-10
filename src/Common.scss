@@ -152,6 +152,12 @@ address {
 }
 
 .text-omit {
+  &__flex-container {
+    @apply tw-flex tw-flex-1;
+
+    min-width: 0;
+  }
+
   &__single-line {
     @extend .text-omit-base;
 

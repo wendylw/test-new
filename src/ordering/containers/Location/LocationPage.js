@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
+import _get from 'lodash/get';
 import HybridHeader from '../../../components/HybridHeader';
-import LocationPicker, { setHistoricalDeliveryAddresses } from '../../../components/LocationPicker';
 import { post } from '../../../utils/request';
 import config from '../../../config';
 import ErrorImage from '../../../images/delivery-error.png';
 import ErrorToast from '../../../components/ErrorToast';
+import AddressSelector from '../../../containers/AddressSelector';
 import Utils from '../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getBusiness } from '../../redux/modules/app';
+import { actions as appActionCreators, getBusiness, getUserIsLogin } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
+import { getAddressList } from '../../redux/modules/addressList/selectors';
+import { loadAddressList } from '../../redux/modules/addressList/thunks';
+import { setAddressInfo } from '../../../redux/modules/address/thunks';
 import { connect } from 'react-redux';
 import CleverTap from '../../../utils/clevertap';
 
@@ -45,10 +49,24 @@ class LocationPage extends Component {
           errorToast: this.props.t(`OutOfDeliveryRange`, { distance: this.state.outRange }),
         },
         () => {
-          Utils.removeSessionVariable('deliveryAddress');
           Utils.removeSessionVariable('outRange');
         }
       );
+    }
+
+    const { hasUserLoggedIn, loadAddressList } = this.props;
+
+    if (hasUserLoggedIn) {
+      await loadAddressList();
+    }
+  }
+
+  async componentDidUpdate(prevProps) {
+    const { hasUserLoggedIn: prevHasUserLoggedIn } = prevProps;
+    const { hasUserLoggedIn: currHasUserLoggedIn, loadAddressList } = this.props;
+
+    if (!prevHasUserLoggedIn && currHasUserLoggedIn) {
+      await loadAddressList();
     }
   }
 
@@ -87,14 +105,19 @@ class LocationPage extends Component {
     }
   }
 
-  onSelectPlace = async placeInfo => {
-    const { t, history } = this.props;
+  onSelectPlace = async addressInfo => {
+    const { t, history, location, setAddressInfo } = this.props;
+    const { updateAddressEnabled = true, callbackPayload } = location.state || {};
     const address = {
       location: {
-        longitude: placeInfo.coords.lng,
-        latitude: placeInfo.coords.lat,
+        longitude: _get(addressInfo, 'coords.lng', 0),
+        latitude: _get(addressInfo, 'coords.lat', 0),
       },
     };
+
+    if (updateAddressEnabled) {
+      await setAddressInfo(addressInfo);
+    }
 
     let stores = await this.props.appActions.loadCoreStores(address);
     stores = stores.responseGql.data.business.stores;
@@ -106,26 +129,10 @@ class LocationPage extends Component {
       });
       return;
     }
-    // if (distance === Infinity) {
-    //   this.setState({
-    //     errorToast: t(`OutOfDeliveryRangeWrongDistance`, {
-    //       distance: (radius / 1000).toFixed(1),
-    //     }),
-    //   });
-    //   return;
-    // } else if (distance > radius) {
-    //   this.setState({
-    //     errorToast: t(`OutOfDeliveryRange`, { distance: (radius / 1000).toFixed(1) }),
-    //   });
-    //   return;
-    // }
 
-    Utils.setSessionVariable('deliveryAddress', JSON.stringify({ ...placeInfo }));
-    Utils.setSessionVariable('deliveryAddressUpdate', true);
-    setHistoricalDeliveryAddresses(placeInfo);
     const callbackUrl = Utils.getQueryString('callbackUrl');
     if (typeof callbackUrl === 'string') {
-      history.replace(callbackUrl);
+      history.replace(callbackUrl, { selectedAddress: addressInfo, ...callbackPayload });
     } else {
       history.go(-1);
     }
@@ -165,9 +172,11 @@ class LocationPage extends Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, location, addressList, hasUserLoggedIn } = this.props;
     const { initError, initializing, storeInfo, errorToast } = this.state;
-    const outRangeSearchText = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}').address;
+    const { addressPickerAllowed = true } = location.state || {};
+    const addressPickerEnabled = hasUserLoggedIn && addressPickerAllowed;
+
     return (
       <section className="ordering-location flex flex-column" data-heap-name="ordering.location.container">
         <HybridHeader
@@ -182,7 +191,7 @@ class LocationPage extends Component {
         {initError ? (
           this.renderInitError()
         ) : (
-          <LocationPicker
+          <section
             style={{
               top: `${Utils.mainTop({
                 headerEls: [this.headerEl],
@@ -192,13 +201,15 @@ class LocationPage extends Component {
                   headerEls: [this.deliveryEntryEl, this.headerEl, this.deliveryFeeEl],
                 })}px`,
             }}
-            mode={'ORIGIN_STORE'}
-            origin={storeInfo.coords}
-            radius={storeInfo.radius}
-            country={storeInfo.country}
-            outRangeSearchText={this.state.outRange && outRangeSearchText}
-            onSelect={this.onSelectPlace}
-          />
+            className="flex flex-column"
+          >
+            <AddressSelector
+              placeInfo={storeInfo}
+              addressPickerEnabled={addressPickerEnabled}
+              addressList={addressList}
+              onSelect={this.onSelectPlace}
+            />
+          </section>
         )}
         {initializing && this.renderLoadingMask()}
         {errorToast && <ErrorToast className="fixed" message={errorToast} clearError={this.clearErrorToast} />}
@@ -212,11 +223,15 @@ export default compose(
   withTranslation(['OrderingDelivery']),
   connect(
     state => ({
+      hasUserLoggedIn: getUserIsLogin(state),
       business: getBusiness(state),
       allBusinesses: getAllBusinesses(state),
+      addressList: getAddressList(state),
     }),
     dispatch => ({
+      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
+      loadAddressList: bindActionCreators(loadAddressList, dispatch),
     })
   )
 )(LocationPage);

@@ -1,0 +1,9 @@
+.tag {
+  @apply tw-px-8 sm:tw-px-8px tw-not-italic tw-bg-gray-300 tw-inline-block tw-rounded;
+
+  font-size: 0;
+}
+
+.tagInner {
+  @apply tw-text-xs tw-leading-relaxed tw-text-gray-700;
+}

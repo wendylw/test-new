@@ -1,9 +1,8 @@
 import { get } from '../../../../utils/request';
 import Url from '../../../../utils/url';
-import { getCurrentPlaceInfo } from '../app';
-import { getCountryCodeByPlaceInfo } from '../../../../utils/geoUtils';
 import { combineReducers } from 'redux';
 import constants from '../../../../utils/constants';
+import { getAddressCoords, getAddressCountryCode } from '../../../../redux/modules/address/selectors';
 
 const { COLLECTIONS_TYPE, API_REQUEST_STATUS } = constants;
 
@@ -50,8 +49,7 @@ function getRequestUrl(url, params) {
 // @actions
 const actions = {
   getCurrentCollection: urlPath => (dispatch, getState) => {
-    const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
-    const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+    const countryCode = getAddressCountryCode(getState());
     return dispatch({
       types: [
         types.GET_CURRENT_COLLECTION_REQUEST,
@@ -62,10 +60,9 @@ const actions = {
     });
   },
   getCollections: type => (dispatch, getState) => {
-    const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
-    const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
+    const countryCode = getAddressCountryCode(getState()) || 'MY';
     const { page, pageSize } = getStorePageInfo(getState());
-    const { coords } = currentPlaceInfo;
+    const coords = getAddressCoords(getState()) || { lat: 0, lng: 0 };
 
     const params =
       type === 'SearchOthers'

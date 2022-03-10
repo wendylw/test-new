@@ -2,10 +2,13 @@
 <html lang="en">
 
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
     <meta charset="utf-8" />
     <!-- <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" /> -->
     <meta name="viewport"
-      content="target-densitydpi=device-dpi,width=device-width,initial-scale=1.0,shrink-to-fit=no,maximum-scale=1.0,user-scalable=0" />
+      content="target-densitydpi=device-dpi,width=device-width,initial-scale=1.0,shrink-to-fit=no,maximum-scale=1.0,user-scalable=0,viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
     <title>__TITLE__</title>
     <meta name="description" content="__DESCRIPTION__">
@@ -122,6 +125,7 @@
 
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root" class="container"></div>
+    <div id="modal-mount-point"></div>
     <!--
   This HTML file is a template.
   If you open it directly in the browser, you will see an empty page.
@@ -160,7 +164,7 @@
     </script>
 
     <!-- NOTE: If you want add some polyfill, please check whether it's already included in the polyfill collections like `default` or `es2015`, etc. -->
-    <script src="https://polyfills.io/v3/polyfill.min.js?features=default%2Ces2015%2Ces2016%2Ces2017%2Cnavigator.geolocation%2CglobalThis%2CIntl.~locale.en%2CIntl.~locale.th" crossorigin="anonymous" onerror="logScriptLoadError('polyfill-service')"></script>
+    <script src="https://polyfills.io/v3/polyfill.min.js?features=default%2Ces2015%2Ces2016%2Ces2017%2Cnavigator.geolocation%2CglobalThis%2CIntl.~locale.en%2CIntl.~locale.th%2CResizeObserver%2CIntersectionObserver%2CIntersectionObserverEntry" crossorigin="anonymous" onerror="logScriptLoadError('polyfill-service')"></script>
 
     <script>
       (function () {

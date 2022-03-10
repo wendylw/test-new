@@ -20,7 +20,8 @@ import {
   getStoreHashCode,
   getDeliveryRadius,
 } from '../../redux/modules/home';
-
+import { getAddressInfo } from '../../../redux/modules/address/thunks';
+import { getAddressCoords } from '../../../redux/modules/address/selectors';
 import Constants from '../../../utils/constants';
 import '../../../Common.scss';
 import Home from '../Home';
@@ -47,14 +48,6 @@ class App extends Component {
 
     if (queries.s && queries.from === 'home') {
       this.state.isHome = false;
-    }
-    if (!this.isDinePath()) {
-      const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-      let { type } = search;
-      if (!type) {
-        type = DELIVERY_METHOD.DELIVERY;
-      }
-      this.checkCustomer(type);
     }
   }
 
@@ -127,10 +120,10 @@ class App extends Component {
   };
 
   checkDeliveryAddress = async () => {
-    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
+    const { addressCoords } = this.props;
     const type = DELIVERY_METHOD.DELIVERY;
 
-    if (!deliveryAddress.coords) {
+    if (!addressCoords) {
       this.gotoOrderingHome(type);
       return;
     }
@@ -140,7 +133,7 @@ class App extends Component {
     const { businessUTCOffset, businessDeliveryRadius, stores } = this.props;
 
     const { store, distance } = findNearestAvailableStore(stores, {
-      coords: deliveryAddress.coords,
+      coords: addressCoords,
       currentDate: new Date(),
       utcOffset: businessUTCOffset,
     });
@@ -174,12 +167,20 @@ class App extends Component {
     window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.ORDERING_HOME}${queryString}`;
   }
 
-  componentDidMount() {
-    const { appActions, currentStoreId } = this.props;
+  componentDidMount = async () => {
+    const { appActions, currentStoreId, getAddressInfo } = this.props;
     const { fetchOnlineStoreInfo } = appActions;
 
     if (this.isDinePath()) {
       Utils.removeExpectedDeliveryTime();
+    } else {
+      const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
+      let { type } = search;
+      if (!type) {
+        type = DELIVERY_METHOD.DELIVERY;
+      }
+      await getAddressInfo();
+      this.checkCustomer(type);
     }
 
     this.visitErrorPage();
@@ -205,7 +206,7 @@ class App extends Component {
         isHome: true,
       });
     }
-  }
+  };
 
   isDinePath() {
     return this.props.match.path === Constants.ROUTER_PATHS.DINE;
@@ -279,11 +280,13 @@ export default connect(
     error: getError(state),
     pageError: getPageError(state),
     storeHash: getStoreHashCode(state),
+    addressCoords: getAddressCoords(state),
     deliveryRadius: getDeliveryRadius(state),
     businessUTCOffset: getBusinessUTCOffset(state),
     businessDeliveryRadius: getBusinessDeliveryRadius(state),
   }),
   dispatch => ({
+    getAddressInfo: bindActionCreators(getAddressInfo, dispatch),
     appActions: bindActionCreators(appActionCreators, dispatch),
     storesActions: bindActionCreators(storesActionsCreators, dispatch),
   })

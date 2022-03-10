@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { withTranslation, Trans } from 'react-i18next';
-import _get from 'lodash/get';
 import _truncate from 'lodash/truncate';
 import qs from 'qs';
 import _isNil from 'lodash/isNil';
@@ -39,11 +38,10 @@ import {
 } from '../../redux/cart/thunks';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { fetchRedirectPageState, windowSize, mainTop, marginBottom } from './utils';
+import { windowSize, mainTop, marginBottom } from './utils';
 import config from '../../../config';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
-import { captureException } from '@sentry/react';
 import CleverTap from '../../../utils/clevertap';
 import {
   getUserHasReachedLegalDrinkingAge,
@@ -64,8 +62,11 @@ import CurrentCategoryBar from './components/CurrentCategoryBar';
 import ProductList from './components/ProductList';
 import AlcoholModal from './components/AlcoholModal';
 import OfflineStoreModal from './components/OfflineStoreModal';
+import { sourceType } from './constants';
+import { getIfAddressInfoExists, getAddressCoords, getAddressName } from '../../../redux/modules/address/selectors';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
+import loggly from '../../../utils/monitoring/loggly';
 
 const localState = {
   blockScrollTop: 0,
@@ -74,7 +75,7 @@ const localState = {
 const SCROLL_DEPTH_DENOMINATOR = 4;
 
 const { DELIVERY_METHOD, PREORDER_IMMEDIATE_TAG } = Constants;
-export class Home extends Component {
+class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -143,10 +144,6 @@ export class Home extends Component {
 
   componentDidMount = async () => {
     const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent, queryCartAndStatus } = this.props;
-    if (Utils.isFromBeepSite()) {
-      // sync deliveryAddress from beepit.com
-      await this.setupDeliveryAddressByRedirectState();
-    }
 
     await appActions.loadProductList();
 
@@ -157,7 +154,7 @@ export class Home extends Component {
 
     const shareLinkUrl = this.getShareLinkUrl();
 
-    shortenUrl(shareLinkUrl);
+    shortenUrl(shareLinkUrl).catch(error => loggly.error(`failed to share store link(didMount): ${error.message}`));
     const { enablePayLater } = this.props;
 
     if (config.storeId) {
@@ -179,14 +176,17 @@ export class Home extends Component {
     window.addEventListener('resize', () => {
       this.setState({ windowSize: windowSize() });
     });
+
+    this.showCartListDrawerIfNeeded();
   };
 
   checkDeliveryBar() {
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
-    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+    const { ifAddressInfoExists } = this.props;
+
     if (!isDeliveryType && !isPickUpType) {
       this.setState({
         deliveryBar: false,
@@ -203,7 +203,7 @@ export class Home extends Component {
 
     if (isDeliveryType) {
       this.setState({
-        deliveryBar: Boolean(deliveryAddress && expectedDeliveryDate && expectedDeliveryHour),
+        deliveryBar: Boolean(ifAddressInfoExists && expectedDeliveryDate && expectedDeliveryHour),
       });
       return;
     }
@@ -216,13 +216,40 @@ export class Home extends Component {
     }
   }
 
+  showCartListDrawerIfNeeded = () => {
+    const { history } = this.props;
+    const { ROUTER_PATHS, ASIDE_NAMES } = Constants;
+    const source = Utils.getQueryString('source');
+
+    if (source !== sourceType.SHOPPING_CART) return;
+
+    this.handleToggleAside(ASIDE_NAMES.CART);
+
+    const search = Utils.getFilteredQueryString('source');
+
+    history.replace({
+      pathname: ROUTER_PATHS.ORDERING_HOME,
+      search,
+    });
+  };
+
   componentDidUpdate(prevProps, prevState) {
-    const { shouldShowAlcoholModal: prevShouldShowAlcoholModal } = prevProps;
-    const { shouldShowAlcoholModal: newShouldShowAlcoholModal } = this.props;
+    const {
+      shouldShowAlcoholModal: prevShouldShowAlcoholModal,
+      ifAddressInfoExists: prevIfAddressInfoExists,
+    } = prevProps;
+    const {
+      shouldShowAlcoholModal: currShouldShowAlcoholModal,
+      ifAddressInfoExists: currIfAddressInfoExists,
+    } = this.props;
     const { containerHeight } = prevState;
 
-    if (prevShouldShowAlcoholModal !== newShouldShowAlcoholModal) {
-      this.toggleBodyScroll(newShouldShowAlcoholModal);
+    if (prevShouldShowAlcoholModal !== currShouldShowAlcoholModal) {
+      this.toggleBodyScroll(currShouldShowAlcoholModal);
+    }
+
+    if (prevIfAddressInfoExists !== currIfAddressInfoExists) {
+      this.checkDeliveryBar();
     }
 
     this.setMainContainerHeight(containerHeight);
@@ -264,7 +291,9 @@ export class Home extends Component {
 
   checkRange = () => {
     const search = qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true });
-    if (search.h && Utils.getSessionVariable('deliveryAddress') && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
+    const { addressCoords } = this.props;
+
+    if (search.h && addressCoords && search.type === Constants.DELIVERY_METHOD.DELIVERY) {
       const { businessInfo = {} } = this.props;
 
       let { stores = [], qrOrderingSettings } = businessInfo;
@@ -272,7 +301,7 @@ export class Home extends Component {
         const { deliveryRadius } = qrOrderingSettings;
         stores = stores[0];
         const { location } = stores;
-        const distance = computeStraightDistance(JSON.parse(Utils.getSessionVariable('deliveryAddress')).coords, {
+        const distance = computeStraightDistance(addressCoords, {
           lat: location.latitude,
           lng: location.longitude,
         });
@@ -300,16 +329,16 @@ export class Home extends Component {
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     const deliveryType = Utils.getOrderTypeFromUrl();
-    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
 
     const expectedDeliveryDate = Utils.getSessionVariable('expectedDeliveryDate');
     const expectedDeliveryHour = Utils.getSessionVariable('expectedDeliveryHour');
+    const { ifAddressInfoExists } = this.props;
 
     if (!store) {
       return;
     }
 
-    if (isDeliveryType && !deliveryAddress) {
+    if (isDeliveryType && !ifAddressInfoExists) {
       return;
     }
 
@@ -433,20 +462,6 @@ export class Home extends Component {
     }
   };
 
-  // get deliveryTo info from cookie and set into localStorage
-  setupDeliveryAddressByRedirectState = async () => {
-    const state = await fetchRedirectPageState();
-
-    try {
-      if (state.deliveryAddress) {
-        sessionStorage.setItem('deliveryAddress', state.deliveryAddress);
-      }
-    } catch (e) {
-      captureException(e);
-      console.error(e);
-    }
-  };
-
   toggleBodyScroll(blockScroll = false) {
     const rootEl = document.getElementById('root');
     const rootClassName = rootEl
@@ -523,7 +538,7 @@ export class Home extends Component {
     const { history, deliveryInfo, storeInfoForCleverTap } = this.props;
 
     const isValidTimeToOrder = this.isValidTimeToOrder();
-    const { enablePreOrder, deliveryToAddress, savedAddressName } = deliveryInfo;
+    const { enablePreOrder } = deliveryInfo;
 
     const fillInDeliverToAddress = () => {
       CleverTap.pushEvent('Menu Page - Click location & shipping details bar', storeInfoForCleverTap);
@@ -538,7 +553,7 @@ export class Home extends Component {
 
       return;
     };
-    const { t, businessInfo } = this.props;
+    const { t, businessInfo, addressName } = this.props;
     const { stores = [] } = businessInfo;
     const pickupAddress = stores.length ? Utils.getValidAddress(stores[0], Constants.ADDRESS_RANGE.COUNTRY) : '';
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
@@ -549,7 +564,7 @@ export class Home extends Component {
         deliverToBarRef={ref => (this.deliveryEntryEl = ref)}
         data-heap-name="ordering.home.delivery-bar"
         className="ordering-home__deliver-to flex__shrink-fixed"
-        content={Utils.isDeliveryType() ? savedAddressName || deliveryToAddress : pickupAddress}
+        content={Utils.isDeliveryType() ? addressName : pickupAddress}
         backIcon={
           <IconLeftArrow
             className="icon icon__big icon__default text-middle flex__shrink-fixed"
@@ -884,26 +899,22 @@ export class Home extends Component {
         cashback: cashbackRate,
       });
     } catch (error) {
-      console.error(`failed to share store link: ${error.message}`);
+      loggly.error(`failed to share store link(click): ${error.message}`);
     }
   };
 
   getRightContentOfHeader = () => {
-    try {
-      const isDeliveryOrder = Utils.isDeliveryOrder();
-      const { SHARE } = ICON_RES;
+    const isDeliveryOrder = Utils.isDeliveryOrder();
+    const { SHARE } = ICON_RES;
 
-      // The return value of hasMethodInNative is 'false'
-      if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
-        return {
-          iconRes: SHARE,
-          onClick: this.handleClickShare,
-        };
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error(`failed to share store link: ${error.message}`);
+    // The return value of hasMethodInNative is 'false'
+    if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
+      return {
+        iconRes: SHARE,
+        onClick: this.handleClickShare,
+      };
+    } else {
+      return null;
     }
   };
 
@@ -1171,6 +1182,8 @@ export default compose(
         businessInfo: getBusinessInfo(state),
         onlineStoreInfo: getOnlineStoreInfo(state),
         requestInfo: getRequestInfo(state),
+        addressName: getAddressName(state),
+        addressCoords: getAddressCoords(state),
         categories: getCategoryProductList(state),
         businessLoaded: getBusinessIsLoaded(state),
         cartBilling: getCartBilling(state),
@@ -1178,6 +1191,7 @@ export default compose(
         businessUTCOffset: getBusinessUTCOffset(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
+        ifAddressInfoExists: getIfAddressInfoExists(state),
         shouldShowAlcoholModal: getShouldShowAlcoholModal(state),
         store: getStore(state),
         enablePayLater: getEnablePayLater(state),

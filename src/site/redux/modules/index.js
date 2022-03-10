@@ -4,7 +4,9 @@ import home from './home';
 import collections from './collections';
 import entities from './entities';
 import search from './search';
+import addressList from './addressList';
 import orderHistory from '../../order-history/redux';
+import address from '../../../redux/modules/address';
 
 const STORAGE_KEY_ROOT_BACKUP = 'ROOT_STATE_BACKUP';
 
@@ -64,6 +66,8 @@ const appReducer = combineReducers({
   collections,
   search,
   orderHistory,
+  addressList,
+  address,
 });
 
 const rootReducer = (state, action) => {
