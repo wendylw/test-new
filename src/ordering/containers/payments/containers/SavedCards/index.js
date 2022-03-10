@@ -221,6 +221,7 @@ class SavedCards extends Component {
             total={total}
             disabled={!cardToken}
             beforeCreateOrder={async () => {
+              // New requirements, pay later to lock the order and move to the payment side, it needs to request the order lock API
               enablePayLater && (await submitOrderErrorHandler({ receiptNumber, modifiedTime }));
 
               history.push({
