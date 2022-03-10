@@ -2,9 +2,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import _trim from 'lodash/trim';
 import { actions as appActionCreators, getUserConsumerId, getDeliveryDetails } from '../../../../../redux/modules/app';
-import { updateAddress } from '../../../redux/common/api-request';
+import { updateAddress } from '../../../../../redux/modules/addressList/api-request';
 import { API_REQUEST_STATUS } from '../../../../../../utils/constants';
-import { actions as commonActions } from '../../../redux/common/index';
+import { actions as addressListActions } from '../../../../../redux/modules/addressList/index';
 
 const initialState = {
   username: '',
@@ -42,7 +42,7 @@ export const updateContactDetail = createAsyncThunk(
         })
       );
 
-      commonActions.updateAddress(updatedAddress);
+      addressListActions.updateAddress(updatedAddress);
     } catch (error) {
       console.error(error);
     }

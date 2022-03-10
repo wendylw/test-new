@@ -1,0 +1,57 @@
+@keyframes scaleToDisappearance {
+  0% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: scale(1.25);
+    -webkit-transform: scale(1.25);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.25);
+    -webkit-transform: scale(1.25);
+    opacity: 0.1;
+  }
+  100% {
+    transform: scale(1.5);
+    -webkit-transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes scaleToDisappearance {
+  0% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: scale(1.25);
+    -webkit-transform: scale(1.25);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.25);
+    -webkit-transform: scale(1.25);
+    opacity: 0.1;
+  }
+  100% {
+    transform: scale(1.5);
+    -webkit-transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.beep-animated {
+  animation-fill-mode: both;
+}
+
+.beep-animated--infinite {
+  animation-iteration-count: infinite;
+}
+
+.beep-scale-to-disappearance {
+  animation-name: scaleToDisappearance;
+}

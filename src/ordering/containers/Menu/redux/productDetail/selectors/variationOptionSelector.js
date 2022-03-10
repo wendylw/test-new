@@ -1,0 +1,160 @@
+import { createSelector, createStructuredSelector } from 'reselect';
+import { tools as frontendUtilTools, data as frontendUtilData } from '@storehub/frontend-utils';
+import { PRODUCT_STOCK_STATUS, PRODUCT_VARIATION_TYPE } from '../../../constants';
+
+export const formatVariationOptionPriceDiff = (priceDiff, formatCurrency) => {
+  if (!priceDiff) {
+    return '';
+  }
+
+  const isNegative = frontendUtilTools.isNegativeNumber(priceDiff);
+  const sign = isNegative ? '-' : '+';
+  const noBreakSpace = frontendUtilData.SpecialCharacters.NO_BREAK_SPACE;
+  const currencyFormattedPrice = formatCurrency(Math.abs(priceDiff), { hiddenCurrency: true });
+
+  // Example: + 1.50, - 1.00
+  return `${sign}${noBreakSpace}${currencyFormattedPrice}`;
+};
+
+/** Base Selector */
+const getVariationOption = option => option;
+
+const getVariationDetail = (_, variationDetail) => variationDetail;
+
+const getSelectedOptionsByVariationId = (_, __, selectedOptionsByVariationId) => selectedOptionsByVariationId;
+
+const getProductChildrenMap = (_, __, ___, productChildrenMap) => productChildrenMap;
+
+const getLatestSelectedSingleChoiceVariationId = (_, __, ___, ____, latestSelectedSingleChoiceVariationId) =>
+  latestSelectedSingleChoiceVariationId;
+
+const getFormatCurrencyFunction = (_, __, ___, ____, _____, formatCurrency) => formatCurrency;
+
+/** End Base Selector */
+
+const getVariationId = createSelector(getVariationDetail, variation => variation.id);
+
+const getVariationType = createSelector(getVariationDetail, variation => variation.type);
+
+const getVariationSelectionAmountLimit = createSelector(
+  getVariationDetail,
+  variationDetail => variationDetail.selectionAmountLimit
+);
+
+const getVariationSelectedQuantity = createSelector(
+  getVariationDetail,
+  variationDetail => variationDetail.selectedQuantity
+);
+
+const getVariationSelectionAmountMaxLimit = createSelector(
+  getVariationSelectionAmountLimit,
+  selectionAmountLimit => selectionAmountLimit.max
+);
+
+const getIsReachedMaxSelection = createSelector(
+  getVariationSelectedQuantity,
+  getVariationSelectionAmountMaxLimit,
+  (selectedQuantity, max) => selectedQuantity >= max
+);
+
+const getVariationOptionId = createSelector(getVariationOption, option => option.id);
+
+const getVariationOptionValue = createSelector(getVariationOption, option => option.value);
+
+const getVariationOptionPriceDiff = createSelector(getVariationOption, option => option.priceDiff);
+
+const getVariationOptionFormattedPriceDiff = createSelector(
+  getVariationOptionPriceDiff,
+  getFormatCurrencyFunction,
+  (priceDiff, formatCurrency) => formatVariationOptionPriceDiff(priceDiff, formatCurrency)
+);
+
+const getSelectedOptions = createSelector(
+  getVariationId,
+  getSelectedOptionsByVariationId,
+  (variationId, selectedOptionsByVariationId) => selectedOptionsByVariationId[variationId]
+);
+
+const getSelectedOption = createSelector(
+  getVariationOption,
+  getVariationType,
+  getSelectedOptions,
+  (option, variationType, selectedOptions) => {
+    if (!selectedOptions) {
+      return null;
+    }
+
+    switch (variationType) {
+      case PRODUCT_VARIATION_TYPE.SINGLE_CHOICE:
+        return selectedOptions.optionId === option.id ? option : null;
+      case PRODUCT_VARIATION_TYPE.SIMPLE_MULTIPLE_CHOICE:
+      case PRODUCT_VARIATION_TYPE.QUANTITY_MULTIPLE_CHOICE:
+      default:
+        return selectedOptions.find(selectedOption => selectedOption.optionId === option.id);
+    }
+  }
+);
+
+const getIsSelected = createSelector(getSelectedOption, selectedOption => !!selectedOption);
+
+const getQuantity = createSelector(getSelectedOption, selectedOption =>
+  selectedOption ? selectedOption.quantity ?? 1 : 0
+);
+
+const getIsAbleToDecreaseQuantity = createSelector(getQuantity, quantity => quantity > 0);
+
+const getIsAbleToIncreaseQuantity = createSelector(
+  getVariationSelectedQuantity,
+  getVariationSelectionAmountMaxLimit,
+  (variationSelectedQuantity, max) => variationSelectedQuantity < max
+);
+
+/**
+ * is a option out of stock on all children product
+ */
+const getIsOptionOutOfStockOnAllChildrenProduct = createSelector(
+  getVariationType,
+  getVariationOptionValue,
+  getProductChildrenMap,
+  (variationType, optionValue, productChildrenMap) => {
+    if (variationType !== PRODUCT_VARIATION_TYPE.SINGLE_CHOICE) {
+      return false;
+    }
+
+    // If product has no children, that means it is not Track Inventory, return false.
+    if (productChildrenMap.length === 0) {
+      return false;
+    }
+
+    return productChildrenMap
+      .filter(({ variation }) => variation.includes(optionValue))
+      .every(({ stockStatus }) => stockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK);
+  }
+);
+
+// is display the "unavailable" label on option
+const getIsAvailable = createSelector(
+  getIsOptionOutOfStockOnAllChildrenProduct,
+  isOptionOutOfStockOnAllChildrenProduct => !isOptionOutOfStockOnAllChildrenProduct
+);
+
+const getIsDisabled = createSelector(
+  getIsReachedMaxSelection,
+  getIsSelected,
+  getIsAvailable,
+  (isReachedMaxSelection, isSelected, isAvailable) => !isAvailable || (isReachedMaxSelection && !isSelected)
+);
+
+export const variationOptionStructuredSelector = createStructuredSelector({
+  id: getVariationOptionId,
+  name: getVariationOptionValue,
+  value: getVariationOptionValue,
+  formattedPriceDiff: getVariationOptionFormattedPriceDiff,
+  priceDiff: getVariationOptionPriceDiff,
+  selected: getIsSelected,
+  quantity: getQuantity,
+  isAbleToDecreaseQuantity: getIsAbleToDecreaseQuantity,
+  isAbleToIncreaseQuantity: getIsAbleToIncreaseQuantity,
+  available: getIsAvailable,
+  disabled: getIsDisabled,
+});

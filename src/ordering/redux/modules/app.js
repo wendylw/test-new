@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
-import dayjs from 'dayjs';
 import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
 import _isEmpty from 'lodash/isEmpty';
+import _isEqual from 'lodash/isEqual';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
@@ -21,19 +21,24 @@ import url from '../../../utils/url';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
-import { getAllCategories } from '../../../redux/modules/entities/categories';
+import { getAllCategories, getCategoryList } from '../../../redux/modules/entities/categories';
+import { setAddressInfo } from '../../../redux/modules/address/thunks';
+import { getAddressCoords } from '../../../redux/modules/address/selectors';
 import cartReducer from '../cart';
 import { getCartItems as getNewCartItems } from '../cart/selectors';
 
 import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
+import { createCurrencyFormatter } from '@storehub/frontend-utils';
 
-const { AUTH_INFO, REGISTRATION_SOURCE } = Constants;
+const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 export const types = APP_TYPES;
+
+export { getCategoryList, getAllProducts };
 
 const CartItemModel = {
   id: null,
@@ -60,6 +65,7 @@ const CartModel = {
     tax: 0,
     totalCashback: 0,
     serviceCharge: 0,
+    serviceChargeInfo: {},
     shippingFee: 0,
     promotion: {
       promoCode: null,
@@ -114,7 +120,7 @@ export const initialState = {
   business: config.business,
   onlineStoreInfo: {
     id: '',
-    isFetching: false,
+    status: null,
   },
   coreBusiness: {
     status: null,
@@ -129,6 +135,9 @@ export const initialState = {
     data: null,
     status: null,
   },
+  onlineCategory: {
+    status: null,
+  },
   deliveryDetails: {
     username: '',
     phone: '',
@@ -140,20 +149,8 @@ export const initialState = {
     deliveryComments: '',
     deliveryToCity: '',
     postCode: '',
+    countryCode: '',
   },
-};
-
-const updateDeliveryDetailsInSessionStorage = data => {
-  return sessionStorage.setItem('deliveryDetails', JSON.stringify(data));
-};
-
-const getDeliveryDetailsFromSessionStorage = () => {
-  try {
-    return JSON.parse(Utils.getSessionVariable('deliveryDetails'));
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
 };
 
 const fetchCoreBusiness = variables => ({
@@ -453,10 +450,11 @@ export const actions = {
     const deliveryDetails = getDeliveryDetails(getState());
 
     const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
+    const addressCoords = getAddressCoords(getState());
 
     const deliveryCoords = deliveryToLocation
       ? { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude }
-      : Utils.getDeliveryCoords();
+      : { lat: _get(addressCoords, 'lat', 0), lng: _get(addressCoords, 'lng', 0) };
 
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
@@ -488,15 +486,11 @@ export const actions = {
   },
 
   initDeliveryDetails: () => async (dispatch, getState) => {
-    const deliveryDetailsInSession = getDeliveryDetailsFromSessionStorage();
     const localStoragePhone = localStorage.getItem('user.p') || '';
 
     const payload = {
-      ...deliveryDetailsInSession,
-      phone: deliveryDetailsInSession?.phone || localStoragePhone,
+      phone: localStoragePhone,
     };
-
-    updateDeliveryDetailsInSessionStorage(payload);
 
     dispatch({
       type: types.DELIVERY_DETAILS_INIT,
@@ -513,7 +507,31 @@ export const actions = {
       ...data,
     };
 
-    updateDeliveryDetailsInSessionStorage(payload);
+    const isAddressInfoEmpty = !payload.addressId;
+    const hasAddressInfoChanged = !_isEqual(deliveryDetails, payload);
+    const deliveryToLocation = _get(payload, 'deliveryToLocation', null);
+    let coords = null;
+
+    if (deliveryToLocation) {
+      coords = {
+        lat: _get(deliveryToLocation, 'latitude', 0),
+        lng: _get(deliveryToLocation, 'longitude', 0),
+      };
+    }
+
+    if (!isAddressInfoEmpty && hasAddressInfoChanged) {
+      dispatch(
+        setAddressInfo({
+          savedAddressId: _get(payload, 'addressId', null),
+          shortName: _get(payload, 'addressName', ''),
+          fullName: _get(payload, 'deliveryToAddress', ''),
+          coords,
+          city: _get(payload, 'deliveryToCity', ''),
+          postCode: _get(payload, 'postCode', ''),
+          countryCode: _get(payload, 'countryCode', ''),
+        })
+      );
+    }
 
     dispatch({
       type: types.DELIVERY_DETAILS_UPDATED,
@@ -826,11 +844,24 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 
   switch (type) {
     case types.FETCH_ONLINESTOREINFO_REQUEST:
-      return { ...state, isFetching: true };
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
     case types.FETCH_ONLINESTOREINFO_SUCCESS:
-      return { ...state, isFetching: false, id: action.responseGql.data.onlineStoreInfo.id };
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED, id: action.responseGql.data.onlineStoreInfo.id };
     case types.FETCH_ONLINESTOREINFO_FAILURE:
-      return { ...state, isFetching: false };
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
+const onlineCategory = (state = initialState.onlineCategory, action) => {
+  switch (action.type) {
+    case types.FETCH_ONLINECATEGORY_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_ONLINECATEGORY_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_ONLINECATEGORY_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
     default:
       return state;
   }
@@ -993,6 +1024,7 @@ export default combineReducers({
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
   coreBusiness,
+  onlineCategory,
 });
 
 // selectors
@@ -1004,6 +1036,11 @@ export const getError = state => state.app.error;
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
+
+export const getOnlineStoreInfoStatus = state => state.app.onlineStoreInfo.status;
+
+export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
+
 export const getRequestInfo = state => state.app.requestInfo;
 
 export const getApiError = state => state.app.apiError;
@@ -1112,6 +1149,10 @@ export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =
 );
 export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
 
+export const getServiceChargeRate = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'serviceChargeInfo.serviceChargeRate', 0)
+);
+
 export const getShoppingCart = createSelector(
   [getCartBilling, getCartItems, getCartUnavailableItems, getAllProducts, getAllCategories],
   (cartBilling, items, unavailableItems, allProducts, categories) => {
@@ -1201,6 +1242,10 @@ export const getCashbackRate = createSelector(
   (defaultLoyaltyRatio, enableCashback) => {
     if (!enableCashback) {
       return null;
+    }
+
+    if (defaultLoyaltyRatio === 0) {
+      return 0;
     }
 
     return Math.floor((1 / defaultLoyaltyRatio) * 100) / 100;
@@ -1368,4 +1413,36 @@ export const getIsBillingTotalInvalid = createSelector(
     const isTotalBillingTooSmall = billingTotal > 0 && billingTotal < 1;
     return hasMinConsumptionNotReached || isTotalBillingTooSmall;
   }
+);
+
+/**
+ * get Format Currency function
+ * Usage example: formatCurrency(100), output: "RM 100.00"
+ */
+export const getFormatCurrencyFunction = createSelector(getBusinessCurrency, currencyCode => {
+  const currencyFormatter = createCurrencyFormatter({
+    currencyCode,
+  });
+
+  return currencyFormatter.format.bind(currencyFormatter);
+});
+
+/**
+ * is shipping type of QR ordering
+ * @returns
+ */
+export const getIsQrOrderingShippingType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.DINE_IN || shippingType === DELIVERY_METHOD.TAKE_AWAY
+);
+
+/**
+ * is related store data api ready
+ * @returns
+ */
+export const getIsStoreInfoReady = createSelector(
+  getOnlineStoreInfoStatus,
+  getCoreBusinessAPIStatus,
+  (onlineStoreInfoStatus, coreBusinessAPIStatus) =>
+    onlineStoreInfoStatus === API_REQUEST_STATUS.FULFILLED && coreBusinessAPIStatus === API_REQUEST_STATUS.FULFILLED
 );

@@ -1,0 +1,24 @@
+.modal-animation {
+  &-enter {
+    .modal-animation__backdrop {
+      opacity: 0;
+    }
+  }
+  &-enter-active {
+    .modal-animation__backdrop {
+      transition: opacity 300ms;
+      opacity: 1;
+    }
+  }
+  &-exit {
+    .modal-animation__backdrop {
+      opacity: 1;
+    }
+  }
+  &-exit-active {
+    .modal-animation__backdrop {
+      transition: opacity 300ms;
+      opacity: 0;
+    }
+  }
+}

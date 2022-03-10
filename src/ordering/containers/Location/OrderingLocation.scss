@@ -3,9 +3,9 @@
 .ordering-location {
   height: 100vh;
 
-  .location-picker {
-    height: 100%;
+  &__container {
     width: 100%;
+    flex-grow: 1;
     overflow-y: auto;
   }
 

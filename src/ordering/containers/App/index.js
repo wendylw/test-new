@@ -10,6 +10,8 @@ import {
   getApiError,
   getBusinessInfo,
 } from '../../redux/modules/app';
+import { getAddressInfo, setAddressInfo } from '../../../redux/modules/address/thunks';
+import { getIfAddressInfoExists } from '../../../redux/modules/address/selectors';
 import { getPageError } from '../../../redux/modules/entities/error';
 import Constants from '../../../utils/constants';
 import '../../../Common.scss';
@@ -23,19 +25,11 @@ import * as NativeMethods from '../../../utils/native-methods';
 import loggly from '../../../utils/monitoring/loggly';
 
 const { ROUTER_PATHS } = Constants;
-let savedAddressRes;
 
 class App extends Component {
   constructor(props) {
     super(props);
-    if (Utils.isWebview()) {
-      try {
-        savedAddressRes = NativeMethods.getAddress();
-        this.handleNativeResponse(savedAddressRes);
-      } catch (e) {
-        loggly.error('ordering.get-address', { message: e });
-      }
-    }
+
     const source = Utils.getQueryString('source');
 
     if (source === 'SharedLink') {
@@ -44,41 +38,58 @@ class App extends Component {
       Utils.saveSourceUrlToSessionStorage(source);
     }
   }
+
   state = {};
 
-  handleNativeResponse = savedAddressRes => {
-    if (!savedAddressRes) {
+  initAddressInfo = async () => {
+    const { getAddressInfo, setAddressInfo } = this.props;
+
+    if (!Utils.isWebview()) {
+      await getAddressInfo();
       return;
     }
 
-    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress'));
-    if (deliveryAddress && deliveryAddress.address) {
-      return;
+    // TODO: For backward compatible sake, the code block can be deleted once the app is forced to update.
+    try {
+      const hasFixAddressFlowSupport = JSON.parse(NativeMethods.hasMethodInNative('beepModule-setAddress'));
+
+      if (!hasFixAddressFlowSupport) {
+        await getAddressInfo();
+        const { ifAddressInfoExists } = this.props;
+        if (ifAddressInfoExists) return;
+      }
+    } catch (e) {
+      console.error(`failed to check fix address flow support: ${e.message}`);
     }
 
-    const { address, country, countryCode, lat, lng, savedAddressId, addressName } = savedAddressRes;
-    if (savedAddressId) {
-      this.setAppAddressToSession(address, country, countryCode, lat, lng, addressName);
-      sessionStorage.setItem('addressIdFromNative', savedAddressId);
-    } else {
-      this.setAppAddressToSession(address, country, countryCode, lat, lng);
-    }
-  };
+    try {
+      const nativeAddressInfo = NativeMethods.getAddress();
 
-  setAppAddressToSession = (address, country, countryCode, lat, lng, addressName) => {
-    const addressInfo = {
-      address,
-      addressName,
-      addressComponents: {
-        country: country,
-        countryCode: countryCode,
-      },
-      coords: {
-        lat: parseFloat(lat),
-        lng: parseFloat(lng),
-      },
-    };
-    sessionStorage.setItem('deliveryAddress', JSON.stringify(addressInfo));
+      if (!nativeAddressInfo) return;
+
+      const {
+        savedAddressId,
+        addressName: shortName,
+        address: fullName,
+        countryCode,
+        postCode,
+        lat,
+        lng,
+        city,
+      } = nativeAddressInfo;
+
+      await setAddressInfo({
+        savedAddressId,
+        shortName,
+        fullName,
+        coords: { lng: Number(lng), lat: Number(lat) },
+        countryCode,
+        postCode,
+        city,
+      });
+    } catch (e) {
+      loggly.error('ordering.get-address', { message: e });
+    }
   };
 
   async componentDidMount() {
@@ -101,7 +112,9 @@ class App extends Component {
     }
 
     this.visitErrorPage();
+
     try {
+      await this.initAddressInfo();
       await appActions.initDeliveryDetails();
       await appActions.getLoginStatus();
       const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
@@ -204,7 +217,11 @@ class App extends Component {
     const { favicon } = onlineStoreInfo || {};
 
     return (
-      <main className="table-ordering fixed-wrapper fixed-wrapper__main" data-heap-name="ordering.app.container">
+      <main
+        id="ordering-app-container"
+        className="table-ordering fixed-wrapper fixed-wrapper__main"
+        data-heap-name="ordering.app.container"
+      >
         {apiErrorMessage.show ? (
           <MessageModal
             data={apiErrorMessage}
@@ -232,9 +249,12 @@ export default compose(
         error: getError(state),
         pageError: getPageError(state),
         apiErrorMessage: getApiError(state),
+        ifAddressInfoExists: getIfAddressInfoExists(state),
       };
     },
     dispatch => ({
+      getAddressInfo: bindActionCreators(getAddressInfo, dispatch),
+      setAddressInfo: bindActionCreators(setAddressInfo, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
     })
   )

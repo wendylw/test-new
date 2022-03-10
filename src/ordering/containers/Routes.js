@@ -1,13 +1,16 @@
 import React, { Component, lazy, Suspense } from 'react';
-import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
+import { ConnectedRouter } from 'connected-react-router';
 import Utils from '../../utils/utils';
-import Home from './Home';
+import MenuProxy from './Menu/MenuProxy';
 import Cart from './shopping-cart/containers/Cart/index';
 import CartSubmissionStatus from './shopping-cart/containers/CartSubmissionStatus';
 import Payment from './payments/containers/Payment';
 import CustomerInfo from './Customer/containers/CustomerInfo';
 import Constants from '../../utils/constants';
 import NotFound from '../../containers/NotFound';
+import V2Playground from './Menu/Playground';
+import history from '../orderingHistory';
 
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
 const StripePayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/Stripe')));
@@ -35,12 +38,12 @@ const { ROUTER_PATHS } = Constants;
 
 class Routes extends Component {
   render() {
-    const { match } = this.props;
     return (
-      <Router basename={match.path}>
+      <ConnectedRouter history={history}>
         <Suspense fallback={<div className="loader theme full-page"></div>}>
           <Switch>
-            <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={Home} />
+            <Route exact path={'/v2-playground'} component={V2Playground} /> {/* only for test, will remove later */}
+            <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={MenuProxy} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />
             <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
@@ -82,7 +85,7 @@ class Routes extends Component {
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>
-      </Router>
+      </ConnectedRouter>
     );
   }
 }

@@ -16,15 +16,17 @@ import logisticsGrab from '../../../../../../images/beep-logistics-grab.jpg';
 import logisticsLalamove from '../../../../../../images/beep-logistics-lalamove.jpg';
 import logisticBeepOnFleet from '../../../../../../images/beep-logistics-on-fleet.jpg';
 import logisticsMrspeedy from '../../../../../../images/beep-logistics-rspeedy.jpg';
+import logisticsPandago from '../../../../../../images/beep-logistics-pamdago.jpg';
 import './RiderInfo.scss';
 
-const { ORDER_STATUS } = Constants;
+const { ORDER_STATUS, LOGISTICS_RIDER_TYPE } = Constants;
 const LOGISTICS_LOGOS_MAPPING = {
   grab: logisticsGrab,
   goget: logisticsGoget,
   lalamove: logisticsLalamove,
   mrspeedy: logisticsMrspeedy,
   onfleet: logisticBeepOnFleet,
+  pandago: logisticsPandago,
 };
 
 function getDeliveredTimeRange(bestLastMileETA, worstLastMileETA) {
@@ -132,7 +134,26 @@ function RiderInfo({
     return null;
   }
 
-  const logisticName = courier === 'onfleet' ? t('BeepFleet') : courier;
+  // eslint-disable-next-line consistent-return
+  const logisticName = () => {
+    switch (courier) {
+      case LOGISTICS_RIDER_TYPE.GRAB:
+        return t('Grab');
+      case LOGISTICS_RIDER_TYPE.GO_GET:
+        return t('GoGet');
+      case LOGISTICS_RIDER_TYPE.LA_LA_MOVE:
+        return t('LaLaMove');
+      case LOGISTICS_RIDER_TYPE.MR_SPEEDY:
+        return t('MrSpeedy');
+      case LOGISTICS_RIDER_TYPE.ON_FLEET:
+        return 'BeepFleet';
+      case LOGISTICS_RIDER_TYPE.PAN_DAGO:
+        return t('PanDaGo');
+      default:
+        courier;
+    }
+  };
+
   const logisticPhone = isUseStorehubLogistics ? validDriverPhone : validStorePhone;
   const estimationInfo = {
     [ORDER_STATUS.PICKED_UP]: {
@@ -218,7 +239,7 @@ function RiderInfo({
             </div>
             <div className="padding-left-right-normal margin-top-bottom-smaller text-left flex flex-column flex-space-between">
               <p className="line-height-normal text-weight-bolder">
-                {isUseStorehubLogistics && logisticName ? logisticName : t('DeliveryBy', { name: storeName })}
+                {isUseStorehubLogistics && logisticName() ? logisticName() : t('DeliveryBy', { name: storeName })}
               </p>
               {logisticPhone ? <span className="text-gray line-height-normal">{logisticPhone}</span> : null}
             </div>

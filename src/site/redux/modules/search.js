@@ -2,8 +2,7 @@ import { combineReducers } from 'redux';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getStoreById, storesActionCreators } from './entities/stores';
-import { getCurrentPlaceInfo } from './app';
-import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
+import { getAddressCoords, getAddressCountryCode } from '../../../redux/modules/address/selectors';
 import CleverTap from '../../../utils/clevertap';
 
 const defaultPageInfo = {
@@ -72,9 +71,8 @@ const actions = {
 };
 
 const fetchStoreList = (page, pageSize, shippingType) => (dispatch, getState) => {
-  const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
-  const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
-  const { coords } = currentPlaceInfo;
+  const countryCode = getAddressCountryCode(getState());
+  const coords = getAddressCoords(getState()) || { lat: 0, lng: 0 };
   const { keyword } = getSearchInfo(getState());
   return dispatch({
     types: [types.GET_STORE_LIST_REQUEST, types.GET_STORE_LIST_SUCCESS, types.GET_STORE_LIST_FAILURE],

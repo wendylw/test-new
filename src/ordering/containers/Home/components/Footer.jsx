@@ -15,6 +15,7 @@ import {
   getUserIsLogin,
   getIsUserLoginRequestStatusInPending,
 } from '../../../redux/modules/app';
+import { getIfAddressInfoExists } from '../../../../redux/modules/address/selectors';
 import { getCartItemsCount } from '../../../redux/cart/selectors';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
@@ -72,15 +73,14 @@ export class Footer extends Component {
   };
 
   handleWebRedirect = () => {
-    const { history, deliverInfo } = this.props;
+    const { history, deliverInfo, ifAddressInfoExists } = this.props;
     const { enablePreOrder } = deliverInfo;
     const { search } = window.location;
     if (enablePreOrder) {
-      const { address: deliveryToAddress } = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
       const { date, hour } = Utils.getExpectedDeliveryDateFromSession();
 
       if (
-        (Utils.isDeliveryType() && (!deliveryToAddress || !date.date || !hour)) ||
+        (Utils.isDeliveryType() && (!ifAddressInfoExists || !date.date || !hour)) ||
         (Utils.isPickUpType() && (!date.date || !hour.from))
       ) {
         const callbackUrl = encodeURIComponent(`${Constants.ROUTER_PATHS.ORDERING_CART}${search}`);
@@ -230,6 +230,7 @@ export default compose(
         isLogin: getUserIsLogin(state),
         deliverInfo: getDeliveryInfo(state),
         isUserLoginRequestStatusInPending: getIsUserLoginRequestStatusInPending(state),
+        ifAddressInfoExists: getIfAddressInfoExists(state),
         cartProductsCount: getCartItemsCount(state),
       };
     },

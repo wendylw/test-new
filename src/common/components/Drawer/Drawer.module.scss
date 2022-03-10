@@ -1,0 +1,9 @@
+.backdrop {
+  @apply tw-absolute tw-left-0 tw-right-0 tw-bg-black tw-bg-opacity-50 tw-overflow-hidden;
+}
+.container {
+  @apply tw-bottom-0 tw-left-0 tw-right-0 tw-absolute tw-p-16px
+    tw-flex tw-flex-col tw-overflow-auto
+    tw-rounded-t-lg
+    tw-bg-white;
+}

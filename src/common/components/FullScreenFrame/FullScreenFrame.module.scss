@@ -1,0 +1,14 @@
+@import "../../styles/variables.scss";
+
+.fullScreenFrame {
+  position: fixed;
+  // we use height: 100% instead of top: 0 to prevent the component position lagging
+  height: 100%;
+  bottom: 0;
+  // this component is only for placing the inner component, and won't response to any mouse event (like it doesn't exist)
+  pointer-events: none;
+  @include fixed-width;
+  & > * {
+    pointer-events: auto;
+  }
+}
