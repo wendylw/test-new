@@ -1,5 +1,1 @@
 export const ALCOHOL_FREE_COUNTRY_LIST = ['TH', 'SG'];
-
-export const BEEP_APP_MIN_SUPPORT_VERSIONS = {
-  SAVE_FAVORITE_STORE: '1.17.0',
-};

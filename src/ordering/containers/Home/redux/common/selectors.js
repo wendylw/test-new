@@ -8,11 +8,11 @@ import {
   getIsWebview,
   getUserIsLogin,
   getIsDeliveryOrder,
-  getBeepAppVersion,
   getUserLoginByBeepAppStatus,
 } from '../../../../redux/modules/app';
-import { ALCOHOL_FREE_COUNTRY_LIST, BEEP_APP_MIN_SUPPORT_VERSIONS } from './constants';
+import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
+import * as NativeMethods from '../../../../../utils/native-methods';
 
 export const getSelectedProductId = state => state.home.common.selectedProductDetail.productId;
 
@@ -69,12 +69,17 @@ export const getShouldShowAlcoholModal = createSelector(
     hasAlcohol && hasDrinkingAgeRestriction && hasRequestFulfilled && !hasReachedLegalDrinkingAge
 );
 
+export const getHasSaveFavoriteStoreSupport = () => {
+  const { BEEP_MODULE_METHODS } = NativeMethods;
+  return NativeMethods.hasMethodInNative(BEEP_MODULE_METHODS.HAS_SAVE_FAVORITE_STORE_SUPPORT);
+};
+
 export const getShouldShowFavoriteButton = createSelector(
   getIsWebview,
   getIsDeliveryOrder,
-  getBeepAppVersion,
-  (isWebview, isDeliveryOrder, appVersion) =>
-    isWebview && isDeliveryOrder && appVersion >= BEEP_APP_MIN_SUPPORT_VERSIONS.SAVE_FAVORITE_STORE
+  getHasSaveFavoriteStoreSupport,
+  (isWebview, isDeliveryOrder, hasSaveFavoriteStoreSupport) =>
+    isWebview && isDeliveryOrder && hasSaveFavoriteStoreSupport
 );
 
 export const getHasUserLoginByBeepAppRequestFulfilled = createSelector(

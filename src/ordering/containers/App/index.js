@@ -51,9 +51,10 @@ class App extends Component {
 
     // TODO: For backward compatible sake, the code block can be deleted once the app is forced to update.
     try {
-      const hasFixAddressFlowSupport = JSON.parse(NativeMethods.hasMethodInNative('beepModule-setAddress'));
+      const { BEEP_MODULE_METHODS } = NativeMethods;
+      const hasSetAddressSupport = NativeMethods.hasMethodInNative(BEEP_MODULE_METHODS.SET_ADDRESS);
 
-      if (!hasFixAddressFlowSupport) {
+      if (!hasSetAddressSupport) {
         await getAddressInfo();
         const { ifAddressInfoExists } = this.props;
         if (ifAddressInfoExists) return;
