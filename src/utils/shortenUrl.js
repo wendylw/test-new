@@ -15,8 +15,7 @@ export const shortenUrl = async url => {
 
     SHORTEN_URL_MAP.set(url, fetchShortUrlPromise);
 
-    fetchShortUrlPromise.catch(error => {
-      console.error(`failed to share store link: ${error.message}`);
+    fetchShortUrlPromise.catch(() => {
       SHORTEN_URL_MAP.delete(url);
     });
   }

@@ -7,11 +7,12 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 import Cookies from 'js-cookie';
+import * as UtilsV2 from '../common/utils';
+
 dayjs.extend(utc);
 
 const {
   SH_LOGISTICS_VALID_TIME,
-  WEB_VIEW_SOURCE,
   CLIENTS,
   ROUTER_PATHS,
   REGISTRATION_SOURCE,
@@ -35,8 +36,8 @@ Utils.getQueryString = key => {
  * @param {string or string array} keys,
  * @returns {string}
  */
-Utils.getFilteredQueryString = keys => {
-  const query = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+Utils.getFilteredQueryString = (keys, queryString = window.location.search) => {
+  const query = qs.parse(queryString, { ignoreQueryPrefix: true });
 
   // Only deal with string or array.
   if (typeof keys === 'string') {
@@ -60,26 +61,12 @@ Utils.getApiRequestShippingType = shippingType => {
   }
 };
 
-Utils.hasNativeSavedAddress = () => {
-  if (Utils.isWebview() && sessionStorage.getItem('addressIdFromNative')) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-Utils.isWebview = function isWebview() {
-  return Utils.isAndroidWebview() || Utils.isIOSWebview();
-};
+Utils.isWebview = UtilsV2.isWebview;
 
 // still need to distinguish ios webview and android webview
-Utils.isIOSWebview = function isIOSWebview() {
-  return window.webViewSource === WEB_VIEW_SOURCE.IOS;
-};
+Utils.isIOSWebview = UtilsV2.isIOSWebview;
 
-Utils.isAndroidWebview = function isAndroidWebview() {
-  return window.webViewSource === WEB_VIEW_SOURCE.Android;
-};
+Utils.isAndroidWebview = UtilsV2.isAndroidWebview;
 
 Utils.getQueryVariable = variable => {
   var query = window.location.search.substring(1);
@@ -154,15 +141,7 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
   }
 };
 
-Utils.getSessionVariable = function getSessionVariable(name) {
-  try {
-    return sessionStorage.getItem(name);
-  } catch (e) {
-    const { getCookieVariable } = Utils;
-    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
-    getCookieVariable(cookieNameOfSessionStorage);
-  }
-};
+Utils.getSessionVariable = UtilsV2.getSessionVariable;
 
 /* If sessionStorage is not operational, cookies will be used to store global variables */
 Utils.setSessionVariable = function setSessionVariable(name, value) {
@@ -368,18 +347,9 @@ export const isValidUrl = url => {
   return domainRegex.test(url);
 };
 
-Utils.removeHtmlTag = function removeHtmlTag(str) {
-  if (!str) {
-    return '';
-  }
+Utils.removeHtmlTag = UtilsV2.removeHtmlTag;
 
-  return str.replace(/<[^>]+>/g, '');
-};
-
-Utils.getOrderTypeFromUrl = () => {
-  const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-  return type;
-};
+Utils.getOrderTypeFromUrl = UtilsV2.getShippingTypeFromUrl;
 
 Utils.isDeliveryType = () => {
   return Utils.getOrderTypeFromUrl() === Constants.DELIVERY_METHOD.DELIVERY;
@@ -458,17 +428,12 @@ Utils.getDeliveryInfo = businessInfo => {
 
   const { phone } = (stores && stores[0]) || {};
   const storeAddress = Utils.getValidAddress((stores && stores[0]) || {}, Constants.ADDRESS_RANGE.COUNTRY);
-  const { address: deliveryToAddress, addressName: savedAddressName } = JSON.parse(
-    Utils.getSessionVariable('deliveryAddress') || '{}'
-  );
 
   return {
     deliveryFee,
     useStorehubLogistics,
     minOrder,
     storeAddress,
-    deliveryToAddress,
-    savedAddressName,
     telephone: phone,
     validDays,
     validTimeFrom,
@@ -535,15 +500,7 @@ Utils.isPreOrder = () => {
   }
 };
 
-Utils.getExpectedDeliveryDateFromSession = () => {
-  const selectedDate = JSON.parse(Utils.getSessionVariable('expectedDeliveryDate') || '{}');
-  const selectedHour = JSON.parse(Utils.getSessionVariable('expectedDeliveryHour') || '{}');
-
-  return {
-    date: selectedDate,
-    hour: selectedHour,
-  };
-};
+Utils.getExpectedDeliveryDateFromSession = UtilsV2.getExpectedDeliveryDateFromSession;
 
 Utils.setExpectedDeliveryTime = ({ date, hour }) => {
   Utils.setSessionVariable('expectedDeliveryDate', JSON.stringify(date));
@@ -553,28 +510,6 @@ Utils.setExpectedDeliveryTime = ({ date, hour }) => {
 Utils.removeExpectedDeliveryTime = () => {
   Utils.removeSessionVariable('expectedDeliveryDate');
   Utils.removeSessionVariable('expectedDeliveryHour');
-};
-
-Utils.getDeliveryCoords = () => {
-  try {
-    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    return deliveryAddress.coords;
-  } catch (e) {
-    console.error('Cannot get delivery coordinate', e);
-    captureException(e);
-    return undefined;
-  }
-};
-
-Utils.getDeliveryAddress = () => {
-  try {
-    const deliveryAddress = JSON.parse(Utils.getSessionVariable('deliveryAddress') || '{}');
-    return deliveryAddress;
-  } catch (e) {
-    console.error('Cannot get delivery address', e);
-    captureException(e);
-    return {};
-  }
 };
 
 Utils.isSiteApp = (domain = document.location.hostname) => {
@@ -953,9 +888,7 @@ Utils.getMainDomain = () => {
   return result;
 };
 
-Utils.getCookieVariable = name => {
-  return Cookies.get(name);
-};
+Utils.getCookieVariable = UtilsV2.getCookieVariable;
 
 Utils.setCookieVariable = (name, value, attributes) => {
   return Cookies.set(name, value, attributes);
@@ -966,7 +899,7 @@ Utils.removeCookieVariable = (name, attributes) => {
   return Cookies.remove(name, attributes);
 };
 
-Utils.isTNGMiniProgram = () => window._isTNGMiniProgram_;
+Utils.isTNGMiniProgram = UtilsV2.isTNGMiniProgram;
 
 Utils.isSharedLink = () => {
   return Utils.getSessionVariable('BeepOrderingSource') === 'SharedLink';
@@ -1003,8 +936,6 @@ Utils.submitForm = (action, data) => {
   document.body.removeChild(form);
 };
 
-Utils.getStoreHashCode = () => {
-  return Utils.getCookieVariable('__h');
-};
+Utils.getStoreHashCode = UtilsV2.getStoreHashCode;
 
 export default Utils;

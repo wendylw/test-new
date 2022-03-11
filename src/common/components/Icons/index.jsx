@@ -1,0 +1,1 @@
+export { ActivePointIcon } from './ActivePointIcon';

@@ -1,0 +1,38 @@
+.drawer-animation {
+  &-enter {
+    .drawer-animation__backdrop {
+      opacity: 0;
+    }
+    .drawer-animation__content {
+      transform: translateY(100%);
+    }
+  }
+  &-enter-active {
+    .drawer-animation__backdrop {
+      transition: opacity 300ms;
+      opacity: 1;
+    }
+    .drawer-animation__content {
+      transition: transform 300ms;
+      transform: translateY(0);
+    }
+  }
+  &-exit {
+    .drawer-animation__backdrop {
+      opacity: 1;
+    }
+    .drawer-animation__content {
+      transform: translateY(0);
+    }
+  }
+  &-exit-active {
+    .drawer-animation__backdrop {
+      transition: opacity 300ms;
+      opacity: 0;
+    }
+    .drawer-animation__content {
+      transition: transform 300ms;
+      transform: translateY(100%);
+    }
+  }
+}

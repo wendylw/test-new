@@ -1,3 +1,5 @@
+import { createSelector } from 'reselect';
+
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
@@ -32,3 +34,7 @@ export default reducer;
 // selectors
 
 export const getAllCategories = state => state.entities.categories;
+
+export const getCategoryList = createSelector(getAllCategories, allCategories =>
+  Object.values(allCategories).filter(category => category.isEnabled)
+);

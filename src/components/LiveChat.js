@@ -20,6 +20,7 @@ class LiveChat extends Component {
     const userInfo = hasUserLoggedIn ? { user_id: userId, ...userProfile } : {};
 
     window.intercomSettings = {
+      app_base: process.env.REACT_APP_INTERCOM_APP_BASE,
       app_id: process.env.REACT_APP_INTERCOM_APP_ID,
       hide_default_launcher: true,
       order_id,

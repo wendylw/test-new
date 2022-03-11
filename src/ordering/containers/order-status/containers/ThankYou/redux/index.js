@@ -72,8 +72,7 @@ const { reducer, actions } = createSlice({
     [cancelOrder.pending.type]: state => {
       state.cancelOrderStatus = 'pending';
     },
-    [cancelOrder.fulfilled.type]: (state, { payload }) => {
-      state.order = payload.order;
+    [cancelOrder.fulfilled.type]: state => {
       state.cancelOrderStatus = 'fulfilled';
     },
     [cancelOrder.rejected.type]: (state, { error }) => {

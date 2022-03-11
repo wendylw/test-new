@@ -36,9 +36,40 @@ import './OrderingPromotion.scss';
 class Promotion extends Component {
   promoCodeInput = null;
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      containerHeight: this.getContainerHeight(),
+    };
+  }
+
+  componentDidMount() {
+    this.addResizeEventHandler();
+  }
+
   componentWillUnmount() {
     this.props.promotionActions.resetPromotion();
+    this.removeResizeEventHandler();
   }
+
+  getContainerHeight = () => {
+    return Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl],
+    });
+  };
+
+  handleResizeEvent = () => {
+    this.setState({ containerHeight: this.getContainerHeight() });
+  };
+
+  addResizeEventHandler = () => {
+    window.addEventListener('resize', this.handleResizeEvent);
+  };
+
+  removeResizeEventHandler = () => {
+    window.removeEventListener('resize', this.handleResizeEvent);
+  };
 
   handleCleanClick = () => {
     this.props.promotionActions.updatePromoCode('');
@@ -101,6 +132,7 @@ class Promotion extends Component {
 
   render() {
     const { t, promoCode, isAppliedSuccess, isAppliedError, inProcess, selectedPromo } = this.props;
+    const { containerHeight } = this.state;
     const showCleanButton = promoCode.length > 0 && !inProcess && !isAppliedSuccess;
     let inputContainerStatus = '';
     if (isAppliedSuccess) {
@@ -121,15 +153,7 @@ class Promotion extends Component {
           navFunc={this.handleClickBack}
           headerRef={ref => (this.headerEl = ref)}
         ></HybridHeader>
-        <div
-          className="ordering-promotion__container padding-top-bottom-normal"
-          style={{
-            height: Utils.containerHeight({
-              headerEls: [this.headerEl],
-              footerEls: [this.footerEl],
-            }),
-          }}
-        >
+        <div className="ordering-promotion__container padding-top-bottom-normal" style={{ height: containerHeight }}>
           <div className="ordering-promotion__input-container padding-small">
             <div
               className={

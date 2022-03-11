@@ -1,0 +1,27 @@
+$checkboxWidth: 24px;
+
+.checkbox {
+  @apply tw-relative tw-inline-block tw-appearance-none tw-cursor-pointer;
+  width: $checkboxWidth;
+  height: $checkboxWidth;
+
+  &::before {
+    content: "";
+    @apply tw-block tw-w-full tw-h-full tw-box-border tw-bg-white
+      tw-border tw-border-gray-500 tw-border-solid;
+    border-radius: 2px;
+    background-image: url("./check-square-fill.svg");
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+  }
+
+  &:checked::before {
+    @apply tw-border-none;
+    background-size: #{$checkboxWidth + 8px} #{$checkboxWidth + 8px};
+    background-position: 50% 50%;
+  }
+
+  &:disabled::before {
+    @apply tw-bg-gray-200 tw-border-gray-400;
+  }
+}

@@ -19,6 +19,7 @@ import {
   getUser,
   getBusinessInfo,
   getShoppingCart,
+  getServiceChargeRate,
   getDeliveryDetails,
   getHasLoginGuardPassed,
   getCartBilling,
@@ -59,6 +60,7 @@ class PayFirst extends Component {
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
+    this.addResizeEventHandler();
 
     CleverTap.pushEvent('Cart page - view cart page', storeInfoForCleverTap);
   }
@@ -67,6 +69,10 @@ class PayFirst extends Component {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
     this.setProductsContainerHeight(prevStates.productsContainerHeight);
   }
+
+  componentWillUnmount = () => {
+    this.removeResizeEventHandler();
+  };
 
   handleClickContinue = async () => {
     const { user, history, appActions, loadStockStatus } = this.props;
@@ -163,6 +169,19 @@ class PayFirst extends Component {
   handleClearAdditionalComments = () => {
     Utils.removeSessionVariable('additionalComments');
     this.setState({ additionalComments: null });
+  };
+
+  handleResizeEvent = () => {
+    this.setCartContainerHeight();
+    this.setProductsContainerHeight();
+  };
+
+  addResizeEventHandler = () => {
+    window.addEventListener('resize', this.handleResizeEvent);
+  };
+
+  removeResizeEventHandler = () => {
+    window.removeEventListener('resize', this.handleResizeEvent);
   };
 
   setCartContainerHeight = preContainerHeight => {
@@ -551,6 +570,7 @@ class PayFirst extends Component {
       history,
       storeInfoForCleverTap,
       shippingType,
+      serviceChargeRate,
     } = this.props;
     const { cartContainerHeight } = this.state;
     const { items } = shoppingCart || {};
@@ -610,6 +630,7 @@ class PayFirst extends Component {
             }}
             tax={tax}
             serviceCharge={serviceCharge}
+            serviceChargeRate={serviceChargeRate}
             businessInfo={businessInfo}
             isTakeAwayType={Utils.isTakeAwayType()}
             takeawayCharges={takeawayCharges}
@@ -687,6 +708,7 @@ PayFirst.propTypes = {
   }),
   isUserProfileStatusFulfilled: PropTypes.bool,
   consumerId: PropTypes.string,
+  serviceChargeRate: PropTypes.number,
 };
 
 PayFirst.defaultProps = {
@@ -721,6 +743,7 @@ PayFirst.defaultProps = {
   },
   isUserProfileStatusFulfilled: false,
   consumerId: '',
+  serviceChargeRate: 0,
 };
 
 /* TODO: backend data */
@@ -732,6 +755,7 @@ export default compose(
       user: getUser(state),
       cartBilling: getCartBilling(state),
       shoppingCart: getShoppingCart(state),
+      serviceChargeRate: getServiceChargeRate(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
       validBillingTotal: getValidBillingTotal(state),

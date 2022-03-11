@@ -1,0 +1,14 @@
+.badge {
+  @apply tw-bg-orange tw-text-white tw-border tw-border-solid tw-border-white tw-rounded-lg
+    tw-text-center tw-font-bold tw-px-4px tw-flex tw-items-center tw-justify-center;
+
+  font-size: 12px;
+  line-height: 18px;
+  height: 20px;
+  min-width: 20px;
+}
+
+.badgeContainer {
+  display: inline-block;
+  position: relative;
+}

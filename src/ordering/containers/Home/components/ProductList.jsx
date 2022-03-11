@@ -13,6 +13,7 @@ import { bindActionCreators, compose } from 'redux';
 import { actions as appActionsCreator, getCategoryProductList } from '../../../redux/modules/app';
 import { getSelectedProductDetail } from '../redux/common/selectors';
 import { showProductDetail } from '../redux/common/thunks';
+import { getIfAddressInfoExists } from '../../../../redux/modules/address/selectors';
 import Utils from '../../../../utils/utils';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
 import Constants from '../../../../utils/constants';
@@ -75,7 +76,7 @@ class ProductList extends Component {
   }
 
   isNeedToLocationAndDatePage() {
-    const deliveryAddress = Utils.getSessionVariable('deliveryAddress');
+    const { ifAddressInfoExists } = this.props;
     const isDeliveryType = Utils.isDeliveryType();
     const isPickupType = Utils.isPickUpType();
     const storeId = config.storeId;
@@ -91,7 +92,7 @@ class ProductList extends Component {
       return true;
     }
 
-    if (isDeliveryType && !deliveryAddress) {
+    if (isDeliveryType && !ifAddressInfoExists) {
       return true;
     }
 
@@ -252,6 +253,7 @@ export default compose(
       return {
         categories: getCategoryProductList(state),
         selectedProductDetail: getSelectedProductDetail(state),
+        ifAddressInfoExists: getIfAddressInfoExists(state),
       };
     },
     dispatch => ({

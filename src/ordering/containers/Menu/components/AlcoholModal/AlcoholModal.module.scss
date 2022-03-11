@@ -1,0 +1,47 @@
+.AlcoholContainer {
+  @apply tw-flex tw-flex-grow-0 tw-items-center tw-flex-col sm:tw-p-8px tw-p-8 tw-text-center;
+}
+
+.AlcoholImage {
+  max-width: 80px;
+  width: 27%;
+}
+
+.AlcoholDesTitle {
+  @apply tw-text-center tw-font-bold tw-text-xl tw-leading-normal;
+}
+
+.AlcoholDes {
+  @apply tw-text-gray-700 tw-text-base tw-leading-relaxed sm:tw-m-8px tw-m-8;
+}
+
+.AlcoholButton {
+  @apply tw-flex tw-flex-1 tw-w-full  tw-items-center tw-justify-around;
+}
+
+.AlcoholCloseButton {
+  @apply tw-w-full tw-m-6 sm:tw-m-8px  tw-rounded tw-font-bold;
+}
+
+.AlcoholOkButton {
+  @apply tw-w-full tw-m-6 sm:tw-m-8px tw-rounded tw-font-bold;
+}
+
+.AlcoholDesEnd {
+  @apply tw-text-xs sm:tw-m-12px tw-m-12 tw-text-gray-600 tw-text-center;
+
+  width: 100%;
+  max-width: 266px;
+}
+
+.AlcoholDesTitleDenied {
+  @apply tw-text-center tw-font-bold tw-text-xl tw-leading-relaxed;
+}
+
+.AlcoholDesDenied {
+  @apply tw-text-center tw-leading-relaxed sm:tw-px-8px tw-px-8 sm:tw-mb-16px tw-mb-16 sm:tw-mt-2px tw-mt-2;
+}
+
+.AlcoholDeniedButton {
+  @apply tw-flex tw-flex-1  tw-rounded tw-text-white tw-font-bold tw-border-solid;
+}

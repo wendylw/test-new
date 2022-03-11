@@ -3,8 +3,7 @@ import { createSelector } from 'reselect';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getAllStores, storesActionCreators } from './entities/stores';
-import { getCurrentPlaceInfo } from './app';
-import { getCountryCodeByPlaceInfo } from '../../../utils/geoUtils';
+import { getAddressCoords, getAddressCountryCode } from '../../../redux/modules/address/selectors';
 
 const defaultPageInfo = {
   page: 0,
@@ -69,9 +68,8 @@ const actions = {
 };
 
 const fetchStoreList = (page, pageSize, shippingType, urlPath) => (dispatch, getState) => {
-  const currentPlaceInfo = getCurrentPlaceInfo(getState()) || {};
-  const countryCode = getCountryCodeByPlaceInfo(currentPlaceInfo);
-  const { coords } = currentPlaceInfo;
+  const countryCode = getAddressCountryCode(getState());
+  const coords = getAddressCoords(getState()) || { lat: 0, lng: 0 };
   return dispatch({
     types: [types.FETCH_STORE_LIST_REQUEST, types.FETCH_STORE_LIST_SUCCESS, types.FETCH_STORE_LIST_FAILURE],
     context: { page, pageSize, shippingType },
