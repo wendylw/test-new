@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../../../redux/modules/entities/products';
-import { getMerchantCountry, getDeliveryInfo, getOnlineStoreInfo } from '../../../../redux/modules/app';
+import { getMerchantCountry, getDeliveryInfo } from '../../../../redux/modules/app';
 import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
@@ -60,15 +60,3 @@ export const getShouldShowAlcoholModal = createSelector(
   (hasAlcohol, hasDrinkingAgeRestriction, hasReachedLegalDrinkingAge, hasRequestFulfilled) =>
     hasAlcohol && hasDrinkingAgeRestriction && hasRequestFulfilled && !hasReachedLegalDrinkingAge
 );
-
-/**
- * get store display title
- * @param {*} state
- * @returns store display title
- */
-export const getStoreDisplayTitle = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
-  const storeBrandName = _get(onlineStoreInfo, 'beepBrandName', '');
-  const onlineStoreName = _get(onlineStoreInfo, 'storeName', '');
-
-  return storeBrandName || onlineStoreName;
-});

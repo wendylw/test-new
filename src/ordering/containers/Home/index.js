@@ -43,12 +43,9 @@ import config from '../../../config';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import CleverTap from '../../../utils/clevertap';
-import {
-  getUserHasReachedLegalDrinkingAge,
-  getShouldShowAlcoholModal,
-  getStoreDisplayTitle,
-} from './redux/common/selectors';
+import { getUserHasReachedLegalDrinkingAge, getShouldShowAlcoholModal } from './redux/common/selectors';
 import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
+import { getStoreDisplayTitle } from '../Menu/redux/common/selectors';
 import Header from '../../../components/Header';
 import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
