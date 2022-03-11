@@ -931,7 +931,24 @@ class Home extends Component {
   };
 
   handleClickSaveFavoriteStore = async () => {
-    const { appActions, hasUserLoggedIn, toggleUserSaveStoreStatus } = this.props;
+    const {
+      appActions,
+      merchantCountry,
+      shippingType,
+      cashbackRate,
+      hasUserSaveStore,
+      hasUserLoggedIn,
+      freeShippingMinAmount,
+      toggleUserSaveStoreStatus,
+    } = this.props;
+
+    CleverTap.pushEvent('Menu page - Click saved favourite store button', {
+      country: merchantCountry,
+      'free delivery above': freeShippingMinAmount || 0,
+      'shipping type': shippingType,
+      action: hasUserSaveStore ? 'unsaved' : 'saved',
+      cashback: cashbackRate,
+    });
 
     if (!hasUserLoggedIn) {
       await appActions.loginByBeepApp();
