@@ -114,7 +114,10 @@ class Payment extends Component {
     } = this.props;
     const isPaidWithCreditOrOnlineBanking =
       currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE ||
-      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE_FPX;
+      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE_FPX ||
+      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.BEEP_PH_CREDIT_CARD ||
+      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.BEEP_TH_CREDIT_CARD ||
+      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.BEEP_TH_ONLINE_BANKING;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     if (!isPaidWithCreditOrOnlineBanking && enablePayLater) {
