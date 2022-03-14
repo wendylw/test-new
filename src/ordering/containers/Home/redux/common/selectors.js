@@ -2,9 +2,17 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { getAllProducts } from '../../../../../redux/modules/entities/products';
-import { getMerchantCountry, getDeliveryInfo } from '../../../../redux/modules/app';
+import {
+  getMerchantCountry,
+  getDeliveryInfo,
+  getIsWebview,
+  getUserIsLogin,
+  getIsDeliveryOrder,
+  getUserLoginByBeepAppStatus,
+} from '../../../../redux/modules/app';
 import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
+import * as NativeMethods from '../../../../../utils/native-methods';
 
 export const getSelectedProductId = state => state.home.common.selectedProductDetail.productId;
 
@@ -60,3 +68,31 @@ export const getShouldShowAlcoholModal = createSelector(
   (hasAlcohol, hasDrinkingAgeRestriction, hasReachedLegalDrinkingAge, hasRequestFulfilled) =>
     hasAlcohol && hasDrinkingAgeRestriction && hasRequestFulfilled && !hasReachedLegalDrinkingAge
 );
+
+export const getHasSaveFavoriteStoreSupport = () => {
+  const { BEEP_MODULE_METHODS } = NativeMethods;
+  return NativeMethods.hasMethodInNative(BEEP_MODULE_METHODS.HAS_SAVE_FAVORITE_STORE_SUPPORT);
+};
+
+export const getShouldShowFavoriteButton = createSelector(
+  getIsWebview,
+  getIsDeliveryOrder,
+  getHasSaveFavoriteStoreSupport,
+  (isWebview, isDeliveryOrder, hasSaveFavoriteStoreSupport) =>
+    isWebview && isDeliveryOrder && hasSaveFavoriteStoreSupport
+);
+
+export const getHasUserLoginByBeepAppRequestFulfilled = createSelector(
+  getUserLoginByBeepAppStatus,
+  loginByBeepAppStatus => loginByBeepAppStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getShouldCheckSaveStoreStatus = createSelector(
+  getUserIsLogin,
+  getShouldShowFavoriteButton,
+  getHasUserLoginByBeepAppRequestFulfilled,
+  (isLogin, shouldShowFavoriteButton, hasBeepAppLoginRequestFulfilled) =>
+    isLogin && !hasBeepAppLoginRequestFulfilled && shouldShowFavoriteButton
+);
+
+export const getHasUserSaveStore = state => state.home.common.storeSaveStatus.data;

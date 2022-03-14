@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { actions as appActions } from '../../../../redux/modules/app';
-import { getAlcoholConsent, setAlcoholConsent } from './api-request';
+import { actions as appActions, getUserConsumerId, getStoreId } from '../../../../redux/modules/app';
+import { getHasUserSaveStore } from './selectors';
+import { getAlcoholConsent, setAlcoholConsent, getStoreSaveStatus, setStoreSaveStatus } from './api-request';
 
 export const showProductDetail = createAsyncThunk(
   'ordering/home/common/showProductDetail',
@@ -24,3 +25,31 @@ export const setUserAlcoholConsent = createAsyncThunk('ordering/home/common/setU
   setAlcoholConsent().catch(() => {});
   return true;
 });
+
+export const getUserSaveStoreStatus = createAsyncThunk(
+  'ordering/home/common/getUserSaveStoreStatus',
+  async (_, { getState }) => {
+    const state = getState();
+    const consumerId = getUserConsumerId(state);
+    const storeId = getStoreId(state);
+    const { isFavorite = false } = await getStoreSaveStatus({ consumerId, storeId });
+    return isFavorite;
+  }
+);
+
+// Optimistic update: do not care about the API callback result, just update the status as user expected
+export const toggleUserSaveStoreStatus = createAsyncThunk(
+  'ordering/home/common/setUserSaveStoreStatus',
+  (_, { getState }) => {
+    const state = getState();
+    const consumerId = getUserConsumerId(state);
+    const storeId = getStoreId(state);
+    const updatedSaveResult = !getHasUserSaveStore(state);
+
+    setStoreSaveStatus({ consumerId, storeId, isFavorite: updatedSaveResult }).catch(error =>
+      console.error(`Failed to ${updatedSaveResult ? 'save' : 'unsave'} store: ${error.message}`)
+    );
+
+    return updatedSaveResult;
+  }
+);

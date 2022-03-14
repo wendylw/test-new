@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
+import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -31,7 +32,7 @@ import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 
-const { AUTH_INFO, DELIVERY_METHOD } = Constants;
+const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -105,6 +106,7 @@ export const initialState = {
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
     loginRequestStatus: null,
+    loginByBeepAppStatus: null,
   },
   error: null, // network error
   apiError: {
@@ -260,12 +262,13 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  loginApp: ({ accessToken, refreshToken }) => async (dispatch, getState) => {
+  loginApp: ({ accessToken, refreshToken, source = null }) => async (dispatch, getState) => {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
 
       dispatch({
         type: types.CREATE_LOGIN_REQUEST,
+        payload: { source },
       });
 
       const result = await ApiRequest.login({
@@ -276,12 +279,13 @@ export const actions = {
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
-        payload: result,
+        payload: { result, source },
       });
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error: error,
+        payload: { source },
       });
     }
   },
@@ -575,6 +579,29 @@ export const actions = {
     return dispatch(fetchProductDetail({ productId, fulfillDate, shippingType }));
   },
 
+  loginByBeepApp: () => async (dispatch, getState) => {
+    try {
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+      if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
+
+      const source = REGISTRATION_SOURCE.BEEP_APP;
+
+      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+
+      const isTokenExpired = getUserIsExpired(getState());
+
+      if (isTokenExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+      }
+    } catch (e) {
+      console.error('Failed to get tokens from native: ', e.message);
+    }
+  },
+
   loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
@@ -617,8 +644,10 @@ export const actions = {
 };
 
 const user = (state = initialState.user, action) => {
-  const { type, response, prompt, error, fields, responseGql } = action;
+  const { type, response, prompt, error, fields, responseGql, payload } = action;
   const { consumerId, login, noWhatsAppAccount } = response || {};
+  const source = _get(payload, 'source', null);
+  const isFromBeepApp = source === REGISTRATION_SOURCE.BEEP_APP;
 
   switch (type) {
     case types.SHOW_LOGIN_PAGE:
@@ -629,7 +658,12 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true };
     case types.CREATE_LOGIN_REQUEST:
-      return { ...state, isFetching: true, loginRequestStatus: API_REQUEST_STATUS.PENDING };
+      return {
+        ...state,
+        isFetching: true,
+        loginRequestStatus: API_REQUEST_STATUS.PENDING,
+        loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.PENDING : null,
+      };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
@@ -657,7 +691,8 @@ const user = (state = initialState.user, action) => {
         refreshToken: refresh_token,
       };
     case types.CREATE_LOGIN_SUCCESS: {
-      const { consumerId, user } = action.payload;
+      const consumerId = _get(payload, 'result.consumerId', '');
+      const user = _get(payload, 'result.user', {});
       if (state.accessToken) {
         delete state.accessToken;
       }
@@ -680,6 +715,7 @@ const user = (state = initialState.user, action) => {
         hasOtp: false,
         isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
+        loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.FULFILLED : null,
       };
     }
     case types.FETCH_LOGIN_STATUS_SUCCESS:
@@ -692,11 +728,20 @@ const user = (state = initialState.user, action) => {
       };
     case types.CREATE_LOGIN_FAILURE:
       CleverTap.pushEvent('Login - login failed');
+
+      const loginByBeepAppStatus = isFromBeepApp ? API_REQUEST_STATUS.REJECTED : null;
+
       if (error?.error === 'TokenExpiredError' || error?.error === 'JsonWebTokenError') {
-        return { ...state, isExpired: true, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+        return {
+          ...state,
+          isExpired: true,
+          isFetching: false,
+          loginRequestStatus: API_REQUEST_STATUS.REJECTED,
+          loginByBeepAppStatus,
+        };
       }
 
-      return { ...state, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED };
+      return { ...state, isFetching: false, loginRequestStatus: API_REQUEST_STATUS.REJECTED, loginByBeepAppStatus };
     case types.SET_LOGIN_PROMPT:
       return { ...state, prompt };
     case types.UPDATE_PROFILE_INFO:
@@ -1004,6 +1049,8 @@ export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogi
 
 export const getUserLoginRequestStatus = state => state.app.user.loginRequestStatus;
 
+export const getUserLoginByBeepAppStatus = state => state.app.user.loginByBeepAppStatus;
+
 export const getUserProfileStatus = state => state.app.user.profile.status;
 
 export const getUserProfile = state => state.app.user.profile;
@@ -1298,7 +1345,9 @@ export const getCategoryProductList = createSelector(
 export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
 export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
+export const getIsDeliveryOrder = state => Utils.isDeliveryOrder();
 export const getIsQROrder = state => Utils.isQROrder();
+export const getIsWebview = state => Utils.isWebview();
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)

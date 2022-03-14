@@ -1,6 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { showProductDetail, getUserAlcoholConsent, setUserAlcoholConsent } from './thunks';
+import {
+  showProductDetail,
+  getUserAlcoholConsent,
+  setUserAlcoholConsent,
+  getUserSaveStoreStatus,
+  toggleUserSaveStoreStatus,
+} from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 const initialState = {
@@ -10,6 +16,11 @@ const initialState = {
   },
   alcoholConsent: {
     data: null,
+    status: null,
+    error: null,
+  },
+  storeSaveStatus: {
+    data: false,
     status: null,
     error: null,
   },
@@ -45,6 +56,30 @@ const { reducer, actions } = createSlice({
     [setUserAlcoholConsent.rejected.type]: (state, { error }) => {
       state.alcoholConsent.status = API_REQUEST_STATUS.REJECTED;
       state.alcoholConsent.error = error;
+    },
+    [getUserSaveStoreStatus.pending.type]: state => {
+      state.storeSaveStatus.status = API_REQUEST_STATUS.PENDING;
+      state.storeSaveStatus.error = null;
+    },
+    [getUserSaveStoreStatus.fulfilled.type]: (state, { payload }) => {
+      state.storeSaveStatus.status = API_REQUEST_STATUS.FULFILLED;
+      state.storeSaveStatus.data = payload;
+    },
+    [getUserSaveStoreStatus.rejected.type]: (state, { error }) => {
+      state.storeSaveStatus.status = API_REQUEST_STATUS.REJECTED;
+      state.storeSaveStatus.error = error;
+    },
+    [toggleUserSaveStoreStatus.pending.type]: state => {
+      state.storeSaveStatus.status = API_REQUEST_STATUS.PENDING;
+      state.storeSaveStatus.error = null;
+    },
+    [toggleUserSaveStoreStatus.fulfilled.type]: (state, { payload }) => {
+      state.storeSaveStatus.status = API_REQUEST_STATUS.FULFILLED;
+      state.storeSaveStatus.data = payload;
+    },
+    [toggleUserSaveStoreStatus.rejected.type]: (state, { error }) => {
+      state.storeSaveStatus.status = API_REQUEST_STATUS.REJECTED;
+      state.storeSaveStatus.error = error;
     },
   },
 });

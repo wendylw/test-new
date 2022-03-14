@@ -2,6 +2,7 @@ import dsBridge from 'dsbridge';
 import _find from 'lodash/find';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
+import _isArray from 'lodash/isArray';
 import * as loggly from './monitoring/loggly';
 import debug from './debug';
 import Utils from './utils';
@@ -16,6 +17,12 @@ export const NATIVE_API_ERROR_CODES = {
   PARAM_ERROR: 'A0400',
   METHOD_NOT_EXIST: 'C0113',
   UNKNOWN_ERROR: 'B0001',
+};
+
+export const BEEP_MODULE_METHODS = {
+  SET_ADDRESS: 'beepModule-setAddress',
+  SHARE_LINK: 'beepModule-shareLink',
+  HAS_SAVE_FAVORITE_STORE_SUPPORT: 'beepModule-hasSaveFavoriteStoreSupport',
 };
 
 export class NativeAPIError extends Error {
@@ -96,8 +103,8 @@ export const hasMethodInNative = method => {
         methodName: method,
       });
     }
-
-    return NATIVE_METHOD_SUPPORT_MAP[method];
+    // The return value of hasMethodInNative maybe 'false' or 'true'
+    return JSON.parse(NATIVE_METHOD_SUPPORT_MAP[method]);
   } catch (error) {
     return false;
   }
@@ -144,11 +151,20 @@ export const startChat = ({ orderId, storeName }) => {
 
 export const shareLink = ({ link, title }) => {
   const data = {
-    method: 'beepModule-shareLink',
+    method: BEEP_MODULE_METHODS.SHARE_LINK,
     params: {
       link,
       title,
     },
+    mode: MODE.SYNC,
+  };
+
+  return dsBridgeCall(data);
+};
+
+export const hasSaveFavoriteStoreSupport = () => {
+  const data = {
+    method: BEEP_MODULE_METHODS.HAS_SAVE_FAVORITE_STORE_SUPPORT,
     mode: MODE.SYNC,
   };
 
@@ -175,7 +191,7 @@ export const setAddress = addressInfo => {
   const savedAddressId = _get(addressInfo, 'savedAddressId', '');
 
   const data = {
-    method: 'beepModule-setAddress',
+    method: BEEP_MODULE_METHODS.SET_ADDRESS,
     params: {
       address: fullName,
       addressName: shortName,
@@ -358,10 +374,11 @@ export const promptEnableAppNotification = ({ title, description, sourcePage }) 
 export const isLiveChatAvailable = () => window.liveChatAvailable;
 
 export const updateNativeHeader = ({ left, center, right } = {}) => {
+  const transformToArray = data => (_isArray(data) ? data : data ? [data] : []);
   const config = {
-    left: left ? [left] : [],
-    center: center ? [center] : [],
-    right: right ? [right] : [],
+    left: transformToArray(left),
+    center: transformToArray(center),
+    right: transformToArray(right),
   };
   nativeLayout('header', config);
 };
