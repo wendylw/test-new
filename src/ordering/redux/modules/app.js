@@ -448,9 +448,10 @@ export const actions = {
     const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
     const addressCoords = getAddressCoords(getState());
 
+    // BEEP-1978: if deliveryCoords is undefined or null, it won't be sent to server. We DO NOT need to do any fallback logic here.
     const deliveryCoords = deliveryToLocation
       ? { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude }
-      : { lat: _get(addressCoords, 'lat', 0), lng: _get(addressCoords, 'lng', 0) };
+      : addressCoords;
 
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 

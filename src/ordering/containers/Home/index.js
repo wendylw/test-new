@@ -38,7 +38,7 @@ import {
 } from '../../redux/cart/thunks';
 import { getBusinessIsLoaded } from '../../../redux/modules/entities/businesses';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { windowSize, mainTop, marginBottom } from './utils';
+import { windowSize, mainTop, marginBottom, isSameAddressCoords } from './utils';
 import config from '../../../config';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
@@ -233,10 +233,14 @@ class Home extends Component {
     const {
       shouldShowAlcoholModal: prevShouldShowAlcoholModal,
       ifAddressInfoExists: prevIfAddressInfoExists,
+      addressCoords: prevAddressCoords,
     } = prevProps;
     const {
       shouldShowAlcoholModal: currShouldShowAlcoholModal,
       ifAddressInfoExists: currIfAddressInfoExists,
+      addressCoords: currAddressCoords,
+      appActions,
+      enablePayLater,
     } = this.props;
     const { containerHeight } = prevState;
 
@@ -246,6 +250,11 @@ class Home extends Component {
 
     if (prevIfAddressInfoExists !== currIfAddressInfoExists) {
       this.checkDeliveryBar();
+    }
+
+    if (!isSameAddressCoords(prevAddressCoords, currAddressCoords)) {
+      // BEEP-1978: If user has changed address, we need to reload shopping cart API to get update delivery fee
+      if (config.storeId && !enablePayLater) appActions.loadShoppingCart();
     }
 
     this.setMainContainerHeight(containerHeight);
