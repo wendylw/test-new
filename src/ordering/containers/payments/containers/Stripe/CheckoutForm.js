@@ -15,7 +15,6 @@ import ErrorMessage from './ErrorMessage';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
-import { submitOrderErrorHandler } from '../../utils';
 import { STRIPE_LOAD_TIME_OUT } from './constants';
 
 const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS } = Constants;
@@ -31,8 +30,6 @@ function CheckoutForm({
   isAddCardPath,
   paymentExtraData,
   receiptNumber,
-  modifiedTime,
-  enablePayLater,
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -128,8 +125,6 @@ function CheckoutForm({
       }
 
       setProcessing(true);
-
-      enablePayLater ? await submitOrderErrorHandler({ receiptNumber, modifiedTime }) : null;
 
       const payload = await stripe.createPaymentMethod({
         type: 'card',

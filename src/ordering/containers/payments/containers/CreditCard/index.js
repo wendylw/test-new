@@ -19,15 +19,12 @@ import {
   getBusiness,
   getMerchantCountry,
   getBusinessInfo,
-  getEnablePayLater,
 } from '../../../../redux/modules/app';
-import { submitOrderErrorHandler } from '../../utils';
 import {
   getCleverTapAttributes,
   getSelectedPaymentOption,
   getTotal,
   getReceiptNumber,
-  getModifiedTime,
 } from '../../redux/common/selectors';
 import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
@@ -254,7 +251,7 @@ class CreditCard extends Component {
       payNowLoading: true,
     });
 
-    const { t, merchantCountry, total, cleverTapAttributes, enablePayLater, receiptNumber, modifiedTime } = this.props;
+    const { t, merchantCountry, total, cleverTapAttributes } = this.props;
     const { cardInfoError } = this.state;
 
     CleverTap.pushEvent('Card Details - click continue', {
@@ -267,8 +264,6 @@ class CreditCard extends Component {
     if (!this.isFromComplete()) {
       return;
     }
-
-    enablePayLater ? await submitOrderErrorHandler({ receiptNumber, modifiedTime }) : null;
 
     let isInvalidNum = null;
     let isExpired = null;
@@ -629,8 +624,6 @@ export default compose(
         merchantCountry: getMerchantCountry(state),
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
-        enablePayLater: getEnablePayLater(state),
-        modifiedTime: getModifiedTime(state),
       };
     },
     dispatch => ({

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
-import { loadOrders, loadOrdersStatus } from './thunks';
+import { loadOrders, loadOrdersStatus, submitOrders } from './thunks';
 
 const PromotionItemModel = {
   code: null,
@@ -20,6 +20,7 @@ const initialState = {
   requestStatus: {
     loadOrders: API_REQUEST_STATUS.FULFILLED,
     loadOrdersStatus: API_REQUEST_STATUS.FULFILLED,
+    submitOrders: API_REQUEST_STATUS.FULFILLED,
   },
 
   order: {
@@ -43,16 +44,24 @@ const initialState = {
   submission: {
     thankYouPageUrl: null,
   },
+  uiStates: {
+    displaySubmitOrderConfirm: false,
+  },
   error: {
     loadOrders: null,
     loadOrdersStatus: null,
+    submitOrders: null,
   },
 };
 
 export const { reducer, actions } = createSlice({
   name: 'ordering/tableSummary',
   initialState,
-  reducers: {},
+  reducers: {
+    updateSubmitOrderConfirmDisplay(state, { payload }) {
+      state.uiStates.displaySubmitOrderConfirm = payload;
+    },
+  },
   extraReducers: {
     [loadOrders.pending.type]: state => {
       state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
@@ -89,6 +98,17 @@ export const { reducer, actions } = createSlice({
     [loadOrdersStatus.rejected.type]: (state, { error }) => {
       state.error.loadOrdersStatus = error;
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.REJECTED;
+    },
+
+    [submitOrders.pending.type]: state => {
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.PENDING;
+    },
+    [submitOrders.fulfilled.type]: state => {
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.FULFILLED;
+    },
+    [submitOrders.rejected.type]: (state, { error }) => {
+      state.error.submitOrders = error;
+      state.requestStatus.submitOrders = API_REQUEST_STATUS.REJECTED;
     },
   },
 });

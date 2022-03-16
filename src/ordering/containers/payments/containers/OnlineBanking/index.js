@@ -15,7 +15,6 @@ import {
   getOnlineStoreInfo,
   getBusiness,
   getBusinessInfo,
-  getEnablePayLater,
 } from '../../../../redux/modules/app';
 import {
   getLoaderVisibility,
@@ -24,7 +23,6 @@ import {
   getTotal,
   getCleverTapAttributes,
   getReceiptNumber,
-  getModifiedTime,
 } from '../../redux/common/selectors';
 import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import { actions } from './redux';
@@ -32,8 +30,8 @@ import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
-import { submitOrderErrorHandler } from '../../utils';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
+
 class OnlineBanking extends Component {
   order = {};
 
@@ -119,8 +117,6 @@ class OnlineBanking extends Component {
       currentOnlineBanking,
       cleverTapAttributes,
       receiptNumber,
-      modifiedTime,
-      enablePayLater,
     } = this.props;
     const { payNowLoading } = this.state;
 
@@ -177,7 +173,7 @@ class OnlineBanking extends Component {
             data-test-id="payMoney"
             data-heap-name="ordering.payment.online-banking.pay-btn"
             disabled={payNowLoading}
-            beforeCreateOrder={async () => {
+            beforeCreateOrder={() => {
               CleverTap.pushEvent('online banking - click continue', {
                 ...cleverTapAttributes,
                 'payment method': currentPaymentOption?.paymentName,
@@ -186,8 +182,6 @@ class OnlineBanking extends Component {
               this.setState({
                 payNowLoading: true,
               });
-
-              enablePayLater ? await submitOrderErrorHandler({ receiptNumber, modifiedTime }) : null;
             }}
             afterCreateOrder={orderId => {
               loggly.log('online-banking.pay-attempt', { orderId, method: currentOnlineBanking.agentCode });
@@ -235,8 +229,6 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
-        modifiedTime: getModifiedTime(state),
-        enablePayLater: getEnablePayLater(state),
       };
     },
     dispatch => ({

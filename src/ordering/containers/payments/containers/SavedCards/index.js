@@ -11,7 +11,7 @@ import Loader from '../../components/Loader';
 import _get from 'lodash/get';
 
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getUser, getEnablePayLater } from '../../../../redux/modules/app';
+import { actions as appActionCreators, getUser } from '../../../../redux/modules/app';
 import IconAddNew from '../../../../../images/icon-add-new.svg';
 import { getCardList, getSelectedPaymentCard } from './redux/selectors';
 import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
@@ -20,9 +20,7 @@ import {
   getSelectedPaymentProvider,
   getTotal,
   getReceiptNumber,
-  getModifiedTime,
 } from '../../redux/common/selectors';
-import { submitOrderErrorHandler } from '../../utils';
 import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
 import '../../styles/PaymentCreditCard.scss';
@@ -172,7 +170,7 @@ class SavedCards extends Component {
   }
 
   render() {
-    const { t, history, total, selectedPaymentCard, receiptNumber, modifiedTime, enablePayLater } = this.props;
+    const { t, history, total, selectedPaymentCard, receiptNumber } = this.props;
     const cardToken = _get(selectedPaymentCard, 'cardToken', null);
 
     return (
@@ -221,9 +219,6 @@ class SavedCards extends Component {
             total={total}
             disabled={!cardToken}
             beforeCreateOrder={async () => {
-              // New requirements, pay later to lock the order and move to the payment side, it needs to request the order lock API
-              enablePayLater && (await submitOrderErrorHandler({ receiptNumber, modifiedTime }));
-
               history.push({
                 pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_CVV,
                 search: window.location.search,
@@ -258,8 +253,6 @@ export default compose(
       supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
       paymentProvider: getSelectedPaymentProvider(state),
       receiptNumber: getReceiptNumber(state),
-      modifiedTime: getModifiedTime(state),
-      enablePayLater: getEnablePayLater(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

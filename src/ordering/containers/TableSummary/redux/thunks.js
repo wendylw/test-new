@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
-import { fetchOrderIncludeCashback, fetchOrderSubmissionStatus } from './api-request';
+import { fetchOrderIncludeCashback, fetchOrderSubmissionStatus, postOrderSubmitted } from './api-request';
 import { log } from '../../../../utils/monitoring/loggly';
 import { getOrderModifiedTime, getOrderReceiptNumber } from './selectors';
 
@@ -73,3 +73,18 @@ export const clearQueryOrdersAndStatus = () => () => {
   log('table-summary.query-orders-and-status', { action: 'stop' });
   queryOrdersAndStatus.timer = null;
 };
+
+export const submitOrders = createAsyncThunk('ordering/tableSummary/submitOrders', async (_, { getState }) => {
+  const receiptNumber = getOrderReceiptNumber(getState());
+  const modifiedTime = getOrderModifiedTime(getState());
+
+  try {
+    const result = await postOrderSubmitted({ receiptNumber, modifiedTime });
+
+    return result;
+  } catch (error) {
+    console.error(error);
+
+    throw error;
+  }
+});

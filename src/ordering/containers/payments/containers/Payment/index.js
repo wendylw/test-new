@@ -14,7 +14,6 @@ import {
   getDeliveryInfo,
   getShippingType,
   getHasLoginGuardPassed,
-  getEnablePayLater,
 } from '../../../../redux/modules/app';
 import {
   getLoaderVisibility,
@@ -24,7 +23,6 @@ import {
   getSelectedPaymentOptionSupportSaveCard,
   getCleverTapAttributes,
   getReceiptNumber,
-  getModifiedTime,
   getTotal,
   getCashback,
 } from '../../redux/common/selectors';
@@ -45,7 +43,6 @@ import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
-import { submitOrderErrorHandler } from '../../utils';
 
 const { PAYMENT_PROVIDERS, ORDER_STATUS, ROUTER_PATHS } = Constants;
 
@@ -108,21 +105,8 @@ class Payment extends Component {
       currentPaymentSupportSaveCard,
       hasLoginGuardPassed,
       paymentActions,
-      receiptNumber,
-      modifiedTime,
-      enablePayLater,
     } = this.props;
-    const isPaidWithCreditOrOnlineBanking =
-      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE ||
-      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.STRIPE_FPX ||
-      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.BEEP_PH_CREDIT_CARD ||
-      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.BEEP_TH_CREDIT_CARD ||
-      currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.BEEP_TH_ONLINE_BANKING;
     loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
-
-    if (!isPaidWithCreditOrOnlineBanking && enablePayLater) {
-      await submitOrderErrorHandler({ receiptNumber, modifiedTime });
-    }
 
     this.setState({
       payNowLoading: true,
@@ -211,18 +195,7 @@ class Payment extends Component {
       if (orderId) {
         const order = await fetchOrder(orderId);
 
-        if (
-          [
-            ORDER_STATUS.PAID,
-            ORDER_STATUS.READY_FOR_DELIVERY,
-            ORDER_STATUS.READY_FOR_PICKUP,
-            ORDER_STATUS.SHIPPED,
-            ORDER_STATUS.ACCEPTED,
-            ORDER_STATUS.LOGISTICS_CONFIRMED,
-            ORDER_STATUS.CONFIRMED,
-            ORDER_STATUS.DELIVERED,
-          ].includes(order.status)
-        ) {
+        if (order.status !== ORDER_STATUS.PENDING_PAYMENT) {
           loggly.log('ordering.order-has-paid', { order });
 
           alert(t('OrderHasPaidAlertDescription'), {
@@ -396,8 +369,6 @@ export default compose(
         shippingType: getShippingType(state),
         cashback: getCashback(state),
         hasLoginGuardPassed: getHasLoginGuardPassed(state),
-        modifiedTime: getModifiedTime(state),
-        enablePayLater: getEnablePayLater(state),
       };
     },
     dispatch => ({

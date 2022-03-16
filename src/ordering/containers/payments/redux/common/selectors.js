@@ -27,7 +27,6 @@ export const getBillingStatus = createSelector(getBilling, billing => billing.st
 export const getBillingError = createSelector(getBilling, billing => billing.error);
 
 export const getReceiptNumber = createSelector(getBillingData, data => data.receiptNumber);
-export const getModifiedTime = createSelector(getBillingData, data => data.modifiedTime);
 export const getTotal = createSelector(getBillingData, data => data.total);
 export const getSubtotal = createSelector(getBillingData, data => data.subtotal);
 export const getCashback = createSelector(getBillingData, data => data.cashback);

@@ -3,8 +3,13 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { actions } from '../redux';
+import { submitOrders as submitOrdersThunk } from '../redux/thunks';
 import Constants from '../../../../utils/constants';
-import { getOrderSubmissionRequestingStatus, getOrderCompletedStatus } from '../redux/selectors';
+import {
+  getOrderSubmissionRequestingStatus,
+  getSubmitOrderConfirmDisplayStatus,
+  getOrderCompletedStatus,
+} from '../redux/selectors';
 import PageProcessingLoader from '../../../components/PageProcessingLoader';
 import Modal from '../../../../components/Modal';
 import { alert } from '../../../../common/feedback';
@@ -147,11 +152,13 @@ SubmitOrderConfirm.defaultProps = {
 
 export default connect(
   state => ({
+    displaySubmitOrderConfirm: getSubmitOrderConfirmDisplayStatus(state),
     processing: getOrderSubmissionRequestingStatus(state),
     orderCompletedStatus: getOrderCompletedStatus(state),
     shippingType: getShippingType(state),
   }),
   {
+    submitOrders: submitOrdersThunk,
     updateSubmitOrderConfirmDisplay: actions.updateSubmitOrderConfirmDisplay,
   }
 )(SubmitOrderConfirm);
