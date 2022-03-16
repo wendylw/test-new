@@ -5,12 +5,15 @@ import PropTypes from 'prop-types';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isEqual from 'lodash/isEqual';
+import _isArray from 'lodash/isArray';
 import * as NativeMethods from '../utils/native-methods';
 
 export const ICON_RES = {
   BACK: 'back',
   CLOSE: 'close',
   SHARE: 'share',
+  FAVORITE: 'favorite',
+  FAVORITE_BORDER: 'favorite_border',
 };
 
 function getNativeHeaderParams(props) {
@@ -38,18 +41,17 @@ function getNativeHeaderParams(props) {
   };
 
   if (rightContent) {
-    const { icon, text, style, iconRes } = rightContent;
-    const textColor = _get(style, 'color', '#303030');
+    const contents = _isArray(rightContent) ? rightContent : [rightContent];
 
-    headerParams.right = {
+    headerParams.right = contents.map(content => ({
       type: 'button',
-      id: 'headerRightButton',
-      iconUrl: icon,
-      iconRes,
-      text,
-      textColor,
+      id: _get(content, 'id', 'headerRightButton'),
+      iconUrl: content.icon,
+      iconRes: content.iconRes,
+      text: content.text,
+      textColor: _get(content.style, 'color', '#303030'),
       events: ['onClick'],
-    };
+    }));
   }
 
   return headerParams;
@@ -82,29 +84,46 @@ class NativeHeader extends Component {
 
     this.prevNativeHeaderParams = this.nextNativeHeaderParams;
     this.nextNativeHeaderParams = null;
+
+    this.registerEvents();
   }
 
   registerEvents() {
-    NativeMethods.registerFunc([
+    const leftButtonHandlers = [
       {
         type: 'onClick',
         targetId: 'headerBackButton',
         handler: () => {
+          // for getting the latest clicked event from this.props
           const func = _get(this.props, 'navFunc', null);
 
           _isFunction(func) && func.call();
         },
       },
-      {
+    ];
+
+    const { rightContent } = this.props;
+    let rightButtonHandlers = [];
+
+    if (rightContent) {
+      const rightContents = _isArray(rightContent) ? rightContent : [rightContent];
+
+      rightButtonHandlers = rightContents.map((content, index) => ({
         type: 'onClick',
-        targetId: 'headerRightButton',
+        targetId: _get(content, 'id', 'headerRightButton'),
         handler: () => {
-          const func = _get(this.props, 'rightContent.onClick', null);
+          // for getting the latest clicked event from this.props
+          const { rightContent: newRightContent } = this.props;
+          const newRightContents = _isArray(newRightContent) ? newRightContent : [newRightContent];
+
+          const func = _get(newRightContents, `${index}.onClick`, null);
 
           _isFunction(func) && func.call();
         },
-      },
-    ]);
+      }));
+    }
+
+    NativeMethods.registerFunc([...leftButtonHandlers, ...rightButtonHandlers]);
   }
 
   render() {
@@ -118,7 +137,7 @@ NativeHeader.propTypes = {
   titleAlignment: PropTypes.oneOf(['left', 'center', 'right']),
   navFunc: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
-  rightContent: PropTypes.object,
+  rightContent: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };
 
 NativeHeader.defaultProps = {

@@ -31,6 +31,7 @@ import {
   getCashbackRate,
   getShippingType,
   getMerchantCountry,
+  getUserIsLogin,
 } from '../../redux/modules/app';
 import {
   queryCartAndStatus as queryCartAndStatusThunk,
@@ -43,8 +44,20 @@ import config from '../../../config';
 import { computeStraightDistance } from '../../../utils/geoUtils';
 import { setDateTime } from '../../../utils/time-lib';
 import CleverTap from '../../../utils/clevertap';
-import { getUserHasReachedLegalDrinkingAge, getShouldShowAlcoholModal } from './redux/common/selectors';
-import { getUserAlcoholConsent, setUserAlcoholConsent } from './redux/common/thunks';
+import {
+  getUserHasReachedLegalDrinkingAge,
+  getShouldShowAlcoholModal,
+  getHasUserSaveStore,
+  getShouldShowFavoriteButton,
+  getShouldCheckSaveStoreStatus,
+} from './redux/common/selectors';
+import {
+  getUserAlcoholConsent,
+  setUserAlcoholConsent,
+  getUserSaveStoreStatus,
+  toggleUserSaveStoreStatus,
+} from './redux/common/thunks';
+import { getStoreDisplayTitle } from '../Menu/redux/common/selectors';
 import Header from '../../../components/Header';
 import NativeHeader, { ICON_RES } from '../../../components/NativeHeader';
 import Footer from './components/Footer.jsx';
@@ -139,12 +152,23 @@ class Home extends Component {
   };
 
   componentDidMount = async () => {
-    const { appActions, hasUserReachedLegalDrinkingAge, getUserAlcoholConsent, queryCartAndStatus } = this.props;
+    const {
+      appActions,
+      hasUserReachedLegalDrinkingAge,
+      getUserAlcoholConsent,
+      queryCartAndStatus,
+      shouldCheckSaveStoreStatus,
+      getUserSaveStoreStatus,
+    } = this.props;
 
     await appActions.loadProductList();
 
     // Double-checking with backend only if user is not in legal drinking age
     if (!hasUserReachedLegalDrinkingAge) getUserAlcoholConsent();
+
+    if (shouldCheckSaveStoreStatus) {
+      await getUserSaveStoreStatus();
+    }
 
     await Promise.all([appActions.loadCoreBusiness(), appActions.loadCoreStores()]);
 
@@ -229,18 +253,21 @@ class Home extends Component {
     });
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate = async (prevProps, prevState) => {
     const {
       shouldShowAlcoholModal: prevShouldShowAlcoholModal,
       ifAddressInfoExists: prevIfAddressInfoExists,
+      shouldCheckSaveStoreStatus: prevShouldCheckSaveStoreStatus,
       addressCoords: prevAddressCoords,
     } = prevProps;
     const {
       shouldShowAlcoholModal: currShouldShowAlcoholModal,
       ifAddressInfoExists: currIfAddressInfoExists,
+      shouldCheckSaveStoreStatus: currShouldCheckSaveStoreStatus,
       addressCoords: currAddressCoords,
-      appActions,
+      getUserSaveStoreStatus,
       enablePayLater,
+      appActions,
     } = this.props;
     const { containerHeight } = prevState;
 
@@ -258,7 +285,11 @@ class Home extends Component {
     }
 
     this.setMainContainerHeight(containerHeight);
-  }
+
+    if (!prevShouldCheckSaveStoreStatus && currShouldCheckSaveStoreStatus) {
+      await getUserSaveStoreStatus();
+    }
+  };
 
   async componentWillUnmount() {
     const { clearQueryCartStatus } = this.props;
@@ -617,12 +648,8 @@ class Home extends Component {
   };
 
   renderOfflineModal = enableLiveOnline => {
-    const { onlineStoreInfo, businessInfo } = this.props;
-    const { stores, multipleStores } = businessInfo || {};
-    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-    const currentStoreName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
-
-    return <OfflineStoreModal currentStoreName={currentStoreName} enableLiveOnline={enableLiveOnline} />;
+    const { storeDisplayTitle } = this.props;
+    return <OfflineStoreModal currentStoreName={storeDisplayTitle} enableLiveOnline={enableLiveOnline} />;
   };
 
   renderPickupAddress = () => {
@@ -733,10 +760,17 @@ class Home extends Component {
   };
 
   renderHeader() {
-    const { onlineStoreInfo, businessInfo, cartBilling, deliveryInfo, requestInfo, allStore } = this.props;
+    const {
+      onlineStoreInfo,
+      businessInfo,
+      cartBilling,
+      deliveryInfo,
+      requestInfo,
+      allStore,
+      storeDisplayTitle,
+    } = this.props;
     const { search } = this.state;
-    const { stores, multipleStores, defaultLoyaltyRatio, enableCashback } = businessInfo || {};
-    const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
+    const { defaultLoyaltyRatio, enableCashback } = businessInfo || {};
     const isDeliveryType = Utils.isDeliveryType();
     const isPickUpType = Utils.isPickUpType();
     // todo: we may remove legacy delivery fee in the future, since the delivery is dynamic now. For now we keep it for backward compatibility.
@@ -773,7 +807,7 @@ class Home extends Component {
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
-        title={`${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`}
+        title={storeDisplayTitle}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -881,19 +915,8 @@ class Home extends Component {
 
   handleClickShare = async () => {
     try {
-      const {
-        onlineStoreInfo,
-        businessInfo,
-        t,
-        freeShippingMinAmount,
-        cashbackRate,
-        shippingType,
-        merchantCountry,
-      } = this.props;
-      const { stores, multipleStores } = businessInfo || {};
-      const { name } = multipleStores && stores && stores[0] ? stores[0] : {};
-      let storeName = `${onlineStoreInfo.storeName}${name ? ` (${name})` : ''}`;
-      storeName = _truncate(`${storeName}`, { length: 33 });
+      const { t, freeShippingMinAmount, cashbackRate, shippingType, merchantCountry, storeDisplayTitle } = this.props;
+      const storeName = _truncate(`${storeDisplayTitle}`, { length: 33 });
 
       const shareLinkUrl = this.getShareLinkUrl();
 
@@ -916,19 +939,77 @@ class Home extends Component {
     }
   };
 
-  getRightContentOfHeader = () => {
-    const isDeliveryOrder = Utils.isDeliveryOrder();
-    const { SHARE } = ICON_RES;
+  handleClickSaveFavoriteStore = async () => {
+    const {
+      appActions,
+      merchantCountry,
+      shippingType,
+      cashbackRate,
+      hasUserSaveStore,
+      hasUserLoggedIn,
+      freeShippingMinAmount,
+      toggleUserSaveStoreStatus,
+    } = this.props;
 
-    // The return value of hasMethodInNative is 'false'
-    if (isDeliveryOrder && JSON.parse(NativeMethods.hasMethodInNative('beepModule-shareLink'))) {
-      return {
-        iconRes: SHARE,
-        onClick: this.handleClickShare,
-      };
-    } else {
+    CleverTap.pushEvent('Menu page - Click saved favourite store button', {
+      country: merchantCountry,
+      'free delivery above': freeShippingMinAmount || 0,
+      'shipping type': shippingType,
+      action: hasUserSaveStore ? 'unsaved' : 'saved',
+      cashback: cashbackRate,
+    });
+
+    if (!hasUserLoggedIn) {
+      await appActions.loginByBeepApp();
+      if (!this.props.hasUserLoggedIn) return;
+    }
+
+    toggleUserSaveStoreStatus();
+  };
+
+  getRightContentOfHeader = () => {
+    const rightContents = [];
+
+    rightContents.push(this.getShareLinkConfig());
+    rightContents.push(this.getSaveFavoriteStoreConfig());
+
+    // Filter out falsy values
+    return rightContents.filter(config => config);
+  };
+
+  getShareLinkConfig = () => {
+    const { SHARE } = ICON_RES;
+    const isDeliveryOrder = Utils.isDeliveryOrder();
+
+    if (!isDeliveryOrder) return null;
+
+    try {
+      const { BEEP_MODULE_METHODS } = NativeMethods;
+      const hasShareLinkSupport = NativeMethods.hasMethodInNative(BEEP_MODULE_METHODS.SHARE_LINK);
+      if (hasShareLinkSupport) {
+        return {
+          id: 'headerRightShareButton',
+          iconRes: SHARE,
+          onClick: this.handleClickShare,
+        };
+      }
+    } catch (error) {
+      console.error(`failed to share store link: ${error.message}`);
       return null;
     }
+  };
+
+  getSaveFavoriteStoreConfig = () => {
+    const { FAVORITE, FAVORITE_BORDER } = ICON_RES;
+    const { hasUserSaveStore, shouldShowFavoriteButton } = this.props;
+
+    if (!shouldShowFavoriteButton) return null;
+
+    return {
+      id: 'headerRightFavoriteButton',
+      iconRes: hasUserSaveStore ? FAVORITE : FAVORITE_BORDER,
+      onClick: this.handleClickSaveFavoriteStore,
+    };
   };
 
   render() {
@@ -946,6 +1027,7 @@ class Home extends Component {
       shouldShowAlcoholModal,
       orderingOngoingBannerVisibility,
       receiptNumber,
+      storeDisplayTitle,
       ...otherProps
     } = this.props;
     const {
@@ -975,7 +1057,7 @@ class Home extends Component {
           <NativeHeader
             isPage={true}
             rightContent={this.getRightContentOfHeader()}
-            title={window.document.title}
+            title={storeDisplayTitle}
             navFunc={() => {
               if (viewAside === Constants.ASIDE_NAMES.PRODUCT_DETAIL) {
                 this.handleToggleAside();
@@ -1205,6 +1287,10 @@ export default compose(
         hasUserReachedLegalDrinkingAge: getUserHasReachedLegalDrinkingAge(state),
         ifAddressInfoExists: getIfAddressInfoExists(state),
         shouldShowAlcoholModal: getShouldShowAlcoholModal(state),
+        hasUserLoggedIn: getUserIsLogin(state),
+        hasUserSaveStore: getHasUserSaveStore(state),
+        shouldShowFavoriteButton: getShouldShowFavoriteButton(state),
+        shouldCheckSaveStoreStatus: getShouldCheckSaveStoreStatus(state),
         store: getStore(state),
         enablePayLater: getEnablePayLater(state),
         orderingOngoingBannerVisibility: getOrderingOngoingBannerVisibility(state),
@@ -1213,6 +1299,7 @@ export default compose(
         cashbackRate: getCashbackRate(state),
         shippingType: getShippingType(state),
         merchantCountry: getMerchantCountry(state),
+        storeDisplayTitle: getStoreDisplayTitle(state),
       };
     },
     dispatch => ({
@@ -1221,6 +1308,8 @@ export default compose(
       clearQueryCartStatus: bindActionCreators(clearQueryCartStatusThunk, dispatch),
       getUserAlcoholConsent: bindActionCreators(getUserAlcoholConsent, dispatch),
       setUserAlcoholConsent: bindActionCreators(setUserAlcoholConsent, dispatch),
+      getUserSaveStoreStatus: bindActionCreators(getUserSaveStoreStatus, dispatch),
+      toggleUserSaveStoreStatus: bindActionCreators(toggleUserSaveStoreStatus, dispatch),
     })
   )
 )(Home);

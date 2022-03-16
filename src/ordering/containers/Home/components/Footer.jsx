@@ -14,15 +14,15 @@ import {
   getCategoryProductList,
   getUserIsLogin,
   getIsUserLoginRequestStatusInPending,
-  getUserIsExpired,
 } from '../../../redux/modules/app';
 import { getIfAddressInfoExists } from '../../../../redux/modules/address/selectors';
 import { getCartItemsCount } from '../../../redux/cart/selectors';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import * as NativeMethods from '../../../../utils/native-methods';
 import loggly from '../../../../utils/monitoring/loggly';
+
+const { CLIENTS } = Constants;
 
 export class Footer extends Component {
   getDisplayPrice() {
@@ -37,62 +37,39 @@ export class Footer extends Component {
     return totalPrice;
   }
 
-  syncLoginFromNative = async () => {
-    try {
-      const { appActions, userIsExpired } = this.props;
+  getLoginStatus = async () => {
+    const { isLogin, appActions } = this.props;
 
-      const tokens = await NativeMethods.getTokenAsync();
-      const { access_token, refresh_token } = tokens;
-      await appActions.loginApp({
-        accessToken: access_token,
-        refreshToken: refresh_token,
-      });
+    if (isLogin) return true;
 
-      if (userIsExpired) {
-        const tokens = await NativeMethods.tokenExpiredAsync();
-        const { access_token, refresh_token } = tokens;
-        await appActions.loginApp({
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        });
-      }
-    } catch (e) {
-      console.error('syncLoginFromNative error: ', e.message);
+    if (Utils.isWebview()) {
+      await appActions.loginByBeepApp();
+      return this.props.isLogin;
     }
 
-    this.handleWebRedirect();
-  };
-
-  loginInTngMiniProgram = async () => {
-    // TODO: handle login fail
-    await this.props.appActions.loginByTngMiniProgram();
-
-    if (this.props.isLogin) {
-      this.handleWebRedirect();
+    if (Utils.isTNGMiniProgram()) {
+      await appActions.loginByTngMiniProgram();
+      return this.props.isLogin;
     }
+
+    // By default
+    return false;
   };
 
-  handleRedirect = () => {
+  handleRedirect = async () => {
     loggly.log('footer.place-order');
 
-    if (Utils.isWebview() || Utils.isTNGMiniProgram()) {
-      if (this.props.isLogin) {
-        this.handleWebRedirect();
-        return;
-      }
+    const client = Utils.getClient();
 
-      if (Utils.isWebview()) {
-        this.syncLoginFromNative();
-        return;
-      }
-
-      if (Utils.isTNGMiniProgram()) {
-        this.loginInTngMiniProgram();
-        return;
-      }
+    if (client === CLIENTS.WEB) {
+      this.handleWebRedirect();
+      return;
     }
 
-    this.handleWebRedirect();
+    // For non-web users, we need to check login status
+    const isLogin = await this.getLoginStatus();
+
+    if (isLogin) this.handleWebRedirect();
   };
 
   handleWebRedirect = () => {
@@ -255,7 +232,6 @@ export default compose(
         isUserLoginRequestStatusInPending: getIsUserLoginRequestStatusInPending(state),
         ifAddressInfoExists: getIfAddressInfoExists(state),
         cartProductsCount: getCartItemsCount(state),
-        userIsExpired: getUserIsExpired(state),
       };
     },
     dispatch => ({
