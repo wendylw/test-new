@@ -69,17 +69,16 @@ export const getShouldShowAlcoholModal = createSelector(
     hasAlcohol && hasDrinkingAgeRestriction && hasRequestFulfilled && !hasReachedLegalDrinkingAge
 );
 
-export const getHasSaveFavoriteStoreSupport = () => {
+export const getHasSaveFavoriteStoreSupport = createSelector(getIsWebview, isWebview => {
+  if (!isWebview) return false;
   const { BEEP_MODULE_METHODS } = NativeMethods;
   return NativeMethods.hasMethodInNative(BEEP_MODULE_METHODS.HAS_SAVE_FAVORITE_STORE_SUPPORT);
-};
+});
 
 export const getShouldShowFavoriteButton = createSelector(
-  getIsWebview,
   getIsDeliveryOrder,
   getHasSaveFavoriteStoreSupport,
-  (isWebview, isDeliveryOrder, hasSaveFavoriteStoreSupport) =>
-    isWebview && isDeliveryOrder && hasSaveFavoriteStoreSupport
+  (isDeliveryOrder, hasSaveFavoriteStoreSupport) => isDeliveryOrder && hasSaveFavoriteStoreSupport
 );
 
 export const getHasUserLoginByBeepAppRequestFulfilled = createSelector(
