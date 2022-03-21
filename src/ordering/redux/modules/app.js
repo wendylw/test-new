@@ -22,8 +22,12 @@ import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/enti
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories, getCategoryList } from '../../../redux/modules/entities/categories';
-import { setAddressInfo } from '../../../redux/modules/address/thunks';
-import { getAddressCoords, getSavedAddressId } from '../../../redux/modules/address/selectors';
+import { getAddressInfo, setAddressInfo } from '../../../redux/modules/address/thunks';
+import {
+  getAddressCoords,
+  getSavedAddressId,
+  getIsAddressRequestStatusFulfilled,
+} from '../../../redux/modules/address/selectors';
 import cartReducer from '../cart';
 import { getCartItems as getNewCartItems } from '../cart/selectors';
 
@@ -450,24 +454,33 @@ export const actions = {
 
   // load shopping cart
   loadShoppingCart: () => async (dispatch, getState) => {
+    const state = getState();
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
-    const businessUTCOffset = getBusinessUTCOffset(getState());
+    const businessUTCOffset = getBusinessUTCOffset(state);
 
     if (isDigital) {
       await dispatch(generatorShoppingCartForVoucherOrdering());
       return;
     }
 
-    const deliveryDetails = getDeliveryDetails(getState());
-
+    const deliveryDetails = getDeliveryDetails(state);
     const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
-    const addressCoords = getAddressCoords(getState());
+    const isAddressRequestStatusFulfilled = getIsAddressRequestStatusFulfilled(state);
 
-    // BEEP-1978: if deliveryCoords is undefined or null, it won't be sent to server. We DO NOT need to do any fallback logic here.
-    const deliveryCoords = deliveryToLocation
-      ? { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude }
-      : addressCoords;
+    let deliveryCoords = null;
+
+    if (!deliveryToLocation) {
+      if (isAddressRequestStatusFulfilled) {
+        deliveryCoords = getAddressCoords(state);
+      } else {
+        // The only cost is to send redundant requests to get the address, but it will promise to get the address finally
+        await dispatch(getAddressInfo());
+        deliveryCoords = getAddressCoords(getState());
+      }
+    } else {
+      deliveryCoords = { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude };
+    }
 
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 

@@ -45,3 +45,6 @@ export const getIsMalaysianAddress = createSelector(
 
 export const getIsAddressRequestStatusPending = state =>
   state.address.addressInfo.status === API_REQUEST_STATUS.PENDING;
+
+export const getIsAddressRequestStatusFulfilled = state =>
+  state.address.addressInfo.status === API_REQUEST_STATUS.FULFILLED;
