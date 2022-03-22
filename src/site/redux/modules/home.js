@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
+import { push, getLocation } from 'connected-react-router';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import Utils from '../../../utils/utils';
@@ -10,6 +11,9 @@ import {
   getAddressCountryCode,
   getIsMalaysianAddress,
 } from '../../../redux/modules/address/selectors';
+import Constants from '../../../utils/constants';
+
+const { ROUTER_PATHS } = Constants;
 
 const initialState = {
   storeLinkInfo: {
@@ -83,6 +87,25 @@ const actions = {
       fetchStoreListAbortController.abort();
     }
     dispatch(actions.getStoreListNextPage());
+  },
+
+  gotoLocationPage: () => (dispatch, getState) => {
+    const state = getState();
+    const location = getLocation(state);
+    const coords = getAddressCoords(state);
+
+    dispatch(
+      push(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`, {
+        state: {
+          from: location,
+          coords,
+        },
+      })
+    );
+  },
+
+  goToQRScannerPage: () => (dispatch, getState) => {
+    dispatch(push(ROUTER_PATHS.QRSCAN));
   },
 };
 

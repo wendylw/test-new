@@ -1,10 +1,9 @@
 import React, { Suspense } from 'react';
-import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import DeliverToBar from '../../components/DeliverToBar';
-import { IconSearch, IconScanner, IconLocation } from '../../components/Icons';
+import Header from './components/Header';
+import { IconSearch } from '../../components/Icons';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
@@ -40,12 +39,12 @@ import Utils from '../../utils/utils';
 import {
   getAddressInfo as getAddress,
   getAddressId,
-  getAddressName,
   getAddressCoords,
   getIfAddressInfoExists,
 } from '../../redux/modules/address/selectors';
 import { getAddressInfo, setAddressInfo } from '../../redux/modules/address/thunks';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../../redux/modules/address/constants';
+import '../../common/styles/base.scss';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 
@@ -171,8 +170,6 @@ class Home extends React.Component {
   };
 
   gotoLocationPage = () => {
-    CleverTap.pushEvent('Homepage - Click Location Bar');
-
     const { history, location, addressCoords: coords } = this.props;
 
     history.push({
@@ -211,11 +208,6 @@ class Home extends React.Component {
     // to backup whole redux state when click store item
     this.backupState();
     await submitStoreMenu({ deliveryAddress: addressInfo, store: store, source: document.location.href });
-  };
-
-  handleQRCodeClicked = () => {
-    CleverTap.pushEvent('Homepage - Click QR Scan');
-    this.backLeftPosition();
   };
 
   backLeftPosition = () => {
@@ -257,7 +249,6 @@ class Home extends React.Component {
   render() {
     const {
       t,
-      addressName,
       addressCoords,
       storeCollections,
       bannerCollections,
@@ -271,25 +262,8 @@ class Home extends React.Component {
     }
 
     return (
-      <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
-        <DeliverToBar
-          data-heap-name="site.home.delivery-bar"
-          title={t('DeliverTo')}
-          icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
-          className={`entry__deliver-to base-box-shadow ${
-            this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
-          }`}
-          content={addressName}
-          gotoLocationPage={this.gotoLocationPage}
-          backLeftPosition={this.backLeftPosition}
-        >
-          {!Utils.isTNGMiniProgram() && (
-            <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
-              <IconScanner className="icon icon__primary" onClick={this.handleQRCodeClicked} />
-            </Link>
-          )}
-        </DeliverToBar>
-
+      <main className="entry fixed-wrapper fixed-wrapper__main tw-font-sans" data-heap-name="site.home.container">
+        <Header onClick={this.backLeftPosition} />
         <section
           ref={this.sectionRef}
           className="entry-home fixed-wrapper__container wrapper"
@@ -360,7 +334,6 @@ export default compose(
     state => ({
       addressInfo: getAddress(state),
       addressId: getAddressId(state),
-      addressName: getAddressName(state),
       stores: getAllCurrentStores(state),
       addressCoords: getAddressCoords(state),
       storeLinkInfo: getStoreLinkInfo(state),
