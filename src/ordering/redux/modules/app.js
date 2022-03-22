@@ -279,7 +279,7 @@ export const actions = {
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
-        payload: { result, source },
+        payload: { ...result, source },
       });
     } catch (error) {
       dispatch({
@@ -692,8 +692,8 @@ const user = (state = initialState.user, action) => {
         refreshToken: refresh_token,
       };
     case types.CREATE_LOGIN_SUCCESS: {
-      const consumerId = _get(payload, 'result.consumerId', '');
-      const user = _get(payload, 'result.user', {});
+      const consumerId = _get(payload, 'consumerId', '');
+      const user = _get(payload, 'user', {});
       if (state.accessToken) {
         delete state.accessToken;
       }
