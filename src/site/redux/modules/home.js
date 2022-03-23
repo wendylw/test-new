@@ -96,10 +96,8 @@ const actions = {
 
     dispatch(
       push(`${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_LOCATION}`, {
-        state: {
-          from: location,
-          coords,
-        },
+        from: location,
+        coords,
       })
     );
   },
