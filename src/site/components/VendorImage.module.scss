@@ -1,0 +1,26 @@
+.VendorImageFigure {
+  @apply tw-relative tw-w-full tw-rounded tw-overflow-hidden;
+
+  &::before {
+    @apply tw-block;
+
+    content: "";
+    padding-top: 100%;
+  }
+
+  img {
+    @apply tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-object-cover tw-object-center;
+  }
+}
+
+.VendorImageCover {
+  @apply tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full
+    tw-flex tw-justify-center tw-items-center
+    tw-rounded tw-z-10 tw-whitespace-pre-line;
+
+  background-color: rgba(0, 0, 0, 0.4);
+
+  p {
+    @apply tw-text-white tw-text-base tw-font-bold tw-leading-relaxed;
+  }
+}

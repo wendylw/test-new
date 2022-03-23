@@ -125,6 +125,7 @@
   "OfferDetails": "Offer Details",
   "MvpFreeDeliveryPrompt": "<0>Free Delivery above <1>{{minimumSpendForFreeDelivery}}</1></0>",
   "EnabledCashbackText": "{{cashbackRate}}% Store Cashback",
+  "EnabledCashbackShortText": "{{cashbackRate}}% Cashback",
   "Mon": "Mon",
   "Tue": "Tue",
   "Wed": "Wed",
