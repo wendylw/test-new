@@ -2,10 +2,11 @@ import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { Scan } from 'phosphor-react';
 import { getAddressName } from '../../../../redux/modules/address/selectors';
 import { getIsTNGMiniProgram } from '../../../redux/modules/app';
 import { homeActionCreators as homeActions } from '../../../redux/modules/home';
-import { IconMapPin, IconScanner } from '../../../../components/Icons';
+import { IconMapPin } from '../../../../components/Icons';
 import CleverTap from '../../../../utils/clevertap';
 import styles from './Header.module.scss';
 
@@ -49,10 +50,10 @@ const Header = ({ onClick }) => {
             role="button"
             tabIndex="-1"
             aria-label="Click QR Scanner"
-            className="tw-flex tw-items-center"
+            className="tw-flex tw-items-center sm:tw-p-8px tw-p-8"
             onClick={clickQRScannerHandler}
           >
-            <IconScanner className="tw-flex-shrink-0 sm:tw-p-8px tw-p-8" />
+            <Scan className="tw-flex-shrink-0" size={24} />
           </div>
         )}
       </div>
