@@ -110,7 +110,7 @@
   "DeliveryFee": "Delivery Fee",
   "TakeawayFee": "Takeaway Fee",
   "FreeDeliveryPrompt": "Free Delivery with <1></1> & above",
-  "SearchRestaurantPlaceholder": "Search for restaurant, dishes, cuisines",
+  "SearchRestaurantPlaceholder": "Restaurants, dishes, cuisines",
   "NearbyRestaurants": "Restaurants Delivering Nearby",
   "DistanceText": "{{distance}} km",
   "SearchNotFoundStoreDescription": "Couldn't Find Results for “{{keyword}}” Let's try a different restaurant.",

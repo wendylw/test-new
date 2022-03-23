@@ -1,0 +1,19 @@
+.SearchBoxContainer {
+  @apply tw-flex tw-justify-between tw-items-center;
+  @apply tw-bg-white tw-w-full;
+  @apply tw-border-none tw-outline-none tw-p-0 tw-m-0;
+
+  height: 40px;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+.SearchBoxInput {
+  @apply tw-flex-grow;
+  @apply sm:tw-ml-4px tw-ml-4 sm:tw-mr-16px tw-mr-16 sm:tw-py-8px tw-py-8;
+  @apply tw-leading-relaxed;
+  @apply tw-border-none tw-outline-none;
+  @apply tw-caret-gray-600 tw-text-gray-600 tw-placeholder-gray-600;
+
+  box-shadow: none;
+}

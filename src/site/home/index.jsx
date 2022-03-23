@@ -3,7 +3,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import Header from './components/Header';
-import { IconSearch } from '../../components/Icons';
+import SearchBox from './components/SearchBox';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
@@ -181,12 +181,6 @@ class Home extends React.Component {
     });
   };
 
-  handleLoadSearchPage = () => {
-    CleverTap.pushEvent('Homepage - Click Search Bar');
-    this.backLeftPosition();
-    this.props.history.push({ pathname: '/search' });
-  };
-
   handleLoadMoreStores = () => {
     return this.props.homeActions.getStoreListNextPage();
   };
@@ -279,20 +273,7 @@ class Home extends React.Component {
                 <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
               </figure>
             </DevToolsTrigger>
-
-            <div className="entry-home__search">
-              <div className="form__group flex flex-middle">
-                <IconSearch className="entry-home__search-icon icon icon__small icon__default" />
-                <input
-                  className="form__input entry-home__input"
-                  data-testid="searchStore"
-                  data-heap-name="site.home.search-box"
-                  type="type"
-                  placeholder={t('SearchRestaurantPlaceholder')}
-                  onClick={this.handleLoadSearchPage}
-                />
-              </div>
-            </div>
+            <SearchBox onClick={this.backLeftPosition} />
           </Banner>
 
           {shouldShowCampaignBar && (

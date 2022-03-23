@@ -107,6 +107,10 @@ const actions = {
   goToQRScannerPage: () => (dispatch, getState) => {
     dispatch(push(ROUTER_PATHS.QRSCAN));
   },
+
+  goToSearchPage: () => (dispatch, getState) => {
+    dispatch(push(ROUTER_PATHS.SEARCH));
+  },
 };
 
 const fetchStoreUrlHash = (storeId, context) => ({

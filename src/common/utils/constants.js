@@ -56,6 +56,7 @@ export const PATH_NAME_MAPPING = {
   SITE_HOME: '/home',
   QRSCAN: '/qrscan',
   SCAN: '/scan',
+  SEARCH: '/search',
   SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
   ORDER_HISTORY: '/order-history',
