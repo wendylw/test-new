@@ -29,7 +29,7 @@ const SearchBox = ({ onClick }) => {
           className="tw-flex-shrink-0 tw-text-2xl tw-text-gray sm:tw-ml-16px tw-ml-16 sm:tw-my-8px tw-my-8 sm:tw-mr-4px w-mr-4"
           weight="light"
         />
-        <input className={styles.SearchBoxInput} type="type" placeholder={t('SearchRestaurantPlaceholder')} />
+        <span className={styles.SearchBoxContent}>{t('SearchRestaurantPlaceholder')}</span>
       </button>
     </div>
   );
