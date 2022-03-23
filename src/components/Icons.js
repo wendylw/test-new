@@ -71,7 +71,7 @@ export const IconLocation = props => (
 );
 IconLocation.displayName = 'IconLocation';
 
-export const IconPlace = props => (
+export const IconMapPin = props => (
   <i {...props}>
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
       <path d="M2 14c0 6.627 5.373 12 12 12s12-5.373 12-12S20.627 2 14 2 2 7.373 2 14z" fill="#f2f2f3" />
@@ -86,7 +86,7 @@ export const IconPlace = props => (
     </svg>
   </i>
 );
-IconPlace.displayName = 'IconPlace';
+IconMapPin.displayName = 'IconMapPin';
 
 export const IconClose = props => (
   <i {...props}>
