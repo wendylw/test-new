@@ -1,11 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import _get from 'lodash/get';
-import { actions as appActions, getShippingType } from '../../../../redux/modules/app';
-import Constants from '../../../../../utils/constants';
-import { getAddressList } from '../../../../redux/modules/addressList/selectors';
-import { getAddressCoords } from '../../../../../redux/modules/address/selectors';
-import { loadAddressList } from '../../../../redux/modules/addressList/thunks';
-import { findNearbyAvailableAddress } from '../../utils';
+import { actions as appActions, getShippingType } from '../../../../../redux/modules/app';
+import Constants from '../../../../../../utils/constants';
+import { getAddressList } from '../../../../../redux/modules/addressList/selectors';
+import { getAddressCoords } from '../../../../../../redux/modules/address/selectors';
+import { loadAddressList } from '../../../../../redux/modules/addressList/thunks';
+import { findNearbyAvailableAddress } from '../../../utils';
 
 const { DELIVERY_METHOD } = Constants;
 

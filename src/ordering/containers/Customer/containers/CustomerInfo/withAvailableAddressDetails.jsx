@@ -3,7 +3,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { selectAvailableAddress } from '../../redux/common/thunks';
+import { selectAvailableAddress } from './redux/thunks';
+import { getIsSelectAvailableAddressRequestCompleted } from './redux/selectors';
 import { getSavedAddressId } from '../../../../../redux/modules/address/selectors';
 import { getDeliveryAddressId, getHasFetchDeliveryDetailsRequestCompleted } from '../../../../redux/modules/app';
 import PageLoader from '../../../../../components/PageLoader';
@@ -12,14 +13,15 @@ export const withAvailableAddressDetails = () => InnerComponent => {
   const WithAvailableAddressDetails = ({
     savedAddressId,
     deliveryAddressId,
-    hasFetchRequestCompleted,
+    hasFetchDeliveryDetailsRequestCompleted,
     loadAvailableAddress,
+    isSelectAvailableAddressRequestCompleted,
     ...otherProps
   }) => {
     const [shouldShowLoader, setShouldShowLoader] = useState(true);
     const shouldLoadAvailableAddress = useMemo(
-      () => !savedAddressId || (hasFetchRequestCompleted && !deliveryAddressId),
-      [savedAddressId, deliveryAddressId, hasFetchRequestCompleted]
+      () => !savedAddressId || (hasFetchDeliveryDetailsRequestCompleted && !deliveryAddressId),
+      [savedAddressId, deliveryAddressId, hasFetchDeliveryDetailsRequestCompleted]
     );
 
     useEffect(() => {
@@ -29,10 +31,10 @@ export const withAvailableAddressDetails = () => InnerComponent => {
     }, [shouldLoadAvailableAddress, loadAvailableAddress]);
 
     useEffect(() => {
-      if (deliveryAddressId) {
+      if (deliveryAddressId || isSelectAvailableAddressRequestCompleted) {
         setShouldShowLoader(false);
       }
-    }, [deliveryAddressId]);
+    }, [deliveryAddressId, isSelectAvailableAddressRequestCompleted]);
 
     return <>{shouldShowLoader ? <PageLoader /> : <InnerComponent {...otherProps} />}</>;
   };
@@ -41,21 +43,24 @@ export const withAvailableAddressDetails = () => InnerComponent => {
     savedAddressId: PropTypes.string,
     deliveryAddressId: PropTypes.string,
     loadAvailableAddress: PropTypes.func,
-    hasFetchRequestCompleted: PropTypes.bool,
+    hasFetchDeliveryDetailsRequestCompleted: PropTypes.bool,
+    isSelectAvailableAddressRequestCompleted: PropTypes.bool,
   };
 
   WithAvailableAddressDetails.defaultProps = {
     savedAddressId: null,
     deliveryAddressId: null,
     loadAvailableAddress: () => {},
-    hasFetchRequestCompleted: false,
+    hasFetchDeliveryDetailsRequestCompleted: false,
+    isSelectAvailableAddressRequestCompleted: false,
   };
   return compose(
     connect(
       state => ({
         savedAddressId: getSavedAddressId(state),
         deliveryAddressId: getDeliveryAddressId(state),
-        hasFetchRequestCompleted: getHasFetchDeliveryDetailsRequestCompleted(state),
+        hasFetchDeliveryDetailsRequestCompleted: getHasFetchDeliveryDetailsRequestCompleted(state),
+        isSelectAvailableAddressRequestCompleted: getIsSelectAvailableAddressRequestCompleted(state),
       }),
       dispatch => ({
         loadAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
