@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Frame from '../../../common/components/Frame';
 import MenuHeader from './components/MenuHeader';
 import MenuStoreInfo from './components/MenuStoreInfo';
@@ -9,7 +9,6 @@ import ProductDetailDrawer from './components/ProductDetailDrawer';
 import MenuFooter from './components/MenuFooter';
 import MiniCart from './components/MiniCart';
 import AlcoholModal from './components/AlcoholModal';
-import { getIsMiniCartDrawerVisible, getIsCartFooterVisible } from './redux/cart/selectors';
 import { mounted } from './redux/common/thunks';
 
 const Menu = () => {
@@ -17,8 +16,6 @@ const Menu = () => {
   useEffect(() => {
     dispatch(mounted());
   }, []);
-  const isMiniCartDrawerVisible = useSelector(getIsMiniCartDrawerVisible);
-  const isCartFooterVisible = useSelector(getIsCartFooterVisible);
 
   return (
     <Frame>

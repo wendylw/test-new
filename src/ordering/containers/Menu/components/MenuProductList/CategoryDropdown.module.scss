@@ -1,3 +1,5 @@
+@import "../../../../../common/styles/variables.scss";
+
 .menuProductCategoryButton {
   &:global(.type-secondary) {
     @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-py-6 sm:tw-py-6px  tw-w-full tw-border-gray-400
@@ -8,6 +10,11 @@
     height: 40px;
     border-radius: 24px;
   }
+}
+
+.menuProductHighlightedCategory {
+  @apply tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800;
+  @include text-line-clamp(1, null);
 }
 
 .menuProductCategoryDrawer {
@@ -31,11 +38,16 @@
 }
 
 .menuProductCategoryItem {
-  @apply tw-flex tw-items-center tw-py-16;
+  @apply tw-items-center tw-py-16;
 
   &:global(.active) > &Text {
     @apply tw-text-orange tw-font-bold;
   }
+}
+
+.menuProductCategoryItemText {
+  @apply tw-flex-1;
+  @include text-line-clamp(1, null);
 }
 
 @media (min-width: 420px) {

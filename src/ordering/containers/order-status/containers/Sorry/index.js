@@ -10,7 +10,7 @@ const PROVIDER_TO_METHOD = {
   StripeFPX: 'onlineBanking',
   CCPPMYCreditCard: 'creditCard',
   GrabPay: 'onlineBanking',
-  CCPPTnGPay: 'onlineBanking',
+  TnGOnline: 'onlineBanking',
   Boost: 'onlineBanking',
   BeepTHOnlineBanking: 'onlineBanking',
   BeepTHCreditCard: 'creditCard',

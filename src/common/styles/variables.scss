@@ -8,3 +8,27 @@ $contentWidthInBigScreen: 412px; // not including the border
     right: calc(50% - ((#{$contentWidthInBigScreen}) / 2));
   }
 }
+
+@mixin text-line-clamp($lines, $maxHeight) {
+  @if $lines == 1 {
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  @if $lines == 2 {
+    @apply tw-line-clamp-2;
+  }
+
+  @if $lines >= 2 {
+    word-break: break-word;
+    hyphens: none;
+  }
+
+  @if $maxHeight {
+    max-height: $maxHeight;
+  }
+
+  text-overflow: ellipsis;
+}

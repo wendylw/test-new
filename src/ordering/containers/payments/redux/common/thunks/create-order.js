@@ -16,15 +16,19 @@ import {
   getOnlineStoreInfo,
   getRequestInfo,
   getBusinessUTCOffset,
+  getEnablePayLater,
+  getUserConsumerId,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
-import { getSelectedPaymentProvider } from '../selectors';
+import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
 
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
 import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import { alert } from '../../../../../../common/feedback';
+import { initPayLaterOrderPayment } from './api-info';
+import { push } from 'connected-react-router';
 import loggly from '../../../../../../utils/monitoring/loggly';
 
 const { DELIVERY_METHOD, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } = Constants;
@@ -317,7 +321,54 @@ export const callTNGMiniProgramPayment = async ({
   return;
 };
 
-export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
+const initPayLaterPayment = async (dataOfLater, dispatch) => {
+  try {
+    const res = await initPayLaterOrderPayment(dataOfLater);
+    return res;
+  } catch (e) {
+    handlePayLaterPaymentError({ e, dispatch });
+  }
+};
+
+const handlePayLaterPaymentError = ({ e, dispatch }) => {
+  // '393731' means missing parameter, '393732' means order not found
+  // '393735' means order payment locked,'393738' means order not latest
+  if (e.code === '393731') {
+    const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+    alert(i18next.t('SorryDescription'), {
+      title: i18next.t('SorryEmo'),
+      closeButtonContent: i18next.t('BackToMenu'),
+      onClose: () =>
+        dispatch(
+          push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+            search: removeReceiptNumberUrl,
+          })
+        ),
+    });
+  } else if (e.code === '393732') {
+    const removeReceiptNumberUrl = Utils.getFilteredQueryString('receiptNumber');
+    alert(i18next.t('OrderNotFoundDescription'), {
+      title: i18next.t('SorryEmo'),
+      closeButtonContent: i18next.t('BackToMenu'),
+      onClose: () =>
+        dispatch(
+          push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+            search: removeReceiptNumberUrl,
+          })
+        ),
+    });
+  } else if (e.code === '393738') {
+    alert(i18next.t('RefreshTableSummaryDescription'), {
+      title: i18next.t('RefreshTableSummary'),
+      closeButtonContent: i18next.t('Refresh'),
+      onClose: () => window.location.reload(),
+    });
+  }
+};
+
+export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (dispatch, getState) => {
   try {
     const state = getState();
     const shippingType = getShippingType(state);
@@ -344,6 +395,10 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       return;
     }
 
+    const modifiedTime = getModifiedTime(getState());
+    const enablePayLater = getEnablePayLater(getState());
+    const consumerId = getUserConsumerId(getState());
+
     const data = {
       receiptNumber: orderId,
       orderSource: source,
@@ -352,7 +407,19 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       ...paymentArgs,
     };
 
-    const { redirectURL: thankYouPageUrl, paymentUrl } = await initPayment(data);
+    const dataOfLater = {
+      receiptNumber: orderId,
+      orderSource: source,
+      webhookURL,
+      redirectURL,
+      modifiedTime,
+      consumerId,
+      ...paymentArgs,
+    };
+
+    const { redirectURL: thankYouPageUrl, paymentUrl } = enablePayLater
+      ? await initPayLaterPayment(dataOfLater, history)
+      : await initPayment(data);
 
     if (paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
       if (!thankYouPageUrl) {

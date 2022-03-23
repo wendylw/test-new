@@ -1,4 +1,4 @@
-import { get, post } from '../../../../utils/api/api-fetch';
+import { get } from '../../../../utils/api/api-fetch';
 
 // fetch an order
 export const fetchOrder = ({ receiptNumber }) => get(`/api/v3/transactions/${receiptNumber}`);
@@ -9,10 +9,3 @@ export const fetchOrderIncludeCashback = ({ receiptNumber }) =>
 
 // fetch order submission status
 export const fetchOrderSubmissionStatus = ({ receiptNumber }) => get(`/api/v3/transactions/${receiptNumber}/status`);
-
-// confirm to pay for order
-export const postOrderSubmitted = ({ receiptNumber, modifiedTime }) => {
-  const payload = { modifiedTime };
-
-  return post(`/api/v3/transactions/${receiptNumber}/submission`, payload);
-};

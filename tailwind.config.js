@@ -38,7 +38,7 @@ module.exports = {
       relaxed: '1.5',
       loose: '1.6',
     },
-    screen: {
+    screens: {
       sm: '420px',
       md: '770px',
       lg: '1030px',

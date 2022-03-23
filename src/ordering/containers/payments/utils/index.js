@@ -10,15 +10,12 @@ const { PAYMENT_METHOD_LABELS, CREDIT_CARD_BRANDS, ROUTER_PATHS, PAYMENT_PROVIDE
 
 const PAYMENT_NAME_COUNTRY_MAP = {
   MY: {
-    // To enable adyen online banking, remove StripeFPX and release AdyenFPX
     [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'StripeFPX',
-    // [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'AdyenFPX',
     // [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'CCPPMYOnlineBanking',
     [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'CCPPMYCreditCard',
     [PAYMENT_METHOD_LABELS.GRAB_PAY]: 'GrabPay',
-    [PAYMENT_METHOD_LABELS.TNG_PAY]: 'CCPPTnGPay',
+    [PAYMENT_METHOD_LABELS.TNG_PAY]: 'TnGOnline',
     [PAYMENT_METHOD_LABELS.BOOST_PAY]: 'Boost',
-    [PAYMENT_METHOD_LABELS.ADYEN_PAY]: 'Adyen',
   },
   TH: {
     [PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY]: 'BeepTHOnlineBanking',
@@ -183,9 +180,6 @@ export const getCardIcon = cardType => {
 
 export const getCreditCardFormPathname = (paymentProvider, saveCard = false) => {
   switch (paymentProvider) {
-    case PAYMENT_PROVIDERS.ADYEN:
-      return ROUTER_PATHS.ORDERING_ADYEN_PAYMENT;
-
     case PAYMENT_PROVIDERS.STRIPE:
       return saveCard ? ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE : ROUTER_PATHS.ORDERING_STRIPE_PAYMENT;
 

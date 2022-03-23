@@ -644,6 +644,8 @@ Utils.judgeClient = () => {
   } else if (/(Android)/i.test(navigator.userAgent)) {
     //判断Android
     client = 'Android';
+  } else if (/(Mac)/i.test(navigator.userAgent)) {
+    client = 'Mac';
   } else {
     client = 'PC';
   }

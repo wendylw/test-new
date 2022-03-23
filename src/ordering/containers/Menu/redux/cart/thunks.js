@@ -12,6 +12,7 @@ import {
   getUserIsLogin,
   getReceiptNumber,
   getEnablePayLater,
+  getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
 import { tokenExpiredAsync, getTokenAsync } from '../../../../../utils/native-methods';
 import {
@@ -24,11 +25,15 @@ import {
 } from '../../../../../common/utils';
 import { SHIPPING_TYPES, PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import loggly from '../../../../../utils/monitoring/loggly';
+import Clevertap from '../../../../../utils/clevertap';
 
 /**
  * show mini cart drawer
  */
-export const showMiniCartDrawer = createAsyncThunk('ordering/menu/cart/showMiniCartDrawer', async () => {});
+export const showMiniCartDrawer = createAsyncThunk('ordering/menu/cart/showMiniCartDrawer', async (_, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+  Clevertap.pushEvent('Menu Page - Click cart', storeInfoForCleverTap);
+});
 /**
  * hide mini cart drawer
  */
@@ -66,6 +71,9 @@ export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', asyn
   const shippingType = getShippingType(state);
   const deliverInfo = getDeliveryInfo(state);
   const { enablePreOrder } = deliverInfo;
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+
+  Clevertap.pushEvent('Menu Page - Click order now', storeInfoForCleverTap);
 
   if (!isInsertWebview || (isInsertWebview && userSignedIn)) {
     gotoNextPage(shippingType, enablePreOrder, dispatch);
@@ -129,7 +137,10 @@ export const removeAllCartItems = createAsyncThunk(
   'ordering/menu/cart/removeAllCartItems',
   async (_, { dispatch, getState }) => {
     loggly.log('cart-list-drawer.clear-all-attempt');
-    // this.cleverTapTrack('Menu Page - Cart Preview - Click clear all');
+
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Menu Page - Cart Preview - Click clear all', storeInfoForCleverTap);
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -142,6 +153,18 @@ export const removeAllCartItems = createAsyncThunk(
   }
 );
 
+const getCartItemCleverTapAttributes = cartItem => ({
+  'category name': cartItem.categoryName,
+  'category rank': cartItem.categoryRank,
+  'product name': cartItem.title,
+  'product rank': cartItem.rank,
+  'product image url': cartItem.images?.length > 0 ? cartItem.images[0] : '',
+  amount: !_isNil(cartItem.originalDisplayPrice) ? cartItem.originalDisplayPrice : cartItem.displayPrice,
+  discountedprice: !_isNil(cartItem.originalDisplayPrice) ? cartItem.displayPrice : '',
+  'is bestsellar': cartItem.isFeaturedProduct,
+  'has picture': cartItem.images?.length > 0,
+});
+
 /**
  * increase cart item quantity
  */
@@ -153,12 +176,20 @@ export const increaseCartItemQuantity = createAsyncThunk(
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
     const originalCartItems = getOriginalCartItems(state);
-    const { quantity, productId, variations } = originalCartItems.find(item => item.id === cartItemId) || {};
+    const originalCartItem = originalCartItems.find(item => item.id === cartItemId) || {};
+    const { quantity, productId, variations } = originalCartItem;
     const selectedOptions = (variations || []).map(({ variationId, optionId, quantity: variationQuantity }) => ({
       variationId,
       optionId,
       quantity: variationQuantity,
     }));
+    const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+
+    Clevertap.pushEvent('Menu Page - Cart Preview - Increase quantity', {
+      ...storeInfoForCleverTap,
+      ...cartItemCleverTapAttributes,
+    });
 
     // this.handleGtmEventTracking(cartItem);
 
@@ -229,6 +260,14 @@ export const decreaseCartItemQuantity = createAsyncThunk(
 
     const originalCartItem = originalCartItems.find(item => item.id === cartItemId) || {};
     const { quantity, productId, variations } = originalCartItem || {};
+
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+    const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
+
+    Clevertap.pushEvent('Menu Page - Cart Preview - Decrease quantity', {
+      ...storeInfoForCleverTap,
+      ...cartItemCleverTapAttributes,
+    });
 
     if (quantity === 1) {
       dispatch(removeCartItem({ cartItemId }));

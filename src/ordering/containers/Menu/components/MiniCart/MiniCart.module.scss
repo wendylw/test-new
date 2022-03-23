@@ -1,3 +1,5 @@
+@import "../../../../../common/styles/variables.scss";
+
 .header {
   @apply tw-relative tw-text-center tw-p-16px tw-border-gray-300;
   border-bottom-width: 1px;
@@ -31,9 +33,8 @@
 }
 
 .cartItemTitle {
-  @apply tw-px-2 sm:tw-px-2px tw-font-bold tw-leading-relaxed tw-line-clamp-2;
-
-  max-height: 3em;
+  @apply tw-px-2 sm:tw-px-2px tw-font-bold tw-leading-relaxed;
+  @include text-line-clamp(2, 3em);
 }
 
 .cartItemDescription {

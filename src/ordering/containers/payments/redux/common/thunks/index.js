@@ -21,12 +21,6 @@ const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
 
 /* Model */
 const PAYMENTS_MAPPING = {
-  // Adyen is unavailable for now, so it is hidden
-  Adyen: {
-    key: 'CreditAndDebitCard',
-    logo: 'paymentCreditImage',
-    pathname: '/payment/adyen',
-  },
   CCPPMYCreditCard: {
     key: 'CreditAndDebitCard',
     logo: 'paymentCreditImage',
@@ -57,11 +51,6 @@ const PAYMENTS_MAPPING = {
     logo: 'paymentBankingImage',
     pathname: '/payment/online-banking',
   },
-  AdyenFPX: {
-    key: 'OnlineBanking',
-    logo: 'paymentBankingImage',
-    pathname: '/payment/online-banking',
-  },
   BeepTHOnlineBanking: {
     key: 'OnlineBanking',
     logo: 'paymentBankingImage',
@@ -71,7 +60,7 @@ const PAYMENTS_MAPPING = {
     key: 'GrabPay',
     logo: 'paymentGrabImage',
   },
-  CCPPTnGPay: {
+  TnGOnline: {
     key: 'TouchNGo',
     logo: 'paymentTNGImage',
   },
@@ -137,10 +126,11 @@ export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', asy
   // For Pay Later order, update Billing data by order data
   if (receiptNumber) {
     const data = await fetchOrder(receiptNumber);
-    const { total, subtotal, items } = data;
+    const { total, subtotal, items, modifiedTime } = data;
 
     return {
       receiptNumber,
+      modifiedTime,
       total,
       subtotal,
       itemsQuantity: _sumBy(items, 'quantity'),

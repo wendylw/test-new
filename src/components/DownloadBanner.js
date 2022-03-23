@@ -2,17 +2,21 @@ import React from 'react';
 import beepAppAppleStore from '../images/beep-app-apple-store.svg';
 import beepAppGooglePlay from '../images/beep-app-google-play.svg';
 import Utils from '../utils/utils';
+import Constants from '../utils/constants';
 import './DownloadBanner.scss';
+
+const { CLIENTS } = Constants;
 
 function DownloadBanner(props) {
   const { link, text } = props;
   const client = Utils.judgeClient();
+  const desktopClients = [CLIENTS.PC, CLIENTS.MAC];
 
   return (
     <a
       className="download-banner flex flex-middle flex-space-around margin-small padding-top-bottom-small padding-left-right-normal"
       href={link}
-      target={client === 'PC' ? '_blank' : ''}
+      target={desktopClients.includes(client) ? '_blank' : ''}
     >
       <span className="download-banner__text text-weight-bolder">{text}</span>
       <img

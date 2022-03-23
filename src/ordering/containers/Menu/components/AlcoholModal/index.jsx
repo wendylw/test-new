@@ -10,12 +10,13 @@ import {
   getConfirmNotLegal,
 } from './redux/selectors';
 import { acceptAlcoholConsent, getUserAlcoholConsent, confirmAlcoholDenied } from './redux/thunks';
-import { getMerchantCountry } from '../../../../redux/modules/app';
+import { getMerchantCountry, getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 import Button from '../../../../../common/components/Button';
 import Modal from '../../../../../common/components/Modal';
 import TermsAndPrivacy from '../../../../../components/TermsAndPrivacy';
 import beepAlcoholImage from '../../../../../images/beep-alcohol-consent-new.png';
 import styles from './AlcoholModal.module.scss';
+import Clevertap from '../../../../../utils/clevertap';
 
 const AlcoholModal = ({ history }) => {
   const dispatch = useDispatch();
@@ -25,12 +26,21 @@ const AlcoholModal = ({ history }) => {
   const legalForAlcohol = useSelector(isLegalForAlcohol);
   const country = useSelector(getMerchantCountry);
   const confirmNotLegal = useSelector(getConfirmNotLegal);
+  const storeInfoForCleverTap = useSelector(getStoreInfoForCleverTap);
 
   useEffect(() => {
     if (!legalForAlcohol) {
       dispatch(getUserAlcoholConsent());
     }
   }, []);
+
+  useEffect(() => {
+    if (shouldShowAlcoholModal) {
+      Clevertap.pushEvent('Menu Page - Alcohol Counsent - Pop up', storeInfoForCleverTap);
+    }
+    // push clevertap event only when shouldShowAlcoholModal changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldShowAlcoholModal]);
 
   useEffect(() => {
     if (shouldModal) {
@@ -40,9 +50,11 @@ const AlcoholModal = ({ history }) => {
 
   const handleClick = value => {
     if (value) {
+      Clevertap.pushEvent('Menu Page - Alcohol Consent - Click yes', storeInfoForCleverTap);
       dispatch(acceptAlcoholConsent());
       dispatch(actions.setAlcoholModalVisibility(false));
     } else {
+      Clevertap.pushEvent('Menu Page - Alcohol Consent - Click no', storeInfoForCleverTap);
       dispatch(actions.setConfirmNotLegal(true));
     }
   };

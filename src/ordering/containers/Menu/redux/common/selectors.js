@@ -72,6 +72,7 @@ export const getCategories = createSelector(
       name: category.name,
       id: category.id,
       cartQuantity: _sumBy(category.products, productId => cartQuantityByProductId[productId] || 0),
+      isBestSeller: category.isBestSeller || false,
       isActive: category.id === activeCategoryId,
     }))
 );

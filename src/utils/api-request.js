@@ -37,4 +37,4 @@ export const login = ({ accessToken, refreshToken, fulfillDate }) =>
     return data;
   });
 
-export const fetchOrder = receiptNumber => get(`/api/v3/transactions/${receiptNumber}`);
+export const fetchOrder = receiptNumber => get(`/api/v3/transactions/${receiptNumber}/calculation`);
