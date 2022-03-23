@@ -1,20 +1,17 @@
 import qs from 'qs';
 import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import _isNil from 'lodash/isNil';
 import { clearCart, updateCartItems, removeCartItemsById } from '../../../../redux/cart/thunks';
 import { getOriginalCartItems } from './selectors';
 import {
   actions as appActions,
   getShippingType,
   getDeliveryInfo,
-  getUser,
   getUserIsLogin,
   getReceiptNumber,
   getEnablePayLater,
   getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
-import { tokenExpiredAsync, getTokenAsync } from '../../../../../utils/native-methods';
 import {
   isWebview,
   isTNGMiniProgram,
@@ -82,30 +79,17 @@ export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', asyn
   }
 
   if (isTNGMiniProgram()) {
-    try {
-      await dispatch(appActions.loginByTngMiniProgram());
-
-      gotoNextPage(shippingType, enablePreOrder, dispatch);
-
-      return;
-    } catch (e) {
-      loggly.error('ordering.home.footer', { message: 'TNG mini program login failed' });
-    }
+    await dispatch(appActions.loginByTngMiniProgram());
   }
 
   if (isWebview()) {
-    const { isExpired } = getUser(state) || {};
+    await dispatch(appActions.loginByBeepApp());
+  }
 
-    const res = isExpired ? await tokenExpiredAsync() : await getTokenAsync();
+  const isLogin = getUserIsLogin(getState());
 
-    if (_isNil(res)) {
-      loggly.error('ordering.home.footer', { message: 'native token is invalid' });
-    } else {
-      // eslint-disable-next-line camelcase
-      const { access_token: accessToken, refresh_token: refreshToken } = res;
-
-      dispatch(appActions.loginApp({ accessToken, refreshToken }));
-    }
+  if (isLogin) {
+    gotoNextPage(shippingType, enablePreOrder, dispatch);
   }
 });
 
