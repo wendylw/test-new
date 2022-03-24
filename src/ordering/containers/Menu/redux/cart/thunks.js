@@ -24,6 +24,7 @@ import {
 import { SHIPPING_TYPES, PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import loggly from '../../../../../utils/monitoring/loggly';
 import Clevertap from '../../../../../utils/clevertap';
+import { gtmEventTracking, GTM_TRACKING_EVENTS } from '../../../../../utils/gtm';
 
 /**
  * show mini cart drawer
@@ -150,6 +151,28 @@ const getCartItemCleverTapAttributes = cartItem => ({
   'has picture': cartItem.images?.length > 0,
 });
 
+const getCartItemGTMData = cartItem => {
+  const stockStatusMapping = {
+    outOfStock: 'out of stock',
+    inStock: 'in stock',
+    lowStock: 'low stock',
+    unavailable: 'unavailable',
+    notTrackInventory: 'not track Inventory',
+  };
+
+  // In cart list, image count is always either 1 or 0
+  return {
+    product_name: cartItem.title,
+    product_id: cartItem.productId,
+    price_local: cartItem.displayPrice,
+    variant: cartItem.variations,
+    quantity: cartItem.quantityOnHand,
+    product_type: cartItem.inventoryType,
+    Inventory: stockStatusMapping[cartItem.stockStatus] || stockStatusMapping.inStock,
+    image_count: cartItem.image || 0,
+  };
+};
+
 /**
  * increase cart item quantity
  */
@@ -170,6 +193,9 @@ export const increaseCartItemQuantity = createAsyncThunk(
     }));
     const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+    const cartItemGTMData = getCartItemGTMData(originalCartItem);
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, cartItemGTMData);
 
     Clevertap.pushEvent('Menu Page - Cart Preview - Increase quantity', {
       ...storeInfoForCleverTap,

@@ -62,6 +62,10 @@ export const getSelectedCategory = createSelector(
   (allCategories, selectedCategoryId) => allCategories[selectedCategoryId]
 );
 
+export const getSelectedProductInventoryType = createSelector(getSelectedProduct, selectedProduct =>
+  _get(selectedProduct, 'inventoryType', null)
+);
+
 export const getProductDisplayPrice = createSelector(getSelectedProduct, product => _get(product, 'displayPrice', 0));
 
 export const getProductId = createSelector(getSelectedProduct, product => _get(product, 'id', ''));
@@ -393,3 +397,34 @@ export const getUnableAddToCartReason = createSelector(
     return '';
   }
 );
+
+export const getProductIdForGTMData = createSelector(
+  getSelectedChildProductId,
+  getSelectedProductId,
+  (childProductId, selectedProductId) => childProductId || selectedProductId
+);
+
+export const getStockStatusForGTMData = createSelector(getSelectedProductStockStatus, selectedProductStockStatus => {
+  const stockStatusMapping = {
+    outOfStock: 'out of stock',
+    inStock: 'in stock',
+    lowStock: 'low stock',
+    unavailable: 'unavailable',
+    notTrackInventory: 'not track Inventory',
+  };
+
+  return _get(stockStatusMapping, selectedProductStockStatus, stockStatusMapping.inStock);
+});
+
+export const getProductImagesCount = createSelector(getProductImages, productImages => productImages.length);
+
+export const getAddToCartGTMData = createStructuredSelector({
+  product_name: getProductTitle,
+  product_id: getProductIdForGTMData,
+  price_local: getSelectedProductDisplayPrice,
+  variant: getSelectedVariationDataForAddToCartApi,
+  quantity: getSelectedProductQuantityOnHand,
+  product_type: getSelectedProductInventoryType,
+  Inventory: getStockStatusForGTMData,
+  image_count: getProductImagesCount,
+});
