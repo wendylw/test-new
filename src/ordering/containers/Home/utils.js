@@ -54,10 +54,3 @@ export const getCurrentPromotionClientType = () => {
 
   return PROMOTION_CLIENT_TYPES.WEB;
 };
-
-export const isSameAddressCoords = (thisCoords, anotherCoords) => {
-  const { lat: thisLat, lng: thisLng } = thisCoords || {};
-  const { lat: anotherLat, lng: anotherLng } = anotherCoords || {};
-
-  return thisLat === anotherLat && thisLng === anotherLng;
-};
