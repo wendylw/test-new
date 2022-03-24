@@ -22,12 +22,8 @@ import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/enti
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories, getCategoryList } from '../../../redux/modules/entities/categories';
-import { getAddressInfo, setAddressInfo } from '../../../redux/modules/address/thunks';
-import {
-  getAddressCoords,
-  getSavedAddressId,
-  getIsAddressRequestStatusFulfilled,
-} from '../../../redux/modules/address/selectors';
+import { setAddressInfo } from '../../../redux/modules/address/thunks';
+import { getAddressCoords } from '../../../redux/modules/address/selectors';
 import cartReducer from '../cart';
 import { getCartItems as getNewCartItems } from '../cart/selectors';
 
@@ -154,7 +150,6 @@ export const initialState = {
     deliveryToCity: '',
     postCode: '',
     countryCode: '',
-    fetchRequestStatus: null,
   },
 };
 
@@ -284,7 +279,7 @@ export const actions = {
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
-        payload: { ...result, source },
+        payload: { result, source },
       });
     } catch (error) {
       dispatch({
@@ -435,17 +430,6 @@ export const actions = {
     },
   }),
 
-  getDeliveryAddressDetails: (consumerId, storeId, savedAddressId) => ({
-    [API_REQUEST]: {
-      types: [
-        types.FETCH_DELIVERYADDRESSDETAIL_REQUEST,
-        types.FETCH_DELIVERYADDRESSDETAIL_SUCCESS,
-        types.FETCH_DELIVERYADDRESSDETAIL_FAILURE,
-      ],
-      ...url.API_URLS.GET_DELIVERY_ADDRESS_DETAILS(consumerId, storeId, savedAddressId),
-    },
-  }),
-
   loadCoreBusiness: id => dispatch => {
     const { storeId, business } = config;
 
@@ -454,33 +438,24 @@ export const actions = {
 
   // load shopping cart
   loadShoppingCart: () => async (dispatch, getState) => {
-    const state = getState();
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
-    const businessUTCOffset = getBusinessUTCOffset(state);
+    const businessUTCOffset = getBusinessUTCOffset(getState());
 
     if (isDigital) {
       await dispatch(generatorShoppingCartForVoucherOrdering());
       return;
     }
 
-    const deliveryDetails = getDeliveryDetails(state);
+    const deliveryDetails = getDeliveryDetails(getState());
+
     const deliveryToLocation = _get(deliveryDetails, 'deliveryToLocation', null);
-    const isAddressRequestStatusFulfilled = getIsAddressRequestStatusFulfilled(state);
+    const addressCoords = getAddressCoords(getState());
 
-    let deliveryCoords = null;
-
-    if (!deliveryToLocation) {
-      if (isAddressRequestStatusFulfilled) {
-        deliveryCoords = getAddressCoords(state);
-      } else {
-        // The only cost is to send redundant requests to get the address, but it will promise to get the address finally
-        await dispatch(getAddressInfo());
-        deliveryCoords = getAddressCoords(getState());
-      }
-    } else {
-      deliveryCoords = { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude };
-    }
+    // BEEP-1978: if deliveryCoords is undefined or null, it won't be sent to server. We DO NOT need to do any fallback logic here.
+    const deliveryCoords = deliveryToLocation
+      ? { lat: deliveryToLocation.latitude, lng: deliveryToLocation.longitude }
+      : addressCoords;
 
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
@@ -522,13 +497,6 @@ export const actions = {
       type: types.DELIVERY_DETAILS_INIT,
       payload,
     });
-
-    const savedAddressId = getSavedAddressId(getState());
-    const ifDeliveryAddressInfoExists = !_isEmpty(savedAddressId);
-
-    if (ifDeliveryAddressInfoExists) {
-      dispatch(actions.loadDeliveryAddressDetails());
-    }
   },
 
   updateDeliveryDetails: data => async (dispatch, getState) => {
@@ -571,25 +539,6 @@ export const actions = {
       payload,
     });
   },
-
-  loadDeliveryAddressDetails: () => async (dispatch, getState) => {
-    const state = getState();
-    const consumerId = getUserConsumerId(state);
-    const storeId = getStoreId(state);
-    const savedAddressId = getSavedAddressId(state);
-
-    return dispatch({
-      [API_REQUEST]: {
-        types: [
-          types.FETCH_DELIVERYADDRESSDETAIL_REQUEST,
-          types.FETCH_DELIVERYADDRESSDETAIL_SUCCESS,
-          types.FETCH_DELIVERYADDRESSDETAIL_FAILURE,
-        ],
-        ...Url.API_URLS.GET_DELIVERY_ADDRESS_DETAILS(consumerId, storeId, savedAddressId),
-      },
-    });
-  },
-
   loadCoreStores: address => (dispatch, getState) => {
     const business = getBusiness(getState());
 
@@ -743,8 +692,8 @@ const user = (state = initialState.user, action) => {
         refreshToken: refresh_token,
       };
     case types.CREATE_LOGIN_SUCCESS: {
-      const consumerId = _get(payload, 'consumerId', '');
-      const user = _get(payload, 'user', {});
+      const consumerId = _get(payload, 'result.consumerId', '');
+      const user = _get(payload, 'result.user', {});
       if (state.accessToken) {
         delete state.accessToken;
       }
@@ -1029,40 +978,6 @@ const deliveryDetails = (state = initialState.deliveryDetails, action) => {
         ...state,
         ...action.payload,
       };
-    case types.FETCH_DELIVERYADDRESSDETAIL_REQUEST:
-      return {
-        ...state,
-        fetchRequestStatus: API_REQUEST_STATUS.PENDING,
-      };
-    case types.FETCH_DELIVERYADDRESSDETAIL_SUCCESS:
-      const { response } = action;
-      const isAddressAvailable = _get(response, 'availableStatus', false);
-      const deliveryDetailsInfo = isAddressAvailable
-        ? {
-            username: _get(response, 'contactName', ''),
-            phone: _get(response, 'contactNumber', ''),
-            addressId: _get(response, '_id', ''),
-            addressName: _get(response, 'addressName', ''),
-            addressDetails: _get(response, 'addressDetails', ''),
-            deliveryComments: _get(response, 'comments', ''),
-            deliveryToAddress: _get(response, 'deliveryTo', ''),
-            deliveryToLocation: _get(response, 'location', null),
-            deliveryToCity: _get(response, 'city', ''),
-            postCode: _get(response, 'postCode', ''),
-            countryCode: _get(response, 'countryCode', ''),
-          }
-        : {};
-
-      return {
-        ...state,
-        ...deliveryDetailsInfo,
-        fetchRequestStatus: API_REQUEST_STATUS.FULFILLED,
-      };
-    case types.FETCH_DELIVERYADDRESSDETAIL_FAILURE:
-      return {
-        ...state,
-        fetchRequestStatus: API_REQUEST_STATUS.REJECTED,
-      };
     default:
       return state;
   }
@@ -1146,10 +1061,8 @@ export const getIsUserLoginRequestStatusInPending = createSelector(
   status => status === API_REQUEST_STATUS.PENDING
 );
 
-export const getIsUserProfileStatusFulfilled = createSelector(
-  getUserProfileStatus,
-  status => status === API_REQUEST_STATUS.FULFILLED
-);
+export const getIsUserProfileStatusFulfilled =
+  (getUserProfileStatus, status => status === API_REQUEST_STATUS.FULFILLED);
 
 export const getBusinessInfo = state => {
   const business = getBusiness(state);
@@ -1229,14 +1142,6 @@ export const getCartUnavailableItems = state => state.app.shoppingCart.unavailab
 export const getCartStatus = state => state.app.shoppingCart.status;
 
 export const getDeliveryDetails = state => state.app.deliveryDetails;
-
-export const getDeliveryAddressId = createSelector(getDeliveryDetails, deliveryDetails =>
-  _get(deliveryDetails, 'addressId', null)
-);
-
-export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeliveryDetails, deliveryDetails =>
-  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(deliveryDetails.fetchRequestStatus)
-);
 
 export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
 export const getCartSubtotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'subtotal', null));

@@ -17,7 +17,6 @@ import {
   actions as appActionCreators,
   getBusiness,
   getUser,
-  getUserProfile,
   getRequestInfo,
   getBusinessUTCOffset,
   getCartBilling,
@@ -28,7 +27,6 @@ import {
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import { actions as customerInfoActionCreators } from './redux';
 import { getCustomerError, getShouldGoToAddNewAddressPage } from './redux/selectors';
-import { withAddressInfo } from '../../../Location/withAddressInfo';
 import { withAvailableAddressDetails } from './withAvailableAddressDetails';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -46,12 +44,11 @@ class CustomerInfo extends Component {
     const { user, deliveryDetails, appActions } = this.props;
     const { consumerId } = user || {};
     consumerId && (await appActions.getProfileInfo(consumerId));
+    const { profile } = user || {};
 
-    // Get the latest profile directly from the props
-    const { userProfile } = this.props;
     await appActions.updateDeliveryDetails({
-      username: deliveryDetails.username || userProfile.name,
-      phone: deliveryDetails.phone || userProfile.phone,
+      username: deliveryDetails.username || profile.name,
+      phone: deliveryDetails.phone || profile.phone,
     });
 
     appActions.loadShoppingCart();
@@ -449,12 +446,10 @@ CustomerInfo.displayName = 'CustomerInfo';
 
 export default compose(
   withTranslation(['OrderingCustomer']),
-  withAddressInfo(),
   withAvailableAddressDetails(),
   connect(
     state => ({
       user: getUser(state),
-      userProfile: getUserProfile(state),
       business: getBusiness(state),
       businessInfo: getBusinessInfo(state),
       allBusinessInfo: getAllBusinesses(state),

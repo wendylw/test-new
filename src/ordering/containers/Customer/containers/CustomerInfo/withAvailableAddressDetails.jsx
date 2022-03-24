@@ -1,67 +1,41 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { selectAvailableAddress } from './redux/thunks';
-import { getIsSelectAvailableAddressRequestCompleted } from './redux/selectors';
-import { getSavedAddressId } from '../../../../../redux/modules/address/selectors';
-import { getDeliveryAddressId, getHasFetchDeliveryDetailsRequestCompleted } from '../../../../redux/modules/app';
+import { selectAvailableAddress } from '../../redux/common/thunks';
+import { getIsAddressRequestStatusPending } from '../../../../../redux/modules/address/selectors';
 import PageLoader from '../../../../../components/PageLoader';
 
 export const withAvailableAddressDetails = () => InnerComponent => {
-  const WithAvailableAddressDetails = ({
-    savedAddressId,
-    deliveryAddressId,
-    hasFetchDeliveryDetailsRequestCompleted,
-    loadAvailableAddress,
-    isSelectAvailableAddressRequestCompleted,
-    ...otherProps
-  }) => {
+  const WithAvailableAddressDetails = ({ isAddressRequestStatusPending, loadAvailableAddress, ...otherProps }) => {
     const [shouldShowLoader, setShouldShowLoader] = useState(true);
-    const shouldLoadAvailableAddress = useMemo(
-      () => !savedAddressId || (hasFetchDeliveryDetailsRequestCompleted && !deliveryAddressId),
-      [savedAddressId, deliveryAddressId, hasFetchDeliveryDetailsRequestCompleted]
-    );
+    const loadAvailableAddressDetails = useCallback(async () => {
+      await loadAvailableAddress();
+      setShouldShowLoader(false);
+    }, [loadAvailableAddress]);
 
     useEffect(() => {
-      if (shouldLoadAvailableAddress) {
-        loadAvailableAddress();
+      if (!isAddressRequestStatusPending) {
+        loadAvailableAddressDetails();
       }
-    }, [shouldLoadAvailableAddress, loadAvailableAddress]);
-
-    useEffect(() => {
-      if (deliveryAddressId || isSelectAvailableAddressRequestCompleted) {
-        setShouldShowLoader(false);
-      }
-    }, [deliveryAddressId, isSelectAvailableAddressRequestCompleted]);
+    }, [isAddressRequestStatusPending, loadAvailableAddressDetails]);
 
     return <>{shouldShowLoader ? <PageLoader /> : <InnerComponent {...otherProps} />}</>;
   };
   WithAvailableAddressDetails.displayName = 'WithAddressInfo';
   WithAvailableAddressDetails.propTypes = {
-    savedAddressId: PropTypes.string,
-    deliveryAddressId: PropTypes.string,
+    isAddressRequestStatusPending: PropTypes.bool,
     loadAvailableAddress: PropTypes.func,
-    hasFetchDeliveryDetailsRequestCompleted: PropTypes.bool,
-    isSelectAvailableAddressRequestCompleted: PropTypes.bool,
   };
 
   WithAvailableAddressDetails.defaultProps = {
-    savedAddressId: null,
-    deliveryAddressId: null,
+    isAddressRequestStatusPending: false,
     loadAvailableAddress: () => {},
-    hasFetchDeliveryDetailsRequestCompleted: false,
-    isSelectAvailableAddressRequestCompleted: false,
   };
   return compose(
     connect(
-      state => ({
-        savedAddressId: getSavedAddressId(state),
-        deliveryAddressId: getDeliveryAddressId(state),
-        hasFetchDeliveryDetailsRequestCompleted: getHasFetchDeliveryDetailsRequestCompleted(state),
-        isSelectAvailableAddressRequestCompleted: getIsSelectAvailableAddressRequestCompleted(state),
-      }),
+      state => ({ isAddressRequestStatusPending: getIsAddressRequestStatusPending(state) }),
       dispatch => ({
         loadAvailableAddress: bindActionCreators(selectAvailableAddress, dispatch),
       })
