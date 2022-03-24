@@ -89,3 +89,11 @@ export const GTM_TRACKING_EVENTS = {
   INITIATE_CHECKOUT: 'initiateCheckout',
   ORDER_CONFIRMATION: 'orderConfirmation',
 };
+
+export const STOCK_STATUS_MAPPING = {
+  outOfStock: 'out of stock',
+  inStock: 'in stock',
+  lowStock: 'low stock',
+  unavailable: 'unavailable',
+  notTrackInventory: 'not track Inventory',
+};

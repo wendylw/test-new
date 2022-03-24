@@ -24,7 +24,7 @@ import {
 import Clevertap from '../../../../../utils/clevertap';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { PRODUCT_STOCK_STATUS } from '../../constants';
-import { gtmEventTracking, GTM_TRACKING_EVENTS } from '../../../../../utils/gtm';
+import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
 
 /**
  * get product clever tap data
@@ -94,25 +94,15 @@ const getDefaultSelectedOptions = product => {
   }
 };
 
-const getViewProductGTMData = product => {
-  const stockStatusMapping = {
-    outOfStock: 'out of stock',
-    inStock: 'in stock',
-    lowStock: 'low stock',
-    unavailable: 'unavailable',
-    notTrackInventory: 'not track Inventory',
-  };
-
-  return {
-    product_name: product.title,
-    product_id: product.id,
-    price_local: product.displayPrice,
-    product_type: product.inventoryType,
-    Inventory: stockStatusMapping[product.stockStatus] || stockStatusMapping.inStock,
-    image_count: _get(product, 'images.length', 0),
-    product_description: product.description,
-  };
-};
+const getViewProductGTMData = product => ({
+  product_name: product.title,
+  product_id: product.id,
+  price_local: product.displayPrice,
+  product_type: product.inventoryType,
+  Inventory: STOCK_STATUS_MAPPING[product.stockStatus] || STOCK_STATUS_MAPPING.inStock,
+  image_count: _get(product, 'images.length', 0),
+  product_description: product.description,
+});
 
 /**
  * Show product detail drawer

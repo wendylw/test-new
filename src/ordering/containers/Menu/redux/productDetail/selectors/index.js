@@ -11,6 +11,7 @@ import { PRODUCT_STOCK_STATUS, PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIA
 import { variationStructuredSelector } from './variationSelector';
 import { variationOptionStructuredSelector, formatVariationOptionPriceDiff } from './variationOptionSelector';
 import { getAllCategories } from '../../../../../../redux/modules/entities/categories';
+import { STOCK_STATUS_MAPPING } from '../../../../../../utils/gtm';
 
 export const getProductDetailState = state => state.menu.productDetail;
 
@@ -404,17 +405,9 @@ export const getProductIdForGTMData = createSelector(
   (childProductId, selectedProductId) => childProductId || selectedProductId
 );
 
-export const getStockStatusForGTMData = createSelector(getSelectedProductStockStatus, selectedProductStockStatus => {
-  const stockStatusMapping = {
-    outOfStock: 'out of stock',
-    inStock: 'in stock',
-    lowStock: 'low stock',
-    unavailable: 'unavailable',
-    notTrackInventory: 'not track Inventory',
-  };
-
-  return _get(stockStatusMapping, selectedProductStockStatus, stockStatusMapping.inStock);
-});
+export const getStockStatusForGTMData = createSelector(getSelectedProductStockStatus, selectedProductStockStatus =>
+  _get(STOCK_STATUS_MAPPING, selectedProductStockStatus, STOCK_STATUS_MAPPING.inStock)
+);
 
 export const getProductImagesCount = createSelector(getProductImages, productImages => productImages.length);
 

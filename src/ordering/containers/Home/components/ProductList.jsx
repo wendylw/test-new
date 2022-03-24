@@ -15,7 +15,7 @@ import { getSelectedProductDetail } from '../redux/common/selectors';
 import { showProductDetail } from '../redux/common/thunks';
 import { getIfAddressInfoExists } from '../../../../redux/modules/address/selectors';
 import Utils from '../../../../utils/utils';
-import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
+import { GTM_TRACKING_EVENTS, gtmEventTracking, STOCK_STATUS_MAPPING } from '../../../../utils/gtm';
 import Constants from '../../../../utils/constants';
 import config from '../../../../config';
 import './ProductList.scss';
@@ -28,13 +28,6 @@ class ProductList extends Component {
   handleGtmEventTracking = (eventName, data) => {
     if (!data) return;
 
-    const stockStatusMapping = {
-      outOfStock: 'out of stock',
-      inStock: 'in stock',
-      lowStock: 'low stock',
-      unavailable: 'unavailable',
-      notTrackInventory: 'not track Inventory',
-    };
     let gtmTrackingData = {};
 
     if (eventName === GTM_TRACKING_EVENTS.VIEW_PRODUCT) {
@@ -43,7 +36,7 @@ class ProductList extends Component {
         product_id: data.id,
         price_local: data.displayPrice,
         product_type: data.inventoryType,
-        Inventory: stockStatusMapping[data.stockStatus] || stockStatusMapping.inStock,
+        Inventory: STOCK_STATUS_MAPPING[data.stockStatus] || STOCK_STATUS_MAPPING.inStock,
         image_count: (data.images && data.images.length) || 0,
         product_description: data.description,
       };
@@ -57,7 +50,7 @@ class ProductList extends Component {
         variant: data.variations,
         quantity: data.quantityOnHand,
         product_type: data.inventoryType,
-        Inventory: stockStatusMapping[data.stockStatus] || stockStatusMapping.inStock,
+        Inventory: STOCK_STATUS_MAPPING[data.stockStatus] || STOCK_STATUS_MAPPING.inStock,
         image_count: (data.images && data.images.length) || 0,
       };
     }
