@@ -3,6 +3,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import { IconChecked } from '../../../../../components/Icons';
 import {
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
@@ -15,7 +16,7 @@ import {
 } from '../../../../redux/cart/thunks';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
-import orderSuccessImage from '../../../../../images/order-success.png';
+import orderSuccessImage from '../../../../../images/order-success-1.svg';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
 import './CartSubmissionStatus.scss';
 
@@ -29,23 +30,9 @@ class CartSubmissionStatus extends Component {
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+        pathname: Constants.ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS,
         search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}&receiptNumber=${receiptNumber}`,
       });
-    }
-  };
-
-  componentDidUpdate = prevProps => {
-    const { history, cartSubmittedStatus, receiptNumber } = this.props;
-    const { cartSubmittedStatus: prevCartSubmittedStatus } = prevProps;
-
-    if (cartSubmittedStatus && cartSubmittedStatus !== prevCartSubmittedStatus) {
-      this.timer = setTimeout(() => {
-        history.push({
-          pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
-          search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}&receiptNumber=${receiptNumber}`,
-        });
-      }, 1500);
     }
   };
 
@@ -53,7 +40,6 @@ class CartSubmissionStatus extends Component {
     const { clearQueryCartSubmissionStatus } = this.props;
 
     clearQueryCartSubmissionStatus();
-    clearTimeout(this.timer);
   };
 
   handleClickBack = () => {
@@ -62,6 +48,48 @@ class CartSubmissionStatus extends Component {
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
       search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}`,
+    });
+  };
+
+  getOrderStatusOptionsEl = () => {
+    const { t, cartSubmittedStatus } = this.props;
+    let options = null;
+
+    if (cartSubmittedStatus) {
+      options = {
+        className: 'ordering-submission__base-info-status--created',
+        icon: <IconChecked className="icon icon__success padding-small" />,
+        title: (
+          <span className="margin-left-right-smaller text-size-biggest text-capitalize">{t('OrderPlacedStatus')}</span>
+        ),
+      };
+    }
+
+    return (
+      options && (
+        <div className={`${options.className} flex flex-middle padding-small`}>
+          {options.icon}
+          {options.title}
+        </div>
+      )
+    );
+  };
+
+  handleClickAddMoreItems = () => {
+    const { history } = this.props;
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}`,
+    });
+  };
+
+  handleClickViewTableSummary = () => {
+    const { history, receiptNumber } = this.props;
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
+      search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}&receiptNumber=${receiptNumber}`,
     });
   };
 
@@ -81,12 +109,29 @@ class CartSubmissionStatus extends Component {
 
         {cartSubmittedStatus && (
           <>
-            <img className="ordering-submission__image-container-common" src={orderSuccessImage} alt="order success" />
-            <h2 className="text-size-biggest text-weight-bold text-line-height-base">{t('OrderSubmitted')}</h2>
-            <div className="padding-bottom-normal">
-              <p className="ordering-submission__success-description text-center margin-top-bottom-smaller text-size-big text-line-height-base">
-                {t('LoadingRedirectingDescription')}
-              </p>
+            <div className="ordering-submission__warning absolute-wrapper padding-small flex flex-middle flex-center">
+              <span>{t('OrderPlacedTitle')}</span>
+            </div>
+            <div className="ordering-submission__success absolute-wrapper flex flex-column flex-middle">
+              {this.getOrderStatusOptionsEl()}
+              <img className="ordering-submission__image-container-new" src={orderSuccessImage} alt="order success" />
+              <h2 className="ordering-submission__description text-size-big padding-left-right-normal margin-top-bottom-normal text-line-height-base">
+                {t('OrderPlacedDescription')}
+              </h2>
+              <div className="ordering-submission__button-container flex flex-column flex-middle flex-center">
+                <button
+                  className="ordering-submission__button button button__fill margin-small padding-normal text-uppercase text-weight-bolder"
+                  onClick={this.handleClickAddMoreItems}
+                >
+                  {t('AddMoreItems')}
+                </button>
+                <button
+                  className="ordering-submission__button-second button margin-small padding-normal text-uppercase text-weight-bolder"
+                  onClick={this.handleClickViewTableSummary}
+                >
+                  {t('ViewOrderOrPay')}
+                </button>
+              </div>
             </div>
           </>
         )}

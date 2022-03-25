@@ -5,3 +5,10 @@
 #modal-mount-point {
   @apply tw-font-sans;
 }
+
+// If display want to use flex of line-clamp container, please add this class for container
+.tw-line-clamp-flex-container {
+  @apply tw-flex tw-flex-1;
+
+  min-width: 0;
+}

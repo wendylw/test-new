@@ -8,15 +8,5 @@
   "UnableBackMenuTitle": "Want to view the menu?",
   "UnableBackMenuDescription": "You may only return to the menu once you <bold>completed your payment</bold>. Select ‘Pay Now’ to proceed.",
   "UnableBackMenuAndPendingPaymentDescription": "You may only return to the menu once you <bold>completed your payment</bold>. Select payment method to proceed",
-  "Sorry":"Oh no :(",
-  "SorryDescription":" Your order cannot be found.",
-  "OrderNotFoundDescription": " Your order cannot be found. Please contact customer support if you wish to proceed.",
-  "BackToMenu":"Back to Menu",
-  "SomeoneElseIsPaying":"Someone else is paying",
-  "SomeoneElseIsPayingDescription":"Someone else on the table is checking out the order. Please try again later.",
-  "BackToTableSummary":"Back to Table Summary",
-  "RefreshTableSummary":"Refresh table summary to continue",
-  "RefreshTableSummaryDescription": "Some items in your group order has been added or removed.",
-  "Refresh": "Refresh",
   "AddItems": "Add Items"
 }

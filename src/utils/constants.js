@@ -46,14 +46,12 @@ const PAYMENT_METHOD_LABELS = {
   TNG_PAY: 'TouchNGo',
   GCASH_PAY: 'GCash',
   LINE_PAY: 'Line',
-  ADYEN_PAY: 'Adyen',
 };
 
 const PAYMENT_PROVIDERS = {
   STRIPE: 'Stripe',
-  ADYEN: 'Adyen',
   STRIPE_FPX: 'StripeFPX',
-  CCPP_TNG_PAY: 'CCPPTnGPay',
+  TNG_ONLINE: 'TnGOnline',
   BOOST: 'Boost',
   GRAB_PAY: 'GrabPay',
   BEEP_TH_CREDIT_CARD: 'BeepTHCreditCard',
@@ -583,12 +581,6 @@ const SH_LOGISTICS_VALID_TIME = {
   TO: '21:00',
 };
 
-const ADYEN_PAYMENT_TYPE = {
-  PAY_WITHOUT_SAVE_CARD: '1',
-  PAY_WITH_SAVED_CARD: '2',
-  PAY_WITH_SAVE_CARD: '3',
-};
-
 const WEB_VIEW_SOURCE = {
   IOS: 'iOS',
   Android: 'Android',
@@ -605,6 +597,8 @@ const CLIENTS = {
   WEB: 'web',
   IOS: 'iOS',
   ANDROID: 'Android',
+  MAC: 'Mac',
+  PC: 'PC',
   TNG_MINI_PROGRAM: 'tngMiniProgram',
 };
 
@@ -696,7 +690,6 @@ export default {
   ERROR_CODE_MAP,
   RESEND_OTP_TIME,
   SH_LOGISTICS_VALID_TIME,
-  ADYEN_PAYMENT_TYPE,
   TIME_SLOT_NOW,
   WEB_VIEW_SOURCE,
   PAYMENT_API_PAYMENT_OPTIONS,

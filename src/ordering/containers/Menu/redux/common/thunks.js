@@ -1,10 +1,11 @@
 import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { actions as appActions, getStoreId, getTableId } from '../../../../redux/modules/app';
+import { actions as appActions, getStoreId, getStoreInfoForCleverTap, getTableId } from '../../../../redux/modules/app';
 import { getIsProductListReady, getIsEnablePayLater, getIsStoreInfoReady } from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import { getShippingTypeFromUrl, isDineInType } from '../../../../../common/utils';
+import Clevertap from '../../../../../utils/clevertap';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -60,6 +61,10 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
       enablePayLater = _get(originalCoreBusinessResult, 'qrOrderingSettings.enablePayLater', false);
     }
 
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Menu Page - View page', storeInfoForCleverTap);
+
     if (storeId) {
       enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
     }
@@ -86,4 +91,8 @@ export const willUnmount = createAsyncThunk('ordering/menu/willUnmount', async (
 /**
  * Select a category
  */
-export const selectCategory = createAsyncThunk('ordering/menu/selectCategory', categoryId => categoryId);
+export const selectCategory = createAsyncThunk('ordering/menu/selectCategory', (categoryId, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+  Clevertap.pushEvent('Menu Page - Click category', storeInfoForCleverTap);
+  return categoryId;
+});

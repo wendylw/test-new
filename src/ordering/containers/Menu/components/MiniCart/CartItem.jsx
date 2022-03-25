@@ -90,7 +90,7 @@ const CartItem = ({ item }) => {
     <li className={itemClassName.join(' ')}>
       <div className={styles.cartItemInfoContent}>
         <div className="tw-flex-1">
-          <h4 className={`${styles.cartItemTitle} text-omit__multiple-line`}>{item.title}</h4>
+          <h4 className={styles.cartItemTitle}>{item.title}</h4>
           {item.variationTitles && item.variationTitles.length > 0 ? (
             <p className={styles.cartItemDescription}>{item.variationTitles.join(', ')}</p>
           ) : null}

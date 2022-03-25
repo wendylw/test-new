@@ -10,6 +10,7 @@ import {
   getIsDeliveryOrder,
   getUserLoginByBeepAppStatus,
 } from '../../../../redux/modules/app';
+import { getStoreDisplayTitle, getStoreDisplaySubTitle } from '../../../Menu/redux/common/selectors';
 import { ALCOHOL_FREE_COUNTRY_LIST } from './constants';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -95,3 +96,9 @@ export const getShouldCheckSaveStoreStatus = createSelector(
 );
 
 export const getHasUserSaveStore = state => state.home.common.storeSaveStatus.data;
+
+export const getStoreFullDisplayTitle = createSelector(
+  getStoreDisplayTitle,
+  getStoreDisplaySubTitle,
+  (title, subTitle) => `${title}${subTitle ? ` (${subTitle})` : ''}`
+);

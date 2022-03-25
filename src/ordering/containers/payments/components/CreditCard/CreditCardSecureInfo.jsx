@@ -1,12 +1,11 @@
 import React from 'react';
 import _get from 'lodash/get';
 import { useTranslation, Trans } from 'react-i18next';
-import AdyenSecurity from '../../../../../../src/images/Adyen-PCI.png';
+import PCICompliance from '../../../../../../src/images/pci-compliance.png';
 import Constants from '../../../../../utils/constants';
 
 const { PAYMENT_PROVIDERS } = Constants;
 const KNOW_MORE_LINKS = {
-  [PAYMENT_PROVIDERS.ADYEN]: 'https://www.adyen.com/platform/certifications',
   [PAYMENT_PROVIDERS.STRIPE]: 'https://stripe.com/docs/security/stripe',
 };
 
@@ -21,7 +20,7 @@ function CreditCardSecureInfo(props) {
         <label className="text-size-bigger text-weight-bolder">{t('SecurePaymentBy')}</label>
       </div>
       <div className="text-line-height-normal payment-credit-card__save-text flex flex-top flex-space-between">
-        <img src={AdyenSecurity} alt="pci" className="payment-credit-card__secure-image margin-top-bottom-smaller" />
+        <img src={PCICompliance} alt="pci" className="payment-credit-card__secure-image margin-top-bottom-smaller" />
         <p className="payment-credit-card__secure-text">
           <Trans t={t} i18nKey="SecurityHint">
             Our card payment service is under PCI compliance protection to protect and encrypt cardholder data

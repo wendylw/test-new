@@ -50,6 +50,7 @@ import {
   getHasUserSaveStore,
   getShouldShowFavoriteButton,
   getShouldCheckSaveStoreStatus,
+  getStoreFullDisplayTitle,
 } from './redux/common/selectors';
 import {
   getUserAlcoholConsent,
@@ -639,8 +640,8 @@ class Home extends Component {
   };
 
   renderOfflineModal = enableLiveOnline => {
-    const { storeDisplayTitle } = this.props;
-    return <OfflineStoreModal currentStoreName={storeDisplayTitle} enableLiveOnline={enableLiveOnline} />;
+    const { storeFullDisplayTitle } = this.props;
+    return <OfflineStoreModal currentStoreName={storeFullDisplayTitle} enableLiveOnline={enableLiveOnline} />;
   };
 
   renderPickupAddress = () => {
@@ -758,7 +759,7 @@ class Home extends Component {
       deliveryInfo,
       requestInfo,
       allStore,
-      storeDisplayTitle,
+      storeFullDisplayTitle,
     } = this.props;
     const { search } = this.state;
     const { defaultLoyaltyRatio, enableCashback } = businessInfo || {};
@@ -798,7 +799,7 @@ class Home extends Component {
         isPage={true}
         isStoreHome={true}
         logo={onlineStoreInfo.logo}
-        title={storeDisplayTitle}
+        title={storeFullDisplayTitle}
         isDeliveryType={isDeliveryType}
         deliveryFee={deliveryFee}
         enableCashback={enableCashback}
@@ -906,8 +907,15 @@ class Home extends Component {
 
   handleClickShare = async () => {
     try {
-      const { t, freeShippingMinAmount, cashbackRate, shippingType, merchantCountry, storeDisplayTitle } = this.props;
-      const storeName = _truncate(`${storeDisplayTitle}`, { length: 33 });
+      const {
+        t,
+        freeShippingMinAmount,
+        cashbackRate,
+        shippingType,
+        merchantCountry,
+        storeFullDisplayTitle,
+      } = this.props;
+      const storeName = _truncate(`${storeFullDisplayTitle}`, { length: 33 });
 
       const shareLinkUrl = this.getShareLinkUrl();
 
@@ -1291,6 +1299,7 @@ export default compose(
         shippingType: getShippingType(state),
         merchantCountry: getMerchantCountry(state),
         storeDisplayTitle: getStoreDisplayTitle(state),
+        storeFullDisplayTitle: getStoreFullDisplayTitle(state),
       };
     },
     dispatch => ({

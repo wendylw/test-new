@@ -43,6 +43,7 @@ import CleverTap from '../../../../../utils/clevertap';
 import loggly from '../../../../../utils/monitoring/loggly';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
+import { getPaymentType } from './utils';
 
 const { PAYMENT_PROVIDERS, ORDER_STATUS, ROUTER_PATHS } = Constants;
 
@@ -87,9 +88,11 @@ class Payment extends Component {
   getPaymentEntryRequestData = () => {
     const { currentPaymentOption } = this.props;
     const { paymentProvider } = currentPaymentOption;
+    const paymentType = getPaymentType(paymentProvider);
 
     return {
       paymentProvider,
+      paymentType,
     };
   };
 
@@ -195,7 +198,18 @@ class Payment extends Component {
       if (orderId) {
         const order = await fetchOrder(orderId);
 
-        if (order.status !== ORDER_STATUS.PENDING_PAYMENT) {
+        if (
+          [
+            ORDER_STATUS.PAID,
+            ORDER_STATUS.READY_FOR_DELIVERY,
+            ORDER_STATUS.READY_FOR_PICKUP,
+            ORDER_STATUS.SHIPPED,
+            ORDER_STATUS.ACCEPTED,
+            ORDER_STATUS.LOGISTICS_CONFIRMED,
+            ORDER_STATUS.CONFIRMED,
+            ORDER_STATUS.DELIVERED,
+          ].includes(order.status)
+        ) {
           loggly.log('ordering.order-has-paid', { order });
 
           alert(t('OrderHasPaidAlertDescription'), {

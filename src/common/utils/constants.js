@@ -39,7 +39,6 @@ export const PATH_NAME_MAPPING = {
   ORDERING_PAYMENT: '/payment',
   ORDERING_STRIPE_PAYMENT: '/payment/stripe',
   ORDERING_STRIPE_PAYMENT_SAVE: '/payment/stripe/save',
-  ORDERING_ADYEN_PAYMENT: '/payment/adyen',
   ORDERING_CREDIT_CARD_PAYMENT: '/payment/creditcard',
   ORDERING_ONLINE_BANKING_PAYMENT: '/payment/online-banking',
   ORDERING_ONLINE_SAVED_CARDS: '/payment/cards',

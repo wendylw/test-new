@@ -8,7 +8,6 @@ import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
 import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
-import { actions } from './redux';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
@@ -26,7 +25,6 @@ import {
   getOrderPlacedStatus,
   getOrderPendingPaymentStatus,
   getSubOrdersMapping,
-  getOrderSubmissionRequestingStatus,
   getThankYouPageUrl,
   getOrderServiceChargeRate,
 } from './redux/selectors';
@@ -36,7 +34,6 @@ import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
-import SubmitOrderConfirm from './components/SubmitOrderConfirm';
 import './TableSummary.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
@@ -137,28 +134,6 @@ export class TableSummary extends React.Component {
     }
 
     this.showUnableBackMenuPageAlert();
-  };
-
-  handleConfirmOrderSubmissionOrGotoPaymentPage = () => {
-    const { history, orderPlacedStatus, orderPendingPaymentStatus, updateSubmitOrderConfirmDisplay } = this.props;
-
-    if (orderPlacedStatus) {
-      updateSubmitOrderConfirmDisplay(true);
-
-      return;
-    }
-
-    if (orderPendingPaymentStatus) {
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-        search: window.location.search,
-      });
-
-      return;
-    }
-
-    // TODO: May be need complete other status behavior
-    console.error('order status is not created or pending payment');
   };
 
   getOrderStatusOptionsEl = () => {
@@ -299,7 +274,6 @@ export class TableSummary extends React.Component {
       shippingFee,
       orderPlacedStatus,
       orderPendingPaymentStatus,
-      orderSubmissionRequestingStatus,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -350,7 +324,6 @@ export class TableSummary extends React.Component {
             history={history}
             orderPendingPaymentStatus={orderPendingPaymentStatus}
           />
-          <SubmitOrderConfirm history={history} />
         </div>
         <footer
           ref={ref => {
@@ -371,8 +344,12 @@ export class TableSummary extends React.Component {
             className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
-            onClick={this.handleConfirmOrderSubmissionOrGotoPaymentPage}
-            disabled={orderSubmissionRequestingStatus}
+            onClick={() => {
+              history.push({
+                pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+                search: window.location.search,
+              });
+            }}
           >
             {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
           </button>
@@ -403,10 +380,8 @@ TableSummary.propTypes = {
   businessInfo: PropTypes.object,
   businessUTCOffset: PropTypes.number,
   shippingType: PropTypes.string,
-  orderSubmissionRequestingStatus: PropTypes.bool,
   queryOrdersAndStatus: PropTypes.func,
   clearQueryOrdersAndStatus: PropTypes.func,
-  updateSubmitOrderConfirmDisplay: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
   resetCartSubmission: PropTypes.func,
 };
@@ -428,10 +403,8 @@ TableSummary.defaultProps = {
   businessInfo: {},
   businessUTCOffset: 480,
   shippingType: null,
-  orderSubmissionRequestingStatus: false,
   queryOrdersAndStatus: () => {},
   clearQueryOrdersAndStatus: () => {},
-  updateSubmitOrderConfirmDisplay: () => {},
   resetCartSubmission: () => {},
   thankYouPageUrl: '',
 };
@@ -457,14 +430,11 @@ export default compose(
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
-
-      orderSubmissionRequestingStatus: getOrderSubmissionRequestingStatus(state),
     }),
 
     {
       queryOrdersAndStatus: queryOrdersAndStatusThunk,
       clearQueryOrdersAndStatus: clearQueryOrdersAndStatusThunk,
-      updateSubmitOrderConfirmDisplay: actions.updateSubmitOrderConfirmDisplay,
       resetCartSubmission: resetCartSubmissionActions.resetCartSubmission,
     }
   )

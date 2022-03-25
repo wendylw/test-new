@@ -11,6 +11,7 @@ const initialState = {
   billing: {
     data: {
       receiptNumber: null,
+      modifiedTime: null,
       total: null,
       subtotal: null,
       itemsQuantity: 0,
@@ -39,6 +40,7 @@ const { reducer, actions } = createSlice({
     [loadBilling.fulfilled]: (state, { payload }) => {
       state.billing.status = API_REQUEST_STATUS.FULFILLED;
       state.billing.data.receiptNumber = payload.receiptNumber;
+      state.billing.data.modifiedTime = payload.modifiedTime;
       state.billing.data.total = payload.total;
       state.billing.data.subtotal = payload.subtotal;
       state.billing.data.cashback = payload.cashback;

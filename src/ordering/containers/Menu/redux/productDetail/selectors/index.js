@@ -10,6 +10,7 @@ import { getAllProducts, getFormatCurrencyFunction } from '../../../../../redux/
 import { PRODUCT_STOCK_STATUS, PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIATION_TYPE } from '../../../constants';
 import { variationStructuredSelector } from './variationSelector';
 import { variationOptionStructuredSelector, formatVariationOptionPriceDiff } from './variationOptionSelector';
+import { getAllCategories } from '../../../../../../redux/modules/entities/categories';
 
 export const getProductDetailState = state => state.menu.productDetail;
 
@@ -53,6 +54,12 @@ export const getSelectedProduct = createSelector(
   getAllProducts,
   getSelectedProductId,
   (allProducts, selectedProductId) => allProducts[selectedProductId]
+);
+
+export const getSelectedCategory = createSelector(
+  getAllCategories,
+  getSelectedCategoryId,
+  (allCategories, selectedCategoryId) => allCategories[selectedCategoryId]
 );
 
 export const getProductDisplayPrice = createSelector(getSelectedProduct, product => _get(product, 'displayPrice', 0));
@@ -113,7 +120,7 @@ export const getSelectedSingleChoiceOptionsList = createSelector(
   getSelectedOptionsByVariationId,
   (variations, selectedOptionsByVariationId) =>
     variations
-      .filter(variation => variation.variationType === 'SingleChoice')
+      .filter(variation => variation.variationType === 'SingleChoice' && selectedOptionsByVariationId[variation.id])
       .map(variation => {
         const selectedOption = selectedOptionsByVariationId[variation.id];
 

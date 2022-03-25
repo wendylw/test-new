@@ -25,16 +25,14 @@ const CategoryList = ({ categories, onCategoryItemClick }) => {
       {categories.map(category => (
         <li
           key={`categoryItem-${category.id}`}
-          className={`${styles.menuProductCategoryItem} tw-cursor-default text-omit__flex-container${
+          className={`${styles.menuProductCategoryItem} tw-cursor-default tw-line-clamp-flex-container ${
             (highlightedCategory && highlightedCategory.id) === category.id ? ' active' : ''
           }`}
           onClick={() => {
             onCategoryItemClick(category.id);
           }}
         >
-          <span className={`${styles.menuProductCategoryItemText} text-omit__single-line tw-flex-1`}>
-            {category.name}
-          </span>
+          <span className={styles.menuProductCategoryItemText}>{category.name}</span>
           {category.cartQuantity ? <Badge className="tw-flex-shrink-0" value={category.cartQuantity} /> : null}
         </li>
       ))}
@@ -92,7 +90,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
         }}
       >
         <BookOpen className="tw-flex-shrink-0 tw-text-2xl tw-text-gray-600" />
-        <span className="text-omit__single-line tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800">
+        <span className={styles.menuProductHighlightedCategory}>
           {highlightedCategory ? highlightedCategory.name : null}
         </span>
         <CaretDown className="tw-flex-shrink-0 tw-text-xl tw-my-4 sm:tw-my-4px tw-text-gray-600" weight="light" />
