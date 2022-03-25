@@ -6,7 +6,7 @@ import { Scan } from 'phosphor-react';
 import { getAddressName } from '../../../../redux/modules/address/selectors';
 import { getIsTNGMiniProgram } from '../../../redux/modules/app';
 import { homeActionCreators as homeActions } from '../../../redux/modules/home';
-import { IconMapPin } from '../../../../components/Icons';
+import { MapPinIcon } from '../../../../common/components/Icons';
 import CleverTap from '../../../../utils/clevertap';
 import styles from './Header.module.scss';
 
@@ -37,7 +37,7 @@ const Header = ({ onClick }) => {
         tabIndex="0"
         onClick={clickLocationBarHandler}
       >
-        <IconMapPin className="tw-flex-shrink-0 sm:tw-p-8px tw-p-8" />
+        <MapPinIcon className="tw-flex-shrink-0 sm:tw-p-8px tw-p-8" />
         <div className="tw-flex-grow tw-flex tw-flex-col tw-overflow-hidden">
           <span className="tw-text-xs tw-leading-relaxed">{t('DeliverTo')}</span>
           <p className="tw-flex-grow tw-text-base tw-font-bold tw-leading-relaxed tw-truncate">{addressName}</p>
