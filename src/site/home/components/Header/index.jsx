@@ -30,7 +30,7 @@ const Header = ({ onClick }) => {
   }, [dispatch, onClick]);
 
   return (
-    <section className={styles.HeaderContainer} data-heap-name="site.home.delivery-bar">
+    <section className={styles.Header__container} data-heap-name="site.home.delivery-bar">
       <div
         className="tw-flex-grow tw-flex tw-justify-start tw-items-center tw-overflow-hidden"
         role="button"

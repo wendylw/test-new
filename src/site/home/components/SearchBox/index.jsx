@@ -20,7 +20,7 @@ const SearchBox = ({ onClick }) => {
   return (
     <div className="sm:tw-mt-16px tw-mt-16 sm:tw-mb-8px tw-mb-8 sm:tw-mx-16px tw-mx-16">
       <button
-        className={styles.SearchBoxContainer}
+        className={styles.SearchBox__container}
         data-testid="searchStore"
         data-heap-name="site.home.search-box"
         onClick={clickSearchBoxHandler}
@@ -29,7 +29,7 @@ const SearchBox = ({ onClick }) => {
           className="tw-flex-shrink-0 tw-text-2xl tw-text-gray sm:tw-ml-16px tw-ml-16 sm:tw-my-8px tw-my-8 sm:tw-mr-4px w-mr-4"
           weight="light"
         />
-        <span className={styles.SearchBoxContent}>{t('SearchRestaurantPlaceholder')}</span>
+        <span className={styles.SearchBox__content}>{t('SearchRestaurantPlaceholder')}</span>
       </button>
     </div>
   );
