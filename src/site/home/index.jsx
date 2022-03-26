@@ -170,6 +170,8 @@ class Home extends React.Component {
   };
 
   gotoLocationPage = () => {
+    CleverTap.pushEvent('Homepage - Click Location Bar');
+
     const { history, location, addressCoords: coords } = this.props;
 
     history.push({
@@ -179,6 +181,12 @@ class Home extends React.Component {
         coords,
       },
     });
+  };
+
+  handleLoadSearchPage = () => {
+    CleverTap.pushEvent('Homepage - Click Search Bar');
+    this.backLeftPosition();
+    this.props.history.push({ pathname: '/search' });
   };
 
   handleLoadMoreStores = () => {
@@ -202,6 +210,11 @@ class Home extends React.Component {
     // to backup whole redux state when click store item
     this.backupState();
     await submitStoreMenu({ deliveryAddress: addressInfo, store: store, source: document.location.href });
+  };
+
+  handleQRCodeClicked = () => {
+    CleverTap.pushEvent('Homepage - Click QR Scan');
+    this.backLeftPosition();
   };
 
   backLeftPosition = () => {
@@ -242,7 +255,6 @@ class Home extends React.Component {
 
   render() {
     const {
-      t,
       addressCoords,
       storeCollections,
       bannerCollections,
@@ -257,7 +269,7 @@ class Home extends React.Component {
 
     return (
       <main className="entry fixed-wrapper fixed-wrapper__main tw-font-sans" data-heap-name="site.home.container">
-        <Header onClick={this.backLeftPosition} />
+        <Header onLocationBarClick={this.gotoLocationPage} onQRScannerClick={this.handleQRCodeClicked} />
         <section
           ref={this.sectionRef}
           className="entry-home fixed-wrapper__container wrapper"
@@ -273,7 +285,7 @@ class Home extends React.Component {
                 <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
               </figure>
             </DevToolsTrigger>
-            <SearchBox onClick={this.backLeftPosition} />
+            <SearchBox onClick={this.handleLoadSearchPage} />
           </Banner>
 
           {shouldShowCampaignBar && (

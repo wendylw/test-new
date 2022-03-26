@@ -1,33 +1,22 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Scan } from 'phosphor-react';
 import { getAddressName } from '../../../../redux/modules/address/selectors';
 import { getIsTNGMiniProgram } from '../../../redux/modules/app';
-import { homeActionCreators as homeActions } from '../../../redux/modules/home';
 import { MapPinIcon } from '../../../../common/components/Icons';
-import CleverTap from '../../../../utils/clevertap';
+import Constants from '../../../../utils/constants';
 import styles from './Header.module.scss';
 
-const Header = ({ onClick }) => {
+const { ROUTER_PATHS } = Constants;
+
+const Header = ({ onLocationBarClick, onQRScannerClick }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
 
   const addressName = useSelector(getAddressName);
   const isTnGMiniProgram = useSelector(getIsTNGMiniProgram);
-
-  const clickQRScannerHandler = useCallback(() => {
-    CleverTap.pushEvent('Homepage - Click QR Scan');
-    dispatch(homeActions.goToQRScannerPage());
-    onClick();
-  }, [dispatch, onClick]);
-
-  const clickLocationBarHandler = useCallback(() => {
-    CleverTap.pushEvent('Homepage - Click Location Bar');
-    dispatch(homeActions.gotoLocationPage());
-    onClick();
-  }, [dispatch, onClick]);
 
   return (
     <section className={styles.Header__container} data-heap-name="site.home.delivery-bar">
@@ -35,7 +24,7 @@ const Header = ({ onClick }) => {
         className="tw-flex-grow tw-flex tw-justify-start tw-items-center tw-overflow-hidden"
         role="button"
         tabIndex="0"
-        onClick={clickLocationBarHandler}
+        onClick={onLocationBarClick}
       >
         <MapPinIcon className="tw-flex-shrink-0 sm:tw-p-8px tw-p-8" />
         <div className="tw-flex-grow tw-flex tw-flex-col tw-overflow-hidden">
@@ -45,16 +34,14 @@ const Header = ({ onClick }) => {
       </div>
       <div className="tw-flex tw-justify-end tw-items-center">
         {!isTnGMiniProgram && (
-          <div
+          <Link
+            to={ROUTER_PATHS.QRSCAN}
             data-heap-name="site.home.qr-scan-icon"
-            role="button"
-            tabIndex="-1"
-            aria-label="Click QR Scanner"
             className="tw-flex tw-items-center sm:tw-p-8px tw-p-8"
-            onClick={clickQRScannerHandler}
+            onClick={onQRScannerClick}
           >
             <Scan className="tw-flex-shrink-0" size={24} />
-          </div>
+          </Link>
         )}
       </div>
     </section>
@@ -64,11 +51,13 @@ const Header = ({ onClick }) => {
 Header.displayName = 'Header';
 
 Header.propTypes = {
-  onClick: PropTypes.func,
+  onLocationBarClick: PropTypes.func,
+  onQRScannerClick: PropTypes.func,
 };
 
 Header.defaultProps = {
-  onClick: () => {},
+  onLocationBarClick: () => {},
+  onQRScannerClick: () => {},
 };
 
 export default Header;
