@@ -183,13 +183,15 @@ class Payment extends Component {
 
   // TODO: This place logic almost same as the “handleCreateOrder” function that in CreateOrderButton component
   handlePayWithCash = async () => {
+    const { shippingType, currentPaymentOption } = this.props;
+    const paymentProvider = currentPaymentOption.paymentProvider;
+
     try {
-      const { t, shippingType, cashback, currentPaymentOption, createOrder, total, gotoPayment } = this.props;
+      const { t, cashback, createOrder, total, gotoPayment } = this.props;
       this.setState({
         payNowLoading: true,
       });
 
-      const paymentProvider = currentPaymentOption.paymentProvider;
       loggly.log('payment.pay-attempt', { method: paymentProvider });
 
       let orderId = this.props.receiptNumber;
@@ -253,7 +255,17 @@ class Payment extends Component {
         );
       }
     } catch (error) {
-      console.error('Got a error in handlePayWithCash function', error);
+      window.newrelic?.addPageAction('ordering.createOrder.error', {
+        error: error?.message,
+        shippingType,
+        paymentName: paymentProvider,
+      });
+
+      loggly.error('ordering.createOrder.error', {
+        error: error?.message,
+        shippingType,
+        paymentName: paymentProvider,
+      });
 
       this.setState({
         payNowLoading: false,

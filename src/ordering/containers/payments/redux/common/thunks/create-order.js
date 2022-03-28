@@ -365,6 +365,8 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
       closeButtonContent: i18next.t('Refresh'),
       onClose: () => window.location.reload(),
     });
+  } else {
+    throw e;
   }
 };
 
