@@ -447,11 +447,13 @@ export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (
     window.newrelic?.addPageAction('ordering.initPayment.error', {
       error: error?.message,
       paymentProvider,
+      receiptNumber: orderId,
     });
 
     loggly.error('ordering.initPayment.error', {
       error: error?.message,
       paymentProvider,
+      receiptNumber: orderId,
     });
 
     if (error.code) {
