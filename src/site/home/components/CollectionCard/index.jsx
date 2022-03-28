@@ -1,7 +1,7 @@
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import './index.scss';
+import styles from './index.module.scss';
 import { compose } from 'redux';
 import Image from '../../../../components/Image';
 import CleverTap from '../../../../utils/clevertap';
@@ -11,13 +11,13 @@ class CollectionCard extends React.Component {
     const { collections, backLeftPosition } = this.props;
 
     return (
-      <ul className="store-collections flex flex-space-between flex-middle">
+      <ul className={styles.IconCollection__wrapper}>
         {collections.map((collection, index) => {
           const { name, image, urlPath, beepCollectionId } = collection;
           return (
             <li
               key={urlPath}
-              className="store-collections__item text-center"
+              className={styles.IconCollection__container}
               data-testid="collection"
               data-heap-name="site.home.collection-icon"
               data-heap-collection-name={name}
@@ -34,8 +34,8 @@ class CollectionCard extends React.Component {
                 });
               }}
             >
-              <Image src={image} alt={name} className="icon store-collections__img" />
-              <span className="store-collections__name text-size-smaller text-center text-weight-bolder">{name}</span>
+              <Image src={image} alt={name} className={styles.IconCollection__figure} />
+              <span className={styles.IconCollection__title}>{name}</span>
             </li>
           );
         })}
