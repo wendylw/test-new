@@ -369,6 +369,8 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
 };
 
 export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (dispatch, getState) => {
+  const paymentProvider = paymentArgs?.paymentProvider;
+
   try {
     const state = getState();
     const shippingType = getShippingType(state);
@@ -378,7 +380,6 @@ export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (
     const source = Utils.getOrderSource();
     const planId = getBusinessByName(state, business).planId || '';
     const isInternal = planId.startsWith('internal');
-    const paymentProvider = paymentArgs?.paymentProvider;
 
     if (Utils.isTNGMiniProgram()) {
       await callTNGMiniProgramPayment({
@@ -443,7 +444,15 @@ export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (
 
     window.location.href = paymentUrl;
   } catch (error) {
-    console.error('Catch an error in gotoPayment function', error);
+    window.newrelic?.addPageAction('ordering.initPayment.error', {
+      error: error?.message,
+      paymentProvider,
+    });
+
+    loggly.error('ordering.initPayment.error', {
+      error: error?.message,
+      paymentProvider,
+    });
 
     if (error.code) {
       // TODO: This type is actually not used, because apiError does not respect action type,

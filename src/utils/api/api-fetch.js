@@ -108,7 +108,7 @@ async function _fetch(url, opts) {
 
     return formatResponseData(url, await parseResponse(resp));
   } catch (e) {
-    let error = {};
+    let error = e;
 
     if (e.response) {
       const body = await parseResponse(e.response);
