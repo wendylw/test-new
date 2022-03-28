@@ -197,6 +197,10 @@ const API_URLS = {
     url: '/payment/risk',
     method: 'get',
   }),
+  GET_DELIVERY_ADDRESS_DETAILS: (consumerId, storeId, savedAddressId) => ({
+    url: `/api/consumers/${consumerId}/store/${storeId}/address/${savedAddressId}`,
+    method: 'get',
+  }),
 };
 
 export default {

@@ -116,8 +116,8 @@ class App extends Component {
 
     try {
       await this.initAddressInfo();
-      await appActions.initDeliveryDetails();
       await appActions.getLoginStatus();
+      await appActions.initDeliveryDetails();
       const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
 
       if (Utils.isWebview()) {
