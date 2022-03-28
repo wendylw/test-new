@@ -327,6 +327,8 @@ const initPayLaterPayment = async (dataOfLater, dispatch) => {
     return res;
   } catch (e) {
     handlePayLaterPaymentError({ e, dispatch });
+
+    throw e;
   }
 };
 
@@ -365,8 +367,6 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
       closeButtonContent: i18next.t('Refresh'),
       onClose: () => window.location.reload(),
     });
-  } else {
-    throw e;
   }
 };
 
