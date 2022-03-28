@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import { get, post, del, put } from '../../utils/request';
 
 //Deal with every single action that has API_REQUEST field.
