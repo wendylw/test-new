@@ -6,11 +6,6 @@ export const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
     beforeRequest: [req => req.headers.set('client', Utils.getClient())],
-    retry: {
-      limit: 1,
-      methods: ['get'],
-      statusCodes: ['200'],
-    },
   },
   credentials: 'include',
 });
