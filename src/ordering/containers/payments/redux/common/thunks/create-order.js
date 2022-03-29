@@ -343,7 +343,7 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
       onClose: () =>
         dispatch(
           push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
             search: removeReceiptNumberUrl,
           })
         ),
@@ -356,7 +356,7 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
       onClose: () =>
         dispatch(
           push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
             search: removeReceiptNumberUrl,
           })
         ),
@@ -370,7 +370,7 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
   }
 };
 
-export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (dispatch, getState) => {
+export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
   const paymentProvider = paymentArgs?.paymentProvider;
 
   try {
@@ -421,7 +421,7 @@ export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (
     };
 
     const { redirectURL: thankYouPageUrl, paymentUrl } = enablePayLater
-      ? await initPayLaterPayment(dataOfLater, history)
+      ? await initPayLaterPayment(dataOfLater, dispatch)
       : await initPayment(data);
 
     if (paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
