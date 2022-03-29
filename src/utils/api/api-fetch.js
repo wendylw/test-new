@@ -7,6 +7,9 @@ export const ky = originalKy.create({
     // Update headers when consumer enter beep from different client
     beforeRequest: [req => req.headers.set('client', Utils.getClient())],
   },
+  // TODO: There is a RETRY strategy in ky, but it might not work well with our use case.
+  // Need to monitor it and decide whether to use it.
+  // Reference: https://github.com/sindresorhus/ky#retry
   credentials: 'include',
 });
 
