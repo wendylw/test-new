@@ -161,7 +161,7 @@ const getCartItemGTMData = cartItem =>
     quantity: cartItem.quantityOnHand,
     product_type: cartItem.inventoryType,
     Inventory: STOCK_STATUS_MAPPING[cartItem.stockStatus] || STOCK_STATUS_MAPPING.inStock,
-    image_count: cartItem.image || 0,
+    image_count: cartItem.image ? 1 : 0,
   });
 /**
  * increase cart item quantity

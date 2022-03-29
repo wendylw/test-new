@@ -45,7 +45,7 @@ class CartListDrawer extends Component {
       quantity: selectedProduct.quantityOnHand,
       product_type: selectedProduct.inventoryType,
       Inventory: STOCK_STATUS_MAPPING[selectedProduct.stockStatus] || STOCK_STATUS_MAPPING.inStock,
-      image_count: selectedProduct.image || 0,
+      image_count: selectedProduct.image ? 1 : 0,
     };
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventDate);
