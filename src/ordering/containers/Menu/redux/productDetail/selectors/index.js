@@ -411,12 +411,17 @@ export const getStockStatusForGTMData = createSelector(getSelectedProductStockSt
 
 export const getProductImagesCount = createSelector(getProductImages, productImages => productImages.length);
 
+export const getSelectedProductQuantityOnHandForGTMData = createSelector(
+  getSelectedProductQuantityOnHand,
+  quantityOnHand => (quantityOnHand === Infinity ? null : quantityOnHand)
+);
+
 export const getAddToCartGTMData = createStructuredSelector({
   product_name: getProductTitle,
   product_id: getProductIdForGTMData,
   price_local: getSelectedProductDisplayPrice,
   variant: getSelectedVariationDataForAddToCartApi,
-  quantity: getSelectedProductQuantityOnHand,
+  quantity: getSelectedProductQuantityOnHandForGTMData,
   product_type: getSelectedProductInventoryType,
   Inventory: getStockStatusForGTMData,
   image_count: getProductImagesCount,
