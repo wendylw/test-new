@@ -7,7 +7,7 @@ import { IconLeftArrow } from '../../components/Icons';
 import SearchBox from '../components/SearchBox';
 import SwitchPanel from '../components/SwitchPanel';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
-import StoreList from '../home/components/StoreList';
+import StoreList from '../components/StoreList';
 import EmptySearch from './components/EmptySearch';
 import MvpNotFoundImage from '../../images/mvp-no-search.svg';
 import MvpStartSearchImage from '../../images/mvp-start-search.svg';

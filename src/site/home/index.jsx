@@ -25,7 +25,7 @@ import {
   getShouldShowCampaignBar,
 } from '../redux/modules/home';
 import CollectionCard from './components/CollectionCard';
-import StoreList from './components/StoreList';
+import StoreList from '../components/StoreList';
 // import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
@@ -233,7 +233,9 @@ class Home extends React.Component {
 
     return (
       <React.Fragment>
-        <h2 className="text-size-biggest text-weight-bolder">{t('NearbyRestaurants')}</h2>
+        <h2 className="sm:tw-px-16px tw-px-16 sm:tw-py-4px tw-py-4 tw-text-xl tw-font-bold tw-leading-normal">
+          {t('NearbyRestaurants')}
+        </h2>
         <StoreListAutoScroll
           getScrollParent={() => this.sectionRef.current}
           defaultScrollTop={scrollTop}
@@ -310,9 +312,7 @@ class Home extends React.Component {
 
           <Carousel collections={carouselCollections} />
 
-          <div className="store-card-list__container padding-normal">
-            {addressCoords ? this.renderStoreList() : null}
-          </div>
+          <div className="sm:tw-py-4px tw-py-4">{addressCoords ? this.renderStoreList() : null}</div>
         </section>
       </main>
     );

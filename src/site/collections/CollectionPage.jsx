@@ -2,7 +2,7 @@ import React from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import StoreList from '../home/components/StoreList';
+import StoreList from '../components/StoreList';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import ModalPageLayout from '../components/ModalPageLayout';
 import { collectionsActions, getPageInfo, getStoreList, getShippingType } from '../redux/modules/collections';
