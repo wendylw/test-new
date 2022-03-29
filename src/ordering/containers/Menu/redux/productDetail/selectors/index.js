@@ -419,7 +419,7 @@ export const getSelectedProductQuantityOnHandForGTMData = createSelector(
 export const getAddToCartGTMData = createStructuredSelector({
   product_name: getProductTitle,
   product_id: getProductIdForGTMData,
-  price_local: getSelectedProductDisplayPrice,
+  price_local: getProductDisplayPriceWithPriceDiff,
   variant: getSelectedVariationDataForAddToCartApi,
   quantity: getSelectedProductQuantityOnHandForGTMData,
   product_type: getSelectedProductInventoryType,
