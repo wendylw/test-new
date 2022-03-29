@@ -47,9 +47,9 @@ const MenuFooter = () => {
     <PageFooter zIndex={50}>
       <MenuViewOrderBar />
       {isCartFooterVisible ? (
-        <div className="tw-flex tw-py-8 sm:tw-py-8px tw-px-20 sm:tw-px-20px">
+        <div className="tw-flex tw-p-8 sm:tw-p-8px">
           <div
-            className="tw-flex-1 tw-flex tw-items-center tw-cursor-default tw-justify-center"
+            className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-mx-8 sm:tw-mx-8px tw-cursor-default"
             onClick={() => (isMiniCartDrawerVisible ? dispatch(hideMiniCartDrawer()) : dispatch(showMiniCartDrawer()))}
             role="button"
             tabIndex="0"
@@ -58,7 +58,7 @@ const MenuFooter = () => {
               <HandbagSimple className="tw-text-5xl" weight="light" />
             </Badge>
             {isEnablePayLater ? null : (
-              <span className="tw-px-6 sm:tw-px-6px tw-ml-6 sm:tw-ml-6px tw-font-bold">{cartFormattedSubtotal}</span>
+              <span className="tw-px-2 sm:tw-px-2px tw-ml-8 sm:tw-ml-8px tw-font-bold">{cartFormattedSubtotal}</span>
             )}
           </div>
           <Button
