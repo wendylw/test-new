@@ -26,9 +26,9 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
         tabIndex="0"
         onClick={onLocationBarClick}
       >
-        <MapPinIcon className="tw-flex-shrink-0 sm:tw-p-8px tw-p-8" />
+        <MapPinIcon className="tw-flex-shrink-0 sm:tw-p-4px tw-p-4" />
         <div className="tw-flex-grow tw-flex tw-flex-col tw-overflow-hidden">
-          <span className="tw-text-xs tw-leading-relaxed">{t('DeliverTo')}</span>
+          <span className="tw-text-xs tw-leading-relaxed tw-uppercase">{t('DeliverTo')}</span>
           <p className="tw-flex-grow tw-text-base tw-font-bold tw-leading-relaxed tw-truncate">{addressName}</p>
         </div>
       </div>
