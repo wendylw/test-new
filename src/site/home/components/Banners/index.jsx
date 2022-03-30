@@ -20,7 +20,7 @@ class Banners extends Component {
     return (
       <div>
         <Swiper
-          className="margin-top-bottom-smaller"
+          className="sm:tw-my-16px tw-my-16"
           slidesPerView={'auto'}
           spaceBetween={12}
           loop={true}
