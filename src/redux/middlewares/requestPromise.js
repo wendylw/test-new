@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import loggly from '../../utils/monitoring/loggly';
 
 //Deal with every single action that has FETCH_REQUEST field.
@@ -42,7 +43,7 @@ export default store => next => action => {
       if (error.name === 'AbortError' || /TypeError: cancelled/i.test(error.message)) {
         return next({ ...other, type: cancelType || failureType, error });
       }
-      console.error(error);
+
       return next({ ...other, type: failureType, error });
     });
 };
