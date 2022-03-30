@@ -19,10 +19,12 @@ import {
   getProductVariationsDetail,
   getSelectedProduct,
   getSelectedCategory,
+  getAddToCartGTMData,
 } from './selectors';
 import Clevertap from '../../../../../utils/clevertap';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { PRODUCT_STOCK_STATUS } from '../../constants';
+import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
 
 /**
  * get product clever tap data
@@ -92,6 +94,16 @@ const getDefaultSelectedOptions = product => {
   }
 };
 
+const getViewProductGTMData = product => ({
+  product_name: product.title,
+  product_id: product.id,
+  price_local: product.displayPrice,
+  product_type: product.inventoryType,
+  Inventory: STOCK_STATUS_MAPPING[product.stockStatus] || STOCK_STATUS_MAPPING.inStock,
+  image_count: _get(product, 'images.length', 0),
+  product_description: product.description,
+});
+
 /**
  * Show product detail drawer
  * Reset the selected variation options
@@ -121,6 +133,8 @@ export const showProductDetailDrawer = createAsyncThunk(
     });
 
     const productInResult = _get(result, 'responseGql.data.product', null);
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
 
     return {
       productId,
@@ -246,6 +260,9 @@ export const addToCart = createAsyncThunk(
     const category = getSelectedCategory(getState());
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
     const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+    const addToCartGtmData = getAddToCartGTMData(state);
+
+    gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, addToCartGtmData);
 
     Clevertap.pushEvent('Menu Page - Add to Cart', {
       ...storeInfoForCleverTap,
