@@ -8,7 +8,7 @@ const SearchBox = ({ onClick }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="sm:tw-mt-16px tw-mt-16 sm:tw-mb-8px tw-mb-8 sm:tw-mx-16px tw-mx-16">
+    <div className="sm:tw-mt-16px tw-mt-16 sm:tw-mb-8px tw-mb-8">
       <button
         className={styles.SearchBox__container}
         data-testid="searchStore"

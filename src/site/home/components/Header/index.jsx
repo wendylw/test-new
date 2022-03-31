@@ -21,7 +21,7 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
   return (
     <section className={styles.Header__container} data-heap-name="site.home.delivery-bar">
       <div
-        className="tw-flex-grow tw-flex tw-justify-start tw-items-center tw-overflow-hidden"
+        className="tw-flex-grow tw-flex tw-justify-start tw-items-center tw-overflow-hidden sm:tw-p-4px tw-p-4"
         role="button"
         tabIndex="0"
         onClick={onLocationBarClick}
@@ -32,12 +32,12 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
           <p className="tw-flex-grow tw-text-base tw-font-bold tw-leading-relaxed tw-truncate">{addressName}</p>
         </div>
       </div>
-      <div className="tw-flex tw-justify-end tw-items-center">
+      <div className="tw-flex tw-justify-end tw-items-stretch">
         {!isTnGMiniProgram && (
           <Link
             to={ROUTER_PATHS.QRSCAN}
             data-heap-name="site.home.qr-scan-icon"
-            className="tw-flex tw-items-center sm:tw-p-8px tw-p-8"
+            className="tw-flex tw-items-center sm:tw-px-8px tw-px-8"
             onClick={onQRScannerClick}
           >
             <Scan className="tw-flex-shrink-0 tw-text-gray" size={24} />
