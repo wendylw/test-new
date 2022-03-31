@@ -270,7 +270,7 @@ class Home extends React.Component {
     }
 
     return (
-      <main className="entry fixed-wrapper fixed-wrapper__main tw-font-sans" data-heap-name="site.home.container">
+      <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
         <Header onLocationBarClick={this.gotoLocationPage} onQRScannerClick={this.handleQRCodeClicked} />
         <section
           ref={this.sectionRef}
