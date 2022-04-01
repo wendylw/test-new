@@ -8,6 +8,11 @@
     border-radius: 24px;
   }
 
+  &__icon {
+    @apply sm:tw-ml-16px tw-ml-16 sm:tw-my-8px tw-my-8 sm:tw-mr-4px tw-mr-4
+      tw-flex-shrink-0 tw-text-2xl tw-text-gray;
+  }
+
   &__content {
     @apply tw-flex-grow
       sm:tw-ml-4px tw-ml-4 sm:tw-mr-16px tw-mr-16 sm:tw-py-8px tw-py-8

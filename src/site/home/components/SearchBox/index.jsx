@@ -15,10 +15,7 @@ const SearchBox = ({ onClick }) => {
         data-heap-name="site.home.search-box"
         onClick={onClick}
       >
-        <MagnifyingGlass
-          className="tw-flex-shrink-0 tw-text-2xl tw-text-gray sm:tw-ml-16px tw-ml-16 sm:tw-my-8px tw-my-8 sm:tw-mr-4px w-mr-4"
-          weight="light"
-        />
+        <MagnifyingGlass className={styles.SearchBox__icon} weight="light" />
         <span className={styles.SearchBox__content}>{t('SearchRestaurantPlaceholder')}</span>
       </button>
     </div>
