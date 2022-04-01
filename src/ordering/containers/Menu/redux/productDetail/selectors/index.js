@@ -11,6 +11,7 @@ import { PRODUCT_STOCK_STATUS, PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIA
 import { variationStructuredSelector } from './variationSelector';
 import { variationOptionStructuredSelector, formatVariationOptionPriceDiff } from './variationOptionSelector';
 import { getAllCategories } from '../../../../../../redux/modules/entities/categories';
+import { STOCK_STATUS_MAPPING } from '../../../../../../utils/gtm';
 
 export const getProductDetailState = state => state.menu.productDetail;
 
@@ -60,6 +61,10 @@ export const getSelectedCategory = createSelector(
   getAllCategories,
   getSelectedCategoryId,
   (allCategories, selectedCategoryId) => allCategories[selectedCategoryId]
+);
+
+export const getSelectedProductInventoryType = createSelector(getSelectedProduct, selectedProduct =>
+  _get(selectedProduct, 'inventoryType', null)
 );
 
 export const getProductDisplayPrice = createSelector(getSelectedProduct, product => _get(product, 'displayPrice', 0));
@@ -393,3 +398,31 @@ export const getUnableAddToCartReason = createSelector(
     return '';
   }
 );
+
+export const getProductIdForGTMData = createSelector(
+  getSelectedChildProductId,
+  getSelectedProductId,
+  (childProductId, selectedProductId) => childProductId || selectedProductId
+);
+
+export const getStockStatusForGTMData = createSelector(getSelectedProductStockStatus, selectedProductStockStatus =>
+  _get(STOCK_STATUS_MAPPING, selectedProductStockStatus, STOCK_STATUS_MAPPING.inStock)
+);
+
+export const getProductImagesCount = createSelector(getProductImages, productImages => productImages.length);
+
+export const getSelectedProductQuantityOnHandForGTMData = createSelector(
+  getSelectedProductQuantityOnHand,
+  quantityOnHand => (quantityOnHand === Infinity ? null : quantityOnHand)
+);
+
+export const getAddToCartGTMData = createStructuredSelector({
+  product_name: getProductTitle,
+  product_id: getProductIdForGTMData,
+  price_local: getProductDisplayPriceWithPriceDiff,
+  variant: getSelectedVariationDataForAddToCartApi,
+  quantity: getSelectedProductQuantityOnHandForGTMData,
+  product_type: getSelectedProductInventoryType,
+  Inventory: getStockStatusForGTMData,
+  image_count: getProductImagesCount,
+});

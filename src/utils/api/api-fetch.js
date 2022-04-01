@@ -6,12 +6,10 @@ export const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
     beforeRequest: [req => req.headers.set('client', Utils.getClient())],
-    retry: {
-      limit: 1,
-      methods: ['get'],
-      statusCodes: ['200'],
-    },
   },
+  // TODO: There is a RETRY strategy in ky, but it might not work well with our use case.
+  // Need to monitor it and decide whether to use it.
+  // Reference: https://github.com/sindresorhus/ky#retry
   credentials: 'include',
 });
 
@@ -108,7 +106,7 @@ async function _fetch(url, opts) {
 
     return formatResponseData(url, await parseResponse(resp));
   } catch (e) {
-    let error = {};
+    let error = e;
 
     if (e.response) {
       const body = await parseResponse(e.response);

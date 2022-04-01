@@ -12,7 +12,7 @@ import {
 import { getCartItems, getCartUnavailableItems, getCartItemsCount } from '../../../redux/cart/selectors';
 import { getSelectedProductDetail } from '../redux/common/selectors';
 import Constants from '../../../../utils/constants';
-import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
+import { GTM_TRACKING_EVENTS, gtmEventTracking, STOCK_STATUS_MAPPING } from '../../../../utils/gtm';
 import { IconDelete, IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import ProductItem from '../../../components/ProductItem';
@@ -36,14 +36,6 @@ class CartListDrawer extends Component {
   }
 
   handleGtmEventTracking = selectedProduct => {
-    const stockStatusMapping = {
-      outOfStock: 'out of stock',
-      inStock: 'in stock',
-      lowStock: 'low stock',
-      unavailable: 'unavailable',
-      notTrackInventory: 'not track Inventory',
-    };
-
     // In cart list, image count is always either 1 or 0
     const gtmEventDate = {
       product_name: selectedProduct.title,
@@ -52,8 +44,8 @@ class CartListDrawer extends Component {
       variant: selectedProduct.variations,
       quantity: selectedProduct.quantityOnHand,
       product_type: selectedProduct.inventoryType,
-      Inventory: stockStatusMapping[selectedProduct.stockStatus] || stockStatusMapping.inStock,
-      image_count: selectedProduct.image || 0,
+      Inventory: STOCK_STATUS_MAPPING[selectedProduct.stockStatus] || STOCK_STATUS_MAPPING.inStock,
+      image_count: selectedProduct.image ? 1 : 0,
     };
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, gtmEventDate);

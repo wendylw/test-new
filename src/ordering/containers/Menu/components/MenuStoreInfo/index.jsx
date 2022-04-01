@@ -48,7 +48,7 @@ const MenuStoreInfo = () => {
           <ObjectFitImage className="tw-rounded" src={storeLogo} />
         </div>
       ) : null}
-      <div className="tw-mx-12 sm:tw-mx-12px">
+      <div className="tw-flex-1">
         <h1 className="tw-text-xl tw-my-0 tw-leading-normal" ref={storeNameRef}>
           {storeDisplayTitle}
         </h1>
