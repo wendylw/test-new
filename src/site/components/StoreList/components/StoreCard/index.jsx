@@ -10,6 +10,7 @@ import RibbonBadge from '../../../RibbonBadge';
 import RatingTag from '../../../RatingTag';
 import DistanceTag from '../../../DistanceTag';
 import PromoTag from '../../../PromoTag';
+import ProductCard from '../ProductCard';
 import styles from './StoreCard.module.scss';
 
 const StoreCard = ({ store, onClick }) => {
@@ -22,6 +23,7 @@ const StoreCard = ({ store, onClick }) => {
   const isOpen = useMemo(() => _get(store, 'isOpen', false), [store]);
   const enablePreOrder = useMemo(() => _get(store, 'enablePreOrder', false), [store]);
   const enableCashback = useMemo(() => _get(store, 'enableCashback', false), [store]);
+  const products = useMemo(() => _get(store, 'products', []), [store]);
   const searchingTags = useMemo(() => _get(store, 'searchingTags', []), [store]);
   const promoTag = useMemo(() => _get(store, 'promoTag', ''), [store]);
   const rating = useMemo(() => _get(store, 'reviewInfo.rating', ''), [store]);
@@ -85,6 +87,17 @@ const StoreCard = ({ store, onClick }) => {
               <PromoTag key={idx} tagName={tag} className="sm:tw-mt-4px tw-mt-4 first:sm:tw-mr-4px first:tw-mr-4" />
             ))}
           </ol>
+        )}
+        {_isEmpty(products) ? null : (
+          <div className={styles.StoreCardProductContainer}>
+            {(products || []).map((product, idx) => (
+              <ProductCard
+                key={idx}
+                product={product}
+                className="sm:tw-px-4px tw-px-4 first:sm:tw--ml-4px first:tw--ml-4"
+              />
+            ))}
+          </div>
         )}
       </div>
     </button>
