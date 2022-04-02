@@ -1,3 +1,5 @@
+@import "../../../../common/styles/variables.scss";
+
 .IconCollectionWrapper {
   @apply tw-flex tw-justify-between tw-items-stretch tw-flex-wrap sm:tw-my-16px tw-my-16;
 }
@@ -25,6 +27,6 @@
 }
 
 .IconCollectionTitle {
-  @apply tw-block sm:tw-pt-4px tw-pt-4 sm:tw-px-16px tw-px-16 tw-text-xs
-    tw-text-center tw-font-bold tw-line-clamp-2 tw-break-words;
+  @apply tw-block sm:tw-pt-4px tw-pt-4 sm:tw-px-16px tw-px-16 tw-text-xs tw-text-center tw-font-bold;
+  @include text-line-clamp(2, null);
 }
