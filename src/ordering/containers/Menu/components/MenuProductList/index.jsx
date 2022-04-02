@@ -10,6 +10,7 @@ import Tag from '../../../../../common/components/Tag';
 import IconBestSellerImage from '../../../../../images/bestseller.svg';
 import CategoryDropdown from './CategoryDropdown';
 import { getCategories, getProductsByCategory, getIsProductListReady } from '../../redux/common/selectors';
+import { getDeliveryInfo } from '../../../../redux/modules/app';
 import { showProductDetailDrawer } from '../../redux/productDetail/thunks';
 import { selectCategory } from '../../redux/common/thunks';
 import { actions as commonActions } from '../../redux/common';
@@ -223,10 +224,11 @@ const MenuProductList = () => {
   const categories = useSelector(getCategories);
   const productList = useSelector(getProductsByCategory);
   const isProductListReady = useSelector(getIsProductListReady);
+  const { enableLiveOnline } = useSelector(getDeliveryInfo);
   const blockIntersectionObserver = useRef(false); // do not use state to avoid async issues.
 
   // is product list data ready, if not UI can display a loading
-  if (!isProductListReady) {
+  if (!isProductListReady || !enableLiveOnline) {
     return null;
   }
 
