@@ -3,3 +3,9 @@
     tw-flex tw-justify-between tw-items-stretch
     tw-sticky tw-z-100 tw-bg-white tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
 }
+
+.HeaderMapPinIcon {
+  @apply tw-flex-shrink-0 sm:tw-px-4px tw-px-4 tw-self-center;
+
+  height: 28px;
+}
