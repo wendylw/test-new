@@ -42,7 +42,7 @@ const MenuStoreInfo = () => {
   }
 
   return (
-    <div className="tw-flex tw-items-center tw-px-16 sm:tw-px-16px">
+    <div className="tw-flex tw-items-center tw-px-16 sm:tw-px-16px" style={{ opacity: '50%' }}>
       {storeLogo ? (
         <div className={`${styles.menuStoreInfo__logo} tw-flex-shrink-0`}>
           <ObjectFitImage className="tw-rounded" src={storeLogo} />

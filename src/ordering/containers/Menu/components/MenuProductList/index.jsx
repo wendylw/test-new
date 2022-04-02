@@ -228,8 +228,17 @@ const MenuProductList = () => {
   const blockIntersectionObserver = useRef(false); // do not use state to avoid async issues.
 
   // is product list data ready, if not UI can display a loading
-  if (!isProductListReady || !enableLiveOnline) {
+  if (!isProductListReady) {
     return null;
+  }
+
+  if (enableLiveOnline) {
+    return (
+      <div className="tw-container tw-h-full tw-flex tw-flex-col tw-self-center tw-items-center  tw-text-xl tw-font-bold tw-mx-16 sm:tw-mx-16px tw-my-8 sm:tw-my-8px tw-leading-normal">
+        <p> Our store is offline now</p>
+        <p>Come again next time! </p>
+      </div>
+    );
   }
 
   return (
