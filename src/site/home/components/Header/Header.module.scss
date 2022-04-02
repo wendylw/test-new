@@ -1,7 +1,5 @@
-.Header {
-  &__container {
-    @apply tw-top-0 sm:tw-p-8px tw-p-8 tw-w-full
-      tw-flex tw-justify-between tw-items-stretch
-      tw-sticky tw-z-100 tw-bg-white tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
-  }
+.HeaderContainer {
+  @apply tw-top-0 sm:tw-p-8px tw-p-8 tw-w-full
+    tw-flex tw-justify-between tw-items-stretch
+    tw-sticky tw-z-100 tw-bg-white tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
 }

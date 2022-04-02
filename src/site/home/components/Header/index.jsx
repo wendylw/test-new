@@ -19,7 +19,7 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
   const isTnGMiniProgram = useSelector(getIsTNGMiniProgram);
 
   return (
-    <section className={styles.Header__container} data-heap-name="site.home.delivery-bar">
+    <section className={styles.HeaderContainer} data-heap-name="site.home.delivery-bar">
       <div
         className="tw-flex-grow tw-flex tw-justify-start tw-items-center tw-overflow-hidden sm:tw-p-4px tw-p-4"
         role="button"
