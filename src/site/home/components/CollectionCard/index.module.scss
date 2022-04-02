@@ -1,32 +1,30 @@
-.IconCollection {
-  &__wrapper {
-    @apply tw-flex tw-justify-between tw-items-stretch tw-flex-wrap sm:tw-my-16px tw-my-16;
+.IconCollectionWrapper {
+  @apply tw-flex tw-justify-between tw-items-stretch tw-flex-wrap sm:tw-my-16px tw-my-16;
+}
+
+.IconCollectionContainer {
+  @apply tw-w-1/4 tw-flex tw-flex-col tw-items-center tw-flex-shrink-0 sm:tw-py-8px tw-py-8;
+}
+
+.IconCollectionFigure {
+  @apply tw-relative tw-w-full tw-rounded-full tw-overflow-hidden;
+
+  width: 62%;
+  max-width: 60px;
+
+  &::before {
+    @apply tw-block;
+
+    content: "";
+    padding-top: 100%;
   }
 
-  &__container {
-    @apply tw-w-1/4 tw-flex tw-flex-col tw-items-center tw-flex-shrink-0 sm:tw-py-8px tw-py-8;
+  img {
+    @apply tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-object-cover tw-object-center;
   }
+}
 
-  &__figure {
-    @apply tw-relative tw-w-full tw-rounded-full tw-overflow-hidden;
-
-    width: 62%;
-    max-width: 60px;
-
-    &::before {
-      @apply tw-block;
-
-      content: "";
-      padding-top: 100%;
-    }
-
-    img {
-      @apply tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-object-cover tw-object-center;
-    }
-  }
-
-  &__title {
-    @apply tw-block sm:tw-pt-4px tw-pt-4 sm:tw-px-16px tw-px-16 tw-text-xs
-      tw-text-center tw-font-bold tw-line-clamp-2 tw-break-words;
-  }
+.IconCollectionTitle {
+  @apply tw-block sm:tw-pt-4px tw-pt-4 sm:tw-px-16px tw-px-16 tw-text-xs
+    tw-text-center tw-font-bold tw-line-clamp-2 tw-break-words;
 }

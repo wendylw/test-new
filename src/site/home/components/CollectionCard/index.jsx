@@ -11,13 +11,13 @@ class CollectionCard extends React.Component {
     const { collections, backLeftPosition } = this.props;
 
     return (
-      <ul className={styles.IconCollection__wrapper}>
+      <ul className={styles.IconCollectionWrapper}>
         {collections.map((collection, index) => {
           const { name, image, urlPath, beepCollectionId } = collection;
           return (
             <li
               key={urlPath}
-              className={styles.IconCollection__container}
+              className={styles.IconCollectionContainer}
               data-testid="collection"
               data-heap-name="site.home.collection-icon"
               data-heap-collection-name={name}
@@ -34,8 +34,8 @@ class CollectionCard extends React.Component {
                 });
               }}
             >
-              <Image src={image} alt={name} className={styles.IconCollection__figure} />
-              <span className={styles.IconCollection__title}>{name}</span>
+              <Image src={image} alt={name} className={styles.IconCollectionFigure} />
+              <span className={styles.IconCollectionTitle}>{name}</span>
             </li>
           );
         })}
