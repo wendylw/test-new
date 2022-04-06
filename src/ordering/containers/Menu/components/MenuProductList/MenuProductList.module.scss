@@ -11,6 +11,10 @@
   }
 }
 
+.menuProductItem {
+  @apply tw-cursor-pointer;
+}
+
 .categoryProductList .menuProductItem {
   &::before {
     @apply tw-block tw-bg-gray-200 tw-mx-6 sm:tw-mx-6px;
@@ -22,14 +26,15 @@
 
 .menuProductItemTitle,
 .menuProductItemDescription {
-  @apply tw-font-bold tw-leading-relaxed;
+  @apply tw-font-bold tw-leading-relaxed tw-mr-12 sm:tw-mr-12px;
   @include text-line-clamp(2, 3em);
 }
 
 .menuProductItemNoImage {
-  .menuProductItemTitle,
-  .menuProductItemDescription {
-    max-width: 85%;
+  @apply tw-flex tw-items-start;
+
+  .menuProductItemCartQuantity {
+    @apply tw-static tw-flex-shrink-0;
   }
 }
 

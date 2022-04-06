@@ -106,7 +106,7 @@ const CategoryProductList = ({ products, categoryId }) => {
           <div
             className={`tw-relative tw-p-4 sm:tw-p-4px tw-my-12 sm:tw-my-12px ${
               product.isSoldOut ? styles.menuProductItemContentDisabled : ''
-            } ${product.image ? styles.menuProductItemNoImage : ''}`}
+            } ${product.image ? '' : styles.menuProductItemNoImage}`}
           >
             <div className="tw-flex">
               <div className="tw-flex-auto tw-relative">
