@@ -1,9 +1,7 @@
-.DistanceTag {
-  &__container {
-    @apply tw-flex tw-flex-row tw-items-center;
-  }
+.DistanceTagContainer {
+  @apply tw-flex tw-flex-row tw-items-center;
+}
 
-  &__icon {
-    @apply sm:tw-my-2px tw-my-2 tw-text-base tw-text-gray-600;
-  }
+.DistanceTagIcon {
+  @apply sm:tw-my-2px tw-my-2 tw-text-base tw-text-gray-600;
 }
