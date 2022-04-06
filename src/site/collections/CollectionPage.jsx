@@ -5,7 +5,14 @@ import { withTranslation } from 'react-i18next';
 import StoreList from '../components/StoreList';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import ModalPageLayout from '../components/ModalPageLayout';
-import { collectionsActions, getPageInfo, getStoreList, getShippingType } from '../redux/modules/collections';
+import SwitchPanel from '../components/SwitchPanel';
+import {
+  collectionsActions,
+  getPageInfo,
+  getStoreList,
+  getShippingType,
+  getShouldShowSwitchPanel,
+} from '../redux/modules/collections';
 import { submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
@@ -138,32 +145,6 @@ class CollectionPage extends React.Component {
     this.props.collectionsActions.getStoreList(urlPath);
   };
 
-  renderSwitchBar = () => {
-    const { t, shippingType } = this.props;
-    const classList = 'switch-bar text-center text-weight-bolder padding-top-bottom-normal';
-    return (
-      <ul className="header flex flex-space-around text-uppercase border__bottom-divider sticky-wrapper">
-        <li
-          className={`${classList} ${shippingType === 'delivery' ? 'switch-bar__active' : 'text-opacity'}`}
-          data-testid="switchBar"
-          data-heap-name="site.collection.tab-bar"
-          data-heap-delivery-type="delivery"
-          onClick={() => this.handleSwitchTab('delivery')}
-        >
-          {t('Delivery')}
-        </li>
-        <li
-          className={`${classList} ${shippingType === 'pickup' ? 'switch-bar__active' : 'text-opacity'}`}
-          data-heap-name="site.collection.tab-bar"
-          data-heap-delivery-type="pickup"
-          onClick={() => this.handleSwitchTab('pickup')}
-        >
-          {t('SelfPickup')}
-        </li>
-      </ul>
-    );
-  };
-
   renderStoreList = () => {
     const { stores, pageInfo, currentCollection } = this.props;
     const { scrollTop } = pageInfo;
@@ -225,7 +206,7 @@ class CollectionPage extends React.Component {
   }
 
   render() {
-    const { currentCollection, currentCollectionStatus } = this.props;
+    const { shippingType, currentCollection, currentCollectionStatus, shouldShowSwitchPanel } = this.props;
     if (!currentCollectionStatus || currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
       return <PageLoader />;
     }
@@ -235,8 +216,19 @@ class CollectionPage extends React.Component {
     }
 
     return (
-      <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
-        {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
+      <ModalPageLayout
+        className={shouldShowSwitchPanel ? '' : 'tw-border-0 tw-border-b tw-border-solid tw-border-gray-200'}
+        title={currentCollection.name}
+        onGoBack={this.backToPreviousPage}
+      >
+        {shouldShowSwitchPanel && (
+          <SwitchPanel
+            className="sm:tw-pt-6px tw-pt-6"
+            shippingType={shippingType}
+            dataHeapName="site.collection.tab-bar"
+            handleSwitchTab={this.handleSwitchTab}
+          />
+        )}
         <section
           ref={this.sectionRef}
           className="entry-home fixed-wrapper__container wrapper"
@@ -264,6 +256,7 @@ export default compose(
       shippingType: getShippingType(state),
       addressInfo: getAddressInfo(state),
       addressCoords: getAddressCoords(state),
+      shouldShowSwitchPanel: getShouldShowSwitchPanel(state),
     }),
     dispatch => ({
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
