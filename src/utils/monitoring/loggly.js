@@ -35,7 +35,29 @@ const getAppPlatform = () => {
   return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
 };
 
+const sendToLogService = async (data, tags = '') => {
+  const tagArray = `${REACT_APP_LOGGLY_TAG.replace(/ /g, '')}${tags && `,${tags}`}`.split(',');
+  const body = JSON.stringify({
+    ...data,
+    tags: tagArray,
+  });
+  const headers = new Headers({ 'Content-Type': 'application/json' });
+  const endpoint = process.env.LOG_SERVICE_ENDPOINT || 'http://localhost:8080/logs/raw';
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body,
+    });
+  } catch (e) {
+    if (IS_DEV_ENV) {
+      throw e;
+    }
+  }
+};
+
 const send = async (data, tags = '') => {
+  sendToLogService(data, tags);
   const body = JSON.stringify(data);
 
   debug(`[LOGGLY] %s`, body);
@@ -85,7 +107,7 @@ const track = async (name, data, meta = {}) => {
     // todo: business name, page url, user agent, env, client timestamp, ...
     dataToSend.level = meta.level || 'info';
 
-    let tags = meta.tags ? (Array.isArray(meta.tags) ? meta.tags.join('') : meta.tags) : '';
+    let tags = meta.tags ? (Array.isArray(meta.tags) ? meta.tags.join(',') : meta.tags) : '';
     if (tags && !/^\w+(,\w+)?$/.test(tags)) {
       throw new Error('Incorrect loggly tags format');
     }
