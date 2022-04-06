@@ -16,7 +16,7 @@ const DistanceTag = ({ distance, className }) => {
     <li className={classNameList.join(' ')}>
       <MapPin className={styles.DistanceTagIcon} weight="light" size={16} />
       <span className="sm:tw-mx-4px tw-mx-4 sm:tw-my-2px tw-my-2 tw-text-sm tw-leading-normal">
-        {t('DistanceText', { distance: `~ ${(distance || 0).toFixed(2)}` })}
+        {t('DistanceText', { distance: `~${(distance || 0).toFixed(2)}` })}
       </span>
     </li>
   );
