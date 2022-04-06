@@ -42,7 +42,7 @@ const sendToLogService = async (data, tags = '') => {
     tags: tagArray,
   });
   const headers = new Headers({ 'Content-Type': 'application/json' });
-  const endpoint = process.env.LOG_SERVICE_ENDPOINT || 'http://localhost:8080/logs/raw';
+  const endpoint = process.env.REACT_APP_LOG_SERVICE_URL || 'http://localhost:8080/logs/raw';
   try {
     await fetch(endpoint, {
       method: 'POST',
