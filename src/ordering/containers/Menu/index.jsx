@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useUnmount } from 'react-use';
 import Frame from '../../../common/components/Frame';
 import MenuHeader from './components/MenuHeader';
 import MenuStoreInfo from './components/MenuStoreInfo';
@@ -16,17 +17,32 @@ import { getDeliveryInfo } from '../../redux/modules/app';
 const Menu = () => {
   const dispatch = useDispatch();
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
+
+  // enableLiveOnline is undefined firstly and then get the value of true / false
+  const isEnableLiveOnline = () => {
+    const obj = {};
+    if (enableLiveOnline) {
+      obj[enableLiveOnline] = enableLiveOnline;
+    } else {
+      obj[enableLiveOnline] = setTimeout(() => {
+        enableLiveOnline;
+      }, 500);
+    }
+
+    return Boolean(obj[enableLiveOnline]) === false;
+  };
+
   useEffect(() => {
     dispatch(mounted());
   }, []);
 
   return (
     <Frame>
-      <MenuHeader />
-      {enableLiveOnline ? (
+      {isEnableLiveOnline() ? (
         <MenuOffline />
       ) : (
         <>
+          <MenuHeader />
           <section className="tw-py-16 sm:tw-py-16px">
             <MenuStoreInfo />
             <PromotionBar />
