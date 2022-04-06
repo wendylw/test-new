@@ -8,7 +8,7 @@ const MenuProxy = props => {
   const isMenuRevamp = useSelector(getIsMenuRevamp);
 
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return <>{isMenuRevamp ? <Menu {...props} /> : <Home {...props} />}</>;
+  return <>{!isMenuRevamp ? <Menu {...props} /> : <Home {...props} />}</>;
 };
 
 MenuProxy.displayName = 'MenuProxy';
