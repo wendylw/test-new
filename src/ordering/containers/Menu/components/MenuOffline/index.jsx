@@ -13,7 +13,7 @@ const MenuOffline = () => {
   const history = useHistory();
 
   const handleNavBack = () => {
-    const sourceUrl = getSourceUrlFromSessionStorage;
+    const sourceUrl = getSourceUrlFromSessionStorage();
     if (sourceUrl) {
       window.location.href = sourceUrl;
       return;

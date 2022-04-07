@@ -18,27 +18,13 @@ const Menu = () => {
   const dispatch = useDispatch();
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
 
-  // enableLiveOnline is undefined firstly and then get the value of true / false
-  const isEnableLiveOnline = () => {
-    const obj = {};
-    if (enableLiveOnline) {
-      obj[enableLiveOnline] = enableLiveOnline;
-    } else {
-      obj[enableLiveOnline] = setTimeout(() => {
-        enableLiveOnline;
-      }, 500);
-    }
-
-    return Boolean(obj[enableLiveOnline]) === false;
-  };
-
   useEffect(() => {
     dispatch(mounted());
   }, []);
 
   return (
     <Frame>
-      {isEnableLiveOnline() ? (
+      {enableLiveOnline == null ? null : !enableLiveOnline ? (
         <MenuOffline />
       ) : (
         <>
