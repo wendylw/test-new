@@ -2,9 +2,9 @@ import React from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { CaretLeft } from 'phosphor-react';
 import StoreList from '../components/StoreList';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
-import ModalPageLayout from '../components/ModalPageLayout';
 import SwitchPanel from '../components/SwitchPanel';
 import {
   collectionsActions,
@@ -33,6 +33,8 @@ import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
 import ErrorComponent from '../../components/Error';
 import PageLoader from '../../../src/components/PageLoader';
+import styles from './CollectionPage.module.scss';
+
 const { API_REQUEST_STATUS } = constants;
 
 class CollectionPage extends React.Component {
@@ -151,7 +153,7 @@ class CollectionPage extends React.Component {
     const { urlPath } = currentCollection;
 
     return (
-      <div className="store-card-list__container padding-normal">
+      <div className="sm:tw-py-4px tw-py-4 tw-bg-white">
         <StoreListAutoScroll
           getScrollParent={() => this.sectionRef.current}
           defaultScrollTop={scrollTop}
@@ -215,20 +217,34 @@ class CollectionPage extends React.Component {
       return this.renderError();
     }
 
+    const title = currentCollection.name;
+
     return (
-      <ModalPageLayout
-        className={shouldShowSwitchPanel ? '' : 'tw-border-0 tw-border-b tw-border-solid tw-border-gray-200'}
-        title={currentCollection.name}
-        onGoBack={this.backToPreviousPage}
-      >
-        {shouldShowSwitchPanel && (
-          <SwitchPanel
-            className="sm:tw-pt-6px tw-pt-6"
-            shippingType={shippingType}
-            dataHeapName="site.collection.tab-bar"
-            handleSwitchTab={this.handleSwitchTab}
-          />
-        )}
+      <main className="fixed-wrapper fixed-wrapper__main">
+        <div className="tw-sticky tw-top-0 tw-z-100 tw-w-full tw-bg-white">
+          <header
+            className={`${styles.CollectionPageHeaderWrapper} ${
+              shouldShowSwitchPanel ? '' : 'tw-border-0 tw-border-b tw-border-solid tw-border-gray-200'
+            }`}
+          >
+            <button
+              className={styles.CollectionPageHeaderIconWrapper}
+              onClick={this.backToPreviousPage}
+              data-heap-name="site.common.back-btn"
+            >
+              <CaretLeft size={24} weight="light" />
+            </button>
+            {title ? <h2 className={styles.CollectionPageHeaderTitle}>{title}</h2> : null}
+          </header>
+          {shouldShowSwitchPanel && (
+            <SwitchPanel
+              className="sm:tw-pt-6px tw-pt-6"
+              shippingType={shippingType}
+              dataHeapName="site.collection.tab-bar"
+              handleSwitchTab={this.handleSwitchTab}
+            />
+          )}
+        </div>
         <section
           ref={this.sectionRef}
           className="entry-home fixed-wrapper__container wrapper"
@@ -237,7 +253,7 @@ class CollectionPage extends React.Component {
         >
           {this.renderStoreList()}
         </section>
-      </ModalPageLayout>
+      </main>
     );
   }
 }

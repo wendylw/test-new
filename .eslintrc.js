@@ -235,7 +235,6 @@ const legacyFiles = [
   'src/site/collections/CollectionPage.jsx',
   'src/site/components/Banner.jsx',
   'src/site/components/CurrencyNumber.jsx',
-  'src/site/components/ModalPageLayout.jsx',
   'src/site/components/NotFound.jsx',
   'src/site/components/ProtectedRoute.jsx',
   'src/site/components/SearchBox.jsx',

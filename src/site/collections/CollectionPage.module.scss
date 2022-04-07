@@ -1,15 +1,14 @@
-.ModalPageLayoutHeaderWrapper {
-  @apply tw-sticky tw-top-0 tw-w-full tw-z-100 tw-bg-white 
-    tw-flex tw-justify-between tw-items-center;
+.CollectionPageHeaderWrapper {
+  @apply tw-flex tw-justify-between tw-items-center;
 }
 
-.ModalPageLayoutIconWrapper {
+.CollectionPageHeaderIconWrapper {
   @apply tw-flex tw-flex-shrink-0 tw-items-stretch
     sm:tw-py-20px tw-py-20 sm:tw-pl-16px tw-pl-16 sm:tw-pr-12px tw-pr-12
     tw-border-none tw-outline-none tw-bg-transparent;
 }
 
-.ModalPageLayoutTitle {
+.CollectionPageHeaderTitle {
   @apply tw-flex-grow tw-text-left tw-text-lg tw-leading-relaxed tw-font-bold tw-truncate
     sm:tw-pr-16px tw-pr-16 sm:tw-py-20px tw-py-20;
 }
