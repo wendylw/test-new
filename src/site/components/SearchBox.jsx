@@ -19,14 +19,14 @@ class SearchBox extends React.Component {
           value={keyword}
           onChange={handleSearchTextChange}
         />
-        <XCircle
-          size={20}
-          weight="fill"
-          className={styles.SearchBoxCloseIcon}
+        <button
+          className={styles.SearchBoxCloseIconWrapper}
           data-heap-name="site.search.search-box-clear-btn"
           onClick={handleClearSearchText}
           style={{ visibility: keyword ? 'visible' : 'hidden' }}
-        />
+        >
+          <XCircle className={styles.SearchBoxCloseIcon} size={20} weight="fill" />
+        </button>
       </div>
     );
   }

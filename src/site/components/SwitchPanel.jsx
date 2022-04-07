@@ -26,7 +26,7 @@ class SwitchPanel extends React.Component {
           {t('Delivery')}
         </li>
         <li
-          className={`${classList} ${shippingType === 'pickup' ? 'switch-bar__active' : 'tw-text-gray-600'}`}
+          className={`${classList.join(' ')} ${shippingType === 'pickup' ? 'switch-bar__active' : 'tw-text-gray-600'}`}
           data-heap-name={dataHeapName}
           data-heap-delivery-type="pickup"
           onClick={() => handleSwitchTab('pickup')}

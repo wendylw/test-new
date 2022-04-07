@@ -23,9 +23,7 @@
 .EmptySearchPopularCategoryContent {
   @extend .EmptySearchCategoryContent;
   @apply sm:tw-mx-4px tw-mx-4 sm:tw-my-6px tw-my-6 sm:tw-px-12px tw-px-12 sm:tw-py-4px tw-py-4
-    tw-border-solid tw-border tw-border-gray-400;
-
-  border-radius: 16px;
+    tw-overflow-hidden tw-border-solid tw-border tw-border-gray-400 tw-rounded-xl;
 }
 
 .EmptySearchOtherCategoryContainer {
@@ -34,5 +32,4 @@
   height: 13.077vw;
   min-height: 37px;
   max-height: 51px;
-  border-radius: 0.5px;
 }
