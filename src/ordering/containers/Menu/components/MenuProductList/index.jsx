@@ -108,7 +108,7 @@ const CategoryProductList = ({ products, categoryId }) => {
               product.isSoldOut ? styles.menuProductItemContentDisabled : ''
             } ${product.image ? '' : styles.menuProductItemNoImage}`}
           >
-            <div className="tw-flex">
+            <div className="tw-flex tw-flex-1">
               <div className="tw-flex-auto tw-relative">
                 <div className="tw-px-2 sm:tw-px-2px">
                   {product.isBestSeller ? (
