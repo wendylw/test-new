@@ -17,6 +17,7 @@ import {
   getEnablePayLater as getIsEnablePayLater,
   getBusiness,
   getIsStoreInfoReady,
+  getDeliveryInfo,
 } from '../../../../redux/modules/app';
 
 export { getTableId, getShippingType, getIsQrOrderingShippingType, getIsEnablePayLater, getIsStoreInfoReady };
@@ -166,5 +167,15 @@ export const getIsMenuRevamp = createSelector(
     const isPilotMerchant = pilotMerchants.includes(businessName);
 
     return isQrOrderingShippingType && isPilotMerchant;
+  }
+);
+
+export const getEnableLiveOnline = createSelector(
+  getIsStoreInfoReady,
+  getDeliveryInfo,
+  (isStoreInfoReady, deliveryInfo) => {
+    const { enableLiveOnline } = deliveryInfo;
+
+    return isStoreInfoReady && !enableLiveOnline;
   }
 );
