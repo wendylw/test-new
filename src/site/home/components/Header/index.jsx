@@ -40,7 +40,7 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
             className="tw-flex tw-items-center sm:tw-p-8px tw-p-8"
             onClick={onQRScannerClick}
           >
-            <Scan className="tw-flex-shrink-0 tw-text-gray" size={24} />
+            <Scan className="tw-flex-shrink-0 tw-text-gray" size={24} weight="light" />
           </Link>
         )}
       </div>
