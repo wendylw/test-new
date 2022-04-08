@@ -261,5 +261,7 @@
   "AddToCart": "ADD TO CART - {{price}}",
   "OutOfStock": "OUT OF STOCK",
   "SelectVariant": "SELECT VARIANT",
-  "ExceedsMaximumStock": "EXCEEDS MAXIMUM STOCK"
+  "ExceedsMaximumStock": "EXCEEDS MAXIMUM STOCK",
+  "StoreNotFound": "Oops! Store not found",
+  "StoreNotFoundDesc": "This store may be temporarily unavailable or undergoing a delicious upgrade! Check back soon…"
 }

@@ -1,0 +1,21 @@
+@import "../../../../../common/styles/variables.scss";
+
+.menuOfflineContainer {
+  @apply tw-flex tw-flex-col  tw-items-center tw-justify-center tw-w-full;
+
+  height: 69vh;
+}
+
+.menuOfflineImg {
+  @apply tw-p-16 sm:tw-p-16px;
+}
+
+.menuOfflineDesc {
+  @apply tw-text-center;
+}
+
+.menuOfflineDescUnder {
+  @apply tw-leading-relaxed tw-text-gray-700 tw-font-bold;
+
+  max-width: 317px;
+}
