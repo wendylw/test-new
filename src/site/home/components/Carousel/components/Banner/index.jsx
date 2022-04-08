@@ -18,7 +18,7 @@ const Banner = ({ title, onClick }) => {
         <span className="tw-text-base tw-text-gray-700 tw-leading-relaxed sm:tw-pr-2px tw-pr-2 sm:tw-pl-20px tw-pl-20">
           {t('SeeAll')}
         </span>
-        <CaretRight className="tw-text-gray-600 sm:tw-m-2px tw-m-2" />
+        <CaretRight className="tw-text-gray-600 sm:tw-m-2px tw-m-2" weight="light" />
       </button>
     </div>
   );
