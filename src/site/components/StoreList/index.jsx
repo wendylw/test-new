@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroller';
 import StoreCard from './components/StoreCard';
+import styles from './StoreList.module.scss';
 
 class StoreList extends Component {
   renderStoreItems = () => {
@@ -16,7 +17,7 @@ class StoreList extends Component {
           const { id, name } = store || {};
 
           return (
-            <div key={id}>
+            <div key={id} className={styles.StoreListItemWrapper}>
               <StoreCard
                 store={store}
                 data-heap-name="site.common.store-item"
@@ -24,7 +25,6 @@ class StoreList extends Component {
                 data-heap-store-index={index}
                 onClick={onStoreClicked.bind(this, store, index)}
               />
-              <div className="tw-border-solid tw-border-0 tw-border-b tw-border-gray-200 sm:tw-mx-16px tw-mx-16" />
             </div>
           );
         })}
