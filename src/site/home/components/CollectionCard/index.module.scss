@@ -27,6 +27,6 @@
 }
 
 .IconCollectionTitle {
-  @apply tw-block sm:tw-pt-4px tw-pt-4 sm:tw-px-16px tw-px-16 tw-text-xs tw-text-center tw-font-bold;
+  @apply tw-block sm:tw-pt-4px tw-pt-4 sm:tw-px-16px tw-px-16 tw-text-sm tw-leading-loose tw-text-center tw-font-bold;
   @include text-line-clamp(2, null);
 }
