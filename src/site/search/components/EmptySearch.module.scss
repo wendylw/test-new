@@ -32,4 +32,8 @@
   height: 13.077vw;
   min-height: 37px;
   max-height: 51px;
+
+  &:last-of-type {
+    @apply tw-border-0;
+  }
 }
