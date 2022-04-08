@@ -1,0 +1,46 @@
+.SearchBoxContainer {
+  @apply sm:tw-my-12px tw-my-12 sm:tw-mr-16px tw-mr-16 tw-flex tw-flex-grow tw-items-center tw-bg-gray-200 tw-overflow-hidden;
+
+  border-radius: 24px;
+}
+
+.SearchBoxIcon {
+  @apply tw-flex-shrink-0;
+
+  margin-top: 2.5641vw;
+  margin-bottom: 2.5641vw;
+}
+
+.SearchBoxGlassIcon {
+  @extend .SearchBoxIcon;
+  @apply sm:tw-ml-12px tw-ml-12 sm:tw-mr-6px tw-mr-6;
+}
+
+.SearchBoxCloseIconWrapper {
+  @apply tw-border-0 tw-border-none tw-outline-none tw-p-0 tw-m-0 tw-bg-transparent;
+
+  line-height: 0;
+}
+
+.SearchBoxCloseIcon {
+  @extend .SearchBoxIcon;
+  @apply sm:tw-mr-12px tw-mr-12 sm:tw-ml-6px tw-ml-6 tw-text-gray-600;
+}
+
+.SearchBoxInput {
+  @apply sm:tw-py-8px tw-py-8 tw-border-none tw-outline-none tw-flex-grow tw-overflow-hidden
+    tw-text-left tw-leading-relaxed tw-text-gray tw-truncate tw-caret-orange tw-bg-transparent;
+
+  box-shadow: none;
+
+  &::placeholder {
+    @apply tw-text-gray-600;
+  }
+}
+
+@media (min-width: 420px) {
+  .SearchBoxIcon {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}

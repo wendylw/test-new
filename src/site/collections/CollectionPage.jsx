@@ -2,10 +2,17 @@ import React from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import StoreList from '../home/components/StoreList';
+import { CaretLeft } from 'phosphor-react';
+import StoreList from '../components/StoreList';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
-import ModalPageLayout from '../components/ModalPageLayout';
-import { collectionsActions, getPageInfo, getStoreList, getShippingType } from '../redux/modules/collections';
+import SwitchPanel from '../components/SwitchPanel';
+import {
+  collectionsActions,
+  getPageInfo,
+  getStoreList,
+  getShippingType,
+  getShouldShowSwitchPanel,
+} from '../redux/modules/collections';
 import { submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
@@ -26,6 +33,8 @@ import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
 import ErrorComponent from '../../components/Error';
 import PageLoader from '../../../src/components/PageLoader';
+import styles from './CollectionPage.module.scss';
+
 const { API_REQUEST_STATUS } = constants;
 
 class CollectionPage extends React.Component {
@@ -138,39 +147,13 @@ class CollectionPage extends React.Component {
     this.props.collectionsActions.getStoreList(urlPath);
   };
 
-  renderSwitchBar = () => {
-    const { t, shippingType } = this.props;
-    const classList = 'switch-bar text-center text-weight-bolder padding-top-bottom-normal';
-    return (
-      <ul className="header flex flex-space-around text-uppercase border__bottom-divider sticky-wrapper">
-        <li
-          className={`${classList} ${shippingType === 'delivery' ? 'switch-bar__active' : 'text-opacity'}`}
-          data-testid="switchBar"
-          data-heap-name="site.collection.tab-bar"
-          data-heap-delivery-type="delivery"
-          onClick={() => this.handleSwitchTab('delivery')}
-        >
-          {t('Delivery')}
-        </li>
-        <li
-          className={`${classList} ${shippingType === 'pickup' ? 'switch-bar__active' : 'text-opacity'}`}
-          data-heap-name="site.collection.tab-bar"
-          data-heap-delivery-type="pickup"
-          onClick={() => this.handleSwitchTab('pickup')}
-        >
-          {t('SelfPickup')}
-        </li>
-      </ul>
-    );
-  };
-
   renderStoreList = () => {
     const { stores, pageInfo, currentCollection } = this.props;
     const { scrollTop } = pageInfo;
     const { urlPath } = currentCollection;
 
     return (
-      <div className="store-card-list__container padding-normal">
+      <div className="sm:tw-py-4px tw-py-4 tw-bg-white">
         <StoreListAutoScroll
           getScrollParent={() => this.sectionRef.current}
           defaultScrollTop={scrollTop}
@@ -225,7 +208,7 @@ class CollectionPage extends React.Component {
   }
 
   render() {
-    const { currentCollection, currentCollectionStatus } = this.props;
+    const { shippingType, currentCollection, currentCollectionStatus, shouldShowSwitchPanel } = this.props;
     if (!currentCollectionStatus || currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
       return <PageLoader />;
     }
@@ -234,9 +217,34 @@ class CollectionPage extends React.Component {
       return this.renderError();
     }
 
+    const title = currentCollection.name;
+
     return (
-      <ModalPageLayout title={currentCollection.name} onGoBack={this.backToPreviousPage}>
-        {currentCollection.shippingType.length !== 2 ? null : this.renderSwitchBar()}
+      <main className="fixed-wrapper fixed-wrapper__main">
+        <div className="tw-sticky tw-top-0 tw-z-100 tw-w-full tw-bg-white">
+          <header
+            className={`${styles.CollectionPageHeaderWrapper} ${
+              shouldShowSwitchPanel ? '' : 'tw-border-0 tw-border-b tw-border-solid tw-border-gray-200'
+            }`}
+          >
+            <button
+              className={styles.CollectionPageHeaderIconWrapper}
+              onClick={this.backToPreviousPage}
+              data-heap-name="site.common.back-btn"
+            >
+              <CaretLeft size={24} weight="light" />
+            </button>
+            {title ? <h2 className={styles.CollectionPageHeaderTitle}>{title}</h2> : null}
+          </header>
+          {shouldShowSwitchPanel && (
+            <SwitchPanel
+              className="sm:tw-pt-6px tw-pt-6"
+              shippingType={shippingType}
+              dataHeapName="site.collection.tab-bar"
+              handleSwitchTab={this.handleSwitchTab}
+            />
+          )}
+        </div>
         <section
           ref={this.sectionRef}
           className="entry-home fixed-wrapper__container wrapper"
@@ -245,7 +253,7 @@ class CollectionPage extends React.Component {
         >
           {this.renderStoreList()}
         </section>
-      </ModalPageLayout>
+      </main>
     );
   }
 }
@@ -264,6 +272,7 @@ export default compose(
       shippingType: getShippingType(state),
       addressInfo: getAddressInfo(state),
       addressCoords: getAddressCoords(state),
+      shouldShowSwitchPanel: getShouldShowSwitchPanel(state),
     }),
     dispatch => ({
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),

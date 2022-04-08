@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getAllStores, storesActionCreators } from './entities/stores';
+import { getCurrentCollection } from './entities/storeCollections';
 import { getAddressCoords, getAddressCountryCode } from '../../../redux/modules/address/selectors';
 
 const defaultPageInfo = {
@@ -195,3 +196,8 @@ const getStoreIds = state => {
 export const getStoreList = createSelector([getStoreIds, getAllStores], (storeIds, stores) => {
   return storeIds.map(id => stores[id]);
 });
+
+export const getShouldShowSwitchPanel = createSelector(
+  getCurrentCollection,
+  currentCollection => currentCollection?.shippingType?.length === 2
+);

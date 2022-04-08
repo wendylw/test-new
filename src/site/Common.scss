@@ -1011,7 +1011,7 @@ img {
   .fixed-wrapper {
     @extend .wrapper;
 
-    border-width: 1px;
+    border-width: 0px 1px;
     border-style: solid;
     border-color: $gray-4;
   }
