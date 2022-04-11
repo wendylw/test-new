@@ -270,7 +270,6 @@ class SearchPage extends React.Component {
           </header>
           {shouldShowSwitchPanel && (
             <SwitchPanel
-              className="sm:tw-pt-4px tw-pt-4"
               shippingType={shippingType}
               dataHeapName="site.search.tab-bar"
               handleSwitchTab={this.handleSwitchTab}

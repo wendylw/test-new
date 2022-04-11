@@ -238,7 +238,6 @@ class CollectionPage extends React.Component {
           </header>
           {shouldShowSwitchPanel && (
             <SwitchPanel
-              className="sm:tw-pt-6px tw-pt-6"
               shippingType={shippingType}
               dataHeapName="site.collection.tab-bar"
               handleSwitchTab={this.handleSwitchTab}
