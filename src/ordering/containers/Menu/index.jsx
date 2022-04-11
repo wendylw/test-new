@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Frame from '../../../common/components/Frame';
 import MenuHeader from './components/MenuHeader';
 import MenuStoreInfo from './components/MenuStoreInfo';
@@ -11,11 +11,9 @@ import MiniCart from './components/MiniCart';
 import AlcoholModal from './components/AlcoholModal';
 import MenuOffline from './components/MenuOffline';
 import { mounted } from './redux/common/thunks';
-import { getEnableLiveOnline } from './redux/common/selectors';
 
 const Menu = () => {
   const dispatch = useDispatch();
-  const enableLiveOnline = useSelector(getEnableLiveOnline);
 
   useEffect(() => {
     dispatch(mounted());
@@ -24,21 +22,18 @@ const Menu = () => {
   return (
     <Frame>
       <MenuHeader />
-      {enableLiveOnline ? (
+      <>
+        <section className="tw-py-16 sm:tw-py-16px">
+          <MenuStoreInfo />
+          <PromotionBar />
+          <MenuProductList />
+        </section>
+        <MenuFooter />
+        <ProductDetailDrawer />
+        <MiniCart />
+        <AlcoholModal />
         <MenuOffline />
-      ) : (
-        <>
-          <section className="tw-py-16 sm:tw-py-16px">
-            <MenuStoreInfo />
-            <PromotionBar />
-            <MenuProductList />
-          </section>
-          <MenuFooter />
-          <ProductDetailDrawer />
-          <MiniCart />
-          <AlcoholModal />
-        </>
-      )}
+      </>
     </Frame>
   );
 };

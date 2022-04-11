@@ -100,14 +100,14 @@ const MenuHeader = () => {
       {isInWebview ? (
         <NativeHeader isPage title="" navFunc={handleNavBack} />
       ) : (
-        <header className="tw-p-12 sm:tw-p-12px">
+        <header className="tw-absolute  tw-container tw-p-12 sm:tw-p-12px" style={{ zIndex: 101 }}>
           <img className={styles.MenuHeaderLogoOffline} src={ArrowBackIcon} alt="" onClick={handleNavBack} />
         </header>
       )}
     </>
   );
 
-  return <>{enableLiveOnline ? normalRender() : ifShouldShowHeader && menuOfflineRender()}</>;
+  return <>{enableLiveOnline ? ifShouldShowHeader && menuOfflineRender() : normalRender()}</>;
 };
 
 MenuHeader.displayName = 'MenuHeader';
