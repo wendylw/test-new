@@ -17,7 +17,7 @@
 }
 
 .SearchBoxCloseIconWrapper {
-  @apply tw-border-0 tw-border-none tw-outline-none tw-p-0 tw-m-0 tw-bg-transparent;
+  @apply tw-border-0 tw-border-none tw-outline-none tw-p-0 tw-m-0 tw-bg-transparent tw-cursor-pointer;
 
   line-height: 0;
 }

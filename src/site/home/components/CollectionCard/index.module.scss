@@ -5,7 +5,7 @@
 }
 
 .IconCollectionContainer {
-  @apply tw-w-1/4 tw-flex tw-flex-col tw-items-center tw-flex-shrink-0 sm:tw-py-8px tw-py-8;
+  @apply tw-w-1/4 tw-flex tw-flex-col tw-items-center tw-flex-shrink-0 sm:tw-py-8px tw-py-8 tw-cursor-pointer;
 }
 
 .IconCollectionFigure {

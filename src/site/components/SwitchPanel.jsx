@@ -7,7 +7,7 @@ class SwitchPanel extends React.Component {
     const { t, shippingType, className, dataHeapName, handleSwitchTab } = this.props;
 
     const classList = [
-      'switch-bar text-center tw-text-lg tw-leading-relaxed tw-font-bold sm:tw-pt-8px tw-pt-8 sm:tw-pb-12px tw-pb-12',
+      'switch-bar text-center tw-text-lg tw-leading-relaxed tw-font-bold sm:tw-pt-8px tw-pt-8 sm:tw-pb-12px tw-pb-12 tw-cursor-pointer',
     ];
 
     if (className) {
