@@ -23,11 +23,11 @@ const Menu = () => {
 
   return (
     <Frame>
+      <MenuHeader />
       {enableLiveOnline ? (
         <MenuOffline />
       ) : (
         <>
-          <MenuHeader />
           <section className="tw-py-16 sm:tw-py-16px">
             <MenuStoreInfo />
             <PromotionBar />
