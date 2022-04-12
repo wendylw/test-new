@@ -11,9 +11,13 @@ const MenuOfflineModal = () => {
   const { t } = useTranslation();
   const enableLiveOnline = useSelector(getEnableLiveOnline);
 
+  if (enableLiveOnline == null) {
+    return null;
+  }
+
   return (
     <>
-      {enableLiveOnline && (
+      {!enableLiveOnline && (
         <FullScreenFrame className={styles.fullScreenGround}>
           <div className={styles.menuOfflineContainer}>
             <img src={ErrorMenuOffline} className={styles.menuOfflineImg} />

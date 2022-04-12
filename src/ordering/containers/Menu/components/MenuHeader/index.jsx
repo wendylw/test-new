@@ -54,6 +54,10 @@ const MenuHeader = () => {
     rightContentForWebHeader = createRightContentHtml(t('TAKE_AWAY'));
   }
 
+  if (enableLiveOnline == null) {
+    return null;
+  }
+
   const renderNormalContent = () => (
     <>
       {isInWebview ? (
