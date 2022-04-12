@@ -31,7 +31,8 @@ const MenuHeader = () => {
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   const isProductDetailDrawerVisible = useSelector(getIsProductDetailDrawerVisible);
   const isInWebview = isWebview();
-  const enableLiveOnline = useSelector(getEnableLiveOnline);
+  let enableLiveOnline = useSelector(getEnableLiveOnline);
+  enableLiveOnline = enableLiveOnline == null ? null : enableLiveOnline;
   const history = useHistory();
   const ifShouldShowHeader = isWebview() && isQROrder();
   const createRightContentHtml = useCallback(
@@ -52,10 +53,6 @@ const MenuHeader = () => {
   } else if (isTakeAwayType()) {
     rightContentForNativeHeader = { text: t('TAKE_AWAY') };
     rightContentForWebHeader = createRightContentHtml(t('TAKE_AWAY'));
-  }
-
-  if (enableLiveOnline == null) {
-    return null;
   }
 
   const renderNormalContent = () => (
