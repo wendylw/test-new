@@ -33,15 +33,16 @@ const StoreCard = ({ store, onClick }) => {
   const isFreeDeliveryAvailable = useMemo(() => _get(store, 'showFreeDeliveryTag', false), [store]);
   const isCashbackAvailable = useMemo(() => enableCashback && cashbackRate, [enableCashback, cashbackRate]);
   const isStoreClosed = useMemo(() => !(isOpen || enablePreOrder), [isOpen, enablePreOrder]);
+  const shouldShowPreOrderTag = useMemo(() => !isOpen && enablePreOrder, [isOpen, enablePreOrder]);
 
   const ribbonBadges = useMemo(() => {
     const badges = [];
 
     badges.push(promoTag ? { title: promoTag, color: '#F04B23' } : null);
-    badges.push(enablePreOrder ? { title: t('PreOrder'), color: '#0698A8' } : null);
+    badges.push(shouldShowPreOrderTag ? { title: t('PreOrder'), color: '#0698A8' } : null);
 
     return badges.filter(badge => badge);
-  }, [t, enablePreOrder, promoTag]);
+  }, [t, promoTag, shouldShowPreOrderTag]);
 
   const promoTags = useMemo(() => {
     const tags = [];
