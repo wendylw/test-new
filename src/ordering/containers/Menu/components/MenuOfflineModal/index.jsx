@@ -11,23 +11,21 @@ const MenuOfflineModal = () => {
   const { t } = useTranslation();
   const enableLiveOnline = useSelector(getEnableLiveOnline);
 
-  if (enableLiveOnline == null) {
-    return null;
-  }
-
   return (
     <>
-      {!enableLiveOnline && (
-        <FullScreenFrame className={styles.fullScreenGround}>
-          <div className={styles.menuOfflineContainer}>
-            <img src={ErrorMenuOffline} className={styles.menuOfflineImg} />
-            <div className={styles.menuOfflineDesc}>
-              <p className="tw-text-xl tw-font-bold">{t('StoreNotFound')}</p>
-              <p className={styles.menuOfflineDescUnder}>{t('StoreNotFoundDesc')}</p>
-            </div>
-          </div>
-        </FullScreenFrame>
-      )}
+      {enableLiveOnline == null
+        ? null
+        : enableLiveOnline && (
+            <FullScreenFrame className={styles.fullScreenGround}>
+              <div className={styles.menuOfflineContainer}>
+                <img src={ErrorMenuOffline} className={styles.menuOfflineImg} />
+                <div className={styles.menuOfflineDesc}>
+                  <p className="tw-text-xl tw-font-bold">{t('StoreNotFound')}</p>
+                  <p className={styles.menuOfflineDescUnder}>{t('StoreNotFoundDesc')}</p>
+                </div>
+              </div>
+            </FullScreenFrame>
+          )}
     </>
   );
 };
