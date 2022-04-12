@@ -3,12 +3,11 @@
 }
 
 .CollectionPageHeaderIconWrapper {
-  @apply tw-flex tw-flex-shrink-0 tw-items-stretch
-    sm:tw-py-20px tw-py-20 sm:tw-pl-16px tw-pl-16 sm:tw-pr-12px tw-pr-12
-    tw-border-none tw-outline-none tw-bg-transparent tw-text-gray;
+  @apply tw-flex tw-flex-shrink-0 tw-items-stretch sm:tw-p-12px tw-p-12
+    tw-border-none tw-outline-none tw-bg-transparent tw-text-gray tw-cursor-pointer;
 }
 
 .CollectionPageHeaderTitle {
   @apply tw-flex-grow tw-text-left tw-text-lg tw-leading-relaxed tw-font-bold tw-truncate
-    sm:tw-pr-16px tw-pr-16 sm:tw-py-20px tw-py-20;
+    sm:tw-pr-16px tw-pr-16 sm:tw-py-12px tw-py-12;
 }

@@ -21,7 +21,7 @@ const Header = ({ onLocationBarClick, onQRScannerClick }) => {
   return (
     <section className={styles.HeaderContainer} data-heap-name="site.home.delivery-bar">
       <div
-        className="tw-flex-grow tw-flex tw-justify-start tw-items-center tw-overflow-hidden sm:tw-px-4px tw-px-4"
+        className="tw-flex-grow tw-flex tw-justify-start tw-items-center tw-overflow-hidden sm:tw-px-4px tw-px-4 tw-cursor-pointer"
         role="button"
         tabIndex="0"
         onClick={onLocationBarClick}

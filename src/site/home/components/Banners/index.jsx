@@ -46,7 +46,7 @@ class Banners extends Component {
                   });
                 }}
                 data-heap-name="site.home.collection-banners"
-                className="banners-item"
+                className="banners-item tw-cursor-pointer"
               >
                 <Image src={image} alt={name} scalingRatioIndex={2} />
               </SwiperSlide>
