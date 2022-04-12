@@ -5,16 +5,20 @@ import { useTranslation } from 'react-i18next';
 import FullScreenFrame from '../../../../../common/components/FullScreenFrame';
 import { getEnableLiveOnline } from '../../redux/common/selectors';
 import ErrorMenuOffline from '../../../../../images/error-menu-offline.png';
-import styles from './MenuOffline.module.scss';
+import styles from './MenuOfflineModal.module.scss';
 
-const MenuOffline = () => {
+const MenuOfflineModal = () => {
   const { t } = useTranslation();
   const enableLiveOnline = useSelector(getEnableLiveOnline);
 
+  if (enableLiveOnline == null) {
+    return null;
+  }
+
   return (
     <>
-      {enableLiveOnline && (
-        <FullScreenFrame backgroundColor="#fff">
+      {!enableLiveOnline && (
+        <FullScreenFrame className={styles.fullScreenGround}>
           <div className={styles.menuOfflineContainer}>
             <img src={ErrorMenuOffline} className={styles.menuOfflineImg} />
             <div className={styles.menuOfflineDesc}>
@@ -28,6 +32,6 @@ const MenuOffline = () => {
   );
 };
 
-MenuOffline.displayName = 'MenuOffline';
+MenuOfflineModal.displayName = 'MenuOfflineModal';
 
-export default MenuOffline;
+export default MenuOfflineModal;

@@ -54,7 +54,11 @@ const MenuHeader = () => {
     rightContentForWebHeader = createRightContentHtml(t('TAKE_AWAY'));
   }
 
-  const normalRender = () => (
+  if (enableLiveOnline == null) {
+    return null;
+  }
+
+  const renderNormalContent = () => (
     <>
       {isInWebview ? (
         <NativeHeader
@@ -95,7 +99,7 @@ const MenuHeader = () => {
     history.goBack();
   };
 
-  const menuOfflineRender = () => (
+  const renderOfflineContent = () => (
     <>
       {isInWebview ? (
         <NativeHeader isPage title="" navFunc={handleNavBack} />
@@ -107,7 +111,10 @@ const MenuHeader = () => {
     </>
   );
 
-  return <>{enableLiveOnline ? ifShouldShowHeader && menuOfflineRender() : normalRender()}</>;
+  if (enableLiveOnline && ifShouldShowHeader) {
+    return <>{renderOfflineContent()}</>;
+  }
+  return <>{renderNormalContent()}</>;
 };
 
 MenuHeader.displayName = 'MenuHeader';

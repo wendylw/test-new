@@ -10,9 +10,9 @@ import styles from './FullScreenFrame.module.scss';
  * You should not use fixed position on the wrapped component.
  */
 const FullScreenFrame = props => {
-  const { children, className, zIndex = 100, backgroundColor } = props;
+  const { children, className, zIndex = 100 } = props;
   return (
-    <div className={`${styles.fullScreenFrame} body-scroll-block-fix ${className}`} style={{ zIndex, backgroundColor }}>
+    <div className={`${styles.fullScreenFrame} body-scroll-block-fix ${className}`} style={{ zIndex }}>
       {children}
     </div>
   );
@@ -23,13 +23,11 @@ FullScreenFrame.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node,
   zIndex: PropTypes.number,
-  backgroundColor: PropTypes.string,
 };
 FullScreenFrame.defaultProps = {
   className: '',
   children: null,
   zIndex: 100,
-  backgroundColor: '',
 };
 
 export default FullScreenFrame;
