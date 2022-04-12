@@ -4,12 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PowerByBeepLogo from '../../../../../images/powered-by-beep-logo.svg';
 import ArrowBackIcon from '../../../../../images/arrow-icon.svg';
-import {
-  getTableId,
-  getShouldShowStoreNameInNativeHeader,
-  getStoreDisplayTitle,
-  getEnableLiveOnline,
-} from '../../redux/common/selectors';
+import { getTableId, getShouldShowStoreNameInNativeHeader, getStoreDisplayTitle } from '../../redux/common/selectors';
 import { getIsProductDetailDrawerVisible } from '../../redux/productDetail/selectors';
 import { hideProductDetailDrawer } from '../../redux/productDetail/thunks';
 import styles from './MenuHeader.module.scss';
@@ -22,6 +17,7 @@ import {
 } from '../../../../../common/utils';
 import NativeHeader from '../../../../../components/NativeHeader';
 import { closeWebView, goBack } from '../../../../../utils/native-methods';
+import { getDeliveryInfo } from '../../../../redux/modules/app';
 
 const MenuHeader = () => {
   const { t } = useTranslation();
@@ -31,7 +27,7 @@ const MenuHeader = () => {
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   const isProductDetailDrawerVisible = useSelector(getIsProductDetailDrawerVisible);
   const isInWebview = isWebview();
-  const enableLiveOnline = useSelector(getEnableLiveOnline);
+  const { enableLiveOnline } = useSelector(getDeliveryInfo);
   const history = useHistory();
   const ifShouldShowHeader = isWebview() || isQROrder();
   const createRightContentHtml = useCallback(
@@ -107,7 +103,7 @@ const MenuHeader = () => {
     </>
   );
 
-  if (enableLiveOnline && ifShouldShowHeader) {
+  if (!enableLiveOnline && ifShouldShowHeader) {
     return <>{renderOfflineContent()}</>;
   }
   return <>{renderNormalContent()}</>;

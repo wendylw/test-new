@@ -11,11 +11,11 @@ import MiniCart from './components/MiniCart';
 import AlcoholModal from './components/AlcoholModal';
 import MenuOfflineModal from './components/MenuOfflineModal';
 import { mounted } from './redux/common/thunks';
-import { getEnableLiveOnline } from './redux/common/selectors';
+import { getDeliveryInfo } from '../../redux/modules/app';
 
 const Menu = () => {
   const dispatch = useDispatch();
-  const enableLiveOnline = useSelector(getEnableLiveOnline);
+  const { enableLiveOnline } = useSelector(getDeliveryInfo);
   console.log('enableLiveOnline', enableLiveOnline);
 
   useEffect(() => {
@@ -24,10 +24,15 @@ const Menu = () => {
 
   return (
     <Frame>
-      <MenuHeader />
       <>
-        {!enableLiveOnline ? (
+        {enableLiveOnline == null ? null : !enableLiveOnline ? (
           <>
+            <MenuHeader />
+            <MenuOfflineModal />
+          </>
+        ) : (
+          <>
+            <MenuHeader />
             <section className="tw-py-16 sm:tw-py-16px">
               <MenuStoreInfo />
               <PromotionBar />
@@ -38,8 +43,6 @@ const Menu = () => {
             <MiniCart />
             <AlcoholModal />
           </>
-        ) : (
-          <MenuOfflineModal />
         )}
       </>
     </Frame>
