@@ -15,7 +15,9 @@ import { getEnableLiveOnline } from './redux/common/selectors';
 
 const Menu = () => {
   const dispatch = useDispatch();
-  const enableLiveOnline = useSelector(getEnableLiveOnline);
+  let enableLiveOnline = useSelector(getEnableLiveOnline);
+  enableLiveOnline = enableLiveOnline == null ? null : enableLiveOnline;
+  console.log('enableLiveOnline', enableLiveOnline);
 
   useEffect(() => {
     dispatch(mounted());
