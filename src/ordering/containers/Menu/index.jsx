@@ -9,7 +9,7 @@ import ProductDetailDrawer from './components/ProductDetailDrawer';
 import MenuFooter from './components/MenuFooter';
 import MiniCart from './components/MiniCart';
 import AlcoholModal from './components/AlcoholModal';
-import MenuOffline from './components/MenuOffline';
+import MenuOfflineModal from './components/MenuOfflineModal';
 import { mounted } from './redux/common/thunks';
 
 const Menu = () => {
@@ -32,7 +32,7 @@ const Menu = () => {
         <ProductDetailDrawer />
         <MiniCart />
         <AlcoholModal />
-        <MenuOffline />
+        <MenuOfflineModal />
       </>
     </Frame>
   );
