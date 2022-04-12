@@ -31,8 +31,7 @@ const MenuHeader = () => {
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   const isProductDetailDrawerVisible = useSelector(getIsProductDetailDrawerVisible);
   const isInWebview = isWebview();
-  let enableLiveOnline = useSelector(getEnableLiveOnline);
-  enableLiveOnline = enableLiveOnline == null ? null : enableLiveOnline;
+  const enableLiveOnline = useSelector(getEnableLiveOnline);
   const history = useHistory();
   const ifShouldShowHeader = isWebview() || isQROrder();
   const createRightContentHtml = useCallback(

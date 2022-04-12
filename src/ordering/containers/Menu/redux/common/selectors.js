@@ -174,7 +174,8 @@ export const getEnableLiveOnline = createSelector(
   getIsStoreInfoReady,
   getDeliveryInfo,
   (isStoreInfoReady, deliveryInfo) => {
-    const { enableLiveOnline } = deliveryInfo;
+    let { enableLiveOnline } = deliveryInfo;
+    enableLiveOnline = enableLiveOnline == null ? null : enableLiveOnline;
 
     return isStoreInfoReady && !enableLiveOnline;
   }
