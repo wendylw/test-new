@@ -34,7 +34,7 @@ const MenuHeader = () => {
   let enableLiveOnline = useSelector(getEnableLiveOnline);
   enableLiveOnline = enableLiveOnline == null ? null : enableLiveOnline;
   const history = useHistory();
-  const ifShouldShowHeader = isWebview() && isQROrder();
+  const ifShouldShowHeader = isWebview() || isQROrder();
   const createRightContentHtml = useCallback(
     content => (
       <div className="tw-flex-shrink-0">
