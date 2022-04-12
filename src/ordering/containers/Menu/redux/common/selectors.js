@@ -169,14 +169,3 @@ export const getIsMenuRevamp = createSelector(
     return isQrOrderingShippingType && isPilotMerchant;
   }
 );
-
-export const getEnableLiveOnline = createSelector(
-  getIsStoreInfoReady,
-  getDeliveryInfo,
-  (isStoreInfoReady, deliveryInfo) => {
-    let { enableLiveOnline } = deliveryInfo;
-    enableLiveOnline = enableLiveOnline == null ? null : enableLiveOnline;
-
-    return isStoreInfoReady && !enableLiveOnline;
-  }
-);
