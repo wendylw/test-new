@@ -16,7 +16,6 @@ import { getDeliveryInfo } from '../../redux/modules/app';
 const Menu = () => {
   const dispatch = useDispatch();
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
-  console.log('enableLiveOnline', enableLiveOnline);
 
   useEffect(() => {
     dispatch(mounted());
