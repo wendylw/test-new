@@ -1,14 +1,18 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PowerByBeepLogo from '../../../../../images/powered-by-beep-logo.svg';
+import ArrowBackIcon from '../../../../../images/arrow-icon.svg';
 import { getTableId, getShouldShowStoreNameInNativeHeader, getStoreDisplayTitle } from '../../redux/common/selectors';
 import { getIsProductDetailDrawerVisible } from '../../redux/productDetail/selectors';
 import { hideProductDetailDrawer } from '../../redux/productDetail/thunks';
 import styles from './MenuHeader.module.scss';
-import { isWebview, isDineInType, isTakeAwayType } from '../../../../../common/utils';
+import { isWebview, isDineInType, isTakeAwayType, getSourceUrlFromSessionStorage } from '../../../../../common/utils';
+import Utils from '../../../../../utils/utils';
 import NativeHeader from '../../../../../components/NativeHeader';
-import { closeWebView } from '../../../../../utils/native-methods';
+import { closeWebView, goBack } from '../../../../../utils/native-methods';
+import { getDeliveryInfo } from '../../../../redux/modules/app';
 
 const MenuHeader = () => {
   const { t } = useTranslation();
@@ -18,6 +22,9 @@ const MenuHeader = () => {
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   const isProductDetailDrawerVisible = useSelector(getIsProductDetailDrawerVisible);
   const isInWebview = isWebview();
+  const { enableLiveOnline } = useSelector(getDeliveryInfo);
+  const history = useHistory();
+  const ifShouldShowHeader = isWebview() || Utils.isFromBeepSite();
   const createRightContentHtml = useCallback(
     content => (
       <div className="tw-flex-shrink-0">
@@ -38,7 +45,7 @@ const MenuHeader = () => {
     rightContentForWebHeader = createRightContentHtml(t('TAKE_AWAY'));
   }
 
-  return (
+  const renderNormalContent = () => (
     <>
       {isInWebview ? (
         <NativeHeader
@@ -63,6 +70,38 @@ const MenuHeader = () => {
       )}
     </>
   );
+
+  const handleNavBack = () => {
+    const sourceUrl = getSourceUrlFromSessionStorage();
+    if (sourceUrl) {
+      window.location.href = sourceUrl;
+      return;
+    }
+
+    if (isWebview()) {
+      goBack();
+      return;
+    }
+
+    history.goBack();
+  };
+
+  const renderOfflineContent = () => (
+    <>
+      {isInWebview ? (
+        <NativeHeader isPage title="" navFunc={handleNavBack} />
+      ) : (
+        <header className="tw-absolute  tw-container tw-p-12 sm:tw-p-12px" style={{ zIndex: 101 }}>
+          <img className={styles.MenuHeaderLogoOffline} src={ArrowBackIcon} alt="" onClick={handleNavBack} />
+        </header>
+      )}
+    </>
+  );
+
+  if (!enableLiveOnline && ifShouldShowHeader) {
+    return <>{renderOfflineContent()}</>;
+  }
+  return <>{renderNormalContent()}</>;
 };
 
 MenuHeader.displayName = 'MenuHeader';
