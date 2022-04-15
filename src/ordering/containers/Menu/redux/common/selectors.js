@@ -17,7 +17,6 @@ import {
   getEnablePayLater as getIsEnablePayLater,
   getBusiness,
   getIsStoreInfoReady,
-  getDeliveryInfo,
 } from '../../../../redux/modules/app';
 
 export { getTableId, getShippingType, getIsQrOrderingShippingType, getIsEnablePayLater, getIsStoreInfoReady };
