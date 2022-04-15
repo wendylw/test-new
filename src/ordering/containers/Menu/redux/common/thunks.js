@@ -96,3 +96,50 @@ export const selectCategory = createAsyncThunk('ordering/menu/selectCategory', (
   Clevertap.pushEvent('Menu Page - Click category', storeInfoForCleverTap);
   return categoryId;
 });
+
+/**
+ * show searching box
+ */
+export const showSearchingBox = createAsyncThunk('ordering/menu/showSearchingBox', async () => {});
+
+/**
+ * hide searching box
+ */
+export const hideSearchingBox = createAsyncThunk('ordering/menu/hideSearchingBox', async () => {});
+
+/**
+ * update searching keyword
+ */
+export const updateSearchingKeyword = createAsyncThunk(
+  'ordering/menu/updateSearchingKeyword',
+  async searchingProductKeywords => searchingProductKeywords
+);
+
+/**
+ * clear searching keyword
+ */
+export const clearSearchingKeyword = createAsyncThunk('ordering/menu/clearSearchingKeyword', async () => {});
+
+/**
+ * set scrolling top position before starting to search
+ */
+export const setBeforeStartToSearchScrollTopPosition = createAsyncThunk(
+  'ordering/menu/setBeforeStartToSearchScrollTopPosition',
+  async scrollTopPosition => scrollTopPosition
+);
+
+/**
+ * clear scrolling top position before starting to search
+ */
+export const clearBeforeStartToSearchScrollTopPosition = createAsyncThunk(
+  'ordering/menu/clearBeforeStartToSearchScrollTopPosition',
+  async () => {}
+);
+
+/**
+ * toggle virtual keyboard status
+ */
+export const updateStatusVirtualKeyboard = createAsyncThunk(
+  'ordering/menu/updateStatusVirtualKeyboard',
+  async status => status
+);

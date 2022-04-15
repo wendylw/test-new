@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +15,7 @@ import NativeHeader from '../../../../../components/NativeHeader';
 import { closeWebView, goBack } from '../../../../../utils/native-methods';
 import { getDeliveryInfo } from '../../../../redux/modules/app';
 
-const MenuHeader = () => {
+const MenuHeader = ({ webHeaderVisibility }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const tableId = useSelector(getTableId);
@@ -44,6 +45,14 @@ const MenuHeader = () => {
     rightContentForNativeHeader = { text: t('TAKE_AWAY') };
     rightContentForWebHeader = createRightContentHtml(t('TAKE_AWAY'));
   }
+  const webHeader = webHeaderVisibility ? (
+    <header className="tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
+      <h2 className={styles.MenuHeaderLogoContainer}>
+        <img className={styles.MenuHeaderLogo} src={PowerByBeepLogo} alt="" />
+      </h2>
+      {rightContentForWebHeader}
+    </header>
+  ) : null;
 
   const renderNormalContent = () => (
     <>
@@ -61,12 +70,7 @@ const MenuHeader = () => {
           }}
         />
       ) : (
-        <header className="tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
-          <h2 className={styles.MenuHeaderLogoContainer}>
-            <img className={styles.MenuHeaderLogo} src={PowerByBeepLogo} alt="" />
-          </h2>
-          {rightContentForWebHeader}
-        </header>
+        webHeader
       )}
     </>
   );
@@ -105,5 +109,13 @@ const MenuHeader = () => {
 };
 
 MenuHeader.displayName = 'MenuHeader';
+
+MenuHeader.propTypes = {
+  webHeaderVisibility: PropTypes.bool,
+};
+
+MenuHeader.defaultProps = {
+  webHeaderVisibility: false,
+};
 
 export default MenuHeader;

@@ -10,11 +10,14 @@ import MenuFooter from './components/MenuFooter';
 import MiniCart from './components/MiniCart';
 import AlcoholModal from './components/AlcoholModal';
 import MenuOfflineModal from './components/MenuOfflineModal';
+import { getIsSearchingBannerVisible } from './redux/common/selectors';
 import { mounted } from './redux/common/thunks';
 import { getDeliveryInfo } from '../../redux/modules/app';
 
 const Menu = () => {
   const dispatch = useDispatch();
+  // for whether display searching banner, if not header, store info and promo banner display
+  const isSearchingBannerVisible = useSelector(getIsSearchingBannerVisible);
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
 
   useEffect(() => {
@@ -31,10 +34,14 @@ const Menu = () => {
           </>
         ) : (
           <>
-            <MenuHeader />
+            <MenuHeader webHeaderVisibility={!isSearchingBannerVisible} />
             <section className="tw-py-16 sm:tw-py-16px">
-              <MenuStoreInfo />
-              <PromotionBar />
+              {isSearchingBannerVisible ? null : (
+                <>
+                  <MenuStoreInfo />
+                  <PromotionBar />
+                </>
+              )}
               <MenuProductList />
             </section>
             <MenuFooter />

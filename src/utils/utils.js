@@ -322,25 +322,9 @@ Utils.initSmoothAnimation = function initSmoothAnimation() {
   }
 };
 
-Utils.getUserAgentInfo = function getUserAgentInfo() {
-  /* eslint-disable */
-  /* https://www.regextester.com/97574 */
-  const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/g;
-  /* eslint-enabled */
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
-    navigator.userAgent
-  );
-  const browsers = navigator.userAgent.match(regex);
+Utils.getUserAgentInfo = UtilsV2.getUserAgentInfo;
 
-  return {
-    isMobile,
-    browser: browsers ? browsers[0] : '',
-  };
-};
-
-Utils.isSafari = function isSafari() {
-  return Utils.getUserAgentInfo().browser.includes('Safari');
-};
+Utils.isSafari = UtilsV2.isSafari;
 
 export const isValidUrl = url => {
   const domainRegex = /(http|https):\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;

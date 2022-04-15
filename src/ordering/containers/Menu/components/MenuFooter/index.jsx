@@ -6,6 +6,7 @@ import Button from '../../../../../common/components/Button';
 import PageFooter from '../../../../../common/components/PageFooter';
 import Badge from '../../../../../common/components/Badge';
 import MenuViewOrderBar from './MenuViewOrderBar';
+import { getIsVirtualKeyboardVisible } from '../../redux/common/selectors';
 import {
   getCartQuantity,
   getCartItemsFormattedSubtotal,
@@ -18,6 +19,8 @@ import {
   // getFormattedDiffPriceOnFulfillMinimumConsumption,
 } from '../../redux/cart/selectors';
 import { reviewCart, showMiniCartDrawer, hideMiniCartDrawer } from '../../redux/cart/thunks';
+import { getIsVirtualKeyboardVisibleInMobile } from '../../utils';
+import { isMobile } from '../../../../../common/utils';
 import styles from './MenuFooter.module.scss';
 
 const MenuFooter = () => {
@@ -25,6 +28,8 @@ const MenuFooter = () => {
   const dispatch = useDispatch();
   // for whether display cart footer display
   const isCartFooterVisible = useSelector(getIsCartFooterVisible);
+  // get virtual keyboard visibility status
+  const isVirtualKeyboardVisible = useSelector(getIsVirtualKeyboardVisible);
   // is enable pay later
   const isEnablePayLater = useSelector(getIsEnablePayLater);
   // get cart quantity
@@ -39,9 +44,16 @@ const MenuFooter = () => {
   const isFulfillMinimumConsumption = useSelector(getIsFulfillMinimumConsumption);
   // is able to review cart
   const isAbleToReviewCart = useSelector(getIsAbleToReviewCart);
+  // get virtual keyboard visibility status in mobile
+  const isVirtualKeyboardVisibleInMobile = getIsVirtualKeyboardVisibleInMobile(isMobile(), isVirtualKeyboardVisible);
   useEffect(() => {
     dispatch(hideMiniCartDrawer());
   }, [isCartFooterVisible]);
+
+  // footer will hide that searching box focused or virtual keyboard is opened in mobile
+  if (isVirtualKeyboardVisibleInMobile) {
+    return null;
+  }
 
   return (
     <PageFooter zIndex={50}>
