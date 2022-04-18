@@ -32,6 +32,7 @@ const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers
 const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
 const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
 const TableSummary = lazy(() => Utils.attemptLoad(() => import('./TableSummary')));
+const OrderHistory = lazy(() => Utils.attemptLoad(() => import('../../site/order-history')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -65,6 +66,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.REPORT_DRIVER} component={ReportDriver} />
             <Route exact path={ROUTER_PATHS.ORDERING_LOGIN} component={PageLogin} />
             <Route exact path={ROUTER_PATHS.ORDERING_STORE_LIST} component={StoreList} />
+            <Route exact path={ROUTER_PATHS.ORDER_HISTORY} component={Utils.isQROrder() ? OrderHistory : NotFound} />
             <Route
               exact
               path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.ADDRESS_LIST}`}

@@ -74,7 +74,7 @@ class PageLogin extends React.Component {
   }
 
   async handleWebLogin(otp) {
-    const { appActions } = this.props;
+    const { appActions, history, location } = this.props;
 
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
@@ -88,6 +88,14 @@ class PageLogin extends React.Component {
         accessToken,
         refreshToken,
       });
+
+      const { shouldToOrderHistory } = location.state || {};
+      if (shouldToOrderHistory) {
+        history.replace({
+          pathname: Constants.ROUTER_PATHS.ORDER_HISTORY,
+          search: window.location.search,
+        });
+      }
     }
   }
 

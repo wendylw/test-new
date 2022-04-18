@@ -94,6 +94,23 @@ export class TableSummary extends React.Component {
     });
   };
 
+  handleOrderHistory = () => {
+    const { history, userIsLogin } = this.props;
+    if (userIsLogin) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDER_HISTORY,
+        search: window.location.search,
+        state: { isFromTableSummary: true },
+      });
+    } else {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+        state: { shouldGoBack: true, shouldToOrderHistory: true },
+      });
+    }
+  };
+
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
       headerEls: [this.headerEl],
@@ -324,6 +341,7 @@ export class TableSummary extends React.Component {
             history={history}
             orderPendingPaymentStatus={orderPendingPaymentStatus}
           />
+          <button onClick={this.handleOrderHistory}>test order history</button>
         </div>
         <footer
           ref={ref => {
