@@ -14,6 +14,7 @@ import orderStatus from '../../containers/order-status/redux';
 import address from '../../../redux/modules/address';
 import tableSummary from '../../containers/TableSummary/redux';
 import menu from '../../containers/Menu/redux';
+import foodCourt from '../../containers/food-court/redux';
 
 const rootReducer = history =>
   combineReducers({
@@ -32,6 +33,7 @@ const rootReducer = history =>
     address,
     tableSummary,
     menu,
+    foodCourt,
   });
 
 export default rootReducer;

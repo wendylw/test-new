@@ -20,7 +20,7 @@ const computeDimensionStyle = (width, height, aspectRatio) => {
 };
 
 const ObjectFitImage = props => {
-  const { className, style, alt, src, dimension, showLoader, width, height, aspectRatio } = props;
+  const { className, style, alt, src, dimension, showLoader, staticSource, width, height, aspectRatio } = props;
   const [imageLoaded, setImageLoaded] = useState(LOADED_IMAGE_SET.has(src));
   const onImageLoad = useCallback(() => {
     setImageLoaded(true);
@@ -43,6 +43,7 @@ const ObjectFitImage = props => {
         src={src}
         alt={alt}
         dimension={dimension}
+        staticSource={staticSource}
         onLoad={onImageLoad}
       />
 
@@ -60,6 +61,8 @@ ObjectFitImage.propTypes = {
   src: PropTypes.string,
   dimension: PropTypes.oneOf(Array.from(AVAILABLE_DIMENSIONS)),
   showLoader: PropTypes.bool,
+  // If static source is not provided, the image will not be loaded from the server
+  staticSource: PropTypes.bool,
   // if height and aspectRatio are provide at the same time, aspectRatio will be ignored
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -72,6 +75,7 @@ ObjectFitImage.defaultProps = {
   src: '',
   dimension: '160x160',
   showLoader: true,
+  staticSource: false,
   width: '100%',
   height: undefined,
   aspectRatio: 1,

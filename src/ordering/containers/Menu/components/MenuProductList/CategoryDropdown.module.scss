@@ -14,7 +14,7 @@
 
 .menuProductHighlightedCategory {
   @apply tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800;
-  @include text-line-clamp(1, null);
+  @include text-line-clamp(1);
 }
 
 .menuProductCategoryDrawer {
@@ -47,7 +47,7 @@
 
 .menuProductCategoryItemText {
   @apply tw-flex-1;
-  @include text-line-clamp(1, null);
+  @include text-line-clamp(1);
 }
 
 @media (min-width: 420px) {
