@@ -237,7 +237,7 @@ export const getPlacesFromCoordinates = async coords => {
     const googleMapsAPI = await loadGoogleMapsAPI();
     const location = await getLatLng(coords);
     const geocoder = new googleMapsAPI.Geocoder();
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       geocoder.geocode({ location }, (result, status) => {
         if (status === googleMapsAPI.GeocoderStatus.OK && result.length) {
           window.newrelic?.addPageAction('google-maps-api.geocode-success');
@@ -256,7 +256,7 @@ export const getPlacesFromCoordinates = async coords => {
     });
   } catch (e) {
     loggly.error('getPlacesFromCoordinates-failure', { message: e?.message });
-    return Promise.reject(e);
+    throw e;
   }
 };
 
@@ -307,11 +307,11 @@ export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
     const googleMapsAPI = await loadGoogleMapsAPI();
 
     if (options.fromAutocomplete) {
-      return getPlaceDetails(placeId, googleMapsAPI);
+      return await getPlaceDetails(placeId, googleMapsAPI);
     }
 
     const geocoder = new googleMapsAPI.Geocoder();
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       geocoder.geocode({ placeId }, (resp, status) => {
         if (status === googleMapsAPI.GeocoderStatus.OK && resp.length) {
           const place = resp[0];
@@ -337,7 +337,7 @@ export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
     });
   } catch (e) {
     loggly.error('getPlaceInfoFromPlaceId-failure', { message: e?.message });
-    return Promise.reject(e);
+    throw e;
   }
 };
 
