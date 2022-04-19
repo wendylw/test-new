@@ -1,9 +1,13 @@
+import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getFoodCourtId } from './selectors';
 import { fetchFoodCourtStoreList } from './api-request';
+import { isWebview, isTNGMiniProgram } from '../../../../../common/utils';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
+import { actions as appActions, getUserIsLogin } from '../../../../redux/modules/app';
 
 /**
- * Ordering Menu page mounted
+ * Food court landing page mounted
  */
 export const mounted = createAsyncThunk('ordering/foodCourt/common/mounted', async (_, { getState }) => {
   // - Load store List of this food court
@@ -21,3 +25,30 @@ export const mounted = createAsyncThunk('ordering/foodCourt/common/mounted', asy
     throw e;
   }
 });
+
+/**
+ * Selected a store of this food court landing page
+ */
+export const selectedOneStore = createAsyncThunk(
+  'ordering/foodCourt/common/selectedOneStore',
+  async ({ url }, { dispatch, getState }) => {
+    const state = getState();
+    const userSignedIn = getUserIsLogin(state);
+
+    if (userSignedIn) {
+      dispatch(push(`${PATH_NAME_MAPPING.ORDERING_HOME}${url}`));
+
+      return;
+    }
+
+    if (isTNGMiniProgram()) {
+      await dispatch(appActions.loginByTngMiniProgram());
+    }
+
+    if (isWebview()) {
+      await dispatch(appActions.loginByBeepApp());
+    }
+
+    dispatch(push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${url}`));
+  }
+);

@@ -1,12 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import { getFoodCourtStoreList, getIsFoodCourtStoreListReady } from '../../redux/common/selectors';
+import { selectedOneStore } from '../../redux/common/thunks';
 import styles from './FoodCourtStoreList.module.scss';
 
 const FoodCourtStoreList = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const storeList = useSelector(getFoodCourtStoreList);
   const isFoodCourtStoreListReady = useSelector(getIsFoodCourtStoreListReady);
 
@@ -23,7 +25,13 @@ const FoodCourtStoreList = () => {
       <ul className={styles.foodCourtStoreList}>
         {storeList.map(store =>
           !store.image ? null : (
-            <li key={`bestSellerProductItem-${store.id}`} className={styles.foodCourtStore} onClick={() => {}}>
+            <li
+              key={`bestSellerProductItem-${store.id}`}
+              className={styles.foodCourtStore}
+              onClick={() => {
+                dispatch(selectedOneStore({ url: store.url }));
+              }}
+            >
               <div className="tw-relative tw-p-4 sm:tw-p-4px">
                 <div className={styles.foodCourtStoreImageContainer}>
                   <ObjectFitImage className="tw-rounded" src={store.image} />
