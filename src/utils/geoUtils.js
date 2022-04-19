@@ -38,7 +38,7 @@ const loadGoogleMapsAPI = async () => {
 };
 
 // Preload google maps script if needed
-if (!Utils.isQROrder()) {
+if (Utils.isSiteApp() || Utils.isDeliveryOrder()) {
   loadGoogleMapsAPI();
 }
 
