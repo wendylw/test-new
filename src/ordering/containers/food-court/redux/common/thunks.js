@@ -31,12 +31,12 @@ export const mounted = createAsyncThunk('ordering/foodCourt/common/mounted', asy
  */
 export const selectedOneStore = createAsyncThunk(
   'ordering/foodCourt/common/selectedOneStore',
-  async ({ url }, { dispatch, getState }) => {
+  async ({ redirectUrl }, { dispatch, getState }) => {
     const state = getState();
     const userSignedIn = getUserIsLogin(state);
 
     if (userSignedIn) {
-      dispatch(push(`${PATH_NAME_MAPPING.ORDERING_HOME}${url}`));
+      dispatch(push(`${PATH_NAME_MAPPING.ORDERING_HOME}${redirectUrl}`));
 
       return;
     }
@@ -49,6 +49,6 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByBeepApp());
     }
 
-    dispatch(push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${url}`));
+    dispatch(push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${redirectUrl}`));
   }
 );
