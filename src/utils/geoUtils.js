@@ -32,14 +32,17 @@ const loadGoogleMapsAPI = async () => {
         scriptName: 'google-map-api',
       });
       loggly.error('common.script-load-error', {
-        message: 'Fail to load google maps api',
+        message: 'Failed to load google maps api',
       });
+      return Promise.reject(new Error('Failed to load google maps api'));
     });
 };
 
 // Preload google maps script if needed
 if (Utils.isSiteApp() || Utils.isDeliveryOrder()) {
-  loadGoogleMapsAPI();
+  loadGoogleMapsAPI().catch(e => {
+    loggly.error('preloadGoogleMapAPI-failure', { message: e?.message });
+  });
 }
 
 const getLatLng = async ({ lat, lng }) => {
