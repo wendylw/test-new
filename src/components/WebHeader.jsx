@@ -103,7 +103,7 @@ WebHeader.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   dataAttributes: PropTypes.object,
   contentClassName: PropTypes.string,
-  shouldBackToTableSummary: PropTypes.string,
+  shouldBackToTableSummary: PropTypes.bool,
 };
 
 WebHeader.defaultProps = {
@@ -118,7 +118,7 @@ WebHeader.defaultProps = {
   },
   dataAttributes: {},
   rightContent: null,
-  shouldBackToTableSummary: '',
+  shouldBackToTableSummary: false,
 };
 
 export const WebHeaderComponent = WebHeader;
