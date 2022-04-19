@@ -35,6 +35,7 @@ import Image from '../../../components/Image';
 import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import './TableSummary.scss';
+import config from '../../../config';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -97,11 +98,7 @@ export class TableSummary extends React.Component {
   handleOrderHistory = () => {
     const { history, userIsLogin } = this.props;
     if (userIsLogin) {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDER_HISTORY,
-        search: window.location.search,
-        state: { isFromTableSummary: true },
-      });
+      window.location.href = config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY;
     } else {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,

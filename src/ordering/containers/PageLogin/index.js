@@ -16,6 +16,7 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
+import config from '../../../config';
 
 class PageLogin extends React.Component {
   state = {
@@ -74,7 +75,7 @@ class PageLogin extends React.Component {
   }
 
   async handleWebLogin(otp) {
-    const { appActions, history, location } = this.props;
+    const { appActions, location } = this.props;
 
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
@@ -91,10 +92,8 @@ class PageLogin extends React.Component {
 
       const { shouldToOrderHistory } = location.state || {};
       if (shouldToOrderHistory) {
-        history.replace({
-          pathname: Constants.ROUTER_PATHS.ORDER_HISTORY,
-          search: window.location.search,
-        });
+        window.location.href =
+          config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY + Constants.ROUTER_PATHS.FROM_LOGIN_PARAMETER;
       }
     }
   }

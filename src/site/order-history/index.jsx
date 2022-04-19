@@ -25,13 +25,11 @@ import './order-history.scss';
 import OrderListEmptyView from './components/OrderListEmptyView';
 import Clevertap from '../../utils/clevertap';
 import _get from 'lodash/get';
-import HybridHeader from '../../components/HybridHeader';
+import WebHeader from '../../components/WebHeader';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
     const { isLogin, initOrderHistoryData, isPingRequestDone, location } = this.props;
-
-    const { isFromTableSummary } = location.state || {};
 
     if (isLogin) {
       initOrderHistoryData();
@@ -96,17 +94,9 @@ class OrderHistory extends React.Component {
   };
 
   render() {
-    const {
-      t,
-      isLogin,
-      orderHistoryList,
-      hasMore,
-      page,
-      isRequestOrderDataDone,
-      pageLoaderVisibility,
-      location,
-    } = this.props;
-    const { isFromTableSummary } = location.state;
+    const { t, isLogin, orderHistoryList, hasMore, page, isRequestOrderDataDone, pageLoaderVisibility } = this.props;
+    const obj = Utils.getQueryString();
+    const isFromLogin = obj['from-login'];
 
     if (pageLoaderVisibility) {
       return <PageLoader />;
@@ -126,9 +116,13 @@ class OrderHistory extends React.Component {
 
     return (
       <>
-        {isFromTableSummary ? (
-          <HybridHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
-        ) : null}
+        <WebHeader
+          shouldBackToTableSummary={isFromLogin}
+          headerRef={ref => (this.headerEl = ref)}
+          isPage={true}
+          title={t('MyOrderHistory')}
+        />
+
         <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
           {showOrderListEmptyView ? (
             <OrderListEmptyView />
