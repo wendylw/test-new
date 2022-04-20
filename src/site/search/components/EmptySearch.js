@@ -3,7 +3,7 @@ import { withTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import CleverTap from '../../../utils/clevertap';
-import './EmptySearch.scss';
+import styles from './EmptySearch.module.scss';
 
 class EmptySearch extends Component {
   handleClick = urlPath => {
@@ -14,16 +14,16 @@ class EmptySearch extends Component {
   renderPopularCategories() {
     const { t, populars } = this.props;
     return (
-      <div className="search-popular padding-top-bottom-normal">
-        <h2 className={'padding-top-bottom-normal text-weight-bolder'}>{t('PopularCategories')}</h2>
-        <div className={'search-popular__container flex flex-between'}>
+      <div className={styles.EmptySearchCategoryWrapper}>
+        <h2 className={styles.EmptySearchPopularCategoryTitle}>{t('PopularCategories')}</h2>
+        <div className="tw-flex tw-flex-wrap">
           {(populars || []).map((collection, index) => {
             const { name, urlPath } = collection || {};
 
             return (
               <span
                 key={urlPath}
-                className="search-popular__category padding-small"
+                className={styles.EmptySearchPopularCategoryContent}
                 onClick={() => {
                   CleverTap.pushEvent('Empty Search - Click popular category', {
                     'collection name': name,
@@ -53,7 +53,7 @@ class EmptySearch extends Component {
           return (
             <li
               key={urlPath}
-              className="search-other__category padding-top-bottom-normal"
+              className={styles.EmptySearchOtherCategoryContainer}
               onClick={() => {
                 CleverTap.pushEvent('Empty Search - Click other category', {
                   'collection name': name,
@@ -63,7 +63,7 @@ class EmptySearch extends Component {
               }}
               data-heap-name="site.search.other-categories"
             >
-              <span className="search-other__name">{name}</span>
+              <span className={styles.EmptySearchCategoryContent}>{name}</span>
             </li>
           );
         })}
@@ -75,9 +75,9 @@ class EmptySearch extends Component {
     const { t, hasMore, getScrollParent, loadCollections, others } = this.props;
 
     return (
-      <div className={'search-other'}>
-        <h2 className={'padding-top-bottom-normal text-weight-bolder'}>{t('OtherCategories')}</h2>
-        <ul className={'search-other__container'}>
+      <div className={styles.EmptySearchCategoryWrapper}>
+        <h2 className={styles.EmptySearchCategoryTitle}>{t('OtherCategories')}</h2>
+        <ul className="sm:tw-mx-4px tw-mx-4">
           {!others || !others.length ? null : (
             <InfiniteScroll
               className="store-card-list"
@@ -101,7 +101,7 @@ class EmptySearch extends Component {
   render() {
     const { populars, others } = this.props;
     return (
-      <div className={'empty-search padding-normal'}>
+      <div className={styles.EmptySearchWrapper}>
         {populars && populars.length > 0 && this.renderPopularCategories()}
         {others && others.length > 0 && this.renderOtherCategories()}
       </div>

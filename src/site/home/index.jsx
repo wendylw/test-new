@@ -1,10 +1,9 @@
 import React, { Suspense } from 'react';
-import { Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import DeliverToBar from '../../components/DeliverToBar';
-import { IconSearch, IconScanner, IconLocation } from '../../components/Icons';
+import Header from './components/Header';
+import SearchBox from './components/SearchBox';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
 import Constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
@@ -26,7 +25,7 @@ import {
   getShouldShowCampaignBar,
 } from '../redux/modules/home';
 import CollectionCard from './components/CollectionCard';
-import StoreList from './components/StoreList';
+import StoreList from '../components/StoreList';
 // import CampaignBar from './containers/CampaignBar';
 import './index.scss';
 import { getPlaceInfo, getPlaceInfoByDeviceByAskPermission, submitStoreMenu } from './utils';
@@ -40,12 +39,12 @@ import Utils from '../../utils/utils';
 import {
   getAddressInfo as getAddress,
   getAddressId,
-  getAddressName,
   getAddressCoords,
   getIfAddressInfoExists,
 } from '../../redux/modules/address/selectors';
 import { getAddressInfo, setAddressInfo } from '../../redux/modules/address/thunks';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../../redux/modules/address/constants';
+import '../../common/styles/base.scss';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 
@@ -234,7 +233,9 @@ class Home extends React.Component {
 
     return (
       <React.Fragment>
-        <h2 className="text-size-biggest text-weight-bolder">{t('NearbyRestaurants')}</h2>
+        <h2 className="sm:tw-px-16px tw-px-16 sm:tw-py-4px tw-py-4 tw-text-xl tw-font-bold tw-leading-normal">
+          {t('NearbyRestaurants')}
+        </h2>
         <StoreListAutoScroll
           getScrollParent={() => this.sectionRef.current}
           defaultScrollTop={scrollTop}
@@ -256,8 +257,6 @@ class Home extends React.Component {
 
   render() {
     const {
-      t,
-      addressName,
       addressCoords,
       storeCollections,
       bannerCollections,
@@ -272,24 +271,7 @@ class Home extends React.Component {
 
     return (
       <main className="entry fixed-wrapper fixed-wrapper__main" data-heap-name="site.home.container">
-        <DeliverToBar
-          data-heap-name="site.home.delivery-bar"
-          title={t('DeliverTo')}
-          icon={<IconLocation className="icon icon__smaller text-middle flex__shrink-fixed" />}
-          className={`entry__deliver-to base-box-shadow ${
-            this.state.campaignShown ? 'absolute-wrapper' : 'sticky-wrapper'
-          }`}
-          content={addressName}
-          gotoLocationPage={this.gotoLocationPage}
-          backLeftPosition={this.backLeftPosition}
-        >
-          {!Utils.isTNGMiniProgram() && (
-            <Link to={ROUTER_PATHS.QRSCAN} className="flex flex-middle" data-heap-name="site.home.qr-scan-icon">
-              <IconScanner className="icon icon__primary" onClick={this.handleQRCodeClicked} />
-            </Link>
-          )}
-        </DeliverToBar>
-
+        <Header onLocationBarClick={this.gotoLocationPage} onQRScannerClick={this.handleQRCodeClicked} />
         <section
           ref={this.sectionRef}
           className="entry-home fixed-wrapper__container wrapper"
@@ -305,20 +287,7 @@ class Home extends React.Component {
                 <img src={MvpDeliveryBannerImage} alt="mvp home banner logo" />
               </figure>
             </DevToolsTrigger>
-
-            <div className="entry-home__search">
-              <div className="form__group flex flex-middle">
-                <IconSearch className="entry-home__search-icon icon icon__small icon__default" />
-                <input
-                  className="form__input entry-home__input"
-                  data-testid="searchStore"
-                  data-heap-name="site.home.search-box"
-                  type="type"
-                  placeholder={t('SearchRestaurantPlaceholder')}
-                  onClick={this.handleLoadSearchPage}
-                />
-              </div>
-            </div>
+            <SearchBox onClick={this.handleLoadSearchPage} />
           </Banner>
 
           {shouldShowCampaignBar && (
@@ -343,9 +312,7 @@ class Home extends React.Component {
 
           <Carousel collections={carouselCollections} />
 
-          <div className="store-card-list__container padding-normal">
-            {addressCoords ? this.renderStoreList() : null}
-          </div>
+          <div className="sm:tw-py-4px tw-py-4">{addressCoords ? this.renderStoreList() : null}</div>
         </section>
       </main>
     );
@@ -360,7 +327,6 @@ export default compose(
     state => ({
       addressInfo: getAddress(state),
       addressId: getAddressId(state),
-      addressName: getAddressName(state),
       stores: getAllCurrentStores(state),
       addressCoords: getAddressCoords(state),
       storeLinkInfo: getStoreLinkInfo(state),

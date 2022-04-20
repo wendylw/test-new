@@ -1,0 +1,37 @@
+.RibbonBadgeContainer {
+  @apply tw-z-10 tw-flex tw-flex-col tw-items-start;
+}
+
+.RibbonBadgeTitle {
+  @apply tw-inline-block tw-text-white tw-text-xs tw-leading-loose tw-text-left tw-font-bold sm:tw-px-4px tw-px-4;
+
+  border-radius: 0px 4px 4px 4px;
+  background-blend-mode: multiply;
+}
+
+.RibbonBadgeCornerContent {
+  @apply tw-w-0 tw-h-0 tw-border-l-transparent;
+
+  border-bottom-width: 1.025641vw;
+  border-left-width: 1.538462vw;
+  border-style: none none solid solid;
+}
+
+.RibbonBadgeCornerOverlay {
+  @extend .RibbonBadgeCornerContent;
+
+  @apply tw--mt-4;
+
+  border-bottom-color: rgba(0, 0, 0, 0.4);
+}
+
+@media (min-width: 420px) {
+  .RibbonBadgeCornerContent {
+    border-bottom-width: 4px;
+    border-left-width: 6px;
+  }
+
+  .RibbonBadgeCornerOverlay {
+    margin-top: -4px;
+  }
+}

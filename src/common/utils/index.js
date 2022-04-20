@@ -1,4 +1,5 @@
 import qs from 'qs';
+import _once from 'lodash/once';
 import Cookies from 'js-cookie';
 import { WEB_VIEW_SOURCE, SHIPPING_TYPES } from './constants';
 
@@ -22,6 +23,28 @@ export const isTakeAwayType = () => getShippingTypeFromUrl() === SHIPPING_TYPES.
 export const isDeliveryOrder = () => isDeliveryType() || isPickUpType();
 
 export const isQROrder = () => isDineInType() || isTakeAwayType();
+
+export const getUserAgentInfo = _once(() => {
+  /* eslint-disable */
+  /* https://www.regextester.com/97574 */
+  const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/g;
+  /* eslint-enabled */
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
+    navigator.userAgent
+  );
+  const browsers = navigator.userAgent.match(regex);
+
+  return {
+    isMobile,
+    browser: browsers ? browsers[0] : '',
+  };
+});
+
+export const isSafari = _once(() => {
+  return getUserAgentInfo().browser.includes('Safari');
+});
+
+export const isMobile = () => getUserAgentInfo().isMobile;
 
 // still need to distinguish ios webview and android webview
 export const isIOSWebview = () => window.webViewSource === WEB_VIEW_SOURCE.IOS;
