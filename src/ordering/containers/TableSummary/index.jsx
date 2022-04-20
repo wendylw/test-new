@@ -103,7 +103,10 @@ export class TableSummary extends React.Component {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
         search: window.location.search,
-        state: { shouldGoBack: true, shouldToOrderHistory: true },
+        state: {
+          shouldGoBack: true,
+          redirectLocation: config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY,
+        },
       });
     }
   };

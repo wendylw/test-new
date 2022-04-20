@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import PropTypes from 'prop-types';
 import { IconLeftArrow, IconClose } from './Icons';
 import withDataAttributes from './withDataAttributes';
 import './Header.scss';
 
 class WebHeader extends Component {
-  navFuncToTableSummary = () => {
-    window.history.go(-2);
-  };
-
   renderRightContent() {
     const { rightContent } = this.props;
 
@@ -39,17 +34,7 @@ class WebHeader extends Component {
   }
 
   render() {
-    const {
-      headerRef,
-      style,
-      className,
-      dataAttributes,
-      contentClassName,
-      isPage,
-      navFunc,
-      title,
-      shouldBackToTableSummary,
-    } = this.props;
+    const { headerRef, style, className, dataAttributes, contentClassName, isPage, navFunc, title } = this.props;
     const classList = ['header flex flex-space-between flex-middle flex__shrink-fixed sticky-wrapper'];
     const contentClassList = ['header__content flex padding-top-bottom-smaller'];
     const iconClassName = `icon icon__big icon__default text-middle flex__shrink-fixed`;
@@ -67,11 +52,7 @@ class WebHeader extends Component {
       <header ref={headerRef} style={style} className={classList.join(' ')} {...dataAttributes}>
         <div className={contentClassList.join(' ')}>
           {isPage ? (
-            <IconLeftArrow
-              className={iconClassName}
-              data-heap-name="common.header.back-btn"
-              onClick={!shouldBackToTableSummary ? navFunc : this.navFuncToTableSummary}
-            />
+            <IconLeftArrow className={iconClassName} data-heap-name="common.header.back-btn" onClick={navFunc} />
           ) : (
             <IconClose className={iconClassName} data-heap-name="common.header.close-btn" onClick={navFunc} />
           )}
@@ -103,7 +84,6 @@ WebHeader.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   dataAttributes: PropTypes.object,
   contentClassName: PropTypes.string,
-  shouldBackToTableSummary: PropTypes.bool,
 };
 
 WebHeader.defaultProps = {
@@ -118,7 +98,6 @@ WebHeader.defaultProps = {
   },
   dataAttributes: {},
   rightContent: null,
-  shouldBackToTableSummary: false,
 };
 
 export const WebHeaderComponent = WebHeader;

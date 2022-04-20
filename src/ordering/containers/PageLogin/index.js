@@ -17,6 +17,8 @@ import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
 import config from '../../../config';
+import _isObject from 'lodash/isObject';
+import _includes from 'lodash/includes';
 
 class PageLogin extends React.Component {
   state = {
@@ -43,6 +45,17 @@ class PageLogin extends React.Component {
     const { redirectLocation } = location.state || {};
 
     if (redirectLocation) {
+      // RedirectLocation is a Location object
+      if (_isObject(redirectLocation)) {
+        history.replace(redirectLocation);
+        return;
+      }
+
+      if (_includes(redirectLocation, config.beepitComUrl)) {
+        window.location.replace(redirectLocation);
+        return;
+      }
+
       history.replace(redirectLocation);
       return;
     }
@@ -75,7 +88,7 @@ class PageLogin extends React.Component {
   }
 
   async handleWebLogin(otp) {
-    const { appActions, location } = this.props;
+    const { appActions } = this.props;
 
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
@@ -89,12 +102,6 @@ class PageLogin extends React.Component {
         accessToken,
         refreshToken,
       });
-
-      const { shouldToOrderHistory } = location.state || {};
-      if (shouldToOrderHistory) {
-        window.location.href =
-          config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY + Constants.ROUTER_PATHS.FROM_LOGIN_PARAMETER;
-      }
     }
   }
 

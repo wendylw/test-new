@@ -59,7 +59,6 @@ export const PATH_NAME_MAPPING = {
   SCAN_NOT_SUPPORT: '/scanNotSupport',
   ORDER_DETAILS: '/orderdetails',
   ORDER_HISTORY: '/order-history',
-  FROM_LOGIN_PARAMETER: '?from-login=true',
   // voucher
   VOUCHER_HOME: '/voucher',
   VOUCHER_CONTACT: '/voucher/contact',

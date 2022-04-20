@@ -93,13 +93,6 @@ class OrderHistory extends React.Component {
     this.login();
   };
 
-  getIfIsFromLogin = () => {
-    const obj = Utils.getQueryString();
-    const isFromLogin = obj['from-login'];
-
-    return !!isFromLogin;
-  };
-
   render() {
     const { t, isLogin, orderHistoryList, hasMore, page, isRequestOrderDataDone, pageLoaderVisibility } = this.props;
 
@@ -121,12 +114,7 @@ class OrderHistory extends React.Component {
 
     return (
       <>
-        <WebHeader
-          shouldBackToTableSummary={getIfIsFromLogin()}
-          headerRef={ref => (this.headerEl = ref)}
-          isPage={true}
-          title={t('MyOrderHistory')}
-        />
+        <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
 
         <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
           {showOrderListEmptyView ? (
