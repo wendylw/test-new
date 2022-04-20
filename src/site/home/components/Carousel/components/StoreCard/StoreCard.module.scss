@@ -1,0 +1,47 @@
+.StoreCardContainer {
+  @apply sm:tw-px-4px tw-px-4 sm:tw-pt-6px tw-pt-6 sm:tw-pb-12px tw-pb-12
+    tw-border-none tw-outline-none tw-p-0 tw-m-0
+    tw-flex tw-flex-col tw-justify-start
+    tw-w-full tw-bg-transparent tw-text-gray tw-cursor-pointer;
+}
+
+.StoreCardImageContainer {
+  @apply tw-p-2 sm:tw-p-2px tw-relative;
+
+  width: 100%;
+}
+
+.StoreCardSummaryContainer {
+  @apply tw-flex tw-flex-col tw-w-full sm:tw-px-2px tw-px-2;
+}
+
+.StoreCardTitle {
+  @apply tw-mt-6 sm:tw-mt-6px tw-w-full tw-text-left tw-font-bold tw-leading-relaxed tw-truncate;
+}
+
+.StoreCardRibbonBadgeWrapper {
+  @apply tw-absolute sm:tw--left-4px tw--left-4 tw-flex tw-flex-col tw-z-20;
+
+  top: 2.5641vw;
+}
+
+.StoreCardRatingTagContainer {
+  @apply tw-absolute sm:tw-bottom-8px tw-bottom-8 sm:tw-right-8px tw-right-8 sm:tw-pl-4px tw-pl-4 sm:tw-pr-2px tw-pr-2 tw-rounded-sm tw-bg-white;
+}
+
+.StoreCardPromoTagContainer {
+  @apply tw-flex tw-flex-row tw-items-center tw-justify-start tw-w-full;
+}
+
+@media (min-width: 770px) {
+  .StoreCardImageContainer {
+    width: 174px;
+    height: 174px;
+  }
+}
+
+@media (min-width: 420px) {
+  .StoreCardRibbonBadgeWrapper {
+    top: 10px;
+  }
+}

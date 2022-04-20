@@ -1,0 +1,39 @@
+.EmptySearchWrapper {
+  @apply sm:tw-px-12px tw-px-12;
+}
+
+.EmptySearchCategoryWrapper {
+  @apply tw-flex tw-flex-col tw-items-stretch sm:tw-pb-2px tw-pb-2;
+}
+
+.EmptySearchCategoryTitle {
+  @apply sm:tw-pt-16px tw-pt-16 sm:tw-px-4px tw-px-4 tw-text-lg tw-leading-relaxed tw-font-bold tw-text-left;
+}
+
+.EmptySearchCategoryContent {
+  @apply tw-text-left tw-text-base tw-leading-relaxed tw-break-words;
+}
+
+.EmptySearchPopularCategoryTitle {
+  @extend .EmptySearchCategoryTitle;
+
+  @apply sm:tw-pb-8px tw-pb-8 sm:tw-mb-2px tw-mb-2;
+}
+
+.EmptySearchPopularCategoryContent {
+  @extend .EmptySearchCategoryContent;
+  @apply sm:tw-mx-4px tw-mx-4 sm:tw-my-6px tw-my-6 sm:tw-px-12px tw-px-12 sm:tw-py-4px tw-py-4
+    tw-overflow-hidden tw-border-solid tw-border tw-border-gray-400 tw-rounded-xl tw-cursor-pointer;
+}
+
+.EmptySearchOtherCategoryContainer {
+  @apply tw-flex tw-flex-col tw-justify-center tw-border-0 tw-border-solid tw-border-b tw-border-gray-200 tw-cursor-pointer;
+
+  height: 13.077vw;
+  min-height: 37px;
+  max-height: 51px;
+
+  &:last-of-type {
+    @apply tw-border-0;
+  }
+}
