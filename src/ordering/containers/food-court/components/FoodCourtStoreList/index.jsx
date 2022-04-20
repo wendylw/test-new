@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ObjectFitImage } from '../../../../../common/components/Image';
-import { getFoodCourtStoreList, getIsFoodCourtStoreListReady } from '../../redux/common/selectors';
+import { getFoodCourtStoreList } from '../../redux/common/selectors';
 import { selectedOneStore } from '../../redux/common/thunks';
 import styles from './FoodCourtStoreList.module.scss';
 
@@ -10,11 +10,6 @@ const FoodCourtStoreList = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const storeList = useSelector(getFoodCourtStoreList);
-  const isFoodCourtStoreListReady = useSelector(getIsFoodCourtStoreListReady);
-
-  if (!isFoodCourtStoreListReady) {
-    return null;
-  }
 
   return (
     <div className="tw-pb-16 sm:tw-pb-16px tw-relative">

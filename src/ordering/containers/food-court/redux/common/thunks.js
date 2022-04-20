@@ -36,7 +36,7 @@ export const selectedOneStore = createAsyncThunk(
     const userSignedIn = getUserIsLogin(state);
 
     if (userSignedIn) {
-      dispatch(push(`${PATH_NAME_MAPPING.ORDERING_HOME}${redirectUrl}`));
+      dispatch(push(redirectUrl));
 
       return;
     }
@@ -49,6 +49,11 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByBeepApp());
     }
 
-    dispatch(push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${redirectUrl}`));
+    dispatch(
+      push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${redirectUrl}`, {
+        shouldGoBack: false, // - should not go back to previous page
+        redirectLocation: redirectUrl,
+      })
+    );
   }
 );

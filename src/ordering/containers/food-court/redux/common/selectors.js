@@ -7,11 +7,13 @@ export const getFoodCourtTableId = state => state.foodCourt.common.foodCourtTabl
 export const getFoodCourtId = state => state.foodCourt.common.foodCourtId;
 
 export const getFoodCourtStoreList = state =>
-  AllFoodCourtStoreList.filter(store => state.foodCourt.common.foodCourtStoreList.data.includes(store.id));
+  state.foodCourt.common.foodCourtStoreList.data.map(store => {
+    const storeStaticData = AllFoodCourtStoreList.find(currentStore => currentStore.id === store.id);
+
+    return {
+      ...store,
+      ...storeStaticData,
+    };
+  });
 
 export const getFoodCourtStoreListStatus = state => state.foodCourt.common.foodCourtStoreList.status;
-
-export const getIsFoodCourtStoreListReady = createSelector(
-  getFoodCourtStoreListStatus,
-  foodCourtStoreListStatus => foodCourtStoreListStatus === API_REQUEST_STATUS.FULFILLED
-);

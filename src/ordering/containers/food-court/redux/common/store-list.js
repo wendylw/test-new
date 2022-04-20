@@ -17,6 +17,7 @@ export const AllFoodCourtStoreList = [
     image:
       'https://d2ncjxd2rk2vpl.cloudfront.net/okonomi/product/611cad4155f0e8000606d099/495d616f-28eb-488d-c4a8-9c1994da8529',
     title: 'jw',
+    tags: ['Pork-Free', 'Fusion', 'Crab', 'Steak', 'Pasta'],
   },
   {
     id: '5e15be72470b493f40485311',

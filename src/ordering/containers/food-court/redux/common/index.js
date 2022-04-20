@@ -5,7 +5,7 @@ import { mounted } from './thunks';
 
 const initialState = {
   foodCourtId: getCookieVariable('__sh_fc_id'),
-  foodCourtTableId: getCookieVariable('__sh_fc_tid'),
+  foodCourtTableId: getCookieVariable('__sh_fc_tId'),
   foodCourtStoreList: { status: API_REQUEST_STATUS.PENDING, data: [] },
 };
 
