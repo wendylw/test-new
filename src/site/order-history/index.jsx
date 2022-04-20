@@ -114,7 +114,9 @@ class OrderHistory extends React.Component {
 
     return (
       <>
-        <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
+        {!Utils.isTNGMiniProgram() ? (
+          <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
+        ) : null}
 
         <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
           {showOrderListEmptyView ? (
