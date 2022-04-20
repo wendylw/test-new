@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
 import _sumBy from 'lodash/sumBy';
 import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
@@ -91,6 +92,7 @@ export const getProductsByCategory = createSelector(
     categoryList.map(category => ({
       id: category.id,
       name: category.name,
+      isBestSeller: category.isBestSeller,
       products: category.products
         .filter(productId => !!productsById[productId])
         .map(productId => {
@@ -168,3 +170,75 @@ export const getIsMenuRevamp = createSelector(
     return isQrOrderingShippingType && isPilotMerchant;
   }
 );
+
+export const getIsSearchingBannerVisible = state => state.menu.common.searchingBannerVisible;
+
+export const getSearchingProductKeywords = state => state.menu.common.searchingProductKeywords;
+
+/**
+ * get the filtered product list according to the keyword
+ * @returns filtered products by category
+ */
+export const getSearchingProducts = createSelector(
+  getProductsByCategory,
+  getSearchingProductKeywords,
+  (categoriesProductList, searchProductsKeywords) => {
+    if (_isEmpty(searchProductsKeywords)) {
+      return categoriesProductList;
+    }
+
+    // Divide the keyword into a keyword list according to the space, and each keyword in the array is used as a search keyword
+    const searchProductsKeywordList = searchProductsKeywords.split(' ').filter(keyword => !!keyword);
+    const searchingProductsResult = [];
+
+    categoriesProductList.forEach(({ products, ...otherOptions }) => {
+      // The name and description of the Product contains every words in the keyword list, which is the searched product
+      const searchedProductList = products.filter(product =>
+        searchProductsKeywordList.every(keyword => {
+          const searchCheckingContent = [product.title];
+
+          if (!_isEmpty(product.description)) {
+            searchCheckingContent.push(product.description);
+          }
+          // title or description ignore case matching keywords
+          const keywordRegex = new RegExp(keyword, 'i');
+
+          return searchCheckingContent.join(' ').match(keywordRegex);
+        })
+      );
+
+      if (searchedProductList.length > 0) {
+        searchingProductsResult.push({
+          ...otherOptions,
+          products: searchedProductList,
+        });
+      }
+    });
+
+    return searchingProductsResult;
+  }
+);
+
+/**
+ * get `true` when the search box is not empty, the search result is an empty product list
+ * @returns
+ */
+export const getIsSearchingEmptyProducts = createSelector(
+  getIsSearchingBannerVisible,
+  getSearchingProductKeywords,
+  getSearchingProducts,
+  (isSearchingBannerVisible, searchingProductKeywords, searchingProductsResult) =>
+    isSearchingBannerVisible && !_isEmpty(searchingProductKeywords) && searchingProductsResult.length <= 0
+);
+
+/**
+ * get scrolling top position before starting to search
+ * @returns scrolling top position, for example: 0
+ */
+export const getBeforeStartToSearchScrollTopPosition = state => state.menu.common.beforeStartToSearchScrollTopPosition;
+
+/**
+ * get `true` when the virtual keyboard is opened
+ * @returns
+ */
+export const getIsVirtualKeyboardVisible = state => state.menu.common.virtualKeyboardVisible;

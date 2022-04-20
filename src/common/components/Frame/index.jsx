@@ -13,6 +13,7 @@ const Frame = props => {
   const { children } = props;
   // Keep both for now, refer to the comment in Frame.module.scss.
   // return <FlexLayout>{children}</FlexLayout>;
+
   return <NormalLayout>{children}</NormalLayout>;
 };
 

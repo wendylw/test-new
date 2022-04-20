@@ -177,12 +177,12 @@ const ProductDetailDrawer = () => {
                 onClick={() => {
                   dispatch(addToCart());
                 }}
-                className="tw-w-full"
+                className="tw-w-full tw-uppercase"
               >
                 {t('AddToCart', { price: formattedTotalPrice })}
               </Button>
             ) : (
-              <Button className="tw-w-full" disabled>
+              <Button className="tw-w-full tw-uppercase" disabled>
                 {t(UNABLE_ADD_TO_CART_REASON_KEY_MAP[unableAddToCartReason])}
               </Button>
             )}
