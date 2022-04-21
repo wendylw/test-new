@@ -35,6 +35,7 @@ import Image from '../../../components/Image';
 import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import './TableSummary.scss';
+import config from '../../../config';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -92,6 +93,22 @@ export class TableSummary extends React.Component {
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
       search,
     });
+  };
+
+  handleOrderHistory = () => {
+    const { history, userIsLogin } = this.props;
+    if (userIsLogin) {
+      window.location.href = config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY;
+    } else {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+        state: {
+          shouldGoBack: true,
+          redirectLocation: config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY,
+        },
+      });
+    }
   };
 
   setCartContainerHeight = preContainerHeight => {
@@ -324,6 +341,7 @@ export class TableSummary extends React.Component {
             history={history}
             orderPendingPaymentStatus={orderPendingPaymentStatus}
           />
+          <button onClick={this.handleOrderHistory}>test order history</button>
         </div>
         <footer
           ref={ref => {

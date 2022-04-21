@@ -16,6 +16,9 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
+import config from '../../../config';
+import _isObject from 'lodash/isObject';
+import _includes from 'lodash/includes';
 
 class PageLogin extends React.Component {
   state = {
@@ -42,16 +45,29 @@ class PageLogin extends React.Component {
     const { redirectLocation, isRedirect } = location.state || {};
 
     if (redirectLocation && !isRedirect) {
-      history.replace(redirectLocation);
+      if (redirectLocation) {
+        // RedirectLocation is a Location object
+        if (_isObject(redirectLocation)) {
+          history.replace(redirectLocation);
+          return;
+        }
 
-      return;
-    } else if (redirectLocation && isRedirect) {
-      window.location.href = redirectLocation;
+        if (_includes(redirectLocation, config.beepitComUrl)) {
+          window.location.replace(redirectLocation);
+          return;
+        }
 
-      return;
+        history.replace(redirectLocation);
+
+        return;
+      } else if (redirectLocation && isRedirect) {
+        window.location.href = redirectLocation;
+
+        return;
+      }
+
+      this.goBack();
     }
-
-    this.goBack();
   };
 
   handleCloseOtpModal() {
