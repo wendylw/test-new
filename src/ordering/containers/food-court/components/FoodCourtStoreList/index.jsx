@@ -24,7 +24,7 @@ const FoodCourtStoreList = () => {
               key={`bestSellerProductItem-${store.id}`}
               className={styles.foodCourtStore}
               onClick={() => {
-                dispatch(selectedOneStore({ redirectUrl: store.redirectUrl }));
+                dispatch(selectedOneStore({ businessName: store.businessName, redirectUrl: store.redirectUrl }));
               }}
             >
               <div className="tw-relative tw-p-4 sm:tw-p-4px">

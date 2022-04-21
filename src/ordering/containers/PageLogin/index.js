@@ -39,10 +39,15 @@ class PageLogin extends React.Component {
 
   visitNextPage = async () => {
     const { history, location } = this.props;
-    const { redirectLocation } = location.state || {};
+    const { redirectLocation, isRedirect } = location.state || {};
 
-    if (redirectLocation) {
+    if (redirectLocation && !isRedirect) {
       history.replace(redirectLocation);
+
+      return;
+    } else if (redirectLocation && isRedirect) {
+      window.location.href = redirectLocation;
+
       return;
     }
 

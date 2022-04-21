@@ -1,5 +1,3 @@
-import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
 import { AllFoodCourtStoreList } from './store-list';
 
 export const getFoodCourtTableId = state => state.foodCourt.common.foodCourtTableId;
