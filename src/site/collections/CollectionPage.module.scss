@@ -1,0 +1,13 @@
+.CollectionPageHeaderWrapper {
+  @apply tw-flex tw-justify-between tw-items-center;
+}
+
+.CollectionPageHeaderIconWrapper {
+  @apply tw-flex tw-flex-shrink-0 tw-items-stretch sm:tw-p-12px tw-p-12
+    tw-border-none tw-outline-none tw-bg-transparent tw-text-gray tw-cursor-pointer;
+}
+
+.CollectionPageHeaderTitle {
+  @apply tw-flex-grow tw-text-left tw-text-lg tw-leading-relaxed tw-font-bold tw-truncate
+    sm:tw-pr-16px tw-pr-16 sm:tw-py-12px tw-py-12;
+}

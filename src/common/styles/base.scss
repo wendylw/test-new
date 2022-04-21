@@ -7,8 +7,12 @@
 }
 
 // If display want to use flex of line-clamp container, please add this class for container
-.tw-line-clamp-flex-container {
+.beep-line-clamp-flex-container {
   @apply tw-flex tw-flex-1;
 
   min-width: 0;
+}
+
+.beep-text-reset {
+  font-size: 0;
 }

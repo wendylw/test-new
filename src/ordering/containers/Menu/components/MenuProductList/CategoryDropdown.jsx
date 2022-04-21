@@ -25,7 +25,7 @@ const CategoryList = ({ categories, onCategoryItemClick }) => {
       {categories.map(category => (
         <li
           key={`categoryItem-${category.id}`}
-          className={`${styles.menuProductCategoryItem} tw-cursor-default tw-line-clamp-flex-container ${
+          className={`${styles.menuProductCategoryItem} tw-cursor-default beep-line-clamp-flex-container ${
             (highlightedCategory && highlightedCategory.id) === category.id ? ' active' : ''
           }`}
           onClick={() => {
@@ -79,7 +79,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
   }, []);
 
   return (
-    <div className="tw-sticky tw-top-0 tw-p-16 sm:tw-p-16px tw-bg-white tw-z-10">
+    <div className="tw-flex-1 beep-line-clamp-flex-container">
       <Button
         type="secondary"
         className={styles.menuProductCategoryButton}
@@ -105,7 +105,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
           <Button
             type="text"
             onClick={() => setShowDrawer(false)}
-            className={`${styles.menuProductCategoryDrawerHeaderCloseButton} text-size-reset`}
+            className={`${styles.menuProductCategoryDrawerHeaderCloseButton} beep-text-reset`}
           >
             <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
           </Button>

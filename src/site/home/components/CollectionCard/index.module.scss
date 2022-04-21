@@ -1,0 +1,32 @@
+@import "../../../../common/styles/variables.scss";
+
+.IconCollectionWrapper {
+  @apply tw-flex tw-justify-between tw-items-stretch tw-flex-wrap sm:tw-my-16px tw-my-16;
+}
+
+.IconCollectionContainer {
+  @apply tw-w-1/4 tw-flex tw-flex-col tw-items-center tw-flex-shrink-0 sm:tw-py-8px tw-py-8 tw-cursor-pointer;
+}
+
+.IconCollectionFigure {
+  @apply tw-relative tw-w-full tw-rounded-full tw-overflow-hidden;
+
+  width: 62%;
+  max-width: 60px;
+
+  &::before {
+    @apply tw-block;
+
+    content: "";
+    padding-top: 100%;
+  }
+
+  img {
+    @apply tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-object-cover tw-object-center;
+  }
+}
+
+.IconCollectionTitle {
+  @apply tw-block sm:tw-pt-4px tw-pt-4 sm:tw-px-16px tw-px-16 tw-text-sm tw-leading-loose tw-text-center tw-font-bold;
+  @include text-line-clamp(2, null);
+}

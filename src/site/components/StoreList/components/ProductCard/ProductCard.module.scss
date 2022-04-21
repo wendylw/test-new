@@ -1,0 +1,34 @@
+.ProductCardContainer {
+  @apply tw-flex tw-flex-col tw-items-stretch;
+
+  width: 18.462vw;
+}
+
+.ProductCardImageContainer {
+  @apply tw-relative tw-w-full tw-rounded tw-overflow-hidden tw-flex-shrink-0;
+
+  &::before {
+    @apply tw-block;
+
+    content: "";
+    padding-top: 100%;
+  }
+
+  img {
+    @apply tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-object-cover tw-object-center;
+  }
+}
+
+.ProductCardContentContainer {
+  @apply tw-flex tw-flex-col sm:tw-mt-2px tw-mt-2;
+}
+
+.ProductCardContent {
+  @apply tw-text-left tw-text-sm tw-leading-loose tw-truncate;
+}
+
+@media (min-width: 770px) {
+  .ProductCardContainer {
+    width: 72px;
+  }
+}

@@ -2,7 +2,7 @@
 
 .menuProductCategoryButton {
   &:global(.type-secondary) {
-    @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-py-6 sm:tw-py-6px  tw-w-full tw-border-gray-400
+    @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-py-6 sm:tw-py-6px  tw-w-full tw-border-gray-400 tw-rounded-2xl
     hover:tw-border-gray-400
     focus:tw-border-gray-400 focus:hover:tw-border-gray-400 focus:active:tw-border-gray-400
     active:tw-border-gray-400;

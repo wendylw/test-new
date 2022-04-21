@@ -1,7 +1,10 @@
 import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
+import _isEmpty from 'lodash/isEmpty';
 import { get } from '../../../utils/request';
 import Url from '../../../utils/url';
 import { getStoreById, storesActionCreators } from './entities/stores';
+import { getPopupCollections, getOtherCollections } from './entities/storeCollections';
 import { getAddressCoords, getAddressCountryCode } from '../../../redux/modules/address/selectors';
 import CleverTap from '../../../utils/clevertap';
 
@@ -199,3 +202,41 @@ export const getPageInfo = state => state.search.paginationInfo;
 export const getShippingType = state => state.search.shippingType;
 export const loadedSearchingStores = state => state.search.loadedSearchingStoreList;
 export const getStoreList = state => state.search.storeIds.map(storeId => getStoreById(state, storeId));
+
+export const getIsSearchInfoKeywordEmpty = createSelector(getSearchInfo, searchInfo => _isEmpty(searchInfo.keyword));
+
+export const getIsAnyCollectionAvailable = createSelector(
+  getPopupCollections,
+  getOtherCollections,
+  (popularCollections, otherCollections) => !_isEmpty(popularCollections.concat(otherCollections))
+);
+
+export const getShouldShowCategories = createSelector(
+  getIsSearchInfoKeywordEmpty,
+  getIsAnyCollectionAvailable,
+  (isKeywordEmpty, isAnyCollectionAvailable) => isKeywordEmpty && isAnyCollectionAvailable
+);
+
+export const getShouldShowSwitchPanel = createSelector(
+  getIsSearchInfoKeywordEmpty,
+  getIsAnyCollectionAvailable,
+  (isKeywordEmpty, isAnyCollectionAvailable) => !(isKeywordEmpty && isAnyCollectionAvailable)
+);
+
+export const getShouldShowStartSearchPage = createSelector(
+  getIsSearchInfoKeywordEmpty,
+  getIsAnyCollectionAvailable,
+  (isKeywordEmpty, isAnyCollectionAvailable) => isKeywordEmpty && !isAnyCollectionAvailable
+);
+
+export const getShouldShowNoSearchResultPage = createSelector(
+  getStoreList,
+  getIsSearchInfoKeywordEmpty,
+  (stores, isKeywordEmpty) => _isEmpty(stores) && !isKeywordEmpty
+);
+
+export const getShouldShowStoreList = createSelector(
+  getStoreList,
+  getIsSearchInfoKeywordEmpty,
+  (stores, isKeywordEmpty) => !(_isEmpty(stores) || isKeywordEmpty)
+);
