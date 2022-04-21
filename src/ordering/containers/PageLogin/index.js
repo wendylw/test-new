@@ -45,29 +45,27 @@ class PageLogin extends React.Component {
     const { redirectLocation, isRedirect } = location.state || {};
 
     if (redirectLocation && !isRedirect) {
-      if (redirectLocation) {
-        // RedirectLocation is a Location object
-        if (_isObject(redirectLocation)) {
-          history.replace(redirectLocation);
-          return;
-        }
-
-        if (_includes(redirectLocation, config.beepitComUrl)) {
-          window.location.replace(redirectLocation);
-          return;
-        }
-
+      // RedirectLocation is a Location object
+      if (_isObject(redirectLocation)) {
         history.replace(redirectLocation);
-
-        return;
-      } else if (redirectLocation && isRedirect) {
-        window.location.href = redirectLocation;
-
         return;
       }
 
-      this.goBack();
+      if (_includes(redirectLocation, config.beepitComUrl)) {
+        window.location.replace(redirectLocation);
+        return;
+      }
+
+      history.replace(redirectLocation);
+
+      return;
+    } else if (redirectLocation && isRedirect) {
+      window.location.href = redirectLocation;
+
+      return;
     }
+
+    this.goBack();
   };
 
   handleCloseOtpModal() {
