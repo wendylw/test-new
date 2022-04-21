@@ -57,7 +57,6 @@ export const selectedOneStore = createAsyncThunk(
     dispatch(
       push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${redirectUrl}`, {
         isRedirect: true,
-        shouldGoBack: false, // - should not go back to previous page
         redirectLocation: `${window.location.protocol}//${hostList.join('.')}${
           PATH_NAME_MAPPING.ORDERING_BASE
         }${redirectUrl}`,
