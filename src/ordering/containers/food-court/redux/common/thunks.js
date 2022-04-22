@@ -4,7 +4,7 @@ import { getFoodCourtId } from './selectors';
 import { fetchFoodCourtStoreList } from './api-request';
 import { isWebview, isTNGMiniProgram } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
-import { actions as appActions, getUserIsLogin } from '../../../../redux/modules/app';
+import { actions as appActions, getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
 
 /**
  * Food court landing page mounted
@@ -34,6 +34,7 @@ export const selectedOneStore = createAsyncThunk(
   async ({ businessName, redirectUrl }, { dispatch, getState }) => {
     const state = getState();
     const userSignedIn = getUserIsLogin(state);
+    const shippingType = getShippingType(state);
     const hostList = window.location.host.split('.');
 
     hostList[0] = businessName;
@@ -48,18 +49,23 @@ export const selectedOneStore = createAsyncThunk(
 
     if (isTNGMiniProgram()) {
       await dispatch(appActions.loginByTngMiniProgram());
+
+      return;
     }
 
     if (isWebview()) {
       await dispatch(appActions.loginByBeepApp());
+
+      return;
     }
 
     dispatch(
-      push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${redirectUrl}`, {
-        shouldGoBack: false, // - should not go back to previous page
+      push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${window.location.search}`, {
+        shouldGoBack: true,
         redirectLocation: `${window.location.protocol}//${hostList.join('.')}${
           PATH_NAME_MAPPING.ORDERING_BASE
         }${redirectUrl}`,
+        loginOptions: { shippingType },
       })
     );
   }

@@ -21,15 +21,7 @@ const {
 } = Constants;
 const Utils = {};
 
-Utils.getQueryString = key => {
-  const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-
-  if (key) {
-    return queries[key] || null;
-  }
-
-  return queries;
-};
+Utils.getQueryString = UtilsV2.getQueryString;
 
 /**
  *
@@ -50,16 +42,7 @@ Utils.getFilteredQueryString = (keys, queryString = window.location.search) => {
   return qs.stringify(query, { addQueryPrefix: true });
 };
 
-Utils.getApiRequestShippingType = shippingType => {
-  const type = shippingType || Utils.getQueryString('type');
-
-  switch (type) {
-    case Constants.DELIVERY_METHOD.DINE_IN:
-      return 'dineIn';
-    default:
-      return type;
-  }
-};
+Utils.getApiRequestShippingType = UtilsV2.getApiRequestShippingType;
 
 Utils.isWebview = UtilsV2.isWebview;
 
