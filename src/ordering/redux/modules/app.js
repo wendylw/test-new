@@ -281,17 +281,18 @@ export const actions = {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
+        shippingType,
       });
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
-        payload: { ...result, source, shippingType },
+        payload: { ...result, source },
       });
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error: error,
-        payload: { source, shippingType },
+        payload: { source },
       });
     }
   },
