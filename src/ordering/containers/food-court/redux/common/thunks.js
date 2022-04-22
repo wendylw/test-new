@@ -36,25 +36,32 @@ export const selectedOneStore = createAsyncThunk(
     const userSignedIn = getUserIsLogin(state);
     const shippingType = getShippingType(state);
     const hostList = window.location.host.split('.');
+    const redirectLocation = (window.location.href = `${window.location.protocol}//${hostList.join('.')}${
+      PATH_NAME_MAPPING.ORDERING_BASE
+    }${redirectUrl}`);
 
     hostList[0] = businessName;
 
     if (userSignedIn) {
-      window.location.href = `${window.location.protocol}//${hostList.join('.')}${
-        PATH_NAME_MAPPING.ORDERING_BASE
-      }${redirectUrl}`;
-
-      return;
+      window.location.href = redirectLocation;
     }
 
     if (isTNGMiniProgram()) {
       await dispatch(appActions.loginByTngMiniProgram());
+
+      if (getUserIsLogin(getState())) {
+        window.location.href = redirectLocation;
+      }
 
       return;
     }
 
     if (isWebview()) {
       await dispatch(appActions.loginByBeepApp());
+
+      if (getUserIsLogin(getState())) {
+        window.location.href = redirectLocation;
+      }
 
       return;
     }
