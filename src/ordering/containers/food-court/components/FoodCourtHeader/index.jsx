@@ -30,6 +30,7 @@ const FoodCourtHeader = () => {
         state: {
           shouldGoBack: true,
           redirectLocation: config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY,
+          isRedirect: true,
         },
       });
     }

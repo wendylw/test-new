@@ -45,17 +45,7 @@ class PageLogin extends React.Component {
     const { redirectLocation, isRedirect } = location.state || {};
 
     if (redirectLocation && !isRedirect) {
-      // RedirectLocation is a Location object
-      if (_isObject(redirectLocation)) {
-        history.replace(redirectLocation);
-        return;
-      }
-
-      if (_includes(redirectLocation, config.beepitComUrl)) {
-        window.location.replace(redirectLocation);
-        return;
-      }
-
+      // Same domain
       history.replace(redirectLocation);
 
       return;
