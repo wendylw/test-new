@@ -42,15 +42,16 @@ class PageLogin extends React.Component {
 
   visitNextPage = async () => {
     const { history, location } = this.props;
-    const { redirectLocation, isRedirect } = location.state || {};
+    const { redirectLocation } = location.state || {};
 
-    if (redirectLocation && !isRedirect) {
-      // Same domain
+    if (redirectLocation) {
+      const redirectUrl = new URL(redirectLocation, window.location.origin);
+      if (redirectUrl.origin !== window.location.origin) {
+        window.location.replace(redirectLocation);
+        return;
+      }
+
       history.replace(redirectLocation);
-
-      return;
-    } else if (redirectLocation && isRedirect) {
-      window.location.replace(redirectLocation);
 
       return;
     }
