@@ -81,6 +81,7 @@ class PageLogin extends React.Component {
   async handleWebLogin(otp) {
     const { appActions, location } = this.props;
     const loginOptions = location.state?.loginOptions || {};
+    const { shippingTye } = loginOptions;
 
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
@@ -93,7 +94,7 @@ class PageLogin extends React.Component {
       appActions.loginApp({
         accessToken,
         refreshToken,
-        ...loginOptions,
+        shippingTye,
       });
     }
   }

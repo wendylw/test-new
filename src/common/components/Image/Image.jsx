@@ -80,7 +80,7 @@ function getImageURL(dimension, imageURL) {
   return Object.values(imageObject).join('/');
 }
 
-const Image = ({ className, style, src, alt, dimension, staticSource, onLoad, onError }) => {
+const Image = ({ className, style, src, alt, dimension, noCompression, onLoad, onError }) => {
   if (!src) {
     return null;
   }
@@ -88,7 +88,7 @@ const Image = ({ className, style, src, alt, dimension, staticSource, onLoad, on
   return (
     <img
       className={className}
-      src={staticSource ? src : getImageURL(dimension, src)}
+      src={noCompression ? src : getImageURL(dimension, src)}
       alt={alt}
       onLoad={onLoad}
       onError={onError}
@@ -106,7 +106,7 @@ Image.propTypes = {
   src: PropTypes.string,
   dimension: PropTypes.oneOf(Array.from(AVAILABLE_DIMENSIONS)),
   // If static source is not provided, the image will not be loaded from the server
-  staticSource: PropTypes.bool,
+  noCompression: PropTypes.bool,
   onLoad: PropTypes.func,
   onError: PropTypes.func,
 };
@@ -116,7 +116,7 @@ Image.defaultProps = {
   alt: '',
   src: '',
   dimension: '160x160',
-  staticSource: false,
+  noCompression: false,
   onLoad: () => {},
   onError: () => {},
 };
