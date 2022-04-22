@@ -15,9 +15,14 @@
   width: 100%;
 }
 
+.OrderHistoryEntry {
+  @apply tw-pr-16 sm:tw-pr-16px;
+  height: 24px;
+}
+
 .FoodCourtHeaderButton {
   &__default:global(.type-text) {
-    @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-border-0 tw-text-black hover:tw-text-black active:tw-text-gray focus:tw-text-black focus:hover:tw-text-black  focus:active:tw-text-gray;
+    @apply tw-px-8 sm:tw-px-8px tw-py-12 sm:tw-py-12px tw-border-0 tw-text-black hover:tw-text-black active:tw-text-gray focus:tw-text-black focus:hover:tw-text-black  focus:active:tw-text-gray;
   }
 
   &__danger:global(.type-text-danger) {

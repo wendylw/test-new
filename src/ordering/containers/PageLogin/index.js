@@ -16,6 +16,9 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
+import config from '../../../config';
+import _isObject from 'lodash/isObject';
+import _includes from 'lodash/includes';
 
 class PageLogin extends React.Component {
   state = {
@@ -39,14 +42,24 @@ class PageLogin extends React.Component {
 
   visitNextPage = async () => {
     const { history, location } = this.props;
-    const { redirectLocation, isRedirect } = location.state || {};
+    const { redirectLocation } = location.state || {};
 
-    if (redirectLocation && !isRedirect) {
+    if (redirectLocation) {
+      // RedirectLocation is a Location object
+      if (_isObject(redirectLocation)) {
+        history.replace(redirectLocation);
+        return;
+      }
+
+      // The second param will be used only when "redirectLocation" is an absolute url
+      // Refer: https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
+      const redirectUrl = new URL(redirectLocation, window.location.origin);
+      if (redirectUrl.origin !== window.location.origin) {
+        window.location.replace(redirectLocation);
+        return;
+      }
+
       history.replace(redirectLocation);
-
-      return;
-    } else if (redirectLocation && isRedirect) {
-      window.location.href = redirectLocation;
 
       return;
     }
