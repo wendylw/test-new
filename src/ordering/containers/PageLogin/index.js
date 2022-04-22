@@ -60,7 +60,7 @@ class PageLogin extends React.Component {
 
       return;
     } else if (redirectLocation && isRedirect) {
-      window.location.href = redirectLocation;
+      window.location.replace(redirectLocation);
 
       return;
     }
