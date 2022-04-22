@@ -268,13 +268,13 @@ export const actions = {
     type: types.HIDE_LOGIN_PAGE,
   }),
 
-  loginApp: ({ accessToken, refreshToken, source = null }) => async (dispatch, getState) => {
+  loginApp: ({ accessToken, refreshToken, source = null, shippingType = null }) => async (dispatch, getState) => {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
 
       dispatch({
         type: types.CREATE_LOGIN_REQUEST,
-        payload: { source },
+        payload: { source, shippingType },
       });
 
       const result = await ApiRequest.login({
@@ -285,13 +285,13 @@ export const actions = {
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
-        payload: { ...result, source },
+        payload: { ...result, source, shippingType },
       });
     } catch (error) {
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error: error,
-        payload: { source },
+        payload: { source, shippingType },
       });
     }
   },

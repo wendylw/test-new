@@ -4,7 +4,7 @@ import { getFoodCourtId } from './selectors';
 import { fetchFoodCourtStoreList } from './api-request';
 import { isWebview, isTNGMiniProgram } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
-import { actions as appActions, getUserIsLogin } from '../../../../redux/modules/app';
+import { actions as appActions, getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
 
 /**
  * Food court landing page mounted
@@ -34,6 +34,7 @@ export const selectedOneStore = createAsyncThunk(
   async ({ businessName, redirectUrl }, { dispatch, getState }) => {
     const state = getState();
     const userSignedIn = getUserIsLogin(state);
+    const shippingType = getShippingType(state);
     const hostList = window.location.host.split('.');
 
     hostList[0] = businessName;
@@ -61,6 +62,7 @@ export const selectedOneStore = createAsyncThunk(
         redirectLocation: `${window.location.protocol}//${hostList.join('.')}${
           PATH_NAME_MAPPING.ORDERING_BASE
         }${redirectUrl}`,
+        loginOptions: { shippingType },
       })
     );
   }
