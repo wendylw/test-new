@@ -36,9 +36,9 @@ export const selectedOneStore = createAsyncThunk(
     const userSignedIn = getUserIsLogin(state);
     const shippingType = getShippingType(state);
     const hostList = window.location.host.split('.');
-    const redirectLocation = (window.location.href = `${window.location.protocol}//${hostList.join('.')}${
+    const redirectLocation = `${window.location.protocol}//${hostList.join('.')}${
       PATH_NAME_MAPPING.ORDERING_BASE
-    }${redirectUrl}`);
+    }${redirectUrl}`;
 
     hostList[0] = businessName;
 
@@ -70,9 +70,7 @@ export const selectedOneStore = createAsyncThunk(
       push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${window.location.search}`, {
         isRedirect: true,
         shouldGoBack: true,
-        redirectLocation: `${window.location.protocol}//${hostList.join('.')}${
-          PATH_NAME_MAPPING.ORDERING_BASE
-        }${redirectUrl}`,
+        redirectLocation,
         loginOptions: { shippingType },
       })
     );
