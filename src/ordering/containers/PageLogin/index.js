@@ -45,6 +45,13 @@ class PageLogin extends React.Component {
     const { redirectLocation } = location.state || {};
 
     if (redirectLocation) {
+      // RedirectLocation is a Location object
+      if (_isObject(redirectLocation)) {
+        history.replace(redirectLocation);
+        return;
+      }
+
+      // Different origin when before and after redirect
       const redirectUrl = new URL(redirectLocation, window.location.origin);
       if (redirectUrl.origin !== window.location.origin) {
         window.location.replace(redirectLocation);
