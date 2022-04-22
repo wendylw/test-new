@@ -1,27 +1,41 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PowerByBeepLogo from '../../../../../images/powered-by-beep-logo.svg';
+import OrderHistoryEntry from '../../../../../images/order-history-entry.png';
 import { getFoodCourtTableId } from '../../redux/common/selectors';
 import styles from './FoodCourtHeader.module.scss';
 import { isWebview } from '../../../../../common/utils';
 import NativeHeader from '../../../../../components/NativeHeader';
 import { closeWebView } from '../../../../../utils/native-methods';
+import { getUserIsLogin } from '../../../../redux/modules/app';
+import config from '../../../../../config';
+import Constants from '../../../../../utils/constants';
 
 const FoodCourtHeader = () => {
   const { t } = useTranslation();
   const tableId = useSelector(getFoodCourtTableId);
   const isInWebview = isWebview();
-  const createRightContentHtml = useCallback(
-    content => (
-      <div className="tw-flex-shrink-0">
-        <span className="tw-p-16 sm:tw-p-16px tw-text-gray-700">{content}</span>
-      </div>
-    ),
-    []
-  );
+  const userIsLogin = useSelector(getUserIsLogin);
+  const history = useHistory();
+
+  const goOrderHistoryPage = () => {
+    if (userIsLogin) {
+      window.location.href = config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY;
+    } else {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+        state: {
+          shouldGoBack: true,
+          redirectLocation: config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY,
+        },
+      });
+    }
+  };
+
   const rightContentForNativeHeader = { text: t('TableIdText', { tableId }) };
-  const rightContentForWebHeader = createRightContentHtml(t('TableIdText', { tableId }));
 
   return (
     <>
@@ -39,7 +53,10 @@ const FoodCourtHeader = () => {
           <h2 className={styles.FoodCourtHeaderLogoContainer}>
             <img className={styles.FoodCourtHeaderLogo} src={PowerByBeepLogo} alt="" />
           </h2>
-          {rightContentForWebHeader}
+          <div className="tw-flex tw-items-center tw-flex-shrink-0">
+            <span className="tw-p-16 sm:tw-p-16px tw-text-gray-700">{t('TableIdText', { tableId })}</span>
+            <img onClick={goOrderHistoryPage} className={styles.OrderHistoryEntry} src={OrderHistoryEntry} alt="" />
+          </div>
         </header>
       )}
     </>

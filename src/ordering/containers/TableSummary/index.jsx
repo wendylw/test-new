@@ -35,6 +35,7 @@ import Image from '../../../components/Image';
 import { IconChecked, IconError } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import './TableSummary.scss';
+import config from '../../../config';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
