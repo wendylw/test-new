@@ -5,6 +5,16 @@ import { WEB_VIEW_SOURCE, SHIPPING_TYPES } from './constants';
 
 // todo: make old legacy utils to import function from here, rather than define same functions twice
 
+export const getQueryString = key => {
+  const queries = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
+  if (key) {
+    return queries[key] || null;
+  }
+
+  return queries;
+};
+
 export const getShippingTypeFromUrl = () => {
   const { type = '' } = qs.parse(window.location.search, { ignoreQueryPrefix: true });
   return type;
@@ -90,3 +100,14 @@ export const removeHtmlTag = str => {
 };
 
 export const getSourceUrlFromSessionStorage = () => getSessionVariable('BeepOrderingSourceUrl');
+
+export const getApiRequestShippingType = shippingType => {
+  const type = shippingType || getQueryString('type');
+
+  switch (type) {
+    case SHIPPING_TYPES.DINE_IN:
+      return 'dineIn';
+    default:
+      return type;
+  }
+};

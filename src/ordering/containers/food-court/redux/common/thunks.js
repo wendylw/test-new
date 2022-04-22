@@ -49,10 +49,14 @@ export const selectedOneStore = createAsyncThunk(
 
     if (isTNGMiniProgram()) {
       await dispatch(appActions.loginByTngMiniProgram());
+
+      return;
     }
 
     if (isWebview()) {
       await dispatch(appActions.loginByBeepApp());
+
+      return;
     }
 
     dispatch(
