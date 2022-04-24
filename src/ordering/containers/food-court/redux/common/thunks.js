@@ -44,6 +44,8 @@ export const selectedOneStore = createAsyncThunk(
 
     if (userSignedIn) {
       window.location.href = redirectLocation;
+
+      return;
     }
 
     if (isTNGMiniProgram()) {
