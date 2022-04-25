@@ -18,6 +18,8 @@ import {
   getBusinessUTCOffset,
   getEnablePayLater,
   getUserConsumerId,
+  getUserName,
+  getUserPhone,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
@@ -143,8 +145,13 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   const additionalComments = Utils.getSessionVariable('additionalComments');
   const { storeId, tableId } = getRequestInfo(getState());
   const deliveryDetails = getDeliveryDetails(getState());
-  const { phone, username: name } = deliveryDetails || {};
-  const contactDetail = { phone, name };
+  const { phone: deliveryPhone, username: deliveryName } = deliveryDetails || {};
+  const profileName = getUserName(getState());
+  const profilePhone = getUserPhone(getState());
+  const contactDetail = {
+    phone: deliveryPhone || profilePhone,
+    name: deliveryName || profileName,
+  };
   let variables = {
     business,
     storeId,
