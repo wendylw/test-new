@@ -71,6 +71,7 @@ export const selectedOneStore = createAsyncThunk(
     dispatch(
       push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${window.location.search}`, {
         shouldGoBack: true,
+        isRedirect: true,
         redirectLocation,
         loginOptions: { shippingType },
       })
