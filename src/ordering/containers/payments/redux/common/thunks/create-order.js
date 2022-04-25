@@ -1,6 +1,7 @@
 import React from 'react';
 import { captureException } from '@sentry/react';
 import i18next from 'i18next';
+import _isEmpty from 'lodash/isEmpty';
 
 import Url from '../../../../../../utils/url';
 import Utils from '../../../../../../utils/utils';
@@ -12,6 +13,7 @@ import { createPaymentDetails, initPayment } from './api-info';
 
 import { getCartItems, getDeliveryDetails, getShippingType } from '../../../../../redux/modules/app';
 import {
+  actions as appActions,
   getBusiness,
   getOnlineStoreInfo,
   getRequestInfo,
@@ -148,10 +150,24 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   const { phone: deliveryPhone, username: deliveryName } = deliveryDetails || {};
   const profileName = getUserName(getState());
   const profilePhone = getUserPhone(getState());
+
+  let contactPhone = deliveryPhone || profilePhone;
+  let contactName = deliveryName || profileName;
+
+  // If there is no contact info, we need to refetch the profile API in order to get the contact info
+  if (_isEmpty(contactPhone) || _isEmpty(contactName)) {
+    const consumerId = getUserConsumerId(getState());
+    consumerId && (await dispatch(appActions.getProfileInfo(consumerId)));
+
+    contactPhone = getUserPhone(getState());
+    contactName = getUserName(getState());
+  }
+
   const contactDetail = {
-    phone: deliveryPhone || profilePhone,
-    name: deliveryName || profileName,
+    phone: contactPhone,
+    name: contactName,
   };
+
   let variables = {
     business,
     storeId,
