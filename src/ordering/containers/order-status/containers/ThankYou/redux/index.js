@@ -6,6 +6,7 @@ import {
   loadStoreIdTableIdHashCode,
   cancelOrder,
   updateOrderShippingType,
+  loadFoodCourtIdHashCode,
 } from './thunks';
 
 const initialState = {
@@ -23,6 +24,9 @@ const initialState = {
   updateShippingTypeError: null,
   cancelOrderStatus: null, // pending || fulfilled || rejected
   profileModalVisibility: false,
+  foodCourtInfo: {
+    hashCode: null,
+  },
 };
 
 const { reducer, actions } = createSlice({
@@ -88,6 +92,9 @@ const { reducer, actions } = createSlice({
     [updateOrderShippingType.rejected.type]: (state, { error }) => {
       state.updateShippingTypeError = error;
       state.updateShippingTypeStatus = 'rejected';
+    },
+    [loadFoodCourtIdHashCode.fulfilled.type]: (state, { payload }) => {
+      state.foodCourtInfo.hashCode = payload.hex;
     },
   },
 });

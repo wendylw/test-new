@@ -151,3 +151,9 @@ export const getShouldShowCashbackCard = createSelector(
   getHasCashbackClaimed,
   (isCashbackClaimable, hasCashbackClaimed) => isCashbackClaimable || hasCashbackClaimed
 );
+
+export const getFoodCourtId = createSelector(getOrder, order => _get(order, 'foodCourtId', null));
+
+export const getFoodCourtBusiness = createSelector(getOrder, order => _get(order, 'foodCourtMerchantName', null));
+
+export const getFoodCourtHashCode = state => state.orderStatus.thankYou.foodCourtInfo.hashCode;

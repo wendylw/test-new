@@ -36,11 +36,12 @@ export const selectedOneStore = createAsyncThunk(
     const userSignedIn = getUserIsLogin(state);
     const shippingType = getShippingType(state);
     const hostList = window.location.host.split('.');
+
+    hostList[0] = businessName;
+
     const redirectLocation = `${window.location.protocol}//${hostList.join('.')}${
       PATH_NAME_MAPPING.ORDERING_BASE
     }${redirectUrl}`;
-
-    hostList[0] = businessName;
 
     if (userSignedIn) {
       window.location.href = redirectLocation;
