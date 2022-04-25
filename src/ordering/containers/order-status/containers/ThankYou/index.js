@@ -51,7 +51,12 @@ import {
   getIsUseStorehubLogistics,
   getIsPayLater,
 } from '../../redux/selector';
-import { getshowProfileVisibility, getFoodCourtId, getFoodCourtHashCode, getFoodCourtBusiness } from './redux/selector';
+import {
+  getshowProfileVisibility,
+  getFoodCourtId,
+  getFoodCourtHashCode,
+  getFoodCourtMerchantName,
+} from './redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
 import {
@@ -979,7 +984,7 @@ export default compose(
       isPayLater: getIsPayLater(state),
       foodCourtId: getFoodCourtId(state),
       foodCourtHashCode: getFoodCourtHashCode(state),
-      foodCourtMerchantName: getFoodCourtBusiness(state),
+      foodCourtMerchantName: getFoodCourtMerchantName(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
