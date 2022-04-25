@@ -19,8 +19,7 @@ const initialState = {
   originalDeliveryType: null,
   deliveryType: null,
   storeId: null,
-  deliveryAddress: '',
-  deliveryCoords: null,
+  addressInfo: null,
   selectedDay: null, // js Date Object
   selectedFromTime: null, // from time, like 09:00
   timeSlotSoldData: [],
@@ -33,8 +32,7 @@ export const actions = {
     originalDeliveryType,
     deliveryType,
     storeId,
-    deliveryAddress,
-    deliveryCoords,
+    addressInfo,
     expectedDay,
     expectedFromTime,
   }) => async (dispatch, getState) => {
@@ -43,8 +41,7 @@ export const actions = {
       originalDeliveryType,
       deliveryType,
       storeId,
-      deliveryAddress,
-      deliveryCoords,
+      addressInfo,
       selectedDay: null,
       selectedFromTime: null,
       loading: false,
@@ -56,6 +53,7 @@ export const actions = {
 
     const stores = getCoreStoreList(getState());
     const businessUTCOffset = getBusinessUTCOffset(getState());
+    const coords = _get(addressInfo, 'coords', null);
 
     if (payload.storeId) {
       const store = getStoreById(getState(), payload.storeId);
@@ -68,9 +66,9 @@ export const actions = {
       payload.storeId = isFulfillment && isOpen ? payload.storeId : null;
     }
 
-    if (!payload.storeId && deliveryCoords && deliveryType === DELIVERY_METHOD.DELIVERY) {
+    if (!payload.storeId && coords && deliveryType === DELIVERY_METHOD.DELIVERY) {
       const { store } = storeUtils.findNearestAvailableStore(stores, {
-        coords: deliveryCoords,
+        coords,
         currentDate: payload.currentDate,
         utcOffset: businessUTCOffset,
       });
@@ -148,12 +146,12 @@ export const actions = {
       const currentDate = getCurrentDate(state);
       const stores = getCoreStoreList(state);
       const businessUTCOffset = getBusinessUTCOffset(state);
-      const deliveryCoords = getDeliveryCoords(state);
+      const coords = getAddressCoords(state);
 
       // re-find the nearestStore
-      if (deliveryType === DELIVERY_METHOD.DELIVERY && deliveryCoords) {
+      if (deliveryType === DELIVERY_METHOD.DELIVERY && coords) {
         const { store: nearestStore } = storeUtils.findNearestAvailableStore(stores, {
-          coords: deliveryCoords,
+          coords,
           currentDate: currentDate,
           utcOffset: businessUTCOffset,
         });
@@ -209,11 +207,6 @@ export const actions = {
   storeChanged: storeId => ({
     type: LOCATION_AND_DATE.STORE_CHANGED,
     payload: storeId,
-  }),
-
-  deliveryAddressChanged: deliveryAddress => ({
-    type: LOCATION_AND_DATE.DELIVERY_ADDRESS_CHANGED,
-    payload: deliveryAddress,
   }),
 
   selectedDayChanged: selectedDay => async (dispatch, getState) => {
@@ -304,14 +297,7 @@ export const actions = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_AND_DATE.INITIAL:
-      const {
-        currentDate,
-        originalDeliveryType,
-        deliveryType,
-        storeId,
-        deliveryAddress,
-        deliveryCoords,
-      } = action.payload;
+      const { currentDate, originalDeliveryType, deliveryType, storeId, addressInfo } = action.payload;
 
       return {
         ...state,
@@ -319,8 +305,7 @@ const reducer = (state = initialState, action) => {
         originalDeliveryType,
         deliveryType,
         storeId,
-        deliveryAddress,
-        deliveryCoords,
+        addressInfo,
         loading: action.payload.loading,
         selectedDay: action.payload.selectedDay,
         selectedFromTime: action.payload.selectedFromTime,
@@ -337,11 +322,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         storeId: action.payload,
-      };
-    case LOCATION_AND_DATE.DELIVERY_ADDRESS_CHANGED:
-      return {
-        ...state,
-        deliveryAddress: action.payload,
       };
     case LOCATION_AND_DATE.SELECTED_DAY_CHANGE:
       const { selectedDay, selectedFromTime } = action.payload;
@@ -392,12 +372,6 @@ export const getStore = state => {
   const storeId = getStoreId(state);
   return getStoreById(state, storeId);
 };
-
-export const getDeliveryAddress = state => {
-  return _get(state.locationAndDate, 'deliveryAddress', '');
-};
-
-export const getDeliveryCoords = state => _get(state.locationAndDate, 'deliveryCoords', null);
 
 export const getSelectedDay = state => _get(state.locationAndDate, 'selectedDay', null);
 
@@ -502,5 +476,19 @@ export const getSelectedTime = createSelector(
 export const isShowLoading = state => _get(state.locationAndDate, 'loading', false);
 
 export const getOriginalDeliveryType = state => _get(state.locationAndDate, 'originalDeliveryType', null);
+
+export const getAddressInfo = state => _get(state.locationAndDate, 'addressInfo', null);
+
+export const getAddressCoords = createSelector(getAddressInfo, addressInfo => _get(addressInfo, 'coords', null));
+
+export const getAddressShortName = createSelector(getAddressInfo, addressInfo => _get(addressInfo, 'shortName', ''));
+
+export const getAddressFullName = createSelector(getAddressInfo, addressInfo => _get(addressInfo, 'fullName', ''));
+
+export const getAddressName = createSelector(
+  getAddressShortName,
+  getAddressFullName,
+  (shortName, fullName) => shortName || fullName
+);
 
 export default reducer;
