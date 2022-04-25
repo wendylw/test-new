@@ -42,28 +42,17 @@ class PageLogin extends React.Component {
 
   visitNextPage = async () => {
     const { history, location } = this.props;
-    const { redirectLocation } = location.state || {};
+    const { redirectLocation, isRedirect } = location.state || {};
 
-    if (redirectLocation) {
-      // RedirectLocation is a Location object
-      if (_isObject(redirectLocation)) {
-        history.replace(redirectLocation);
-        return;
-      }
-
-      // The second param will be used only when "redirectLocation" is an absolute url
-      // Refer: https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
-      const redirectUrl = new URL(redirectLocation, window.location.origin);
-      if (redirectUrl.origin !== window.location.origin) {
-        window.location.replace(redirectLocation);
-        return;
-      }
-
+    if (redirectLocation && !isRedirect) {
       history.replace(redirectLocation);
 
       return;
-    }
+    } else if (redirectLocation && isRedirect) {
+      window.location.replace(redirectLocation);
 
+      return;
+    }
     this.goBack();
   };
 
