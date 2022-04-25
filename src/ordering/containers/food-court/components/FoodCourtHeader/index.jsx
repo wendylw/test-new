@@ -29,6 +29,7 @@ const FoodCourtHeader = () => {
         search: window.location.search,
         state: {
           shouldGoBack: true,
+          isRedirect: true,
           redirectLocation: config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY,
         },
       });
