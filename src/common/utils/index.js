@@ -2,6 +2,8 @@ import qs from 'qs';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
 import { WEB_VIEW_SOURCE, SHIPPING_TYPES } from './constants';
+// eslint-disable-next-line import/no-cycle
+import config from '../../config';
 
 // todo: make old legacy utils to import function from here, rather than define same functions twice
 
