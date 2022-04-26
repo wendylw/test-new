@@ -2,7 +2,7 @@ import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getFoodCourtId } from './selectors';
 import { fetchFoodCourtStoreList } from './api-request';
-import { isWebview, isTNGMiniProgram } from '../../../../../common/utils';
+import { isWebview, isTNGMiniProgram, saveSourceUrlToSessionStorage } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { actions as appActions, getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
 
@@ -36,11 +36,12 @@ export const selectedOneStore = createAsyncThunk(
     const userSignedIn = getUserIsLogin(state);
     const shippingType = getShippingType(state);
     const hostList = window.location.host.split('.');
+
+    hostList[0] = businessName;
+
     const redirectLocation = `${window.location.protocol}//${hostList.join('.')}${
       PATH_NAME_MAPPING.ORDERING_BASE
     }${redirectUrl}`;
-
-    hostList[0] = businessName;
 
     if (userSignedIn) {
       window.location.href = redirectLocation;
@@ -62,6 +63,7 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByBeepApp());
 
       if (getUserIsLogin(getState())) {
+        await saveSourceUrlToSessionStorage(redirectLocation);
         window.location.href = redirectLocation;
       }
 
@@ -71,6 +73,7 @@ export const selectedOneStore = createAsyncThunk(
     dispatch(
       push(`${PATH_NAME_MAPPING.ORDERING_LOGIN}${window.location.search}`, {
         shouldGoBack: true,
+        isRedirect: true,
         redirectLocation,
         loginOptions: { shippingType },
       })

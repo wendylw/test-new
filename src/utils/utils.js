@@ -1,7 +1,6 @@
 import qs from 'qs';
 import Constants from './constants';
 import config from '../config';
-import { captureException } from '@sentry/react';
 import _get from 'lodash/get';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -127,15 +126,7 @@ Utils.removeLocalStorageVariable = function removeLocalStorageVariable(name) {
 Utils.getSessionVariable = UtilsV2.getSessionVariable;
 
 /* If sessionStorage is not operational, cookies will be used to store global variables */
-Utils.setSessionVariable = function setSessionVariable(name, value) {
-  try {
-    sessionStorage.setItem(name, value || '');
-  } catch (e) {
-    const { setCookieVariable } = Utils;
-    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
-    setCookieVariable(cookieNameOfSessionStorage, value);
-  }
-};
+Utils.setSessionVariable = UtilsV2.setSessionVariable;
 
 Utils.removeSessionVariable = function removeSessionVariable(name) {
   try {
@@ -479,13 +470,7 @@ Utils.removeExpectedDeliveryTime = () => {
   Utils.removeSessionVariable('expectedDeliveryHour');
 };
 
-Utils.isSiteApp = (domain = document.location.hostname) => {
-  const domainList = (process.env.REACT_APP_QR_SCAN_DOMAINS || '')
-    .split(',')
-    .map(d => d.trim())
-    .filter(d => d);
-  return domainList.some(d => domain.toLowerCase() === d.toLowerCase());
-};
+Utils.isSiteApp = UtilsV2.isSiteApp;
 
 // unicode string to base64
 Utils.utoa = str => {
@@ -778,21 +763,7 @@ export const copyDataToClipboard = async text => {
   }
 };
 
-Utils.isFromBeepSite = () => {
-  try {
-    const beepOrderingSourceUrl = Utils.getSourceUrlFromSessionStorage();
-    if (!beepOrderingSourceUrl) {
-      return false;
-    }
-    const urlObj = new URL(beepOrderingSourceUrl);
-    const hostname = urlObj.hostname;
-
-    return Utils.isSiteApp(hostname);
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
+Utils.isFromBeepSite = UtilsV2.isFromBeepSite;
 
 Utils.getRegistrationTouchPoint = () => {
   const isOnCashbackPage = window.location.pathname.startsWith(ROUTER_PATHS.CASHBACK_BASE);
@@ -859,9 +830,7 @@ Utils.getMainDomain = () => {
 
 Utils.getCookieVariable = UtilsV2.getCookieVariable;
 
-Utils.setCookieVariable = (name, value, attributes) => {
-  return Cookies.set(name, value, attributes);
-};
+Utils.setCookieVariable = UtilsV2.setCookieVariable;
 
 // IMPORTANT! When deleting a cookie and you're not relying on the default attributes, you must pass the exact same path and domain attributes that were used to set the cookie
 Utils.removeCookieVariable = (name, attributes) => {
@@ -874,13 +843,9 @@ Utils.isSharedLink = () => {
   return Utils.getSessionVariable('BeepOrderingSource') === 'SharedLink';
 };
 
-Utils.saveSourceUrlToSessionStorage = sourceUrl => {
-  Utils.setSessionVariable('BeepOrderingSourceUrl', sourceUrl);
-};
+Utils.saveSourceUrlToSessionStorage = UtilsV2.saveSourceUrlToSessionStorage;
 
-Utils.getSourceUrlFromSessionStorage = () => {
-  return Utils.getSessionVariable('BeepOrderingSourceUrl');
-};
+Utils.getSourceUrlFromSessionStorage = UtilsV2.getSourceUrlFromSessionStorage;
 
 Utils.submitForm = (action, data) => {
   const form = document.createElement('form');
