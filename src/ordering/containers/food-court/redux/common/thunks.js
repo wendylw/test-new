@@ -62,7 +62,10 @@ export const selectedOneStore = createAsyncThunk(
     if (isWebview()) {
       await dispatch(appActions.loginByBeepApp());
 
+      console.log(`${redirectLocation}&source=${encodeURIComponent(document.location.href)}`);
+
       if (getUserIsLogin(getState())) {
+        console.log(`${redirectLocation}&source=${encodeURIComponent(document.location.href)}`);
         submitForm('/go2page', { target: `${redirectLocation}&source=${encodeURIComponent(document.location.href)}` });
       }
 
