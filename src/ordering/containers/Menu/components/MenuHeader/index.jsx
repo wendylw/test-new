@@ -1,4 +1,3 @@
-import _isEmpty from 'lodash/isEmpty';
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -122,9 +121,10 @@ const MenuHeader = ({ webHeaderVisibility }) => {
           rightContent={rightContentForNativeHeader}
           title={showStoreName ? storeDisplayTitle : ''}
           navFunc={() => {
-            // document.referrer gets the url of the previous page, if the user is from other page visit menu, we need to redirect to the source page
-            if (!_isEmpty(document.referrer)) {
-              window.location.href = document.referrer;
+            const sourceUrl = getSourceUrlFromSessionStorage();
+            // There is source url in session storage, so we can redirect to the source page
+            if (sourceUrl) {
+              window.location.href = sourceUrl;
               return;
             }
 
