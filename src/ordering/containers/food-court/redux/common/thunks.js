@@ -59,6 +59,8 @@ export const selectedOneStore = createAsyncThunk(
       return;
     }
 
+    alert(isWebview());
+
     if (isWebview()) {
       await dispatch(appActions.loginByBeepApp());
 
