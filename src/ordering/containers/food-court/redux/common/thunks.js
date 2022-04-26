@@ -63,7 +63,6 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByBeepApp());
 
       if (getUserIsLogin(getState())) {
-        await saveSourceUrlToSessionStorage(redirectLocation);
         window.location.href = redirectLocation;
       }
 
