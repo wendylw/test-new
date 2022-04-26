@@ -121,16 +121,16 @@ const MenuHeader = ({ webHeaderVisibility }) => {
           rightContent={rightContentForNativeHeader}
           title={showStoreName ? storeDisplayTitle : ''}
           navFunc={() => {
-            const sourceUrl = getSourceUrlFromSessionStorage();
-            // There is source url in session storage, so we can redirect to the source page
-            if (sourceUrl) {
-              window.location.href = sourceUrl;
-              return;
-            }
-
             if (isProductDetailDrawerVisible) {
               dispatch(hideProductDetailDrawer(false));
             } else {
+              const sourceUrl = getSourceUrlFromSessionStorage();
+              // There is source url in session storage, so we can redirect to the source page
+              if (sourceUrl) {
+                window.location.href = sourceUrl;
+                return;
+              }
+
               closeWebView();
             }
           }}
