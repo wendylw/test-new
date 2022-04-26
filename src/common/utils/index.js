@@ -150,3 +150,33 @@ export const getApiRequestShippingType = shippingType => {
       return type;
   }
 };
+
+export const getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
+  let storeUrl = `${config.beepOnlineStoreUrl(business)}/ordering/?h=${hash}`;
+  if (type) storeUrl += `&type=${type}`;
+  if (source) storeUrl += `&source=${encodeURIComponent(source)}`;
+  return storeUrl;
+};
+
+export const submitForm = (action, data) => {
+  const form = document.createElement('form');
+  form.action = action;
+  form.method = 'POST';
+  form.style.height = 0;
+  form.style.width = 0;
+  form.style.overflow = 'hidden';
+  form.style.visibility = 'hidden';
+
+  Object.keys(data).forEach(key => {
+    const input = document.createElement('input');
+    input.name = key;
+    input.value = data[key];
+    input.type = 'hidden';
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+
+  document.body.removeChild(form);
+};

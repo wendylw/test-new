@@ -2,7 +2,7 @@ import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getFoodCourtId } from './selectors';
 import { fetchFoodCourtStoreList } from './api-request';
-import { isWebview, isTNGMiniProgram, saveSourceUrlToSessionStorage } from '../../../../../common/utils';
+import { isWebview, isTNGMiniProgram, getMerchantStoreUrl, submitForm } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { actions as appActions, getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
 
@@ -53,7 +53,7 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByTngMiniProgram());
 
       if (getUserIsLogin(getState())) {
-        window.location.href = `${redirectLocation}&source=${encodeURIComponent(document.location.href)}`;
+        submitForm('/go2page', { target: `${redirectLocation}&source=${encodeURIComponent(document.location.href)}` });
       }
 
       return;
@@ -63,7 +63,7 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByBeepApp());
 
       if (getUserIsLogin(getState())) {
-        window.location.href = `${redirectLocation}&source=${encodeURIComponent(document.location.href)}`;
+        submitForm('/go2page', { target: `${redirectLocation}&source=${encodeURIComponent(document.location.href)}` });
       }
 
       return;
