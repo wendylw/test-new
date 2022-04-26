@@ -53,7 +53,7 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByTngMiniProgram());
 
       if (getUserIsLogin(getState())) {
-        window.location.href = `${redirectLocation}&source=${encodeURIComponent(document.location.href)}`;
+        submitForm('/go2page', { target: `${redirectLocation}&source=${encodeURIComponent(document.location.href)}` });
       }
 
       return;
@@ -62,8 +62,12 @@ export const selectedOneStore = createAsyncThunk(
     if (isWebview()) {
       await dispatch(appActions.loginByBeepApp());
 
+      alert(isWebview());
+
       if (getUserIsLogin(getState())) {
-        window.location.href = `${redirectLocation}&source=${encodeURIComponent(document.location.href)}`;
+        alert(`${redirectLocation}&source=${encodeURIComponent(document.location.href)}`);
+
+        submitForm('/go2page', { target: `${redirectLocation}&source=${encodeURIComponent(document.location.href)}` });
       }
 
       return;
