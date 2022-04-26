@@ -53,7 +53,7 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByTngMiniProgram());
 
       if (getUserIsLogin(getState())) {
-        window.location.href = redirectLocation;
+        window.location.href = `${redirectLocation}&source=${encodeURIComponent(redirectLocation)}`;
       }
 
       return;
@@ -63,7 +63,7 @@ export const selectedOneStore = createAsyncThunk(
       await dispatch(appActions.loginByBeepApp());
 
       if (getUserIsLogin(getState())) {
-        window.location.href = redirectLocation;
+        window.location.href = `${redirectLocation}&source=${encodeURIComponent(redirectLocation)}`;
       }
 
       return;
