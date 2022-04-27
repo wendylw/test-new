@@ -20,7 +20,7 @@ import {
   getTotal,
   getReceiptNumber,
 } from '../../redux/common/selectors';
-import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
+import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 import CheckoutForm from './CheckoutForm';
 
@@ -59,23 +59,8 @@ const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY |
 // React Stripe.js reference: https://stripe.com/docs/stripe-js/react
 class Stripe extends Component {
   async componentDidMount() {
-    try {
-      await this.ensurePaymentProvider();
-
-      this.props.loadBilling();
-    } catch (error) {
-      // TODO: handle this error in Payment 2.0
-      console.error(error);
-    }
+    this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
   }
-
-  ensurePaymentProvider = async () => {
-    const { paymentProvider, loadPaymentOptions } = this.props;
-    // refresh page will lost state
-    if (!paymentProvider) {
-      await loadPaymentOptions(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
-    }
-  };
 
   getPaymentEntryRequestData = () => {
     const { user } = this.props;
@@ -140,8 +125,7 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      loadBilling: bindActionCreators(loadBilling, dispatch),
-      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      initialize: bindActionCreators(initializeThunkCreator, dispatch),
     })
   )
 )(Stripe);

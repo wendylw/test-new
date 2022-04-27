@@ -12,7 +12,7 @@ import {
   actions as locationAndDateActionCreator,
   getDeliveryType,
   getStoreId,
-  getDeliveryAddress,
+  getAddressName,
   getOrderDateList,
   getSelectedOrderDate,
   getAvailableTimeSlotList,
@@ -22,6 +22,7 @@ import {
   getSelectedFromTime,
   isShowLoading,
   getOriginalDeliveryType,
+  getAddressInfo as getCachedAddressInfo,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -35,7 +36,7 @@ import {
   getStoreInfoForCleverTap,
   getStoreHashCode,
 } from '../../redux/modules/app';
-import { getAddressName, getAddressCoords } from '../../../redux/modules/address/selectors';
+import { getAddressInfo as getSavedAddressInfo } from '../../../redux/modules/address/selectors';
 import { setAddressInfo } from '../../../redux/modules/address/thunks';
 import { withAddressInfo } from '../Location/withAddressInfo';
 import dayjs from 'dayjs';
@@ -50,18 +51,10 @@ class LocationAndDate extends Component {
   footerEl = null;
   resetWhenWillUnmount = false;
 
-  state = {
-    selectedAddress: null,
-  };
-
   componentDidMount = async () => {
-    const { actions, location, addressName, addressCoords } = this.props;
-    const { selectedAddress = null } = location.state || {};
+    const { actions, location, savedAddressInfo, cachedAddressInfo } = this.props;
+    const { selectedAddress: selectedAddressInfo = null } = location.state || {};
 
-    this.setState({ selectedAddress });
-
-    const selectedAddressName = _get(selectedAddress, 'shortName', '') || _get(selectedAddress, 'fullName', '');
-    const selectedAddressCoords = _get(selectedAddress, 'coords', null);
     const deliveryType = (this.query.type || '').toLowerCase();
     this.ensureDeliveryType(deliveryType);
     const expectedDeliveryDate = Utils.getExpectedDeliveryDateFromSession();
@@ -69,14 +62,13 @@ class LocationAndDate extends Component {
     const expectedDay = _get(expectedDeliveryDate, 'date.date', null);
     const expectedFromTime = _get(expectedDeliveryDate, 'hour.from', null);
     // if delivery address updated from location page, should trigger `initial action` find nearest store
-    const storeId = selectedAddressCoords ? null : config.storeId;
+    const storeId = selectedAddressInfo ? null : config.storeId;
 
     await actions.initial({
       currentDate: new Date(),
       deliveryType: this.props.deliveryType || deliveryType,
       storeId: this.query.storeid || storeId,
-      deliveryAddress: selectedAddressName || addressName,
-      deliveryCoords: selectedAddressCoords ?? addressCoords,
+      addressInfo: selectedAddressInfo || cachedAddressInfo || savedAddressInfo,
       expectedDay: this.props.selectedDay || expectedDay,
       expectedFromTime: this.props.selectedFromTime || expectedFromTime,
       originalDeliveryType: this.props.originalDeliveryType ?? deliveryType,
@@ -84,7 +76,7 @@ class LocationAndDate extends Component {
 
     if (deliveryType === DELIVERY_METHOD.DELIVERY) {
       CleverTap.pushEvent(
-        `Shipping Details${this.props.deliveryAddress ? '' : ' (missing delivery address)'} - View Page`
+        `Shipping Details${this.props.cachedAddressInfo ? '' : ' (missing delivery address)'} - View Page`
       );
     }
 
@@ -181,20 +173,13 @@ class LocationAndDate extends Component {
   };
 
   isContinueButtonDisabled = () => {
-    const {
-      store,
-      deliveryAddress,
-      orderDateList,
-      availableTimeSlotList,
-      selectedOrderDate,
-      selectedTime,
-    } = this.props;
+    const { store, addressName, orderDateList, availableTimeSlotList, selectedOrderDate, selectedTime } = this.props;
 
     if (!store) {
       return true;
     }
 
-    if (this.isDelivery && !deliveryAddress) {
+    if (this.isDelivery && !addressName) {
       return true;
     }
 
@@ -239,8 +224,9 @@ class LocationAndDate extends Component {
       location,
       history,
       setAddressInfo,
+      cachedAddressInfo,
     } = this.props;
-    const { selectedAddress } = this.state;
+
     const expectedDate = {
       date: selectedOrderDate.date.toISOString(),
       isOpen: selectedOrderDate.isOpen,
@@ -262,8 +248,8 @@ class LocationAndDate extends Component {
     // reset redux store data when will unmount
     this.resetWhenWillUnmount = true;
 
-    if (selectedAddress) {
-      await setAddressInfo(selectedAddress);
+    if (cachedAddressInfo) {
+      await setAddressInfo(cachedAddressInfo);
     }
 
     await appActions.getStoreHashData(storeId);
@@ -433,7 +419,7 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryTo = () => {
-    const { t, deliveryAddress, storeInfoForCleverTap } = this.props;
+    const { t, addressName, storeInfoForCleverTap } = this.props;
 
     return (
       <div className="padding-normal">
@@ -449,15 +435,15 @@ class LocationAndDate extends Component {
           data-heap-name="ordering.location-and-date.deliver-to"
           data-testid="deliverTo"
         >
-          {!deliveryAddress && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
+          {!addressName && <IconSearch className="icon icon__big icon__default flex__shrink-fixed" />}
           <p
             className={`location-date__input form__input flex flex-middle text-size-big text-line-height-base text-omit__single-line ${
-              deliveryAddress ? 'padding-normal' : ''
+              addressName ? 'padding-normal' : ''
             }`}
           >
-            {deliveryAddress || t('WhereToDeliverFood')}
+            {addressName || t('WhereToDeliverFood')}
           </p>
-          {deliveryAddress && <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />}
+          {addressName && <IconNext className="icon icon__normal icon__primary flex__shrink-fixed" />}
         </div>
       </div>
     );
@@ -655,12 +641,12 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryContainer = () => {
-    const { deliveryAddress } = this.props;
+    const { addressName } = this.props;
     return (
       <Fragment>
         {this.renderDeliveryTo()}
 
-        {deliveryAddress ? (
+        {addressName ? (
           <Fragment>
             {this.renderSelectedStore()}
             {this.renderDeliveryDateSelector()}
@@ -739,7 +725,6 @@ export default compose(
       deliveryType: getDeliveryType(state),
       storeId: getStoreId(state),
       store: getStore(state),
-      deliveryAddress: getDeliveryAddress(state),
       businessDeliveryTypes: getBusinessDeliveryTypes(state),
       orderDateList: getOrderDateList(state),
       businessUTCOffset: getBusinessUTCOffset(state),
@@ -753,7 +738,8 @@ export default compose(
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       originalDeliveryType: getOriginalDeliveryType(state),
       addressName: getAddressName(state),
-      addressCoords: getAddressCoords(state),
+      cachedAddressInfo: getCachedAddressInfo(state),
+      savedAddressInfo: getSavedAddressInfo(state),
     }),
 
     dispatch => ({
