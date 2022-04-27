@@ -28,8 +28,7 @@ import {
 } from '../../redux/common/selectors';
 import qs from 'qs';
 import {
-  loadBilling,
-  loadPaymentOptions,
+  initialize as initializeThunkCreator,
   createOrder as createOrderThunkCreator,
   gotoPayment as gotoPaymentThunkCreator,
 } from '../../redux/common/thunks';
@@ -56,16 +55,11 @@ class Payment extends Component {
   willUnmount = false;
 
   componentDidMount = async () => {
-    const { loadPaymentOptions, loadBilling, paymentActions } = this.props;
+    const { initialize, paymentActions } = this.props;
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
-    await loadBilling();
-
-    /**
-     * Load all payment options action and except saved card list
-     */
-    loadPaymentOptions();
+    initialize();
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -399,8 +393,7 @@ export default compose(
     },
     dispatch => ({
       paymentActions: bindActionCreators(paymentActions, dispatch),
-      loadBilling: bindActionCreators(loadBilling, dispatch),
-      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      initialize: bindActionCreators(initializeThunkCreator, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       createOrder: bindActionCreators(createOrderThunkCreator, dispatch),
       gotoPayment: bindActionCreators(gotoPaymentThunkCreator, dispatch),
