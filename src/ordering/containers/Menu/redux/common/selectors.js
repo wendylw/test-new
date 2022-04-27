@@ -158,17 +158,7 @@ export const getHighlightedCategory = createSelector(
 
 export const getIsMenuRevamp = createSelector(
   getIsQrOrderingShippingType,
-  getBusiness,
-  (isQrOrderingShippingType, businessName) => {
-    if (!process.env.REACT_APP_MENU_REVAMP_PILOT_MERCHANTS) {
-      return false;
-    }
-
-    const pilotMerchants = process.env.REACT_APP_MENU_REVAMP_PILOT_MERCHANTS.split(',');
-    const isPilotMerchant = pilotMerchants.includes(businessName);
-
-    return isQrOrderingShippingType && isPilotMerchant;
-  }
+  isQrOrderingShippingType => isQrOrderingShippingType
 );
 
 export const getIsSearchingBannerVisible = state => state.menu.common.searchingBannerVisible;
