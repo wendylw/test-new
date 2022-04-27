@@ -28,6 +28,7 @@ import {
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
+import config from '../../../../../config';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING, DELIVERY_METHOD } = Constants;
 
@@ -321,6 +322,13 @@ export class OrderDetails extends Component {
 
     if (isWebview) {
       NativeMethods.goBack();
+      return;
+    }
+
+    const sourceUrl = Utils.getSourceUrlFromSessionStorage();
+
+    if (sourceUrl) {
+      window.location.href = sourceUrl;
       return;
     }
 
