@@ -111,22 +111,16 @@ const isTikTokIssues = (event, hint) => {
   try {
     const message = getErrorMessageFromHint(hint);
     const tiktokRegex = /https:\/\/analytics.tiktok.com/;
-    const stacktraceFileNamesAbsPaths = [...event.exception.values[0].stacktrace.frames, event.stacktrace.frames].map(
-      frame => ({
-        filename: frame.filename,
-        abs_path: frame.abs_path,
-      })
-    );
-    const contextIssues = stacktraceFileNamesAbsPaths.filter(({ filename, abs_path }) =>
-      tiktokRegex.test(filename || abs_path)
-    );
 
     // If error message includes `sendAnalyticsEvent not support`, this error is from `tiktok analysis` issue instead of beep issue.
     const monitorIssue = /sendAnalyticsEvent not support/.test(message);
     // In this case, the chunk file of tiktok failed to load, not because of the failure to load the Beep file.
     const chunkLoadFailed = tiktokRegex.test(message) && /Loading chunk/.test(message);
     // If abs_path or filename of stacktrace includes tiktok i18n events path, exception will response `ePageWillLeave=function(){var t,n;Object.keys(this.context.methods.getUserInfo())` on /i18n/pixel/events.js
-    const contextNoMethodFuncIssue = contextIssues && contextIssues.length > 0;
+    const contextNoMethodFuncIssue = [
+      ...event.exception.values[0].stacktrace.frames,
+      ...event.stacktrace.frames,
+    ].some(({ filename, abs_path }) => tiktokRegex.test(filename || abs_path));
 
     return monitorIssue || chunkLoadFailed || contextNoMethodFuncIssue;
   } catch {
