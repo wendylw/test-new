@@ -2,7 +2,7 @@ import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getFoodCourtId } from './selectors';
 import { fetchFoodCourtStoreList } from './api-request';
-import { isWebview, isTNGMiniProgram } from '../../../../../common/utils';
+import { isWebview, isTNGMiniProgram, getMerchantStoreUrl, submitForm } from '../../../../../common/utils';
 import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import { actions as appActions, getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
 
@@ -41,7 +41,7 @@ export const selectedOneStore = createAsyncThunk(
 
     const redirectLocation = `${window.location.protocol}//${hostList.join('.')}${
       PATH_NAME_MAPPING.ORDERING_BASE
-    }${redirectUrl}`;
+    }${redirectUrl}${isTNGMiniProgram() || isWebview() ? `&source=${encodeURIComponent(document.location.href)}` : ''}`;
 
     if (userSignedIn) {
       window.location.href = redirectLocation;
