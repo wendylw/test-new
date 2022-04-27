@@ -22,7 +22,7 @@ const FoodCourtHeader = () => {
 
   const goOrderHistoryPage = () => {
     if (userIsLogin) {
-      window.location.href = config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY;
+      window.location.href = `${config.beepitComUrl}${Constants.ROUTER_PATHS.ORDER_HISTORY}?isFoodCourt=${window.location.href}`;
     } else {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,

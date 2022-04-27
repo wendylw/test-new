@@ -96,6 +96,13 @@ class OrderHistory extends React.Component {
     this.login();
   };
 
+  handleHeaderNavFunc = () => {
+    const isFoodCourt = Utils.getQueryString();
+
+    window.location.href = isFoodCourt['isFoodCourt'];
+    return;
+  };
+
   render() {
     const { t, isLogin, orderHistoryList, hasMore, page, isRequestOrderDataDone, pageLoaderVisibility } = this.props;
 
@@ -118,7 +125,12 @@ class OrderHistory extends React.Component {
     return (
       <>
         {!Utils.isTNGMiniProgram() ? (
-          <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
+          <WebHeader
+            headerRef={ref => (this.headerEl = ref)}
+            navFunc={this.handleHeaderNavFunc}
+            isPage={true}
+            title={t('MyOrderHistory')}
+          />
         ) : null}
 
         <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
