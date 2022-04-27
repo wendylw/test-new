@@ -110,7 +110,7 @@ const isTikTokIssues = (event, hint) => {
   // These issues cause by tiktok monitoring script.
   try {
     const message = getErrorMessageFromHint(hint);
-    const tiktokRegex = /https:\/\/analytics.tiktok.com/;
+    const tiktokRegex = /^https:\/\/analytics.tiktok.com/;
 
     // If error message includes `sendAnalyticsEvent not support`, this error is from `tiktok analysis` issue instead of beep issue.
     const monitorIssue = /sendAnalyticsEvent not support/.test(message);
