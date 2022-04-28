@@ -29,13 +29,10 @@ import WebHeader from '../../components/WebHeader';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
-    const { isLogin, initOrderHistoryData, isPingRequestDone, isRequestOrderDataInPending } = this.props;
+    const { isLogin, initOrderHistoryData, isPingRequestDone } = this.props;
 
     if (isLogin) {
       initOrderHistoryData();
-      if (isRequestOrderDataInPending) {
-        window.location.reload();
-      }
     }
 
     if (isPingRequestDone && !isLogin) {
