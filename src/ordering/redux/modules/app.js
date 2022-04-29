@@ -281,8 +281,10 @@ export const actions = {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-        shippingType,
+        shippingType: Utils.getApiRequestShippingType(shippingType),
       });
+
+      debugger;
 
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,

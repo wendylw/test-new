@@ -26,7 +26,7 @@ import {
   getTotal,
   getReceiptNumber,
 } from '../../redux/common/selectors';
-import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
+import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
 import PaymentCardBrands from '../../components/PaymentCardBrands';
 import '../../styles/PaymentCreditCard.scss';
@@ -68,11 +68,7 @@ class CreditCard extends Component {
 
     this.setState({ domLoaded: true });
 
-    const { loadPaymentOptions } = this.props;
-
-    this.props.loadBilling();
-
-    loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+    this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
   }
 
   getPaymentEntryRequestData = () => {
@@ -628,8 +624,7 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
-      loadBilling: bindActionCreators(loadBilling, dispatch),
+      initialize: bindActionCreators(initializeThunkCreator, dispatch),
     })
   )
 )(CreditCard);

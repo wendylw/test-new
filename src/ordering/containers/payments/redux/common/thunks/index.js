@@ -15,7 +15,8 @@ import {
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
-import { getTotal } from '../selectors';
+import { getBillingLoadedComplete, getTotal } from '../selectors';
+import loggly from '../../../../../../utils/monitoring/loggly';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
 
@@ -116,6 +117,29 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) => {
 };
 /* end of Model */
 
+export const initialize = createAsyncThunk(
+  'ordering/payments/initialize',
+  async (initialPaymentMethod = null, { dispatch, getState }) => {
+    try {
+      await dispatch(loadBilling()).unwrap();
+
+      // MUST call [loadBilling] thunk before calling this function
+      // because paymentOptions data depends on billing total
+      await dispatch(loadPaymentOptions(initialPaymentMethod)).unwrap();
+    } catch (error) {
+      window.newrelic?.addPageAction('ordering.paymentInitialize.error', {
+        error: error?.message,
+        initialPaymentMethod,
+      });
+
+      loggly.error('ordering.paymentInitialize.error', {
+        error: error?.message,
+        initialPaymentMethod,
+      });
+    }
+  }
+);
+
 /**
  * Billing is a abstract data, it has two source:
  * For pay first order, update the Billing data by shopping cart data
@@ -162,7 +186,7 @@ export const loadPaymentOptions = createAsyncThunk(
     const storeId = getStoreId(state);
     const shippingType = getShippingType(state);
 
-    const { url, queryParams } = API_INFO.getPayments(storeId, Utils.getApiRequestShippingType(shippingType));
+    const { url, queryParams } = API_INFO.getPayments(storeId, Utils.getApiRequestShippingType(shippingType), total);
     const result = await get(url, { queryParams });
     if (!result.data) {
       throw result.error;
