@@ -1,9 +1,9 @@
 import { post } from '../../../../../../utils/api/api-fetch';
 
 export const API_INFO = {
-  getPayments: (storeId, shippingType) => ({
+  getPayments: (storeId, shippingType, amount) => ({
     url: '/payment/online/options',
-    queryParams: { storeId, shippingType },
+    queryParams: { storeId, shippingType, amount },
   }),
   getSavedCardList: (userId, paymentProvider) => ({
     url: `/api/consumers/${userId}/paymentMethods`,
