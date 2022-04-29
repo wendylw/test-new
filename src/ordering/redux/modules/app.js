@@ -284,8 +284,6 @@ export const actions = {
         shippingType: Utils.getApiRequestShippingType(shippingType),
       });
 
-      debugger;
-
       dispatch({
         type: types.CREATE_LOGIN_SUCCESS,
         payload: { ...result, source },
