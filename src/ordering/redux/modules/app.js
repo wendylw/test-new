@@ -281,7 +281,7 @@ export const actions = {
         accessToken,
         refreshToken,
         fulfillDate: Utils.getFulfillDate(businessUTCOffset),
-        shippingType,
+        shippingType: Utils.getApiRequestShippingType(shippingType),
       });
 
       dispatch({
