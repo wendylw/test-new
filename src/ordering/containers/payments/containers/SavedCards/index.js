@@ -21,7 +21,7 @@ import {
   getTotal,
   getReceiptNumber,
 } from '../../redux/common/selectors';
-import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
+import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
 import '../../styles/PaymentCreditCard.scss';
 
@@ -34,22 +34,14 @@ class SavedCards extends Component {
 
   willUnmount = false;
 
-  ensurePaymentProvider = async () => {
-    const { paymentProvider, loadPaymentOptions } = this.props;
-    // refresh page will lost state
-    if (!paymentProvider) {
-      await loadPaymentOptions(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
-    }
-  };
-
   componentDidMount = async () => {
     try {
       this.setState({
         showLoading: true,
       });
-      await this.ensurePaymentProvider();
+      await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 
-      const { paymentProvider, history, cardList, supportSaveCard, loadBilling } = this.props;
+      const { paymentProvider, history, cardList, supportSaveCard } = this.props;
 
       if (!supportSaveCard) {
         history.replace({
@@ -71,8 +63,6 @@ class SavedCards extends Component {
         });
         return;
       }
-
-      await loadBilling();
     } catch (error) {
       // TODO: Handle this error in Payment 2.0
       console.error(error);
@@ -256,8 +246,7 @@ export default compose(
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
-      loadBilling: bindActionCreators(loadBilling, dispatch),
+      initialize: bindActionCreators(initializeThunkCreator, dispatch),
       fetchSavedCard: bindActionCreators(savedCardsThunks.fetchSavedCard, dispatch),
       setPaymentCard: bindActionCreators(savedCardsActions.setPaymentCard, dispatch),
     })
