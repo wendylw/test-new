@@ -67,6 +67,7 @@ export const PATH_NAME_MAPPING = {
   VOUCHER_PAYMENT: '/ordering/payment',
   // dine
   DINE: '/dine',
+  FOOD_COURT: '/food-court',
 };
 
 export const PROMOTION_CLIENT_TYPES = {

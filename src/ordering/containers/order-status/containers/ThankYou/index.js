@@ -797,8 +797,8 @@ export class ThankYou extends PureComponent {
       options.push(`type=${shippingType}`);
     }
 
-    window.location.href = `${window.location.protocol}//${hostList.join('.')}${
-      Constants.ROUTER_PATHS.ORDERING_BASE
+    window.location.href = `${window.location.protocol}//${hostList.join('.')}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+      Constants.ROUTER_PATHS.FOOD_COURT
     }?${options.join('&')}`;
   };
 
@@ -838,6 +838,7 @@ export class ThankYou extends PureComponent {
     // If this order is from Food Court, go to Food Court Landing Page
     if (foodCourtId) {
       this.goToFoodCourtLandingPage();
+      return;
     }
 
     this.goToOrderingHomePage();

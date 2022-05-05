@@ -81,7 +81,7 @@ class Routes extends Component {
               path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`}
               component={ContactDetail}
             />
-            <Route exact path={'/food-court'} component={FoodCourt} />
+            <Route exact path={ROUTER_PATHS.FOOD_COURT} component={FoodCourt} />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>
