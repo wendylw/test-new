@@ -30,6 +30,7 @@ class Carousel extends Component {
       'shipping type': shippingType,
       'has promo': !_isEmpty(promoTag),
       cashback,
+      'has lowest price': _get(store, 'isLowestPrice', false),
     });
 
     const { addressInfo } = this.props;

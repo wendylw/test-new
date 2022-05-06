@@ -33,6 +33,10 @@
   @apply tw-flex tw-flex-row tw-items-center tw-justify-start tw-w-full;
 }
 
+.StoreCardLowPriceTagContainer {
+  @apply tw-absolute sm:tw-bottom-8px tw-bottom-8 sm:tw-left-8px tw-left-8;
+}
+
 @media (min-width: 770px) {
   .StoreCardImageContainer {
     width: 174px;

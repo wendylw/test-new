@@ -9,6 +9,7 @@ import VendorImage from '../../../../../components/VendorImage';
 import RibbonBadge from '../../../../../components/RibbonBadge';
 import RatingTag from '../../../../../components/RatingTag';
 import PromoTag from '../../../../../components/PromoTag';
+import LowPriceTag from '../../../../../components/LowPriceTag';
 import styles from './StoreCard.module.scss';
 
 const StoreCard = ({ store, onClick }) => {
@@ -22,6 +23,7 @@ const StoreCard = ({ store, onClick }) => {
   const promoTag = useMemo(() => _get(store, 'promoTag', ''), [store]);
   const rating = useMemo(() => _get(store, 'reviewInfo.rating', ''), [store]);
   const cashbackRate = useMemo(() => _get(store, 'cashbackRate', 0), [store]);
+  const hasLowestPrice = useMemo(() => _get(store, 'isLowestPrice', false), [store]);
   const cashbackRatePercentage = useMemo(() => Math.round((Number(cashbackRate) || 0) * 100), [cashbackRate]);
   const isFreeDeliveryAvailable = useMemo(() => _get(store, 'showFreeDeliveryTag', false), [store]);
   const isCashbackAvailable = useMemo(() => enableCashback && cashbackRate, [enableCashback, cashbackRate]);
@@ -62,6 +64,7 @@ const StoreCard = ({ store, onClick }) => {
           </div>
         )}
         <VendorImage src={avatar} alt={name} isClosed={isStoreClosed} />
+        {hasLowestPrice && <LowPriceTag className={styles.StoreCardLowPriceTagContainer} />}
         {rating && <RatingTag rating={rating} className={styles.StoreCardRatingTagContainer} />}
       </div>
       <div className={`${styles.StoreCardSummaryContainer} ${isStoreClosed ? 'tw-opacity-40' : ''}`}>

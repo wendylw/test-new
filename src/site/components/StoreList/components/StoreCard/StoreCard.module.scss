@@ -45,8 +45,18 @@
   @apply tw-bg-transparent;
 }
 
-.StoreCardPromoTagContainer {
-  @apply tw-flex tw-flex-row tw-items-center tw-justify-start tw-w-full;
+.StoreCardTagListContainer {
+  @apply tw-flex tw-flex-row tw-items-center tw-justify-start tw-w-full tw-flex-wrap;
+}
+
+.StoreCardTagListItem {
+  @apply tw-flex tw-items-center sm:tw-mt-4px tw-mt-4;
+
+  height: 16px;
+
+  &:not(:last-child) {
+    @apply sm:tw-mr-4px tw-mr-4;
+  }
 }
 
 .StoreCardProductContainer {

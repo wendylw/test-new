@@ -43,6 +43,7 @@ import { loadOrder, loadOrderStatus } from '../../redux/thunks';
 import {
   getOrder,
   getOrderStatus,
+  getOrderStoreInfo,
   getReceiptNumber,
   getRiderLocations,
   getIsOrderCancellable,
@@ -245,7 +246,7 @@ export class ThankYou extends PureComponent {
 
   // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
   recordChargedEvent = () => {
-    const { order, business, onlineStoreInfo } = this.props;
+    const { order, business, onlineStoreInfo, orderStoreInfo } = this.props;
 
     let totalQuantity = 0;
     let totalDiscount = 0;
@@ -290,6 +291,7 @@ export class ThankYou extends PureComponent {
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
       'promo/voucher applied': _get(order, 'displayPromotions[0].promotionCode'),
+      'Lowest Price': _get(orderStoreInfo, 'isLowestPrice', false),
     });
   };
 
@@ -922,6 +924,7 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
+      orderStoreInfo: getOrderStoreInfo(state),
       businessInfo: getBusinessInfo(state),
       business: getBusiness(state),
       user: getUser(state),
