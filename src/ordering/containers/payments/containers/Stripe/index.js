@@ -29,26 +29,35 @@ const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
 // recreating the `Stripe` object on every render.
 const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '')
   .then(stripe => {
+    console.log('stripeMY==>', stripe);
+
     window.newrelic?.addPageAction('common.stripe-load-success', {
       country: 'MY',
     });
     return stripe;
   })
   .catch(err => {
+    console.log('stripeErrorMY==>', err);
+
     window.newrelic?.addPageAction('common.stripe-load-failure', {
       error: err?.message,
       country: 'MY',
     });
+
     throw err;
   });
 const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '')
   .then(stripe => {
+    console.log('stripeSG==>', stripe);
+
     window.newrelic?.addPageAction('common.stripe-load-success', {
       country: 'SG',
     });
     return stripe;
   })
   .catch(err => {
+    console.log('stripeErrorSG==>', err);
+
     window.newrelic?.addPageAction('common.stripe-load-failure', {
       error: err?.message,
       country: 'SG',

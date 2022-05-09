@@ -48,7 +48,7 @@ class CardCVV extends Component {
       return;
     }
 
-    this.timeoutId = setTimeout(this.handleLoadTimeout, STRIPE_LOAD_TIME_OUT);
+    // this.timeoutId = setTimeout(this.handleLoadTimeout, STRIPE_LOAD_TIME_OUT);
   }
 
   componentWillUnmount() {
@@ -172,7 +172,7 @@ class CardCVV extends Component {
               merchantCountry={merchantCountry}
             />
           </div>
-          <Loader className={'loading-cover opacity'} loaded={isCvvComponentReady} />
+          {/* <Loader className={'loading-cover opacity'} loaded={isCvvComponentReady} /> */}
         </div>
         <footer
           ref={ref => {

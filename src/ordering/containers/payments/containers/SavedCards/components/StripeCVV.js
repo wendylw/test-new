@@ -18,10 +18,13 @@ const stripeMYPromise = loadStripe(MY_STRIPE_KEY)
     return stripe;
   })
   .catch(err => {
+    console.log('stripeErrorMY==>', err);
+
     window.newrelic?.addPageAction('common.stripe-load-failure', {
       error: err?.message,
       country: 'MY',
     });
+
     throw err;
   });
 const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
@@ -32,6 +35,8 @@ const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
     return stripe;
   })
   .catch(err => {
+    console.log('stripeErrorSG==>', err);
+
     window.newrelic?.addPageAction('common.stripe-load-failure', {
       error: err?.message,
       country: 'SG',
@@ -123,7 +128,7 @@ const StripeCVV = forwardRef((props, ref) => {
   const { merchantCountry } = props;
 
   return (
-    <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise}>
+    <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{ loader: 'always' }}>
       <CVVInput ref={ref} {...props} />
     </Elements>
   );
