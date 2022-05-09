@@ -32,6 +32,7 @@ const normalizeAlertOptions = options => ({
   onClose: () => {},
   ...options,
 });
+
 const createAlert = (content, options) =>
   new Promise(resolve => {
     const { container, onClose, ...restOptions } = options;

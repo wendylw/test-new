@@ -42,10 +42,10 @@ const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
     });
 
     alert(i18next.t('GotoPaymentFailedDescription'), {
-      onClose: () => window.location.reload(),
+      onClose: () => {
+        window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_ONLINE_SAVED_CARDS}${window.location.search}`;
+      },
     });
-
-    throw err;
   });
 
 export default (WrappedComponent, { withRef = false }) => {

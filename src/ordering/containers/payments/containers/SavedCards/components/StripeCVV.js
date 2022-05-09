@@ -1,49 +1,9 @@
 import React, { useImperativeHandle, useState, Fragment } from 'react';
 import { Elements, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
-// import { loadStripe } from '@stripe/stripe-js';
 import StripeWrapper from '../../../components/StripeWrapper';
 import CVCCardImage from '../../../../../../images/cvc-card.png';
 import _isFunction from 'lodash/isFunction';
 import _get from 'lodash/get';
-
-// const MY_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '';
-// const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
-
-// Make sure to call `loadStripe` outside of a component’s render to avoid
-// recreating the `Stripe` object on every render.
-// const stripeMYPromise = loadStripe(MY_STRIPE_KEY)
-//   .then(stripe => {
-//     window.newrelic?.addPageAction('common.stripe-load-success', {
-//       country: 'MY',
-//     });
-//     return stripe;
-//   })
-//   .catch(err => {
-//     console.log('stripeErrorMY==>', err);
-
-//     window.newrelic?.addPageAction('common.stripe-load-failure', {
-//       error: err?.message,
-//       country: 'MY',
-//     });
-
-//     throw err;
-//   });
-// const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
-//   .then(stripe => {
-//     window.newrelic?.addPageAction('common.stripe-load-success', {
-//       country: 'SG',
-//     });
-//     return stripe;
-//   })
-//   .catch(err => {
-//     console.log('stripeErrorSG==>', err);
-
-//     window.newrelic?.addPageAction('common.stripe-load-failure', {
-//       error: err?.message,
-//       country: 'SG',
-//     });
-//     throw err;
-//   });
 
 const CVVInput = React.forwardRef((props, ref) => {
   const { onReady, onChange } = props;
