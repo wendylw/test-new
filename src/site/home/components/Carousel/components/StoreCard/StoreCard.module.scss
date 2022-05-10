@@ -25,8 +25,12 @@
   top: 2.5641vw;
 }
 
+.StoreCardTagListContainer {
+  @apply tw-absolute sm:tw-bottom-8px tw-bottom-8 sm:tw-inset-x-8px tw-inset-x-8 tw-flex tw-justify-between tw-items-end;
+}
+
 .StoreCardRatingTagContainer {
-  @apply tw-absolute sm:tw-bottom-8px tw-bottom-8 sm:tw-right-8px tw-right-8 sm:tw-pl-4px tw-pl-4 sm:tw-pr-2px tw-pr-2 tw-rounded-sm tw-bg-white;
+  @apply sm:tw-pl-4px tw-pl-4 sm:tw-pr-2px tw-pr-2 tw-rounded-sm tw-bg-white;
 }
 
 .StoreCardPromoTagContainer {
@@ -34,7 +38,7 @@
 }
 
 .StoreCardLowPriceTagContainer {
-  @apply tw-absolute sm:tw-bottom-8px tw-bottom-8 sm:tw-left-8px tw-left-8;
+  @apply sm:tw-mr-4px tw-mr-4;
 }
 
 @media (min-width: 770px) {

@@ -4,3 +4,9 @@
   border-radius: 2px;
   background-color: #fff2e3;
 }
+
+.LowPriceTagTitle {
+  @apply tw-block tw-text-xs tw-text-orange-dark tw-font-bold tw-leading-loose tw-truncate;
+
+  padding: 0 2px;
+}

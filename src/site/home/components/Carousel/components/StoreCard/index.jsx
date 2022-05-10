@@ -64,8 +64,10 @@ const StoreCard = ({ store, onClick }) => {
           </div>
         )}
         <VendorImage src={avatar} alt={name} isClosed={isStoreClosed} />
-        {hasLowestPrice && <LowPriceTag className={styles.StoreCardLowPriceTagContainer} />}
-        {rating && <RatingTag rating={rating} className={styles.StoreCardRatingTagContainer} />}
+        <ol className={styles.StoreCardTagListContainer}>
+          {hasLowestPrice && <LowPriceTag className={styles.StoreCardLowPriceTagContainer} />}
+          {rating && <RatingTag rating={rating} className={styles.StoreCardRatingTagContainer} />}
+        </ol>
       </div>
       <div className={`${styles.StoreCardSummaryContainer} ${isStoreClosed ? 'tw-opacity-40' : ''}`}>
         <h3 className={styles.StoreCardTitle}>{name}</h3>

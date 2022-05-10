@@ -15,9 +15,7 @@ const LowPriceTag = ({ className }) => {
   return (
     <li className={classNameList.join(' ')}>
       <ShieldDollarIcon className="tw-flex" />
-      <span className="tw-block tw-text-xs tw-text-orange-dark tw-font-bold tw-leading-loose tw-truncate tw-px-2 sm:tw-px-2px">
-        {t('LowestPrice')}
-      </span>
+      <span className={styles.LowPriceTagTitle}>{t('LowestPrice')}</span>
     </li>
   );
 };
