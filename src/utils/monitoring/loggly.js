@@ -45,7 +45,7 @@ const sendToLogService = async (data, tags = '') => {
   if (!REACT_APP_LOG_SERVICE_URL || !REACT_APP_LOG_SERVICE_TOKEN) {
     return;
   }
-  const tagArray = `${REACT_APP_LOGGLY_TAG.replace(/ /g, '')}${tags && `,${tags}`}`.split(',');
+  const tagArray = `${(REACT_APP_LOGGLY_TAG || '').replace(/ /g, '')}${tags && `,${tags}`}`.split(',');
   const body = JSON.stringify({
     ...data,
     tags: tagArray,
