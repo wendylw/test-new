@@ -327,6 +327,8 @@ const initPayLaterPayment = async (dataOfLater, dispatch) => {
     return res;
   } catch (e) {
     handlePayLaterPaymentError({ e, dispatch });
+
+    throw e;
   }
 };
 
@@ -341,7 +343,7 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
       onClose: () =>
         dispatch(
           push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
             search: removeReceiptNumberUrl,
           })
         ),
@@ -354,7 +356,7 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
       onClose: () =>
         dispatch(
           push({
-            pathname: Constants.ROUTER_PATHS.ORDERING_BASE,
+            pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
             search: removeReceiptNumberUrl,
           })
         ),
@@ -368,7 +370,9 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
   }
 };
 
-export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (dispatch, getState) => {
+export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
+  const paymentProvider = paymentArgs?.paymentProvider;
+
   try {
     const state = getState();
     const shippingType = getShippingType(state);
@@ -378,7 +382,6 @@ export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (
     const source = Utils.getOrderSource();
     const planId = getBusinessByName(state, business).planId || '';
     const isInternal = planId.startsWith('internal');
-    const paymentProvider = paymentArgs?.paymentProvider;
 
     if (Utils.isTNGMiniProgram()) {
       await callTNGMiniProgramPayment({
@@ -418,7 +421,7 @@ export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (
     };
 
     const { redirectURL: thankYouPageUrl, paymentUrl } = enablePayLater
-      ? await initPayLaterPayment(dataOfLater, history)
+      ? await initPayLaterPayment(dataOfLater, dispatch)
       : await initPayment(data);
 
     if (paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
@@ -443,7 +446,17 @@ export const gotoPayment = ({ orderId, total, history }, paymentArgs) => async (
 
     window.location.href = paymentUrl;
   } catch (error) {
-    console.error('Catch an error in gotoPayment function', error);
+    window.newrelic?.addPageAction('ordering.initPayment.error', {
+      error: error?.message,
+      paymentProvider,
+      receiptNumber: orderId,
+    });
+
+    loggly.error('ordering.initPayment.error', {
+      error: error?.message,
+      paymentProvider,
+      receiptNumber: orderId,
+    });
 
     if (error.code) {
       // TODO: This type is actually not used, because apiError does not respect action type,

@@ -12,6 +12,7 @@ module.exports = {
       sm: '4px',
       lg: '12px',
       xl: '16px',
+      '2xl': '24px',
       full: '50%',
     },
     fontFamily: {
@@ -115,6 +116,7 @@ module.exports = {
       },
       zIndex: {
         '60': '60',
+        '100': '100',
       },
     },
   },

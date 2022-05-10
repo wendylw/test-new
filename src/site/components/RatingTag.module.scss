@@ -1,0 +1,7 @@
+.RatingTagContainer {
+  @apply tw-flex tw-flex-row tw-items-center;
+}
+
+.RatingTagIcon {
+  @apply sm:tw-my-2px tw-my-2 tw-text-base tw-text-yellow;
+}

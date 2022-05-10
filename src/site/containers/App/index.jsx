@@ -19,7 +19,7 @@ class SiteApp extends React.Component {
     // const isErrorPage = /^\/error/.test(pathname || '') || /^\/ordering\/location/.test(pathname || '');
 
     return (
-      <React.Fragment>
+      <div className="tw-font-sans">
         {error ? (
           <ErrorToast
             className="fixed-wrapper padding-normal"
@@ -30,7 +30,7 @@ class SiteApp extends React.Component {
         {/* <SiteFakeHeader /> */}
         <Routes />
         {this.showSiteFooter && <SiteFooter />}
-      </React.Fragment>
+      </div>
     );
   }
 }

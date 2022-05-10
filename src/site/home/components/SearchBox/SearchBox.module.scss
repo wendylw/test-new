@@ -1,0 +1,19 @@
+.SearchBoxContainer {
+  @apply tw-flex tw-justify-between tw-items-center
+      tw-bg-white tw-w-full tw-cursor-pointer
+      tw-border-none tw-outline-none tw-p-0 tw-m-0;
+
+  height: 40px;
+  border-radius: 24px;
+}
+
+.SearchBoxIcon {
+  @apply sm:tw-ml-12px tw-ml-12 sm:tw-my-8px tw-my-8 sm:tw-mr-4px tw-mr-4
+    tw-flex-shrink-0 tw-text-2xl tw-text-gray;
+}
+
+.SearchBoxContent {
+  @apply tw-flex-grow
+    sm:tw-ml-4px tw-ml-4 sm:tw-mr-16px tw-mr-16 sm:tw-py-8px tw-py-8
+    tw-text-left tw-leading-relaxed tw-text-gray-600 tw-truncate;
+}

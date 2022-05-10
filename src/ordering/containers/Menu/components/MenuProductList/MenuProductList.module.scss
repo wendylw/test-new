@@ -1,5 +1,9 @@
 @import "../../../../../common/styles/variables.scss";
 
+.menuProductCategorySearchContainer {
+  @apply tw-flex tw-items-center tw-sticky tw-top-0 tw-p-16 sm:tw-p-16px tw-bg-white tw-z-10;
+}
+
 .bestSellerCategoryProductList {
   @apply tw-relative tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 md:tw-grid-cols-2 tw-gap-4 sm:tw-gap-4px tw-px-8 sm:tw-px-8px tw-pt-12 sm:tw-pt-12px tw-pb-2 sm:tw-pb-2px tw-mx-2 sm:tw-mx-2px;
 
@@ -9,6 +13,10 @@
     content: "";
     height: 1px;
   }
+}
+
+.menuProductItem {
+  @apply tw-cursor-pointer;
 }
 
 .categoryProductList .menuProductItem {
@@ -22,14 +30,15 @@
 
 .menuProductItemTitle,
 .menuProductItemDescription {
-  @apply tw-font-bold tw-leading-relaxed;
+  @apply tw-font-bold tw-leading-relaxed tw-mr-12 sm:tw-mr-12px;
   @include text-line-clamp(2, 3em);
 }
 
 .menuProductItemNoImage {
-  .menuProductItemTitle,
-  .menuProductItemDescription {
-    max-width: 85%;
+  @apply tw-flex tw-items-start;
+
+  .menuProductItemCartQuantity {
+    @apply tw-static tw-flex-shrink-0;
   }
 }
 
@@ -57,4 +66,24 @@
   .menuProductItemCartQuantity {
     @apply tw-opacity-40;
   }
+}
+
+.menuProductNoResult {
+  @apply tw-relative tw-text-center tw-py-8 sm:tw-py-8px;
+
+  top: 15vh;
+  // No result height is not enough, so we need to set height to 100%
+  height: calc(85vh - 70px);
+}
+
+.menuProductNoResultImage {
+  @apply tw-w-3/10 tw-m-8 sm:tw-m-8px;
+
+  max-width: 120px;
+}
+
+.menuProductNoResultImage {
+  @apply tw-w-3/10 tw-m-8 sm:tw-m-8px;
+
+  max-width: 120px;
 }

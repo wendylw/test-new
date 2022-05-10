@@ -24,7 +24,7 @@ import {
   getCleverTapAttributes,
   getReceiptNumber,
 } from '../../redux/common/selectors';
-import { loadPaymentOptions, loadBilling } from '../../redux/common/thunks';
+import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { actions } from './redux';
 import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';
@@ -40,14 +40,12 @@ class OnlineBanking extends Component {
   };
 
   async componentDidMount() {
-    const { loadPaymentOptions, loadBilling } = this.props;
-
-    await loadBilling();
+    const { initialize } = this.props;
 
     /**
      * Load all payment options action and except saved card list
      */
-    loadPaymentOptions(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
+    initialize(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
   }
 
   getPaymentEntryRequestData = () => {
@@ -233,9 +231,8 @@ export default compose(
     },
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
-      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      initialize: bindActionCreators(initializeThunkCreator, dispatch),
       updateBankingSelected: bindActionCreators(actions.updateBankingSelected, dispatch),
-      loadBilling: bindActionCreators(loadBilling, dispatch),
     })
   )
 )(OnlineBanking);

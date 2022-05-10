@@ -28,8 +28,7 @@ import {
 } from '../../redux/common/selectors';
 import qs from 'qs';
 import {
-  loadBilling,
-  loadPaymentOptions,
+  initialize as initializeThunkCreator,
   createOrder as createOrderThunkCreator,
   gotoPayment as gotoPaymentThunkCreator,
 } from '../../redux/common/thunks';
@@ -56,16 +55,11 @@ class Payment extends Component {
   willUnmount = false;
 
   componentDidMount = async () => {
-    const { loadPaymentOptions, loadBilling, paymentActions } = this.props;
+    const { initialize, paymentActions } = this.props;
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
-    await loadBilling();
-
-    /**
-     * Load all payment options action and except saved card list
-     */
-    loadPaymentOptions();
+    initialize();
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -183,13 +177,15 @@ class Payment extends Component {
 
   // TODO: This place logic almost same as the “handleCreateOrder” function that in CreateOrderButton component
   handlePayWithCash = async () => {
+    const { shippingType, currentPaymentOption } = this.props;
+    const paymentProvider = currentPaymentOption.paymentProvider;
+
     try {
-      const { t, shippingType, cashback, currentPaymentOption, createOrder, total, gotoPayment } = this.props;
+      const { t, cashback, createOrder, total, gotoPayment } = this.props;
       this.setState({
         payNowLoading: true,
       });
 
-      const paymentProvider = currentPaymentOption.paymentProvider;
       loggly.log('payment.pay-attempt', { method: paymentProvider });
 
       let orderId = this.props.receiptNumber;
@@ -253,7 +249,17 @@ class Payment extends Component {
         );
       }
     } catch (error) {
-      console.error('Got a error in handlePayWithCash function', error);
+      window.newrelic?.addPageAction('ordering.createOrder.error', {
+        error: error?.message,
+        shippingType,
+        paymentName: paymentProvider,
+      });
+
+      loggly.error('ordering.createOrder.error', {
+        error: error?.message,
+        shippingType,
+        paymentName: paymentProvider,
+      });
 
       this.setState({
         payNowLoading: false,
@@ -387,8 +393,7 @@ export default compose(
     },
     dispatch => ({
       paymentActions: bindActionCreators(paymentActions, dispatch),
-      loadBilling: bindActionCreators(loadBilling, dispatch),
-      loadPaymentOptions: bindActionCreators(loadPaymentOptions, dispatch),
+      initialize: bindActionCreators(initializeThunkCreator, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       createOrder: bindActionCreators(createOrderThunkCreator, dispatch),
       gotoPayment: bindActionCreators(gotoPaymentThunkCreator, dispatch),

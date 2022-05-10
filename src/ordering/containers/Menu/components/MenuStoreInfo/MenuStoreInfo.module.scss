@@ -1,16 +1,17 @@
 $cashbackTagBackgroundColor: #fff2e3;
-$cashbackTagBorderRadius: 2px;
 
 .menuStoreInfo {
   @apply tw-flex tw-items-center tw-px-16 sm:tw-px-16px;
 
   &__logo {
+    @apply tw-mr-12 sm:tw-mr-12px;
+
     width: 22.35%;
     max-width: 80px;
   }
 
   &__tag {
     background-color: $cashbackTagBackgroundColor;
-    border-radius: $cashbackTagBorderRadius;
+    border-radius: 2px;
   }
 }

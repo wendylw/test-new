@@ -281,3 +281,30 @@ If terminal response
 ```
 nvm use v12.17
 ```
+
+- If `yarn` error - unable to get local issuer certificate
+
+```shell script
+yarn config set "strict-ssl" false
+```
+
+- If `yarn start`
+  `
+  There might be a problem with the project dependency tree.
+  It is likely not a bug in Create React App, but something you need to fix locally.
+
+  The react-scripts package provided by Create React App requires a dependency:
+
+  "babel-loader": "8.1.0"
+
+  Don't try to install it manually: your package manager does it automatically.
+  However, a different version of babel-loader was detected higher up in the tree:
+
+  /Users/alanrussell/Documents/playground/sb-sc-bug-repro/node_modules/babel-loader (version: 8.2.1)
+
+  Manually installing incompatible versions is known to cause hard-to-debug issues.
+  `
+
+  ```shell script
+  npm i yarn -g
+  ```

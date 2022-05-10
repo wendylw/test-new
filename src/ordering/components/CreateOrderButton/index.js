@@ -82,7 +82,21 @@ class CreateOrderButton extends React.Component {
     try {
       await this.handleCreateOrder();
     } catch (error) {
-      console.error(error);
+      const { paymentName } = this.props;
+      const shippingType = Utils.getOrderTypeFromUrl();
+
+      window.newrelic?.addPageAction('ordering.createOrder.error', {
+        error: error?.message,
+        shippingType,
+        paymentName: paymentName || 'N/A',
+      });
+
+      loggly.error('ordering.createOrder.error', {
+        error: error?.message,
+        shippingType,
+        paymentName: paymentName || 'N/A',
+      });
+
       this.props.afterCreateOrder && this.props.afterCreateOrder();
     }
   };

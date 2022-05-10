@@ -20,7 +20,7 @@ import { bindActionCreators, compose } from 'redux';
 import { getSelectedProductDetail } from '../redux/common/selectors';
 import { actions as appActionCreators } from '../../../redux/modules/app';
 import { updateCartItems as updateCartItemsThunk } from '../../../redux/cart/thunks';
-import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../utils/gtm';
+import { GTM_TRACKING_EVENTS, gtmEventTracking, STOCK_STATUS_MAPPING } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';
 import loggly from '../../../../utils/monitoring/loggly';
 import 'swiper/swiper.scss';
@@ -443,14 +443,6 @@ class ProductDetailDrawer extends Component {
       childrenProduct = selectedProduct;
     }
 
-    const stockStatusMapping = {
-      outOfStock: 'out of stock',
-      inStock: 'in stock',
-      lowStock: 'low stock',
-      unavailable: 'unavailable',
-      notTrackInventory: 'not track Inventory',
-    };
-
     const gtmEventData = {
       product_name: selectedProduct.title,
       product_id: variables.productId,
@@ -458,7 +450,7 @@ class ProductDetailDrawer extends Component {
       variant: variables.variations,
       quantity: childrenProduct.quantityOnHand,
       product_type: selectedProduct.inventoryType,
-      Inventory: stockStatusMapping[selectedProduct.stockStatus] || stockStatusMapping.inStock,
+      Inventory: STOCK_STATUS_MAPPING[selectedProduct.stockStatus] || STOCK_STATUS_MAPPING.inStock,
       image_count: (selectedProduct.images && selectedProduct.images.length) || 0,
     };
 

@@ -6,6 +6,7 @@ import Button from '../../../../../common/components/Button';
 import PageFooter from '../../../../../common/components/PageFooter';
 import Badge from '../../../../../common/components/Badge';
 import MenuViewOrderBar from './MenuViewOrderBar';
+import { getIsVirtualKeyboardVisible } from '../../redux/common/selectors';
 import {
   getCartQuantity,
   getCartItemsFormattedSubtotal,
@@ -18,6 +19,8 @@ import {
   // getFormattedDiffPriceOnFulfillMinimumConsumption,
 } from '../../redux/cart/selectors';
 import { reviewCart, showMiniCartDrawer, hideMiniCartDrawer } from '../../redux/cart/thunks';
+import { getIsVirtualKeyboardVisibleInMobile } from '../../utils';
+import { isMobile } from '../../../../../common/utils';
 import styles from './MenuFooter.module.scss';
 
 const MenuFooter = () => {
@@ -25,6 +28,8 @@ const MenuFooter = () => {
   const dispatch = useDispatch();
   // for whether display cart footer display
   const isCartFooterVisible = useSelector(getIsCartFooterVisible);
+  // get virtual keyboard visibility status
+  const isVirtualKeyboardVisible = useSelector(getIsVirtualKeyboardVisible);
   // is enable pay later
   const isEnablePayLater = useSelector(getIsEnablePayLater);
   // get cart quantity
@@ -39,17 +44,24 @@ const MenuFooter = () => {
   const isFulfillMinimumConsumption = useSelector(getIsFulfillMinimumConsumption);
   // is able to review cart
   const isAbleToReviewCart = useSelector(getIsAbleToReviewCart);
+  // get virtual keyboard visibility status in mobile
+  const isVirtualKeyboardVisibleInMobile = getIsVirtualKeyboardVisibleInMobile(isMobile(), isVirtualKeyboardVisible);
   useEffect(() => {
     dispatch(hideMiniCartDrawer());
   }, [isCartFooterVisible]);
+
+  // footer will hide that searching box focused or virtual keyboard is opened in mobile
+  if (isVirtualKeyboardVisibleInMobile) {
+    return null;
+  }
 
   return (
     <PageFooter zIndex={50}>
       <MenuViewOrderBar />
       {isCartFooterVisible ? (
-        <div className="tw-flex tw-py-8 sm:tw-py-8px tw-px-20 sm:tw-px-20px">
+        <div className="tw-flex tw-p-8 sm:tw-p-8px">
           <div
-            className="tw-flex-1 tw-flex tw-items-center tw-cursor-default tw-justify-center"
+            className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-mx-8 sm:tw-mx-8px tw-cursor-default"
             onClick={() => (isMiniCartDrawerVisible ? dispatch(hideMiniCartDrawer()) : dispatch(showMiniCartDrawer()))}
             role="button"
             tabIndex="0"
@@ -58,7 +70,7 @@ const MenuFooter = () => {
               <HandbagSimple className="tw-text-5xl" weight="light" />
             </Badge>
             {isEnablePayLater ? null : (
-              <span className="tw-px-6 sm:tw-px-6px tw-ml-6 sm:tw-ml-6px tw-font-bold">{cartFormattedSubtotal}</span>
+              <span className="tw-px-2 sm:tw-px-2px tw-ml-8 sm:tw-ml-8px tw-font-bold">{cartFormattedSubtotal}</span>
             )}
           </div>
           <Button

@@ -29,17 +29,15 @@ const PromotionBar = () => {
         <ul className="tw-flex-1">
           {promotions.slice(0, PROMO_DISPLAY_LIMIT).map(promotion => (
             <li className={styles.promotionEntry} key={promotion.id}>
-              <div className={styles.labelContainer}>
-                <Tag weight="fill" className="tw-text-red tw-mr-8px" />
-              </div>
+              <Tag className={styles.labelContainer} weight="fill" />
               <div className={`${styles.textContainer} ${onlyOnePromo ? 'tw-line-clamp-2' : 'tw-line-clamp-1'}`}>
-                <PromotionContent promotion={promotion} singleLine />
+                <PromotionContent promotion={promotion} textClassName="tw-leading-loose" singleLine />
               </div>
             </li>
           ))}
         </ul>
         <div className={styles.arrowWrapper}>
-          <CaretRight className="tw-text-gray-600" />
+          <CaretRight className="tw-text-lg tw-text-gray-600" />
         </div>
       </div>
       <PromotionDrawer />
