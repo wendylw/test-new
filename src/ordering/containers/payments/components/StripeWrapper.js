@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import { alert } from '../../../../common/feedback';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 import CleverTap from '../../../../utils/clevertap';
+import loggly from '../../../../utils/monitoring/loggly';
 
 const MY_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '';
 const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
@@ -22,6 +23,11 @@ const getStripePromise = country => {
     })
     .catch(err => {
       window.newrelic?.addPageAction('common.stripe-load-failure', {
+        error: err?.message,
+        country,
+      });
+
+      loggly.error('common.stripe-load-failure', {
         error: err?.message,
         country,
       });
