@@ -20,7 +20,7 @@ const LowPriceTag = ({ className }) => {
   );
 };
 
-LowPriceTag.displayName = 'PromoTag';
+LowPriceTag.displayName = 'LowPriceTag';
 
 LowPriceTag.propTypes = {
   className: PropTypes.string,
