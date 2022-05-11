@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import i18next from 'i18next';
 import { alert } from '../../../../common/feedback';
@@ -9,63 +9,69 @@ const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripeMYPromise = loadStripe(MY_STRIPE_KEY)
-  .then(stripe => {
-    window.newrelic?.addPageAction('common.stripe-load-success', {
-      country: 'MY',
-    });
-    return stripe;
-  })
-  .catch(err => {
-    window.newrelic?.addPageAction('common.stripe-load-failure', {
-      error: err?.message,
-      country: 'MY',
+const getStripePromise = country =>
+  loadStripe(country === 'SG' ? SG_STRIPE_KEY : MY_STRIPE_KEY)
+    .then(stripe => {
+      window.newrelic?.addPageAction('common.stripe-load-success', {
+        country,
+      });
+      return stripe;
+    })
+    .catch(err => {
+      window.newrelic?.addPageAction('common.stripe-load-failure', {
+        error: err?.message,
+        country,
+      });
+
+      alert(i18next.t('GotoPaymentFailedDescription'), {
+        onClose: () => {
+          window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_ONLINE_SAVED_CARDS}${window.location.search}`;
+        },
+      });
     });
 
-    alert(i18next.t('GotoPaymentFailedDescription'), {
-      onClose: () => {
-        window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_ONLINE_SAVED_CARDS}${window.location.search}`;
-      },
-    });
-  });
-const stripeSGPromise = loadStripe(SG_STRIPE_KEY)
-  .then(stripe => {
-    window.newrelic?.addPageAction('common.stripe-load-success', {
-      country: 'SG',
-    });
-    return stripe;
-  })
-  .catch(err => {
-    window.newrelic?.addPageAction('common.stripe-load-failure', {
-      error: err?.message,
-      country: 'SG',
-    });
-
-    alert(i18next.t('GotoPaymentFailedDescription'), {
-      onClose: () => {
-        window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_ONLINE_SAVED_CARDS}${window.location.search}`;
-      },
-    });
-  });
-
-export default (WrappedComponent, { withRef = false }) => {
+export default (WrappedComponent, { withRef = false } = {}) => {
   if (withRef) {
-    const StripeWrapperWithRef = React.forwardRef((props, ref) => (
-      /* eslint-disable react/jsx-props-no-spreading */
-      // eslint-disable-next-line react/jsx-filename-extension
-      <WrappedComponent stripeMYPromise={stripeMYPromise} stripeSGPromise={stripeSGPromise} {...props} ref={ref} />
-    ));
+    const StripeWrapperWithRef = React.forwardRef((props, ref) => {
+      const { merchantCountry } = props || {};
+      const [stripePromise, setStripePromise] = useState(null);
+      useEffect(() => {
+        setStripePromise(getStripePromise(merchantCountry));
+      }, [merchantCountry]);
+
+      if (!stripePromise) {
+        return null;
+      }
+
+      return (
+        /* eslint-disable react/jsx-props-no-spreading */
+        // eslint-disable-next-line react/jsx-filename-extension
+        <WrappedComponent stripePromise={stripePromise} {...props} ref={ref} />
+      );
+    });
 
     StripeWrapperWithRef.displayName = 'StripeWrapperWithRef';
 
     return StripeWrapperWithRef;
   }
 
-  const StripeWrapper = props => (
-    /* eslint-disable react/jsx-props-no-spreading */
-    // eslint-disable-next-line react/jsx-filename-extension
-    <WrappedComponent stripeMYPromise={stripeMYPromise} stripeSGPromise={stripeSGPromise} {...props} />
-  );
+  const StripeWrapper = props => {
+    const { merchantCountry } = props || {};
+    const [stripePromise, setStripePromise] = useState(null);
+    useEffect(() => {
+      setStripePromise(getStripePromise(merchantCountry));
+    }, [merchantCountry]);
+
+    if (!stripePromise) {
+      return null;
+    }
+
+    return (
+      /* eslint-disable react/jsx-props-no-spreading */
+      // eslint-disable-next-line react/jsx-filename-extension
+      <WrappedComponent stripePromise={stripePromise} {...props} />
+    );
+  };
 
   StripeWrapper.displayName = 'StripeWrapper';
 

@@ -86,10 +86,10 @@ const CVVInput = React.forwardRef((props, ref) => {
 CVVInput.displayName = 'CVVInput';
 
 const StripeCVV = React.forwardRef((props, ref) => {
-  const { merchantCountry, stripeSGPromise, stripeMYPromise } = props;
+  const { stripePromise } = props;
 
   return (
-    <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{ loader: 'always' }}>
+    <Elements stripe={stripePromise} options={{ loader: 'always' }}>
       <CVVInput ref={ref} {...props} />
     </Elements>
   );

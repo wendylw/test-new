@@ -54,13 +54,12 @@ class Stripe extends Component {
       supportSaveCard,
       cleverTapAttributes,
       receiptNumber,
-      stripeSGPromise,
-      stripeMYPromise,
+      stripePromise,
     } = this.props;
     const isAddCardPath = ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE === history.location.pathname;
 
     return (
-      <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
+      <Elements stripe={stripePromise} options={{}}>
         <CheckoutForm
           match={match}
           t={t}
