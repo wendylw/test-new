@@ -1,6 +1,7 @@
 import React, { useImperativeHandle, useState, Fragment } from 'react';
 import { Elements, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import StripeWrapper from '../../../components/StripeWrapper';
+import CleverTap from '../../../../../../utils/clevertap';
 import CVCCardImage from '../../../../../../images/cvc-card.png';
 import _isFunction from 'lodash/isFunction';
 import _get from 'lodash/get';
@@ -55,6 +56,8 @@ const CVVInput = React.forwardRef((props, ref) => {
     },
 
     onReady: () => {
+      CleverTap.pushEvent('Stripe - loaded', { timeStamp: new Date().getTime() });
+
       if (_isFunction(onReady)) {
         onReady();
       }

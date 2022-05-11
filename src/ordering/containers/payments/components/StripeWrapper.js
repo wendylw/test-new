@@ -3,14 +3,17 @@ import { loadStripe } from '@stripe/stripe-js';
 import i18next from 'i18next';
 import { alert } from '../../../../common/feedback';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
+import CleverTap from '../../../../utils/clevertap';
 
 const MY_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '';
 const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const getStripePromise = country =>
-  loadStripe(country === 'SG' ? SG_STRIPE_KEY : MY_STRIPE_KEY)
+const getStripePromise = country => {
+  CleverTap.pushEvent('Stripe - start loading', { timeStamp: new Date().getTime() });
+
+  return loadStripe(country === 'SG' ? SG_STRIPE_KEY : MY_STRIPE_KEY)
     .then(stripe => {
       window.newrelic?.addPageAction('common.stripe-load-success', {
         country,
@@ -32,6 +35,7 @@ const getStripePromise = country =>
         },
       });
     });
+};
 
 export default (WrappedComponent, { withRef = false } = {}) => {
   if (withRef) {
