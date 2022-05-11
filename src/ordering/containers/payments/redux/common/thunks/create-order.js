@@ -467,7 +467,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       throw new Error('Goto payment failure, because the payment url is empty');
     }
 
-    window.location.href = paymentUrl;
+    Utils.submitForm(paymentUrl);
   } catch (error) {
     window.newrelic?.addPageAction('ordering.initPayment.error', {
       error: error?.message,
