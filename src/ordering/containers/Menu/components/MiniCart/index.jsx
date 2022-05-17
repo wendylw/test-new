@@ -27,7 +27,7 @@ const MiniCart = () => {
   return (
     <Drawer
       className={styles.miniCartDrawer}
-      show={isCartFooterVisible}
+      show={isMiniCartDrawerVisible && isCartFooterVisible}
       onClose={() => dispatch(hideMiniCartDrawer())}
       zIndex={40}
       respectSpaceOccupation
