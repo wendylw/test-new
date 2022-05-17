@@ -19,7 +19,7 @@ const FoodCourtStoreList = () => {
       </h2>
       <ul className={styles.foodCourtStoreList}>
         {storeList.map(store =>
-          !store.image ? null : (
+          !store.imageNoCompression && !store.image ? null : (
             <li
               key={`bestSellerProductItem-${store.id}`}
               className={styles.foodCourtStore}
@@ -29,7 +29,11 @@ const FoodCourtStoreList = () => {
             >
               <div className="tw-relative tw-p-4 sm:tw-p-4px">
                 <div className={styles.foodCourtStoreImageContainer}>
-                  <ObjectFitImage className="tw-rounded" src={store.image} />
+                  <ObjectFitImage
+                    className="tw-rounded"
+                    src={store.imageNoCompression || store.image}
+                    noCompression={!!store.imageNoCompression}
+                  />
                 </div>
                 <h4
                   className={`${styles.foodCourtStoreTitle} tw-px-2 sm:tw-px-2px tw-mt-8 sm:tw-mt-8px tw-font-bold tw-leading-relaxed`}

@@ -1,4 +1,33 @@
+import ChuImage from '../../../../../images/food-court-temp/merchant-Chu.jpg';
+import ThreeFiveImage from '../../../../../images/food-court-temp/merchant-555.jpg';
+import RexBarImage from '../../../../../images/food-court-temp/merchant-Rex.jpg';
+import CheongSamImage from '../../../../../images/food-court-temp/merchant-CheongSam.jpg';
+
 export const AllFoodCourtStoreList = {
+  '6197240d9c8fb2000690ea3c': {
+    id: '6197240d9c8fb2000690ea3c',
+    imageNoCompression: ChuImage,
+    title: 'Chu By Fifty Tales',
+    tags: ['Asian', 'Noodles', 'Non-halal'],
+  },
+  '6279de1c1171c90007dc1505': {
+    id: '6279de1c1171c90007dc1505',
+    imageNoCompression: ThreeFiveImage,
+    title: '555 Local Snack Bar',
+    tags: ['Bar', 'Grilled Food', 'Nasi Lemak', 'Non-Halal'],
+  },
+  '6093d8d3de125500068db4b2': {
+    id: '6093d8d3de125500068db4b2',
+    imageNoCompression: RexBarImage,
+    title: 'The REX Bar',
+    tags: ['Alcohol'],
+  },
+  '6093c9996dc7070006af7497': {
+    id: '6093c9996dc7070006af7497',
+    imageNoCompression: CheongSamImage,
+    title: 'Mezzanine - Cheong Somm',
+    tags: ['Alcohol', 'Tapas'],
+  },
   '608b7c77cc9fd00006d831f3': {
     id: '608b7c77cc9fd00006d831f3',
     image: 'https://d2ncjxd2rk2vpl.cloudfront.net/mariassteakcafe/beep/logo/6e9ee2ba-9585-4718-ae1d-e7ed425bafdf',
