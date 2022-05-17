@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import _get from 'lodash/get';
 import Header from './components/Header';
 import SearchBox from './components/SearchBox';
 import MvpDeliveryBannerImage from '../../images/mvp-delivery-banner.png';
@@ -201,6 +202,7 @@ class Home extends React.Component {
       'has promo': store.promoTag?.length > 0,
       cashback: store.cashbackRate || 0,
       distance: store.geoDistance,
+      'has lowest price': _get(store, 'isLowestPrice', false),
     });
 
     const { homeActions, addressInfo } = this.props;

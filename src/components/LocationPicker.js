@@ -67,8 +67,6 @@ class LocationPicker extends Component {
       await setHistoricalDeliveryAddresses(placeInfo);
       onSearchResultSelect(placeInfo, index);
     } catch (e) {
-      console.error(e);
-      captureException(e);
       this.setState({ errorToast: t('FailToGetPlaceInfo'), isSubmitting: false });
     }
   }

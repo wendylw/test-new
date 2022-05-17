@@ -5,7 +5,13 @@ import _once from 'lodash/once';
 import businessName from '../business-name';
 import Utils from '../utils';
 import debug from '../debug';
-const { REACT_APP_LOGGLY_SERVICE_URL, REACT_APP_LOGGLY_TOKEN, REACT_APP_LOGGLY_TAG } = process.env;
+const {
+  REACT_APP_LOGGLY_SERVICE_URL,
+  REACT_APP_LOGGLY_TOKEN,
+  REACT_APP_LOGGLY_TAG,
+  REACT_APP_LOG_SERVICE_URL,
+  REACT_APP_LOG_SERVICE_TOKEN,
+} = process.env;
 
 const IS_DEV_ENV = process.env.NODE_ENV === 'development';
 
@@ -35,7 +41,34 @@ const getAppPlatform = () => {
   return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
 };
 
+const sendToLogService = async (data, tags = '') => {
+  if (!REACT_APP_LOG_SERVICE_URL || !REACT_APP_LOG_SERVICE_TOKEN) {
+    return;
+  }
+  const tagString = `${(REACT_APP_LOGGLY_TAG || '').replace(/ /g, '')}${tags && `,${tags}`}`;
+  const tagArray = tagString ? tagString.split(',') : [];
+  const body = JSON.stringify({
+    ...data,
+    tags: tagArray,
+  });
+  const headers = new Headers({ 'Content-Type': 'application/json' });
+  const endpoint = `${REACT_APP_LOG_SERVICE_URL}?token=${REACT_APP_LOG_SERVICE_TOKEN}`;
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body,
+      priority: 'low',
+    });
+  } catch (e) {
+    if (IS_DEV_ENV) {
+      throw e;
+    }
+  }
+};
+
 const send = async (data, tags = '') => {
+  sendToLogService(data, tags);
   const body = JSON.stringify(data);
 
   debug(`[LOGGLY] %s`, body);
@@ -85,7 +118,7 @@ const track = async (name, data, meta = {}) => {
     // todo: business name, page url, user agent, env, client timestamp, ...
     dataToSend.level = meta.level || 'info';
 
-    let tags = meta.tags ? (Array.isArray(meta.tags) ? meta.tags.join('') : meta.tags) : '';
+    let tags = meta.tags ? (Array.isArray(meta.tags) ? meta.tags.join(',') : meta.tags) : '';
     if (tags && !/^\w+(,\w+)?$/.test(tags)) {
       throw new Error('Incorrect loggly tags format');
     }

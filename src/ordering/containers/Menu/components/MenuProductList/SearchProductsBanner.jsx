@@ -53,10 +53,10 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
 
     // If the visualViewport height is smaller than the original height, indicates that the virtual keyboard is shown.
     // So, we need to update the virtual keyboard status.
-    isMobile() && visualViewportObj.addEventListener('resize', onUpdateStatusVirtualKeyboard);
+    isMobile() && visualViewportObj?.addEventListener('resize', onUpdateStatusVirtualKeyboard);
 
     return () => {
-      isMobile() && visualViewportObj.removeEventListener('resize', onUpdateStatusVirtualKeyboard);
+      isMobile() && visualViewportObj?.removeEventListener('resize', onUpdateStatusVirtualKeyboard);
     };
   }, []);
 

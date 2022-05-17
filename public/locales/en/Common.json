@@ -266,5 +266,6 @@
   "StoreNotFound": "Oops! Store not found",
   "StoreNotFoundDesc": "This store may be temporarily unavailable or undergoing a delicious upgrade! Check back soon…",
   "SearchingProductsNoResult": "Oops! Couldn’t find results for \"{{searchingProductKeywords}}\"<0></0>Let’s try a different item",
-  "MenuSearchingBoxPlaceholder": "What are you looking for?"
+  "MenuSearchingBoxPlaceholder": "What are you looking for?",
+  "Restaurants": "Restaurants"
 }

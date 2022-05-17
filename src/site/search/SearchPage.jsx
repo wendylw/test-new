@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withTranslation, Trans } from 'react-i18next';
 import _debounce from 'lodash/debounce';
 import { CaretLeft } from 'phosphor-react';
+import _get from 'lodash/get';
 import SearchBox from '../components/SearchBox';
 import SwitchPanel from '../components/SwitchPanel';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
@@ -232,6 +233,7 @@ class SearchPage extends React.Component {
                     'shipping type': store.shippingType,
                     'has promo': store.promoTag?.length > 0,
                     cashback: store.cashbackRate || 0,
+                    'has lowest price': _get(store, 'isLowestPrice', false),
                   });
                   this.backLeftPosition(store);
                 }}

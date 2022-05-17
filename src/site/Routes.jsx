@@ -10,7 +10,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Location from './ordering/containers/Location';
 import CollectionPage from './collections/CollectionPage';
 import SearchPage from './search/SearchPage';
-import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 
 const { ROUTER_PATHS } = Constants;
@@ -33,8 +32,7 @@ const SiteRoute = () => {
       <ProtectedRoute path={`/account`}>
         <Account />
       </ProtectedRoute>
-      {/* order history only can be visit on TNG mini program */}
-      <Route path={ROUTER_PATHS.ORDER_HISTORY} component={Utils.isTNGMiniProgram() ? OrderHistory : NotFound} />
+      <Route path={ROUTER_PATHS.ORDER_HISTORY} component={OrderHistory} />
       <Redirect from={`/`} to={`/home`} />
       <Route component={NotFound} />
     </Switch>

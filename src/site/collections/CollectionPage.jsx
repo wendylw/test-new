@@ -3,6 +3,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { CaretLeft } from 'phosphor-react';
+import _get from 'lodash/get';
 import StoreList from '../components/StoreList';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import SwitchPanel from '../components/SwitchPanel';
@@ -176,6 +177,7 @@ class CollectionPage extends React.Component {
                 'Shipping Type': store.shippingType,
                 'has promo': store.promoTag?.length > 0,
                 cashback: store.cashbackRate || 0,
+                'has lowest price': _get(store, 'isLowestPrice', false),
               });
               this.backLeftPosition(store);
             }}
