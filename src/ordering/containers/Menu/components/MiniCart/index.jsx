@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { X, Trash } from 'phosphor-react';
@@ -21,8 +21,13 @@ const MiniCart = () => {
   const cartItems = useSelector(getCartItems);
   const isMiniCartDrawerVisible = useSelector(getIsMiniCartDrawerVisible);
   const isCartFooterVisible = useSelector(getIsCartFooterVisible);
-  console.log('isMiniCartDrawerVisible', isMiniCartDrawerVisible);
-  console.log('isCartFooterVisible', isCartFooterVisible);
+
+  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+    if (window.location.href.indexOf('#reloaded') === -1) {
+      window.location.href = `${window.location.href}#reloaded`;
+      window.location.reload();
+    }
+  }
 
   return (
     <Drawer

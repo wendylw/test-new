@@ -30,7 +30,7 @@ import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../
  * show mini cart drawer
  */
 export const showMiniCartDrawer = createAsyncThunk('ordering/menu/cart/showMiniCartDrawer', async (_, { getState }) => {
-  const storeInfoForCleverTap = await getStoreInfoForCleverTap(getState());
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
   Clevertap.pushEvent('Menu Page - Click cart', storeInfoForCleverTap);
 });
 /**
