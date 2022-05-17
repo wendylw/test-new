@@ -25,6 +25,10 @@ if (process.env.REACT_APP_SENTRY_DSN) {
 }
 
 const getAppPlatform = () => {
+  if (Utils.isTNGMiniProgram()) {
+    return 'tng-mini-program';
+  }
+
   return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
 };
 

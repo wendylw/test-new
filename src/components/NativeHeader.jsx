@@ -28,6 +28,7 @@ function getNativeHeaderParams(props) {
   headerParams.left = {
     type: 'button',
     id: 'headerBackButton',
+    // If isPage is true that header display back button otherwise close button on left
     iconRes: isPage ? BACK : CLOSE,
     events: ['onClick'],
   };

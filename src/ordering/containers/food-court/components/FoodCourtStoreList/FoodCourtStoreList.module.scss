@@ -1,0 +1,28 @@
+@import "../../../../../common/styles/variables.scss";
+
+.foodCourtStoreList {
+  @apply tw-relative tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 md:tw-grid-cols-2 tw-gap-4 sm:tw-gap-4px tw-px-8 sm:tw-px-8px tw-pt-12 sm:tw-pt-12px tw-pb-2 sm:tw-pb-2px tw-mx-2 sm:tw-mx-2px;
+
+  &::before {
+    @apply tw-absolute tw-top-0 tw-left-8 sm:tw-left-8px tw-right-8 sm:tw-right-8px tw-block tw-bg-gray-200 tw-mx-6 sm:tw-mx-6px;
+
+    content: "";
+    height: 1px;
+  }
+}
+
+.foodCourtStoreImageContainer {
+  @apply tw-m-2 sm:tw-m-2px;
+}
+
+.foodCourtStoreTitle {
+  @apply tw-font-bold tw-leading-relaxed;
+
+  @include text-line-clamp(2, 3em);
+}
+
+.foodCourtStoreTag {
+  @apply tw-text-sm tw-text-gray-700;
+
+  @include text-line-clamp(1);
+}

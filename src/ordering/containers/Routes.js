@@ -32,6 +32,7 @@ const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers
 const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
 const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
 const TableSummary = lazy(() => Utils.attemptLoad(() => import('./TableSummary')));
+const FoodCourt = lazy(() => Utils.attemptLoad(() => import('./food-court')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -80,6 +81,7 @@ class Routes extends Component {
               path={`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${ROUTER_PATHS.CONTACT_DETAIL}`}
               component={ContactDetail}
             />
+            <Route exact path={ROUTER_PATHS.FOOD_COURT} component={FoodCourt} />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>
