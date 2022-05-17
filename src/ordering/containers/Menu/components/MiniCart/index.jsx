@@ -21,11 +21,13 @@ const MiniCart = () => {
   const cartItems = useSelector(getCartItems);
   const isMiniCartDrawerVisible = useSelector(getIsMiniCartDrawerVisible);
   const isCartFooterVisible = useSelector(getIsCartFooterVisible);
+  console.log('isMiniCartDrawerVisible', isMiniCartDrawerVisible);
+  console.log('isCartFooterVisible', isCartFooterVisible);
 
   return (
     <Drawer
       className={styles.miniCartDrawer}
-      show={isMiniCartDrawerVisible && isCartFooterVisible}
+      show={isMiniCartDrawerVisible || isCartFooterVisible}
       onClose={() => dispatch(hideMiniCartDrawer())}
       zIndex={40}
       respectSpaceOccupation
