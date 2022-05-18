@@ -6,7 +6,6 @@ import _debounce from 'lodash/debounce';
 import { CaretLeft } from 'phosphor-react';
 import _get from 'lodash/get';
 import SearchBox from '../components/SearchBox';
-import SwitchPanel from '../components/SwitchPanel';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import StoreList from '../components/StoreList';
 import EmptySearch from './components/EmptySearch';
@@ -19,7 +18,7 @@ import {
   getSearchInfo,
   loadedSearchingStores,
   getShouldShowCategories,
-  getShouldShowSwitchPanel,
+  getShouldShowFilterBar,
   getShouldShowStartSearchPage,
   getShouldShowNoSearchResultPage,
   getShouldShowStoreList,
@@ -105,26 +104,6 @@ class SearchPage extends React.Component {
     this.props.searchActions.setPaginationInfo();
     this.props.searchActions.getStoreList();
   }, 700);
-
-  handleSwitchTab = async shippingType => {
-    const {
-      searchInfo: { keyword },
-    } = this.props;
-
-    if (shippingType === 'delivery') {
-      CleverTap.pushEvent('Search - Click delivery tab', {
-        keyword,
-      });
-    } else {
-      CleverTap.pushEvent('Search - Click self pickup tab', {
-        keyword,
-      });
-    }
-
-    this.props.searchActions.setPaginationInfo();
-    this.props.searchActions.setShippingType(shippingType);
-    await this.props.searchActions.getStoreList();
-  };
 
   handleSearchTextChange = event => {
     const keyword = event.currentTarget.value;
@@ -247,14 +226,14 @@ class SearchPage extends React.Component {
   }
 
   render() {
-    const { searchInfo, shippingType, shouldShowSwitchPanel } = this.props;
+    const { searchInfo, shouldShowFilterBar } = this.props;
     const { keyword } = searchInfo;
     return (
       <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.search.container">
         <div className="tw-sticky tw-top-0 tw-z-100 tw-w-full tw-bg-white">
           <header
             className={`${styles.SearchPageHeaderWrapper} ${
-              shouldShowSwitchPanel ? '' : 'tw-border-0 tw-border-b tw-border-solid tw-border-gray-200'
+              shouldShowFilterBar ? '' : 'tw-border-0 tw-border-b tw-border-solid tw-border-gray-200'
             }`}
           >
             <button
@@ -270,13 +249,6 @@ class SearchPage extends React.Component {
               handleClearSearchText={this.handleClearSearchText}
             />
           </header>
-          {shouldShowSwitchPanel && (
-            <SwitchPanel
-              shippingType={shippingType}
-              dataHeapName="site.search.tab-bar"
-              handleSwitchTab={this.handleSwitchTab}
-            />
-          )}
         </div>
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           {this.renderStoreList()}
@@ -304,7 +276,7 @@ export default compose(
       popularCollections: getPopupCollections(state),
       addressCoords: getAddressCoords(state),
       shouldShowCategories: getShouldShowCategories(state),
-      shouldShowSwitchPanel: getShouldShowSwitchPanel(state),
+      shouldShowFilterBar: getShouldShowFilterBar(state),
       shouldShowStartSearchPage: getShouldShowStartSearchPage(state),
       shouldShowNoSearchResultPage: getShouldShowNoSearchResultPage(state),
       shouldShowStoreList: getShouldShowStoreList(state),

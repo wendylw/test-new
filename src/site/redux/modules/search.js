@@ -217,7 +217,7 @@ export const getShouldShowCategories = createSelector(
   (isKeywordEmpty, isAnyCollectionAvailable) => isKeywordEmpty && isAnyCollectionAvailable
 );
 
-export const getShouldShowSwitchPanel = createSelector(
+export const getShouldShowFilterBar = createSelector(
   getIsSearchInfoKeywordEmpty,
   getIsAnyCollectionAvailable,
   (isKeywordEmpty, isAnyCollectionAvailable) => !(isKeywordEmpty && isAnyCollectionAvailable)
