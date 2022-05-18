@@ -51,9 +51,9 @@ const MenuFooter = () => {
   }, [isCartFooterVisible]);
 
   // footer will hide that searching box focused or virtual keyboard is opened in mobile
-  if (isVirtualKeyboardVisibleInMobile) {
-    return null;
-  }
+  // if (isVirtualKeyboardVisibleInMobile) {
+  //   return null;
+  // }
 
   return (
     <PageFooter zIndex={50}>
