@@ -22,16 +22,6 @@ const MiniCart = () => {
   const isMiniCartDrawerVisible = useSelector(getIsMiniCartDrawerVisible);
   const isCartFooterVisible = useSelector(getIsCartFooterVisible);
 
-  // useEffect(() => {
-  //   // If need can add iPhone|iPad|iPod|iOS
-  //   if (/(iPhone)/i.test(navigator.userAgent)) {
-  //     if (window.location.href.indexOf('#reloaded') === -1) {
-  //       window.location.href = `${window.location.href}#reloaded`;
-  //       window.location.reload();
-  //     }
-  //   }
-  // }, []);
-
   return (
     <Drawer
       className={styles.miniCartDrawer}

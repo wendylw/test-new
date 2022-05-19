@@ -19,7 +19,7 @@ import {
   // getFormattedDiffPriceOnFulfillMinimumConsumption,
 } from '../../redux/cart/selectors';
 import { reviewCart, showMiniCartDrawer, hideMiniCartDrawer } from '../../redux/cart/thunks';
-import { getIsVirtualKeyboardVisibleInMobile } from '../../utils';
+import { getIsVirtualKeyboardVisibleInMobile, getIsIosMobile } from '../../utils';
 import { isMobile } from '../../../../../common/utils';
 import styles from './MenuFooter.module.scss';
 
@@ -45,15 +45,18 @@ const MenuFooter = () => {
   // is able to review cart
   const isAbleToReviewCart = useSelector(getIsAbleToReviewCart);
   // get virtual keyboard visibility status in mobile
-  const isVirtualKeyboardVisibleInMobile = getIsVirtualKeyboardVisibleInMobile(isMobile(), isVirtualKeyboardVisible);
+  const isVirtualKeyboardVisibleInMobile = !getIsIosMobile()
+    ? getIsVirtualKeyboardVisibleInMobile(isMobile(), isVirtualKeyboardVisible)
+    : null;
+
   useEffect(() => {
     dispatch(hideMiniCartDrawer());
   }, [isCartFooterVisible]);
 
   // footer will hide that searching box focused or virtual keyboard is opened in mobile
-  // if (isVirtualKeyboardVisibleInMobile) {
-  //   return null;
-  // }
+  if (isVirtualKeyboardVisibleInMobile) {
+    return null;
+  }
 
   return (
     <PageFooter zIndex={50}>

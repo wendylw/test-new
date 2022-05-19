@@ -29,3 +29,5 @@ export const getWindowInnerHeight = () => window.innerHeight;
 
 export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardVisible) =>
   isMobile && isVirtualKeyboardVisible;
+
+export const getIsIosMobile = () => !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
