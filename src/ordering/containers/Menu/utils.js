@@ -30,12 +30,12 @@ export const getWindowInnerHeight = () => window.innerHeight;
 export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardVisible) =>
   isMobile && isVirtualKeyboardVisible;
 
-// eslint-disable-next-line consistent-return
+const SHORTEN_URL_MAP = new Map();
 export const getIsIosMobile = () => {
-  const set = new Set();
-  const temp = /(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
-  set.add(temp);
-  if (set.has(temp)) {
-    return temp;
+  const result = /(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
+  if (!SHORTEN_URL_MAP.has(result)) {
+    SHORTEN_URL_MAP.set('ios', result);
   }
+
+  return SHORTEN_URL_MAP.get('ios');
 };
