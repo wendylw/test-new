@@ -10,6 +10,7 @@ import RibbonBadge from '../../../RibbonBadge';
 import RatingTag from '../../../RatingTag';
 import DistanceTag from '../../../DistanceTag';
 import PromoTag from '../../../PromoTag';
+import LowPriceTag from '../../../LowPriceTag';
 import ProductCard from '../ProductCard';
 import styles from './StoreCard.module.scss';
 
@@ -29,6 +30,7 @@ const StoreCard = ({ store, onClick }) => {
   const rating = useMemo(() => _get(store, 'reviewInfo.rating', ''), [store]);
   const distance = useMemo(() => _get(store, 'geoDistance', 0), [store]);
   const cashbackRate = useMemo(() => _get(store, 'cashbackRate', 0), [store]);
+  const hasLowestPrice = useMemo(() => _get(store, 'isLowestPrice', false), [store]);
   const cashbackRatePercentage = useMemo(() => Math.round((Number(cashbackRate) || 0) * 100), [cashbackRate]);
   const isFreeDeliveryAvailable = useMemo(() => _get(store, 'showFreeDeliveryTag', false), [store]);
   const isCashbackAvailable = useMemo(() => enableCashback && cashbackRate, [enableCashback, cashbackRate]);
@@ -52,6 +54,8 @@ const StoreCard = ({ store, onClick }) => {
 
     return tags.filter(tag => tag);
   }, [t, isFreeDeliveryAvailable, isCashbackAvailable, cashbackRatePercentage]);
+
+  const shouldShowTagList = useMemo(() => !_isEmpty(promoTags) || hasLowestPrice, [promoTags, hasLowestPrice]);
 
   const keywords = useMemo(() => {
     if (_isEmpty(searchingTags)) return null;
@@ -82,11 +86,14 @@ const StoreCard = ({ store, onClick }) => {
             className={`${styles.StoreCardDistanceTagContainer} ${rating ? 'sm:tw-px-8px tw-px-8' : ''}`}
           />
         </ol>
-        {_isEmpty(promoTags) ? null : (
-          <ol className={styles.StoreCardPromoTagContainer}>
-            {promoTags.map((tag, idx) => (
-              <PromoTag key={idx} tagName={tag} className="sm:tw-mt-4px tw-mt-4 first:sm:tw-mr-4px first:tw-mr-4" />
-            ))}
+        {shouldShowTagList && (
+          <ol className={styles.StoreCardTagListContainer}>
+            {hasLowestPrice && <LowPriceTag className={styles.StoreCardTagListItem} />}
+            {_isEmpty(promoTags)
+              ? null
+              : promoTags.map((tag, idx) => (
+                  <PromoTag key={idx} tagName={tag} className={styles.StoreCardTagListItem} />
+                ))}
           </ol>
         )}
         {_isEmpty(products) ? null : (

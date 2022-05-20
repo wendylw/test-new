@@ -25,6 +25,7 @@ import './order-history.scss';
 import OrderListEmptyView from './components/OrderListEmptyView';
 import Clevertap from '../../utils/clevertap';
 import _get from 'lodash/get';
+import WebHeader from '../../components/WebHeader';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
@@ -112,33 +113,39 @@ class OrderHistory extends React.Component {
     const showOrderListEmptyView = isRequestOrderDataDone && orderHistoryList.length === 0;
 
     return (
-      <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
-        {showOrderListEmptyView ? (
-          <OrderListEmptyView />
-        ) : (
-          <div className="order-history">
-            <InfiniteScroll
-              useWindow={false}
-              initialLoad={false}
-              loader={<Loader key={page} />}
-              loadMore={this.handleLoadMore}
-              hasMore={hasMore}
-              element="ul"
-            >
-              {orderHistoryList.map(order => (
-                <li
-                  key={order.receiptNumber}
-                  className="margin-normal"
-                  data-heap-name="site.order-history.order"
-                  onClick={() => this.handleOrderItemClick(order)}
-                >
-                  <OrderItem order={order} />
-                </li>
-              ))}
-            </InfiniteScroll>
-          </div>
-        )}
-      </PullToRefresh>
+      <>
+        {!Utils.isTNGMiniProgram() ? (
+          <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
+        ) : null}
+
+        <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
+          {showOrderListEmptyView ? (
+            <OrderListEmptyView />
+          ) : (
+            <div className="order-history">
+              <InfiniteScroll
+                useWindow={false}
+                initialLoad={false}
+                loader={<Loader key={page} />}
+                loadMore={this.handleLoadMore}
+                hasMore={hasMore}
+                element="ul"
+              >
+                {orderHistoryList.map(order => (
+                  <li
+                    key={order.receiptNumber}
+                    className="margin-normal"
+                    data-heap-name="site.order-history.order"
+                    onClick={() => this.handleOrderItemClick(order)}
+                  >
+                    <OrderItem order={order} />
+                  </li>
+                ))}
+              </InfiniteScroll>
+            </div>
+          )}
+        </PullToRefresh>
+      </>
     );
   }
 }

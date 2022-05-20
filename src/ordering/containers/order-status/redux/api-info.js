@@ -1,3 +1,5 @@
+import { post } from '../../../../utils/api/api-fetch';
+
 export const API_INFO = {
   getOrderDetail: () => ({
     url: `/api/gql/Order`,
@@ -30,4 +32,8 @@ export const API_INFO = {
   createStoreIdTableIdHashCode: storeId => ({
     url: `/api/ordering/stores/${storeId}`,
   }),
+};
+
+export const postFoodCourtIdHashCode = (foodCourtId, payload) => {
+  return post(`/api/ordering/stores/${foodCourtId}`, payload);
 };
