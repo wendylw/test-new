@@ -27,11 +27,12 @@ import {
   getProductListOffsetTop,
   getWindowScrollingPositionForSearchingProductList,
   getWindowInnerHeight,
+  getIsIosMobile,
 } from '../../utils';
-import { isMobile } from '../../../../../common/utils';
 import styles from './SearchProductsBanner.module.scss';
 
 const originalHeight = getWindowInnerHeight();
+const isIosMobile = getIsIosMobile();
 const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef, searchInputRef }) => {
   const { t } = useTranslation();
   // for whether display searching banner
@@ -53,10 +54,10 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
 
     // If the visualViewport height is smaller than the original height, indicates that the virtual keyboard is shown.
     // So, we need to update the virtual keyboard status.
-    isMobile() && visualViewportObj?.addEventListener('resize', onUpdateStatusVirtualKeyboard);
+    !isIosMobile && visualViewportObj?.addEventListener('resize', onUpdateStatusVirtualKeyboard);
 
     return () => {
-      isMobile() && visualViewportObj?.removeEventListener('resize', onUpdateStatusVirtualKeyboard);
+      !isIosMobile && visualViewportObj?.removeEventListener('resize', onUpdateStatusVirtualKeyboard);
     };
   }, []);
 

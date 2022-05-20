@@ -19,7 +19,7 @@ import {
   // getFormattedDiffPriceOnFulfillMinimumConsumption,
 } from '../../redux/cart/selectors';
 import { reviewCart, showMiniCartDrawer, hideMiniCartDrawer } from '../../redux/cart/thunks';
-import { getIsVirtualKeyboardVisibleInMobile, getIsIosMobile } from '../../utils';
+import { getIsVirtualKeyboardVisibleInMobile } from '../../utils';
 import { isMobile } from '../../../../../common/utils';
 import styles from './MenuFooter.module.scss';
 
@@ -45,10 +45,7 @@ const MenuFooter = () => {
   // is able to review cart
   const isAbleToReviewCart = useSelector(getIsAbleToReviewCart);
   // get virtual keyboard visibility status in mobile
-  const isVirtualKeyboardVisibleInMobile = !getIsIosMobile()
-    ? getIsVirtualKeyboardVisibleInMobile(isMobile(), isVirtualKeyboardVisible)
-    : null;
-
+  const isVirtualKeyboardVisibleInMobile = getIsVirtualKeyboardVisibleInMobile(isMobile(), isVirtualKeyboardVisible);
   useEffect(() => {
     dispatch(hideMiniCartDrawer());
   }, [isCartFooterVisible]);
