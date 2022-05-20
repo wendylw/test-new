@@ -31,13 +31,13 @@ export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardV
   isMobile && isVirtualKeyboardVisible;
 
 // eslint-disable-next-line consistent-return
-// export const getIsIosMobile = () => {
-//   const set = new Set();
-//   const temp = !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
-//   if (set.has(temp)) {
-//     return temp;
-//   }
-//   set.add(temp);
-// };
+export const getIsIosMobile = () => {
+  const set = new Set();
+  const temp = !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
+  if (set.has(temp)) {
+    return temp;
+  }
+  set.add(temp);
+};
 
-export const getIsIosMobile = () => !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
+// export const getIsIosMobile = () => !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);

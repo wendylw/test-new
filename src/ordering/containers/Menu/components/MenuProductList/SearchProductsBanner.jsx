@@ -33,6 +33,7 @@ import styles from './SearchProductsBanner.module.scss';
 
 const originalHeight = getWindowInnerHeight();
 const isIosMobile = getIsIosMobile();
+alert(isIosMobile);
 const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef, searchInputRef }) => {
   const { t } = useTranslation();
   // for whether display searching banner
