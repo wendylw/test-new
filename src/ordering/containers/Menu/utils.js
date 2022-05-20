@@ -40,4 +40,4 @@ export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardV
 //   set.add(temp);
 // };
 
-export const getIosMobile = () => !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
+export const getIsIosMobile = () => !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
