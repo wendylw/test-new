@@ -29,13 +29,3 @@ export const getWindowInnerHeight = () => window.innerHeight;
 
 export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardVisible) =>
   isMobile && isVirtualKeyboardVisible;
-
-const SHORTEN_URL_MAP = new Map();
-export const getIsIosMobile = () => {
-  const result = /(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
-  if (!SHORTEN_URL_MAP.has(result)) {
-    SHORTEN_URL_MAP.set('ios', result);
-  }
-
-  return SHORTEN_URL_MAP.get('ios');
-};

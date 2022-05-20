@@ -27,12 +27,12 @@ import {
   getProductListOffsetTop,
   getWindowScrollingPositionForSearchingProductList,
   getWindowInnerHeight,
-  getIsIosMobile,
 } from '../../utils';
 import styles from './SearchProductsBanner.module.scss';
+import { isSafari } from '../../../../../common/utils';
 
 const originalHeight = getWindowInnerHeight();
-const isIosMobile = getIsIosMobile();
+const isIosMobile = isSafari();
 const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef, searchInputRef }) => {
   const { t } = useTranslation();
   // for whether display searching banner
