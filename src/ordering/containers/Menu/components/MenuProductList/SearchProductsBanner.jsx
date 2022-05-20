@@ -29,7 +29,7 @@ import {
   getWindowInnerHeight,
 } from '../../utils';
 import styles from './SearchProductsBanner.module.scss';
-import { isSafari } from '../../../../../common/utils';
+import { isMobile, isSafari } from '../../../../../common/utils';
 
 const originalHeight = getWindowInnerHeight();
 const isIosMobile = isSafari();
@@ -54,10 +54,10 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
 
     // If the visualViewport height is smaller than the original height, indicates that the virtual keyboard is shown.
     // So, we need to update the virtual keyboard status.
-    !isIosMobile && visualViewportObj?.addEventListener('resize', onUpdateStatusVirtualKeyboard);
+    isMobile() && !isIosMobile && visualViewportObj?.addEventListener('resize', onUpdateStatusVirtualKeyboard);
 
     return () => {
-      !isIosMobile && visualViewportObj?.removeEventListener('resize', onUpdateStatusVirtualKeyboard);
+      isMobile() && !isIosMobile && visualViewportObj?.removeEventListener('resize', onUpdateStatusVirtualKeyboard);
     };
   }, []);
 
