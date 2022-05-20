@@ -30,4 +30,14 @@ export const getWindowInnerHeight = () => window.innerHeight;
 export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardVisible) =>
   isMobile && isVirtualKeyboardVisible;
 
-export const getIsIosMobile = () => !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
+// eslint-disable-next-line consistent-return
+// export const getIsIosMobile = () => {
+//   const set = new Set();
+//   const temp = !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
+//   if (set.has(temp)) {
+//     return temp;
+//   }
+//   set.add(temp);
+// };
+
+export const getIosMobile = () => !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
