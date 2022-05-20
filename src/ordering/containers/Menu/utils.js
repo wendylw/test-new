@@ -39,5 +39,3 @@ export const getIsIosMobile = () => {
     return temp;
   }
 };
-
-// export const getIsIosMobile = () => !!/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent);
