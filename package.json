@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@craco/craco": "^6.4.3",
+    "@googlemaps/js-api-loader": "^1.14.0",
     "@reduxjs/toolkit": "^1.6.2",
     "@sentry/apm": "^5.27.1",
     "@sentry/cli": "^1.55.0",
@@ -95,6 +96,7 @@
     "reselect": "^4.1.2",
     "sass": "^1.50.1",
     "smoothscroll-polyfill": "^0.4.4",
+    "spherical-geometry-js": "^2.0.0",
     "swiper": "^6.1.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "whatwg-fetch": "^3.6.2",

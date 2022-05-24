@@ -16,6 +16,7 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
+import _isObject from 'lodash/isObject';
 
 class PageLogin extends React.Component {
   state = {
@@ -39,13 +40,17 @@ class PageLogin extends React.Component {
 
   visitNextPage = async () => {
     const { history, location } = this.props;
-    const { redirectLocation } = location.state || {};
+    const { redirectLocation, isRedirect } = location.state || {};
 
-    if (redirectLocation) {
+    if (redirectLocation && !isRedirect) {
       history.replace(redirectLocation);
+
+      return;
+    } else if (redirectLocation && isRedirect) {
+      window.location.replace(redirectLocation);
+
       return;
     }
-
     this.goBack();
   };
 
@@ -74,7 +79,9 @@ class PageLogin extends React.Component {
   }
 
   async handleWebLogin(otp) {
-    const { appActions } = this.props;
+    const { appActions, location } = this.props;
+    const loginOptions = location.state?.loginOptions || {};
+    const { shippingType } = loginOptions;
 
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
@@ -87,6 +94,7 @@ class PageLogin extends React.Component {
       appActions.loginApp({
         accessToken,
         refreshToken,
+        shippingType,
       });
     }
   }

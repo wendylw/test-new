@@ -1,0 +1,35 @@
+@import "../../../../../common/styles/variables.scss";
+
+.foodCourtInfoLogo {
+  @apply tw-mx-12 sm:tw-mx-12px tw-flex-shrink-0;
+
+  width: 14%;
+  max-width: 50px;
+}
+
+.foodCourtInfoContent {
+  @apply tw-flex-initial tw-flex-col tw-relative tw-px-12 sm:tw-px-12px;
+
+  &::before {
+    @apply tw-absolute tw-inset-y-0 tw-left-0 tw-bg-gray-200;
+
+    content: "";
+    display: inline-flex;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 1px;
+    height: 34px;
+  }
+}
+
+.foodCourtInfoTitle {
+  @apply tw-text-xl tw-my-0 tw-leading-normal;
+
+  @include text-line-clamp(1, null);
+}
+
+.foodCourtInfoCity {
+  @apply tw-text-sm tw-leading-loose;
+
+  @include text-line-clamp(1, null);
+}

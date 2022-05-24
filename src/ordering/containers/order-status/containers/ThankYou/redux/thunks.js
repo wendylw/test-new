@@ -3,7 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
 import { alert } from '../../../../../../common/feedback';
-import { API_INFO } from '../../../redux/api-info';
+import { API_INFO, postFoodCourtIdHashCode } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import { getPaidToCurrentEventDurationMinutes } from '../utils';
@@ -113,6 +113,23 @@ export const updateOrderShippingType = createAsyncThunk(
       } else {
         alert(i18next.t('ApiError:57002Description'), { title: i18next.t('ApiError:57002Title') });
       }
+
+      throw e;
+    }
+  }
+);
+
+export const loadFoodCourtIdHashCode = createAsyncThunk(
+  'ordering/orderStatus/thankYou/loadFoodCourtIdHashCode',
+  async ({ foodCourtId, tableId }) => {
+    try {
+      const result = await postFoodCourtIdHashCode(foodCourtId, {
+        tableId,
+      });
+
+      return result;
+    } catch (e) {
+      logglyError('Load food court hash code error: ', e);
 
       throw e;
     }

@@ -1,0 +1,12 @@
+.LowPriceTagContainer {
+  @apply tw-inline-block tw-flex tw-flex-row tw-items-center tw-overflow-hidden;
+
+  border-radius: 2px;
+  background-color: #fff2e3;
+}
+
+.LowPriceTagTitle {
+  @apply tw-block tw-text-xs tw-text-orange-dark tw-font-bold tw-leading-loose tw-truncate;
+
+  padding-right: 2px;
+}

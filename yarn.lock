@@ -3075,6 +3075,13 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@googlemaps/js-api-loader@^1.14.0":
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/@googlemaps/js-api-loader/-/js-api-loader-1.14.0.tgz#7a1d3f0b7b53eabf797977ad0714b45069d5972e"
+  integrity sha512-J6xBJ39LPgafGiOaq7jX8KaThX4/G2nqP9DCwXHawB66K4U5KxAzVJi0H5Q6/NgjF2bAubhKd6rDmvoDgIXldg==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
@@ -19731,6 +19738,11 @@ speedometer@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/speedometer/-/speedometer-1.0.0.tgz#cd671cb06752c22bca3370e2f334440be4fc62e2"
   integrity sha1-zWccsGdSwivKM3Di8zREC+T8YuI=
+
+spherical-geometry-js@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/spherical-geometry-js/-/spherical-geometry-js-2.1.0.tgz#f9a6e550dfa4f24087fee6669cbc27edf612a5b4"
+  integrity sha512-osIQKPLKIqvxm47yCZ8DyNitnRLWUYEpS1zRLCOYuP8RSVa0yeclIyM8iBDTP5EyLQ9wtHGpq/l6Ppteun3vbA==
 
 split-string@^3.0.1, split-string@^3.0.2:
   version "3.1.0"

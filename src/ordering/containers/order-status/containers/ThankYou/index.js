@@ -43,6 +43,7 @@ import { loadOrder, loadOrderStatus } from '../../redux/thunks';
 import {
   getOrder,
   getOrderStatus,
+  getOrderStoreInfo,
   getReceiptNumber,
   getRiderLocations,
   getIsOrderCancellable,
@@ -51,10 +52,21 @@ import {
   getIsUseStorehubLogistics,
   getIsPayLater,
 } from '../../redux/selector';
-import { getshowProfileVisibility } from './redux/selector';
+import {
+  getshowProfileVisibility,
+  getFoodCourtId,
+  getFoodCourtHashCode,
+  getFoodCourtMerchantName,
+} from './redux/selector';
 import './OrderingThanks.scss';
 import { actions as thankYouActionCreators } from './redux';
-import { loadStoreIdHashCode, loadStoreIdTableIdHashCode, cancelOrder, loadCashbackInfo } from './redux/thunks';
+import {
+  loadStoreIdHashCode,
+  loadStoreIdTableIdHashCode,
+  cancelOrder,
+  loadCashbackInfo,
+  loadFoodCourtIdHashCode,
+} from './redux/thunks';
 import {
   getCashback,
   getStoreHashCode,
@@ -135,13 +147,18 @@ export class ThankYou extends PureComponent {
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
     window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
-    const { loadStoreIdHashCode, loadStoreIdTableIdHashCode, order, onlineStoreInfo } = this.props;
+    const {
+      loadStoreIdHashCode,
+      loadStoreIdTableIdHashCode,
+      loadFoodCourtIdHashCode,
+      order,
+      onlineStoreInfo,
+    } = this.props;
     const { storeId } = order || {};
+    const tableId = config.table;
 
     if (storeId) {
-      Utils.isDineInType()
-        ? loadStoreIdTableIdHashCode({ storeId, tableId: config.table })
-        : loadStoreIdHashCode(storeId);
+      Utils.isDineInType() ? loadStoreIdTableIdHashCode({ storeId, tableId }) : loadStoreIdHashCode(storeId);
     }
 
     if (onlineStoreInfo && onlineStoreInfo.id) {
@@ -150,13 +167,17 @@ export class ThankYou extends PureComponent {
 
     await this.loadOrder();
 
-    const { shippingType } = this.props;
+    const { shippingType, foodCourtId } = this.props;
 
     this.setContainerHeight();
 
     this.pollOrderStatus();
 
     this.recordPageLoadEvent();
+
+    if (foodCourtId) {
+      loadFoodCourtIdHashCode({ foodCourtId, tableId });
+    }
 
     if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
       this.promptUserEnableAppNotification();
@@ -245,7 +266,7 @@ export class ThankYou extends PureComponent {
 
   // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
   recordChargedEvent = () => {
-    const { order, business, onlineStoreInfo } = this.props;
+    const { order, business, onlineStoreInfo, orderStoreInfo } = this.props;
 
     let totalQuantity = 0;
     let totalDiscount = 0;
@@ -290,6 +311,7 @@ export class ThankYou extends PureComponent {
       'Cashback Amount': _get(order, 'loyaltyDiscounts[0].displayDiscount'),
       'Cashback Store': business,
       'promo/voucher applied': _get(order, 'displayPromotions[0].promotionCode'),
+      'Lowest Price': _get(orderStoreInfo, 'isLowestPrice', false),
     });
   };
 
@@ -766,8 +788,24 @@ export class ThankYou extends PureComponent {
     });
   };
 
+  goToFoodCourtLandingPage = () => {
+    const { foodCourtMerchantName, foodCourtHashCode, shippingType } = this.props;
+    const options = [`h=${foodCourtHashCode}`];
+    const hostList = window.location.host.split('.');
+
+    hostList[0] = foodCourtMerchantName;
+
+    if (shippingType) {
+      options.push(`type=${shippingType}`);
+    }
+
+    window.location.href = `${window.location.protocol}//${hostList.join('.')}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+      Constants.ROUTER_PATHS.FOOD_COURT
+    }?${options.join('&')}`;
+  };
+
   handleHeaderNavFunc = () => {
-    const { history, orderStatus, profileModalVisibility, isPayLater } = this.props;
+    const { history, orderStatus, profileModalVisibility, isPayLater, foodCourtId } = this.props;
     const isWebview = Utils.isWebview();
 
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
@@ -796,6 +834,12 @@ export class ThankYou extends PureComponent {
 
     if (Utils.isTNGMiniProgram() && sourceUrl) {
       window.location.href = sourceUrl;
+      return;
+    }
+
+    // If this order is from Food Court, go to Food Court Landing Page
+    if (foodCourtId) {
+      this.goToFoodCourtLandingPage();
       return;
     }
 
@@ -922,6 +966,7 @@ export default compose(
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
+      orderStoreInfo: getOrderStoreInfo(state),
       businessInfo: getBusinessInfo(state),
       business: getBusiness(state),
       user: getUser(state),
@@ -941,6 +986,9 @@ export default compose(
       profileModalVisibility: getshowProfileVisibility(state),
       hasOrderPaid: getHasOrderPaid(state),
       isPayLater: getIsPayLater(state),
+      foodCourtId: getFoodCourtId(state),
+      foodCourtHashCode: getFoodCourtHashCode(state),
+      foodCourtMerchantName: getFoodCourtMerchantName(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -954,6 +1002,7 @@ export default compose(
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
+      loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
     })
   )
 )(ThankYou);
