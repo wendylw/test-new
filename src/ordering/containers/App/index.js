@@ -32,10 +32,12 @@ class App extends Component {
 
     const source = Utils.getQueryString('source');
 
-    if (source === 'SharedLink') {
-      Utils.setSessionVariable('BeepOrderingSource', 'SharedLink');
-    } else {
-      Utils.saveSourceUrlToSessionStorage(source);
+    if (source) {
+      if (source === 'SharedLink') {
+        Utils.setSessionVariable('BeepOrderingSource', 'SharedLink');
+      } else {
+        Utils.saveSourceUrlToSessionStorage(source);
+      }
     }
   }
 
