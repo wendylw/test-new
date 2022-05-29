@@ -268,5 +268,6 @@
   "SearchingProductsNoResult": "Oops! Couldn’t find results for \"{{searchingProductKeywords}}\"<0></0>Let’s try a different item",
   "MenuSearchingBoxPlaceholder": "What are you looking for?",
   "Restaurants": "Restaurants",
-  "Reset": "Reset"
+  "Reset": "Reset",
+  "Apply": "Apply"
 }

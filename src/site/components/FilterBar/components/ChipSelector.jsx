@@ -1,12 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { CaretDown, FunnelSimple } from 'phosphor-react';
+import { DISPLAY_ICON_TYPES } from '../../../../utils/constants';
 import styles from './ChipSelector.module.scss';
-
-const DISPLAY_ICONS = {
-  FUNNEL_SIMPLE: 'FunnelSimple',
-  CARET_DOWN: 'CaretDown',
-};
 
 const ChipSelector = ({ category, className, onClick }) => {
   const classNameList = [styles.ChipSelectorContainer, 'text-size-reset'];
@@ -33,9 +29,11 @@ const ChipSelector = ({ category, className, onClick }) => {
       onClick={clickHandler}
       data-heap-name="site.common.filter.category-btn"
     >
-      {category.displayInfo.icons.includes(DISPLAY_ICONS.FUNNEL_SIMPLE) && <FunnelSimple size={16} weight="light" />}
+      {category.displayInfo.icons.includes(DISPLAY_ICON_TYPES.FUNNEL_SIMPLE) && (
+        <FunnelSimple size={16} weight="light" />
+      )}
       <span className={styles.ChipSelectorContent}>{category.displayInfo.name}</span>
-      {category.displayInfo.icons.includes(DISPLAY_ICONS.CARET_DOWN) && (
+      {category.displayInfo.icons.includes(DISPLAY_ICON_TYPES.CARET_DOWN) && (
         <CaretDown size={16} weight="light" className="tw-text-gray-600" />
       )}
     </button>
