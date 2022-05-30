@@ -3,12 +3,16 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation, Trans } from 'react-i18next';
 import _debounce from 'lodash/debounce';
-import { CaretLeft } from 'phosphor-react';
+import { CaretLeft, X } from 'phosphor-react';
 import _get from 'lodash/get';
 import SearchBox from '../components/SearchBox';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import StoreList from '../components/StoreList';
 import EmptySearch from './components/EmptySearch';
+import FilterBar from '../components/FilterBar';
+import Drawer from '../../common/components/Drawer';
+import Button from '../../common/components/Button';
+import OptionSelector from '../components/OptionSelector';
 import BeepNotResultImage from '../../images/beep-no-results.svg';
 import {
   searchActions,
@@ -37,6 +41,14 @@ import {
   getPopupCollections,
   getStorePageInfo,
 } from '../redux/modules/entities/storeCollections';
+import { actions as filterActionCreators } from '../redux/modules/filter';
+import {
+  getCategoryFilterList,
+  getHasAnyCategorySelected,
+  getFilterOptionSearchParams,
+} from '../redux/modules/filter/selectors';
+import { loadSearchOptionList, backUpSearchOptionList, resetSearchOptionList } from '../redux/modules/filter/thunks';
+import { TYPES, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
@@ -49,10 +61,16 @@ class SearchPage extends React.Component {
   scrollTop = 0;
   sectionRef = React.createRef();
 
+  state = {
+    drawerInfo: { category: null },
+  };
+
   componentDidMount = async () => {
-    const { otherCollections, popularCollections, fetchAddressInfo } = this.props;
+    const { otherCollections, popularCollections, fetchAddressInfo, loadSearchOptionList } = this.props;
     if (!checkStateRestoreStatus()) {
       this.resetSearchData();
+      // Try to load option list from cache first then fetch from server
+      await loadSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
       if (otherCollections.length === 0) {
         this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
       }
@@ -66,15 +84,21 @@ class SearchPage extends React.Component {
   };
 
   componentDidUpdate = async prevProps => {
-    const { addressCoords: prevAddressCoords } = prevProps;
-    const { addressCoords: currAddressCoords, collectionCardActions } = this.props;
+    const { addressCoords: prevAddressCoords, filterOptionParams: prevFilterOptionParams } = prevProps;
+    const { addressCoords: currAddressCoords, filterOptionParams: currFilterOptionParams } = this.props;
+
+    const hasFilterOptionParamsChanged = prevFilterOptionParams !== currFilterOptionParams;
 
     if (!isSameAddressCoords(prevAddressCoords, currAddressCoords)) {
       scrollTopPosition(this.sectionRef.current);
       this.resetSearchData();
       // Reload other and popular collections once address changed
-      collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
-      collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+    }
+
+    if (hasFilterOptionParamsChanged) {
+      this.props.backUpSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     }
   };
 
@@ -98,6 +122,8 @@ class SearchPage extends React.Component {
     this.props.history.push({
       pathname: '/home',
     });
+
+    this.props.resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
   };
 
   debounceSearchStores = _debounce(() => {
@@ -225,8 +251,89 @@ class SearchPage extends React.Component {
     );
   }
 
+  handleClickCategoryButton = category => {
+    const { id, type } = category;
+
+    if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
+      this.setState({ drawerInfo: { category } });
+    } else {
+      this.props.filterActions.updateCategorySelectStatus({ id });
+    }
+  };
+
+  handleClickResetAllCategoryButton = () => {
+    this.props.resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+  };
+
+  handleCloseDrawer = () => {
+    this.setState({ drawerInfo: { category: null } });
+  };
+
+  handleClickSingleChoiceOptionItem = (category, option) => {
+    const { id: categoryId } = category;
+
+    this.props.filterActions.updateCategoryOptionSelectStatus({ categoryId, option });
+    this.handleCloseDrawer();
+  };
+
+  handleClickResetOptionButton = category => {
+    const { id: categoryId } = category;
+
+    this.props.filterActions.resetCategoryAllOptionSelectStatus({ categoryId });
+    this.handleCloseDrawer();
+  };
+
+  handleClickApplyAllOptionButton = (category, options) => {
+    const { id: categoryId } = category;
+
+    this.props.filterActions.updateCategoryAllOptionSelectStatus({ categoryId, options });
+    this.handleCloseDrawer();
+  };
+
+  renderDrawer = () => {
+    const {
+      drawerInfo: { category },
+    } = this.state;
+    const shouldShowDrawer = !!category;
+    const title = _get(category, 'name', '');
+
+    return (
+      <Drawer
+        className={styles.SearchPageCategoryDrawerHeaderWrapper}
+        show={shouldShowDrawer}
+        onClose={this.handleCloseDrawer}
+        style={{ maxHeight: '99.8%' }}
+      >
+        <div className="tw-flex tw-flex-col tw-max-h-screen tw-overflow-hidden">
+          <div className={styles.SearchPageCategoryDrawerHeaderContainer}>
+            <Button
+              type="text"
+              onClick={this.handleCloseDrawer}
+              className={`${styles.SearchPageCategoryDrawerHeaderButton} beep-text-reset`}
+            >
+              <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+            </Button>
+            <h2 className="tw-flex-1 tw-text-lg tw-leading-relaxed tw-text-center tw-px-16 sm:tw-px-16px tw-font-bold tw-capitalize">
+              {title}
+            </h2>
+          </div>
+          {shouldShowDrawer && (
+            <OptionSelector
+              category={category}
+              onSingleChoiceClick={this.handleClickSingleChoiceOptionItem}
+              onResetButtonClick={this.handleClickResetOptionButton}
+              onApplyButtonClick={this.handleClickApplyAllOptionButton}
+              shouldUseRadioGroup={category.type === TYPES.SINGLE_SELECT}
+              shouldUseCheckbox={category.type === TYPES.MULTI_SELECT}
+            />
+          )}
+        </div>
+      </Drawer>
+    );
+  };
+
   render() {
-    const { searchInfo, shouldShowFilterBar } = this.props;
+    const { searchInfo, shouldShowFilterBar, categoryFilterList, shouldShowResetButton } = this.props;
     const { keyword } = searchInfo;
     return (
       <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.search.container">
@@ -249,10 +356,20 @@ class SearchPage extends React.Component {
               handleClearSearchText={this.handleClearSearchText}
             />
           </header>
+          {shouldShowFilterBar && (
+            <FilterBar
+              className={styles.SearchPageFilterBarWrapper}
+              categories={categoryFilterList}
+              shouldShowResetButton={shouldShowResetButton}
+              onResetButtonClick={this.handleClickResetAllCategoryButton}
+              onCategoryButtonClick={this.handleClickCategoryButton}
+            />
+          )}
         </div>
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           {this.renderStoreList()}
         </section>
+        {this.renderDrawer()}
       </main>
     );
   }
@@ -280,14 +397,21 @@ export default compose(
       shouldShowStartSearchPage: getShouldShowStartSearchPage(state),
       shouldShowNoSearchResultPage: getShouldShowNoSearchResultPage(state),
       shouldShowStoreList: getShouldShowStoreList(state),
+      categoryFilterList: getCategoryFilterList(state),
+      shouldShowResetButton: getHasAnyCategorySelected(state),
+      filterOptionParams: getFilterOptionSearchParams(state),
     }),
     dispatch => ({
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
+      loadSearchOptionList: bindActionCreators(loadSearchOptionList, dispatch),
+      backUpSearchOptionList: bindActionCreators(backUpSearchOptionList, dispatch),
+      resetSearchOptionList: bindActionCreators(resetSearchOptionList, dispatch),
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       searchActions: bindActionCreators(searchActions, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
       collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
+      filterActions: bindActionCreators(filterActionCreators, dispatch),
     })
   )
 )(SearchPage);

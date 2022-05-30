@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
@@ -15,6 +16,7 @@ const Drawer = props => {
     header,
     show,
     className = '',
+    style = {},
     onClose,
     animation = true,
     fullScreen = false,
@@ -70,7 +72,7 @@ const Drawer = props => {
         <div
           className={`drawer-animation__content ${styles.container} ${className}`}
           // the drawer always has some distance to the top if fullScreen is false, for beautiful look (not confirmed with designer)
-          style={{ ...(fullScreen ? { height: '100%' } : { maxHeight: '90%' }) }}
+          style={{ ...(fullScreen ? { height: '100%' } : { maxHeight: '90%' }), ...style }}
         >
           {header}
           <div className="tw-flex-1 tw-overflow-auto">{children}</div>
@@ -109,6 +111,8 @@ Drawer.propTypes = {
   show: PropTypes.bool,
   /* The class name of outer container */
   className: PropTypes.string,
+  /* The style of outer container */
+  style: PropTypes.object,
   /* The callback when the use touch the backdrop */
   onClose: PropTypes.func,
   /* Whether show and hide with animation. `true` by default */
@@ -132,6 +136,7 @@ Drawer.defaultProps = {
   header: null,
   show: false,
   className: '',
+  style: {},
   onClose: () => {},
   animation: true,
   fullScreen: false,

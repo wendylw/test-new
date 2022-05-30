@@ -2,7 +2,7 @@ import React from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { CaretLeft } from 'phosphor-react';
+import { CaretLeft, X } from 'phosphor-react';
 import _get from 'lodash/get';
 import StoreList from '../components/StoreList';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
@@ -22,9 +22,21 @@ import {
   getCurrentCollection,
   getCurrentCollectionStatus,
 } from '../redux/modules/entities/storeCollections';
+import { actions as filterActionCreators } from '../redux/modules/filter';
+import {
+  getCategoryFilterList,
+  getHasAnyCategorySelected,
+  getFilterOptionSearchParams,
+} from '../redux/modules/filter/selectors';
+import { loadSearchOptionList, backUpSearchOptionList, resetSearchOptionList } from '../redux/modules/filter/thunks';
+import { TYPES, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
+import FilterBar from '../components/FilterBar';
+import Drawer from '../../common/components/Drawer';
+import Button from '../../common/components/Button';
+import OptionSelector from '../components/OptionSelector';
 import ErrorComponent from '../../components/Error';
 import PageLoader from '../../../src/components/PageLoader';
 import styles from './CollectionPage.module.scss';
@@ -36,8 +48,12 @@ class CollectionPage extends React.Component {
   scrollTop = 0;
   sectionRef = React.createRef();
 
+  state = {
+    drawerInfo: { category: null },
+  };
+
   componentDidMount = async () => {
-    const { collectionCardActions, fetchAddressInfo } = this.props;
+    const { collectionCardActions, fetchAddressInfo, loadSearchOptionList } = this.props;
     await collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
 
     const hasReduxCache = checkStateRestoreStatus();
@@ -45,6 +61,9 @@ class CollectionPage extends React.Component {
     if (hasReduxCache) {
       // Silently fetch address Info without blocking current process
       fetchAddressInfo();
+    } else {
+      // Try to load option list from cache first then fetch from server
+      await loadSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     }
 
     if (!this.props.currentCollection) {
@@ -64,12 +83,18 @@ class CollectionPage extends React.Component {
   };
 
   componentDidUpdate = async prevProps => {
-    const { addressCoords: prevAddressCoords } = prevProps;
-    const { addressCoords: currAddressCoords } = this.props;
+    const { addressCoords: prevAddressCoords, filterOptionParams: prevFilterOptionParams } = prevProps;
+    const { addressCoords: currAddressCoords, filterOptionParams: currFilterOptionParams } = this.props;
+
+    const hasFilterOptionParamsChanged = prevFilterOptionParams !== currFilterOptionParams;
 
     if (!isSameAddressCoords(prevAddressCoords, currAddressCoords)) {
       scrollTopPosition(this.sectionRef.current);
       await this.reloadStoreListIfNeeded();
+    }
+
+    if (hasFilterOptionParamsChanged) {
+      this.props.backUpSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     }
   };
 
@@ -98,12 +123,14 @@ class CollectionPage extends React.Component {
   backToPreviousPage = () => {
     CleverTap.pushEvent('Collection Page - Click back');
 
-    const { history, location } = this.props;
+    const { history, location, resetSearchOptionList } = this.props;
     const pathname = (location.state && location.state.from) || '/home';
 
     history.push({
       pathname,
     });
+
+    resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
   };
 
   backupState = () => {
@@ -183,8 +210,89 @@ class CollectionPage extends React.Component {
     );
   }
 
+  handleClickCategoryButton = category => {
+    const { id, type } = category;
+
+    if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
+      this.setState({ drawerInfo: { category } });
+    } else {
+      this.props.filterActions.updateCategorySelectStatus({ id });
+    }
+  };
+
+  handleClickResetAllCategoryButton = () => {
+    this.props.resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
+  };
+
+  handleCloseDrawer = () => {
+    this.setState({ drawerInfo: { category: null } });
+  };
+
+  handleClickSingleChoiceOptionItem = (category, option) => {
+    const { id: categoryId } = category;
+
+    this.props.filterActions.updateCategoryOptionSelectStatus({ categoryId, option });
+    this.handleCloseDrawer();
+  };
+
+  handleClickResetOptionButton = category => {
+    const { id: categoryId } = category;
+
+    this.props.filterActions.resetCategoryAllOptionSelectStatus({ categoryId });
+    this.handleCloseDrawer();
+  };
+
+  handleClickApplyAllOptionButton = (category, options) => {
+    const { id: categoryId } = category;
+
+    this.props.filterActions.updateCategoryAllOptionSelectStatus({ categoryId, options });
+    this.handleCloseDrawer();
+  };
+
+  renderDrawer = () => {
+    const {
+      drawerInfo: { category },
+    } = this.state;
+    const shouldShowDrawer = !!category;
+    const title = _get(category, 'name', '');
+
+    return (
+      <Drawer
+        className={styles.CollectionPageCategoryDrawerHeaderWrapper}
+        show={shouldShowDrawer}
+        onClose={this.handleCloseDrawer}
+        style={{ maxHeight: '99.8%' }}
+      >
+        <div className="tw-flex tw-flex-col tw-max-h-screen tw-overflow-hidden">
+          <div className={styles.CollectionPageCategoryDrawerHeaderContainer}>
+            <Button
+              type="text"
+              onClick={this.handleCloseDrawer}
+              className={`${styles.CollectionPageCategoryDrawerHeaderButton} beep-text-reset`}
+            >
+              <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+            </Button>
+            <h2 className="tw-flex-1 tw-text-lg tw-leading-relaxed tw-text-center tw-px-16 sm:tw-px-16px tw-font-bold tw-capitalize">
+              {title}
+            </h2>
+          </div>
+          {shouldShowDrawer && (
+            <OptionSelector
+              category={category}
+              onSingleChoiceClick={this.handleClickSingleChoiceOptionItem}
+              onResetButtonClick={this.handleClickResetOptionButton}
+              onApplyButtonClick={this.handleClickApplyAllOptionButton}
+              shouldUseRadioGroup={category.type === TYPES.SINGLE_SELECT}
+              shouldUseCheckbox={category.type === TYPES.MULTI_SELECT}
+            />
+          )}
+        </div>
+      </Drawer>
+    );
+  };
+
   render() {
-    const { currentCollection, currentCollectionStatus } = this.props;
+    const { currentCollection, currentCollectionStatus, categoryFilterList, shouldShowResetButton } = this.props;
     if (!currentCollectionStatus || currentCollectionStatus === API_REQUEST_STATUS.PENDING) {
       return <PageLoader />;
     }
@@ -208,6 +316,13 @@ class CollectionPage extends React.Component {
             </button>
             {title ? <h2 className={styles.CollectionPageHeaderTitle}>{title}</h2> : null}
           </header>
+          <FilterBar
+            className={styles.CollectionPageFilterBarWrapper}
+            categories={categoryFilterList}
+            shouldShowResetButton={shouldShowResetButton}
+            onResetButtonClick={this.handleClickResetAllCategoryButton}
+            onCategoryButtonClick={this.handleClickCategoryButton}
+          />
         </div>
         <section
           ref={this.sectionRef}
@@ -217,6 +332,7 @@ class CollectionPage extends React.Component {
         >
           {this.renderStoreList()}
         </section>
+        {this.renderDrawer()}
       </main>
     );
   }
@@ -236,14 +352,21 @@ export default compose(
       shippingType: getShippingType(state),
       addressInfo: getAddressInfo(state),
       addressCoords: getAddressCoords(state),
+      categoryFilterList: getCategoryFilterList(state),
+      shouldShowResetButton: getHasAnyCategorySelected(state),
+      filterOptionParams: getFilterOptionSearchParams(state),
     }),
     dispatch => ({
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
+      loadSearchOptionList: bindActionCreators(loadSearchOptionList, dispatch),
+      backUpSearchOptionList: bindActionCreators(backUpSearchOptionList, dispatch),
+      resetSearchOptionList: bindActionCreators(resetSearchOptionList, dispatch),
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       collectionsActions: bindActionCreators(collectionsActions, dispatch),
       collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      filterActions: bindActionCreators(filterActionCreators, dispatch),
     })
   )
 )(CollectionPage);

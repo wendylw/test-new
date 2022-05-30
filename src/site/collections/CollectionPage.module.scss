@@ -11,3 +11,28 @@
   @apply tw-flex-grow tw-text-left tw-text-lg tw-leading-relaxed tw-font-bold tw-truncate
     sm:tw-pr-16px tw-pr-16 sm:tw-py-12px tw-py-12;
 }
+
+.CollectionPageFilterBarWrapper {
+  @apply sm:tw-pt-4px tw-pt-4 sm:tw-pb-12px tw-pb-12
+    tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+}
+
+.CollectionPageCategoryDrawerHeaderWrapper {
+  @apply tw-p-0;
+}
+
+.CollectionPageCategoryDrawerHeaderContainer {
+  @apply tw-flex tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+
+  &::after {
+    @apply tw-flex-shrink-0 tw-p-16 sm:tw-p-16px;
+
+    content: "";
+    display: inline-flex;
+    width: 1.4285rem;
+  }
+}
+
+.CollectionPageCategoryDrawerHeaderButton:global(.type-text) {
+  @apply tw-flex-shrink-0 tw-p-16 sm:tw-p-16px tw-border-0;
+}
