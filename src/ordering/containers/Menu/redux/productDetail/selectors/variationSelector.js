@@ -11,6 +11,8 @@ const getVariationId = variation => variation.id;
 
 const getVariationName = variation => variation.name;
 
+const getVariationModifier = variation => variation.isModifier;
+
 const getVariationOptionValues = variation => variation.optionValues;
 
 const getVariationType = variation => {
@@ -121,6 +123,7 @@ export const variationStructuredSelector = createStructuredSelector({
   id: getVariationId,
   name: getVariationName,
   type: getVariationType,
+  isModifier: getVariationModifier,
   selectionAmountLimit: selectionAmountLimitStructuredSelector,
   selectedQuantity: getSelectedVariationQuantity,
 });

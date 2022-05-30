@@ -9,7 +9,7 @@
   @apply tw-flex tw-flex-col tw-flex-1 tw-overflow-auto;
 }
 .productDetailFooter {
-  @apply tw-flex-none tw-p-16px;
+  @apply tw-flex-none tw-p-8 sm:tw-p-8px;
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
 }
 .topArrowBtn {
@@ -54,9 +54,10 @@
 }
 // text content
 .productDescription {
-  @apply tw-leading-relaxed tw-text-gray-700;
+  @apply tw-max-w-full tw-leading-relaxed tw-text-gray-700 tw-break-words tw-overflow-auto;
+
   & * {
-    @apply tw-leading-relaxed tw-text-gray-700;
+    @apply tw-max-w-full tw-leading-relaxed tw-text-gray-700 tw-break-words tw-overflow-auto;
   }
 }
 
