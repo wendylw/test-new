@@ -20,7 +20,9 @@ const { reducer, actions } = createSlice({
       const paymentOptions = payload.paymentOptions;
       const onlineBankingOption = paymentOptions.find(payment => payment.key === 'OnlineBanking');
       if (onlineBankingOption) {
-        const selectedOnlineBanking = onlineBankingOption.agentCodes.find(banking => banking.agentCode);
+        const selectedOnlineBanking = onlineBankingOption.agentCodes.find(
+          banking => banking.agentCode && banking.available
+        );
         if (selectedOnlineBanking) {
           state.selectedOnlineBankingAgentCode = selectedOnlineBanking.agentCode;
         }

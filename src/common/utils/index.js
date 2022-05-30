@@ -160,7 +160,7 @@ export const getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) 
   return storeUrl;
 };
 
-export const submitForm = (action, data) => {
+export const submitForm = (action, data = {}) => {
   const form = document.createElement('form');
   form.action = action;
   form.method = 'POST';
