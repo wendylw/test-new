@@ -1,3 +1,4 @@
+/* eslint-disable react/sort-comp */
 import React from 'react';
 import qs from 'qs';
 import PropTypes from 'prop-types';
@@ -10,9 +11,11 @@ import Constants from '../../../utils/constants';
 import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
+  loadOrders as loadOrdersThunk,
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
 } from './redux/thunks';
+import { removePromo as removePromoThunk } from '../Promotion/redux/common/thunks';
 import {
   getOrderPickUpCode,
   getTableNumber,
@@ -27,12 +30,15 @@ import {
   getSubOrdersMapping,
   getThankYouPageUrl,
   getOrderServiceChargeRate,
+  getOrderBillingPromo,
+  getOrderPromoDiscount,
+  getOrderPromotionCode,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
-import { IconChecked, IconError } from '../../../components/Icons';
+import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import './TableSummary.scss';
 import config from '../../../config';
@@ -169,6 +175,33 @@ export class TableSummary extends React.Component {
     );
   };
 
+  handleDismissPromotion = async () => {
+    const { removePromo, loadOrders } = this.props;
+
+    const receiptNumber = Utils.getQueryString('receiptNumber');
+
+    await removePromo();
+    await loadOrders(receiptNumber);
+  };
+
+  handleGotoPromotion = () => {
+    const { history, userIsLogin } = this.props;
+
+    if (userIsLogin) {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
+        search: window.location.search,
+        state: { shouldGoBack: true },
+      });
+    } else {
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+        state: { shouldGoBack: true },
+      });
+    }
+  };
+
   renderBaseInfo() {
     const { t, orderNumber, tableNumber } = this.props;
 
@@ -259,6 +292,59 @@ export class TableSummary extends React.Component {
     );
   }
 
+  renderPromotionItem() {
+    const { t, OrderBillingPromo, oderPromoDiscount } = this.props;
+    const { PROMO_TYPE } = Constants;
+    const orderPromoType = OrderBillingPromo.length ? PROMO_TYPE.PROMOTION_ADD : '';
+
+    return (
+      <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
+        {OrderBillingPromo.length ? (
+          <>
+            <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
+              <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+              <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
+                {t(orderPromoType)} ({this.showShortPromoCode()})
+              </span>
+              <button
+                onClick={this.handleDismissPromotion}
+                className="button flex__shrink-fixed"
+                data-heap-name="ordering.cart.dismiss-promo"
+              >
+                <IconClose className="icon icon__small" />
+              </button>
+            </div>
+            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
+              - <CurrencyNumber className="text-size-big text-weight-bolder" money={oderPromoDiscount} />
+            </div>
+          </>
+        ) : (
+          <button
+            className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
+            onClick={this.handleGotoPromotion}
+            data-heap-name="ordering.cart.add-promo"
+          >
+            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
+          </button>
+        )}
+      </li>
+    );
+  }
+
+  showShortPromoCode() {
+    const { orderPromotionCode } = this.props;
+    const SHOW_LENGTH = 5;
+    // show like "Promo..."
+    if (orderPromotionCode) {
+      if (orderPromotionCode.length > SHOW_LENGTH) {
+        return `${orderPromotionCode.substring(0, SHOW_LENGTH)}...`;
+      }
+      return orderPromotionCode;
+    }
+    return '';
+  }
+
   render() {
     const {
       t,
@@ -324,7 +410,9 @@ export class TableSummary extends React.Component {
             isLogin={userIsLogin}
             history={history}
             orderPendingPaymentStatus={orderPendingPaymentStatus}
-          />
+          >
+            {this.renderPromotionItem()}
+          </Billing>
         </div>
         <footer
           ref={ref => {
@@ -385,6 +473,12 @@ TableSummary.propTypes = {
   clearQueryOrdersAndStatus: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
   resetCartSubmission: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  OrderBillingPromo: PropTypes.array,
+  loadOrders: PropTypes.func,
+  removePromo: PropTypes.func,
+  oderPromoDiscount: PropTypes.number,
+  orderPromotionCode: PropTypes.string,
 };
 
 TableSummary.defaultProps = {
@@ -408,6 +502,11 @@ TableSummary.defaultProps = {
   clearQueryOrdersAndStatus: () => {},
   resetCartSubmission: () => {},
   thankYouPageUrl: '',
+  OrderBillingPromo: [],
+  loadOrders: () => {},
+  removePromo: () => {},
+  oderPromoDiscount: 0,
+  orderPromotionCode: '',
 };
 
 export default compose(
@@ -431,12 +530,17 @@ export default compose(
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
+      OrderBillingPromo: getOrderBillingPromo(state),
+      oderPromoDiscount: getOrderPromoDiscount(state),
+      orderPromotionCode: getOrderPromotionCode(state),
     }),
 
     {
       queryOrdersAndStatus: queryOrdersAndStatusThunk,
       clearQueryOrdersAndStatus: clearQueryOrdersAndStatusThunk,
       resetCartSubmission: resetCartSubmissionActions.resetCartSubmission,
+      loadOrders: loadOrdersThunk,
+      removePromo: removePromoThunk,
     }
   )
 )(TableSummary);

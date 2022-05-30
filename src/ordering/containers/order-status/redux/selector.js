@@ -65,7 +65,7 @@ export const getPromotion = createSelector(getOrder, order => {
     return {
       promoCode: appliedPromo.promotionCode,
       discount: appliedPromo.displayDiscount,
-      promoType: PROMO_TYPE.PROMOTION,
+      promoType: PROMO_TYPE.PROMOTION_ADD,
     };
   }
 

@@ -4,11 +4,23 @@ import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
 import { loadOrders, loadOrdersStatus } from './thunks';
 
 const PromotionItemModel = {
+  promotionId: null,
+  tax: 0,
+  taxCode: null,
   code: null,
-  name: null,
+  promotionCode: null,
+  promotionName: null,
   status: null,
   discount: 0,
   discountType: null,
+};
+
+const appliedVoucherModel = {
+  voucherId: null,
+  voucherCode: null,
+  value: 0,
+  cost: 0,
+  purchaseChannel: null,
 };
 
 const loyaltyDiscountsModel = {
@@ -59,7 +71,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
     },
     [loadOrders.fulfilled.type]: (state, { payload }) => {
-      const { displayPromotions = [], loyaltyDiscounts = [], status: orderStatus, ...others } = {
+      const { displayPromotions = [], loyaltyDiscounts = [], appliedVoucher = [], status: orderStatus, ...others } = {
         ...state.order,
         ...payload,
       };
@@ -69,6 +81,7 @@ export const { reducer, actions } = createSlice({
         orderStatus,
         loyaltyDiscounts: (loyaltyDiscounts || []).map(item => ({ ...loyaltyDiscountsModel, ...item })),
         displayPromotions: (displayPromotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
+        appliedVoucher: (appliedVoucher || []).map(voucher => ({ ...appliedVoucherModel, ...voucher })),
       };
       state.requestStatus.loadOrders = API_REQUEST_STATUS.FULFILLED;
     },

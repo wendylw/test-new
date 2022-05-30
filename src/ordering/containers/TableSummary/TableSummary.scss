@@ -102,6 +102,15 @@
   &__outline-button {
     color: $white;
   }
+
+  &__promotion-content {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  &__button-acquisition {
+    max-height: 50px;
+  }
 }
 
 .submit-order-confirm {
