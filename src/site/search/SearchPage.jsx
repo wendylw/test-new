@@ -48,7 +48,7 @@ import {
   getFilterOptionSearchParams,
 } from '../redux/modules/filter/selectors';
 import { loadSearchOptionList, backUpSearchOptionList, resetSearchOptionList } from '../redux/modules/filter/thunks';
-import { TYPES, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
+import { TYPES, IDS, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
@@ -253,6 +253,17 @@ class SearchPage extends React.Component {
 
   handleClickCategoryButton = category => {
     const { id, type } = category;
+    const {
+      searchInfo: { keyword },
+    } = this.props;
+
+    if (id === IDS.SORT_BY) {
+      CleverTap.pushEvent('Search - Click sort by button', {
+        'search keyword': keyword,
+      });
+    } else {
+      CleverTap.pushEvent('Search - Click quick filter button');
+    }
 
     if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
       this.setState({ drawerInfo: { category } });
@@ -263,6 +274,7 @@ class SearchPage extends React.Component {
 
   handleClickResetAllCategoryButton = () => {
     this.props.resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+    CleverTap.pushEvent('Search - Click reset quick sort and filter button');
   };
 
   handleCloseDrawer = () => {
@@ -271,20 +283,40 @@ class SearchPage extends React.Component {
 
   handleClickSingleChoiceOptionItem = (category, option) => {
     const { id: categoryId } = category;
+    const { name: optionName } = option;
+
+    if (categoryId === IDS.SORT_BY) {
+      CleverTap.pushEvent('Search - Select sort options (Sort button)', {
+        'type of sort': optionName,
+      });
+    }
 
     this.props.filterActions.updateCategoryOptionSelectStatus({ categoryId, option });
     this.handleCloseDrawer();
   };
 
   handleClickResetOptionButton = category => {
-    const { id: categoryId } = category;
+    const { id: categoryId, name: filterName } = category;
+
+    CleverTap.pushEvent('Search - Reset (Filter slide-up)', {
+      'type of filter': filterName,
+    });
 
     this.props.filterActions.resetCategoryAllOptionSelectStatus({ categoryId });
     this.handleCloseDrawer();
   };
 
   handleClickApplyAllOptionButton = (category, options) => {
-    const { id: categoryId } = category;
+    const { id: categoryId, name: filterName } = category;
+    const optionNames = options
+      .filter(option => option.selected)
+      .map(option => option.name)
+      .join(', ');
+
+    CleverTap.pushEvent('Search - Select filter options (Filter button)', {
+      'type of filter': filterName,
+      'filter options': optionNames,
+    });
 
     this.props.filterActions.updateCategoryAllOptionSelectStatus({ categoryId, options });
     this.handleCloseDrawer();
