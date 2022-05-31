@@ -1,5 +1,6 @@
 @import "../Variables.scss";
 
+// generate the plus / minus icon using pure css
 .item-operator {
   &::before {
     content: "";
