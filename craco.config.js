@@ -33,6 +33,12 @@ module.exports = {
   plugins: [
     {
       plugin: CracoEsbuildPlugin,
+      options: {
+        esbuildMinimizerOptions: {
+          target: 'es2015',
+          css: false, // if true, OptimizeCssAssetsWebpackPlugin will also be replaced by esbuild.
+        },
+      },
     },
   ],
 };
