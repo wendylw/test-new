@@ -14,19 +14,23 @@ import Drawer from '../../common/components/Drawer';
 import Button from '../../common/components/Button';
 import OptionSelector from '../components/OptionSelector';
 import BeepNotResultImage from '../../images/beep-no-results.svg';
+import { actions as searchActions } from '../redux/modules/search';
 import {
-  searchActions,
   getStoreList,
   getShippingType,
   getPageInfo,
-  getSearchInfo,
-  loadedSearchingStores,
+  getSearchKeyword,
+  getSearchResults,
   getShouldShowCategories,
   getShouldShowFilterBar,
   getShouldShowStartSearchPage,
   getShouldShowNoSearchResultPage,
   getShouldShowStoreList,
-} from '../redux/modules/search';
+  getShouldLoadStoreList,
+  getShouldShowStoreListLoader,
+  getShouldShowNoFilteredResultPage,
+} from '../redux/modules/search/selectors';
+import { resetPageInfo, setShippingType, loadStoreList } from '../redux/modules/search/thunks';
 import { submitStoreMenu } from '../home/utils';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { rootActionCreators } from '../redux/modules';
@@ -49,6 +53,7 @@ import {
 } from '../redux/modules/filter/selectors';
 import { loadSearchOptionList, backUpSearchOptionList, resetSearchOptionList } from '../redux/modules/filter/thunks';
 import { TYPES, IDS, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
+import { SHIPPING_TYPES } from '../../common/utils/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
@@ -68,7 +73,7 @@ class SearchPage extends React.Component {
   componentDidMount = async () => {
     const { otherCollections, popularCollections, fetchAddressInfo, loadSearchOptionList } = this.props;
     if (!checkStateRestoreStatus()) {
-      this.resetSearchData();
+      await this.resetSearchData();
       // Try to load option list from cache first then fetch from server
       await loadSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
       if (otherCollections.length === 0) {
@@ -84,36 +89,63 @@ class SearchPage extends React.Component {
   };
 
   componentDidUpdate = async prevProps => {
-    const { addressCoords: prevAddressCoords, filterOptionParams: prevFilterOptionParams } = prevProps;
-    const { addressCoords: currAddressCoords, filterOptionParams: currFilterOptionParams } = this.props;
+    const {
+      addressCoords: prevAddressCoords,
+      filterOptionParams: prevFilterOptionParams,
+      shippingType: prevShippingType,
+    } = prevProps;
+    const {
+      addressCoords: currAddressCoords,
+      filterOptionParams: currFilterOptionParams,
+      shippingType: currShippingType,
+      searchKeyword,
+      resetPageInfo,
+    } = this.props;
 
+    const hasAddressCoordsChanged = !isSameAddressCoords(prevAddressCoords, currAddressCoords);
     const hasFilterOptionParamsChanged = prevFilterOptionParams !== currFilterOptionParams;
+    // Exclude shipping type is null for avoiding store list reloading sake.
+    const hasShippingTypeChanged = !!prevShippingType && prevShippingType !== currShippingType;
+    const shouldReloadStoreList =
+      searchKeyword && (hasAddressCoordsChanged || hasFilterOptionParamsChanged || hasShippingTypeChanged);
 
-    if (!isSameAddressCoords(prevAddressCoords, currAddressCoords)) {
-      scrollTopPosition(this.sectionRef.current);
-      this.resetSearchData();
+    if (hasAddressCoordsChanged) {
       // Reload other and popular collections once address changed
       this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
       this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
     }
 
-    if (hasFilterOptionParamsChanged) {
+    if (shouldReloadStoreList) {
+      scrollTopPosition(this.sectionRef.current);
+      await resetPageInfo();
+      this.loadStoreListIfNeeded();
+    }
+
+    // Pickup filter is not included in the filter option params so we need to check shipping type separately
+    if (hasFilterOptionParamsChanged || hasShippingTypeChanged) {
       this.props.backUpSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     }
   };
 
-  resetSearchData = () => {
-    const { searchActions } = this.props;
-    searchActions.setShippingType('delivery');
-    searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
+  resetSearchData = async () => {
+    const { categoryFilterList, resetPageInfo, setShippingType } = this.props;
+    const pickupFilter = categoryFilterList.find(filter => filter.id === IDS.PICK_UP);
+    await resetPageInfo();
+    await setShippingType({ shippingType: pickupFilter?.selected ? SHIPPING_TYPES.PICKUP : SHIPPING_TYPES.DELIVERY });
+  };
+
+  loadStoreListIfNeeded = async () => {
+    const { shouldLoadStoreList, loadStoreList } = this.props;
+
+    if (!shouldLoadStoreList) return;
+
+    await loadStoreList();
   };
 
   onGoBack = () => {
-    const {
-      searchInfo: { keyword },
-    } = this.props;
+    const { searchKeyword, searchActions, resetPageInfo } = this.props;
 
-    if (!keyword) {
+    if (!searchKeyword) {
       CleverTap.pushEvent('Empty Search - Click back');
     } else {
       CleverTap.pushEvent('Search - click back');
@@ -123,24 +155,35 @@ class SearchPage extends React.Component {
       pathname: '/home',
     });
 
+    // Reset all search & filter redux data state
+    searchActions.setSearchInfo({ keyword: '' });
+    searchActions.resetShippingType();
+    searchActions.resetStoreListInfo();
+    resetPageInfo();
     this.props.resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
   };
 
-  debounceSearchStores = _debounce(() => {
-    this.props.searchActions.setPaginationInfo();
-    this.props.searchActions.getStoreList();
+  debounceSearchStores = _debounce(async () => {
+    await this.props.resetPageInfo();
+    await this.loadStoreListIfNeeded();
+    const { searchKeyword, searchResults } = this.props;
+    CleverTap.pushEvent('Search - Perform search', {
+      keyword: searchKeyword,
+      'has results': searchResults.length > 0,
+    });
   }, 700);
 
   handleSearchTextChange = event => {
     const keyword = event.currentTarget.value;
-    this.props.searchActions.setSearchingStoresStatus(false);
-    this.props.searchActions.setSearchInfo({ keyword, scrollTop: 0 });
+    this.props.searchActions.setSearchInfo({ keyword });
+    this.props.searchActions.setPageInfo({ scrollTop: 0 });
     this.debounceSearchStores();
   };
 
   handleClearSearchText = () => {
     CleverTap.pushEvent('Search - Click clear search field');
-    this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
+    this.props.searchActions.setSearchInfo({ keyword: '' });
+    this.props.searchActions.setPageInfo({ scrollTop: 0 });
   };
 
   backupState = () => {
@@ -149,7 +192,7 @@ class SearchPage extends React.Component {
 
   backLeftPosition = async store => {
     const { searchActions, shippingType, addressInfo } = this.props;
-    searchActions.setSearchInfo({ scrollTop: this.scrollTop });
+    searchActions.setPageInfo({ scrollTop: this.scrollTop });
     this.backupState();
     await submitStoreMenu({
       deliveryAddress: addressInfo,
@@ -168,21 +211,23 @@ class SearchPage extends React.Component {
       t,
       stores,
       pageInfo,
-      searchInfo,
-      loadedSearchingStores,
+      searchKeyword,
       storePageInfo,
       popularCollections,
       otherCollections,
       shouldShowCategories,
       shouldShowStartSearchPage,
       shouldShowNoSearchResultPage,
+      shouldShowNoFilteredResultPage,
       shouldShowStoreList,
+      shouldShowStoreListLoader,
     } = this.props;
-    const { keyword, scrollTop } = searchInfo;
 
-    if (Boolean(keyword) && !loadedSearchingStores) {
+    if (shouldShowStoreListLoader) {
       return <div className="entry-home__huge-loader loader theme text-size-huge" />;
     }
+
+    const shouldShowNoResultPage = shouldShowNoSearchResultPage || shouldShowNoFilteredResultPage;
 
     return (
       <React.Fragment>
@@ -190,7 +235,7 @@ class SearchPage extends React.Component {
           <div>
             <StoreListAutoScroll
               getScrollParent={() => this.sectionRef.current}
-              defaultScrollTop={scrollTop}
+              defaultScrollTop={pageInfo.scrollTop}
               onScroll={scrollTop => (this.scrollTop = scrollTop)}
             >
               <EmptySearch
@@ -209,11 +254,20 @@ class SearchPage extends React.Component {
             <p className={styles.SearchPageInfoCardHeading}>{t('StartSearchDescription')}</p>
           </div>
         )}
-        {shouldShowNoSearchResultPage && (
+        {shouldShowNoResultPage && (
           <div className={styles.SearchPageInfoCard}>
             <img className={styles.SearchPageInfoCardImage} src={BeepNotResultImage} alt="store not found" />
             <p className={styles.SearchPageInfoCardHeading}>
-              <Trans t={t} i18nKey="SearchNotFoundStoreDescription" values={{ keyword }} components={[<br />]} />
+              {shouldShowNoFilteredResultPage ? (
+                <Trans t={t} i18nKey="FilterNotFoundStoreDescription" components={[<br />]} />
+              ) : (
+                <Trans
+                  t={t}
+                  i18nKey="SearchNotFoundStoreDescription"
+                  values={{ keyword: searchKeyword }}
+                  components={[<br />]}
+                />
+              )}
             </p>
           </div>
         )}
@@ -221,7 +275,7 @@ class SearchPage extends React.Component {
           <div className="sm:tw-py-4px tw-py-4 tw-bg-white">
             <StoreListAutoScroll
               getScrollParent={() => this.sectionRef.current}
-              defaultScrollTop={scrollTop}
+              defaultScrollTop={pageInfo.scrollTop}
               onScroll={scrollTop => (this.scrollTop = scrollTop)}
             >
               <StoreList
@@ -229,10 +283,10 @@ class SearchPage extends React.Component {
                 stores={stores}
                 hasMore={pageInfo.hasMore}
                 getScrollParent={() => this.sectionRef.current}
-                loadMoreStores={() => this.props.searchActions.getStoreList()}
+                loadMoreStores={() => this.loadStoreListIfNeeded()}
                 onStoreClicked={(store, index) => {
                   CleverTap.pushEvent('Search - Click search result', {
-                    keyword: keyword,
+                    keyword: searchKeyword,
                     'store name': store.name,
                     'store rank': index + 1,
                     'shipping type': store.shippingType,
@@ -252,28 +306,32 @@ class SearchPage extends React.Component {
   }
 
   handleClickCategoryButton = category => {
-    const { id, type } = category;
-    const {
-      searchInfo: { keyword },
-    } = this.props;
+    const { id, type, selected } = category;
+    const { searchKeyword, setShippingType, filterActions } = this.props;
 
     if (id === IDS.SORT_BY) {
       CleverTap.pushEvent('Search - Click sort by button', {
-        'search keyword': keyword,
+        'search keyword': searchKeyword,
       });
     } else {
       CleverTap.pushEvent('Search - Click quick filter button');
     }
 
+    if (id === IDS.PICK_UP) {
+      setShippingType({ shippingType: selected ? SHIPPING_TYPES.DELIVERY : SHIPPING_TYPES.PICKUP });
+    }
+
     if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
       this.setState({ drawerInfo: { category } });
     } else {
-      this.props.filterActions.updateCategorySelectStatus({ id });
+      filterActions.updateCategorySelectStatus({ id });
     }
   };
 
   handleClickResetAllCategoryButton = () => {
-    this.props.resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+    const { resetSearchOptionList, setShippingType } = this.props;
+    resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+    setShippingType({ shippingType: SHIPPING_TYPES.DELIVERY });
     CleverTap.pushEvent('Search - Click reset quick sort and filter button');
   };
 
@@ -365,8 +423,7 @@ class SearchPage extends React.Component {
   };
 
   render() {
-    const { searchInfo, shouldShowFilterBar, categoryFilterList, shouldShowResetButton } = this.props;
-    const { keyword } = searchInfo;
+    const { searchKeyword, shouldShowFilterBar, categoryFilterList, shouldShowResetButton } = this.props;
     return (
       <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.search.container">
         <div className="tw-sticky tw-top-0 tw-z-100 tw-w-full tw-bg-white">
@@ -383,7 +440,7 @@ class SearchPage extends React.Component {
               <CaretLeft size={24} weight="light" />
             </button>
             <SearchBox
-              keyword={keyword}
+              keyword={searchKeyword}
               handleSearchTextChange={this.handleSearchTextChange}
               handleClearSearchText={this.handleClearSearchText}
             />
@@ -416,10 +473,10 @@ export default compose(
       pageInfo: getPageInfo(state),
       stores: getStoreList(state),
       shippingType: getShippingType(state),
-      searchInfo: getSearchInfo(state),
       storeLinkInfo: getStoreLinkInfo(state),
       addressInfo: getAddressInfo(state),
-      loadedSearchingStores: loadedSearchingStores(state),
+      searchKeyword: getSearchKeyword(state),
+      searchResults: getSearchResults(state),
       storePageInfo: getStorePageInfo(state),
       otherCollections: getOtherCollections(state),
       popularCollections: getPopupCollections(state),
@@ -428,12 +485,18 @@ export default compose(
       shouldShowFilterBar: getShouldShowFilterBar(state),
       shouldShowStartSearchPage: getShouldShowStartSearchPage(state),
       shouldShowNoSearchResultPage: getShouldShowNoSearchResultPage(state),
+      shouldShowNoFilteredResultPage: getShouldShowNoFilteredResultPage(state),
+      shouldShowStoreListLoader: getShouldShowStoreListLoader(state),
       shouldShowStoreList: getShouldShowStoreList(state),
       categoryFilterList: getCategoryFilterList(state),
       shouldShowResetButton: getHasAnyCategorySelected(state),
       filterOptionParams: getFilterOptionSearchParams(state),
+      shouldLoadStoreList: getShouldLoadStoreList(state),
     }),
     dispatch => ({
+      resetPageInfo: bindActionCreators(resetPageInfo, dispatch),
+      setShippingType: bindActionCreators(setShippingType, dispatch),
+      loadStoreList: bindActionCreators(loadStoreList, dispatch),
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
       loadSearchOptionList: bindActionCreators(loadSearchOptionList, dispatch),
       backUpSearchOptionList: bindActionCreators(backUpSearchOptionList, dispatch),
