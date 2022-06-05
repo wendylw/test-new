@@ -11,8 +11,10 @@ import StoreList from '../components/StoreList';
 import EmptySearch from './components/EmptySearch';
 import FilterBar from '../components/FilterBar';
 import Drawer from '../../common/components/Drawer';
+import DrawerHeader from '../../common/components/Drawer/DrawerHeader';
 import Button from '../../common/components/Button';
-import OptionSelector from '../components/OptionSelector';
+import SingleChoiceSelector from '../components/OptionSelectors/SingleChoiceSelector';
+import MultipleChoiceSelector from '../components/OptionSelectors/MultipleChoiceSelector';
 import BeepNotResultImage from '../../images/beep-no-results.svg';
 import { actions as searchActions } from '../redux/modules/search';
 import {
@@ -386,38 +388,41 @@ class SearchPage extends React.Component {
     } = this.state;
     const shouldShowDrawer = !!category;
     const title = _get(category, 'name', '');
+    const type = _get(category, 'type', '');
+    const shouldShowSingleChoiceSelector = type === TYPES.SINGLE_SELECT;
+    const shouldShowMultipleChoiceSelector = type === TYPES.MULTI_SELECT;
 
     return (
       <Drawer
-        className={styles.SearchPageCategoryDrawerHeaderWrapper}
+        className={styles.SearchPageCategoryDrawerWrapper}
         show={shouldShowDrawer}
         onClose={this.handleCloseDrawer}
         style={{ maxHeight: '99.8%' }}
+        header={
+          <DrawerHeader
+            left={
+              <Button
+                type="text"
+                onClick={this.handleCloseDrawer}
+                className={`${styles.SearchPageCategoryDrawerHeaderButton} beep-text-reset`}
+              >
+                <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+              </Button>
+            }
+          >
+            <span className={styles.SearchPageCategoryDrawerHeaderTitle}>{title}</span>
+          </DrawerHeader>
+        }
       >
-        <div className="tw-flex tw-flex-col tw-max-h-screen tw-overflow-hidden">
-          <div className={styles.SearchPageCategoryDrawerHeaderContainer}>
-            <Button
-              type="text"
-              onClick={this.handleCloseDrawer}
-              className={`${styles.SearchPageCategoryDrawerHeaderButton} beep-text-reset`}
-            >
-              <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
-            </Button>
-            <h2 className="tw-flex-1 tw-text-lg tw-leading-relaxed tw-text-center tw-px-16 sm:tw-px-16px tw-font-bold tw-capitalize">
-              {title}
-            </h2>
-          </div>
-          {shouldShowDrawer && (
-            <OptionSelector
-              category={category}
-              onSingleChoiceClick={this.handleClickSingleChoiceOptionItem}
-              onResetButtonClick={this.handleClickResetOptionButton}
-              onApplyButtonClick={this.handleClickApplyAllOptionButton}
-              shouldUseRadioGroup={category.type === TYPES.SINGLE_SELECT}
-              shouldUseCheckbox={category.type === TYPES.MULTI_SELECT}
-            />
-          )}
-        </div>
+        {shouldShowSingleChoiceSelector ? (
+          <SingleChoiceSelector category={category} onClick={this.handleClickSingleChoiceOptionItem} />
+        ) : shouldShowMultipleChoiceSelector ? (
+          <MultipleChoiceSelector
+            category={category}
+            onResetButtonClick={this.handleClickResetOptionButton}
+            onApplyButtonClick={this.handleClickApplyAllOptionButton}
+          />
+        ) : null}
       </Drawer>
     );
   };
