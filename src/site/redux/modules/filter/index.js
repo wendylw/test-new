@@ -1,133 +1,138 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { loadSearchOptionList, backUpSearchOptionList, resetSearchOptionList } from './thunks';
+import {
+  loadSearchOptionList,
+  loadSelectedOptionList,
+  backUpSelectedOptionList,
+  resetSelectedOptionList,
+  updateCategorySelectStatus,
+  updateCategoryOptionSelectStatus,
+  resetCategoryAllOptionSelectStatus,
+} from './thunks';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
-import { transformSearchOptionList } from './utils';
-import { TYPES, SORT_BY_OPTION_DEFAULT_ID } from './constants';
+import { DEFAULT_SELECTED_OPTION_LIST } from './constants';
 
 const initialState = {
   searchOptionList: {
     data: [],
-    loadDataStatus: null,
-    backUpDataStatus: null,
-    resetDataStatus: null,
-    loadDataError: null,
-    backUpDataError: null,
-    resetDataError: null,
+    status: null,
+    error: null,
+  },
+  selectedOptionList: {
+    // Data Structure: { [categoryId]: { options: [optionId] } }
+    data: DEFAULT_SELECTED_OPTION_LIST,
+    updateDataRequest: {
+      status: null,
+      error: null,
+    },
+    loadDataRequest: {
+      status: null,
+      error: null,
+    },
+    backUpDataRequest: {
+      status: null,
+      error: null,
+    },
+    resetDataRequest: {
+      status: null,
+      error: null,
+    },
   },
 };
 
 export const { reducer, actions } = createSlice({
   name: 'site/filter',
   initialState,
-  reducers: {
-    updateCategoryOptionSelectStatus(state, action) {
-      const { categoryId, option: selectedOption } = action.payload;
-      const { id: optionId, name: optionName } = selectedOption;
-      const prevData = state.searchOptionList.data;
-      const newData = prevData.map(category => {
-        if (category.id === categoryId) {
-          if (category.type === TYPES.SINGLE_SELECT) {
-            // TODO: This part of the code is tricky and needs to be refactored if the designer comes up with a better idea for the feature.
-            return {
-              ...category,
-              options: category.options.map(option => ({ ...option, selected: option.id === optionId })),
-              selected: optionId !== SORT_BY_OPTION_DEFAULT_ID,
-              displayInfo: {
-                ...category.displayInfo,
-                name: `${category.name}${optionId !== SORT_BY_OPTION_DEFAULT_ID ? ` ${optionName}` : ''}`,
-              },
-            };
-          }
-        }
-        return category;
-      });
-      state.searchOptionList.data = newData;
-    },
-    updateCategoryAllOptionSelectStatus(state, action) {
-      const { categoryId, options } = action.payload;
-      const prevData = state.searchOptionList.data;
-      const newData = prevData.map(category => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            options,
-            selected: options.some(option => option.selected),
-          };
-        }
-        return category;
-      });
-      state.searchOptionList.data = newData;
-    },
-    resetCategoryAllOptionSelectStatus(state, action) {
-      const { categoryId } = action.payload;
-      const prevData = state.searchOptionList.data;
-      const newData = prevData.map(category => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            options: category.options.map(option => ({ ...option, selected: false })),
-            selected: false,
-          };
-        }
-        return category;
-      });
-      state.searchOptionList.data = newData;
-    },
-    updateCategorySelectStatus(state, action) {
-      const { id } = action.payload;
-      const prevData = state.searchOptionList.data;
-      const newData = prevData.map(category => {
-        if (category.id === id) {
-          category.selected = !category.selected;
-        }
-        return category;
-      });
-      state.searchOptionList.data = newData;
-    },
-    resetAllSelectStatus(state) {
-      const prevData = state.searchOptionList.data;
-      state.searchOptionList.data = transformSearchOptionList(prevData);
-    },
-  },
+  reducers: {},
   extraReducers: {
     [loadSearchOptionList.pending.type]: state => {
-      state.searchOptionList.loadDataStatus = API_REQUEST_STATUS.PENDING;
-      state.searchOptionList.loadDataError = null;
+      state.searchOptionList.status = API_REQUEST_STATUS.PENDING;
+      state.searchOptionList.error = null;
     },
     [loadSearchOptionList.fulfilled.type]: (state, action) => {
       state.searchOptionList.data = action.payload;
-      state.searchOptionList.loadDataStatus = API_REQUEST_STATUS.FULFILLED;
-      state.searchOptionList.loadDataError = null;
+      state.searchOptionList.status = API_REQUEST_STATUS.FULFILLED;
+      state.searchOptionList.error = null;
     },
-
     [loadSearchOptionList.rejected.type]: (state, action) => {
-      state.searchOptionList.loadDataStatus = API_REQUEST_STATUS.REJECTED;
-      state.searchOptionList.loadDataError = action.error;
+      state.searchOptionList.status = API_REQUEST_STATUS.REJECTED;
+      state.searchOptionList.error = action.error;
     },
-    [backUpSearchOptionList.pending.type]: state => {
-      state.searchOptionList.backUpDataStatus = API_REQUEST_STATUS.PENDING;
-      state.searchOptionList.backUpDataError = null;
+    [loadSelectedOptionList.pending.type]: state => {
+      state.selectedOptionList.loadDataRequest.status = API_REQUEST_STATUS.PENDING;
+      state.selectedOptionList.loadDataRequest.error = null;
     },
-    [backUpSearchOptionList.fulfilled.type]: state => {
-      state.searchOptionList.backUpDataStatus = API_REQUEST_STATUS.FULFILLED;
-      state.searchOptionList.backUpDataError = null;
+    [loadSelectedOptionList.fulfilled.type]: (state, action) => {
+      state.selectedOptionList.data = action.payload;
+      state.selectedOptionList.loadDataRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.selectedOptionList.loadDataRequest.error = null;
     },
-    [backUpSearchOptionList.rejected.type]: state => {
-      state.searchOptionList.backUpDataStatus = API_REQUEST_STATUS.REJECTED;
-      state.searchOptionList.backUpDataError = null;
+    [loadSelectedOptionList.rejected.type]: (state, action) => {
+      state.selectedOptionList.loadDataRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.selectedOptionList.loadDataRequest.error = action.error;
     },
-    [resetSearchOptionList.pending.type]: state => {
-      state.searchOptionList.resetDataStatus = API_REQUEST_STATUS.PENDING;
-      state.searchOptionList.resetDataError = null;
+    [backUpSelectedOptionList.pending.type]: state => {
+      state.selectedOptionList.backUpDataRequest.status = API_REQUEST_STATUS.PENDING;
+      state.selectedOptionList.backUpDataRequest.error = null;
     },
-    [resetSearchOptionList.fulfilled.type]: (state, action) => {
-      state.searchOptionList.data = action.payload;
-      state.searchOptionList.resetDataStatus = API_REQUEST_STATUS.FULFILLED;
-      state.searchOptionList.resetDataError = null;
+    [backUpSelectedOptionList.fulfilled.type]: state => {
+      state.selectedOptionList.backUpDataRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.selectedOptionList.backUpDataRequest.error = null;
     },
-    [resetSearchOptionList.rejected.type]: state => {
-      state.searchOptionList.resetDataStatus = API_REQUEST_STATUS.REJECTED;
-      state.searchOptionList.resetDataError = null;
+    [backUpSelectedOptionList.rejected.type]: (state, action) => {
+      state.selectedOptionList.backUpDataRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.selectedOptionList.backUpDataRequest.error = action.error;
+    },
+    [resetSelectedOptionList.pending.type]: state => {
+      state.selectedOptionList.resetDataRequest.status = API_REQUEST_STATUS.PENDING;
+      state.selectedOptionList.resetDataRequest.error = null;
+    },
+    [resetSelectedOptionList.fulfilled.type]: (state, action) => {
+      state.selectedOptionList.data = action.payload;
+      state.selectedOptionList.resetDataRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.selectedOptionList.resetDataRequest.error = null;
+    },
+    [resetSelectedOptionList.rejected.type]: (state, action) => {
+      state.selectedOptionList.resetDataRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.selectedOptionList.resetDataRequest.error = action.error;
+    },
+    [updateCategorySelectStatus.pending.type]: state => {
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.PENDING;
+      state.selectedOptionList.updateDataRequest.error = null;
+    },
+    [updateCategorySelectStatus.fulfilled.type]: (state, action) => {
+      state.selectedOptionList.data = action.payload;
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.selectedOptionList.updateDataRequest.error = null;
+    },
+    [updateCategorySelectStatus.rejected.type]: (state, action) => {
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.selectedOptionList.updateDataRequest.error = action.error;
+    },
+    [updateCategoryOptionSelectStatus.pending.type]: state => {
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.PENDING;
+      state.selectedOptionList.updateDataRequest.error = null;
+    },
+    [updateCategoryOptionSelectStatus.fulfilled.type]: (state, action) => {
+      state.selectedOptionList.data = action.payload;
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.selectedOptionList.updateDataRequest.error = null;
+    },
+    [updateCategoryOptionSelectStatus.rejected.type]: (state, action) => {
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.selectedOptionList.updateDataRequest.error = action.error;
+    },
+    [resetCategoryAllOptionSelectStatus.pending.type]: state => {
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.PENDING;
+      state.selectedOptionList.updateDataRequest.error = null;
+    },
+    [resetCategoryAllOptionSelectStatus.fulfilled.type]: (state, action) => {
+      state.selectedOptionList.data = action.payload;
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.selectedOptionList.updateDataRequest.error = null;
+    },
+    [resetCategoryAllOptionSelectStatus.rejected.type]: (state, action) => {
+      state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.selectedOptionList.updateDataRequest.error = action.error;
     },
   },
 });

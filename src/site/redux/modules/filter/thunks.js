@@ -1,33 +1,83 @@
+import _omit from 'lodash/omit';
+import _isEmpty from 'lodash/isEmpty';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchSearchOptionList } from './api-request';
-import { getCategoryFilterList } from './selectors';
+import { getSelectedOptionList } from './selectors';
 import { transformSearchOptionList } from './utils';
+import { DEFAULT_SELECTED_OPTION_LIST } from './constants';
 
-export const loadSearchOptionList = createAsyncThunk('site/common/search/loadSearchOptionList', async ({ key }) => {
+export const loadSelectedOptionList = createAsyncThunk('site/common/search/loadSelectedOptionList', async ({ key }) => {
   const backupData = sessionStorage.getItem(key);
 
   if (backupData) return JSON.parse(backupData);
 
-  const data = await fetchSearchOptionList();
-
-  return transformSearchOptionList(data);
+  return DEFAULT_SELECTED_OPTION_LIST;
 });
 
-export const backUpSearchOptionList = createAsyncThunk(
-  'site/common/search/backupSearchOptionList',
+export const loadSearchOptionList = createAsyncThunk(
+  'site/common/search/loadSearchOptionList',
+  async ({ key }, { getState, dispatch }) => {
+    await dispatch(loadSelectedOptionList({ key }));
+    const selectedOptionList = getSelectedOptionList(getState());
+    const data = await fetchSearchOptionList();
+
+    return transformSearchOptionList(data, selectedOptionList);
+  }
+);
+
+export const backUpSelectedOptionList = createAsyncThunk(
+  'site/common/search/backUpSelectedOptionList',
   async ({ key }, { getState }) => {
-    const data = getCategoryFilterList(getState());
+    const data = getSelectedOptionList(getState());
     sessionStorage.setItem(key, JSON.stringify(data));
   }
 );
 
-export const resetSearchOptionList = createAsyncThunk(
-  'site/common/search/clearSearchOptionListBackup',
-  async ({ key }, { getState }) => {
+export const resetSelectedOptionList = createAsyncThunk(
+  'site/common/search/resetSelectedOptionList',
+  async ({ key }) => {
     sessionStorage.removeItem(key);
 
-    const data = getCategoryFilterList(getState());
+    return DEFAULT_SELECTED_OPTION_LIST;
+  }
+);
 
-    return transformSearchOptionList(data);
+export const updateCategorySelectStatus = createAsyncThunk(
+  'site/common/search/updateCategorySelectStatus',
+  async ({ categoryId }, { getState }) => {
+    const state = getState();
+    const prevData = getSelectedOptionList(state);
+
+    if (prevData[categoryId]) {
+      return _omit(prevData, [categoryId]);
+    }
+
+    return { ...prevData, [categoryId]: {} };
+  }
+);
+
+export const updateCategoryOptionSelectStatus = createAsyncThunk(
+  'site/common/search/updateCategoryOptionSelectStatus',
+  async ({ categoryId, optionIds }, { getState }) => {
+    const state = getState();
+    const prevData = getSelectedOptionList(state);
+
+    // If the selected option list is empty, remove the category from the selected list.
+    // This is to prevent the category from being mistakenly selected when the user selects nothing.
+    if (_isEmpty(optionIds)) {
+      return _omit(prevData, [categoryId]);
+    }
+
+    return { ...prevData, [categoryId]: { options: [...optionIds] } };
+  }
+);
+
+export const resetCategoryAllOptionSelectStatus = createAsyncThunk(
+  'site/common/search/resetCategoryAllOptionSelectStatus',
+  async ({ categoryId }, { getState }) => {
+    const state = getState();
+    const prevData = getSelectedOptionList(state);
+
+    return _omit(prevData, [categoryId]);
   }
 );

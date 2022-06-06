@@ -32,13 +32,19 @@ import {
   getCurrentCollection,
   getCurrentCollectionStatus,
 } from '../redux/modules/entities/storeCollections';
-import { actions as filterActionCreators } from '../redux/modules/filter';
 import {
   getCategoryFilterList,
   getHasAnyCategorySelected,
   getFilterOptionSearchParams,
 } from '../redux/modules/filter/selectors';
-import { loadSearchOptionList, backUpSearchOptionList, resetSearchOptionList } from '../redux/modules/filter/thunks';
+import {
+  loadSearchOptionList as loadSearchOptionListThunkCreator,
+  backUpSelectedOptionList as backUpSelectedOptionListThunkCreator,
+  resetSelectedOptionList as resetSelectedOptionListThunkCreator,
+  updateCategorySelectStatus as updateCategorySelectStatusThunkCreator,
+  updateCategoryOptionSelectStatus as updateCategoryOptionSelectStatusThunkCreator,
+  resetCategoryAllOptionSelectStatus as resetCategoryAllOptionSelectStatusThunkCreator,
+} from '../redux/modules/filter/thunks';
 import { TYPES, IDS, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
 import { SHIPPING_TYPES } from '../../common/utils/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
@@ -128,8 +134,16 @@ class CollectionPage extends React.Component {
 
     // Pickup filter is not included in the filter option params so we need to check shipping type separately
     if (hasFilterOptionParamsChanged || hasShippingTypeChanged) {
-      this.props.backUpSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
+      this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     }
+  };
+
+  componentWillUnmount = () => {
+    // Reset filter redux data state when user leaves the page in below 2 cases:
+    // 1. User directly clicks the back button from browser
+    // 2. User directly clicks the back button from the collection page
+
+    this.props.resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
   };
 
   resetCollectionData = async () => {
@@ -167,18 +181,17 @@ class CollectionPage extends React.Component {
   backToPreviousPage = () => {
     CleverTap.pushEvent('Collection Page - Click back');
 
-    const { history, location, resetSearchOptionList, collectionsActions, resetPageInfo } = this.props;
+    const { history, location, collectionsActions, resetPageInfo } = this.props;
     const pathname = (location.state && location.state.from) || '/home';
 
     history.push({
       pathname,
     });
 
-    // Reset all collection & filter redux data state
+    // Reset collection data state
     collectionsActions.resetShippingType();
     collectionsActions.resetStoreListInfo();
     resetPageInfo();
-    resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
   };
 
   backupState = () => {
@@ -286,7 +299,7 @@ class CollectionPage extends React.Component {
       CleverTap.pushEvent('Collection Page - Click quick filter button');
     }
 
-    const { setShippingType, filterActions } = this.props;
+    const { setShippingType } = this.props;
 
     if (id === IDS.PICK_UP) {
       setShippingType({ shippingType: selected ? SHIPPING_TYPES.DELIVERY : SHIPPING_TYPES.PICKUP });
@@ -295,13 +308,13 @@ class CollectionPage extends React.Component {
     if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
       this.setState({ drawerInfo: { category } });
     } else {
-      filterActions.updateCategorySelectStatus({ id });
+      this.props.updateCategorySelectStatus({ categoryId: id });
     }
   };
 
   handleClickResetAllCategoryButton = () => {
-    const { resetSearchOptionList, setShippingType } = this.props;
-    resetSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
+    const { resetSelectedOptionList, setShippingType } = this.props;
+    resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     setShippingType({ shippingType: SHIPPING_TYPES.DELIVERY });
     CleverTap.pushEvent('Collection Page - Click reset quick sort and filter button');
   };
@@ -312,7 +325,7 @@ class CollectionPage extends React.Component {
 
   handleClickSingleChoiceOptionItem = (category, option) => {
     const { id: categoryId } = category;
-    const { name: optionName } = option;
+    const { id: optionId, name: optionName } = option;
 
     if (categoryId === IDS.SORT_BY) {
       CleverTap.pushEvent('Collection Page - Select sort options (Sort button)', {
@@ -320,7 +333,7 @@ class CollectionPage extends React.Component {
       });
     }
 
-    this.props.filterActions.updateCategoryOptionSelectStatus({ categoryId, option });
+    this.props.updateCategoryOptionSelectStatus({ categoryId, optionIds: [optionId] });
     this.handleCloseDrawer();
   };
 
@@ -331,7 +344,7 @@ class CollectionPage extends React.Component {
       'type of filter': filterName,
     });
 
-    this.props.filterActions.resetCategoryAllOptionSelectStatus({ categoryId });
+    this.props.resetCategoryAllOptionSelectStatus({ categoryId });
     this.handleCloseDrawer();
   };
 
@@ -341,13 +354,14 @@ class CollectionPage extends React.Component {
       .filter(option => option.selected)
       .map(option => option.name)
       .join(', ');
+    const optionIds = options.filter(option => option.selected).map(option => option.id);
 
     CleverTap.pushEvent('Collection Page - Select filter options (Filter button)', {
       'type of filter': filterName,
       'filter options': optionNames,
     });
 
-    this.props.filterActions.updateCategoryAllOptionSelectStatus({ categoryId, options });
+    this.props.updateCategoryOptionSelectStatus({ categoryId, optionIds });
     this.handleCloseDrawer();
   };
 
@@ -467,15 +481,17 @@ export default compose(
       setShippingType: bindActionCreators(setShippingType, dispatch),
       loadStoreList: bindActionCreators(loadStoreList, dispatch),
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
-      loadSearchOptionList: bindActionCreators(loadSearchOptionList, dispatch),
-      backUpSearchOptionList: bindActionCreators(backUpSearchOptionList, dispatch),
-      resetSearchOptionList: bindActionCreators(resetSearchOptionList, dispatch),
+      loadSearchOptionList: bindActionCreators(loadSearchOptionListThunkCreator, dispatch),
+      backUpSelectedOptionList: bindActionCreators(backUpSelectedOptionListThunkCreator, dispatch),
+      resetSelectedOptionList: bindActionCreators(resetSelectedOptionListThunkCreator, dispatch),
+      updateCategorySelectStatus: bindActionCreators(updateCategorySelectStatusThunkCreator, dispatch),
+      updateCategoryOptionSelectStatus: bindActionCreators(updateCategoryOptionSelectStatusThunkCreator, dispatch),
+      resetCategoryAllOptionSelectStatus: bindActionCreators(resetCategoryAllOptionSelectStatusThunkCreator, dispatch),
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       collectionsActions: bindActionCreators(collectionsActions, dispatch),
       collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
-      filterActions: bindActionCreators(filterActionCreators, dispatch),
     })
   )
 )(CollectionPage);
