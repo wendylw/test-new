@@ -42,8 +42,8 @@ export const resetSelectedOptionList = createAsyncThunk(
   }
 );
 
-export const updateCategorySelectStatus = createAsyncThunk(
-  'site/common/search/updateCategorySelectStatus',
+export const toggleCategorySelectStatus = createAsyncThunk(
+  'site/common/search/toggleCategorySelectStatus',
   async ({ categoryId }, { getState }) => {
     const state = getState();
     const prevData = getSelectedOptionList(state);

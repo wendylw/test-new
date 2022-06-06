@@ -4,7 +4,7 @@ import {
   loadSelectedOptionList,
   backUpSelectedOptionList,
   resetSelectedOptionList,
-  updateCategorySelectStatus,
+  toggleCategorySelectStatus,
   updateCategoryOptionSelectStatus,
   resetCategoryAllOptionSelectStatus,
 } from './thunks';
@@ -95,16 +95,16 @@ export const { reducer, actions } = createSlice({
       state.selectedOptionList.resetDataRequest.status = API_REQUEST_STATUS.REJECTED;
       state.selectedOptionList.resetDataRequest.error = action.error;
     },
-    [updateCategorySelectStatus.pending.type]: state => {
+    [toggleCategorySelectStatus.pending.type]: state => {
       state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.PENDING;
       state.selectedOptionList.updateDataRequest.error = null;
     },
-    [updateCategorySelectStatus.fulfilled.type]: (state, action) => {
+    [toggleCategorySelectStatus.fulfilled.type]: (state, action) => {
       state.selectedOptionList.data = action.payload;
       state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.selectedOptionList.updateDataRequest.error = null;
     },
-    [updateCategorySelectStatus.rejected.type]: (state, action) => {
+    [toggleCategorySelectStatus.rejected.type]: (state, action) => {
       state.selectedOptionList.updateDataRequest.status = API_REQUEST_STATUS.REJECTED;
       state.selectedOptionList.updateDataRequest.error = action.error;
     },

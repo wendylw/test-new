@@ -56,7 +56,7 @@ import {
   loadSearchOptionList as loadSearchOptionListThunkCreator,
   backUpSelectedOptionList as backUpSelectedOptionListThunkCreator,
   resetSelectedOptionList as resetSelectedOptionListThunkCreator,
-  updateCategorySelectStatus as updateCategorySelectStatusThunkCreator,
+  toggleCategorySelectStatus as toggleCategorySelectStatusThunkCreator,
   updateCategoryOptionSelectStatus as updateCategoryOptionSelectStatusThunkCreator,
   resetCategoryAllOptionSelectStatus as resetCategoryAllOptionSelectStatusThunkCreator,
 } from '../redux/modules/filter/thunks';
@@ -339,7 +339,7 @@ class SearchPage extends React.Component {
     if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
       this.setState({ drawerInfo: { category } });
     } else {
-      this.props.updateCategorySelectStatus({ categoryId: id });
+      this.props.toggleCategorySelectStatus({ categoryId: id });
     }
   };
 
@@ -520,7 +520,7 @@ export default compose(
       loadSearchOptionList: bindActionCreators(loadSearchOptionListThunkCreator, dispatch),
       backUpSelectedOptionList: bindActionCreators(backUpSelectedOptionListThunkCreator, dispatch),
       resetSelectedOptionList: bindActionCreators(resetSelectedOptionListThunkCreator, dispatch),
-      updateCategorySelectStatus: bindActionCreators(updateCategorySelectStatusThunkCreator, dispatch),
+      toggleCategorySelectStatus: bindActionCreators(toggleCategorySelectStatusThunkCreator, dispatch),
       updateCategoryOptionSelectStatus: bindActionCreators(updateCategoryOptionSelectStatusThunkCreator, dispatch),
       resetCategoryAllOptionSelectStatus: bindActionCreators(resetCategoryAllOptionSelectStatusThunkCreator, dispatch),
       rootActions: bindActionCreators(rootActionCreators, dispatch),
