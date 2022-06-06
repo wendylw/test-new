@@ -75,7 +75,7 @@ const Drawer = props => {
           style={{ ...(fullScreen ? { height: '100%' } : { maxHeight: '90%' }), ...style }}
         >
           {header}
-          <div className="tw-flex-1 tw-overflow-auto">{children}</div>
+          <div className="drawer-animation__children tw-flex-1 tw-overflow-auto">{children}</div>
         </div>
       </div>
     </FullScreenFrame>

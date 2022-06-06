@@ -51,8 +51,10 @@ import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import CleverTap from '../../utils/clevertap';
 import FilterBar from '../components/FilterBar';
 import Drawer from '../../common/components/Drawer';
+import DrawerHeader from '../../common/components/Drawer/DrawerHeader';
 import Button from '../../common/components/Button';
-import OptionSelector from '../components/OptionSelector';
+import SingleChoiceSelector from '../components/OptionSelectors/SingleChoiceSelector';
+import MultipleChoiceSelector from '../components/OptionSelectors/MultipleChoiceSelector';
 import ErrorComponent from '../../components/Error';
 import PageLoader from '../../../src/components/PageLoader';
 import BeepNotResultImage from '../../images/beep-no-results.svg';
@@ -371,38 +373,41 @@ class CollectionPage extends React.Component {
     } = this.state;
     const shouldShowDrawer = !!category;
     const title = _get(category, 'name', '');
+    const type = _get(category, 'type', '');
+    const shouldShowSingleChoiceSelector = type === TYPES.SINGLE_SELECT;
+    const shouldShowMultipleChoiceSelector = type === TYPES.MULTI_SELECT;
 
     return (
       <Drawer
-        className={styles.CollectionPageCategoryDrawerHeaderWrapper}
+        className={styles.CollectionPageCategoryDrawerWrapper}
         show={shouldShowDrawer}
         onClose={this.handleCloseDrawer}
         style={{ maxHeight: '99.8%' }}
+        header={
+          <DrawerHeader
+            left={
+              <Button
+                type="text"
+                onClick={this.handleCloseDrawer}
+                className={`${styles.CollectionPageCategoryDrawerHeaderButton} beep-text-reset`}
+              >
+                <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+              </Button>
+            }
+          >
+            <span className={styles.CollectionPageCategoryDrawerHeaderTitle}>{title}</span>
+          </DrawerHeader>
+        }
       >
-        <div className="tw-flex tw-flex-col tw-max-h-screen tw-overflow-hidden">
-          <div className={styles.CollectionPageCategoryDrawerHeaderContainer}>
-            <Button
-              type="text"
-              onClick={this.handleCloseDrawer}
-              className={`${styles.CollectionPageCategoryDrawerHeaderButton} beep-text-reset`}
-            >
-              <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
-            </Button>
-            <h2 className="tw-flex-1 tw-text-lg tw-leading-relaxed tw-text-center tw-px-16 sm:tw-px-16px tw-font-bold tw-capitalize">
-              {title}
-            </h2>
-          </div>
-          {shouldShowDrawer && (
-            <OptionSelector
-              category={category}
-              onSingleChoiceClick={this.handleClickSingleChoiceOptionItem}
-              onResetButtonClick={this.handleClickResetOptionButton}
-              onApplyButtonClick={this.handleClickApplyAllOptionButton}
-              shouldUseRadioGroup={category.type === TYPES.SINGLE_SELECT}
-              shouldUseCheckbox={category.type === TYPES.MULTI_SELECT}
-            />
-          )}
-        </div>
+        {shouldShowSingleChoiceSelector ? (
+          <SingleChoiceSelector category={category} onClick={this.handleClickSingleChoiceOptionItem} />
+        ) : shouldShowMultipleChoiceSelector ? (
+          <MultipleChoiceSelector
+            category={category}
+            onResetButtonClick={this.handleClickResetOptionButton}
+            onApplyButtonClick={this.handleClickApplyAllOptionButton}
+          />
+        ) : null}
       </Drawer>
     );
   };
