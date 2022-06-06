@@ -1,0 +1,12 @@
+.ChipSelectorContainer {
+  @apply sm:tw-px-12px tw-px-12 sm:tw-py-6px tw-py-6 tw-cursor-pointer
+    tw-flex tw-flex-row tw-items-center 
+    tw-text-gray tw-text-left tw-text-base tw-leading-relaxed
+    tw-border-none tw-outline-none tw-bg-transparent tw-cursor-pointer;
+
+  border-radius: 20px;
+}
+
+.ChipSelectorContent {
+  @apply sm:tw-px-4px tw-px-4;
+}

@@ -653,6 +653,11 @@ const LOGISTICS_RIDER_TYPE = {
   PAN_DAGO: 'pandago',
 };
 
+export const DISPLAY_ICON_TYPES = {
+  FUNNEL_SIMPLE: 'FunnelSimple',
+  CARET_DOWN: 'CaretDown',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -704,4 +709,5 @@ export default {
   PROMOTION_CLIENT_TYPES,
   REFERRER_SOURCE_TYPES,
   LOGISTICS_RIDER_TYPE,
+  DISPLAY_ICON_TYPES,
 };

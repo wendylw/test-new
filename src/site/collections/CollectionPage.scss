@@ -1,13 +1,5 @@
 @import "../Variables";
 
-.switch-bar {
-  width: 50vw;
-
-  &__active {
-    border-bottom: 3px solid $theme-color;
-  }
-}
-
 .collection-page {
   &__render-error {
     .error__image-container {

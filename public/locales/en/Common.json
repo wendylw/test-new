@@ -114,6 +114,7 @@
   "NearbyRestaurants": "Restaurants Delivering Nearby",
   "DistanceText": "{{distance}} km",
   "SearchNotFoundStoreDescription": "Oops! Couldn’t find results for \"{{keyword}}\".<0></0>Let’s try a different restaurant",
+  "FilterNotFoundStoreDescription": "Oops! That’s not on the menu yet!<0></0>Try filtering for other delicious items instead",
   "StartSearchDescription": "Let’s start a search for your favorite restaurant",
   "ClosedForNow": "Closed\nFor Now",
   "MvpDocumentTitle": "Beep | Food Delivery & Takeaway | Order Food Online Now",
@@ -267,5 +268,7 @@
   "StoreNotFoundDesc": "This store may be temporarily unavailable or undergoing a delicious upgrade! Check back soon…",
   "SearchingProductsNoResult": "Oops! Couldn’t find results for \"{{searchingProductKeywords}}\"<0></0>Let’s try a different item",
   "MenuSearchingBoxPlaceholder": "What are you looking for?",
-  "Restaurants": "Restaurants"
+  "Restaurants": "Restaurants",
+  "Reset": "Reset",
+  "Apply": "Apply"
 }
