@@ -40,7 +40,7 @@
 .CollectionPageInfoCard {
   @apply tw-flex tw-flex-col tw-items-center;
 
-  padding: 14.5882vh 0;
+  padding: 14.1176vh 0;
 }
 
 .CollectionPageInfoCardImage {
@@ -55,6 +55,6 @@
 
 @media (min-width: 770px) {
   .CollectionPageInfoCard {
-    padding: 124px 0;
+    padding: 120px 0;
   }
 }
