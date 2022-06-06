@@ -293,12 +293,15 @@ class CollectionPage extends React.Component {
   }
 
   handleClickCategoryButton = category => {
-    const { id, type, selected } = category;
+    const { id, name, type, selected } = category;
 
     if (id === IDS.SORT_BY) {
       CleverTap.pushEvent('Collection Page - Click sort by button');
     } else {
-      CleverTap.pushEvent('Collection Page - Click quick filter button');
+      CleverTap.pushEvent('Collection Page - Click quick filter button', {
+        'type of filter': name,
+        'select state': !selected,
+      });
     }
 
     const { setShippingType } = this.props;

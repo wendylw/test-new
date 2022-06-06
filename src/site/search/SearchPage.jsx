@@ -321,7 +321,7 @@ class SearchPage extends React.Component {
   }
 
   handleClickCategoryButton = category => {
-    const { id, type, selected } = category;
+    const { id, name, type, selected } = category;
     const { searchKeyword, setShippingType } = this.props;
 
     if (id === IDS.SORT_BY) {
@@ -329,7 +329,10 @@ class SearchPage extends React.Component {
         'search keyword': searchKeyword,
       });
     } else {
-      CleverTap.pushEvent('Search - Click quick filter button');
+      CleverTap.pushEvent('Search - Click quick filter button', {
+        'type of filter': name,
+        'select state': !selected,
+      });
     }
 
     if (id === IDS.PICK_UP) {
