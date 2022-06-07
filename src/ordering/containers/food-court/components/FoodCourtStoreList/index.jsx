@@ -22,9 +22,11 @@ const FoodCourtStoreList = () => {
           !store.imageNoCompression && !store.image ? null : (
             <li
               key={`bestSellerProductItem-${store.id}`}
-              className={styles.foodCourtStore}
+              className={store.isClosed ? styles.foodCourtStoreClosed : styles.foodCourtStore}
               onClick={() => {
-                dispatch(selectedOneStore({ businessName: store.businessName, redirectUrl: store.redirectUrl }));
+                if (!store.isClosed) {
+                  dispatch(selectedOneStore({ businessName: store.businessName, redirectUrl: store.redirectUrl }));
+                }
               }}
             >
               <div className="tw-relative tw-p-4 sm:tw-p-4px">
@@ -34,13 +36,20 @@ const FoodCourtStoreList = () => {
                     src={store.imageNoCompression || store.image}
                     noCompression={!!store.imageNoCompression}
                   />
+                  {store.isClosed ? (
+                    <div className={styles.foodCourtStoreClosedOverlay}>
+                      <span className={styles.foodCourtStoreClosedOverlayText}>{t('ClosedForNow')}</span>
+                    </div>
+                  ) : null}
                 </div>
                 <h4
                   className={`${styles.foodCourtStoreTitle} tw-px-2 sm:tw-px-2px tw-mt-8 sm:tw-mt-8px tw-font-bold tw-leading-relaxed`}
                 >
                   {store.title}
                 </h4>
-                <div className="tw-flex tw-flex-wrap tw-items-center tw-px-2 sm:tw-px-2px tw-my-4 sm:tw-my-4px">
+                <div
+                  className={`${styles.foodCourtStoreDescription} tw-flex tw-flex-wrap tw-items-center tw-px-2 sm:tw-px-2px tw-my-4 sm:tw-my-4px`}
+                >
                   <span className={styles.foodCourtStoreTag}>{store.tags.join(', ')}</span>
                 </div>
               </div>
