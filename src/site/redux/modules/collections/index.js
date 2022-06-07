@@ -2,7 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import _concat from 'lodash/concat';
-import { resetPageInfo, setShippingType, loadStoreList } from './thunks';
+import {
+  setPageInfo,
+  resetPageInfo,
+  setShippingType,
+  resetShippingType,
+  loadStoreList,
+  resetStoreList,
+} from './thunks';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 const defaultPageInfo = {
@@ -37,26 +44,13 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'site/collections',
   initialState,
-  reducers: {
-    setPageInfo: (state, action) => {
-      const { scrollTop } = action.payload;
-      state.storeListInfo.data.pageInfo = { ...state.pageInfo.data, scrollTop };
-    },
-    resetShippingType: state => {
-      state.shippingType.data = null;
-    },
-    resetStoreListInfo: state => {
-      state.storeListInfo.data.storeIds = [];
-    },
-  },
+  reducers: {},
   extraReducers: {
     [loadStoreList.pending.type]: state => {
       const { storeIds } = state.storeListInfo.data;
-      const { page, hasMore } = state.pageInfo.data;
+      const { page } = state.pageInfo.data;
 
       state.storeListInfo.data.storeIds = page === 0 ? [] : storeIds;
-      state.pageInfo.data.hasMore = page === 0 ? true : hasMore;
-      state.pageInfo.data.loading = true;
 
       state.storeListInfo.status = API_REQUEST_STATUS.PENDING;
       state.storeListInfo.error = null;
@@ -64,15 +58,18 @@ export const { reducer, actions } = createSlice({
     [loadStoreList.fulfilled.type]: (state, action) => {
       const { storeIds } = state.storeListInfo.data;
       const { page, pageSize, hasMore } = state.pageInfo.data;
-      const stores = _get(action.payload, 'stores', []);
 
-      state.storeListInfo.data.storeIds = _concat(
-        storeIds,
-        stores.map(store => store.id)
-      );
-      state.pageInfo.data.page = page + 1;
-      state.pageInfo.data.hasMore = _isEmpty(stores) || pageSize > stores.length ? false : hasMore;
-      state.pageInfo.data.loading = false;
+      if (action.payload) {
+        const stores = _get(action.payload, 'stores', []);
+
+        state.storeListInfo.data.storeIds = _concat(
+          storeIds,
+          stores.map(store => store.id)
+        );
+        state.pageInfo.data.page = page + 1;
+        state.pageInfo.data.hasMore = _isEmpty(stores) || pageSize > stores.length ? false : hasMore;
+        state.pageInfo.data.loading = false;
+      }
 
       state.storeListInfo.status = API_REQUEST_STATUS.FULFILLED;
       state.storeListInfo.error = null;
@@ -82,6 +79,32 @@ export const { reducer, actions } = createSlice({
       state.pageInfo.data.loading = false;
       state.storeListInfo.status = API_REQUEST_STATUS.REJECTED;
       state.storeListInfo.error = action.error;
+    },
+    [resetStoreList.pending.type]: state => {
+      state.storeListInfo.status = API_REQUEST_STATUS.PENDING;
+      state.storeListInfo.error = null;
+    },
+    [resetStoreList.fulfilled.type]: state => {
+      state.storeListInfo.data.storeIds = [];
+      state.storeListInfo.status = API_REQUEST_STATUS.FULFILLED;
+      state.storeListInfo.error = null;
+    },
+    [resetStoreList.rejected.type]: (state, action) => {
+      state.storeListInfo.status = API_REQUEST_STATUS.REJECTED;
+      state.storeListInfo.error = action.error;
+    },
+    [setPageInfo.pending.type]: state => {
+      state.pageInfo.status = API_REQUEST_STATUS.PENDING;
+      state.pageInfo.error = null;
+    },
+    [setPageInfo.fulfilled.type]: (state, action) => {
+      state.pageInfo.data = action.payload;
+      state.pageInfo.status = API_REQUEST_STATUS.FULFILLED;
+      state.pageInfo.error = null;
+    },
+    [setPageInfo.rejected.type]: (state, action) => {
+      state.pageInfo.status = API_REQUEST_STATUS.REJECTED;
+      state.pageInfo.error = action.error;
     },
     [resetPageInfo.pending.type]: state => {
       state.pageInfo.status = API_REQUEST_STATUS.PENDING;
@@ -106,6 +129,19 @@ export const { reducer, actions } = createSlice({
       state.shippingType.error = null;
     },
     [setShippingType.rejected.type]: (state, action) => {
+      state.shippingType.status = API_REQUEST_STATUS.REJECTED;
+      state.shippingType.error = action.error;
+    },
+    [resetShippingType.pending.type]: state => {
+      state.shippingType.status = API_REQUEST_STATUS.PENDING;
+      state.shippingType.error = null;
+    },
+    [resetShippingType.fulfilled.type]: state => {
+      state.shippingType.data = null;
+      state.shippingType.status = API_REQUEST_STATUS.FULFILLED;
+      state.shippingType.error = null;
+    },
+    [resetShippingType.rejected.type]: (state, action) => {
       state.shippingType.status = API_REQUEST_STATUS.REJECTED;
       state.shippingType.error = action.error;
     },

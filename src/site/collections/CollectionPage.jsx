@@ -6,17 +6,22 @@ import { CaretLeft, X } from 'phosphor-react';
 import _get from 'lodash/get';
 import StoreList from '../components/StoreList';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
-import { actions as collectionsActions } from '../redux/modules/collections';
 import {
   getPageInfo,
   getStoreList,
   getShippingType,
-  getShouldLoadStoreList,
   getShouldShowPageLoader,
   getShouldShowStoreListLoader,
   getShouldShowNoFilteredResultPage,
 } from '../redux/modules/collections/selectors';
-import { resetPageInfo, setShippingType, loadStoreList } from '../redux/modules/collections/thunks';
+import {
+  setPageInfo as setPageInfoThunkCreator,
+  resetPageInfo as resetPageInfoThunkCreator,
+  setShippingType as setShippingTypeThunkCreator,
+  resetShippingType as resetShippingTypeThunkCreator,
+  loadStoreList as loadStoreListThunkCreator,
+  resetStoreList as resetStoreListThunkCreator,
+} from '../redux/modules/collections/thunks';
 import { submitStoreMenu } from '../home/utils';
 import { rootActionCreators } from '../redux/modules';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
@@ -70,7 +75,7 @@ class CollectionPage extends React.Component {
   };
 
   componentDidMount = async () => {
-    const { collectionCardActions, fetchAddressInfo, loadSearchOptionList } = this.props;
+    const { collectionCardActions, fetchAddressInfo, loadSearchOptionList, loadStoreList } = this.props;
     await collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
 
     const hasReduxCache = checkStateRestoreStatus();
@@ -88,12 +93,12 @@ class CollectionPage extends React.Component {
     }
 
     const { currentCollection } = this.props;
-    const { name, beepCollectionId } = currentCollection;
+    const { urlPath, name, beepCollectionId } = currentCollection;
     if (!hasReduxCache) {
       await this.resetCollectionData();
     }
 
-    this.loadStoreListIfNeeded();
+    loadStoreList(urlPath);
 
     CleverTap.pushEvent('Collection Page - View Collection Page', {
       'collection name': name,
@@ -125,12 +130,13 @@ class CollectionPage extends React.Component {
         await collectionCardActions.getCurrentCollection(match.params.urlPath);
       }
 
-      const { currentCollection, resetPageInfo } = this.props;
+      const { currentCollection, resetPageInfo, loadStoreList } = this.props;
 
       if (currentCollection) {
+        const { urlPath } = currentCollection;
         scrollTopPosition(this.sectionRef.current);
         await resetPageInfo();
-        this.loadStoreListIfNeeded();
+        loadStoreList(urlPath);
       }
     }
 
@@ -168,22 +174,10 @@ class CollectionPage extends React.Component {
     await resetPageInfo();
   };
 
-  loadStoreListIfNeeded = () => {
-    const {
-      shouldLoadStoreList,
-      loadStoreList,
-      currentCollection: { urlPath },
-    } = this.props;
-
-    if (!shouldLoadStoreList) return;
-
-    loadStoreList(urlPath);
-  };
-
   backToPreviousPage = () => {
     CleverTap.pushEvent('Collection Page - Click back');
 
-    const { history, location, collectionsActions, resetPageInfo } = this.props;
+    const { history, location, resetPageInfo, resetShippingType, resetStoreList } = this.props;
     const pathname = (location.state && location.state.from) || '/home';
 
     history.push({
@@ -191,8 +185,8 @@ class CollectionPage extends React.Component {
     });
 
     // Reset collection data state
-    collectionsActions.resetShippingType();
-    collectionsActions.resetStoreListInfo();
+    resetShippingType();
+    resetStoreList();
     resetPageInfo();
   };
 
@@ -201,8 +195,8 @@ class CollectionPage extends React.Component {
   };
 
   backLeftPosition = async store => {
-    const { shippingType, collectionsActions, addressInfo } = this.props;
-    collectionsActions.setPageInfo({ scrollTop: this.scrollTop });
+    const { shippingType, addressInfo, setPageInfo } = this.props;
+    setPageInfo({ scrollTop: this.scrollTop });
     this.backupState();
     await submitStoreMenu({
       deliveryAddress: addressInfo,
@@ -217,11 +211,13 @@ class CollectionPage extends React.Component {
       t,
       stores,
       pageInfo,
+      loadStoreList,
       currentCollection,
       shouldShowStoreListLoader,
       shouldShowNoFilteredResultPage,
     } = this.props;
     const { scrollTop } = pageInfo;
+    const { urlPath } = currentCollection;
 
     if (shouldShowStoreListLoader) {
       return <PageLoader />;
@@ -250,7 +246,7 @@ class CollectionPage extends React.Component {
             stores={stores}
             hasMore={pageInfo.hasMore}
             getScrollParent={() => this.sectionRef.current}
-            loadMoreStores={() => this.loadStoreListIfNeeded()}
+            loadMoreStores={() => loadStoreList(urlPath)}
             onStoreClicked={(store, index) => {
               CleverTap.pushEvent('Collection Page - Click Store Card', {
                 'Collection Name': currentCollection.name,
@@ -478,13 +474,15 @@ export default compose(
       shouldShowPageLoader: getShouldShowPageLoader(state),
       shouldShowStoreListLoader: getShouldShowStoreListLoader(state),
       filterOptionParams: getFilterOptionSearchParams(state),
-      shouldLoadStoreList: getShouldLoadStoreList(state),
       shouldShowNoFilteredResultPage: getShouldShowNoFilteredResultPage(state),
     }),
     dispatch => ({
-      resetPageInfo: bindActionCreators(resetPageInfo, dispatch),
-      setShippingType: bindActionCreators(setShippingType, dispatch),
-      loadStoreList: bindActionCreators(loadStoreList, dispatch),
+      setPageInfo: bindActionCreators(setPageInfoThunkCreator, dispatch),
+      resetPageInfo: bindActionCreators(resetPageInfoThunkCreator, dispatch),
+      setShippingType: bindActionCreators(setShippingTypeThunkCreator, dispatch),
+      resetShippingType: bindActionCreators(resetShippingTypeThunkCreator, dispatch),
+      loadStoreList: bindActionCreators(loadStoreListThunkCreator, dispatch),
+      resetStoreList: bindActionCreators(resetStoreListThunkCreator, dispatch),
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
       loadSearchOptionList: bindActionCreators(loadSearchOptionListThunkCreator, dispatch),
       backUpSelectedOptionList: bindActionCreators(backUpSelectedOptionListThunkCreator, dispatch),
@@ -494,7 +492,6 @@ export default compose(
       resetCategoryAllOptionSelectStatus: bindActionCreators(resetCategoryAllOptionSelectStatusThunkCreator, dispatch),
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
-      collectionsActions: bindActionCreators(collectionsActions, dispatch),
       collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
     })

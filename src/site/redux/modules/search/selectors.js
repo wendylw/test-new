@@ -21,12 +21,6 @@ export const getSearchKeyword = createSelector(getSearchInfo, searchInfo => sear
 
 export const getSearchResults = createSelector(getSearchInfo, searchInfo => searchInfo.results);
 
-export const getShouldLoadStoreList = createSelector(getPageInfo, getShippingType, (pageInfo, shippingType) => {
-  const { loading, hasMore } = pageInfo;
-  // We need to avoid sending the search API when the shipping type hasn't been set yet
-  return !!shippingType && !loading && hasMore;
-});
-
 export const getSearchStoreParams = createSelector(
   getPageInfo,
   getShippingType,
@@ -85,9 +79,13 @@ export const getHasLoadStoreListRequestCompleted = createSelector(getStoreListIn
 );
 
 export const getShouldShowStoreListLoader = createSelector(
+  getPageInfo,
   getIsSearchInfoKeywordEmpty,
   getHasLoadStoreListRequestCompleted,
-  (isKeywordEmpty, hasLoadStoreListRequestCompleted) => !isKeywordEmpty && !hasLoadStoreListRequestCompleted
+  (pageInfo, isKeywordEmpty, hasLoadStoreListRequestCompleted) => {
+    const isFirstPage = pageInfo.page === 0;
+    return isFirstPage && !isKeywordEmpty && !hasLoadStoreListRequestCompleted;
+  }
 );
 
 export const getShouldShowNoFilteredResultPage = createSelector(
