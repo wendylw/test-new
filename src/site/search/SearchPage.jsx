@@ -149,7 +149,7 @@ class SearchPage extends React.Component {
     // 1. User directly clicks the back button from browser
     // 2. User directly clicks the back button from the collection page
 
-    this.props.resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
+    this.props.resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
   };
 
   resetSearchData = async () => {
