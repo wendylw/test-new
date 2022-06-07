@@ -27,9 +27,9 @@ const ChipSelector = ({ category, left, right, children, className, onClick }) =
       onClick={clickHandler}
       data-heap-name="site.common.filter.category-btn"
     >
-      <div>{left}</div>
+      <div className={styles.ChipSelectorSider}>{left}</div>
       <div className={styles.ChipSelectorContent}>{children}</div>
-      <div>{right}</div>
+      <div className={styles.ChipSelectorSider}>{right}</div>
     </button>
   );
 };

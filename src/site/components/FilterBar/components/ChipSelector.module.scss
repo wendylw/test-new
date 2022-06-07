@@ -7,6 +7,10 @@
   border-radius: 20px;
 }
 
+.ChipSelectorSider {
+  @apply tw-flex tw-flex-shrink-0;
+}
+
 .ChipSelectorContent {
   @apply sm:tw-px-4px tw-px-4;
 }
