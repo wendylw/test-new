@@ -2,6 +2,20 @@ import ChuImage from '../../../../../images/food-court-temp/merchant-Chu.jpg';
 import ThreeFiveImage from '../../../../../images/food-court-temp/merchant-555.jpg';
 import RexBarImage from '../../../../../images/food-court-temp/merchant-Rex.jpg';
 import CheongSamImage from '../../../../../images/food-court-temp/merchant-CheongSam.jpg';
+import ChickenRiceImage from '../../../../../images/food-court-temp/merchant-chickenrice.jpg';
+import ClaypotImage from '../../../../../images/food-court-temp/merchant-claypot.jpg';
+import EmpireImage from '../../../../../images/food-court-temp/merchant-empire.jpg';
+import GeprekImage from '../../../../../images/food-court-temp/merchant-geprek.jpg';
+import HabibiImage from '../../../../../images/food-court-temp/merchant-habibi.jpg';
+import IronImage from '../../../../../images/food-court-temp/merchant-iron.jpg';
+import KeeImage from '../../../../../images/food-court-temp/merchant-kee.jpg';
+import NasikandarImage from '../../../../../images/food-court-temp/merchant-nasikandar.jpg';
+import SushiImage from '../../../../../images/food-court-temp/merchant-sushi.jpg';
+import TeppanyakiImage from '../../../../../images/food-court-temp/merchant-teppanyaki.jpg';
+import ThaifoodImage from '../../../../../images/food-court-temp/merchant-thaifood.jpg';
+import ToastImage from '../../../../../images/food-court-temp/merchant-toast.jpg';
+import WesternImage from '../../../../../images/food-court-temp/merchant-western.jpg';
+import YewyewImage from '../../../../../images/food-court-temp/merchant-yewyew.jpg';
 
 export const AllFoodCourtStoreList = {
   '6197240d9c8fb2000690ea3c': {
@@ -43,6 +57,90 @@ export const AllFoodCourtStoreList = {
       validTimeFrom: '08:00',
       validTimeTo: '23:59',
     },
+  },
+  '61b93058cef3c900060ca990': {
+    id: '61b93058cef3c900060ca990',
+    imageNoCompression: TeppanyakiImage,
+    title: 'Teppanyaki',
+    tags: ['grilled food', 'japanese'],
+  },
+  '61b987643aee120006eb19ca': {
+    id: '61b987643aee120006eb19ca',
+    imageNoCompression: ChickenRiceImage,
+    title: 'Chicken Rice',
+    tags: ['chinese', 'chicken rice'],
+  },
+  '61b98797e5962b0006a40be6': {
+    id: '61b98797e5962b0006a40be6',
+    imageNoCompression: EmpireImage,
+    title: 'Empire Laksa',
+    tags: ['noodles'],
+  },
+  '61b997bd438dfb00065319cf': {
+    id: '61b997bd438dfb00065319cf',
+    imageNoCompression: GeprekImage,
+    title: 'Geprek & Penyet',
+    tags: ['chicken rice', 'noodles'],
+  },
+  '61b967f4e5962b00069da7c1': {
+    id: '61b967f4e5962b00069da7c1',
+    imageNoCompression: HabibiImage,
+    title: 'Habibi Kunafa',
+    tags: ['middle eastern', 'desserts'],
+  },
+  '61b993e83c1b7f0006cf57a6': {
+    id: '61b993e83c1b7f0006cf57a6',
+    imageNoCompression: IronImage,
+    title: 'Iron Pepper Rice',
+    tags: ['japanese', 'rice meals'],
+  },
+  '61b99722f501550006a51dde': {
+    id: '61b99722f501550006a51dde',
+    imageNoCompression: KeeImage,
+    title: 'Kee Ngu Yen',
+    tags: ['nasi lemak', 'coffee'],
+  },
+  '61b996e03aee120006ee2cf6': {
+    id: '61b996e03aee120006ee2cf6',
+    imageNoCompression: NasikandarImage,
+    title: 'Nasi Kandar',
+    tags: ['briyani', 'noodles'],
+  },
+  '61b99632f501550006a4e4ce': {
+    id: '61b99632f501550006a4e4ce',
+    imageNoCompression: ThaifoodImage,
+    title: 'Sawasdee Grub',
+    tags: ['thai', 'rice meals', 'noodles'],
+  },
+  '61b995e13aee120006edf90c': {
+    id: '61b995e13aee120006edf90c',
+    imageNoCompression: ClaypotImage,
+    title: 'Sizzling & Claypot',
+    tags: ['chinese', 'noodles', 'rice meals'],
+  },
+  '61b996a0438dfb000652eba3': {
+    id: '61b996a0438dfb000652eba3',
+    imageNoCompression: SushiImage,
+    title: 'Sushi & Bento',
+    tags: ['japanese', 'sushi', 'bento'],
+  },
+  '61b99758438dfb00065307c5': {
+    id: '61b99758438dfb00065307c5',
+    imageNoCompression: ToastImage,
+    title: 'Toast & Beverages',
+    tags: ['toast', 'drinks'],
+  },
+  '61b9978caf89aa00064225c4': {
+    id: '61b9978caf89aa00064225c4',
+    imageNoCompression: WesternImage,
+    title: 'Western',
+    tags: ['pasta'],
+  },
+  '61b967a59de26d0006d64b97': {
+    id: '61b967a59de26d0006d64b97',
+    imageNoCompression: YewyewImage,
+    title: 'YewYew Coffee',
+    tags: ['pastries', 'coffee'],
   },
   '608b7c77cc9fd00006d831f3': {
     id: '608b7c77cc9fd00006d831f3',
