@@ -6,7 +6,7 @@ import { getSelectedOptionList } from './selectors';
 import { transformSearchOptionList } from './utils';
 import { DEFAULT_SELECTED_OPTION_LIST } from './constants';
 
-export const loadSelectedOptionList = createAsyncThunk('site/common/search/loadSelectedOptionList', async ({ key }) => {
+export const loadSelectedOptionList = createAsyncThunk('site/filter/loadSelectedOptionList', async ({ key }) => {
   const backupData = sessionStorage.getItem(key);
 
   if (backupData) return JSON.parse(backupData);
@@ -15,7 +15,7 @@ export const loadSelectedOptionList = createAsyncThunk('site/common/search/loadS
 });
 
 export const loadSearchOptionList = createAsyncThunk(
-  'site/common/search/loadSearchOptionList',
+  'site/filter/loadSearchOptionList',
   async ({ key }, { getState, dispatch }) => {
     await dispatch(loadSelectedOptionList({ key }));
     const selectedOptionList = getSelectedOptionList(getState());
@@ -26,24 +26,21 @@ export const loadSearchOptionList = createAsyncThunk(
 );
 
 export const backUpSelectedOptionList = createAsyncThunk(
-  'site/common/search/backUpSelectedOptionList',
+  'site/filter/backUpSelectedOptionList',
   async ({ key }, { getState }) => {
     const data = getSelectedOptionList(getState());
     sessionStorage.setItem(key, JSON.stringify(data));
   }
 );
 
-export const resetSelectedOptionList = createAsyncThunk(
-  'site/common/search/resetSelectedOptionList',
-  async ({ key }) => {
-    sessionStorage.removeItem(key);
+export const resetSelectedOptionList = createAsyncThunk('site/filter/resetSelectedOptionList', async ({ key }) => {
+  sessionStorage.removeItem(key);
 
-    return DEFAULT_SELECTED_OPTION_LIST;
-  }
-);
+  return DEFAULT_SELECTED_OPTION_LIST;
+});
 
 export const toggleCategorySelectStatus = createAsyncThunk(
-  'site/common/search/toggleCategorySelectStatus',
+  'site/filter/toggleCategorySelectStatus',
   async ({ categoryId }, { getState }) => {
     const state = getState();
     const prevData = getSelectedOptionList(state);
@@ -57,7 +54,7 @@ export const toggleCategorySelectStatus = createAsyncThunk(
 );
 
 export const updateCategoryOptionSelectStatus = createAsyncThunk(
-  'site/common/search/updateCategoryOptionSelectStatus',
+  'site/filter/updateCategoryOptionSelectStatus',
   async ({ categoryId, optionIds }, { getState }) => {
     const state = getState();
     const prevData = getSelectedOptionList(state);
@@ -73,7 +70,7 @@ export const updateCategoryOptionSelectStatus = createAsyncThunk(
 );
 
 export const resetCategoryAllOptionSelectStatus = createAsyncThunk(
-  'site/common/search/resetCategoryAllOptionSelectStatus',
+  'site/filter/resetCategoryAllOptionSelectStatus',
   async ({ categoryId }, { getState }) => {
     const state = getState();
     const prevData = getSelectedOptionList(state);
