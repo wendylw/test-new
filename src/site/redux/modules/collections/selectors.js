@@ -21,12 +21,6 @@ export const getStoreList = createSelector([getStoreIds, getAllStores], (storeId
   storeIds.map(id => stores[id])
 );
 
-export const getShouldLoadStoreList = createSelector(getPageInfo, getShippingType, (pageInfo, shippingType) => {
-  const { loading, hasMore } = pageInfo;
-  // We need to avoid sending the search API when the shipping type hasn't been set yet
-  return !!shippingType && !loading && hasMore;
-});
-
 export const getSearchStoreParams = createSelector(
   getPageInfo,
   getShippingType,
@@ -56,8 +50,12 @@ export const getHasLoadStoreListRequestCompleted = createSelector(getStoreListIn
 
 // Show loading indicator every time FE sends a search store request
 export const getShouldShowStoreListLoader = createSelector(
+  getPageInfo,
   getHasLoadStoreListRequestCompleted,
-  hasRequestCompleted => !hasRequestCompleted
+  (pageInfo, hasRequestCompleted) => {
+    const isFirstPage = pageInfo.page === 0;
+    return isFirstPage && !hasRequestCompleted;
+  }
 );
 
 export const getShouldShowNoFilteredResultPage = createSelector(
