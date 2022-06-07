@@ -411,7 +411,7 @@ class SearchPage extends React.Component {
         className={styles.SearchPageCategoryDrawerWrapper}
         show={shouldShowDrawer}
         onClose={this.handleCloseDrawer}
-        style={{ maxHeight: '99.8%' }}
+        style={{ maxHeight: '100%' }}
         header={
           <DrawerHeader
             left={
