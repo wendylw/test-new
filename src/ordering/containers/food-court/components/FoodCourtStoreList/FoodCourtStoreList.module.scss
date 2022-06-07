@@ -12,7 +12,7 @@
 }
 
 .foodCourtStoreImageContainer {
-  @apply tw-m-2 sm:tw-m-2px;
+  @apply tw-relative tw-m-2 sm:tw-m-2px;
 }
 
 .foodCourtStoreTitle {
@@ -25,4 +25,20 @@
   @apply tw-text-sm tw-text-gray-700;
 
   @include text-line-clamp(1);
+}
+
+.foodCourtStoreClosed .foodCourtStoreTitle,
+.foodCourtStoreClosed .foodCourtStoreDescription,
+.foodCourtStoreClosed .foodCourtStoreImageContainer figure {
+  @apply tw-opacity-40;
+}
+
+.foodCourtStoreClosedOverlay {
+  @apply tw-flex tw-items-center tw-justify-center tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-z-10 tw-rounded;
+
+  background-color: rgba($color: #000000, $alpha: 0.4);
+}
+
+.foodCourtStoreClosedOverlayText {
+  @apply tw-text-center tw-text-white tw-text-lg tw-font-bold tw-leading-relaxed tw-whitespace-pre-line;
 }
