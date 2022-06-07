@@ -39,8 +39,8 @@ import {
 } from '../redux/modules/entities/storeCollections';
 import {
   getCategoryFilterList,
+  getSelectedOptionList,
   getHasAnyCategorySelected,
-  getFilterOptionSearchParams,
 } from '../redux/modules/filter/selectors';
 import {
   loadSearchOptionList as loadSearchOptionListThunkCreator,
@@ -107,22 +107,12 @@ class CollectionPage extends React.Component {
   };
 
   componentDidUpdate = async prevProps => {
-    const {
-      addressCoords: prevAddressCoords,
-      filterOptionParams: prevFilterOptionParams,
-      shippingType: prevShippingType,
-    } = prevProps;
-    const {
-      addressCoords: currAddressCoords,
-      filterOptionParams: currFilterOptionParams,
-      shippingType: currShippingType,
-    } = this.props;
+    const { addressCoords: prevAddressCoords, selectedOptionList: prevSelectedOptionList } = prevProps;
+    const { addressCoords: currAddressCoords, selectedOptionList: currSelectedOptionList } = this.props;
 
     const hasAddressCoordsChanged = !isSameAddressCoords(prevAddressCoords, currAddressCoords);
-    const hasFilterOptionParamsChanged = prevFilterOptionParams !== currFilterOptionParams;
-    // Exclude shipping type is null for avoiding store list reloading sake.
-    const hasShippingTypeChanged = !!prevShippingType && prevShippingType !== currShippingType;
-    const shouldReloadStoreList = hasAddressCoordsChanged || hasFilterOptionParamsChanged || hasShippingTypeChanged;
+    const hasSelectedOptionListChanged = prevSelectedOptionList !== currSelectedOptionList;
+    const shouldReloadStoreList = hasAddressCoordsChanged || hasSelectedOptionListChanged;
 
     if (shouldReloadStoreList) {
       if (hasAddressCoordsChanged) {
@@ -140,8 +130,7 @@ class CollectionPage extends React.Component {
       }
     }
 
-    // Pickup filter is not included in the filter option params so we need to check shipping type separately
-    if (hasFilterOptionParamsChanged || hasShippingTypeChanged) {
+    if (hasSelectedOptionListChanged) {
       this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     }
   };
@@ -155,23 +144,25 @@ class CollectionPage extends React.Component {
   };
 
   resetCollectionData = async () => {
-    const { categoryFilterList, currentCollection, resetPageInfo, setShippingType } = this.props;
+    const { categoryFilterList, resetPageInfo, setShippingType } = this.props;
     const pickupFilter = categoryFilterList.find(filter => filter.id === IDS.PICK_UP);
-    const { shippingType } = currentCollection;
 
     // Forward compatibility:
-    // If pickup filter has been selected, we will set shipping type to pickup
-    // Backward compatibility:
-    // If no shipping type is set and only one shipping type is available then we will use the existing one.
-    // Otherwise, we will set shipping type to delivery
-    const type = pickupFilter?.selected
-      ? SHIPPING_TYPES.PICKUP
-      : shippingType.length === 1
-      ? shippingType[0].toLowerCase()
-      : SHIPPING_TYPES.DELIVERY;
+    // If pickup filter has been selected, we will set shipping type to pickup. Otherwise, we will set shipping type to default value.
+    const type = pickupFilter?.selected ? SHIPPING_TYPES.PICKUP : this.getDefaultShippingType();
 
     await setShippingType({ shippingType: type });
     await resetPageInfo();
+  };
+
+  getDefaultShippingType = () => {
+    // Backward compatibility:
+    // If no shipping type is set and only one shipping type is available then we will use the existing one.
+    // Otherwise, we will set shipping type to delivery
+    const {
+      currentCollection: { shippingType },
+    } = this.props;
+    return shippingType.length === 1 ? shippingType[0].toLowerCase() : SHIPPING_TYPES.DELIVERY;
   };
 
   backToPreviousPage = () => {
@@ -313,10 +304,10 @@ class CollectionPage extends React.Component {
     }
   };
 
-  handleClickResetAllCategoryButton = () => {
+  handleClickResetAllCategoryButton = async () => {
     const { resetSelectedOptionList, setShippingType } = this.props;
-    resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
-    setShippingType({ shippingType: SHIPPING_TYPES.DELIVERY });
+    await setShippingType({ shippingType: this.getDefaultShippingType() });
+    await resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     CleverTap.pushEvent('Collection Page - Click reset quick sort and filter button');
   };
 
@@ -473,10 +464,10 @@ export default compose(
       addressInfo: getAddressInfo(state),
       addressCoords: getAddressCoords(state),
       categoryFilterList: getCategoryFilterList(state),
+      selectedOptionList: getSelectedOptionList(state),
       shouldShowResetButton: getHasAnyCategorySelected(state),
       shouldShowPageLoader: getShouldShowPageLoader(state),
       shouldShowStoreListLoader: getShouldShowStoreListLoader(state),
-      filterOptionParams: getFilterOptionSearchParams(state),
       shouldShowNoFilteredResultPage: getShouldShowNoFilteredResultPage(state),
     }),
     dispatch => ({

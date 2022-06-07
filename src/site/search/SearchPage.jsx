@@ -57,8 +57,8 @@ import {
 } from '../redux/modules/entities/storeCollections';
 import {
   getCategoryFilterList,
+  getSelectedOptionList,
   getHasAnyCategorySelected,
-  getFilterOptionSearchParams,
 } from '../redux/modules/filter/selectors';
 import {
   loadSearchOptionList as loadSearchOptionListThunkCreator,
@@ -105,26 +105,18 @@ class SearchPage extends React.Component {
   };
 
   componentDidUpdate = async prevProps => {
-    const {
-      addressCoords: prevAddressCoords,
-      filterOptionParams: prevFilterOptionParams,
-      shippingType: prevShippingType,
-    } = prevProps;
+    const { addressCoords: prevAddressCoords, selectedOptionList: prevSelectedOptionList } = prevProps;
     const {
       addressCoords: currAddressCoords,
-      filterOptionParams: currFilterOptionParams,
-      shippingType: currShippingType,
+      selectedOptionList: currSelectedOptionList,
       searchKeyword,
       resetPageInfo,
       loadStoreList,
     } = this.props;
 
     const hasAddressCoordsChanged = !isSameAddressCoords(prevAddressCoords, currAddressCoords);
-    const hasFilterOptionParamsChanged = prevFilterOptionParams !== currFilterOptionParams;
-    // Exclude shipping type is null for avoiding store list reloading sake.
-    const hasShippingTypeChanged = !!prevShippingType && prevShippingType !== currShippingType;
-    const shouldReloadStoreList =
-      searchKeyword && (hasAddressCoordsChanged || hasFilterOptionParamsChanged || hasShippingTypeChanged);
+    const hasSelectedOptionListChanged = prevSelectedOptionList !== currSelectedOptionList;
+    const shouldReloadStoreList = searchKeyword && (hasAddressCoordsChanged || hasSelectedOptionListChanged);
 
     if (hasAddressCoordsChanged) {
       // Reload other and popular collections once address changed
@@ -138,8 +130,7 @@ class SearchPage extends React.Component {
       loadStoreList();
     }
 
-    // Pickup filter is not included in the filter option params so we need to check shipping type separately
-    if (hasFilterOptionParamsChanged || hasShippingTypeChanged) {
+    if (hasSelectedOptionListChanged) {
       this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     }
   };
@@ -348,10 +339,10 @@ class SearchPage extends React.Component {
     }
   };
 
-  handleClickResetAllCategoryButton = () => {
+  handleClickResetAllCategoryButton = async () => {
     const { resetSelectedOptionList, setShippingType } = this.props;
-    resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
-    setShippingType({ shippingType: SHIPPING_TYPES.DELIVERY });
+    await setShippingType({ shippingType: SHIPPING_TYPES.DELIVERY });
+    await resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     CleverTap.pushEvent('Search - Click reset quick sort and filter button');
   };
 
@@ -513,8 +504,8 @@ export default compose(
       shouldShowStoreListLoader: getShouldShowStoreListLoader(state),
       shouldShowStoreList: getShouldShowStoreList(state),
       categoryFilterList: getCategoryFilterList(state),
+      selectedOptionList: getSelectedOptionList(state),
       shouldShowResetButton: getHasAnyCategorySelected(state),
-      filterOptionParams: getFilterOptionSearchParams(state),
     }),
     dispatch => ({
       setPageInfo: bindActionCreators(setPageInfoThunkCreator, dispatch),
