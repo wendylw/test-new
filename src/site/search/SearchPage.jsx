@@ -364,7 +364,7 @@ class SearchPage extends React.Component {
     const { id: optionId, name: optionName } = option;
 
     if (categoryId === IDS.SORT_BY) {
-      CleverTap.pushEvent('Search - Select sort options (Sort button)', {
+      CleverTap.pushEvent('Search - Select sort option (Sort button)', {
         'type of sort': optionName,
       });
     }

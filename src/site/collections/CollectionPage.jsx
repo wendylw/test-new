@@ -329,7 +329,7 @@ class CollectionPage extends React.Component {
     const { id: optionId, name: optionName } = option;
 
     if (categoryId === IDS.SORT_BY) {
-      CleverTap.pushEvent('Collection Page - Select sort options (Sort button)', {
+      CleverTap.pushEvent('Collection Page - Select sort option (Sort button)', {
         'type of sort': optionName,
       });
     }
