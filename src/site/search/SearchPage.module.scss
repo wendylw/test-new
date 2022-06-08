@@ -36,7 +36,7 @@
 }
 
 .SearchPageCategoryDrawerHeaderButton:global(.type-text) {
-  @apply tw-flex-shrink-0 tw-p-16 sm:tw-p-16px tw-border-0;
+  @apply tw-flex-shrink-0 tw--ml-16 sm:tw--ml-16px tw-p-16 sm:tw-p-16px tw-border-0;
 }
 
 .SearchPageCategoryDrawerHeaderTitle {
