@@ -7,7 +7,14 @@ import ChipSelector from './components/ChipSelector';
 import { DISPLAY_ICON_TYPES } from '../../../utils/constants';
 import styles from './FilterBar.module.scss';
 
-const FilterBar = ({ className, categories, shouldShowResetButton, onResetButtonClick, onCategoryButtonClick }) => {
+const FilterBar = ({
+  className,
+  categories,
+  shouldShowResetButton,
+  onSwiper,
+  onResetButtonClick,
+  onCategoryButtonClick,
+}) => {
   const { t } = useTranslation();
   const classNameList = [styles.FilterBarContainer, 'text-size-reset'];
 
@@ -27,7 +34,7 @@ const FilterBar = ({ className, categories, shouldShowResetButton, onResetButton
           {t('Reset')}
         </button>
       )}
-      <Swiper className={classNameList.join(' ')} slidesPerView="auto" grabCursor="true">
+      <Swiper className={classNameList.join(' ')} slidesPerView="auto" grabCursor="true" onSwiper={onSwiper}>
         {categories.map(category => (
           <SwiperSlide key={category.id} className={styles.FilterBarSwiperSlideWrapper}>
             <ChipSelector
@@ -72,6 +79,7 @@ FilterBar.propTypes = {
     })
   ),
   shouldShowResetButton: PropTypes.bool,
+  onSwiper: PropTypes.func,
   onResetButtonClick: PropTypes.func,
   onCategoryButtonClick: PropTypes.func,
 };
@@ -80,6 +88,7 @@ FilterBar.defaultProps = {
   className: '',
   categories: [],
   shouldShowResetButton: false,
+  onSwiper: () => {},
   onResetButtonClick: () => {},
   onCategoryButtonClick: () => {},
 };

@@ -72,6 +72,7 @@ class CollectionPage extends React.Component {
 
   state = {
     drawerInfo: { category: null },
+    filterBarSwiperRef: null,
   };
 
   componentDidMount = async () => {
@@ -131,6 +132,10 @@ class CollectionPage extends React.Component {
     }
 
     if (hasSelectedOptionListChanged) {
+      const { filterBarSwiperRef } = this.state;
+      // NOTE: Once the sort & filter selected options are changed, the swiper should be re-rendered. Otherwise, the offsets of slides will be wrong.
+      // API Doc: https://swiperjs.com/swiper-api#method-swiper-update
+      filterBarSwiperRef?.update();
       this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
     }
   };
@@ -285,10 +290,14 @@ class CollectionPage extends React.Component {
     if (id === IDS.SORT_BY) {
       CleverTap.pushEvent('Collection Page - Click sort by button');
     } else {
-      CleverTap.pushEvent('Collection Page - Click quick filter button', {
-        'type of filter': name,
-        'select state': !selected,
-      });
+      const attributes = { 'type of filter': name };
+
+      if (type === TYPES.TOGGLE) {
+        // Only record select state for toggle filters
+        attributes['select state'] = !selected;
+      }
+
+      CleverTap.pushEvent('Collection Page - Click quick filter button', attributes);
     }
 
     const { setShippingType } = this.props;
@@ -402,6 +411,10 @@ class CollectionPage extends React.Component {
     );
   };
 
+  handleFilterBarSwiper = swiper => {
+    this.setState({ filterBarSwiperRef: swiper });
+  };
+
   render() {
     const { currentCollection, categoryFilterList, shouldShowPageLoader, shouldShowResetButton } = this.props;
     if (shouldShowPageLoader) {
@@ -430,6 +443,7 @@ class CollectionPage extends React.Component {
           <FilterBar
             className={styles.CollectionPageFilterBarWrapper}
             categories={categoryFilterList}
+            onSwiper={this.handleFilterBarSwiper}
             shouldShowResetButton={shouldShowResetButton}
             onResetButtonClick={this.handleClickResetAllCategoryButton}
             onCategoryButtonClick={this.handleClickCategoryButton}

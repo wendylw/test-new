@@ -84,6 +84,7 @@ class SearchPage extends React.Component {
 
   state = {
     drawerInfo: { category: null },
+    filterBarSwiperRef: null,
   };
 
   componentDidMount = async () => {
@@ -131,6 +132,10 @@ class SearchPage extends React.Component {
     }
 
     if (hasSelectedOptionListChanged) {
+      const { filterBarSwiperRef } = this.state;
+      // NOTE: Once the sort & filter selected options are changed, the swiper should be re-rendered. Otherwise, the offsets of slides will be wrong.
+      // API Doc: https://swiperjs.com/swiper-api#method-swiper-update
+      filterBarSwiperRef?.update();
       this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     }
   };
@@ -140,7 +145,7 @@ class SearchPage extends React.Component {
     // 1. User directly clicks the back button from browser
     // 2. User directly clicks the back button from the collection page
 
-    this.props.resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.COLLECTION });
+    this.props.resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
   };
 
   resetSearchData = async () => {
@@ -322,10 +327,14 @@ class SearchPage extends React.Component {
         'search keyword': searchKeyword,
       });
     } else {
-      CleverTap.pushEvent('Search - Click quick filter button', {
-        'type of filter': name,
-        'select state': !selected,
-      });
+      const attributes = { 'type of filter': name };
+
+      if (type === TYPES.TOGGLE) {
+        // Only record select state for toggle filters
+        attributes['select state'] = !selected;
+      }
+
+      CleverTap.pushEvent('Search - Click quick filter button', attributes);
     }
 
     if (id === IDS.PICK_UP) {
@@ -437,6 +446,10 @@ class SearchPage extends React.Component {
     );
   };
 
+  handleFilterBarSwiper = swiper => {
+    this.setState({ filterBarSwiperRef: swiper });
+  };
+
   render() {
     const { searchKeyword, shouldShowFilterBar, categoryFilterList, shouldShowResetButton } = this.props;
     return (
@@ -464,6 +477,7 @@ class SearchPage extends React.Component {
             <FilterBar
               className={styles.SearchPageFilterBarWrapper}
               categories={categoryFilterList}
+              onSwiper={this.handleFilterBarSwiper}
               shouldShowResetButton={shouldShowResetButton}
               onResetButtonClick={this.handleClickResetAllCategoryButton}
               onCategoryButtonClick={this.handleClickCategoryButton}
