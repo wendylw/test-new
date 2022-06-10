@@ -1,10 +1,9 @@
 .FilterBarContainer {
-  @apply tw-flex tw-flex-row tw-items-stretch sm:tw-px-16px tw-px-16;
+  @apply tw-flex tw-flex-row tw-items-stretch sm:tw-pr-16px tw-pr-16;
 }
 
 .FilterBarButtonWrapper {
   @apply sm:tw-pl-16px tw-pl-16 sm:tw-pr-8px tw-pr-8
-    tw-absolute tw-left-0 sm:tw-top-4px tw-top-4 sm:tw-bottom-12px tw-bottom-12 tw-z-10
     tw-border-none tw-outline-none tw-bg-white tw-cursor-pointer
     tw-text-left tw-text-base tw-font-bold tw-text-blue;
 }

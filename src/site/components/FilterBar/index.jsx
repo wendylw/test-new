@@ -23,7 +23,7 @@ const FilterBar = ({
   }
 
   return (
-    <div className="tw-relative">
+    <div className={classNameList.join(' ')}>
       {shouldShowResetButton && (
         <button
           className={styles.FilterBarButtonWrapper}
@@ -34,7 +34,12 @@ const FilterBar = ({
           {t('Reset')}
         </button>
       )}
-      <Swiper className={classNameList.join(' ')} slidesPerView="auto" grabCursor="true" onSwiper={onSwiper}>
+      <Swiper
+        slidesPerView="auto"
+        grabCursor="true"
+        onSwiper={onSwiper}
+        className={shouldShowResetButton ? '' : 'sm:tw-pl-16px tw-pl-16'}
+      >
         {categories.map(category => (
           <SwiperSlide key={category.id} className={styles.FilterBarSwiperSlideWrapper}>
             <ChipSelector
