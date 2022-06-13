@@ -61,6 +61,7 @@ import {
 } from '../redux/modules/filter/selectors';
 import {
   loadSearchOptionList as loadSearchOptionListThunkCreator,
+  loadSelectedOptionList as loadSelectedOptionListThunkCreator,
   backUpSelectedOptionList as backUpSelectedOptionListThunkCreator,
   resetSelectedOptionList as resetSelectedOptionListThunkCreator,
   toggleCategorySelectStatus as toggleCategorySelectStatusThunkCreator,
@@ -87,7 +88,13 @@ class SearchPage extends React.Component {
   };
 
   componentDidMount = async () => {
-    const { otherCollections, popularCollections, fetchAddressInfo, loadSearchOptionList } = this.props;
+    const {
+      otherCollections,
+      popularCollections,
+      fetchAddressInfo,
+      loadSearchOptionList,
+      loadSelectedOptionList,
+    } = this.props;
     if (!checkStateRestoreStatus()) {
       // Try to load option list from cache first then fetch from server
       await loadSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
@@ -99,6 +106,8 @@ class SearchPage extends React.Component {
         this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
       }
     } else {
+      // BEEP-2532: The purpose for reloading selected option list is to force swiper to recalculate number of slides and their offsets.
+      await loadSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
       // Silently fetch address Info without blocking current process
       fetchAddressInfo();
     }
@@ -529,6 +538,7 @@ export default compose(
       resetStoreList: bindActionCreators(resetStoreListThunkCreator, dispatch),
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
       loadSearchOptionList: bindActionCreators(loadSearchOptionListThunkCreator, dispatch),
+      loadSelectedOptionList: bindActionCreators(loadSelectedOptionListThunkCreator, dispatch),
       backUpSelectedOptionList: bindActionCreators(backUpSelectedOptionListThunkCreator, dispatch),
       resetSelectedOptionList: bindActionCreators(resetSelectedOptionListThunkCreator, dispatch),
       toggleCategorySelectStatus: bindActionCreators(toggleCategorySelectStatusThunkCreator, dispatch),
