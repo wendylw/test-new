@@ -1,80 +1,137 @@
 import _intersection from 'lodash/intersection';
 import Utils from './utils';
 import { captureException } from '@sentry/react';
-import _get from 'lodash/get';
+import { Loader } from '@googlemaps/js-api-loader';
+import { computeDistanceBetween } from 'spherical-geometry-js';
 import { get, post } from './request';
 import loggly from '../utils/monitoring/loggly';
 import { getLocation as getLocationFromTNG } from './tng-utils';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../redux/modules/address/constants';
+import config from '../../src/config';
 
-const googleMaps = _get(window, 'google.maps', null);
+const GOOGLE_MAPS_INVALIDATE_INTERVAL = 12 * 3600 * 1000;
+const GOOGLE_MAPS_TIMESTAMP =
+  Math.floor(Date.now() / GOOGLE_MAPS_INVALIDATE_INTERVAL) * GOOGLE_MAPS_INVALIDATE_INTERVAL;
 
-const latLng = ({ lat, lng }) => new googleMaps.LatLng(lat, lng);
+const loadGoogleMapsAPI = async () => {
+  // fix FB-1755: Some browsers caches the google maps script for a long time, which makes the token expired.
+  // In order to solve this, we force the browser to refetch the script after 12 hours. This won't have too
+  // much impact on performance, because the content of the script changes every day, so the cache is invalidated
+  const loader = new Loader({
+    // According to https://github.com/googlemaps/js-api-loader/issues/357
+    apiKey: `${config.googleMapsAPIKey}&timestamp=${GOOGLE_MAPS_TIMESTAMP}`,
+    version: 'quarterly',
+    libraries: ['geometry', 'places'],
+  });
+
+  return loader
+    .load()
+    .then(google => google.maps)
+    .catch(() => {
+      window.newrelic?.addPageAction?.('common.script-load-error', {
+        scriptName: 'google-map-api',
+      });
+      loggly.error('common.script-load-error', {
+        message: 'Failed to load google maps api',
+      });
+      return Promise.reject(new Error('Failed to load google maps api'));
+    });
+};
+
+// Preload google maps script if needed
+if (Utils.isSiteApp() || Utils.isDeliveryOrder()) {
+  loadGoogleMapsAPI().catch(e => {
+    loggly.error('preloadGoogleMapAPI-failure', { message: e?.message });
+  });
+}
+
+const getLatLng = async ({ lat, lng }) => {
+  try {
+    const googleMapsAPI = await loadGoogleMapsAPI();
+    return new googleMapsAPI.LatLng(lat, lng);
+  } catch (e) {
+    loggly.error('getLatLng-failure', { message: e?.message });
+    throw e;
+  }
+};
 
 let autoCompleteSessionToken;
 let lastTokenGenerateTime = 0;
-export const getAutocompleteSessionToken = () => {
+export const getAutocompleteSessionToken = async () => {
   // According to https://stackoverflow.com/questions/50398801/how-long-do-the-new-places-api-session-tokens-last,
   // the AutocompleteSessionToken expires in 3 mins. Note that there's NO official document for this value.
   const now = Date.now();
-  if (!autoCompleteSessionToken || now - lastTokenGenerateTime > 180000) {
-    autoCompleteSessionToken = new googleMaps.places.AutocompleteSessionToken();
-    lastTokenGenerateTime = now;
+  try {
+    const googleMapsAPI = await loadGoogleMapsAPI();
+    if (!autoCompleteSessionToken || now - lastTokenGenerateTime > 180000) {
+      autoCompleteSessionToken = new googleMapsAPI.places.AutocompleteSessionToken();
+      lastTokenGenerateTime = now;
+    }
+    return autoCompleteSessionToken;
+  } catch (e) {
+    loggly.error('getAutocompleteSessionToken-failure', { message: e?.message });
+    throw e;
   }
-  return autoCompleteSessionToken;
 };
 
 export const getPlaceAutocompleteList = async (text, { location, origin, radius, country }) => {
-  let originCoords = origin ? latLng(origin) : undefined;
-  let locationCoords = location ? latLng(location) : undefined;
-  let radiusNumber = radius;
-  if ((locationCoords && typeof radiusNumber !== 'number') || (typeof radiusNumber === 'number' && !locationCoords)) {
-    console.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
-    loggly.warn('geoUtils.getPlaceAutocompleteList', {
-      message: 'getPlaceAutocompleteList: location and radius must be provided at the same time.',
-    });
-    locationCoords = undefined;
-    radiusNumber = undefined;
-  }
-  const autocompleteService = new googleMaps.places.AutocompleteService();
-
-  const places = await new Promise(resolve => {
-    if (!text) {
-      resolve([]);
-      return;
+  try {
+    const googleMapsAPI = await loadGoogleMapsAPI();
+    let originCoords = origin ? await getLatLng(origin) : undefined;
+    let locationCoords = location ? await getLatLng(location) : undefined;
+    let radiusNumber = radius;
+    if ((locationCoords && typeof radiusNumber !== 'number') || (typeof radiusNumber === 'number' && !locationCoords)) {
+      console.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
+      loggly.warn('geoUtils.getPlaceAutocompleteList', {
+        message: 'getPlaceAutocompleteList: location and radius must be provided at the same time.',
+      });
+      locationCoords = undefined;
+      radiusNumber = undefined;
     }
-    autocompleteService.getPlacePredictions(
-      {
-        input: text,
-        sessionToken: getAutocompleteSessionToken(),
-        location: locationCoords,
-        origin: originCoords,
-        radius: radiusNumber,
-        ...(country ? { componentRestrictions: { country } } : undefined),
-      },
-      (results, status) => {
-        if (status === googleMaps.places.PlacesServiceStatus.OK) {
-          window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-success');
-          resolve(results);
-        } else {
-          window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-failure', {
-            error: status,
-          });
-          loggly.error('google-maps-api.getPlacePredictions-failure', {
-            error: status,
-            input: text,
-            location: locationCoords,
-            origin: originCoords,
-            radius: radiusNumber,
-            country,
-          });
-          resolve([]);
-        }
-      }
-    );
-  });
+    const autocompleteService = new googleMapsAPI.places.AutocompleteService();
+    const sessionToken = await getAutocompleteSessionToken();
 
-  return places;
+    const places = await new Promise(resolve => {
+      if (!text) {
+        resolve([]);
+        return;
+      }
+      autocompleteService.getPlacePredictions(
+        {
+          input: text,
+          sessionToken,
+          location: locationCoords,
+          origin: originCoords,
+          radius: radiusNumber,
+          ...(country ? { componentRestrictions: { country } } : undefined),
+        },
+        (results, status) => {
+          if (status === googleMapsAPI.places.PlacesServiceStatus.OK) {
+            window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-success');
+            resolve(results);
+          } else {
+            window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-failure', {
+              error: status,
+            });
+            loggly.error('google-maps-api.getPlacePredictions-failure', {
+              error: status,
+              input: text,
+              location: locationCoords,
+              origin: originCoords,
+              radius: radiusNumber,
+              country,
+            });
+            resolve([]);
+          }
+        }
+      );
+    });
+
+    return places;
+  } catch (e) {
+    loggly.error('getPlaceAutocompleteList-failure', { message: e?.message });
+    return [];
+  }
 };
 
 export const standardizeGeoAddress = geoAddressComponent => {
@@ -175,26 +232,32 @@ export const tryGetDeviceCoordinates = async () => {
   }
 };
 
-export const getPlacesFromCoordinates = coords => {
-  const location = latLng(coords);
-  const geocoder = new googleMaps.Geocoder();
-  return new Promise((resolve, reject) => {
-    geocoder.geocode({ location }, (result, status) => {
-      if (status === googleMaps.GeocoderStatus.OK && result.length) {
-        window.newrelic?.addPageAction('google-maps-api.geocode-success');
-        resolve(result);
-      } else {
-        window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
-          error: status,
-        });
-        loggly.error('google-maps-api.geocode-failure', {
-          error: status,
-          location,
-        });
-        reject(new Error(`Failed to get location from coordinates: ${status}`));
-      }
+export const getPlacesFromCoordinates = async coords => {
+  try {
+    const googleMapsAPI = await loadGoogleMapsAPI();
+    const location = await getLatLng(coords);
+    const geocoder = new googleMapsAPI.Geocoder();
+    return await new Promise((resolve, reject) => {
+      geocoder.geocode({ location }, (result, status) => {
+        if (status === googleMapsAPI.GeocoderStatus.OK && result.length) {
+          window.newrelic?.addPageAction('google-maps-api.geocode-success');
+          resolve(result);
+        } else {
+          window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
+            error: status,
+          });
+          loggly.error('google-maps-api.geocode-failure', {
+            error: status,
+            location,
+          });
+          reject(new Error(`Failed to get location from coordinates: ${status}`));
+        }
+      });
     });
-  });
+  } catch (e) {
+    loggly.error('getPlacesFromCoordinates-failure', { message: e?.message });
+    throw e;
+  }
 };
 
 // to @luke: a multiple source 一条龙 has been created named [getPositionInfoBySource]
@@ -233,78 +296,49 @@ export const computeStraightDistance = (fromCoords, toCoords) => {
   if (straightDistanceCache[key]) {
     return straightDistanceCache[key];
   }
-  const from = latLng(fromCoords);
-  const to = latLng(toCoords);
-  const result = window.google.maps.geometry.spherical.computeDistanceBetween(from, to);
+  const result = computeDistanceBetween(fromCoords, toCoords);
 
   straightDistanceCache[key] = result;
   return result;
 };
 
-export const computeDirectionDistance = async (fromCoords, toCoords) => {
-  const matrix = computeDirectionDistanceMatrix([fromCoords], [toCoords]);
-  const distance = matrix[0][0];
-  if (distance === null) {
-    throw new Error('Fail to get direction distance');
-  }
-  return distance;
-};
+export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
+  try {
+    const googleMapsAPI = await loadGoogleMapsAPI();
 
-export const computeDirectionDistanceMatrix = async (fromCoordsList, toCoordsList) => {
-  const origins = fromCoordsList.map(coords => latLng(coords));
-  const destinations = toCoordsList.map(coords => latLng(coords));
-  const distanceMatrixService = new window.google.maps.DistanceMatrixService();
-  return new Promise((resolve, reject) => {
-    distanceMatrixService.getDistanceMatrix({ origins, destinations, travelMode: 'DRIVING' }, (resp, status) => {
-      if (status !== window.google.maps.DistanceMatrixStatus.OK) {
-        reject(`Failed to get distance info: ${status}`);
-        return;
-      }
-      const result = resp.rows.map((row, rowIndex) => {
-        return row.elements.map((element, elementIndex) => {
-          if (!element.distance) {
-            console.error(
-              `Fail to get distance between ${origins[rowIndex]} and ${destinations[elementIndex]}}: ${element.status}`
-            );
-            return null;
-          }
-          return element.distance.value || null;
-        });
+    if (options.fromAutocomplete) {
+      return await getPlaceDetails(placeId, googleMapsAPI);
+    }
+
+    const geocoder = new googleMapsAPI.Geocoder();
+    return await new Promise((resolve, reject) => {
+      geocoder.geocode({ placeId }, (resp, status) => {
+        if (status === googleMapsAPI.GeocoderStatus.OK && resp.length) {
+          const place = resp[0];
+          const result = {
+            coords: place.geometry.location.toJSON(),
+            address: place.formatted_address,
+            addressComponents: standardizeGeoAddress(place.address_components),
+            placeId: place.place_id,
+          };
+          window.newrelic?.addPageAction('google-maps-api.geocode-success');
+          resolve(result);
+        } else {
+          window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
+            error: status,
+          });
+          loggly.error('google-maps-api.geocode-failure', {
+            error: status,
+            placeId,
+          });
+          reject(`Failed to get location from coordinates: ${status}`);
+        }
       });
-      resolve(result);
     });
-  });
-};
-
-export const getPlaceInfoFromPlaceId = (placeId, options = {}) => {
-  if (options.fromAutocomplete) {
-    return getPlaceDetails(placeId);
+  } catch (e) {
+    loggly.error('getPlaceInfoFromPlaceId-failure', { message: e?.message });
+    throw e;
   }
-  const geocoder = new googleMaps.Geocoder();
-  return new Promise((resolve, reject) => {
-    geocoder.geocode({ placeId }, (resp, status) => {
-      if (status === googleMaps.GeocoderStatus.OK && resp.length) {
-        const place = resp[0];
-        const result = {
-          coords: place.geometry.location.toJSON(),
-          address: place.formatted_address,
-          addressComponents: standardizeGeoAddress(place.address_components),
-          placeId: place.place_id,
-        };
-        window.newrelic?.addPageAction('google-maps-api.geocode-success');
-        resolve(result);
-      } else {
-        window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
-          error: status,
-        });
-        loggly.error('google-maps-api.geocode-failure', {
-          error: status,
-          placeId,
-        });
-        reject(`Failed to get location from coordinates: ${status}`);
-      }
-    });
-  });
 };
 
 // this api is very expensive, hence we won't export it for public use for now.
@@ -312,17 +346,18 @@ export const getPlaceInfoFromPlaceId = (placeId, options = {}) => {
 // is charged as <SKU: Autocomplete (included with Places Details) – Per Session>
 // (https://developers.google.com/places/web-service/usage-and-billing#ac-with-details-session)
 const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_components'] } = {}) => {
-  const places = new googleMaps.places.PlacesService(document.createElement('div'));
-
-  const placeDetails = await new Promise(resolve => {
+  const googleMapsAPI = await loadGoogleMapsAPI();
+  const places = new googleMapsAPI.places.PlacesService(document.createElement('div'));
+  const sessionToken = await getAutocompleteSessionToken();
+  const placeDetails = await new Promise((resolve, reject) => {
     places.getDetails(
       {
         fields,
         placeId,
-        sessionToken: getAutocompleteSessionToken(),
+        sessionToken,
       },
       (result, status) => {
-        if (status === googleMaps.places.PlacesServiceStatus.OK) {
+        if (status === googleMapsAPI.places.PlacesServiceStatus.OK) {
           window.newrelic?.addPageAction('google-maps-api.placesGetDetails-success');
           resolve(result);
         } else {
@@ -335,7 +370,7 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
             placeId,
           });
           console.error('Fail to get place detail:', status, placeId);
-          throw new Error('Fail to get place detail');
+          reject(new Error('Fail to get place detail'));
         }
       }
     );
@@ -352,26 +387,6 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
   };
 
   return ret;
-};
-
-// Caution: this function is not well supported by most mobile.
-// Reference: https://caniuse.com/#search=permissions
-export const queryGeolocationPermission = async () => {
-  try {
-    const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
-    return permissionStatus;
-  } catch (e) {
-    return {};
-  }
-};
-
-export const isDeviceGeolocationDenied = async () => {
-  try {
-    const permissionStatus = await queryGeolocationPermission();
-    return permissionStatus.state === 'denied';
-  } catch (e) {
-    return true;
-  }
 };
 
 // dev to change the dev mode url, other wise you will see API 500 error

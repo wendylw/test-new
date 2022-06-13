@@ -1,9 +1,9 @@
 import { PROMOTION_TYPES } from '../types';
 import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
+import Utils from '../../../utils/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { getBusinessUTCOffset, getCartBilling } from './app';
-import Utils from '../../../utils/utils';
 import _get from 'lodash/get';
 const { PROMO_TYPE } = Constants;
 
@@ -327,4 +327,8 @@ export function hasSearchedForPromo(state) {
 
 export function getSelectedPromo(state) {
   return state.promotion.selectedPromo;
+}
+
+export function getPromotionId(state) {
+  return state.promotion.foundPromo.availablePromos[0]?.id;
 }

@@ -125,7 +125,12 @@ export const getSelectedSingleChoiceOptionsList = createSelector(
   getSelectedOptionsByVariationId,
   (variations, selectedOptionsByVariationId) =>
     variations
-      .filter(variation => variation.variationType === 'SingleChoice' && selectedOptionsByVariationId[variation.id])
+      .filter(
+        variation =>
+          !variation.isModifier &&
+          variation.variationType === 'SingleChoice' &&
+          selectedOptionsByVariationId[variation.id]
+      )
       .map(variation => {
         const selectedOption = selectedOptionsByVariationId[variation.id];
 
@@ -259,14 +264,30 @@ export const getMultipleSelectedOptionsTotalPriceDiff = createSelector(getProduc
   return _sumBy(multipleVariations, 'priceDiff');
 });
 
+export const getSingleSelectedOptionsNotChildMapTotalPriceDiff = createSelector(
+  getProductVariationsDetail,
+  variations => {
+    const shareModifierSingleVariations = variations.filter(
+      ({ isModifier, type }) => isModifier && type === PRODUCT_VARIATION_TYPE.SINGLE_CHOICE
+    );
+    return _sumBy(shareModifierSingleVariations, 'priceDiff');
+  }
+);
+
 export const getSelectedOptionsTotalPriceDiff = createSelector(
   getHasChildProduct,
   getAllSelectedOptionsTotalPriceDiff,
   getMultipleSelectedOptionsTotalPriceDiff,
-  (hasChildProduct, allSelectedOptionsPriceDiff, multipleSelectedOptionsTotalPriceDiff) => {
+  getSingleSelectedOptionsNotChildMapTotalPriceDiff,
+  (
+    hasChildProduct,
+    allSelectedOptionsPriceDiff,
+    multipleSelectedOptionsTotalPriceDiff,
+    singleSelectedOptionsNotChildMapTotalPriceDiff
+  ) => {
     // if has child product, exclude the price diff of single choice options
     if (hasChildProduct) {
-      return multipleSelectedOptionsTotalPriceDiff;
+      return multipleSelectedOptionsTotalPriceDiff + singleSelectedOptionsNotChildMapTotalPriceDiff;
     }
     return allSelectedOptionsPriceDiff;
   }

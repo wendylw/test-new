@@ -230,9 +230,9 @@ export class OrderDetails extends Component {
   }
 
   renderPromotion() {
-    const { isPayLater, promotion, t } = this.props;
+    const { promotion, t } = this.props;
 
-    if (!promotion || isPayLater) {
+    if (!promotion) {
       return null;
     }
 

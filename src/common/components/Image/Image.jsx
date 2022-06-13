@@ -105,6 +105,7 @@ Image.propTypes = {
   alt: PropTypes.string,
   src: PropTypes.string,
   dimension: PropTypes.oneOf(Array.from(AVAILABLE_DIMENSIONS)),
+  // If static source is not provided, the image will not be loaded from the server
   noCompression: PropTypes.bool,
   onLoad: PropTypes.func,
   onError: PropTypes.func,

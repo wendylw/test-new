@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _debounce from 'lodash/debounce';
-import Constants from '../../../utils/constants';
 import { IconWrappedClose } from '../../../components/Icons';
 import HybridHeader from '../../../components/HybridHeader';
 import PromoList from './components/PromoList/PromoList';
@@ -21,10 +20,18 @@ import {
   getAppliedResult,
 } from '../../redux/modules/promotion';
 import {
+  getApplyPromoPendingStatus,
+  getPromoErrorCodePayLater,
+  getIsAppliedSuccessPayLater,
+} from './redux/common/selector';
+import { applyPromo as applyPromoThunk } from './redux/common/thunks';
+import { actions as promoForPayLater } from './redux/common';
+import {
   actions as appActionCreators,
   getUser,
   getOnlineStoreInfo,
   getStoreInfoForCleverTap,
+  getEnablePayLater,
 } from '../../redux/modules/app';
 import { withTranslation } from 'react-i18next';
 import { getErrorMessageByPromoErrorCode } from './utils';
@@ -49,6 +56,7 @@ class Promotion extends Component {
 
   componentWillUnmount() {
     this.props.promotionActions.resetPromotion();
+    this.props.promoActions.init();
     this.removeResizeEventHandler();
   }
 
@@ -77,14 +85,11 @@ class Promotion extends Component {
   };
 
   handleClickBack = () => {
-    this.gotoCartPage();
+    this.gotoCartOrTableSummaryPage();
   };
 
-  gotoCartPage = () => {
-    this.props.history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_CART,
-      search: window.location.search,
-    });
+  gotoCartOrTableSummaryPage = () => {
+    this.props.history.goBack();
   };
 
   debounceSearchPromo = _debounce(() => {
@@ -100,19 +105,20 @@ class Promotion extends Component {
   };
 
   handleApplyPromotion = async () => {
+    const { enablePayLater, applyPromo } = this.props;
     loggly.log('promotion.apply-attempt');
 
-    if (this.props.inProcess) {
+    if (this.props.inProcess || this.props.inProcessPayLater) {
       return false;
     }
 
-    await this.props.promotionActions.applyPromo();
+    !enablePayLater ? await this.props.promotionActions.applyPromo() : await applyPromo();
 
-    if (this.props.isAppliedSuccess) {
+    if (this.props.isAppliedSuccess || this.props.isAppliedSuccessPayLater.success) {
       CleverTap.pushEvent('Cart Page - apply promo', {
         'promo/voucher applied': this.props.promoCode,
       });
-      this.gotoCartPage();
+      this.gotoCartOrTableSummaryPage();
     }
   };
 
@@ -121,23 +127,51 @@ class Promotion extends Component {
   };
 
   getMessage = () => {
-    const { appliedResult, onlineStoreInfo } = this.props;
-    if (!appliedResult || appliedResult.success) {
-      return '';
-    }
-    const { code, extraInfo, errorMessage } = appliedResult;
+    const {
+      appliedResult,
+      onlineStoreInfo,
+      promoErrorCodePayLater,
+      enablePayLater,
+      isAppliedSuccessPayLater,
+    } = this.props;
 
-    return getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo);
+    if (!enablePayLater) {
+      if (!appliedResult || appliedResult.success) {
+        return '';
+      }
+      const { code, extraInfo, errorMessage } = appliedResult;
+      return getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo);
+    } else {
+      const { code, extraInfo, errorMessage } = promoErrorCodePayLater;
+
+      if (!code || isAppliedSuccessPayLater.success) {
+        return '';
+      }
+
+      return getErrorMessageByPromoErrorCode(code, extraInfo, errorMessage, onlineStoreInfo);
+    }
   };
 
   render() {
-    const { t, promoCode, isAppliedSuccess, isAppliedError, inProcess, selectedPromo } = this.props;
+    const {
+      t,
+      promoCode,
+      isAppliedSuccess,
+      isAppliedSuccessPayLater,
+      isAppliedError,
+      promoErrorCodePayLater,
+      inProcess,
+      inProcessPayLater,
+      selectedPromo,
+      enablePayLater,
+    } = this.props;
     const { containerHeight } = this.state;
-    const showCleanButton = promoCode.length > 0 && !inProcess && !isAppliedSuccess;
+    const showCleanButton =
+      promoCode.length > 0 && !inProcess && !isAppliedSuccess && !inProcessPayLater && !isAppliedSuccessPayLater;
     let inputContainerStatus = '';
-    if (isAppliedSuccess) {
+    if (isAppliedSuccess || isAppliedSuccessPayLater) {
       inputContainerStatus = 'success';
-    } else if (isAppliedError) {
+    } else if (isAppliedError || promoErrorCodePayLater) {
       inputContainerStatus = 'error';
     }
 
@@ -192,7 +226,7 @@ class Promotion extends Component {
               <p className="form__error-message margin-small text-weight-bolder">{this.getMessage()}</p>
             ) : null}
           </div>
-          <PromoList />
+          <PromoList isPayLater={enablePayLater} />
         </div>
 
         <footer
@@ -202,10 +236,10 @@ class Promotion extends Component {
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-heap-name="ordering.promotion.apply-btn"
-            disabled={!selectedPromo.code || isAppliedSuccess}
+            disabled={!selectedPromo.code || inProcess || inProcessPayLater}
             onClick={this.handleApplyPromotion}
           >
-            {inProcess ? t('Processing') : t('Apply')}
+            {inProcess || inProcessPayLater ? t('Processing') : t('Apply')}
           </button>
         </footer>
       </section>
@@ -221,8 +255,10 @@ export default compose(
         promoCode: getPromoCode(state),
         errorCode: getPromoErrorCode(state),
         isAppliedSuccess: isAppliedSuccess(state),
+        isAppliedSuccessPayLater: getIsAppliedSuccessPayLater(state),
         isAppliedError: isAppliedError(state),
         inProcess: isInProcess(state),
+        inProcessPayLater: getApplyPromoPendingStatus(state),
         voucherList: getVoucherList(state),
         user: getUser(state),
         foundPromo: getFoundPromotion(state),
@@ -232,11 +268,15 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         appliedResult: getAppliedResult(state),
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
+        enablePayLater: getEnablePayLater(state),
+        promoErrorCodePayLater: getPromoErrorCodePayLater(state),
       };
     },
     dispatch => ({
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
+      applyPromo: bindActionCreators(applyPromoThunk, dispatch),
+      promoActions: bindActionCreators(promoForPayLater, dispatch),
     })
   )
 )(Promotion);

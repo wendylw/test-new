@@ -174,9 +174,16 @@ class ProductDetailDrawer extends Component {
           return;
         }
 
-        // childrenProduct only need add the multiple choice of variations priceDiff
+        // childrenProduct need add the multiple choice and share modifier choice price of variations priceDiff
         if (childrenProduct) {
           if (options.variationType === VARIATION_TYPES.MULTIPLE_CHOICE) {
+            totalPriceDiff += option.priceDiff * (optionQuantity[key] || 1);
+          }
+
+          if (
+            !childrenProduct.variation.includes(option.value) &&
+            options.variationType === VARIATION_TYPES.SINGLE_CHOICE
+          ) {
             totalPriceDiff += option.priceDiff * (optionQuantity[key] || 1);
           }
         } else {

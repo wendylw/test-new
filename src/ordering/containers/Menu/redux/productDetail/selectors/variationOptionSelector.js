@@ -36,6 +36,8 @@ const getVariationId = createSelector(getVariationDetail, variation => variation
 
 const getVariationType = createSelector(getVariationDetail, variation => variation.type);
 
+const getShareModifierVariation = createSelector(getVariationDetail, variation => variation.isModifier);
+
 const getVariationSelectionAmountLimit = createSelector(
   getVariationDetail,
   variationDetail => variationDetail.selectionAmountLimit
@@ -62,6 +64,8 @@ const getVariationOptionId = createSelector(getVariationOption, option => option
 const getVariationOptionValue = createSelector(getVariationOption, option => option.value);
 
 const getVariationOptionPriceDiff = createSelector(getVariationOption, option => option.priceDiff);
+
+const getVariationOptionMarkedSoldOut = createSelector(getVariationOption, option => option.markedSoldOut);
 
 const getVariationOptionFormattedPriceDiff = createSelector(
   getVariationOptionPriceDiff,
@@ -114,10 +118,21 @@ const getIsAbleToIncreaseQuantity = createSelector(
  */
 const getIsOptionOutOfStockOnAllChildrenProduct = createSelector(
   getVariationType,
+  getShareModifierVariation,
   getVariationOptionValue,
+  getVariationOptionMarkedSoldOut,
   getProductChildrenMap,
-  (variationType, optionValue, productChildrenMap) => {
+  (variationType, variationShareModifier, optionValue, optionMarkedSoldOut, productChildrenMap) => {
+    if (optionMarkedSoldOut) {
+      return true;
+    }
+
     if (variationType !== PRODUCT_VARIATION_TYPE.SINGLE_CHOICE) {
+      return false;
+    }
+
+    // If variation's isModifier is true, that means it is not Track Inventory, return false.
+    if (variationShareModifier) {
       return false;
     }
 

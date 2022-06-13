@@ -53,26 +53,36 @@ const getDefaultSelectedOptions = product => {
     const productVariations = _get(product, 'variations', []);
 
     const productSingleVariation = productVariations.filter(variation => variation.variationType === 'SingleChoice');
-
     const childProduct = productChildrenMap.find(child => child.stockStatus !== PRODUCT_STOCK_STATUS.OUT_OF_STOCK);
+    const shareModifierSingleVariations = productSingleVariation.filter(variation => variation.isModifier);
+    const setUntrackInventorySelectedOptions = variations => {
+      const selectedOptions = {};
 
-    // no child product OR all child product are out of stock
-    if (!childProduct) {
-      const selectedOptionsByVariationId = {};
-      // select the first option from single variations
-      productSingleVariation.forEach(variation => {
+      variations.forEach(variation => {
+        // If variation do not track inventory, default option should be first option
+        // select the first option from single variations
         const defaultSelectedOption = variation.optionValues[0];
 
-        selectedOptionsByVariationId[variation.id] = {
+        selectedOptions[variation.id] = {
           optionId: defaultSelectedOption.id,
           value: defaultSelectedOption.value,
         };
       });
 
-      return selectedOptionsByVariationId;
-    }
+      return selectedOptions;
+    };
 
-    const selectedOptionsByVariationId = {};
+    const selectedOptionsByVariationId = {
+      ...setUntrackInventorySelectedOptions(shareModifierSingleVariations),
+    };
+
+    // no child product OR all child product are out of stock
+    if (!childProduct) {
+      return {
+        ...selectedOptionsByVariationId,
+        ...setUntrackInventorySelectedOptions(productSingleVariation),
+      };
+    }
 
     childProduct.variationValues.forEach(variationValue => {
       const variation = productSingleVariation.find(

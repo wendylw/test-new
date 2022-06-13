@@ -5,6 +5,17 @@ export const getErrorMessageFromHint = ({ originalException, syntheticException 
   return originalException?.message || syntheticException?.message || 'UnknownSentryErrorMessage';
 };
 
+export const getErrorStacktraceFrames = event => {
+  const values = event.exception.values;
+  const frames = event.stacktrace?.frames || [];
+
+  if (values && values.length > 0) {
+    return frames.concat(values[0].stacktrace?.frames || []);
+  }
+
+  return frames;
+};
+
 const isInfiniteScrollerBug = (event, hint) => {
   // This error happens when the user make a fast slide and navigate to another page before the animation
   // stops. This seems to be a bug on ios safari. And it won't affect real user.
@@ -117,10 +128,9 @@ const isTikTokIssues = (event, hint) => {
     // In this case, the chunk file of tiktok failed to load, not because of the failure to load the Beep file.
     const chunkLoadFailed = tiktokRegex.test(message) && /Loading chunk/.test(message);
     // If abs_path or filename of stacktrace includes tiktok i18n events path, exception will response `ePageWillLeave=function(){var t,n;Object.keys(this.context.methods.getUserInfo())` on /i18n/pixel/events.js
-    const contextNoMethodFuncIssue = [
-      ...event.exception.values[0].stacktrace.frames,
-      ...event.stacktrace.frames,
-    ].some(({ filename, abs_path }) => tiktokRegex.test(filename || abs_path));
+    const contextNoMethodFuncIssue = getErrorStacktraceFrames(event).some(
+      ({ filename, abs_path }) => tiktokRegex.test(filename) || tiktokRegex.test(abs_path)
+    );
 
     return monitorIssue || chunkLoadFailed || contextNoMethodFuncIssue;
   } catch {

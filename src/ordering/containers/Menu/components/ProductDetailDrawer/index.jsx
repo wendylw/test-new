@@ -130,9 +130,9 @@ const ProductDetailDrawer = () => {
               {product.isBestSeller ? (
                 <img className="tw-inline-block" src={IconBestSellerImage} alt="StoreHub Beep best seller" />
               ) : null}
-              <div className="tw-my-4 sm:tw-my-4px tw-flex tw-items-center tw-w-full tw-flex-row">
+              <div className="tw-my-4 sm:tw-my-4px tw-flex tw-w-full tw-flex-row">
                 <h2 className="tw-font-bold tw-flex-1 tw-text-xl tw-leading-normal">{product.title}</h2>
-                <div className="tw-flex-shrink-0 tw-text-xl tw-ml-8 sm:tw-ml-8px text-gray-700">
+                <div className="tw-flex-shrink-0 tw-text-xl tw-ml-12 sm:tw-ml-12px text-gray-700">
                   {product.formattedDisplayPrice}
                 </div>
               </div>
