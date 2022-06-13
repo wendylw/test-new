@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchStoreList } from './api-request';
 import { storesActionCreators } from '../entities/stores';
-import { getPageInfo, getShippingType, getSearchInfo, getSearchStoreParams } from './selectors';
+import { getPageInfo, getShippingType, getSearchStoreParams } from './selectors';
 
 export const setPageInfo = createAsyncThunk('site/search/setPageInfo', async (payload, { getState }) => {
   const state = getState();
@@ -18,15 +18,6 @@ export const setShippingType = createAsyncThunk(
 );
 
 export const resetShippingType = createAsyncThunk('site/search/resetShippingType', async () => {});
-
-export const setSearchInfo = createAsyncThunk('site/search/setSearchInfo', async (payload, { getState }) => {
-  const state = getState();
-  const prevSearchInfo = getSearchInfo(state);
-
-  return { ...prevSearchInfo, ...payload };
-});
-
-export const resetSearchInfo = createAsyncThunk('site/search/resetSearchInfo', async () => {});
 
 export const loadStoreList = createAsyncThunk('site/search/loadStoreList', async (_, { dispatch, getState }) => {
   const state = getState();

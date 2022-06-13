@@ -17,6 +17,7 @@ import Button from '../../common/components/Button';
 import SingleChoiceSelector from '../components/OptionSelectors/SingleChoiceSelector';
 import MultipleChoiceSelector from '../components/OptionSelectors/MultipleChoiceSelector';
 import BeepNotResultImage from '../../images/beep-no-results.svg';
+import { actions as searchActionCreators } from '../redux/modules/search';
 import {
   getStoreList,
   getShippingType,
@@ -36,8 +37,6 @@ import {
   resetPageInfo as resetPageInfoThunkCreator,
   setShippingType as setShippingTypeThunkCreator,
   resetShippingType as resetShippingTypeThunkCreator,
-  setSearchInfo as setSearchInfoThunkCreator,
-  resetSearchInfo as resetSearchInfoThunkCreator,
   loadStoreList as loadStoreListThunkCreator,
   resetStoreList as resetStoreListThunkCreator,
 } from '../redux/modules/search/thunks';
@@ -156,7 +155,7 @@ class SearchPage extends React.Component {
   };
 
   onGoBack = () => {
-    const { searchKeyword, resetSearchInfo, resetShippingType, resetPageInfo, resetStoreList } = this.props;
+    const { searchKeyword, searchActions, resetShippingType, resetPageInfo, resetStoreList } = this.props;
 
     if (!searchKeyword) {
       CleverTap.pushEvent('Empty Search - Click back');
@@ -169,7 +168,7 @@ class SearchPage extends React.Component {
     });
 
     // Reset search data state
-    resetSearchInfo();
+    searchActions.resetSearchInfo();
     resetShippingType();
     resetStoreList();
     resetPageInfo();
@@ -187,14 +186,14 @@ class SearchPage extends React.Component {
 
   handleSearchTextChange = event => {
     const keyword = event.currentTarget.value;
-    this.props.setSearchInfo({ keyword });
+    this.props.searchActions.setSearchInfo({ keyword });
     this.props.setPageInfo({ scrollTop: 0 });
     this.debounceSearchStores();
   };
 
   handleClearSearchText = () => {
     CleverTap.pushEvent('Search - Click clear search field');
-    this.props.resetSearchInfo();
+    this.props.searchActions.resetSearchInfo();
     this.props.setPageInfo({ scrollTop: 0 });
   };
 
@@ -526,8 +525,6 @@ export default compose(
       resetPageInfo: bindActionCreators(resetPageInfoThunkCreator, dispatch),
       setShippingType: bindActionCreators(setShippingTypeThunkCreator, dispatch),
       resetShippingType: bindActionCreators(resetShippingTypeThunkCreator, dispatch),
-      setSearchInfo: bindActionCreators(setSearchInfoThunkCreator, dispatch),
-      resetSearchInfo: bindActionCreators(resetSearchInfoThunkCreator, dispatch),
       loadStoreList: bindActionCreators(loadStoreListThunkCreator, dispatch),
       resetStoreList: bindActionCreators(resetStoreListThunkCreator, dispatch),
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
@@ -540,6 +537,7 @@ export default compose(
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      searchActions: bindActionCreators(searchActionCreators, dispatch),
       collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
     })
   )

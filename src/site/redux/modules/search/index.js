@@ -7,8 +7,6 @@ import {
   resetPageInfo,
   setShippingType,
   resetShippingType,
-  setSearchInfo,
-  resetSearchInfo,
   loadStoreList,
   resetStoreList,
 } from './thunks';
@@ -45,8 +43,6 @@ const initialState = {
       keyword: '',
       results: [],
     },
-    status: null,
-    error: null,
   },
   shippingType: {
     data: null,
@@ -58,7 +54,15 @@ const initialState = {
 export const { reducer, actions } = createSlice({
   name: 'site/search',
   initialState,
-  reducers: {},
+  reducers: {
+    setSearchInfo(state, action) {
+      const prevData = state.searchInfo.data;
+      state.searchInfo.data = { ...prevData, ...action.payload };
+    },
+    resetSearchInfo(state) {
+      state.searchInfo.data = defaultSearchInfo;
+    },
+  },
   extraReducers: {
     [loadStoreList.pending.type]: state => {
       const { page } = state.pageInfo.data;
@@ -158,32 +162,6 @@ export const { reducer, actions } = createSlice({
     [resetShippingType.rejected.type]: (state, action) => {
       state.shippingType.status = API_REQUEST_STATUS.REJECTED;
       state.shippingType.error = action.error;
-    },
-    [setSearchInfo.pending.type]: state => {
-      state.searchInfo.status = API_REQUEST_STATUS.PENDING;
-      state.searchInfo.error = null;
-    },
-    [setSearchInfo.fulfilled.type]: (state, action) => {
-      state.searchInfo.data = action.payload;
-      state.searchInfo.status = API_REQUEST_STATUS.FULFILLED;
-      state.searchInfo.error = null;
-    },
-    [setSearchInfo.rejected.type]: (state, action) => {
-      state.searchInfo.status = API_REQUEST_STATUS.REJECTED;
-      state.searchInfo.error = action.error;
-    },
-    [resetSearchInfo.pending.type]: state => {
-      state.searchInfo.status = API_REQUEST_STATUS.PENDING;
-      state.searchInfo.error = null;
-    },
-    [resetSearchInfo.fulfilled.type]: state => {
-      state.searchInfo.data = defaultSearchInfo;
-      state.searchInfo.status = API_REQUEST_STATUS.FULFILLED;
-      state.searchInfo.error = null;
-    },
-    [resetSearchInfo.rejected.type]: (state, action) => {
-      state.searchInfo.status = API_REQUEST_STATUS.REJECTED;
-      state.searchInfo.error = action.error;
     },
   },
 });
