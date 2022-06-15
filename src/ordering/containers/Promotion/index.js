@@ -23,8 +23,9 @@ import {
   getApplyPromoPendingStatus,
   getPromoErrorCodePayLater,
   getIsAppliedSuccessPayLater,
+  getSelectPromoOrVoucherPayLater,
 } from './redux/common/selector';
-import { applyPromo as applyPromoThunk } from './redux/common/thunks';
+import { applyPromo as applyPromoThunk, applyVoucherPayLater } from './redux/common/thunks';
 import { actions as promoForPayLater } from './redux/common';
 import {
   actions as appActionCreators,
@@ -105,14 +106,22 @@ class Promotion extends Component {
   };
 
   handleApplyPromotion = async () => {
-    const { enablePayLater, applyPromo } = this.props;
+    const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater } = this.props;
     loggly.log('promotion.apply-attempt');
 
     if (this.props.inProcess || this.props.inProcessPayLater) {
       return false;
     }
 
-    !enablePayLater ? await this.props.promotionActions.applyPromo() : await applyPromo();
+    const applyPromotionOrVoucher = async () => {
+      if (selectPromoOrVoucherPayLater) {
+        await applyPromo();
+        return;
+      }
+      await applyVoucherPayLater();
+    };
+
+    !enablePayLater ? await this.props.promotionActions.applyPromo() : applyPromotionOrVoucher();
 
     if (this.props.isAppliedSuccess || this.props.isAppliedSuccessPayLater.success) {
       CleverTap.pushEvent('Cart Page - apply promo', {
@@ -270,6 +279,7 @@ export default compose(
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         enablePayLater: getEnablePayLater(state),
         promoErrorCodePayLater: getPromoErrorCodePayLater(state),
+        selectPromoOrVoucherPayLater: getSelectPromoOrVoucherPayLater(state),
       };
     },
     dispatch => ({
@@ -277,6 +287,7 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       applyPromo: bindActionCreators(applyPromoThunk, dispatch),
       promoActions: bindActionCreators(promoForPayLater, dispatch),
+      applyVoucherPayLater: bindActionCreators(applyVoucherPayLater, dispatch),
     })
   )
 )(Promotion);
