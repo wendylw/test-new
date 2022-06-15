@@ -25,7 +25,10 @@ import {
   getIsAppliedSuccessPayLater,
   getSelectPromoOrVoucherPayLater,
 } from './redux/common/selector';
-import { applyPromo as applyPromoThunk, applyVoucherPayLater } from './redux/common/thunks';
+import {
+  applyPromo as applyPromoThunk,
+  applyVoucherPayLater as applyVoucherPayLaterThunk,
+} from './redux/common/thunks';
 import { actions as promoForPayLater } from './redux/common';
 import {
   actions as appActionCreators,
@@ -106,22 +109,16 @@ class Promotion extends Component {
   };
 
   handleApplyPromotion = async () => {
-    const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater } = this.props;
+    const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater, applyVoucherPayLater } = this.props;
     loggly.log('promotion.apply-attempt');
 
     if (this.props.inProcess || this.props.inProcessPayLater) {
       return false;
     }
 
-    const applyPromotionOrVoucher = async () => {
-      if (selectPromoOrVoucherPayLater) {
-        await applyPromo();
-        return;
-      }
-      await applyVoucherPayLater();
-    };
-
-    !enablePayLater ? await this.props.promotionActions.applyPromo() : applyPromotionOrVoucher();
+    !enablePayLater
+      ? await this.props.promotionActions.applyPromo()
+      : (selectPromoOrVoucherPayLater && (await applyPromo())) || (await applyVoucherPayLater());
 
     if (this.props.isAppliedSuccess || this.props.isAppliedSuccessPayLater.success) {
       CleverTap.pushEvent('Cart Page - apply promo', {
@@ -287,7 +284,7 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       applyPromo: bindActionCreators(applyPromoThunk, dispatch),
       promoActions: bindActionCreators(promoForPayLater, dispatch),
-      applyVoucherPayLater: bindActionCreators(applyVoucherPayLater, dispatch),
+      applyVoucherPayLater: bindActionCreators(applyVoucherPayLaterThunk, dispatch),
     })
   )
 )(Promotion);

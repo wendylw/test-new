@@ -15,7 +15,10 @@ import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
 } from './redux/thunks';
-import { removePromo as removePromoThunk } from '../Promotion/redux/common/thunks';
+import {
+  removePromo as removePromoThunk,
+  removeVoucherPayLater as removeVoucherPayLaterThunk,
+} from '../Promotion/redux/common/thunks';
 import {
   getOrderPickUpCode,
   getTableNumber,
@@ -41,7 +44,6 @@ import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import './TableSummary.scss';
-import config from '../../../config';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -176,11 +178,13 @@ export class TableSummary extends React.Component {
   };
 
   handleDismissPromotion = async () => {
-    const { removePromo, loadOrders } = this.props;
+    const { removePromo, loadOrders, removeVoucherPayLater } = this.props;
 
     const receiptNumber = Utils.getQueryString('receiptNumber');
 
     await removePromo();
+    //  await removeVoucherPayLater();
+
     await loadOrders(receiptNumber);
   };
 
@@ -479,6 +483,7 @@ TableSummary.propTypes = {
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,
   orderPromotionCode: PropTypes.string,
+  removeVoucherPayLater: PropTypes.func,
 };
 
 TableSummary.defaultProps = {
@@ -507,6 +512,7 @@ TableSummary.defaultProps = {
   removePromo: () => {},
   oderPromoDiscount: 0,
   orderPromotionCode: '',
+  removeVoucherPayLater: () => {},
 };
 
 export default compose(
@@ -541,6 +547,7 @@ export default compose(
       resetCartSubmission: resetCartSubmissionActions.resetCartSubmission,
       loadOrders: loadOrdersThunk,
       removePromo: removePromoThunk,
+      removeVoucherPayLater: removeVoucherPayLaterThunk,
     }
   )
 )(TableSummary);
