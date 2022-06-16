@@ -21,8 +21,8 @@ class ReCAPTCHA extends React.Component {
   }
 
   getValue() {
-    if (this.props.grecaptcha && this._widgetId !== undefined) {
-      return this.props.grecaptcha.getResponse(this._widgetId);
+    if (this.props.grecaptcha && this.props.grecaptcha.enterprise && this._widgetId !== undefined) {
+      return this.props.grecaptcha.enterprise.getResponse(this._widgetId);
     }
     return null;
   }
@@ -37,8 +37,8 @@ class ReCAPTCHA extends React.Component {
   execute() {
     const { grecaptcha } = this.props;
 
-    if (grecaptcha && this._widgetId !== undefined) {
-      return grecaptcha.execute(this._widgetId);
+    if (grecaptcha && grecaptcha.enterprise && this._widgetId !== undefined) {
+      return grecaptcha.enterprise.execute(this._widgetId);
     } else {
       this._executeRequested = true;
     }
@@ -53,14 +53,14 @@ class ReCAPTCHA extends React.Component {
   }
 
   reset() {
-    if (this.props.grecaptcha && this._widgetId !== undefined) {
-      this.props.grecaptcha.reset(this._widgetId);
+    if (this.props.grecaptcha && this.props.grecaptcha.enterprise && this._widgetId !== undefined) {
+      this.props.grecaptcha.enterprise.reset(this._widgetId);
     }
   }
 
   forceReset() {
-    if (this.props.grecaptcha) {
-      this.props.grecaptcha.reset();
+    if (this.props.grecaptcha && this.props.grecaptcha.enterprise) {
+      this.props.grecaptcha.enterprise.reset();
     }
   }
 
@@ -95,9 +95,9 @@ class ReCAPTCHA extends React.Component {
   }
 
   explicitRender() {
-    if (this.props.grecaptcha && this.props.grecaptcha.render && this._widgetId === undefined) {
+    if (this.props.grecaptcha && this.props.grecaptcha.enterprise?.render && this._widgetId === undefined) {
       const wrapper = document.createElement('div');
-      this._widgetId = this.props.grecaptcha.render(wrapper, {
+      this._widgetId = this.props.grecaptcha.enterprise.render(wrapper, {
         sitekey: this.props.sitekey,
         callback: this.handleChange,
         theme: this.props.theme,
@@ -180,8 +180,8 @@ ReCAPTCHA.defaultProps = {
   badge: 'bottomright',
 };
 
-const callbackName = 'onloadcallback';
-const globalName = 'grecaptcha';
+const callbackName = 'onloadCallback';
+export const globalName = 'grecaptcha';
 
 function getOptions() {
   return (typeof window !== 'undefined' && window.recaptchaOptions) || {};
@@ -190,7 +190,7 @@ function getOptions() {
 function getURL() {
   const dynamicOptions = getOptions();
   const hostname = dynamicOptions.useRecaptchaNet ? 'recaptcha.net' : 'www.google.com';
-  return `https://${hostname}/recaptcha/api.js?onload=${callbackName}&render=explicit`;
+  return `https://${hostname}/recaptcha/enterprise.js?onload=${callbackName}&render=explicit`;
 }
 
 export default makeAsyncScriptLoader(getURL, {
