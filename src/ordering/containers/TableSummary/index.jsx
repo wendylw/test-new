@@ -33,9 +33,10 @@ import {
   getSubOrdersMapping,
   getThankYouPageUrl,
   getOrderServiceChargeRate,
-  getOrderBillingPromo,
+  getOrderBillingPromoIfExist,
   getOrderPromoDiscount,
   getOrderPromotionCode,
+  getVoucherBillingIfExist,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -178,12 +179,11 @@ export class TableSummary extends React.Component {
   };
 
   handleDismissPromotion = async () => {
-    const { removePromo, loadOrders, removeVoucherPayLater } = this.props;
+    const { removePromo, loadOrders, removeVoucherPayLater, voucherBilling } = this.props;
 
     const receiptNumber = Utils.getQueryString('receiptNumber');
 
-    await removePromo();
-    //  await removeVoucherPayLater();
+    !voucherBilling ? await removePromo() : await removeVoucherPayLater();
 
     await loadOrders(receiptNumber);
   };
@@ -298,17 +298,15 @@ export class TableSummary extends React.Component {
 
   renderPromotionItem() {
     const { t, OrderBillingPromo, oderPromoDiscount } = this.props;
-    const { PROMO_TYPE } = Constants;
-    const orderPromoType = OrderBillingPromo.length ? PROMO_TYPE.PROMOTION_ADD : '';
 
     return (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
-        {OrderBillingPromo.length ? (
+        {OrderBillingPromo ? (
           <>
             <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
               <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
               <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
-                {t(orderPromoType)} ({this.showShortPromoCode()})
+                {t(this.orderPromoType())} ({this.showShortPromoCode()})
               </span>
               <button
                 onClick={this.handleDismissPromotion}
@@ -346,6 +344,21 @@ export class TableSummary extends React.Component {
       }
       return orderPromotionCode;
     }
+    return '';
+  }
+
+  orderPromoType() {
+    const { OrderBillingPromo, voucherBilling } = this.props;
+    const { PROMO_TYPE } = Constants;
+
+    if (OrderBillingPromo) {
+      return PROMO_TYPE.PROMOTION_FOR_PAY_LATER;
+    }
+
+    if (voucherBilling) {
+      return PROMO_TYPE.VOUCHER_FOR_PAY_LATER;
+    }
+
     return '';
   }
 
@@ -484,6 +497,8 @@ TableSummary.propTypes = {
   oderPromoDiscount: PropTypes.number,
   orderPromotionCode: PropTypes.string,
   removeVoucherPayLater: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  voucherBilling: PropTypes.array,
 };
 
 TableSummary.defaultProps = {
@@ -513,6 +528,7 @@ TableSummary.defaultProps = {
   oderPromoDiscount: 0,
   orderPromotionCode: '',
   removeVoucherPayLater: () => {},
+  voucherBilling: [],
 };
 
 export default compose(
@@ -536,9 +552,10 @@ export default compose(
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
-      OrderBillingPromo: getOrderBillingPromo(state),
+      OrderBillingPromo: getOrderBillingPromoIfExist(state),
       oderPromoDiscount: getOrderPromoDiscount(state),
       orderPromotionCode: getOrderPromotionCode(state),
+      voucherBilling: getVoucherBillingIfExist(state),
     }),
 
     {

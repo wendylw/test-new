@@ -79,7 +79,7 @@ export const getOrderCompletedStatus = state =>
 
 export const getThankYouPageUrl = state => state.tableSummary.submission.thankYouPageUrl;
 
-export const getOrderBillingPromo = state => state.tableSummary.order.displayPromotions;
+export const getOrderBillingPromoIfExist = state => state.tableSummary.order.displayPromotions?.length || '';
 
 export const getOrderPromoDiscountType = state => state.tableSummary.order.displayPromotions[0]?.discountType;
 
@@ -87,4 +87,4 @@ export const getOrderPromoDiscount = state => state.tableSummary.order.displayPr
 
 export const getOrderPromotionCode = state => state.tableSummary.order.displayPromotions[0]?.promotionCode;
 
-export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
+export const getVoucherBillingIfExist = state => state.tableSummary.order.appliedVoucher?.length || '';

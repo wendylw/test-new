@@ -527,8 +527,9 @@ const PREORDER_IMMEDIATE_TAG = {
 
 const PROMO_TYPE = {
   PROMOTION: 'promotion',
-  PROMOTION_ADD: 'Promotion',
+  PROMOTION_FOR_PAY_LATER: 'Promotion',
   VOUCHER: 'voucher',
+  VOUCHER_FOR_PAY_LATER: 'Voucher',
 };
 
 const PROMOTIONS_TYPES = {
