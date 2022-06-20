@@ -13,7 +13,6 @@ import Constants from '../../../utils/constants';
 import '../../../Common.scss';
 import './Loyalty.scss';
 import Routes from '../Routes';
-import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
@@ -24,7 +23,6 @@ import Utils from '../../../utils/utils';
 import loggly from '../../../utils/monitoring/loggly';
 import _isNil from 'lodash/isNil';
 import NativeHeader from '../../../components/NativeHeader';
-import PageLoader from '../../../components/PageLoader';
 
 class App extends Component {
   state = {
@@ -128,23 +126,17 @@ class App extends Component {
     }
   }
 
-  handleClearError = () => {
-    this.props.appActions.clearError();
-  };
-
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
   };
 
   renderMainContent() {
-    const { user, error, onlineStoreInfo } = this.props;
+    const { user, onlineStoreInfo } = this.props;
     const { isFetching, prompt, isLogin } = user || {};
-    const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="loyalty fixed-wrapper__main fixed-wrapper">
-        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         <Message />
         {!isFetching || !isLogin ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
         <Routes />
@@ -155,7 +147,6 @@ class App extends Component {
 
   render() {
     const { user } = this.props;
-    const { isFetching } = user;
     const { showAppLoginPage } = this.state;
     const isWebview = Utils.isWebview();
 
@@ -164,8 +155,6 @@ class App extends Component {
         {isWebview && <NativeHeader />}
 
         {showAppLoginPage ? <RequestLogin user={user} onClick={this.handleLoginClick} /> : this.renderMainContent()}
-
-        {isFetching && <PageLoader />}
       </>
     );
   }
