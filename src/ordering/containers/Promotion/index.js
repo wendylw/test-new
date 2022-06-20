@@ -24,6 +24,7 @@ import {
   getPromoErrorCodePayLater,
   getIsAppliedSuccessPayLater,
   getSelectPromoOrVoucherPayLater,
+  getApplyVoucherPendingStatus,
 } from './redux/common/selector';
 import {
   applyPromo as applyPromoThunk,
@@ -112,7 +113,7 @@ class Promotion extends Component {
     const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater, applyVoucherPayLater } = this.props;
     loggly.log('promotion.apply-attempt');
 
-    if (this.props.inProcess || this.props.inProcessPayLater) {
+    if (this.props.inProcess || this.props.inProcessPayLater || this.props.isProcessPayLaterVoucher) {
       return false;
     }
 
@@ -170,10 +171,16 @@ class Promotion extends Component {
       inProcessPayLater,
       selectedPromo,
       enablePayLater,
+      isProcessPayLaterVoucher,
     } = this.props;
     const { containerHeight } = this.state;
     const showCleanButton =
-      promoCode.length > 0 && !inProcess && !isAppliedSuccess && !inProcessPayLater && !isAppliedSuccessPayLater;
+      promoCode.length > 0 &&
+      !inProcess &&
+      !isAppliedSuccess &&
+      !inProcessPayLater &&
+      !isAppliedSuccessPayLater &&
+      !isProcessPayLaterVoucher;
     let inputContainerStatus = '';
     if (isAppliedSuccess || isAppliedSuccessPayLater) {
       inputContainerStatus = 'success';
@@ -242,10 +249,10 @@ class Promotion extends Component {
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-heap-name="ordering.promotion.apply-btn"
-            disabled={!selectedPromo.code || inProcess || inProcessPayLater}
+            disabled={!selectedPromo.code || inProcess || inProcessPayLater || isProcessPayLaterVoucher}
             onClick={this.handleApplyPromotion}
           >
-            {inProcess || inProcessPayLater ? t('Processing') : t('Apply')}
+            {inProcess || inProcessPayLater || isProcessPayLaterVoucher ? t('Processing') : t('Apply')}
           </button>
         </footer>
       </section>
@@ -277,6 +284,7 @@ export default compose(
         enablePayLater: getEnablePayLater(state),
         promoErrorCodePayLater: getPromoErrorCodePayLater(state),
         selectPromoOrVoucherPayLater: getSelectPromoOrVoucherPayLater(state),
+        isProcessPayLaterVoucher: getApplyVoucherPendingStatus(state),
       };
     },
     dispatch => ({

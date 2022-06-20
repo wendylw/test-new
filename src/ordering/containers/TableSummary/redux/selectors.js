@@ -87,4 +87,8 @@ export const getOrderPromoDiscount = state => state.tableSummary.order.displayPr
 
 export const getOrderPromotionCode = state => state.tableSummary.order.displayPromotions[0]?.promotionCode;
 
-export const getVoucherBillingIfExist = state => state.tableSummary.order.appliedVoucher?.length || '';
+export const getVoucherBillingIfExist = state => state.tableSummary.order.appliedVoucher?.voucherId || '';
+
+export const getOrderVoucherCode = state => state.tableSummary.order.appliedVoucher?.voucherCode;
+
+export const getOrderVoucherDiscount = state => state.tableSummary.order.appliedVoucher?.value;

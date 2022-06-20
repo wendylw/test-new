@@ -24,3 +24,6 @@ export const getSelectPromoOrVoucherPayLater = createSelector(getSelectedPromo, 
   }
   return false;
 });
+
+export const getApplyVoucherPendingStatus = state =>
+  state.promoPayLater.common.requestStatus.applyVoucherPayLater === API_REQUEST_STATUS.PENDING;
