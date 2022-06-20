@@ -70,15 +70,15 @@ class Login extends React.Component {
     }
   }
 
-  async handleSubmitPhoneNumber(phone) {
-    const { appActions, otpType: type } = this.props;
+  async handleSubmitPhoneNumber(phone, type) {
+    const { appActions } = this.props;
     this.setState({ sendOtp: false });
     loggly.log('cashback.login-attempt');
 
     try {
-      const token = await this.handleCompleteReCAPTCHA();
+      const captchaToken = await this.handleCompleteReCAPTCHA();
       window.newrelic?.addPageAction('cashback.login.get-otp-start');
-      appActions.getOtp({ phone, token, type });
+      appActions.getOtp({ phone, captchaToken, type });
       window.newrelic?.addPageAction('cashback.login.get-otp-success');
       this.setState({ sendOtp: true });
     } catch (e) {

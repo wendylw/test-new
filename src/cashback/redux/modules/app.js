@@ -86,14 +86,16 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone, token, type = 'otp' }) => ({
+  getOtp: ({ phone, captchaToken, type = 'otp' }) => ({
     [API_REQUEST]: {
       types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
       ...Url.API_URLS.GET_OTP,
       payload: {
-        type,
         phone,
-        token,
+        type,
+        siteKey: process.env.REACT_APP_RECAPTCHA_SITE_KEY,
+        platform: 'BeepWeb',
+        captchaToken,
       },
     },
   }),
