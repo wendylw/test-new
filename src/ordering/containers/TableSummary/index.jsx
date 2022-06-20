@@ -39,6 +39,7 @@ import {
   getVoucherBillingIfExist,
   getOrderVoucherCode,
   getOrderVoucherDiscount,
+  getPromoOrVoucherExist,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -299,11 +300,11 @@ export class TableSummary extends React.Component {
   }
 
   renderPromotionItem() {
-    const { t, orderBillingPromo, oderPromoDiscount, voucherBilling, orderVoucherDiscount } = this.props;
+    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist } = this.props;
 
     return (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
-        {orderBillingPromo || voucherBilling ? (
+        {promoOrVoucherExist ? (
           <>
             <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
               <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
@@ -505,8 +506,7 @@ TableSummary.propTypes = {
   clearQueryOrdersAndStatus: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
   resetCartSubmission: PropTypes.func,
-  // eslint-disable-next-line react/forbid-prop-types
-  orderBillingPromo: PropTypes.array,
+  orderBillingPromo: PropTypes.number,
   loadOrders: PropTypes.func,
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,
@@ -515,6 +515,7 @@ TableSummary.propTypes = {
   voucherBilling: PropTypes.number,
   orderVoucherCode: PropTypes.string,
   orderVoucherDiscount: PropTypes.number,
+  promoOrVoucherExist: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -538,7 +539,7 @@ TableSummary.defaultProps = {
   clearQueryOrdersAndStatus: () => {},
   resetCartSubmission: () => {},
   thankYouPageUrl: '',
-  orderBillingPromo: [],
+  orderBillingPromo: 0,
   loadOrders: () => {},
   removePromo: () => {},
   oderPromoDiscount: 0,
@@ -547,6 +548,7 @@ TableSummary.defaultProps = {
   voucherBilling: 0,
   orderVoucherCode: '',
   orderVoucherDiscount: 0,
+  promoOrVoucherExist: false,
 };
 
 export default compose(
@@ -576,6 +578,7 @@ export default compose(
       voucherBilling: getVoucherBillingIfExist(state),
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
+      promoOrVoucherExist: getPromoOrVoucherExist(state),
     }),
 
     {

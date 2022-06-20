@@ -20,11 +20,10 @@ import {
   getAppliedResult,
 } from '../../redux/modules/promotion';
 import {
-  getApplyPromoPendingStatus,
   getPromoErrorCodePayLater,
   getIsAppliedSuccessPayLater,
   getSelectPromoOrVoucherPayLater,
-  getApplyVoucherPendingStatus,
+  getApplyPromoOrVoucherPendingStatus,
 } from './redux/common/selector';
 import {
   applyPromo as applyPromoThunk,
@@ -113,7 +112,7 @@ class Promotion extends Component {
     const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater, applyVoucherPayLater } = this.props;
     loggly.log('promotion.apply-attempt');
 
-    if (this.props.inProcess || this.props.inProcessPayLater || this.props.isProcessPayLaterVoucher) {
+    if (this.props.inProcess || this.props.applyPromoOrVoucherPendingStatus) {
       return false;
     }
 
@@ -168,19 +167,17 @@ class Promotion extends Component {
       isAppliedError,
       promoErrorCodePayLater,
       inProcess,
-      inProcessPayLater,
       selectedPromo,
       enablePayLater,
-      isProcessPayLaterVoucher,
+      applyPromoOrVoucherPendingStatus,
     } = this.props;
     const { containerHeight } = this.state;
     const showCleanButton =
       promoCode.length > 0 &&
       !inProcess &&
       !isAppliedSuccess &&
-      !inProcessPayLater &&
       !isAppliedSuccessPayLater &&
-      !isProcessPayLaterVoucher;
+      !applyPromoOrVoucherPendingStatus;
     let inputContainerStatus = '';
     if (isAppliedSuccess || isAppliedSuccessPayLater) {
       inputContainerStatus = 'success';
@@ -249,10 +246,10 @@ class Promotion extends Component {
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-heap-name="ordering.promotion.apply-btn"
-            disabled={!selectedPromo.code || inProcess || inProcessPayLater || isProcessPayLaterVoucher}
+            disabled={!selectedPromo.code || inProcess || applyPromoOrVoucherPendingStatus}
             onClick={this.handleApplyPromotion}
           >
-            {inProcess || inProcessPayLater || isProcessPayLaterVoucher ? t('Processing') : t('Apply')}
+            {inProcess || applyPromoOrVoucherPendingStatus ? t('Processing') : t('Apply')}
           </button>
         </footer>
       </section>
@@ -271,7 +268,6 @@ export default compose(
         isAppliedSuccessPayLater: getIsAppliedSuccessPayLater(state),
         isAppliedError: isAppliedError(state),
         inProcess: isInProcess(state),
-        inProcessPayLater: getApplyPromoPendingStatus(state),
         voucherList: getVoucherList(state),
         user: getUser(state),
         foundPromo: getFoundPromotion(state),
@@ -284,7 +280,7 @@ export default compose(
         enablePayLater: getEnablePayLater(state),
         promoErrorCodePayLater: getPromoErrorCodePayLater(state),
         selectPromoOrVoucherPayLater: getSelectPromoOrVoucherPayLater(state),
-        isProcessPayLaterVoucher: getApplyVoucherPendingStatus(state),
+        applyPromoOrVoucherPendingStatus: getApplyPromoOrVoucherPendingStatus(state),
       };
     },
     dispatch => ({

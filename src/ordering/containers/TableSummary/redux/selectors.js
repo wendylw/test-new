@@ -92,3 +92,9 @@ export const getVoucherBillingIfExist = state => state.tableSummary.order.applie
 export const getOrderVoucherCode = state => state.tableSummary.order.appliedVoucher?.voucherCode;
 
 export const getOrderVoucherDiscount = state => state.tableSummary.order.appliedVoucher?.value;
+
+export const getPromoOrVoucherExist = createSelector(
+  getOrderBillingPromoIfExist,
+  getVoucherBillingIfExist,
+  (orderBillingPromoIfExist, voucherBillingIfExist) => !!(orderBillingPromoIfExist || voucherBillingIfExist)
+);
