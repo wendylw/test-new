@@ -301,13 +301,14 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone, type = 'otp' }) => ({
+  getOtp: ({ phone, token, type = 'otp' }) => ({
     [API_REQUEST]: {
       types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
       ...Url.API_URLS.GET_OTP,
       payload: {
         type,
         phone,
+        token,
       },
     },
   }),

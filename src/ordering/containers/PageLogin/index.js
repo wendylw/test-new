@@ -7,6 +7,7 @@ import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
 import Constants from '../../../utils/constants';
 import HybridHeader from '../../../components/HybridHeader';
 import PageLoader from '../../../components/PageLoader';
+import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
@@ -16,12 +17,15 @@ import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
-import _isObject from 'lodash/isObject';
+import { alert } from '../../../common/feedback/alert';
 
 class PageLogin extends React.Component {
   state = {
     sendOtp: false,
+    shouldShowCaptchaAlert: false,
   };
+
+  captchaRef = React.createRef();
 
   componentDidMount() {
     if (Utils.isTNGMiniProgram()) {
@@ -29,12 +33,23 @@ class PageLogin extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { user } = prevProps;
     const { isLogin } = user || {};
     const { sendOtp } = this.state;
     if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitNextPage();
+    }
+
+    const { shouldShowCaptchaAlert: prevShouldShowAlert } = prevState;
+    const { shouldShowCaptchaAlert: currShouldShowAlert } = this.state;
+
+    if (!prevShouldShowAlert && currShouldShowAlert) {
+      // TODO: Ask PO to provide a better typewriting for this
+      alert('Something went wrong. Please try again.', {
+        title: 'OTP Request Failed',
+        onClose: () => this.setState({ shouldShowCaptchaAlert: false }),
+      });
     }
   }
 
@@ -66,12 +81,56 @@ class PageLogin extends React.Component {
     appActions.updateUser(user);
   }
 
-  handleSubmitPhoneNumber(phone, type) {
+  async handleCompleteReCAPTCHA() {
+    try {
+      if (!window[RECAPTCHA_GLOBAL_NAME]) {
+        throw new Error('ReCaptcha failed to load');
+      }
+
+      const token = await this.captchaRef.current.executeAsync();
+      this.captchaRef.current.reset();
+
+      if (!token) {
+        // reCAPTCHA response expires then token will be null.
+        throw new Error('ReCaptcha response is expired');
+      }
+
+      loggly.log('ordering.otp-login.complete-captcha-success');
+
+      return token;
+    } catch (e) {
+      this.setState({ shouldShowCaptchaAlert: true });
+      // We will set the attribute 'message' even if it is always empty
+      loggly.error('ordering.otp-login.complete-captcha-error', { message: e?.message });
+      throw e;
+    }
+  }
+
+  async handleSubmitPhoneNumber(phone, type) {
     const { appActions } = this.props;
-    loggly.log('page-login.login-attempt');
-    window.newrelic?.addPageAction('ordering.login.get-otp-start');
-    appActions.getOtp({ phone, type });
-    this.setState({ sendOtp: true });
+    this.setState({ sendOtp: false });
+    loggly.log('ordering.login-attempt');
+
+    try {
+      const token = await this.handleCompleteReCAPTCHA();
+      window.newrelic?.addPageAction('ordering.login.get-otp-start');
+      appActions.getOtp({ phone, token, type });
+      window.newrelic?.addPageAction('ordering.login.get-otp-success');
+      this.setState({ sendOtp: true });
+    } catch (e) {
+      window.newrelic?.addPageAction('ordering.login.get-otp-failed');
+    }
+  }
+
+  handleCaptchaLoad() {
+    const hasLoadSuccess = !!window.grecaptcha;
+    const scriptName = 'google-recaptcha';
+
+    window.newrelic?.addPageAction(`ordering.otp-login.script-load-${hasLoadSuccess ? 'success' : 'error'}`, {
+      scriptName: scriptName,
+    });
+
+    this.setState({ shouldShowCaptchaAlert: !hasLoadSuccess });
   }
 
   updateOtpStatus() {
@@ -129,6 +188,7 @@ class PageLogin extends React.Component {
 
   renderOtpModal() {
     const { t, user } = this.props;
+    const { sendOtp } = this.state;
     const { isFetching, isResending, isLogin, hasOtp, isError, phone, noWhatsAppAccount, country } = user || {};
     const { RESEND_OTP_TIME } = Constants;
 
@@ -150,6 +210,7 @@ class PageLogin extends React.Component {
         isLoading={isFetching || isLogin}
         isResending={isResending}
         isError={isError}
+        shouldCountdown={sendOtp}
       />
     );
   }
@@ -217,6 +278,12 @@ class PageLogin extends React.Component {
           </p>
         </section>
         {this.renderOtpModal()}
+        <ReCAPTCHA
+          sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+          size="invisible"
+          ref={this.captchaRef}
+          asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
+        />
       </React.Fragment>
     );
   }

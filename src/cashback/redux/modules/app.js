@@ -28,6 +28,8 @@ export const initialState = {
     consumerId: config.consumerId,
     customerId: '',
     storeCreditsBalance: 0,
+    isError: false,
+    otpType: 'otp',
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
@@ -84,15 +86,14 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone }) => ({
+  getOtp: ({ phone, token, type = 'otp' }) => ({
     [API_REQUEST]: {
       types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
-      ...Url.API_URLS.POST_OTP(config.authApiUrl),
+      ...Url.API_URLS.GET_OTP,
       payload: {
-        grant_type: AUTH_INFO.GRANT_TYPE,
-        client: AUTH_INFO.CLIENT,
-        business_name: config.business,
-        username: phone,
+        type,
+        phone,
+        token,
       },
     },
   }),
@@ -272,12 +273,18 @@ const user = (state = initialState.user, action) => {
   switch (type) {
     case types.FETCH_LOGIN_STATUS_REQUEST:
     case types.GET_OTP_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        isResending: true,
+        otpType: 'reSendotp',
+      };
     case types.CREATE_OTP_REQUEST:
-      return { ...state, isFetching: true, isResending: true };
+      return { ...state, isFetching: true };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false, isResending: false };
+      return { ...state, isFetching: false, isResending: false, isError: true };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
     case types.UPDATE_OTP_STATUS:

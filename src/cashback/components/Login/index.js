@@ -4,16 +4,34 @@ import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
+import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getUser } from '../../redux/modules/app';
+import loggly from '../../../utils/monitoring/loggly';
 import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
   state = {
     sendOtp: false,
+    shouldShowCaptchaAlert: false,
   };
+
+  captchaRef = React.createRef();
+
+  componentDidUpdate(prevProps, prevState) {
+    const { shouldShowCaptchaAlert: prevShouldShowAlert } = prevState;
+    const { shouldShowCaptchaAlert: currShouldShowAlert } = this.state;
+
+    if (!prevShouldShowAlert && currShouldShowAlert) {
+      // TODO: Ask PO to provide a better typewriting for this
+      alert('Something went wrong. Please try again.', {
+        title: 'OTP Request Failed',
+        onClose: () => this.setState({ shouldShowCaptchaAlert: false }),
+      });
+    }
+  }
 
   handleCloseOtpModal() {
     const { appActions } = this.props;
@@ -27,11 +45,56 @@ class Login extends React.Component {
     appActions.updateUser(user);
   }
 
-  handleSubmitPhoneNumber(phone) {
-    const { appActions, otpType } = this.props;
+  async handleCompleteReCAPTCHA() {
+    try {
+      if (!window[RECAPTCHA_GLOBAL_NAME]) {
+        throw new Error('ReCaptcha failed to load');
+      }
 
-    appActions.getOtp({ phone, type: otpType });
-    this.setState({ sendOtp: true });
+      const token = await this.captchaRef.current.executeAsync();
+      this.captchaRef.current.reset();
+
+      if (!token) {
+        // reCAPTCHA response expires then token will be null.
+        throw new Error('ReCaptcha response is expired');
+      }
+
+      loggly.log('cashback.otp-login.complete-captcha-success');
+
+      return token;
+    } catch (e) {
+      this.setState({ shouldShowCaptchaAlert: true });
+      // We will set the attribute 'message' even if it is always empty
+      loggly.error('cashback.otp-login.complete-captcha-error', { message: e?.message });
+      throw e;
+    }
+  }
+
+  async handleSubmitPhoneNumber(phone) {
+    const { appActions, otpType: type } = this.props;
+    this.setState({ sendOtp: false });
+    loggly.log('cashback.login-attempt');
+
+    try {
+      const token = await this.handleCompleteReCAPTCHA();
+      window.newrelic?.addPageAction('cashback.login.get-otp-start');
+      appActions.getOtp({ phone, token, type });
+      window.newrelic?.addPageAction('cashback.login.get-otp-success');
+      this.setState({ sendOtp: true });
+    } catch (e) {
+      window.newrelic?.addPageAction('cashback.login.get-otp-failed');
+    }
+  }
+
+  handleCaptchaLoad() {
+    const hasLoadSuccess = !!window.grecaptcha;
+    const scriptName = 'google-recaptcha';
+
+    window.newrelic?.addPageAction(`cashback.otp-login.script-load-${hasLoadSuccess ? 'success' : 'error'}`, {
+      scriptName: scriptName,
+    });
+
+    this.setState({ shouldShowCaptchaAlert: !hasLoadSuccess });
   }
 
   async handleWebLogin(otp) {
@@ -56,7 +119,8 @@ class Login extends React.Component {
 
   renderOtpModal() {
     const { user, t } = this.props;
-    const { isFetching, isResending, isLogin, hasOtp, phone, noWhatsAppAccount, country } = user || {};
+    const { sendOtp } = this.state;
+    const { isFetching, isResending, isLogin, hasOtp, isError, phone, noWhatsAppAccount, country } = user || {};
     const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
@@ -75,6 +139,8 @@ class Login extends React.Component {
         updateOtpStatus={this.updateOtpStatus.bind(this)}
         isLoading={isFetching || isLogin}
         isResending={isResending}
+        isError={isError}
+        shouldCountdown={sendOtp}
       />
     );
   }
@@ -115,6 +181,12 @@ class Login extends React.Component {
           </p>
         </PhoneViewContainer>
         {this.renderOtpModal()}
+        <ReCAPTCHA
+          sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+          size="invisible"
+          ref={this.captchaRef}
+          asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
+        />
       </section>
     );
   }

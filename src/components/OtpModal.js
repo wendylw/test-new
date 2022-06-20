@@ -76,6 +76,15 @@ class OtpModal extends React.Component {
     clearTimeout(this.countDownSetTimeoutObj);
   }
 
+  componentDidUpdate(prevProps) {
+    const { shouldCountdown: currShouldCountdown } = this.props;
+    const { shouldCountdown: prevShouldCountdown } = prevProps;
+
+    if (!prevShouldCountdown && currShouldCountdown) {
+      this.countDown(this.props.ResendOtpTime);
+    }
+  }
+
   updateAndValidateOtp = otp => {
     const { sendOtp, updateOtpStatus } = this.props;
     this.setState(
@@ -113,17 +122,7 @@ class OtpModal extends React.Component {
   }
 
   render() {
-    const {
-      t,
-      onClose,
-      getOtp,
-      isLoading,
-      isResending,
-      phone,
-      showWhatsAppResendBtn,
-      ResendOtpTime,
-      isError,
-    } = this.props;
+    const { t, onClose, getOtp, isLoading, isResending, phone, showWhatsAppResendBtn, isError } = this.props;
     const { currentOtpTime, otp } = this.state;
 
     return (
@@ -181,8 +180,6 @@ class OtpModal extends React.Component {
                   data-heap-name="common.otp-modal.resend-btn"
                   onClick={() => {
                     CleverTap.pushEvent('Login - Resend OTP');
-                    this.setState({ currentOtpTime: ResendOtpTime });
-                    this.countDown(ResendOtpTime);
                     getOtp(phone, 'reSendotp');
                   }}
                 >
@@ -194,8 +191,6 @@ class OtpModal extends React.Component {
                     data-heap-name="common.otp-modal.resend-whats-btn"
                     onClick={() => {
                       CleverTap.pushEvent('Login - Resend Whatsapp OTP');
-                      this.setState({ currentOtpTime: ResendOtpTime });
-                      this.countDown(ResendOtpTime);
                       getOtp(phone, 'WhatsApp');
                     }}
                   >
@@ -238,6 +233,7 @@ OtpModal.propTypes = {
   isLoading: PropTypes.bool,
   isError: PropTypes.bool,
   showWhatsAppResendBtn: PropTypes.bool,
+  shouldCountdown: PropTypes.bool,
   onClose: PropTypes.func,
   getOtp: PropTypes.func,
   sendOtp: PropTypes.func,
@@ -248,6 +244,7 @@ OtpModal.defaultProps = {
   buttonText: '',
   ResendOtpTime: 0,
   isLoading: false,
+  shouldCountdown: false,
   onClose: () => {},
   sendOtp: () => {},
 };
