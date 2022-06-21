@@ -13,6 +13,7 @@ import Constants from '../../../utils/constants';
 import '../../../Common.scss';
 import './Loyalty.scss';
 import Routes from '../Routes';
+import ErrorToast from '../../../components/ErrorToast';
 import Message from '../../components/Message';
 import Login from '../../components/Login';
 import DocumentFavicon from '../../../components/DocumentFavicon';
@@ -126,17 +127,23 @@ class App extends Component {
     }
   }
 
+  handleClearError = () => {
+    this.props.appActions.clearError();
+  };
+
   handleCloseMessageModal = () => {
     this.props.appActions.hideMessageModal();
   };
 
   renderMainContent() {
-    const { user, onlineStoreInfo } = this.props;
+    const { user, error, onlineStoreInfo } = this.props;
     const { isFetching, prompt, isLogin } = user || {};
+    const { message } = error || {};
     const { favicon } = onlineStoreInfo || {};
 
     return (
       <main className="loyalty fixed-wrapper__main fixed-wrapper">
+        {message ? <ErrorToast className="fixed" message={message} clearError={this.handleClearError} /> : null}
         <Message />
         {!isFetching || !isLogin ? <Login className="aside fixed-wrapper" title={prompt} /> : null}
         <Routes />
