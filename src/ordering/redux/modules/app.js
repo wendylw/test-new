@@ -308,7 +308,7 @@ export const actions = {
       payload: {
         phone,
         type,
-        siteKey: process.env.REACT_APP_RECAPTCHA_SITE_KEY,
+        siteKey: config.googleRecaptchaSiteKey,
         platform: 'BeepWeb',
         captchaToken,
       },

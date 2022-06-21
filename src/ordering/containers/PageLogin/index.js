@@ -16,6 +16,7 @@ import { actions as appActionCreators, getUser, getOtpType, getDeliveryDetails }
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
+import config from '../../../config';
 import loggly from '../../../utils/monitoring/loggly';
 import Utils from '../../../utils/utils';
 
@@ -272,7 +273,7 @@ class PageLogin extends React.Component {
         </section>
         {this.renderOtpModal()}
         <ReCAPTCHA
-          sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+          sitekey={config.googleRecaptchaSiteKey}
           size="invisible"
           ref={this.captchaRef}
           asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}

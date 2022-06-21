@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getUser } from '../../redux/modules/app';
+import config from '../../../config';
 import loggly from '../../../utils/monitoring/loggly';
 import './LoyaltyLogin.scss';
 
@@ -174,7 +175,7 @@ class Login extends React.Component {
         </PhoneViewContainer>
         {this.renderOtpModal()}
         <ReCAPTCHA
-          sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+          sitekey={config.googleRecaptchaSiteKey}
           size="invisible"
           ref={this.captchaRef}
           asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
