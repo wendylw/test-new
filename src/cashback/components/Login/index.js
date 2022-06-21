@@ -4,13 +4,13 @@ import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
+import Alert from '../../../common/feedback/alert/Alert';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import loggly from '../../../utils/monitoring/loggly';
-import { alert } from '../../../common/feedback';
 import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
@@ -20,19 +20,6 @@ class Login extends React.Component {
   };
 
   captchaRef = React.createRef();
-
-  componentDidUpdate(prevProps, prevState) {
-    const { shouldShowCaptchaAlert: prevShouldShowAlert } = prevState;
-    const { shouldShowCaptchaAlert: currShouldShowAlert } = this.state;
-
-    if (!prevShouldShowAlert && currShouldShowAlert) {
-      // TODO: Ask PO to provide a better typewriting for this
-      alert('Something went wrong. Please try again.', {
-        title: 'OTP Request Failed',
-        onClose: () => this.setState({ shouldShowCaptchaAlert: false }),
-      });
-    }
-  }
 
   handleCloseOtpModal() {
     const { appActions } = this.props;
@@ -44,6 +31,10 @@ class Login extends React.Component {
     const { appActions } = this.props;
 
     appActions.updateUser(user);
+  }
+
+  handleCloseAlert() {
+    this.setState({ shouldShowCaptchaAlert: false });
   }
 
   async handleCompleteReCAPTCHA() {
@@ -147,6 +138,7 @@ class Login extends React.Component {
   }
 
   render() {
+    const { shouldShowCaptchaAlert } = this.state;
     const { user, title, className, t } = this.props;
     const { isFetching, isLogin, phone, country } = user || {};
     const classList = ['login'];
@@ -187,6 +179,21 @@ class Login extends React.Component {
           size="invisible"
           ref={this.captchaRef}
           asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
+        />
+        <Alert
+          show={shouldShowCaptchaAlert}
+          onClose={this.handleCloseAlert.bind(this)}
+          closeButtonContent={t('Dismiss')}
+          content={
+            <>
+              <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">
+                {t('NetworkErrorTitle')}
+              </h4>
+              <div className="alert__description padding-small text-line-height-base">
+                {t('NetworkErrorDescription')}
+              </div>
+            </>
+          }
         />
       </section>
     );

@@ -267,5 +267,7 @@
   "StoreNotFoundDesc": "This store may be temporarily unavailable or undergoing a delicious upgrade! Check back soon…",
   "SearchingProductsNoResult": "Oops! Couldn’t find results for \"{{searchingProductKeywords}}\"<0></0>Let’s try a different item",
   "MenuSearchingBoxPlaceholder": "What are you looking for?",
-  "Restaurants": "Restaurants"
+  "Restaurants": "Restaurants",
+  "NetworkErrorTitle": "No internet connection",
+  "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again"
 }
