@@ -10,6 +10,7 @@ import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import { actions as appActionCreators, getUser } from '../../redux/modules/app';
 import loggly from '../../../utils/monitoring/loggly';
+import { alert } from '../../../common/feedback';
 import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
