@@ -653,6 +653,8 @@ const LOGISTICS_RIDER_TYPE = {
   PAN_DAGO: 'pandago',
 };
 
+const OTP_REQUEST_PLATFORM = 'BeepWeb';
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -704,4 +706,5 @@ export default {
   PROMOTION_CLIENT_TYPES,
   REFERRER_SOURCE_TYPES,
   LOGISTICS_RIDER_TYPE,
+  OTP_REQUEST_PLATFORM,
 };

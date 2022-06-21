@@ -17,7 +17,7 @@ import { createSelector } from 'reselect';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
-const { AUTH_INFO } = Constants;
+const { AUTH_INFO, OTP_REQUEST_PLATFORM } = Constants;
 
 export const initialState = {
   user: {
@@ -94,7 +94,7 @@ export const actions = {
         phone,
         type,
         siteKey: config.googleRecaptchaSiteKey,
-        platform: 'BeepWeb',
+        platform: OTP_REQUEST_PLATFORM,
         captchaToken,
       },
     },

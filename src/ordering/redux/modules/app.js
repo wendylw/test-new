@@ -37,7 +37,7 @@ import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import loggly from '../../../utils/monitoring/loggly';
 
-const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE } = Constants;
+const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, OTP_REQUEST_PLATFORM } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -309,7 +309,7 @@ export const actions = {
         phone,
         type,
         siteKey: config.googleRecaptchaSiteKey,
-        platform: 'BeepWeb',
+        platform: OTP_REQUEST_PLATFORM,
         captchaToken,
       },
     },
