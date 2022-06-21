@@ -1,4 +1,8 @@
 // This file is copied from https://github.com/dozoisch/react-google-recaptcha and modified to fit the needs of this project.
+// We will track following events:
+// PR: https://github.com/dozoisch/react-google-recaptcha/pull/239
+// Issues: https://github.com/dozoisch/react-google-recaptcha/issues/228
+// Once the original repo meets the needs of the enterprise version, we will remove this file and directly import the 'react-google-recaptcha' library.
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/sort-comp */
 /* eslint-disable no-else-return */
@@ -21,6 +25,8 @@ class ReCAPTCHA extends React.Component {
   }
 
   getValue() {
+    // Use 'grecaptcha.enterprise' instead of 'grecaptcha' to fit the enterprise version according to the Google ReCAPTCHA guide.
+    // Ref: https://cloud.google.com/recaptcha-enterprise/docs/using-features
     if (this.props.grecaptcha && this.props.grecaptcha.enterprise && this._widgetId !== undefined) {
       return this.props.grecaptcha.enterprise.getResponse(this._widgetId);
     }
@@ -37,6 +43,8 @@ class ReCAPTCHA extends React.Component {
   execute() {
     const { grecaptcha } = this.props;
 
+    // Use 'grecaptcha.enterprise' instead of 'grecaptcha' to fit the enterprise version according to the Google ReCAPTCHA guide.
+    // Ref: https://cloud.google.com/recaptcha-enterprise/docs/using-features
     if (grecaptcha && grecaptcha.enterprise && this._widgetId !== undefined) {
       return grecaptcha.enterprise.execute(this._widgetId);
     } else {
@@ -53,12 +61,16 @@ class ReCAPTCHA extends React.Component {
   }
 
   reset() {
+    // Use 'grecaptcha.enterprise' instead of 'grecaptcha' to fit the enterprise version according to the Google ReCAPTCHA guide.
+    // Ref: https://cloud.google.com/recaptcha-enterprise/docs/using-features
     if (this.props.grecaptcha && this.props.grecaptcha.enterprise && this._widgetId !== undefined) {
       this.props.grecaptcha.enterprise.reset(this._widgetId);
     }
   }
 
   forceReset() {
+    // Use 'grecaptcha.enterprise' instead of 'grecaptcha' to fit the enterprise version according to the Google ReCAPTCHA guide.
+    // Ref: https://cloud.google.com/recaptcha-enterprise/docs/using-features
     if (this.props.grecaptcha && this.props.grecaptcha.enterprise) {
       this.props.grecaptcha.enterprise.reset();
     }
@@ -95,6 +107,8 @@ class ReCAPTCHA extends React.Component {
   }
 
   explicitRender() {
+    // Use 'grecaptcha.enterprise' instead of 'grecaptcha' to fit the enterprise version according to the Google ReCAPTCHA guide.
+    // Ref: https://cloud.google.com/recaptcha-enterprise/docs/using-features
     if (this.props.grecaptcha && this.props.grecaptcha.enterprise?.render && this._widgetId === undefined) {
       const wrapper = document.createElement('div');
       this._widgetId = this.props.grecaptcha.enterprise.render(wrapper, {
@@ -113,7 +127,14 @@ class ReCAPTCHA extends React.Component {
       });
       this.captcha.appendChild(wrapper);
     }
-    if (this._executeRequested && this.props.grecaptcha && this._widgetId !== undefined) {
+    // Use 'grecaptcha.enterprise' instead of 'grecaptcha' to fit the enterprise version according to the Google ReCAPTCHA guide.
+    // Ref: https://cloud.google.com/recaptcha-enterprise/docs/using-features
+    if (
+      this._executeRequested &&
+      this.props.grecaptcha &&
+      this.props.grecaptcha.enterprise &&
+      this._widgetId !== undefined
+    ) {
       this._executeRequested = false;
       this.execute();
     }
@@ -190,6 +211,8 @@ function getOptions() {
 function getURL() {
   const dynamicOptions = getOptions();
   const hostname = dynamicOptions.useRecaptchaNet ? 'recaptcha.net' : 'www.google.com';
+  // Use 'enterprise.js' instead of 'api.js' to fit the enterprise version according to the Google ReCAPTCHA guide.
+  // Ref: https://cloud.google.com/recaptcha-enterprise/docs/using-features
   return `https://${hostname}/recaptcha/enterprise.js?onload=${callbackName}&render=explicit`;
 }
 
