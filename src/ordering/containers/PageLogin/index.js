@@ -106,7 +106,11 @@ class PageLogin extends React.Component {
     loggly.log('ordering.login-attempt');
 
     try {
-      const captchaToken = await this.handleCompleteReCAPTCHA();
+      let captchaToken = undefined;
+      // Skip reCAPTCHA checking if it is disabled
+      if (config.recaptchaEnabled) {
+        captchaToken = await this.handleCompleteReCAPTCHA();
+      }
       appActions.getOtp({ phone, captchaToken, type });
       window.newrelic?.addPageAction('ordering.login.get-otp-success');
       this.setState({ sendOtp: true });
@@ -208,6 +212,42 @@ class PageLogin extends React.Component {
     );
   }
 
+  renderReCAPTCHA() {
+    const { t } = this.props;
+    const { shouldShowCaptchaAlert } = this.state;
+
+    // Only load reCAPTCHA script if it is enabled
+    if (!config.recaptchaEnabled) {
+      return null;
+    }
+
+    return (
+      <>
+        <ReCAPTCHA
+          sitekey={config.googleRecaptchaSiteKey}
+          size="invisible"
+          ref={this.captchaRef}
+          asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
+        />
+        <Alert
+          show={shouldShowCaptchaAlert}
+          onClose={this.handleCloseAlert.bind(this)}
+          closeButtonContent={t('Dismiss')}
+          content={
+            <>
+              <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">
+                {t('NetworkErrorTitle')}
+              </h4>
+              <div className="alert__description padding-small text-line-height-base">
+                {t('NetworkErrorDescription')}
+              </div>
+            </>
+          }
+        />
+      </>
+    );
+  }
+
   render() {
     const { shouldShowCaptchaAlert } = this.state;
     const { t, user, className } = this.props;
@@ -272,27 +312,7 @@ class PageLogin extends React.Component {
           </p>
         </section>
         {this.renderOtpModal()}
-        <ReCAPTCHA
-          sitekey={config.googleRecaptchaSiteKey}
-          size="invisible"
-          ref={this.captchaRef}
-          asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
-        />
-        <Alert
-          show={shouldShowCaptchaAlert}
-          onClose={this.handleCloseAlert.bind(this)}
-          closeButtonContent={t('Dismiss')}
-          content={
-            <>
-              <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">
-                {t('NetworkErrorTitle')}
-              </h4>
-              <div className="alert__description padding-small text-line-height-base">
-                {t('NetworkErrorDescription')}
-              </div>
-            </>
-          }
-        />
+        {this.renderReCAPTCHA()}
       </React.Fragment>
     );
   }
