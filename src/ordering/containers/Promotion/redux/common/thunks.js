@@ -3,9 +3,9 @@ import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './
 import { getPromoId, getPromoCodePayLater } from './selector';
 import Utils from '../../../../../utils/utils';
 
-const addErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
+const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
 
-const handleRemovePromoOrVoucher = async removeMethods => {
+const removePromoOrVoucher = async removeMethods => {
   const receiptNumber = Utils.getQueryString('receiptNumber');
   try {
     const result = await removeMethods({ receiptNumber });
@@ -30,14 +30,14 @@ export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo
 
     return result;
   } catch (e) {
-    console.error(addErrorOfApplyPromoOrVoucher(e));
+    console.error(formatErrorOfApplyPromoOrVoucher(e));
 
-    throw addErrorOfApplyPromoOrVoucher(e);
+    throw formatErrorOfApplyPromoOrVoucher(e);
   }
 });
 
 export const removePromo = createAsyncThunk('ordering/promotion/common/removePromotion', () =>
-  handleRemovePromoOrVoucher(removePromotion)
+  removePromoOrVoucher(removePromotion)
 );
 
 /**
@@ -54,13 +54,13 @@ export const applyVoucherPayLater = createAsyncThunk(
 
       return result;
     } catch (e) {
-      console.error(addErrorOfApplyPromoOrVoucher(e));
+      console.error(formatErrorOfApplyPromoOrVoucher(e));
 
-      throw addErrorOfApplyPromoOrVoucher(e);
+      throw formatErrorOfApplyPromoOrVoucher(e);
     }
   }
 );
 
 export const removeVoucherPayLater = createAsyncThunk('ordering/promotion/common/removeVoucherPayLater', () =>
-  handleRemovePromoOrVoucher(removeVoucher)
+  removePromoOrVoucher(removeVoucher)
 );
