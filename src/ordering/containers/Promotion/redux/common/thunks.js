@@ -3,11 +3,10 @@ import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './
 import { getPromoId, getPromoCodePayLater } from './selector';
 import Utils from '../../../../../utils/utils';
 
-const receiptNumber = Utils.getQueryString('receiptNumber');
-
 const addErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
 
 const handleRemovePromoOrVoucher = async removeMethods => {
+  const receiptNumber = Utils.getQueryString('receiptNumber');
   try {
     const result = await removeMethods({ receiptNumber });
 
@@ -25,6 +24,7 @@ const handleRemovePromoOrVoucher = async removeMethods => {
 export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo', async (_, { getState }) => {
   const state = getState();
   const promotionId = getPromoId(state);
+  const receiptNumber = Utils.getQueryString('receiptNumber');
   try {
     const result = await applyPromotion({ receiptNumber, promotionId });
 
@@ -48,6 +48,7 @@ export const applyVoucherPayLater = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState();
     const voucherCode = getPromoCodePayLater(state);
+    const receiptNumber = Utils.getQueryString('receiptNumber');
     try {
       const result = await applyVoucher({ receiptNumber, voucherCode });
 
