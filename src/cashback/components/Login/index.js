@@ -69,7 +69,6 @@ class Login extends React.Component {
 
     try {
       const captchaToken = await this.handleCompleteReCAPTCHA();
-      window.newrelic?.addPageAction('cashback.login.get-otp-start');
       appActions.getOtp({ phone, captchaToken, type });
       window.newrelic?.addPageAction('cashback.login.get-otp-success');
       this.setState({ sendOtp: true });

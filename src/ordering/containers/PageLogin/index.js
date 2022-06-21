@@ -106,7 +106,6 @@ class PageLogin extends React.Component {
 
     try {
       const captchaToken = await this.handleCompleteReCAPTCHA();
-      window.newrelic?.addPageAction('ordering.login.get-otp-start');
       appActions.getOtp({ phone, captchaToken, type });
       window.newrelic?.addPageAction('ordering.login.get-otp-success');
       this.setState({ sendOtp: true });
