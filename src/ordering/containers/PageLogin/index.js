@@ -89,6 +89,9 @@ class PageLogin extends React.Component {
       }
 
       const token = await this.captchaRef.current.executeAsync();
+      // Reset the recaptcha once the token is retrieved.
+      // If we don't reset the captcha manually, the new token won't be generated next time.
+      // Ref: https://github.com/dozoisch/react-google-recaptcha/issues/191#issuecomment-715635172
       this.captchaRef.current.reset();
 
       if (!token) {
