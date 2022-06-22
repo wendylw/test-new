@@ -50,8 +50,12 @@ const send = async (data, tags = '') => {
   try {
     await fetch(endpoint, {
       method: 'POST',
+      // content-type=text/plain can make the request a simple request and avoid to send preflight (OPTIONS) requests before the actual CORS request
+      // Refer to: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests
+      headers: { 'Content-Type': 'text/plain' },
       body,
       priority: 'low',
+      credentials: 'omit',
     });
   } catch (e) {
     if (IS_DEV_ENV) {
