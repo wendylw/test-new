@@ -655,6 +655,11 @@ const LOGISTICS_RIDER_TYPE = {
 
 const OTP_REQUEST_PLATFORM = 'BeepWeb';
 
+export const DISPLAY_ICON_TYPES = {
+  FUNNEL_SIMPLE: 'FunnelSimple',
+  CARET_DOWN: 'CaretDown',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -707,4 +712,5 @@ export default {
   REFERRER_SOURCE_TYPES,
   LOGISTICS_RIDER_TYPE,
   OTP_REQUEST_PLATFORM,
+  DISPLAY_ICON_TYPES,
 };
