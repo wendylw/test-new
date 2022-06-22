@@ -199,9 +199,9 @@ class Login extends React.Component {
           updateCountry={this.handleUpdateUser.bind(this)}
           onSubmit={this.handleSubmitPhoneNumber.bind(this)}
         >
-          <p className="terms-privacy text-center text-opacity">
+          <p className="text-center margin-top-bottom-small text-line-height-base text-opacity login__terms-privacy">
             <TermsAndPrivacy
-              buttonLinkClassName="button__default"
+              buttonLinkClassName="login__button-link"
               termsOfUseDataHeapName="cashback.login.term-link"
               privacyPolicyDataHeapName="cashback.login.privacy-policy-link"
             />

@@ -8,4 +8,20 @@
     border-radius: 12px 12px 0 0;
     background-color: $white;
   }
+
+  &__button-link {
+    color: inherit;
+  }
+
+  &__terms-privacy {
+    margin-bottom: 30vw;
+  }
+}
+
+@media (min-width: 770px) {
+  .login {
+    &__terms-privacy {
+      margin-bottom: 90px;
+    }
+  }
 }

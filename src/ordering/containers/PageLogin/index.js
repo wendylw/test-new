@@ -295,11 +295,12 @@ class PageLogin extends React.Component {
               updatePhoneNumber={this.handleUpdateUser.bind(this)}
               updateCountry={this.handleUpdateUser.bind(this)}
               onSubmit={this.handleSubmitPhoneNumber.bind(this)}
-            ></PhoneViewContainer>
+            >
+              <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
+                <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
+              </p>
+            </PhoneViewContainer>
           </div>
-          <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
-            <TermsAndPrivacy buttonLinkClassName="page-login__button-link" />
-          </p>
         </section>
         {this.renderOtpModal()}
         {this.renderReCAPTCHA()}

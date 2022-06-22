@@ -133,7 +133,7 @@ class OtpModal extends React.Component {
           data-heap-name="common.otp-modal.header"
         />
 
-        <section ref={this.addressAsideInnerRef} className="otp-modal__container text-center">
+        <section ref={this.addressAsideInnerRef} className="text-center">
           <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
             {isError ? <img src={beepOtpError} alt="otp" /> : <img src={beepOtpLock} alt="otp" />}
           </figure>
