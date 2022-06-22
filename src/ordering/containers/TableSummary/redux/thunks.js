@@ -2,7 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { fetchOrderIncludeCashback, fetchOrderSubmissionStatus } from './api-request';
-import { log } from '../../../../utils/monitoring/loggly';
+import { log } from '../../../../utils/monitoring/logger';
 import { getOrderModifiedTime, getOrderReceiptNumber } from './selectors';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;

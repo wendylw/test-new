@@ -21,7 +21,7 @@ import faviconImage from '../../../images/favicon.ico';
 import RequestLogin from './components/RequestLogin';
 import * as NativeMethods from '../../../utils/native-methods';
 import Utils from '../../../utils/utils';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 import _isNil from 'lodash/isNil';
 import NativeHeader from '../../../components/NativeHeader';
 import PageLoader from '../../../components/PageLoader';
@@ -110,7 +110,7 @@ class App extends Component {
 
     const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
     if (_isNil(res)) {
-      loggly.error('cashback.post-app-message', { message: 'native token is invalid' });
+      logger.error('cashback.post-app-message', { message: 'native token is invalid' });
     } else {
       const { access_token, refresh_token } = res;
       await appActions.loginApp({

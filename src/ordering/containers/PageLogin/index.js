@@ -14,7 +14,7 @@ import { actions as appActionCreators, getUser, getOtpType, getDeliveryDetails }
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 import _isObject from 'lodash/isObject';
 
@@ -68,7 +68,7 @@ class PageLogin extends React.Component {
 
   handleSubmitPhoneNumber(phone, type) {
     const { appActions } = this.props;
-    loggly.log('page-login.login-attempt');
+    logger.log('page-login.login-attempt');
     window.newrelic?.addPageAction('ordering.login.get-otp-start');
     appActions.getOtp({ phone, type });
     this.setState({ sendOtp: true });

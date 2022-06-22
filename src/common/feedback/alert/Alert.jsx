@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import './Alert.scss';
-import { log } from '../../../utils/monitoring/loggly';
+import { log } from '../../../utils/monitoring/logger';
 
 const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();

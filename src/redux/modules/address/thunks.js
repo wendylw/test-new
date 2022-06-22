@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getAddressSnapshot, setAddressSnapshot } from './api-request';
 import * as NativeMethods from '../../../utils/native-methods';
 import Utils from '../../../utils/utils';
-import { error } from '../../../utils/monitoring/loggly';
+import { error } from '../../../utils/monitoring/logger';
 
 export const getAddressInfo = createAsyncThunk('app/address/getAddressInfo', async () => {
   const { addressInfo = null } = await getAddressSnapshot();

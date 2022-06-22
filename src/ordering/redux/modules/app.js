@@ -35,7 +35,7 @@ import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -361,7 +361,7 @@ export const actions = {
         );
       }
     } catch (error) {
-      loggly.error('ordering.syncLoginFromNative.error', {
+      logger.error('ordering.syncLoginFromNative.error', {
         error: error?.message,
         code: error?.code,
       });

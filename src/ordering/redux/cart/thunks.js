@@ -17,7 +17,7 @@ import {
   fetchCartSubmissionStatus,
   fetchCartStatus,
 } from './api-request';
-import { log } from '../../../utils/monitoring/loggly';
+import { log } from '../../../utils/monitoring/logger';
 
 const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
 const CART_SUBMISSION_INTERVAL = 2 * 1000;

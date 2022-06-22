@@ -3,7 +3,7 @@ import _find from 'lodash/find';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isArray from 'lodash/isArray';
-import * as loggly from './monitoring/loggly';
+import logger from './monitoring/logger';
 import debug from './debug';
 import Utils from './utils';
 
@@ -58,7 +58,7 @@ const dsBridgeSyncCall = (method, params) => {
   } catch (error) {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
-    loggly.error(`dsBridge-methods.${method}`, errorData);
+    logger.error(`dsBridge-methods.${method}`, errorData);
 
     throw error;
   }
@@ -87,7 +87,7 @@ const dsBridgeAsyncCall = (method, params) =>
   }).catch(error => {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
-    loggly.error(`dsBridge-methods.${method}`, errorData);
+    logger.error(`dsBridge-methods.${method}`, errorData);
 
     throw error;
   });

@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import invariant from 'invariant';
 import * as timeLib from './time-lib';
-import loggly from '../utils/monitoring/loggly';
+import logger from './monitoring/logger';
 
 dayjs.extend(utc);
 
@@ -114,7 +114,7 @@ export const toLocaleString = (date, countryCode, options) => {
   const dateObj = new Date(date);
   if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
-    loggly.warn('datetime-lib.toLocaleString', {
+    logger.warn('datetime-lib.toLocaleString', {
       message: 'Invalid date object',
     });
     return '';
@@ -164,7 +164,7 @@ export const toISODateString = date => {
   const dateObj = new Date(date);
   if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
-    loggly.warn('datetime-lib.toISODateString', {
+    logger.warn('datetime-lib.toISODateString', {
       message: 'Invalid date object',
     });
     return '';

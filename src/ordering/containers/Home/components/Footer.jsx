@@ -20,7 +20,7 @@ import { getCartItemsCount } from '../../../redux/cart/selectors';
 import Utils from '../../../../utils/utils';
 import { IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
-import loggly from '../../../../utils/monitoring/loggly';
+import logger from '../../../../utils/monitoring/logger';
 
 const { CLIENTS } = Constants;
 
@@ -57,7 +57,7 @@ export class Footer extends Component {
   };
 
   handleRedirect = async () => {
-    loggly.log('footer.place-order');
+    logger.log('footer.place-order');
 
     const client = Utils.getClient();
 

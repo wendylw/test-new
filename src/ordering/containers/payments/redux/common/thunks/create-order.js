@@ -33,7 +33,7 @@ import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import { alert } from '../../../../../../common/feedback';
 import { initPayLaterOrderPayment } from './api-info';
 import { push } from 'connected-react-router';
-import loggly from '../../../../../../utils/monitoring/loggly';
+import logger from '../../../../../../utils/monitoring/logger';
 
 const { DELIVERY_METHOD, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } = Constants;
 
@@ -453,7 +453,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       }
 
       Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
-      loggly.log('create-order.offline-payment.to-thank-you', { orderId });
+      logger.log('create-order.offline-payment.to-thank-you', { orderId });
 
       // Add "type" in thankYouPageUrl query
       const urlObj = new URL(thankYouPageUrl, window.location.origin);
@@ -475,7 +475,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       receiptNumber: orderId,
     });
 
-    loggly.error('ordering.initPayment.error', {
+    logger.error('ordering.initPayment.error', {
       error: error?.message,
       paymentProvider,
       receiptNumber: orderId,

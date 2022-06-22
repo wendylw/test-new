@@ -22,7 +22,7 @@ import { gtmSetUserProperties } from '../../../utils/gtm';
 import faviconImage from '../../../images/favicon.ico';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -91,7 +91,7 @@ class App extends Component {
         city,
       });
     } catch (e) {
-      loggly.error('ordering.get-address', { message: e });
+      logger.error('ordering.get-address', { message: e });
     }
   };
 

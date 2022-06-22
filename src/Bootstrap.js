@@ -10,7 +10,7 @@ import { Translation } from 'react-i18next';
 import i18n from './i18n';
 import './Bootstrap.scss';
 import * as NativeMethods from './utils/native-methods';
-import loggly from './utils/monitoring/loggly';
+import logger from './utils/monitoring/logger';
 import { initDevTools } from './utils/dev-tools';
 import { isRequiredDevTools } from './utils/tng-utils';
 
@@ -43,7 +43,7 @@ class Bootstrap extends Component {
       host: document.location.host,
       href: document.location.href,
     });
-    loggly.error('common.render-error', {
+    logger.error('common.render-error', {
       sentryId: eventId,
       errorMessage: error?.message,
     });

@@ -37,7 +37,7 @@ import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thun
 import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import CleverTap from '../../../../../utils/clevertap';
-import { log } from '../../../../../utils/monitoring/loggly';
+import { log } from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 
 const { ROUTER_PATHS } = Constants;

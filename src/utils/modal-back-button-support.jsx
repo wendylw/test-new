@@ -5,7 +5,7 @@ import qs from 'qs';
 import _difference from 'lodash/difference';
 import _uniqueId from 'lodash/uniqueId';
 import _once from 'lodash/once';
-import { log } from './monitoring/loggly';
+import { log } from './monitoring/logger';
 
 const parseHash = (hash = document.location.hash) => qs.parse(hash.replace(/^#/, ''));
 

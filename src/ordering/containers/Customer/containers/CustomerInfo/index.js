@@ -32,7 +32,7 @@ import { withAddressInfo } from '../../../Location/withAddressInfo';
 import { withAvailableAddressDetails } from './withAvailableAddressDetails';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
-import loggly from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 
 const { ADDRESS_RANGE, ROUTER_PATHS } = Constants;
 
@@ -127,7 +127,7 @@ class CustomerInfo extends Component {
   }
 
   handleBeforeCreateOrder = () => {
-    loggly.log('customer.create-order-attempt');
+    logger.log('customer.create-order-attempt');
 
     const { customerInfoActions } = this.props;
     const error = this.validateFields();

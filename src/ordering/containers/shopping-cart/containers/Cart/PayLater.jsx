@@ -32,7 +32,7 @@ import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
 
-import { log } from '../../../../../utils/monitoring/loggly';
+import { log } from '../../../../../utils/monitoring/logger';
 import { alert } from '../../../../../common/feedback';
 
 class PayLater extends Component {

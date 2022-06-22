@@ -11,7 +11,7 @@ import { setAddressInfo } from '../../../../redux/modules/address/thunks';
 import { defaultLocations, getDefaultCoords } from './utils';
 import AddressSelector from '../../../../containers/AddressSelector';
 import CleverTap from '../../../../utils/clevertap';
-import loggly from '../../../../utils/monitoring/loggly';
+import logger from '../../../../utils/monitoring/logger';
 import './index.scss';
 
 class Location extends React.Component {
@@ -46,7 +46,7 @@ class Location extends React.Component {
           JSON.stringify(defaultCoords),
           defaultLocations.KualaLumpur
         );
-        loggly.warn('Location.componentDidMount', {
+        logger.warn('Location.componentDidMount', {
           message: '[Location] fetch_location_failed, use default location',
         });
         this.setState({
