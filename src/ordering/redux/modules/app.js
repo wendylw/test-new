@@ -15,7 +15,7 @@ import CleverTap from '../../../utils/clevertap';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { get } from '../../../utils/request';
+import { get, post } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -107,6 +107,7 @@ export const initialState = {
     },
     isError: false,
     otpType: 'otp',
+    isOTPError: false,
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
@@ -301,19 +302,31 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone, captchaToken, type = 'otp' }) => ({
-    [API_REQUEST]: {
-      types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
-      ...Url.API_URLS.GET_OTP,
-      payload: {
+  getOtp: ({ phone, captchaToken, type = 'otp' }) => async dispatch => {
+    try {
+      dispatch({ type: types.GET_OTP_REQUEST });
+
+      const { isSent, errorCode } = await post(Url.API_URLS.GET_OTP.url, {
         phone,
         type,
         siteKey: config.googleRecaptchaSiteKey,
         platform: OTP_REQUEST_PLATFORM,
         captchaToken,
-      },
-    },
-  }),
+      });
+
+      if (isSent) {
+        dispatch({ type: types.GET_OTP_SUCCESS });
+      } else {
+        dispatch({ type: types.GET_OTP_FAILURE, error: errorCode });
+      }
+    } catch (error) {
+      // For sake of completeness: this won't be called because of the the response code will always be 200
+      dispatch({
+        type: types.GET_OTP_FAILURE,
+        error: error,
+      });
+    }
+  },
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
@@ -720,6 +733,8 @@ const user = (state = initialState.user, action) => {
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
+      // We won't handle the error code separately for now, because we don't want users to see the error details in the phase 1.
+      return { ...state, isFetching: false, isResending: false, isOTPError: true };
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isResending: false, isError: true };
     case types.GET_OTP_REQUEST:
@@ -727,6 +742,7 @@ const user = (state = initialState.user, action) => {
         ...state,
         isFetching: true,
         isResending: true,
+        isOTPError: false,
         otpType: 'reSendotp',
       };
     case types.RESET_OTP_STATUS:

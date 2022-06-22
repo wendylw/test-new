@@ -17,10 +17,21 @@ import './LoyaltyLogin.scss';
 class Login extends React.Component {
   state = {
     sendOtp: false,
-    shouldShowCaptchaAlert: false,
+    shouldShowAlert: false,
   };
 
   captchaRef = React.createRef();
+
+  componentDidUpdate(prevProps) {
+    const { user: prevUser } = prevProps;
+    const { user: currUser } = this.props;
+    const { isOTPError: prevIsOTPError } = prevUser || {};
+    const { isOTPError: currIsOTPError } = currUser || {};
+
+    if (!prevIsOTPError && currIsOTPError) {
+      this.setState({ shouldShowAlert: true });
+    }
+  }
 
   handleCloseOtpModal() {
     const { appActions } = this.props;
@@ -35,7 +46,7 @@ class Login extends React.Component {
   }
 
   handleCloseAlert() {
-    this.setState({ shouldShowCaptchaAlert: false });
+    this.setState({ shouldShowAlert: false });
   }
 
   async handleCompleteReCAPTCHA() {
@@ -56,7 +67,7 @@ class Login extends React.Component {
 
       return token;
     } catch (e) {
-      this.setState({ shouldShowCaptchaAlert: true });
+      this.setState({ shouldShowAlert: true });
       // We will set the attribute 'message' even if it is always empty
       loggly.error('cashback.otp-login.complete-captcha-error', { message: e?.message });
       throw e;
@@ -90,7 +101,7 @@ class Login extends React.Component {
       scriptName: scriptName,
     });
 
-    this.setState({ shouldShowCaptchaAlert: !hasLoadSuccess });
+    this.setState({ shouldShowAlert: !hasLoadSuccess });
   }
 
   async handleWebLogin(otp) {
@@ -142,42 +153,23 @@ class Login extends React.Component {
   }
 
   renderReCAPTCHA() {
-    const { t } = this.props;
-    const { shouldShowCaptchaAlert } = this.state;
-
     // Only load reCAPTCHA script if it is enabled
     if (!config.recaptchaEnabled) {
       return null;
     }
 
     return (
-      <>
-        <ReCAPTCHA
-          sitekey={config.googleRecaptchaSiteKey}
-          size="invisible"
-          ref={this.captchaRef}
-          asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
-        />
-        <Alert
-          show={shouldShowCaptchaAlert}
-          onClose={this.handleCloseAlert.bind(this)}
-          closeButtonContent={t('Dismiss')}
-          content={
-            <>
-              <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">
-                {t('NetworkErrorTitle')}
-              </h4>
-              <div className="alert__description padding-small text-line-height-base">
-                {t('NetworkErrorDescription')}
-              </div>
-            </>
-          }
-        />
-      </>
+      <ReCAPTCHA
+        sitekey={config.googleRecaptchaSiteKey}
+        size="invisible"
+        ref={this.captchaRef}
+        asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
+      />
     );
   }
 
   render() {
+    const { shouldShowAlert } = this.state;
     const { user, title, className, t } = this.props;
     const { isFetching, isLogin, phone, country } = user || {};
     const classList = ['login'];
@@ -214,6 +206,21 @@ class Login extends React.Component {
         </PhoneViewContainer>
         {this.renderOtpModal()}
         {this.renderReCAPTCHA()}
+        <Alert
+          show={shouldShowAlert}
+          onClose={this.handleCloseAlert.bind(this)}
+          closeButtonContent={t('Dismiss')}
+          content={
+            <>
+              <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">
+                {t('NetworkErrorTitle')}
+              </h4>
+              <div className="alert__description padding-small text-line-height-base">
+                {t('NetworkErrorDescription')}
+              </div>
+            </>
+          }
+        />
       </section>
     );
   }
