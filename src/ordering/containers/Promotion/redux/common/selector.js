@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../../utils/api/api-utils';
-import { getPromotionId, getPromoCode, getSelectedPromo } from '../../../../redux/modules/promotion';
+import { getPromotionId, getSelectedPromo } from '../../../../redux/modules/promotion';
 import Constants from '../../../../../utils/constants';
 
 const { PROMO_TYPE } = Constants;
@@ -14,7 +14,7 @@ export const getIsAppliedSuccessPayLater = state => state.promoPayLater.common.a
 
 export const getPromoId = createSelector(getPromotionId, id => id);
 
-export const getPromoCodePayLater = createSelector(getPromoCode, code => code);
+export const getPromoCodePayLater = createSelector(getSelectedPromo, selectedPromo => selectedPromo.code);
 
 export const getSelectPromoOrVoucherPayLater = createSelector(getSelectedPromo, selectedPromo => {
   const { type } = selectedPromo;
