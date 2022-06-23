@@ -77,19 +77,20 @@ class Login extends React.Component {
   }
 
   async handleSubmitPhoneNumber(phone, type) {
+    const payload = { phone, type };
     this.setState({ sendOtp: false });
     loggly.log('cashback.login-attempt');
 
     try {
-      let captchaToken = undefined;
       const isWhatsAppType = type === Constants.OTP_REQUEST_TYPES.WHATSAPP;
       const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled || isWhatsAppType;
 
       if (!shouldSkipReCAPTCHACheck) {
-        captchaToken = await this.handleCompleteReCAPTCHA();
+        payload.captchaToken = await this.handleCompleteReCAPTCHA();
+        payload.siteKey = config.googleRecaptchaSiteKey;
       }
 
-      await this.handleGetOtpCode({ phone, captchaToken, type });
+      await this.handleGetOtpCode(payload);
 
       this.setState({ sendOtp: true });
     } catch (e) {

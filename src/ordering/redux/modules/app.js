@@ -302,16 +302,13 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone, captchaToken, type = OTP_REQUEST_TYPES.OTP }) => async dispatch => {
+  getOtp: payload => async dispatch => {
     try {
       dispatch({ type: types.GET_OTP_REQUEST });
 
       const { isSent, errorCode } = await post(Url.API_URLS.GET_OTP.url, {
-        phone,
-        type,
-        siteKey: config.googleRecaptchaSiteKey,
+        ...payload,
         platform: OTP_REQUEST_PLATFORM,
-        captchaToken,
       });
 
       if (isSent) {
