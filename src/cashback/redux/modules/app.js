@@ -30,7 +30,7 @@ export const initialState = {
     storeCreditsBalance: 0,
     isError: false,
     otpType: OTP_REQUEST_TYPES.OTP,
-    isOTPError: false,
+    isOtpError: false,
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
@@ -292,7 +292,7 @@ const user = (state = initialState.user, action) => {
         ...state,
         isFetching: true,
         isResending: true,
-        isOTPError: false,
+        isOtpError: false,
         otpType: OTP_REQUEST_TYPES.RE_SEND_OTP,
       };
     case types.CREATE_OTP_REQUEST:
@@ -300,7 +300,7 @@ const user = (state = initialState.user, action) => {
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
       // We won't handle the error code separately for now, because we don't want users to see the error details in the phase 1.
-      return { ...state, isFetching: false, isResending: false, isOTPError: true };
+      return { ...state, isFetching: false, isResending: false, isOtpError: true };
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isResending: false, isError: true };
     case types.RESET_OTP_STATUS:
@@ -465,6 +465,7 @@ export default combineReducers({
 
 // selectors
 export const getUser = state => state.app.user;
+export const getIsOtpError = state => state.app.user.isOtpError;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => {
   return getBusinessByName(state, state.app.business);

@@ -9,7 +9,7 @@ import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { actions as appActionCreators, getUser } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getIsOtpError } from '../../redux/modules/app';
 import config from '../../../config';
 import loggly from '../../../utils/monitoring/loggly';
 import './LoyaltyLogin.scss';
@@ -21,17 +21,6 @@ class Login extends React.Component {
   };
 
   captchaRef = React.createRef();
-
-  componentDidUpdate(prevProps) {
-    const { user: prevUser } = prevProps;
-    const { user: currUser } = this.props;
-    const { isOTPError: prevIsOTPError } = prevUser || {};
-    const { isOTPError: currIsOTPError } = currUser || {};
-
-    if (!prevIsOTPError && currIsOTPError) {
-      this.setState({ shouldShowAlert: true });
-    }
-  }
 
   handleCloseOtpModal() {
     const { appActions } = this.props;
@@ -70,15 +59,24 @@ class Login extends React.Component {
 
       return token;
     } catch (e) {
-      this.setState({ shouldShowAlert: true });
       // We will set the attribute 'message' even if it is always empty
       loggly.error('cashback.otp-login.complete-captcha-error', { message: e?.message });
       throw e;
     }
   }
 
+  async handleGetOtpCode(payload) {
+    await this.props.appActions.getOtp(payload);
+
+    if (this.props.isOtpError) {
+      window.newrelic?.addPageAction('cashback.login.get-otp-failed');
+      throw new Error('OTP verification failed');
+    }
+
+    window.newrelic?.addPageAction('cashback.login.get-otp-success');
+  }
+
   async handleSubmitPhoneNumber(phone, type) {
-    const { appActions } = this.props;
     this.setState({ sendOtp: false });
     loggly.log('cashback.login-attempt');
 
@@ -90,11 +88,12 @@ class Login extends React.Component {
       if (!shouldSkipReCAPTCHACheck) {
         captchaToken = await this.handleCompleteReCAPTCHA();
       }
-      await appActions.getOtp({ phone, captchaToken, type });
-      window.newrelic?.addPageAction('cashback.login.get-otp-success');
+
+      await this.handleGetOtpCode({ phone, captchaToken, type });
+
       this.setState({ sendOtp: true });
     } catch (e) {
-      window.newrelic?.addPageAction('cashback.login.get-otp-failed');
+      this.setState({ shouldShowAlert: true });
     }
   }
 
@@ -245,6 +244,7 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      isOtpError: getIsOtpError(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

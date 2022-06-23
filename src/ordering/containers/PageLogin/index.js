@@ -12,7 +12,13 @@ import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { actions as appActionCreators, getUser, getOtpType, getDeliveryDetails } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUser,
+  getOtpType,
+  getIsOtpError,
+  getDeliveryDetails,
+} from '../../redux/modules/app';
 import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
@@ -35,18 +41,12 @@ class PageLogin extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { user: prevUser } = prevProps;
-    const { user: currUser } = this.props;
-    const { isLogin: prevIsLogin, isOTPError: prevIsOTPError } = prevUser || {};
-    const { isLogin: currIsLogin, isOTPError: currIsOTPError } = currUser || {};
+    const { user } = prevProps;
+    const { isLogin } = user || {};
     const { sendOtp } = this.state;
 
-    if (sendOtp && !prevIsLogin && currIsLogin) {
+    if (sendOtp && this.props.user.isLogin && isLogin !== this.props.user.isLogin) {
       this.visitNextPage();
-    }
-
-    if (!prevIsOTPError && currIsOTPError) {
-      this.setState({ shouldShowAlert: true });
     }
   }
 
@@ -103,15 +103,24 @@ class PageLogin extends React.Component {
 
       return token;
     } catch (e) {
-      this.setState({ shouldShowAlert: true });
       // We will set the attribute 'message' even if it is always empty
       loggly.error('ordering.otp-login.complete-captcha-error', { message: e?.message });
       throw e;
     }
   }
 
+  async handleGetOtpCode(payload) {
+    await this.props.appActions.getOtp(payload);
+
+    if (this.props.isOtpError) {
+      window.newrelic?.addPageAction('ordering.login.get-otp-failed');
+      throw new Error('OTP verification failed');
+    }
+
+    window.newrelic?.addPageAction('ordering.login.get-otp-success');
+  }
+
   async handleSubmitPhoneNumber(phone, type) {
-    const { appActions } = this.props;
     this.setState({ sendOtp: false });
     loggly.log('ordering.login-attempt');
 
@@ -123,11 +132,12 @@ class PageLogin extends React.Component {
       if (!shouldSkipReCAPTCHACheck) {
         captchaToken = await this.handleCompleteReCAPTCHA();
       }
-      await appActions.getOtp({ phone, captchaToken, type });
-      window.newrelic?.addPageAction('ordering.login.get-otp-success');
+
+      await this.handleGetOtpCode({ phone, captchaToken, type });
+
       this.setState({ sendOtp: true });
     } catch (e) {
-      window.newrelic?.addPageAction('ordering.login.get-otp-failed');
+      this.setState({ shouldShowAlert: true });
     }
   }
 
@@ -343,6 +353,7 @@ export default compose(
       user: getUser(state),
       deliveryDetails: getDeliveryDetails(state),
       otpType: getOtpType(state),
+      isOtpError: getIsOtpError(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
