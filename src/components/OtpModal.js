@@ -180,7 +180,7 @@ class OtpModal extends React.Component {
                   data-heap-name="common.otp-modal.resend-btn"
                   onClick={() => {
                     CleverTap.pushEvent('Login - Resend OTP');
-                    getOtp(phone, 'reSendotp');
+                    getOtp(phone, Constants.OTP_REQUEST_TYPES.RE_SEND_OTP);
                   }}
                 >
                   {t('ResendViaSMS')}
@@ -191,7 +191,7 @@ class OtpModal extends React.Component {
                     data-heap-name="common.otp-modal.resend-whats-btn"
                     onClick={() => {
                       CleverTap.pushEvent('Login - Resend Whatsapp OTP');
-                      getOtp(phone, 'WhatsApp');
+                      getOtp(phone, Constants.OTP_REQUEST_TYPES.WHATSAPP);
                     }}
                   >
                     {t('ResendViaWhatsAPP')}

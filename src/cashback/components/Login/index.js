@@ -84,8 +84,10 @@ class Login extends React.Component {
 
     try {
       let captchaToken = undefined;
-      // Skip reCAPTCHA checking if it is disabled
-      if (config.recaptchaEnabled) {
+      const isWhatsAppType = type === Constants.OTP_REQUEST_TYPES.WHATSAPP;
+      const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled || isWhatsAppType;
+
+      if (!shouldSkipReCAPTCHACheck) {
         captchaToken = await this.handleCompleteReCAPTCHA();
       }
       await appActions.getOtp({ phone, captchaToken, type });

@@ -655,6 +655,12 @@ const LOGISTICS_RIDER_TYPE = {
 
 const OTP_REQUEST_PLATFORM = 'BeepWeb';
 
+const OTP_REQUEST_TYPES = {
+  OTP: 'otp',
+  RE_SEND_OTP: 'reSendotp',
+  WHATSAPP: 'WhatsApp',
+};
+
 export const DISPLAY_ICON_TYPES = {
   FUNNEL_SIMPLE: 'FunnelSimple',
   CARET_DOWN: 'CaretDown',
@@ -712,5 +718,6 @@ export default {
   REFERRER_SOURCE_TYPES,
   LOGISTICS_RIDER_TYPE,
   OTP_REQUEST_PLATFORM,
+  OTP_REQUEST_TYPES,
   DISPLAY_ICON_TYPES,
 };

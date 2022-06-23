@@ -5,6 +5,7 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
+import Constants from '../utils/constants';
 import './PhoneViewContainer.scss';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
@@ -34,7 +35,7 @@ class PhoneViewContainer extends React.Component {
 
     Utils.setLocalStorageVariable('user.p', phone);
 
-    onSubmit(phone, 'otp');
+    onSubmit(phone, Constants.OTP_REQUEST_TYPES.OTP);
   }
 
   render() {

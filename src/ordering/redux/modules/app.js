@@ -37,7 +37,7 @@ import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import loggly from '../../../utils/monitoring/loggly';
 
-const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, OTP_REQUEST_PLATFORM } = Constants;
+const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -106,7 +106,7 @@ export const initialState = {
       status: '',
     },
     isError: false,
-    otpType: 'otp',
+    otpType: OTP_REQUEST_TYPES.OTP,
     isOTPError: false,
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber || '',
@@ -302,7 +302,7 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone, captchaToken, type = 'otp' }) => async dispatch => {
+  getOtp: ({ phone, captchaToken, type = OTP_REQUEST_TYPES.OTP }) => async dispatch => {
     try {
       dispatch({ type: types.GET_OTP_REQUEST });
 
@@ -743,7 +743,7 @@ const user = (state = initialState.user, action) => {
         isFetching: true,
         isResending: true,
         isOTPError: false,
-        otpType: 'reSendotp',
+        otpType: OTP_REQUEST_TYPES.RE_SEND_OTP,
       };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
