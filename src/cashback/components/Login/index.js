@@ -4,16 +4,23 @@ import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
+import Alert from '../../../common/feedback/alert/Alert';
+import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { actions as appActionCreators, getUser } from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getIsOtpError } from '../../redux/modules/app';
+import config from '../../../config';
+import logger from '../../../utils/monitoring/logger';
 import './LoyaltyLogin.scss';
 
 class Login extends React.Component {
   state = {
     sendOtp: false,
+    shouldShowAlert: false,
   };
+
+  captchaRef = React.createRef();
 
   handleCloseOtpModal() {
     const { appActions } = this.props;
@@ -27,11 +34,79 @@ class Login extends React.Component {
     appActions.updateUser(user);
   }
 
-  handleSubmitPhoneNumber(phone) {
-    const { appActions, otpType } = this.props;
+  handleCloseAlert() {
+    this.setState({ shouldShowAlert: false });
+  }
 
-    appActions.getOtp({ phone, type: otpType });
-    this.setState({ sendOtp: true });
+  async handleCompleteReCAPTCHA() {
+    try {
+      if (!window[RECAPTCHA_GLOBAL_NAME]) {
+        throw new Error('ReCaptcha failed to load');
+      }
+
+      const token = await this.captchaRef.current.executeAsync();
+      // Reset the recaptcha once the token is retrieved.
+      // If we don't reset the captcha manually, the new token won't be generated next time.
+      // Ref: https://github.com/dozoisch/react-google-recaptcha/issues/191#issuecomment-715635172
+      this.captchaRef.current.reset();
+
+      if (!token) {
+        // reCAPTCHA response expires then token will be null.
+        throw new Error('ReCaptcha response is expired');
+      }
+
+      logger.log('cashback.otp-login.complete-captcha-success');
+
+      return token;
+    } catch (e) {
+      // We will set the attribute 'message' even if it is always empty
+      logger.error('cashback.otp-login.complete-captcha-error', { message: e?.message });
+      throw e;
+    }
+  }
+
+  async handleGetOtpCode(payload) {
+    await this.props.appActions.getOtp(payload);
+
+    if (this.props.isOtpError) {
+      window.newrelic?.addPageAction('cashback.login.get-otp-failed');
+      throw new Error('OTP verification failed');
+    }
+
+    window.newrelic?.addPageAction('cashback.login.get-otp-success');
+  }
+
+  async handleSubmitPhoneNumber(phone, type) {
+    const payload = { phone, type };
+    this.setState({ sendOtp: false });
+    logger.log('cashback.login-attempt');
+
+    try {
+      const isWhatsAppType = type === Constants.OTP_REQUEST_TYPES.WHATSAPP;
+      const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled || isWhatsAppType;
+
+      if (!shouldSkipReCAPTCHACheck) {
+        payload.captchaToken = await this.handleCompleteReCAPTCHA();
+        payload.siteKey = config.googleRecaptchaSiteKey;
+      }
+
+      await this.handleGetOtpCode(payload);
+
+      this.setState({ sendOtp: true });
+    } catch (e) {
+      this.setState({ shouldShowAlert: true });
+    }
+  }
+
+  handleCaptchaLoad() {
+    const hasLoadSuccess = !!window.grecaptcha;
+    const scriptName = 'google-recaptcha';
+
+    window.newrelic?.addPageAction(`cashback.otp-login.script-load-${hasLoadSuccess ? 'success' : 'error'}`, {
+      scriptName: scriptName,
+    });
+
+    this.setState({ shouldShowAlert: !hasLoadSuccess });
   }
 
   async handleWebLogin(otp) {
@@ -56,7 +131,8 @@ class Login extends React.Component {
 
   renderOtpModal() {
     const { user, t } = this.props;
-    const { isFetching, isResending, isLogin, hasOtp, phone, noWhatsAppAccount, country } = user || {};
+    const { sendOtp } = this.state;
+    const { isFetching, isResending, isLogin, hasOtp, isError, phone, noWhatsAppAccount, country } = user || {};
     const { RESEND_OTP_TIME } = Constants;
 
     if (!hasOtp || isLogin) {
@@ -75,11 +151,30 @@ class Login extends React.Component {
         updateOtpStatus={this.updateOtpStatus.bind(this)}
         isLoading={isFetching || isLogin}
         isResending={isResending}
+        isError={isError}
+        shouldCountdown={sendOtp}
+      />
+    );
+  }
+
+  renderReCAPTCHA() {
+    // Only load reCAPTCHA script if it is enabled
+    if (!config.recaptchaEnabled) {
+      return null;
+    }
+
+    return (
+      <ReCAPTCHA
+        sitekey={config.googleRecaptchaSiteKey}
+        size="invisible"
+        ref={this.captchaRef}
+        asyncScriptOnLoad={this.handleCaptchaLoad.bind(this)}
       />
     );
   }
 
   render() {
+    const { shouldShowAlert } = this.state;
     const { user, title, className, t } = this.props;
     const { isFetching, isLogin, phone, country } = user || {};
     const classList = ['login'];
@@ -106,15 +201,31 @@ class Login extends React.Component {
           updateCountry={this.handleUpdateUser.bind(this)}
           onSubmit={this.handleSubmitPhoneNumber.bind(this)}
         >
-          <p className="terms-privacy text-center text-opacity">
+          <p className="text-center margin-top-bottom-small text-line-height-base text-opacity login__terms-privacy">
             <TermsAndPrivacy
-              buttonLinkClassName="button__default"
+              buttonLinkClassName="login__button-link"
               termsOfUseDataHeapName="cashback.login.term-link"
               privacyPolicyDataHeapName="cashback.login.privacy-policy-link"
             />
           </p>
         </PhoneViewContainer>
         {this.renderOtpModal()}
+        {this.renderReCAPTCHA()}
+        <Alert
+          show={shouldShowAlert}
+          onClose={this.handleCloseAlert.bind(this)}
+          closeButtonContent={t('Dismiss')}
+          content={
+            <>
+              <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">
+                {t('NetworkErrorTitle')}
+              </h4>
+              <div className="alert__description padding-small text-line-height-base">
+                {t('NetworkErrorDescription')}
+              </div>
+            </>
+          }
+        />
       </section>
     );
   }
@@ -134,6 +245,7 @@ export default compose(
   connect(
     state => ({
       user: getUser(state),
+      isOtpError: getIsOtpError(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

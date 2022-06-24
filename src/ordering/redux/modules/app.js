@@ -15,7 +15,7 @@ import CleverTap from '../../../utils/clevertap';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { get } from '../../../utils/request';
+import { get, post } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -37,7 +37,7 @@ import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
 
-const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE } = Constants;
+const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -106,7 +106,8 @@ export const initialState = {
       status: '',
     },
     isError: false,
-    otpType: 'otp',
+    otpType: OTP_REQUEST_TYPES.OTP,
+    isOtpError: false,
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
@@ -301,16 +302,28 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone, type = 'otp' }) => ({
-    [API_REQUEST]: {
-      types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
-      ...Url.API_URLS.GET_OTP,
-      payload: {
-        type,
-        phone,
-      },
-    },
-  }),
+  getOtp: payload => async dispatch => {
+    try {
+      dispatch({ type: types.GET_OTP_REQUEST });
+
+      const { isSent, errorCode } = await post(Url.API_URLS.GET_OTP.url, {
+        ...payload,
+        platform: OTP_REQUEST_PLATFORM,
+      });
+
+      if (isSent) {
+        dispatch({ type: types.GET_OTP_SUCCESS });
+      } else {
+        dispatch({ type: types.GET_OTP_FAILURE, error: errorCode });
+      }
+    } catch (error) {
+      // For sake of completeness: this won't be called because of the the response code will always be 200
+      dispatch({
+        type: types.GET_OTP_FAILURE,
+        error: error,
+      });
+    }
+  },
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
@@ -717,6 +730,8 @@ const user = (state = initialState.user, action) => {
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
+      // We won't handle the error code separately for now, because we don't want users to see the error details in the phase 1.
+      return { ...state, isFetching: false, isResending: false, isOtpError: true };
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isResending: false, isError: true };
     case types.GET_OTP_REQUEST:
@@ -724,7 +739,8 @@ const user = (state = initialState.user, action) => {
         ...state,
         isFetching: true,
         isResending: true,
-        otpType: 'reSendotp',
+        isOtpError: false,
+        otpType: OTP_REQUEST_TYPES.RE_SEND_OTP,
       };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
@@ -1115,6 +1131,7 @@ export default combineReducers({
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpType = state => state.app.user.otpType;
+export const getIsOtpError = state => state.app.user.isOtpError;
 export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;

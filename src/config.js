@@ -94,6 +94,8 @@ const config = {
   consumerId: getConsumerId(),
   PUBLIC_URL: process.env.PUBLIC_URL || '',
   googleMapsAPIKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+  googleRecaptchaSiteKey: process.env.REACT_APP_GOOGLE_RECAPTCHA_SITE_KEY,
+  recaptchaEnabled: process.env.REACT_APP_RECAPTCHA_ENABLED === 'true',
 };
 
 Object.defineProperty(config, 'peopleCount', {
