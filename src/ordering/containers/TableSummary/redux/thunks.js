@@ -2,7 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { fetchOrderIncludeCashback, fetchOrderSubmissionStatus } from './api-request';
-import { log } from '../../../../utils/monitoring/logger';
+import logger from '../../../../utils/monitoring/logger';
 import { getOrderModifiedTime, getOrderReceiptNumber } from './selectors';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
@@ -44,14 +44,14 @@ export const loadOrdersStatus = createAsyncThunk(
 );
 
 export const queryOrdersAndStatus = receiptNumber => async dispatch => {
-  log('table-summary.query-orders-and-status', { action: 'start', receiptNumber });
+  logger.log('table-summary.query-orders-and-status', { action: 'start', receiptNumber });
   try {
     const queryOrderStatus = () => {
       queryOrdersAndStatus.timer = setTimeout(async () => {
         await dispatch(loadOrdersStatus(receiptNumber));
         // Loop has been stopped
         if (!queryOrdersAndStatus.timer) {
-          log('table-summary.query-orders-and-status', { action: 'quit-silently', receiptNumber });
+          logger.log('table-summary.query-orders-and-status', { action: 'quit-silently', receiptNumber });
           return;
         }
 
@@ -70,6 +70,6 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
 
 export const clearQueryOrdersAndStatus = () => () => {
   clearTimeout(queryOrdersAndStatus.timer);
-  log('table-summary.query-orders-and-status', { action: 'stop' });
+  logger.log('table-summary.query-orders-and-status', { action: 'stop' });
   queryOrdersAndStatus.timer = null;
 };

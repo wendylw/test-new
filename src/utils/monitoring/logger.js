@@ -99,8 +99,8 @@ const track = async (name, data, meta = {}) => {
   }
 };
 
-export const log = (name, data = {}, meta = {}) => track(name, data, { level: 'info', ...meta });
-export const warn = (name, data = {}, meta = {}) => track(name, data, { level: 'warning', ...meta });
-export const error = (name, data = {}, meta = {}) => track(name, data, { level: 'error', ...meta });
+const log = (name, data = {}, meta = {}) => track(name, data, { level: 'info', ...meta });
+const warn = (name, data = {}, meta = {}) => track(name, data, { level: 'warning', ...meta });
+const error = (name, data = {}, meta = {}) => track(name, data, { level: 'error', ...meta });
 
 export default { log, warn, error };

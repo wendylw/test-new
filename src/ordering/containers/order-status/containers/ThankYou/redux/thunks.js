@@ -10,7 +10,7 @@ import { getPaidToCurrentEventDurationMinutes } from '../utils';
 import { actions as appActions, getBusinessInfo } from '../../../../../redux/modules/app';
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
-import { error as logError } from '../../../../../../utils/monitoring/logger';
+import logger from '../../../../../../utils/monitoring/logger';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
   try {
@@ -19,7 +19,7 @@ export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/
 
     return result;
   } catch (e) {
-    logError('Load cashback info error: ', e);
+    logger.error('Load cashback info error: ', e);
 
     throw e;
   }
@@ -80,7 +80,7 @@ export const cancelOrder = createAsyncThunk(
 
       window.location.reload();
     } catch (e) {
-      logError('Cancel order error: ', e);
+      logger.error('Cancel order error: ', e);
 
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
@@ -129,7 +129,7 @@ export const loadFoodCourtIdHashCode = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logError('Load food court hash code error: ', e);
+      logger.error('Load food court hash code error: ', e);
 
       throw e;
     }

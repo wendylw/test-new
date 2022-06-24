@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import './Alert.scss';
-import { log } from '../../../utils/monitoring/logger';
+import logger from '../../../utils/monitoring/logger';
 
 const Alert = forwardRef((props, ref) => {
   const { t } = useTranslation();
@@ -43,7 +43,7 @@ const Alert = forwardRef((props, ref) => {
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerHTML;
-      log('feedback.alert.show', { text });
+      logger.log('feedback.alert.show', { text });
       window.newrelic?.addPageAction('feedback.alert.show', { text });
     }
   }, [content, show]);

@@ -32,7 +32,7 @@ import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
 
-import { log } from '../../../../../utils/monitoring/logger';
+import logger from '../../../../../utils/monitoring/logger';
 import { alert } from '../../../../../common/feedback';
 
 class PayLater extends Component {
@@ -241,7 +241,7 @@ class PayLater extends Component {
 
   handleDecreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
-    log('pay-later-cart.item-operate-attempt');
+    logger.log('pay-later-cart.item-operate-attempt');
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -253,13 +253,13 @@ class PayLater extends Component {
 
   handleIncreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
-    log('pay-later-cart.item-operate-attempt');
+    logger.log('pay-later-cart.item-operate-attempt');
 
     updateCartItems(this.getUpdateShoppingCartItemData(cartItem, 1));
   };
 
   handleRemoveCartItem = cartItem => {
-    log('pay-later-cart.item-operate-attempt');
+    logger.log('pay-later-cart.item-operate-attempt');
     const { id } = cartItem;
     const { removeCartItemsById } = this.props;
     removeCartItemsById(id);

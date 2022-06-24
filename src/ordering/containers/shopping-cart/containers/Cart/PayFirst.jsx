@@ -37,7 +37,7 @@ import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thun
 import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import CleverTap from '../../../../../utils/clevertap';
-import { log } from '../../../../../utils/monitoring/logger';
+import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 
 const { ROUTER_PATHS } = Constants;
@@ -154,7 +154,7 @@ class PayFirst extends Component {
   handleClearAll = () => {
     const { history, storeInfoForCleverTap, appActions } = this.props;
 
-    log('cart.clear-all-attempt');
+    logger.log('cart.clear-all-attempt');
 
     CleverTap.pushEvent('Cart page - click clear all', storeInfoForCleverTap);
 
@@ -260,7 +260,7 @@ class PayFirst extends Component {
   handleIncreaseCartItem = cartItem => {
     const { appActions } = this.props;
 
-    log('cart-list.item-operate-attempt');
+    logger.log('cart-list.item-operate-attempt');
     const { quantity } = cartItem;
 
     this.handleGtmEventTracking(cartItem);
@@ -272,7 +272,7 @@ class PayFirst extends Component {
   handleDecreaseCartItem = cartItem => {
     const { appActions } = this.props;
 
-    log('cart-list.item-operate-attempt');
+    logger.log('cart-list.item-operate-attempt');
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -287,7 +287,7 @@ class PayFirst extends Component {
   handleRemoveCartItem = cartItem => {
     const { appActions } = this.props;
 
-    log('cart-list.item-operate-attempt');
+    logger.log('cart-list.item-operate-attempt');
     const { productId, variations } = cartItem;
 
     appActions
@@ -328,7 +328,7 @@ class PayFirst extends Component {
     const { cashback, promotion } = cartBilling || {};
     const { promoCode } = promotion || {};
 
-    log('cart.pay-now');
+    logger.log('cart.pay-now');
     CleverTap.pushEvent('Cart Page - click pay now', {
       ...storeInfoForCleverTap,
       'promo/voucher applied': promoCode || '',
@@ -398,7 +398,7 @@ class PayFirst extends Component {
       });
     }
 
-    log('cart.create-order-attempt');
+    logger.log('cart.create-order-attempt');
     this.handleClickPayButtonEventTracking();
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;
