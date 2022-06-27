@@ -38,7 +38,7 @@ export const withAvailableAddressDetails = () => InnerComponent => {
 
     return <>{shouldShowLoader ? <PageLoader /> : <InnerComponent {...otherProps} />}</>;
   };
-  WithAvailableAddressDetails.displayName = 'WithAddressInfo';
+  WithAvailableAddressDetails.displayName = 'WithAvailableAddressDetails';
   WithAvailableAddressDetails.propTypes = {
     savedAddressId: PropTypes.string,
     deliveryAddressId: PropTypes.string,
