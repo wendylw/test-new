@@ -540,7 +540,15 @@ export const actions = {
     };
 
     const isAddressInfoEmpty = !payload.addressId;
-    const hasAddressInfoChanged = !_isEqual(deliveryDetails, payload);
+    const hasAddressInfoChanged = [
+      'addressId',
+      'addressName',
+      'deliveryToAddress',
+      'deliveryToCity',
+      'postCode',
+      'countryCode',
+      'deliveryToLocation',
+    ].some(key => !_isEqual(deliveryDetails[key], payload[key]));
     const deliveryToLocation = _get(payload, 'deliveryToLocation', null);
     let coords = null;
 

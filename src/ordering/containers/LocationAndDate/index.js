@@ -273,7 +273,6 @@ class LocationAndDate extends Component {
         this.gotoOrderingCartPage(deliveryType, h);
         return;
       }
-      return history.go(-1);
     }
 
     if (this.query.callbackUrl) {
