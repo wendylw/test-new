@@ -30,7 +30,7 @@ class ContactDetail extends Component {
   };
 
   handleClickContinue = async () => {
-    this.props.updateContactDetail();
+    await this.props.updateContactDetail();
     this.handleClickBack();
   };
 

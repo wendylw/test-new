@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import _get from 'lodash/get';
-import { getDeliveryDetails, getUserName, getUserPhone } from '../../../../../redux/modules/app';
+import { getDeliveryDetails } from '../../../../../redux/modules/app';
 import {
   getAddressFullName,
   getAddressCoords,
@@ -70,8 +70,8 @@ export const init = createAsyncThunk(
       const longitude = _get(selectedAddress, 'coords.lng', 0) || _get(coords, 'lng', 0);
       const latitude = _get(selectedAddress, 'coords.lat', 0) || _get(coords, 'lat', 0);
       payload.coords = { longitude, latitude };
-      payload.contactName = _get(addressDetails, 'contactName', '') || getUserName(state);
-      payload.contactNumber = _get(addressDetails, 'contactNumber', '') || getUserPhone(state);
+      payload.contactName = _get(addressDetails, 'contactName', '') || username;
+      payload.contactNumber = _get(addressDetails, 'contactNumber', '') || phone;
       payload.city = _get(selectedAddress, 'city', '') || getAddressCity(state);
       payload.postCode = _get(selectedAddress, 'postCode', '') || getAddressPostCode(state);
       payload.countryCode = _get(selectedAddress, 'countryCode', '') || getAddressCountryCode(state);

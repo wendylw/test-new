@@ -33,20 +33,22 @@ export const selectAvailableAddress = createAsyncThunk(
       return null;
     })();
 
-    dispatch(
-      appActions.updateDeliveryDetails({
-        username: _get(availableAddress, 'contactName', ''),
-        phone: _get(availableAddress, 'contactNumber', ''),
-        addressId: _get(availableAddress, '_id', ''),
-        addressName: _get(availableAddress, 'addressName', ''),
-        addressDetails: _get(availableAddress, 'addressDetails', ''),
-        deliveryComments: _get(availableAddress, 'comments', ''),
-        deliveryToAddress: _get(availableAddress, 'deliveryTo', ''),
-        deliveryToLocation: _get(availableAddress, 'location', null),
-        deliveryToCity: _get(availableAddress, 'city', ''),
-        postCode: _get(availableAddress, 'postCode', ''),
-        countryCode: _get(availableAddress, 'countryCode', ''),
-      })
-    );
+    if (availableAddress) {
+      dispatch(
+        appActions.updateDeliveryDetails({
+          username: _get(availableAddress, 'contactName', ''),
+          phone: _get(availableAddress, 'contactNumber', ''),
+          addressId: _get(availableAddress, '_id', ''),
+          addressName: _get(availableAddress, 'addressName', ''),
+          addressDetails: _get(availableAddress, 'addressDetails', ''),
+          deliveryComments: _get(availableAddress, 'comments', ''),
+          deliveryToAddress: _get(availableAddress, 'deliveryTo', ''),
+          deliveryToLocation: _get(availableAddress, 'location', null),
+          deliveryToCity: _get(availableAddress, 'city', ''),
+          postCode: _get(availableAddress, 'postCode', ''),
+          countryCode: _get(availableAddress, 'countryCode', ''),
+        })
+      );
+    }
   }
 );
