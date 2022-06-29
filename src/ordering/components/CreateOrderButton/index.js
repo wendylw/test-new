@@ -181,7 +181,7 @@ class CreateOrderButton extends React.Component {
           ORDER_STATUS.DELIVERED,
         ].includes(order.status)
       ) {
-        logger.log('ordering.order-has-paid', { order });
+        logger.log('ordering.order-has-paid', { orderId });
 
         alert(i18next.t('OrderHasPaidAlertDescription'), {
           closeButtonContent: i18next.t('Continue'),
