@@ -6,7 +6,15 @@ import { PROMOTIONS_TYPES } from '../../constants';
 
 const PromotionText = ({ promotion, className }) => {
   const { t } = useTranslation();
-  const { discountType, formattedDiscountValue, promotionCode, discountProductList, validDate } = promotion;
+  const {
+    discountType,
+    formattedDiscountValue,
+    promotionCode,
+    discountProductList,
+    validDate,
+    isFreeDeliveryTagVisible,
+    freeShippingFormattedMinAmount,
+  } = promotion;
   let content;
   if (discountProductList && validDate) {
     const discountProducts = discountProductList.join(', ');
@@ -56,6 +64,8 @@ const PromotionText = ({ promotion, className }) => {
         components={[<strong />, <strong />]}
       />
     );
+  } else if (isFreeDeliveryTagVisible) {
+    content = <strong>{t('FreeDeliveryPrompt', { freeShippingFormattedMinAmount })}</strong>;
   } else {
     content = (
       <Trans

@@ -68,6 +68,14 @@
   }
 }
 
+.menuProductItemBestSellerTag {
+  @apply tw-inline-block;
+
+  width: 31%;
+  max-width: 77px;
+  min-width: 63px;
+}
+
 .menuProductNoResult {
   @apply tw-relative tw-text-center tw-py-8 sm:tw-py-8px;
 

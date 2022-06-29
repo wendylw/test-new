@@ -9,7 +9,6 @@ import Payment from './payments/containers/Payment';
 import CustomerInfo from './Customer/containers/CustomerInfo';
 import Constants from '../../utils/constants';
 import NotFound from '../../containers/NotFound';
-import V2Playground from './Menu/Playground';
 import history from '../orderingHistory';
 
 const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
@@ -42,7 +41,6 @@ class Routes extends Component {
       <ConnectedRouter history={history}>
         <Suspense fallback={<div className="loader theme full-page"></div>}>
           <Switch>
-            <Route exact path={'/v2-playground'} component={V2Playground} /> {/* only for test, will remove later */}
             <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={MenuProxy} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />

@@ -21,20 +21,8 @@
   @apply tw-p-0;
 }
 
-.menuProductCategoryDrawerHeader {
-  @apply tw-flex tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
-
-  &::after {
-    @apply tw-flex-shrink-0 tw-p-16;
-
-    content: "";
-    display: inline-flex;
-    width: 1.4285rem;
-  }
-}
-
 .menuProductCategoryDrawerHeaderCloseButton:global(.type-text) {
-  @apply tw-flex-shrink-0 tw-p-12 sm:tw-p-12px;
+  @apply tw-flex-shrink-0 tw-p-0;
 }
 
 .menuProductCategoryItem {

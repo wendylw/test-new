@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { X, Trash } from 'phosphor-react';
+import { useUnmount } from 'react-use';
 import Drawer from '../../../../../common/components/Drawer';
 import DrawerHeader from '../../../../../common/components/Drawer/DrawerHeader';
 import Button from '../../../../../common/components/Button';
@@ -12,20 +13,33 @@ import {
   increaseCartItemQuantity,
   decreaseCartItemQuantity,
 } from '../../redux/cart/thunks';
-import { getCartItems, getIsCartFooterVisible, getIsMiniCartDrawerVisible } from '../../redux/cart/selectors';
+import { getCartItems, getCartQuantity, getIsMiniCartDrawerVisible } from '../../redux/cart/selectors';
 import styles from './MiniCart.module.scss';
 
 const MiniCart = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const cartItems = useSelector(getCartItems);
+  const cartQuantity = useSelector(getCartQuantity);
   const isMiniCartDrawerVisible = useSelector(getIsMiniCartDrawerVisible);
-  const isCartFooterVisible = useSelector(getIsCartFooterVisible);
+
+  useEffect(() => {
+    // if there is no cart item, then hide mini cart drawer
+    if (isMiniCartDrawerVisible && cartQuantity === 0) {
+      dispatch(hideMiniCartDrawer());
+    }
+  }, [cartQuantity, dispatch, isMiniCartDrawerVisible]);
+
+  useUnmount(() => {
+    if (isMiniCartDrawerVisible) {
+      dispatch(hideMiniCartDrawer());
+    }
+  });
 
   return (
     <Drawer
       className={styles.miniCartDrawer}
-      show={isMiniCartDrawerVisible && isCartFooterVisible}
+      show={isMiniCartDrawerVisible}
       onClose={() => dispatch(hideMiniCartDrawer())}
       zIndex={40}
       respectSpaceOccupation

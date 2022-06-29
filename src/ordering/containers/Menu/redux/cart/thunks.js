@@ -38,63 +38,6 @@ export const showMiniCartDrawer = createAsyncThunk('ordering/menu/cart/showMiniC
  */
 export const hideMiniCartDrawer = createAsyncThunk('ordering/menu/cart/hideMiniCartDrawer', async () => {});
 
-const gotoNextPage = (shippingType, enablePreOrder, dispatch) => {
-  const { search } = window.location;
-
-  if (enablePreOrder) {
-    const { address: deliveryToAddress } = JSON.parse(getSessionVariable('deliveryAddress') || '{}');
-    const { date, hour } = getExpectedDeliveryDateFromSession();
-
-    if (
-      (shippingType === SHIPPING_TYPES.DELIVERY && (!deliveryToAddress || !date.date || !hour)) ||
-      (shippingType === SHIPPING_TYPES.PICKUP && (!date.date || !hour.from))
-    ) {
-      const callbackUrl = encodeURIComponent(`${PATH_NAME_MAPPING.ORDERING_CART}${search}`);
-
-      dispatch(push(`${PATH_NAME_MAPPING.ORDERING_LOCATION_AND_DATE}${search}&callbackUrl=${callbackUrl}`));
-    }
-  }
-
-  dispatch(push(`${PATH_NAME_MAPPING.ORDERING_CART}${search}`));
-};
-
-/**
- * goto Review cart page
- */
-export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', async (_, { dispatch, getState }) => {
-  dispatch(hideMiniCartDrawer());
-
-  const state = getState();
-  const isInsertWebview = isWebview() || isTNGMiniProgram();
-  const userSignedIn = getUserIsLogin(state);
-  const shippingType = getShippingType(state);
-  const deliverInfo = getDeliveryInfo(state);
-  const { enablePreOrder } = deliverInfo;
-  const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
-
-  Clevertap.pushEvent('Menu Page - Click order now', storeInfoForCleverTap);
-
-  if (!isInsertWebview || (isInsertWebview && userSignedIn)) {
-    gotoNextPage(shippingType, enablePreOrder, dispatch);
-
-    return;
-  }
-
-  if (isTNGMiniProgram()) {
-    await dispatch(appActions.loginByTngMiniProgram());
-  }
-
-  if (isWebview()) {
-    await dispatch(appActions.loginByBeepApp());
-  }
-
-  const isLogin = getUserIsLogin(getState());
-
-  if (isLogin) {
-    gotoNextPage(shippingType, enablePreOrder, dispatch);
-  }
-});
-
 /**
  * goto table summary page
  */

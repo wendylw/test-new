@@ -1,0 +1,15 @@
+.menuShippingInfoBar {
+  @apply tw-flex tw-flex-grow tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+
+  > div {
+    @apply tw-relative;
+  }
+
+  > div + div::before {
+    @apply tw-absolute tw-inset-y-0 tw-my-auto tw-inline-flex tw-bg-gray-200;
+
+    content: "";
+    width: 1px;
+    height: 58%;
+  }
+}

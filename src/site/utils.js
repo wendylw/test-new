@@ -18,6 +18,9 @@ export const isSameAddressCoords = (thisCoords, anotherCoords) => {
 };
 
 export const scrollTopPosition = scrollParent => {
+  // BEEP-2611: In case of scrollParent is not defined, we should NOT call the following functions.
+  if (!scrollParent) return;
+
   const scrollBehavior = scrollParent.style.scrollBehavior;
   scrollParent.style.scrollBehavior = 'auto';
   scrollParent.scrollTo(0, 0, { behavior: 'instant' });

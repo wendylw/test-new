@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import _get from 'lodash/get';
 import { getBusinessInfo, getShippingType, getFormatCurrencyFunction } from '../../../../redux/modules/app';
+import { getIsFreeDeliveryTagVisible, getFreeShippingFormattedMinAmount } from '../common/selectors';
 import { PROMOTION_CLIENT_TYPES, SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import { PROMOTIONS_SHIPPING_TYPES_MAPPING, PROMOTIONS_TYPES } from '../../constants';
 import { isTNGMiniProgram, isWebview } from '../../../../../common/utils';
@@ -9,9 +10,11 @@ export const getAvailablePromotions = createSelector(
   getBusinessInfo,
   getShippingType,
   getFormatCurrencyFunction,
-  (businessInfo, shippingType, formatCurrency) => {
+  getIsFreeDeliveryTagVisible,
+  getFreeShippingFormattedMinAmount,
+  (businessInfo, shippingType, formatCurrency, isFreeDeliveryTagVisible, freeShippingFormattedMinAmount) => {
     const promotions = _get(businessInfo, 'promotions', []);
-    return promotions
+    const availablePromotions = promotions
       .filter(promotion => {
         const { appliedSources, appliedClientTypes } = promotion;
         const currentClientType = isTNGMiniProgram()
@@ -48,6 +51,17 @@ export const getAvailablePromotions = createSelector(
         formattedMaxDiscountAmount: promotion.maxDiscountAmount ? formatCurrency(promotion.maxDiscountAmount) : '',
         formattedMinOrderAmount: promotion.minOrderAmount ? formatCurrency(promotion.minOrderAmount) : '',
       }));
+
+    if (isFreeDeliveryTagVisible) {
+      availablePromotions.push({
+        id: '-1',
+        appliedClientTypes: ['web', 'app'],
+        isFreeDeliveryTagVisible: true,
+        freeShippingFormattedMinAmount,
+      });
+    }
+
+    return availablePromotions;
   }
 );
 export const getPromotionDrawerVisible = state => state.menu.promotion.promotionDrawerVisible;

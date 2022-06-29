@@ -1,11 +1,61 @@
-import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { actions as appActions, getStoreId, getStoreInfoForCleverTap, getTableId } from '../../../../redux/modules/app';
-import { getIsProductListReady, getIsEnablePayLater, getIsStoreInfoReady } from './selectors';
+import { goBack as historyGoBack, push, replace } from 'connected-react-router';
+import {
+  actions as appActions,
+  getBusinessUTCOffset,
+  getIsBeepDeliveryShippingType,
+  getIsCoreStoresLoaded,
+  getStoreId,
+  getStoreInfoForCleverTap,
+  getTableId,
+  getUserConsumerId,
+  getUserIsLogin,
+  getMerchantCountry,
+  getFreeShippingMinAmount,
+  getCashbackRate,
+  getDeliveryRadius,
+  getLocationSearch,
+  getIsWebview,
+  getIsTNGMiniProgram,
+  getIsInBrowser,
+  getIsInAppOrMiniProgram,
+  getURLQueryObject,
+} from '../../../../redux/modules/app';
+import {
+  getIsProductListReady,
+  getIsEnablePayLater,
+  getIsStoreInfoReady,
+  getCurrentTime,
+  getStore,
+  getShippingType,
+  getIsQrOrderingShippingType,
+  getHasUserSaveStore,
+  getIsAddressOutOfRange,
+  getHasSelectedExpectedDeliveryTime,
+  getStoreStatus,
+} from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES } from '../../../../../common/utils/constants';
-import { getShippingTypeFromUrl, isDineInType } from '../../../../../common/utils';
+import {
+  getExpectedDeliveryDateFromSession,
+  getFilteredQueryString,
+  getShippingTypeFromUrl,
+  getSourceUrlFromSessionStorage,
+  isDineInType,
+  removeExpectedDeliveryTime,
+  setSessionVariable,
+} from '../../../../../common/utils';
 import Clevertap from '../../../../../utils/clevertap';
+import * as StoreUtils from '../../../../../utils/store-utils';
+import * as TimeLib from '../../../../../utils/time-lib';
+import * as NativeMethods from '../../../../../utils/native-methods';
+import { fetchStoreFavStatus, saveStoreFavStatus } from './api-request';
+import { shortenUrl } from '../../../../../utils/shortenUrl';
+import loggly from '../../../../../utils/monitoring/loggly';
+import { getShareLinkUrl } from '../../utils';
+import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
+import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
+import { SOURCE_TYPE, STORE_OPENING_STATUS } from '../../constants';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -28,6 +78,187 @@ const ensureShippingType = () => {
   }
 };
 
+export const showStoreInfoDrawer = createAsyncThunk('ordering/menu/common/showStoreInfoDrawer', async () => {});
+
+/**
+ * @params expectedDate: null | ISO string format | now
+ */
+export const updateExpectedDeliveryDate = createAsyncThunk(
+  'ordering/menu/updateExpectedDeliveryDate',
+  async (expectedDate, { getState }) => {
+    try {
+      const currentTime = getCurrentTime(getState());
+      const store = getStore(getState());
+      const businessUTCOffset = getBusinessUTCOffset(getState());
+      const currentDayJsObj = StoreUtils.getBusinessDateTime(businessUTCOffset, currentTime);
+      const shippingType = getShippingType(getState());
+
+      if (!expectedDate) {
+        removeExpectedDeliveryTime();
+        return null;
+      }
+
+      // Immediate delivery time
+      if (expectedDate === 'now') {
+        const isOpen = StoreUtils.isAvailableOnDemandOrderTime(
+          store,
+          currentDayJsObj.toDate(),
+          businessUTCOffset,
+          shippingType
+        );
+        const currentTimeStartOfDay = currentDayJsObj.startOf('day').toISOString();
+
+        setSessionVariable(
+          'expectedDeliveryDate',
+          JSON.stringify({
+            date: currentTimeStartOfDay,
+            isOpen,
+            isToday: true,
+          })
+        );
+        const expectedDeliveryHour =
+          shippingType === SHIPPING_TYPES.DELIVERY ? { from: 'now', to: 'now' } : { from: 'now' };
+
+        setSessionVariable('expectedDeliveryHour', JSON.stringify(expectedDeliveryHour));
+
+        return 'now';
+      }
+
+      const expectedDateDayJsObj = StoreUtils.getBusinessDateTime(businessUTCOffset, expectedDate);
+
+      const isToday = currentDayJsObj.isSame(expectedDateDayJsObj, 'day');
+
+      const isOpen = StoreUtils.isAvailableOrderTime(
+        store,
+        expectedDateDayJsObj.toDate(),
+        businessUTCOffset,
+        shippingType
+      );
+
+      setSessionVariable(
+        'expectedDeliveryDate',
+        JSON.stringify({
+          date: expectedDateDayJsObj.startOf('day').toISOString(),
+          isOpen,
+          isToday,
+        })
+      );
+
+      const from = TimeLib.getTimeFromDayjs(expectedDateDayJsObj);
+
+      const to = shippingType === SHIPPING_TYPES.DELIVERY ? TimeLib.add(from, { value: 1, unit: 'hour' }) : undefined;
+
+      setSessionVariable(
+        'expectedDeliveryHour',
+        JSON.stringify({
+          from,
+          to,
+        })
+      );
+
+      return expectedDateDayJsObj.toISOString();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+);
+
+export const initExpectedDeliveryDate = createAsyncThunk(
+  'ordering/menu/initExpectedDeliveryDate',
+  async (_, { getState, dispatch }) => {
+    try {
+      const { date, hour: expectedDeliveryHour } = getExpectedDeliveryDateFromSession();
+      const expectedDeliveryDate = date.date;
+      const from = expectedDeliveryHour?.from || null;
+      const to = expectedDeliveryHour?.to || null;
+      const businessUTCOffset = getBusinessUTCOffset(getState());
+      const shippingType = getShippingType(getState());
+      const currentTime = getCurrentTime(getState());
+      const store = getStore(getState());
+
+      let initialExpectedDeliveryTime = (() => {
+        if (!expectedDeliveryDate || !from) {
+          return null;
+        }
+
+        // PICKUP only has [from], no [to]
+        const previousShippingType = from && !to ? SHIPPING_TYPES.PICKUP : SHIPPING_TYPES.DELIVERY;
+
+        // Remove user previously selected delivery/pickup time from session
+        if (shippingType !== previousShippingType) {
+          return null;
+        }
+
+        if (from === 'now') {
+          const isAvailableOnDemandOrder = StoreUtils.isAvailableOnDemandOrderTime(
+            store,
+            new Date(currentTime),
+            businessUTCOffset,
+            shippingType
+          );
+          if (!isAvailableOnDemandOrder) {
+            return null;
+          }
+
+          return 'now';
+        }
+
+        const expectedDeliveryDateDayjsObj = StoreUtils.getBusinessDateTime(
+          businessUTCOffset,
+          new Date(expectedDeliveryDate)
+        );
+
+        const expectedDeliveryTimeDayjsObj = TimeLib.setDateTime(from, expectedDeliveryDateDayjsObj);
+
+        // expected delivery time is out of date
+        if (expectedDeliveryTimeDayjsObj.isBefore(currentTime)) {
+          return null;
+        }
+
+        if (
+          !StoreUtils.isAvailableOrderTime(
+            store,
+            expectedDeliveryTimeDayjsObj.toDate(),
+            businessUTCOffset,
+            shippingType
+          )
+        ) {
+          return null;
+        }
+
+        return expectedDeliveryTimeDayjsObj.toISOString();
+      })();
+
+      // if [initialExpectedDeliveryTime] is null, then check whether able to selected 'now' on default
+      if (
+        !initialExpectedDeliveryTime &&
+        StoreUtils.isAvailableOnDemandOrderTime(store, new Date(currentTime), businessUTCOffset, shippingType)
+      ) {
+        initialExpectedDeliveryTime = 'now';
+      }
+
+      dispatch(updateExpectedDeliveryDate(initialExpectedDeliveryTime));
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+);
+
+export const updateCurrentTime = createAsyncThunk('ordering/menu/updateCurrentTime', async () => {});
+
+export const loadUserFavStoreStatus = createAsyncThunk(
+  'ordering/menu/common/loadUserFavStoreStatus',
+  async (_, { getState }) => {
+    const state = getState();
+    const consumerId = getUserConsumerId(state);
+    const storeId = getStoreId(state);
+    const { isFavorite = false } = await fetchStoreFavStatus({ consumerId, storeId });
+    return isFavorite;
+  }
+);
+
 /**
  * Ordering Menu page mounted
  */
@@ -36,14 +267,19 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
   // - Load Product List
   // - Load user alcohol concept data if needed
   // - Load Core Business Data
+  // - Load Store List Data
+  // - Init delivery time
   // - Load shopping Cart data & status
   // - CleverTap push event, `Menu Page - View page`
 
   const state = getState();
   const storeId = getStoreId(state);
-  let enablePayLater = getIsEnablePayLater(state);
   const isStoreInfoReady = getIsStoreInfoReady(state);
+  const isCoreStoresLoaded = getIsCoreStoresLoaded(state);
   const isProductListReady = getIsProductListReady(state);
+  const isBeepQR = getIsQrOrderingShippingType(state);
+  const isBeepDelivery = getIsBeepDeliveryShippingType(state);
+  const isWebview = getIsWebview(state);
 
   ensureShippingType();
   if (isDineInType()) {
@@ -55,23 +291,103 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
   }
 
   try {
+    const basicLoadDataList = [];
+
     if (!isStoreInfoReady) {
-      const coreBusinessAction = await dispatch(appActions.loadCoreBusiness());
-      const originalCoreBusinessResult = coreBusinessAction?.responseGql?.data?.business || {};
-      enablePayLater = _get(originalCoreBusinessResult, 'qrOrderingSettings.enablePayLater', false);
+      basicLoadDataList.push(dispatch(appActions.loadCoreBusiness()));
+    }
+
+    if (isBeepDelivery && !isCoreStoresLoaded) {
+      basicLoadDataList.push(dispatch(appActions.loadCoreStores()));
+    }
+
+    if (basicLoadDataList.length > 0) {
+      await Promise.all(basicLoadDataList);
     }
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
     Clevertap.pushEvent('Menu Page - View page', storeInfoForCleverTap);
 
-    if (storeId) {
-      enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
-    }
-  } catch (e) {
-    console.error('load core business or load shopping cart failed on menu page');
+    if (isBeepQR) {
+      // Get EnablePayLater after core business loaded
+      const enablePayLater = getIsEnablePayLater(getState());
 
-    throw e;
+      if (storeId) {
+        enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
+      }
+    }
+
+    if (isBeepDelivery) {
+      const store = getStore(getState());
+      dispatch(updateCurrentTime());
+
+      if (isWebview) {
+        const shareLinkUrl = getShareLinkUrl();
+
+        shortenUrl(shareLinkUrl).catch(error => loggly.error(`failed to share store link(didMount): ${error.message}`));
+      }
+
+      if (!store) {
+        // remove expectedDeliveryDate
+        await dispatch(updateExpectedDeliveryDate(null));
+        return;
+      }
+
+      const storeStatus = getStoreStatus(getState());
+
+      if (storeStatus === STORE_OPENING_STATUS.CLOSED) {
+        // Show store info drawer automatically when store is closed
+        await dispatch(showStoreInfoDrawer());
+        return;
+      }
+
+      await dispatch(initExpectedDeliveryDate());
+
+      dispatch(appActions.loadShoppingCart()).then(() => {
+        const query = getURLQueryObject(getState());
+        const { source } = query;
+
+        // if there is source='shoppingCart' in query
+        // then show mini cart automatically once page mounted
+        if (source === SOURCE_TYPE.SHOPPING_CART) {
+          dispatch(showMiniCartDrawer());
+
+          const search = getFilteredQueryString('source');
+
+          // remove source='shoppingCart' from query
+          dispatch(
+            replace({
+              pathname: PATH_NAME_MAPPING.ORDERING_HOME,
+              search,
+            })
+          );
+        }
+      });
+
+      const isAddressOutOfRange = getIsAddressOutOfRange(getState());
+
+      if (isAddressOutOfRange) {
+        // TODO: will update the out of range logic on Delivery 2.0 Phase 2
+        const deliveryRadius = getDeliveryRadius(getState());
+
+        setSessionVariable('outRange', deliveryRadius);
+
+        const search = getLocationSearch(getState());
+        const callbackUrl = encodeURIComponent(`${PATH_NAME_MAPPING.ORDERING_BASE}${search}`);
+
+        dispatch(
+          push({
+            pathname: PATH_NAME_MAPPING.ORDERING_LOCATION,
+            search: `${search}&callbackUrl=${callbackUrl}`,
+          })
+        );
+      }
+    }
+  } catch (error) {
+    console.error(error);
+
+    throw error;
   }
 });
 
@@ -143,3 +459,190 @@ export const updateStatusVirtualKeyboard = createAsyncThunk(
   'ordering/menu/updateStatusVirtualKeyboard',
   async status => status
 );
+
+// Optimistic update: do not care about the API callback result, just update the status as user expected
+export const toggleUserSaveStoreStatus = createAsyncThunk(
+  'ordering/menu/common/toggleUserSaveStoreStatus',
+  (_, { getState }) => {
+    const state = getState();
+    const consumerId = getUserConsumerId(state);
+    const storeId = getStoreId(state);
+    const updatedSaveResult = !getHasUserSaveStore(state);
+
+    saveStoreFavStatus({ consumerId, storeId, isFavorite: updatedSaveResult }).catch(error =>
+      console.error(`Failed to ${updatedSaveResult ? 'save' : 'unsave'} store: ${error.message}`)
+    );
+
+    return updatedSaveResult;
+  }
+);
+
+export const goBack = createAsyncThunk('ordering/menu/common/goBack', (_, { dispatch, getState }) => {
+  const sourceUrl = getSourceUrlFromSessionStorage();
+  const isWebview = getIsWebview(getState());
+  // There is source url in session storage, so we can redirect to the source page
+  if (sourceUrl) {
+    window.location.href = sourceUrl;
+    return;
+  }
+
+  // Native back to previous page
+  if (isWebview) {
+    NativeMethods.goBack();
+
+    return;
+  }
+
+  dispatch(historyGoBack());
+});
+
+export const saveFavoriteStore = createAsyncThunk(
+  'ordering/menu/common/saveFavoriteStore',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const merchantCountry = getMerchantCountry(state);
+    const freeShippingMinAmount = getFreeShippingMinAmount(state);
+    const shippingType = getShippingType(state);
+    const hasUserSaveStore = getHasUserSaveStore(state);
+    const cashbackRate = getCashbackRate(state);
+    const hasUserLoggedIn = getUserIsLogin(state);
+    Clevertap.pushEvent('Menu page - Click saved favourite store button', {
+      country: merchantCountry,
+      'free delivery above': freeShippingMinAmount || 0,
+      'shipping type': shippingType,
+      action: hasUserSaveStore ? 'unsaved' : 'saved',
+      cashback: cashbackRate,
+    });
+
+    if (!hasUserLoggedIn) {
+      await dispatch(appActions.loginByBeepApp());
+      if (!hasUserLoggedIn) return;
+    }
+
+    dispatch(toggleUserSaveStoreStatus());
+  }
+);
+
+export const shareStore = createAsyncThunk('ordering/menu/common/shareStore', async (title, { getState }) => {
+  const state = getState();
+  const merchantCountry = getMerchantCountry(state);
+  const freeShippingMinAmount = getFreeShippingMinAmount(state);
+  const shippingType = getShippingType(state);
+  const cashbackRate = getCashbackRate(state);
+  try {
+    const shareLinkUrl = getShareLinkUrl();
+
+    // eslint-disable-next-line camelcase
+    const { url_short } = await shortenUrl(shareLinkUrl);
+
+    const para = {
+      // eslint-disable-next-line camelcase
+      link: `${url_short}`,
+      title,
+    };
+    NativeMethods.shareLink(para);
+
+    Clevertap.pushEvent('Menu page - Click share store link', {
+      country: merchantCountry,
+      'free delivery above': freeShippingMinAmount || 0,
+      'shipping type': shippingType,
+      cashback: cashbackRate,
+    });
+  } catch (error) {
+    loggly.error(`failed to share store link(click): ${error.message}`);
+    throw error;
+  }
+});
+
+export const hideStoreInfoDrawer = createAsyncThunk('ordering/menu/common/hideStoreInfoDrawer', async () => {});
+
+const gotoLocationAndDate = (isToReviewCart, state, dispatch) => {
+  const search = getLocationSearch(state);
+  const basePath = isToReviewCart ? PATH_NAME_MAPPING.ORDERING_CART : PATH_NAME_MAPPING.ORDERING_HOME;
+
+  const callbackUrl = encodeURIComponent(`${basePath}${search}`);
+
+  dispatch(
+    push({
+      pathname: PATH_NAME_MAPPING.ORDERING_LOCATION_AND_DATE,
+      search: `${search}&callbackUrl=${callbackUrl}`,
+    })
+  );
+};
+
+// TODO: will complete it in Phase2
+export const showLocationDrawer = createAsyncThunk(
+  'ordering/menu/common/showLocationDrawer',
+  (isToReviewCart = false, { getState, dispatch }) => {
+    gotoLocationAndDate(isToReviewCart, getState(), dispatch);
+  }
+);
+
+// TODO: will complete it in Phase2
+export const showTimeSlotDrawer = createAsyncThunk(
+  'ordering/menu/common/showTimeSlotDrawer',
+  (isToReviewCart = false, { getState, dispatch }) => {
+    gotoLocationAndDate(isToReviewCart, getState(), dispatch);
+  }
+);
+
+// TODO: will complete it in Phase2
+export const showStoreListDrawer = createAsyncThunk(
+  'ordering/menu/common/showStoreListDrawer',
+  (isToReviewCart = false, { getState, dispatch }) => {
+    gotoLocationAndDate(isToReviewCart, getState(), dispatch);
+  }
+);
+
+/**
+ * goto Review cart page
+ */
+export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', async (_, { dispatch, getState }) => {
+  dispatch(hideMiniCartDrawer());
+
+  const state = getState();
+  const isWebview = getIsWebview(state);
+  const isTNGMiniProgram = getIsTNGMiniProgram(state);
+  const isInBrowser = getIsInBrowser(state);
+  const isInAppOrMiniProgram = getIsInAppOrMiniProgram(state);
+  const isLogin = getUserIsLogin(state);
+  const shippingType = getShippingType(state);
+  const isBeepDelivery = getIsBeepDeliveryShippingType(state);
+  const hasSelectedExpectedDeliveryTime = getHasSelectedExpectedDeliveryTime(state);
+  const ifAddressInfoExists = getIfAddressInfoExists(getState());
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+  const search = getLocationSearch(state);
+
+  Clevertap.pushEvent('Menu Page - Click order now', storeInfoForCleverTap);
+
+  if (shippingType === SHIPPING_TYPES.DELIVERY && !ifAddressInfoExists) {
+    await dispatch(showLocationDrawer(true));
+    return;
+  }
+
+  if (isBeepDelivery && !hasSelectedExpectedDeliveryTime) {
+    await dispatch(showTimeSlotDrawer(true));
+    return;
+  }
+
+  const gotoReviewCartPage = () => {
+    dispatch(push(`${PATH_NAME_MAPPING.ORDERING_CART}${search}`));
+  };
+
+  if (isInBrowser || (isInAppOrMiniProgram && isLogin)) {
+    gotoReviewCartPage();
+    return;
+  }
+
+  if (isTNGMiniProgram) {
+    await dispatch(appActions.loginByTngMiniProgram());
+  }
+
+  if (isWebview) {
+    await dispatch(appActions.loginByBeepApp());
+  }
+
+  if (getUserIsLogin(getState())) {
+    gotoReviewCartPage();
+  }
+});

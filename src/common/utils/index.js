@@ -81,6 +81,16 @@ export const getExpectedDeliveryDateFromSession = () => {
   };
 };
 
+export const removeExpectedDeliveryTime = () => {
+  removeSessionVariable('expectedDeliveryDate');
+  removeSessionVariable('expectedDeliveryHour');
+};
+
+export const setExpectedDeliveryTime = ({ date, hour }) => {
+  setSessionVariable('expectedDeliveryDate', JSON.stringify(date));
+  setSessionVariable('expectedDeliveryHour', JSON.stringify(hour));
+};
+
 export const getStoreHashCode = () => getCookieVariable('__h');
 
 export const saveSourceUrlToSessionStorage = sourceUrl => {
@@ -181,4 +191,64 @@ export const submitForm = (action, data = {}) => {
   form.submit();
 
   document.body.removeChild(form);
+};
+
+export const removeSessionVariable = name => {
+  try {
+    sessionStorage.removeItem(name);
+  } catch (e) {
+    const { removeCookieVariable } = Utils;
+    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
+    removeCookieVariable(cookieNameOfSessionStorage);
+  }
+};
+
+export const getFilteredQueryString = (keys, queryString = window.location.search) => {
+  const query = qs.parse(queryString, { ignoreQueryPrefix: true });
+
+  // Only deal with string or array.
+  if (typeof keys === 'string') {
+    delete query[keys];
+  }
+  if (Array.isArray(keys)) {
+    keys.forEach(key => delete query[key]);
+  }
+
+  return qs.stringify(query, { addQueryPrefix: true });
+};
+
+export const getOpeningHours = ({
+  breakTimeFrom,
+  breakTimeTo,
+  validTimeFrom = '00:00',
+  validTimeTo = '24:00',
+  formatBreakTimes,
+  formatValidTimes = ['12am', '12am'],
+}) => {
+  if (validTimeFrom >= breakTimeFrom && validTimeTo <= breakTimeTo) {
+    return [];
+  }
+
+  if (
+    !breakTimeFrom ||
+    !breakTimeTo ||
+    validTimeFrom >= breakTimeTo ||
+    (validTimeTo <= breakTimeTo && breakTimeFrom === breakTimeTo)
+  ) {
+    return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeFrom < breakTimeFrom && validTimeTo > breakTimeTo && breakTimeFrom !== breakTimeTo) {
+    return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}`, `${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeFrom >= breakTimeFrom && validTimeFrom <= breakTimeTo && breakTimeTo < validTimeTo) {
+    return [`${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
+  }
+
+  if (validTimeTo <= breakTimeTo && validTimeTo >= breakTimeFrom && breakTimeFrom > validTimeFrom) {
+    return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}`];
+  }
+
+  return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
 };
