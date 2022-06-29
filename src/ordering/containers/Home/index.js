@@ -1079,7 +1079,7 @@ class Home extends Component {
                 (this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight : 0)}px`,
             }}
           >
-            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+            <Trans i18nKey="FreeDeliveryPreviousPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
             </Trans>
           </p>
