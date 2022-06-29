@@ -15,6 +15,8 @@ import {
   loadUserFavStoreStatus,
   showStoreInfoDrawer,
   hideStoreInfoDrawer,
+  showLocationDrawer,
+  hideLocationDrawer,
 } from './thunks';
 
 const initialState = {
@@ -34,6 +36,7 @@ const initialState = {
     error: null,
   },
   storeInfoDrawerVisible: false,
+  locationDrawerVisible: false,
   enabledDeliveryRevamp: process.env.REACT_APP_ENABLED_DELIVERY_REVAMP === 'true',
 };
 
@@ -109,6 +112,12 @@ export const { reducer, actions } = createSlice({
     },
     [hideStoreInfoDrawer.fulfilled.type]: state => {
       state.storeInfoDrawerVisible = false;
+    },
+    [showLocationDrawer.fulfilled.type]: state => {
+      state.locationDrawerVisible = true;
+    },
+    [hideLocationDrawer.fulfilled.type]: state => {
+      state.locationDrawerVisible = false;
     },
   },
 });

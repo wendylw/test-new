@@ -1,3 +1,4 @@
+import qs from 'qs';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push, replace } from 'connected-react-router';
 import {
@@ -13,7 +14,6 @@ import {
   getMerchantCountry,
   getFreeShippingMinAmount,
   getCashbackRate,
-  getDeliveryRadius,
   getLocationSearch,
   getIsWebview,
   getIsTNGMiniProgram,
@@ -56,6 +56,7 @@ import { getShareLinkUrl } from '../../utils';
 import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
 import { SOURCE_TYPE, STORE_OPENING_STATUS } from '../../constants';
+import Utils from '../../../../../utils/utils';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -79,6 +80,10 @@ const ensureShippingType = () => {
 };
 
 export const showStoreInfoDrawer = createAsyncThunk('ordering/menu/common/showStoreInfoDrawer', async () => {});
+
+export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLocationDrawer', () => {});
+
+export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {});
 
 /**
  * @params expectedDate: null | ISO string format | now
@@ -368,20 +373,7 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
       const isAddressOutOfRange = getIsAddressOutOfRange(getState());
 
       if (isAddressOutOfRange) {
-        // TODO: will update the out of range logic on Delivery 2.0 Phase 2
-        const deliveryRadius = getDeliveryRadius(getState());
-
-        setSessionVariable('outRange', deliveryRadius);
-
-        const search = getLocationSearch(getState());
-        const callbackUrl = encodeURIComponent(`${PATH_NAME_MAPPING.ORDERING_BASE}${search}`);
-
-        dispatch(
-          push({
-            pathname: PATH_NAME_MAPPING.ORDERING_LOCATION,
-            search: `${search}&callbackUrl=${callbackUrl}`,
-          })
-        );
+        await dispatch(showLocationDrawer());
       }
     }
   } catch (error) {
@@ -571,14 +563,6 @@ const gotoLocationAndDate = (isToReviewCart, state, dispatch) => {
 };
 
 // TODO: will complete it in Phase2
-export const showLocationDrawer = createAsyncThunk(
-  'ordering/menu/common/showLocationDrawer',
-  (isToReviewCart = false, { getState, dispatch }) => {
-    gotoLocationAndDate(isToReviewCart, getState(), dispatch);
-  }
-);
-
-// TODO: will complete it in Phase2
 export const showTimeSlotDrawer = createAsyncThunk(
   'ordering/menu/common/showTimeSlotDrawer',
   (isToReviewCart = false, { getState, dispatch }) => {
@@ -616,7 +600,7 @@ export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', asyn
   Clevertap.pushEvent('Menu Page - Click order now', storeInfoForCleverTap);
 
   if (shippingType === SHIPPING_TYPES.DELIVERY && !ifAddressInfoExists) {
-    await dispatch(showLocationDrawer(true));
+    await dispatch(showLocationDrawer());
     return;
   }
 
@@ -645,4 +629,12 @@ export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', asyn
   if (getUserIsLogin(getState())) {
     gotoReviewCartPage();
   }
+});
+
+export const refreshMenuPage = createAsyncThunk('ordering/menu/common/refreshMenuPage', async storeHashCode => {
+  const h = decodeURIComponent(storeHashCode);
+  const queries = Utils.getQueryString();
+  queries.h = h;
+  const search = qs.stringify(queries, { addQueryPrefix: true });
+  window.location.href = `${PATH_NAME_MAPPING.ORDERING_BASE}${search}`;
 });

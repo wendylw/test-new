@@ -39,6 +39,7 @@ import {
   getIsFromBeepSite,
   getIsInAppOrMiniProgram,
 } from '../../../../redux/modules/app';
+import { getStoreById, getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import {
@@ -624,6 +625,8 @@ export const getIsStoreInfoEntryVisible = createSelector(
 
 export const getIsStoreInfoDrawerVisible = state => state.menu.common.storeInfoDrawerVisible;
 
+export const getIsLocationDrawerVisible = state => state.menu.common.locationDrawerVisible;
+
 export const getStoreLocation = createSelector(getDeliveryInfo, deliveryInfo => {
   const { storeAddress } = deliveryInfo;
   return storeAddress;
@@ -731,4 +734,28 @@ export const getStoreLocationStreetForPickup = createSelector(
   getStore,
   getIsBeepDeliveryType,
   (store, isBeepDelivery) => !isBeepDelivery && _get(store, 'street1', '')
+);
+
+/**
+ * get current date
+ */
+export const getCurrentDate = state => new Date();
+
+/**
+ * get store id from the nearest store according to the selected location
+ * @returns {object} | null
+ */
+export const getNearestStore = createSelector(
+  getCurrentDate,
+  getAddressCoords,
+  getCoreStoreList,
+  getBusinessUTCOffset,
+  (currentDate, coords, storeList, utcOffset) => {
+    const { store } = StoreUtils.findNearestAvailableStore(storeList, {
+      coords,
+      currentDate,
+      utcOffset,
+    });
+    return store;
+  }
 );
