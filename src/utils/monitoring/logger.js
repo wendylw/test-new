@@ -37,6 +37,8 @@ const getAppPlatform = () => {
 };
 
 const send = async (data, tags = '') => {
+  debug('[Logger]\n%o', data);
+
   if (!REACT_APP_LOG_SERVICE_URL || !REACT_APP_LOG_SERVICE_TOKEN) {
     return;
   }
@@ -90,6 +92,7 @@ const track = async (name, data, meta = {}) => {
     if (tags && !/^\w+(,\w+)?$/.test(tags)) {
       throw new Error('Incorrect log tags format');
     }
+
     send(dataToSend, tags);
   } catch (e) {
     console.warn(e.message);
