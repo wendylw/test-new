@@ -68,7 +68,7 @@ class StoreInfoAside extends Component {
         return (
           <li key={day} className="flex flex-middle flex-space-between margin-top-bottom-small">
             <span>{t(weekInfo[day])}</span>
-            <time>{validDays.includes(+day) || !openingHours.length ? openingHours : t('Closed')}</time>
+            <time>{validDays.includes(+day) || !openingHours.length ? openingHours.join(', ') : t('Closed')}</time>
           </li>
         );
       });

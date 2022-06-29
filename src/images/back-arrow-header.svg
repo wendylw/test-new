@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>caret-left-light (1)</title>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon/Frame24px-Copy" transform="translate(-2.000000, -2.000000)">
+            <g id="caret-left-light-(1)" transform="translate(2.000000, 2.000000)">
+                <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+                <path d="M12.0619068,2.99580493 C12.243828,2.81092217 12.5387807,2.81092217 12.7207019,2.99580493 C12.8969381,3.17491011 12.9024455,3.46181942 12.7372241,3.64766235 L12.7207019,3.66532464 L6.83881988,9.64285714 L12.7207019,15.6203896 C12.8969381,15.7994948 12.9024455,16.0864041 12.7372241,16.2722471 L12.7207019,16.2899094 C12.5444657,16.4690145 12.2621522,16.4746116 12.0792861,16.3067005 L12.0619068,16.2899094 L5.85072665,9.977617 C5.67449044,9.79851182 5.66898306,9.51160251 5.83420451,9.32575957 L5.85072665,9.30809729 L12.0619068,2.99580493 Z" id="Path" fill="#303030" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,15 @@
+.MiniMumOrder {
+  @apply tw-flex tw-items-center tw-flex-1 tw-w-full tw-justify-center   tw-bg-yellow-light tw-shadow-sm;
+}
+
+.MiniMumOrderContent {
+  @apply tw-py-8 sm:tw-py-8px tw-text-sm tw-text-red  tw-font-bold;
+
+  letter-spacing: 0.2px;
+}
+
+.MiniMumOrderContentDiff {
+  @apply tw-py-8 sm:tw-py-8px tw-text-sm tw-text-gray-800  tw-font-bold;
+
+  letter-spacing: 0.2px;
+}

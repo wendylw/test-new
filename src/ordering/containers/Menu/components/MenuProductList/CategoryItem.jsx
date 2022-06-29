@@ -90,7 +90,7 @@ const CategoryProductList = ({ products, categoryId }) => {
     <ul className={styles.categoryProductList}>
       {products.map(product => (
         <li
-          key={`productItem-${product.id}`}
+          key={product.id}
           className={`${styles.menuProductItem} tw-mx-8 sm:tw-mx-8px`}
           onClick={() => {
             if (!product.isSoldOut) {
@@ -107,7 +107,11 @@ const CategoryProductList = ({ products, categoryId }) => {
               <div className="tw-flex-auto tw-relative">
                 <div className="tw-px-2 sm:tw-px-2px">
                   {product.isBestSeller ? (
-                    <img className="tw-inline-block" src={IconBestSellerImage} alt="StoreHub Beep best seller" />
+                    <img
+                      className={styles.menuProductItemBestSellerTag}
+                      src={IconBestSellerImage}
+                      alt="StoreHub Beep best seller"
+                    />
                   ) : null}
                   <h4 className={`${styles.menuProductItemTitle} tw-font-bold tw-leading-relaxed`}>{product.title}</h4>
                   {product.description && (

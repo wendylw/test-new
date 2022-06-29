@@ -1,9 +1,63 @@
-.tag {
-  @apply tw-px-8 sm:tw-px-8px tw-not-italic tw-bg-gray-300 tw-inline-block tw-rounded;
+$pinkBackgroundColor: #fff2e3;
+
+@mixin tagStyle($color: null) {
+  @apply tw-px-8 sm:tw-px-8px tw-not-italic tw-inline-block;
 
   font-size: 0;
+
+  @if $color == "red" {
+    @apply tw-text-gray-50 tw-bg-red tw-font-bold;
+  } @else if $color == "green" {
+    @apply tw-text-gray-50 tw-bg-cyan tw-font-bold;
+  } @else if $color == "pink" {
+    @apply tw-text-gray-800;
+
+    background-color: $pinkBackgroundColor;
+  } @else if $color == "white" {
+    @apply tw-text-gray-800 tw-bg-gray-50;
+  } @else {
+    @apply tw-text-gray-700 tw-bg-gray-300;
+  }
+}
+
+@mixin tagBorderRadius($radiusSize: null) {
+  @if ($radiusSize == "xs") {
+    @apply tw-px-4 sm:tw-px-4px;
+
+    border-radius: 2px;
+  } @else {
+    @apply tw-rounded;
+  }
+}
+
+.tag {
+  @include tagStyle;
+  @include tagBorderRadius;
+
+  &:global(.red) {
+    @include tagStyle("red");
+  }
+
+  &:global(.pink) {
+    @include tagStyle("pink");
+  }
+
+  &:global(.green) {
+    @include tagStyle("green");
+  }
+
+  &:global(.white) {
+    @include tagStyle("white");
+  }
+
+  &:global(.xs) {
+    @include tagBorderRadius("xs");
+  }
 }
 
 .tagInner {
-  @apply tw-text-xs tw-leading-relaxed tw-text-gray-700;
+  @apply tw-text-xs tw-leading-relaxed;
+
+  color: inherit;
+  font-weight: inherit;
 }

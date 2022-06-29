@@ -308,6 +308,23 @@ export const formatTo12hour = (time, withTimePeriod = true) => {
 };
 
 /**
+ * format to time with formatter
+ * @param {*} time
+ * @param {string} Reference: https://day.js.org/docs/en/display/format#list-of-all-available-formats
+ * @returns
+ */
+export const formatTime = (time, formatter = 'h:mm A') => {
+  if (!isValidTime(time)) {
+    console.warn(`The "${time}" is not valid time to format.`);
+    return time;
+  }
+
+  const dateTime = setDateTime(time);
+
+  return dateTime.format(formatter);
+};
+
+/**
  * pad zero
  * @param {number} num
  * @returns {string}

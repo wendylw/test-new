@@ -12,10 +12,12 @@ const PROMO_DISPLAY_LIMIT = 2;
 const PromotionBar = () => {
   const dispatch = useDispatch();
   const promotions = useSelector(getAvailablePromotions);
+
   if (!promotions.length) {
     return null;
   }
   const onlyOnePromo = promotions.length === 1;
+
   return (
     <>
       <div
