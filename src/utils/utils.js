@@ -26,19 +26,7 @@ Utils.getQueryString = UtilsV2.getQueryString;
  * @param {string or string array} keys,
  * @returns {string}
  */
-Utils.getFilteredQueryString = (keys, queryString = window.location.search) => {
-  const query = qs.parse(queryString, { ignoreQueryPrefix: true });
-
-  // Only deal with string or array.
-  if (typeof keys === 'string') {
-    delete query[keys];
-  }
-  if (Array.isArray(keys)) {
-    keys.forEach(key => delete query[key]);
-  }
-
-  return qs.stringify(query, { addQueryPrefix: true });
-};
+Utils.getFilteredQueryString = UtilsV2.getFilteredQueryString;
 
 Utils.getApiRequestShippingType = UtilsV2.getApiRequestShippingType;
 
@@ -127,15 +115,7 @@ Utils.getSessionVariable = UtilsV2.getSessionVariable;
 /* If sessionStorage is not operational, cookies will be used to store global variables */
 Utils.setSessionVariable = UtilsV2.setSessionVariable;
 
-Utils.removeSessionVariable = function removeSessionVariable(name) {
-  try {
-    sessionStorage.removeItem(name);
-  } catch (e) {
-    const { removeCookieVariable } = Utils;
-    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
-    removeCookieVariable(cookieNameOfSessionStorage);
-  }
-};
+Utils.removeSessionVariable = UtilsV2.removeSessionVariable;
 
 Utils.isProductSoldOut = product => {
   const { stockStatus, variations } = product;
@@ -459,15 +439,9 @@ Utils.isPreOrder = () => {
 
 Utils.getExpectedDeliveryDateFromSession = UtilsV2.getExpectedDeliveryDateFromSession;
 
-Utils.setExpectedDeliveryTime = ({ date, hour }) => {
-  Utils.setSessionVariable('expectedDeliveryDate', JSON.stringify(date));
-  Utils.setSessionVariable('expectedDeliveryHour', JSON.stringify(hour));
-};
+Utils.setExpectedDeliveryTime = UtilsV2.setExpectedDeliveryTime;
 
-Utils.removeExpectedDeliveryTime = () => {
-  Utils.removeSessionVariable('expectedDeliveryDate');
-  Utils.removeSessionVariable('expectedDeliveryHour');
-};
+Utils.removeExpectedDeliveryTime = UtilsV2.removeExpectedDeliveryTime;
 
 Utils.isSiteApp = UtilsV2.isSiteApp;
 
@@ -649,41 +623,7 @@ Utils.formatHour = (hourString = '') => {
   return `${hourRemainder || 12}${Number(minute) ? `:${minute}` : ''}${localeMeridiem}`;
 };
 
-Utils.getOpeningHours = function({
-  breakTimeFrom,
-  breakTimeTo,
-  validTimeFrom = '00:00',
-  validTimeTo = '24:00',
-  formatBreakTimes,
-  formatValidTimes = ['12am', '12am'],
-}) {
-  if (validTimeFrom >= breakTimeFrom && validTimeTo <= breakTimeTo) {
-    return [];
-  }
-
-  if (
-    !breakTimeFrom ||
-    !breakTimeTo ||
-    validTimeFrom >= breakTimeTo ||
-    (validTimeTo <= breakTimeTo && breakTimeFrom === breakTimeTo)
-  ) {
-    return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
-  }
-
-  if (validTimeFrom < breakTimeFrom && validTimeTo > breakTimeTo && breakTimeFrom !== breakTimeTo) {
-    return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}, ${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
-  }
-
-  if (validTimeFrom >= breakTimeFrom && validTimeFrom <= breakTimeTo && breakTimeTo < validTimeTo) {
-    return [`${formatBreakTimes[1]} - ${formatValidTimes[1]}`];
-  }
-
-  if (validTimeTo <= breakTimeTo && validTimeTo >= breakTimeFrom && breakTimeFrom > validTimeFrom) {
-    return [`${formatValidTimes[0]} - ${formatBreakTimes[0]}`];
-  }
-
-  return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
-};
+Utils.getOpeningHours = UtilsV2.getOpeningHours;
 
 Utils.getOrderSource = () => {
   if (Utils.isTNGMiniProgram()) {

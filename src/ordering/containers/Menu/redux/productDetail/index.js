@@ -50,11 +50,14 @@ export const { reducer, actions } = createSlice({
       state.productDetailRequest.status = API_REQUEST_STATUS.PENDING;
     },
     [showProductDetailDrawer.fulfilled.type]: (state, { payload }) => {
-      state.isProductDetailDrawerVisible = true;
-      state.selectedProductId = payload.productId;
-      state.selectedCategoryId = payload.categoryId;
-      state.selectedOptionsByVariationId = payload.selectedOptionsByVariationId;
-      state.selectedQuantity = 1;
+      if (payload) {
+        state.isProductDetailDrawerVisible = true;
+        state.selectedProductId = payload.productId;
+        state.selectedCategoryId = payload.categoryId;
+        state.selectedOptionsByVariationId = payload.selectedOptionsByVariationId;
+        state.selectedQuantity = 1;
+      }
+
       state.productDetailRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
     [showProductDetailDrawer.rejected.type]: (state, action) => {

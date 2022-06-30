@@ -121,7 +121,7 @@ export const AllFoodCourtStoreList = {
   '61b996a0438dfb000652eba3': {
     id: '61b996a0438dfb000652eba3',
     imageNoCompression: SushiImage,
-    title: 'Sushi & Bento',
+    title: 'Kaiju Kare',
     tags: ['japanese', 'sushi', 'bento'],
   },
   '61b99758438dfb00065307c5': {

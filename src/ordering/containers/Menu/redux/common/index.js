@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 import {
   selectCategory,
   showSearchingBox,
@@ -8,6 +9,12 @@ import {
   setBeforeStartToSearchScrollTopPosition,
   clearBeforeStartToSearchScrollTopPosition,
   updateStatusVirtualKeyboard,
+  updateCurrentTime,
+  updateExpectedDeliveryDate,
+  toggleUserSaveStoreStatus,
+  loadUserFavStoreStatus,
+  showStoreInfoDrawer,
+  hideStoreInfoDrawer,
 } from './thunks';
 
 const initialState = {
@@ -18,6 +25,16 @@ const initialState = {
   searchingProductKeywords: '',
   beforeStartToSearchScrollTopPosition: 0,
   virtualKeyboardVisible: false,
+  currentTime: new Date().toISOString(), // current time
+  // User selected expected delivery time: "2022-06-01T01:00:00.000Z" | "now"
+  expectedDeliveryTime: null,
+  storeFavStatus: {
+    data: false,
+    status: null,
+    error: null,
+  },
+  storeInfoDrawerVisible: false,
+  enabledDeliveryRevamp: process.env.REACT_APP_ENABLED_DELIVERY_REVAMP === 'true',
 };
 
 export const { reducer, actions } = createSlice({
@@ -56,6 +73,42 @@ export const { reducer, actions } = createSlice({
     },
     [updateStatusVirtualKeyboard.fulfilled.type]: (state, { payload }) => {
       state.virtualKeyboardVisible = payload;
+    },
+    [updateCurrentTime.fulfilled.type]: state => {
+      state.currentTime = new Date().toISOString();
+    },
+    [updateExpectedDeliveryDate.fulfilled.type]: (state, { payload }) => {
+      state.expectedDeliveryTime = payload;
+    },
+    [loadUserFavStoreStatus.pending.type]: state => {
+      state.storeFavStatus.status = API_REQUEST_STATUS.PENDING;
+      state.storeFavStatus.error = null;
+    },
+    [loadUserFavStoreStatus.fulfilled.type]: (state, { payload }) => {
+      state.storeFavStatus.status = API_REQUEST_STATUS.FULFILLED;
+      state.storeFavStatus.data = payload;
+    },
+    [loadUserFavStoreStatus.rejected.type]: (state, { error }) => {
+      state.storeFavStatus.status = API_REQUEST_STATUS.REJECTED;
+      state.storeFavStatus.error = error;
+    },
+    [toggleUserSaveStoreStatus.pending.type]: state => {
+      state.storeFavStatus.status = API_REQUEST_STATUS.PENDING;
+      state.storeFavStatus.error = null;
+    },
+    [toggleUserSaveStoreStatus.fulfilled.type]: (state, { payload }) => {
+      state.storeFavStatus.status = API_REQUEST_STATUS.FULFILLED;
+      state.storeFavStatus.data = payload;
+    },
+    [toggleUserSaveStoreStatus.rejected.type]: (state, { error }) => {
+      state.storeFavStatus.status = API_REQUEST_STATUS.REJECTED;
+      state.storeFavStatus.error = error;
+    },
+    [showStoreInfoDrawer.fulfilled.type]: state => {
+      state.storeInfoDrawerVisible = true;
+    },
+    [hideStoreInfoDrawer.fulfilled.type]: state => {
+      state.storeInfoDrawerVisible = false;
     },
   },
 });

@@ -11,6 +11,7 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import * as ApiRequest from '../../../utils/api-request';
 import CleverTap from '../../../utils/clevertap';
+import qs from 'qs';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
@@ -36,8 +37,9 @@ import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import loggly from '../../../utils/monitoring/loggly';
+import { isFromBeepSite } from '../../../common/utils';
 
-const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE } = Constants;
+const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -141,6 +143,9 @@ export const initialState = {
     status: null,
   },
   onlineCategory: {
+    status: null,
+  },
+  coreStores: {
     status: null,
   },
   deliveryDetails: {
@@ -933,6 +938,19 @@ const coreBusiness = (state = initialState.coreBusiness, action) => {
   }
 };
 
+const coreStores = (state = initialState.coreStores, action) => {
+  switch (action.type) {
+    case types.FETCH_CORESTORES_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_CORESTORES_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_CORESTORES_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
 const apiError = (state = initialState.apiError, action) => {
   const { type, code, response, responseGql, payload } = action;
   const { error: payloadError } = payload || {};
@@ -1110,6 +1128,7 @@ export default combineReducers({
   storeHashCode: storeHashCodeReducer,
   coreBusiness,
   onlineCategory,
+  coreStores,
 });
 
 // selectors
@@ -1123,6 +1142,8 @@ export const getOnlineStoreInfo = state => {
 };
 
 export const getOnlineStoreInfoStatus = state => state.app.onlineStoreInfo.status;
+
+export const getCoreStoresStatus = state => state.app.coreStores.status;
 
 export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
 
@@ -1215,9 +1236,15 @@ export const getStore = state => {
   return getStoreById(state, storeId);
 };
 
+export const getHasSelectedStore = createSelector(getStoreId, storeId => !!storeId);
+
 export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
   return _get(onlineStoreInfo, 'currency', 'MYR');
 });
+
+export const getIsEnablePreOrder = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'qrOrderingSettings.enablePreOrder', false)
+);
 
 export const getCartItems = state => state.app.shoppingCart.items;
 
@@ -1226,6 +1253,8 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
 export const getCartStatus = state => state.app.shoppingCart.status;
+
+export const getShippingFee = createSelector(getCartBilling, billing => billing.shippingFee);
 
 export const getDeliveryDetails = state => state.app.deliveryDetails;
 
@@ -1314,6 +1343,17 @@ export const getUserPhone = createSelector(getUser, user => _get(user, 'profile.
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
 
 export const getStoreName = createSelector(getStore, store => _get(store, 'name', ''));
+
+export const getStoreCoords = createSelector(getStore, store => {
+  if (!store) {
+    return null;
+  }
+
+  return {
+    lat: _get(store, 'location.latitude'),
+    lng: _get(store, 'location.longitude'),
+  };
+});
 
 export const getEnableCashback = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'enableCashback', null)
@@ -1443,6 +1483,13 @@ export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsDeliveryOrder = state => Utils.isDeliveryOrder();
 export const getIsQROrder = state => Utils.isQROrder();
 export const getIsWebview = state => Utils.isWebview();
+export const getIsInBrowser = state => Utils.getClient() === CLIENTS.WEB;
+export const getIsInAppOrMiniProgram = createSelector(
+  getIsWebview,
+  getIsTNGMiniProgram,
+  (isWebview, isTNGMiniProgram) => isWebview || isTNGMiniProgram
+);
+export const getIsFromBeepSite = state => isFromBeepSite();
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)
@@ -1531,6 +1578,24 @@ export const getIsQrOrderingShippingType = createSelector(
 );
 
 /**
+ * is shipping type of delivery or pickup
+ * @returns
+ */
+export const getIsBeepDeliveryShippingType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP
+);
+
+/**
+ * is shipping type of only delivery
+ * @returns
+ */
+export const getIsBeepDeliveryType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.DELIVERY
+);
+
+/**
  * is related store data api ready
  * @returns
  */
@@ -1539,4 +1604,25 @@ export const getIsStoreInfoReady = createSelector(
   getCoreBusinessAPIStatus,
   (onlineStoreInfoStatus, coreBusinessAPIStatus) =>
     onlineStoreInfoStatus === API_REQUEST_STATUS.FULFILLED && coreBusinessAPIStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsCoreStoresLoaded = createSelector(
+  getCoreStoresStatus,
+  coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getDeliveryRadius = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'qrOrderingSettings.deliveryRadius', null)
+);
+
+export const getRouter = state => state.router;
+
+export const getLocationSearch = createSelector(getRouter, router => router.location.search);
+
+export const getURLQueryObject = createSelector(getLocationSearch, locationSearch =>
+  qs.parse(locationSearch, { ignoreQueryPrefix: true })
+);
+
+export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'stores[0].reviewInfo.rating', null)
 );

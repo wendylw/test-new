@@ -3,27 +3,43 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslation, Trans } from 'react-i18next';
 import _debounce from 'lodash/debounce';
-import { CaretLeft } from 'phosphor-react';
+import { CaretLeft, X } from 'phosphor-react';
 import _get from 'lodash/get';
 import SearchBox from '../components/SearchBox';
-import SwitchPanel from '../components/SwitchPanel';
 import StoreListAutoScroll from '../components/StoreListAutoScroll';
 import StoreList from '../components/StoreList';
 import EmptySearch from './components/EmptySearch';
+import FilterBar from '../components/FilterBar';
+import Drawer from '../../common/components/Drawer';
+import PageLoader from '../../../src/components/PageLoader';
+import DrawerHeader from '../../common/components/Drawer/DrawerHeader';
+import Button from '../../common/components/Button';
+import SingleChoiceSelector from '../components/OptionSelectors/SingleChoiceSelector';
+import MultipleChoiceSelector from '../components/OptionSelectors/MultipleChoiceSelector';
 import BeepNotResultImage from '../../images/beep-no-results.svg';
+import { actions as searchActionCreators } from '../redux/modules/search';
 import {
-  searchActions,
   getStoreList,
   getShippingType,
   getPageInfo,
-  getSearchInfo,
-  loadedSearchingStores,
+  getSearchKeyword,
+  getSearchResults,
   getShouldShowCategories,
-  getShouldShowSwitchPanel,
+  getShouldShowFilterBar,
   getShouldShowStartSearchPage,
   getShouldShowNoSearchResultPage,
   getShouldShowStoreList,
-} from '../redux/modules/search';
+  getShouldShowStoreListLoader,
+  getShouldShowNoFilteredResultPage,
+} from '../redux/modules/search/selectors';
+import {
+  setPageInfo as setPageInfoThunkCreator,
+  resetPageInfo as resetPageInfoThunkCreator,
+  setShippingType as setShippingTypeThunkCreator,
+  resetShippingType as resetShippingTypeThunkCreator,
+  loadStoreList as loadStoreListThunkCreator,
+  resetStoreList as resetStoreListThunkCreator,
+} from '../redux/modules/search/thunks';
 import { submitStoreMenu } from '../home/utils';
 import { getStoreLinkInfo, homeActionCreators } from '../redux/modules/home';
 import { rootActionCreators } from '../redux/modules';
@@ -38,6 +54,22 @@ import {
   getPopupCollections,
   getStorePageInfo,
 } from '../redux/modules/entities/storeCollections';
+import {
+  getCategoryFilterList,
+  getSelectedOptionList,
+  getHasAnyCategorySelected,
+} from '../redux/modules/filter/selectors';
+import {
+  loadSearchOptionList as loadSearchOptionListThunkCreator,
+  loadSelectedOptionList as loadSelectedOptionListThunkCreator,
+  backUpSelectedOptionList as backUpSelectedOptionListThunkCreator,
+  resetSelectedOptionList as resetSelectedOptionListThunkCreator,
+  toggleCategorySelectStatus as toggleCategorySelectStatusThunkCreator,
+  updateCategoryOptionSelectStatus as updateCategoryOptionSelectStatusThunkCreator,
+  resetCategoryAllOptionSelectStatus as resetCategoryAllOptionSelectStatusThunkCreator,
+} from '../redux/modules/filter/thunks';
+import { TYPES, IDS, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
+import { SHIPPING_TYPES } from '../../common/utils/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
@@ -50,10 +82,23 @@ class SearchPage extends React.Component {
   scrollTop = 0;
   sectionRef = React.createRef();
 
+  state = {
+    drawerInfo: { category: null },
+    filterBarSwiperRef: null,
+  };
+
   componentDidMount = async () => {
-    const { otherCollections, popularCollections, fetchAddressInfo } = this.props;
+    const {
+      otherCollections,
+      popularCollections,
+      fetchAddressInfo,
+      loadSearchOptionList,
+      loadSelectedOptionList,
+    } = this.props;
     if (!checkStateRestoreStatus()) {
-      this.resetSearchData();
+      // Try to load option list from cache first then fetch from server
+      await loadSearchOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+      await this.resetSearchData();
       if (otherCollections.length === 0) {
         this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
       }
@@ -61,36 +106,67 @@ class SearchPage extends React.Component {
         this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
       }
     } else {
+      // BEEP-2532: The purpose for reloading selected option list is to force swiper to recalculate number of slides and their offsets.
+      await loadSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
       // Silently fetch address Info without blocking current process
       fetchAddressInfo();
     }
   };
 
   componentDidUpdate = async prevProps => {
-    const { addressCoords: prevAddressCoords } = prevProps;
-    const { addressCoords: currAddressCoords, collectionCardActions } = this.props;
+    const { addressCoords: prevAddressCoords, selectedOptionList: prevSelectedOptionList } = prevProps;
+    const {
+      addressCoords: currAddressCoords,
+      selectedOptionList: currSelectedOptionList,
+      searchKeyword,
+      resetPageInfo,
+      loadStoreList,
+    } = this.props;
 
-    if (!isSameAddressCoords(prevAddressCoords, currAddressCoords)) {
-      scrollTopPosition(this.sectionRef.current);
-      this.resetSearchData();
+    const hasAddressCoordsChanged = !isSameAddressCoords(prevAddressCoords, currAddressCoords);
+    const hasSelectedOptionListChanged = prevSelectedOptionList !== currSelectedOptionList;
+    const shouldReloadStoreList = searchKeyword && (hasAddressCoordsChanged || hasSelectedOptionListChanged);
+
+    if (hasAddressCoordsChanged) {
       // Reload other and popular collections once address changed
-      collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
-      collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.OTHERS);
+      this.props.collectionCardActions.getCollections(COLLECTIONS_TYPE.POPULAR);
+    }
+
+    if (shouldReloadStoreList) {
+      scrollTopPosition(this.sectionRef.current);
+      await resetPageInfo();
+      loadStoreList();
+    }
+
+    if (hasSelectedOptionListChanged) {
+      const { filterBarSwiperRef } = this.state;
+      // NOTE: Once the sort & filter selected options are changed, the swiper should be re-rendered. Otherwise, the offsets of slides will be wrong.
+      // API Doc: https://swiperjs.com/swiper-api#method-swiper-update
+      filterBarSwiperRef?.update();
+      this.props.backUpSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
     }
   };
 
-  resetSearchData = () => {
-    const { searchActions } = this.props;
-    searchActions.setShippingType('delivery');
-    searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
+  componentWillUnmount = () => {
+    // Reset filter redux data state when user leaves the page in below 2 cases:
+    // 1. User directly clicks the back button from browser
+    // 2. User directly clicks the back button from the collection page
+
+    this.props.resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+  };
+
+  resetSearchData = async () => {
+    const { categoryFilterList, resetPageInfo, setShippingType } = this.props;
+    const pickupFilter = categoryFilterList.find(filter => filter.id === IDS.PICK_UP);
+    await resetPageInfo();
+    await setShippingType({ shippingType: pickupFilter?.selected ? SHIPPING_TYPES.PICKUP : SHIPPING_TYPES.DELIVERY });
   };
 
   onGoBack = () => {
-    const {
-      searchInfo: { keyword },
-    } = this.props;
+    const { searchKeyword, searchActions, resetShippingType, resetPageInfo, resetStoreList } = this.props;
 
-    if (!keyword) {
+    if (!searchKeyword) {
       CleverTap.pushEvent('Empty Search - Click back');
     } else {
       CleverTap.pushEvent('Search - click back');
@@ -99,43 +175,35 @@ class SearchPage extends React.Component {
     this.props.history.push({
       pathname: '/home',
     });
+
+    // Reset search data state
+    searchActions.resetSearchInfo();
+    resetShippingType();
+    resetStoreList();
+    resetPageInfo();
   };
 
-  debounceSearchStores = _debounce(() => {
-    this.props.searchActions.setPaginationInfo();
-    this.props.searchActions.getStoreList();
+  debounceSearchStores = _debounce(async () => {
+    await this.props.resetPageInfo();
+    await this.props.loadStoreList();
+    const { searchKeyword, searchResults } = this.props;
+    CleverTap.pushEvent('Search - Perform search', {
+      keyword: searchKeyword,
+      'has results': searchResults.length > 0,
+    });
   }, 700);
-
-  handleSwitchTab = async shippingType => {
-    const {
-      searchInfo: { keyword },
-    } = this.props;
-
-    if (shippingType === 'delivery') {
-      CleverTap.pushEvent('Search - Click delivery tab', {
-        keyword,
-      });
-    } else {
-      CleverTap.pushEvent('Search - Click self pickup tab', {
-        keyword,
-      });
-    }
-
-    this.props.searchActions.setPaginationInfo();
-    this.props.searchActions.setShippingType(shippingType);
-    await this.props.searchActions.getStoreList();
-  };
 
   handleSearchTextChange = event => {
     const keyword = event.currentTarget.value;
-    this.props.searchActions.setSearchingStoresStatus(false);
-    this.props.searchActions.setSearchInfo({ keyword, scrollTop: 0 });
+    this.props.searchActions.setSearchInfo({ keyword });
+    this.props.setPageInfo({ scrollTop: 0 });
     this.debounceSearchStores();
   };
 
   handleClearSearchText = () => {
     CleverTap.pushEvent('Search - Click clear search field');
-    this.props.searchActions.setSearchInfo({ keyword: '', scrollTop: 0 });
+    this.props.searchActions.resetSearchInfo();
+    this.props.setPageInfo({ scrollTop: 0 });
   };
 
   backupState = () => {
@@ -143,8 +211,8 @@ class SearchPage extends React.Component {
   };
 
   backLeftPosition = async store => {
-    const { searchActions, shippingType, addressInfo } = this.props;
-    searchActions.setSearchInfo({ scrollTop: this.scrollTop });
+    const { setPageInfo, shippingType, addressInfo } = this.props;
+    setPageInfo({ scrollTop: this.scrollTop });
     this.backupState();
     await submitStoreMenu({
       deliveryAddress: addressInfo,
@@ -163,21 +231,24 @@ class SearchPage extends React.Component {
       t,
       stores,
       pageInfo,
-      searchInfo,
-      loadedSearchingStores,
+      searchKeyword,
       storePageInfo,
+      loadStoreList,
       popularCollections,
       otherCollections,
       shouldShowCategories,
       shouldShowStartSearchPage,
       shouldShowNoSearchResultPage,
+      shouldShowNoFilteredResultPage,
       shouldShowStoreList,
+      shouldShowStoreListLoader,
     } = this.props;
-    const { keyword, scrollTop } = searchInfo;
 
-    if (Boolean(keyword) && !loadedSearchingStores) {
-      return <div className="entry-home__huge-loader loader theme text-size-huge" />;
+    if (shouldShowStoreListLoader) {
+      return <PageLoader />;
     }
+
+    const shouldShowNoResultPage = shouldShowNoSearchResultPage || shouldShowNoFilteredResultPage;
 
     return (
       <React.Fragment>
@@ -185,7 +256,7 @@ class SearchPage extends React.Component {
           <div>
             <StoreListAutoScroll
               getScrollParent={() => this.sectionRef.current}
-              defaultScrollTop={scrollTop}
+              defaultScrollTop={pageInfo.scrollTop}
               onScroll={scrollTop => (this.scrollTop = scrollTop)}
             >
               <EmptySearch
@@ -204,11 +275,20 @@ class SearchPage extends React.Component {
             <p className={styles.SearchPageInfoCardHeading}>{t('StartSearchDescription')}</p>
           </div>
         )}
-        {shouldShowNoSearchResultPage && (
+        {shouldShowNoResultPage && (
           <div className={styles.SearchPageInfoCard}>
             <img className={styles.SearchPageInfoCardImage} src={BeepNotResultImage} alt="store not found" />
             <p className={styles.SearchPageInfoCardHeading}>
-              <Trans t={t} i18nKey="SearchNotFoundStoreDescription" values={{ keyword }} components={[<br />]} />
+              {shouldShowNoFilteredResultPage ? (
+                <Trans t={t} i18nKey="FilterNotFoundStoreDescription" components={[<br />]} />
+              ) : (
+                <Trans
+                  t={t}
+                  i18nKey="SearchNotFoundStoreDescription"
+                  values={{ keyword: searchKeyword }}
+                  components={[<br />]}
+                />
+              )}
             </p>
           </div>
         )}
@@ -216,7 +296,7 @@ class SearchPage extends React.Component {
           <div className="sm:tw-py-4px tw-py-4 tw-bg-white">
             <StoreListAutoScroll
               getScrollParent={() => this.sectionRef.current}
-              defaultScrollTop={scrollTop}
+              defaultScrollTop={pageInfo.scrollTop}
               onScroll={scrollTop => (this.scrollTop = scrollTop)}
             >
               <StoreList
@@ -224,10 +304,10 @@ class SearchPage extends React.Component {
                 stores={stores}
                 hasMore={pageInfo.hasMore}
                 getScrollParent={() => this.sectionRef.current}
-                loadMoreStores={() => this.props.searchActions.getStoreList()}
+                loadMoreStores={() => loadStoreList()}
                 onStoreClicked={(store, index) => {
                   CleverTap.pushEvent('Search - Click search result', {
-                    keyword: keyword,
+                    keyword: searchKeyword,
                     'store name': store.name,
                     'store rank': index + 1,
                     'shipping type': store.shippingType,
@@ -246,15 +326,146 @@ class SearchPage extends React.Component {
     );
   }
 
+  handleClickCategoryButton = category => {
+    const { id, name, type, selected } = category;
+    const { searchKeyword, setShippingType } = this.props;
+
+    if (id === IDS.SORT_BY) {
+      CleverTap.pushEvent('Search - Click sort by button', {
+        'search keyword': searchKeyword,
+      });
+    } else {
+      const attributes = { 'type of filter': name };
+
+      if (type === TYPES.TOGGLE) {
+        // Only record select state for toggle filters
+        attributes['select state'] = !selected;
+      }
+
+      CleverTap.pushEvent('Search - Click quick filter button', attributes);
+    }
+
+    if (id === IDS.PICK_UP) {
+      setShippingType({ shippingType: selected ? SHIPPING_TYPES.DELIVERY : SHIPPING_TYPES.PICKUP });
+    }
+
+    if (FILTER_DRAWER_SUPPORT_TYPES.includes(type)) {
+      this.setState({ drawerInfo: { category } });
+    } else {
+      this.props.toggleCategorySelectStatus({ categoryId: id });
+    }
+  };
+
+  handleClickResetAllCategoryButton = async () => {
+    const { resetSelectedOptionList, setShippingType } = this.props;
+    await setShippingType({ shippingType: SHIPPING_TYPES.DELIVERY });
+    await resetSelectedOptionList({ key: FILTER_BACKUP_STORAGE_KEYS.SEARCH });
+    CleverTap.pushEvent('Search - Click reset quick sort and filter button');
+  };
+
+  handleCloseDrawer = () => {
+    this.setState({ drawerInfo: { category: null } });
+  };
+
+  handleClickSingleChoiceOptionItem = (category, option) => {
+    const { id: categoryId } = category;
+    const { id: optionId, name: optionName } = option;
+
+    if (categoryId === IDS.SORT_BY) {
+      CleverTap.pushEvent('Search - Select sort option (Sort button)', {
+        'type of sort': optionName,
+      });
+    }
+
+    this.props.updateCategoryOptionSelectStatus({ categoryId, optionIds: [optionId] });
+    this.handleCloseDrawer();
+  };
+
+  handleClickResetOptionButton = category => {
+    const { id: categoryId, name: filterName } = category;
+
+    CleverTap.pushEvent('Search - Reset (Filter slide-up)', {
+      'type of filter': filterName,
+    });
+
+    this.props.resetCategoryAllOptionSelectStatus({ categoryId });
+    this.handleCloseDrawer();
+  };
+
+  handleClickApplyAllOptionButton = (category, options) => {
+    const { id: categoryId, name: filterName } = category;
+    const optionNames = options
+      .filter(option => option.selected)
+      .map(option => option.name)
+      .join(', ');
+    const optionIds = options.filter(option => option.selected).map(option => option.id);
+
+    CleverTap.pushEvent('Search - Select filter options (Filter button)', {
+      'type of filter': filterName,
+      'filter options': optionNames,
+    });
+
+    this.props.updateCategoryOptionSelectStatus({ categoryId, optionIds });
+    this.handleCloseDrawer();
+  };
+
+  renderDrawer = () => {
+    const {
+      drawerInfo: { category },
+    } = this.state;
+    const shouldShowDrawer = !!category;
+    const title = _get(category, 'name', '');
+    const type = _get(category, 'type', '');
+    const shouldShowSingleChoiceSelector = type === TYPES.SINGLE_SELECT;
+    const shouldShowMultipleChoiceSelector = type === TYPES.MULTI_SELECT;
+
+    return (
+      <Drawer
+        className={styles.SearchPageCategoryDrawerWrapper}
+        show={shouldShowDrawer}
+        onClose={this.handleCloseDrawer}
+        style={{ maxHeight: '100%' }}
+        header={
+          <DrawerHeader
+            left={
+              <Button
+                type="text"
+                onClick={this.handleCloseDrawer}
+                className={`${styles.SearchPageCategoryDrawerHeaderButton} beep-text-reset`}
+              >
+                <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+              </Button>
+            }
+          >
+            <span className={styles.SearchPageCategoryDrawerHeaderTitle}>{title}</span>
+          </DrawerHeader>
+        }
+      >
+        {shouldShowSingleChoiceSelector ? (
+          <SingleChoiceSelector category={category} onClick={this.handleClickSingleChoiceOptionItem} />
+        ) : shouldShowMultipleChoiceSelector ? (
+          <MultipleChoiceSelector
+            category={category}
+            onResetButtonClick={this.handleClickResetOptionButton}
+            onApplyButtonClick={this.handleClickApplyAllOptionButton}
+          />
+        ) : null}
+      </Drawer>
+    );
+  };
+
+  handleFilterBarSwiper = swiper => {
+    this.setState({ filterBarSwiperRef: swiper });
+  };
+
   render() {
-    const { searchInfo, shippingType, shouldShowSwitchPanel } = this.props;
-    const { keyword } = searchInfo;
+    const { searchKeyword, shouldShowFilterBar, categoryFilterList, shouldShowResetButton } = this.props;
     return (
       <main className="fixed-wrapper fixed-wrapper__main" data-heap-name="site.search.container">
         <div className="tw-sticky tw-top-0 tw-z-100 tw-w-full tw-bg-white">
           <header
             className={`${styles.SearchPageHeaderWrapper} ${
-              shouldShowSwitchPanel ? '' : 'tw-border-0 tw-border-b tw-border-solid tw-border-gray-200'
+              shouldShowFilterBar ? '' : 'tw-border-0 tw-border-b tw-border-solid tw-border-gray-200'
             }`}
           >
             <button
@@ -265,22 +476,26 @@ class SearchPage extends React.Component {
               <CaretLeft size={24} weight="light" />
             </button>
             <SearchBox
-              keyword={keyword}
+              keyword={searchKeyword}
               handleSearchTextChange={this.handleSearchTextChange}
               handleClearSearchText={this.handleClearSearchText}
             />
           </header>
-          {shouldShowSwitchPanel && (
-            <SwitchPanel
-              shippingType={shippingType}
-              dataHeapName="site.search.tab-bar"
-              handleSwitchTab={this.handleSwitchTab}
+          {shouldShowFilterBar && (
+            <FilterBar
+              className={styles.SearchPageFilterBarWrapper}
+              categories={categoryFilterList}
+              onSwiper={this.handleFilterBarSwiper}
+              shouldShowResetButton={shouldShowResetButton}
+              onResetButtonClick={this.handleClickResetAllCategoryButton}
+              onCategoryButtonClick={this.handleClickCategoryButton}
             />
           )}
         </div>
         <section ref={this.sectionRef} className="entry-home fixed-wrapper__container wrapper">
           {this.renderStoreList()}
         </section>
+        {this.renderDrawer()}
       </main>
     );
   }
@@ -295,26 +510,44 @@ export default compose(
       pageInfo: getPageInfo(state),
       stores: getStoreList(state),
       shippingType: getShippingType(state),
-      searchInfo: getSearchInfo(state),
       storeLinkInfo: getStoreLinkInfo(state),
       addressInfo: getAddressInfo(state),
-      loadedSearchingStores: loadedSearchingStores(state),
+      searchKeyword: getSearchKeyword(state),
+      searchResults: getSearchResults(state),
       storePageInfo: getStorePageInfo(state),
       otherCollections: getOtherCollections(state),
       popularCollections: getPopupCollections(state),
       addressCoords: getAddressCoords(state),
       shouldShowCategories: getShouldShowCategories(state),
-      shouldShowSwitchPanel: getShouldShowSwitchPanel(state),
+      shouldShowFilterBar: getShouldShowFilterBar(state),
       shouldShowStartSearchPage: getShouldShowStartSearchPage(state),
       shouldShowNoSearchResultPage: getShouldShowNoSearchResultPage(state),
+      shouldShowNoFilteredResultPage: getShouldShowNoFilteredResultPage(state),
+      shouldShowStoreListLoader: getShouldShowStoreListLoader(state),
       shouldShowStoreList: getShouldShowStoreList(state),
+      categoryFilterList: getCategoryFilterList(state),
+      selectedOptionList: getSelectedOptionList(state),
+      shouldShowResetButton: getHasAnyCategorySelected(state),
     }),
     dispatch => ({
+      setPageInfo: bindActionCreators(setPageInfoThunkCreator, dispatch),
+      resetPageInfo: bindActionCreators(resetPageInfoThunkCreator, dispatch),
+      setShippingType: bindActionCreators(setShippingTypeThunkCreator, dispatch),
+      resetShippingType: bindActionCreators(resetShippingTypeThunkCreator, dispatch),
+      loadStoreList: bindActionCreators(loadStoreListThunkCreator, dispatch),
+      resetStoreList: bindActionCreators(resetStoreListThunkCreator, dispatch),
       fetchAddressInfo: bindActionCreators(fetchAddressInfo, dispatch),
+      loadSearchOptionList: bindActionCreators(loadSearchOptionListThunkCreator, dispatch),
+      loadSelectedOptionList: bindActionCreators(loadSelectedOptionListThunkCreator, dispatch),
+      backUpSelectedOptionList: bindActionCreators(backUpSelectedOptionListThunkCreator, dispatch),
+      resetSelectedOptionList: bindActionCreators(resetSelectedOptionListThunkCreator, dispatch),
+      toggleCategorySelectStatus: bindActionCreators(toggleCategorySelectStatusThunkCreator, dispatch),
+      updateCategoryOptionSelectStatus: bindActionCreators(updateCategoryOptionSelectStatusThunkCreator, dispatch),
+      resetCategoryAllOptionSelectStatus: bindActionCreators(resetCategoryAllOptionSelectStatusThunkCreator, dispatch),
       rootActions: bindActionCreators(rootActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
-      searchActions: bindActionCreators(searchActions, dispatch),
       homeActions: bindActionCreators(homeActionCreators, dispatch),
+      searchActions: bindActionCreators(searchActionCreators, dispatch),
       collectionCardActions: bindActionCreators(collectionCardActionCreators, dispatch),
     })
   )

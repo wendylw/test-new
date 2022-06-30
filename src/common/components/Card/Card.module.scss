@@ -1,0 +1,21 @@
+@mixin cardDisabled {
+  @apply tw-bg-opacity-40;
+}
+
+.card {
+  @apply tw-px-12 sm:tw-px-12px tw-py-12 sm:tw-py-12px tw-bg-gray-50 tw-border tw-border-solid tw-border-gray-300 tw-rounded tw-outline-none tw-shadow-none;
+
+  &.cardDisabled {
+    @include cardDisabled;
+  }
+}
+
+.cardActive {
+  @extend .card;
+
+  @apply tw-border-orange;
+
+  &.cardDisabled {
+    @include cardDisabled;
+  }
+}

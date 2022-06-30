@@ -61,6 +61,10 @@ const PAYMENTS_MAPPING = {
     key: 'GrabPay',
     logo: 'paymentGrabImage',
   },
+  StripeGrab: {
+    key: 'GrabPay',
+    logo: 'paymentGrabImage',
+  },
   TnGOnline: {
     key: 'TouchNGo',
     logo: 'paymentTNGImage',
