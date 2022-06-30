@@ -1,0 +1,32 @@
+@import "../../../../../common/styles/variables.scss";
+
+.storeInfoDrawerButton {
+  @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px tw--mr-8 sm:tw--mr-8px tw-border-0 tw-bg-gray-50 tw-border-gray-50 tw-rounded-sm tw-outline-none tw-shadow-none;
+}
+
+.storeInfoDrawerTitle {
+  @apply tw-font-bold tw-text-lg tw-leading-relaxed;
+  @include text-line-clamp(1, null);
+
+  max-width: 100%;
+}
+
+.storeInfoDrawer {
+  @apply tw-p-0 sm:tw-p-0;
+}
+
+.storeInfoDrawerIcon {
+  @apply tw-inline-flex tw-flex-shrink-0 tw-bg-gray-200 tw-rounded-full tw-justify-center tw-items-center;
+
+  width: 24px;
+  height: 24px;
+}
+
+.storeInfoDrawerCardText,
+.storeInfoDrawerCardLink {
+  @apply tw-inline-flex tw-ml-8 sm:tw-ml-8px tw-leading-loose;
+}
+
+.storeInfoDrawerCardLink {
+  @apply tw-text-blue tw-font-bold;
+}

@@ -35,3 +35,13 @@ export const PROMOTIONS_SHIPPING_TYPES_MAPPING = {
   [DELIVERY_METHOD.DINE_IN]: 8,
 };
 export { PROMOTIONS_TYPES };
+
+export const SOURCE_TYPE = {
+  SHOPPING_CART: 'shoppingCart',
+};
+
+export const STORE_OPENING_STATUS = {
+  ON_DEMAND: 'onDemand',
+  PRE_ORDER: 'preOrder',
+  CLOSED: 'closed',
+};

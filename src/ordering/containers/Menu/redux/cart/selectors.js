@@ -1,20 +1,13 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
-import { isAvailableOnDemandOrderTime } from '../../../../../utils/store-utils';
 import {
   getTableId,
   getFormatCurrencyFunction,
   getShippingType,
-  getIsQrOrderingShippingType,
   getEnablePayLater as getIsEnablePayLater,
   getCartCount,
   getMinimumConsumption,
   getOrderingOngoingBannerVisibility,
-  getDeliveryInfo,
-  getStore,
-  getStoresList,
-  getBusinessUTCOffset,
-  getIsUserLoginRequestStatusInPending,
   getShoppingCart,
   getIsStoreInfoReady,
 } from '../../../../redux/modules/app';
@@ -60,7 +53,7 @@ export const getOriginalCartItems = createSelector(
  *  get items cart subtotal
  * @return items subtotal, for example: 10
  */
-const getCartItemsSubtotal = createSelector(
+export const getCartItemsSubtotal = createSelector(
   getIsEnablePayLater,
   getOriginalCartItems,
   (isEnablePayLater, originalCartItems) => {
@@ -116,8 +109,14 @@ export const getIsFulfillMinimumConsumption = createSelector(
   getShippingType,
   getMinimumConsumption,
   getCartItemsSubtotal,
-  (shippingType, minimumConsumption, cartItemsSubtotal) =>
-    shippingType === SHIPPING_TYPES.DELIVERY && minimumConsumption && minimumConsumption > cartItemsSubtotal
+  (shippingType, minimumConsumption, cartItemsSubtotal) => {
+    // only delivery order will consider minium consumption
+    if (shippingType !== SHIPPING_TYPES.DELIVERY) {
+      return true;
+    }
+
+    return cartItemsSubtotal >= minimumConsumption;
+  }
 );
 
 /**
@@ -140,73 +139,11 @@ export const getFormattedDiffPriceOnFulfillMinimumConsumption = createSelector(
   getIsFulfillMinimumConsumption,
   getFormatCurrencyFunction,
   (minimumConsumption, cartItemsSubtotal, IsFulfillMinimumConsumption, formatCurrency) => {
-    if (IsFulfillMinimumConsumption) {
+    if (!IsFulfillMinimumConsumption) {
       return formatCurrency(minimumConsumption - cartItemsSubtotal);
     }
 
     return '';
-  }
-);
-
-/**
- *  is able to review cart, if cart empty that footer will be hidden
- * @return
- */
-export const getIsAbleToReviewCart = createSelector(
-  getIsEnablePayLater,
-  getCartQuantity,
-  getDeliveryInfo,
-  getShippingType,
-  getIsQrOrderingShippingType,
-  getStore,
-  getStoresList,
-  getTableId,
-  getBusinessUTCOffset,
-  getIsFulfillMinimumConsumption,
-  getIsUserLoginRequestStatusInPending,
-  (
-    enablePayLater,
-    cartQuantity,
-    deliveryInfo,
-    shippingType,
-    isQrOrderingShippingType,
-    store,
-    storeList,
-    businessUTCOffset,
-    isFulfillMinimumConsumption,
-    isUserLoginRequestStatusInPending
-  ) => {
-    const { enablePreOrder, enableLiveOnline } = deliveryInfo;
-    const availableCartQuantity = cartQuantity > 0;
-    const qrOrderingAbleToReviewCart = availableCartQuantity && enableLiveOnline && !isUserLoginRequestStatusInPending;
-
-    if (enablePayLater) {
-      return availableCartQuantity;
-    }
-
-    if (isQrOrderingShippingType) {
-      return qrOrderingAbleToReviewCart;
-    }
-
-    const currentTime = new Date();
-    let isValidTimeToOrder = isAvailableOnDemandOrderTime(store, currentTime, businessUTCOffset, shippingType);
-    let isPreOrderEnabled = !!enablePreOrder;
-
-    if (!store) {
-      isValidTimeToOrder = storeList.some(currentStore =>
-        isAvailableOnDemandOrderTime(currentStore, currentTime, businessUTCOffset, shippingType)
-      );
-
-      isPreOrderEnabled = storeList.some(({ qrOrderingSettings }) => qrOrderingSettings.enablePreOrder);
-    }
-
-    const pickupAbleToReviewCart = isValidTimeToOrder && isPreOrderEnabled && qrOrderingAbleToReviewCart;
-
-    if (shippingType === SHIPPING_TYPES.PICKUP) {
-      return pickupAbleToReviewCart;
-    }
-
-    return isFulfillMinimumConsumption && pickupAbleToReviewCart;
   }
 );
 
@@ -286,3 +223,14 @@ export const getCartItems = createSelector(
  * @return
  */
 export const getIsMiniCartDrawerVisible = state => state.menu.cart.miniCartDrawerVisible;
+
+export const getIsEnableMinimumAmount = createSelector(
+  getMinimumConsumption,
+  minimumConsumption => !!minimumConsumption
+);
+
+export const getHiddenMiniOrderStatus = createSelector(
+  getIsEnableMinimumAmount,
+  getIsFulfillMinimumConsumption,
+  (isEnableMinimumAmount, isFulfillMinimumConsumption) => !isEnableMinimumAmount || isFulfillMinimumConsumption
+);

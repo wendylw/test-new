@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Frame from '../../../common/components/Frame';
+import MenuShippingInfoBar from './components/MenuShippingInfoBar';
 import MenuHeader from './components/MenuHeader';
 import MenuStoreInfo from './components/MenuStoreInfo';
 import PromotionBar from './components/PromotionBar';
@@ -35,6 +36,7 @@ const Menu = () => {
         ) : (
           <>
             <MenuHeader webHeaderVisibility={!isSearchingBannerVisible} />
+            <MenuShippingInfoBar />
             <section className="tw-py-16 sm:tw-py-16px">
               {isSearchingBannerVisible ? null : (
                 <>

@@ -29,3 +29,10 @@ export const getWindowInnerHeight = () => window.innerHeight;
 
 export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardVisible) =>
   isMobile && isVirtualKeyboardVisible;
+
+export const getShareLinkUrl = () => {
+  const storeUrl = window.location.href;
+  const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+
+  return shareLinkUrl;
+};

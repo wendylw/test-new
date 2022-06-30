@@ -16,7 +16,7 @@ import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
 import { getBillingLoadedComplete, getTotal } from '../selectors';
-import loggly from '../../../../../../utils/monitoring/loggly';
+import logger from '../../../../../../utils/monitoring/logger';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
 
@@ -58,6 +58,10 @@ const PAYMENTS_MAPPING = {
     pathname: '/payment/online-banking',
   },
   GrabPay: {
+    key: 'GrabPay',
+    logo: 'paymentGrabImage',
+  },
+  StripeGrab: {
     key: 'GrabPay',
     logo: 'paymentGrabImage',
   },
@@ -132,7 +136,7 @@ export const initialize = createAsyncThunk(
         initialPaymentMethod,
       });
 
-      loggly.error('ordering.paymentInitialize.error', {
+      logger.error('ordering.paymentInitialize.error', {
         error: error?.message,
         initialPaymentMethod,
       });

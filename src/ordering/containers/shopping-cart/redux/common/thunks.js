@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import { getShoppingCart, getBusinessUTCOffset } from '../../../../redux/modules/app';
 import Utils from '../../../../../utils/utils';
 import { fetchStockStatus } from './api-request';
-import { error as logglyError } from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 import { alert } from '../../../../../common/feedback';
 import Constants from '../../../../../utils/constants';
 
@@ -21,7 +21,7 @@ export const loadStockStatus = createAsyncThunk('ordering/cart/common/fetchStock
 
     return result;
   } catch (e) {
-    logglyError('Load stock status error: ', e);
+    logger.error('Load stock status error: ', e);
 
     if (e.code && ERROR_CODE_MAP[e.code]) {
       const { desc, title, buttonText, redirectUrl } = ERROR_CODE_MAP[e.code];

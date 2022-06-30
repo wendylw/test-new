@@ -16,8 +16,30 @@ import ThaifoodImage from '../../../../../images/food-court-temp/merchant-thaifo
 import ToastImage from '../../../../../images/food-court-temp/merchant-toast.jpg';
 import WesternImage from '../../../../../images/food-court-temp/merchant-western.jpg';
 import YewyewImage from '../../../../../images/food-court-temp/merchant-yewyew.jpg';
+import GRunImage from '../../../../../images/food-court-temp/merchant-grun.jpg';
+import StellarKLImage from '../../../../../images/food-court-temp/merchant-stellar-kl.jpg';
 
 export const AllFoodCourtStoreList = {
+  '6294429ddf0225000788e6e5': {
+    id: '6294429ddf0225000788e6e5',
+    imageNoCompression: GRunImage,
+    title: 'G-Run',
+    tags: ['Pastry', 'Juice'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '20:30',
+    },
+  },
+  '60933597a9ffdc00068608a4': {
+    id: '60933597a9ffdc00068608a4',
+    imageNoCompression: StellarKLImage,
+    title: 'Stellar KL',
+    tags: ['Coffee', 'Lemonade', 'Kombucha'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '21:00',
+    },
+  },
   '6197240d9c8fb2000690ea3c': {
     id: '6197240d9c8fb2000690ea3c',
     imageNoCompression: ChuImage,
@@ -121,7 +143,7 @@ export const AllFoodCourtStoreList = {
   '61b996a0438dfb000652eba3': {
     id: '61b996a0438dfb000652eba3',
     imageNoCompression: SushiImage,
-    title: 'Sushi & Bento',
+    title: 'Kaiju Kare',
     tags: ['japanese', 'sushi', 'bento'],
   },
   '61b99758438dfb00065307c5': {

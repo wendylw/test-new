@@ -76,7 +76,7 @@ import { sourceType } from './constants';
 import { getIfAddressInfoExists, getAddressCoords, getAddressName } from '../../../redux/modules/address/selectors';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 
 const localState = {
   blockScrollTop: 0,
@@ -175,7 +175,7 @@ class Home extends Component {
 
     const shareLinkUrl = this.getShareLinkUrl();
 
-    shortenUrl(shareLinkUrl).catch(error => loggly.error(`failed to share store link(didMount): ${error.message}`));
+    shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
     const { enablePayLater } = this.props;
 
     if (config.storeId) {
@@ -934,7 +934,7 @@ class Home extends Component {
         cashback: cashbackRate,
       });
     } catch (error) {
-      loggly.error(`failed to share store link(click): ${error.message}`);
+      logger.error(`failed to share store link(click): ${error.message}`);
     }
   };
 
@@ -1079,7 +1079,7 @@ class Home extends Component {
                 (this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight : 0)}px`,
             }}
           >
-            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+            <Trans i18nKey="FreeDeliveryPreviousPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
             </Trans>
           </p>

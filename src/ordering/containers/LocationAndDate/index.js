@@ -41,7 +41,7 @@ import { setAddressInfo } from '../../../redux/modules/address/thunks';
 import { withAddressInfo } from '../Location/withAddressInfo';
 import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 import './OrderingLocationDate.scss';
 
 const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRESS_RANGE } = Constants;
@@ -213,7 +213,7 @@ class LocationAndDate extends Component {
   };
 
   goToNext = async () => {
-    loggly.log('location-data.continue');
+    logger.log('location-data.continue');
     const {
       selectedOrderDate,
       selectedTime,
@@ -273,7 +273,6 @@ class LocationAndDate extends Component {
         this.gotoOrderingCartPage(deliveryType, h);
         return;
       }
-      return history.go(-1);
     }
 
     if (this.query.callbackUrl) {

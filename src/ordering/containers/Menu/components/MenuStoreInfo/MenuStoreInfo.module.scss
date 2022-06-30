@@ -1,4 +1,4 @@
-$cashbackTagBackgroundColor: #fff2e3;
+@import "../../../../../common/styles/variables.scss";
 
 .menuStoreInfo {
   @apply tw-flex tw-items-center tw-px-16 sm:tw-px-16px;
@@ -9,9 +9,42 @@ $cashbackTagBackgroundColor: #fff2e3;
     width: 22.35%;
     max-width: 80px;
   }
+}
 
-  &__tag {
-    background-color: $cashbackTagBackgroundColor;
-    border-radius: 2px;
+.menuStoreInfoSubtitle {
+  @apply tw-text-sm tw-leading-loose;
+  @include text-line-clamp(1);
+}
+
+.menuStoreInfoList {
+  @apply tw-flex tw-items-center tw-my-2 sm:tw-my-2px tw-space-x-8 sm:tw-space-x-8px;
+
+  > li:nth-child(n + 2) {
+    @apply tw-border-solid tw-pl-8 sm:tw-pl-8px tw-border-0 tw-border-l tw-border-gray-200;
   }
+}
+
+.menuStoreInfoTag {
+  @apply tw-absolute tw-justify-center tw-inset-x-0 tw-bottom-0 tw-translate-y-1/2;
+
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.menuStoreInfoFreeDeliveryTagContainer {
+  @apply tw-inline-flex tw-flex-1 tw-mx-4 sm:tw-mx-4px tw-my-4 sm:tw-my-4px tw-overflow-hidden;
+}
+
+.menuStoreInfoFreeDeliveryTag {
+  @apply tw-leading-loose tw-overflow-hidden;
+
+  > span {
+    @apply tw-max-w-full;
+
+    @include text-line-clamp(1);
+  }
+}
+
+.menuStoreInfoStarIcon {
+  @apply tw-text-yellow;
 }

@@ -15,6 +15,10 @@
   width: 100%;
 }
 
+.MenuHeaderBackArrow {
+  width: 20%;
+}
+
 .MenuHeaderButton {
   &__default:global(.type-text) {
     @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-border-0 tw-text-black hover:tw-text-black active:tw-text-gray focus:tw-text-black focus:hover:tw-text-black  focus:active:tw-text-gray;

@@ -73,9 +73,10 @@ const PromotionPrompt = ({ promotion, className }) => {
     formattedMinOrderAmount,
     appliedSources,
     requireFirstPurchase,
+    isFreeDeliveryTagVisible,
   } = promotion;
 
-  if (discountProductList || validDate) {
+  if (discountProductList || validDate || isFreeDeliveryTagVisible) {
     return null;
   }
 
