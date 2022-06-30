@@ -17,7 +17,7 @@ import { IconDelete, IconCart } from '../../../../components/Icons';
 import CurrencyNumber from '../../../components/CurrencyNumber';
 import ProductItem from '../../../components/ProductItem';
 import ItemOperator from '../../../../components/ItemOperator';
-import loggly from '../../../../utils/monitoring/loggly';
+import logger from '../../../../utils/monitoring/logger';
 import './CartListDrawer.scss';
 import { withBackButtonSupport } from '../../../../utils/modal-back-button-support';
 
@@ -68,7 +68,7 @@ class CartListDrawer extends Component {
   }
 
   handleClearCart = async () => {
-    loggly.log('cart-list-drawer.clear-all-attempt');
+    logger.log('cart-list-drawer.clear-all-attempt');
 
     const { appActions, onClearCart, enablePayLater, clearCart } = this.props;
 
@@ -86,7 +86,7 @@ class CartListDrawer extends Component {
   handleRemoveCartItem = cartItem => {
     const { appActions, enablePayLater, removeCartItemsById } = this.props;
 
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const { id, productId, variations } = cartItem;
 
@@ -106,7 +106,7 @@ class CartListDrawer extends Component {
 
   handleDecreaseCartItem = cartItem => {
     const { enablePayLater, updateCartItems } = this.props;
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const { quantity, productId, variations } = cartItem;
 
@@ -140,7 +140,7 @@ class CartListDrawer extends Component {
 
   handleIncreaseCartItem = cartItem => {
     const { enablePayLater, updateCartItems } = this.props;
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const { quantity, productId, variations } = cartItem;
     const selectedOptions = (variations || []).map(({ variationId, optionId, quantity }) => ({

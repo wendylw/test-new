@@ -93,7 +93,7 @@ async function _fetch(url, opts) {
   try {
     const resp = await ky(url, opts);
 
-    // Send log to Loggly
+    // Send log to Log service
     window.dispatchEvent(
       new CustomEvent('sh-api-success', {
         detail: {
@@ -113,7 +113,7 @@ async function _fetch(url, opts) {
 
       if (typeof body === 'object' && body.code) {
         error = body;
-        // Send log to Loggly
+        // Send log to Log service
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
@@ -131,7 +131,7 @@ async function _fetch(url, opts) {
           status: e.status,
           message: typeof body === 'string' ? body : JSON.stringify(body),
         };
-        // Send log to Loggly
+        // Send log to Log service
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
@@ -144,7 +144,7 @@ async function _fetch(url, opts) {
         );
       }
     } else {
-      // Send log to Loggly
+      // Send log to Log service
       window.dispatchEvent(
         new CustomEvent('sh-fetch-error', {
           detail: {

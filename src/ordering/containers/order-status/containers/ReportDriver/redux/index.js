@@ -19,7 +19,7 @@ import _get from 'lodash/get';
 import _trim from 'lodash/trim';
 import Utils from '../../../../../../utils/utils';
 import { alert } from '../../../../../../common/feedback';
-import * as loggly from '../../../../../../utils/monitoring/loggly.js';
+import logger from '../../../../../../utils/monitoring/logger.js';
 
 export const initialState = {
   inputNotes: '',
@@ -71,7 +71,7 @@ export const thunks = {
           dispatch(actions.setUploadPhotoFileLocation(result.location));
           location = result.location;
         } catch (e) {
-          loggly.error('order-status.report-driver.upload-photo-error', { message: e.message });
+          logger.error('order-status.report-driver.upload-photo-error', { message: e.message });
 
           alert.raw(
             <p className="padding-small text-size-biggest text-weight-bolder">{i18next.t('ConnectionIssue')}</p>
@@ -90,7 +90,7 @@ export const thunks = {
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.SUBMITTED));
     } catch (e) {
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
-      loggly.error('order-status.report-driver.submit-error', { message: e.message });
+      logger.error('order-status.report-driver.submit-error', { message: e.message });
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
         // which is a bad practice, we will fix it in the future, for now we just keep a useless

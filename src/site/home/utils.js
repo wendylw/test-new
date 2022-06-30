@@ -2,7 +2,7 @@ import { getPositionInfoBySource } from '../../utils/geoUtils';
 import { get } from '../../utils/request';
 import Url from '../../utils/url';
 import Utils from '../../utils/utils';
-import loggly from '../../utils/monitoring/loggly';
+import logger from '../../utils/monitoring/logger';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../../redux/modules/address/constants';
 
 export const getPlaceInfoByDeviceByAskPermission = async () => {
@@ -11,7 +11,7 @@ export const getPlaceInfoByDeviceByAskPermission = async () => {
     return placeInfo;
   } catch (e) {
     console.warn(e);
-    loggly.warn('utils.getPlaceInfoByDeviceByAskPermission', {
+    logger.warn('utils.getPlaceInfoByDeviceByAskPermission', {
       message: e?.message,
     });
   }
@@ -30,7 +30,7 @@ export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) =>
       if (placeInfo) source = DEVICE;
     } catch (e) {
       console.warn(e);
-      loggly.warn('utils.getPlaceInfo', {
+      logger.warn('utils.getPlaceInfo', {
         message: e?.message,
       });
     }
@@ -43,7 +43,7 @@ export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) =>
       placeInfo = await getPositionInfoBySource(IP, false);
       if (placeInfo) source = IP;
     } catch (e) {
-      loggly.error('utils.get-place-info', {
+      logger.error('utils.get-place-info', {
         message: e?.message,
       });
     }
@@ -53,7 +53,7 @@ export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) =>
 };
 
 export const submitStoreMenu = async ({ deliveryAddress, store, source, shippingType = 'delivery' }) => {
-  loggly.log('beepit.click-store', {
+  logger.log('beepit.click-store', {
     targetBusiness: store.business,
     source,
   });
@@ -68,7 +68,7 @@ export const submitStoreMenu = async ({ deliveryAddress, store, source, shipping
   const redirectUrl = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
 
   if (!Boolean(deliveryAddress)) {
-    loggly.error('beepit.to-store-failure', { message: 'delivery address is empty' });
+    logger.error('beepit.to-store-failure', { message: 'delivery address is empty' });
     console.error('delivery address is empty');
     return;
   }

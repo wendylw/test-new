@@ -1,5 +1,5 @@
 /* eslint-disable import/no-anonymous-default-export */
-import loggly from '../../utils/monitoring/loggly';
+import logger from '../../utils/monitoring/logger';
 
 //Deal with every single action that has FETCH_REQUEST field.
 export default store => next => action => {
@@ -33,7 +33,7 @@ export default store => next => action => {
 
       if (!response) {
         console.warn('requestPromise returns nothing in promise.then() when types =', types);
-        loggly.warn('requestPromise.default', {
+        logger.warn('requestPromise.default', {
           message: `requestPromise returns nothing in promise.then() when types = ${types}`,
         });
       }

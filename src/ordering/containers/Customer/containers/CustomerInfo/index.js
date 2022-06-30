@@ -32,7 +32,7 @@ import { withAddressInfo } from '../../../Location/withAddressInfo';
 import { withAvailableAddressDetails } from './withAvailableAddressDetails';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
-import loggly from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 
 const { ADDRESS_RANGE, ROUTER_PATHS } = Constants;
 
@@ -127,7 +127,7 @@ class CustomerInfo extends Component {
   }
 
   handleBeforeCreateOrder = () => {
-    loggly.log('customer.create-order-attempt');
+    logger.log('customer.create-order-attempt');
 
     const { customerInfoActions } = this.props;
     const error = this.validateFields();
@@ -188,6 +188,8 @@ class CustomerInfo extends Component {
     const isDeliveryType = Utils.isDeliveryType();
     const { deliveryToAddress, addressDetails, deliveryComments, addressName } = deliveryDetails;
     const pickUpAddress = stores.length && Utils.getValidAddress(stores[0], ADDRESS_RANGE.COUNTRY);
+    const { search } = window.location;
+    const callbackUrl = encodeURIComponent(`${ROUTER_PATHS.ORDERING_CUSTOMER_INFO}${search}`);
 
     return (
       <li>
@@ -231,7 +233,7 @@ class CustomerInfo extends Component {
                 <Link
                   to={{
                     pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-                    search: window.location.search,
+                    search: `${search}&callbackUrl=${callbackUrl}`,
                     state: {
                       from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
                     },
@@ -282,7 +284,7 @@ class CustomerInfo extends Component {
           }}
           to={{
             pathname: ROUTER_PATHS.ORDERING_LOCATION_AND_DATE,
-            search: window.location.search,
+            search: `${search}&callbackUrl=${callbackUrl}`,
             state: {
               from: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
             },

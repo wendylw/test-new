@@ -5,23 +5,12 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
+import Constants from '../utils/constants';
 import './PhoneViewContainer.scss';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class PhoneViewContainer extends React.Component {
-  state = {
-    isSavingPhone: this.props.isLoading,
-  };
-
-  componentDidUpdate(prevProps) {
-    const { isLoading } = this.props;
-
-    if (isLoading !== prevProps.isLoading) {
-      this.setState({ isSavingPhone: isLoading });
-    }
-  }
-
   handleUpdatePhoneNumber(phone) {
     const { updatePhoneNumber } = this.props;
     const { number } = (phone && parsePhoneNumberFromString(phone)) || {};
@@ -45,18 +34,16 @@ class PhoneViewContainer extends React.Component {
     }
 
     Utils.setLocalStorageVariable('user.p', phone);
-    this.setState({ isSavingPhone: true });
 
-    onSubmit(phone, 'otp');
+    onSubmit(phone, Constants.OTP_REQUEST_TYPES.OTP);
   }
 
   render() {
-    const { t, children, title, className, country, buttonText, content, phone } = this.props;
-    const { isSavingPhone } = this.state;
+    const { t, children, title, className, country, buttonText, content, phone, isLoading } = this.props;
     const classList = ['phone-view'];
     let buttonContent = buttonText;
 
-    if (isSavingPhone) {
+    if (isLoading) {
       buttonContent = t('Processing');
     }
 
@@ -89,7 +76,7 @@ class PhoneViewContainer extends React.Component {
           className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
           data-heap-name="common.phone-view-container.submit-btn"
           onClick={this.handleSubmitPhoneNumber.bind(this)}
-          disabled={!phone || isSavingPhone || !isValidPhoneNumber(phone || '')}
+          disabled={!phone || isLoading || !isValidPhoneNumber(phone || '')}
         >
           {buttonContent}
         </button>

@@ -4,7 +4,7 @@ import { captureException } from '@sentry/react';
 import { Loader } from '@googlemaps/js-api-loader';
 import { computeDistanceBetween } from 'spherical-geometry-js';
 import { get, post } from './request';
-import loggly from '../utils/monitoring/loggly';
+import logger from './monitoring/logger';
 import { getLocation as getLocationFromTNG } from './tng-utils';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../redux/modules/address/constants';
 import config from '../../src/config';
@@ -31,7 +31,7 @@ const loadGoogleMapsAPI = async () => {
       window.newrelic?.addPageAction?.('common.script-load-error', {
         scriptName: 'google-map-api',
       });
-      loggly.error('common.script-load-error', {
+      logger.error('common.script-load-error', {
         message: 'Failed to load google maps api',
       });
       return Promise.reject(new Error('Failed to load google maps api'));
@@ -41,7 +41,7 @@ const loadGoogleMapsAPI = async () => {
 // Preload google maps script if needed
 if (Utils.isSiteApp() || Utils.isDeliveryOrder()) {
   loadGoogleMapsAPI().catch(e => {
-    loggly.error('preloadGoogleMapAPI-failure', { message: e?.message });
+    logger.error('preloadGoogleMapAPI-failure', { message: e?.message });
   });
 }
 
@@ -50,7 +50,7 @@ const getLatLng = async ({ lat, lng }) => {
     const googleMapsAPI = await loadGoogleMapsAPI();
     return new googleMapsAPI.LatLng(lat, lng);
   } catch (e) {
-    loggly.error('getLatLng-failure', { message: e?.message });
+    logger.error('getLatLng-failure', { message: e?.message });
     throw e;
   }
 };
@@ -69,7 +69,7 @@ export const getAutocompleteSessionToken = async () => {
     }
     return autoCompleteSessionToken;
   } catch (e) {
-    loggly.error('getAutocompleteSessionToken-failure', { message: e?.message });
+    logger.error('getAutocompleteSessionToken-failure', { message: e?.message });
     throw e;
   }
 };
@@ -82,7 +82,7 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
     let radiusNumber = radius;
     if ((locationCoords && typeof radiusNumber !== 'number') || (typeof radiusNumber === 'number' && !locationCoords)) {
       console.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
-      loggly.warn('geoUtils.getPlaceAutocompleteList', {
+      logger.warn('geoUtils.getPlaceAutocompleteList', {
         message: 'getPlaceAutocompleteList: location and radius must be provided at the same time.',
       });
       locationCoords = undefined;
@@ -113,7 +113,7 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
             window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-failure', {
               error: status,
             });
-            loggly.error('google-maps-api.getPlacePredictions-failure', {
+            logger.error('google-maps-api.getPlacePredictions-failure', {
               error: status,
               input: text,
               location: locationCoords,
@@ -129,7 +129,7 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
 
     return places;
   } catch (e) {
-    loggly.error('getPlaceAutocompleteList-failure', { message: e?.message });
+    logger.error('getPlaceAutocompleteList-failure', { message: e?.message });
     return [];
   }
 };
@@ -180,7 +180,7 @@ export const standardizeGeoAddress = geoAddressComponent => {
 export const getDeviceCoordinates = option => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      loggly.warn('geoUtils.getDeviceCoordinates', {
+      logger.warn('geoUtils.getDeviceCoordinates', {
         message: 'Your browser does not support location detection.',
       });
       reject('Your browser does not support location detection.');
@@ -192,7 +192,7 @@ export const getDeviceCoordinates = option => {
       },
       error => {
         console.warn('Fail to detect location', error);
-        loggly.warn('geoUtils.getDeviceCoordinates', { message: `Fail to detect location, error: ${error?.message}` });
+        logger.warn('geoUtils.getDeviceCoordinates', { message: `Fail to detect location, error: ${error?.message}` });
         reject(error);
       },
       option
@@ -246,7 +246,7 @@ export const getPlacesFromCoordinates = async coords => {
           window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
             error: status,
           });
-          loggly.error('google-maps-api.geocode-failure', {
+          logger.error('google-maps-api.geocode-failure', {
             error: status,
             location,
           });
@@ -255,7 +255,7 @@ export const getPlacesFromCoordinates = async coords => {
       });
     });
   } catch (e) {
-    loggly.error('getPlacesFromCoordinates-failure', { message: e?.message });
+    logger.error('getPlacesFromCoordinates-failure', { message: e?.message });
     throw e;
   }
 };
@@ -327,7 +327,7 @@ export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
           window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
             error: status,
           });
-          loggly.error('google-maps-api.geocode-failure', {
+          logger.error('google-maps-api.geocode-failure', {
             error: status,
             placeId,
           });
@@ -336,7 +336,7 @@ export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
       });
     });
   } catch (e) {
-    loggly.error('getPlaceInfoFromPlaceId-failure', { message: e?.message });
+    logger.error('getPlaceInfoFromPlaceId-failure', { message: e?.message });
     throw e;
   }
 };
@@ -364,7 +364,7 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
           window.newrelic?.addPageAction('google-maps-api.placesGetDetails-failure', {
             error: status,
           });
-          loggly.error('google-maps-api.placesGetDetails-failure', {
+          logger.error('google-maps-api.placesGetDetails-failure', {
             error: status,
             fields,
             placeId,
@@ -400,7 +400,7 @@ export const fetchGeolocationByIp = () => {
       window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-failure', {
         error: err?.message,
       });
-      loggly.error('ip-api.fetchGeolocationByIp-failure', {
+      logger.error('ip-api.fetchGeolocationByIp-failure', {
         error: err?.message,
       });
       throw err;

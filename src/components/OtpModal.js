@@ -76,6 +76,15 @@ class OtpModal extends React.Component {
     clearTimeout(this.countDownSetTimeoutObj);
   }
 
+  componentDidUpdate(prevProps) {
+    const { shouldCountdown: currShouldCountdown } = this.props;
+    const { shouldCountdown: prevShouldCountdown } = prevProps;
+
+    if (!prevShouldCountdown && currShouldCountdown) {
+      this.countDown(this.props.ResendOtpTime);
+    }
+  }
+
   updateAndValidateOtp = otp => {
     const { sendOtp, updateOtpStatus } = this.props;
     this.setState(
@@ -113,17 +122,7 @@ class OtpModal extends React.Component {
   }
 
   render() {
-    const {
-      t,
-      onClose,
-      getOtp,
-      isLoading,
-      isResending,
-      phone,
-      showWhatsAppResendBtn,
-      ResendOtpTime,
-      isError,
-    } = this.props;
+    const { t, onClose, getOtp, isLoading, isResending, phone, showWhatsAppResendBtn, isError } = this.props;
     const { currentOtpTime, otp } = this.state;
 
     return (
@@ -134,7 +133,7 @@ class OtpModal extends React.Component {
           data-heap-name="common.otp-modal.header"
         />
 
-        <section ref={this.addressAsideInnerRef} className="otp-modal__container text-center">
+        <section ref={this.addressAsideInnerRef} className="text-center">
           <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
             {isError ? <img src={beepOtpError} alt="otp" /> : <img src={beepOtpLock} alt="otp" />}
           </figure>
@@ -181,9 +180,7 @@ class OtpModal extends React.Component {
                   data-heap-name="common.otp-modal.resend-btn"
                   onClick={() => {
                     CleverTap.pushEvent('Login - Resend OTP');
-                    this.setState({ currentOtpTime: ResendOtpTime });
-                    this.countDown(ResendOtpTime);
-                    getOtp(phone, 'reSendotp');
+                    getOtp(phone, Constants.OTP_REQUEST_TYPES.RE_SEND_OTP);
                   }}
                 >
                   {t('ResendViaSMS')}
@@ -194,9 +191,7 @@ class OtpModal extends React.Component {
                     data-heap-name="common.otp-modal.resend-whats-btn"
                     onClick={() => {
                       CleverTap.pushEvent('Login - Resend Whatsapp OTP');
-                      this.setState({ currentOtpTime: ResendOtpTime });
-                      this.countDown(ResendOtpTime);
-                      getOtp(phone, 'WhatsApp');
+                      getOtp(phone, Constants.OTP_REQUEST_TYPES.WHATSAPP);
                     }}
                   >
                     {t('ResendViaWhatsAPP')}
@@ -238,6 +233,7 @@ OtpModal.propTypes = {
   isLoading: PropTypes.bool,
   isError: PropTypes.bool,
   showWhatsAppResendBtn: PropTypes.bool,
+  shouldCountdown: PropTypes.bool,
   onClose: PropTypes.func,
   getOtp: PropTypes.func,
   sendOtp: PropTypes.func,
@@ -248,6 +244,7 @@ OtpModal.defaultProps = {
   buttonText: '',
   ResendOtpTime: 0,
   isLoading: false,
+  shouldCountdown: false,
   onClose: () => {},
   sendOtp: () => {},
 };
