@@ -1,75 +1,50 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getIsFulfillMinimumConsumption } from './redux/cart/selectors';
+import Button from '../../../common/components/Button';
 import {
-  getSelectedDateDisplayValue,
-  getSelectedLocationDisplayName,
-  getStoreId,
-  getShippingType,
-  getSelectedTimeDisplayValue,
-  getStoreStatus,
-  getDisplayDeliveryDistance,
-  getFormattedShippingFee,
-  getIsAddressOutOfRange,
-  getIsAbleToReviewCart,
-  getStoreRatingDisplayValue,
-  getIsFreeDeliveryTagVisible,
-  getFreeShippingFormattedMinAmount,
-  getFreeShippingFormattedMinAmountWithOutSpacing,
-} from './redux/common/selectors';
+  getDateList,
+  getIsEnablePerTimeSlotLimitForPreOrder,
+  getIsInitializing,
+  getIsSaveButtonDisabled,
+  getShippingTypeList,
+  getStoreSupportShippingTypes,
+  getTimeSlotList,
+} from './redux/timeSlot/selectors';
+import { showTimeSlotDrawer } from './redux/timeSlot/thunks';
 
 function Debug() {
-  const locationDisplayName = useSelector(getSelectedLocationDisplayName);
-  const storeId = useSelector(getStoreId);
-  const shippingType = useSelector(getShippingType);
-  const selectedDateDisplayValue = useSelector(getSelectedDateDisplayValue);
-  const selectedTimeDisplayValue = useSelector(getSelectedTimeDisplayValue);
-  const storeStatus = useSelector(getStoreStatus);
-  const deliveryDistance = useSelector(getDisplayDeliveryDistance);
-  const formattedShippingFee = useSelector(getFormattedShippingFee);
-  const isAddressOutOfRange = useSelector(getIsAddressOutOfRange);
-  const isAbleToReviewCart = useSelector(getIsAbleToReviewCart);
-  const isFulfillMinimumConsumption = useSelector(getIsFulfillMinimumConsumption);
-  const storeRating = useSelector(getStoreRatingDisplayValue);
-  const isFreeDeliveryTagVisible = useSelector(getIsFreeDeliveryTagVisible);
-  const freeShippingFormattedMinAmount = useSelector(getFreeShippingFormattedMinAmount);
-  const freeShippingFormattedMinAmountWithOutSpacing = useSelector(getFreeShippingFormattedMinAmountWithOutSpacing);
+  const dispatch = useDispatch();
+  const shippingTypeList = useSelector(getShippingTypeList);
+  const storeSupportShippingTypes = useSelector(getStoreSupportShippingTypes);
+  const dateList = useSelector(getDateList);
+  const timeSlotList = useSelector(getTimeSlotList);
+  const isEnablePerTimeSlotLimitForPreOrder = useSelector(getIsEnablePerTimeSlotLimitForPreOrder);
+  const isSaveButtonDisabled = useSelector(getIsSaveButtonDisabled);
+  const isInitializing = useSelector(getIsInitializing);
 
   useEffect(() => {
-    console.log('locationDisplayName: ', locationDisplayName);
-    console.log('storeId: ', storeId);
-    console.log('shippingType: ', shippingType);
-    console.log('selectedDateDisplayValue: ', selectedDateDisplayValue);
-    console.log('selectedTimeDisplayValue: ', selectedTimeDisplayValue);
-    console.log('storeStatus: ', storeStatus);
-    console.log('deliveryDistance: ', deliveryDistance);
-    console.log('formattedShippingFee: ', formattedShippingFee);
-    console.log('isAddressOutOfRange: ', isAddressOutOfRange);
-    console.log('isAbleToReviewCart: ', isAbleToReviewCart);
-    console.log('isFulfillMinimumConsumption: ', isFulfillMinimumConsumption);
-    console.log('storeRating: ', storeRating);
-    console.log('isFreeDeliveryTagVisible: ', isFreeDeliveryTagVisible);
-    console.log('freeShippingFormattedMinAmount: ', freeShippingFormattedMinAmount);
-    console.log('freeShippingFormattedMinAmountWithOutSpacing: ', freeShippingFormattedMinAmountWithOutSpacing);
+    console.log('shippingTypeList: ', shippingTypeList);
+    console.log('storeSupportShippingTypes: ', storeSupportShippingTypes);
+    console.log('dateList: ', dateList);
+    console.log('timeSlotList: ', timeSlotList);
+    console.log('isEnablePerTimeSlotLimitForPreOrder: ', isEnablePerTimeSlotLimitForPreOrder);
+    console.log('isSaveButtonDisabled: ', isSaveButtonDisabled);
+    console.log('isInitializing: ', isInitializing);
   }, [
-    locationDisplayName,
-    storeId,
-    shippingType,
-    selectedDateDisplayValue,
-    selectedTimeDisplayValue,
-    storeStatus,
-    deliveryDistance,
-    formattedShippingFee,
-    isAddressOutOfRange,
-    isAbleToReviewCart,
-    isFulfillMinimumConsumption,
-    storeRating,
-    isFreeDeliveryTagVisible,
-    freeShippingFormattedMinAmount,
-    freeShippingFormattedMinAmountWithOutSpacing,
+    isInitializing,
+    shippingTypeList,
+    storeSupportShippingTypes,
+    dateList,
+    timeSlotList,
+    isEnablePerTimeSlotLimitForPreOrder,
+    isSaveButtonDisabled,
   ]);
 
-  return null;
+  const handleShowTimeSlotDrawer = () => {
+    dispatch(showTimeSlotDrawer());
+  };
+
+  return <Button onClick={handleShowTimeSlotDrawer}>show time slot drawer</Button>;
 }
 
 Debug.displayName = 'Debug';

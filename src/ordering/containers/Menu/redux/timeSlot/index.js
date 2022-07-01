@@ -1,11 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
+import { loadTimeSlotSoldData, showTimeSlotDrawer } from './thunks';
 
 const initialState = {
   timeSlotDrawerVisible: false,
   selectedShippingType: null, // selected shipping type
   selectedDate: null, // selected date, IOS date String format, example: "2022-06-30T16:00:00.000Z"
-  selectedTimeSlot: null, // selected time slot, example: "16:00"
-  initializing: false,
+  selectedTimeSlot: null, // selected time slot, example: "now" || "16:00"
+  showTimeSlotDrawerRequest: {
+    status: null,
+    error: null,
+  },
   timeSlotSoldRequest: {
     data: [],
     status: null,
@@ -17,7 +22,35 @@ export const { reducer, actions } = createSlice({
   name: 'ordering/menu/timeSlot',
   initialState,
   reducers: {},
-  extraReducers: {},
+  extraReducers: {
+    [showTimeSlotDrawer.pending.type]: state => {
+      state.showTimeSlotDrawerRequest.status = API_REQUEST_STATUS.PENDING;
+      // show time slot drawer
+      state.timeSlotDrawerVisible = true;
+    },
+    [showTimeSlotDrawer.fulfilled.type]: (state, { payload }) => {
+      state.showTimeSlotDrawerRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.selectedShippingType = payload.selectedShippingType;
+      state.selectedDate = payload.selectedDate;
+      state.selectedTimeSlot = payload.selectedTimeSlot;
+    },
+    [showTimeSlotDrawer.rejected.type]: (state, { error }) => {
+      state.showTimeSlotDrawerRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.showTimeSlotDrawerRequest.error = error;
+    },
+    [loadTimeSlotSoldData.pending.type]: state => {
+      state.timeSlotSoldRequest.status = API_REQUEST_STATUS.PENDING;
+    },
+    [loadTimeSlotSoldData.fulfilled.type]: (state, { payload }) => {
+      state.timeSlotSoldRequest.status = API_REQUEST_STATUS.FULFILLED;
+      state.timeSlotSoldRequest.data = payload;
+    },
+    [loadTimeSlotSoldData.rejected.type]: (state, { error }) => {
+      state.timeSlotSoldRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.timeSlotSoldRequest.data = [];
+      state.timeSlotSoldRequest.error = error;
+    },
+  },
 });
 
 export default reducer;

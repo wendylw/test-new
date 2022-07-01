@@ -1,11 +1,23 @@
 import { createSelector } from 'reselect';
-import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
-import { getBusinessUTCOffset, getStore, getStoreSupportShippingTypes } from '../../../../redux/modules/app';
+import _lowerCase from 'lodash/lowerCase';
+import _get from 'lodash/get';
+import { API_REQUEST_STATUS, SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { getBusinessUTCOffset, getStore } from '../../../../redux/modules/app';
 import { getCurrentTime } from '../common/selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
 import * as timeLib from '../../../../../utils/time-lib';
 
-export const getTimeSlotState = state => state.app.menu.timeSlot;
+export const getStoreFulfillmentOptions = createSelector(getStore, store => _get(store, 'fulfillmentOptions', []));
+
+export const getIsEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, store =>
+  _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false)
+);
+
+export const getStoreSupportShippingTypes = createSelector(getStoreFulfillmentOptions, storeFulfillmentOptions =>
+  storeFulfillmentOptions.map(_lowerCase)
+);
+
+export const getTimeSlotState = state => state.menu.timeSlot;
 
 export const getTimeSlotDrawerVisible = createSelector(
   getTimeSlotState,
@@ -21,7 +33,10 @@ export const getSelectedDate = createSelector(getTimeSlotState, timeSlotState =>
 
 export const getSelectedTimeSlot = createSelector(getTimeSlotState, timeSlotState => timeSlotState.selectedTimeSlot);
 
-export const getIsInitializing = createSelector(getTimeSlotState, timeSlotState => timeSlotState.initializing);
+export const getIsInitializing = createSelector(
+  getTimeSlotState,
+  timeSlotState => timeSlotState.showTimeSlotDrawerRequest.status === API_REQUEST_STATUS.PENDING
+);
 
 export const getTimeSlotSoldRequest = createSelector(
   getTimeSlotState,
@@ -122,7 +137,7 @@ export const getTimeSlotList = createSelector(
 
     const currentDate = new Date(currentTime);
 
-    const selectedDate = new Date(selectedDateObj.value);
+    const selectedDateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, selectedDateObj.value);
 
     const timeSlotList = (() => {
       if (selectedDateObj.isToday) {
@@ -151,7 +166,9 @@ export const getTimeSlotList = createSelector(
       const toTime =
         selectedShippingType === SHIPPING_TYPES.DELIVERY ? timeLib.add(time, { value: 1, unit: 'hour' }) : time;
 
-      const soldOut = storeUtils.isDateTimeSoldOut(store, timeSlotSoldData, selectedDate, businessUTCOffset);
+      const selectedTime = timeLib.setDateTime(time, selectedDateDayjs);
+
+      const soldOut = storeUtils.isDateTimeSoldOut(store, timeSlotSoldData, selectedTime.toDate(), businessUTCOffset);
 
       return {
         value: time,

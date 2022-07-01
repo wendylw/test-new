@@ -120,6 +120,12 @@ export const getCategories = createSelector(
 
 export const getCurrentTime = state => state.menu.common.currentTime;
 
+export const getBusinessTimeZoneCurrentDayjs = createSelector(
+  getCurrentTime,
+  getBusinessUTCOffset,
+  (currentTime, businessUTCOffset) => StoreUtils.getBusinessDateTime(businessUTCOffset, currentTime)
+);
+
 export const getExpectedDeliveryTime = state => state.menu.common.expectedDeliveryTime;
 
 export const getHasSelectedExpectedDeliveryTime = createSelector(
