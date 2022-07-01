@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import _map from 'lodash/map';
-import { getBusinessUTCOffset } from '../../../../redux/modules/app';
+import { getBusinessUTCOffset, getStore } from '../../../../redux/modules/app';
 import {
   getBusinessTimeZoneCurrentDayjs,
   getExpectedDeliveryTime,
@@ -15,7 +15,13 @@ export const loadTimeSlotSoldData = createAsyncThunk(
   'ordering/menu/timeSlot/loadTimeSlotSoldData',
   async ({ selectedDate, selectedShippingType }, { getState }) => {
     const state = getState();
+    const isEnablePerTimeSlotLimitForPreOrder = getIsEnablePerTimeSlotLimitForPreOrder(state);
     const storeId = getStoreId(state);
+
+    if (!isEnablePerTimeSlotLimitForPreOrder || !storeId || !selectedDate || !selectedShippingType) {
+      return [];
+    }
+
     const soldDate = await fetchTimeSlotSoldData({
       shippingType: selectedShippingType,
       fulfillDate: selectedDate,
@@ -29,62 +35,51 @@ export const loadTimeSlotSoldData = createAsyncThunk(
   }
 );
 
-export const showTimeSlotDrawer = createAsyncThunk(
-  'ordering/menu/timeSlot/showTimeSlotDrawer',
-  (_, { getState, dispatch }) => {
-    const state = getState();
-    const selectedShippingType = getShippingType(state);
-    const expectedDeliveryTime = getExpectedDeliveryTime(state);
-    const isEnablePerTimeSlotLimitForPreOrder = getIsEnablePerTimeSlotLimitForPreOrder(state);
-    const currentDayjs = getBusinessTimeZoneCurrentDayjs(state);
-    const businessUTCOffset = getBusinessUTCOffset(state);
+export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/timeSlot/showTimeSlotDrawer', (_, { getState }) => {
+  const state = getState();
+  const store = getStore(state);
+  const selectedShippingType = getShippingType(state);
+  const expectedDeliveryTime = getExpectedDeliveryTime(state);
+  const currentDayjs = getBusinessTimeZoneCurrentDayjs(state);
+  const businessUTCOffset = getBusinessUTCOffset(state);
 
-    if (!expectedDeliveryTime) {
-      return {
-        selectedShippingType,
-        selectedDate: null,
-        selectedTimeSlot: null,
-      };
-    }
+  if (!expectedDeliveryTime) {
+    // find earliest available time slot
+    const { orderDate, fromTime } = StoreUtils.getStoreAvailableDateAndTime(store, {
+      expectedDay: null,
+      expectedFromTime: null,
+      deliveryType: selectedShippingType,
+      currentDate: currentDayjs.toDate(),
+      businessUTCOffset,
+    });
 
-    if (expectedDeliveryTime === 'now') {
-      const selectedDate = currentDayjs.startOf('day').toISOString();
-      if (isEnablePerTimeSlotLimitForPreOrder) {
-        dispatch(
-          loadTimeSlotSoldData({
-            selectedDate,
-            selectedShippingType,
-          })
-        );
-      }
+    return {
+      selectedShippingType,
+      selectedDate: orderDate?.date?.toISOString(),
+      selectedTimeSlot: fromTime,
+    };
+  }
 
-      return {
-        selectedShippingType,
-        selectedDate,
-        selectedTimeSlot: 'now',
-      };
-    }
-
-    const expectedDeliveryTimeDayjs = StoreUtils.getBusinessDateTime(businessUTCOffset, expectedDeliveryTime);
-
-    const selectedDate = expectedDeliveryTimeDayjs.startOf('day').toISOString();
-
-    if (isEnablePerTimeSlotLimitForPreOrder) {
-      dispatch(
-        loadTimeSlotSoldData({
-          selectedDate,
-          selectedShippingType,
-        })
-      );
-    }
+  if (expectedDeliveryTime === 'now') {
+    const selectedDate = currentDayjs.startOf('day').toISOString();
 
     return {
       selectedShippingType,
       selectedDate,
-      selectedTimeSlot: expectedDeliveryTimeDayjs.format('HH:mm'),
+      selectedTimeSlot: 'now',
     };
   }
-);
+
+  const expectedDeliveryTimeDayjs = StoreUtils.getBusinessDateTime(businessUTCOffset, expectedDeliveryTime);
+
+  const selectedDate = expectedDeliveryTimeDayjs.startOf('day').toISOString();
+
+  return {
+    selectedShippingType,
+    selectedDate,
+    selectedTimeSlot: expectedDeliveryTimeDayjs.format('HH:mm'),
+  };
+});
 
 export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/timeSlot/hideTimeSlotDrawer', () => {});
 

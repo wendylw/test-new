@@ -6,14 +6,19 @@ import {
   getIsEnablePerTimeSlotLimitForPreOrder,
   getIsInitializing,
   getIsSaveButtonDisabled,
+  getSelectedDate,
+  getSelectedShippingType,
   getShippingTypeList,
   getStoreSupportShippingTypes,
+  getTimeSlotDrawerVisible,
   getTimeSlotList,
 } from './redux/timeSlot/selectors';
-import { showTimeSlotDrawer } from './redux/timeSlot/thunks';
+import { hideTimeSlotDrawer, loadTimeSlotSoldData, showTimeSlotDrawer } from './redux/timeSlot/thunks';
 
 function Debug() {
   const dispatch = useDispatch();
+  const selectedShippingType = useSelector(getSelectedShippingType);
+  const selectedDate = useSelector(getSelectedDate);
   const shippingTypeList = useSelector(getShippingTypeList);
   const storeSupportShippingTypes = useSelector(getStoreSupportShippingTypes);
   const dateList = useSelector(getDateList);
@@ -21,6 +26,7 @@ function Debug() {
   const isEnablePerTimeSlotLimitForPreOrder = useSelector(getIsEnablePerTimeSlotLimitForPreOrder);
   const isSaveButtonDisabled = useSelector(getIsSaveButtonDisabled);
   const isInitializing = useSelector(getIsInitializing);
+  const timeSlotDrawerVisible = useSelector(getTimeSlotDrawerVisible);
 
   useEffect(() => {
     console.log('shippingTypeList: ', shippingTypeList);
@@ -30,6 +36,7 @@ function Debug() {
     console.log('isEnablePerTimeSlotLimitForPreOrder: ', isEnablePerTimeSlotLimitForPreOrder);
     console.log('isSaveButtonDisabled: ', isSaveButtonDisabled);
     console.log('isInitializing: ', isInitializing);
+    console.log('timeSlotDrawerVisible: ', timeSlotDrawerVisible);
   }, [
     isInitializing,
     shippingTypeList,
@@ -38,13 +45,29 @@ function Debug() {
     timeSlotList,
     isEnablePerTimeSlotLimitForPreOrder,
     isSaveButtonDisabled,
+    timeSlotDrawerVisible,
   ]);
+
+  useEffect(() => {
+    dispatch(loadTimeSlotSoldData({ selectedShippingType, selectedDate }));
+  }, [selectedShippingType, selectedDate, dispatch]);
 
   const handleShowTimeSlotDrawer = () => {
     dispatch(showTimeSlotDrawer());
   };
 
-  return <Button onClick={handleShowTimeSlotDrawer}>show time slot drawer</Button>;
+  return (
+    <>
+      <Button onClick={handleShowTimeSlotDrawer}>Show time slot drawer</Button>
+      <Button
+        onClick={() => {
+          dispatch(hideTimeSlotDrawer());
+        }}
+      >
+        Hide time slot drawer
+      </Button>
+    </>
+  );
 }
 
 Debug.displayName = 'Debug';
