@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
-import { loadTimeSlotSoldData, showTimeSlotDrawer } from './thunks';
+import { hideTimeSlotDrawer, loadTimeSlotSoldData, showTimeSlotDrawer } from './thunks';
 
 const initialState = {
   timeSlotDrawerVisible: false,
@@ -49,6 +49,9 @@ export const { reducer, actions } = createSlice({
       state.timeSlotSoldRequest.status = API_REQUEST_STATUS.REJECTED;
       state.timeSlotSoldRequest.data = [];
       state.timeSlotSoldRequest.error = error;
+    },
+    [hideTimeSlotDrawer.fulfilled.type]: state => {
+      state.timeSlotDrawerVisible = false;
     },
   },
 });
