@@ -1,6 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
-import { hideTimeSlotDrawer, loadTimeSlotSoldData, showTimeSlotDrawer } from './thunks';
+import {
+  changeDate,
+  changeShippingType,
+  changeTimeSlot,
+  hideTimeSlotDrawer,
+  loadTimeSlotSoldData,
+  showTimeSlotDrawer,
+} from './thunks';
 
 const initialState = {
   timeSlotDrawerVisible: false,
@@ -52,6 +59,17 @@ export const { reducer, actions } = createSlice({
     },
     [hideTimeSlotDrawer.fulfilled.type]: state => {
       state.timeSlotDrawerVisible = false;
+    },
+    [changeShippingType.fulfilled.type]: (state, { payload }) => {
+      state.selectedShippingType = payload.selectedShippingType;
+      state.selectedDate = payload.selectedDate;
+      state.selectedTimeSlot = payload.selectedTimeSlot;
+    },
+    [changeDate.fulfilled.type]: (state, { payload }) => {
+      state.selectedDate = payload;
+    },
+    [changeTimeSlot.fulfilled.type]: (state, { payload }) => {
+      state.selectedTimeSlot = payload;
     },
   },
 });

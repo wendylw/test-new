@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { random } from 'lodash';
 import Button from '../../../common/components/Button';
 import {
   getDateList,
@@ -8,17 +9,26 @@ import {
   getIsSaveButtonDisabled,
   getSelectedDate,
   getSelectedShippingType,
+  getSelectedTimeSlot,
   getShippingTypeList,
   getStoreSupportShippingTypes,
   getTimeSlotDrawerVisible,
   getTimeSlotList,
 } from './redux/timeSlot/selectors';
-import { hideTimeSlotDrawer, loadTimeSlotSoldData, showTimeSlotDrawer } from './redux/timeSlot/thunks';
+import {
+  changeDate,
+  changeShippingType,
+  changeTimeSlot,
+  hideTimeSlotDrawer,
+  loadTimeSlotSoldData,
+  showTimeSlotDrawer,
+} from './redux/timeSlot/thunks';
 
 function Debug() {
   const dispatch = useDispatch();
   const selectedShippingType = useSelector(getSelectedShippingType);
   const selectedDate = useSelector(getSelectedDate);
+  const selectedTimeSlot = useSelector(getSelectedTimeSlot);
   const shippingTypeList = useSelector(getShippingTypeList);
   const storeSupportShippingTypes = useSelector(getStoreSupportShippingTypes);
   const dateList = useSelector(getDateList);
@@ -37,6 +47,9 @@ function Debug() {
     console.log('isSaveButtonDisabled: ', isSaveButtonDisabled);
     console.log('isInitializing: ', isInitializing);
     console.log('timeSlotDrawerVisible: ', timeSlotDrawerVisible);
+    console.log('selectedShippingType: ', selectedShippingType);
+    console.log('selectedDate: ', selectedDate);
+    console.log('selectedTimeSlot: ', selectedTimeSlot);
   }, [
     isInitializing,
     shippingTypeList,
@@ -46,6 +59,9 @@ function Debug() {
     isEnablePerTimeSlotLimitForPreOrder,
     isSaveButtonDisabled,
     timeSlotDrawerVisible,
+    selectedShippingType,
+    selectedDate,
+    selectedTimeSlot,
   ]);
 
   useEffect(() => {
@@ -65,6 +81,27 @@ function Debug() {
         }}
       >
         Hide time slot drawer
+      </Button>
+      <Button
+        onClick={() => {
+          dispatch(changeShippingType(selectedShippingType === 'delivery' ? 'pickup' : 'delivery'));
+        }}
+      >
+        Change Shipping Type
+      </Button>
+      <Button
+        onClick={() => {
+          dispatch(changeDate(dateList[random(0, dateList.length - 1)].value));
+        }}
+      >
+        Change Date
+      </Button>
+      <Button
+        onClick={() => {
+          dispatch(changeTimeSlot(timeSlotList[random(0, timeSlotList.length - 1)].value));
+        }}
+      >
+        Change Time Slot
       </Button>
     </>
   );
