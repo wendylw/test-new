@@ -139,7 +139,10 @@ export const save = createAsyncThunk('ordering/menu/timeSlot/save', (_, { getSta
     const selectedDate = getSelectedDate(state);
     const selectedTimeSlot = getSelectedTimeSlot(state);
     const businessUTCOffset = getBusinessUTCOffset(state);
-    const expectedDeliveryDate = (() => {
+    const shippingType = getShippingType(state);
+    const expectedDeliveryTime = getExpectedDeliveryTime(state);
+
+    const selectedExpectedDeliveryTime = (() => {
       if (selectedTimeSlot === 'now') {
         return 'now';
       }
@@ -153,10 +156,15 @@ export const save = createAsyncThunk('ordering/menu/timeSlot/save', (_, { getSta
 
     dispatch(
       updateExpectedDeliveryDate({
-        expectedDate: expectedDeliveryDate,
+        expectedDate: selectedExpectedDeliveryTime,
         shippingType: selectedShippingType,
       })
     );
+
+    if (selectedShippingType !== shippingType || expectedDeliveryTime !== selectedExpectedDeliveryTime) {
+      dispatch(AppActions.loadShoppingCart());
+      dispatch(AppActions.loadProductList());
+    }
   } catch (error) {
     console.error(error);
     throw error;

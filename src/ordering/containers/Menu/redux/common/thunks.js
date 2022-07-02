@@ -33,6 +33,7 @@ import {
   getIsAddressOutOfRange,
   getHasSelectedExpectedDeliveryTime,
   getStoreStatus,
+  getExpectedDeliveryTime,
 } from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES } from '../../../../../common/utils/constants';
@@ -607,7 +608,7 @@ export const showStoreListDrawer = createAsyncThunk(
 /**
  * goto Review cart page
  */
-export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', async (_, { dispatch, getState }) => {
+export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', async (_, { dispatch, getState }) => {
   dispatch(hideMiniCartDrawer());
 
   const state = getState();
