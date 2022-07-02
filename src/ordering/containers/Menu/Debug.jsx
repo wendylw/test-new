@@ -21,6 +21,7 @@ import {
   changeTimeSlot,
   hideTimeSlotDrawer,
   loadTimeSlotSoldData,
+  save,
   showTimeSlotDrawer,
 } from './redux/timeSlot/thunks';
 
@@ -102,6 +103,13 @@ function Debug() {
         }}
       >
         Change Time Slot
+      </Button>
+      <Button
+        onClick={() => {
+          dispatch(save());
+        }}
+      >
+        Save
       </Button>
     </>
   );

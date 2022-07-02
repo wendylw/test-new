@@ -6,6 +6,7 @@ import {
   changeTimeSlot,
   hideTimeSlotDrawer,
   loadTimeSlotSoldData,
+  save,
   showTimeSlotDrawer,
 } from './thunks';
 
@@ -70,6 +71,9 @@ export const { reducer, actions } = createSlice({
     },
     [changeTimeSlot.fulfilled.type]: (state, { payload }) => {
       state.selectedTimeSlot = payload;
+    },
+    [save.fulfilled.type]: state => {
+      state.timeSlotDrawerVisible = false;
     },
   },
 });

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import _map from 'lodash/map';
-import { getBusinessUTCOffset, getStore } from '../../../../redux/modules/app';
+import { getBusinessUTCOffset, getStore, actions as AppActions } from '../../../../redux/modules/app';
 import {
   getBusinessTimeZoneCurrentDayjs,
   getCurrentTime,
@@ -9,8 +9,16 @@ import {
   getStoreId,
 } from '../common/selectors';
 import { fetchTimeSlotSoldData } from './api-request';
-import { getIsEnablePerTimeSlotLimitForPreOrder, getSelectedDateObj, getSelectedTimeSlot } from './selectors';
+import {
+  getIsEnablePerTimeSlotLimitForPreOrder,
+  getSelectedDate,
+  getSelectedDateObj,
+  getSelectedShippingType,
+  getSelectedTimeSlot,
+} from './selectors';
 import * as StoreUtils from '../../../../../utils/store-utils';
+import { updateExpectedDeliveryDate } from '../common/thunks';
+import { setDateTime } from '../../../../../utils/time-lib';
 
 export const loadTimeSlotSoldData = createAsyncThunk(
   'ordering/menu/timeSlot/loadTimeSlotSoldData',
@@ -101,12 +109,7 @@ export const changeShippingType = createAsyncThunk(
       const businessUTCOffset = getBusinessUTCOffset(state);
 
       const { orderDate, fromTime } = StoreUtils.getStoreAvailableDateAndTime(store, {
-        // construct this func needed params
-        expectedDay: {
-          date: new Date(selectedDateObj.value),
-          isOpen: selectedDateObj.available,
-          isToday: selectedDateObj.isToday,
-        },
+        expectedDay: new Date(selectedDateObj.value),
         expectedFromTime: selectedTimeSlot,
         deliveryType: shippingType,
         currentDate: new Date(currentTime),
@@ -129,4 +132,33 @@ export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', 
 
 export const changeTimeSlot = createAsyncThunk('ordering/menu/timeSlot/changeTimeSlot', value => value);
 
-export const save = createAsyncThunk('ordering/menu/timeSlot/save', () => {});
+export const save = createAsyncThunk('ordering/menu/timeSlot/save', (_, { getState, dispatch }) => {
+  try {
+    const state = getState();
+    const selectedShippingType = getSelectedShippingType(state);
+    const selectedDate = getSelectedDate(state);
+    const selectedTimeSlot = getSelectedTimeSlot(state);
+    const businessUTCOffset = getBusinessUTCOffset(state);
+    const expectedDeliveryDate = (() => {
+      if (selectedTimeSlot === 'now') {
+        return 'now';
+      }
+
+      const selectedDateBusinessTimeZone = StoreUtils.getBusinessDateTime(businessUTCOffset, selectedDate);
+
+      return setDateTime(selectedTimeSlot, selectedDateBusinessTimeZone).toISOString();
+    })();
+
+    dispatch(AppActions.updateShippingType(selectedShippingType));
+
+    dispatch(
+      updateExpectedDeliveryDate({
+        expectedDate: expectedDeliveryDate,
+        shippingType: selectedShippingType,
+      })
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+});
