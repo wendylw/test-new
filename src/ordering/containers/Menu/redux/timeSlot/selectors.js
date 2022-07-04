@@ -43,6 +43,10 @@ export const getTimeSlotSoldRequest = createSelector(
   timeSlotState => timeSlotState.timeSlotSoldRequest
 );
 
+export const getSaveRequest = createSelector(getTimeSlotState, timeSlotState => timeSlotState.saveRequest);
+
+export const getSaveRequestStatus = createSelector(getSaveRequest, saveRequest => saveRequest.status);
+
 export const getTimeSlotSoldData = createSelector(
   getTimeSlotSoldRequest,
   timeSlotSoldRequest => timeSlotSoldRequest.data

@@ -24,6 +24,10 @@ const initialState = {
     status: null,
     error: null,
   },
+  saveRequest: {
+    status: null,
+    error: null,
+  },
 };
 
 export const { reducer, actions } = createSlice({
@@ -72,8 +76,15 @@ export const { reducer, actions } = createSlice({
     [changeTimeSlot.fulfilled.type]: (state, { payload }) => {
       state.selectedTimeSlot = payload;
     },
+    [save.pending.type]: state => {
+      state.saveRequest.status = API_REQUEST_STATUS.PENDING;
+    },
     [save.fulfilled.type]: state => {
+      state.saveRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.timeSlotDrawerVisible = false;
+    },
+    [save.rejected.type]: state => {
+      state.saveRequest.status = API_REQUEST_STATUS.REJECTED;
     },
   },
 });

@@ -132,7 +132,7 @@ export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', 
 
 export const changeTimeSlot = createAsyncThunk('ordering/menu/timeSlot/changeTimeSlot', value => value);
 
-export const save = createAsyncThunk('ordering/menu/timeSlot/save', (_, { getState, dispatch }) => {
+export const save = createAsyncThunk('ordering/menu/timeSlot/save', async (_, { getState, dispatch }) => {
   try {
     const state = getState();
     const selectedShippingType = getSelectedShippingType(state);
@@ -162,6 +162,7 @@ export const save = createAsyncThunk('ordering/menu/timeSlot/save', (_, { getSta
     );
 
     if (selectedShippingType !== shippingType || expectedDeliveryTime !== selectedExpectedDeliveryTime) {
+      // need to reload the shopping cart and product list
       dispatch(AppActions.loadShoppingCart());
       dispatch(AppActions.loadProductList());
     }
