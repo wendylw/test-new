@@ -16,7 +16,7 @@ import {
   getSelectedShippingType,
   getSelectedTimeSlot,
 } from './selectors';
-import * as StoreUtils from '../../../../../utils/store-utils';
+import * as storeUtils from '../../../../../utils/store-utils';
 import { updateExpectedDeliveryDate } from '../common/thunks';
 import { setDateTime } from '../../../../../utils/time-lib';
 
@@ -55,7 +55,7 @@ export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/timeSlot/showT
 
     if (!expectedDeliveryTime) {
       // find earliest available time slot
-      const { orderDate, fromTime } = StoreUtils.getStoreAvailableDateAndTime(store, {
+      const { orderDate, fromTime } = storeUtils.getStoreAvailableDateAndTime(store, {
         expectedDay: null,
         expectedFromTime: null,
         deliveryType: selectedShippingType,
@@ -80,7 +80,7 @@ export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/timeSlot/showT
       };
     }
 
-    const expectedDeliveryTimeDayjs = StoreUtils.getBusinessDateTime(businessUTCOffset, expectedDeliveryTime);
+    const expectedDeliveryTimeDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, expectedDeliveryTime);
 
     const selectedDate = expectedDeliveryTimeDayjs.startOf('day').toISOString();
 
@@ -108,7 +108,7 @@ export const changeShippingType = createAsyncThunk(
       const currentTime = getCurrentTime(state);
       const businessUTCOffset = getBusinessUTCOffset(state);
 
-      const { orderDate, fromTime } = StoreUtils.getStoreAvailableDateAndTime(store, {
+      const { orderDate, fromTime } = storeUtils.getStoreAvailableDateAndTime(store, {
         expectedDay: new Date(selectedDateObj.value),
         expectedFromTime: selectedTimeSlot,
         deliveryType: shippingType,
@@ -147,7 +147,7 @@ export const save = createAsyncThunk('ordering/menu/timeSlot/save', async (_, { 
         return 'now';
       }
 
-      const selectedDateBusinessTimeZone = StoreUtils.getBusinessDateTime(businessUTCOffset, selectedDate);
+      const selectedDateBusinessTimeZone = storeUtils.getBusinessDateTime(businessUTCOffset, selectedDate);
 
       return setDateTime(selectedTimeSlot, selectedDateBusinessTimeZone).toISOString();
     })();
