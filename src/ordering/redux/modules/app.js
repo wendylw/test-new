@@ -1651,3 +1651,5 @@ export const getURLQueryObject = createSelector(getLocationSearch, locationSearc
 export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'stores[0].reviewInfo.rating', null)
 );
+
+export const getCurrentDate = state => new Date();

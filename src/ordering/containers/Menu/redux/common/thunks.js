@@ -1,3 +1,4 @@
+import qs from 'qs';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push, replace } from 'connected-react-router';
 import {
@@ -56,6 +57,7 @@ import { getShareLinkUrl } from '../../utils';
 import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
 import { SOURCE_TYPE, STORE_OPENING_STATUS } from '../../constants';
+import Utils from '../../../../../utils/utils';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -586,13 +588,9 @@ export const showTimeSlotDrawer = createAsyncThunk(
   }
 );
 
-// TODO: will complete it in Phase2
-export const showStoreListDrawer = createAsyncThunk(
-  'ordering/menu/common/showStoreListDrawer',
-  (isToReviewCart = false, { getState, dispatch }) => {
-    gotoLocationAndDate(isToReviewCart, getState(), dispatch);
-  }
-);
+export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', () => {});
+
+export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {});
 
 /**
  * goto Review cart page
@@ -645,4 +643,12 @@ export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', asyn
   if (getUserIsLogin(getState())) {
     gotoReviewCartPage();
   }
+});
+
+export const refreshMenuPage = createAsyncThunk('ordering/menu/common/refreshMenuPage', async storeHashCode => {
+  const h = decodeURIComponent(storeHashCode);
+  const queries = Utils.getQueryString();
+  queries.h = h;
+  const search = qs.stringify(queries, { addQueryPrefix: true });
+  window.location.href = `${PATH_NAME_MAPPING.ORDERING_BASE}${search}`;
 });
