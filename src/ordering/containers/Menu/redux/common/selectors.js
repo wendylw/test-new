@@ -120,6 +120,10 @@ export const getCategories = createSelector(
 
 export const getCurrentTime = state => state.menu.common.currentTime;
 
+/**
+ * get current time in business time zone
+ * @returns Dayjs object
+ */
 export const getBusinessTimeZoneCurrentDayjs = createSelector(
   getCurrentTime,
   getBusinessUTCOffset,
