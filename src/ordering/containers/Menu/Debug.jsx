@@ -66,6 +66,7 @@ function Debug() {
   ]);
 
   useEffect(() => {
+    // load time slot sold data once shipping type or selected date has changed
     dispatch(loadTimeSlotSoldData({ selectedShippingType, selectedDate }));
   }, [selectedShippingType, selectedDate, dispatch]);
 
