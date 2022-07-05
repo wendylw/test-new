@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CaretDown } from 'phosphor-react';
 import { LocationAndAddressIcon } from '../../../../common/components/Icons';
+import AddressDropdownDrawer from './AddressDropdownDrawer';
 import styles from './AddressDropdown.module.scss';
 
 const AddressDropdown = ({ locationTitle, locationValue, onClick }) => (
@@ -19,6 +20,7 @@ const AddressDropdown = ({ locationTitle, locationValue, onClick }) => (
       </div>
       <CaretDown className="tw-text-gray-600" />
     </button>
+    <AddressDropdownDrawer />
   </div>
 );
 
