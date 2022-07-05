@@ -589,7 +589,7 @@ export const showLocationDrawer = createAsyncThunk(
   }
 );
 
-// TODO: will complete it in Phase2
+// this one will be deprecated, please use showTimeSlotDrawer in timeSlot Redux thunks
 export const showTimeSlotDrawer = createAsyncThunk(
   'ordering/menu/common/showTimeSlotDrawer',
   (isToReviewCart = false, { getState, dispatch }) => {
