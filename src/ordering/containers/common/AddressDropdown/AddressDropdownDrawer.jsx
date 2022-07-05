@@ -16,7 +16,7 @@ const AddressDropdownDrawer = ({ isInitializing, onClose }) => {
 
   return (
     <Drawer
-      className={isInitializing ? styles.timeSlotDrawerInitializing : styles.timeSlotDrawer}
+      className={isInitializing ? styles.addressDropdownDrawerInitializing : styles.addressDropdownDrawer}
       fullScreen
       show
       header={
@@ -31,7 +31,7 @@ const AddressDropdownDrawer = ({ isInitializing, onClose }) => {
       {isInitializing ? (
         <Loader className={styles.loader} weight="bold" />
       ) : (
-        <div>
+        <>
           <Search
             ref={searchInputRef}
             placeholder={t('SearchYourLocation')}
@@ -39,41 +39,43 @@ const AddressDropdownDrawer = ({ isInitializing, onClose }) => {
             onChangeInputValue={value => {}}
             onClearInput={() => {}}
           />
-          <div>
-            <img src="" alt="" />
-            <p>{t('AddressListEmptyDescription')}</p>
-          </div>
-          <div>
-            <section>
-              <h3>{t('SavedAddress')}</h3>
-              <ul>
-                <li>
-                  <i>icon</i>
-                  <div>
-                    <h4>
-                      <span>Apartment</span>
-                      <Tag>{t('OutOfRange')}</Tag>
-                    </h4>
-                    <p>5, Jalan Kukuh 25/42, Taman Sri Mudim</p>
-                  </div>
-                </li>
-              </ul>
-            </section>
-            <section>
-              <ul>
-                <li>
-                  <i>icon</i>
-                  <div>
-                    <h4>
-                      <span>KYMCO Malaysia Motorcycle Bestbuy Sdn Bhd</span>
-                    </h4>
-                    <p>8, Jalan PJU 7/6 Mutiara Damansara, Selangor</p>
-                  </div>
-                </li>
-              </ul>
-            </section>
-          </div>
-        </div>
+          <section>
+            <div>
+              <img src="" alt="" />
+              <p>{t('AddressListEmptyDescription')}</p>
+            </div>
+            <div>
+              <section>
+                <h3>{t('SavedAddress')}</h3>
+                <ul>
+                  <li>
+                    <i>icon</i>
+                    <div>
+                      <h4>
+                        <span>Apartment</span>
+                        <Tag>{t('OutOfRange')}</Tag>
+                      </h4>
+                      <p>5, Jalan Kukuh 25/42, Taman Sri Mudim</p>
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section>
+                <ul>
+                  <li>
+                    <i>icon</i>
+                    <div>
+                      <h4>
+                        <span>KYMCO Malaysia Motorcycle Bestbuy Sdn Bhd</span>
+                      </h4>
+                      <p>8, Jalan PJU 7/6 Mutiara Damansara, Selangor</p>
+                    </div>
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </section>
+        </>
       )}
     </Drawer>
   );
@@ -87,7 +89,7 @@ AddressDropdownDrawer.propTypes = {
 };
 
 AddressDropdownDrawer.defaultProps = {
-  isInitializing: true,
+  isInitializing: false,
   onClose: () => {},
 };
 
