@@ -21,7 +21,7 @@ import {
   getIsStoreInfoReady,
   getIsDeliveryOrder,
   getIsBeepDeliveryShippingType,
-  getIsBeepDeliveryType,
+  getIsDeliveryType,
   getStore,
   getBusinessUTCOffset,
   getIsWebview,
@@ -38,6 +38,7 @@ import {
   getStoreRating,
   getIsFromBeepSite,
   getIsInAppOrMiniProgram,
+  getIsPickUpType,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -54,7 +55,7 @@ export {
   getTableId,
   getShippingType,
   getIsQrOrderingShippingType,
-  getIsBeepDeliveryType,
+  getIsDeliveryType,
   getIsEnablePayLater,
   getIsStoreInfoReady,
   getStore,
@@ -666,7 +667,7 @@ export const getStoreOpeningTimeList = createSelector(
       7: 'Saturday',
     };
     const { validTimeFrom, validTimeTo, validDays, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
-    const formatBreakTimes = [formatTime(breakTimeFrom), formatTime(breakTimeTo)];
+    const formatBreakTimes = breakTimeFrom && breakTimeTo ? [formatTime(breakTimeFrom), formatTime(breakTimeTo)] : [];
     const formatValidTimes = [formatTime(validTimeFrom), formatTime(validTimeTo)];
     const openingHours = getOpeningHours({
       validTimeFrom,
@@ -727,8 +728,6 @@ export const getIsAbleToReviewCart = createSelector(
  * for display store pickup location
  * @returns {string}
  */
-export const getStoreLocationStreetForPickup = createSelector(
-  getStore,
-  getIsBeepDeliveryType,
-  (store, isBeepDelivery) => !isBeepDelivery && _get(store, 'street1', '')
+export const getStoreLocationStreetForPickup = createSelector(getStore, getIsPickUpType, (store, isPickup) =>
+  isPickup ? _get(store, 'street1', '') : ''
 );

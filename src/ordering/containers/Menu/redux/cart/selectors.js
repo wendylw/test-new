@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import _isNil from 'lodash/isNil';
 import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import {
   getTableId,
@@ -197,16 +198,22 @@ export const getCartItems = createSelector(
         !(inventoryStatus !== 'notTrackInventory' && inventory && cartItem.quantity > inventory) &&
         !(inventory && cartItem.quantity === inventory);
 
+      const displayPrice = cartItem.price || cartItem.displayPrice;
+      const originalDisplayPrice = cartItem.originalPrice || cartItem.originalDisplayPrice;
+
+      const formattedDisplayPrice = _isNil(displayPrice) ? '' : formatCurrency(displayPrice, { hiddenCurrency: true });
+      const formattedOriginalDisplayPrice = _isNil(originalDisplayPrice)
+        ? ''
+        : formatCurrency(originalDisplayPrice, { hiddenCurrency: true });
+
       return {
         id: cartItem.id,
         productId: cartItem.productId,
         title: cartItem.title,
         image: cartItem.image,
         variationTitles: cartItem.variationTexts,
-        formattedDisplayPrice: formatCurrency(cartItem.price || cartItem.displayPrice, { hiddenCurrency: true }),
-        formattedOriginalDisplayPrice: formatCurrency(cartItem.originalPrice || cartItem.originalDisplayPrice, {
-          hiddenCurrency: true,
-        }),
+        formattedDisplayPrice,
+        formattedOriginalDisplayPrice,
         quantity: cartItem.quantity,
         inventory,
         isOutOfStock: inventoryStatus === 'outOfStock' || inventoryStatus === 'unavailable',

@@ -1503,7 +1503,6 @@ export const getCategoryProductList = createSelector(
 
 // TODO: add Utils methods to state rather than using Utils
 export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
-export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsDeliveryOrder = state => Utils.isDeliveryOrder();
 export const getIsQROrder = state => Utils.isQROrder();
@@ -1515,6 +1514,20 @@ export const getIsInAppOrMiniProgram = createSelector(
   (isWebview, isTNGMiniProgram) => isWebview || isTNGMiniProgram
 );
 export const getIsFromBeepSite = state => isFromBeepSite();
+
+/**
+ * Is delivery shipping type
+ * @returns
+ */
+export const getIsDeliveryType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.DELIVERY
+);
+
+/**
+ * Is pickup shipping type
+ */
+export const getIsPickUpType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.PICKUP);
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)
@@ -1609,15 +1622,6 @@ export const getIsQrOrderingShippingType = createSelector(
 export const getIsBeepDeliveryShippingType = createSelector(
   getShippingType,
   shippingType => shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP
-);
-
-/**
- * is shipping type of only delivery
- * @returns
- */
-export const getIsBeepDeliveryType = createSelector(
-  getShippingType,
-  shippingType => shippingType === DELIVERY_METHOD.DELIVERY
 );
 
 /**
