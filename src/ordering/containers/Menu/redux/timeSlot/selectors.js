@@ -3,9 +3,10 @@ import _lowerCase from 'lodash/lowerCase';
 import _get from 'lodash/get';
 import { API_REQUEST_STATUS, SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import { getBusinessUTCOffset, getStore } from '../../../../redux/modules/app';
-import { getCurrentTime } from '../common/selectors';
+import { getCurrentTime, getStoreStatus } from '../common/selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
 import * as timeLib from '../../../../../utils/time-lib';
+import { STORE_OPENING_STATUS } from '../../constants';
 
 export const getStoreFulfillmentOptions = createSelector(getStore, store => _get(store, 'fulfillmentOptions', []));
 
@@ -15,6 +16,11 @@ export const getIsEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, s
 
 export const getStoreSupportShippingTypes = createSelector(getStoreFulfillmentOptions, storeFulfillmentOptions =>
   storeFulfillmentOptions.map(_lowerCase)
+);
+
+export const getIsOnlyPreOrder = createSelector(
+  getStoreStatus,
+  storeStatus => storeStatus === STORE_OPENING_STATUS.PRE_ORDER
 );
 
 export const getTimeSlotState = state => state.menu.timeSlot;
