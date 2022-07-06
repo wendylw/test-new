@@ -22,7 +22,10 @@ const AddressDropdownDrawer = ({ isInitializing, onClose }) => {
       fullScreen
       show
       header={
-        <DrawerHeader left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />}>
+        <DrawerHeader
+          className={styles.addressDropdownDrawerHeader}
+          left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />}
+        >
           <div className="tw-flex tw-flex-col tw-items-center">
             <span className="tw-font-bold tw-text-lg tw-leading-relaxed">{t('DeliverTo')}</span>
           </div>
@@ -33,15 +36,18 @@ const AddressDropdownDrawer = ({ isInitializing, onClose }) => {
       {isInitializing ? (
         <Loader className={styles.loader} weight="bold" />
       ) : (
-        <>
-          <Search
-            ref={searchInputRef}
-            placeholder={t('SearchYourLocation')}
-            defaultSearchKeyword=""
-            onChangeInputValue={value => {}}
-            onClearInput={() => {}}
-          />
-          <section>
+        <div className="tw-flex tw-flex-col">
+          <section className="tw-flex-shrink-0 tw-pb-16 sm:tw-pb-16px tw-px-16 sm:tw-px-16px tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
+            <Search
+              ref={searchInputRef}
+              placeholder={t('SearchYourLocation')}
+              defaultSearchKeyword=""
+              onChangeInputValue={value => {}}
+              onClearInput={() => {}}
+            />
+          </section>
+
+          <div className="tw-flex-1 tw-px-16 sm:tw-px-16px tw-py-24 sm:tw-py-24px tw-overflow-x-auto">
             {/* <div className={styles.addressDropdownDrawerEmpty}>
               <img
                 className={styles.addressDropdownDrawerEmptyImage}
@@ -50,64 +56,62 @@ const AddressDropdownDrawer = ({ isInitializing, onClose }) => {
               />
               <p className={styles.addressDropdownDrawerEmptyDescription}>{t('AddressListEmptyDescription')}</p>
             </div> */}
-            <div>
-              <section>
-                <h3 className="tw-p-4 sm:tw-p-4px tw-leading-relaxed tw-font-bold">{t('SavedAddress')}</h3>
-                <ul>
-                  <li className={styles.addressDropdownDrawerItem}>
-                    <button className={styles.addressDropdownDrawerItemButton}>
-                      <FlagIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
-                      <div className="beep-line-clamp-flex-container tw-flex-col">
-                        <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
-                          <span className="tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">Apartment</span>
-                          <Tag className="tw-flex-shrink-0">{t('OutOfRange')}</Tag>
-                        </h4>
-                        <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
-                          5, Jalan Kukuh 25/42, Taman Sri Mudim
-                        </p>
-                      </div>
-                    </button>
-                  </li>
-                  <li className={styles.addressDropdownDrawerItem}>
-                    <button className={styles.addressDropdownDrawerItemButton}>
-                      <FlagIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
-                      <div className="beep-line-clamp-flex-container tw-flex-col">
-                        <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
-                          <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
-                            Apartment
-                          </span>
-                          <Tag className="tw-flex-shrink-0">{t('OutOfRange')}</Tag>
-                        </h4>
-                        <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
-                          5, Jalan Kukuh 25/42, Taman Sri Mudim
-                        </p>
-                      </div>
-                    </button>
-                  </li>
-                </ul>
-              </section>
-              <section>
-                <ul>
-                  <li className={styles.addressDropdownDrawerItem}>
-                    <button className={styles.addressDropdownDrawerItemButton}>
-                      <LocationAndAddressIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
-                      <div className="beep-line-clamp-flex-container tw-flex-col">
-                        <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
-                          <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
-                            KYMCO Malaysia Motorcycle Bestbuy Sdn Bhd
-                          </span>
-                        </h4>
-                        <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
-                          8, Jalan PJU 7/6 Mutiara Damansara, Selangor
-                        </p>
-                      </div>
-                    </button>
-                  </li>
-                </ul>
-              </section>
-            </div>
-          </section>
-        </>
+            <section>
+              <h3 className="tw-pb-4 sm:tw-pb-4px tw-leading-relaxed tw-font-bold">{t('SavedAddress')}</h3>
+              <ul>
+                <li className={styles.addressDropdownDrawerItem}>
+                  <button className={styles.addressDropdownDrawerItemButton}>
+                    <FlagIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
+                    <div className="beep-line-clamp-flex-container tw-flex-col">
+                      <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
+                        <span className="tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">Apartment</span>
+                        <Tag className="tw-flex-shrink-0">{t('OutOfRange')}</Tag>
+                      </h4>
+                      <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
+                        5, Jalan Kukuh 25/42, Taman Sri Mudim
+                      </p>
+                    </div>
+                  </button>
+                </li>
+                <li className={styles.addressDropdownDrawerItem}>
+                  <button className={styles.addressDropdownDrawerItemButton}>
+                    <FlagIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
+                    <div className="beep-line-clamp-flex-container tw-flex-col">
+                      <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
+                        <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
+                          Apartment
+                        </span>
+                        <Tag className="tw-flex-shrink-0">{t('OutOfRange')}</Tag>
+                      </h4>
+                      <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
+                        5, Jalan Kukuh 25/42, Taman Sri Mudim
+                      </p>
+                    </div>
+                  </button>
+                </li>
+              </ul>
+            </section>
+            <section>
+              <ul>
+                <li className={styles.addressDropdownDrawerItem}>
+                  <button className={styles.addressDropdownDrawerItemButton}>
+                    <LocationAndAddressIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
+                    <div className="beep-line-clamp-flex-container tw-flex-col">
+                      <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
+                        <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
+                          KYMCO Malaysia Motorcycle Bestbuy Sdn Bhd
+                        </span>
+                      </h4>
+                      <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
+                        8, Jalan PJU 7/6 Mutiara Damansara, Selangor
+                      </p>
+                    </div>
+                  </button>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
       )}
     </Drawer>
   );

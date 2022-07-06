@@ -7,6 +7,10 @@
   }
 }
 
+.addressDropdownDrawerHeader {
+  @apply tw-border-0;
+}
+
 .addressDropdownDrawerEmpty {
   @apply tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center;
 
@@ -25,9 +29,9 @@
 }
 
 .addressDropdownDrawerItemButton {
-  @apply tw-flex tw-w-full tw-border-0 tw-bg-transparent;
+  @apply tw-flex tw-w-full tw-py-8 sm:tw-py-8px tw-border-0 tw-bg-transparent;
 }
 
 .addressDropdownDrawerItem:nth-child(n + 2) .addressDropdownDrawerItemButton {
-  @apply tw-border-t tw-border-gray-300 tw-py-4;
+  @apply tw-border-t tw-border-gray-300;
 }
