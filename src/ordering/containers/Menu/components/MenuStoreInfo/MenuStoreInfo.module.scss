@@ -25,10 +25,10 @@
 }
 
 .menuStoreInfoTag {
-  @apply tw-absolute tw-justify-center tw-inset-x-0 tw-bottom-0 tw-translate-y-1/2;
+  @apply tw-absolute tw-justify-center tw-inset-x-0 tw-bottom-0;
 
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+  transform: translate3d(0, 50%, 0);
+  -webkit-transform: translate3d(0, 50%, 0);
 }
 
 .menuStoreInfoFreeDeliveryTagContainer {

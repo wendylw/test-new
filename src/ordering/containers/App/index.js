@@ -23,6 +23,7 @@ import faviconImage from '../../../images/favicon.ico';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
+import { SOURCE_TYPE } from '../Menu/constants';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -35,7 +36,9 @@ class App extends Component {
     if (source) {
       if (source === 'SharedLink') {
         Utils.setSessionVariable('BeepOrderingSource', 'SharedLink');
-      } else {
+        // DON'T Touch it if you don't know what it is.
+        // if source is 'shoppingCart', not save it to session
+      } else if (source !== SOURCE_TYPE.SHOPPING_CART) {
         Utils.saveSourceUrlToSessionStorage(source);
       }
     }
