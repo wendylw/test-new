@@ -12,7 +12,7 @@ import LocationEmptyImage from '../../../../images/location-empty-image.png';
 import 'swiper/components/pagination/pagination.scss';
 import styles from './AddressDropdownDrawer.module.scss';
 
-const AddressDropdownDrawer = ({ isInitializing, onClose }) => {
+const AddressDropdownDrawer = ({ isLocationDrawerVisible, isInitializing, onClose }) => {
   const { t } = useTranslation();
   const searchInputRef = useRef(null);
 
@@ -20,7 +20,7 @@ const AddressDropdownDrawer = ({ isInitializing, onClose }) => {
     <Drawer
       className={isInitializing ? styles.addressDropdownDrawerInitializing : styles.addressDropdownDrawer}
       fullScreen
-      show
+      show={isLocationDrawerVisible}
       header={
         <DrawerHeader
           className={styles.addressDropdownDrawerHeader}
@@ -121,11 +121,13 @@ AddressDropdownDrawer.displayName = 'AddressDropdownDrawer';
 
 AddressDropdownDrawer.propTypes = {
   isInitializing: PropTypes.bool,
+  isLocationDrawerVisible: PropTypes.bool,
   onClose: PropTypes.func,
 };
 
 AddressDropdownDrawer.defaultProps = {
   isInitializing: false,
+  isLocationDrawerVisible: true,
   onClose: () => {},
 };
 
