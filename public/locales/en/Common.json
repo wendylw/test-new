@@ -283,5 +283,7 @@
   "Reset": "Reset",
   "Apply": "Apply",
   "NetworkErrorTitle": "No internet connection",
-  "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again"
+  "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again",
+  "StoreListDrawerTitle": "Select store branch",
+  "StoreListDrawerDescription": "{{totalOutletDisplayTitle}} Outlets near you"
 }
