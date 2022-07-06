@@ -12,18 +12,19 @@ import {
   getSelectedTimeSlot,
   getShippingTypeList,
   getStoreSupportShippingTypes,
-  getTimeSlotDrawerVisible,
   getTimeSlotList,
 } from './redux/timeSlot/selectors';
 import {
   changeDate,
   changeShippingType,
   changeTimeSlot,
-  hideTimeSlotDrawer,
   loadTimeSlotSoldData,
   save,
-  showTimeSlotDrawer,
+  timeSlotDrawerHidden,
+  timeSlotDrawerShown,
 } from './redux/timeSlot/thunks';
+import { getTimeSlotDrawerVisible } from './redux/common/selectors';
+import { hideTimeSlotDrawer, showTimeSlotDrawer } from './redux/common/thunks';
 
 function Debug() {
   const dispatch = useDispatch();
@@ -69,6 +70,14 @@ function Debug() {
     // load time slot sold data once shipping type or selected date has changed
     dispatch(loadTimeSlotSoldData({ selectedShippingType, selectedDate }));
   }, [selectedShippingType, selectedDate, dispatch]);
+
+  useEffect(() => {
+    if (timeSlotDrawerVisible) {
+      dispatch(timeSlotDrawerShown());
+    } else {
+      dispatch(timeSlotDrawerHidden());
+    }
+  }, [timeSlotDrawerVisible, dispatch]);
 
   const handleShowTimeSlotDrawer = () => {
     dispatch(showTimeSlotDrawer());

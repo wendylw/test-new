@@ -589,13 +589,9 @@ export const showLocationDrawer = createAsyncThunk(
   }
 );
 
-// this one will be deprecated, please use showTimeSlotDrawer in timeSlot Redux thunks
-export const showTimeSlotDrawer = createAsyncThunk(
-  'ordering/menu/common/showTimeSlotDrawer',
-  (isToReviewCart = false, { getState, dispatch }) => {
-    gotoLocationAndDate(isToReviewCart, getState(), dispatch);
-  }
-);
+export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', () => {});
+
+export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {});
 
 // TODO: will complete it in Phase2
 export const showStoreListDrawer = createAsyncThunk(
@@ -632,7 +628,7 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
   }
 
   if (isBeepDelivery && !hasSelectedExpectedDeliveryTime) {
-    await dispatch(showTimeSlotDrawer(true));
+    await dispatch(showTimeSlotDrawer());
     return;
   }
 

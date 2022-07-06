@@ -100,6 +100,9 @@ export const getStoreDisplaySubTitle = createSelector(getBusinessInfo, businessI
  */
 export const getActiveCategoryId = state => state.menu.common.activeCategoryId;
 
+// is time slot drawer visible
+export const getTimeSlotDrawerVisible = state => state.menu.common.timeSlotDrawerVisible;
+
 /**
  * get store category list
  * @param {*} state

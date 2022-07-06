@@ -17,7 +17,7 @@ import {
   getSelectedTimeSlot,
 } from './selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
-import { updateExpectedDeliveryDate } from '../common/thunks';
+import { hideTimeSlotDrawer, updateExpectedDeliveryDate } from '../common/thunks';
 import { setDateTime } from '../../../../../utils/time-lib';
 
 export const loadTimeSlotSoldData = createAsyncThunk(
@@ -44,7 +44,8 @@ export const loadTimeSlotSoldData = createAsyncThunk(
   }
 );
 
-export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/timeSlot/showTimeSlotDrawer', (_, { getState }) => {
+// do some initializing stuff after time slow drawer shown
+export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/timeSlotDrawerShown', (_, { getState }) => {
   try {
     const state = getState();
     const store = getStore(state);
@@ -95,7 +96,8 @@ export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/timeSlot/showT
   }
 });
 
-export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/timeSlot/hideTimeSlotDrawer', () => {});
+// Do some clean up job after time slot drawer hidden
+export const timeSlotDrawerHidden = createAsyncThunk('ordering/menu/timeSlot/hideTimeSlotDrawer', () => {});
 
 export const changeShippingType = createAsyncThunk(
   'ordering/menu/timeSlot/changeShippingType',
@@ -166,6 +168,8 @@ export const save = createAsyncThunk('ordering/menu/timeSlot/save', async (_, { 
       dispatch(AppActions.loadShoppingCart());
       dispatch(AppActions.loadProductList());
     }
+
+    dispatch(hideTimeSlotDrawer());
   } catch (error) {
     console.error(error);
     throw error;

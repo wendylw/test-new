@@ -25,11 +25,6 @@ export const getIsOnlyPreOrder = createSelector(
 
 export const getTimeSlotState = state => state.menu.timeSlot;
 
-export const getTimeSlotDrawerVisible = createSelector(
-  getTimeSlotState,
-  timeSlotState => timeSlotState.timeSlotDrawerVisible
-);
-
 export const getSelectedShippingType = createSelector(
   getTimeSlotState,
   timeSlotState => timeSlotState.selectedShippingType
@@ -41,7 +36,7 @@ export const getSelectedTimeSlot = createSelector(getTimeSlotState, timeSlotStat
 
 export const getIsInitializing = createSelector(
   getTimeSlotState,
-  timeSlotState => timeSlotState.showTimeSlotDrawerRequest.status === API_REQUEST_STATUS.PENDING
+  timeSlotState => timeSlotState.timeSlotDrawerShownRequest.status === API_REQUEST_STATUS.PENDING
 );
 
 export const getTimeSlotSoldRequest = createSelector(

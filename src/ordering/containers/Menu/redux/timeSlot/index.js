@@ -4,18 +4,17 @@ import {
   changeDate,
   changeShippingType,
   changeTimeSlot,
-  hideTimeSlotDrawer,
   loadTimeSlotSoldData,
   save,
-  showTimeSlotDrawer,
+  timeSlotDrawerHidden,
+  timeSlotDrawerShown,
 } from './thunks';
 
 const initialState = {
-  timeSlotDrawerVisible: false,
   selectedShippingType: null, // selected shipping type
   selectedDate: null, // selected date, IOS date String format, example: "2022-06-30T16:00:00.000Z"
   selectedTimeSlot: null, // selected time slot, example: "now" || "16:00"
-  showTimeSlotDrawerRequest: {
+  timeSlotDrawerShownRequest: {
     status: null,
     error: null,
   },
@@ -35,21 +34,22 @@ export const { reducer, actions } = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [showTimeSlotDrawer.pending.type]: state => {
-      state.showTimeSlotDrawerRequest.status = API_REQUEST_STATUS.PENDING;
-      // show time slot drawer
-      state.timeSlotDrawerVisible = true;
+    [timeSlotDrawerShown.pending.type]: state => {
+      state.timeSlotDrawerShownRequest.status = API_REQUEST_STATUS.PENDING;
     },
-    [showTimeSlotDrawer.fulfilled.type]: (state, { payload }) => {
-      state.showTimeSlotDrawerRequest.status = API_REQUEST_STATUS.FULFILLED;
+    [timeSlotDrawerShown.fulfilled.type]: (state, { payload }) => {
+      state.timeSlotDrawerShownRequest.status = API_REQUEST_STATUS.FULFILLED;
       state.selectedShippingType = payload.selectedShippingType;
       state.selectedDate = payload.selectedDate;
       state.selectedTimeSlot = payload.selectedTimeSlot;
     },
-    [showTimeSlotDrawer.rejected.type]: (state, { error }) => {
-      state.showTimeSlotDrawerRequest.status = API_REQUEST_STATUS.REJECTED;
-      state.showTimeSlotDrawerRequest.error = error;
+    [timeSlotDrawerShown.rejected.type]: (state, { error }) => {
+      state.timeSlotDrawerShownRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.timeSlotDrawerShownRequest.error = error;
     },
+    [timeSlotDrawerHidden.fulfilled.type]: () => ({
+      ...initialState,
+    }),
     [loadTimeSlotSoldData.pending.type]: state => {
       state.timeSlotSoldRequest.status = API_REQUEST_STATUS.PENDING;
     },
@@ -61,9 +61,6 @@ export const { reducer, actions } = createSlice({
       state.timeSlotSoldRequest.status = API_REQUEST_STATUS.REJECTED;
       state.timeSlotSoldRequest.data = [];
       state.timeSlotSoldRequest.error = error;
-    },
-    [hideTimeSlotDrawer.fulfilled.type]: state => {
-      state.timeSlotDrawerVisible = false;
     },
     [changeShippingType.fulfilled.type]: (state, { payload }) => {
       state.selectedShippingType = payload.selectedShippingType;
@@ -81,7 +78,6 @@ export const { reducer, actions } = createSlice({
     },
     [save.fulfilled.type]: state => {
       state.saveRequest.status = API_REQUEST_STATUS.FULFILLED;
-      state.timeSlotDrawerVisible = false;
     },
     [save.rejected.type]: state => {
       state.saveRequest.status = API_REQUEST_STATUS.REJECTED;
