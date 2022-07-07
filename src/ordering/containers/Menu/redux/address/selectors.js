@@ -5,6 +5,8 @@ export const getStoreInfo = state => state.menu.address.storeInfo;
 
 export const getDrawerInfo = state => state.menu.address.drawerInfo;
 
+export const getStoreInfoData = createSelector(getStoreInfo, storeInfo => storeInfo.data);
+
 export const getHasStoreInfoInitialized = createSelector(
   getStoreInfo,
   storeInfo => storeInfo.status === API_REQUEST_STATUS.PENDING
