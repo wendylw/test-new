@@ -62,7 +62,7 @@ const AddressDropdownDrawer = ({ isLocationDrawerVisible, isInitializing, addres
                 <h3 className="tw-pb-4 sm:tw-pb-4px tw-leading-relaxed tw-font-bold">{t('SavedAddress')}</h3>
                 <ul>
                   {addressList.map(address => (
-                    <li className={styles.addressDropdownDrawerItem}>
+                    <li key={address.id} className={styles.addressDropdownDrawerItem}>
                       <button
                         className={styles.addressDropdownDrawerItemButton}
                         disabled={address.outOfRange}
@@ -71,35 +71,14 @@ const AddressDropdownDrawer = ({ isLocationDrawerVisible, isInitializing, addres
                         <FlagIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
                         <div className="beep-line-clamp-flex-container tw-flex-col">
                           <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
-                            <span className="tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
-                              {address.addressName}
-                            </span>
+                            <span className={styles.addressDropdownDrawerItemButtonTitle}>{address.addressName}</span>
                             {addressList.outOfRange ? <Tag className="tw-flex-shrink-0">{t('OutOfRange')}</Tag> : null}
                           </h4>
-                          <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
-                            {address.deliveryTo}
-                          </p>
+                          <p className={styles.addressDropdownDrawerItemButtonDeliveryTo}>{address.deliveryTo}</p>
                         </div>
                       </button>
                     </li>
                   ))}
-
-                  <li className={styles.addressDropdownDrawerItem}>
-                    <button className={styles.addressDropdownDrawerItemButton}>
-                      <FlagIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
-                      <div className="beep-line-clamp-flex-container tw-flex-col">
-                        <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
-                          <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
-                            Apartment
-                          </span>
-                          <Tag className="tw-flex-shrink-0">{t('OutOfRange')}</Tag>
-                        </h4>
-                        <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
-                          5, Jalan Kukuh 25/42, Taman Sri Mudim
-                        </p>
-                      </div>
-                    </button>
-                  </li>
                 </ul>
               </section>
             ) : null}

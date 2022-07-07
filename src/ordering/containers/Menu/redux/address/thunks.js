@@ -9,6 +9,7 @@ import { setAddressInfo } from '../../../../../redux/modules/address/thunks';
 import { getBusinessByName } from '../../../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../../../redux/modules/entities/stores';
 import {
+  getUserIsLogin,
   getStoreId,
   getBusiness,
   getDeliveryRadius,
@@ -105,16 +106,6 @@ export const locationDrawerShown = createAsyncThunk(
 
 export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/locationDrawerHidden', async () => {});
 
-/*
- * load address list and location list
- */
-export const loadAddressDropdownData = createAsyncThunk(
-  'ordering/menu/address/loadAddressDropdownData',
-  async (_, { dispatch }) => {
-    await dispatch(loadAddressList());
-  }
-);
-
 /**
  * select location from the location drawer
  */
@@ -188,6 +179,21 @@ export const selectLocation = createAsyncThunk(
       await dispatch(refreshMenuPageForNewStore(storeHashCode));
     } catch (e) {
       await dispatch(showErrorToast(e.message));
+    }
+  }
+);
+
+/*
+ * load address list and location list
+ */
+export const loadAddressDropdownData = createAsyncThunk(
+  'ordering/menu/address/loadAddressDropdownData',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const userSignedIn = getUserIsLogin(state);
+
+    if (userSignedIn) {
+      await dispatch(loadAddressList());
     }
   }
 );

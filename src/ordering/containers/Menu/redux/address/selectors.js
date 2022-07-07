@@ -20,5 +20,5 @@ export const getStoreInfoData = createSelector(getStoreInfo, storeInfo => storeI
 
 export const getHasStoreInfoInitialized = createSelector(
   getStoreInfo,
-  storeInfo => storeInfo.status === API_REQUEST_STATUS.PENDING
+  storeInfo => storeInfo.status !== API_REQUEST_STATUS.PENDING
 );

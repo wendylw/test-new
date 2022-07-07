@@ -17,8 +17,8 @@ import { getHasStoreInfoInitialized, getAddressList } from '../../redux/address/
 import {
   locationDrawerShown,
   locationDrawerHidden,
-  loadAddressDropdownData,
   selectLocation,
+  loadAddressDropdownData,
 } from '../../redux/address/thunks';
 import styles from './MenuAddressDropdown.module.scss';
 
