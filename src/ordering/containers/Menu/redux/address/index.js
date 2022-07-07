@@ -8,8 +8,8 @@ const initialState = {
     status: null,
     error: null,
   },
-  drawerInfo: {
-    error: null,
+  errorToast: {
+    data: null,
   },
 };
 
@@ -31,10 +31,11 @@ export const { reducer, actions } = createSlice({
       state.storeInfo.error = action.error;
     },
     [showErrorToast.fulfilled.type]: (state, action) => {
-      state.drawerInfo.error = action.payload;
+      const { message } = action.payload;
+      state.errorToast.data = message;
     },
     [clearErrorToast.fulfilled.type]: state => {
-      state.drawerInfo.error = null;
+      state.errorToast.data = null;
     },
   },
 });

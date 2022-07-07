@@ -26,7 +26,9 @@ import {
 import { isEnablePerTimeSlotLimitForPreOrder, getStoreAvailableDateAndTime } from '../../../../../utils/store-utils';
 import Utils from '../../../../../utils/utils';
 
-export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async error => error);
+export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async message => {
+  message;
+});
 
 export const clearErrorToast = createAsyncThunk('ordering/menu/address/clearErrorToast', async () => {});
 
