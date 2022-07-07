@@ -44,6 +44,12 @@ const StoreList = () => {
         isStoreListDrawerVisible={isStoreListDrawerVisible}
         totalOutletDisplayTitle={totalOutletDisplayTitle}
         storeList={storeList}
+        onClose={() => {
+          dispatch(hideStoreInfoDrawer());
+        }}
+        selectStoreBranch={value => {
+          dispatch(selectStoreBranch(value));
+        }}
       />
     </div>
   );
