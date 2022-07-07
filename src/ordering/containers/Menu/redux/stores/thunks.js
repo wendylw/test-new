@@ -1,4 +1,3 @@
-import i18next from 'i18next';
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import { createAsyncThunk } from '@reduxjs/toolkit';
@@ -11,19 +10,8 @@ import {
   getBusinessUTCOffset,
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
-import { refreshMenuPage } from '../common/thunks';
-import {
-  actions as locationAndDateActionCreators,
-  getSelectedDay,
-  getSelectedFromTime,
-} from '../../../../redux/modules/locationAndDate';
-import {
-  checkStoreIsOpened,
-  findNearestAvailableStore,
-  isEnablePerTimeSlotLimitForPreOrder,
-  getStoreAvailableDateAndTime,
-} from '../../../../../utils/store-utils';
-import Utils from '../../../../../utils/utils';
+import { refreshMenuPageForNewStore } from '../common/thunks';
+import { checkStoreIsOpened, findNearestAvailableStore } from '../../../../../utils/store-utils';
 import Constants from '../../../../../utils/constants';
 
 const { DELIVERY_METHOD } = Constants;
@@ -67,43 +55,6 @@ export const storeDrawerShown = createAsyncThunk(
 
 export const storeDrawerHidden = createAsyncThunk('ordering/menu/stores/storeDrawerHidden', async () => {});
 
-// TODO: What the hell for this one? Need to take more time to understand buckets of legacy logic.
-export const updateTimeSlot = createAsyncThunk(
-  'ordering/menu/stores/updateTimeSlot',
-  async (store, { dispatch, getState }) => {
-    const state = getState();
-    const deliveryType = getShippingType(state);
-    const currentDate = getCurrentDate(state);
-    const businessUTCOffset = getBusinessUTCOffset(state);
-    const enablePerTimeSlotLimitForPreOrder = isEnablePerTimeSlotLimitForPreOrder(store);
-    const expectedDeliveryDate = Utils.getExpectedDeliveryDateFromSession();
-    const expectedDay = getSelectedDay(state) || _get(expectedDeliveryDate, 'date.date', null);
-    const expectedFromTime = getSelectedFromTime(state) || _get(expectedDeliveryDate, 'hour.from', null);
-    const storeId = _get(store, 'id', null);
-
-    const { orderDate, fromTime } = getStoreAvailableDateAndTime(store, {
-      expectedDay,
-      expectedFromTime,
-      deliveryType,
-      currentDate,
-      businessUTCOffset,
-    });
-
-    const selectedDay = _get(orderDate, 'date', null);
-    const selectedFromTime = fromTime;
-
-    if (enablePerTimeSlotLimitForPreOrder && selectedDay) {
-      dispatch(
-        locationAndDateActionCreators.loadTimeSlotSoldData({
-          deliveryType,
-          selectedDay,
-          storeId,
-        })
-      );
-    }
-  }
-);
-
 /**
  * select store from the store branch drawer
  */
@@ -128,7 +79,7 @@ export const selectStoreBranch = createAsyncThunk(
     if (isCurrentStoreAvailable) {
       storeId = _get(store, 'id', null);
       const storeHashCode = _get(store, 'hash', null);
-      await dispatch(refreshMenuPage(storeHashCode));
+      await dispatch(refreshMenuPageForNewStore(storeHashCode));
     } else if (coords && isDeliveryType) {
       // TODO: Need to check with PO whether we should keep this logic or not.
       // I remember last time QA complained that it really looks like a bug.
@@ -159,9 +110,7 @@ export const selectStoreBranch = createAsyncThunk(
         }
 
         const storeHashCode = _get(nearestStore, 'hash', null);
-
-        await dispatch(updateTimeSlot(storeInfo));
-        await dispatch(refreshMenuPage(storeHashCode));
+        await dispatch(refreshMenuPageForNewStore(storeHashCode));
       }
     }
   }
