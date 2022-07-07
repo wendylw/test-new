@@ -13,6 +13,7 @@ import {
   getBusiness,
   getShippingType,
   getDeliveryRadius,
+  getMerchantCountry,
   getBusinessUTCOffset,
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
@@ -68,9 +69,9 @@ export const locationDrawerShown = createAsyncThunk(
         businessInfo = getBusinessByName(getState(), business);
       }
 
-      const { qrOrderingSettings, country } = businessInfo;
       const store = _get(businessInfo, 'stores.[0]', {});
-      const { deliveryRadius } = qrOrderingSettings || {};
+      const country = getMerchantCountry(getState());
+      const deliveryRadius = getDeliveryRadius(getState());
 
       if (!_isNumber(deliveryRadius)) {
         throw new Error('Delivery radius is incorrect.');
