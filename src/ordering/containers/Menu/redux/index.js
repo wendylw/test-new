@@ -4,6 +4,7 @@ import productDetail from './productDetail';
 import alcohol from '../components/AlcoholModal/redux';
 import cart from './cart';
 import promotion from './promotion';
+import address from './address';
 import timeSlot from './timeSlot';
 
 export default combineReducers({
@@ -12,5 +13,6 @@ export default combineReducers({
   alcohol,
   cart,
   promotion,
+  address,
   timeSlot,
 });
