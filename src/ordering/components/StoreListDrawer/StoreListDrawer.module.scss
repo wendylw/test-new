@@ -1,3 +1,7 @@
+.loader {
+  @apply tw-absolute tw-text-2xl tw-text-gray-600;
+}
+
 .storeListDrawerInitializing,
 .storeListDrawer {
   @apply tw-p-0;
