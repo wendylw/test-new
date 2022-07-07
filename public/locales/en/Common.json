@@ -282,6 +282,7 @@
   "TimeSlotUnavailable": "Time slot unavailable",
   "Reset": "Reset",
   "Apply": "Apply",
+  "SelectNextAvailableTime": "Select next available time slot",
   "NetworkErrorTitle": "No internet connection",
   "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again"
 }

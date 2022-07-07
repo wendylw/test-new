@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { CaretDown } from 'phosphor-react';
 import { TimeSlotIcon } from '../../../../common/components/Icons';
+import TimeSlotDrawer from './TimeSlotDrawer';
 import styles from './TimeSlot.module.scss';
 
-const TimeSlot = ({ isTimeSlotAvailable, timeSlotTitle, dateTimeValue, onClick }) => (
+const TimeSlot = ({
+  isTimeSlotAvailable,
+  timeSlotTitle,
+  dateTimeValue,
+  onClick,
+  selectedShippingType,
+  // Drawer Data
+  timeSlotDrawerVisible,
+  isOnlyPreOrder,
+  shippingTypeList,
+  dateList,
+  timeSlotList,
+  isSaveButtonDisabled,
+  isInitializing,
+  onClose,
+  changeShippingType,
+  changeDate,
+  changeTimeSlot,
+  save,
+}) => (
   <div className="tw-flex-1">
     <button className={styles.timeSlotDropdownButton} disabled={!isTimeSlotAvailable} onClick={onClick}>
       <div className="tw-flex tw-items-center">
@@ -17,6 +37,21 @@ const TimeSlot = ({ isTimeSlotAvailable, timeSlotTitle, dateTimeValue, onClick }
 
       <CaretDown className="tw-text-gray-600" />
     </button>
+    <TimeSlotDrawer
+      timeSlotDrawerVisible={timeSlotDrawerVisible}
+      isOnlyPreOrder={isOnlyPreOrder}
+      selectedShippingType={selectedShippingType}
+      shippingTypeList={shippingTypeList}
+      dateList={dateList}
+      timeSlotList={timeSlotList}
+      isSaveButtonDisabled={isSaveButtonDisabled}
+      isInitializing={isInitializing}
+      onClose={onClose}
+      changeShippingType={changeShippingType}
+      changeDate={changeDate}
+      changeTimeSlot={changeTimeSlot}
+      save={save}
+    />
   </div>
 );
 
@@ -27,6 +62,8 @@ TimeSlot.propTypes = {
   timeSlotTitle: PropTypes.string,
   dateTimeValue: PropTypes.string,
   onClick: PropTypes.func,
+  selectedShippingType: PropTypes.string,
+  ...TimeSlotDrawer.propTypes,
 };
 
 TimeSlot.defaultProps = {
@@ -34,6 +71,8 @@ TimeSlot.defaultProps = {
   timeSlotTitle: '',
   dateTimeValue: null,
   onClick: () => {},
+  selectedShippingType: null,
+  ...TimeSlotDrawer.defaultProps,
 };
 
 export default TimeSlot;
