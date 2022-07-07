@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useMount } from 'react-use';
 import Frame from '../../../common/components/Frame';
 import MenuShippingInfoBar from './components/MenuShippingInfoBar';
 import MenuHeader from './components/MenuHeader';
@@ -21,9 +22,9 @@ const Menu = () => {
   const isSearchingBannerVisible = useSelector(getIsSearchingBannerVisible);
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
 
-  useEffect(() => {
+  useMount(() => {
     dispatch(mounted());
-  }, []);
+  });
 
   return (
     <Frame>

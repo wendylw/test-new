@@ -33,6 +33,7 @@ import {
   getIsAddressOutOfRange,
   getHasSelectedExpectedDeliveryTime,
   getStoreStatus,
+  getExpectedDeliveryTime,
 } from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES } from '../../../../../common/utils/constants';
@@ -85,13 +86,12 @@ export const showStoreInfoDrawer = createAsyncThunk('ordering/menu/common/showSt
  */
 export const updateExpectedDeliveryDate = createAsyncThunk(
   'ordering/menu/updateExpectedDeliveryDate',
-  async (expectedDate, { getState }) => {
+  async ({ expectedDate, shippingType }, { getState }) => {
     try {
       const currentTime = getCurrentTime(getState());
       const store = getStore(getState());
       const businessUTCOffset = getBusinessUTCOffset(getState());
       const currentDayJsObj = StoreUtils.getBusinessDateTime(businessUTCOffset, currentTime);
-      const shippingType = getShippingType(getState());
 
       if (!expectedDate) {
         removeExpectedDeliveryTime();
@@ -238,7 +238,12 @@ export const initExpectedDeliveryDate = createAsyncThunk(
         initialExpectedDeliveryTime = 'now';
       }
 
-      dispatch(updateExpectedDeliveryDate(initialExpectedDeliveryTime));
+      dispatch(
+        updateExpectedDeliveryDate({
+          expectedDate: initialExpectedDeliveryTime,
+          shippingType,
+        })
+      );
     } catch (error) {
       console.error(error);
       throw error;
@@ -280,6 +285,7 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
   const isBeepQR = getIsQrOrderingShippingType(state);
   const isBeepDelivery = getIsBeepDeliveryShippingType(state);
   const isWebview = getIsWebview(state);
+  const shippingType = getShippingType(state);
 
   ensureShippingType();
   if (isDineInType()) {
@@ -330,7 +336,12 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
 
       if (!store) {
         // remove expectedDeliveryDate
-        await dispatch(updateExpectedDeliveryDate(null));
+        await dispatch(
+          updateExpectedDeliveryDate({
+            expectedDate: null,
+            shippingType,
+          })
+        );
         return;
       }
 
@@ -578,13 +589,9 @@ export const showLocationDrawer = createAsyncThunk(
   }
 );
 
-// TODO: will complete it in Phase2
-export const showTimeSlotDrawer = createAsyncThunk(
-  'ordering/menu/common/showTimeSlotDrawer',
-  (isToReviewCart = false, { getState, dispatch }) => {
-    gotoLocationAndDate(isToReviewCart, getState(), dispatch);
-  }
-);
+export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', () => {});
+
+export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {});
 
 // TODO: will complete it in Phase2
 export const showStoreListDrawer = createAsyncThunk(
@@ -597,7 +604,7 @@ export const showStoreListDrawer = createAsyncThunk(
 /**
  * goto Review cart page
  */
-export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', async (_, { dispatch, getState }) => {
+export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', async (_, { dispatch, getState }) => {
   dispatch(hideMiniCartDrawer());
 
   const state = getState();
@@ -621,7 +628,7 @@ export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', asyn
   }
 
   if (isBeepDelivery && !hasSelectedExpectedDeliveryTime) {
-    await dispatch(showTimeSlotDrawer(true));
+    await dispatch(showTimeSlotDrawer());
     return;
   }
 

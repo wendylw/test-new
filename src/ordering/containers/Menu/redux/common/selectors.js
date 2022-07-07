@@ -100,6 +100,9 @@ export const getStoreDisplaySubTitle = createSelector(getBusinessInfo, businessI
  */
 export const getActiveCategoryId = state => state.menu.common.activeCategoryId;
 
+// is time slot drawer visible
+export const getTimeSlotDrawerVisible = state => state.menu.common.timeSlotDrawerVisible;
+
 /**
  * get store category list
  * @param {*} state
@@ -120,6 +123,16 @@ export const getCategories = createSelector(
 );
 
 export const getCurrentTime = state => state.menu.common.currentTime;
+
+/**
+ * get current time in business time zone
+ * @returns Dayjs object
+ */
+export const getBusinessTimeZoneCurrentDayjs = createSelector(
+  getCurrentTime,
+  getBusinessUTCOffset,
+  (currentTime, businessUTCOffset) => StoreUtils.getBusinessDateTime(businessUTCOffset, currentTime)
+);
 
 export const getExpectedDeliveryTime = state => state.menu.common.expectedDeliveryTime;
 
@@ -212,9 +225,8 @@ export const getIsMenuRevamp = createSelector(
   getIsQrOrderingShippingType,
   getIsDeliveryOrder,
   getEnableDeliveryRevamp,
-  getIsInAppOrMiniProgram,
-  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp, isInAppOrMiniProgram) =>
-    isQrOrderingShippingType || (isDeliveryOrder && !isInAppOrMiniProgram && enabledDeliveryRevamp)
+  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp) =>
+    isQrOrderingShippingType || (isDeliveryOrder && enabledDeliveryRevamp)
 );
 
 export const getIsSearchingBannerVisible = state => state.menu.common.searchingBannerVisible;
