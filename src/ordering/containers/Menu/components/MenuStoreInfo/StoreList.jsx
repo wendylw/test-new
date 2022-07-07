@@ -31,13 +31,13 @@ const StoreList = () => {
     <div className="tw-flex-1">
       <button
         className={styles.storeListDropdownButton}
-        disabled={!isStoreListDrawerVisible}
+        disabled={storeList.length <= 1}
         onClick={() => {
           dispatch(showStoreListDrawer());
         }}
       >
         <span className={styles.storeListSubtitle}>{storeDisplaySubTitle}</span>
-        <CaretDown className="tw-mx-4 sm:tw-mx-4px tw-text-xs tw-text-gray-600" />
+        {storeList.length > 1 ? <CaretDown className="tw-mx-4 sm:tw-mx-4px tw-text-xs tw-text-gray-600" /> : null}
       </button>
       <StoreListDrawer
         isInitializing={!hasStoreListInitialized}
