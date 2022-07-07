@@ -33,7 +33,7 @@ const StoreList = () => {
   }, [isStoreListDrawerVisible]);
 
   return (
-    <div className="tw-flex-1">
+    <div className="tw-flex-1 beep-line-clamp-flex-container">
       {isQrOrderingShippingType ? (
         <p className={styles.storeListSubtitle}>storeDisplaySubTitle</p>
       ) : (

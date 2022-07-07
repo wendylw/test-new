@@ -7,4 +7,6 @@
 
 .storeListDropdownButton {
   @apply tw-flex tw-items-center tw-border-0 tw-bg-transparent tw-cursor-pointer;
+
+  min-width: 0;
 }
