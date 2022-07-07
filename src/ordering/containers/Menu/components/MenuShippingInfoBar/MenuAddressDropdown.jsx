@@ -1,6 +1,5 @@
 import _isEmpty from 'lodash/isEmpty';
 import React, { useEffect } from 'react';
-import { useMount } from 'react-use';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { CaretDown } from 'phosphor-react';
@@ -13,12 +12,16 @@ import {
   getIsLocationDrawerVisible,
 } from '../../redux/common/selectors';
 import { showLocationDrawer, hideLocationDrawer } from '../../redux/common/thunks';
-import { getHasStoreInfoInitialized, getAddressList } from '../../redux/address/selectors';
+import {
+  getHasStoreInfoInitialized,
+  getAddressListInfo,
+  getEnableToLoadAddressList,
+} from '../../redux/address/selectors';
 import {
   locationDrawerShown,
   locationDrawerHidden,
   selectLocation,
-  loadAddressDropdownData,
+  loadAddressListData,
 } from '../../redux/address/thunks';
 import styles from './MenuAddressDropdown.module.scss';
 
@@ -35,24 +38,26 @@ const MenuShippingInfoBar = () => {
   const storeLocationStreet = useSelector(getStoreLocationStreetForPickup);
   // user selected shipping type: "delivery" | "pickup" | "dine-in" | "takeaway"
   const shippingType = useSelector(getShippingType);
+  // enable to load address list
+  const enableToLoadAddressList = useSelector(getEnableToLoadAddressList);
   const isLocationDrawerVisible = useSelector(getIsLocationDrawerVisible);
   const hasStoreInfoInitialized = useSelector(getHasStoreInfoInitialized);
-  const addressList = useSelector(getAddressList);
+  const addressList = useSelector(getAddressListInfo);
   const locationTitle = storeLocationStreet
     ? t(LOCATION_TITLE_KEYS[shippingType])
     : selectedLocationDisplayName || t('SelectLocation');
 
   useEffect(() => {
+    if (enableToLoadAddressList) {
+      dispatch(loadAddressListData(enableToLoadAddressList));
+    }
+
     if (isLocationDrawerVisible) {
       dispatch(locationDrawerShown());
     } else {
       dispatch(locationDrawerHidden());
     }
-  }, [isLocationDrawerVisible]);
-
-  useMount(() => {
-    dispatch(loadAddressDropdownData());
-  });
+  }, [isLocationDrawerVisible, enableToLoadAddressList]);
 
   return (
     <div className="tw-flex-1">

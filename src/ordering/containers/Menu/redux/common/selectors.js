@@ -40,7 +40,7 @@ import {
   getIsInAppOrMiniProgram,
   getIsPickUpType,
 } from '../../../../redux/modules/app';
-import { getStoreById, getCoreStoreList } from '../../../../../redux/modules/entities/stores';
+import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import {

@@ -58,7 +58,7 @@ const AddressDropdownDrawer = ({ isLocationDrawerVisible, isInitializing, addres
             </div> */}
 
             {addressList.length > 0 ? (
-              <section>
+              <>
                 <h3 className="tw-pb-4 sm:tw-pb-4px tw-leading-relaxed tw-font-bold">{t('SavedAddress')}</h3>
                 <ul>
                   {addressList.map(address => (
@@ -80,28 +80,26 @@ const AddressDropdownDrawer = ({ isLocationDrawerVisible, isInitializing, addres
                     </li>
                   ))}
                 </ul>
-              </section>
+              </>
             ) : null}
 
-            <section>
-              <ul>
-                <li className={styles.addressDropdownDrawerItem}>
-                  <button className={styles.addressDropdownDrawerItemButton}>
-                    <LocationAndAddressIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
-                    <div className="beep-line-clamp-flex-container tw-flex-col">
-                      <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
-                        <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
-                          KYMCO Malaysia Motorcycle Bestbuy Sdn Bhd
-                        </span>
-                      </h4>
-                      <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
-                        8, Jalan PJU 7/6 Mutiara Damansara, Selangor
-                      </p>
-                    </div>
-                  </button>
-                </li>
-              </ul>
-            </section>
+            <ul>
+              <li className={styles.addressDropdownDrawerItem}>
+                <button className={styles.addressDropdownDrawerItemButton}>
+                  <LocationAndAddressIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
+                  <div className="beep-line-clamp-flex-container tw-flex-col">
+                    <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
+                      <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
+                        KYMCO Malaysia Motorcycle Bestbuy Sdn Bhd
+                      </span>
+                    </h4>
+                    <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
+                      8, Jalan PJU 7/6 Mutiara Damansara, Selangor
+                    </p>
+                  </div>
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
       )}

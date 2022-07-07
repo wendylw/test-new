@@ -9,7 +9,6 @@ import { setAddressInfo } from '../../../../../redux/modules/address/thunks';
 import { getBusinessByName } from '../../../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../../../redux/modules/entities/stores';
 import {
-  getUserIsLogin,
   getStoreId,
   getBusiness,
   getDeliveryRadius,
@@ -186,13 +185,10 @@ export const selectLocation = createAsyncThunk(
 /*
  * load address list and location list
  */
-export const loadAddressDropdownData = createAsyncThunk(
+export const loadAddressListData = createAsyncThunk(
   'ordering/menu/address/loadAddressDropdownData',
-  async (_, { dispatch, getState }) => {
-    const state = getState();
-    const userSignedIn = getUserIsLogin(state);
-
-    if (userSignedIn) {
+  async (enableToLoadAddressList, { dispatch }) => {
+    if (enableToLoadAddressList) {
       await dispatch(loadAddressList());
     }
   }

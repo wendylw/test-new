@@ -1,8 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
-import { getAddressList } from '../../../../redux/modules/addressList/selectors';
+import { getUserIsLogin } from '../../../../redux/modules/app';
+import { getAddressList, getAddressListInitialized } from '../../../../redux/modules/addressList/selectors';
 
-export { getAddressList };
+export { getAddressListInitialized };
 
 export const getAddressListInfo = createSelector(getAddressList, addressList =>
   addressList.map(({ _id, availableStatus, ...othersOptions }) => ({
@@ -21,4 +22,13 @@ export const getStoreInfoData = createSelector(getStoreInfo, storeInfo => storeI
 export const getHasStoreInfoInitialized = createSelector(
   getStoreInfo,
   storeInfo => storeInfo.status !== API_REQUEST_STATUS.PENDING
+);
+
+/**
+ *  get enabled loading address list status
+ * */
+export const getEnableToLoadAddressList = createSelector(
+  getUserIsLogin,
+  getAddressListInitialized,
+  (enableToLoadAddressList, addressListInitialized) => enableToLoadAddressList && !addressListInitialized
 );
