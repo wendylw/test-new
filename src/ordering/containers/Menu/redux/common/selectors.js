@@ -21,7 +21,7 @@ import {
   getIsStoreInfoReady,
   getIsDeliveryOrder,
   getIsBeepDeliveryShippingType,
-  getIsBeepDeliveryType,
+  getIsDeliveryType,
   getStore,
   getBusinessUTCOffset,
   getIsWebview,
@@ -38,6 +38,7 @@ import {
   getStoreRating,
   getIsFromBeepSite,
   getIsInAppOrMiniProgram,
+  getIsPickUpType,
 } from '../../../../redux/modules/app';
 import { getStoreById, getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import * as StoreUtils from '../../../../../utils/store-utils';
@@ -55,7 +56,7 @@ export {
   getTableId,
   getShippingType,
   getIsQrOrderingShippingType,
-  getIsBeepDeliveryType,
+  getIsDeliveryType,
   getIsEnablePayLater,
   getIsStoreInfoReady,
   getStore,
@@ -100,6 +101,9 @@ export const getStoreDisplaySubTitle = createSelector(getBusinessInfo, businessI
  */
 export const getActiveCategoryId = state => state.menu.common.activeCategoryId;
 
+// is time slot drawer visible
+export const getTimeSlotDrawerVisible = state => state.menu.common.timeSlotDrawerVisible;
+
 /**
  * get store category list
  * @param {*} state
@@ -120,6 +124,16 @@ export const getCategories = createSelector(
 );
 
 export const getCurrentTime = state => state.menu.common.currentTime;
+
+/**
+ * get current time in business time zone
+ * @returns Dayjs object
+ */
+export const getBusinessTimeZoneCurrentDayjs = createSelector(
+  getCurrentTime,
+  getBusinessUTCOffset,
+  (currentTime, businessUTCOffset) => StoreUtils.getBusinessDateTime(businessUTCOffset, currentTime)
+);
 
 export const getExpectedDeliveryTime = state => state.menu.common.expectedDeliveryTime;
 
@@ -669,7 +683,7 @@ export const getStoreOpeningTimeList = createSelector(
       7: 'Saturday',
     };
     const { validTimeFrom, validTimeTo, validDays, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
-    const formatBreakTimes = [formatTime(breakTimeFrom), formatTime(breakTimeTo)];
+    const formatBreakTimes = breakTimeFrom && breakTimeTo ? [formatTime(breakTimeFrom), formatTime(breakTimeTo)] : [];
     const formatValidTimes = [formatTime(validTimeFrom), formatTime(validTimeTo)];
     const openingHours = getOpeningHours({
       validTimeFrom,
@@ -730,10 +744,8 @@ export const getIsAbleToReviewCart = createSelector(
  * for display store pickup location
  * @returns {string}
  */
-export const getStoreLocationStreetForPickup = createSelector(
-  getStore,
-  getIsBeepDeliveryType,
-  (store, isBeepDelivery) => !isBeepDelivery && _get(store, 'street1', '')
+export const getStoreLocationStreetForPickup = createSelector(getStore, getIsPickUpType, (store, isPickup) =>
+  isPickup ? _get(store, 'street1', '') : ''
 );
 
 /**
