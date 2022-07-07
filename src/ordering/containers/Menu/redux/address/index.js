@@ -22,7 +22,8 @@ export const { reducer, actions } = createSlice({
       state.storeInfo.error = null;
     },
     [locationDrawerShown.fulfilled.type]: (state, action) => {
-      state.storeInfo.data = action.payload;
+      const { coords, country, radius } = action.payload;
+      state.storeInfo.data = { coords, country, radius };
       state.storeInfo.status = API_REQUEST_STATUS.FULFILLED;
     },
     [locationDrawerShown.rejected.type]: (state, action) => {
