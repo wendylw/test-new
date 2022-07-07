@@ -637,10 +637,13 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
   }
 });
 
-export const refreshMenuPage = createAsyncThunk('ordering/menu/common/refreshMenuPage', async storeHashCode => {
-  const h = decodeURIComponent(storeHashCode);
-  const queries = Utils.getQueryString();
-  queries.h = h;
-  const search = qs.stringify(queries, { addQueryPrefix: true });
-  window.location.href = `${PATH_NAME_MAPPING.ORDERING_BASE}${search}`;
-});
+export const refreshMenuPageForNewStore = createAsyncThunk(
+  'ordering/menu/common/refreshMenuPageForNewStore',
+  async storeHashCode => {
+    const h = decodeURIComponent(storeHashCode);
+    const queries = Utils.getQueryString();
+    queries.h = h;
+    const search = qs.stringify(queries, { addQueryPrefix: true });
+    window.location.href = `${PATH_NAME_MAPPING.ORDERING_BASE}${search}`;
+  }
+);

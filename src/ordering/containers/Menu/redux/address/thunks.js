@@ -11,21 +11,12 @@ import { getCoreStoreList, getStoreById } from '../../../../../redux/modules/ent
 import {
   getStoreId,
   getBusiness,
-  getShippingType,
   getDeliveryRadius,
   getMerchantCountry,
-  getBusinessUTCOffset,
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
-import { refreshMenuPage, hideLocationDrawer } from '../common/thunks';
-import { getCurrentDate, getNearestStore, getIsAddressOutOfRange } from '../common/selectors';
-import {
-  actions as locationAndDateActionCreators,
-  getSelectedDay,
-  getSelectedFromTime,
-} from '../../../../redux/modules/locationAndDate';
-import { isEnablePerTimeSlotLimitForPreOrder, getStoreAvailableDateAndTime } from '../../../../../utils/store-utils';
-import Utils from '../../../../../utils/utils';
+import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
+import { getNearestStore, getIsAddressOutOfRange } from '../common/selectors';
 
 export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async message => ({ message }));
 
@@ -113,43 +104,6 @@ export const locationDrawerShown = createAsyncThunk(
 
 export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/locationDrawerHidden', async () => {});
 
-// TODO: What the hell for this one? Need to take more time to understand buckets of legacy logic.
-export const updateTimeSlot = createAsyncThunk(
-  'ordering/menu/address/updateTimeSlot',
-  async (store, { dispatch, getState }) => {
-    const state = getState();
-    const deliveryType = getShippingType(state);
-    const currentDate = getCurrentDate(state);
-    const businessUTCOffset = getBusinessUTCOffset(state);
-    const enablePerTimeSlotLimitForPreOrder = isEnablePerTimeSlotLimitForPreOrder(store);
-    const expectedDeliveryDate = Utils.getExpectedDeliveryDateFromSession();
-    const expectedDay = getSelectedDay(state) || _get(expectedDeliveryDate, 'date.date', null);
-    const expectedFromTime = getSelectedFromTime(state) || _get(expectedDeliveryDate, 'hour.from', null);
-    const storeId = _get(store, 'id', null);
-
-    const { orderDate, fromTime } = getStoreAvailableDateAndTime(store, {
-      expectedDay,
-      expectedFromTime,
-      deliveryType,
-      currentDate,
-      businessUTCOffset,
-    });
-
-    const selectedDay = _get(orderDate, 'date', null);
-    const selectedFromTime = fromTime;
-
-    if (enablePerTimeSlotLimitForPreOrder && selectedDay) {
-      dispatch(
-        locationAndDateActionCreators.loadTimeSlotSoldData({
-          deliveryType,
-          selectedDay,
-          storeId,
-        })
-      );
-    }
-  }
-);
-
 /**
  * select location from the location drawer
  */
@@ -202,7 +156,6 @@ export const selectLocation = createAsyncThunk(
        */
       await dispatch(setAddressInfo(addressInfo));
 
-      // TODO: Remind Wendy to disable the click button for pickup type.
       const store = getNearestStore(getState());
       const storeId = _get(store, 'id', null);
 
@@ -221,9 +174,7 @@ export const selectLocation = createAsyncThunk(
 
       const storeHashCode = _get(store, 'hash', null);
 
-      // TODO: huaicheng will check with PO whether this action is necessary.
-      await dispatch(updateTimeSlot(storeInfo));
-      await dispatch(refreshMenuPage(storeHashCode));
+      await dispatch(refreshMenuPageForNewStore(storeHashCode));
     } catch (e) {
       await dispatch(showErrorToast(e.message));
     }
