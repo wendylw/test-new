@@ -15,6 +15,7 @@ import {
   getMerchantCountry,
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
+import { loadAddressList } from '../../../../redux/modules/addressList/thunks';
 import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
 import { getNearestStore, getIsAddressOutOfRange } from '../common/selectors';
 
@@ -103,6 +104,16 @@ export const locationDrawerShown = createAsyncThunk(
 );
 
 export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/locationDrawerHidden', async () => {});
+
+/*
+ * load address list and location list
+ */
+export const loadAddressDropdownData = createAsyncThunk(
+  'ordering/menu/address/loadAddressDropdownData',
+  async (_, { dispatch }) => {
+    await dispatch(loadAddressList());
+  }
+);
 
 /**
  * select location from the location drawer

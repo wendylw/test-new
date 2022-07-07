@@ -1,16 +1,14 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import AddressDropdown from '../../../common/AddressDropdown';
+import MenuAddressDropdown from './MenuAddressDropdown';
 import TimeSlot from '../../../common/TimeSlot';
 import {
-  getSelectedLocationDisplayName,
   getIsQrOrderingShippingType,
   getShippingType,
   getIsTimeSlotAvailable,
   getSelectedDateDisplayValue,
   getSelectedTimeDisplayValue,
-  getStoreLocationStreetForPickup,
   getTimeSlotDrawerVisible,
 } from '../../redux/common/selectors';
 import {
@@ -22,7 +20,7 @@ import {
   getIsSaveButtonDisabled,
   getIsInitializing,
 } from '../../redux/timeSlot/selectors';
-import { showTimeSlotDrawer, hideTimeSlotDrawer, showLocationDrawer } from '../../redux/common/thunks';
+import { showTimeSlotDrawer, hideTimeSlotDrawer } from '../../redux/common/thunks';
 import {
   changeShippingType,
   changeDate,
@@ -34,10 +32,6 @@ import {
 } from '../../redux/timeSlot/thunks';
 import styles from './MenuShippingInfoBar.module.scss';
 
-const LOCATION_TITLE_KEYS = {
-  pickup: 'StoreLocation',
-};
-
 const TIME_SLOT_TITLE_KEYS = {
   delivery: 'Delivery',
   pickup: 'Pickup',
@@ -47,10 +41,6 @@ const TIME_SLOT_TITLE_KEYS = {
 const MenuShippingInfoBar = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  // user selected location display name, for example: "18, Jln USJ"
-  const selectedLocationDisplayName = useSelector(getSelectedLocationDisplayName);
-  // when user select PICKUP should use this selector to display store location
-  const storeLocationStreet = useSelector(getStoreLocationStreetForPickup);
   const isQrOrderingShippingType = useSelector(getIsQrOrderingShippingType);
   // user selected shipping type: "delivery" | "pickup" | "dine-in" | "takeaway"
   const shippingType = useSelector(getShippingType);
@@ -75,9 +65,6 @@ const MenuShippingInfoBar = () => {
   const isSaveButtonDisabled = useSelector(getIsSaveButtonDisabled);
   // is initializing, if TRUE, show a loader
   const isInitializing = useSelector(getIsInitializing);
-  const locationTitle = storeLocationStreet
-    ? t(LOCATION_TITLE_KEYS[shippingType])
-    : selectedLocationDisplayName || t('SelectLocation');
   const timeSlotTItle = t(TIME_SLOT_TITLE_KEYS[shippingType]) || t(TIME_SLOT_TITLE_KEYS.default);
   const dateTranslated = ['Today', 'Tomorrow'].includes(selectedDateDisplayValue)
     ? t(selectedDateDisplayValue)
@@ -109,13 +96,7 @@ const MenuShippingInfoBar = () => {
 
   return (
     <div className={styles.menuShippingInfoBar}>
-      <AddressDropdown
-        locationTitle={locationTitle}
-        locationValue={storeLocationStreet}
-        onClick={() => {
-          dispatch(showLocationDrawer());
-        }}
-      />
+      <MenuAddressDropdown />
       <TimeSlot
         isTimeSlotAvailable={isTimeSlotAvailable}
         timeSlotTitle={isTimeSlotAvailable ? timeSlotTItle : t('TimeSlotUnavailable')}
