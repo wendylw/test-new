@@ -128,6 +128,6 @@
   }
 
   &:disabled {
-    @apply tw-border-gray-300 tw-text-gray-400;
+    @apply tw-border-transparent tw-text-gray-400;
   }
 }
