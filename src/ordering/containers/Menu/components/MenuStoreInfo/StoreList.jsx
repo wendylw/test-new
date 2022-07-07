@@ -5,6 +5,7 @@ import { getStoreDisplaySubTitle, getIsStoreListDrawerVisible } from '../../redu
 import { showStoreListDrawer, hideStoreInfoDrawer } from '../../redux/common/thunks';
 import { getHasStoreListInitialized, getStoreList, getTotalOutletDisplayTitle } from '../../redux/stores/selectors';
 import { storeDrawerShown, storeDrawerHidden, selectStoreBranch } from '../../redux/stores/thunks';
+import StoreListDrawer from '../../../../components/StoreListDrawer';
 import styles from './StoreList.module.scss';
 
 const StoreList = () => {
@@ -36,8 +37,14 @@ const StoreList = () => {
         }}
       >
         <span className={styles.storeListSubtitle}>{storeDisplaySubTitle}</span>
-        <CaretDown className="tw-text-base tw-text-gray-600" />
+        <CaretDown className="tw-mx-4 sm:tw-mx-4px tw-text-xs tw-text-gray-600" />
       </button>
+      <StoreListDrawer
+        isInitializing={!hasStoreListInitialized}
+        isStoreListDrawerVisible={isStoreListDrawerVisible}
+        totalOutletDisplayTitle={totalOutletDisplayTitle}
+        storeList={storeList}
+      />
     </div>
   );
 };

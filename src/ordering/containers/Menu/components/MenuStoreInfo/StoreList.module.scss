@@ -1,0 +1,10 @@
+@import "../../../../../common/styles/variables.scss";
+
+.storeListSubtitle {
+  @apply tw-text-sm tw-text-gray-800 tw-leading-loose;
+  @include text-line-clamp(1);
+}
+
+.storeListDropdownButton {
+  @apply tw-flex tw-items-center tw-border-0 tw-bg-transparent;
+}

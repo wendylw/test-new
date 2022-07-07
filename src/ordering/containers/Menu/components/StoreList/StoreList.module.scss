@@ -1,6 +1,0 @@
-@import "../../../../../common/styles/variables.scss";
-
-.storeListSubtitle {
-  @apply tw-text-sm tw-leading-loose;
-  @include text-line-clamp(1);
-}

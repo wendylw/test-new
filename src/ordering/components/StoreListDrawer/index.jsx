@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X } from 'phosphor-react';
-import Drawer from '../../../../../common/components/Drawer';
-import Card from '../../../../../common/components/Card';
-import Tag from '../../../../../common/components/Tag';
-import DrawerHeader from '../../../../../common/components/Drawer/DrawerHeader';
+import Drawer from '../../../common/components/Drawer';
+import Card from '../../../common/components/Card';
+import Tag from '../../../common/components/Tag';
+import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
 import styles from './StoreListDrawer.module.scss';
 
 const StoreListDrawer = ({
@@ -36,7 +36,7 @@ const StoreListDrawer = ({
       <ul>
         {storeList.map(store => (
           <li key={store.id} className={styles.storeListItem}>
-            <Card>
+            <Card onClick={selectStoreBranch}>
               <i>icon</i>
               <div>
                 <h4>Bukit Bintang</h4>
