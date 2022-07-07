@@ -1,3 +1,11 @@
 .storeListDrawerInitializing {
   @apply tw-p-0;
 }
+
+.storeListDrawerInfoList {
+  @apply tw-flex tw-items-center tw-my-2 sm:tw-my-2px tw-space-x-8 sm:tw-space-x-8px;
+
+  > li:nth-child(n + 2) {
+    @apply tw-border-solid tw-pl-8 sm:tw-pl-8px tw-border-0 tw-border-l tw-border-gray-200;
+  }
+}

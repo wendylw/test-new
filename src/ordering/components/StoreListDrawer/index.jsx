@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { X } from 'phosphor-react';
+import { X, MapPin, Clock } from 'phosphor-react';
 import Drawer from '../../../common/components/Drawer';
 import Card from '../../../common/components/Card';
 import CardGroup from '../../../common/components/Card/CardGroup';
 import Tag from '../../../common/components/Tag';
 import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
+import { StoreIcon } from '../../../common/components/Icons';
 import styles from './StoreListDrawer.module.scss';
 
 const StoreListDrawer = ({
@@ -21,8 +22,7 @@ const StoreListDrawer = ({
   return (
     <Drawer
       className={isInitializing ? styles.storeListDrawerInitializing : styles.storeListDrawer}
-      // show={isStoreListDrawerVisible}
-      show
+      show={isStoreListDrawerVisible}
       header={
         <DrawerHeader
           left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" onClick={onClose} />}
@@ -39,58 +39,36 @@ const StoreListDrawer = ({
     >
       <CardGroup className="tw-px-16 sm:tw-px-16px tw-py-24 sm:tw-py-24px" spacing="16">
         {storeList.map(store => (
-          <Card key={store.id} onClick={selectStoreBranch}>
-            <i>icon</i>
-            <div>
-              <h4>Bukit Bintang</h4>
-              <p>8, Jalan PJU 7/6, Mutiara Damansara, 47800 Petaling Jaya, Selangor</p>
-              <ol>
-                <li>
-                  <i>icon</i>
-                  <span>10 KM</span>
-                </li>
-                <li>
-                  <i>icon</i>
-                  <span>11:00-22:00</span>
-                </li>
-              </ol>
+          <Card
+            key={store.id}
+            contentClassName="tw-flex tw-items-start"
+            onClick={selectStoreBranch}
+            active={store.selected}
+            disabled={!store.available}
+          >
+            <StoreIcon />
+            <div className="tw-ml-8 sm:tw-ml-8px">
+              <h4 className="tw-font-bold tw-leading-relaxed">{store.title}</h4>
+              <p className="tw-my-6 sm: tw-my-6px tw-text-sm tw-leading-loose">{store.location}</p>
+              <div className="tw-flex tw-items-center">
+                <ul className={styles.storeListDrawerInfoList}>
+                  <li className="tw-flex tw-items-center">
+                    <MapPin className="tw-text-sm tw-text-gray-600" weight="light" />
+                    <span className="tw-mx-4 sm:tw-mx-4px tw-text-xs">{store.displayDistance}</span>
+                  </li>
+                  <li className="tw-flex tw-items-center">
+                    <Clock className="tw-text-sm tw-text-gray-600" weight="light" />
+                    <span className="tw-mx-4 sm:tw-mx-4px tw-text-xs">{store.displayOpeningTime}</span>
+                  </li>
+                </ul>
+                <Tag className="tw-mx-8 sm:tw-mx-8px" color="red">
+                  {t('Closed')}
+                </Tag>
+                <Tag className="tw-mx-8 sm:tw-mx-8px">{t('OutOfRange')}</Tag>
+              </div>
             </div>
           </Card>
         ))}
-        <Card>
-          <i>icon</i>
-          <div>
-            <h4>Bukit Bintang</h4>
-            <p>8, Jalan PJU 7/6, Mutiara Damansara, 47800 Petaling Jaya, Selangor</p>
-            <ol>
-              <li>
-                <i>icon</i>
-                <span>10 KM</span>
-              </li>
-              <li>
-                <i>icon</i>
-                <span>11:00-22:00</span>
-              </li>
-            </ol>
-          </div>
-        </Card>
-        <Card>
-          <i>icon</i>
-          <div>
-            <h4>Bukit Bintang</h4>
-            <p>8, Jalan PJU 7/6, Mutiara Damansara, 47800 Petaling Jaya, Selangor</p>
-            <ol>
-              <li>
-                <i>icon</i>
-                <span>10 KM</span>
-              </li>
-              <li>
-                <Tag color="red">closed</Tag>
-                <Tag>Out of range</Tag>
-              </li>
-            </ol>
-          </div>
-        </Card>
       </CardGroup>
     </Drawer>
   );
