@@ -60,6 +60,7 @@ const TimeSlotDrawer = ({
               <div className={styles.switchButtons}>
                 {shippingTypeList.map(({ value, available, selected }) => (
                   <button
+                    key={`switch-button-${value}`}
                     disabled={!available}
                     className={`${styles.switchButton}${selected ? ' active' : ''}`}
                     onClick={() => changeShippingType(value)}
@@ -101,12 +102,14 @@ const TimeSlotDrawer = ({
                     <SwiperSlide
                       data-text={isTomorrow ? dateContentList[0] : ''}
                       tag="li"
-                      key={2}
+                      key={`${value}-${displayMonth}-${displayDay}`}
                       className={classNameList.join(' ')}
                       onClick={() => (available ? changeDate(value) : {})}
                     >
                       {dateContentList.map(content => (
-                        <span className={styles.timeSlotDateItemText}>{content}</span>
+                        <span key={`${value}-${content}`} className={styles.timeSlotDateItemText}>
+                          {content}
+                        </span>
                       ))}
                     </SwiperSlide>
                   );
@@ -124,7 +127,7 @@ const TimeSlotDrawer = ({
                   const timeContentList = selectedShippingType === 'delivery' ? [from, to] : [from];
 
                   return (
-                    <li className={styles.timeSlotTimeItem}>
+                    <li key={`${value}-${from}-${to}`} className={styles.timeSlotTimeItem}>
                       <button
                         disabled={!available}
                         className={`${styles.timeSlotTimeButton} ${selected ? 'active' : ''}`}

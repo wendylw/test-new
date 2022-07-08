@@ -286,5 +286,8 @@
   "NetworkErrorTitle": "No internet connection",
   "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again",
   "SearchYourLocation": "Search your location",
-  "AddressListEmptyDescription": "Enter your delivery location"
+  "AddressListEmptyDescription": "Enter your delivery location",
+  "StoreListDrawerTitle": "Select store branch",
+  "StoreListDrawerDeliveryDescription": "{{totalOutletDisplayTitle}} outlets near you",
+  "StoreListDrawerPickupDescription": "Total {{totalOutletDisplayTitle}} outlets"
 }

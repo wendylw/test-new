@@ -6,6 +6,7 @@ import cart from './cart';
 import promotion from './promotion';
 import address from './address';
 import timeSlot from './timeSlot';
+import stores from './stores';
 
 export default combineReducers({
   common,
@@ -15,4 +16,5 @@ export default combineReducers({
   promotion,
   address,
   timeSlot,
+  stores,
 });
