@@ -10,6 +10,7 @@ import DrawerHeader from '../../../../common/components/Drawer/DrawerHeader';
 import Loader from '../../../../common/components/Loader';
 import 'swiper/components/pagination/pagination.scss';
 import styles from './TimeSlotDrawer.module.scss';
+import { SHIPPING_TYPES } from '../../../../common/utils/constants';
 
 const SHIPPING_TYPE_MAPPING = {
   pickup: 'Pickup',
@@ -60,6 +61,7 @@ const TimeSlotDrawer = ({
               <div className={styles.switchButtons}>
                 {shippingTypeList.map(({ value, available, selected }) => (
                   <button
+                    key={value}
                     disabled={!available}
                     className={`${styles.switchButton}${selected ? ' active' : ''}`}
                     onClick={() => changeShippingType(value)}
@@ -101,12 +103,14 @@ const TimeSlotDrawer = ({
                     <SwiperSlide
                       data-text={isTomorrow ? dateContentList[0] : ''}
                       tag="li"
-                      key={2}
+                      key={value}
                       className={classNameList.join(' ')}
                       onClick={() => (available ? changeDate(value) : {})}
                     >
                       {dateContentList.map(content => (
-                        <span className={styles.timeSlotDateItemText}>{content}</span>
+                        <span key={content} className={styles.timeSlotDateItemText}>
+                          {content}
+                        </span>
                       ))}
                     </SwiperSlide>
                   );
@@ -121,16 +125,17 @@ const TimeSlotDrawer = ({
               </h3>
               <ol className="tw-py-4 sm:tw-py-4px">
                 {timeSlotList.map(({ value, from, to, available, selected }) => {
-                  const timeContentList = selectedShippingType === 'delivery' ? [from, to] : [from];
+                  const timeContentList = selectedShippingType === SHIPPING_TYPES.DELIVERY ? [from, to] : [from];
 
                   return (
-                    <li className={styles.timeSlotTimeItem}>
+                    <li key={value} className={styles.timeSlotTimeItem}>
                       <button
                         disabled={!available}
                         className={`${styles.timeSlotTimeButton} ${selected ? 'active' : ''}`}
                         onClick={() => changeTimeSlot(value)}
                       >
-                        {`${timeContentList.join(' - ')}${!available ? ` (${t('TimeSlotUnavailable')})` : ''}`}
+                        {from === 'Immediate' ? t('Immediate') : timeContentList.join(' - ')}
+                        {!available ? ` (${t('TimeSlotUnavailable')})` : ''}
                       </button>
                     </li>
                   );
