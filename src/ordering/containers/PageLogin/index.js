@@ -110,6 +110,9 @@ class PageLogin extends React.Component {
   }
 
   async handleGetOtpCode(payload) {
+    // BEEP-2685: New Relic needs to know the OTP first send time.
+    window.newrelic?.addPageAction('ordering.login.get-otp-start');
+
     await this.props.appActions.getOtp(payload);
 
     if (this.props.isOtpError) {
