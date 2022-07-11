@@ -110,6 +110,8 @@ export const changeShippingType = createAsyncThunk(
       const currentTime = getCurrentTime(state);
       const businessUTCOffset = getBusinessUTCOffset(state);
 
+      // check current selected time whether available for new selected shippingType
+      // if not, find the earliest available time
       const { orderDate, fromTime } = storeUtils.getStoreAvailableDateAndTime(store, {
         expectedDay: new Date(selectedDateObj.value),
         expectedFromTime: selectedTimeSlot,
@@ -139,6 +141,8 @@ export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', 
     const businessUTCOffset = getBusinessUTCOffset(state);
     const selectedTimeSlot = getSelectedTimeSlot(state);
 
+    // check current selected time whether available for new selected date
+    // if not, find the earliest available time
     const { orderDate, fromTime } = storeUtils.getStoreAvailableDateAndTime(store, {
       expectedDay: new Date(value),
       expectedFromTime: selectedTimeSlot,
