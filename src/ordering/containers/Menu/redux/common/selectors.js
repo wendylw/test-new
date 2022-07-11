@@ -637,6 +637,8 @@ export const getIsStoreInfoEntryVisible = createSelector(
 
 export const getIsStoreInfoDrawerVisible = state => state.menu.common.storeInfoDrawerVisible;
 
+export const getIsStoreListDrawerVisible = state => state.menu.common.storeListDrawerVisible;
+
 export const getStoreLocation = createSelector(getDeliveryInfo, deliveryInfo => {
   const { storeAddress } = deliveryInfo;
   return storeAddress;

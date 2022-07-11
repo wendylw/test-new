@@ -4,5 +4,6 @@ export { ShieldDollarIcon } from './ShieldDollarIcon';
 export { TimeSlotIcon } from './TimeSlotIcon';
 export { LocationAndAddressIcon } from './LocationAndAddressIcon';
 export { MotorcycleIcon } from './MotorcycleIcon';
+export { StoreIcon } from './StoreIcon';
 export { DateIcon } from './DateIcon';
 export { TimeIcon } from './TimeIcon';
