@@ -81,6 +81,7 @@ import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
+import { ICON_RES } from '../../../../../components/NativeHeader';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
 const ANIMATION_TIME = 3600;
@@ -738,7 +739,8 @@ export class ThankYou extends PureComponent {
 
     if (isWebview) {
       const rightContentOfNativeLiveChat = {
-        text: `${t('NeedHelp')}?`,
+        text: `${t('Help')}`,
+        iconRes: ICON_RES.SUPPORT_AGENT,
         style: {
           color: '#00b0ff',
         },

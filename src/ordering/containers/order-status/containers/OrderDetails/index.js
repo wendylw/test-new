@@ -28,6 +28,7 @@ import {
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
+import { ICON_RES } from '../../../../../components/NativeHeader';
 
 const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING, DELIVERY_METHOD } = Constants;
 
@@ -259,7 +260,8 @@ export class OrderDetails extends Component {
 
     if (isWebview) {
       const rightContentOfNativeLiveChat = {
-        text: `${t('NeedHelp')}?`,
+        text: `${t('Help')}`,
+        iconRes: ICON_RES.SUPPORT_AGENT,
         style: {
           color: '#00b0ff',
         },

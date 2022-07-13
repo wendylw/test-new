@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _isFunction from 'lodash/isFunction';
+import { Headset } from 'phosphor-react';
 import { getUserConsumerId, getUserIsLogin } from '../ordering/redux/modules/app';
 import { getLiveChatUserProfile } from '../ordering/containers/order-status/redux/selector';
 import './LiveChat.scss';
@@ -116,13 +117,16 @@ class LiveChat extends Component {
 
     return (
       <button
-        className={`button live-chat flex flex-middle flex__shrink-fixed padding-left-right-small padding-top-bottom-normal ${
+        className={`button live-chat flex flex-middle flex__shrink-fixed sm:tw-px-6px tw-px-6 sm:tw-py-16px tw-py-16 ${
           hasScriptLoaded ? '' : 'text-opacity'
         }`}
         onClick={this.handleClick}
       >
         {!hasScriptLoaded && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
-        <div className="live-chat__loading-text margin-left-right-smaller">{`${t('NeedHelp')}?`}</div>
+        <div className="live-chat__loading-text margin-left-right-smaller tw-flex tw-items-center">
+          <Headset weight="fill" className="tw-flex-shrink-0 sm:tw-mx-2px tw-mx-2" size={20} />
+          <span className="tw-font-bold tw-text-lg tw-leading-relaxed sm:tw-px-2px tw-px-2">{`${t('Help')}`}</span>
+        </div>
       </button>
     );
   }
