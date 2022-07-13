@@ -23,6 +23,7 @@ import {
   isShowLoading,
   getOriginalDeliveryType,
   getAddressInfo as getCachedAddressInfo,
+  getCurrentDate,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -482,12 +483,14 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryDateItem = orderDate => {
-    const { t, selectedOrderDate, businessUTCOffset, storeInfoForCleverTap } = this.props;
+    const { t, selectedOrderDate, businessUTCOffset, storeInfoForCleverTap, currentDate } = this.props;
 
+    const currentDateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, currentDate);
     const dateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, orderDate.date);
 
     const isSelected = selectedOrderDate ? dateDayjs.isSame(selectedOrderDate.date) : false;
     const isToday = orderDate.isToday;
+    const isTomorrow = dateDayjs.isSame(currentDateDayjs.add(1, 'day'), 'day');
     const isOpen = orderDate.isOpen;
     const dayOfWeek = dateDayjs.day();
     const dateOfMonth = dateDayjs.date();
@@ -498,7 +501,7 @@ class LocationAndDate extends Component {
           className={`location-date__button-date button
           ${isSelected ? 'button__fill' : 'button__outline'}
           padding-top-bottom-smaller padding-left-right-normal margin-left-right-small
-          ${isToday ? 'text-uppercase' : ''}`}
+          ${isToday || isTomorrow ? 'text-uppercase' : ''}`}
           disabled={!isOpen}
           data-testid="preOrderDate"
           data-heap-name="ordering.location-and-date.date-item"
@@ -510,6 +513,8 @@ class LocationAndDate extends Component {
         >
           {isToday ? (
             t('Today')
+          ) : isTomorrow ? (
+            t('Tomorrow')
           ) : (
             <Fragment>
               <span className="location-date__date-weekday text-weight-bolder">
@@ -739,6 +744,7 @@ export default compose(
       addressName: getAddressName(state),
       cachedAddressInfo: getCachedAddressInfo(state),
       savedAddressInfo: getSavedAddressInfo(state),
+      currentDate: getCurrentDate(state),
     }),
 
     dispatch => ({
