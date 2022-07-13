@@ -110,6 +110,8 @@ export const changeShippingType = createAsyncThunk(
       const currentTime = getCurrentTime(state);
       const businessUTCOffset = getBusinessUTCOffset(state);
 
+      // check current selected time whether available for new selected shippingType
+      // if not, find the earliest available time
       const { orderDate, fromTime } = storeUtils.getStoreAvailableDateAndTime(store, {
         expectedDay: new Date(selectedDateObj.value),
         expectedFromTime: selectedTimeSlot,
@@ -130,7 +132,34 @@ export const changeShippingType = createAsyncThunk(
   }
 );
 
-export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', value => value);
+export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', (value, { getState }) => {
+  try {
+    const state = getState();
+    const store = getStore(state);
+    const selectedShippingType = getSelectedShippingType(state);
+    const currentTime = getCurrentTime(state);
+    const businessUTCOffset = getBusinessUTCOffset(state);
+    const selectedTimeSlot = getSelectedTimeSlot(state);
+
+    // check current selected time whether available for new selected date
+    // if not, find the earliest available time
+    const { orderDate, fromTime } = storeUtils.getStoreAvailableDateAndTime(store, {
+      expectedDay: new Date(value),
+      expectedFromTime: selectedTimeSlot,
+      deliveryType: selectedShippingType,
+      currentDate: new Date(currentTime),
+      businessUTCOffset,
+    });
+
+    return {
+      selectedDate: orderDate?.date?.toISOString(),
+      selectedTimeSlot: fromTime,
+    };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+});
 
 export const changeTimeSlot = createAsyncThunk('ordering/menu/timeSlot/changeTimeSlot', value => value);
 
