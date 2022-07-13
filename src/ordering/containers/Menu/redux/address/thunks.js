@@ -161,9 +161,7 @@ export const selectLocation = createAsyncThunk(
         throw new Error(errorMessage);
       }
 
-      const storeHashCode = _get(store, 'hash', null);
-
-      await dispatch(refreshMenuPageForNewStore(storeHashCode));
+      await dispatch(refreshMenuPageForNewStore(store));
     } catch (e) {
       console.error(`Failed to change store: ${e.message}`);
       await dispatch(showErrorToast(e.message));
