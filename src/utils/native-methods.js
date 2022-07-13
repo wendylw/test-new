@@ -117,7 +117,7 @@ export const hasIconResInNative = iconRes => {
     const isInMap = Object.prototype.hasOwnProperty.call(NATIVE_ICON_RES_SUPPORT_MAP, iconRes);
 
     if (!isInMap) {
-      NATIVE_METHOD_SUPPORT_MAP[iconRes] = dsBridgeSyncCall('hasNativeIconRes', {
+      NATIVE_METHOD_SUPPORT_MAP[iconRes] = dsBridgeSyncCall('nativeLayoutModule-hasNativeIconRes', {
         iconRes,
       });
     }
