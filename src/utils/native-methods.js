@@ -121,8 +121,7 @@ export const hasIconResInNative = iconRes => {
         iconRes,
       });
     }
-    // The return value of hasNativeIconRes maybe 'false' or 'true'
-    return JSON.parse(NATIVE_METHOD_SUPPORT_MAP[iconRes]);
+    return NATIVE_METHOD_SUPPORT_MAP[iconRes];
   } catch (error) {
     return false;
   }
