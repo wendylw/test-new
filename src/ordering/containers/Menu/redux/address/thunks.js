@@ -7,7 +7,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getAddressInfo } from '../../../../../redux/modules/address/selectors';
 import { setAddressInfo } from '../../../../../redux/modules/address/thunks';
 import { getBusinessByName } from '../../../../../redux/modules/entities/businesses';
-import { getCoreStoreList, getStoreById } from '../../../../../redux/modules/entities/stores';
+import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import {
   getStoreId,
   getBusiness,
@@ -31,7 +31,7 @@ export const checkDeliveryRange = createAsyncThunk(
     if (!isAddressOutOfRange) return;
 
     const deliveryRadius = getDeliveryRadius(state);
-    const errorMessage = i18next.t('OutOfDeliveryRange', { distance: deliveryRadius });
+    const errorMessage = i18next.t('OrderingDelivery:OutOfDeliveryRange', { distance: deliveryRadius });
 
     await dispatch(showErrorToast(errorMessage));
   }
@@ -65,7 +65,7 @@ export const locationDrawerShown = createAsyncThunk(
       const deliveryRadius = getDeliveryRadius(getState());
 
       if (!_isNumber(deliveryRadius)) {
-        throw new Error('Delivery radius is incorrect.');
+        throw new Error('delivery radius is incorrect.');
       }
 
       if (_isEmpty(storeId)) {
@@ -78,7 +78,7 @@ export const locationDrawerShown = createAsyncThunk(
       // FB-4039: we need to be aware that there is a possibility that the store cannot be found.
       // This issue has already been raised in production and we should take time to further investigate.
       if (_isEmpty(store)) {
-        throw new Error('Store is not found.');
+        throw new Error('store is not found.');
       }
 
       const coords = {
@@ -87,7 +87,7 @@ export const locationDrawerShown = createAsyncThunk(
       };
 
       if (!_isNumber(coords.lat) || !_isNumber(coords.lng)) {
-        throw new Error('Store coordination is incorrect.');
+        throw new Error('store coordination is incorrect.');
       }
 
       return {
@@ -96,7 +96,7 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      console.error('fail to load storeInfo', e);
+      console.error(`Failed to load storeInfo: ${e.message}`);
       return {};
     }
   }
@@ -112,13 +112,13 @@ export const selectLocation = createAsyncThunk(
   async (addressInfo, { dispatch, getState }) => {
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
+    const deliveryRadius = getDeliveryRadius(state);
 
     if (_isEqual(prevAddressInfo, addressInfo)) {
       await dispatch(hideLocationDrawer());
       return;
     }
 
-    const business = getBusiness(state);
     const address = {
       location: {
         longitude: _get(addressInfo, 'coords.lng', 0),
@@ -128,8 +128,7 @@ export const selectLocation = createAsyncThunk(
 
     try {
       if (_isEmpty(addressInfo.coords)) {
-        // TODO: Ask PO to provide reasonable typewriting for this case.
-        throw new Error('Address coordination is incorrect. Please try another one.');
+        throw new Error(i18next.t('OrderingDelivery:AddressNotFound'));
       }
 
       /**
@@ -142,9 +141,7 @@ export const selectLocation = createAsyncThunk(
       const stores = getCoreStoreList(getState());
 
       if (_isEmpty(stores)) {
-        const { qrOrderingSettings } = getBusinessByName(state, business);
-        const { deliveryRadius } = qrOrderingSettings || {};
-        const errorMessage = i18next.t('OutOfDeliveryRange', { distance: deliveryRadius.toFixed(1) });
+        const errorMessage = i18next.t('OrderingDelivery:OutOfDeliveryRange', { distance: deliveryRadius.toFixed(1) });
         throw new Error(errorMessage);
       }
 
@@ -160,22 +157,15 @@ export const selectLocation = createAsyncThunk(
       const storeId = _get(store, 'id', null);
 
       if (_isEmpty(storeId)) {
-        // TODO: Ask PO to provide reasonable typewriting for this case.
-        throw new Error('No store is available for your location. Please try another one.');
-      }
-
-      await dispatch(appActionCreators.loadCoreBusiness(storeId));
-      const storeInfo = getStoreById(getState(), storeId);
-
-      if (_isEmpty(storeInfo)) {
-        // TODO: Ask PO to provide reasonable typewriting for this case.
-        throw new Error('No delivery time is available for your location. Please try another one.');
+        const errorMessage = i18next.t('OrderingDelivery:OutOfDeliveryRange', { distance: deliveryRadius.toFixed(1) });
+        throw new Error(errorMessage);
       }
 
       const storeHashCode = _get(store, 'hash', null);
 
       await dispatch(refreshMenuPageForNewStore(storeHashCode));
     } catch (e) {
+      console.error(`Failed to change store: ${e.message}`);
       await dispatch(showErrorToast(e.message));
     }
   }
