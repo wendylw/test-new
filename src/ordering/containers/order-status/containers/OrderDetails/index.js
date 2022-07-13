@@ -260,8 +260,6 @@ export class OrderDetails extends Component {
 
     if (isWebview) {
       const rightContentOfNativeLiveChat = {
-        text: `${t('Help')}`,
-        iconRes: ICON_RES.SUPPORT_AGENT,
         style: {
           color: '#00b0ff',
         },
@@ -274,6 +272,14 @@ export class OrderDetails extends Component {
           });
         },
       };
+
+      if (NativeMethods.hasIconResInNative(ICON_RES.SUPPORT_AGENT)) {
+        rightContentOfNativeLiveChat['text'] = t('Help');
+        rightContentOfNativeLiveChat['iconRes'] = ICON_RES.SUPPORT_AGENT;
+      } else {
+        // For back-compatibility sake, we remain the same UI for old versions of the app
+        rightContentOfNativeLiveChat['text'] = `${t('NeedHelp')}?`;
+      }
 
       const rightContentOfContactUs = {
         text: t('ContactUs'),

@@ -110,6 +110,24 @@ export const hasMethodInNative = method => {
   }
 };
 
+const NATIVE_ICON_RES_SUPPORT_MAP = {};
+
+export const hasIconResInNative = iconRes => {
+  try {
+    const isInMap = Object.prototype.hasOwnProperty.call(NATIVE_ICON_RES_SUPPORT_MAP, iconRes);
+
+    if (!isInMap) {
+      NATIVE_METHOD_SUPPORT_MAP[iconRes] = dsBridgeSyncCall('hasNativeIconRes', {
+        iconRes,
+      });
+    }
+    // The return value of hasNativeIconRes maybe 'false' or 'true'
+    return JSON.parse(NATIVE_METHOD_SUPPORT_MAP[iconRes]);
+  } catch (error) {
+    return false;
+  }
+};
+
 const dsBridgeCall = nativeMethod => {
   const { method, params, mode } = nativeMethod || {};
   const hasNativeMethod = hasMethodInNative(method);
