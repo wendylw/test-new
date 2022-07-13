@@ -4,7 +4,7 @@ import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
 import _isEqual from 'lodash/isEqual';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getAddressInfo } from '../../../../../redux/modules/address/selectors';
+import { getAddressInfo, getAddressCoords } from '../../../../../redux/modules/address/selectors';
 import { setAddressInfo } from '../../../../../redux/modules/address/thunks';
 import { getBusinessByName } from '../../../../../redux/modules/entities/businesses';
 import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
@@ -13,10 +13,12 @@ import {
   getBusiness,
   getDeliveryRadius,
   getMerchantCountry,
+  getBusinessUTCOffset,
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
 import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
-import { getNearestStore, getIsAddressOutOfRange } from '../common/selectors';
+import { getIsAddressOutOfRange } from '../common/selectors';
+import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 
 export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async message => ({ message }));
 
@@ -109,7 +111,7 @@ export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/loca
  */
 export const selectLocation = createAsyncThunk(
   'ordering/menu/address/selectLocation',
-  async (addressInfo, { dispatch, getState }) => {
+  async ({ addressInfo, date = new Date() }, { dispatch, getState }) => {
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
     const deliveryRadius = getDeliveryRadius(state);
@@ -153,7 +155,14 @@ export const selectLocation = createAsyncThunk(
        */
       await dispatch(setAddressInfo(addressInfo));
 
-      const store = getNearestStore(getState());
+      const coords = getAddressCoords(getState());
+      const utcOffset = getBusinessUTCOffset(getState());
+      const { store } = findNearestAvailableStore(stores, {
+        coords,
+        date,
+        utcOffset,
+      });
+
       const storeId = _get(store, 'id', null);
 
       if (_isEmpty(storeId)) {
