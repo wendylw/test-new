@@ -4,7 +4,7 @@ import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
 import _isEqual from 'lodash/isEqual';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getAddressInfo, getAddressCoords } from '../../../../../redux/modules/address/selectors';
+import { getAddressInfo } from '../../../../../redux/modules/address/selectors';
 import { setAddressInfo } from '../../../../../redux/modules/address/thunks';
 import { getBusinessByName } from '../../../../../redux/modules/entities/businesses';
 import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
@@ -121,55 +121,40 @@ export const selectLocation = createAsyncThunk(
       return;
     }
 
-    const address = {
-      location: {
-        longitude: _get(addressInfo, 'coords.lng', 0),
-        latitude: _get(addressInfo, 'coords.lat', 0),
-      },
-    };
-
+    /**
+     * After the user selects the new valid location, there are 3 things that need to be done:
+     * 1. Find the nearest available store
+     * 2. Sync up current address info with the BFF
+     * 3. Update the store id by hard-refreshing menu page
+     */
     try {
-      if (_isEmpty(addressInfo.coords)) {
+      const coords = _get(addressInfo, 'coords', null);
+
+      if (_isEmpty(coords)) {
         throw new Error(i18next.t('OrderingDelivery:AddressNotFound'));
       }
 
-      /**
-       * If the selected location is out of the delivery ranges of all stores, pop up an error toast to hint users.
-       * Leave a comment for newcomers:
-       * we need to fetch core store API every time to get the latest store list since this is the only way to make sure the selected location is within the delivery range.
-       */
-      await dispatch(appActionCreators.loadCoreStores(address));
-
-      const stores = getCoreStoreList(getState());
+      let stores = getCoreStoreList(state);
+      const utcOffset = getBusinessUTCOffset(state);
 
       if (_isEmpty(stores)) {
-        const errorMessage = i18next.t('OrderingDelivery:OutOfDeliveryRange', { distance: deliveryRadius.toFixed(1) });
-        throw new Error(errorMessage);
+        // We only fetch the core store API again when the previous call hasn't been completed or sent yet for better performance
+        await dispatch(appActionCreators.loadCoreStores());
+        stores = getCoreStoreList(getState());
       }
 
-      /**
-       * After the user selects the new valid location, there are 3 things that need to be done:
-       * 1. Sync up current address info with the BFF
-       * 2. Find the nearest available store
-       * 3. Update the store id by hard-refreshing menu page
-       */
-      await dispatch(setAddressInfo(addressInfo));
-
-      const coords = getAddressCoords(getState());
-      const utcOffset = getBusinessUTCOffset(getState());
       const { store } = findNearestAvailableStore(stores, {
         coords,
         date,
         utcOffset,
       });
 
-      const storeId = _get(store, 'id', null);
-
-      if (_isEmpty(storeId)) {
+      if (_isEmpty(store)) {
         const errorMessage = i18next.t('OrderingDelivery:OutOfDeliveryRange', { distance: deliveryRadius.toFixed(1) });
         throw new Error(errorMessage);
       }
 
+      await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(store));
     } catch (e) {
       console.error(`Failed to change store: ${e.message}`);
