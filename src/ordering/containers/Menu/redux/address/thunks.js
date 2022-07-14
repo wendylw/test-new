@@ -154,7 +154,7 @@ export const selectLocation = createAsyncThunk(
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(store));
     } catch (e) {
-      console.error(`Failed to change store: ${e.message}`);
+      console.error(`Failed to select location: ${e.message}`);
       await dispatch(showErrorToast(e.message));
     }
   }
