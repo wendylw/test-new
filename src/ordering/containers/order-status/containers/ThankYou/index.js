@@ -83,7 +83,13 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
+const {
+  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
+  DELIVERY_METHOD,
+  ORDER_STATUS,
+  REFERRER_SOURCE_TYPES,
+  LIVE_CHAT_SOURCE_TYPES,
+} = Constants;
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -746,6 +752,7 @@ export class ThankYou extends PureComponent {
           NativeMethods.startChat({
             orderId,
             storeName: orderStoreName,
+            source: LIVE_CHAT_SOURCE_TYPES.ORDER_DETAILS,
           });
         },
       };

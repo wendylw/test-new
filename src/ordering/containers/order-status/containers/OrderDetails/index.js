@@ -30,7 +30,12 @@ import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING, DELIVERY_METHOD } = Constants;
+const {
+  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
+  ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
+  DELIVERY_METHOD,
+  LIVE_CHAT_SOURCE_TYPES,
+} = Constants;
 
 export class OrderDetails extends Component {
   state = {};
@@ -269,6 +274,7 @@ export class OrderDetails extends Component {
           NativeMethods.startChat({
             orderId,
             storeName: orderStoreName,
+            source: LIVE_CHAT_SOURCE_TYPES.ORDER_DETAILS,
           });
         },
       };
