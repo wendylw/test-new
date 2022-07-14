@@ -8,9 +8,7 @@ const initialState = {
     status: null,
     error: null,
   },
-  errorToast: {
-    data: null,
-  },
+  errorCode: null,
 };
 
 export const { reducer, actions } = createSlice({
@@ -31,11 +29,11 @@ export const { reducer, actions } = createSlice({
       state.storeInfo.error = action.error;
     },
     [showErrorToast.fulfilled.type]: (state, action) => {
-      const { message } = action.payload;
-      state.errorToast.data = message;
+      const { errorCode } = action.payload;
+      state.errorCode = errorCode;
     },
     [clearErrorToast.fulfilled.type]: state => {
-      state.errorToast.data = null;
+      state.errorCode = null;
     },
   },
 });

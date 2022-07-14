@@ -1,4 +1,3 @@
-import i18next from 'i18next';
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
@@ -19,8 +18,11 @@ import {
 import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
 import { getIsAddressOutOfRange } from '../common/selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
+import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../utils/constants';
 
-export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async message => ({ message }));
+export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async errorCode => ({
+  errorCode,
+}));
 
 export const clearErrorToast = createAsyncThunk('ordering/menu/address/clearErrorToast', async () => {});
 
@@ -32,10 +34,7 @@ export const checkDeliveryRange = createAsyncThunk(
 
     if (!isAddressOutOfRange) return;
 
-    const deliveryRadius = getDeliveryRadius(state);
-    const errorMessage = i18next.t('OrderingDelivery:OutOfDeliveryRange', { distance: deliveryRadius });
-
-    await dispatch(showErrorToast(errorMessage));
+    await dispatch(showErrorToast(ERROR_CODES.OUT_OF_DELIVERY_RANGE));
   }
 );
 
@@ -114,7 +113,6 @@ export const selectLocation = createAsyncThunk(
   async ({ addressInfo, date = new Date() }, { dispatch, getState }) => {
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
-    const deliveryRadius = getDeliveryRadius(state);
 
     if (_isEqual(prevAddressInfo, addressInfo)) {
       await dispatch(hideLocationDrawer());
@@ -131,7 +129,7 @@ export const selectLocation = createAsyncThunk(
       const coords = _get(addressInfo, 'coords', null);
 
       if (_isEmpty(coords)) {
-        throw new Error(i18next.t('OrderingDelivery:AddressNotFound'));
+        throw new Error(ERROR_CODES.ADDRESS_NOT_FOUND);
       }
 
       let stores = getCoreStoreList(state);
@@ -150,8 +148,7 @@ export const selectLocation = createAsyncThunk(
       });
 
       if (_isEmpty(store)) {
-        const errorMessage = i18next.t('OrderingDelivery:OutOfDeliveryRange', { distance: deliveryRadius.toFixed(1) });
-        throw new Error(errorMessage);
+        throw new Error(ERROR_CODES.OUT_OF_DELIVERY_RANGE);
       }
 
       await dispatch(setAddressInfo(addressInfo));
