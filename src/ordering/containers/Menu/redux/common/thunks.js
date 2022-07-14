@@ -577,13 +577,9 @@ export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTim
 
 export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {});
 
-// TODO: will complete it in Phase2
-export const showStoreListDrawer = createAsyncThunk(
-  'ordering/menu/common/showStoreListDrawer',
-  (isToReviewCart = false, { getState, dispatch }) => {
-    gotoLocationAndDate(isToReviewCart, getState(), dispatch);
-  }
-);
+export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', () => {});
+
+export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {});
 
 /**
  * goto Review cart page

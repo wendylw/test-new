@@ -68,7 +68,8 @@ export const { reducer, actions } = createSlice({
       state.selectedTimeSlot = payload.selectedTimeSlot;
     },
     [changeDate.fulfilled.type]: (state, { payload }) => {
-      state.selectedDate = payload;
+      state.selectedDate = payload.selectedDate;
+      state.selectedTimeSlot = payload.selectedTimeSlot;
     },
     [changeTimeSlot.fulfilled.type]: (state, { payload }) => {
       state.selectedTimeSlot = payload;

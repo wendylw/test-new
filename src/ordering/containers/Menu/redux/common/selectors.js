@@ -225,9 +225,8 @@ export const getIsMenuRevamp = createSelector(
   getIsQrOrderingShippingType,
   getIsDeliveryOrder,
   getEnableDeliveryRevamp,
-  getIsInAppOrMiniProgram,
-  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp, isInAppOrMiniProgram) =>
-    isQrOrderingShippingType || (isDeliveryOrder && !isInAppOrMiniProgram && enabledDeliveryRevamp)
+  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp) =>
+    isQrOrderingShippingType || (isDeliveryOrder && enabledDeliveryRevamp)
 );
 
 export const getIsSearchingBannerVisible = state => state.menu.common.searchingBannerVisible;
@@ -625,9 +624,8 @@ export const getFreeShippingFormattedMinAmountWithOutSpacing = createSelector(
   freeShippingFormattedMinAmount => freeShippingFormattedMinAmount.replace(/\s/g, '')
 );
 
-export const getIsTimeSlotAvailable = createSelector(
-  getStoreStatus,
-  storeStatus => storeStatus !== STORE_OPENING_STATUS.CLOSED
+export const getIsTimeSlotAvailable = createSelector(getSelectedStoreStatus, storeStatus =>
+  [STORE_OPENING_STATUS.ON_DEMAND, STORE_OPENING_STATUS.PRE_ORDER].includes(storeStatus)
 );
 
 export const getIsStoreInfoEntryVisible = createSelector(
@@ -639,6 +637,7 @@ export const getIsStoreInfoEntryVisible = createSelector(
 export const getIsStoreInfoDrawerVisible = state => state.menu.common.storeInfoDrawerVisible;
 
 export const getIsLocationDrawerVisible = state => state.menu.common.locationDrawerVisible;
+export const getIsStoreListDrawerVisible = state => state.menu.common.storeListDrawerVisible;
 
 export const getStoreLocation = createSelector(getDeliveryInfo, deliveryInfo => {
   const { storeAddress } = deliveryInfo;

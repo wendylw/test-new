@@ -13,7 +13,6 @@ import {
   getStoreLogo,
   getStoreDisplayStatus,
   getStoreDisplayTitle,
-  getStoreDisplaySubTitle,
   getCashbackPercentage,
   getIsStoreInfoReady,
   getIsFreeDeliveryTagVisible,
@@ -24,6 +23,7 @@ import {
 } from '../../redux/common/selectors';
 import { actions } from '../../redux/common/index';
 import { STORE_STATUS_KEY_MAPPING, STORE_STATUS_COLOR_MAPPING } from './utils/constants';
+import StoreList from './StoreList';
 import styles from './MenuStoreInfo.module.scss';
 
 const StoreStatusTag = ({ containerClassName, className, show, status }) => {
@@ -69,8 +69,6 @@ const MenuStoreInfo = () => {
   const storeDisplayStatus = useSelector(getStoreDisplayStatus);
   // get store display title, storeBrandName || onlineStoreName
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
-  // get store display sub-title, storeLocationName || storeName
-  const storeDisplaySubTitle = useSelector(getStoreDisplaySubTitle);
   // get cashback percentage, for example: 4
   const cashbackPercentage = useSelector(getCashbackPercentage);
   // whether display FREE DELIVERY tag
@@ -123,7 +121,8 @@ const MenuStoreInfo = () => {
             status={storeDisplayStatus}
           />
         </h1>
-        <p className={styles.menuStoreInfoSubtitle}>{storeDisplaySubTitle}</p>
+        {/* <p className={styles.menuStoreInfoSubtitle}>{storeDisplaySubTitle}</p> */}
+        <StoreList />
         {displayStoreBasicInfo ? (
           <ul className={styles.menuStoreInfoList}>
             {storeRatingDisplayValue ? (
