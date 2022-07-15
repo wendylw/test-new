@@ -19,6 +19,7 @@ import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks
 import { getIsAddressOutOfRange } from '../common/selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../utils/constants';
+import logger from '../../../../../utils/monitoring/logger';
 
 export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async errorCode => ({
   errorCode,
@@ -97,7 +98,7 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      console.error(`Failed to load storeInfo: ${e.message}`);
+      logger.error(`Failed to load storeInfo: ${e.message}`);
       return {};
     }
   }
@@ -168,7 +169,7 @@ export const selectLocation = createAsyncThunk(
 
       // In case users fail to select a location for some unknown reasons, we should still catch such an error message by directly retrieving the message from the error object.
       const errorMessage = _get(e, 'message.reason', '') || e.message;
-      console.error(`Failed to select location: ${errorMessage}`);
+      logger.error(`Failed to select location: ${errorMessage}`);
     }
   }
 );
