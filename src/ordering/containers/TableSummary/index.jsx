@@ -252,7 +252,7 @@ export class TableSummary extends React.Component {
                 </span>
               </div>
               <ul>
-                {subOrderItems.map(({ id, productInfo, displayPrice, quantity }) => (
+                {subOrderItems.map(({ id, productInfo, displayPrice, quantity, comments: itemComments }) => (
                   <li
                     key={`product-item-${id}`}
                     className="flex flex-middle flex-space-between padding-left-right-small"
@@ -271,6 +271,11 @@ export class TableSummary extends React.Component {
                           money={displayPrice * quantity}
                           numberOnly
                         />
+                        {itemComments ? (
+                          <p className="table-summary__comments padding-top-bottom-smaller text-size-small text-line-height-higher">
+                            {itemComments}
+                          </p>
+                        ) : null}
                       </div>
                     </div>
                     <span className="padding-top-bottom-small flex__shrink-fixed margin-small text-opacity">

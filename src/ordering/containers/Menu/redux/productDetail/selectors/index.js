@@ -447,3 +447,14 @@ export const getAddToCartGTMData = createStructuredSelector({
   Inventory: getStockStatusForGTMData,
   image_count: getProductImagesCount,
 });
+
+export const getIfHasNotesContents = state => !!state.menu.productDetail.comments;
+
+export const getNotesContents = state => state?.menu.productDetail.comments;
+
+export const getIfCommentsShowStatus = state => state.menu.productDetail.showComments;
+
+export const getIfShowVariations = createSelector(
+  getProductDetailData,
+  productDetailData => productDetailData.variations.length
+);
