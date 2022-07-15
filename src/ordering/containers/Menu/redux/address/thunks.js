@@ -129,7 +129,10 @@ export const selectLocation = createAsyncThunk(
       const coords = _get(addressInfo, 'coords', null);
 
       if (_isEmpty(coords)) {
-        throw new Error(ERROR_CODES.ADDRESS_NOT_FOUND);
+        throw new Error({
+          code: ERROR_CODES.ADDRESS_NOT_FOUND,
+          reason: 'address coordination is not found',
+        });
       }
 
       let stores = getCoreStoreList(state);
@@ -148,14 +151,24 @@ export const selectLocation = createAsyncThunk(
       });
 
       if (_isEmpty(store)) {
-        throw new Error(ERROR_CODES.OUT_OF_DELIVERY_RANGE);
+        throw new Error({
+          code: ERROR_CODES.OUT_OF_DELIVERY_RANGE,
+          reason: 'no available store according to the current time or delivery range',
+        });
       }
 
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(store));
     } catch (e) {
-      console.error(`Failed to select location: ${e.message}`);
-      await dispatch(showErrorToast(e.message));
+      const errorCode = _get(e, 'message.code', null);
+
+      if (errorCode) {
+        await dispatch(showErrorToast(errorCode));
+      }
+
+      // In case users fail to select a location for some unknown reasons, we should still catch such an error message by directly retrieving the message from the error object.
+      const errorMessage = _get(e, 'message.reason', '') || e.message;
+      console.error(`Failed to select location: ${errorMessage}`);
     }
   }
 );
