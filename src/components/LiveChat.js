@@ -117,13 +117,13 @@ class LiveChat extends Component {
 
     return (
       <button
-        className={`button live-chat flex flex-middle flex__shrink-fixed sm:tw-px-6px tw-px-6 sm:tw-py-16px tw-py-16 ${
+        className={`button live-chat flex flex-middle flex__shrink-fixed sm:tw-px-12px tw-px-12 sm:tw-py-16px tw-py-16 ${
           hasScriptLoaded ? '' : 'text-opacity'
         }`}
         onClick={this.handleClick}
       >
         {!hasScriptLoaded && <div className="loader live-chat__loader margin-left-right-smaller"></div>}
-        <div className="live-chat__loading-text margin-left-right-smaller tw-flex tw-items-center">
+        <div className="live-chat__loading-text sm:tw-px-2px tw-px-2 tw-flex tw-items-center">
           <Headset weight="fill" className="tw-flex-shrink-0 sm:tw-mx-2px tw-mx-2" size={20} />
           <span className="tw-font-bold tw-text-lg tw-leading-relaxed sm:tw-px-2px tw-px-2">{`${t('Help')}`}</span>
         </div>
