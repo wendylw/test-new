@@ -20,14 +20,7 @@ import {
 import { getIsProductDetailDrawerVisible } from '../../redux/productDetail/selectors';
 import { hideProductDetailDrawer } from '../../redux/productDetail/thunks';
 import styles from './MenuHeader.module.scss';
-import {
-  isWebview,
-  isTakeAwayType,
-  isDeliveryOrder,
-  getSourceUrlFromSessionStorage,
-  isFromBeepSite,
-  isQROrder,
-} from '../../../../../common/utils';
+import { isWebview, isTakeAwayType, isDeliveryOrder, isFromBeepSite, isQROrder } from '../../../../../common/utils';
 import NativeHeader, { ICON_RES } from '../../../../../components/NativeHeader';
 import { closeWebView } from '../../../../../utils/native-methods';
 import { getDeliveryInfo } from '../../../../redux/modules/app';
@@ -203,13 +196,6 @@ const MenuHeader = ({ webHeaderVisibility }) => {
             if (isProductDetailDrawerVisible) {
               dispatch(hideProductDetailDrawer(false));
             } else {
-              const sourceUrl = getSourceUrlFromSessionStorage();
-              // There is source url in session storage, so we can redirect to the source page
-              if (sourceUrl) {
-                window.location.href = sourceUrl;
-                return;
-              }
-
               closeWebView();
             }
           }}

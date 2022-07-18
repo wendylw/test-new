@@ -158,10 +158,17 @@ class LocationAndDate extends Component {
     this.resetWhenWillUnmount = true;
 
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      const state = stateFrom ? { from: stateFrom } : null;
+
+      if (callbackUrl) {
+        return history.replace(callbackUrl, state);
+      }
+
+      // For compatibility sake, in case some users are still using the old version.
       return history.push({
         pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
-        state: stateFrom ? { from: stateFrom } : null,
+        state,
       });
     }
 
