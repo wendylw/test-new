@@ -14,9 +14,13 @@ import Constants from '../utils/constants';
 class Site extends Component {
   constructor(props) {
     super(props);
+    const { ROUTER_PATHS } = Constants;
+    const { pathname } = window.location;
     const browser = Utils.getUserAgentInfo().browser;
+    const isTermsOfUsePage = pathname.includes(ROUTER_PATHS.TERMS_OF_USE);
+    const isPrivacyPolicyPage = pathname.includes(ROUTER_PATHS.PRIVACY);
 
-    if (browser.includes('Safari') || browser.includes('AppleWebKit')) {
+    if (!(isTermsOfUsePage || isPrivacyPolicyPage) && (browser.includes('Safari') || browser.includes('AppleWebKit'))) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.height = '100%';
