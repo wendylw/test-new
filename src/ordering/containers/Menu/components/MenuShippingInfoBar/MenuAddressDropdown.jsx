@@ -32,6 +32,7 @@ import {
   updateSearchLocationListData,
 } from '../../redux/address/thunks';
 import styles from './MenuAddressDropdown.module.scss';
+import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../utils/constants';
 
 const LOCATION_TITLE_KEYS = {
   pickup: 'StoreLocation',
@@ -98,6 +99,7 @@ const MenuShippingInfoBar = () => {
   const isAddressListVisible = useSelector(getIsAddressListVisible) && !isSearchLocationListVisible;
   const isLocationHistoryListVisible = useSelector(getIsLocationHistoryListVisible) && !isSearchLocationListVisible;
   const locationHistoryList = useSelector(getLocationHistoryListInfo);
+  const errorCode = useSelector(getErrorCode);
   const locationTitle = storeLocationStreet
     ? t(LOCATION_TITLE_KEYS[shippingType])
     : selectedLocationDisplayName || t('SelectLocation');
@@ -112,6 +114,14 @@ const MenuShippingInfoBar = () => {
       dispatch(locationDrawerHidden());
     }
   }, [isLocationDrawerVisible, enableToLoadAddressList]);
+
+  useEffect(() => {
+    if (errorCode === ERROR_CODES.ADDRESS_NOT_FOUND) {
+      // show  error toast
+    } else if (errorCode === ERROR_CODES.OUT_OF_DELIVERY_RANGE) {
+      // show error toast
+    }
+  }, [errorCode]);
 
   return (
     <div className="tw-flex-1">
