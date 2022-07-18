@@ -40,7 +40,6 @@ import {
   getIsInAppOrMiniProgram,
   getIsPickUpType,
 } from '../../../../redux/modules/app';
-import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import {
@@ -638,7 +637,6 @@ export const getIsStoreInfoEntryVisible = createSelector(
 export const getIsStoreInfoDrawerVisible = state => state.menu.common.storeInfoDrawerVisible;
 
 export const getIsLocationDrawerVisible = state => state.menu.common.locationDrawerVisible;
-
 export const getIsStoreListDrawerVisible = state => state.menu.common.storeListDrawerVisible;
 
 export const getStoreLocation = createSelector(getDeliveryInfo, deliveryInfo => {
@@ -746,28 +744,4 @@ export const getIsAbleToReviewCart = createSelector(
  */
 export const getStoreLocationStreetForPickup = createSelector(getStore, getIsPickUpType, (store, isPickup) =>
   isPickup ? _get(store, 'street1', '') : ''
-);
-
-/**
- * get current date
- */
-export const getCurrentDate = state => new Date();
-
-/**
- * get store id from the nearest store according to the selected location
- * @returns {object} | null
- */
-export const getNearestStore = createSelector(
-  getCurrentDate,
-  getAddressCoords,
-  getCoreStoreList,
-  getBusinessUTCOffset,
-  (currentDate, coords, storeList, utcOffset) => {
-    const { store } = StoreUtils.findNearestAvailableStore(storeList, {
-      coords,
-      currentDate,
-      utcOffset,
-    });
-    return store;
-  }
 );
