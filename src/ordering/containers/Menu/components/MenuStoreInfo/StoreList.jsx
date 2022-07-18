@@ -35,7 +35,7 @@ const StoreList = () => {
   return (
     <div className="tw-flex-1 beep-line-clamp-flex-container">
       {isQrOrderingShippingType ? (
-        <p className={styles.storeListSubtitle}>storeDisplaySubTitle</p>
+        <p className={styles.storeListSubtitle}>{storeDisplaySubTitle}</p>
       ) : (
         <>
           <button

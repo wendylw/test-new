@@ -12,6 +12,7 @@ import addressList from './addressList';
 import locationAndDate from './locationAndDate';
 import orderStatus from '../../containers/order-status/redux';
 import address from '../../../redux/modules/address';
+import locations from '../../../redux/modules/locations';
 import tableSummary from '../../containers/TableSummary/redux';
 import menu from '../../containers/Menu/redux';
 import promoPayLater from '../../containers/Promotion/redux';
@@ -32,6 +33,7 @@ const rootReducer = history =>
     orderStatus,
     profile,
     address,
+    locations,
     tableSummary,
     menu,
     promoPayLater,

@@ -12,7 +12,14 @@ import LocationEmptyImage from '../../../images/location-empty-image.png';
 import 'swiper/components/pagination/pagination.scss';
 import styles from './AddressDropdownDrawer.module.scss';
 
-const AddressDropdownDrawer = ({ isLocationDrawerVisible, isInitializing, addressList, onClose, onSelectLocation }) => {
+const AddressDropdownDrawer = ({
+  isLocationDrawerVisible,
+  isInitializing,
+  addressList,
+  locationList,
+  onClose,
+  onSelectLocation,
+}) => {
   const { t } = useTranslation();
   const searchInputRef = useRef(null);
 
@@ -48,14 +55,14 @@ const AddressDropdownDrawer = ({ isLocationDrawerVisible, isInitializing, addres
           </section>
 
           <div className="tw-flex-1 tw-px-16 sm:tw-px-16px tw-py-24 sm:tw-py-24px tw-overflow-x-auto">
-            {/* <div className={styles.addressDropdownDrawerEmpty}>
+            <div className={styles.addressDropdownDrawerEmpty}>
               <img
                 className={styles.addressDropdownDrawerEmptyImage}
                 src={LocationEmptyImage}
                 alt="StoreHub - location empty"
               />
               <p className={styles.addressDropdownDrawerEmptyDescription}>{t('AddressListEmptyDescription')}</p>
-            </div> */}
+            </div>
 
             {addressList.length > 0 ? (
               <>
@@ -83,23 +90,27 @@ const AddressDropdownDrawer = ({ isLocationDrawerVisible, isInitializing, addres
               </>
             ) : null}
 
-            <ul>
-              <li className={styles.addressDropdownDrawerItem}>
-                <button className={styles.addressDropdownDrawerItemButton}>
-                  <LocationAndAddressIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
-                  <div className="beep-line-clamp-flex-container tw-flex-col">
-                    <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
-                      <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
-                        KYMCO Malaysia Motorcycle Bestbuy Sdn Bhd
-                      </span>
-                    </h4>
-                    <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
-                      8, Jalan PJU 7/6 Mutiara Damansara, Selangor
-                    </p>
-                  </div>
-                </button>
-              </li>
-            </ul>
+            {locationList.length > 0 ? (
+              <ul>
+                {locationList.map(location => (
+                  <li className={styles.addressDropdownDrawerItem}>
+                    <button className={styles.addressDropdownDrawerItemButton}>
+                      <LocationAndAddressIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />
+                      <div className="beep-line-clamp-flex-container tw-flex-col">
+                        <h4 className="tw-flex tw-items-center tw-justify-start tw-my-4 sm:tw-my-4px">
+                          <span className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold">
+                            KYMCO Malaysia Motorcycle Bestbuy Sdn Bhd
+                          </span>
+                        </h4>
+                        <p className="tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700">
+                          8, Jalan PJU 7/6 Mutiara Damansara, Selangor
+                        </p>
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </div>
       )}
@@ -113,6 +124,7 @@ AddressDropdownDrawer.propTypes = {
   isInitializing: PropTypes.bool,
   isLocationDrawerVisible: PropTypes.bool,
   addressList: PropTypes.arrayOf(PropTypes.object),
+  locationList: PropTypes.arrayOf(PropTypes.object),
   onClose: PropTypes.func,
   onSelectLocation: PropTypes.func,
 };
@@ -121,6 +133,7 @@ AddressDropdownDrawer.defaultProps = {
   isInitializing: false,
   isLocationDrawerVisible: true,
   addressList: [],
+  locationList: [],
   onClose: () => {},
   onSelectLocation: () => {},
 };
