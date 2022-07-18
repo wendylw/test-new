@@ -165,6 +165,7 @@ class LocationPicker extends Component {
   }
 
   renderMainContent() {
+    // eslint-disable-next-line react/destructuring-assignment
     const shouldShowSearchResultList = !!this.props.searchResultList.length;
     return shouldShowSearchResultList ? this.renderSearchResultList() : this.renderHistoricalAddressList();
   }

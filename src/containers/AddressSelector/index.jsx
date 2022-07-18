@@ -60,6 +60,11 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
         city,
       };
 
+      console.log('place');
+      console.table(place);
+      console.log('addressSelector addressInfo');
+      console.table(addressInfo);
+
       onSelect(addressInfo);
     },
     [onSelect]
@@ -131,6 +136,10 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
         city,
         state,
       });
+
+      console.log('historicalResult');
+      console.table(historicalResult);
+
       selectPlaceInfoHandler(historicalResult);
     },
     [selectPlaceInfoHandler]

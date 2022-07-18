@@ -1,6 +1,7 @@
 import _isEmpty from 'lodash/isEmpty';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
 import { CaretDown } from 'phosphor-react';
 import { LocationAndAddressIcon } from '../../../../../common/components/Icons';
@@ -15,13 +16,18 @@ import { showLocationDrawer, hideLocationDrawer } from '../../redux/common/thunk
 import {
   getHasStoreInfoInitialized,
   getAddressListInfo,
+  getIsAddressListVisible,
   getEnableToLoadAddressList,
+  getLocationHistoryListInfo,
+  getIsLocationHistoryListVisible,
 } from '../../redux/address/selectors';
 import {
   locationDrawerShown,
   locationDrawerHidden,
   selectLocation,
   loadAddressListData,
+  loadLocationHistoryListData,
+  loadSearchLocationListData,
 } from '../../redux/address/thunks';
 import styles from './MenuAddressDropdown.module.scss';
 
@@ -32,6 +38,7 @@ const LOCATION_TITLE_KEYS = {
 const MenuShippingInfoBar = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const [searchLocationList, setSearchLocationList] = useState([]);
   // user selected location display name, for example: "18, Jln USJ"
   const selectedLocationDisplayName = useSelector(getSelectedLocationDisplayName);
   // when user select PICKUP should use this selector to display store location
@@ -43,14 +50,17 @@ const MenuShippingInfoBar = () => {
   const isLocationDrawerVisible = useSelector(getIsLocationDrawerVisible);
   const hasStoreInfoInitialized = useSelector(getHasStoreInfoInitialized);
   const addressList = useSelector(getAddressListInfo);
+  const isSearchLocationListVisible = searchLocationList.length > 0;
+  const isAddressListVisible = useSelector(getIsAddressListVisible) && !isSearchLocationListVisible;
+  const isLocationHistoryListVisible = useSelector(getIsLocationHistoryListVisible) && !isSearchLocationListVisible;
+  const locationHistoryList = useSelector(getLocationHistoryListInfo);
   const locationTitle = storeLocationStreet
     ? t(LOCATION_TITLE_KEYS[shippingType])
     : selectedLocationDisplayName || t('SelectLocation');
 
   useEffect(() => {
-    if (enableToLoadAddressList) {
-      dispatch(loadAddressListData(enableToLoadAddressList));
-    }
+    dispatch(loadAddressListData(enableToLoadAddressList));
+    dispatch(loadLocationHistoryListData(enableToLoadAddressList));
 
     if (isLocationDrawerVisible) {
       dispatch(locationDrawerShown());
@@ -82,11 +92,26 @@ const MenuShippingInfoBar = () => {
         isLocationDrawerVisible={isLocationDrawerVisible}
         isInitializing={!hasStoreInfoInitialized}
         addressList={addressList}
+        isAddressListVisible={isAddressListVisible}
+        locationHistoryList={locationHistoryList}
+        isLocationHistoryListVisible={isLocationHistoryListVisible}
+        searchLocationList={searchLocationList}
+        isSearchLocationListVisible={isSearchLocationListVisible}
+        isEmptyList={!isAddressListVisible && !isLocationHistoryListVisible && !isSearchLocationListVisible}
         onClose={() => {
           dispatch(hideLocationDrawer());
         }}
-        onSelectLocation={addressInfo => {
-          dispatch(selectLocation(addressInfo));
+        onSelectAddress={addressInfo => {
+          dispatch(selectLocation({ addressInfo }));
+        }}
+        onChangeSearchKeyword={async searchKey => {
+          const searchResult = await dispatch(loadSearchLocationListData(searchKey)).then(unwrapResult);
+
+          setSearchLocationList(searchResult);
+        }}
+        onClearSearchKeyword={() => {
+          dispatch(loadSearchLocationListData());
+          setSearchLocationList([]);
         }}
       />
     </div>

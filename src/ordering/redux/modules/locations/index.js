@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { API_REQUEST_STATUS } from '../../../utils/constants';
+import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import { loadLocationHistoryList, updateLocationToHistoryList, loadLocationOfDevice } from './thunks';
 
 const initialState = {

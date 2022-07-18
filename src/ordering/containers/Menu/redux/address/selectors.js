@@ -2,16 +2,12 @@ import { createSelector } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 import { getUserIsLogin } from '../../../../redux/modules/app';
 import { getAddressList, getAddressListInitialized } from '../../../../redux/modules/addressList/selectors';
+import {
+  getLocationHistoryList,
+  getLocationHistoryListInitialized,
+} from '../../../../redux/modules/locations/selectors';
 
-export { getAddressListInitialized };
-
-export const getAddressListInfo = createSelector(getAddressList, addressList =>
-  addressList.map(({ _id, availableStatus, ...othersOptions }) => ({
-    id: _id,
-    outOfRange: !availableStatus,
-    ...othersOptions,
-  }))
-);
+export { getAddressListInitialized, getLocationHistoryListInitialized };
 
 export const getStoreInfo = state => state.menu.address.storeInfo;
 
@@ -29,5 +25,41 @@ export const getHasStoreInfoInitialized = createSelector(getStoreInfo, storeInfo
 export const getEnableToLoadAddressList = createSelector(
   getUserIsLogin,
   getAddressListInitialized,
-  (enableToLoadAddressList, addressListInitialized) => enableToLoadAddressList && !addressListInitialized
+  (userSignedIn, addressListInitialized) => userSignedIn && !addressListInitialized
+);
+
+/**
+ *  get address list
+ * */
+export const getAddressListInfo = createSelector(getAddressList, addressList =>
+  addressList.map(({ _id, availableStatus, ...othersOptions }) => ({
+    id: _id,
+    outOfRange: !availableStatus,
+    ...othersOptions,
+  }))
+);
+
+/**
+ *  get location history list
+ * */
+export const getLocationHistoryListInfo = createSelector(getLocationHistoryList, location =>
+  location.map(({ availableStatus, ...othersOptions }) => ({
+    outOfRange: !availableStatus,
+    ...othersOptions,
+  }))
+);
+
+export const getIsAddressListVisible = createSelector(
+  getUserIsLogin,
+  getAddressList,
+  (userSignedIn, addressList) => userSignedIn && addressList.length > 0
+);
+
+export const getIsLocationHistoryListVisible = createSelector(
+  getUserIsLogin,
+  getAddressList,
+  getLocationHistoryList,
+  (userSignedIn, addressList, locationHistoryList) =>
+    (userSignedIn && addressList.length <= 0 && locationHistoryList.length > 0) ||
+    (!userSignedIn && locationHistoryList.length > 0)
 );

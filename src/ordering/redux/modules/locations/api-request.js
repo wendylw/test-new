@@ -1,4 +1,4 @@
-import { get, post } from '../../../utils/api/api-fetch';
+import { get, post } from '../../../../utils/api/api-fetch';
 
 export const getLocationHistoryList = () => get('/api/storage/location-history');
 

@@ -8,5 +8,3 @@ export const updateAddress = ({ consumerId, addressId, contactName, contactNumbe
     contactName,
     contactNumber,
   });
-
-export const fetchLocationHistory = async () => ApiFetch.get('/api/storage/location-history');

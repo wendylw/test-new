@@ -115,6 +115,13 @@ class LocationPage extends Component {
       },
     };
 
+    console.log('locationPage addressInfo');
+    console.table(addressInfo);
+    console.log('locationPage address');
+    console.table(address);
+    console.log('locationPage location');
+    console.table(location);
+
     if (updateAddressEnabled) {
       await setAddressInfo(addressInfo);
     }

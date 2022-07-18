@@ -1,29 +1,32 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getPlaceAutocompleteList, tryGetDeviceCoordinates, getPlaceInfoFromPlaceId } from '../../../utils/geoUtils';
+import { getPlaceAutocompleteList, tryGetDeviceCoordinates, getPlaceInfoFromPlaceId } from '../../../../utils/geoUtils';
 import { getLocationHistoryList, putLocationToHistoryList } from './api-request';
+import logger from '../../../../utils/monitoring/logger';
+
+/* eslint-disable camelcase */
+const getDisplayPositionInfo = location => {
+  const { structured_formatting, place_id } = location;
+  const { main_text, secondary_text } = structured_formatting;
+
+  return {
+    placeId: place_id,
+    address: `${main_text}, ${secondary_text}`,
+    displayComponents: {
+      mainText: main_text,
+      secondaryText: secondary_text,
+    },
+    ...location,
+  };
+};
+/* eslint-enable camelcase */
 
 /**
  * @param {object} storeInfo { location, origin, radius, country }
  */
-export const loadSearchLocationList = async ({ searchKey, storeInfo }) => {
+export const loadSearchLocationList = async (searchKey, storeInfo) => {
   const result = await getPlaceAutocompleteList(searchKey, storeInfo);
 
-  return result;
-};
-
-/**
- * @param {object} options { fromAutocomplete: true }
- */
-export const loadSearchLocationDetail = async ({ placeId, options }) => {
-  try {
-    const result = await getPlaceInfoFromPlaceId(placeId, options);
-
-    return result;
-  } catch (e) {
-    console.log('fail to loadSearchLocationDetail', e);
-
-    throw e;
-  }
+  return result.map(item => getDisplayPositionInfo(item));
 };
 
 /**
@@ -42,17 +45,23 @@ export const loadLocationHistoryList = createAsyncThunk('app/location/loadLocati
 });
 
 /**
+ *  @param {object} options { fromAutocomplete: true }
  *  @param {object} positionInfo {displayComponents: {mainText, secondaryText}, address: `${mainText}, ${secondaryText, coords, placeId, addressComponents}`}
  */
 export const updateLocationToHistoryList = createAsyncThunk(
   'app/location/updateLocationToHistoryList',
-  async (positionInfo, { dispatch }) => {
+  async ({ searchResult, options }, { dispatch }) => {
     try {
-      await putLocationToHistoryList(positionInfo);
+      /* eslint-disable camelcase */
+      const { place_id } = searchResult;
+      const positionInfo = await getPlaceInfoFromPlaceId(place_id, options);
+      /* eslint-enable camelcase */
+
+      await putLocationToHistoryList(getDisplayPositionInfo(positionInfo));
 
       dispatch(loadLocationHistoryList());
     } catch (e) {
-      console.error('failed to put location delivery addresses', e);
+      logger.error('failed to put location delivery addresses', e);
 
       throw e;
     }

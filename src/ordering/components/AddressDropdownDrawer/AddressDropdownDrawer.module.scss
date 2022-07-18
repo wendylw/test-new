@@ -37,28 +37,3 @@
 .addressDropdownDrawerEmptyDescription {
   @apply tw-p-8 sm:tw-p-8px tw-leading-relaxed tw-font-bold tw-text-gray-700;
 }
-
-.addressDropdownDrawerItemButton {
-  @apply tw-flex tw-w-full tw-py-8 sm:tw-py-8px tw-border-0 tw-bg-transparent tw-cursor-pointer;
-
-  &:disabled {
-    @apply tw-cursor-default;
-
-    .addressDropdownDrawerItemButtonTitle,
-    .addressDropdownDrawerItemButtonDeliveryTo {
-      @apply tw-opacity-25;
-    }
-  }
-}
-
-.addressDropdownDrawerItem:nth-child(n + 2) .addressDropdownDrawerItemButton {
-  @apply tw-border-t tw-border-gray-300;
-}
-
-.addressDropdownDrawerItemButtonTitle {
-  @apply tw-mx-8 sm:tw-mx-8px tw-leading-relaxed tw-font-bold;
-}
-
-.addressDropdownDrawerItemButtonDeliveryTo {
-  @apply tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-4 sm:tw-my-4px tw-text-sm tw-leading-loose tw-text-gray-700;
-}

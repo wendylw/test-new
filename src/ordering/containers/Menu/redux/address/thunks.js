@@ -1,4 +1,5 @@
 import _get from 'lodash/get';
+import _debounce from 'lodash/debounce';
 import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
 import _isEqual from 'lodash/isEqual';
@@ -16,8 +17,10 @@ import {
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
 import { loadAddressList } from '../../../../redux/modules/addressList/thunks';
+import { loadLocationHistoryList, loadSearchLocationList } from '../../../../redux/modules/locations/thunks';
 import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
 import { getIsAddressOutOfRange } from '../common/selectors';
+import { getStoreInfoData } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
@@ -176,7 +179,7 @@ export const selectLocation = createAsyncThunk(
 );
 
 /*
- * load address list and location list
+ * load address list
  */
 export const loadAddressListData = createAsyncThunk(
   'ordering/menu/address/loadAddressDropdownData',
@@ -184,5 +187,47 @@ export const loadAddressListData = createAsyncThunk(
     if (enableToLoadAddressList) {
       await dispatch(loadAddressList());
     }
+  }
+);
+
+/*
+ * load location history list
+ */
+export const loadLocationHistoryListData = createAsyncThunk(
+  'ordering/menu/address/loadLocationHistoryListData',
+  async (enableToLoadAddressList, { dispatch }) => {
+    if (!enableToLoadAddressList) {
+      await dispatch(loadLocationHistoryList());
+    }
+  }
+);
+
+/**
+ *  load search location list
+ */
+export const loadSearchLocationListData = createAsyncThunk(
+  'ordering/menu/address/loadSearchLocationListData',
+  async (searchKey, { getState }) => {
+    if (_isEmpty(searchKey)) {
+      return [];
+    }
+
+    const state = getState();
+    const storeInfo = getStoreInfoData(state);
+    const getSearchList = async (search, searchStoreInfo) => {
+      try {
+        const result = await loadSearchLocationList(search, searchStoreInfo);
+
+        return result;
+      } catch (e) {
+        logger.error('failed to load search location list data', e);
+
+        return [];
+      }
+    };
+
+    return new Promise(resolve => {
+      _debounce(resolve(getSearchList(searchKey, storeInfo)), 700);
+    });
   }
 );
