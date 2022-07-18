@@ -20,6 +20,7 @@ import {
   getEnableToLoadAddressList,
   getLocationHistoryListInfo,
   getIsLocationHistoryListVisible,
+  getErrorCode,
 } from '../../redux/address/selectors';
 import {
   locationDrawerShown,
@@ -28,11 +29,54 @@ import {
   loadAddressListData,
   loadLocationHistoryListData,
   loadSearchLocationListData,
+  updateSearchLocationListData,
 } from '../../redux/address/thunks';
 import styles from './MenuAddressDropdown.module.scss';
 
 const LOCATION_TITLE_KEYS = {
   pickup: 'StoreLocation',
+};
+
+const getFormatSelectAddressInfo = (AddressOrLocationInfo, type) => {
+  const addressInfo = {};
+
+  if (type === 'address') {
+    const {
+      id,
+      deliveryTo: fullName,
+      addressName: shortName,
+      location: { longitude: lng, latitude: lat },
+      countryCode,
+      postCode,
+      city,
+    } = AddressOrLocationInfo;
+
+    addressInfo.savedAddressId = id;
+    addressInfo.fullName = fullName;
+    addressInfo.shortName = shortName;
+    addressInfo.coords = { lng, lat };
+    addressInfo.countryCode = countryCode;
+    addressInfo.postCode = postCode;
+    addressInfo.city = city;
+  } else if (type === 'location') {
+    const {
+      placeId,
+      address: fullName,
+      coords,
+      displayComponents: { mainText: shortName },
+      addressComponents: { countryCode, postCode, city },
+    } = AddressOrLocationInfo;
+
+    addressInfo.placeId = placeId;
+    addressInfo.fullName = fullName;
+    addressInfo.shortName = shortName;
+    addressInfo.coords = coords;
+    addressInfo.countryCode = countryCode;
+    addressInfo.postCode = postCode;
+    addressInfo.city = city;
+  }
+
+  return addressInfo;
 };
 
 const MenuShippingInfoBar = () => {
@@ -101,7 +145,21 @@ const MenuShippingInfoBar = () => {
         onClose={() => {
           dispatch(hideLocationDrawer());
         }}
-        onSelectAddress={addressInfo => {
+        onSelectAddress={selectedAddressInfo => {
+          const addressInfo = getFormatSelectAddressInfo(selectedAddressInfo, 'address');
+
+          dispatch(selectLocation({ addressInfo }));
+        }}
+        onSelectLocation={selectedLocationInfo => {
+          const addressInfo = getFormatSelectAddressInfo(selectedLocationInfo, 'location');
+
+          dispatch(selectLocation({ addressInfo }));
+        }}
+        onSelectSearchLocation={searchResult => {
+          dispatch(updateSearchLocationListData(searchResult));
+
+          const addressInfo = getFormatSelectAddressInfo(searchResult, 'location');
+
           dispatch(selectLocation({ addressInfo }));
         }}
         onChangeSearchKeyword={async searchKey => {

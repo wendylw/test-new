@@ -22,6 +22,7 @@ const AddressDropdownDrawer = ({
   isAddressListVisible,
   addressList,
   onSelectAddress,
+  onSelectLocation,
   onSelectSearchLocation,
   isEmptyList,
   onChangeSearchKeyword,
@@ -87,7 +88,7 @@ const AddressDropdownDrawer = ({
             <LocationList
               isLocationListVisible={isLocationHistoryListVisible}
               locationList={locationHistoryList}
-              onSelectLocation={onSelectAddress}
+              onSelectLocation={onSelectLocation}
             />
             {/* search location history list */}
             <LocationList
@@ -118,6 +119,7 @@ AddressDropdownDrawer.propTypes = {
   onClearSearchKeyword: PropTypes.func,
   onClose: PropTypes.func,
   onSelectAddress: PropTypes.func,
+  onSelectLocation: PropTypes.func,
   onSelectSearchLocation: PropTypes.func,
 };
 
@@ -135,6 +137,7 @@ AddressDropdownDrawer.defaultProps = {
   onClearSearchKeyword: () => {},
   onClose: () => {},
   onSelectAddress: () => {},
+  onSelectLocation: () => {},
   onSelectSearchLocation: () => {},
 };
 

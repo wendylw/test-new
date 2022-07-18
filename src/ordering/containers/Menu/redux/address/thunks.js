@@ -17,7 +17,11 @@ import {
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
 import { loadAddressList } from '../../../../redux/modules/addressList/thunks';
-import { loadLocationHistoryList, loadSearchLocationList } from '../../../../redux/modules/locations/thunks';
+import {
+  loadLocationHistoryList,
+  loadSearchLocationList,
+  updateLocationToHistoryList,
+} from '../../../../redux/modules/locations/thunks';
 import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
 import { getIsAddressOutOfRange } from '../common/selectors';
 import { getStoreInfoData } from './selectors';
@@ -116,6 +120,7 @@ export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/loca
 export const selectLocation = createAsyncThunk(
   'ordering/menu/address/selectLocation',
   async ({ addressInfo, date = new Date() }, { dispatch, getState }) => {
+    console.log(addressInfo);
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
 
@@ -229,5 +234,15 @@ export const loadSearchLocationListData = createAsyncThunk(
     return new Promise(resolve => {
       _debounce(resolve(getSearchList(searchKey, storeInfo)), 700);
     });
+  }
+);
+
+/**
+ *  update search location list
+ */
+export const updateSearchLocationListData = createAsyncThunk(
+  'ordering/menu/address/updateSearchLocationListData',
+  async (searchResult, { dispatch }) => {
+    await dispatch(updateLocationToHistoryList({ searchResult, options: { fromAutocomplete: true } }));
   }
 );
