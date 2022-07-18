@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import _trim from 'lodash/trim';
 import _nth from 'lodash/_baseNth';
 import _debounce from 'lodash/debounce';
-import PlaceSearchBox from '../../components/PlaceSearchBox';
-import LocationPicker from '../../components/LocationPicker';
-import AddressPicker from '../../components/AddressPicker';
-import { getPlaceAutocompleteList } from '../../../../../utils/geoUtils';
-import CleverTap from '../../../../../utils/clevertap';
+import PlaceSearchBox from './PlaceSearchBox';
+import LocationPicker from './LocationPicker';
+import AddressPicker from './AddressPicker';
+import { getPlaceAutocompleteList } from '../../../utils/geoUtils';
+import CleverTap from '../../../utils/clevertap';
 
 const fetchAutocompletePlaceList = _debounce(async (searchText, placeInfo, searchCallback) => {
   const { coords: origin, radius, country } = placeInfo;
