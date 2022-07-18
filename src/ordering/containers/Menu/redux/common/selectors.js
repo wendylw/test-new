@@ -624,9 +624,8 @@ export const getFreeShippingFormattedMinAmountWithOutSpacing = createSelector(
   freeShippingFormattedMinAmount => freeShippingFormattedMinAmount.replace(/\s/g, '')
 );
 
-export const getIsTimeSlotAvailable = createSelector(
-  getStoreStatus,
-  storeStatus => storeStatus !== STORE_OPENING_STATUS.CLOSED
+export const getIsTimeSlotAvailable = createSelector(getSelectedStoreStatus, storeStatus =>
+  [STORE_OPENING_STATUS.ON_DEMAND, STORE_OPENING_STATUS.PRE_ORDER].includes(storeStatus)
 );
 
 export const getIsStoreInfoEntryVisible = createSelector(

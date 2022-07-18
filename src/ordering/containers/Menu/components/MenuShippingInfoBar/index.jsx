@@ -21,6 +21,8 @@ import {
   getTimeSlotList,
   getIsSaveButtonDisabled,
   getIsInitializing,
+  getSelectedDate,
+  getSelectedShippingType,
 } from '../../redux/timeSlot/selectors';
 import { showTimeSlotDrawer, hideTimeSlotDrawer, showLocationDrawer } from '../../redux/common/thunks';
 import {
@@ -89,19 +91,28 @@ const MenuShippingInfoBar = () => {
       ? t('SelectTimeSlot')
       : `${dateTranslated}, ${timeTranslated}`;
 
-  useEffect(() => {
-    // load time slot sold data, once shipping type or date has changed
-    loadTimeSlotSoldData({
-      selectedDate: selectedDateDisplayValue,
-      selectedShippingType: selectedShippingTypeForDrawer,
-    });
+  const selectedDateInTimeSlotDrawer = useSelector(getSelectedDate);
+  const selectedShippingTypeInTimeSlotDrawer = useSelector(getSelectedShippingType);
 
+  useEffect(() => {
+    if (timeSlotDrawerVisible) {
+      // load time slot sold data, once shipping type or date has changed
+      dispatch(
+        loadTimeSlotSoldData({
+          selectedDate: selectedDateInTimeSlotDrawer,
+          selectedShippingType: selectedShippingTypeInTimeSlotDrawer,
+        })
+      );
+    }
+  }, [selectedDateInTimeSlotDrawer, selectedShippingTypeInTimeSlotDrawer, timeSlotDrawerVisible, dispatch]);
+
+  useEffect(() => {
     if (timeSlotDrawerVisible) {
       dispatch(timeSlotDrawerShown());
     } else {
       dispatch(timeSlotDrawerHidden());
     }
-  }, [selectedDateDisplayValue, selectedShippingTypeForDrawer, timeSlotDrawerVisible]);
+  }, [timeSlotDrawerVisible, dispatch]);
 
   if (isQrOrderingShippingType) {
     return null;
