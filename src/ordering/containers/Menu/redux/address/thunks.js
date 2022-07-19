@@ -99,7 +99,7 @@ export const locationDrawerShown = createAsyncThunk(
       };
     } catch (e) {
       logger.error(`Failed to load storeInfo: ${e?.message}`);
-      return {};
+      throw e;
     }
   }
 );
