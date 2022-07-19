@@ -156,8 +156,10 @@ export const selectLocation = createAsyncThunk(
         });
       }
 
+      const storeId = _get(store, 'id', null);
+
       await dispatch(setAddressInfo(addressInfo));
-      await dispatch(refreshMenuPageForNewStore(store));
+      await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
       const errorCode = _get(e, 'cause', null);
 
