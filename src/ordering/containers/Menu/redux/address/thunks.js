@@ -98,7 +98,7 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      logger.error(`Failed to load storeInfo: ${e.message}`);
+      logger.error(`Failed to load storeInfo: ${e?.message}`);
       return {};
     }
   }
@@ -130,9 +130,8 @@ export const selectLocation = createAsyncThunk(
       const coords = _get(addressInfo, 'coords', null);
 
       if (_isEmpty(coords)) {
-        throw new Error({
-          code: ERROR_CODES.ADDRESS_NOT_FOUND,
-          reason: 'address coordination is not found',
+        throw new Error('address coordination is not found', {
+          cause: ERROR_CODES.ADDRESS_NOT_FOUND,
         });
       }
 
@@ -152,24 +151,21 @@ export const selectLocation = createAsyncThunk(
       });
 
       if (_isEmpty(store)) {
-        throw new Error({
-          code: ERROR_CODES.OUT_OF_DELIVERY_RANGE,
-          reason: 'no available store according to the current time or delivery range',
+        throw new Error('no available store according to the current time or delivery range', {
+          cause: ERROR_CODES.OUT_OF_DELIVERY_RANGE,
         });
       }
 
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(store));
     } catch (e) {
-      const errorCode = _get(e, 'message.code', null);
+      const errorCode = _get(e, 'cause', null);
 
       if (errorCode) {
         await dispatch(showErrorToast(errorCode));
       }
 
-      // In case users fail to select a location for some unknown reasons, we should still catch such an error message by directly retrieving the message from the error object.
-      const errorMessage = _get(e, 'message.reason', '') || e.message;
-      logger.error(`Failed to select location: ${errorMessage}`);
+      logger.error(`Failed to select location: ${e?.message}`);
     }
   }
 );
