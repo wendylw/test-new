@@ -10,6 +10,7 @@ import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import {
   getStoreId,
   getBusiness,
+  getCurrentDate,
   getDeliveryRadius,
   getMerchantCountry,
   getBusinessUTCOffset,
@@ -111,7 +112,7 @@ export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/loca
  */
 export const selectLocation = createAsyncThunk(
   'ordering/menu/address/selectLocation',
-  async ({ addressInfo, currentDate = new Date() }, { dispatch, getState }) => {
+  async (addressInfo, { dispatch, getState }) => {
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
 
@@ -137,6 +138,7 @@ export const selectLocation = createAsyncThunk(
 
       let stores = getCoreStoreList(state);
       const utcOffset = getBusinessUTCOffset(state);
+      const currentDate = getCurrentDate(state);
 
       if (_isEmpty(stores)) {
         // We only fetch the core store API again when the previous call hasn't been completed or sent yet for better performance
