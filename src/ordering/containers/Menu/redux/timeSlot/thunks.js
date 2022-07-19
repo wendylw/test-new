@@ -15,6 +15,7 @@ import {
   getSelectedDateObj,
   getSelectedShippingType,
   getSelectedTimeSlot,
+  getStoreSupportShippingTypes,
 } from './selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
 import { hideTimeSlotDrawer, updateExpectedDeliveryDate } from '../common/thunks';
@@ -49,10 +50,14 @@ export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/time
   try {
     const state = getState();
     const store = getStore(state);
-    const selectedShippingType = getShippingType(state);
+    const shippingType = getShippingType(state);
     const expectedDeliveryTime = getExpectedDeliveryTime(state);
     const currentDayjs = getBusinessTimeZoneCurrentDayjs(state);
     const businessUTCOffset = getBusinessUTCOffset(state);
+    const storeSupportShippingTypes = getStoreSupportShippingTypes(state);
+    const selectedShippingType = storeSupportShippingTypes.includes(shippingType)
+      ? shippingType
+      : storeSupportShippingTypes[0];
 
     if (!expectedDeliveryTime) {
       // find earliest available time slot
