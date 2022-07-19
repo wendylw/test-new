@@ -22,6 +22,15 @@ import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
 
+class LocationSelectedError extends Error {
+  constructor(message, code) {
+    super(message);
+
+    this.name = 'LocationSelectedError';
+    this.code = code;
+  }
+}
+
 export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async errorCode => ({
   errorCode,
 }));
@@ -131,9 +140,7 @@ export const selectLocation = createAsyncThunk(
       const coords = _get(addressInfo, 'coords', null);
 
       if (_isEmpty(coords)) {
-        throw new Error('address coordination is not found', {
-          cause: ERROR_CODES.ADDRESS_NOT_FOUND,
-        });
+        throw new LocationSelectedError('address coordination is not found', ERROR_CODES.ADDRESS_NOT_FOUND);
       }
 
       let stores = getCoreStoreList(state);
@@ -153,9 +160,10 @@ export const selectLocation = createAsyncThunk(
       });
 
       if (_isEmpty(store)) {
-        throw new Error('no available store according to the current time or delivery range', {
-          cause: ERROR_CODES.OUT_OF_DELIVERY_RANGE,
-        });
+        throw new LocationSelectedError(
+          'no available store according to the current time or delivery range',
+          ERROR_CODES.OUT_OF_DELIVERY_RANGE
+        );
       }
 
       const storeId = _get(store, 'id', null);
@@ -163,13 +171,12 @@ export const selectLocation = createAsyncThunk(
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
-      const errorCode = _get(e, 'cause', null);
-
-      if (errorCode) {
-        await dispatch(showErrorToast(errorCode));
+      if (e instanceof LocationSelectedError) {
+        await dispatch(showErrorToast(e.code));
       }
 
       logger.error(`Failed to select location: ${e?.message}`);
+      throw e;
     }
   }
 );
