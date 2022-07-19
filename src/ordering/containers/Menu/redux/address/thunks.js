@@ -111,7 +111,7 @@ export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/loca
  */
 export const selectLocation = createAsyncThunk(
   'ordering/menu/address/selectLocation',
-  async ({ addressInfo, date = new Date() }, { dispatch, getState }) => {
+  async ({ addressInfo, currentDate = new Date() }, { dispatch, getState }) => {
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
 
@@ -146,7 +146,7 @@ export const selectLocation = createAsyncThunk(
 
       const { store } = findNearestAvailableStore(stores, {
         coords,
-        date,
+        currentDate,
         utcOffset,
       });
 
