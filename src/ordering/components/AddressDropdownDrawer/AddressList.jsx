@@ -31,7 +31,7 @@ const AddressList = ({ isInitializing, addressList, onSelectAddress }) => {
             <div className="beep-line-clamp-flex-container tw-flex-col">
               <h4 className="tw-flex tw-items-center tw-justify-start tw-my-2 sm:tw-my-2px beep-line-clamp-flex-container">
                 <span className={styles.addressItemButtonTitle}>{address.addressName}</span>
-                {addressList.outOfRange ? <Tag className="tw-flex-shrink-0 tw-font-bold">{t('OutOfRange')}</Tag> : null}
+                {address.outOfRange ? <Tag className="tw-flex-shrink-0 tw-font-bold">{t('OutOfRange')}</Tag> : null}
               </h4>
               <p className={styles.addressItemButtonDeliveryTo}>{address.deliveryTo}</p>
             </div>
