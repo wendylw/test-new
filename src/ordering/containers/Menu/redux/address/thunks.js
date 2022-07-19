@@ -121,7 +121,6 @@ export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/loca
 export const selectLocation = createAsyncThunk(
   'ordering/menu/address/selectLocation',
   async ({ addressInfo, date = new Date() }, { dispatch, getState }) => {
-    console.log(addressInfo);
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
 
@@ -220,21 +219,15 @@ export const loadSearchLocationListData = createAsyncThunk(
 
     const state = getState();
     const storeInfo = getStoreInfoData(state);
-    const getSearchList = async (search, searchStoreInfo) => {
-      try {
-        const result = await loadSearchLocationList(search, searchStoreInfo);
+    try {
+      const result = await loadSearchLocationList(searchKey, storeInfo);
 
-        return result;
-      } catch (e) {
-        logger.error('failed to load search location list data', e);
+      return result;
+    } catch (e) {
+      logger.error('failed to load search location list data', e);
 
-        return [];
-      }
-    };
-
-    return new Promise(resolve => {
-      _debounce(resolve(getSearchList(searchKey, storeInfo)), 700);
-    });
+      return [];
+    }
   }
 );
 

@@ -1,5 +1,6 @@
 import _isEmpty from 'lodash/isEmpty';
-import React, { useRef, useState } from 'react';
+import _debounce from 'lodash/debounce';
+import React, { useCallback, useRef, useState } from 'react';
 import { useMount } from 'react-use';
 import PropTypes from 'prop-types';
 import { MagnifyingGlass, XCircle } from 'phosphor-react';
@@ -16,6 +17,7 @@ const Search = React.forwardRef(
       defaultSearchKeyword,
       allowClear,
       searching,
+      isDebounce,
       onChangeInputValue,
       onClearInput,
     },
@@ -28,6 +30,7 @@ const Search = React.forwardRef(
     const [inputValue, setInputValue] = useState(defaultSearchKeyword);
     const currentRef = useRef(null);
     const searchInputRef = searchRef || currentRef;
+
     useMount(() => {
       searchInputRef.current?.focus();
     });
@@ -53,7 +56,13 @@ const Search = React.forwardRef(
           value={inputValue}
           onChange={e => {
             setInputValue(e.target.value);
-            onChangeInputValue(e.target.value);
+
+            if (isDebounce) {
+              const onChangeSearchValue = _debounce(ev => onChangeInputValue(ev.target.value), 700);
+              onChangeSearchValue(e);
+            } else {
+              onChangeInputValue(e.target.value);
+            }
           }}
           onKeyPress={e => {
             if (e.code === 'Enter' || (e.charCode || e.which) === 13) {
@@ -96,6 +105,7 @@ Search.propTypes = {
   defaultSearchKeyword: PropTypes.string,
   allowClear: PropTypes.bool,
   searching: PropTypes.bool,
+  isDebounce: PropTypes.bool,
   onChangeInputValue: PropTypes.func,
   onClearInput: PropTypes.func,
 };
@@ -106,6 +116,7 @@ Search.defaultProps = {
   defaultSearchKeyword: '',
   allowClear: true,
   searching: false,
+  isDebounce: false,
   onChangeInputValue: () => {},
   onClearInput: () => {},
 };

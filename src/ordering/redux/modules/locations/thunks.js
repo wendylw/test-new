@@ -5,8 +5,6 @@ import logger from '../../../../utils/monitoring/logger';
 
 /* eslint-disable camelcase */
 const getDisplayPositionInfo = location => {
-  console.log(location);
-
   const { structured_formatting, place_id } = location;
   const { main_text, secondary_text } = structured_formatting;
 

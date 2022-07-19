@@ -56,6 +56,7 @@ const AddressDropdownDrawer = ({
         <div className={styles.addressDropdownDrawerContent}>
           <section className="tw-flex-shrink-0 tw-pb-16 sm:tw-pb-16px tw-px-16 sm:tw-px-16px tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
             <Search
+              isDebounce
               ref={searchInputRef}
               placeholder={t('SearchYourLocation')}
               searching={false}
