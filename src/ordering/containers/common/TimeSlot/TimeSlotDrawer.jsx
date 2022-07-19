@@ -75,7 +75,7 @@ const TimeSlotDrawer = ({
             <section className="tw-my-8 sm:tw-my-8px">
               <h3 className="tw-flex tw-items-center tw-py-8 sm:tw-py-8px tw-mx-16 sm:tw-mx-16px">
                 <DateIcon className="tw-inline-flex" />
-                <span className="tw-px-8 sm:tw-px-8px tw-font-bold">Date</span>
+                <span className="tw-px-8 sm:tw-px-8px tw-font-bold">{t('Date')}</span>
               </h3>
               <Swiper
                 wrapperTag="ul"
@@ -121,7 +121,7 @@ const TimeSlotDrawer = ({
             <section className="tw-my-8 sm:tw-my-8px tw-mx-16 sm:tw-mx-16px">
               <h3 className="tw-flex tw-items-center tw-py-8 sm:tw-py-8px">
                 <TimeIcon className="tw-inline-flex" />
-                <span className="tw-px-8 sm:tw-px-8px tw-font-bold">Time</span>
+                <span className="tw-px-8 sm:tw-px-8px tw-font-bold">{t('Time')}</span>
               </h3>
               <ol className="tw-py-4 sm:tw-py-4px">
                 {timeSlotList.map(({ value, from, to, available, selected }) => {

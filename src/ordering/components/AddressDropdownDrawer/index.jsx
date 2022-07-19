@@ -34,7 +34,9 @@ const AddressDropdownDrawer = ({
   return (
     <Drawer
       fullScreen
-      className={isInitializing ? styles.addressDropdownDrawerInitializing : styles.addressDropdownDrawer}
+      className={`${isInitializing ? styles.addressDropdownDrawerInitializing : styles.addressDropdownDrawer}${
+        isEmptyList ? ` ${styles.addressDropdownDrawerEmpty}` : ''
+      }`}
       show={isLocationDrawerVisible}
       header={
         <DrawerHeader
@@ -51,7 +53,7 @@ const AddressDropdownDrawer = ({
       {isInitializing ? (
         <Loader className={styles.loader} weight="bold" />
       ) : (
-        <div className="tw-flex tw-flex-col">
+        <div className={styles.addressDropdownDrawerContent}>
           <section className="tw-flex-shrink-0 tw-pb-16 sm:tw-pb-16px tw-px-16 sm:tw-px-16px tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
             <Search
               ref={searchInputRef}
@@ -64,7 +66,7 @@ const AddressDropdownDrawer = ({
 
           <div className="tw-flex-1 tw-px-16 sm:tw-px-16px tw-py-16 sm:tw-py-16px tw-overflow-x-auto">
             {isEmptyList ? (
-              <div className={styles.addressDropdownDrawerEmpty}>
+              <div className={styles.addressDropdownDrawerEmptyContent}>
                 <img
                   className={styles.addressDropdownDrawerEmptyImage}
                   src={LocationEmptyImage}

@@ -289,5 +289,7 @@
   "AddressListEmptyDescription": "Enter your delivery location",
   "StoreListDrawerTitle": "Select store branch",
   "StoreListDrawerDeliveryDescription": "{{totalOutletDisplayTitle}} outlets near you",
-  "StoreListDrawerPickupDescription": "Total {{totalOutletDisplayTitle}} outlets"
+  "StoreListDrawerPickupDescription": "Total {{totalOutletDisplayTitle}} outlets",
+  "Date": "Date",
+  "Time": "Time"
 }
