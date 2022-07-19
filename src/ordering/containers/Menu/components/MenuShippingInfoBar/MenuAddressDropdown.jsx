@@ -117,9 +117,9 @@ const MenuShippingInfoBar = () => {
 
   useEffect(() => {
     if (errorCode === ERROR_CODES.ADDRESS_NOT_FOUND) {
-      // show  error toast
+      console.log('address not found');
     } else if (errorCode === ERROR_CODES.OUT_OF_DELIVERY_RANGE) {
-      // show error toast
+      console.log('out of range');
     }
   }, [errorCode]);
 
