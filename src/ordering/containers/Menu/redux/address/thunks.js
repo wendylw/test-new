@@ -3,7 +3,7 @@ import _debounce from 'lodash/debounce';
 import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
 import _isEqual from 'lodash/isEqual';
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
 import { getAddressInfo } from '../../../../../redux/modules/address/selectors';
 import { setAddressInfo } from '../../../../../redux/modules/address/thunks';
 import { getBusinessByName } from '../../../../../redux/modules/entities/businesses';
@@ -21,6 +21,7 @@ import {
   loadLocationHistoryList,
   loadSearchLocationList,
   updateLocationToHistoryList,
+  loadPlaceInfoById,
 } from '../../../../redux/modules/locations/thunks';
 import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
 import { getIsAddressOutOfRange } from '../common/selectors';
@@ -238,11 +239,22 @@ export const loadSearchLocationListData = createAsyncThunk(
 );
 
 /**
+ *
+ * */
+export const loadPlaceInfoData = async searchResult => {
+  const result = await loadPlaceInfoById(searchResult, { fromAutocomplete: true });
+
+  return result;
+};
+
+/**
  *  update search location list
  */
 export const updateSearchLocationListData = createAsyncThunk(
   'ordering/menu/address/updateSearchLocationListData',
-  async (searchResult, { dispatch }) => {
-    await dispatch(updateLocationToHistoryList({ searchResult, options: { fromAutocomplete: true } }));
+  async (formatPositionInfo, { dispatch }) => {
+    const result = await dispatch(updateLocationToHistoryList(formatPositionInfo)).then(unwrapResult);
+
+    return result;
   }
 );

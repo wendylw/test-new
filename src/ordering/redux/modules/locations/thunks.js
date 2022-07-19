@@ -5,6 +5,8 @@ import logger from '../../../../utils/monitoring/logger';
 
 /* eslint-disable camelcase */
 const getDisplayPositionInfo = location => {
+  console.log(location);
+
   const { structured_formatting, place_id } = location;
   const { main_text, secondary_text } = structured_formatting;
 
@@ -45,19 +47,36 @@ export const loadLocationHistoryList = createAsyncThunk('app/location/loadLocati
 });
 
 /**
+ * @param {object} options { fromAutocomplete: true }
+ * @return {object} positionInfo {displayComponents: {mainText, secondaryText}, address: `${mainText}, ${secondaryText, coords, placeId, addressComponents}`}
+ */
+export const loadPlaceInfoById = async (placeInfo, options) => {
+  try {
+    /* eslint-disable camelcase */
+    const { place_id } = placeInfo;
+    const positionInfo = await getPlaceInfoFromPlaceId(place_id, options);
+
+    return getDisplayPositionInfo({
+      ...placeInfo,
+      ...positionInfo,
+    });
+    /* eslint-enable camelcase */
+  } catch (e) {
+    console.error('load place info by id failed', e);
+
+    throw e;
+  }
+};
+
+/**
  *  @param {object} options { fromAutocomplete: true }
  *  @param {object} positionInfo {displayComponents: {mainText, secondaryText}, address: `${mainText}, ${secondaryText, coords, placeId, addressComponents}`}
  */
 export const updateLocationToHistoryList = createAsyncThunk(
   'app/location/updateLocationToHistoryList',
-  async ({ searchResult, options }, { dispatch }) => {
+  async (formatPositionInfo, { dispatch }) => {
     try {
-      /* eslint-disable camelcase */
-      const { place_id } = searchResult;
-      const positionInfo = await getPlaceInfoFromPlaceId(place_id, options);
-      /* eslint-enable camelcase */
-
-      await putLocationToHistoryList(getDisplayPositionInfo(positionInfo));
+      await putLocationToHistoryList(formatPositionInfo);
 
       dispatch(loadLocationHistoryList());
     } catch (e) {

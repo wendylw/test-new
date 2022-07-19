@@ -29,6 +29,7 @@ import {
   loadAddressListData,
   loadLocationHistoryListData,
   loadSearchLocationListData,
+  loadPlaceInfoData,
   updateSearchLocationListData,
 } from '../../redux/address/thunks';
 import styles from './MenuAddressDropdown.module.scss';
@@ -40,6 +41,8 @@ const LOCATION_TITLE_KEYS = {
 
 const getFormatSelectAddressInfo = (AddressOrLocationInfo, type) => {
   const addressInfo = {};
+
+  console.log(AddressOrLocationInfo);
 
   if (type === 'address') {
     const {
@@ -165,12 +168,14 @@ const MenuShippingInfoBar = () => {
 
           dispatch(selectLocation({ addressInfo }));
         }}
-        onSelectSearchLocation={searchResult => {
-          dispatch(updateSearchLocationListData(searchResult));
+        onSelectSearchLocation={async searchResult => {
+          if (searchResult) {
+            const formatPositionInfo = await loadPlaceInfoData(searchResult);
+            const addressInfo = getFormatSelectAddressInfo(formatPositionInfo, 'location');
 
-          const addressInfo = getFormatSelectAddressInfo(searchResult, 'location');
-
-          dispatch(selectLocation({ addressInfo }));
+            dispatch(updateSearchLocationListData(formatPositionInfo));
+            dispatch(selectLocation({ addressInfo }));
+          }
         }}
         onChangeSearchKeyword={async searchKey => {
           const searchResult = await dispatch(loadSearchLocationListData(searchKey)).then(unwrapResult);

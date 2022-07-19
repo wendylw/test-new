@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import Tag from '../../../common/components/Tag';
 import { LocationAndAddressIcon } from '../../../common/components/Icons';
 import styles from './LocationList.module.scss';
 
