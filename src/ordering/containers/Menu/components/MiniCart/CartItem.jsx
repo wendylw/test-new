@@ -35,7 +35,7 @@ const CartItemOperator = ({
           {t('RemoveItem')}
         </Button>
       ) : (
-        <div className="tw-flex tw-flex-col tw-items-center tw-flex-shrink-0">
+        <div className="tw-flex tw-flex-col tw-items-center">
           <QuantityAdjuster
             className="tw-px-2 sm:tw-px-2px tw-mt-8 sm:tw-mt-8px"
             decreaseDisabled={!isAbleToDecreaseQuantity}
@@ -95,26 +95,21 @@ const CartItem = ({ item }) => {
             <p className={styles.cartItemDescription}>{item.variationTitles.join(', ')}</p>
           ) : null}
           <div className="tw-flex tw-items-start tw-justify-between">
-            <div>
-              <div className="tw-flex tw-items-center tw-my-8 sm:tw-my-8px">
-                <span className={`${styles.cartItemPrice} tw-px-2 sm:tw-px-2px tw-leading-relaxed`}>
-                  {item.formattedDisplayPrice}
+            <div className="tw-flex tw-items-center tw-my-8 sm:tw-my-8px">
+              <span className={`${styles.cartItemPrice} tw-px-2 sm:tw-px-2px tw-leading-relaxed`}>
+                {item.formattedDisplayPrice}
+              </span>
+              {item.formattedOriginalDisplayPrice && (
+                <span
+                  className={`${styles.cartItemPrice} tw-px-2 sm:tw-px-2px tw-leading-relaxed tw-line-through tw-gray-900 tw-opacity-40`}
+                >
+                  {item.formattedOriginalDisplayPrice}
                 </span>
-                {item.formattedOriginalDisplayPrice && (
-                  <span
-                    className={`${styles.cartItemPrice} tw-px-2 sm:tw-px-2px tw-leading-relaxed tw-line-through tw-gray-900 tw-opacity-40`}
-                  >
-                    {item.formattedOriginalDisplayPrice}
-                  </span>
-                )}
-                {item.isOutOfStock ? (
-                  <Tag className="tw-mx-8 sm:tw-mx-8px tw-font-bold tw-uppercase">{t('SoldOut')}</Tag>
-                ) : null}
-              </div>
-
-              {item.comments ? <p className={styles.cartItemComments}>{item.comments}</p> : null}
+              )}
+              {item.isOutOfStock ? (
+                <Tag className="tw-mx-8 sm:tw-mx-8px tw-font-bold tw-uppercase">{t('SoldOut')}</Tag>
+              ) : null}
             </div>
-
             {item.image ? null : (
               <CartItemOperator
                 id={item.id}

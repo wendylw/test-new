@@ -116,12 +116,12 @@ export const clearQueryCartStatus = () => () => {
  */
 export const updateCartItems = createAsyncThunk(
   'ordering/app/cart/updateCartItems',
-  async ({ productId, comments, quantityChange, variations = [] }, { dispatch, getState }) => {
+  async ({ productId, quantityChange, variations = [] }, { dispatch, getState }) => {
     const state = getState();
     const businessUTCOffset = getBusinessUTCOffset(state);
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
     const shippingType = Utils.getApiRequestShippingType();
-    const options = { productId, comments, quantityChange, variations: variations || [], shippingType };
+    const options = { productId, quantityChange, variations: variations || [], shippingType };
 
     if (fulfillDate) {
       options.fulfillDate = fulfillDate;

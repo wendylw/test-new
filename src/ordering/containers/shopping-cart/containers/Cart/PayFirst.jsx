@@ -246,11 +246,10 @@ class PayFirst extends Component {
     }
   };
 
-  getUpdateShoppingCartItemData = ({ productId, comments, variations }, currentQuantity) => ({
+  getUpdateShoppingCartItemData = ({ productId, variations }, currentQuantity) => ({
     action: 'edit',
     productId,
     quantity: currentQuantity,
-    comments,
     variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
       variationId,
       optionId,
@@ -289,12 +288,11 @@ class PayFirst extends Component {
     const { appActions } = this.props;
 
     logger.log('cart-list.item-operate-attempt');
-    const { productId, comments, variations } = cartItem;
+    const { productId, variations } = cartItem;
 
     appActions
       .removeShoppingCartItem({
         productId,
-        comments,
         variations,
       })
       .then(() => {

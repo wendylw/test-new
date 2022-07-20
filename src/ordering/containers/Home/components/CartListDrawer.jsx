@@ -108,7 +108,7 @@ class CartListDrawer extends Component {
     const { enablePayLater, updateCartItems } = this.props;
     logger.log('cart-list-drawer.item-operate-attempt');
 
-    const { quantity, productId, variations, comments } = cartItem;
+    const { quantity, productId, variations } = cartItem;
 
     if (quantity === 1) {
       this.handleRemoveCartItem(cartItem);
@@ -122,7 +122,6 @@ class CartListDrawer extends Component {
       enablePayLater
         ? updateCartItems({
             productId,
-            comments,
             quantityChange: -1,
             variations: selectedOptions,
           })
@@ -130,7 +129,6 @@ class CartListDrawer extends Component {
             .addOrUpdateShoppingCartItem({
               action: 'edit',
               productId,
-              comments,
               quantity: quantity - 1,
               variations: selectedOptions,
             })
@@ -144,7 +142,7 @@ class CartListDrawer extends Component {
     const { enablePayLater, updateCartItems } = this.props;
     logger.log('cart-list-drawer.item-operate-attempt');
 
-    const { quantity, productId, variations, comments } = cartItem;
+    const { quantity, productId, variations } = cartItem;
     const selectedOptions = (variations || []).map(({ variationId, optionId, quantity }) => ({
       variationId,
       optionId,
@@ -156,7 +154,6 @@ class CartListDrawer extends Component {
     if (enablePayLater) {
       updateCartItems({
         productId,
-        comments,
         quantityChange: 1,
         variations: selectedOptions,
       });
@@ -165,7 +162,6 @@ class CartListDrawer extends Component {
         .addOrUpdateShoppingCartItem({
           action: 'edit',
           productId,
-          comments,
           quantity: quantity + 1,
           variations: selectedOptions,
         })
@@ -206,14 +202,6 @@ class CartListDrawer extends Component {
         />
       </div>
     );
-  }
-
-  renderCartItemComments(comments) {
-    return comments ? (
-      <p className="cart-item__comments padding-top-bottom-smaller text-size-small text-line-height-higher">
-        {comments}
-      </p>
-    ) : null;
   }
 
   renderProductItemRightController(cartItem) {
@@ -298,25 +286,7 @@ class CartListDrawer extends Component {
       >
         <ul data-heap-name="ordering.home.mini-cart.cart-list">
           {cartItems.map(cartItem => {
-            const {
-              id,
-              title,
-              variationTexts,
-              displayPrice,
-              image,
-              originalDisplayPrice,
-              stockStatus,
-              comments,
-            } = cartItem;
-            const commentsEl = this.renderCartItemComments(comments);
-            const detailsEl = commentsEl ? (
-              <>
-                {this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
-                {commentsEl}
-              </>
-            ) : (
-              this.renderProductItemPrice(displayPrice, originalDisplayPrice)
-            );
+            const { id, title, variationTexts, displayPrice, image, originalDisplayPrice, stockStatus } = cartItem;
 
             return (
               <li key={`mini-cart-item-${id}`}>
@@ -327,7 +297,7 @@ class CartListDrawer extends Component {
                   imageCover={this.renderImageCover(stockStatus)}
                   title={title}
                   variation={(variationTexts || []).join(', ')}
-                  details={detailsEl}
+                  details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
                 >
                   {this.renderProductItemRightController(cartItem)}
                 </ProductItem>

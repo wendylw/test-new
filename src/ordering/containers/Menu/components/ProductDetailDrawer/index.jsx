@@ -31,7 +31,6 @@ import {
   addToCart,
 } from '../../redux/productDetail/thunks';
 import { PRODUCT_UNABLE_ADD_TO_CART_REASONS } from '../../constants';
-import AddSpecialNotes from '../AddSpecialNotes';
 
 const LoadingIndicator = () => {
   const [shouldShow] = useTimeout(500);
@@ -139,20 +138,17 @@ const ProductDetailDrawer = () => {
               </div>
               <p className={styles.productDescription} dangerouslySetInnerHTML={{ __html: product.description }} />
             </section>
-            <session className={styles.productDetailVariationAndNote}>
-              <div>
-                {product.variations.map(variation =>
-                  variation.type === 'SingleChoice' ? (
-                    <SingleChoiceVariation key={variation.id} variation={variation} />
-                  ) : variation.type === 'SimpleMultipleChoice' ? (
-                    <SimpleMultipleChoiceVariation key={variation.id} variation={variation} />
-                  ) : variation.type === 'QuantityMultipleChoice' ? (
-                    <QuantityMultipleChoiceVariation key={variation.id} variation={variation} />
-                  ) : null
-                )}
-              </div>
-              <AddSpecialNotes />
-            </session>
+            <section className={styles.variationSection}>
+              {product.variations.map(variation =>
+                variation.type === 'SingleChoice' ? (
+                  <SingleChoiceVariation key={variation.id} variation={variation} />
+                ) : variation.type === 'SimpleMultipleChoice' ? (
+                  <SimpleMultipleChoiceVariation key={variation.id} variation={variation} />
+                ) : variation.type === 'QuantityMultipleChoice' ? (
+                  <QuantityMultipleChoiceVariation key={variation.id} variation={variation} />
+                ) : null
+              )}
+            </section>
             <section className={styles.quantitySection}>
               <QuantityAdjuster
                 size="large"

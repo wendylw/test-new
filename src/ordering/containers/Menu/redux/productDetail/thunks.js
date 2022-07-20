@@ -23,7 +23,6 @@ import {
   getSelectedProduct,
   getSelectedCategory,
   getAddToCartGTMData,
-  getNotesContents,
 } from './selectors';
 import Clevertap from '../../../../../utils/clevertap';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
@@ -307,7 +306,6 @@ export const addToCart = createAsyncThunk(
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
     const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
     const addToCartGtmData = getAddToCartGTMData(state);
-    const comments = getNotesContents(state);
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, addToCartGtmData);
 
@@ -321,7 +319,6 @@ export const addToCart = createAsyncThunk(
         updateCartItems({
           productId: childProductId || parentProductId,
           quantityChange: quantity,
-          comments,
           variations,
         })
       );
@@ -332,7 +329,6 @@ export const addToCart = createAsyncThunk(
           business,
           productId: childProductId || parentProductId,
           quantity,
-          comments,
           variations,
         })
       );
@@ -341,6 +337,3 @@ export const addToCart = createAsyncThunk(
     dispatch(hideProductDetailDrawer());
   }
 );
-
-export const showNotesDrawer = createAsyncThunk('ordering/menu/productDetail/showNotesDrawer', async () => {});
-export const hideNotesDrawer = createAsyncThunk('ordering/menu/productDetail/hideNotesDrawer', async () => {});

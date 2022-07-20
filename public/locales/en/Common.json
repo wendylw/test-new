@@ -282,10 +282,6 @@
   "TimeSlotUnavailable": "Time slot unavailable",
   "Reset": "Reset",
   "Apply": "Apply",
-  "AddSpecialInstructions": "Add Special Instructions",
-  "SpecialInstructions": "Special Instructions",
-  "LengthLimitOfNotes": "{{inputLength}}/{{maxLength}} characters",
-  "EgLessSugar":"Eg: Less sugar",
   "NetworkErrorTitle": "No internet connection",
   "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again"
 }

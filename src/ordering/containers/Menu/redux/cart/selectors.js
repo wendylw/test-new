@@ -213,7 +213,6 @@ export const getCartItems = createSelector(
         isLowStock: inventoryStatus === 'lowStock',
         isAbleToIncreaseQuantity,
         isAbleToDecreaseQuantity: cartItem.quantity > 0,
-        comments: cartItem.comments,
       };
     });
   }

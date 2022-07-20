@@ -220,10 +220,9 @@ class PayLater extends Component {
     }, 300);
   };
 
-  getUpdateShoppingCartItemData = ({ productId, comments, variations }, quantityChange) => ({
+  getUpdateShoppingCartItemData = ({ productId, variations }, quantityChange) => ({
     productId,
     quantityChange,
-    comments,
     variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
       variationId,
       optionId,

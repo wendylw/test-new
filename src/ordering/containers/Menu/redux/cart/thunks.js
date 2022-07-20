@@ -127,7 +127,6 @@ export const increaseCartItemQuantity = createAsyncThunk(
     const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const cartItemGTMData = getCartItemGTMData(originalCartItem);
-    const { comments } = originalCartItem;
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, cartItemGTMData);
 
@@ -142,7 +141,6 @@ export const increaseCartItemQuantity = createAsyncThunk(
       dispatch(
         updateCartItems({
           productId,
-          comments,
           quantityChange: 1,
           variations: selectedOptions,
         })
@@ -152,7 +150,6 @@ export const increaseCartItemQuantity = createAsyncThunk(
         appActions.addOrUpdateShoppingCartItem({
           action: 'edit',
           productId,
-          comments,
           quantity: quantity + 1,
           variations: selectedOptions,
         })
@@ -175,7 +172,6 @@ export const removeCartItem = createAsyncThunk(
     const enablePayLater = getEnablePayLater(state);
     const originalCartItems = getOriginalCartItems(state);
     const originalCartItem = originalCartItems.find(item => item.id === cartItemId) || {};
-    const { comments } = originalCartItem;
 
     const { id, productId, variations } = originalCartItem;
 
@@ -185,7 +181,6 @@ export const removeCartItem = createAsyncThunk(
       dispatch(
         appActions.removeShoppingCartItem({
           productId,
-          comments,
           variations,
         })
       ).then(() => {
@@ -212,7 +207,6 @@ export const decreaseCartItemQuantity = createAsyncThunk(
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
-    const { comments } = originalCartItem;
 
     Clevertap.pushEvent('Menu Page - Cart Preview - Decrease quantity', {
       ...storeInfoForCleverTap,
@@ -232,7 +226,6 @@ export const decreaseCartItemQuantity = createAsyncThunk(
         ? dispatch(
             updateCartItems({
               productId,
-              comments,
               quantityChange: -1,
               variations: selectedOptions,
             })
@@ -241,7 +234,6 @@ export const decreaseCartItemQuantity = createAsyncThunk(
             appActions.addOrUpdateShoppingCartItem({
               action: 'edit',
               productId,
-              comments,
               quantity: quantity - 1,
               variations: selectedOptions,
             })
