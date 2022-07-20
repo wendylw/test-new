@@ -180,7 +180,11 @@
   "CompleteProfileTip": "Complete your profile to get updated on relevant offers & promotions by our partner merchants!",
   "AddNewAddress": "Add New Address",
   "SavedAddress": "Saved Address",
+<<<<<<< HEAD
   "OutOfRange": "Out of range",
+=======
+  "OutOfRange": "Out of Range",
+>>>>>>> 60783b8d39585a255fa1bef2858febc51698aa3c
   "ContactDetails": "Contact Details",
   "ContactTip": "Only change this if you're ordering for someone else and want us to contact them if there's an issue with the order. P.S. All order status updates will be sent to the contact person below.",
   "EditAddress": "Edit Address",
@@ -288,8 +292,9 @@
   "SearchYourLocation": "Search your location",
   "AddressListEmptyDescription": "Enter your delivery location",
   "StoreListDrawerTitle": "Select store branch",
-  "StoreListDrawerDeliveryDescription": "{{totalOutletDisplayTitle}} outlets near you",
-  "StoreListDrawerPickupDescription": "Total {{totalOutletDisplayTitle}} outlets",
+  "StoreListDrawerDeliveryDescription": "{{totalOutlet}} outlets near you",
+  "StoreListDrawerPickupDescription": "Total {{totalOutlet}} outlets",
+  "Promos": "Promos",
   "Date": "Date",
   "Time": "Time"
 }
