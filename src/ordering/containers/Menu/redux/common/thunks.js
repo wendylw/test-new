@@ -56,6 +56,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import { getShareLinkUrl } from '../../utils';
 import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
+import { getStoreById } from '../../../../../redux/modules/entities/stores';
 import { SOURCE_TYPE, STORE_OPENING_STATUS } from '../../constants';
 import Utils from '../../../../../utils/utils';
 
@@ -636,8 +637,9 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
 
 export const refreshMenuPageForNewStore = createAsyncThunk(
   'ordering/menu/common/refreshMenuPageForNewStore',
-  async (store, { getState }) => {
+  async (storeId, { getState }) => {
     const state = getState();
+    const store = getStoreById(state, storeId);
     const hashCode = _get(store, 'hash', null);
     const fulfillmentOptions = _get(store, 'fulfillmentOptions', []);
     const shippingTypes = fulfillmentOptions.map(option => option.toLowerCase());

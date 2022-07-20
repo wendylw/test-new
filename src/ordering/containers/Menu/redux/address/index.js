@@ -25,6 +25,7 @@ export const { reducer, actions } = createSlice({
       state.storeInfo.status = API_REQUEST_STATUS.FULFILLED;
     },
     [locationDrawerShown.rejected.type]: (state, action) => {
+      state.storeInfo.data = {};
       state.storeInfo.status = API_REQUEST_STATUS.REJECTED;
       state.storeInfo.error = action.error;
     },
