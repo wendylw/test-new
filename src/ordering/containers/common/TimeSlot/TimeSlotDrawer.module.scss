@@ -1,0 +1,133 @@
+.loader {
+  @apply tw-absolute tw-text-2xl tw-text-gray-600;
+}
+
+.timeSlotDrawer {
+  @apply tw-p-0;
+}
+
+.timeSlotDrawerInitializing {
+  @apply tw-p-0;
+
+  :global(.drawer-animation__children) {
+    @apply tw-relative tw-flex tw-items-center tw-justify-center;
+  }
+}
+
+.timeSlotWrapper {
+  @apply tw-flex tw-flex-col tw-h-full;
+}
+
+.timeSlotContent {
+  @apply tw-flex tw-flex-col tw-flex-1 tw-overflow-auto;
+}
+
+.timeSlotFooter {
+  @apply tw-flex-none tw-p-8 sm:tw-p-8px;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
+}
+
+.switchButtons {
+  @apply tw-flex tw-items-center tw-my-24 sm:tw-my-24px tw-bg-gray-200 tw-rounded-2xl;
+
+  &:disabled {
+    @apply tw-text-gray-500;
+  }
+}
+
+.switchButton {
+  @apply tw-flex tw-items-center tw-justify-center tw-flex-1 tw-border tw-border-solid tw-border-transparent tw-rounded-2xl tw-cursor-pointer;
+
+  height: 40px;
+  line-height: 40px;
+
+  &:global(.active) {
+    @apply tw-font-bold tw-text-orange tw-bg-gray-50 tw-border-orange;
+  }
+}
+
+.timeSlotDateList {
+  @apply tw-py-8 sm:tw-py-8px tw-mx-8 sm:tw-mx-8px;
+
+  :global(.swiper-pagination) {
+    display: none;
+  }
+}
+
+.timeSlotDateItem {
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-8 sm:tw-px-8px tw-py-12 sm:tw-py-12px tw-mx-8 sm:tw-mx-8px tw-border tw-border-solid tw-border-gray-300 tw-rounded tw-text-gray-700 tw-bg-gray-50 tw-cursor-pointer;
+
+  width: auto;
+  height: 64px;
+  min-width: 64px;
+
+  &:global(.active) {
+    @apply tw-border-orange tw-text-gray-800;
+
+    .timeSlotDateItemText {
+      @apply tw-font-bold;
+    }
+  }
+
+  &:global(.disabled) {
+    @apply tw-border-gray-300 tw-text-gray-400;
+  }
+}
+
+.timeSlotDateItemOverWidth {
+  @apply tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-8 sm:tw-px-8px tw-py-12 sm:tw-py-12px tw-mx-8 sm:tw-mx-8px tw-border tw-border-solid tw-border-gray-300 tw-rounded tw-text-gray-700 tw-bg-gray-50 tw-cursor-pointer;
+
+  width: auto;
+  height: 64px;
+  min-width: 64px;
+
+  &::before {
+    @apply tw-absolute tw-font-bold tw-opacity-0 tw-text-gray-800;
+
+    content: attr(data-text);
+  }
+
+  &:global(.active) {
+    @apply tw-border-orange;
+
+    &::before {
+      @apply tw-opacity-100;
+    }
+
+    .timeSlotDateItemText {
+      @apply tw-opacity-0;
+    }
+  }
+
+  &:global(.disabled) {
+    @apply tw-border-gray-300 tw-text-gray-400;
+
+    &::before {
+      @apply tw-opacity-0;
+    }
+
+    .timeSlotDateItemText {
+      @apply tw-opacity-100;
+    }
+  }
+}
+
+.timeSlotDateItemText {
+  @apply tw-my-6 sm:tw-my-6px;
+}
+
+.timeSlotTimeItem {
+  @apply tw-my-4 sm:tw-my-4px;
+}
+
+.timeSlotTimeButton {
+  @apply tw-flex tw-items-center tw-justify-center tw-p-12 sm:tw-p-12px tw-border tw-border-solid tw-border-transparent tw-rounded tw-w-full tw-text-gray-700 tw-bg-gray-50;
+
+  &:global(.active) {
+    @apply tw-text-gray tw-border-orange tw-font-bold;
+  }
+
+  &:disabled {
+    @apply tw-border-transparent tw-text-gray-400;
+  }
+}

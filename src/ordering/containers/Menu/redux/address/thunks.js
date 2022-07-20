@@ -1,4 +1,3 @@
-import i18next from 'i18next';
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
@@ -7,18 +6,34 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getAddressInfo } from '../../../../../redux/modules/address/selectors';
 import { setAddressInfo } from '../../../../../redux/modules/address/thunks';
 import { getBusinessByName } from '../../../../../redux/modules/entities/businesses';
-import { getCoreStoreList, getStoreById } from '../../../../../redux/modules/entities/stores';
+import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import {
   getStoreId,
   getBusiness,
+  getCurrentDate,
   getDeliveryRadius,
   getMerchantCountry,
+  getBusinessUTCOffset,
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
 import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
-import { getNearestStore, getIsAddressOutOfRange } from '../common/selectors';
+import { getIsAddressOutOfRange } from '../common/selectors';
+import { findNearestAvailableStore } from '../../../../../utils/store-utils';
+import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../utils/constants';
+import logger from '../../../../../utils/monitoring/logger';
 
-export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async message => ({ message }));
+class LocationSelectedError extends Error {
+  constructor(message, code) {
+    super(message);
+
+    this.name = 'LocationSelectedError';
+    this.code = code;
+  }
+}
+
+export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async errorCode => ({
+  errorCode,
+}));
 
 export const clearErrorToast = createAsyncThunk('ordering/menu/address/clearErrorToast', async () => {});
 
@@ -30,10 +45,7 @@ export const checkDeliveryRange = createAsyncThunk(
 
     if (!isAddressOutOfRange) return;
 
-    const deliveryRadius = getDeliveryRadius(state);
-    const errorMessage = i18next.t('OutOfDeliveryRange', { distance: deliveryRadius });
-
-    await dispatch(showErrorToast(errorMessage));
+    await dispatch(showErrorToast(ERROR_CODES.OUT_OF_DELIVERY_RANGE));
   }
 );
 
@@ -65,7 +77,7 @@ export const locationDrawerShown = createAsyncThunk(
       const deliveryRadius = getDeliveryRadius(getState());
 
       if (!_isNumber(deliveryRadius)) {
-        throw new Error('Delivery radius is incorrect.');
+        throw new Error('delivery radius is incorrect.');
       }
 
       if (_isEmpty(storeId)) {
@@ -78,7 +90,7 @@ export const locationDrawerShown = createAsyncThunk(
       // FB-4039: we need to be aware that there is a possibility that the store cannot be found.
       // This issue has already been raised in production and we should take time to further investigate.
       if (_isEmpty(store)) {
-        throw new Error('Store is not found.');
+        throw new Error('store is not found.');
       }
 
       const coords = {
@@ -87,7 +99,7 @@ export const locationDrawerShown = createAsyncThunk(
       };
 
       if (!_isNumber(coords.lat) || !_isNumber(coords.lng)) {
-        throw new Error('Store coordination is incorrect.');
+        throw new Error('store coordination is incorrect.');
       }
 
       return {
@@ -96,8 +108,8 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      console.error('fail to load storeInfo', e);
-      return {};
+      logger.error(`Failed to load storeInfo: ${e?.message}`);
+      throw e;
     }
   }
 );
@@ -118,65 +130,53 @@ export const selectLocation = createAsyncThunk(
       return;
     }
 
-    const business = getBusiness(state);
-    const address = {
-      location: {
-        longitude: _get(addressInfo, 'coords.lng', 0),
-        latitude: _get(addressInfo, 'coords.lat', 0),
-      },
-    };
-
+    /**
+     * After the user selects the new valid location, there are 3 things that need to be done:
+     * 1. Find the nearest available store
+     * 2. Sync up current address info with the BFF
+     * 3. Update the store id by hard-refreshing menu page
+     */
     try {
-      if (_isEmpty(addressInfo.coords)) {
-        // TODO: Ask PO to provide reasonable typewriting for this case.
-        throw new Error('Address coordination is incorrect. Please try another one.');
+      const coords = _get(addressInfo, 'coords', null);
+
+      if (_isEmpty(coords)) {
+        throw new LocationSelectedError('address coordination is not found', ERROR_CODES.ADDRESS_NOT_FOUND);
       }
 
-      /**
-       * If the selected location is out of the delivery ranges of all stores, pop up an error toast to hint users.
-       * Leave a comment for newcomers:
-       * we need to fetch core store API every time to get the latest store list since this is the only way to make sure the selected location is within the delivery range.
-       */
-      await dispatch(appActionCreators.loadCoreStores(address));
-
-      const stores = getCoreStoreList(getState());
+      let stores = getCoreStoreList(state);
+      const utcOffset = getBusinessUTCOffset(state);
+      const currentDate = getCurrentDate(state);
 
       if (_isEmpty(stores)) {
-        const { qrOrderingSettings } = getBusinessByName(state, business);
-        const { deliveryRadius } = qrOrderingSettings || {};
-        const errorMessage = i18next.t('OutOfDeliveryRange', { distance: deliveryRadius.toFixed(1) });
-        throw new Error(errorMessage);
+        // We only fetch the core store API again when the previous call hasn't been completed or sent yet for better performance
+        await dispatch(appActionCreators.loadCoreStores());
+        stores = getCoreStoreList(getState());
       }
 
-      /**
-       * After the user selects the new valid location, there are 3 things that need to be done:
-       * 1. Sync up current address info with the BFF
-       * 2. Find the nearest available store
-       * 3. Update the store id by hard-refreshing menu page
-       */
-      await dispatch(setAddressInfo(addressInfo));
+      const { store } = findNearestAvailableStore(stores, {
+        coords,
+        currentDate,
+        utcOffset,
+      });
 
-      const store = getNearestStore(getState());
+      if (_isEmpty(store)) {
+        throw new LocationSelectedError(
+          'no available store according to the current time or delivery range',
+          ERROR_CODES.OUT_OF_DELIVERY_RANGE
+        );
+      }
+
       const storeId = _get(store, 'id', null);
 
-      if (_isEmpty(storeId)) {
-        // TODO: Ask PO to provide reasonable typewriting for this case.
-        throw new Error('No store is available for your location. Please try another one.');
-      }
-
-      await dispatch(appActionCreators.loadCoreBusiness(storeId));
-      const storeInfo = getStoreById(getState(), storeId);
-
-      if (_isEmpty(storeInfo)) {
-        // TODO: Ask PO to provide reasonable typewriting for this case.
-        throw new Error('No delivery time is available for your location. Please try another one.');
-      }
-
-      const storeHashCode = _get(store, 'hash', null);
-
-      await dispatch(refreshMenuPageForNewStore(storeHashCode));
+      await dispatch(setAddressInfo(addressInfo));
+      await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
-      await dispatch(showErrorToast(e.message));
+      if (e instanceof LocationSelectedError) {
+        await dispatch(showErrorToast(e.code));
+      }
+
+      logger.error(`Failed to select location: ${e?.message}`);
+      throw e;
     }
   }
 );

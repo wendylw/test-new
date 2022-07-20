@@ -666,6 +666,11 @@ export const DISPLAY_ICON_TYPES = {
   CARET_DOWN: 'CaretDown',
 };
 
+export const LOCATION_SELECTION_REASON_CODES = {
+  OUT_OF_DELIVERY_RANGE: 'OutOfDeliveryRange',
+  ADDRESS_NOT_FOUND: 'AddressNotFound',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -720,4 +725,5 @@ export default {
   OTP_REQUEST_PLATFORM,
   OTP_REQUEST_TYPES,
   DISPLAY_ICON_TYPES,
+  LOCATION_SELECTION_REASON_CODES,
 };
