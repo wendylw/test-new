@@ -11,6 +11,7 @@ import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import {
   getStoreId,
   getBusiness,
+  getCurrentDate,
   getDeliveryRadius,
   getMerchantCountry,
   getBusinessUTCOffset,
@@ -29,6 +30,15 @@ import { getStoreInfoData } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
+
+class LocationSelectedError extends Error {
+  constructor(message, code) {
+    super(message);
+
+    this.name = 'LocationSelectedError';
+    this.code = code;
+  }
+}
 
 export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async errorCode => ({
   errorCode,
@@ -107,8 +117,8 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      logger.error(`Failed to load storeInfo: ${e.message}`);
-      return {};
+      logger.error(`Failed to load storeInfo: ${e?.message}`);
+      throw e;
     }
   }
 );
@@ -120,7 +130,7 @@ export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/loca
  */
 export const selectLocation = createAsyncThunk(
   'ordering/menu/address/selectLocation',
-  async ({ addressInfo, date = new Date() }, { dispatch, getState }) => {
+  async (addressInfo, { dispatch, getState }) => {
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
 
@@ -139,14 +149,12 @@ export const selectLocation = createAsyncThunk(
       const coords = _get(addressInfo, 'coords', null);
 
       if (_isEmpty(coords)) {
-        throw new Error({
-          code: ERROR_CODES.ADDRESS_NOT_FOUND,
-          reason: 'address coordination is not found',
-        });
+        throw new LocationSelectedError('address coordination is not found', ERROR_CODES.ADDRESS_NOT_FOUND);
       }
 
       let stores = getCoreStoreList(state);
       const utcOffset = getBusinessUTCOffset(state);
+      const currentDate = getCurrentDate(state);
 
       if (_isEmpty(stores)) {
         // We only fetch the core store API again when the previous call hasn't been completed or sent yet for better performance
@@ -156,29 +164,28 @@ export const selectLocation = createAsyncThunk(
 
       const { store } = findNearestAvailableStore(stores, {
         coords,
-        date,
+        currentDate,
         utcOffset,
       });
 
       if (_isEmpty(store)) {
-        throw new Error({
-          code: ERROR_CODES.OUT_OF_DELIVERY_RANGE,
-          reason: 'no available store according to the current time or delivery range',
-        });
+        throw new LocationSelectedError(
+          'no available store according to the current time or delivery range',
+          ERROR_CODES.OUT_OF_DELIVERY_RANGE
+        );
       }
+
+      const storeId = _get(store, 'id', null);
 
       await dispatch(setAddressInfo(addressInfo));
-      await dispatch(refreshMenuPageForNewStore(store));
+      await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
-      const errorCode = _get(e, 'message.code', null);
-
-      if (errorCode) {
-        await dispatch(showErrorToast(errorCode));
+      if (e instanceof LocationSelectedError) {
+        await dispatch(showErrorToast(e.code));
       }
 
-      // In case users fail to select a location for some unknown reasons, we should still catch such an error message by directly retrieving the message from the error object.
-      const errorMessage = _get(e, 'message.reason', '') || e.message;
-      logger.error(`Failed to select location: ${errorMessage}`);
+      logger.error(`Failed to select location: ${e?.message}`);
+      throw e;
     }
   }
 );

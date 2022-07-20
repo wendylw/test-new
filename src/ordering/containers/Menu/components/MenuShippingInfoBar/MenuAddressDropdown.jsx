@@ -161,12 +161,12 @@ const MenuShippingInfoBar = () => {
         onSelectAddress={selectedAddressInfo => {
           const addressInfo = getFormatSelectAddressInfo(selectedAddressInfo, 'address');
 
-          dispatch(selectLocation({ addressInfo }));
+          dispatch(selectLocation(addressInfo));
         }}
         onSelectLocation={selectedLocationInfo => {
           const addressInfo = getFormatSelectAddressInfo(selectedLocationInfo, 'location');
 
-          dispatch(selectLocation({ addressInfo }));
+          dispatch(selectLocation(addressInfo));
         }}
         onSelectSearchLocation={async searchResult => {
           if (searchResult) {
@@ -174,7 +174,7 @@ const MenuShippingInfoBar = () => {
             const addressInfo = getFormatSelectAddressInfo(formatPositionInfo, 'location');
 
             dispatch(updateSearchLocationListData(formatPositionInfo));
-            dispatch(selectLocation({ addressInfo }));
+            dispatch(selectLocation(addressInfo));
           }
         }}
         onChangeSearchKeyword={async searchKey => {
