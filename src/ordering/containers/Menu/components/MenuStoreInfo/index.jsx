@@ -121,7 +121,6 @@ const MenuStoreInfo = () => {
             status={storeDisplayStatus}
           />
         </h1>
-        {/* <p className={styles.menuStoreInfoSubtitle}>{storeDisplaySubTitle}</p> */}
         <StoreList />
         {displayStoreBasicInfo ? (
           <ul className={styles.menuStoreInfoList}>

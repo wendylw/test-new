@@ -1,4 +1,5 @@
 import qs from 'qs';
+import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push, replace } from 'connected-react-router';
 import {
@@ -34,7 +35,6 @@ import {
   getIsAddressOutOfRange,
   getHasSelectedExpectedDeliveryTime,
   getStoreStatus,
-  getExpectedDeliveryTime,
 } from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES } from '../../../../../common/utils/constants';
@@ -57,6 +57,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import { getShareLinkUrl } from '../../utils';
 import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
+import { getStoreById } from '../../../../../redux/modules/entities/stores';
 import { SOURCE_TYPE, STORE_OPENING_STATUS } from '../../constants';
 import Utils from '../../../../../utils/utils';
 
@@ -654,10 +655,21 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
 
 export const refreshMenuPageForNewStore = createAsyncThunk(
   'ordering/menu/common/refreshMenuPageForNewStore',
-  async storeHashCode => {
-    const h = decodeURIComponent(storeHashCode);
+  async (storeId, { getState }) => {
+    const state = getState();
+    const store = getStoreById(state, storeId);
+    const hashCode = _get(store, 'hash', null);
+    const fulfillmentOptions = _get(store, 'fulfillmentOptions', []);
+    const shippingTypes = fulfillmentOptions.map(option => option.toLowerCase());
+    const shippingType = getShippingType(state);
+    const h = decodeURIComponent(hashCode);
     const queries = Utils.getQueryString();
+
     queries.h = h;
+
+    // If the new store doesn't support the current shipping type, then we need to change the shipping type to the available one.
+    queries.type = shippingTypes.includes(shippingType) ? shippingType : shippingTypes[0];
+
     const search = qs.stringify(queries, { addQueryPrefix: true });
     window.location.href = `${PATH_NAME_MAPPING.ORDERING_BASE}${search}`;
   }

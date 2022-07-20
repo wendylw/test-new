@@ -1,4 +1,5 @@
-import React from 'react';
+import _isEmpty from 'lodash/isEmpty';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X, MapPin, Clock } from 'phosphor-react';
@@ -20,6 +21,13 @@ const StoreListDrawer = ({
   selectStoreBranch,
 }) => {
   const { t } = useTranslation();
+  const onHandleSelectStoreBranch = useCallback(
+    id => {
+      selectStoreBranch(id);
+    },
+    [selectStoreBranch]
+  );
+
   return (
     <Drawer
       className={isInitializing ? styles.storeListDrawerInitializing : styles.storeListDrawer}
@@ -30,9 +38,7 @@ const StoreListDrawer = ({
         >
           <div className="tw-flex tw-flex-col tw-items-center">
             <h3 className="tw-font-bold tw-text-lg tw-leading-relaxed">{t('StoreListDrawerTitle')}</h3>
-            <span className="tw-text-xs tw-text-gray-600">
-              {t('StoreListDrawerDeliveryDescription', { totalOutletDisplayTitle })}
-            </span>
+            <span className="tw-text-xs tw-text-gray-600">{totalOutletDisplayTitle}</span>
           </div>
         </DrawerHeader>
       }
@@ -45,30 +51,43 @@ const StoreListDrawer = ({
           {storeList.map(store => (
             <Card
               key={store.id}
+              className={store.available ? styles.storeListDrawerInfoCard : styles.storeListDrawerInfoCardDisabled}
               contentClassName="tw-flex tw-items-start"
-              onClick={selectStoreBranch}
+              onClick={() => onHandleSelectStoreBranch(store.id)}
               active={store.selected}
               disabled={!store.available}
             >
-              <StoreIcon />
+              <StoreIcon className={styles.storeListDrawerInfoIcon} />
               <div className="tw-ml-8 sm:tw-ml-8px">
-                <h4 className="tw-font-bold tw-leading-relaxed">{store.title}</h4>
-                <p className="tw-my-6 sm: tw-my-6px tw-text-sm tw-leading-loose">{store.location}</p>
-                <div className="tw-flex tw-items-center">
+                <h4 className={styles.storeListDrawerInfoTitle}>{store.title}</h4>
+                <p className={styles.storeListDrawerInfoDescription}>{store.location}</p>
+                <div className="tw-flex tw-items-center flex-wrap">
                   <ul className={styles.storeListDrawerInfoList}>
-                    <li className="tw-flex tw-items-center">
-                      <MapPin className="tw-text-sm tw-text-gray-600" weight="light" />
-                      <span className="tw-mx-4 sm:tw-mx-4px tw-text-xs">{store.displayDistance}</span>
-                    </li>
-                    <li className="tw-flex tw-items-center">
-                      <Clock className="tw-text-sm tw-text-gray-600" weight="light" />
-                      <span className="tw-mx-4 sm:tw-mx-4px tw-text-xs">{store.displayOpeningTime}</span>
-                    </li>
+                    {!store.displayDistance ? null : (
+                      <li className="tw-flex tw-items-center">
+                        <MapPin className="tw-text-sm tw-text-gray-600" weight="light" />
+                        <span className="tw-flex-shrink-0 tw-mx-4 sm:tw-mx-4px tw-text-xs">
+                          {t('DistanceText', { distance: store.distance })}
+                        </span>
+                      </li>
+                    )}
+                    {store.closed || _isEmpty(store.displayOpeningTime) ? null : (
+                      <li className="tw-flex tw-items-center">
+                        <Clock className="tw-text-sm tw-text-gray-600" weight="light" />
+                        <span className="tw-flex-shrink-0 tw-mx-4 sm:tw-mx-4px tw-text-xs">
+                          {store.displayOpeningTime}
+                        </span>
+                      </li>
+                    )}
                   </ul>
-                  <Tag className="tw-mx-8 sm:tw-mx-8px" color="red">
-                    {t('Closed')}
-                  </Tag>
-                  <Tag className="tw-mx-8 sm:tw-mx-8px">{t('OutOfRange')}</Tag>
+                  {store.closed && (
+                    <Tag className="tw-flex-shrink-0 tw-mr-8 sm:tw-mr-8px" color="red">
+                      {t('Closed')}
+                    </Tag>
+                  )}
+                  {store.outOfRange && (
+                    <Tag className="tw-flex-shrink-0 tw-mr-8 sm:tw-mr-8px tw-font-bold">{t('OutOfRange')}</Tag>
+                  )}
                 </div>
               </div>
             </Card>
@@ -90,7 +109,7 @@ StoreListDrawer.propTypes = {
       id: PropTypes.string,
       title: PropTypes.string,
       location: PropTypes.string,
-      displayDistance: PropTypes.string,
+      distance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       displayOpeningTime: PropTypes.string,
       selected: PropTypes.bool,
       available: PropTypes.bool,

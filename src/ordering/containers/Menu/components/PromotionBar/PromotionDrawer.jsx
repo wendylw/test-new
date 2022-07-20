@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Tag, X } from 'phosphor-react';
 import Drawer from '../../../../../common/components/Drawer';
 import DrawerHeader from '../../../../../common/components/Drawer/DrawerHeader';
@@ -9,6 +10,7 @@ import { setPromotionDrawerVisible } from '../../redux/promotion/thunks';
 import styles from './PromotionDrawer.module.scss';
 
 const PromotionDrawer = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const promotions = useSelector(getAvailablePromotions);
   const promotionDrawerVisible = useSelector(getPromotionDrawerVisible);
@@ -20,9 +22,12 @@ const PromotionDrawer = () => {
     <Drawer
       className={styles.promotionDrawer}
       header={
-        <DrawerHeader left={<X size={24} onClick={closeDrawer} />}>
-          {/* i18n */}
-          <span className="tw-font-bold tw-text-lg">Promos</span>
+        <DrawerHeader
+          left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" onClick={closeDrawer} />}
+        >
+          <div className="tw-flex tw-flex-col tw-items-center">
+            <span className="tw-font-bold tw-text-lg tw-leading-relaxed">{t('Promos')}</span>
+          </div>
         </DrawerHeader>
       }
       show={promotionDrawerVisible}

@@ -36,8 +36,8 @@ const TimeSlotDrawer = ({
 
   return (
     <Drawer
+      maxHeightUpdateToHeight
       className={isInitializing ? styles.timeSlotDrawerInitializing : styles.timeSlotDrawer}
-      style={{ height: '65%' }}
       show={timeSlotDrawerVisible}
       header={
         <DrawerHeader

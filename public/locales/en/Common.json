@@ -180,7 +180,7 @@
   "CompleteProfileTip": "Complete your profile to get updated on relevant offers & promotions by our partner merchants!",
   "AddNewAddress": "Add New Address",
   "SavedAddress": "Saved Address",
-  "OutOfRange": "OUT OF RANGE",
+  "OutOfRange": "Out of Range",
   "ContactDetails": "Contact Details",
   "ContactTip": "Only change this if you're ordering for someone else and want us to contact them if there's an issue with the order. P.S. All order status updates will be sent to the contact person below.",
   "EditAddress": "Edit Address",
@@ -286,6 +286,7 @@
   "NetworkErrorTitle": "No internet connection",
   "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again",
   "StoreListDrawerTitle": "Select store branch",
-  "StoreListDrawerDeliveryDescription": "{{totalOutletDisplayTitle}} outlets near you",
-  "StoreListDrawerPickupDescription": "Total {{totalOutletDisplayTitle}} outlets"
+  "StoreListDrawerDeliveryDescription": "{{totalOutlet}} outlets near you",
+  "StoreListDrawerPickupDescription": "Total {{totalOutlet}} outlets",
+  "Promos": "Promos"
 }

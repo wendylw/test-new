@@ -1,28 +1,35 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { CaretDown } from 'phosphor-react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
   getStoreDisplaySubTitle,
   getIsStoreListDrawerVisible,
   getIsQrOrderingShippingType,
+  getIsDeliveryType,
 } from '../../redux/common/selectors';
-import { showStoreListDrawer, hideStoreInfoDrawer } from '../../redux/common/thunks';
-import { getHasStoreListInitialized, getStoreList, getTotalOutletDisplayTitle } from '../../redux/stores/selectors';
+import { showStoreListDrawer, hideStoreListDrawer } from '../../redux/common/thunks';
+import { getHasStoreListInitialized, getStoreList, getTotalOutlet } from '../../redux/stores/selectors';
 import { storeDrawerShown, storeDrawerHidden, selectStoreBranch } from '../../redux/stores/thunks';
 import StoreListDrawer from '../../../../components/StoreListDrawer';
 import styles from './StoreList.module.scss';
 
 const StoreList = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const isQrOrderingShippingType = useSelector(getIsQrOrderingShippingType);
+  const isDeliveryType = useSelector(getIsDeliveryType);
   const isStoreListDrawerVisible = useSelector(getIsStoreListDrawerVisible);
   const storeList = useSelector(getStoreList);
   // the subtitle display on drawer
-  const totalOutletDisplayTitle = useSelector(getTotalOutletDisplayTitle);
+  const totalOutlet = useSelector(getTotalOutlet);
   // get store display sub-title, storeLocationName || storeName
   const storeDisplaySubTitle = useSelector(getStoreDisplaySubTitle);
   // if is initializing, if TRUE, show a loader
   const hasStoreListInitialized = useSelector(getHasStoreListInitialized);
+  const onHandleHideStoreListDrawer = useCallback(() => {
+    dispatch(hideStoreListDrawer());
+  }, [hideStoreListDrawer]);
 
   useEffect(() => {
     if (isStoreListDrawerVisible) {
@@ -35,7 +42,7 @@ const StoreList = () => {
   return (
     <div className="tw-flex-1 beep-line-clamp-flex-container">
       {isQrOrderingShippingType ? (
-        <p className={styles.storeListSubtitle}>storeDisplaySubTitle</p>
+        <p className={styles.storeListSubtitle}>{storeDisplaySubTitle}</p>
       ) : (
         <>
           <button
@@ -50,13 +57,15 @@ const StoreList = () => {
           <StoreListDrawer
             isInitializing={!hasStoreListInitialized}
             isStoreListDrawerVisible={isStoreListDrawerVisible}
-            totalOutletDisplayTitle={totalOutletDisplayTitle}
+            totalOutletDisplayTitle={
+              isDeliveryType
+                ? t('StoreListDrawerDeliveryDescription', { totalOutlet })
+                : t('StoreListDrawerPickupDescription', { totalOutlet })
+            }
             storeList={storeList}
-            onClose={() => {
-              dispatch(hideStoreInfoDrawer());
-            }}
-            selectStoreBranch={value => {
-              dispatch(selectStoreBranch(value));
+            onClose={onHandleHideStoreListDrawer}
+            selectStoreBranch={id => {
+              dispatch(selectStoreBranch(id));
             }}
           />
         </>

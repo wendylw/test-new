@@ -35,7 +35,10 @@ const AddressPicker = ({ addressList, onSelect, displayMode }) => {
                 <div>
                   <span>{addressName}</span>
                   {!availableStatus && (
-                    <Tag text={t('OutOfRange')} className="tag__primary tag__small margin-left-right-normal" />
+                    <Tag
+                      text={t('OutOfRange')}
+                      className="tag__primary tag__small margin-left-right-normal text-uppercase"
+                    />
                   )}
                 </div>
                 <p className="padding-top-bottom-small text-opacity">{deliveryTo}</p>
