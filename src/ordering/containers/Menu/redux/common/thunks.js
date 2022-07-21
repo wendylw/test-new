@@ -22,6 +22,7 @@ import {
   getIsInBrowser,
   getIsInAppOrMiniProgram,
   getURLQueryObject,
+  getStoreSupportShippingTypes,
 } from '../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -342,12 +343,6 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
       const store = getStore(getState());
       dispatch(updateCurrentTime());
 
-      if (isWebview) {
-        const shareLinkUrl = getShareLinkUrl();
-
-        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
-      }
-
       if (!store) {
         // remove expectedDeliveryDate
         await dispatch(
@@ -357,6 +352,20 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
           })
         );
         return;
+      }
+
+      const storeSupportShippingTypes = getStoreSupportShippingTypes(getState());
+
+      // if store not support current shipping type
+      // then update to its support shipping type
+      if (!storeSupportShippingTypes.includes(shippingType)) {
+        dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
+      }
+
+      if (isWebview) {
+        const shareLinkUrl = getShareLinkUrl();
+
+        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
       }
 
       const storeStatus = getStoreStatus(getState());

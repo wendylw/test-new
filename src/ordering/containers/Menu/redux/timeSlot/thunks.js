@@ -1,6 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import _map from 'lodash/map';
-import { getBusinessUTCOffset, getStore, actions as AppActions } from '../../../../redux/modules/app';
+import {
+  getBusinessUTCOffset,
+  getStore,
+  actions as AppActions,
+  getIsEnablePerTimeSlotLimitForPreOrder,
+  getStoreSupportShippingTypes,
+} from '../../../../redux/modules/app';
 import {
   getBusinessTimeZoneCurrentDayjs,
   getCurrentTime,
@@ -9,14 +15,7 @@ import {
   getStoreId,
 } from '../common/selectors';
 import { fetchTimeSlotSoldData } from './api-request';
-import {
-  getIsEnablePerTimeSlotLimitForPreOrder,
-  getSelectedDate,
-  getSelectedDateObj,
-  getSelectedShippingType,
-  getSelectedTimeSlot,
-  getStoreSupportShippingTypes,
-} from './selectors';
+import { getSelectedDate, getSelectedDateObj, getSelectedShippingType, getSelectedTimeSlot } from './selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
 import { hideTimeSlotDrawer, updateExpectedDeliveryDate } from '../common/thunks';
 import { setDateTime } from '../../../../../utils/time-lib';
