@@ -181,9 +181,11 @@ export const initExpectedDeliveryDate = createAsyncThunk(
       const store = getStore(getState());
 
       let initialExpectedDeliveryTime = (() => {
-        if (!expectedDeliveryDate || !from) {
+        if (!expectedDeliveryDate || !from || !store) {
           return null;
         }
+
+        const { enablePreOrder, disableTodayDeliveryPreOrder, disableTodayPreOrder } = store.qrOrderingSettings;
 
         // PICKUP only has [from], no [to]
         const previousShippingType = from && !to ? SHIPPING_TYPES.PICKUP : SHIPPING_TYPES.DELIVERY;
@@ -216,6 +218,15 @@ export const initExpectedDeliveryDate = createAsyncThunk(
 
         // expected delivery time is out of date
         if (expectedDeliveryTimeDayjsObj.isBefore(currentTime)) {
+          return null;
+        }
+
+        // store is disable pre-order
+        if (
+          !enablePreOrder ||
+          disableTodayPreOrder ||
+          (shippingType === SHIPPING_TYPES.DELIVERY && disableTodayDeliveryPreOrder)
+        ) {
           return null;
         }
 
