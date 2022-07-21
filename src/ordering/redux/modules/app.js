@@ -4,6 +4,7 @@ import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
+import _lowerCase from 'lodash/lowerCase';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
@@ -1302,6 +1303,16 @@ export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStor
 
 export const getIsEnablePreOrder = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings.enablePreOrder', false)
+);
+
+export const getStoreFulfillmentOptions = createSelector(getStore, store => _get(store, 'fulfillmentOptions', []));
+
+export const getIsEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, store =>
+  _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false)
+);
+
+export const getStoreSupportShippingTypes = createSelector(getStoreFulfillmentOptions, storeFulfillmentOptions =>
+  storeFulfillmentOptions.map(_lowerCase)
 );
 
 export const getCartItems = state => state.app.shoppingCart.items;

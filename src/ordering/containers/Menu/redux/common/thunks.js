@@ -21,6 +21,7 @@ import {
   getIsInBrowser,
   getIsInAppOrMiniProgram,
   getURLQueryObject,
+  getStoreSupportShippingTypes,
 } from '../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -184,9 +185,11 @@ export const initExpectedDeliveryDate = createAsyncThunk(
       const store = getStore(getState());
 
       let initialExpectedDeliveryTime = (() => {
-        if (!expectedDeliveryDate || !from) {
+        if (!expectedDeliveryDate || !from || !store) {
           return null;
         }
+
+        const { enablePreOrder, disableTodayDeliveryPreOrder, disableTodayPreOrder } = store.qrOrderingSettings;
 
         // PICKUP only has [from], no [to]
         const previousShippingType = from && !to ? SHIPPING_TYPES.PICKUP : SHIPPING_TYPES.DELIVERY;
@@ -219,6 +222,15 @@ export const initExpectedDeliveryDate = createAsyncThunk(
 
         // expected delivery time is out of date
         if (expectedDeliveryTimeDayjsObj.isBefore(currentTime)) {
+          return null;
+        }
+
+        // store is disable pre-order
+        if (
+          !enablePreOrder ||
+          disableTodayPreOrder ||
+          (shippingType === SHIPPING_TYPES.DELIVERY && disableTodayDeliveryPreOrder)
+        ) {
           return null;
         }
 
@@ -334,12 +346,6 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
       const store = getStore(getState());
       dispatch(updateCurrentTime());
 
-      if (isWebview) {
-        const shareLinkUrl = getShareLinkUrl();
-
-        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
-      }
-
       if (!store) {
         // remove expectedDeliveryDate
         await dispatch(
@@ -349,6 +355,20 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
           })
         );
         return;
+      }
+
+      const storeSupportShippingTypes = getStoreSupportShippingTypes(getState());
+
+      // if store not support current shipping type
+      // then update to its support shipping type
+      if (!storeSupportShippingTypes.includes(shippingType)) {
+        dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
+      }
+
+      if (isWebview) {
+        const shareLinkUrl = getShareLinkUrl();
+
+        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
       }
 
       const storeStatus = getStoreStatus(getState());
