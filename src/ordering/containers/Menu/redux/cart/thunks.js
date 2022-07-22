@@ -22,7 +22,7 @@ import {
   getShippingTypeFromUrl,
 } from '../../../../../common/utils';
 import { SHIPPING_TYPES, PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
-import loggly from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 import Clevertap from '../../../../../utils/clevertap';
 import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
 
@@ -65,7 +65,7 @@ export const viewOnGoingOrder = createAsyncThunk(
 export const removeAllCartItems = createAsyncThunk(
   'ordering/menu/cart/removeAllCartItems',
   async (_, { dispatch, getState }) => {
-    loggly.log('cart-list-drawer.clear-all-attempt');
+    logger.log('cart-list-drawer.clear-all-attempt');
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
@@ -112,7 +112,7 @@ const getCartItemGTMData = cartItem =>
 export const increaseCartItemQuantity = createAsyncThunk(
   'ordering/menu/cart/increaseCartItemQuantity',
   async ({ cartItemId }, { dispatch, getState }) => {
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -166,7 +166,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
 export const removeCartItem = createAsyncThunk(
   'ordering/menu/cart/removeCartItem',
   async ({ cartItemId }, { dispatch, getState }) => {
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -196,7 +196,7 @@ export const removeCartItem = createAsyncThunk(
 export const decreaseCartItemQuantity = createAsyncThunk(
   'ordering/menu/cart/decreaseCartItemQuantity',
   async ({ cartItemId }, { dispatch, getState }) => {
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);

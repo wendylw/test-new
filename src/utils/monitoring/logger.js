@@ -1,24 +1,19 @@
 import dsBridge from 'dsbridge';
-import tids from './tracing-id';
 import _isPlainObject from 'lodash/isPlainObject';
 import _once from 'lodash/once';
+import tids from './tracing-id';
 import businessName from '../business-name';
 import Utils from '../utils';
 import debug from '../debug';
-const {
-  REACT_APP_LOGGLY_SERVICE_URL,
-  REACT_APP_LOGGLY_TOKEN,
-  REACT_APP_LOGGLY_TAG,
-  REACT_APP_LOG_SERVICE_URL,
-  REACT_APP_LOG_SERVICE_TOKEN,
-} = process.env;
+
+const { REACT_APP_LOG_SERVICE_TAG, REACT_APP_LOG_SERVICE_URL, REACT_APP_LOG_SERVICE_TOKEN } = process.env;
 
 const IS_DEV_ENV = process.env.NODE_ENV === 'development';
 
 const getDeviceId = _once(() => {
   try {
     if (!Utils.isWebview()) {
-      return;
+      return undefined;
     }
 
     const stringifyResult = dsBridge.call('callNative', { method: 'userModule-getUserInfo' });
@@ -29,7 +24,7 @@ const getDeviceId = _once(() => {
 
     return data?.deviceId || undefined;
   } catch {
-    return;
+    return undefined;
   }
 });
 
@@ -41,53 +36,28 @@ const getAppPlatform = () => {
   return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
 };
 
-const sendToLogService = async (data, tags = '') => {
+const send = async (data, tags = '') => {
+  debug('[Logger]\n%o', data);
+
   if (!REACT_APP_LOG_SERVICE_URL || !REACT_APP_LOG_SERVICE_TOKEN) {
     return;
   }
-  const tagString = `${(REACT_APP_LOGGLY_TAG || '').replace(/ /g, '')}${tags && `,${tags}`}`;
+  const tagString = `${(REACT_APP_LOG_SERVICE_TAG || '').replace(/ /g, '')}${tags && `,${tags}`}`;
   const tagArray = tagString ? tagString.split(',') : [];
   const body = JSON.stringify({
     ...data,
     tags: tagArray,
   });
-  const headers = new Headers({ 'Content-Type': 'application/json' });
   const endpoint = `${REACT_APP_LOG_SERVICE_URL}?token=${REACT_APP_LOG_SERVICE_TOKEN}`;
   try {
     await fetch(endpoint, {
       method: 'POST',
-      headers,
+      // content-type=text/plain can make the request a simple request and avoid to send preflight (OPTIONS) requests before the actual CORS request
+      // Refer to: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests
+      headers: { 'Content-Type': 'text/plain' },
       body,
       priority: 'low',
-    });
-  } catch (e) {
-    if (IS_DEV_ENV) {
-      throw e;
-    }
-  }
-};
-
-const send = async (data, tags = '') => {
-  sendToLogService(data, tags);
-  const body = JSON.stringify(data);
-
-  debug(`[LOGGLY] %s`, body);
-
-  if (!REACT_APP_LOGGLY_SERVICE_URL || !REACT_APP_LOGGLY_TOKEN || !REACT_APP_LOGGLY_TAG) {
-    return;
-  }
-  const endpoint = `${REACT_APP_LOGGLY_SERVICE_URL}/inputs/${REACT_APP_LOGGLY_TOKEN}/tag/${REACT_APP_LOGGLY_TAG.replace(
-    / /g,
-    ''
-  )}${tags && `,${tags}`}/`;
-
-  const headers = new Headers({ 'Content-Type': 'application/json' });
-
-  try {
-    await fetch(endpoint, {
-      method: 'POST',
-      headers,
-      body,
+      credentials: 'omit',
     });
   } catch (e) {
     if (IS_DEV_ENV) {
@@ -118,11 +88,12 @@ const track = async (name, data, meta = {}) => {
     // todo: business name, page url, user agent, env, client timestamp, ...
     dataToSend.level = meta.level || 'info';
 
-    let tags = meta.tags ? (Array.isArray(meta.tags) ? meta.tags.join(',') : meta.tags) : '';
+    const tags = meta.tags ? (Array.isArray(meta.tags) ? meta.tags.join(',') : meta.tags) : '';
     if (tags && !/^\w+(,\w+)?$/.test(tags)) {
-      throw new Error('Incorrect loggly tags format');
+      throw new Error('Incorrect log tags format');
     }
-    return send(dataToSend, tags);
+
+    send(dataToSend, tags);
   } catch (e) {
     console.warn(e.message);
     if (IS_DEV_ENV) {
@@ -131,14 +102,8 @@ const track = async (name, data, meta = {}) => {
   }
 };
 
-export const log = async (name, data = {}, meta = {}) => {
-  return track(name, data, { level: 'info', ...meta });
-};
-export const warn = async (name, data = {}, meta = {}) => {
-  return track(name, data, { level: 'warning', ...meta });
-};
-export const error = async (name, data = {}, meta = {}) => {
-  return track(name, data, { level: 'error', ...meta });
-};
+const log = (name, data = {}, meta = {}) => track(name, data, { level: 'info', ...meta });
+const warn = (name, data = {}, meta = {}) => track(name, data, { level: 'warning', ...meta });
+const error = (name, data = {}, meta = {}) => track(name, data, { level: 'error', ...meta });
 
 export default { log, warn, error };

@@ -28,7 +28,7 @@ import * as NativeMethods from '../../../../../../../utils/native-methods';
 import { getCashbackInfo } from '../../redux/selector';
 import { loadCashbackInfo, createCashbackInfo } from '../../redux/thunks';
 import './PhoneLogin.scss';
-import loggly from '../../../../../../../utils/monitoring/loggly';
+import logger from '../../../../../../../utils/monitoring/logger';
 
 const ORDER_CLAIMED_SUCCESSFUL = ['Claimed_FirstTime', 'Claimed_NotFirstTime'];
 const CASHBACK_ZERO_CLAIMED = [...ORDER_CLAIMED_SUCCESSFUL, 'Claimed_Repeat'];
@@ -67,7 +67,7 @@ class PhoneLogin extends React.Component {
     if (Utils.isWebview()) {
       const res = await NativeMethods.getTokenAsync();
       if (_isNil(res)) {
-        loggly.error('order-status.thank-you.phone-login', { message: 'native token is invalid' });
+        logger.error('order-status.thank-you.phone-login', { message: 'native token is invalid' });
       } else {
         const { access_token, refresh_token } = res;
         await appActions.loginApp({

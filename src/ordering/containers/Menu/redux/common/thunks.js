@@ -51,7 +51,7 @@ import * as TimeLib from '../../../../../utils/time-lib';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import { fetchStoreFavStatus, saveStoreFavStatus } from './api-request';
 import { shortenUrl } from '../../../../../utils/shortenUrl';
-import loggly from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 import { getShareLinkUrl } from '../../utils';
 import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
@@ -325,7 +325,7 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
       if (isWebview) {
         const shareLinkUrl = getShareLinkUrl();
 
-        shortenUrl(shareLinkUrl).catch(error => loggly.error(`failed to share store link(didMount): ${error.message}`));
+        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
       }
 
       if (!store) {
@@ -516,7 +516,8 @@ export const saveFavoriteStore = createAsyncThunk(
 
     if (!hasUserLoggedIn) {
       await dispatch(appActions.loginByBeepApp());
-      if (!hasUserLoggedIn) return;
+      // BEEP-2728: Retrieve the latest login status after loginByBeepApp thunk is completed
+      if (!getUserIsLogin(getState())) return;
     }
 
     dispatch(toggleUserSaveStoreStatus());
@@ -549,7 +550,7 @@ export const shareStore = createAsyncThunk('ordering/menu/common/shareStore', as
       cashback: cashbackRate,
     });
   } catch (error) {
-    loggly.error(`failed to share store link(click): ${error.message}`);
+    logger.error(`failed to share store link(click): ${error.message}`);
     throw error;
   }
 });

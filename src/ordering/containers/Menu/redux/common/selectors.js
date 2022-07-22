@@ -211,9 +211,8 @@ export const getIsMenuRevamp = createSelector(
   getIsQrOrderingShippingType,
   getIsDeliveryOrder,
   getEnableDeliveryRevamp,
-  getIsInAppOrMiniProgram,
-  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp, isInAppOrMiniProgram) =>
-    isQrOrderingShippingType || (isDeliveryOrder && !isInAppOrMiniProgram && enabledDeliveryRevamp)
+  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp) =>
+    isQrOrderingShippingType || (isDeliveryOrder && enabledDeliveryRevamp)
 );
 
 export const getIsSearchingBannerVisible = state => state.menu.common.searchingBannerVisible;

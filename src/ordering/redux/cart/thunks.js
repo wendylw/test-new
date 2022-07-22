@@ -17,7 +17,7 @@ import {
   fetchCartSubmissionStatus,
   fetchCartStatus,
 } from './api-request';
-import { log } from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 
 const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
 const CART_SUBMISSION_INTERVAL = 2 * 1000;
@@ -80,7 +80,7 @@ export const loadCartStatus = createAsyncThunk(
 );
 
 export const queryCartAndStatus = () => async dispatch => {
-  log('cart.polling-cart-status', { action: 'start' });
+  logger.log('cart.polling-cart-status', { action: 'start' });
   try {
     const queryCartStatus = () => {
       queryCartAndStatus.timer = setTimeout(async () => {
@@ -88,7 +88,7 @@ export const queryCartAndStatus = () => async dispatch => {
 
         // Loop has been stopped
         if (!queryCartAndStatus.timer) {
-          log('cart.polling-cart-status', { action: 'quit-silently' });
+          logger.log('cart.polling-cart-status', { action: 'quit-silently' });
           return;
         }
 
@@ -107,7 +107,7 @@ export const queryCartAndStatus = () => async dispatch => {
 
 export const clearQueryCartStatus = () => () => {
   clearTimeout(queryCartAndStatus.timer);
-  log('cart.polling-cart-status', { action: 'stop' });
+  logger.log('cart.polling-cart-status', { action: 'stop' });
   queryCartAndStatus.timer = null;
 };
 
@@ -266,7 +266,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
 );
 
 export const queryCartSubmissionStatus = submissionId => dispatch => {
-  log('cart.polling-cart-submission-status', { action: 'start', submissionId });
+  logger.log('cart.polling-cart-submission-status', { action: 'start', submissionId });
   const targetTimestamp = Date.parse(new Date()) + TIMEOUT_CART_SUBMISSION_TIME;
 
   try {
@@ -274,7 +274,7 @@ export const queryCartSubmissionStatus = submissionId => dispatch => {
       queryCartSubmissionStatus.timer = setTimeout(async () => {
         if (targetTimestamp - Date.parse(new Date()) <= 0) {
           clearTimeout(queryCartSubmissionStatus.timer);
-          log('cart.polling-cart-submission-status', { action: 'stop', reason: 'timeout', submissionId });
+          logger.log('cart.polling-cart-submission-status', { action: 'stop', reason: 'timeout', submissionId });
           dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
 
           return;
@@ -284,7 +284,7 @@ export const queryCartSubmissionStatus = submissionId => dispatch => {
 
         if (submission.status !== CART_SUBMISSION_STATUS.PENDING) {
           clearTimeout(queryCartSubmissionStatus.timer);
-          log('cart.polling-cart-submission-status', { action: 'stop', reason: 'finished', submissionId });
+          logger.log('cart.polling-cart-submission-status', { action: 'stop', reason: 'finished', submissionId });
           return;
         }
 
@@ -303,6 +303,6 @@ export const queryCartSubmissionStatus = submissionId => dispatch => {
 export const clearQueryCartSubmissionStatus = () => () => {
   if (queryCartSubmissionStatus.timer) {
     clearTimeout(queryCartSubmissionStatus.timer);
-    log('cart.polling-cart-submission-status', { action: 'stop', reason: 'unmount' });
+    logger.log('cart.polling-cart-submission-status', { action: 'stop', reason: 'unmount' });
   }
 };

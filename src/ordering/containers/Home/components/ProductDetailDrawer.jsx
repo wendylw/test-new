@@ -22,7 +22,7 @@ import { actions as appActionCreators } from '../../../redux/modules/app';
 import { updateCartItems as updateCartItemsThunk } from '../../../redux/cart/thunks';
 import { GTM_TRACKING_EVENTS, gtmEventTracking, STOCK_STATUS_MAPPING } from '../../../../utils/gtm';
 import { withRouter } from 'react-router-dom';
-import loggly from '../../../../utils/monitoring/loggly';
+import logger from '../../../../utils/monitoring/logger';
 import 'swiper/swiper.scss';
 import 'swiper/components/pagination/pagination.scss';
 import './ProductDetailDrawer.scss';
@@ -83,7 +83,7 @@ class ProductDetailDrawer extends Component {
     ) {
       this.initVariationsByIdMap(selectedProduct);
       this.initMinimumVariationList();
-      loggly.log('product-detail.component-showed');
+      logger.log('product-detail.component-showed');
     }
 
     if (!show && prevProps.show !== show) {
@@ -465,7 +465,7 @@ class ProductDetailDrawer extends Component {
   };
 
   handleUpdateCartItems = async variables => {
-    loggly.log('product-detail.item-operate-attempt');
+    logger.log('product-detail.item-operate-attempt');
 
     const { updateCartItems } = this.props;
 
@@ -477,7 +477,7 @@ class ProductDetailDrawer extends Component {
   };
 
   handleAddOrUpdateShoppingCartItem = async variables => {
-    loggly.log('product-detail.item-operate-attempt');
+    logger.log('product-detail.item-operate-attempt');
 
     const { appActions } = this.props;
 

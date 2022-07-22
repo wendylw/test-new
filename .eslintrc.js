@@ -312,7 +312,6 @@ const legacyFiles = [
   'src/utils/gtm.js',
   'src/utils/monitoring/click-detector.js',
   'src/utils/monitoring/filter-sentry-events.js',
-  'src/utils/monitoring/loggly.js',
   'src/utils/monitoring/monitor.js',
   'src/utils/monitoring/navigation-detector.js',
   'src/utils/monitoring/tracing-id.js',

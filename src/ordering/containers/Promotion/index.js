@@ -41,7 +41,7 @@ import { withTranslation } from 'react-i18next';
 import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 import './OrderingPromotion.scss';
 
 class Promotion extends Component {
@@ -110,7 +110,7 @@ class Promotion extends Component {
 
   handleApplyPromotion = async () => {
     const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater, applyVoucherPayLater } = this.props;
-    loggly.log('promotion.apply-attempt');
+    logger.log('promotion.apply-attempt');
 
     if (this.props.inProcess || this.props.applyPromoOrVoucherPendingStatus) {
       return false;

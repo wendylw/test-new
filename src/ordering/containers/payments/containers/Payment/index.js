@@ -39,7 +39,7 @@ import PayByCash from '../../components/PayByCash';
 import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
-import loggly from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
 import { getPaymentType } from './utils';
@@ -103,7 +103,7 @@ class Payment extends Component {
       hasLoginGuardPassed,
       paymentActions,
     } = this.props;
-    loggly.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
+    logger.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
       payNowLoading: true,
@@ -186,7 +186,7 @@ class Payment extends Component {
         payNowLoading: true,
       });
 
-      loggly.log('payment.pay-attempt', { method: paymentProvider });
+      logger.log('payment.pay-attempt', { method: paymentProvider });
 
       let orderId = this.props.receiptNumber;
 
@@ -206,7 +206,7 @@ class Payment extends Component {
             ORDER_STATUS.DELIVERED,
           ].includes(order.status)
         ) {
-          loggly.log('ordering.order-has-paid', { order });
+          logger.log('ordering.order-has-paid', { order });
 
           alert(t('OrderHasPaidAlertDescription'), {
             closeButtonContent: t('Continue'),
@@ -232,7 +232,7 @@ class Payment extends Component {
 
         orderId = order.orderId;
 
-        loggly.log('ordering.order-created', { orderId });
+        logger.log('ordering.order-created', { orderId });
 
         if (orderId) {
           Utils.removeSessionVariable('additionalComments');
@@ -255,7 +255,7 @@ class Payment extends Component {
         paymentName: paymentProvider,
       });
 
-      loggly.error('ordering.createOrder.error', {
+      logger.error('ordering.createOrder.error', {
         error: error?.message,
         shippingType,
         paymentName: paymentProvider,
