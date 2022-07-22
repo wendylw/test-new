@@ -1,3 +1,5 @@
+import { SOURCE_TYPE } from './constants';
+
 export const bodyScrollTopPosition = () =>
   document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
 
@@ -32,7 +34,7 @@ export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardV
 
 export const getShareLinkUrl = () => {
   const storeUrl = window.location.href;
-  const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+  const shareLinkUrl = `${storeUrl}&source=${SOURCE_TYPE.SHARED_LINK}&utm_source=store_link&utm_medium=share`;
 
   return shareLinkUrl;
 };

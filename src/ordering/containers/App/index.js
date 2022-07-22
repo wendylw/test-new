@@ -24,6 +24,7 @@ import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
 import { SOURCE_TYPE } from '../Menu/constants';
+import { isURL } from '../../../common/utils';
 
 const { ROUTER_PATHS } = Constants;
 
@@ -34,12 +35,19 @@ class App extends Component {
     const source = Utils.getQueryString('source');
 
     if (source) {
-      if (source === 'SharedLink') {
-        Utils.setSessionVariable('BeepOrderingSource', 'SharedLink');
-        // DON'T Touch it if you don't know what it is.
-        // if source is 'shoppingCart', not save it to session
-      } else if (source !== SOURCE_TYPE.SHOPPING_CART) {
-        Utils.saveSourceUrlToSessionStorage(source);
+      switch (source) {
+        case SOURCE_TYPE.SHARED_LINK:
+          Utils.setSessionVariable('BeepOrderingSource', SOURCE_TYPE.SHARED_LINK);
+          break;
+        case SOURCE_TYPE.SHOPPING_CART:
+          // no need to do anything in here, it will be used on the menu page.
+          break;
+        default:
+          if (isURL(source)) {
+            Utils.saveSourceUrlToSessionStorage(source);
+          } else {
+            logger.error(`ordering.invalid-source`, { source });
+          }
       }
     }
   }
