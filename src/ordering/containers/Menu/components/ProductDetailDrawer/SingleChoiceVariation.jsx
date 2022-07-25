@@ -24,7 +24,7 @@ const SingleChoiceVariation = ({ variation }) => {
         <h3 className={styles.variationTitle}>
           {name}
           {selectedQuantity ? (
-            <Tag className="tw-mx-12 sm:tw-mx-12px tw-flex-shrink-0">
+            <Tag className="tw-flex-shrink-0 tw-mx-12 sm:tw-mx-12px tw-my-3 sm:tw-my-3px">
               {t('NumSelected', { amount: selectedQuantity })}
             </Tag>
           ) : null}
