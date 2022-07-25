@@ -8,7 +8,13 @@ import { compose } from 'redux';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
-import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
+import {
+  getUserIsLogin,
+  getBusinessInfo,
+  getShippingType,
+  getBusinessUTCOffset,
+  getUserConsumerId,
+} from '../../redux/modules/app';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
   loadOrders as loadOrdersThunk,
@@ -33,6 +39,8 @@ import {
   getOrderBillingPromo,
   getOrderPromoDiscount,
   getOrderPromotionCode,
+  getOrderModifiedTime,
+  getSelectedPromoCode,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -42,6 +50,8 @@ import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../comp
 import Billing from '../../components/Billing';
 import './TableSummary.scss';
 import config from '../../../config';
+import { submitOrder } from './redux/api-request';
+import { getPromotionId } from '../../redux/modules/promotion';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -99,6 +109,47 @@ export class TableSummary extends React.Component {
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
       search,
     });
+  };
+
+  handleGotoPayMentPageOrThankYouPage = async () => {
+    try {
+      const {
+        total,
+        history,
+        consumerId,
+        modifiedTime,
+        cashback,
+        promotionId,
+        promoCodePayLater,
+        shippingType,
+      } = this.props;
+      const receiptNumber = Utils.getQueryString('receiptNumber');
+      const { voucherCode } = promoCodePayLater;
+      const data = {
+        consumerId,
+        modifiedTime,
+        cashback,
+        promotionId,
+        voucherCode,
+      };
+
+      if (total === 0) {
+        const { redirectURL: thankYouPageUrl } = await submitOrder(receiptNumber, data);
+
+        const urlObj = new URL(thankYouPageUrl, window.location.origin);
+        urlObj.searchParams.set('type', shippingType);
+
+        window.location.href = urlObj.toString();
+        return;
+      }
+
+      history.push({
+        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
+        search: window.location.search,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   setCartContainerHeight = preContainerHeight => {
@@ -433,12 +484,7 @@ export class TableSummary extends React.Component {
             className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
-            onClick={() => {
-              history.push({
-                pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-                search: window.location.search,
-              });
-            }}
+            onClick={this.handleGotoPayMentPageOrThankYouPage}
           >
             {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
           </button>
@@ -479,6 +525,11 @@ TableSummary.propTypes = {
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,
   orderPromotionCode: PropTypes.string,
+  consumerId: PropTypes.string,
+  modifiedTime: PropTypes.string,
+  promotionId: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  promoCodePayLater: PropTypes.object,
 };
 
 TableSummary.defaultProps = {
@@ -507,6 +558,10 @@ TableSummary.defaultProps = {
   removePromo: () => {},
   oderPromoDiscount: 0,
   orderPromotionCode: '',
+  consumerId: '',
+  modifiedTime: '',
+  promotionId: '',
+  promoCodePayLater: {},
 };
 
 export default compose(
@@ -533,6 +588,11 @@ export default compose(
       OrderBillingPromo: getOrderBillingPromo(state),
       oderPromoDiscount: getOrderPromoDiscount(state),
       orderPromotionCode: getOrderPromotionCode(state),
+      consumerId: getUserConsumerId(state),
+      modifiedTime: getOrderModifiedTime(state),
+      promotionCode: getOrderPromotionCode(state),
+      promotionId: getPromotionId(state),
+      promoCodePayLater: getSelectedPromoCode(state),
     }),
 
     {

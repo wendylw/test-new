@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
 import Constants from '../../../../utils/constants';
+import { getPromotionId, getSelectedPromo } from '../../../redux/modules/promotion';
 
 const { ORDER_STATUS } = Constants;
 
@@ -88,3 +89,5 @@ export const getOrderPromoDiscount = state => state.tableSummary.order.displayPr
 export const getOrderPromotionCode = state => state.tableSummary.order.displayPromotions[0]?.promotionCode;
 
 export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
+
+export const getSelectedPromoCode = createSelector(getSelectedPromo, selectedPromo => selectedPromo.code);
