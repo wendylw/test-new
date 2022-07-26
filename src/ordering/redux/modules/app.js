@@ -37,7 +37,7 @@ import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
-import { isFromBeepSite } from '../../../common/utils';
+import { isFromBeepSite, isFromBeepSiteOrderHistory } from '../../../common/utils';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -1515,6 +1515,7 @@ export const getIsInAppOrMiniProgram = createSelector(
   (isWebview, isTNGMiniProgram) => isWebview || isTNGMiniProgram
 );
 export const getIsFromBeepSite = state => isFromBeepSite();
+export const getIsFromBeepSiteOrderHistory = state => isFromBeepSiteOrderHistory();
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)
