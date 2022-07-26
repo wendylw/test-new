@@ -56,15 +56,6 @@
   @apply tw-relative tw-flex-1 tw-pb-16px;
 }
 
-.productDetailVariationAndNoteDisabled {
-  @apply tw-relative;
-
-  &::before {
-    content: "";
-
-    @apply tw-absolute tw-block tw-top-0 tw-left-0 tw-w-full tw-h-full tw-bg-opacity-60 tw-bg-white tw-z-10;
-  }
-}
 .quantitySection {
   @apply tw-flex-none tw-p-16px tw-text-center;
 }

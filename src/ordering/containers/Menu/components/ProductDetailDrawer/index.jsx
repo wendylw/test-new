@@ -138,7 +138,7 @@ const ProductDetailDrawer = () => {
                   <Tag className="tw-flex-shrink-0 tw-my-6 sm:tw-my-6px tw-font-bold tw-uppercase">{t('SoldOut')}</Tag>
                 ) : null}
               </div>
-              <div className="tw-my-4 sm:tw-my-4px tw-flex tw-items-start tw-w-full tw-flex-row">
+              <div className="tw-my-4 sm:tw-my-4px tw-flex tw-w-full tw-flex-row">
                 <h2 className="tw-font-bold tw-flex-1 tw-text-xl tw-leading-normal">{product.title}</h2>
                 <span className="tw-flex-shrink-0 tw-text-xl tw-ml-12 sm:tw-ml-12px text-gray-700 tw-leading-normal">
                   {product.formattedDisplayPrice}
