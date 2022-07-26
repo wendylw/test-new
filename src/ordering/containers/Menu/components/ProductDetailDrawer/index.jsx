@@ -12,6 +12,7 @@ import SimpleMultipleChoiceVariation from './SimpleMultipleChoiceVariation';
 import QuantityMultipleChoiceVariation from './QuantityMultipleChoiceVariation';
 import styles from './ProductDetailDrawer.module.scss';
 import Button from '../../../../../common/components/Button';
+import Tag from '../../../../../common/components/Tag';
 import IconBestSellerImage from '../../../../../images/bestseller.svg';
 import {
   getIsProductDetailDrawerVisible,
@@ -23,6 +24,7 @@ import {
   getIsAddToCartLoading,
   getIsAbleAddToCart,
   getUnableAddToCartReason,
+  getIsOutOfStockProduct,
 } from '../../redux/productDetail/selectors';
 import {
   hideProductDetailDrawer,
@@ -43,7 +45,7 @@ const LoadingIndicator = () => {
 LoadingIndicator.displayName = 'LoadingIndicator';
 
 const UNABLE_ADD_TO_CART_REASON_KEY_MAP = {
-  [PRODUCT_UNABLE_ADD_TO_CART_REASONS.OUT_OF_STOCK]: 'OutOfStock',
+  [PRODUCT_UNABLE_ADD_TO_CART_REASONS.OUT_OF_STOCK]: 'SoldOut',
   [PRODUCT_UNABLE_ADD_TO_CART_REASONS.VARIATION_UNFULFILLED]: 'SelectVariant',
   // TODO: get the copy from PO
   [PRODUCT_UNABLE_ADD_TO_CART_REASONS.EXCEEDED_QUANTITY_ON_HAND]: 'ExceedsMaximumStock',
@@ -61,6 +63,7 @@ const ProductDetailDrawer = () => {
   const fullScreen = useSelector(getIsProductDetailDrawerFullScreen);
   const isAbleAddCart = useSelector(getIsAbleAddToCart);
   const unableAddToCartReason = useSelector(getUnableAddToCartReason);
+  const isOutOfStockProduct = useSelector(getIsOutOfStockProduct);
 
   const contentRef = useRef();
   const imageSectionRef = useRef();
@@ -127,18 +130,25 @@ const ProductDetailDrawer = () => {
               </button>
             </section>
             <section className={styles.basicInfoSection}>
-              {product.isBestSeller ? (
-                <img className="tw-inline-block" src={IconBestSellerImage} alt="StoreHub Beep best seller" />
-              ) : null}
-              <div className="tw-my-4 sm:tw-my-4px tw-flex tw-w-full tw-flex-row">
+              <div className={product.isBestSeller ? styles.productFeatureStatus : styles.productSoldOutStatus}>
+                {product.isBestSeller ? (
+                  <img className="tw-inline-block" src={IconBestSellerImage} alt="StoreHub Beep best seller" />
+                ) : null}
+                {isOutOfStockProduct ? (
+                  <Tag className="tw-flex-shrink-0 tw-my-6 sm:tw-my-6px tw-font-bold tw-uppercase">{t('SoldOut')}</Tag>
+                ) : null}
+              </div>
+              <div className="tw-my-4 sm:tw-my-4px tw-flex tw-items-start tw-w-full tw-flex-row">
                 <h2 className="tw-font-bold tw-flex-1 tw-text-xl tw-leading-normal">{product.title}</h2>
-                <div className="tw-flex-shrink-0 tw-text-xl tw-ml-12 sm:tw-ml-12px text-gray-700">
+                <span className="tw-flex-shrink-0 tw-text-xl tw-ml-12 sm:tw-ml-12px text-gray-700 tw-leading-normal">
                   {product.formattedDisplayPrice}
-                </div>
+                </span>
               </div>
               <p className={styles.productDescription} dangerouslySetInnerHTML={{ __html: product.description }} />
             </section>
-            <section className={styles.variationSection}>
+            <section
+              className={isOutOfStockProduct ? styles.productDetailVariationAndNoteDisabled : styles.variationSection}
+            >
               {product.variations.map(variation =>
                 variation.type === 'SingleChoice' ? (
                   <SingleChoiceVariation key={variation.id} variation={variation} />
