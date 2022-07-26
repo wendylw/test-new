@@ -18,6 +18,8 @@ import WesternImage from '../../../../../images/food-court-temp/merchant-western
 import YewyewImage from '../../../../../images/food-court-temp/merchant-yewyew.jpg';
 import GRunImage from '../../../../../images/food-court-temp/merchant-grun.jpg';
 import StellarKLImage from '../../../../../images/food-court-temp/merchant-stellar-kl.jpg';
+import AltaburgerImage from '../../../../../images/food-court-temp/merchant-altaburger.jpg';
+import ThebaoguysImage from '../../../../../images/food-court-temp/merchant-thebaoguys.jpg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -64,7 +66,7 @@ export const AllFoodCourtStoreList = {
     id: '6093d8d3de125500068db4b2',
     imageNoCompression: RexBarImage,
     title: 'The REX Bar',
-    tags: ['Alcohol'],
+    tags: ['Craft Beer', 'Pale Ale', 'Liquor'],
     businessHours: {
       validTimeFrom: '08:00',
       validTimeTo: '23:59',
@@ -74,7 +76,7 @@ export const AllFoodCourtStoreList = {
     id: '6093c9996dc7070006af7497',
     imageNoCompression: CheongSamImage,
     title: 'Mezzanine - Cheong Somm',
-    tags: ['Alcohol', 'Tapas'],
+    tags: ['Wine', 'Tapas'],
     businessHours: {
       validTimeFrom: '08:00',
       validTimeTo: '23:59',
@@ -163,6 +165,18 @@ export const AllFoodCourtStoreList = {
     imageNoCompression: YewyewImage,
     title: 'YewYew Coffee',
     tags: ['pastries', 'coffee'],
+  },
+  '6270db86f870ac000754deb6': {
+    id: '6270db86f870ac000754deb6',
+    imageNoCompression: AltaburgerImage,
+    title: 'Alta Burger',
+    tags: ['Burgers', 'Fries', 'Wine'],
+  },
+  '62ac9e5453c8fb0008d217bf': {
+    id: '62ac9e5453c8fb0008d217bf',
+    imageNoCompression: ThebaoguysImage,
+    title: 'The Bao Guys',
+    tags: ['Baos'],
   },
   '608b7c77cc9fd00006d831f3': {
     id: '608b7c77cc9fd00006d831f3',
