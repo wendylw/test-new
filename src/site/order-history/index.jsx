@@ -1,6 +1,5 @@
 /* eslint-disable */
 import React from 'react';
-import qs from 'qs';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -114,9 +113,7 @@ class OrderHistory extends React.Component {
 
     return (
       <>
-        {!Utils.isTNGMiniProgram() ? (
-          <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
-        ) : null}
+        <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
 
         <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
           {showOrderListEmptyView ? (
