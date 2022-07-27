@@ -146,6 +146,23 @@ export const isFromBeepSiteOrderHistory = () => {
   }
 };
 
+export const isFromFoodCourt = () => {
+  try {
+    const beepOrderingSourceUrl = getSourceUrlFromSessionStorage();
+    if (!beepOrderingSourceUrl) {
+      return false;
+    }
+    const urlObj = new URL(beepOrderingSourceUrl);
+    const { pathname } = urlObj;
+    const { ORDERING_BASE, FOOD_COURT } = PATH_NAME_MAPPING;
+
+    return pathname === `${ORDERING_BASE}${FOOD_COURT}`;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 export const isDeliveryType = () => getShippingTypeFromUrl() === SHIPPING_TYPES.DELIVERY;
 
 export const isPickUpType = () => getShippingTypeFromUrl() === SHIPPING_TYPES.PICKUP;
