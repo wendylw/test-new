@@ -38,6 +38,8 @@ import {
   getStoreRating,
   getIsFromBeepSite,
   getIsInAppOrMiniProgram,
+  getIsTNGMiniProgram,
+  getIsFromFoodCourt,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -329,7 +331,12 @@ export const getStoreFullDisplayTitle = createSelector(
   (title, subTitle) => `${title}${subTitle ? ` (${subTitle})` : ''}`
 );
 
-export const getIsShowBackButton = createSelector(getIsFromBeepSite, isFromBeepSite => isFromBeepSite);
+export const getIsShowBackButton = createSelector(
+  getIsFromBeepSite,
+  getIsTNGMiniProgram,
+  getIsFromFoodCourt,
+  (isFromBeepSite, isTNGMiniProgram, isFromFoodCourt) => isFromBeepSite || (isTNGMiniProgram && isFromFoodCourt)
+);
 
 /**
  * user selected display date
