@@ -102,3 +102,5 @@ export const getPromoOrVoucherExist = createSelector(
 export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
 
 export const getSelectedPromoCode = createSelector(getSelectedPromo, selectedPromo => selectedPromo.code);
+
+export const getShouldShowRedirectLoader = state => state.tableSummary.redirectLoaderVisible;

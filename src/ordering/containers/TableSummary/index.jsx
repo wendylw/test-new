@@ -41,6 +41,7 @@ import {
   getOrderVoucherCode,
   getOrderVoucherDiscount,
   getPromoOrVoucherExist,
+  getShouldShowRedirectLoader,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -48,6 +49,7 @@ import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
+import RedirectPageLoader from '../../components/RedirectPageLoader';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -400,8 +402,13 @@ export class TableSummary extends React.Component {
       shippingFee,
       orderPlacedStatus,
       orderPendingPaymentStatus,
+      shouldShowRedirectLoader,
     } = this.props;
     const { cartContainerHeight } = this.state;
+
+    if (shouldShowRedirectLoader) {
+      return <RedirectPageLoader />;
+    }
 
     return (
       <section
@@ -518,6 +525,7 @@ TableSummary.propTypes = {
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
   gotoPayment: PropTypes.func,
+  shouldShowRedirectLoader: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -552,6 +560,7 @@ TableSummary.defaultProps = {
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
   gotoPayment: () => {},
+  shouldShowRedirectLoader: false,
 };
 
 export default compose(
@@ -582,6 +591,7 @@ export default compose(
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
+      shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
     }),
 
     {

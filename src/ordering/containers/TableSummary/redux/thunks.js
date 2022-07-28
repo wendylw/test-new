@@ -83,6 +83,10 @@ export const lockOrder = createAsyncThunk('ordering/tableSummary/lockOrder', asy
   submitOrder(receiptNumber, data)
 );
 
+export const showRedirectLoader = createAsyncThunk('ordering/tableSummary/showRedirectLoader', async () => {});
+
+export const hideRedirectLoader = createAsyncThunk('ordering/tableSummary/hideRedirectLoader', async () => {});
+
 export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment', async (_, { dispatch, getState }) => {
   const state = getState();
   const receiptNumber = getOrderReceiptNumber(state);
@@ -112,6 +116,7 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     const isTNGMiniProgram = getIsTNGMiniProgram(state);
 
     if (isTNGMiniProgram) {
+      dispatch(showRedirectLoader());
       // Load Billing API before calling init with order API, otherwise may be rejected for the required parameter missing
       await dispatch(loadBilling()).unwrap();
       await dispatch(initPayment({ orderId: receiptNumber, total })).unwrap();
@@ -122,11 +127,11 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     const search = getLocationSearch(state);
     dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
   } catch (error) {
+    dispatch(hideRedirectLoader());
     logger.error('ordering.table-summary.go-to-payment.error', {
       error: error?.message,
       receiptNumber,
     });
-
     throw error;
   }
 });
