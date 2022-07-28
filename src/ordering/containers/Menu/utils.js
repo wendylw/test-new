@@ -33,8 +33,17 @@ export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardV
   isMobile && isVirtualKeyboardVisible;
 
 export const getShareLinkUrl = () => {
-  const storeUrl = window.location.href;
-  const shareLinkUrl = `${storeUrl}&source=${SOURCE_TYPE.SHARED_LINK}&utm_source=store_link&utm_medium=share`;
+  try {
+    const storeUrl = new URL(window.location.href);
+    const { searchParams } = storeUrl;
 
-  return shareLinkUrl;
+    searchParams.set('source', SOURCE_TYPE.SHARED_LINK);
+    searchParams.set('utm_source', 'store_link');
+    searchParams.set('utm_medium', 'share');
+
+    return storeUrl.toString();
+  } catch (error) {
+    console.error(error);
+    return window.location.href;
+  }
 };
