@@ -612,13 +612,25 @@ export const showLocationDrawer = createAsyncThunk(
   }
 );
 
-export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', () => {});
+export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', (_, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {});
+  Clevertap.pushEvent('Menu page - Click timeslot', storeInfoForCleverTap);
+});
 
-export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', () => {});
+export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {
+  Clevertap.pushEvent('Timeslot - back');
+});
 
-export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {});
+export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', (_, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+  Clevertap.pushEvent('Menu page - Click store list', storeInfoForCleverTap);
+});
+
+export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {
+  Clevertap.pushEvent('Store List - Back');
+});
 
 /**
  * goto Review cart page
