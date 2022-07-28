@@ -39,9 +39,23 @@
 .basicInfoSection {
   @apply tw-flex-none tw-p-16 sm:tw-p-16px;
 }
+
+.productFeatureStatus {
+  @apply tw-flex tw-items-center tw-justify-between;
+}
+
+.productSoldOutStatus {
+  @apply tw-flex tw-items-center tw-justify-end;
+}
+
 .variationSection {
   @apply tw-flex-1 tw-pb-16px;
 }
+
+.productDetailVariationAndNote {
+  @apply tw-relative tw-flex-1 tw-pb-16px;
+}
+
 .quantitySection {
   @apply tw-flex-none tw-p-16px tw-text-center;
 }
@@ -73,10 +87,10 @@
   }
 }
 .variationBasicInfo {
-  @apply tw-flex tw-items-center tw-w-full tw-py-16 sm:tw-py-16px;
+  @apply tw-flex tw-items-start tw-w-full tw-py-16 sm:tw-py-16px;
 }
 .variationTitle {
-  @apply tw-flex tw-items-center tw-flex-1 tw-font-bold tw-leading-normal;
+  @apply tw-flex tw-items-start tw-flex-1 tw-font-bold tw-leading-normal;
 }
 .variationOptionItem {
   @apply tw-flex tw-items-center tw-w-full tw-border-gray-200 tw-border-t tw-py-20 sm:tw-py-20px;

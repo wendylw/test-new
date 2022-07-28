@@ -36,9 +36,7 @@ const BestSellerCategoryProductList = ({ products, categoryId }) => {
             key={`bestSellerProductItem-${product.id}`}
             className={styles.menuProductItem}
             onClick={() => {
-              if (!product.isSoldOut) {
-                dispatch(showProductDetailDrawer({ productId: product.id, category: categoryId }));
-              }
+              dispatch(showProductDetailDrawer({ productId: product.id, category: categoryId }));
             }}
           >
             <div
@@ -93,9 +91,7 @@ const CategoryProductList = ({ products, categoryId }) => {
           key={product.id}
           className={`${styles.menuProductItem} tw-mx-8 sm:tw-mx-8px`}
           onClick={() => {
-            if (!product.isSoldOut) {
-              dispatch(showProductDetailDrawer({ productId: product.id, category: categoryId }));
-            }
+            dispatch(showProductDetailDrawer({ productId: product.id, category: categoryId }));
           }}
         >
           <div

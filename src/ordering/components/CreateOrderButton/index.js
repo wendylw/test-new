@@ -24,6 +24,9 @@ import { alert } from '../../../common/feedback/';
 const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS, ORDER_STATUS } = Constants;
 
 class CreateOrderButton extends React.Component {
+  state = {
+    isLoadingCreatedOrder: false,
+  };
   componentDidMount = async () => {
     if (this.shouldAskUserLogin()) {
       this.gotoLoginPage();
@@ -199,6 +202,7 @@ class CreateOrderButton extends React.Component {
         paymentName: paymentName || 'N/A',
       });
 
+      this.setState({ isLoadingCreatedOrder: true });
       const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
         paymentName: paymentName || 'N/A',
@@ -226,6 +230,8 @@ class CreateOrderButton extends React.Component {
       }
     }
 
+    this.setState({ isLoadingCreatedOrder: false });
+
     if (afterCreateOrder) {
       afterCreateOrder(orderId);
     }
@@ -239,6 +245,7 @@ class CreateOrderButton extends React.Component {
 
   render() {
     const { children, className, buttonType, disabled, dataAttributes, loaderText, processing } = this.props;
+    const { isLoadingCreatedOrder } = this.state;
     const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
@@ -250,11 +257,11 @@ class CreateOrderButton extends React.Component {
         <button
           className={classList.join(' ')}
           type={buttonType}
-          disabled={disabled}
+          disabled={disabled || isLoadingCreatedOrder}
           onClick={this.handleCreateOrderSafety}
           {...dataAttributes}
         >
-          {children}
+          {isLoadingCreatedOrder ? loaderText : children}
         </button>
         <PageProcessingLoader show={processing} loaderText={loaderText} />
       </>

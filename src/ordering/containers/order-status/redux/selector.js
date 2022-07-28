@@ -56,7 +56,7 @@ export const getPromotion = createSelector(getOrder, order => {
     return {
       promoCode: order.appliedVoucher.voucherCode,
       discount: order.appliedVoucher.value,
-      promoType: PROMO_TYPE.VOUCHER,
+      promoType: PROMO_TYPE.VOUCHER_FOR_PAY_LATER,
     };
   }
 
@@ -65,7 +65,7 @@ export const getPromotion = createSelector(getOrder, order => {
     return {
       promoCode: appliedPromo.promotionCode,
       discount: appliedPromo.displayDiscount,
-      promoType: PROMO_TYPE.PROMOTION_ADD,
+      promoType: PROMO_TYPE.PROMOTION_FOR_PAY_LATER,
     };
   }
 

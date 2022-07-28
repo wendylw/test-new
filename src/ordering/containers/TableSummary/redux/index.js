@@ -42,6 +42,7 @@ const initialState = {
     cashback: 0,
     displayPromotions: [],
     loyaltyDiscounts: [],
+    appliedVoucher: null,
     total: 0,
     subtotal: 0,
     modifiedTime: null,
@@ -71,7 +72,7 @@ export const { reducer, actions } = createSlice({
       state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
     },
     [loadOrders.fulfilled.type]: (state, { payload }) => {
-      const { displayPromotions = [], loyaltyDiscounts = [], appliedVoucher = [], status: orderStatus, ...others } = {
+      const { displayPromotions = [], loyaltyDiscounts = [], appliedVoucher, status: orderStatus, ...others } = {
         ...state.order,
         ...payload,
       };
@@ -81,7 +82,7 @@ export const { reducer, actions } = createSlice({
         orderStatus,
         loyaltyDiscounts: (loyaltyDiscounts || []).map(item => ({ ...loyaltyDiscountsModel, ...item })),
         displayPromotions: (displayPromotions || []).map(promotion => ({ ...PromotionItemModel, ...promotion })),
-        appliedVoucher: (appliedVoucher || []).map(voucher => ({ ...appliedVoucherModel, ...voucher })),
+        appliedVoucher: { ...appliedVoucherModel, ...appliedVoucher },
       };
       state.requestStatus.loadOrders = API_REQUEST_STATUS.FULFILLED;
     },
