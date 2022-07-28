@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
 import Constants from '../../../../utils/constants';
+import { getPromotionId, getSelectedPromo } from '../../../redux/modules/promotion';
 
 const { ORDER_STATUS } = Constants;
 
@@ -79,7 +80,7 @@ export const getOrderCompletedStatus = state =>
 
 export const getThankYouPageUrl = state => state.tableSummary.submission.thankYouPageUrl;
 
-export const getOrderBillingPromo = state => state.tableSummary.order.displayPromotions;
+export const getOrderBillingPromoIfExist = state => state.tableSummary.order.displayPromotions?.length || '';
 
 export const getOrderPromoDiscountType = state => state.tableSummary.order.displayPromotions[0]?.discountType;
 
@@ -87,4 +88,17 @@ export const getOrderPromoDiscount = state => state.tableSummary.order.displayPr
 
 export const getOrderPromotionCode = state => state.tableSummary.order.displayPromotions[0]?.promotionCode;
 
+export const getVoucherBillingIfExist = state => state.tableSummary.order.appliedVoucher?.voucherId || '';
+
+export const getOrderVoucherCode = state => state.tableSummary.order.appliedVoucher?.voucherCode;
+
+export const getOrderVoucherDiscount = state => state.tableSummary.order.appliedVoucher?.value;
+
+export const getPromoOrVoucherExist = createSelector(
+  getOrderBillingPromoIfExist,
+  getVoucherBillingIfExist,
+  (orderBillingPromoIfExist, voucherBillingIfExist) => !!(orderBillingPromoIfExist || voucherBillingIfExist)
+);
 export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
+
+export const getSelectedPromoCode = createSelector(getSelectedPromo, selectedPromo => selectedPromo.code);

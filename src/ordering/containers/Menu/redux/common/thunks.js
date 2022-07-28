@@ -520,7 +520,8 @@ export const saveFavoriteStore = createAsyncThunk(
 
     if (!hasUserLoggedIn) {
       await dispatch(appActions.loginByBeepApp());
-      if (!hasUserLoggedIn) return;
+      // BEEP-2728: Retrieve the latest login status after loginByBeepApp thunk is completed
+      if (!getUserIsLogin(getState())) return;
     }
 
     dispatch(toggleUserSaveStoreStatus());
