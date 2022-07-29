@@ -1,7 +1,8 @@
 import _isEmpty from 'lodash/isEmpty';
+import _isEqual from 'lodash/isEqual';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { actions as appActionCreators, getStoresList } from '../../../../redux/modules/app';
-import { refreshMenuPageForNewStore } from '../common/thunks';
+import { actions as appActionCreators, getStoresList, getStoreId } from '../../../../redux/modules/app';
+import { hideStoreListDrawer, refreshMenuPageForNewStore } from '../common/thunks';
 
 /**
  * Store branch drawer shown
@@ -26,5 +27,15 @@ export const storeDrawerHidden = createAsyncThunk('ordering/menu/stores/storeDra
  */
 export const selectStoreBranch = createAsyncThunk(
   'ordering/menu/stores/selectStoreBranch',
-  async (storeId, { dispatch }) => dispatch(refreshMenuPageForNewStore(storeId))
+  async (storeId, { getState, dispatch }) => {
+    const state = getState();
+    const currentStoreId = getStoreId(state);
+
+    if (_isEqual(currentStoreId, storeId)) {
+      dispatch(hideStoreListDrawer());
+      return;
+    }
+
+    dispatch(refreshMenuPageForNewStore(storeId));
+  }
 );
