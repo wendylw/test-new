@@ -16,7 +16,7 @@
 }
 
 .removeItemButton:global(.type-text-danger) {
-  @apply tw-p-0 tw-px-2 sm:tw-px-2px tw-mt-8 sm:tw-mt-8px tw-border-none tw-text-sm tw-capitalize;
+  @apply tw-flex-shrink-0 tw-p-0 tw-px-2 sm:tw-px-2px tw-mt-8 sm:tw-mt-8px tw-border-none tw-text-sm tw-capitalize;
 }
 
 .cartItem {
@@ -28,6 +28,7 @@
     border-top-width: 0;
   }
 }
+
 .cartItemInfoContent {
   @apply tw-flex tw-items-start;
 }
@@ -39,6 +40,12 @@
 
 .cartItemDescription {
   @apply tw-px-2 sm:tw-px-2px tw-my-2 sm:tw-my-2px tw-leading-loose tw-text-orange tw-text-sm;
+}
+
+.cartItemComments {
+  @apply tw-px-2 sm:tw-px-2px tw-text-sm tw-text-gray-600;
+
+  word-break: break-word;
 }
 
 .cartItemImageContainer {
