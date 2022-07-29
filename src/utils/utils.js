@@ -6,6 +6,7 @@ import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 import Cookies from 'js-cookie';
 import * as UtilsV2 from '../common/utils';
+import { SOURCE_TYPE } from '../ordering/containers/Menu/constants';
 
 dayjs.extend(utc);
 
@@ -774,7 +775,7 @@ Utils.removeCookieVariable = (name, attributes) => {
 Utils.isTNGMiniProgram = UtilsV2.isTNGMiniProgram;
 
 Utils.isSharedLink = () => {
-  return Utils.getSessionVariable('BeepOrderingSource') === 'SharedLink';
+  return Utils.getSessionVariable('BeepOrderingSource') === SOURCE_TYPE.SHARED_LINK;
 };
 
 Utils.saveSourceUrlToSessionStorage = UtilsV2.saveSourceUrlToSessionStorage;

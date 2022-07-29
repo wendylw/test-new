@@ -77,6 +77,7 @@ import { getIfAddressInfoExists, getAddressCoords, getAddressName } from '../../
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
+import { SOURCE_TYPE } from '../Menu/constants';
 
 const localState = {
   blockScrollTop: 0,
@@ -900,7 +901,7 @@ class Home extends Component {
 
   getShareLinkUrl = () => {
     const storeUrl = window.location.href;
-    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+    const shareLinkUrl = `${storeUrl}&source=${SOURCE_TYPE.SHARED_LINK}&utm_source=store_link&utm_medium=share`;
 
     return shareLinkUrl;
   };
