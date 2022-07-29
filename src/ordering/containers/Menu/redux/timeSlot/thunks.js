@@ -18,7 +18,8 @@ import {
 import { fetchTimeSlotSoldData } from './api-request';
 import { getSelectedDate, getSelectedDateObj, getSelectedShippingType, getSelectedTimeSlot } from './selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
-import { hideTimeSlotDrawer, updateExpectedDeliveryDate } from '../common/thunks';
+import { updateExpectedDeliveryDate } from '../common/thunks';
+import { actions as commonActions } from '../common/index';
 import { setDateTime } from '../../../../../utils/time-lib';
 import Clevertap from '../../../../../utils/clevertap';
 import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
@@ -107,7 +108,7 @@ export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/time
 });
 
 // Do some clean up job after time slot drawer hidden
-export const timeSlotDrawerHidden = createAsyncThunk('ordering/menu/timeSlot/hideTimeSlotDrawer', () => {});
+export const timeSlotDrawerHidden = createAsyncThunk('ordering/menu/timeSlot/timeSlotDrawerHidden', () => {});
 
 export const changeShippingType = createAsyncThunk(
   'ordering/menu/timeSlot/changeShippingType',
@@ -225,7 +226,8 @@ export const save = createAsyncThunk('ordering/menu/timeSlot/save', async (_, { 
       dispatch(AppActions.loadProductList());
     }
 
-    dispatch(hideTimeSlotDrawer());
+    // Avoid calling hideTimeSlotDrawer because it will push the CT event "Timeslot - back"
+    dispatch(commonActions.setTimeSlotDrawerVisible(false));
   } catch (error) {
     console.error(error);
     throw error;
