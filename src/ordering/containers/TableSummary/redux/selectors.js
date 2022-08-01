@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
 import Constants from '../../../../utils/constants';
+import { getIsTNGMiniProgram } from '../../../redux/modules/app';
 import { getPromotionId, getSelectedPromo } from '../../../redux/modules/promotion';
 
 const { ORDER_STATUS } = Constants;
@@ -104,3 +105,9 @@ export const getVoucherBilling = state => state.tableSummary.order.appliedVouche
 export const getSelectedPromoCode = createSelector(getSelectedPromo, selectedPromo => selectedPromo.code);
 
 export const getShouldShowRedirectLoader = state => state.tableSummary.redirectLoaderVisible;
+
+export const getShouldShowPayNowButton = createSelector(
+  getIsTNGMiniProgram,
+  getOrderPendingPaymentStatus,
+  (isTNGMiniProgram, orderPendingPaymentStatus) => isTNGMiniProgram || !orderPendingPaymentStatus
+);

@@ -42,6 +42,7 @@ import {
   getOrderVoucherDiscount,
   getPromoOrVoucherExist,
   getShouldShowRedirectLoader,
+  getShouldShowPayNowButton,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -403,6 +404,7 @@ export class TableSummary extends React.Component {
       orderPlacedStatus,
       orderPendingPaymentStatus,
       shouldShowRedirectLoader,
+      shouldShowPayNowButton,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -481,7 +483,7 @@ export class TableSummary extends React.Component {
             data-heap-name="ordering.order-status.table-summary.pay-btn"
             onClick={this.handleClickPayButton}
           >
-            {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
+            {shouldShowPayNowButton ? t('PayNow') : t('SelectPaymentMethod')}
           </button>
         </footer>
       </section>
@@ -526,6 +528,7 @@ TableSummary.propTypes = {
   promoOrVoucherExist: PropTypes.bool,
   gotoPayment: PropTypes.func,
   shouldShowRedirectLoader: PropTypes.bool,
+  shouldShowPayNowButton: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -561,6 +564,7 @@ TableSummary.defaultProps = {
   promoOrVoucherExist: false,
   gotoPayment: () => {},
   shouldShowRedirectLoader: false,
+  shouldShowPayNowButton: false,
 };
 
 export default compose(
@@ -592,6 +596,7 @@ export default compose(
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
+      shouldShowPayNowButton: getShouldShowPayNowButton(state),
     }),
 
     {
