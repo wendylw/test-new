@@ -732,7 +732,7 @@ PayFirst.propTypes = {
   isUserProfileStatusFulfilled: PropTypes.bool,
   consumerId: PropTypes.string,
   serviceChargeRate: PropTypes.number,
-  isTNGMiniProgram: false,
+  isTNGMiniProgram: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
