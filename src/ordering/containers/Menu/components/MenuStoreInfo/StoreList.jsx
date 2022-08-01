@@ -6,6 +6,7 @@ import {
   getStoreDisplaySubTitle,
   getIsStoreListDrawerVisible,
   getIsQrOrderingShippingType,
+  getIsDeliveryType,
 } from '../../redux/common/selectors';
 import { showStoreListDrawer, hideStoreListDrawer } from '../../redux/common/thunks';
 import { getHasStoreListInitialized, getStoreList, getTotalOutlet } from '../../redux/stores/selectors';
@@ -17,6 +18,7 @@ const StoreList = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const isQrOrderingShippingType = useSelector(getIsQrOrderingShippingType);
+  const isDeliveryType = useSelector(getIsDeliveryType);
   const isStoreListDrawerVisible = useSelector(getIsStoreListDrawerVisible);
   const storeList = useSelector(getStoreList);
   // the subtitle display on drawer

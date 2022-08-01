@@ -179,7 +179,15 @@
   "CompleteProfileTip": "Complete your profile to get updated on relevant offers & promotions by our partner merchants!",
   "AddNewAddress": "Add New Address",
   "SavedAddress": "Saved Address",
+<<<<<<< HEAD
   "OutOfRange": "Out of Range",
+=======
+<<<<<<< HEAD
+  "OutOfRange": "Out of range",
+=======
+  "OutOfRange": "Out of Range",
+>>>>>>> 60783b8d39585a255fa1bef2858febc51698aa3c
+>>>>>>> release_delivery2.0-phase2
   "ContactDetails": "Contact Details",
   "ContactTip": "Only change this if you're ordering for someone else and want us to contact them if there's an issue with the order. P.S. All order status updates will be sent to the contact person below.",
   "EditAddress": "Edit Address",

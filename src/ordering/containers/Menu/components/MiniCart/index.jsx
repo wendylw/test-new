@@ -66,7 +66,9 @@ const MiniCart = () => {
             </Button>
           }
         >
-          <span className="tw-font-bold tw-text-lg">{t('Cart')}</span>
+          <div className="tw-flex tw-flex-col tw-items-center">
+            <span className="tw-font-bold tw-text-lg">{t('Cart')}</span>
+          </div>
         </DrawerHeader>
       }
     >
