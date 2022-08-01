@@ -38,7 +38,6 @@ import {
   getStoreRating,
   getIsFromBeepSite,
   getIsInAppOrMiniProgram,
-  getIsTNGMiniProgram,
   getIsFromFoodCourt,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
@@ -333,9 +332,8 @@ export const getStoreFullDisplayTitle = createSelector(
 
 export const getIsShowBackButton = createSelector(
   getIsFromBeepSite,
-  getIsTNGMiniProgram,
   getIsFromFoodCourt,
-  (isFromBeepSite, isTNGMiniProgram, isFromFoodCourt) => isFromBeepSite || (isTNGMiniProgram && isFromFoodCourt)
+  (isFromBeepSite, isFromFoodCourt) => isFromBeepSite || isFromFoodCourt
 );
 
 /**
