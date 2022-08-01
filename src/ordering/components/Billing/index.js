@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
+import { actions as appActionCreators } from '../../redux/modules/app';
+import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 import CleverTap from '../../../utils/clevertap';
 import './Billing.scss';
@@ -48,13 +52,21 @@ class Billing extends Component {
     );
   }
 
-  handleLogin = () => {
-    const { history } = this.props;
+  handleLogin = async () => {
+    const { history, appActions } = this.props;
 
     CleverTap.pushEvent('Login - view login screen', {
       'Screen Name': 'Cart Page',
     });
 
+    if (Utils.isWebview()) {
+      // BEEP-2663: In case users can click on the login button in the beep apps, we need to call the native login method.
+      await appActions.loginByBeepApp();
+      return;
+    }
+
+    // TODO: we need to consider TnG MP separately for QR Scan feature
+    // By default, redirect users to the web login page
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
       search: window.location.search,
@@ -188,4 +200,12 @@ Billing.defaultProps = {
   isLogin: false,
 };
 
-export default withTranslation()(Billing);
+export default compose(
+  withTranslation(),
+  connect(
+    () => ({}),
+    dispatch => ({
+      appActions: bindActionCreators(appActionCreators, dispatch),
+    })
+  )
+)(Billing);

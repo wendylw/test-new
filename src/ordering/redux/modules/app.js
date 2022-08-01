@@ -793,6 +793,7 @@ const user = (state = initialState.user, action) => {
         },
         isLogin: true,
         hasOtp: false,
+        isExpired: false,
         isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.FULFILLED : null,
