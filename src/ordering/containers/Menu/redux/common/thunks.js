@@ -21,6 +21,7 @@ import {
   getIsInBrowser,
   getIsInAppOrMiniProgram,
   getURLQueryObject,
+  getStoreSupportShippingTypes,
 } from '../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -83,9 +84,15 @@ const ensureShippingType = () => {
 
 export const showStoreInfoDrawer = createAsyncThunk('ordering/menu/common/showStoreInfoDrawer', async () => {});
 
-export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLocationDrawer', () => {});
+export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLocationDrawer', (_, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {});
+  Clevertap.pushEvent('Location Page - View page', storeInfoForCleverTap);
+});
+
+export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {
+  Clevertap.pushEvent('Location Page - Click back');
+});
 
 /**
  * @params expectedDate: null | ISO string format | now
@@ -184,9 +191,11 @@ export const initExpectedDeliveryDate = createAsyncThunk(
       const store = getStore(getState());
 
       let initialExpectedDeliveryTime = (() => {
-        if (!expectedDeliveryDate || !from) {
+        if (!expectedDeliveryDate || !from || !store) {
           return null;
         }
+
+        const { enablePreOrder, disableTodayDeliveryPreOrder, disableTodayPreOrder } = store.qrOrderingSettings;
 
         // PICKUP only has [from], no [to]
         const previousShippingType = from && !to ? SHIPPING_TYPES.PICKUP : SHIPPING_TYPES.DELIVERY;
@@ -219,6 +228,15 @@ export const initExpectedDeliveryDate = createAsyncThunk(
 
         // expected delivery time is out of date
         if (expectedDeliveryTimeDayjsObj.isBefore(currentTime)) {
+          return null;
+        }
+
+        // store is disable pre-order
+        if (
+          !enablePreOrder ||
+          disableTodayPreOrder ||
+          (shippingType === SHIPPING_TYPES.DELIVERY && disableTodayDeliveryPreOrder)
+        ) {
           return null;
         }
 
@@ -334,12 +352,6 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
       const store = getStore(getState());
       dispatch(updateCurrentTime());
 
-      if (isWebview) {
-        const shareLinkUrl = getShareLinkUrl();
-
-        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
-      }
-
       if (!store) {
         // remove expectedDeliveryDate
         await dispatch(
@@ -349,6 +361,20 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
           })
         );
         return;
+      }
+
+      const storeSupportShippingTypes = getStoreSupportShippingTypes(getState());
+
+      // if store not support current shipping type
+      // then update to its support shipping type
+      if (!storeSupportShippingTypes.includes(shippingType)) {
+        dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
+      }
+
+      if (isWebview) {
+        const shareLinkUrl = getShareLinkUrl();
+
+        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
       }
 
       const storeStatus = getStoreStatus(getState());
@@ -561,27 +587,25 @@ export const shareStore = createAsyncThunk('ordering/menu/common/shareStore', as
 
 export const hideStoreInfoDrawer = createAsyncThunk('ordering/menu/common/hideStoreInfoDrawer', async () => {});
 
-const gotoLocationAndDate = (isToReviewCart, state, dispatch) => {
-  const search = getLocationSearch(state);
-  const basePath = isToReviewCart ? PATH_NAME_MAPPING.ORDERING_CART : PATH_NAME_MAPPING.ORDERING_HOME;
+export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', (_, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-  const callbackUrl = encodeURIComponent(`${basePath}${search}`);
+  Clevertap.pushEvent('Menu page - Click timeslot', storeInfoForCleverTap);
+});
 
-  dispatch(
-    push({
-      pathname: PATH_NAME_MAPPING.ORDERING_LOCATION_AND_DATE,
-      search: `${search}&callbackUrl=${callbackUrl}`,
-    })
-  );
-};
+export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {
+  Clevertap.pushEvent('Timeslot - back');
+});
 
-export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', () => {});
+export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', (_, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {});
+  Clevertap.pushEvent('Menu page - Click store list', storeInfoForCleverTap);
+});
 
-export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', () => {});
-
-export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {});
+export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {
+  Clevertap.pushEvent('Store List - Back');
+});
 
 /**
  * goto Review cart page

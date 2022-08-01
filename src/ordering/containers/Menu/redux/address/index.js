@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
-import { locationDrawerShown, showErrorToast, clearErrorToast } from './thunks';
+import { locationDrawerShown } from './thunks';
 
 const initialState = {
   storeInfo: {
@@ -8,7 +8,6 @@ const initialState = {
     status: null,
     error: null,
   },
-  errorCode: null,
 };
 
 export const { reducer, actions } = createSlice({
@@ -28,13 +27,6 @@ export const { reducer, actions } = createSlice({
       state.storeInfo.data = {};
       state.storeInfo.status = API_REQUEST_STATUS.REJECTED;
       state.storeInfo.error = action.error;
-    },
-    [showErrorToast.fulfilled.type]: (state, action) => {
-      const { errorCode } = action.payload;
-      state.errorCode = errorCode;
-    },
-    [clearErrorToast.fulfilled.type]: state => {
-      state.errorCode = null;
     },
   },
 });

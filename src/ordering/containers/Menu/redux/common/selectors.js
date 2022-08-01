@@ -61,6 +61,7 @@ export {
   getStore,
   getStoreId,
   getSelectedLocationDisplayName,
+  getIsPickUpType,
 };
 
 /**

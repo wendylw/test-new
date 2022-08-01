@@ -57,6 +57,9 @@ export const { reducer, actions } = createSlice({
       state.categoriesInView[categoryId] = inView;
       state.activeCategoryId = null;
     },
+    setTimeSlotDrawerVisible: (state, { payload }) => {
+      state.timeSlotDrawerVisible = payload;
+    },
   },
   extraReducers: {
     [selectCategory.fulfilled.type]: (state, { payload }) => {

@@ -16,6 +16,7 @@ const Drawer = props => {
     header,
     show,
     className = '',
+    childrenClassName = '',
     style = {},
     onClose,
     animation = true,
@@ -75,7 +76,7 @@ const Drawer = props => {
           style={{ ...(fullScreen ? { height: '100%' } : { maxHeight: '90%' }), ...style }}
         >
           {header}
-          <div className="drawer-animation__children tw-flex-1 tw-overflow-auto">{children}</div>
+          <div className={`drawer-animation__children tw-flex-1 tw-overflow-auto ${childrenClassName}`}>{children}</div>
         </div>
       </div>
     </FullScreenFrame>
@@ -111,6 +112,8 @@ Drawer.propTypes = {
   show: PropTypes.bool,
   /* The class name of outer container */
   className: PropTypes.string,
+  /* The class name of inner container */
+  childrenClassName: PropTypes.string,
   /* The style of outer container */
   style: PropTypes.object,
   /* The callback when the use touch the backdrop */
@@ -121,6 +124,8 @@ Drawer.propTypes = {
   fullScreen: PropTypes.bool,
   /* Whether covers the footer */
   respectSpaceOccupation: PropTypes.bool,
+  /* Whether set max height to drawer content height */
+  maxHeightUpdateToHeight: PropTypes.bool,
   /* z-index style that is set on the outermost DOM node */
   zIndex: PropTypes.number,
   /* Whether mount the component at a common portal at the root. `true` by default */
@@ -136,11 +141,13 @@ Drawer.defaultProps = {
   header: null,
   show: false,
   className: '',
+  childrenClassName: '',
   style: {},
   onClose: () => {},
   animation: true,
   fullScreen: false,
   respectSpaceOccupation: false,
+  maxHeightUpdateToHeight: false,
   zIndex: 100,
   mountAtRoot: true,
   onHistoryBackCompleted: () => {},

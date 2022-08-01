@@ -16,7 +16,6 @@
   "ContactUs": "Contact Us",
   "OrderDetails": "Order Details",
   "TermsAndPrivacyDescription": "By tapping to continue, you agree to our<1/><2>Terms of Service</2> and <5>Privacy Policy</5>.",
-  "TermsAndPrivacyDescriptionQr": "By tapping to continue, you agree to our Terms of Service and Privacy Policy.",
   "DefaultMessage": "Oops, please scan QR to claim again.",
   "InvalidMessage": "After your purchase, just scan your receipt and enter your mobile number to earn cashback for your next visit. It’s that simple!",
   "ClaimedFirstTimeTitle": "Awesome, you've earned your first cashback! 🎉",
@@ -180,7 +179,7 @@
   "CompleteProfileTip": "Complete your profile to get updated on relevant offers & promotions by our partner merchants!",
   "AddNewAddress": "Add New Address",
   "SavedAddress": "Saved Address",
-  "OutOfRange": "OUT OF RANGE",
+  "OutOfRange": "Out of Range",
   "ContactDetails": "Contact Details",
   "ContactTip": "Only change this if you're ordering for someone else and want us to contact them if there's an issue with the order. P.S. All order status updates will be sent to the contact person below.",
   "EditAddress": "Edit Address",
@@ -285,7 +284,11 @@
   "SelectNextAvailableTime": "Select next available time slot",
   "NetworkErrorTitle": "No internet connection",
   "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again",
+  "SearchYourLocation": "Search your location",
+  "AddressListEmptyDescription": "Enter your delivery location",
   "StoreListDrawerTitle": "Select store branch",
-  "StoreListDrawerDeliveryDescription": "{{totalOutletDisplayTitle}} outlets near you",
-  "StoreListDrawerPickupDescription": "Total {{totalOutletDisplayTitle}} outlets"
+  "StoreListDrawerDescription": "{{totalOutlet}} outlets near you",
+  "Promos": "Promos",
+  "Date": "Date",
+  "Time": "Time"
 }

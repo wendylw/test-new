@@ -4,7 +4,6 @@ import { storeDrawerShown } from './thunks';
 
 const initialState = {
   storeListInfo: {
-    data: [],
     status: null,
     error: null,
   },
@@ -18,8 +17,7 @@ export const { reducer, actions } = createSlice({
       state.storeListInfo.status = API_REQUEST_STATUS.PENDING;
       state.storeListInfo.error = null;
     },
-    [storeDrawerShown.fulfilled.type]: (state, action) => {
-      state.storeListInfo.data = action.payload;
+    [storeDrawerShown.fulfilled.type]: state => {
       state.storeListInfo.status = API_REQUEST_STATUS.FULFILLED;
     },
     [storeDrawerShown.rejected.type]: (state, action) => {

@@ -7,7 +7,7 @@ const DrawerHeader = props => {
   return (
     <header className={`${styles.header} ${className}`}>
       <div className={`${styles.buttonContainer} ${styles.left}`}>{left}</div>
-      <div className={styles.headerTitle}>{children}</div>
+      <div>{children}</div>
       <div className={`${styles.buttonContainer} ${styles.right}`}>{right}</div>
     </header>
   );

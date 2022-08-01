@@ -2,7 +2,8 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
 import _isEqual from 'lodash/isEqual';
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, unwrapResult } from '@reduxjs/toolkit';
+import i18next from 'i18next';
 import { getAddressInfo } from '../../../../../redux/modules/address/selectors';
 import { setAddressInfo } from '../../../../../redux/modules/address/thunks';
 import { getBusinessByName } from '../../../../../redux/modules/entities/businesses';
@@ -16,11 +17,20 @@ import {
   getBusinessUTCOffset,
   actions as appActionCreators,
 } from '../../../../redux/modules/app';
+import { loadAddressList } from '../../../../redux/modules/addressList/thunks';
+import {
+  loadLocationHistoryList,
+  loadSearchLocationList,
+  updateLocationToHistoryList,
+  loadPlaceInfoById,
+} from '../../../../redux/modules/locations/thunks';
 import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
 import { getIsAddressOutOfRange } from '../common/selectors';
+import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
-import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../utils/constants';
+import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../common/utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
+import { toast } from '../../../../../common/feedback';
 
 class LocationSelectedError extends Error {
   constructor(message, code) {
@@ -31,21 +41,19 @@ class LocationSelectedError extends Error {
   }
 }
 
-export const showErrorToast = createAsyncThunk('ordering/menu/address/showErrorToast', async errorCode => ({
-  errorCode,
-}));
-
-export const clearErrorToast = createAsyncThunk('ordering/menu/address/clearErrorToast', async () => {});
-
 export const checkDeliveryRange = createAsyncThunk(
   'ordering/menu/address/checkDeliveryRange',
-  async (_, { dispatch, getState }) => {
+  async (_, { getState }) => {
     const state = getState();
     const isAddressOutOfRange = getIsAddressOutOfRange(state);
+    const errorOptions = getErrorOptions(state);
 
     if (!isAddressOutOfRange) return;
 
-    await dispatch(showErrorToast(ERROR_CODES.OUT_OF_DELIVERY_RANGE));
+    toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
+      type: 'error',
+      duration: 4500,
+    });
   }
 );
 
@@ -54,10 +62,16 @@ export const checkDeliveryRange = createAsyncThunk(
  */
 export const locationDrawerShown = createAsyncThunk(
   'ordering/menu/address/locationDrawerShown',
-  async (_, { dispatch, getState }) => {
+  async (isLoadableAddressList, { dispatch, getState }) => {
     const state = getState();
     const storeId = getStoreId(state);
     const business = getBusiness(state);
+
+    if (isLoadableAddressList) {
+      await dispatch(loadAddressList());
+    } else {
+      await dispatch(loadLocationHistoryList());
+    }
 
     await dispatch(checkDeliveryRange());
 
@@ -99,7 +113,7 @@ export const locationDrawerShown = createAsyncThunk(
       };
 
       if (!_isNumber(coords.lat) || !_isNumber(coords.lng)) {
-        throw new Error('store coordination is incorrect.');
+        throw new Error('store coordinates is incorrect.');
       }
 
       return {
@@ -116,14 +130,57 @@ export const locationDrawerShown = createAsyncThunk(
 
 export const locationDrawerHidden = createAsyncThunk('ordering/menu/address/locationDrawerHidden', async () => {});
 
+const getFormatSelectAddressInfo = (addressOrLocationInfo, type) => {
+  const addressInfo = {};
+
+  if (type === 'address') {
+    const {
+      id,
+      deliveryTo: fullName,
+      addressName: shortName,
+      location: { longitude: lng, latitude: lat },
+      countryCode,
+      postCode,
+      city,
+    } = addressOrLocationInfo;
+
+    addressInfo.savedAddressId = id;
+    addressInfo.fullName = fullName;
+    addressInfo.shortName = shortName;
+    addressInfo.coords = { lng, lat };
+    addressInfo.countryCode = countryCode;
+    addressInfo.postCode = postCode;
+    addressInfo.city = city;
+  } else if (type === 'location') {
+    const {
+      placeId,
+      address: fullName,
+      coords,
+      displayComponents: { mainText: shortName },
+      addressComponents: { countryCode, postCode, city },
+    } = addressOrLocationInfo;
+
+    addressInfo.placeId = placeId;
+    addressInfo.fullName = fullName;
+    addressInfo.shortName = shortName;
+    addressInfo.coords = coords;
+    addressInfo.countryCode = countryCode;
+    addressInfo.postCode = postCode;
+    addressInfo.city = city;
+  }
+
+  return addressInfo;
+};
 /**
  * select location from the location drawer
  */
 export const selectLocation = createAsyncThunk(
   'ordering/menu/address/selectLocation',
-  async (addressInfo, { dispatch, getState }) => {
+  async ({ addressOrLocationInfo, type }, { dispatch, getState }) => {
+    const addressInfo = getFormatSelectAddressInfo(addressOrLocationInfo, type);
     const state = getState();
     const prevAddressInfo = getAddressInfo(state);
+    const errorOptions = getErrorOptions(state);
 
     if (_isEqual(prevAddressInfo, addressInfo)) {
       await dispatch(hideLocationDrawer());
@@ -140,12 +197,18 @@ export const selectLocation = createAsyncThunk(
       const coords = _get(addressInfo, 'coords', null);
 
       if (_isEmpty(coords)) {
+        toast(i18next.t(`OrderingDelivery:AddressNotFound`), {
+          type: 'error',
+          duration: 4500,
+        });
+
         throw new LocationSelectedError('address coordination is not found', ERROR_CODES.ADDRESS_NOT_FOUND);
       }
 
       let stores = getCoreStoreList(state);
       const utcOffset = getBusinessUTCOffset(state);
       const currentDate = getCurrentDate(state);
+      const deliveryRadius = getDeliveryRadius(state);
 
       if (_isEmpty(stores)) {
         // We only fetch the core store API again when the previous call hasn't been completed or sent yet for better performance
@@ -153,13 +216,20 @@ export const selectLocation = createAsyncThunk(
         stores = getCoreStoreList(getState());
       }
 
-      const { store } = findNearestAvailableStore(stores, {
+      const { store, distance } = findNearestAvailableStore(stores, {
         coords,
         currentDate,
         utcOffset,
       });
 
-      if (_isEmpty(store)) {
+      const deliveryDistance = (distance / 1000).toFixed(2);
+
+      if (_isEmpty(store) || deliveryDistance > deliveryRadius) {
+        toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
+          type: 'error',
+          duration: 4500,
+        });
+
         throw new LocationSelectedError(
           'no available store according to the current time or delivery range',
           ERROR_CODES.OUT_OF_DELIVERY_RANGE
@@ -171,12 +241,52 @@ export const selectLocation = createAsyncThunk(
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
-      if (e instanceof LocationSelectedError) {
-        await dispatch(showErrorToast(e.code));
-      }
-
       logger.error(`Failed to select location: ${e?.message}`);
       throw e;
     }
+  }
+);
+
+/**
+ *  load search location list
+ */
+export const loadSearchLocationListData = createAsyncThunk(
+  'ordering/menu/address/loadSearchLocationListData',
+  async (searchKey, { getState }) => {
+    if (_isEmpty(searchKey)) {
+      return [];
+    }
+    try {
+      const state = getState();
+      const storeInfo = getStoreInfoData(state);
+      const result = await loadSearchLocationList(searchKey, storeInfo);
+
+      return result;
+    } catch (e) {
+      logger.error('failed to load search location list data', e);
+
+      return [];
+    }
+  }
+);
+
+/**
+ *
+ * */
+export const loadPlaceInfo = async searchResult => {
+  const result = await loadPlaceInfoById(searchResult, { fromAutocomplete: true });
+
+  return result;
+};
+
+/**
+ *  update search location list
+ */
+export const updateSearchLocationList = createAsyncThunk(
+  'ordering/menu/address/updateSearchLocationList',
+  async (formatPositionInfo, { dispatch }) => {
+    const result = await dispatch(updateLocationToHistoryList(formatPositionInfo)).then(unwrapResult);
+
+    return result;
   }
 );

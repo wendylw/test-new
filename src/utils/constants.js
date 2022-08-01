@@ -85,12 +85,7 @@ const CHANNEL_TYPE = {
   BEEP: 3,
 };
 
-const ADDRESS_RANGE = {
-  STREET: 2,
-  CITY: 4,
-  STATE: 5,
-  COUNTRY: 6,
-};
+const ADDRESS_RANGE = ConstantsV2.ADDRESS_RANGE;
 
 const ADD_TO_CART_MIN_QUANTITY = 1;
 
@@ -415,7 +410,7 @@ const ASIDE_NAMES = {
 
 const DELIVERY_METHOD = ConstantsV2.SHIPPING_TYPES;
 
-const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEK_DAYS_I18N_KEYS = ConstantsV2.WEEK_DAYS_I18N_KEYS;
 
 const PROMOTION_ERROR_CODES = {
   /* temp promotion error code */
@@ -667,10 +662,7 @@ export const DISPLAY_ICON_TYPES = {
   CARET_DOWN: 'CaretDown',
 };
 
-export const LOCATION_SELECTION_REASON_CODES = {
-  OUT_OF_DELIVERY_RANGE: 'OutOfDeliveryRange',
-  ADDRESS_NOT_FOUND: 'AddressNotFound',
-};
+export const LOCATION_SELECTION_REASON_CODES = ConstantsV2.LOCATION_SELECTION_REASON_CODES;
 
 export default {
   OTP_CODE_SIZE,

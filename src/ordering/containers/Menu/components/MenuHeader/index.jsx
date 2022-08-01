@@ -23,7 +23,7 @@ import styles from './MenuHeader.module.scss';
 import { isWebview, isTakeAwayType, isDeliveryOrder, isFromBeepSite, isQROrder } from '../../../../../common/utils';
 import NativeHeader, { ICON_RES } from '../../../../../components/NativeHeader';
 import { closeWebView } from '../../../../../utils/native-methods';
-import { getDeliveryInfo } from '../../../../redux/modules/app';
+import { getDeliveryInfo, getIsFromBeepSite } from '../../../../redux/modules/app';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import { goBack, loadUserFavStoreStatus, saveFavoriteStore, shareStore } from '../../redux/common/thunks';
 
@@ -70,7 +70,7 @@ const MenuHeader = ({ webHeaderVisibility }) => {
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   const isProductDetailDrawerVisible = useSelector(getIsProductDetailDrawerVisible);
   const isInWebview = isWebview();
-  const isFromBeepSitePage = isFromBeepSite();
+  const isFromBeepSitePage = useSelector(getIsFromBeepSite);
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
   const storeFullDisplayTitle = useSelector(getStoreFullDisplayTitle);
   const hasUserSaveStore = useSelector(getHasUserSaveStore);

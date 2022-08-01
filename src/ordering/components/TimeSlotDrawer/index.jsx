@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X } from 'phosphor-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { DateIcon, TimeIcon } from '../../../../common/components/Icons';
-import Button from '../../../../common/components/Button';
-import Drawer from '../../../../common/components/Drawer';
-import DrawerHeader from '../../../../common/components/Drawer/DrawerHeader';
-import Loader from '../../../../common/components/Loader';
+import { DateIcon, TimeIcon } from '../../../common/components/Icons';
+import Button from '../../../common/components/Button';
+import Drawer from '../../../common/components/Drawer';
+import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
+import Loader from '../../../common/components/Loader';
+import { SHIPPING_TYPES } from '../../../common/utils/constants';
 import 'swiper/components/pagination/pagination.scss';
 import styles from './TimeSlotDrawer.module.scss';
-import { SHIPPING_TYPES } from '../../../../common/utils/constants';
 
 const SHIPPING_TYPE_MAPPING = {
   pickup: 'Pickup',
@@ -36,18 +36,19 @@ const TimeSlotDrawer = ({
 
   return (
     <Drawer
+      style={{
+        minHeight: '70%',
+      }}
       className={isInitializing ? styles.timeSlotDrawerInitializing : styles.timeSlotDrawer}
-      style={{ height: '65%' }}
+      childrenClassName={styles.timeSlotWrapper}
       show={timeSlotDrawerVisible}
       header={
         <DrawerHeader
           left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" onClick={onClose} />}
         >
-          <div className="tw-flex tw-flex-col tw-items-center">
-            <span className="tw-font-bold tw-text-lg tw-leading-relaxed">
-              {isOnlyPreOrder ? t('SelectNextAvailableTime') : t('SelectTimeSlot')}
-            </span>
-          </div>
+          <span className="tw-font-bold tw-text-lg tw-leading-relaxed">
+            {isOnlyPreOrder ? t('SelectNextAvailableTime') : t('SelectTimeSlot')}
+          </span>
         </DrawerHeader>
       }
       onClose={onClose}
@@ -55,7 +56,7 @@ const TimeSlotDrawer = ({
       {isInitializing ? (
         <Loader className={styles.loader} weight="bold" />
       ) : (
-        <div className={styles.timeSlotWrapper}>
+        <>
           <div className={styles.timeSlotContent}>
             <section className="tw-mx-16 sm:tw-mx-16px">
               <div className={styles.switchButtons}>
@@ -75,7 +76,7 @@ const TimeSlotDrawer = ({
             <section className="tw-my-8 sm:tw-my-8px">
               <h3 className="tw-flex tw-items-center tw-py-8 sm:tw-py-8px tw-mx-16 sm:tw-mx-16px">
                 <DateIcon className="tw-inline-flex" />
-                <span className="tw-px-8 sm:tw-px-8px tw-font-bold">Date</span>
+                <span className="tw-px-8 sm:tw-px-8px tw-font-bold">{t('Date')}</span>
               </h3>
               <Swiper
                 wrapperTag="ul"
@@ -86,10 +87,10 @@ const TimeSlotDrawer = ({
                 }}
                 className={styles.timeSlotDateList}
               >
-                {dateList.map(({ value, displayMonth, displayDay, available, selected, isToday, isTomorrow }) => {
+                {dateList.map(({ value, displayWeek, displayDay, available, selected, isToday, isTomorrow }) => {
                   const classNameList = [isTomorrow ? styles.timeSlotDateItemOverWidth : styles.timeSlotDateItem];
                   const dateContentList =
-                    !isToday && !isTomorrow ? [displayMonth, displayDay] : isToday ? [t('Today')] : [t('Tomorrow')];
+                    !isToday && !isTomorrow ? [t(displayWeek), displayDay] : isToday ? [t('Today')] : [t('Tomorrow')];
 
                   if (selected) {
                     classNameList.push('active');
@@ -121,7 +122,7 @@ const TimeSlotDrawer = ({
             <section className="tw-my-8 sm:tw-my-8px tw-mx-16 sm:tw-mx-16px">
               <h3 className="tw-flex tw-items-center tw-py-8 sm:tw-py-8px">
                 <TimeIcon className="tw-inline-flex" />
-                <span className="tw-px-8 sm:tw-px-8px tw-font-bold">Time</span>
+                <span className="tw-px-8 sm:tw-px-8px tw-font-bold">{t('Time')}</span>
               </h3>
               <ol className="tw-py-4 sm:tw-py-4px">
                 {timeSlotList.map(({ value, from, to, available, selected }) => {
@@ -149,7 +150,7 @@ const TimeSlotDrawer = ({
               {t('Continue')}
             </Button>
           </div>
-        </div>
+        </>
       )}
     </Drawer>
   );

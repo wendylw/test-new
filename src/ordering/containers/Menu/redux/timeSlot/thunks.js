@@ -1,6 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import _map from 'lodash/map';
-import { getBusinessUTCOffset, getStore, actions as AppActions } from '../../../../redux/modules/app';
+import {
+  getBusinessUTCOffset,
+  getStore,
+  actions as AppActions,
+  getIsEnablePerTimeSlotLimitForPreOrder,
+  getStoreSupportShippingTypes,
+  getStoreInfoForCleverTap,
+} from '../../../../redux/modules/app';
 import {
   getBusinessTimeZoneCurrentDayjs,
   getCurrentTime,
@@ -9,16 +16,13 @@ import {
   getStoreId,
 } from '../common/selectors';
 import { fetchTimeSlotSoldData } from './api-request';
-import {
-  getIsEnablePerTimeSlotLimitForPreOrder,
-  getSelectedDate,
-  getSelectedDateObj,
-  getSelectedShippingType,
-  getSelectedTimeSlot,
-} from './selectors';
+import { getSelectedDate, getSelectedDateObj, getSelectedShippingType, getSelectedTimeSlot } from './selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
-import { hideTimeSlotDrawer, updateExpectedDeliveryDate } from '../common/thunks';
+import { updateExpectedDeliveryDate } from '../common/thunks';
+import { actions as commonActions } from '../common/index';
 import { setDateTime } from '../../../../../utils/time-lib';
+import Clevertap from '../../../../../utils/clevertap';
+import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
 
 export const loadTimeSlotSoldData = createAsyncThunk(
   'ordering/menu/timeSlot/loadTimeSlotSoldData',
@@ -49,10 +53,17 @@ export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/time
   try {
     const state = getState();
     const store = getStore(state);
-    const selectedShippingType = getShippingType(state);
+    const shippingType = getShippingType(state);
     const expectedDeliveryTime = getExpectedDeliveryTime(state);
     const currentDayjs = getBusinessTimeZoneCurrentDayjs(state);
     const businessUTCOffset = getBusinessUTCOffset(state);
+    const storeSupportShippingTypes = getStoreSupportShippingTypes(state);
+    const selectedShippingType = storeSupportShippingTypes.includes(shippingType)
+      ? shippingType
+      : storeSupportShippingTypes[0];
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Timeslot - view page', storeInfoForCleverTap);
 
     if (!expectedDeliveryTime) {
       // find earliest available time slot
@@ -97,7 +108,7 @@ export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/time
 });
 
 // Do some clean up job after time slot drawer hidden
-export const timeSlotDrawerHidden = createAsyncThunk('ordering/menu/timeSlot/hideTimeSlotDrawer', () => {});
+export const timeSlotDrawerHidden = createAsyncThunk('ordering/menu/timeSlot/timeSlotDrawerHidden', () => {});
 
 export const changeShippingType = createAsyncThunk(
   'ordering/menu/timeSlot/changeShippingType',
@@ -109,6 +120,11 @@ export const changeShippingType = createAsyncThunk(
       const selectedTimeSlot = getSelectedTimeSlot(state);
       const currentTime = getCurrentTime(state);
       const businessUTCOffset = getBusinessUTCOffset(state);
+      const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+      const eventName =
+        shippingType === SHIPPING_TYPES.DELIVERY ? 'Timeslot - click delivery tab' : 'Timeslot - click pickup tab';
+
+      Clevertap.pushEvent(eventName, storeInfoForCleverTap);
 
       // check current selected time whether available for new selected shippingType
       // if not, find the earliest available time
@@ -140,6 +156,9 @@ export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', 
     const currentTime = getCurrentTime(state);
     const businessUTCOffset = getBusinessUTCOffset(state);
     const selectedTimeSlot = getSelectedTimeSlot(state);
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Timeslot - click shipping date', storeInfoForCleverTap);
 
     // check current selected time whether available for new selected date
     // if not, find the earliest available time
@@ -161,7 +180,13 @@ export const changeDate = createAsyncThunk('ordering/menu/timeSlot/changeDate', 
   }
 });
 
-export const changeTimeSlot = createAsyncThunk('ordering/menu/timeSlot/changeTimeSlot', value => value);
+export const changeTimeSlot = createAsyncThunk('ordering/menu/timeSlot/changeTimeSlot', (value, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+  Clevertap.pushEvent('Timeslot - click shipping time', storeInfoForCleverTap);
+
+  return value;
+});
 
 export const save = createAsyncThunk('ordering/menu/timeSlot/save', async (_, { getState, dispatch }) => {
   try {
@@ -172,6 +197,9 @@ export const save = createAsyncThunk('ordering/menu/timeSlot/save', async (_, { 
     const businessUTCOffset = getBusinessUTCOffset(state);
     const shippingType = getShippingType(state);
     const expectedDeliveryTime = getExpectedDeliveryTime(state);
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Timeslot - confirm', storeInfoForCleverTap);
 
     const selectedExpectedDeliveryTime = (() => {
       if (selectedTimeSlot === 'now') {
@@ -198,7 +226,8 @@ export const save = createAsyncThunk('ordering/menu/timeSlot/save', async (_, { 
       dispatch(AppActions.loadProductList());
     }
 
-    dispatch(hideTimeSlotDrawer());
+    // Avoid calling hideTimeSlotDrawer because it will push the CT event "Timeslot - back"
+    dispatch(commonActions.setTimeSlotDrawerVisible(false));
   } catch (error) {
     console.error(error);
     throw error;
