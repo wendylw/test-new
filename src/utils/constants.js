@@ -9,7 +9,7 @@ import * as ConstantsV2 from '../common/utils/constants';
 
 const DOCUMENT_ROOT_ID = 'root';
 
-const RESEND_OTP_TIME = 60;
+const RESEND_OTP_TIME = 30;
 
 const MANIFEST = {
   PLACEHOLDER_ID: 'manifest-placeholder',
@@ -664,6 +664,10 @@ export const DISPLAY_ICON_TYPES = {
 
 export const LOCATION_SELECTION_REASON_CODES = ConstantsV2.LOCATION_SELECTION_REASON_CODES;
 
+export const LIVE_CHAT_SOURCE_TYPES = {
+  ORDER_DETAILS: 'order details',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -719,4 +723,5 @@ export default {
   OTP_REQUEST_TYPES,
   DISPLAY_ICON_TYPES,
   LOCATION_SELECTION_REASON_CODES,
+  LIVE_CHAT_SOURCE_TYPES,
 };

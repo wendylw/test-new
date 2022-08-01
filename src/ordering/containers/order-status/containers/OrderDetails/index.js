@@ -28,8 +28,14 @@ import {
 import './OrderingDetails.scss';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
+import { ICON_RES } from '../../../../../components/NativeHeader';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING, DELIVERY_METHOD } = Constants;
+const {
+  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
+  ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING,
+  DELIVERY_METHOD,
+  LIVE_CHAT_SOURCE_TYPES,
+} = Constants;
 
 export class OrderDetails extends Component {
   state = {};
@@ -259,7 +265,6 @@ export class OrderDetails extends Component {
 
     if (isWebview) {
       const rightContentOfNativeLiveChat = {
-        text: `${t('NeedHelp')}?`,
         style: {
           color: '#00b0ff',
         },
@@ -269,9 +274,18 @@ export class OrderDetails extends Component {
           NativeMethods.startChat({
             orderId,
             storeName: orderStoreName,
+            source: LIVE_CHAT_SOURCE_TYPES.ORDER_DETAILS,
           });
         },
       };
+
+      if (NativeMethods.hasIconResInNative(ICON_RES.SUPPORT_AGENT)) {
+        rightContentOfNativeLiveChat['text'] = t('Help');
+        rightContentOfNativeLiveChat['iconRes'] = ICON_RES.SUPPORT_AGENT;
+      } else {
+        // For back-compatibility sake, we remain the same UI for old versions of the app
+        rightContentOfNativeLiveChat['text'] = `${t('NeedHelp')}?`;
+      }
 
       const rightContentOfContactUs = {
         text: t('ContactUs'),

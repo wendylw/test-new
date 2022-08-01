@@ -39,7 +39,6 @@
 .basicInfoSection {
   @apply tw-flex-none tw-p-16 sm:tw-p-16px;
 }
-
 .productFeatureStatus {
   @apply tw-flex tw-items-center tw-justify-between;
 }
@@ -48,12 +47,8 @@
   @apply tw-flex tw-items-center tw-justify-end;
 }
 
-.variationSection {
-  @apply tw-flex-1 tw-pb-16px;
-}
-
 .productDetailVariationAndNote {
-  @apply tw-relative tw-flex-1 tw-pb-16px;
+  @apply tw-flex-1 tw-pb-16px;
 }
 
 .quantitySection {
