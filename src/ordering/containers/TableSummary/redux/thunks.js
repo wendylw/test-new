@@ -87,12 +87,17 @@ export const showRedirectLoader = createAsyncThunk('ordering/tableSummary/showRe
 
 export const hideRedirectLoader = createAsyncThunk('ordering/tableSummary/hideRedirectLoader', async () => {});
 
-export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment', async (_, { dispatch, getState }) => {
-  const state = getState();
-  const receiptNumber = getOrderReceiptNumber(state);
+export const clearQueryOrdersAndStatus = () => () => {
+  clearTimeout(queryOrdersAndStatus.timer);
+  logger.log('table-summary.query-orders-and-status', { action: 'stop' });
+  queryOrdersAndStatus.timer = null;
+};
 
-  try {
-    const total = getOrderTotal(state);
+export const payByCoupons = createAsyncThunk(
+  'ordering/tableSummary/payByCoupons',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const receiptNumber = getOrderReceiptNumber(state);
     const cashback = getOrderCashback(state);
     const promotionId = getPromotionId(state);
     const consumerId = getUserConsumerId(state);
@@ -106,9 +111,44 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
       voucherCode,
     };
 
+    await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+  }
+);
+
+export const payByTnGMiniProgram = createAsyncThunk(
+  'ordering/tableSummary/payByTnGMiniProgram',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const total = getOrderTotal(state);
+    const receiptNumber = getOrderReceiptNumber(state);
+
+    try {
+      dispatch(showRedirectLoader());
+      // We need to stop the polling for 2 reasons:
+      // 1. It is unnecessary to poll the status when user is paying by TNG Mini Program.
+      // 2. It affects the page redirection and the page will be stook and the TnG app will be crashed at the end.
+      dispatch(clearQueryOrdersAndStatus());
+      // Load Billing API before calling init with order API, otherwise may be rejected for the required parameter missing
+      await dispatch(loadBilling()).unwrap();
+      await dispatch(initPayment({ orderId: receiptNumber, total }));
+    } catch (error) {
+      dispatch(hideRedirectLoader());
+      // Resume payment status polling then user can still fetch the latest payment status
+      dispatch(queryOrdersAndStatus(receiptNumber));
+      throw error;
+    }
+  }
+);
+
+export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment', async (_, { dispatch, getState }) => {
+  const state = getState();
+  const total = getOrderTotal(state);
+  const receiptNumber = getOrderReceiptNumber(state);
+
+  try {
     // Special case for free charge
     if (total === 0) {
-      await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+      await dispatch(payByCoupons()).unwrap();
       return;
     }
 
@@ -116,10 +156,7 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     const isTNGMiniProgram = getIsTNGMiniProgram(state);
 
     if (isTNGMiniProgram) {
-      dispatch(showRedirectLoader());
-      // Load Billing API before calling init with order API, otherwise may be rejected for the required parameter missing
-      await dispatch(loadBilling()).unwrap();
-      await dispatch(initPayment({ orderId: receiptNumber, total })).unwrap();
+      await dispatch(payByTnGMiniProgram()).unwrap();
       return;
     }
 
@@ -127,7 +164,6 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     const search = getLocationSearch(state);
     dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
   } catch (error) {
-    dispatch(hideRedirectLoader());
     logger.error('ordering.table-summary.go-to-payment.error', {
       error: error?.message,
       receiptNumber,
@@ -135,9 +171,3 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     throw error;
   }
 });
-
-export const clearQueryOrdersAndStatus = () => () => {
-  clearTimeout(queryOrdersAndStatus.timer);
-  logger.log('table-summary.query-orders-and-status', { action: 'stop' });
-  queryOrdersAndStatus.timer = null;
-};
