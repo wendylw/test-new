@@ -421,6 +421,11 @@ export const getUnableAddToCartReason = createSelector(
   }
 );
 
+export const getIsOutOfStockProduct = createSelector(
+  getSelectedProductStockStatus,
+  selectedProductStockStatus => selectedProductStockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK
+);
+
 export const getProductIdForGTMData = createSelector(
   getSelectedChildProductId,
   getSelectedProductId,

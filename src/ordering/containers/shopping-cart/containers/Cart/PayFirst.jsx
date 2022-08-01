@@ -49,6 +49,7 @@ class PayFirst extends Component {
       additionalComments: Utils.getSessionVariable('additionalComments'),
       cartContainerHeight: '100%',
       productsContainerHeight: '0px',
+      pendingBeforeCreateOrder: false,
     };
   }
 
@@ -354,17 +355,18 @@ class PayFirst extends Component {
 
   renderCreateOrderButton = () => {
     const { t, history, isValidCreateOrder, pendingCheckingInventory, shouldDisablePayButton } = this.props;
+    const { pendingBeforeCreateOrder } = this.state;
     return (
       <CreateOrderButton
         className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
         history={history}
         data-testid="pay"
         data-heap-name="ordering.cart.pay-btn"
-        disabled={shouldDisablePayButton}
+        disabled={shouldDisablePayButton || pendingBeforeCreateOrder}
         validCreateOrder={isValidCreateOrder}
         beforeCreateOrder={this.handleBeforeCreateOrder}
         loaderText={t('Processing')}
-        processing={pendingCheckingInventory}
+        processing={pendingCheckingInventory || pendingBeforeCreateOrder}
       >
         {this.getOrderButtonContent()}
       </CreateOrderButton>
@@ -382,6 +384,7 @@ class PayFirst extends Component {
       isUserProfileStatusFulfilled,
     } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
+    this.setState({ pendingBeforeCreateOrder: true });
 
     // if user login, and one of user name or phone is empty from delivery details data,
     // then update them from user profile.
@@ -408,10 +411,13 @@ class PayFirst extends Component {
         state: { shouldGoBack: true },
       });
     });
+
+    this.setState({ pendingBeforeCreateOrder: false });
   };
 
   getOrderButtonContent = () => {
     const { t, pendingCheckingInventory, isBillingTotalInvalid, validBillingTotal } = this.props;
+    const { pendingBeforeCreateOrder } = this.state;
 
     const buttonContent = !isBillingTotalInvalid ? (
       <span className="text-weight-bolder" key="pay-now">
@@ -433,7 +439,7 @@ class PayFirst extends Component {
       </span>
     );
 
-    return pendingCheckingInventory ? processingContent : buttonContent;
+    return pendingCheckingInventory || pendingBeforeCreateOrder ? processingContent : buttonContent;
   };
 
   formatCleverTapAttributes(product) {
