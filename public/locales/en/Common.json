@@ -202,6 +202,7 @@
   "Rounding": "Rounding",
   "ReportIssue": "Report Issue",
   "NeedHelp": "Need Help",
+  "Help": "Help",
   "CommonErrorMessage": "Whoops, this page isn't available",
   "ErrorId": "Error ID: {{ id }}",
   "LowStockProductQuantity": "only {{quantityOnHand}} left",

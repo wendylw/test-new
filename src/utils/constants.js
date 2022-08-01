@@ -667,6 +667,10 @@ export const DISPLAY_ICON_TYPES = {
   CARET_DOWN: 'CaretDown',
 };
 
+export const LIVE_CHAT_SOURCE_TYPES = {
+  ORDER_DETAILS: 'order details',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -721,4 +725,5 @@ export default {
   OTP_REQUEST_PLATFORM,
   OTP_REQUEST_TYPES,
   DISPLAY_ICON_TYPES,
+  LIVE_CHAT_SOURCE_TYPES,
 };
