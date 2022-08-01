@@ -67,12 +67,7 @@ class OrderHistory extends React.Component {
       'store name': _get(order, 'store.storeDisplayName', ''),
     });
 
-    // '/go2page' will response 302 status and redirect to ${target} url
-    // we add this for disabled IOS app link in Beep tng mini program
-    // this is workaround way, TNGD side will fix IOS app link issue in the future
-    Utils.submitForm('/go2page', {
-      target: urlObj.toString(),
-    });
+    window.location.href = urlObj.toString();
   };
 
   handleRefresh = async () => {
