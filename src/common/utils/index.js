@@ -114,6 +114,14 @@ export const getShippingTypeFromUrl = () => {
   return type;
 };
 
+export const isURL = url => {
+  try {
+    return !!new URL(url);
+  } catch {
+    return false;
+  }
+};
+
 export const isFromBeepSite = () => {
   try {
     const beepOrderingSourceUrl = getSourceUrlFromSessionStorage();

@@ -581,27 +581,25 @@ export const shareStore = createAsyncThunk('ordering/menu/common/shareStore', as
 
 export const hideStoreInfoDrawer = createAsyncThunk('ordering/menu/common/hideStoreInfoDrawer', async () => {});
 
-const gotoLocationAndDate = (isToReviewCart, state, dispatch) => {
-  const search = getLocationSearch(state);
-  const basePath = isToReviewCart ? PATH_NAME_MAPPING.ORDERING_CART : PATH_NAME_MAPPING.ORDERING_HOME;
+export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', (_, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-  const callbackUrl = encodeURIComponent(`${basePath}${search}`);
+  Clevertap.pushEvent('Menu page - Click timeslot', storeInfoForCleverTap);
+});
 
-  dispatch(
-    push({
-      pathname: PATH_NAME_MAPPING.ORDERING_LOCATION_AND_DATE,
-      search: `${search}&callbackUrl=${callbackUrl}`,
-    })
-  );
-};
+export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {
+  Clevertap.pushEvent('Timeslot - back');
+});
 
-export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', () => {});
+export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', (_, { getState }) => {
+  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {});
+  Clevertap.pushEvent('Menu page - Click store list', storeInfoForCleverTap);
+});
 
-export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', () => {});
-
-export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {});
+export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {
+  Clevertap.pushEvent('Store List - Back');
+});
 
 /**
  * goto Review cart page
