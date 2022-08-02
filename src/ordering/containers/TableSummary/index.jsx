@@ -1,4 +1,3 @@
-/* eslint-disable react/sort-comp */
 import React from 'react';
 import qs from 'qs';
 import PropTypes from 'prop-types';
@@ -55,10 +54,10 @@ import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
-import './TableSummary.scss';
-import config from '../../../config';
 import { submitOrder } from './redux/api-request';
 import { getPromotionId } from '../../redux/modules/promotion';
+import './TableSummary.scss';
+import logger from '../../../utils/monitoring/logger';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -77,7 +76,11 @@ export class TableSummary extends React.Component {
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
 
-    await queryOrdersAndStatus(receiptNumber);
+    if (receiptNumber) {
+      await queryOrdersAndStatus(receiptNumber);
+    } else {
+      logger.error('receiptNumber is missing');
+    }
   }
 
   componentDidUpdate(prevProps, prevStates) {
@@ -100,23 +103,6 @@ export class TableSummary extends React.Component {
     await clearQueryOrdersAndStatus();
     resetCartSubmission();
   }
-
-  goToMenuPage = () => {
-    const { history, shippingType } = this.props;
-    const hashCode = Utils.getStoreHashCode();
-    const search = qs.stringify(
-      {
-        h: hashCode,
-        type: shippingType,
-      },
-      { addQueryPrefix: true }
-    );
-
-    history.push({
-      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
-      search,
-    });
-  };
 
   handleGotoPayMentPageOrThankYouPage = async () => {
     try {
@@ -170,6 +156,35 @@ export class TableSummary extends React.Component {
         cartContainerHeight: containerHeight,
       });
     }
+  };
+
+  getCorrectCode(code) {
+    const SHOW_LENGTH = 5;
+    // show like "Promo..."
+    if (code) {
+      if (code.length > SHOW_LENGTH) {
+        return `${code.substring(0, SHOW_LENGTH)}...`;
+      }
+      return code;
+    }
+    return '';
+  }
+
+  goToMenuPage = () => {
+    const { history, shippingType } = this.props;
+    const hashCode = Utils.getStoreHashCode();
+    const search = qs.stringify(
+      {
+        h: hashCode,
+        type: shippingType,
+      },
+      { addQueryPrefix: true }
+    );
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search,
+    });
   };
 
   showUnableBackMenuPageAlert = () => {
@@ -260,6 +275,30 @@ export class TableSummary extends React.Component {
       });
     }
   };
+
+  showShortPromoCode() {
+    const { orderPromotionCode, orderVoucherCode } = this.props;
+
+    if (orderPromotionCode) {
+      return this.getCorrectCode(orderPromotionCode);
+    }
+    return this.getCorrectCode(orderVoucherCode);
+  }
+
+  orderPromoType() {
+    const { orderBillingPromo, voucherBilling } = this.props;
+    const { PROMO_TYPE } = Constants;
+
+    if (orderBillingPromo) {
+      return PROMO_TYPE.PROMOTION_FOR_PAY_LATER;
+    }
+
+    if (voucherBilling) {
+      return PROMO_TYPE.VOUCHER_FOR_PAY_LATER;
+    }
+
+    return '';
+  }
 
   renderBaseInfo() {
     const { t, orderNumber, tableNumber } = this.props;
@@ -391,43 +430,6 @@ export class TableSummary extends React.Component {
         )}
       </li>
     );
-  }
-
-  // eslint-disable-next-line consistent-return
-  showShortPromoCode() {
-    const { orderPromotionCode, orderVoucherCode } = this.props;
-
-    if (orderPromotionCode) {
-      return this.getCorrectCode(orderPromotionCode);
-    }
-    return this.getCorrectCode(orderVoucherCode);
-  }
-
-  getCorrectCode(code) {
-    const SHOW_LENGTH = 5;
-    // show like "Promo..."
-    if (code) {
-      if (code.length > SHOW_LENGTH) {
-        return `${code.substring(0, SHOW_LENGTH)}...`;
-      }
-      return code;
-    }
-    return '';
-  }
-
-  orderPromoType() {
-    const { orderBillingPromo, voucherBilling } = this.props;
-    const { PROMO_TYPE } = Constants;
-
-    if (orderBillingPromo) {
-      return PROMO_TYPE.PROMOTION_FOR_PAY_LATER;
-    }
-
-    if (voucherBilling) {
-      return PROMO_TYPE.VOUCHER_FOR_PAY_LATER;
-    }
-
-    return '';
   }
 
   render() {
