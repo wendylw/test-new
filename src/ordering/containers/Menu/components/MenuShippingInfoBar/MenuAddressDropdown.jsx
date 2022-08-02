@@ -35,6 +35,7 @@ import {
 } from '../../redux/address/thunks';
 import styles from './MenuAddressDropdown.module.scss';
 import CleverTap from '../../../../../utils/clevertap';
+import { getStoreInfoForCleverTap } from '../../../../redux/modules/app';
 
 const LOCATION_TITLE_KEYS = {
   pickup: 'StoreLocation',
@@ -60,6 +61,8 @@ const MenuAddressDropdown = () => {
   const isAddressListVisible = useSelector(getIsAddressListVisible) && !isSearchLocationListVisible;
   const isLocationHistoryListVisible = useSelector(getIsLocationHistoryListVisible) && !isSearchLocationListVisible;
   const locationHistoryList = useSelector(getLocationHistoryListInfo);
+  const storeInfoForCleverTap = useSelector(getStoreInfoForCleverTap);
+
   const onHandleShowLocationDrawer = useCallback(() => {
     if (!isPickUpType) {
       dispatch(showLocationDrawer());
@@ -81,6 +84,14 @@ const MenuAddressDropdown = () => {
       dispatch(locationDrawerHidden());
     }
   }, [isLocationDrawerVisible, isLoadableAddressList, dispatch]);
+
+  useEffect(() => {
+    if (isLocationDrawerVisible) {
+      CleverTap.pushEvent('Location Page - View page', storeInfoForCleverTap);
+    }
+    // only run when isLocationDrawerVisible changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLocationDrawerVisible]);
 
   const handleSearchKeywordChanged = useCallback(
     async searchKey => {

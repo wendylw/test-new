@@ -87,7 +87,7 @@ export const showStoreInfoDrawer = createAsyncThunk('ordering/menu/common/showSt
 export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLocationDrawer', (_, { getState }) => {
   const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-  Clevertap.pushEvent('Location Page - View page', storeInfoForCleverTap);
+  Clevertap.pushEvent('Menu page - Click delivery location', storeInfoForCleverTap);
 });
 
 export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {
