@@ -129,6 +129,7 @@ export const payByTnGMiniProgram = createAsyncThunk(
       // 2. It affects the page redirection and the page will be stook and the TnG app will be crashed at the end.
       dispatch(clearQueryOrdersAndStatus());
       // Load Billing API before calling init with order API, otherwise may be rejected for the required parameter missing
+      // TODO: Not a good practice to call the thunk that from totally different module. We definitely need to optimize these codes in the future.
       await dispatch(loadBilling()).unwrap();
       await dispatch(initPayment({ orderId: receiptNumber, total }));
     } catch (error) {
