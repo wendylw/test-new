@@ -58,7 +58,7 @@ class Carousel extends Component {
 
   renderCarouselStores(stores, collectionInfo) {
     return (
-      <Swiper className="sm:tw-px-16px tw-px-16 sm:tw--mx-6px tw--mx-6" slidesPerView={'auto'} spaceBetween={16}>
+      <Swiper className="sm:tw-px-16px tw-px-16 sm:tw--mx-6px tw--mx-6" slidesPerView={'auto'}>
         {(stores || []).map((store, index) => {
           const { id } = store || {};
           return (
