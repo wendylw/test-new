@@ -1,33 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { applyPromotion, removePromotion } from './api-request';
-import { getPromoId } from './selector';
+import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './api-request';
+import { getPromoId, getPromoCodePayLater } from './selector';
 import Utils from '../../../../../utils/utils';
 
-export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo', async (_, { getState }) => {
-  const state = getState();
+const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
+
+const removePromoOrVoucher = async removeMethods => {
   const receiptNumber = Utils.getQueryString('receiptNumber');
-  const promotionId = getPromoId(state);
   try {
-    const result = await applyPromotion({ receiptNumber, promotionId });
-
-    return result;
-  } catch (e) {
-    const addError = {
-      name: JSON.stringify(e.extra),
-      code: e.code,
-      message: e.message,
-    };
-    console.error(addError);
-
-    throw addError;
-  }
-});
-
-export const removePromo = createAsyncThunk('ordering/promotion/common/removePromotion', async () => {
-  const receiptNumber = Utils.getQueryString('receiptNumber');
-
-  try {
-    const result = await removePromotion({ receiptNumber });
+    const result = await removeMethods({ receiptNumber });
 
     return result;
   } catch (e) {
@@ -35,4 +16,51 @@ export const removePromo = createAsyncThunk('ordering/promotion/common/removePro
 
     throw e;
   }
+};
+
+/**
+ * Promotion part
+ */
+export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo', async (_, { getState }) => {
+  const state = getState();
+  const promotionId = getPromoId(state);
+  const receiptNumber = Utils.getQueryString('receiptNumber');
+  try {
+    const result = await applyPromotion({ receiptNumber, promotionId });
+
+    return result;
+  } catch (e) {
+    console.error(formatErrorOfApplyPromoOrVoucher(e));
+
+    throw formatErrorOfApplyPromoOrVoucher(e);
+  }
 });
+
+export const removePromo = createAsyncThunk('ordering/promotion/common/removePromotion', () =>
+  removePromoOrVoucher(removePromotion)
+);
+
+/**
+ * Voucher part
+ */
+export const applyVoucherPayLater = createAsyncThunk(
+  'ordering/promotion/common/applyVoucherPayLater',
+  async (_, { getState }) => {
+    const state = getState();
+    const voucherCode = getPromoCodePayLater(state);
+    const receiptNumber = Utils.getQueryString('receiptNumber');
+    try {
+      const result = await applyVoucher({ receiptNumber, voucherCode });
+
+      return result;
+    } catch (e) {
+      console.error(formatErrorOfApplyPromoOrVoucher(e));
+
+      throw formatErrorOfApplyPromoOrVoucher(e);
+    }
+  }
+);
+
+export const removeVoucherPayLater = createAsyncThunk('ordering/promotion/common/removeVoucherPayLater', () =>
+  removePromoOrVoucher(removeVoucher)
+);

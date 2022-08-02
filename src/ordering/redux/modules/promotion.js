@@ -330,5 +330,5 @@ export function getSelectedPromo(state) {
 }
 
 export function getPromotionId(state) {
-  return state.promotion.foundPromo.availablePromos[0]?.id;
+  return _get(state.promotion, 'foundPromo.availablePromos[0].id', '');
 }

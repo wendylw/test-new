@@ -1,3 +1,4 @@
+import _isEmpty from 'lodash/isEmpty';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -105,12 +106,20 @@ class CustomerInfo extends Component {
     const { deliveryDetails, t } = this.props;
     const { username, addressName } = deliveryDetails || {};
     const isDeliveryType = Utils.isDeliveryType();
+    const shippingInfo = isDeliveryType ? this.getDeliveryTime() : this.getPickupTime();
     let error = {};
 
     if (!Boolean(addressName) && isDeliveryType) {
       error = {
         show: true,
         message: t('DeliveryAddressEmptyTitle'),
+        description: t('DeliveryAddressEmptyDescription'),
+        buttonText: t('OK'),
+      };
+    } else if (_isEmpty(shippingInfo)) {
+      error = {
+        show: true,
+        message: t('ShippingTimeEmptyTitle'),
         description: t('DeliveryAddressEmptyDescription'),
         buttonText: t('OK'),
       };
