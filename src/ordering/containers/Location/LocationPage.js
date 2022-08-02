@@ -133,6 +133,8 @@ class LocationPage extends Component {
       }
     } catch (e) {
       logger.error('load core stores failed on location page', e);
+
+      throw e;
     }
 
     const callbackUrl = Utils.getQueryString('callbackUrl');
