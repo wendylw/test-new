@@ -56,8 +56,8 @@ import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../comp
 import Billing from '../../components/Billing';
 import { submitOrder } from './redux/api-request';
 import { getPromotionId } from '../../redux/modules/promotion';
-import './TableSummary.scss';
 import logger from '../../../utils/monitoring/logger';
+import './TableSummary.scss';
 
 const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
 
@@ -70,7 +70,7 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
-    const { queryOrdersAndStatus } = this.props;
+    const { t, history, queryOrdersAndStatus } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
 
     window.scrollTo(0, 0);
@@ -80,6 +80,16 @@ export class TableSummary extends React.Component {
       await queryOrdersAndStatus(receiptNumber);
     } else {
       logger.error('receiptNumber is missing');
+
+      alert(t('ReceiptNumberInValidDescription'), {
+        title: t('ReceiptNumberInValidTitle'),
+        closeButtonContent: t('ReturnToCart'),
+        onClose: () =>
+          history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+            search: window.location.search,
+          }),
+      });
     }
   }
 
