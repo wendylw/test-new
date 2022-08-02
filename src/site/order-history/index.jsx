@@ -106,6 +106,7 @@ class OrderHistory extends React.Component {
 
     const showOrderListEmptyView = isRequestOrderDataDone && orderHistoryList.length === 0;
 
+    // TODO: If we implement the order history tab on TnG Mini Program in the future, the header should be removed from the page.
     return (
       <>
         <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
