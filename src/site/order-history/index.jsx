@@ -87,6 +87,20 @@ class OrderHistory extends React.Component {
     this.login();
   };
 
+  handleBackButtonClick = () => {
+    const sourceUrl = Utils.getQueryString('source');
+
+    if (sourceUrl) {
+      window.location.href = sourceUrl;
+      return;
+    }
+
+    // By default, just go back to previous page
+    const { history } = this.props;
+
+    history.goBack();
+  };
+
   render() {
     const { t, isLogin, orderHistoryList, hasMore, page, isRequestOrderDataDone, pageLoaderVisibility } = this.props;
 
@@ -110,7 +124,12 @@ class OrderHistory extends React.Component {
     // However, the header should be shown if the page is redirected from the food court page.
     return (
       <>
-        <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
+        <WebHeader
+          headerRef={ref => (this.headerEl = ref)}
+          isPage={true}
+          title={t('MyOrderHistory')}
+          navFunc={this.handleBackButtonClick}
+        />
 
         <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
           {showOrderListEmptyView ? (

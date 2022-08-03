@@ -830,8 +830,13 @@ export class ThankYou extends PureComponent {
       return;
     }
 
-    if (isOrderBeforePaid || isFromBeepSiteOrderHistory) {
+    if (isOrderBeforePaid) {
       history.goBack();
+      return;
+    }
+
+    if (isFromBeepSiteOrderHistory) {
+      window.location.href = sourceUrl;
       return;
     }
 
