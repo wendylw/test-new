@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import CleverTap from '../../../utils/clevertap';
 
 import './OrderingLocation.scss';
+import logger from '../../../utils/monitoring/logger';
 
 class LocationPage extends Component {
   state = {
@@ -119,15 +120,21 @@ class LocationPage extends Component {
       await setAddressInfo(addressInfo);
     }
 
-    let stores = await this.props.appActions.loadCoreStores(address);
-    stores = stores.responseGql.data.business.stores;
-    if (!stores.length) {
-      const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
+    try {
+      let stores = await this.props.appActions.loadCoreStores(address);
+      stores = stores.responseGql.data.business.stores;
+      if (!stores.length) {
+        const { deliveryRadius } = this.props.allBusinesses[this.props.business].qrOrderingSettings;
 
-      this.setState({
-        errorToast: t(`OutOfDeliveryRange`, { distance: deliveryRadius.toFixed(1) }),
-      });
-      return;
+        this.setState({
+          errorToast: t(`OutOfDeliveryRange`, { distance: deliveryRadius.toFixed(1) }),
+        });
+        return;
+      }
+    } catch (e) {
+      logger.error('load core stores failed on location page', e);
+
+      throw e;
     }
 
     const callbackUrl = Utils.getQueryString('callbackUrl');

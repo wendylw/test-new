@@ -21,7 +21,7 @@ import {
   getIsStoreInfoReady,
   getIsDeliveryOrder,
   getIsBeepDeliveryShippingType,
-  getIsBeepDeliveryType,
+  getIsDeliveryType,
   getStore,
   getBusinessUTCOffset,
   getIsWebview,
@@ -39,6 +39,7 @@ import {
   getIsFromBeepSite,
   getIsInAppOrMiniProgram,
   getIsFromFoodCourt,
+  getIsPickUpType,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -55,12 +56,13 @@ export {
   getTableId,
   getShippingType,
   getIsQrOrderingShippingType,
-  getIsBeepDeliveryType,
+  getIsDeliveryType,
   getIsEnablePayLater,
   getIsStoreInfoReady,
   getStore,
   getStoreId,
   getSelectedLocationDisplayName,
+  getIsPickUpType,
 };
 
 /**
@@ -100,6 +102,9 @@ export const getStoreDisplaySubTitle = createSelector(getBusinessInfo, businessI
  */
 export const getActiveCategoryId = state => state.menu.common.activeCategoryId;
 
+// is time slot drawer visible
+export const getTimeSlotDrawerVisible = state => state.menu.common.timeSlotDrawerVisible;
+
 /**
  * get store category list
  * @param {*} state
@@ -120,6 +125,16 @@ export const getCategories = createSelector(
 );
 
 export const getCurrentTime = state => state.menu.common.currentTime;
+
+/**
+ * get current time in business time zone
+ * @returns Dayjs object
+ */
+export const getBusinessTimeZoneCurrentDayjs = createSelector(
+  getCurrentTime,
+  getBusinessUTCOffset,
+  (currentTime, businessUTCOffset) => StoreUtils.getBusinessDateTime(businessUTCOffset, currentTime)
+);
 
 export const getExpectedDeliveryTime = state => state.menu.common.expectedDeliveryTime;
 
@@ -615,9 +630,8 @@ export const getFreeShippingFormattedMinAmountWithOutSpacing = createSelector(
   freeShippingFormattedMinAmount => freeShippingFormattedMinAmount.replace(/\s/g, '')
 );
 
-export const getIsTimeSlotAvailable = createSelector(
-  getStoreStatus,
-  storeStatus => storeStatus !== STORE_OPENING_STATUS.CLOSED
+export const getIsTimeSlotAvailable = createSelector(getSelectedStoreStatus, storeStatus =>
+  [STORE_OPENING_STATUS.ON_DEMAND, STORE_OPENING_STATUS.PRE_ORDER].includes(storeStatus)
 );
 
 export const getIsStoreInfoEntryVisible = createSelector(
@@ -627,6 +641,9 @@ export const getIsStoreInfoEntryVisible = createSelector(
 );
 
 export const getIsStoreInfoDrawerVisible = state => state.menu.common.storeInfoDrawerVisible;
+
+export const getIsLocationDrawerVisible = state => state.menu.common.locationDrawerVisible;
+export const getIsStoreListDrawerVisible = state => state.menu.common.storeListDrawerVisible;
 
 export const getStoreLocation = createSelector(getDeliveryInfo, deliveryInfo => {
   const { storeAddress } = deliveryInfo;
@@ -670,7 +687,7 @@ export const getStoreOpeningTimeList = createSelector(
       7: 'Saturday',
     };
     const { validTimeFrom, validTimeTo, validDays, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
-    const formatBreakTimes = [formatTime(breakTimeFrom), formatTime(breakTimeTo)];
+    const formatBreakTimes = breakTimeFrom && breakTimeTo ? [formatTime(breakTimeFrom), formatTime(breakTimeTo)] : [];
     const formatValidTimes = [formatTime(validTimeFrom), formatTime(validTimeTo)];
     const openingHours = getOpeningHours({
       validTimeFrom,
@@ -731,8 +748,6 @@ export const getIsAbleToReviewCart = createSelector(
  * for display store pickup location
  * @returns {string}
  */
-export const getStoreLocationStreetForPickup = createSelector(
-  getStore,
-  getIsBeepDeliveryType,
-  (store, isBeepDelivery) => !isBeepDelivery && _get(store, 'street1', '')
+export const getStoreLocationStreetForPickup = createSelector(getStore, getIsPickUpType, (store, isPickup) =>
+  isPickup ? _get(store, 'street1', '') : ''
 );

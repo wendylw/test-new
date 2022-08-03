@@ -4,6 +4,7 @@ import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
+import _lowerCase from 'lodash/lowerCase';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
@@ -38,6 +39,7 @@ import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
 import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
+import { replace } from 'connected-react-router';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -718,6 +720,31 @@ export const actions = {
 
     return getUserIsLogin(getState());
   },
+
+  updateShippingType: newShippingType => (dispatch, getState) => {
+    const state = getState();
+    const shippingType = getShippingType(state);
+
+    // replace new shipping type in url query
+    if (shippingType !== newShippingType) {
+      const queryObj = getURLQueryObject(state);
+      const location = getLocation(state);
+      queryObj.type = newShippingType;
+      dispatch(
+        replace({
+          pathname: location.pathname,
+          hash: location.hash,
+          state: location.state,
+          search: qs.stringify(queryObj, { addQueryPrefix: true }),
+        })
+      );
+    }
+
+    dispatch({
+      type: types.UPDATE_SHIPPING_TYPE,
+      payload: newShippingType,
+    });
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -793,6 +820,7 @@ const user = (state = initialState.user, action) => {
         },
         isLogin: true,
         hasOtp: false,
+        isExpired: false,
         isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.FULFILLED : null,
@@ -1011,7 +1039,14 @@ const apiError = (state = initialState.apiError, action) => {
   }
 };
 
-const requestInfo = (state = initialState.requestInfo) => state;
+const requestInfo = (state = initialState.requestInfo, action) => {
+  switch (action.type) {
+    case types.UPDATE_SHIPPING_TYPE:
+      return { ...state, shippingType: action.payload };
+    default:
+      return state;
+  }
+};
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
@@ -1271,6 +1306,16 @@ export const getIsEnablePreOrder = createSelector(getBusinessInfo, businessInfo 
   _get(businessInfo, 'qrOrderingSettings.enablePreOrder', false)
 );
 
+export const getStoreFulfillmentOptions = createSelector(getStore, store => _get(store, 'fulfillmentOptions', []));
+
+export const getIsEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, store =>
+  _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false)
+);
+
+export const getStoreSupportShippingTypes = createSelector(getStoreFulfillmentOptions, storeFulfillmentOptions =>
+  storeFulfillmentOptions.map(_lowerCase)
+);
+
 export const getCartItems = state => state.app.shoppingCart.items;
 
 export const getCartBilling = state => state.app.shoppingCart.billing;
@@ -1503,7 +1548,6 @@ export const getCategoryProductList = createSelector(
 
 // TODO: add Utils methods to state rather than using Utils
 export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
-export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsDeliveryOrder = state => Utils.isDeliveryOrder();
 export const getIsQROrder = state => Utils.isQROrder();
@@ -1517,6 +1561,20 @@ export const getIsInAppOrMiniProgram = createSelector(
 export const getIsFromBeepSite = state => isFromBeepSite();
 export const getIsFromBeepSiteOrderHistory = state => isFromBeepSiteOrderHistory();
 export const getIsFromFoodCourt = state => isFromFoodCourt();
+
+/**
+ * Is delivery shipping type
+ * @returns
+ */
+export const getIsDeliveryType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.DELIVERY
+);
+
+/**
+ * Is pickup shipping type
+ */
+export const getIsPickUpType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.PICKUP);
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)
@@ -1614,15 +1672,6 @@ export const getIsBeepDeliveryShippingType = createSelector(
 );
 
 /**
- * is shipping type of only delivery
- * @returns
- */
-export const getIsBeepDeliveryType = createSelector(
-  getShippingType,
-  shippingType => shippingType === DELIVERY_METHOD.DELIVERY
-);
-
-/**
  * is related store data api ready
  * @returns
  */
@@ -1644,7 +1693,9 @@ export const getDeliveryRadius = createSelector(getBusinessInfo, businessInfo =>
 
 export const getRouter = state => state.router;
 
-export const getLocationSearch = createSelector(getRouter, router => router.location.search);
+export const getLocation = state => state.router.location;
+
+export const getLocationSearch = createSelector(getLocation, location => location.search);
 
 export const getURLQueryObject = createSelector(getLocationSearch, locationSearch =>
   qs.parse(locationSearch, { ignoreQueryPrefix: true })
@@ -1653,3 +1704,5 @@ export const getURLQueryObject = createSelector(getLocationSearch, locationSearc
 export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'stores[0].reviewInfo.rating', null)
 );
+
+export const getCurrentDate = state => new Date();

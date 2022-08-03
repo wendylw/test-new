@@ -54,7 +54,7 @@ class CartList extends Component {
             money={originalDisplayPrice}
             numberOnly
           />
-        ) : null}
+        ) : null}{' '}
         <CurrencyNumber
           className={`cart-item__price ${originalDisplayPrice ? 'text-error' : ''}`}
           money={price || 0}
@@ -62,6 +62,14 @@ class CartList extends Component {
         />
       </div>
     );
+  }
+
+  renderCartItemComments(comments) {
+    return comments ? (
+      <p className="cart-item__comments padding-top-bottom-smaller text-size-small text-line-height-higher">
+        {comments}
+      </p>
+    ) : null;
   }
 
   renderProductItemRightController(cartItem) {
@@ -119,7 +127,25 @@ class CartList extends Component {
     return (
       <ul style={style} data-heap-name="ordering.cart.cart-list">
         {cartItems.map(cartItem => {
-          const { id, title, variationTexts, displayPrice, image, originalDisplayPrice, stockStatus } = cartItem;
+          const {
+            id,
+            title,
+            variationTexts,
+            displayPrice,
+            image,
+            originalDisplayPrice,
+            stockStatus,
+            comments,
+          } = cartItem;
+          const commentsEl = this.renderCartItemComments(comments);
+          const detailsEl = commentsEl ? (
+            <>
+              {this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
+              {commentsEl}
+            </>
+          ) : (
+            this.renderProductItemPrice(displayPrice, originalDisplayPrice)
+          );
 
           return (
             <li key={`mini-cart-item-${id}`}>
@@ -130,7 +156,7 @@ class CartList extends Component {
                 imageCover={this.renderImageCover(stockStatus)}
                 title={title}
                 variation={(variationTexts || []).join(', ')}
-                details={this.renderProductItemPrice(displayPrice, originalDisplayPrice)}
+                details={detailsEl}
               >
                 {this.renderProductItemRightController(cartItem)}
               </ProductItem>

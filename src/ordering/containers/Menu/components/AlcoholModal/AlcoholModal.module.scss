@@ -1,8 +1,10 @@
 .AlcoholContainer {
-  @apply tw-flex tw-flex-grow-0 tw-items-center tw-flex-col sm:tw-p-8px tw-p-8 tw-text-center;
+  @apply tw-flex tw-flex-grow-0 tw-items-center tw-flex-col tw-px-8 sm:tw-px-8px tw-py-16 sm:tw-py-16px tw-text-center;
 }
 
 .AlcoholImage {
+  @apply tw-my-2 sm:tw-my-2px;
+
   max-width: 80px;
   width: 27%;
 }
@@ -28,9 +30,8 @@
 }
 
 .AlcoholDesEnd {
-  @apply tw-text-xs sm:tw-m-12px tw-m-12 tw-text-gray-600 tw-text-center;
+  @apply tw-items-center tw-text-sm tw-my-8 sm:tw-my-8px tw-text-gray-600 tw-text-center;
 
-  width: 100%;
   max-width: 266px;
 }
 

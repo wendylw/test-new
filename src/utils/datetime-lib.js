@@ -186,8 +186,13 @@ export const formatToDeliveryTime = ({ date, hour, businessUTCOffset = 480, loca
     return null;
   }
 
-  const isToday = currentDayjs.isSame(fromDayjs, 'day');
-  const dateString = isToday ? i18next.t('Today') : fromDayjs.format('dddd, MMMM DD');
+  const isToday = fromDayjs.isSame(currentDayjs, 'day');
+  const isTomorrow = fromDayjs.isSame(currentDayjs.add(1, 'day'), 'day');
+  const dateString = isToday
+    ? i18next.t('Today')
+    : isTomorrow
+    ? i18next.t('Tomorrow')
+    : fromDayjs.format('dddd, MMMM DD');
   const fromTimeString = fromDayjs.format('hh:mm A');
   const toTimeString = toDayjs ? toDayjs.format('hh:mm A') : null;
   const timeString = toTimeString ? `${fromTimeString} - ${toTimeString}` : fromTimeString;

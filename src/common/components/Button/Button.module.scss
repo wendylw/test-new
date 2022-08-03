@@ -1,5 +1,5 @@
 .button {
-  @apply tw-flex tw-items-center tw-justify-center tw-py-12 tw-px-16 tw-rounded tw-leading-normal /* dimension*/
+  @apply tw-flex tw-items-center tw-justify-center tw-py-12 tw-px-16 tw-rounded tw-leading-normal tw-tracking-wide /* dimension*/
   tw-border tw-border-transparent tw-border-solid /* border */
   tw-cursor-pointer disabled:tw-cursor-default;
 
@@ -19,7 +19,7 @@
   &:global(.type-primary) {
     @apply tw-bg-orange hover:tw-bg-orange-dark /* color */
     focus:tw-bg-orange focus:hover:tw-bg-orange-dark focus:active:tw-bg-orange-light active:tw-bg-orange-light disabled:tw-bg-gray-400 /* color */
-    tw-text-white tw-font-bold /* typography */
+    tw-text-white tw-font-bold tw-tracking-wider/* typography */
     tw-transition;
 
     height: 50px;
@@ -27,14 +27,14 @@
   &:global(.type-primary-danger) {
     @apply tw-bg-red hover:tw-bg-red-dark /* color */
     focus:tw-bg-red focus:hover:tw-bg-red-dark focus:active:tw-bg-red-light active:tw-bg-red-light disabled:tw-bg-gray-400 /* color */
-    tw-text-white tw-font-bold /* typography */
+    tw-text-white tw-font-bold tw-tracking-wider/* typography */
     tw-transition;
 
     height: 50px;
   }
 
   &:global(.type-secondary) {
-    @apply tw-border-orange tw-bg-white tw-text-orange tw-font-bold
+    @apply tw-border-orange tw-bg-white tw-text-orange tw-font-bold tw-tracking-wider
       hover:tw-border-orange-dark hover:tw-text-orange-dark
       focus:tw-border-orange focus:tw-text-orange focus:hover:tw-border-orange-dark focus:hover:tw-text-orange-dark focus:active:tw-border-orange-light focus:active:tw-text-orange-light
       active:tw-border-orange-light active:tw-text-orange-light
@@ -43,7 +43,7 @@
     height: 50px;
   }
   &:global(.type-secondary-danger) {
-    @apply tw-border-red tw-bg-white tw-text-red tw-font-bold
+    @apply tw-border-red tw-bg-white tw-text-red tw-font-bold tw-tracking-wider
       hover:tw-border-red-dark hover:tw-text-red-dark
       focus:tw-border-red focus:tw-text-red focus:hover:tw-border-red-dark  focus:hover:tw-text-red-dark focus:active:tw-border-red-light focus:active:tw-text-red-light
       active:tw-border-red-light active:tw-text-red-light

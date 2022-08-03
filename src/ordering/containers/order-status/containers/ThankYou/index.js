@@ -82,8 +82,15 @@ import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
+import { ICON_RES } from '../../../../../components/NativeHeader';
 
-const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES, DELIVERY_METHOD, ORDER_STATUS, REFERRER_SOURCE_TYPES } = Constants;
+const {
+  AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
+  DELIVERY_METHOD,
+  ORDER_STATUS,
+  REFERRER_SOURCE_TYPES,
+  LIVE_CHAT_SOURCE_TYPES,
+} = Constants;
 const ANIMATION_TIME = 3600;
 const deliveryAndPickupLink = 'https://storehub.page.link/c8Ci';
 const deliveryAndPickupText = 'Discover 1,000+ More Restaurants Download the Beep app now!';
@@ -739,7 +746,6 @@ export class ThankYou extends PureComponent {
 
     if (isWebview) {
       const rightContentOfNativeLiveChat = {
-        text: `${t('NeedHelp')}?`,
         style: {
           color: '#00b0ff',
         },
@@ -747,9 +753,18 @@ export class ThankYou extends PureComponent {
           NativeMethods.startChat({
             orderId,
             storeName: orderStoreName,
+            source: LIVE_CHAT_SOURCE_TYPES.ORDER_DETAILS,
           });
         },
       };
+
+      if (NativeMethods.hasIconResInNative(ICON_RES.SUPPORT_AGENT)) {
+        rightContentOfNativeLiveChat['text'] = t('Help');
+        rightContentOfNativeLiveChat['iconRes'] = ICON_RES.SUPPORT_AGENT;
+      } else {
+        // For back-compatibility sake, we remain the same UI for old versions of the app
+        rightContentOfNativeLiveChat['text'] = `${t('NeedHelp')}?`;
+      }
 
       const rightContentOfContactUs = {
         text: t('ContactUs'),

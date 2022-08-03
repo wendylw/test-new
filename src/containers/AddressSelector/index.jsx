@@ -59,7 +59,6 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
         postCode,
         city,
       };
-
       onSelect(addressInfo);
     },
     [onSelect]
@@ -131,6 +130,7 @@ const AddressSelector = ({ placeInfo, addressList, addressPickerEnabled, onSelec
         city,
         state,
       });
+
       selectPlaceInfoHandler(historicalResult);
     },
     [selectPlaceInfoHandler]

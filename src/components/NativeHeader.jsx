@@ -14,6 +14,7 @@ export const ICON_RES = {
   SHARE: 'share',
   FAVORITE: 'favorite',
   FAVORITE_BORDER: 'favorite_border',
+  SUPPORT_AGENT: 'support_agent',
 };
 
 function getNativeHeaderParams(props) {

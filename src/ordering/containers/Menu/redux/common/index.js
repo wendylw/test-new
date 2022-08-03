@@ -15,6 +15,12 @@ import {
   loadUserFavStoreStatus,
   showStoreInfoDrawer,
   hideStoreInfoDrawer,
+  showLocationDrawer,
+  hideLocationDrawer,
+  showTimeSlotDrawer,
+  hideTimeSlotDrawer,
+  showStoreListDrawer,
+  hideStoreListDrawer,
 } from './thunks';
 
 const initialState = {
@@ -34,7 +40,10 @@ const initialState = {
     error: null,
   },
   storeInfoDrawerVisible: false,
+  locationDrawerVisible: false,
+  storeListDrawerVisible: false,
   enabledDeliveryRevamp: process.env.REACT_APP_ENABLED_DELIVERY_REVAMP === 'true',
+  timeSlotDrawerVisible: false,
 };
 
 export const { reducer, actions } = createSlice({
@@ -47,6 +56,9 @@ export const { reducer, actions } = createSlice({
     setCategoriesInView: (state, { payload: { categoryId, inView } }) => {
       state.categoriesInView[categoryId] = inView;
       state.activeCategoryId = null;
+    },
+    setTimeSlotDrawerVisible: (state, { payload }) => {
+      state.timeSlotDrawerVisible = payload;
     },
   },
   extraReducers: {
@@ -109,6 +121,24 @@ export const { reducer, actions } = createSlice({
     },
     [hideStoreInfoDrawer.fulfilled.type]: state => {
       state.storeInfoDrawerVisible = false;
+    },
+    [showLocationDrawer.fulfilled.type]: state => {
+      state.locationDrawerVisible = true;
+    },
+    [hideLocationDrawer.fulfilled.type]: state => {
+      state.locationDrawerVisible = false;
+    },
+    [showTimeSlotDrawer.fulfilled.type]: state => {
+      state.timeSlotDrawerVisible = true;
+    },
+    [hideTimeSlotDrawer.fulfilled.type]: state => {
+      state.timeSlotDrawerVisible = false;
+    },
+    [showStoreListDrawer.fulfilled.type]: state => {
+      state.storeListDrawerVisible = true;
+    },
+    [hideStoreListDrawer.fulfilled.type]: state => {
+      state.storeListDrawerVisible = false;
     },
   },
 });
