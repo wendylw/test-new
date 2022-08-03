@@ -383,7 +383,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       payload.consumerId = consumerId;
     }
 
-    const { redirectURL: thankYouPageUrl, paymentUrl, paymentData, paymentId } = await initPayment(payload);
+    const { redirectURL: thankYouPageUrl, paymentUrl, paymentData, paymentId } = await initPayment(payload, dispatch);
 
     if (isTNGMiniProgram) {
       const { redirectionUrl } = paymentData?.actionForm || {};
