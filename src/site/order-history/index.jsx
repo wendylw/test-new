@@ -17,6 +17,7 @@ import {
   getIsRequestOrderDataDone,
   getPageLoaderVisibility,
 } from './redux/selectors';
+import { isURL } from '../../common/utils';
 import OrderItem from './components/OrderItem';
 import Loader from './components/Loader';
 import RequireLoginPage from './components/RequireLoginPage';
@@ -25,6 +26,7 @@ import OrderListEmptyView from './components/OrderListEmptyView';
 import Clevertap from '../../utils/clevertap';
 import _get from 'lodash/get';
 import WebHeader from '../../components/WebHeader';
+import logger from '../../utils/monitoring/logger';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
@@ -87,11 +89,20 @@ class OrderHistory extends React.Component {
     this.login();
   };
 
+  handleSourceUrl = sourceUrl => {
+    if (isURL(sourceUrl)) {
+      window.location.href = sourceUrl;
+      return;
+    }
+
+    logger.error(`site.order-history.invalid-source-url`, { sourceUrl });
+  };
+
   handleBackButtonClick = () => {
     const sourceUrl = Utils.getQueryString('source');
 
     if (sourceUrl) {
-      window.location.href = sourceUrl;
+      this.handleSourceUrl(sourceUrl);
       return;
     }
 
