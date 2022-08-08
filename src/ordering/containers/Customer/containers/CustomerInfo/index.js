@@ -14,6 +14,7 @@ import MessageModal from '../../../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import AddressChangeModal from '../../components/AddressChangeModal';
+import RedirectPageLoader from '../../../../components/RedirectPageLoader';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -25,6 +26,7 @@ import {
   getBusinessInfo,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
+  getIsTNGMiniProgram,
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import { actions as customerInfoActionCreators } from './redux';
@@ -41,6 +43,7 @@ class CustomerInfo extends Component {
   state = {
     addressChange: false,
     processing: false,
+    shouldShowRedirectLoader: false,
   };
 
   async componentDidMount() {
@@ -138,14 +141,19 @@ class CustomerInfo extends Component {
   handleBeforeCreateOrder = () => {
     logger.log('customer.create-order-attempt');
 
-    const { customerInfoActions } = this.props;
+    const { customerInfoActions, isTNGMiniProgram } = this.props;
     const error = this.validateFields();
 
     if (error.show) {
       customerInfoActions.setCustomerError(error);
-    } else {
-      this.setState({ processing: true });
+      return;
     }
+
+    if (isTNGMiniProgram) {
+      this.setState({ shouldShowRedirectLoader: true });
+    }
+
+    this.setState({ processing: true });
   };
 
   handleErrorHide() {
@@ -158,12 +166,24 @@ class CustomerInfo extends Component {
     const { history, cartBilling } = this.props;
     const { total } = cartBilling || {};
 
-    if (total && !this.validateFields().show && !Utils.isTNGMiniProgram()) {
+    if (total && !this.validateFields().show) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
       });
     }
+  };
+
+  handleAfterCreateOrder = orderId => {
+    const { isTNGMiniProgram } = this.props;
+
+    if (isTNGMiniProgram) {
+      this.setState({ shouldShowRedirectLoader: !!orderId });
+      return;
+    }
+
+    // By default, redirect to the payment page
+    this.visitPaymentPage();
   };
 
   handleAddressClick = () => {
@@ -321,13 +341,25 @@ class CustomerInfo extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartBilling, customerError, storeInfoForCleverTap } = this.props;
-    const { addressChange, processing } = this.state;
+    const {
+      t,
+      history,
+      deliveryDetails,
+      cartBilling,
+      customerError,
+      storeInfoForCleverTap,
+      isTNGMiniProgram,
+    } = this.props;
+    const { addressChange, processing, shouldShowRedirectLoader } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(phone);
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
     const { total, shippingFee } = cartBilling || {};
+
+    if (shouldShowRedirectLoader) {
+      return <RedirectPageLoader />;
+    }
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -431,12 +463,12 @@ class CustomerInfo extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={processing}
-            validCreateOrder={(Utils.isTNGMiniProgram() || !total) && !this.validateFields().show}
+            validCreateOrder={(isTNGMiniProgram || !total) && !this.validateFields().show}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
               this.handleBeforeCreateOrder();
             }}
-            afterCreateOrder={this.visitPaymentPage}
+            afterCreateOrder={this.handleAfterCreateOrder}
             loaderText={t('Processing')}
             processing={processing}
           >
@@ -476,6 +508,7 @@ export default compose(
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       shouldGoToAddNewAddressPage: getShouldGoToAddNewAddressPage(state),
+      isTNGMiniProgram: getIsTNGMiniProgram(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
