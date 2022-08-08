@@ -63,11 +63,12 @@ export class TableSummary extends React.Component {
   async componentDidMount() {
     const { t, history, queryOrdersAndStatus } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
+    const emptyString = ['null', 'undefined', ''];
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
 
-    if (receiptNumber) {
+    if (receiptNumber && !emptyString.includes(receiptNumber)) {
       await queryOrdersAndStatus(receiptNumber);
     } else {
       logger.error('ordering.tableSummaryInitialize.error', {
