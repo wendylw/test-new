@@ -71,7 +71,15 @@ const StoreInfoDrawer = () => {
         show={isStoreInfoDrawerVisible}
         onClose={() => dispatch(hideStoreInfoDrawer())}
         header={
-          <DrawerHeader left={<X size={24} onClick={() => dispatch(hideStoreInfoDrawer())} />}>
+          <DrawerHeader
+            left={
+              <X
+                weight="light"
+                className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+                onClick={() => dispatch(hideStoreInfoDrawer())}
+              />
+            }
+          >
             <div className="tw-flex tw-flex-col tw-items-center">
               <span className={styles.storeInfoDrawerTitle}>{storeDisplayTitle}</span>
               {_isEmpty(storeDisplayStatus) ? null : (

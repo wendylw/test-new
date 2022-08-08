@@ -1,0 +1,48 @@
+.loader {
+  @apply tw-absolute tw-text-2xl tw-text-gray-600;
+}
+
+.storeListDrawerInitializing {
+  @apply tw-p-0;
+
+  :global(.drawer-animation__children) {
+    @apply tw-relative tw-flex tw-items-center tw-justify-center;
+  }
+}
+
+.storeListDrawer {
+  @apply tw-p-0;
+}
+
+.storeListDrawerInfoCard {
+  @apply tw-cursor-pointer;
+}
+
+.storeListDrawerInfoTitle {
+  @apply tw-font-bold tw-leading-relaxed;
+}
+
+.storeListDrawerInfoDescription {
+  @apply tw-my-6 sm:tw-my-6px tw-text-sm tw-leading-loose;
+}
+
+.storeListDrawerInfoList {
+  @apply tw-flex tw-items-center tw-my-2 sm:tw-my-2px tw-space-x-8 sm:tw-space-x-8px;
+
+  > li:nth-child(n + 2) {
+    @apply tw-border-solid tw-pl-8 sm:tw-pl-8px tw-border-0 tw-border-l tw-border-gray-200;
+  }
+
+  > li:not([hidden]):last-child {
+    @apply tw-mr-8 sm:tw-mr-8px;
+  }
+}
+
+.storeListDrawerInfoCardDisabled {
+  .storeListDrawerInfoIcon,
+  .storeListDrawerInfoTitle,
+  .storeListDrawerInfoDescription,
+  .storeListDrawerInfoList {
+    @apply tw-opacity-40;
+  }
+}

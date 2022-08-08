@@ -111,6 +111,12 @@
   &__button-acquisition {
     max-height: 50px;
   }
+
+  &__comments {
+    word-break: break-word;
+    hyphens: none;
+    color: $gray-3;
+  }
 }
 
 .submit-order-confirm {

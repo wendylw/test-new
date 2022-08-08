@@ -5,6 +5,7 @@ import _forOwn from 'lodash/forOwn';
 import _isArray from 'lodash/isArray';
 import _isNumber from 'lodash/isNumber';
 import _sumBy from 'lodash/sumBy';
+import _isNil from 'lodash/isNil';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getAllProducts, getFormatCurrencyFunction } from '../../../../../redux/modules/app';
 import { PRODUCT_STOCK_STATUS, PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIATION_TYPE } from '../../../constants';
@@ -327,7 +328,7 @@ export const getProductOriginalDisplayPriceWithPriceDiff = createSelector(
 export const getProductFormattedOriginalDisplayPriceWithPriceDiff = createSelector(
   getProductOriginalDisplayPriceWithPriceDiff,
   getFormatCurrencyFunction,
-  (price, formatCurrency) => formatCurrency(price, { hiddenCurrency: true })
+  (price, formatCurrency) => (_isNil(price) ? '' : formatCurrency(price, { hiddenCurrency: true }))
 );
 
 export const getSelectedProductStockStatus = createSelector(
@@ -452,3 +453,14 @@ export const getAddToCartGTMData = createStructuredSelector({
   Inventory: getStockStatusForGTMData,
   image_count: getProductImagesCount,
 });
+
+export const getIfHasNotesContents = state => !!state.menu.productDetail.comments;
+
+export const getNotesContents = state => state?.menu.productDetail.comments;
+
+export const getIfCommentsShowStatus = state => state.menu.productDetail.showComments;
+
+export const getIfShowVariations = createSelector(
+  getProductDetailData,
+  productDetailData => productDetailData.variations.length
+);

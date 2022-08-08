@@ -11,6 +11,7 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
+/* eslint-disable import/no-unresolved */
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import makeAsyncScriptLoader from 'react-async-script';

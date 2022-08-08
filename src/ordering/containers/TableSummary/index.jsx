@@ -7,18 +7,14 @@ import { compose } from 'redux';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
-import {
-  getUserIsLogin,
-  getBusinessInfo,
-  getShippingType,
-  getBusinessUTCOffset,
-  getUserConsumerId,
-} from '../../redux/modules/app';
+import logger from '../../../utils/monitoring/logger';
+import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
   loadOrders as loadOrdersThunk,
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
+  gotoPayment as gotoPaymentThunk,
 } from './redux/thunks';
 import {
   removePromo as removePromoThunk,
@@ -45,8 +41,6 @@ import {
   getOrderVoucherCode,
   getOrderVoucherDiscount,
   getPromoOrVoucherExist,
-  getOrderModifiedTime,
-  getSelectedPromoCode,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -54,12 +48,9 @@ import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
-import { submitOrder } from './redux/api-request';
-import { getPromotionId } from '../../redux/modules/promotion';
-import logger from '../../../utils/monitoring/logger';
 import './TableSummary.scss';
 
-const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD } = Constants;
 
 export class TableSummary extends React.Component {
   constructor(props) {
@@ -115,47 +106,6 @@ export class TableSummary extends React.Component {
     await clearQueryOrdersAndStatus();
     resetCartSubmission();
   }
-
-  handleGotoPayMentPageOrThankYouPage = async () => {
-    try {
-      const {
-        total,
-        history,
-        consumerId,
-        modifiedTime,
-        cashback,
-        promotionId,
-        promoCodePayLater,
-        shippingType,
-      } = this.props;
-      const receiptNumber = Utils.getQueryString('receiptNumber');
-      const { voucherCode } = promoCodePayLater;
-      const data = {
-        consumerId,
-        modifiedTime,
-        cashback,
-        promotionId,
-        voucherCode,
-      };
-
-      if (total === 0) {
-        const { redirectURL: thankYouPageUrl } = await submitOrder(receiptNumber, data);
-
-        const urlObj = new URL(thankYouPageUrl, window.location.origin);
-        urlObj.searchParams.set('type', shippingType);
-
-        window.location.href = urlObj.toString();
-        return;
-      }
-
-      history.push({
-        pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-        search: window.location.search,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   setCartContainerHeight = preContainerHeight => {
     const containerHeight = Utils.containerHeight({
@@ -288,6 +238,11 @@ export class TableSummary extends React.Component {
     }
   };
 
+  handleClickPayButton = () => {
+    const { gotoPayment } = this.props;
+    gotoPayment();
+  };
+
   showShortPromoCode() {
     const { orderPromotionCode, orderVoucherCode } = this.props;
 
@@ -310,96 +265,6 @@ export class TableSummary extends React.Component {
     }
 
     return '';
-  }
-
-  renderBaseInfo() {
-    const { t, orderNumber, tableNumber } = this.props;
-
-    return (
-      <div className="table-summary__base-info">
-        {this.getOrderStatusOptionsEl()}
-        <div className="padding-left-right-normal padding-top-bottom-small">
-          <ul className="table-summary__base-info-list">
-            {orderNumber ? (
-              <li
-                key="table-summary-order-number"
-                className="flex flex-middle flex-space-between padding-top-bottom-normal"
-              >
-                <h5 className="text-size-small text-opacity text-capitalize">{t('OrderNumber')}</h5>
-                <span className="text-size-small">{orderNumber}</span>
-              </li>
-            ) : null}
-            {tableNumber ? (
-              <li
-                key="table-summary-table-number"
-                className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider"
-              >
-                <h5 className="text-size-small text-opacity text-capitalize">{t('TableNumber')}</h5>
-                <span className="text-size-small">{tableNumber}</span>
-              </li>
-            ) : null}
-          </ul>
-        </div>
-      </div>
-    );
-  }
-
-  renderSubOrders() {
-    const { t, subOrdersMapping, businessUTCOffset } = this.props;
-    const subOrderIds = Object.keys(subOrdersMapping);
-
-    return (
-      <>
-        {subOrderIds.map(subOrderId => {
-          const { submittedTime, items: subOrderItems, comments } = subOrdersMapping[subOrderId];
-          const localeSubmittedTime = getLocaleTimeTo24hour(submittedTime, businessUTCOffset);
-
-          return (
-            <div key={`sub-order-${subOrderId}`} className="table-summary__sub-order padding-top-bottom-small">
-              <div className="text-right padding-left-right-small padding-top-bottom-smaller">
-                <span className="margin-small text-opacity">
-                  {t('CreatedOrderTime', { submittedTime: localeSubmittedTime })}
-                </span>
-              </div>
-              <ul>
-                {subOrderItems.map(({ id, productInfo, displayPrice, quantity }) => (
-                  <li
-                    key={`product-item-${id}`}
-                    className="flex flex-middle flex-space-between padding-left-right-small"
-                  >
-                    <div className="flex">
-                      <div className="table-summary__image-container flex__shrink-fixed margin-small">
-                        <Image className="table-summary__image card__image" src={productInfo?.image} alt="" />
-                      </div>
-                      <div className="padding-small flex flex-column flex-space-between">
-                        <span className="table-summary__item-title">{productInfo?.title}</span>
-                        <p className="table-summary__item-variations">
-                          {(productInfo?.variationTexts || []).join(', ')}
-                        </p>
-                        <CurrencyNumber
-                          className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
-                          money={displayPrice * quantity}
-                          numberOnly
-                        />
-                      </div>
-                    </div>
-                    <span className="padding-top-bottom-small flex__shrink-fixed margin-small text-opacity">
-                      x {quantity}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              {comments && (
-                <div className="border__top-divider margin-top-bottom-small margin-left-right-normal text-opacity">
-                  <p className="padding-top-bottom-normal text-line-height-base">{comments}</p>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </>
-    );
   }
 
   renderPromotionItem() {
@@ -441,6 +306,101 @@ export class TableSummary extends React.Component {
           </button>
         )}
       </li>
+    );
+  }
+
+  renderSubOrders() {
+    const { t, subOrdersMapping, businessUTCOffset } = this.props;
+    const subOrderIds = Object.keys(subOrdersMapping);
+
+    return (
+      <>
+        {subOrderIds.map(subOrderId => {
+          const { submittedTime, items: subOrderItems, comments } = subOrdersMapping[subOrderId];
+          const localeSubmittedTime = getLocaleTimeTo24hour(submittedTime, businessUTCOffset);
+
+          return (
+            <div key={`sub-order-${subOrderId}`} className="table-summary__sub-order padding-top-bottom-small">
+              <div className="text-right padding-left-right-small padding-top-bottom-smaller">
+                <span className="margin-small text-opacity">
+                  {t('CreatedOrderTime', { submittedTime: localeSubmittedTime })}
+                </span>
+              </div>
+              <ul>
+                {subOrderItems.map(({ id, productInfo, displayPrice, quantity, comments: itemComments }) => (
+                  <li
+                    key={`product-item-${id}`}
+                    className="flex flex-middle flex-space-between padding-left-right-small"
+                  >
+                    <div className="flex">
+                      <div className="table-summary__image-container flex__shrink-fixed margin-small">
+                        <Image className="table-summary__image card__image" src={productInfo?.image} alt="" />
+                      </div>
+                      <div className="padding-small flex flex-column flex-space-between">
+                        <span className="table-summary__item-title">{productInfo?.title}</span>
+                        <p className="table-summary__item-variations">
+                          {(productInfo?.variationTexts || []).join(', ')}
+                        </p>
+                        <CurrencyNumber
+                          className="padding-top-bottom-smaller flex__shrink-fixed text-opacity"
+                          money={displayPrice * quantity}
+                          numberOnly
+                        />
+                        {itemComments ? (
+                          <p className="table-summary__comments padding-top-bottom-smaller text-size-small text-line-height-higher">
+                            {itemComments}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                    <span className="padding-top-bottom-small flex__shrink-fixed margin-small text-opacity">
+                      x {quantity}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {comments && (
+                <div className="border__top-divider margin-top-bottom-small margin-left-right-normal text-opacity">
+                  <p className="padding-top-bottom-normal text-line-height-base">{comments}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </>
+    );
+  }
+
+  renderBaseInfo() {
+    const { t, orderNumber, tableNumber } = this.props;
+
+    return (
+      <div className="table-summary__base-info">
+        {this.getOrderStatusOptionsEl()}
+        <div className="padding-left-right-normal padding-top-bottom-small">
+          <ul className="table-summary__base-info-list">
+            {orderNumber ? (
+              <li
+                key="table-summary-order-number"
+                className="flex flex-middle flex-space-between padding-top-bottom-normal"
+              >
+                <h5 className="text-size-small text-opacity text-capitalize">{t('OrderNumber')}</h5>
+                <span className="text-size-small">{orderNumber}</span>
+              </li>
+            ) : null}
+            {tableNumber ? (
+              <li
+                key="table-summary-table-number"
+                className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider"
+              >
+                <h5 className="text-size-small text-opacity text-capitalize">{t('TableNumber')}</h5>
+                <span className="text-size-small">{tableNumber}</span>
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      </div>
     );
   }
 
@@ -532,7 +492,7 @@ export class TableSummary extends React.Component {
             className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
-            onClick={this.handleGotoPayMentPageOrThankYouPage}
+            onClick={this.handleClickPayButton}
           >
             {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
           </button>
@@ -577,11 +537,7 @@ TableSummary.propTypes = {
   orderVoucherCode: PropTypes.string,
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
-  consumerId: PropTypes.string,
-  modifiedTime: PropTypes.string,
-  promotionId: PropTypes.string,
-  // eslint-disable-next-line react/forbid-prop-types
-  promoCodePayLater: PropTypes.object,
+  gotoPayment: PropTypes.func,
 };
 
 TableSummary.defaultProps = {
@@ -615,10 +571,7 @@ TableSummary.defaultProps = {
   orderVoucherCode: '',
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
-  consumerId: '',
-  modifiedTime: '',
-  promotionId: '',
-  promoCodePayLater: {},
+  gotoPayment: () => {},
 };
 
 export default compose(
@@ -649,11 +602,6 @@ export default compose(
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
-      consumerId: getUserConsumerId(state),
-      modifiedTime: getOrderModifiedTime(state),
-      promotionCode: getOrderPromotionCode(state),
-      promotionId: getPromotionId(state),
-      promoCodePayLater: getSelectedPromoCode(state),
     }),
 
     {
@@ -663,6 +611,7 @@ export default compose(
       loadOrders: loadOrdersThunk,
       removePromo: removePromoThunk,
       removeVoucherPayLater: removeVoucherPayLaterThunk,
+      gotoPayment: gotoPaymentThunk,
     }
   )
 )(TableSummary);

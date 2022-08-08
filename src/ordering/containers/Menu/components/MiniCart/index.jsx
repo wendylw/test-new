@@ -45,7 +45,13 @@ const MiniCart = () => {
       respectSpaceOccupation
       header={
         <DrawerHeader
-          left={<X size={24} onClick={() => dispatch(hideMiniCartDrawer())} />}
+          left={
+            <X
+              weight="light"
+              className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+              onClick={() => dispatch(hideMiniCartDrawer())}
+            />
+          }
           right={
             <Button
               onClick={() => {
@@ -60,7 +66,9 @@ const MiniCart = () => {
             </Button>
           }
         >
-          <span className="tw-font-bold tw-text-lg">{t('Cart')}</span>
+          <div className="tw-flex tw-flex-col tw-items-center">
+            <span className="tw-font-bold tw-text-lg">{t('Cart')}</span>
+          </div>
         </DrawerHeader>
       }
     >

@@ -10,7 +10,7 @@ const TERMS_OF_USE_FULL_URL = `${officialUrl}${TERMS_OF_USE}`;
 const PRIVACY_FULL_URL = `${officialUrl}${PRIVACY}`;
 const buttonLinkClassList = ['button button__link text-weight-bolder'];
 
-const TermsAndPrivacy = ({ buttonLinkClassName, termsOfUseDataHeapName, privacyPolicyDataHeapName, isQROrder }) => {
+const TermsAndPrivacy = ({ buttonLinkClassName, termsOfUseDataHeapName, privacyPolicyDataHeapName }) => {
   const linkClassName = useMemo(() => {
     if (buttonLinkClassName) {
       buttonLinkClassList.push(buttonLinkClassName);
@@ -19,7 +19,7 @@ const TermsAndPrivacy = ({ buttonLinkClassName, termsOfUseDataHeapName, privacyP
   }, [buttonLinkClassName]);
 
   return (
-    <Trans i18nKey={isQROrder ? 'TermsAndPrivacyDescriptionQr' : 'TermsAndPrivacyDescription'}>
+    <Trans i18nKey="TermsAndPrivacyDescription">
       By tapping to continue, you agree to our
       <br />
       <a
@@ -52,14 +52,12 @@ TermsAndPrivacy.propTypes = {
   buttonLinkClassName: PropTypes.string,
   termsOfUseDataHeapName: PropTypes.string,
   privacyPolicyDataHeapName: PropTypes.string,
-  isQROrder: PropTypes.bool,
 };
 
 TermsAndPrivacy.defaultProps = {
   buttonLinkClassName: '',
   termsOfUseDataHeapName: '',
   privacyPolicyDataHeapName: '',
-  isQROrder: false,
 };
 
 export default withTranslation()(TermsAndPrivacy);

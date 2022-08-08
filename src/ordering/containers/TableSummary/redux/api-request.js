@@ -11,6 +11,4 @@ export const fetchOrderIncludeCashback = ({ receiptNumber }) =>
 export const fetchOrderSubmissionStatus = ({ receiptNumber }) => get(`/api/v3/transactions/${receiptNumber}/status`);
 
 // If total === 0, it will lock order at table summary page
-export const submitOrder = (receiptNumber, data) => {
-  post(`/api/v3/transactions/${receiptNumber}/submission`, data);
-};
+export const submitOrder = (receiptNumber, data) => post(`/api/v3/transactions/${receiptNumber}/submission`, data);
