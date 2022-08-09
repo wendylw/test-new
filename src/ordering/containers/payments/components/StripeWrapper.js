@@ -36,9 +36,7 @@ const getStripePromise = country => {
         onClose: () => {
           window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_ONLINE_SAVED_CARDS}${window.location.search}`;
         },
-        containerStyle: {
-          zIndex: '300',
-        },
+        containerClassName: 'tw-z-300',
       });
     });
 };
