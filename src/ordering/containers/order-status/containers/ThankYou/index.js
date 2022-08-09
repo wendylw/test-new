@@ -38,6 +38,7 @@ import {
   getBusinessUTCOffset,
   getOnlineStoreInfo,
   getUser,
+  getFoodTagsForCleverTap,
 } from '../../../../redux/modules/app';
 import { loadOrder, loadOrderStatus } from '../../redux/thunks';
 import {
@@ -273,7 +274,7 @@ export class ThankYou extends PureComponent {
 
   // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
   recordChargedEvent = () => {
-    const { order, business, onlineStoreInfo, orderStoreInfo } = this.props;
+    const { order, business, onlineStoreInfo, orderStoreInfo, foodTagsForCleverTap } = this.props;
 
     let totalQuantity = 0;
     let totalDiscount = 0;
@@ -319,6 +320,9 @@ export class ThankYou extends PureComponent {
       'Cashback Store': business,
       'promo/voucher applied': _get(order, 'displayPromotions[0].promotionCode'),
       'Lowest Price': _get(orderStoreInfo, 'isLowestPrice', false),
+      'merchant state': _get(orderStoreInfo, 'state', ''),
+      'merchant city': _get(orderStoreInfo, 'city', ''),
+      foodTags: foodTagsForCleverTap,
     });
   };
 
@@ -1004,6 +1008,7 @@ export default compose(
       foodCourtId: getFoodCourtId(state),
       foodCourtHashCode: getFoodCourtHashCode(state),
       foodCourtMerchantName: getFoodCourtMerchantName(state),
+      foodTagsForCleverTap: getFoodTagsForCleverTap(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
