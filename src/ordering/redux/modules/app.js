@@ -1433,6 +1433,12 @@ export const getQROrderingSettings = createSelector(getBusinessInfo, businessInf
   _get(businessInfo, 'qrOrderingSettings', null)
 );
 
+export const getSearchingTags = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'searchingTags', [])
+);
+
+export const getFoodTagsForCleverTap = createSelector(getSearchingTags, searchingTags => searchingTags.join(', '));
+
 export const getFreeShippingMinAmount = createSelector(getQROrderingSettings, qrOrderingSettings =>
   _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.freeShippingMinAmount', null)
 );
