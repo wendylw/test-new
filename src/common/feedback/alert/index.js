@@ -28,6 +28,7 @@ const normalizeAlertOptions = options => ({
   show: true,
   closeButtonContent: null,
   className: '',
+  containerStyle: {},
   style: {},
   onClose: () => {},
   ...options,
@@ -35,8 +36,12 @@ const normalizeAlertOptions = options => ({
 
 const createAlert = (content, options) =>
   new Promise(resolve => {
-    const { container, onClose, ...restOptions } = options;
+    const { container, onClose, containerStyle, ...restOptions } = options;
     const rootDOM = document.createElement('div');
+
+    if (containerStyle) {
+      rootDOM.setAttribute('style', containerStyle);
+    }
 
     rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
     container.appendChild(rootDOM);

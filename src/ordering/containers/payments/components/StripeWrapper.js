@@ -36,7 +36,7 @@ const getStripePromise = country => {
         onClose: () => {
           window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_ONLINE_SAVED_CARDS}${window.location.search}`;
         },
-        style: {
+        containerStyle: {
           zIndex: '300',
         },
       });
