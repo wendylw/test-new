@@ -6,6 +6,7 @@ import { BookOpen, CaretDown, X } from 'phosphor-react';
 import Button from '../../../../../common/components/Button';
 import Badge from '../../../../../common/components/Badge';
 import Drawer from '../../../../../common/components/Drawer';
+import DrawerHeader from '../../../../../common/components/Drawer/DrawerHeader';
 import { getCategories, getIsProductListReady, getHighlightedCategory } from '../../redux/common/selectors';
 import styles from './CategoryDropdown.module.scss';
 
@@ -100,17 +101,22 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
         show={showDrawer}
         onClose={() => setShowDrawer(false)}
         onHistoryBackCompleted={onHistoryBackCompleted}
-      >
-        <div className={styles.menuProductCategoryDrawerHeader}>
-          <Button
-            type="text"
-            onClick={() => setShowDrawer(false)}
-            className={`${styles.menuProductCategoryDrawerHeaderCloseButton} beep-text-reset`}
+        header={
+          <DrawerHeader
+            left={
+              <Button
+                type="text"
+                onClick={() => setShowDrawer(false)}
+                className={`${styles.menuProductCategoryDrawerHeaderCloseButton} beep-text-reset`}
+              >
+                <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
+              </Button>
+            }
           >
-            <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
-          </Button>
-          <h2 className="tw-flex-1 tw-text-center tw-px-16 sm:tw-px-16px tw-font-bold">{t('Menu')}</h2>
-        </div>
+            <h2 className="tw-flex-1 tw-text-center tw-px-16 sm:tw-px-16px tw-font-bold">{t('Menu')}</h2>
+          </DrawerHeader>
+        }
+      >
         <CategoryList categories={categories} onCategoryItemClick={onCategorySelected} />
       </Drawer>
     </div>

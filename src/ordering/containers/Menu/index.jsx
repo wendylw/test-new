@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useMount } from 'react-use';
 import Frame from '../../../common/components/Frame';
+import MenuShippingInfoBar from './components/MenuShippingInfoBar';
 import MenuHeader from './components/MenuHeader';
 import MenuStoreInfo from './components/MenuStoreInfo';
 import PromotionBar from './components/PromotionBar';
@@ -20,9 +22,9 @@ const Menu = () => {
   const isSearchingBannerVisible = useSelector(getIsSearchingBannerVisible);
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
 
-  useEffect(() => {
+  useMount(() => {
     dispatch(mounted());
-  }, []);
+  });
 
   return (
     <Frame>
@@ -35,6 +37,7 @@ const Menu = () => {
         ) : (
           <>
             <MenuHeader webHeaderVisibility={!isSearchingBannerVisible} />
+            <MenuShippingInfoBar />
             <section className="tw-py-16 sm:tw-py-16px">
               {isSearchingBannerVisible ? null : (
                 <>

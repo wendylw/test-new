@@ -15,6 +15,8 @@ import {
   unselectVariationOption,
   increaseVariationOptionQuantity,
   decreaseVariationOptionQuantity,
+  showNotesDrawer,
+  hideNotesDrawer,
 } from './thunks';
 
 const initialState = {
@@ -40,21 +42,31 @@ const initialState = {
    * For Quantity Multiple Choice: [variationId]: [{optionId, value, quantity}]
    */
   selectedOptionsByVariationId: {},
+  showComments: false,
+  comments: '',
 };
 
 export const { reducer, actions } = createSlice({
   name: 'ordering/menu/productDetail',
   initialState,
+  reducers: {
+    updateAndSaveComments(state, action) {
+      state.comments = action.payload;
+    },
+  },
   extraReducers: {
     [showProductDetailDrawer.pending.type]: state => {
       state.productDetailRequest.status = API_REQUEST_STATUS.PENDING;
     },
     [showProductDetailDrawer.fulfilled.type]: (state, { payload }) => {
-      state.isProductDetailDrawerVisible = true;
-      state.selectedProductId = payload.productId;
-      state.selectedCategoryId = payload.categoryId;
-      state.selectedOptionsByVariationId = payload.selectedOptionsByVariationId;
-      state.selectedQuantity = 1;
+      if (payload) {
+        state.isProductDetailDrawerVisible = true;
+        state.selectedProductId = payload.productId;
+        state.selectedCategoryId = payload.categoryId;
+        state.selectedOptionsByVariationId = payload.selectedOptionsByVariationId;
+        state.selectedQuantity = 1;
+      }
+
       state.productDetailRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
     [showProductDetailDrawer.rejected.type]: (state, action) => {
@@ -158,6 +170,12 @@ export const { reducer, actions } = createSlice({
     [addToCart.rejected.type]: (state, action) => {
       state.addToCartRequest.status = API_REQUEST_STATUS.REJECTED;
       state.addToCartRequest.error = action.error;
+    },
+    [showNotesDrawer.fulfilled.type]: state => {
+      state.showComments = true;
+    },
+    [hideNotesDrawer.fulfilled.type]: state => {
+      state.showComments = false;
     },
   },
 });

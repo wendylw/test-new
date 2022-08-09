@@ -11,3 +11,46 @@
   @apply tw-flex-grow tw-text-left tw-text-lg tw-leading-relaxed tw-font-bold tw-truncate
     sm:tw-pr-16px tw-pr-16 sm:tw-py-12px tw-py-12;
 }
+
+.CollectionPageFilterBarWrapper {
+  @apply sm:tw-pt-4px tw-pt-4 sm:tw-pb-12px tw-pb-12
+    tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+}
+
+.CollectionPageCategoryDrawerWrapper {
+  @apply tw-p-0;
+
+  div:global(.drawer-animation__children) {
+    @apply tw-flex tw-flex-col;
+  }
+}
+
+.CollectionPageCategoryDrawerHeaderButton:global(.type-text) {
+  @apply tw-flex-shrink-0 tw--ml-16 sm:tw--ml-16px tw-p-16 sm:tw-p-16px tw-border-0;
+}
+
+.CollectionPageCategoryDrawerHeaderTitle {
+  @apply tw-flex-1 tw-text-lg tw-leading-relaxed tw-text-center tw-px-16 sm:tw-px-16px tw-font-bold tw-capitalize;
+}
+
+.CollectionPageInfoCard {
+  @apply tw-flex tw-flex-col tw-items-center;
+
+  padding: 14.1176vh 0;
+}
+
+.CollectionPageInfoCardImage {
+  @apply tw-w-3/10 sm:tw-m-8px tw-m-8;
+
+  max-width: 120px;
+}
+
+.CollectionPageInfoCardHeading {
+  @apply tw-text-base tw-leading-relaxed tw-font-bold tw-text-gray-700 tw-text-center sm:tw-px-16px tw-px-16 sm:tw-py-8px tw-py-8;
+}
+
+@media (min-width: 770px) {
+  .CollectionPageInfoCard {
+    padding: 120px 0;
+  }
+}

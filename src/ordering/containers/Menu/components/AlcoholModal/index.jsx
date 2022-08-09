@@ -71,7 +71,7 @@ const AlcoholModal = ({ history }) => {
           <div className={styles.AlcoholImage}>
             <img src={beepAlcoholImage} alt="Beep alcohol" />
           </div>
-          <h2 className={styles.AlcoholDesTitle}>{t('CheckIfDrinkingAgeDine')}</h2>
+          <h2 className={styles.AlcoholDesTitle}>{t('CheckIfDrinkingAge')}</h2>
           <p className={styles.AlcoholDes}>
             {country === 'MY' && t('AlcoholLimitationsMY')}
             {country === 'PH' && t('AlcoholLimitationsPH')}
@@ -98,7 +98,7 @@ const AlcoholModal = ({ history }) => {
             </Button>
           </div>
           <p className={styles.AlcoholDesEnd}>
-            <TermsAndPrivacy isQROrder />
+            <TermsAndPrivacy buttonLinkClassName="tw-text-sm tw-text-blue tw-leading-normal" />
           </p>
         </>
       ) : (

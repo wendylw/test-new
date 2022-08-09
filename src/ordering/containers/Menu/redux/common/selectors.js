@@ -2,8 +2,10 @@ import { createSelector } from '@reduxjs/toolkit';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
 import _sumBy from 'lodash/sumBy';
-import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
-import { getCartQuantityByProductId } from '../cart/selectors';
+import _map from 'lodash/map';
+import { API_REQUEST_STATUS, SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { getOpeningHours } from '../../../../../common/utils/index';
+import { getCartQuantity, getCartQuantityByProductId, getIsFulfillMinimumConsumption } from '../cart/selectors';
 import {
   getTableId,
   getCashbackRate,
@@ -16,11 +18,51 @@ import {
   getShippingType,
   getIsQrOrderingShippingType,
   getEnablePayLater as getIsEnablePayLater,
-  getBusiness,
   getIsStoreInfoReady,
+  getIsDeliveryOrder,
+  getIsBeepDeliveryShippingType,
+  getIsDeliveryType,
+  getStore,
+  getBusinessUTCOffset,
+  getIsWebview,
+  getUserLoginByBeepAppStatus,
+  getUserIsLogin,
+  getStoreId,
+  getStoresList,
+  getStoreCoords,
+  getShippingFee,
+  getDeliveryRadius,
+  getDeliveryInfo,
+  getQROrderingSettings,
+  getIsUserLoginRequestStatusInPending,
+  getStoreRating,
+  getIsFromBeepSite,
+  getIsInAppOrMiniProgram,
+  getIsPickUpType,
 } from '../../../../redux/modules/app';
+import * as StoreUtils from '../../../../../utils/store-utils';
+import * as NativeMethods from '../../../../../utils/native-methods';
+import {
+  getAddressCoords,
+  getAddressName as getSelectedLocationDisplayName,
+  getIfAddressInfoExists,
+} from '../../../../../redux/modules/address/selectors';
+import { STORE_OPENING_STATUS } from '../../constants';
+import { computeStraightDistance } from '../../../../../utils/geoUtils';
+import { formatTime } from '../../../../../utils/time-lib';
 
-export { getTableId, getShippingType, getIsQrOrderingShippingType, getIsEnablePayLater, getIsStoreInfoReady };
+export {
+  getTableId,
+  getShippingType,
+  getIsQrOrderingShippingType,
+  getIsDeliveryType,
+  getIsEnablePayLater,
+  getIsStoreInfoReady,
+  getStore,
+  getStoreId,
+  getSelectedLocationDisplayName,
+  getIsPickUpType,
+};
 
 /**
  * get store logo
@@ -59,6 +101,9 @@ export const getStoreDisplaySubTitle = createSelector(getBusinessInfo, businessI
  */
 export const getActiveCategoryId = state => state.menu.common.activeCategoryId;
 
+// is time slot drawer visible
+export const getTimeSlotDrawerVisible = state => state.menu.common.timeSlotDrawerVisible;
+
 /**
  * get store category list
  * @param {*} state
@@ -76,6 +121,25 @@ export const getCategories = createSelector(
       isBestSeller: category.isBestSeller || false,
       isActive: category.id === activeCategoryId,
     }))
+);
+
+export const getCurrentTime = state => state.menu.common.currentTime;
+
+/**
+ * get current time in business time zone
+ * @returns Dayjs object
+ */
+export const getBusinessTimeZoneCurrentDayjs = createSelector(
+  getCurrentTime,
+  getBusinessUTCOffset,
+  (currentTime, businessUTCOffset) => StoreUtils.getBusinessDateTime(businessUTCOffset, currentTime)
+);
+
+export const getExpectedDeliveryTime = state => state.menu.common.expectedDeliveryTime;
+
+export const getHasSelectedExpectedDeliveryTime = createSelector(
+  getExpectedDeliveryTime,
+  expectedDeliveryTime => !!expectedDeliveryTime
 );
 
 /**
@@ -156,9 +220,14 @@ export const getHighlightedCategory = createSelector(
   }
 );
 
+export const getEnableDeliveryRevamp = state => state.menu.common.enabledDeliveryRevamp;
+
 export const getIsMenuRevamp = createSelector(
   getIsQrOrderingShippingType,
-  isQrOrderingShippingType => isQrOrderingShippingType
+  getIsDeliveryOrder,
+  getEnableDeliveryRevamp,
+  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp) =>
+    isQrOrderingShippingType || (isDeliveryOrder && enabledDeliveryRevamp)
 );
 
 export const getIsSearchingBannerVisible = state => state.menu.common.searchingBannerVisible;
@@ -232,3 +301,448 @@ export const getBeforeStartToSearchScrollTopPosition = state => state.menu.commo
  * @returns
  */
 export const getIsVirtualKeyboardVisible = state => state.menu.common.virtualKeyboardVisible;
+
+export const getIsCurrentTimeAvailablePlaceOnDemandOrder = createSelector(
+  getStore,
+  getCurrentTime,
+  getBusinessUTCOffset,
+  getShippingType,
+  (store, currentTime, businessUTCOffset, shippingType) =>
+    StoreUtils.isAvailableOnDemandOrderTime(store, new Date(currentTime), businessUTCOffset, shippingType)
+);
+
+export const getHasSaveFavoriteStoreSupport = createSelector(getIsWebview, isWebview => {
+  if (!isWebview) return false;
+  const { BEEP_MODULE_METHODS } = NativeMethods;
+  return NativeMethods.hasMethodInNative(BEEP_MODULE_METHODS.HAS_SAVE_FAVORITE_STORE_SUPPORT);
+});
+
+export const getShouldShowFavoriteButton = createSelector(
+  getIsDeliveryOrder,
+  getHasSaveFavoriteStoreSupport,
+  (isDeliveryOrder, hasSaveFavoriteStoreSupport) => isDeliveryOrder && hasSaveFavoriteStoreSupport
+);
+
+export const getHasUserLoginByBeepAppRequestFulfilled = createSelector(
+  getUserLoginByBeepAppStatus,
+  loginByBeepAppStatus => loginByBeepAppStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getShouldCheckSaveStoreStatus = createSelector(
+  getUserIsLogin,
+  getShouldShowFavoriteButton,
+  getHasUserLoginByBeepAppRequestFulfilled,
+  (isLogin, shouldShowFavoriteButton, hasBeepAppLoginRequestFulfilled) =>
+    isLogin && !hasBeepAppLoginRequestFulfilled && shouldShowFavoriteButton
+);
+
+export const getHasUserSaveStore = state => state.menu.common.storeFavStatus.data;
+
+export const getStoreFullDisplayTitle = createSelector(
+  getStoreDisplayTitle,
+  getStoreDisplaySubTitle,
+  (title, subTitle) => `${title}${subTitle ? ` (${subTitle})` : ''}`
+);
+
+export const getIsShowBackButton = createSelector(getIsFromBeepSite, isFromBeepSite => isFromBeepSite);
+
+/**
+ * user selected display date
+ * @returns  "" | "Today" | "Tomorrow" | "Sun 09"
+ */
+export const getSelectedDateDisplayValue = createSelector(
+  getExpectedDeliveryTime,
+  getCurrentTime,
+  getBusinessUTCOffset,
+  (expectedDeliveryTime, currentTime, businessUTCOffset) => {
+    if (!expectedDeliveryTime) {
+      return '';
+    }
+
+    if (expectedDeliveryTime === 'now') {
+      return 'Today';
+    }
+
+    const expectedDeliveryTimeDayjsObj = StoreUtils.getBusinessDateTime(
+      businessUTCOffset,
+      new Date(expectedDeliveryTime)
+    );
+
+    if (expectedDeliveryTimeDayjsObj.isSame(currentTime, 'day')) {
+      return 'Today';
+    }
+
+    const tomorrowDayjsObj = StoreUtils.getBusinessDateTime(businessUTCOffset, new Date(currentTime)).add(1, 'day');
+
+    const isTomorrow = expectedDeliveryTimeDayjsObj.isSame(tomorrowDayjsObj, 'day');
+
+    if (isTomorrow) {
+      return 'Tomorrow';
+    }
+
+    return expectedDeliveryTimeDayjsObj.format('ddd DD');
+  }
+);
+
+/**
+ * user selected display time
+ * @returns "" | "Immediate" | "4:00PM - 5:00PM" | "4:00PM"
+ */
+export const getSelectedTimeDisplayValue = createSelector(
+  getExpectedDeliveryTime,
+  getShippingType,
+  getBusinessUTCOffset,
+  (expectedDeliveryTime, shippingType, businessUTCOffset) => {
+    if (!expectedDeliveryTime) {
+      return '';
+    }
+
+    if (expectedDeliveryTime === 'now') {
+      return 'Immediate';
+    }
+
+    const expectedDeliveryTimeDayjsObj = StoreUtils.getBusinessDateTime(
+      businessUTCOffset,
+      new Date(expectedDeliveryTime)
+    );
+
+    // for Delivery order, it will display a time period
+    if (shippingType === SHIPPING_TYPES.DELIVERY) {
+      const from = expectedDeliveryTimeDayjsObj.format('h:mmA');
+      const to = expectedDeliveryTimeDayjsObj.add(1, 'hour').format('h:mmA');
+      return `${from} - ${to}`;
+    }
+
+    return expectedDeliveryTimeDayjsObj.format('h:mmA');
+  }
+);
+
+/**
+ * Get selected Store opening status
+ * @returns  "onDemand" | "preOrder" | "closed" | null
+ */
+export const getSelectedStoreStatus = createSelector(
+  getStore,
+  getShippingType,
+  getBusinessUTCOffset,
+  getCurrentTime,
+  (store, shippingType, businessUTCOffset, currentTime) => {
+    if (!store) {
+      return null;
+    }
+
+    const isAvailableOnDemand = StoreUtils.isAvailableOnDemandOrderTime(
+      store,
+      new Date(currentTime),
+      businessUTCOffset,
+      shippingType
+    );
+
+    if (isAvailableOnDemand) {
+      return STORE_OPENING_STATUS.ON_DEMAND;
+    }
+
+    const isAvailablePreOrder = _get(store, 'qrOrderingSettings.enablePreOrder', false);
+
+    if (isAvailablePreOrder) {
+      return STORE_OPENING_STATUS.PRE_ORDER;
+    }
+
+    return STORE_OPENING_STATUS.CLOSED;
+  }
+);
+
+/**
+ * Get all Stores opening status
+ * @returns  "onDemand" | "preOrder" | "closed" | null
+ */
+export const getAllStoresStatus = createSelector(
+  getStoresList,
+  getShippingType,
+  getBusinessUTCOffset,
+  getCurrentTime,
+  (storeList, shippingType, businessUTCOffset, currentTime) => {
+    if (storeList.length === 0) {
+      return null;
+    }
+
+    const isAvailableOnDemand = storeList.some(store =>
+      StoreUtils.isAvailableOnDemandOrderTime(store, new Date(currentTime), businessUTCOffset, shippingType)
+    );
+
+    if (isAvailableOnDemand) {
+      return STORE_OPENING_STATUS.ON_DEMAND;
+    }
+
+    const isAvailablePreOrder = storeList.some(store => _get(store, 'qrOrderingSettings.enablePreOrder', false));
+
+    if (isAvailablePreOrder) {
+      return STORE_OPENING_STATUS.PRE_ORDER;
+    }
+
+    return STORE_OPENING_STATUS.CLOSED;
+  }
+);
+
+/**
+ * Get Store opening status for display
+ * @returns  "onDemand" | "preOrder" | "closed" | null
+ */
+export const getStoreStatus = createSelector(
+  getSelectedStoreStatus,
+  getAllStoresStatus,
+  (selectedStoreStatus, allStoresStatus) => selectedStoreStatus || allStoresStatus
+);
+
+export const getDeliveryDistance = createSelector(
+  getStoreCoords,
+  getAddressCoords,
+  getShippingType,
+  (storeCoords, addressCoords, shippingType) => {
+    if (shippingType !== SHIPPING_TYPES.DELIVERY) {
+      return null;
+    }
+
+    if (!storeCoords || !addressCoords) {
+      return null;
+    }
+
+    return computeStraightDistance(addressCoords, storeCoords);
+  }
+);
+
+/**
+ * get display delivery distance
+ * @returns "~10.60 KM"
+ */
+export const getDisplayDeliveryDistance = createSelector(getDeliveryDistance, deliveryDistance => {
+  if (!deliveryDistance) {
+    return '';
+  }
+
+  return `~${(deliveryDistance / 1000).toFixed(2)} KM`;
+});
+
+/**
+ * get formatted shipping fee
+ * @returns "RM 24.00"
+ */
+export const getFormattedShippingFee = createSelector(
+  getShippingFee,
+  getShippingType,
+  getFormatCurrencyFunction,
+  getIfAddressInfoExists,
+  (shippingFee, shippingType, formatCurrency, ifAddressInfoExists) => {
+    if (shippingType !== SHIPPING_TYPES.DELIVERY || !ifAddressInfoExists) {
+      return '';
+    }
+
+    return formatCurrency(shippingFee);
+  }
+);
+
+/**
+ * is selected address out of range
+ */
+export const getIsAddressOutOfRange = createSelector(
+  getDeliveryDistance,
+  getDeliveryRadius,
+  (deliveryDistance, deliveryRadius) => {
+    if (!deliveryDistance || !deliveryRadius) {
+      return false;
+    }
+
+    return deliveryDistance / 1000 > deliveryRadius;
+  }
+);
+
+/**
+ * get store rating
+ * Will be display it when entry is Beepit.com or Beep App or Beep TNG MP
+ * @returns 4.8 | null
+ */
+export const getStoreRatingDisplayValue = createSelector(
+  getStoreRating,
+  getIsFromBeepSite,
+  getIsBeepDeliveryShippingType,
+  getIsInAppOrMiniProgram,
+  (storeRating, isFromBeepSite, isBeepDeliveryShippingTye, isInAppOrMiniProgram) => {
+    // store rating only display on the delivery or pickup order
+    if (!isBeepDeliveryShippingTye) {
+      return null;
+    }
+
+    // only from beep site or beep app or beep tng mp will display the store rating
+    if (isFromBeepSite || isInAppOrMiniProgram) {
+      return storeRating;
+    }
+
+    return null;
+  }
+);
+
+/**
+ * get is free delivery tag visible
+ * @returns
+ */
+export const getIsFreeDeliveryTagVisible = createSelector(
+  getDeliveryInfo,
+  getStoreId,
+  getShippingType,
+  (deliveryInfo, storeId, shippingType) => {
+    const { freeShippingMinAmount, enableConditionalFreeShipping } = deliveryInfo;
+
+    return (
+      storeId && shippingType === SHIPPING_TYPES.DELIVERY && freeShippingMinAmount && enableConditionalFreeShipping
+    );
+  }
+);
+
+/**
+ * get the free shipping formatted mini amount
+ * @returns "RM 0.00"
+ */
+export const getFreeShippingFormattedMinAmount = createSelector(
+  getDeliveryInfo,
+  getFormatCurrencyFunction,
+  (deliveryInfo, formatCurrencyFunction) => {
+    const { freeShippingMinAmount } = deliveryInfo;
+
+    if (!freeShippingMinAmount) {
+      return '';
+    }
+
+    return formatCurrencyFunction(freeShippingMinAmount);
+  }
+);
+
+/**
+ *  get the free shipping formatted mini amount with out spacing
+ * @returns "RM0.00"
+ */
+export const getFreeShippingFormattedMinAmountWithOutSpacing = createSelector(
+  getFreeShippingFormattedMinAmount,
+  freeShippingFormattedMinAmount => freeShippingFormattedMinAmount.replace(/\s/g, '')
+);
+
+export const getIsTimeSlotAvailable = createSelector(getSelectedStoreStatus, storeStatus =>
+  [STORE_OPENING_STATUS.ON_DEMAND, STORE_OPENING_STATUS.PRE_ORDER].includes(storeStatus)
+);
+
+export const getIsStoreInfoEntryVisible = createSelector(
+  getStoreId,
+  getIsDeliveryOrder,
+  (storeId, isDeliveryOrder) => isDeliveryOrder && !!storeId
+);
+
+export const getIsStoreInfoDrawerVisible = state => state.menu.common.storeInfoDrawerVisible;
+
+export const getIsLocationDrawerVisible = state => state.menu.common.locationDrawerVisible;
+export const getIsStoreListDrawerVisible = state => state.menu.common.storeListDrawerVisible;
+
+export const getStoreLocation = createSelector(getDeliveryInfo, deliveryInfo => {
+  const { storeAddress } = deliveryInfo;
+  return storeAddress;
+});
+
+/**
+ * value includes: "" | "preOrder" | "closed"
+ * @returns
+ */
+export const getStoreDisplayStatus = createSelector(getStoreStatus, storeStatus => {
+  if (storeStatus === STORE_OPENING_STATUS.ON_DEMAND || !storeStatus) {
+    return '';
+  }
+
+  if (storeStatus === STORE_OPENING_STATUS.PRE_ORDER) {
+    return 'preOrder';
+  }
+
+  return 'closed';
+});
+
+export const getStoreContactNumber = createSelector(getDeliveryInfo, deliveryInfo => {
+  const { telephone } = deliveryInfo;
+  return telephone;
+});
+
+export const getStoreOpeningTimeList = createSelector(
+  getQROrderingSettings,
+  getStoreId,
+  (qrOrderingSettings, storeId) => {
+    if (!storeId) return [];
+
+    const weekInfo = {
+      1: 'Sunday',
+      2: 'Monday',
+      3: 'Tuesday',
+      4: 'Wednesday',
+      5: 'Thursday',
+      6: 'Friday',
+      7: 'Saturday',
+    };
+    const { validTimeFrom, validTimeTo, validDays, breakTimeFrom, breakTimeTo } = qrOrderingSettings;
+    const formatBreakTimes = breakTimeFrom && breakTimeTo ? [formatTime(breakTimeFrom), formatTime(breakTimeTo)] : [];
+    const formatValidTimes = [formatTime(validTimeFrom), formatTime(validTimeTo)];
+    const openingHours = getOpeningHours({
+      validTimeFrom,
+      validTimeTo,
+      breakTimeFrom,
+      breakTimeTo,
+      formatBreakTimes,
+      formatValidTimes,
+    });
+
+    return _map(weekInfo, (week, day) => ({
+      day: week,
+      openingHours,
+      isClosed: !(openingHours.length > 0 && validDays.includes(+day)),
+    }));
+  }
+);
+
+/**
+ *  is able to review cart, if cart empty that footer will be hidden
+ * @return
+ */
+export const getIsAbleToReviewCart = createSelector(
+  getIsEnablePayLater,
+  getCartQuantity,
+  getDeliveryInfo,
+  getIsBeepDeliveryShippingType,
+  getIsFulfillMinimumConsumption,
+  getIsUserLoginRequestStatusInPending,
+  getStoreStatus,
+  (
+    enablePayLater,
+    cartQuantity,
+    deliveryInfo,
+    isBeepDeliveryShippingType,
+    isFulfillMinimumConsumption,
+    isUserLoginRequestStatusInPending,
+    storeStatus
+  ) => {
+    const { enableLiveOnline } = deliveryInfo;
+    const availableCartQuantity = cartQuantity > 0;
+
+    if (enablePayLater) {
+      return availableCartQuantity;
+    }
+
+    if (isBeepDeliveryShippingType && storeStatus === STORE_OPENING_STATUS.CLOSED) {
+      return false;
+    }
+
+    return (
+      availableCartQuantity && enableLiveOnline && !isUserLoginRequestStatusInPending && isFulfillMinimumConsumption
+    );
+  }
+);
+
+/**
+ * for display store pickup location
+ * @returns {string}
+ */
+export const getStoreLocationStreetForPickup = createSelector(getStore, getIsPickUpType, (store, isPickup) =>
+  isPickup ? _get(store, 'street1', '') : ''
+);

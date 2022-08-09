@@ -9,7 +9,7 @@ import * as ConstantsV2 from '../common/utils/constants';
 
 const DOCUMENT_ROOT_ID = 'root';
 
-const RESEND_OTP_TIME = 60;
+const RESEND_OTP_TIME = 30;
 
 const MANIFEST = {
   PLACEHOLDER_ID: 'manifest-placeholder',
@@ -85,12 +85,7 @@ const CHANNEL_TYPE = {
   BEEP: 3,
 };
 
-const ADDRESS_RANGE = {
-  STREET: 2,
-  CITY: 4,
-  STATE: 5,
-  COUNTRY: 6,
-};
+const ADDRESS_RANGE = ConstantsV2.ADDRESS_RANGE;
 
 const ADD_TO_CART_MIN_QUANTITY = 1;
 
@@ -415,7 +410,7 @@ const ASIDE_NAMES = {
 
 const DELIVERY_METHOD = ConstantsV2.SHIPPING_TYPES;
 
-const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEK_DAYS_I18N_KEYS = ConstantsV2.WEEK_DAYS_I18N_KEYS;
 
 const PROMOTION_ERROR_CODES = {
   /* temp promotion error code */
@@ -527,8 +522,9 @@ const PREORDER_IMMEDIATE_TAG = {
 
 const PROMO_TYPE = {
   PROMOTION: 'promotion',
-  PROMOTION_ADD: 'Promotion',
+  PROMOTION_FOR_PAY_LATER: 'Promotion',
   VOUCHER: 'voucher',
+  VOUCHER_FOR_PAY_LATER: 'Voucher',
 };
 
 const PROMOTIONS_TYPES = {
@@ -653,6 +649,25 @@ const LOGISTICS_RIDER_TYPE = {
   PAN_DAGO: 'pandago',
 };
 
+const OTP_REQUEST_PLATFORM = 'BeepWeb';
+
+const OTP_REQUEST_TYPES = {
+  OTP: 'otp',
+  RE_SEND_OTP: 'reSendotp',
+  WHATSAPP: 'WhatsApp',
+};
+
+export const DISPLAY_ICON_TYPES = {
+  FUNNEL_SIMPLE: 'FunnelSimple',
+  CARET_DOWN: 'CaretDown',
+};
+
+export const LOCATION_SELECTION_REASON_CODES = ConstantsV2.LOCATION_SELECTION_REASON_CODES;
+
+export const LIVE_CHAT_SOURCE_TYPES = {
+  ORDER_DETAILS: 'order details',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -704,4 +719,9 @@ export default {
   PROMOTION_CLIENT_TYPES,
   REFERRER_SOURCE_TYPES,
   LOGISTICS_RIDER_TYPE,
+  OTP_REQUEST_PLATFORM,
+  OTP_REQUEST_TYPES,
+  DISPLAY_ICON_TYPES,
+  LOCATION_SELECTION_REASON_CODES,
+  LIVE_CHAT_SOURCE_TYPES,
 };

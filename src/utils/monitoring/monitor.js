@@ -4,7 +4,7 @@ import tids from './tracing-id';
 import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
 import './navigation-detector';
 import './click-detector';
-import loggly from './loggly';
+import logger from './logger';
 import Utils from '../utils';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
@@ -95,7 +95,7 @@ class SentryCapturedError extends Error {
 const trackError = (event, hint) => {
   try {
     const errorMessage = getErrorMessageFromHint(hint);
-    loggly.error('common.error', { message: errorMessage, sentryId: event?.event_id });
+    logger.error('common.error', { message: errorMessage, sentryId: event?.event_id });
 
     window.newrelic?.addPageAction('common.error', {
       message: errorMessage,
@@ -107,14 +107,14 @@ const trackError = (event, hint) => {
 };
 
 const logUrlChange = type => {
-  loggly.log('common.page-navigation', {
+  logger.log('common.page-navigation', {
     type,
     query: window.location.search,
   });
 };
 
 const logClientInfo = () => {
-  loggly.log('common.client-info', {
+  logger.log('common.client-info', {
     userAgent: navigator.userAgent,
   });
 };
@@ -132,7 +132,7 @@ window.addEventListener('popstate', () => {
 });
 
 const logUserAction = (type, data) => {
-  loggly.log(type, data);
+  logger.log(type, data);
 };
 
 window.addEventListener('sh-click', e => {
@@ -140,14 +140,14 @@ window.addEventListener('sh-click', e => {
 });
 
 const logApiSuccess = data => {
-  loggly.log('common.api-responded', {
+  logger.log('common.api-responded', {
     status: 'success',
     ...data,
   });
 };
 
 const logApiFailure = data => {
-  loggly.error('common.api-responded', {
+  logger.error('common.api-responded', {
     status: 'failure',
     ...data,
   });
@@ -162,7 +162,7 @@ window.addEventListener('sh-api-failure', e => {
 });
 
 window.addEventListener('sh-fetch-error', e => {
-  loggly.error('common.fetch-error', e.detail);
+  logger.error('common.fetch-error', e.detail);
 });
 
 const initiallyLogged = false;

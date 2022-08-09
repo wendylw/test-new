@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { HandbagSimple } from 'phosphor-react';
@@ -6,7 +6,7 @@ import Button from '../../../../../common/components/Button';
 import PageFooter from '../../../../../common/components/PageFooter';
 import Badge from '../../../../../common/components/Badge';
 import MenuViewOrderBar from './MenuViewOrderBar';
-import { getIsVirtualKeyboardVisible } from '../../redux/common/selectors';
+import { getIsVirtualKeyboardVisible, getIsAbleToReviewCart } from '../../redux/common/selectors';
 import {
   getCartQuantity,
   getCartItemsFormattedSubtotal,
@@ -15,13 +15,13 @@ import {
   getIsEnablePayLater,
   getIsCartFooterVisible,
   getIsMiniCartDrawerVisible,
-  getIsAbleToReviewCart,
-  // getFormattedDiffPriceOnFulfillMinimumConsumption,
 } from '../../redux/cart/selectors';
-import { reviewCart, showMiniCartDrawer, hideMiniCartDrawer } from '../../redux/cart/thunks';
+import { showMiniCartDrawer, hideMiniCartDrawer } from '../../redux/cart/thunks';
 import { getIsVirtualKeyboardVisibleInMobile } from '../../utils';
 import { isMobile } from '../../../../../common/utils';
 import styles from './MenuFooter.module.scss';
+import MiniMumOrder from '../MiniMumOrder';
+import { reviewCart } from '../../redux/common/thunks';
 
 const MenuFooter = () => {
   const { t } = useTranslation();
@@ -46,10 +46,6 @@ const MenuFooter = () => {
   const isAbleToReviewCart = useSelector(getIsAbleToReviewCart);
   // get virtual keyboard visibility status in mobile
   const isVirtualKeyboardVisibleInMobile = getIsVirtualKeyboardVisibleInMobile(isMobile(), isVirtualKeyboardVisible);
-  useEffect(() => {
-    dispatch(hideMiniCartDrawer());
-  }, [isCartFooterVisible]);
-
   // footer will hide that searching box focused or virtual keyboard is opened in mobile
   if (isVirtualKeyboardVisibleInMobile) {
     return null;
@@ -57,6 +53,7 @@ const MenuFooter = () => {
 
   return (
     <PageFooter zIndex={50}>
+      <MiniMumOrder />
       <MenuViewOrderBar />
       {isCartFooterVisible ? (
         <div className="tw-flex tw-p-8 sm:tw-p-8px">
@@ -81,7 +78,7 @@ const MenuFooter = () => {
             type="primary"
             disabled={!isAbleToReviewCart}
           >
-            {isFulfillMinimumConsumption
+            {!isFulfillMinimumConsumption
               ? t('MinMumConsumptionButtonPrompt', { minimumConsumptionFormattedPrice })
               : t('ReviewCart')}
           </Button>

@@ -23,8 +23,7 @@ import CleverTap from '../../../../../utils/clevertap';
 
 class PromoList extends Component {
   componentDidMount() {
-    const { isPayLater } = this.props;
-    !isPayLater ? this.props.promotionActions.fetchConsumerVoucherList() : null;
+    this.props.promotionActions.fetchConsumerVoucherList();
   }
 
   renderPromoList = (promoList, title) => {

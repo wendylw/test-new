@@ -35,7 +35,7 @@ import './OrderingReportDriver.scss';
 import Utils from '../../../../../utils/utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import { alert } from '../../../../../common/feedback';
-import loggly from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 
 const NOTE_MAX_LENGTH = 140;
 const UPLOAD_FILE_MAX_SIZE = 10 * 1024 * 1024; // 10M
@@ -73,7 +73,7 @@ class ReportDriver extends Component {
 
   loginAppWithNativeToken = async result => {
     if (!result?.access_token || !result?.refresh_token) {
-      loggly.error('order-status.report-driver', { message: 'native token is invalid' });
+      logger.error('order-status.report-driver', { message: 'native token is invalid' });
       return;
     }
     await this.props.loginApp({

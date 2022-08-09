@@ -1,42 +1,37 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CaretLeft } from 'phosphor-react';
+import _truncate from 'lodash/truncate';
 import PowerByBeepLogo from '../../../../../images/powered-by-beep-logo.svg';
-import { getTableId, getShouldShowStoreNameInNativeHeader, getStoreDisplayTitle } from '../../redux/common/selectors';
+import BackArrow from '../../../../../images/back-arrow-header.svg';
+import {
+  getTableId,
+  getShouldShowStoreNameInNativeHeader,
+  getStoreDisplayTitle,
+  getStoreFullDisplayTitle,
+  getHasUserSaveStore,
+  getShouldShowFavoriteButton,
+  getIsShowBackButton,
+  getShouldCheckSaveStoreStatus,
+} from '../../redux/common/selectors';
 import { getIsProductDetailDrawerVisible } from '../../redux/productDetail/selectors';
 import { hideProductDetailDrawer } from '../../redux/productDetail/thunks';
 import styles from './MenuHeader.module.scss';
-import {
-  isWebview,
-  isDineInType,
-  isTakeAwayType,
-  getSourceUrlFromSessionStorage,
-  isFromBeepSite,
-} from '../../../../../common/utils';
-import NativeHeader from '../../../../../components/NativeHeader';
-import { closeWebView, goBack } from '../../../../../utils/native-methods';
-import { getDeliveryInfo } from '../../../../redux/modules/app';
+import { isWebview, isTakeAwayType, isDeliveryOrder, isFromBeepSite, isQROrder } from '../../../../../common/utils';
+import NativeHeader, { ICON_RES } from '../../../../../components/NativeHeader';
+import { closeWebView } from '../../../../../utils/native-methods';
+import { getDeliveryInfo, getIsFromBeepSite } from '../../../../redux/modules/app';
+import * as NativeMethods from '../../../../../utils/native-methods';
+import { goBack, loadUserFavStoreStatus, saveFavoriteStore, shareStore } from '../../redux/common/thunks';
 
-const OfflinePageHeader = ({ history }) => {
+const OfflinePageHeader = () => {
+  const dispatch = useDispatch();
+
   const goBackToPreviousPage = () => {
-    const sourceUrl = getSourceUrlFromSessionStorage();
-    // There is source url in session storage, so we can redirect to the source page
-    if (sourceUrl) {
-      window.location.href = sourceUrl;
-      return;
-    }
-
-    // Native back to previous page
-    if (isWebview()) {
-      goBack();
-
-      return;
-    }
-
-    history.goBack();
+    dispatch(goBack());
   };
 
   return (
@@ -75,9 +70,21 @@ const MenuHeader = ({ webHeaderVisibility }) => {
   const storeDisplayTitle = useSelector(getStoreDisplayTitle);
   const isProductDetailDrawerVisible = useSelector(getIsProductDetailDrawerVisible);
   const isInWebview = isWebview();
-  const isFromBeepSitePage = isFromBeepSite();
+  const isFromBeepSitePage = useSelector(getIsFromBeepSite);
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
+  const storeFullDisplayTitle = useSelector(getStoreFullDisplayTitle);
+  const hasUserSaveStore = useSelector(getHasUserSaveStore);
+  const shouldShowFavoriteButton = useSelector(getShouldShowFavoriteButton);
+  const isShowBackButton = useSelector(getIsShowBackButton);
+  const shouldCheckSaveStoreStatus = useSelector(getShouldCheckSaveStoreStatus);
   const history = useHistory();
+
+  useEffect(() => {
+    if (shouldCheckSaveStoreStatus) {
+      dispatch(loadUserFavStoreStatus());
+    }
+  }, [dispatch, shouldCheckSaveStoreStatus]);
+
   const createRightContentHtml = useCallback(
     content => (
       <div className="tw-flex-shrink-0">
@@ -86,25 +93,90 @@ const MenuHeader = ({ webHeaderVisibility }) => {
     ),
     []
   );
-  let rightContentForNativeHeader = null;
-  let rightContentForWebHeader = null;
 
-  if (isDineInType()) {
-    if (tableId) {
-      rightContentForNativeHeader = { text: t('TableIdText', { tableId }) };
-      rightContentForWebHeader = createRightContentHtml(t('TableIdText', { tableId }));
+  const getShareLinkConfig = () => {
+    const { SHARE } = ICON_RES;
+
+    if (!isDeliveryOrder()) return null;
+
+    try {
+      const { BEEP_MODULE_METHODS } = NativeMethods;
+      const hasShareLinkSupport = NativeMethods.hasMethodInNative(BEEP_MODULE_METHODS.SHARE_LINK);
+      if (!hasShareLinkSupport) {
+        return null;
+      }
+      const storeName = _truncate(`${storeFullDisplayTitle}`, { length: 33 });
+      const title = t('ShareTitle', { storeName });
+      return {
+        id: 'headerRightShareButton',
+        iconRes: SHARE,
+        onClick: () => {
+          dispatch(shareStore(title));
+        },
+      };
+    } catch (error) {
+      console.error(`failed to share store link: ${error.message}`);
+      return null;
     }
-  } else if (isTakeAwayType()) {
-    rightContentForNativeHeader = { text: t('TAKE_AWAY') };
-    rightContentForWebHeader = createRightContentHtml(t('TAKE_AWAY'));
-  }
+  };
+
+  const getSaveFavoriteStoreConfig = () => {
+    const { FAVORITE, FAVORITE_BORDER } = ICON_RES;
+
+    if (!shouldShowFavoriteButton) return null;
+
+    return {
+      id: 'headerRightFavoriteButton',
+      iconRes: hasUserSaveStore ? FAVORITE : FAVORITE_BORDER,
+      onClick: () => {
+        dispatch(saveFavoriteStore());
+      },
+    };
+  };
+
+  const rightContentForNativeHeader = () => {
+    if (isQROrder()) {
+      if (tableId) {
+        return { text: t('TableIdText', { tableId }) };
+      }
+      if (isTakeAwayType()) {
+        return { text: t('TakeAway') };
+      }
+    }
+
+    const rightContents = [];
+
+    rightContents.push(getShareLinkConfig());
+    rightContents.push(getSaveFavoriteStoreConfig());
+
+    // Filter out falsy values
+    return rightContents.filter(config => config);
+  };
+
+  const rightContentForWebHeader = () => {
+    if (isQROrder()) {
+      if (tableId) {
+        return createRightContentHtml(t('TableIdText', { tableId }));
+      }
+      if (isTakeAwayType()) {
+        return createRightContentHtml(t('TakeAway'));
+      }
+    }
+    return null;
+  };
+
+  const leftContentForWebHeader = () => {
+    if (isShowBackButton) {
+      return <img className={styles.MenuHeaderBackArrow} src={BackArrow} alt="" onClick={() => dispatch(goBack())} />;
+    }
+
+    return <img className={styles.MenuHeaderLogo} src={PowerByBeepLogo} alt="" />;
+  };
 
   const webHeader = webHeaderVisibility ? (
     <header className="tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
-      <h2 className={styles.MenuHeaderLogoContainer}>
-        <img className={styles.MenuHeaderLogo} src={PowerByBeepLogo} alt="" />
-      </h2>
-      {rightContentForWebHeader}
+      <h2 className={styles.MenuHeaderLogoContainer}>{leftContentForWebHeader()}</h2>
+      {rightContentForWebHeader()}
     </header>
   ) : null;
 
@@ -118,19 +190,12 @@ const MenuHeader = ({ webHeaderVisibility }) => {
       {isInWebview ? (
         <NativeHeader
           isPage
-          rightContent={rightContentForNativeHeader}
+          rightContent={rightContentForNativeHeader()}
           title={showStoreName ? storeDisplayTitle : ''}
           navFunc={() => {
             if (isProductDetailDrawerVisible) {
               dispatch(hideProductDetailDrawer(false));
             } else {
-              const sourceUrl = getSourceUrlFromSessionStorage();
-              // There is source url in session storage, so we can redirect to the source page
-              if (sourceUrl) {
-                window.location.href = sourceUrl;
-                return;
-              }
-
               closeWebView();
             }
           }}

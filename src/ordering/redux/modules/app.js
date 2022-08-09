@@ -4,6 +4,7 @@ import _get from 'lodash/get';
 import _uniq from 'lodash/uniq';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
+import _lowerCase from 'lodash/lowerCase';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
@@ -11,11 +12,12 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import * as ApiRequest from '../../../utils/api-request';
 import CleverTap from '../../../utils/clevertap';
+import qs from 'qs';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { get } from '../../../utils/request';
+import { get, post } from '../../../utils/request';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -35,9 +37,11 @@ import * as StoreUtils from '../../../utils/store-utils';
 import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
+import { isFromBeepSite } from '../../../common/utils';
+import { replace } from 'connected-react-router';
 
-const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE } = Constants;
+const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
@@ -106,7 +110,8 @@ export const initialState = {
       status: '',
     },
     isError: false,
-    otpType: 'otp',
+    otpType: OTP_REQUEST_TYPES.OTP,
+    isOtpError: false,
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
@@ -141,6 +146,9 @@ export const initialState = {
     status: null,
   },
   onlineCategory: {
+    status: null,
+  },
+  coreStores: {
     status: null,
   },
   deliveryDetails: {
@@ -301,16 +309,28 @@ export const actions = {
     type: types.RESET_OTP_STATUS,
   }),
 
-  getOtp: ({ phone, type = 'otp' }) => ({
-    [API_REQUEST]: {
-      types: [types.GET_OTP_REQUEST, types.GET_OTP_SUCCESS, types.GET_OTP_FAILURE],
-      ...Url.API_URLS.GET_OTP,
-      payload: {
-        type,
-        phone,
-      },
-    },
-  }),
+  getOtp: payload => async dispatch => {
+    try {
+      dispatch({ type: types.GET_OTP_REQUEST });
+
+      const { isSent, errorCode } = await post(Url.API_URLS.GET_OTP.url, {
+        ...payload,
+        platform: OTP_REQUEST_PLATFORM,
+      });
+
+      if (isSent) {
+        dispatch({ type: types.GET_OTP_SUCCESS });
+      } else {
+        dispatch({ type: types.GET_OTP_FAILURE, error: errorCode });
+      }
+    } catch (error) {
+      // For sake of completeness: this won't be called because of the the response code will always be 200
+      dispatch({
+        type: types.GET_OTP_FAILURE,
+        error: error,
+      });
+    }
+  },
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
@@ -361,7 +381,7 @@ export const actions = {
         );
       }
     } catch (error) {
-      loggly.error('ordering.syncLoginFromNative.error', {
+      logger.error('ordering.syncLoginFromNative.error', {
         error: error?.message,
         code: error?.code,
       });
@@ -540,7 +560,15 @@ export const actions = {
     };
 
     const isAddressInfoEmpty = !payload.addressId;
-    const hasAddressInfoChanged = !_isEqual(deliveryDetails, payload);
+    const hasAddressInfoChanged = [
+      'addressId',
+      'addressName',
+      'deliveryToAddress',
+      'deliveryToCity',
+      'postCode',
+      'countryCode',
+      'deliveryToLocation',
+    ].some(key => !_isEqual(deliveryDetails[key], payload[key]));
     const deliveryToLocation = _get(payload, 'deliveryToLocation', null);
     let coords = null;
 
@@ -692,6 +720,31 @@ export const actions = {
 
     return getUserIsLogin(getState());
   },
+
+  updateShippingType: newShippingType => (dispatch, getState) => {
+    const state = getState();
+    const shippingType = getShippingType(state);
+
+    // replace new shipping type in url query
+    if (shippingType !== newShippingType) {
+      const queryObj = getURLQueryObject(state);
+      const location = getLocation(state);
+      queryObj.type = newShippingType;
+      dispatch(
+        replace({
+          pathname: location.pathname,
+          hash: location.hash,
+          state: location.state,
+          search: qs.stringify(queryObj, { addQueryPrefix: true }),
+        })
+      );
+    }
+
+    dispatch({
+      type: types.UPDATE_SHIPPING_TYPE,
+      payload: newShippingType,
+    });
+  },
 };
 
 const user = (state = initialState.user, action) => {
@@ -717,6 +770,8 @@ const user = (state = initialState.user, action) => {
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
     case types.GET_OTP_FAILURE:
+      // We won't handle the error code separately for now, because we don't want users to see the error details in the phase 1.
+      return { ...state, isFetching: false, isResending: false, isOtpError: true };
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isResending: false, isError: true };
     case types.GET_OTP_REQUEST:
@@ -724,7 +779,8 @@ const user = (state = initialState.user, action) => {
         ...state,
         isFetching: true,
         isResending: true,
-        otpType: 'reSendotp',
+        isOtpError: false,
+        otpType: OTP_REQUEST_TYPES.RE_SEND_OTP,
       };
     case types.RESET_OTP_STATUS:
       return { ...state, isFetching: false, hasOtp: false };
@@ -764,6 +820,7 @@ const user = (state = initialState.user, action) => {
         },
         isLogin: true,
         hasOtp: false,
+        isExpired: false,
         isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.FULFILLED : null,
@@ -933,6 +990,19 @@ const coreBusiness = (state = initialState.coreBusiness, action) => {
   }
 };
 
+const coreStores = (state = initialState.coreStores, action) => {
+  switch (action.type) {
+    case types.FETCH_CORESTORES_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_CORESTORES_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_CORESTORES_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
 const apiError = (state = initialState.apiError, action) => {
   const { type, code, response, responseGql, payload } = action;
   const { error: payloadError } = payload || {};
@@ -969,7 +1039,14 @@ const apiError = (state = initialState.apiError, action) => {
   }
 };
 
-const requestInfo = (state = initialState.requestInfo) => state;
+const requestInfo = (state = initialState.requestInfo, action) => {
+  switch (action.type) {
+    case types.UPDATE_SHIPPING_TYPE:
+      return { ...state, shippingType: action.payload };
+    default:
+      return state;
+  }
+};
 
 const shoppingCart = (state = initialState.shoppingCart, action) => {
   if (action.type === types.CLEARALL_SUCCESS || action.type === types.CLEARALL_BY_PRODUCTS_SUCCESS) {
@@ -1110,11 +1187,13 @@ export default combineReducers({
   storeHashCode: storeHashCodeReducer,
   coreBusiness,
   onlineCategory,
+  coreStores,
 });
 
 // selectors
 export const getUser = state => state.app.user;
 export const getOtpType = state => state.app.user.otpType;
+export const getIsOtpError = state => state.app.user.isOtpError;
 export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
@@ -1123,6 +1202,8 @@ export const getOnlineStoreInfo = state => {
 };
 
 export const getOnlineStoreInfoStatus = state => state.app.onlineStoreInfo.status;
+
+export const getCoreStoresStatus = state => state.app.coreStores.status;
 
 export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
 
@@ -1215,9 +1296,25 @@ export const getStore = state => {
   return getStoreById(state, storeId);
 };
 
+export const getHasSelectedStore = createSelector(getStoreId, storeId => !!storeId);
+
 export const getBusinessCurrency = createSelector(getOnlineStoreInfo, onlineStoreInfo => {
   return _get(onlineStoreInfo, 'currency', 'MYR');
 });
+
+export const getIsEnablePreOrder = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'qrOrderingSettings.enablePreOrder', false)
+);
+
+export const getStoreFulfillmentOptions = createSelector(getStore, store => _get(store, 'fulfillmentOptions', []));
+
+export const getIsEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, store =>
+  _get(store, 'qrOrderingSettings.enablePerTimeSlotLimitForPreOrder', false)
+);
+
+export const getStoreSupportShippingTypes = createSelector(getStoreFulfillmentOptions, storeFulfillmentOptions =>
+  storeFulfillmentOptions.map(_lowerCase)
+);
 
 export const getCartItems = state => state.app.shoppingCart.items;
 
@@ -1226,6 +1323,8 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
 export const getCartStatus = state => state.app.shoppingCart.status;
+
+export const getShippingFee = createSelector(getCartBilling, billing => billing.shippingFee);
 
 export const getDeliveryDetails = state => state.app.deliveryDetails;
 
@@ -1314,6 +1413,17 @@ export const getUserPhone = createSelector(getUser, user => _get(user, 'profile.
 export const getUserConsumerId = createSelector(getUser, user => _get(user, 'consumerId', ''));
 
 export const getStoreName = createSelector(getStore, store => _get(store, 'name', ''));
+
+export const getStoreCoords = createSelector(getStore, store => {
+  if (!store) {
+    return null;
+  }
+
+  return {
+    lat: _get(store, 'location.latitude'),
+    lng: _get(store, 'location.longitude'),
+  };
+});
 
 export const getEnableCashback = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'enableCashback', null)
@@ -1438,11 +1548,31 @@ export const getCategoryProductList = createSelector(
 
 // TODO: add Utils methods to state rather than using Utils
 export const getIsTNGMiniProgram = state => Utils.isTNGMiniProgram();
-export const getIsDeliveryType = state => Utils.isDeliveryType();
 export const getIsDigitalType = state => Utils.isDigitalType();
 export const getIsDeliveryOrder = state => Utils.isDeliveryOrder();
 export const getIsQROrder = state => Utils.isQROrder();
 export const getIsWebview = state => Utils.isWebview();
+export const getIsInBrowser = state => Utils.getClient() === CLIENTS.WEB;
+export const getIsInAppOrMiniProgram = createSelector(
+  getIsWebview,
+  getIsTNGMiniProgram,
+  (isWebview, isTNGMiniProgram) => isWebview || isTNGMiniProgram
+);
+export const getIsFromBeepSite = state => isFromBeepSite();
+
+/**
+ * Is delivery shipping type
+ * @returns
+ */
+export const getIsDeliveryType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.DELIVERY
+);
+
+/**
+ * Is pickup shipping type
+ */
+export const getIsPickUpType = createSelector(getShippingType, shippingType => shippingType === DELIVERY_METHOD.PICKUP);
 
 export const getAllowAnonymousQROrdering = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'allowAnonymousQROrdering', false)
@@ -1531,6 +1661,15 @@ export const getIsQrOrderingShippingType = createSelector(
 );
 
 /**
+ * is shipping type of delivery or pickup
+ * @returns
+ */
+export const getIsBeepDeliveryShippingType = createSelector(
+  getShippingType,
+  shippingType => shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP
+);
+
+/**
  * is related store data api ready
  * @returns
  */
@@ -1540,3 +1679,28 @@ export const getIsStoreInfoReady = createSelector(
   (onlineStoreInfoStatus, coreBusinessAPIStatus) =>
     onlineStoreInfoStatus === API_REQUEST_STATUS.FULFILLED && coreBusinessAPIStatus === API_REQUEST_STATUS.FULFILLED
 );
+
+export const getIsCoreStoresLoaded = createSelector(
+  getCoreStoresStatus,
+  coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getDeliveryRadius = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'qrOrderingSettings.deliveryRadius', null)
+);
+
+export const getRouter = state => state.router;
+
+export const getLocation = state => state.router.location;
+
+export const getLocationSearch = createSelector(getLocation, location => location.search);
+
+export const getURLQueryObject = createSelector(getLocationSearch, locationSearch =>
+  qs.parse(locationSearch, { ignoreQueryPrefix: true })
+);
+
+export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
+  _get(businessInfo, 'stores[0].reviewInfo.rating', null)
+);
+
+export const getCurrentDate = state => new Date();

@@ -76,7 +76,8 @@ import { sourceType } from './constants';
 import { getIfAddressInfoExists, getAddressCoords, getAddressName } from '../../../redux/modules/address/selectors';
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
+import { SOURCE_TYPE } from '../Menu/constants';
 
 const localState = {
   blockScrollTop: 0,
@@ -175,7 +176,7 @@ class Home extends Component {
 
     const shareLinkUrl = this.getShareLinkUrl();
 
-    shortenUrl(shareLinkUrl).catch(error => loggly.error(`failed to share store link(didMount): ${error.message}`));
+    shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
     const { enablePayLater } = this.props;
 
     if (config.storeId) {
@@ -900,7 +901,7 @@ class Home extends Component {
 
   getShareLinkUrl = () => {
     const storeUrl = window.location.href;
-    const shareLinkUrl = `${storeUrl}&source=SharedLink&utm_source=store_link&utm_medium=share`;
+    const shareLinkUrl = `${storeUrl}&source=${SOURCE_TYPE.SHARED_LINK}&utm_source=store_link&utm_medium=share`;
 
     return shareLinkUrl;
   };
@@ -934,7 +935,7 @@ class Home extends Component {
         cashback: cashbackRate,
       });
     } catch (error) {
-      loggly.error(`failed to share store link(click): ${error.message}`);
+      logger.error(`failed to share store link(click): ${error.message}`);
     }
   };
 
@@ -1079,7 +1080,7 @@ class Home extends Component {
                 (this.deliveryEntryEl ? this.deliveryEntryEl.clientHeight : 0)}px`,
             }}
           >
-            <Trans i18nKey="FreeDeliveryPrompt" freeShippingMinAmount={freeShippingMinAmount}>
+            <Trans i18nKey="FreeDeliveryPreviousPrompt" freeShippingMinAmount={freeShippingMinAmount}>
               Free Delivery with <CurrencyNumber money={freeShippingMinAmount || 0} /> & above
             </Trans>
           </p>

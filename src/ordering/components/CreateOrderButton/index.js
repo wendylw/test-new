@@ -16,7 +16,7 @@ import { createOrder, gotoPayment } from '../../containers/payments/redux/common
 import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 import { fetchOrder } from '../../../utils/api-request';
 import i18next from 'i18next';
 import { alert } from '../../../common/feedback/';
@@ -24,6 +24,9 @@ import { alert } from '../../../common/feedback/';
 const { ROUTER_PATHS, REFERRER_SOURCE_TYPES, PAYMENT_PROVIDERS, ORDER_STATUS } = Constants;
 
 class CreateOrderButton extends React.Component {
+  state = {
+    isLoadingCreatedOrder: false,
+  };
   componentDidMount = async () => {
     if (this.shouldAskUserLogin()) {
       this.gotoLoginPage();
@@ -91,7 +94,7 @@ class CreateOrderButton extends React.Component {
         paymentName: paymentName || 'N/A',
       });
 
-      loggly.error('ordering.createOrder.error', {
+      logger.error('ordering.createOrder.error', {
         error: error?.message,
         shippingType,
         paymentName: paymentName || 'N/A',
@@ -181,7 +184,7 @@ class CreateOrderButton extends React.Component {
           ORDER_STATUS.DELIVERED,
         ].includes(order.status)
       ) {
-        loggly.log('ordering.order-has-paid', { order });
+        logger.log('ordering.order-has-paid', { orderId });
 
         alert(i18next.t('OrderHasPaidAlertDescription'), {
           closeButtonContent: i18next.t('Continue'),
@@ -199,6 +202,7 @@ class CreateOrderButton extends React.Component {
         paymentName: paymentName || 'N/A',
       });
 
+      this.setState({ isLoadingCreatedOrder: true });
       const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
       window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
         paymentName: paymentName || 'N/A',
@@ -210,7 +214,7 @@ class CreateOrderButton extends React.Component {
         total = order.total;
       }
 
-      loggly.log('ordering.order-created', { orderId });
+      logger.log('ordering.order-created', { orderId });
 
       if (orderId) {
         Utils.removeSessionVariable('additionalComments');
@@ -219,12 +223,14 @@ class CreateOrderButton extends React.Component {
 
       if (thankYouPageUrl) {
         Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.CASHBACK);
-        loggly.log('ordering.to-thank-you', { orderId });
+        logger.log('ordering.to-thank-you', { orderId });
         window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
 
         return;
       }
     }
+
+    this.setState({ isLoadingCreatedOrder: false });
 
     if (afterCreateOrder) {
       afterCreateOrder(orderId);
@@ -239,6 +245,7 @@ class CreateOrderButton extends React.Component {
 
   render() {
     const { children, className, buttonType, disabled, dataAttributes, loaderText, processing } = this.props;
+    const { isLoadingCreatedOrder } = this.state;
     const classList = ['button button__fill button__block text-weight-bolder'];
 
     if (className) {
@@ -250,11 +257,11 @@ class CreateOrderButton extends React.Component {
         <button
           className={classList.join(' ')}
           type={buttonType}
-          disabled={disabled}
+          disabled={disabled || isLoadingCreatedOrder}
           onClick={this.handleCreateOrderSafety}
           {...dataAttributes}
         >
-          {children}
+          {isLoadingCreatedOrder ? loaderText : children}
         </button>
         <PageProcessingLoader show={processing} loaderText={loaderText} />
       </>

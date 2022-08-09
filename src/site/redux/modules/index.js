@@ -5,6 +5,7 @@ import collections from './collections';
 import entities from './entities';
 import search from './search';
 import addressList from './addressList';
+import filter from './filter';
 import orderHistory from '../../order-history/redux';
 import address from '../../../redux/modules/address';
 
@@ -68,6 +69,7 @@ const appReducer = combineReducers({
   orderHistory,
   addressList,
   address,
+  filter,
 });
 
 const rootReducer = (state, action) => {

@@ -11,3 +11,4 @@
 //   alert(content: FeedbackContent, options?: FeedbackOptions);
 // }
 export { alert } from './alert';
+export { toast } from './toast';

@@ -22,7 +22,7 @@ import {
   getShippingTypeFromUrl,
 } from '../../../../../common/utils';
 import { SHIPPING_TYPES, PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
-import loggly from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 import Clevertap from '../../../../../utils/clevertap';
 import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
 
@@ -37,63 +37,6 @@ export const showMiniCartDrawer = createAsyncThunk('ordering/menu/cart/showMiniC
  * hide mini cart drawer
  */
 export const hideMiniCartDrawer = createAsyncThunk('ordering/menu/cart/hideMiniCartDrawer', async () => {});
-
-const gotoNextPage = (shippingType, enablePreOrder, dispatch) => {
-  const { search } = window.location;
-
-  if (enablePreOrder) {
-    const { address: deliveryToAddress } = JSON.parse(getSessionVariable('deliveryAddress') || '{}');
-    const { date, hour } = getExpectedDeliveryDateFromSession();
-
-    if (
-      (shippingType === SHIPPING_TYPES.DELIVERY && (!deliveryToAddress || !date.date || !hour)) ||
-      (shippingType === SHIPPING_TYPES.PICKUP && (!date.date || !hour.from))
-    ) {
-      const callbackUrl = encodeURIComponent(`${PATH_NAME_MAPPING.ORDERING_CART}${search}`);
-
-      dispatch(push(`${PATH_NAME_MAPPING.ORDERING_LOCATION_AND_DATE}${search}&callbackUrl=${callbackUrl}`));
-    }
-  }
-
-  dispatch(push(`${PATH_NAME_MAPPING.ORDERING_CART}${search}`));
-};
-
-/**
- * goto Review cart page
- */
-export const reviewCart = createAsyncThunk('ordering/menu/cart/reviewCart', async (_, { dispatch, getState }) => {
-  dispatch(hideMiniCartDrawer());
-
-  const state = getState();
-  const isInsertWebview = isWebview() || isTNGMiniProgram();
-  const userSignedIn = getUserIsLogin(state);
-  const shippingType = getShippingType(state);
-  const deliverInfo = getDeliveryInfo(state);
-  const { enablePreOrder } = deliverInfo;
-  const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
-
-  Clevertap.pushEvent('Menu Page - Click order now', storeInfoForCleverTap);
-
-  if (!isInsertWebview || (isInsertWebview && userSignedIn)) {
-    gotoNextPage(shippingType, enablePreOrder, dispatch);
-
-    return;
-  }
-
-  if (isTNGMiniProgram()) {
-    await dispatch(appActions.loginByTngMiniProgram());
-  }
-
-  if (isWebview()) {
-    await dispatch(appActions.loginByBeepApp());
-  }
-
-  const isLogin = getUserIsLogin(getState());
-
-  if (isLogin) {
-    gotoNextPage(shippingType, enablePreOrder, dispatch);
-  }
-});
 
 /**
  * goto table summary page
@@ -122,7 +65,7 @@ export const viewOnGoingOrder = createAsyncThunk(
 export const removeAllCartItems = createAsyncThunk(
   'ordering/menu/cart/removeAllCartItems',
   async (_, { dispatch, getState }) => {
-    loggly.log('cart-list-drawer.clear-all-attempt');
+    logger.log('cart-list-drawer.clear-all-attempt');
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
@@ -169,7 +112,7 @@ const getCartItemGTMData = cartItem =>
 export const increaseCartItemQuantity = createAsyncThunk(
   'ordering/menu/cart/increaseCartItemQuantity',
   async ({ cartItemId }, { dispatch, getState }) => {
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -184,6 +127,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
     const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const cartItemGTMData = getCartItemGTMData(originalCartItem);
+    const { comments } = originalCartItem;
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, cartItemGTMData);
 
@@ -198,6 +142,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
       dispatch(
         updateCartItems({
           productId,
+          comments,
           quantityChange: 1,
           variations: selectedOptions,
         })
@@ -207,6 +152,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
         appActions.addOrUpdateShoppingCartItem({
           action: 'edit',
           productId,
+          comments,
           quantity: quantity + 1,
           variations: selectedOptions,
         })
@@ -223,12 +169,13 @@ export const increaseCartItemQuantity = createAsyncThunk(
 export const removeCartItem = createAsyncThunk(
   'ordering/menu/cart/removeCartItem',
   async ({ cartItemId }, { dispatch, getState }) => {
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
     const originalCartItems = getOriginalCartItems(state);
     const originalCartItem = originalCartItems.find(item => item.id === cartItemId) || {};
+    const { comments } = originalCartItem;
 
     const { id, productId, variations } = originalCartItem;
 
@@ -238,6 +185,7 @@ export const removeCartItem = createAsyncThunk(
       dispatch(
         appActions.removeShoppingCartItem({
           productId,
+          comments,
           variations,
         })
       ).then(() => {
@@ -253,7 +201,7 @@ export const removeCartItem = createAsyncThunk(
 export const decreaseCartItemQuantity = createAsyncThunk(
   'ordering/menu/cart/decreaseCartItemQuantity',
   async ({ cartItemId }, { dispatch, getState }) => {
-    loggly.log('cart-list-drawer.item-operate-attempt');
+    logger.log('cart-list-drawer.item-operate-attempt');
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -264,6 +212,7 @@ export const decreaseCartItemQuantity = createAsyncThunk(
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
     const cartItemCleverTapAttributes = getCartItemCleverTapAttributes(originalCartItem);
+    const { comments } = originalCartItem;
 
     Clevertap.pushEvent('Menu Page - Cart Preview - Decrease quantity', {
       ...storeInfoForCleverTap,
@@ -283,6 +232,7 @@ export const decreaseCartItemQuantity = createAsyncThunk(
         ? dispatch(
             updateCartItems({
               productId,
+              comments,
               quantityChange: -1,
               variations: selectedOptions,
             })
@@ -291,6 +241,7 @@ export const decreaseCartItemQuantity = createAsyncThunk(
             appActions.addOrUpdateShoppingCartItem({
               action: 'edit',
               productId,
+              comments,
               quantity: quantity - 1,
               variations: selectedOptions,
             })

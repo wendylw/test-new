@@ -14,8 +14,12 @@ import {
   loadOrders as loadOrdersThunk,
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
+  gotoPayment as gotoPaymentThunk,
 } from './redux/thunks';
-import { removePromo as removePromoThunk } from '../Promotion/redux/common/thunks';
+import {
+  removePromo as removePromoThunk,
+  removeVoucherPayLater as removeVoucherPayLaterThunk,
+} from '../Promotion/redux/common/thunks';
 import {
   getOrderPickUpCode,
   getTableNumber,
@@ -30,9 +34,13 @@ import {
   getSubOrdersMapping,
   getThankYouPageUrl,
   getOrderServiceChargeRate,
-  getOrderBillingPromo,
+  getOrderBillingPromoIfExist,
   getOrderPromoDiscount,
   getOrderPromotionCode,
+  getVoucherBillingIfExist,
+  getOrderVoucherCode,
+  getOrderVoucherDiscount,
+  getPromoOrVoucherExist,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -41,9 +49,8 @@ import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import './TableSummary.scss';
-import config from '../../../config';
 
-const { ROUTER_PATHS, DELIVERY_METHOD } = Constants;
+const { DELIVERY_METHOD } = Constants;
 
 export class TableSummary extends React.Component {
   constructor(props) {
@@ -176,11 +183,12 @@ export class TableSummary extends React.Component {
   };
 
   handleDismissPromotion = async () => {
-    const { removePromo, loadOrders } = this.props;
+    const { removePromo, loadOrders, removeVoucherPayLater, orderBillingPromo } = this.props;
 
     const receiptNumber = Utils.getQueryString('receiptNumber');
 
-    await removePromo();
+    orderBillingPromo ? await removePromo() : await removeVoucherPayLater();
+
     await loadOrders(receiptNumber);
   };
 
@@ -252,7 +260,7 @@ export class TableSummary extends React.Component {
                 </span>
               </div>
               <ul>
-                {subOrderItems.map(({ id, productInfo, displayPrice, quantity }) => (
+                {subOrderItems.map(({ id, productInfo, displayPrice, quantity, comments: itemComments }) => (
                   <li
                     key={`product-item-${id}`}
                     className="flex flex-middle flex-space-between padding-left-right-small"
@@ -271,6 +279,11 @@ export class TableSummary extends React.Component {
                           money={displayPrice * quantity}
                           numberOnly
                         />
+                        {itemComments ? (
+                          <p className="table-summary__comments padding-top-bottom-smaller text-size-small text-line-height-higher">
+                            {itemComments}
+                          </p>
+                        ) : null}
                       </div>
                     </div>
                     <span className="padding-top-bottom-small flex__shrink-fixed margin-small text-opacity">
@@ -293,18 +306,16 @@ export class TableSummary extends React.Component {
   }
 
   renderPromotionItem() {
-    const { t, OrderBillingPromo, oderPromoDiscount } = this.props;
-    const { PROMO_TYPE } = Constants;
-    const orderPromoType = OrderBillingPromo.length ? PROMO_TYPE.PROMOTION_ADD : '';
+    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist } = this.props;
 
     return (
       <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
-        {OrderBillingPromo.length ? (
+        {promoOrVoucherExist ? (
           <>
             <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
               <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
               <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
-                {t(orderPromoType)} ({this.showShortPromoCode()})
+                {t(this.orderPromoType())} ({this.showShortPromoCode()})
               </span>
               <button
                 onClick={this.handleDismissPromotion}
@@ -315,7 +326,11 @@ export class TableSummary extends React.Component {
               </button>
             </div>
             <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
-              - <CurrencyNumber className="text-size-big text-weight-bolder" money={oderPromoDiscount} />
+              -{' '}
+              <CurrencyNumber
+                className="text-size-big text-weight-bolder"
+                money={oderPromoDiscount || orderVoucherDiscount}
+              />
             </div>
           </>
         ) : (
@@ -332,18 +347,47 @@ export class TableSummary extends React.Component {
     );
   }
 
+  // eslint-disable-next-line consistent-return
   showShortPromoCode() {
-    const { orderPromotionCode } = this.props;
+    const { orderPromotionCode, orderVoucherCode } = this.props;
+
+    if (orderPromotionCode) {
+      return this.getCorrectCode(orderPromotionCode);
+    }
+    return this.getCorrectCode(orderVoucherCode);
+  }
+
+  getCorrectCode(code) {
     const SHOW_LENGTH = 5;
     // show like "Promo..."
-    if (orderPromotionCode) {
-      if (orderPromotionCode.length > SHOW_LENGTH) {
-        return `${orderPromotionCode.substring(0, SHOW_LENGTH)}...`;
+    if (code) {
+      if (code.length > SHOW_LENGTH) {
+        return `${code.substring(0, SHOW_LENGTH)}...`;
       }
-      return orderPromotionCode;
+      return code;
     }
     return '';
   }
+
+  orderPromoType() {
+    const { orderBillingPromo, voucherBilling } = this.props;
+    const { PROMO_TYPE } = Constants;
+
+    if (orderBillingPromo) {
+      return PROMO_TYPE.PROMOTION_FOR_PAY_LATER;
+    }
+
+    if (voucherBilling) {
+      return PROMO_TYPE.VOUCHER_FOR_PAY_LATER;
+    }
+
+    return '';
+  }
+
+  handleClickPayButton = () => {
+    const { gotoPayment } = this.props;
+    gotoPayment();
+  };
 
   render() {
     const {
@@ -433,12 +477,7 @@ export class TableSummary extends React.Component {
             className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-testid="pay"
             data-heap-name="ordering.order-status.table-summary.pay-btn"
-            onClick={() => {
-              history.push({
-                pathname: ROUTER_PATHS.ORDERING_PAYMENT,
-                search: window.location.search,
-              });
-            }}
+            onClick={this.handleClickPayButton}
           >
             {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
           </button>
@@ -473,12 +512,17 @@ TableSummary.propTypes = {
   clearQueryOrdersAndStatus: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
   resetCartSubmission: PropTypes.func,
-  // eslint-disable-next-line react/forbid-prop-types
-  OrderBillingPromo: PropTypes.array,
+  orderBillingPromo: PropTypes.number,
   loadOrders: PropTypes.func,
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,
   orderPromotionCode: PropTypes.string,
+  removeVoucherPayLater: PropTypes.func,
+  voucherBilling: PropTypes.number,
+  orderVoucherCode: PropTypes.string,
+  orderVoucherDiscount: PropTypes.number,
+  promoOrVoucherExist: PropTypes.bool,
+  gotoPayment: PropTypes.func,
 };
 
 TableSummary.defaultProps = {
@@ -502,11 +546,17 @@ TableSummary.defaultProps = {
   clearQueryOrdersAndStatus: () => {},
   resetCartSubmission: () => {},
   thankYouPageUrl: '',
-  OrderBillingPromo: [],
+  orderBillingPromo: 0,
   loadOrders: () => {},
   removePromo: () => {},
   oderPromoDiscount: 0,
   orderPromotionCode: '',
+  removeVoucherPayLater: () => {},
+  voucherBilling: 0,
+  orderVoucherCode: '',
+  orderVoucherDiscount: 0,
+  promoOrVoucherExist: false,
+  gotoPayment: () => {},
 };
 
 export default compose(
@@ -530,9 +580,13 @@ export default compose(
       userIsLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
-      OrderBillingPromo: getOrderBillingPromo(state),
+      orderBillingPromo: getOrderBillingPromoIfExist(state),
       oderPromoDiscount: getOrderPromoDiscount(state),
       orderPromotionCode: getOrderPromotionCode(state),
+      voucherBilling: getVoucherBillingIfExist(state),
+      orderVoucherCode: getOrderVoucherCode(state),
+      orderVoucherDiscount: getOrderVoucherDiscount(state),
+      promoOrVoucherExist: getPromoOrVoucherExist(state),
     }),
 
     {
@@ -541,6 +595,8 @@ export default compose(
       resetCartSubmission: resetCartSubmissionActions.resetCartSubmission,
       loadOrders: loadOrdersThunk,
       removePromo: removePromoThunk,
+      removeVoucherPayLater: removeVoucherPayLaterThunk,
+      gotoPayment: gotoPaymentThunk,
     }
   )
 )(TableSummary);

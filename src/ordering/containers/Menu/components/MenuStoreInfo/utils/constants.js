@@ -1,0 +1,11 @@
+import { STORE_OPENING_STATUS } from '../../../constants';
+
+export const STORE_STATUS_KEY_MAPPING = {
+  [STORE_OPENING_STATUS.PRE_ORDER]: 'PreOrder',
+  [STORE_OPENING_STATUS.CLOSED]: 'Closed',
+};
+
+export const STORE_STATUS_COLOR_MAPPING = {
+  [STORE_OPENING_STATUS.PRE_ORDER]: 'green',
+  [STORE_OPENING_STATUS.CLOSED]: 'red',
+};

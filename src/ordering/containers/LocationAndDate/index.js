@@ -23,6 +23,7 @@ import {
   isShowLoading,
   getOriginalDeliveryType,
   getAddressInfo as getCachedAddressInfo,
+  getCurrentDate,
 } from '../../redux/modules/locationAndDate';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
@@ -41,7 +42,7 @@ import { setAddressInfo } from '../../../redux/modules/address/thunks';
 import { withAddressInfo } from '../Location/withAddressInfo';
 import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 import './OrderingLocationDate.scss';
 
 const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRESS_RANGE } = Constants;
@@ -158,10 +159,17 @@ class LocationAndDate extends Component {
     this.resetWhenWillUnmount = true;
 
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
+      const state = stateFrom ? { from: stateFrom } : null;
+
+      if (callbackUrl) {
+        return history.replace(callbackUrl, state);
+      }
+
+      // For compatibility sake, in case some users are still using the old version.
       return history.push({
         pathname: ROUTER_PATHS.ORDERING_CUSTOMER_INFO,
         search: window.location.search,
-        state: stateFrom ? { from: stateFrom } : null,
+        state,
       });
     }
 
@@ -213,7 +221,7 @@ class LocationAndDate extends Component {
   };
 
   goToNext = async () => {
-    loggly.log('location-data.continue');
+    logger.log('location-data.continue');
     const {
       selectedOrderDate,
       selectedTime,
@@ -273,7 +281,6 @@ class LocationAndDate extends Component {
         this.gotoOrderingCartPage(deliveryType, h);
         return;
       }
-      return history.go(-1);
     }
 
     if (this.query.callbackUrl) {
@@ -483,12 +490,14 @@ class LocationAndDate extends Component {
   };
 
   renderDeliveryDateItem = orderDate => {
-    const { t, selectedOrderDate, businessUTCOffset, storeInfoForCleverTap } = this.props;
+    const { t, selectedOrderDate, businessUTCOffset, storeInfoForCleverTap, currentDate } = this.props;
 
+    const currentDateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, currentDate);
     const dateDayjs = storeUtils.getBusinessDateTime(businessUTCOffset, orderDate.date);
 
     const isSelected = selectedOrderDate ? dateDayjs.isSame(selectedOrderDate.date) : false;
     const isToday = orderDate.isToday;
+    const isTomorrow = dateDayjs.isSame(currentDateDayjs.add(1, 'day'), 'day');
     const isOpen = orderDate.isOpen;
     const dayOfWeek = dateDayjs.day();
     const dateOfMonth = dateDayjs.date();
@@ -499,7 +508,7 @@ class LocationAndDate extends Component {
           className={`location-date__button-date button
           ${isSelected ? 'button__fill' : 'button__outline'}
           padding-top-bottom-smaller padding-left-right-normal margin-left-right-small
-          ${isToday ? 'text-uppercase' : ''}`}
+          ${isToday || isTomorrow ? 'text-uppercase' : ''}`}
           disabled={!isOpen}
           data-testid="preOrderDate"
           data-heap-name="ordering.location-and-date.date-item"
@@ -511,6 +520,8 @@ class LocationAndDate extends Component {
         >
           {isToday ? (
             t('Today')
+          ) : isTomorrow ? (
+            t('Tomorrow')
           ) : (
             <Fragment>
               <span className="location-date__date-weekday text-weight-bolder">
@@ -740,6 +751,7 @@ export default compose(
       addressName: getAddressName(state),
       cachedAddressInfo: getCachedAddressInfo(state),
       savedAddressInfo: getSavedAddressInfo(state),
+      currentDate: getCurrentDate(state),
     }),
 
     dispatch => ({

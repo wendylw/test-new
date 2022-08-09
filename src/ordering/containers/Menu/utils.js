@@ -1,3 +1,5 @@
+import { SOURCE_TYPE } from './constants';
+
 export const bodyScrollTopPosition = () =>
   document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
 
@@ -29,3 +31,19 @@ export const getWindowInnerHeight = () => window.innerHeight;
 
 export const getIsVirtualKeyboardVisibleInMobile = (isMobile, isVirtualKeyboardVisible) =>
   isMobile && isVirtualKeyboardVisible;
+
+export const getShareLinkUrl = () => {
+  try {
+    const storeUrl = new URL(window.location.href);
+    const { searchParams } = storeUrl;
+
+    searchParams.set('source', SOURCE_TYPE.SHARED_LINK);
+    searchParams.set('utm_source', 'store_link');
+    searchParams.set('utm_medium', 'share');
+
+    return storeUrl.toString();
+  } catch (error) {
+    console.error(error);
+    return window.location.href;
+  }
+};

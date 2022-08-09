@@ -3,7 +3,7 @@ import _find from 'lodash/find';
 import _get from 'lodash/get';
 import _isFunction from 'lodash/isFunction';
 import _isArray from 'lodash/isArray';
-import * as loggly from './monitoring/loggly';
+import logger from './monitoring/logger';
 import debug from './debug';
 import Utils from './utils';
 
@@ -58,7 +58,7 @@ const dsBridgeSyncCall = (method, params) => {
   } catch (error) {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
-    loggly.error(`dsBridge-methods.${method}`, errorData);
+    logger.error(`dsBridge-methods.${method}`, errorData);
 
     throw error;
   }
@@ -87,7 +87,7 @@ const dsBridgeAsyncCall = (method, params) =>
   }).catch(error => {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
-    loggly.error(`dsBridge-methods.${method}`, errorData);
+    logger.error(`dsBridge-methods.${method}`, errorData);
 
     throw error;
   });
@@ -105,6 +105,23 @@ export const hasMethodInNative = method => {
     }
     // The return value of hasMethodInNative maybe 'false' or 'true'
     return JSON.parse(NATIVE_METHOD_SUPPORT_MAP[method]);
+  } catch (error) {
+    return false;
+  }
+};
+
+const NATIVE_ICON_RES_SUPPORT_MAP = {};
+
+export const hasIconResInNative = iconRes => {
+  try {
+    const isInMap = Object.prototype.hasOwnProperty.call(NATIVE_ICON_RES_SUPPORT_MAP, iconRes);
+
+    if (!isInMap) {
+      NATIVE_METHOD_SUPPORT_MAP[iconRes] = dsBridgeSyncCall('nativeLayoutModule-hasNativeIconRes', {
+        iconRes,
+      });
+    }
+    return NATIVE_METHOD_SUPPORT_MAP[iconRes];
   } catch (error) {
     return false;
   }
@@ -136,12 +153,13 @@ export const getWebviewSource = () => window.webViewSource;
 
 export const getBeepAppVersion = () => window.beepAppVersion;
 
-export const startChat = ({ orderId, storeName }) => {
+export const startChat = ({ orderId, storeName, source }) => {
   const data = {
     method: 'beepModule-startChat',
     params: {
       orderId,
       storeName,
+      source,
     },
     mode: MODE.SYNC,
   };

@@ -9,6 +9,9 @@ import {
   getBusiness,
   getEnablePayLater,
   getStoreInfoForCleverTap,
+  getShippingType,
+  getHasSelectedStore,
+  getIsBeepDeliveryShippingType,
 } from '../../../../redux/modules/app';
 import { updateCartItems } from '../../../../redux/cart/thunks';
 import {
@@ -20,11 +23,16 @@ import {
   getSelectedProduct,
   getSelectedCategory,
   getAddToCartGTMData,
+  getNotesContents,
 } from './selectors';
 import Clevertap from '../../../../../utils/clevertap';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { PRODUCT_STOCK_STATUS } from '../../constants';
 import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
+import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
+import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { showLocationDrawer, showStoreListDrawer, showTimeSlotDrawer } from '../common/thunks';
+import { getHasSelectedExpectedDeliveryTime } from '../common/selectors';
 
 /**
  * get product clever tap data
@@ -122,35 +130,63 @@ const getViewProductGTMData = product => ({
 export const showProductDetailDrawer = createAsyncThunk(
   'ordering/menu/productDetail/showProductDetailDrawer',
   async ({ productId, categoryId }, { dispatch, getState }) => {
-    const allProducts = getAllProducts(getState());
-    const allCategories = getAllCategories(getState());
-    const product = _get(allProducts, productId, null);
-    const category = _get(allCategories, categoryId, null);
+    try {
+      const allProducts = getAllProducts(getState());
+      const allCategories = getAllCategories(getState());
+      const product = _get(allProducts, productId, null);
+      const category = _get(allCategories, categoryId, null);
+      const ifAddressInfoExists = getIfAddressInfoExists(getState());
+      const shippingType = getShippingType(getState());
+      const isBeepDelivery = getIsBeepDeliveryShippingType(getState());
+      const hasSelectedStore = getHasSelectedStore(getState());
+      const hasSelectedExpectedDeliveryTime = getHasSelectedExpectedDeliveryTime(getState());
 
-    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
-    const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+      // Show location drawer if no address info
+      if (shippingType === SHIPPING_TYPES.DELIVERY && !ifAddressInfoExists) {
+        await dispatch(showLocationDrawer());
+        return null;
+      }
 
-    Clevertap.pushEvent('Menu Page - Click product', {
-      ...storeInfoForCleverTap,
-      ...productCleverTapAttributes,
-    });
+      // Show store list drawer if no selected store
+      if (isBeepDelivery && !hasSelectedStore) {
+        await dispatch(showStoreListDrawer());
+        return null;
+      }
 
-    const result = await dispatch(appActions.loadProductDetail(productId));
+      // Show time slot drawer if no selected time slot
+      if (isBeepDelivery && !hasSelectedExpectedDeliveryTime) {
+        await dispatch(showTimeSlotDrawer());
+        return null;
+      }
 
-    Clevertap.pushEvent('Menu Page - View products', {
-      ...storeInfoForCleverTap,
-      ...productCleverTapAttributes,
-    });
+      const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+      const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
 
-    const productInResult = _get(result, 'responseGql.data.product', null);
+      Clevertap.pushEvent('Menu Page - Click product', {
+        ...storeInfoForCleverTap,
+        ...productCleverTapAttributes,
+      });
 
-    gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
+      const result = await dispatch(appActions.loadProductDetail(productId));
 
-    return {
-      productId,
-      categoryId,
-      selectedOptionsByVariationId: getDefaultSelectedOptions(productInResult),
-    };
+      Clevertap.pushEvent('Menu Page - View products', {
+        ...storeInfoForCleverTap,
+        ...productCleverTapAttributes,
+      });
+
+      const productInResult = _get(result, 'responseGql.data.product', null);
+
+      gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
+
+      return {
+        productId,
+        categoryId,
+        selectedOptionsByVariationId: getDefaultSelectedOptions(productInResult),
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 );
 
@@ -271,6 +307,7 @@ export const addToCart = createAsyncThunk(
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
     const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
     const addToCartGtmData = getAddToCartGTMData(state);
+    const comments = getNotesContents(state);
 
     gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, addToCartGtmData);
 
@@ -284,6 +321,7 @@ export const addToCart = createAsyncThunk(
         updateCartItems({
           productId: childProductId || parentProductId,
           quantityChange: quantity,
+          comments,
           variations,
         })
       );
@@ -294,6 +332,7 @@ export const addToCart = createAsyncThunk(
           business,
           productId: childProductId || parentProductId,
           quantity,
+          comments,
           variations,
         })
       );
@@ -302,3 +341,6 @@ export const addToCart = createAsyncThunk(
     dispatch(hideProductDetailDrawer());
   }
 );
+
+export const showNotesDrawer = createAsyncThunk('ordering/menu/productDetail/showNotesDrawer', async () => {});
+export const hideNotesDrawer = createAsyncThunk('ordering/menu/productDetail/hideNotesDrawer', async () => {});

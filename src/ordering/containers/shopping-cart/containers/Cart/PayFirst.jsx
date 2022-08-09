@@ -37,7 +37,7 @@ import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thun
 import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import CleverTap from '../../../../../utils/clevertap';
-import { log } from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 
 const { ROUTER_PATHS } = Constants;
@@ -49,6 +49,7 @@ class PayFirst extends Component {
       additionalComments: Utils.getSessionVariable('additionalComments'),
       cartContainerHeight: '100%',
       productsContainerHeight: '0px',
+      pendingBeforeCreateOrder: false,
     };
   }
 
@@ -154,7 +155,7 @@ class PayFirst extends Component {
   handleClearAll = () => {
     const { history, storeInfoForCleverTap, appActions } = this.props;
 
-    log('cart.clear-all-attempt');
+    logger.log('cart.clear-all-attempt');
 
     CleverTap.pushEvent('Cart page - click clear all', storeInfoForCleverTap);
 
@@ -246,10 +247,11 @@ class PayFirst extends Component {
     }
   };
 
-  getUpdateShoppingCartItemData = ({ productId, variations }, currentQuantity) => ({
+  getUpdateShoppingCartItemData = ({ productId, comments, variations }, currentQuantity) => ({
     action: 'edit',
     productId,
     quantity: currentQuantity,
+    comments,
     variations: (variations || []).map(({ variationId, optionId, quantity }) => ({
       variationId,
       optionId,
@@ -260,7 +262,7 @@ class PayFirst extends Component {
   handleIncreaseCartItem = cartItem => {
     const { appActions } = this.props;
 
-    log('cart-list.item-operate-attempt');
+    logger.log('cart-list.item-operate-attempt');
     const { quantity } = cartItem;
 
     this.handleGtmEventTracking(cartItem);
@@ -272,7 +274,7 @@ class PayFirst extends Component {
   handleDecreaseCartItem = cartItem => {
     const { appActions } = this.props;
 
-    log('cart-list.item-operate-attempt');
+    logger.log('cart-list.item-operate-attempt');
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -287,12 +289,13 @@ class PayFirst extends Component {
   handleRemoveCartItem = cartItem => {
     const { appActions } = this.props;
 
-    log('cart-list.item-operate-attempt');
-    const { productId, variations } = cartItem;
+    logger.log('cart-list.item-operate-attempt');
+    const { productId, comments, variations } = cartItem;
 
     appActions
       .removeShoppingCartItem({
         productId,
+        comments,
         variations,
       })
       .then(() => {
@@ -328,7 +331,7 @@ class PayFirst extends Component {
     const { cashback, promotion } = cartBilling || {};
     const { promoCode } = promotion || {};
 
-    log('cart.pay-now');
+    logger.log('cart.pay-now');
     CleverTap.pushEvent('Cart Page - click pay now', {
       ...storeInfoForCleverTap,
       'promo/voucher applied': promoCode || '',
@@ -354,17 +357,18 @@ class PayFirst extends Component {
 
   renderCreateOrderButton = () => {
     const { t, history, isValidCreateOrder, pendingCheckingInventory, shouldDisablePayButton } = this.props;
+    const { pendingBeforeCreateOrder } = this.state;
     return (
       <CreateOrderButton
         className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
         history={history}
         data-testid="pay"
         data-heap-name="ordering.cart.pay-btn"
-        disabled={shouldDisablePayButton}
+        disabled={shouldDisablePayButton || pendingBeforeCreateOrder}
         validCreateOrder={isValidCreateOrder}
         beforeCreateOrder={this.handleBeforeCreateOrder}
         loaderText={t('Processing')}
-        processing={pendingCheckingInventory}
+        processing={pendingCheckingInventory || pendingBeforeCreateOrder}
       >
         {this.getOrderButtonContent()}
       </CreateOrderButton>
@@ -382,6 +386,7 @@ class PayFirst extends Component {
       isUserProfileStatusFulfilled,
     } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
+    this.setState({ pendingBeforeCreateOrder: true });
 
     // if user login, and one of user name or phone is empty from delivery details data,
     // then update them from user profile.
@@ -398,7 +403,7 @@ class PayFirst extends Component {
       });
     }
 
-    log('cart.create-order-attempt');
+    logger.log('cart.create-order-attempt');
     this.handleClickPayButtonEventTracking();
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;
@@ -408,10 +413,13 @@ class PayFirst extends Component {
         state: { shouldGoBack: true },
       });
     });
+
+    this.setState({ pendingBeforeCreateOrder: false });
   };
 
   getOrderButtonContent = () => {
     const { t, pendingCheckingInventory, isBillingTotalInvalid, validBillingTotal } = this.props;
+    const { pendingBeforeCreateOrder } = this.state;
 
     const buttonContent = !isBillingTotalInvalid ? (
       <span className="text-weight-bolder" key="pay-now">
@@ -433,7 +441,7 @@ class PayFirst extends Component {
       </span>
     );
 
-    return pendingCheckingInventory ? processingContent : buttonContent;
+    return pendingCheckingInventory || pendingBeforeCreateOrder ? processingContent : buttonContent;
   };
 
   formatCleverTapAttributes(product) {

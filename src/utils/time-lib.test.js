@@ -20,6 +20,7 @@ import {
   floorToHour,
   formatTo12hour,
   padZero,
+  formatTime,
 } from './time-lib';
 import dayjs from 'dayjs';
 
@@ -331,5 +332,19 @@ describe('test padZero function', () => {
     ${-1} | ${'-1'}
   `(`return $expected when call padZero with $value`, ({ value, expected }) => {
     expect(padZero(value)).toBe(expected);
+  });
+});
+
+describe('test formatTime function', () => {
+  test.each`
+    time       | format       | expected
+    ${'12:00'} | ${undefined} | ${'12:00 PM'}
+    ${'01:50'} | ${undefined} | ${'1:50 AM'}
+    ${'12:01'} | ${'hh:mm A'} | ${'12:01 PM'}
+    ${'00:25'} | ${'hh:mm A'} | ${'12:25 AM'}
+    ${'00:40'} | ${'hh:mm'}   | ${'12:40'}
+    ${':40'}   | ${'hh:mm'}   | ${':40'}
+  `(`return $expected when call formatTime with $time and $format`, ({ time, format, expected }) => {
+    expect(formatTime(time, format)).toBe(expected);
   });
 });

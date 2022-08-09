@@ -32,7 +32,7 @@ import PaymentCardBrands from '../../components/PaymentCardBrands';
 import '../../styles/PaymentCreditCard.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import * as ApiFetch from '../../../../../utils/api/api-fetch';
-import loggly from '../../../../../utils/monitoring/loggly';
+import logger from '../../../../../utils/monitoring/logger';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
@@ -578,7 +578,7 @@ class CreditCard extends Component {
             beforeCreateOrder={this.handleBeforeCreateOrder}
             validCreateOrder={Boolean(this.isFromComplete())}
             afterCreateOrder={orderId => {
-              loggly.log('credit-card.pay-attempt', { orderId });
+              logger.log('credit-card.pay-attempt', { orderId });
               this.setState({
                 payNowLoading: !!orderId,
               });

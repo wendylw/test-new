@@ -1,9 +1,19 @@
 /* eslint-disable import/no-cycle */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
-import { fetchOrderIncludeCashback, fetchOrderSubmissionStatus } from './api-request';
-import { log } from '../../../../utils/monitoring/loggly';
-import { getOrderModifiedTime, getOrderReceiptNumber } from './selectors';
+import { push } from 'connected-react-router';
+import { fetchOrderIncludeCashback, fetchOrderSubmissionStatus, submitOrder } from './api-request';
+import logger from '../../../../utils/monitoring/logger';
+import {
+  getOrderModifiedTime,
+  getOrderReceiptNumber,
+  getSelectedPromoCode,
+  getOrderCashback,
+  getOrderTotal,
+} from './selectors';
+import { getUserConsumerId, getLocationSearch } from '../../../redux/modules/app';
+import { getPromotionId } from '../../../redux/modules/promotion';
+import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
@@ -44,14 +54,14 @@ export const loadOrdersStatus = createAsyncThunk(
 );
 
 export const queryOrdersAndStatus = receiptNumber => async dispatch => {
-  log('table-summary.query-orders-and-status', { action: 'start', receiptNumber });
+  logger.log('table-summary.query-orders-and-status', { action: 'start', receiptNumber });
   try {
     const queryOrderStatus = () => {
       queryOrdersAndStatus.timer = setTimeout(async () => {
         await dispatch(loadOrdersStatus(receiptNumber));
         // Loop has been stopped
         if (!queryOrdersAndStatus.timer) {
-          log('table-summary.query-orders-and-status', { action: 'quit-silently', receiptNumber });
+          logger.log('table-summary.query-orders-and-status', { action: 'quit-silently', receiptNumber });
           return;
         }
 
@@ -68,8 +78,50 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
   }
 };
 
+export const lockOrder = createAsyncThunk('ordering/tableSummary/lockOrder', async ({ receiptNumber, data }) =>
+  submitOrder(receiptNumber, data)
+);
+
+export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment', async (_, { dispatch, getState }) => {
+  const state = getState();
+  const receiptNumber = getOrderReceiptNumber(state);
+
+  try {
+    const total = getOrderTotal(state);
+    const cashback = getOrderCashback(state);
+    const promotionId = getPromotionId(state);
+    const consumerId = getUserConsumerId(state);
+    const modifiedTime = getOrderModifiedTime(state);
+    const { voucherCode } = getSelectedPromoCode(state) || {};
+    const data = {
+      consumerId,
+      modifiedTime,
+      cashback,
+      promotionId,
+      voucherCode,
+    };
+
+    // Special case for free charge
+    if (total === 0) {
+      await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+      return;
+    }
+
+    // By default, redirect to payment page
+    const search = getLocationSearch(state);
+    dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
+  } catch (error) {
+    logger.error('ordering.table-summary.go-to-payment.error', {
+      error: error?.message,
+      receiptNumber,
+    });
+
+    throw error;
+  }
+});
+
 export const clearQueryOrdersAndStatus = () => () => {
   clearTimeout(queryOrdersAndStatus.timer);
-  log('table-summary.query-orders-and-status', { action: 'stop' });
+  logger.log('table-summary.query-orders-and-status', { action: 'stop' });
   queryOrdersAndStatus.timer = null;
 };

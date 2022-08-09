@@ -20,11 +20,15 @@ import {
   getAppliedResult,
 } from '../../redux/modules/promotion';
 import {
-  getApplyPromoPendingStatus,
   getPromoErrorCodePayLater,
   getIsAppliedSuccessPayLater,
+  getSelectPromoOrVoucherPayLater,
+  getApplyPromoOrVoucherPendingStatus,
 } from './redux/common/selector';
-import { applyPromo as applyPromoThunk } from './redux/common/thunks';
+import {
+  applyPromo as applyPromoThunk,
+  applyVoucherPayLater as applyVoucherPayLaterThunk,
+} from './redux/common/thunks';
 import { actions as promoForPayLater } from './redux/common';
 import {
   actions as appActionCreators,
@@ -37,7 +41,7 @@ import { withTranslation } from 'react-i18next';
 import { getErrorMessageByPromoErrorCode } from './utils';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
-import loggly from '../../../utils/monitoring/loggly';
+import logger from '../../../utils/monitoring/logger';
 import './OrderingPromotion.scss';
 
 class Promotion extends Component {
@@ -105,14 +109,16 @@ class Promotion extends Component {
   };
 
   handleApplyPromotion = async () => {
-    const { enablePayLater, applyPromo } = this.props;
-    loggly.log('promotion.apply-attempt');
+    const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater, applyVoucherPayLater } = this.props;
+    logger.log('promotion.apply-attempt');
 
-    if (this.props.inProcess || this.props.inProcessPayLater) {
+    if (this.props.inProcess || this.props.applyPromoOrVoucherPendingStatus) {
       return false;
     }
 
-    !enablePayLater ? await this.props.promotionActions.applyPromo() : await applyPromo();
+    !enablePayLater
+      ? await this.props.promotionActions.applyPromo()
+      : (selectPromoOrVoucherPayLater && (await applyPromo())) || (await applyVoucherPayLater());
 
     if (this.props.isAppliedSuccess || this.props.isAppliedSuccessPayLater.success) {
       CleverTap.pushEvent('Cart Page - apply promo', {
@@ -161,13 +167,17 @@ class Promotion extends Component {
       isAppliedError,
       promoErrorCodePayLater,
       inProcess,
-      inProcessPayLater,
       selectedPromo,
       enablePayLater,
+      applyPromoOrVoucherPendingStatus,
     } = this.props;
     const { containerHeight } = this.state;
     const showCleanButton =
-      promoCode.length > 0 && !inProcess && !isAppliedSuccess && !inProcessPayLater && !isAppliedSuccessPayLater;
+      promoCode.length > 0 &&
+      !inProcess &&
+      !isAppliedSuccess &&
+      !isAppliedSuccessPayLater &&
+      !applyPromoOrVoucherPendingStatus;
     let inputContainerStatus = '';
     if (isAppliedSuccess || isAppliedSuccessPayLater) {
       inputContainerStatus = 'success';
@@ -236,10 +246,10 @@ class Promotion extends Component {
           <button
             className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
             data-heap-name="ordering.promotion.apply-btn"
-            disabled={!selectedPromo.code || inProcess || inProcessPayLater}
+            disabled={!selectedPromo.code || inProcess || applyPromoOrVoucherPendingStatus}
             onClick={this.handleApplyPromotion}
           >
-            {inProcess || inProcessPayLater ? t('Processing') : t('Apply')}
+            {inProcess || applyPromoOrVoucherPendingStatus ? t('Processing') : t('Apply')}
           </button>
         </footer>
       </section>
@@ -258,7 +268,6 @@ export default compose(
         isAppliedSuccessPayLater: getIsAppliedSuccessPayLater(state),
         isAppliedError: isAppliedError(state),
         inProcess: isInProcess(state),
-        inProcessPayLater: getApplyPromoPendingStatus(state),
         voucherList: getVoucherList(state),
         user: getUser(state),
         foundPromo: getFoundPromotion(state),
@@ -270,6 +279,8 @@ export default compose(
         storeInfoForCleverTap: getStoreInfoForCleverTap(state),
         enablePayLater: getEnablePayLater(state),
         promoErrorCodePayLater: getPromoErrorCodePayLater(state),
+        selectPromoOrVoucherPayLater: getSelectPromoOrVoucherPayLater(state),
+        applyPromoOrVoucherPendingStatus: getApplyPromoOrVoucherPendingStatus(state),
       };
     },
     dispatch => ({
@@ -277,6 +288,7 @@ export default compose(
       appActions: bindActionCreators(appActionCreators, dispatch),
       applyPromo: bindActionCreators(applyPromoThunk, dispatch),
       promoActions: bindActionCreators(promoForPayLater, dispatch),
+      applyVoucherPayLater: bindActionCreators(applyVoucherPayLaterThunk, dispatch),
     })
   )
 )(Promotion);

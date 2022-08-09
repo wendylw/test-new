@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../components/Icons';
 import ShapeImage from '../../images/shape.png';
 import Constants from '../../utils/constants';
-import loggly from '../../utils/monitoring/loggly';
+import logger from '../../utils/monitoring/logger';
 import './index.scss';
 
 const { ERROR, SCAN_NOT_SUPPORT } = Constants.ROUTER_PATHS;
@@ -95,7 +95,7 @@ class QRScan extends Component {
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = error => {
           console.warn('[QRScan] getCamera failed:', error);
-          loggly.warn('qrscan.getCamera', {
+          logger.warn('qrscan.getCamera', {
             message: `[QRScan] getCamera failed: ${error?.message}`,
           });
           if (error.name !== 'NotAllowedError') {

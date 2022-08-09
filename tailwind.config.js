@@ -39,6 +39,11 @@ module.exports = {
       relaxed: '1.5',
       loose: '1.6',
     },
+    letterSpacing: {
+      normal: '0',
+      wide: '.01em',
+      wider: '.02em',
+    },
     screens: {
       sm: '420px',
       md: '770px',
@@ -49,6 +54,7 @@ module.exports = {
       sm: '0 -4px 16px rgba(0, 0, 0, 0.06)',
       lg: '0 4px 16px rgba(0, 0, 0, 0.06)',
       lg: '0 4px 24px rgba(0, 0, 0, 0.06)',
+      none: 'none',
     },
     spacing: {
       '0': '0',
@@ -96,6 +102,11 @@ module.exports = {
           dark: '#F0B917',
           light: '#FFFBE6',
         },
+        green: {
+          DEFAULT: '#36A93F',
+          dark: '#02814E',
+          light: '#DFFDE2',
+        },
         gray: {
           DEFAULT: '#303030',
           50: '#FFFFFF',
@@ -109,6 +120,9 @@ module.exports = {
           800: '#303030',
           900: '#1C1C1C',
         },
+        cyan: {
+          DEFAULT: '#0698A8',
+        },
       },
       width: {
         '3/10': '30%',
@@ -117,6 +131,7 @@ module.exports = {
       zIndex: {
         '60': '60',
         '100': '100',
+        '200': '200',
       },
     },
   },
