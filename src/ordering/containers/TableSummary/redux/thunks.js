@@ -32,10 +32,9 @@ export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', a
 
 export const loadOrdersStatus = createAsyncThunk(
   'ordering/tableSummary/loadOrdersStatus',
-  async (_, { dispatch, getState }) => {
+  async (receiptNumber, { dispatch, getState }) => {
     try {
       const state = getState();
-      const receiptNumber = getOrderReceiptNumber(state);
       const prevModifiedTime = getOrderModifiedTime(state);
       const result = await fetchOrderSubmissionStatus({ receiptNumber });
       const prevModifiedTimeDate = dayjs(prevModifiedTime);
