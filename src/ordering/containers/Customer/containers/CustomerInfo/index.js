@@ -472,7 +472,7 @@ class CustomerInfo extends Component {
             loaderText={t('Processing')}
             processing={processing}
           >
-            {processing ? t('Processing') : t('Continue')}
+            {processing ? t('Processing') : isTNGMiniProgram ? t('PayNow') : t('Continue')}
           </CreateOrderButton>
         </footer>
         {customerError.show ? (
