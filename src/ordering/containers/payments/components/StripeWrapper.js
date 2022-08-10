@@ -34,7 +34,7 @@ const getStripePromise = country => {
 
       alert(i18next.t('GotoPaymentFailedDescription'), {
         onClose: () => {
-          window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_ONLINE_SAVED_CARDS}${window.location.search}`;
+          window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_CART}${window.location.search}`;
         },
         containerClassName: 'tw-z-300',
       });
