@@ -11,11 +11,5 @@ export const API_INFO = {
   }),
 };
 
-export const createPaymentDetails = ({ orderId, orderSource, paymentProvider, webhookURL }) =>
-  post('/payment', { receiptNumber: orderId, orderSource, paymentProvider, webhookURL });
-
-// API Doc: https://app.swaggerhub.com/apis/Storehub/beep-bff-qr-ordering-API/1.0.1#/payment/post_payment_init
-export const initPayment = data => post('/payment/init', data);
-
-// API for submit order and initPayment of pay later
-export const initPayLaterOrderPayment = data => post('/payment/init-with-order', data);
+// API for submit order and initPayment for all payment
+export const initPaymentWithOrder = data => post('/payment/init-with-order', data);

@@ -11,8 +11,9 @@ import {
   getOrderCashback,
   getOrderTotal,
 } from './selectors';
-import { getUserConsumerId, getLocationSearch } from '../../../redux/modules/app';
+import { getUserConsumerId, getLocationSearch, getIsTNGMiniProgram } from '../../../redux/modules/app';
 import { getPromotionId } from '../../../redux/modules/promotion';
+import { gotoPayment as initPayment, loadBilling } from '../../payments/redux/common/thunks';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
@@ -31,10 +32,9 @@ export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', a
 
 export const loadOrdersStatus = createAsyncThunk(
   'ordering/tableSummary/loadOrdersStatus',
-  async (_, { dispatch, getState }) => {
+  async (receiptNumber, { dispatch, getState }) => {
     try {
       const state = getState();
-      const receiptNumber = getOrderReceiptNumber(state);
       const prevModifiedTime = getOrderModifiedTime(state);
       const result = await fetchOrderSubmissionStatus({ receiptNumber });
       const prevModifiedTimeDate = dayjs(prevModifiedTime);
@@ -82,12 +82,21 @@ export const lockOrder = createAsyncThunk('ordering/tableSummary/lockOrder', asy
   submitOrder(receiptNumber, data)
 );
 
-export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment', async (_, { dispatch, getState }) => {
-  const state = getState();
-  const receiptNumber = getOrderReceiptNumber(state);
+export const showRedirectLoader = createAsyncThunk('ordering/tableSummary/showRedirectLoader', async () => {});
 
-  try {
-    const total = getOrderTotal(state);
+export const hideRedirectLoader = createAsyncThunk('ordering/tableSummary/hideRedirectLoader', async () => {});
+
+export const clearQueryOrdersAndStatus = () => () => {
+  clearTimeout(queryOrdersAndStatus.timer);
+  logger.log('table-summary.query-orders-and-status', { action: 'stop' });
+  queryOrdersAndStatus.timer = null;
+};
+
+export const payByCoupons = createAsyncThunk(
+  'ordering/tableSummary/payByCoupons',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const receiptNumber = getOrderReceiptNumber(state);
     const cashback = getOrderCashback(state);
     const promotionId = getPromotionId(state);
     const consumerId = getUserConsumerId(state);
@@ -101,9 +110,53 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
       voucherCode,
     };
 
+    await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+  }
+);
+
+export const payByTnGMiniProgram = createAsyncThunk(
+  'ordering/tableSummary/payByTnGMiniProgram',
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const total = getOrderTotal(state);
+    const receiptNumber = getOrderReceiptNumber(state);
+
+    try {
+      dispatch(showRedirectLoader());
+      // We need to stop the polling for 2 reasons:
+      // 1. It is unnecessary to poll the status when user is paying by TNG Mini Program.
+      // 2. It affects the page redirection and the page will be stook and the TnG app will be crashed at the end.
+      dispatch(clearQueryOrdersAndStatus());
+      // Load Billing API before calling init with order API, otherwise may be rejected for the required parameter missing
+      // TODO: Not a good practice to call the thunk that from totally different module. We definitely need to optimize these codes in the future.
+      await dispatch(loadBilling()).unwrap();
+      await dispatch(initPayment({ orderId: receiptNumber, total }));
+    } catch (error) {
+      dispatch(hideRedirectLoader());
+      // Resume payment status polling then user can still fetch the latest payment status
+      dispatch(queryOrdersAndStatus(receiptNumber));
+      throw error;
+    }
+  }
+);
+
+export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment', async (_, { dispatch, getState }) => {
+  const state = getState();
+  const total = getOrderTotal(state);
+  const receiptNumber = getOrderReceiptNumber(state);
+
+  try {
     // Special case for free charge
     if (total === 0) {
-      await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+      await dispatch(payByCoupons()).unwrap();
+      return;
+    }
+
+    // If it comes from TnG mini program, we need to directly init payment
+    const isTNGMiniProgram = getIsTNGMiniProgram(state);
+
+    if (isTNGMiniProgram) {
+      await dispatch(payByTnGMiniProgram()).unwrap();
       return;
     }
 
@@ -115,13 +168,6 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
       error: error?.message,
       receiptNumber,
     });
-
     throw error;
   }
 });
-
-export const clearQueryOrdersAndStatus = () => () => {
-  clearTimeout(queryOrdersAndStatus.timer);
-  logger.log('table-summary.query-orders-and-status', { action: 'stop' });
-  queryOrdersAndStatus.timer = null;
-};

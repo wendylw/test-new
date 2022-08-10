@@ -33,6 +33,8 @@
   "41000Description": "The selected time slot is no longer available. We have selected the next available time.",
   "41014Title": "No items in cart (Error: {{error_code}})",
   "41014Description": "There are no items in your cart, please reorder again.",
+  "41026Title": "Payment Failed (Error: {{error_code}})",
+  "41026Description": "We could not process your payment. Please check your network and try again.",
   "40025Title": "Unable to access storage",
   "40025Description": "Cookie is not available.",
   "40026Title": "Unable to save data",

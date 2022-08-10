@@ -38,6 +38,7 @@ import {
   getStoreRating,
   getIsFromBeepSite,
   getIsInAppOrMiniProgram,
+  getIsFromFoodCourt,
   getIsPickUpType,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
@@ -344,7 +345,11 @@ export const getStoreFullDisplayTitle = createSelector(
   (title, subTitle) => `${title}${subTitle ? ` (${subTitle})` : ''}`
 );
 
-export const getIsShowBackButton = createSelector(getIsFromBeepSite, isFromBeepSite => isFromBeepSite);
+export const getIsShowBackButton = createSelector(
+  getIsFromBeepSite,
+  getIsFromFoodCourt,
+  (isFromBeepSite, isFromFoodCourt) => isFromBeepSite || isFromFoodCourt
+);
 
 /**
  * user selected display date

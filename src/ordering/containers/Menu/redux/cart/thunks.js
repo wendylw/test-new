@@ -2,7 +2,7 @@ import qs from 'qs';
 import _isNil from 'lodash/isNil';
 import { push } from 'connected-react-router';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { clearCart, updateCartItems, removeCartItemsById } from '../../../../redux/cart/thunks';
+import { clearCart, updateCartItems, removeCartItemsById, clearQueryCartStatus } from '../../../../redux/cart/thunks';
 import { getOriginalCartItems } from './selectors';
 import {
   actions as appActions,
@@ -55,6 +55,7 @@ export const viewOnGoingOrder = createAsyncThunk(
       { addQueryPrefix: true }
     );
 
+    dispatch(clearQueryCartStatus());
     dispatch(push(`${PATH_NAME_MAPPING.ORDERING_TABLE_SUMMARY}${search}`));
   }
 );
