@@ -39,6 +39,11 @@ module.exports = {
       relaxed: '1.5',
       loose: '1.6',
     },
+    letterSpacing: {
+      normal: '0',
+      wide: '.01em',
+      wider: '.02em',
+    },
     screens: {
       sm: '420px',
       md: '770px',
@@ -126,6 +131,7 @@ module.exports = {
       zIndex: {
         '60': '60',
         '100': '100',
+        '200': '200',
       },
     },
   },

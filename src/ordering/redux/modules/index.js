@@ -9,6 +9,7 @@ import promotion from './promotion';
 import payments from '../../containers/payments/redux';
 import customer from '../../containers/Customer/redux';
 import addressList from './addressList';
+import locations from './locations';
 import locationAndDate from './locationAndDate';
 import orderStatus from '../../containers/order-status/redux';
 import address from '../../../redux/modules/address';
@@ -28,6 +29,7 @@ const rootReducer = history =>
     payments,
     promotion,
     addressList,
+    locations,
     locationAndDate,
     orderStatus,
     profile,

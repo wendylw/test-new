@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
-import { loadOrders, loadOrdersStatus } from './thunks';
+import { loadOrders, loadOrdersStatus, lockOrder } from './thunks';
 
 const PromotionItemModel = {
   promotionId: null,
@@ -32,6 +32,7 @@ const initialState = {
   requestStatus: {
     loadOrders: API_REQUEST_STATUS.FULFILLED,
     loadOrdersStatus: API_REQUEST_STATUS.FULFILLED,
+    lockOrder: null,
   },
 
   order: {
@@ -60,6 +61,7 @@ const initialState = {
   error: {
     loadOrders: null,
     loadOrdersStatus: null,
+    lockOrder: null,
   },
 };
 
@@ -104,6 +106,20 @@ export const { reducer, actions } = createSlice({
     [loadOrdersStatus.rejected.type]: (state, { error }) => {
       state.error.loadOrdersStatus = error;
       state.requestStatus.loadOrdersStatus = API_REQUEST_STATUS.REJECTED;
+    },
+    [lockOrder.pending.type]: state => {
+      state.requestStatus.lockOrder = API_REQUEST_STATUS.PENDING;
+    },
+    [lockOrder.fulfilled.type]: (state, { payload }) => {
+      const { redirectUrl } = payload;
+      if (redirectUrl) {
+        state.submission.thankYouPageUrl = redirectUrl;
+      }
+      state.requestStatus.lockOrder = API_REQUEST_STATUS.FULFILLED;
+    },
+    [lockOrder.rejected.type]: (state, { error }) => {
+      state.requestStatus.lockOrder = API_REQUEST_STATUS.REJECTED;
+      state.error.lockOrder = error;
     },
   },
 });

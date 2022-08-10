@@ -1,0 +1,31 @@
+.toast-animation {
+  &-enter {
+    .toast-animation__content {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
+
+  &-enter-active {
+    .toast-animation__content {
+      transition: opacity 300ms, transform 300ms;
+      opacity: 1;
+      transform: translateY(16px);
+    }
+  }
+
+  &-exit {
+    .toast-animation__content {
+      opacity: 1;
+      transform: translateY(16px);
+    }
+  }
+
+  &-exit-active {
+    .drawer-animation__content {
+      transition: opacity 300ms, transform 300ms;
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
+}

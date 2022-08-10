@@ -1,0 +1,21 @@
+.ToastContent {
+  @apply tw-flex tw-items-start tw-justify-center tw-py-4 sm:tw-py-4px tw-px-8 sm:tw-px-8px tw-text-sm tw-rounded-xl;
+
+  height: auto;
+
+  &:global(.error) {
+    @apply tw-bg-red tw-text-white;
+  }
+}
+
+.ToastIcon {
+  @apply tw-flex-shrink-0 tw-my-2 sm:tw-my-2px tw-text-lg;
+}
+
+.ToastText {
+  @apply tw-text-sm tw-leading-loose tw-whitespace-nowrap;
+}
+
+.ToastIcon + .ToastText {
+  @apply tw-ml-4 sm:tw-ml-4px;
+}

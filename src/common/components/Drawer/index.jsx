@@ -1,8 +1,9 @@
 /* eslint-disable react/forbid-prop-types */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { CSSTransition } from 'react-transition-group';
+import { useMeasure } from 'react-use';
 import FullScreenFrame from '../FullScreenFrame';
 import { useBackButtonSupport } from '../../../utils/modal-back-button-support';
 import { useSpaceOccupation } from '../SpaceOccupationContext';
@@ -16,16 +17,19 @@ const Drawer = props => {
     header,
     show,
     className = '',
+    childrenClassName = '',
     style = {},
     onClose,
     animation = true,
     fullScreen = false,
     respectSpaceOccupation,
+    maxHeightUpdateToHeight,
     mountAtRoot = true,
     zIndex = 100,
     onHistoryBackCompleted = () => {},
     disableBackButtonSupport = false,
   } = props;
+  const [ref, { height }] = useMeasure();
   const onHistoryBackReceived = useCallback(() => {
     onClose();
     return true;
@@ -61,6 +65,13 @@ const Drawer = props => {
     bottom = 0;
   }
 
+  useEffect(() => {
+    if (height > 0 && show && maxHeightUpdateToHeight) {
+      const contentEl = document.querySelector('.drawer-animation__content');
+      contentEl.style.height = `${height}px`;
+    }
+  }, [height, show, maxHeightUpdateToHeight]);
+
   const drawerContent = (
     <FullScreenFrame className="drawer-animation" zIndex={zIndex}>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
@@ -73,9 +84,10 @@ const Drawer = props => {
           className={`drawer-animation__content ${styles.container} ${className}`}
           // the drawer always has some distance to the top if fullScreen is false, for beautiful look (not confirmed with designer)
           style={{ ...(fullScreen ? { height: '100%' } : { maxHeight: '90%' }), ...style }}
+          ref={ref}
         >
           {header}
-          <div className="drawer-animation__children tw-flex-1 tw-overflow-auto">{children}</div>
+          <div className={`drawer-animation__children tw-flex-1 tw-overflow-auto ${childrenClassName}`}>{children}</div>
         </div>
       </div>
     </FullScreenFrame>
@@ -111,6 +123,8 @@ Drawer.propTypes = {
   show: PropTypes.bool,
   /* The class name of outer container */
   className: PropTypes.string,
+  /* The class name of inner container */
+  childrenClassName: PropTypes.string,
   /* The style of outer container */
   style: PropTypes.object,
   /* The callback when the use touch the backdrop */
@@ -121,6 +135,8 @@ Drawer.propTypes = {
   fullScreen: PropTypes.bool,
   /* Whether covers the footer */
   respectSpaceOccupation: PropTypes.bool,
+  /* Whether set max height to drawer content height */
+  maxHeightUpdateToHeight: PropTypes.bool,
   /* z-index style that is set on the outermost DOM node */
   zIndex: PropTypes.number,
   /* Whether mount the component at a common portal at the root. `true` by default */
@@ -136,11 +152,13 @@ Drawer.defaultProps = {
   header: null,
   show: false,
   className: '',
+  childrenClassName: '',
   style: {},
   onClose: () => {},
   animation: true,
   fullScreen: false,
   respectSpaceOccupation: false,
+  maxHeightUpdateToHeight: false,
   zIndex: 100,
   mountAtRoot: true,
   onHistoryBackCompleted: () => {},

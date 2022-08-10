@@ -81,3 +81,17 @@ export const API_REQUEST_STATUS = {
   FULFILLED: 'fulfilled',
   REJECTED: 'rejected',
 };
+
+export const WEEK_DAYS_I18N_KEYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+export const LOCATION_SELECTION_REASON_CODES = {
+  OUT_OF_DELIVERY_RANGE: 'OutOfDeliveryRange',
+  ADDRESS_NOT_FOUND: 'AddressNotFound',
+};
+
+export const ADDRESS_RANGE = {
+  STREET: 2,
+  CITY: 4,
+  STATE: 5,
+  COUNTRY: 6,
+};
