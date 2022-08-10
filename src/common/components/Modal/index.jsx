@@ -47,6 +47,8 @@ const Modal = props => {
   useScrollBlock(show);
   const onBackdropClick = useCallback(
     e => {
+      e.stopPropagation();
+
       if (show && closeByBackDrop && e.target?.className?.includes?.(styles.backdrop)) {
         onClose && onClose();
       }

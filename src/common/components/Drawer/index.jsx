@@ -52,6 +52,8 @@ const Drawer = props => {
 
   const onBackdropClick = useCallback(
     e => {
+      e.stopPropagation();
+
       if (show && e.target?.className?.includes?.(styles.backdrop)) {
         onClose && onClose();
       }
