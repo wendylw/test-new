@@ -1262,6 +1262,10 @@ export const getIsCoreBusinessAPIFulfilled = createSelector(
   status => status === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsCoreBusinessAPICompleted = createSelector(getCoreBusinessAPIStatus, status =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
+);
+
 // TODO: Utils.getOrderTypeFromUrl() will replace be selector
 export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo => {
   return (

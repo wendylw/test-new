@@ -39,6 +39,7 @@ import {
   getOnlineStoreInfo,
   getUser,
   getFoodTagsForCleverTap,
+  getIsCoreBusinessAPICompleted,
 } from '../../../../redux/modules/app';
 import { loadOrder, loadOrderStatus } from '../../redux/thunks';
 import {
@@ -362,7 +363,15 @@ export class ThankYou extends PureComponent {
   async componentDidUpdate(prevProps) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
-    const { order, onlineStoreInfo, user, shippingType, loadStoreIdTableIdHashCode, loadStoreIdHashCode } = this.props;
+    const {
+      order,
+      onlineStoreInfo,
+      user,
+      shippingType,
+      loadStoreIdTableIdHashCode,
+      loadStoreIdHashCode,
+      isCoreBusinessAPICompleted,
+    } = this.props;
 
     if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
       this.showCompleteProfileIfNeeded();
@@ -380,7 +389,13 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    if (!this.state.hasRecordedChargedEvent && this.state.from === 'payment' && this.props.order && onlineStoreInfo) {
+    if (
+      !this.state.hasRecordedChargedEvent &&
+      this.state.from === 'payment' &&
+      this.props.order &&
+      onlineStoreInfo &&
+      isCoreBusinessAPICompleted
+    ) {
       const orderInfo = this.props.order;
       this.recordChargedEvent();
       this.handleGtmEventTracking({ order: orderInfo });
@@ -1009,6 +1024,7 @@ export default compose(
       foodCourtHashCode: getFoodCourtHashCode(state),
       foodCourtMerchantName: getFoodCourtMerchantName(state),
       foodTagsForCleverTap: getFoodTagsForCleverTap(state),
+      isCoreBusinessAPICompleted: getIsCoreBusinessAPICompleted(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
