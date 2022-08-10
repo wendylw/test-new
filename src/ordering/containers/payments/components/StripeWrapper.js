@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import { alert } from '../../../../common/feedback';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 import CleverTap from '../../../../utils/clevertap';
-import loggly from '../../../../utils/monitoring/loggly';
+import logger from '../../../../utils/monitoring/logger';
 
 const MY_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '';
 const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
@@ -27,7 +27,7 @@ const getStripePromise = country => {
         country,
       });
 
-      loggly.error('common.stripe-load-failure', {
+      logger.error('common.stripe-load-failure', {
         error: err?.message,
         country,
       });
@@ -36,9 +36,7 @@ const getStripePromise = country => {
         onClose: () => {
           window.location.href = `${window.location.origin}${PATH_NAME_MAPPING.ORDERING_BASE}${PATH_NAME_MAPPING.ORDERING_ONLINE_SAVED_CARDS}${window.location.search}`;
         },
-        style: {
-          zIndex: '300',
-        },
+        containerClassName: 'tw-z-300',
       });
     });
 };
