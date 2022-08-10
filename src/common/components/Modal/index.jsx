@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { CSSTransition } from 'react-transition-group';
@@ -22,6 +22,7 @@ const Modal = props => {
     onHistoryBackCompleted = () => {},
     disableBackButtonSupport = false,
   } = props;
+  const ref = useRef(null);
   const onHistoryBackReceived = useCallback(() => {
     if (closeByBackButton) {
       onClose();
@@ -47,9 +48,7 @@ const Modal = props => {
   useScrollBlock(show);
   const onBackdropClick = useCallback(
     e => {
-      e.stopPropagation();
-
-      if (show && closeByBackDrop && e.target?.className?.includes?.(styles.backdrop)) {
+      if (show && closeByBackDrop && e.target === ref.current) {
         onClose && onClose();
       }
     },
@@ -58,7 +57,7 @@ const Modal = props => {
   const modalContent = (
     <FullScreenFrame className="modal-animation" zIndex={zIndex}>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div className={`modal-animation__backdrop ${styles.backdrop}`} onClick={onBackdropClick}>
+      <div className={`modal-animation__backdrop ${styles.backdrop}`} onClick={onBackdropClick} ref={ref}>
         <div className={`modal-animation__content ${styles.container} ${className}`}>{children}</div>
       </div>
     </FullScreenFrame>
