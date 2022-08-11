@@ -1,0 +1,26 @@
+@import "../../../Variables.scss";
+
+.alert {
+  @apply tw-top-0 tw-h-full tw-z-100;
+
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.alertContent {
+  @apply tw-p-16 sm:tw-p-16px tw-bg-white tw-rounded-xl tw-shadow tw-overflow-hidden;
+
+  max-width: 330px;
+  max-height: 80%;
+  width: 90%;
+}
+
+.alertBody {
+  @apply tw-justify-center;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.alertFooter {
+  @apply tw-py-8 sm:tw-py-8px;
+}
