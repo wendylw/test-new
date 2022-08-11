@@ -4,7 +4,7 @@ import PlaceHolderStoreLogo from '../../../../../images/placeholder-store-logo.p
 
 function StoreLogo({ url, storeName }) {
   return (
-    <figure className="order-history__store-logo logo margin-smaller">
+    <figure className="order-history__store-logo logo margin-smaller flex__shrink-fixed">
       <img alt={storeName} src={url || PlaceHolderStoreLogo} />
     </figure>
   );

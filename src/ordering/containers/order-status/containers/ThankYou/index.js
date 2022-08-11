@@ -38,6 +38,7 @@ import {
   getBusinessUTCOffset,
   getOnlineStoreInfo,
   getUser,
+  getIsFromBeepSiteOrderHistory,
 } from '../../../../redux/modules/app';
 import { loadOrder, loadOrderStatus } from '../../redux/thunks';
 import {
@@ -820,7 +821,14 @@ export class ThankYou extends PureComponent {
   };
 
   handleHeaderNavFunc = () => {
-    const { history, orderStatus, profileModalVisibility, isPayLater, foodCourtId } = this.props;
+    const {
+      history,
+      orderStatus,
+      profileModalVisibility,
+      isPayLater,
+      foodCourtId,
+      isFromBeepSiteOrderHistory,
+    } = this.props;
     const isWebview = Utils.isWebview();
 
     const isOrderBeforePaid = BEFORE_PAID_STATUS_LIST.includes(orderStatus);
@@ -839,6 +847,11 @@ export class ThankYou extends PureComponent {
 
     if (isOrderBeforePaid) {
       history.goBack();
+      return;
+    }
+
+    if (isFromBeepSiteOrderHistory) {
+      window.location.href = sourceUrl;
       return;
     }
 
@@ -1004,6 +1017,7 @@ export default compose(
       foodCourtId: getFoodCourtId(state),
       foodCourtHashCode: getFoodCourtHashCode(state),
       foodCourtMerchantName: getFoodCourtMerchantName(state),
+      isFromBeepSiteOrderHistory: getIsFromBeepSiteOrderHistory(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(

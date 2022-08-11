@@ -276,6 +276,12 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Reorder',
     showModal: true,
   },
+  41026: {
+    title: 'ApiError:41026Title',
+    desc: 'ApiError:41026Description',
+    buttonText: 'Common:OK',
+    showModal: true,
+  },
   54012: {
     title: 'ApiError:54012Title',
     desc: 'ApiError:54012Description',

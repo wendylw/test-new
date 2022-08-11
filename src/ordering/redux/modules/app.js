@@ -38,7 +38,7 @@ import * as TngUtils from '../../../utils/tng-utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
-import { isFromBeepSite } from '../../../common/utils';
+import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
 import { replace } from 'connected-react-router';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
@@ -1559,6 +1559,8 @@ export const getIsInAppOrMiniProgram = createSelector(
   (isWebview, isTNGMiniProgram) => isWebview || isTNGMiniProgram
 );
 export const getIsFromBeepSite = state => isFromBeepSite();
+export const getIsFromBeepSiteOrderHistory = state => isFromBeepSiteOrderHistory();
+export const getIsFromFoodCourt = state => isFromFoodCourt();
 
 /**
  * Is delivery shipping type

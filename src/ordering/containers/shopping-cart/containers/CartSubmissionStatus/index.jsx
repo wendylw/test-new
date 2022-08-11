@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { IconChecked } from '../../../../../components/Icons';
+import RedirectPageLoader from '../../../../components/RedirectPageLoader';
 import {
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
@@ -98,15 +99,7 @@ class CartSubmissionStatus extends Component {
 
     return (
       <section className="ordering-submission absolute-wrapper flex flex-column flex-center flex-middle">
-        {pendingCartSubmissionResult && (
-          <div className="margin-smaller">
-            <i className="ordering-submission__loader loader default" />
-            <p className="ordering-submission__pending-description margin-top-bottom-normal text-center text-size-big text-line-height-base">
-              {t('LoadingRedirectingDescription')}
-            </p>
-          </div>
-        )}
-
+        {pendingCartSubmissionResult && <RedirectPageLoader />}
         {cartSubmittedStatus && (
           <>
             <div className="ordering-submission__warning absolute-wrapper padding-small flex flex-middle flex-center">

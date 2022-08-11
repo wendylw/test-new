@@ -1,7 +1,7 @@
 import qs from 'qs';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
-import { WEB_VIEW_SOURCE, SHIPPING_TYPES } from './constants';
+import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING } from './constants';
 // eslint-disable-next-line import/no-cycle
 import config from '../../config';
 
@@ -132,6 +132,39 @@ export const isFromBeepSite = () => {
     const { hostname } = urlObj;
 
     return isSiteApp(hostname);
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const isFromBeepSiteOrderHistory = () => {
+  try {
+    const beepOrderingSourceUrl = getSourceUrlFromSessionStorage();
+    if (!beepOrderingSourceUrl) {
+      return false;
+    }
+    const urlObj = new URL(beepOrderingSourceUrl);
+    const { pathname } = urlObj;
+
+    return pathname === PATH_NAME_MAPPING.ORDER_HISTORY;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const isFromFoodCourt = () => {
+  try {
+    const beepOrderingSourceUrl = getSourceUrlFromSessionStorage();
+    if (!beepOrderingSourceUrl) {
+      return false;
+    }
+    const urlObj = new URL(beepOrderingSourceUrl);
+    const { pathname } = urlObj;
+    const { ORDERING_BASE, FOOD_COURT } = PATH_NAME_MAPPING;
+
+    return pathname === `${ORDERING_BASE}${FOOD_COURT}`;
   } catch (error) {
     console.error(error);
     return false;
