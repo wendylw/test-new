@@ -16,9 +16,6 @@ import { getIsSearchingBannerVisible } from './redux/common/selectors';
 import { mounted } from './redux/common/thunks';
 import { getDeliveryInfo } from '../../redux/modules/app';
 
-import Alert from '../../../common/components/Alert';
-import AlertContent from '../../../common/components/Alert/AlertContent';
-
 const Menu = () => {
   const dispatch = useDispatch();
   // for whether display searching banner, if not header, store info and promo banner display
@@ -54,9 +51,6 @@ const Menu = () => {
             <ProductDetailDrawer />
             <MiniCart />
             <AlcoholModal />
-            <Alert show>
-              <AlertContent title="test" content="test" />
-            </Alert>
           </>
         )}
       </>
