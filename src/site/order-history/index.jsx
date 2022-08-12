@@ -1,6 +1,5 @@
 /* eslint-disable */
 import React from 'react';
-import qs from 'qs';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -18,6 +17,7 @@ import {
   getIsRequestOrderDataDone,
   getPageLoaderVisibility,
 } from './redux/selectors';
+import { isURL } from '../../common/utils';
 import OrderItem from './components/OrderItem';
 import Loader from './components/Loader';
 import RequireLoginPage from './components/RequireLoginPage';
@@ -26,6 +26,7 @@ import OrderListEmptyView from './components/OrderListEmptyView';
 import Clevertap from '../../utils/clevertap';
 import _get from 'lodash/get';
 import WebHeader from '../../components/WebHeader';
+import logger from '../../utils/monitoring/logger';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
@@ -68,12 +69,7 @@ class OrderHistory extends React.Component {
       'store name': _get(order, 'store.storeDisplayName', ''),
     });
 
-    // '/go2page' will response 302 status and redirect to ${target} url
-    // we add this for disabled IOS app link in Beep tng mini program
-    // this is workaround way, TNGD side will fix IOS app link issue in the future
-    Utils.submitForm('/go2page', {
-      target: urlObj.toString(),
-    });
+    window.location.href = urlObj.toString();
   };
 
   handleRefresh = async () => {
@@ -91,6 +87,32 @@ class OrderHistory extends React.Component {
 
   handleLoginButtonClick = () => {
     this.login();
+  };
+
+  handleSourceUrl = sourceUrl => {
+    const { history } = this.props;
+
+    if (isURL(sourceUrl)) {
+      window.location.href = sourceUrl;
+      return;
+    }
+
+    logger.error(`site.order-history.invalid-source-url`, { sourceUrl });
+    history.goBack(); // Fallback plan: go back to the previous page.
+  };
+
+  handleBackButtonClick = () => {
+    const sourceUrl = Utils.getQueryString('source');
+
+    if (sourceUrl) {
+      this.handleSourceUrl(sourceUrl);
+      return;
+    }
+
+    // By default, just go back to previous page
+    const { history } = this.props;
+
+    history.goBack();
   };
 
   render() {
@@ -112,11 +134,16 @@ class OrderHistory extends React.Component {
 
     const showOrderListEmptyView = isRequestOrderDataDone && orderHistoryList.length === 0;
 
+    // TODO: If we implement the order history tab on TnG Mini Program in the future, the header should be removed from the page.
+    // However, the header should be shown if the page is redirected from the food court page.
     return (
       <>
-        {!Utils.isTNGMiniProgram() ? (
-          <WebHeader headerRef={ref => (this.headerEl = ref)} isPage={true} title={t('MyOrderHistory')} />
-        ) : null}
+        <WebHeader
+          headerRef={ref => (this.headerEl = ref)}
+          isPage={true}
+          title={t('MyOrderHistory')}
+          navFunc={this.handleBackButtonClick}
+        />
 
         <PullToRefresh pullingContent="" refreshingContent={<Loader />} onRefresh={this.handleRefresh}>
           {showOrderListEmptyView ? (

@@ -1,4 +1,3 @@
-/* eslint-disable react/sort-comp */
 import React from 'react';
 import qs from 'qs';
 import PropTypes from 'prop-types';
@@ -8,6 +7,7 @@ import { compose } from 'redux';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
+import logger from '../../../utils/monitoring/logger';
 import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
@@ -41,6 +41,8 @@ import {
   getOrderVoucherCode,
   getOrderVoucherDiscount,
   getPromoOrVoucherExist,
+  getShouldShowRedirectLoader,
+  getShouldShowPayNowButton,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -48,6 +50,7 @@ import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
+import RedirectPageLoader from '../../components/RedirectPageLoader';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -61,13 +64,30 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
-    const { queryOrdersAndStatus } = this.props;
+    const { t, history, queryOrdersAndStatus } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
+    const emptyString = ['null', 'undefined', ''];
 
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
 
-    await queryOrdersAndStatus(receiptNumber);
+    if (receiptNumber && !emptyString.includes(receiptNumber)) {
+      await queryOrdersAndStatus(receiptNumber);
+    } else {
+      logger.error('ordering.tableSummaryInitialize.error', {
+        message: 'receiptNumber is missing',
+      });
+
+      alert(t('ReceiptNumberInValidDescription'), {
+        title: t('ReceiptNumberInValidTitle'),
+        closeButtonContent: t('ReturnToCart'),
+        onClose: () =>
+          history.push({
+            pathname: Constants.ROUTER_PATHS.ORDERING_CART,
+            search: window.location.search,
+          }),
+      });
+    }
   }
 
   componentDidUpdate(prevProps, prevStates) {
@@ -91,6 +111,31 @@ export class TableSummary extends React.Component {
     resetCartSubmission();
   }
 
+  setCartContainerHeight = preContainerHeight => {
+    const containerHeight = Utils.containerHeight({
+      headerEls: [this.headerEl],
+      footerEls: [this.footerEl],
+    });
+
+    if (preContainerHeight !== containerHeight) {
+      this.setState({
+        cartContainerHeight: containerHeight,
+      });
+    }
+  };
+
+  getCorrectCode(code) {
+    const SHOW_LENGTH = 5;
+    // show like "Promo..."
+    if (code) {
+      if (code.length > SHOW_LENGTH) {
+        return `${code.substring(0, SHOW_LENGTH)}...`;
+      }
+      return code;
+    }
+    return '';
+  }
+
   goToMenuPage = () => {
     const { history, shippingType } = this.props;
     const hashCode = Utils.getStoreHashCode();
@@ -106,19 +151,6 @@ export class TableSummary extends React.Component {
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
       search,
     });
-  };
-
-  setCartContainerHeight = preContainerHeight => {
-    const containerHeight = Utils.containerHeight({
-      headerEls: [this.headerEl],
-      footerEls: [this.footerEl],
-    });
-
-    if (preContainerHeight !== containerHeight) {
-      this.setState({
-        cartContainerHeight: containerHeight,
-      });
-    }
   };
 
   showUnableBackMenuPageAlert = () => {
@@ -210,35 +242,74 @@ export class TableSummary extends React.Component {
     }
   };
 
-  renderBaseInfo() {
-    const { t, orderNumber, tableNumber } = this.props;
+  handleClickPayButton = () => {
+    const { gotoPayment } = this.props;
+    gotoPayment();
+  };
+
+  showShortPromoCode() {
+    const { orderPromotionCode, orderVoucherCode } = this.props;
+
+    if (orderPromotionCode) {
+      return this.getCorrectCode(orderPromotionCode);
+    }
+    return this.getCorrectCode(orderVoucherCode);
+  }
+
+  orderPromoType() {
+    const { orderBillingPromo, voucherBilling } = this.props;
+    const { PROMO_TYPE } = Constants;
+
+    if (orderBillingPromo) {
+      return PROMO_TYPE.PROMOTION_FOR_PAY_LATER;
+    }
+
+    if (voucherBilling) {
+      return PROMO_TYPE.VOUCHER_FOR_PAY_LATER;
+    }
+
+    return '';
+  }
+
+  renderPromotionItem() {
+    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist } = this.props;
 
     return (
-      <div className="table-summary__base-info">
-        {this.getOrderStatusOptionsEl()}
-        <div className="padding-left-right-normal padding-top-bottom-small">
-          <ul className="table-summary__base-info-list">
-            {orderNumber ? (
-              <li
-                key="table-summary-order-number"
-                className="flex flex-middle flex-space-between padding-top-bottom-normal"
+      <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
+        {promoOrVoucherExist ? (
+          <>
+            <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
+              <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+              <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
+                {t(this.orderPromoType())} ({this.showShortPromoCode()})
+              </span>
+              <button
+                onClick={this.handleDismissPromotion}
+                className="button flex__shrink-fixed"
+                data-heap-name="ordering.cart.dismiss-promo"
               >
-                <h5 className="text-size-small text-opacity text-capitalize">{t('OrderNumber')}</h5>
-                <span className="text-size-small">{orderNumber}</span>
-              </li>
-            ) : null}
-            {tableNumber ? (
-              <li
-                key="table-summary-table-number"
-                className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider"
-              >
-                <h5 className="text-size-small text-opacity text-capitalize">{t('TableNumber')}</h5>
-                <span className="text-size-small">{tableNumber}</span>
-              </li>
-            ) : null}
-          </ul>
-        </div>
-      </div>
+                <IconClose className="icon icon__small" />
+              </button>
+            </div>
+            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
+              -{' '}
+              <CurrencyNumber
+                className="text-size-big text-weight-bolder"
+                money={oderPromoDiscount || orderVoucherDiscount}
+              />
+            </div>
+          </>
+        ) : (
+          <button
+            className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
+            onClick={this.handleGotoPromotion}
+            data-heap-name="ordering.cart.add-promo"
+          >
+            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
+            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
+          </button>
+        )}
+      </li>
     );
   }
 
@@ -305,89 +376,37 @@ export class TableSummary extends React.Component {
     );
   }
 
-  renderPromotionItem() {
-    const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist } = this.props;
+  renderBaseInfo() {
+    const { t, orderNumber, tableNumber } = this.props;
 
     return (
-      <li className="flex flex-middle flex-space-between border__top-divider border__bottom-divider">
-        {promoOrVoucherExist ? (
-          <>
-            <div className="table-summary__promotion-content flex flex-middle flex-space-between padding-left-right-small text-weight-bolder text-omit__single-line">
-              <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
-              <span className="margin-left-right-smaller text-size-big text-weight-bolder text-omit__single-line">
-                {t(this.orderPromoType())} ({this.showShortPromoCode()})
-              </span>
-              <button
-                onClick={this.handleDismissPromotion}
-                className="button flex__shrink-fixed"
-                data-heap-name="ordering.cart.dismiss-promo"
+      <div className="table-summary__base-info">
+        {this.getOrderStatusOptionsEl()}
+        <div className="padding-left-right-normal padding-top-bottom-small">
+          <ul className="table-summary__base-info-list">
+            {orderNumber ? (
+              <li
+                key="table-summary-order-number"
+                className="flex flex-middle flex-space-between padding-top-bottom-normal"
               >
-                <IconClose className="icon icon__small" />
-              </button>
-            </div>
-            <div className="padding-top-bottom-small padding-left-right-normal text-weight-bolder flex__shrink-fixed">
-              -{' '}
-              <CurrencyNumber
-                className="text-size-big text-weight-bolder"
-                money={oderPromoDiscount || orderVoucherDiscount}
-              />
-            </div>
-          </>
-        ) : (
-          <button
-            className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
-            onClick={this.handleGotoPromotion}
-            data-heap-name="ordering.cart.add-promo"
-          >
-            <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
-            <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
-          </button>
-        )}
-      </li>
+                <h5 className="text-size-small text-opacity text-capitalize">{t('OrderNumber')}</h5>
+                <span className="text-size-small">{orderNumber}</span>
+              </li>
+            ) : null}
+            {tableNumber ? (
+              <li
+                key="table-summary-table-number"
+                className="flex flex-middle flex-space-between padding-top-bottom-normal border__top-divider"
+              >
+                <h5 className="text-size-small text-opacity text-capitalize">{t('TableNumber')}</h5>
+                <span className="text-size-small">{tableNumber}</span>
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      </div>
     );
   }
-
-  // eslint-disable-next-line consistent-return
-  showShortPromoCode() {
-    const { orderPromotionCode, orderVoucherCode } = this.props;
-
-    if (orderPromotionCode) {
-      return this.getCorrectCode(orderPromotionCode);
-    }
-    return this.getCorrectCode(orderVoucherCode);
-  }
-
-  getCorrectCode(code) {
-    const SHOW_LENGTH = 5;
-    // show like "Promo..."
-    if (code) {
-      if (code.length > SHOW_LENGTH) {
-        return `${code.substring(0, SHOW_LENGTH)}...`;
-      }
-      return code;
-    }
-    return '';
-  }
-
-  orderPromoType() {
-    const { orderBillingPromo, voucherBilling } = this.props;
-    const { PROMO_TYPE } = Constants;
-
-    if (orderBillingPromo) {
-      return PROMO_TYPE.PROMOTION_FOR_PAY_LATER;
-    }
-
-    if (voucherBilling) {
-      return PROMO_TYPE.VOUCHER_FOR_PAY_LATER;
-    }
-
-    return '';
-  }
-
-  handleClickPayButton = () => {
-    const { gotoPayment } = this.props;
-    gotoPayment();
-  };
 
   render() {
     const {
@@ -405,8 +424,14 @@ export class TableSummary extends React.Component {
       shippingFee,
       orderPlacedStatus,
       orderPendingPaymentStatus,
+      shouldShowRedirectLoader,
+      shouldShowPayNowButton,
     } = this.props;
     const { cartContainerHeight } = this.state;
+
+    if (shouldShowRedirectLoader) {
+      return <RedirectPageLoader />;
+    }
 
     return (
       <section
@@ -479,7 +504,7 @@ export class TableSummary extends React.Component {
             data-heap-name="ordering.order-status.table-summary.pay-btn"
             onClick={this.handleClickPayButton}
           >
-            {orderPendingPaymentStatus ? t('SelectPaymentMethod') : t('PayNow')}
+            {shouldShowPayNowButton ? t('PayNow') : t('SelectPaymentMethod')}
           </button>
         </footer>
       </section>
@@ -523,6 +548,8 @@ TableSummary.propTypes = {
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
   gotoPayment: PropTypes.func,
+  shouldShowRedirectLoader: PropTypes.bool,
+  shouldShowPayNowButton: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -557,6 +584,8 @@ TableSummary.defaultProps = {
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
   gotoPayment: () => {},
+  shouldShowRedirectLoader: false,
+  shouldShowPayNowButton: false,
 };
 
 export default compose(
@@ -587,6 +616,8 @@ export default compose(
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
+      shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
+      shouldShowPayNowButton: getShouldShowPayNowButton(state),
     }),
 
     {

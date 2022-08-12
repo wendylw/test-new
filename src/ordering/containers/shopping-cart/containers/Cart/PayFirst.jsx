@@ -13,6 +13,7 @@ import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
+import RedirectPageLoader from '../../../../components/RedirectPageLoader';
 import { actions as promotionActionCreators } from '../../../../redux/modules/promotion';
 import {
   actions as appActionCreators,
@@ -31,6 +32,7 @@ import {
   getUserConsumerId,
   getUserProfile,
   getIsUserProfileStatusFulfilled,
+  getIsTNGMiniProgram,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
@@ -50,6 +52,7 @@ class PayFirst extends Component {
       cartContainerHeight: '100%',
       productsContainerHeight: '0px',
       pendingBeforeCreateOrder: false,
+      shouldShowRedirectLoader: false,
     };
   }
 
@@ -367,6 +370,7 @@ class PayFirst extends Component {
         disabled={shouldDisablePayButton || pendingBeforeCreateOrder}
         validCreateOrder={isValidCreateOrder}
         beforeCreateOrder={this.handleBeforeCreateOrder}
+        afterCreateOrder={this.handleAfterCreateOrder}
         loaderText={t('Processing')}
         processing={pendingCheckingInventory || pendingBeforeCreateOrder}
       >
@@ -384,9 +388,14 @@ class PayFirst extends Component {
       consumerId,
       appActions,
       isUserProfileStatusFulfilled,
+      isTNGMiniProgram,
     } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
     this.setState({ pendingBeforeCreateOrder: true });
+
+    if (isTNGMiniProgram) {
+      this.setState({ shouldShowRedirectLoader: true });
+    }
 
     // if user login, and one of user name or phone is empty from delivery details data,
     // then update them from user profile.
@@ -415,6 +424,10 @@ class PayFirst extends Component {
     });
 
     this.setState({ pendingBeforeCreateOrder: false });
+  };
+
+  handleAfterCreateOrder = orderId => {
+    this.setState({ shouldShowRedirectLoader: !!orderId });
   };
 
   getOrderButtonContent = () => {
@@ -580,13 +593,17 @@ class PayFirst extends Component {
       shippingType,
       serviceChargeRate,
     } = this.props;
-    const { cartContainerHeight } = this.state;
+    const { cartContainerHeight, shouldShowRedirectLoader } = this.state;
     const { items } = shoppingCart || {};
     const { count, subtotal, takeawayCharges, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
     const { isLogin } = user || {};
 
     if (!(cartBilling && items)) {
       return null;
+    }
+
+    if (shouldShowRedirectLoader) {
+      return <RedirectPageLoader />;
     }
 
     return (
@@ -717,6 +734,7 @@ PayFirst.propTypes = {
   isUserProfileStatusFulfilled: PropTypes.bool,
   consumerId: PropTypes.string,
   serviceChargeRate: PropTypes.number,
+  isTNGMiniProgram: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -752,6 +770,7 @@ PayFirst.defaultProps = {
   isUserProfileStatusFulfilled: false,
   consumerId: '',
   serviceChargeRate: 0,
+  isTNGMiniProgram: false,
 };
 
 /* TODO: backend data */
@@ -776,6 +795,7 @@ export default compose(
       consumerId: getUserConsumerId(state),
       userProfile: getUserProfile(state),
       isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
+      isTNGMiniProgram: getIsTNGMiniProgram(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),
