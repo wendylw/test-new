@@ -32,8 +32,8 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '20:30',
     },
   },
-  '60933597a9ffdc00068608a4': {
-    id: '60933597a9ffdc00068608a4',
+  '5ec4e07cf35afc0ca557a544': {
+    id: '5ec4e07cf35afc0ca557a544',
     imageNoCompression: StellarKLImage,
     title: 'Stellar KL',
     tags: ['Coffee', 'Lemonade', 'Kombucha'],
