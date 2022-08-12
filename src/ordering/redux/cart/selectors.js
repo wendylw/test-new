@@ -88,6 +88,8 @@ export const getCartReceiptNumber = state => state.app.cart.receiptNumber;
 
 export const getCartSubmissionReceiptNumber = state => state.app.cart.submission.receiptNumber;
 
+export const getCartSubmissionStatus = state => state.app.cart.submission.status;
+
 export const getCartSubmissionPendingStatus = state =>
   state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
 
