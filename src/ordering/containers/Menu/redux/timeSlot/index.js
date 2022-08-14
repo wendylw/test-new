@@ -5,7 +5,7 @@ import {
   changeShippingType,
   changeTimeSlot,
   loadTimeSlotSoldData,
-  save,
+  timeSlotSelected,
   timeSlotDrawerHidden,
   timeSlotDrawerShown,
 } from './thunks';
@@ -74,13 +74,13 @@ export const { reducer, actions } = createSlice({
     [changeTimeSlot.fulfilled.type]: (state, { payload }) => {
       state.selectedTimeSlot = payload;
     },
-    [save.pending.type]: state => {
+    [timeSlotSelected.pending.type]: state => {
       state.saveRequest.status = API_REQUEST_STATUS.PENDING;
     },
-    [save.fulfilled.type]: state => {
+    [timeSlotSelected.fulfilled.type]: state => {
       state.saveRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
-    [save.rejected.type]: state => {
+    [timeSlotSelected.rejected.type]: state => {
       state.saveRequest.status = API_REQUEST_STATUS.REJECTED;
     },
   },

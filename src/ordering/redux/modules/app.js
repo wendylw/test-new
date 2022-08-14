@@ -465,6 +465,10 @@ export const actions = {
     },
   }),
 
+  resetCoreBusinessStatus: () => ({
+    type: types.RESET_COREBUSINESS_STATUS,
+  }),
+
   loadCoreBusiness: id => dispatch => {
     const { storeId, business } = config;
 
@@ -641,6 +645,10 @@ export const actions = {
     },
   }),
 
+  resetOnlineCategoryStatus: () => ({
+    type: types.RESET_ONLINECATEGORY_STATUS,
+  }),
+
   // load product list group by category, and shopping cart
   loadProductList: () => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
@@ -743,6 +751,34 @@ export const actions = {
     dispatch({
       type: types.UPDATE_SHIPPING_TYPE,
       payload: newShippingType,
+    });
+  },
+
+  updateStoreId: newStoreId => (dispatch, getState) => {
+    const state = getState();
+    const storeId = getStoreId(state);
+
+    // replace new store id in url query
+    if (storeId !== newStoreId) {
+      const store = getStoreById(state, newStoreId);
+      const hashCode = _get(store, 'hash', null);
+      const h = decodeURIComponent(hashCode);
+      const queryObj = getURLQueryObject(state);
+      const location = getLocation(state);
+      queryObj.h = h;
+      dispatch(
+        replace({
+          pathname: location.pathname,
+          hash: location.hash,
+          state: location.state,
+          search: qs.stringify(queryObj, { addQueryPrefix: true }),
+        })
+      );
+    }
+
+    dispatch({
+      type: types.UPDATE_STORE_ID,
+      payload: newStoreId,
     });
   },
 };
@@ -964,6 +1000,8 @@ const onlineStoreInfo = (state = initialState.onlineStoreInfo, action) => {
 
 const onlineCategory = (state = initialState.onlineCategory, action) => {
   switch (action.type) {
+    case types.RESET_ONLINECATEGORY_STATUS:
+      return { ...state, status: null };
     case types.FETCH_ONLINECATEGORY_REQUEST:
       return { ...state, status: API_REQUEST_STATUS.PENDING };
     case types.FETCH_ONLINECATEGORY_SUCCESS:
@@ -979,6 +1017,8 @@ const coreBusiness = (state = initialState.coreBusiness, action) => {
   const { type } = action;
 
   switch (type) {
+    case types.RESET_COREBUSINESS_STATUS:
+      return { ...state, status: null };
     case types.FETCH_COREBUSINESS_REQUEST:
       return { ...state, status: API_REQUEST_STATUS.PENDING };
     case types.FETCH_COREBUSINESS_SUCCESS:
@@ -1043,6 +1083,8 @@ const requestInfo = (state = initialState.requestInfo, action) => {
   switch (action.type) {
     case types.UPDATE_SHIPPING_TYPE:
       return { ...state, shippingType: action.payload };
+    case types.UPDATE_STORE_ID:
+      return { ...state, storeId: action.payload };
     default:
       return state;
   }

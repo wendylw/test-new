@@ -28,7 +28,7 @@ import {
   changeDate,
   changeTimeSlot,
   loadTimeSlotSoldData,
-  save as saveTimeSlotData,
+  timeSlotSelected,
   timeSlotDrawerShown,
   timeSlotDrawerHidden,
 } from '../../redux/timeSlot/thunks';
@@ -152,7 +152,7 @@ const TimeSlotDropdown = () => {
             dispatch(changeTimeSlot(value));
           }}
           save={() => {
-            dispatch(saveTimeSlotData());
+            dispatch(timeSlotSelected());
           }}
         />
       </div>

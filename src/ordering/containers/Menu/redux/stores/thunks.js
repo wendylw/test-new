@@ -7,7 +7,7 @@ import {
   getStoreId,
   getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
-import { hideStoreListDrawer, refreshMenuPageForNewStore } from '../common/thunks';
+import { hideStoreListDrawer, changeStore } from '../common/thunks';
 import Clevertap from '../../../../../utils/clevertap';
 
 /**
@@ -34,8 +34,8 @@ export const storeDrawerHidden = createAsyncThunk('ordering/menu/stores/storeDra
 /**
  * select store from the store branch drawer
  */
-export const selectStoreBranch = createAsyncThunk(
-  'ordering/menu/stores/selectStoreBranch',
+export const storeBranchSelected = createAsyncThunk(
+  'ordering/menu/stores/storeBranchSelected',
   async (storeId, { getState, dispatch }) => {
     const state = getState();
     const currentStoreId = getStoreId(state);
@@ -48,6 +48,7 @@ export const selectStoreBranch = createAsyncThunk(
 
     Clevertap.pushEvent('Store List - Select different store branch', storeInfoForCleverTap);
 
-    dispatch(refreshMenuPageForNewStore(storeId));
+    await dispatch(changeStore(storeId));
+    await dispatch(hideStoreListDrawer());
   }
 );

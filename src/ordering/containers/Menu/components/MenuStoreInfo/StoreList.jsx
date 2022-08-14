@@ -10,7 +10,7 @@ import {
 } from '../../redux/common/selectors';
 import { showStoreListDrawer, hideStoreListDrawer } from '../../redux/common/thunks';
 import { getHasStoreListInitialized, getStoreList, getTotalOutlet } from '../../redux/stores/selectors';
-import { storeDrawerShown, storeDrawerHidden, selectStoreBranch } from '../../redux/stores/thunks';
+import { storeDrawerShown, storeDrawerHidden, storeBranchSelected } from '../../redux/stores/thunks';
 import StoreListDrawer from '../../../../components/StoreListDrawer';
 import styles from './StoreList.module.scss';
 
@@ -61,7 +61,7 @@ const StoreList = () => {
             storeList={storeList}
             onClose={onHandleHideStoreListDrawer}
             selectStoreBranch={id => {
-              dispatch(selectStoreBranch(id));
+              dispatch(storeBranchSelected(id));
             }}
           />
         </>

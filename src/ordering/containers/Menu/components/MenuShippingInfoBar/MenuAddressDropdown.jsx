@@ -28,7 +28,7 @@ import {
 import {
   locationDrawerShown,
   locationDrawerHidden,
-  selectLocation,
+  locationSelected,
   loadSearchLocationListData,
   loadPlaceInfo,
   updateSearchLocationList,
@@ -146,7 +146,7 @@ const MenuAddressDropdown = () => {
             state,
           });
 
-          dispatch(selectLocation({ addressOrLocationInfo: selectedAddressInfo, type: 'address' }));
+          dispatch(locationSelected({ addressOrLocationInfo: selectedAddressInfo, type: 'address' }));
         }}
         onSelectLocation={selectedLocationInfo => {
           const {
@@ -160,7 +160,7 @@ const MenuAddressDropdown = () => {
             state,
           });
 
-          dispatch(selectLocation({ addressOrLocationInfo: selectedLocationInfo, type: 'location' }));
+          dispatch(locationSelected({ addressOrLocationInfo: selectedLocationInfo, type: 'location' }));
         }}
         onSelectSearchLocation={async (searchResult, index) => {
           if (searchResult) {
@@ -178,7 +178,7 @@ const MenuAddressDropdown = () => {
             });
 
             dispatch(updateSearchLocationList(formatPositionInfo));
-            dispatch(selectLocation({ addressOrLocationInfo: formatPositionInfo, type: 'location' }));
+            dispatch(locationSelected({ addressOrLocationInfo: formatPositionInfo, type: 'location' }));
           }
         }}
         onChangeSearchKeyword={handleSearchKeywordChanged}
