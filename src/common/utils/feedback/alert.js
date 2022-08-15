@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { destroyTarget } from './index';
+import { destroyTarget } from './utils';
 import Alert from '../../components/Alert';
 import AlertContent from '../../components/Alert/AlertContent';
 
