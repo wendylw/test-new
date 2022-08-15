@@ -9,8 +9,6 @@ import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
-import { createPaymentDetails, initPayment } from './api-info';
-
 import { getCartItems, getDeliveryDetails, getShippingType } from '../../../../../redux/modules/app';
 import {
   actions as appActions,
@@ -22,6 +20,7 @@ import {
   getUserConsumerId,
   getUserName,
   getUserPhone,
+  getIsTNGMiniProgram,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
@@ -31,7 +30,7 @@ import { get, post } from '../../../../../../utils/api/api-fetch';
 import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import { alert } from '../../../../../../common/feedback';
-import { initPayLaterOrderPayment } from './api-info';
+import { initPaymentWithOrder } from './api-info';
 import { push } from 'connected-react-router';
 import logger from '../../../../../../utils/monitoring/logger';
 
@@ -305,57 +304,18 @@ const createOrderStatusRequest = async orderId => {
   return get(url);
 };
 
-export const callTNGMiniProgramPayment = async ({
-  amount,
-  currency,
-  receiptNumber,
-  businessName,
-  redirectURL,
-  webhookURL,
-  source,
-  isInternal,
-}) => {
-  const { paymentData, paymentId } = await createPaymentDetails({
-    orderId: receiptNumber,
-    orderSource: source,
-    paymentProvider: PAYMENT_PROVIDERS.TNG_MINI_PROGRAM,
-    webhookURL,
-  });
-
-  const { redirectionUrl: paymentUrl } = paymentData?.actionForm || {};
-
-  await callTradePay(paymentUrl);
-
-  const data = {
-    amount,
-    currency,
-    receiptNumber,
-    businessName,
-    redirectURL,
-    webhookURL,
-    source,
-    isInternal,
-    paymentMethod: 'TNGMiniProgram',
-    paymentId,
-  };
-
-  Utils.submitForm(redirectURL, data);
-
-  return;
-};
-
-const initPayLaterPayment = async (dataOfLater, dispatch) => {
+const initPayment = async (data, dispatch) => {
   try {
-    const res = await initPayLaterOrderPayment(dataOfLater);
+    const res = await initPaymentWithOrder(data);
     return res;
   } catch (e) {
-    handlePayLaterPaymentError({ e, dispatch });
+    handlePaymentError({ e, dispatch });
 
     throw e;
   }
 };
 
-const handlePayLaterPaymentError = ({ e, dispatch }) => {
+const handlePaymentError = ({ e, dispatch }) => {
   // '393731' means missing parameter, '393732' means order not found
   // '393735' means order payment locked,'393738' means order not latest
   if (e.code === '393731') {
@@ -394,10 +354,11 @@ const handlePayLaterPaymentError = ({ e, dispatch }) => {
 };
 
 export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch, getState) => {
-  const paymentProvider = paymentArgs?.paymentProvider;
+  const state = getState();
+  const isTNGMiniProgram = getIsTNGMiniProgram(state);
+  const paymentProvider = isTNGMiniProgram ? PAYMENT_PROVIDERS.TNG_MINI_PROGRAM : paymentArgs?.paymentProvider;
 
   try {
-    const state = getState();
     const shippingType = getShippingType(state);
     const { currency } = getOnlineStoreInfo(state);
     const business = getBusiness(state);
@@ -405,47 +366,42 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
     const source = Utils.getOrderSource();
     const planId = getBusinessByName(state, business).planId || '';
     const isInternal = planId.startsWith('internal');
+    const modifiedTime = getModifiedTime(state);
+    const enablePayLater = getEnablePayLater(state);
+    const consumerId = getUserConsumerId(state);
+    const payload = {
+      receiptNumber: orderId,
+      orderSource: source,
+      webhookURL,
+      redirectURL,
+      ...paymentArgs,
+      paymentProvider,
+    };
 
-    if (Utils.isTNGMiniProgram()) {
-      await callTNGMiniProgramPayment({
+    if (enablePayLater) {
+      payload.modifiedTime = modifiedTime;
+      payload.consumerId = consumerId;
+    }
+
+    const { redirectURL: thankYouPageUrl, paymentUrl, paymentData, paymentId } = await initPayment(payload, dispatch);
+
+    if (isTNGMiniProgram) {
+      const { redirectionUrl } = paymentData?.actionForm || {};
+      await callTradePay(redirectionUrl);
+      Utils.submitForm(redirectURL, {
         amount: total,
-        currency,
         receiptNumber: orderId,
         businessName: business,
         redirectURL,
         webhookURL,
+        paymentMethod: PAYMENT_PROVIDERS.TNG_MINI_PROGRAM,
+        currency,
         source,
         isInternal,
+        paymentId,
       });
-
       return;
     }
-
-    const modifiedTime = getModifiedTime(getState());
-    const enablePayLater = getEnablePayLater(getState());
-    const consumerId = getUserConsumerId(getState());
-
-    const data = {
-      receiptNumber: orderId,
-      orderSource: source,
-      webhookURL,
-      redirectURL,
-      ...paymentArgs,
-    };
-
-    const dataOfLater = {
-      receiptNumber: orderId,
-      orderSource: source,
-      webhookURL,
-      redirectURL,
-      modifiedTime,
-      consumerId,
-      ...paymentArgs,
-    };
-
-    const { redirectURL: thankYouPageUrl, paymentUrl } = enablePayLater
-      ? await initPayLaterPayment(dataOfLater, dispatch)
-      : await initPayment(data);
 
     if (paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
       if (!thankYouPageUrl) {

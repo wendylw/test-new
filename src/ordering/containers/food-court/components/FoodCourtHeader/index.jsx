@@ -21,8 +21,12 @@ const FoodCourtHeader = () => {
   const history = useHistory();
 
   const goOrderHistoryPage = () => {
+    const redirectLocation = `${config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY}?source=${encodeURIComponent(
+      document.location.href
+    )}`;
+
     if (userIsLogin) {
-      window.location.href = config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY;
+      window.location.href = redirectLocation;
     } else {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
@@ -30,7 +34,7 @@ const FoodCourtHeader = () => {
         state: {
           shouldGoBack: true,
           isRedirect: true,
-          redirectLocation: config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY,
+          redirectLocation,
         },
       });
     }
