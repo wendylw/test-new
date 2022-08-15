@@ -32,6 +32,7 @@ import {
   getUserConsumerId,
   getUserProfile,
   getIsUserProfileStatusFulfilled,
+  getIsWebview,
   getIsTNGMiniProgram,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
@@ -227,8 +228,8 @@ class PayFirst extends Component {
     await appActions.loadShoppingCart();
   };
 
-  handleGotoPromotion = () => {
-    const { history, user, storeInfoForCleverTap } = this.props;
+  handleGotoPromotion = async () => {
+    const { history, user, storeInfoForCleverTap, isWebview, appActions } = this.props;
     const { isLogin } = user || {};
 
     CleverTap.pushEvent('Cart page - click add promo code/voucher', storeInfoForCleverTap);
@@ -238,16 +239,25 @@ class PayFirst extends Component {
         pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
         search: window.location.search,
       });
-    } else {
-      CleverTap.pushEvent('Login - view login screen', {
-        'Screen Name': 'Cart Page',
-      });
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-        state: { shouldGoBack: true },
-      });
+      return;
     }
+
+    CleverTap.pushEvent('Login - view login screen', {
+      'Screen Name': 'Cart Page',
+    });
+
+    if (isWebview) {
+      // BEEP-2920: In case users can click on the login button in the beep apps, we need to call the native login method.
+      await appActions.loginByBeepApp();
+      return;
+    }
+
+    // By default, redirect users to the web login page
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
   };
 
   getUpdateShoppingCartItemData = ({ productId, comments, variations }, currentQuantity) => ({
@@ -703,6 +713,7 @@ PayFirst.propTypes = {
     removeShoppingCartItem: PropTypes.func,
     getProfileInfo: PropTypes.func,
     updateDeliveryDetails: PropTypes.func,
+    loginByBeepApp: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
@@ -734,6 +745,7 @@ PayFirst.propTypes = {
   isUserProfileStatusFulfilled: PropTypes.bool,
   consumerId: PropTypes.string,
   serviceChargeRate: PropTypes.number,
+  isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
 };
 
@@ -745,6 +757,7 @@ PayFirst.defaultProps = {
     removeShoppingCartItem: () => {},
     getProfileInfo: () => {},
     updateDeliveryDetails: () => {},
+    loginByBeepApp: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},
@@ -770,6 +783,7 @@ PayFirst.defaultProps = {
   isUserProfileStatusFulfilled: false,
   consumerId: '',
   serviceChargeRate: 0,
+  isWebview: false,
   isTNGMiniProgram: false,
 };
 
@@ -795,6 +809,7 @@ export default compose(
       consumerId: getUserConsumerId(state),
       userProfile: getUserProfile(state),
       isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
+      isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
     }),
     dispatch => ({
