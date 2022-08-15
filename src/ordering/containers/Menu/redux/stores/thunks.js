@@ -41,14 +41,12 @@ export const storeBranchSelected = createAsyncThunk(
     const currentStoreId = getStoreId(state);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-    if (_isEqual(currentStoreId, storeId)) {
-      dispatch(hideStoreListDrawer());
-      return;
-    }
+    await dispatch(hideStoreListDrawer());
+
+    if (_isEqual(currentStoreId, storeId)) return;
 
     Clevertap.pushEvent('Store List - Select different store branch', storeInfoForCleverTap);
 
     await dispatch(changeStore(storeId));
-    await dispatch(hideStoreListDrawer());
   }
 );
