@@ -134,59 +134,38 @@ const getViewProductGTMData = product => ({
 export const showProductDetailDrawer = createAsyncThunk(
   'ordering/menu/productDetail/showProductDetailDrawer',
   async ({ productId, categoryId }, { dispatch, getState }) => {
-    try {
-      const allProducts = getAllProducts(getState());
-      const allCategories = getAllCategories(getState());
-      const product = _get(allProducts, productId, null);
-      const category = _get(allCategories, categoryId, null);
-      const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
-      const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
-
-      Clevertap.pushEvent('Menu Page - Click product', {
-        ...storeInfoForCleverTap,
-        ...productCleverTapAttributes,
-      });
-
-      const result = await dispatch(appActions.loadProductDetail(productId));
-
-      Clevertap.pushEvent('Menu Page - View products', {
-        ...storeInfoForCleverTap,
-        ...productCleverTapAttributes,
-      });
-
-      const productInResult = _get(result, 'responseGql.data.product', null);
-
-      gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
-
-      return {
-        productId,
-        categoryId,
-        selectedOptionsByVariationId: getDefaultSelectedOptions(productInResult),
-      };
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-);
-
-/**
- * hide product detail drawer
- */
-export const hideProductDetailDrawer = createAsyncThunk(
-  'ordering/menu/productDetail/hideProductDetailDrawer',
-  async () => {}
-);
-
-export const productItemClicked = createAsyncThunk(
-  'productDetail/productItemClicked',
-  async ({ productId, categoryId }, { dispatch, getState }) => {
     const state = getState();
     const shouldShowProductDetailDrawer = getShouldShowProductDetailDrawer(state);
 
     if (shouldShowProductDetailDrawer) {
-      await dispatch(showProductDetailDrawer({ productId, categoryId }));
-      return null;
+      try {
+        const allProducts = getAllProducts(getState());
+        const allCategories = getAllCategories(getState());
+        const product = _get(allProducts, productId, null);
+        const category = _get(allCategories, categoryId, null);
+        const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+        const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+
+        const result = await dispatch(appActions.loadProductDetail(productId));
+
+        Clevertap.pushEvent('Menu Page - View products', {
+          ...storeInfoForCleverTap,
+          ...productCleverTapAttributes,
+        });
+
+        const productInResult = _get(result, 'responseGql.data.product', null);
+
+        gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
+
+        return {
+          productId,
+          categoryId,
+          selectedOptionsByVariationId: getDefaultSelectedOptions(productInResult),
+        };
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     }
 
     // If product detail drawer cannot be shown, pop up responding drawer
@@ -219,6 +198,34 @@ export const productItemClicked = createAsyncThunk(
       logger.error('ordering.menu.show-product-detail-drawer-failure', { message: e?.message });
       throw e;
     }
+  }
+);
+
+/**
+ * hide product detail drawer
+ */
+export const hideProductDetailDrawer = createAsyncThunk(
+  'ordering/menu/productDetail/hideProductDetailDrawer',
+  async () => {}
+);
+
+export const productItemClicked = createAsyncThunk(
+  'productDetail/productItemClicked',
+  async ({ productId, categoryId }, { dispatch, getState }) => {
+    const state = getState();
+    const allProducts = getAllProducts(state);
+    const allCategories = getAllCategories(state);
+    const product = _get(allProducts, productId, null);
+    const category = _get(allCategories, categoryId, null);
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+    const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+
+    Clevertap.pushEvent('Menu Page - Click product', {
+      ...storeInfoForCleverTap,
+      ...productCleverTapAttributes,
+    });
+
+    await dispatch(showProductDetailDrawer({ productId, categoryId }));
   }
 );
 
