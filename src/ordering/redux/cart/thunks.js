@@ -6,7 +6,12 @@ import Constants from '../../../utils/constants';
 import { alert } from '../../../common/feedback';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
-import { getCartVersion, getCartSource, getCartItems, getIsCartSubmissionStatusFinished } from './selectors';
+import {
+  getCartVersion,
+  getCartSource,
+  getCartItems,
+  getIsCartSubmissionStatusQueryPollingStoppable,
+} from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
   fetchCart,
@@ -282,9 +287,9 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
 
         await dispatch(loadCartSubmissionStatus(submissionId));
 
-        const isCartSubmissionStatusFinished = getIsCartSubmissionStatusFinished(getState());
+        const isCartSubmissionStatusQueryPollingStoppable = getIsCartSubmissionStatusQueryPollingStoppable(getState());
 
-        if (isCartSubmissionStatusFinished) {
+        if (isCartSubmissionStatusQueryPollingStoppable) {
           clearTimeout(queryCartSubmissionStatus.timer);
           logger.log('cart.polling-cart-submission-status', { action: 'stop', reason: 'finished', submissionId });
           return;
