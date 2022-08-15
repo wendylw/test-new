@@ -6,7 +6,7 @@ import Constants from '../../../utils/constants';
 import { alert } from '../../../common/feedback';
 import { getBusinessUTCOffset } from '../modules/app';
 import { CART_SUBMISSION_STATUS } from './constants';
-import { getCartVersion, getCartSource, getCartItems } from './selectors';
+import { getCartVersion, getCartSource, getCartItems, getCartSubmissionStatus } from './selectors';
 import { actions as cartActionCreators } from '.';
 import {
   fetchCart,
@@ -265,7 +265,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
   }
 );
 
-export const queryCartSubmissionStatus = submissionId => dispatch => {
+export const queryCartSubmissionStatus = submissionId => (dispatch, getState) => {
   logger.log('cart.polling-cart-submission-status', { action: 'start', submissionId });
   const targetTimestamp = Date.parse(new Date()) + TIMEOUT_CART_SUBMISSION_TIME;
 
@@ -280,9 +280,11 @@ export const queryCartSubmissionStatus = submissionId => dispatch => {
           return;
         }
 
-        const submission = await dispatch(loadCartSubmissionStatus(submissionId)).unwrap();
+        await dispatch(loadCartSubmissionStatus(submissionId));
 
-        if (submission.status !== CART_SUBMISSION_STATUS.PENDING) {
+        const submissionStatus = getCartSubmissionStatus(getState());
+
+        if (submissionStatus === CART_SUBMISSION_STATUS.COMPLETED) {
           clearTimeout(queryCartSubmissionStatus.timer);
           logger.log('cart.polling-cart-submission-status', { action: 'stop', reason: 'finished', submissionId });
           return;
