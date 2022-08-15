@@ -16,7 +16,7 @@ import {
   getIsLocationDrawerVisible,
   getIsPickUpType,
 } from '../../redux/common/selectors';
-import { showLocationDrawer, hideLocationDrawer } from '../../redux/common/thunks';
+import { showLocationDrawer, locationDrawerClosed } from '../../redux/common/thunks';
 import {
   getHasStoreInfoInitialized,
   getAddressListInfo,
@@ -68,8 +68,8 @@ const MenuAddressDropdown = () => {
       dispatch(showLocationDrawer());
     }
   }, [isPickUpType, dispatch]);
-  const onHandleHideLocationDrawer = useCallback(() => {
-    dispatch(hideLocationDrawer());
+  const onHandleCloseLocationDrawer = useCallback(() => {
+    dispatch(locationDrawerClosed());
   }, [dispatch]);
   const locationTitle = isPickUpType
     ? t(LOCATION_TITLE_KEYS[shippingType])
@@ -131,7 +131,7 @@ const MenuAddressDropdown = () => {
         searchLocationList={searchLocationList}
         isSearchLocationListVisible={isSearchLocationListVisible}
         isEmptyList={!isAddressListVisible && !isLocationHistoryListVisible && !isSearchLocationListVisible}
-        onClose={onHandleHideLocationDrawer}
+        onClose={onHandleCloseLocationDrawer}
         onSelectAddress={selectedAddressInfo => {
           const { deliveryTo: fullName, postCode, city } = selectedAddressInfo;
 

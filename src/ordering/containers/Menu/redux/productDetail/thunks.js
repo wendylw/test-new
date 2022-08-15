@@ -34,6 +34,7 @@ import {
   showStoreListDrawer,
   showTimeSlotDrawer,
   saveSelectedProductItemInfo,
+  cleanUpSelectedProductItemInfoIfNeeded,
 } from '../common/thunks';
 import { getHasSelectedExpectedDeliveryTime, getShouldShowProductDetailDrawer } from '../common/selectors';
 import logger from '../../../../../utils/monitoring/logger';
@@ -138,6 +139,9 @@ export const showProductDetailDrawer = createAsyncThunk(
     const shouldShowProductDetailDrawer = getShouldShowProductDetailDrawer(state);
 
     if (shouldShowProductDetailDrawer) {
+      // Immediately clean up the selected product item info to avoid duplicate dispatch thunks
+      await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
+
       try {
         const allProducts = getAllProducts(getState());
         const allCategories = getAllCategories(getState());

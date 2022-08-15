@@ -11,7 +11,7 @@ import {
   getSelectedTimeDisplayValue,
   getTimeSlotDrawerVisible,
 } from '../../redux/common/selectors';
-import { showTimeSlotDrawer, hideTimeSlotDrawer } from '../../redux/common/thunks';
+import { showTimeSlotDrawer, timeSlotDrawerClosed } from '../../redux/common/thunks';
 import {
   getIsOnlyPreOrder,
   getSelectedShippingType as getSelectedShippingTypeForDrawer,
@@ -140,7 +140,7 @@ const TimeSlotDropdown = () => {
           isSaveButtonDisabled={isSaveButtonDisabled}
           isInitializing={isInitializing}
           onClose={() => {
-            dispatch(hideTimeSlotDrawer());
+            dispatch(timeSlotDrawerClosed());
           }}
           changeShippingType={value => {
             dispatch(changeShippingType(value));

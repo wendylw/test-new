@@ -111,10 +111,17 @@ export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLoc
   Clevertap.pushEvent('Menu page - Click delivery location', storeInfoForCleverTap);
 });
 
-export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', (_, { dispatch }) => {
+export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {
   Clevertap.pushEvent('Location Page - Click back');
-  dispatch(cleanUpSelectedProductItemInfoIfNeeded());
 });
+
+export const locationDrawerClosed = createAsyncThunk(
+  'ordering/menu/common/locationDrawerClosed',
+  async (_, { dispatch }) => {
+    await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
+    await dispatch(hideLocationDrawer());
+  }
+);
 
 /**
  * @params expectedDate: null | ISO string format | now
@@ -615,10 +622,17 @@ export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTim
   Clevertap.pushEvent('Menu page - Click timeslot', storeInfoForCleverTap);
 });
 
-export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', (_, { dispatch }) => {
+export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {
   Clevertap.pushEvent('Timeslot - back');
-  dispatch(cleanUpSelectedProductItemInfoIfNeeded());
 });
+
+export const timeSlotDrawerClosed = createAsyncThunk(
+  'ordering/menu/common/timeSlotDrawerClosed',
+  async (_, { dispatch }) => {
+    await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
+    await dispatch(hideTimeSlotDrawer());
+  }
+);
 
 export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', (_, { getState }) => {
   const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
@@ -626,10 +640,17 @@ export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showSt
   Clevertap.pushEvent('Menu page - Click store list', storeInfoForCleverTap);
 });
 
-export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', (_, { dispatch }) => {
+export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {
   Clevertap.pushEvent('Store List - Back');
-  dispatch(cleanUpSelectedProductItemInfoIfNeeded());
 });
+
+export const storeListDrawerClosed = createAsyncThunk(
+  'ordering/menu/common/StoreListDrawerClosed',
+  async (_, { dispatch }) => {
+    await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
+    await dispatch(hideStoreListDrawer());
+  }
+);
 
 export const showLocationConfirmModal = createAsyncThunk('ordering/menu/common/showLocationConfirmModal', () => {});
 

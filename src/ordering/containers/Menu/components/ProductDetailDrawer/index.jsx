@@ -14,6 +14,7 @@ import styles from './ProductDetailDrawer.module.scss';
 import Button from '../../../../../common/components/Button';
 import Tag from '../../../../../common/components/Tag';
 import IconBestSellerImage from '../../../../../images/bestseller.svg';
+import { getSelectedProductItemInfo, getShouldShowProductDetailDrawer } from '../../redux/common/selectors';
 import {
   getIsProductDetailDrawerVisible,
   getIsProductDetailLoading,
@@ -27,6 +28,7 @@ import {
   getIsOutOfStockProduct,
 } from '../../redux/productDetail/selectors';
 import {
+  showProductDetailDrawer,
   hideProductDetailDrawer,
   increaseProductQuantity,
   decreaseProductQuantity,
@@ -65,10 +67,18 @@ const ProductDetailDrawer = () => {
   const isAbleAddCart = useSelector(getIsAbleAddToCart);
   const unableAddToCartReason = useSelector(getUnableAddToCartReason);
   const isOutOfStockProduct = useSelector(getIsOutOfStockProduct);
+  const selectedProductItemInfo = useSelector(getSelectedProductItemInfo);
+  const shouldShowProductDetailDrawer = useSelector(getShouldShowProductDetailDrawer);
 
   const contentRef = useRef();
   const imageSectionRef = useRef();
   const [showTopArrow, setShowTopArrow] = useState(false);
+
+  useEffect(() => {
+    if (shouldShowProductDetailDrawer) {
+      dispatch(showProductDetailDrawer(selectedProductItemInfo));
+    }
+  }, [dispatch, shouldShowProductDetailDrawer, selectedProductItemInfo]);
 
   useEffect(() => {
     if (!isDrawerVisible) {
