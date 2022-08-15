@@ -9,6 +9,7 @@ import {
 } from '../../../../redux/modules/app';
 import { hideStoreListDrawer, changeStore } from '../common/thunks';
 import Clevertap from '../../../../../utils/clevertap';
+import logger from '../../../../../utils/monitoring/logger';
 
 /**
  * Store branch drawer shown
@@ -41,12 +42,19 @@ export const storeBranchSelected = createAsyncThunk(
     const currentStoreId = getStoreId(state);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-    await dispatch(hideStoreListDrawer());
-
-    if (_isEqual(currentStoreId, storeId)) return;
+    if (_isEqual(currentStoreId, storeId)) {
+      await dispatch(hideStoreListDrawer());
+      return;
+    }
 
     Clevertap.pushEvent('Store List - Select different store branch', storeInfoForCleverTap);
 
-    await dispatch(changeStore(storeId));
+    try {
+      await dispatch(changeStore(storeId)).unwrap();
+      await dispatch(hideStoreListDrawer());
+    } catch (e) {
+      logger.error('ordering.menu.select-store-branch-failure', { message: e?.message });
+      throw e;
+    }
   }
 );

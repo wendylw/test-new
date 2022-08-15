@@ -241,11 +241,14 @@ export const locationSelected = createAsyncThunk(
       const storeId = _get(store, 'id', null);
 
       await dispatch(setAddressInfo(addressInfo));
+
+      if (_isEqual(currentStoreId, storeId)) {
+        await dispatch(hideLocationDrawer());
+        return;
+      }
+
+      await dispatch(changeStore(storeId)).unwrap();
       await dispatch(hideLocationDrawer());
-
-      if (_isEqual(currentStoreId, storeId)) return;
-
-      await dispatch(changeStore(storeId));
     } catch (e) {
       logger.error(`Failed to select location: ${e?.message}`);
       throw e;

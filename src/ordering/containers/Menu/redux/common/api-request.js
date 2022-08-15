@@ -5,3 +5,5 @@ export const fetchStoreFavStatus = ({ consumerId, storeId }) =>
 
 export const saveStoreFavStatus = ({ consumerId, storeId, isFavorite }) =>
   post(`/api/consumers/${consumerId}/favorites/stores/${storeId}/status`, { isFavorite });
+
+export const setSelectedStore = h => post(`/api/ordering/stores/selected?h=${h}`);
