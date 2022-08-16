@@ -84,11 +84,16 @@ const ensureShippingType = () => {
 
 export const showStoreInfoDrawer = createAsyncThunk('ordering/menu/common/showStoreInfoDrawer', async () => {});
 
+// FB-4011: We need to save the user's current selected product item information to the redux store. This data is used for:
+// 1. As one of the conditions to re-dispatch showProductDetailDrawer thunk when possible
+// 2. As a request payload to fetch product details before showing the product detail drawer
 export const saveSelectedProductItemInfo = createAsyncThunk(
   'ordering/menu/productDetail/saveSelectedProductItemInfo',
   async itemInfo => itemInfo
 );
 
+// FB-4011: We need to clear the user's current selected product item information from the redux store.
+// Once the user dismisses our modal/drawers during the new workflow journey, we will clear this information to avoid popping up the product detail drawer at the wrong time.
 export const clearSelectedProductItemInfo = createAsyncThunk(
   'ordering/menu/productDetail/clearSelectedProductItemInfo',
   async () => {}
