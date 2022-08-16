@@ -8,7 +8,18 @@ import logger from '../../../utils/monitoring/logger';
 
 const Alert = forwardRef(props => {
   const { t } = useTranslation();
-  const { children, show, animation, closeButtonContent, className, zIndex, onClose } = props;
+  const {
+    children,
+    show,
+    mountAtRoot,
+    animation,
+    closeButtonContent,
+    className,
+    closeButtonClassName,
+    closeButtonStyle,
+    zIndex,
+    onClose,
+  } = props;
   const contentContainerRef = useRef(null);
 
   useEffect(() => {
@@ -22,17 +33,22 @@ const Alert = forwardRef(props => {
   return (
     <Modal
       show={show}
+      mountAtRoot={mountAtRoot}
       className={`${styles.alertContent}${className ? ` ${className}` : ''}`}
       onClose={onClose}
       closeByBackButton={false}
       closeByBackDrop={false}
       animation={animation}
       zIndex={zIndex}
-      disableBackButtonSupport
     >
       <div ref={contentContainerRef}>{children}</div>
       <div className={styles.alertFooter}>
-        <Button type="primary" className="tw-w-full tw-uppercase" onClick={onClose}>
+        <Button
+          type="primary"
+          className={`tw-w-full tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
+          onClick={onClose}
+          style={closeButtonStyle}
+        >
           {closeButtonContent || t('OK')}
         </Button>
       </div>
@@ -46,8 +62,12 @@ Alert.propTypes = {
   children: PropTypes.node,
   show: PropTypes.bool,
   animation: PropTypes.bool,
+  mountAtRoot: PropTypes.bool,
   closeButtonContent: PropTypes.node,
   className: PropTypes.string,
+  closeButtonClassName: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  closeButtonStyle: PropTypes.object,
   zIndex: PropTypes.number,
   onClose: PropTypes.func,
 };
@@ -56,8 +76,11 @@ Alert.defaultProps = {
   children: null,
   show: false,
   animation: true,
+  mountAtRoot: false,
   closeButtonContent: null,
   className: '',
+  closeButtonClassName: '',
+  closeButtonStyle: {},
   zIndex: 300,
   onClose: () => {},
 };
