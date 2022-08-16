@@ -214,7 +214,7 @@ export const hideProductDetailDrawer = createAsyncThunk(
 );
 
 export const productItemClicked = createAsyncThunk(
-  'productDetail/productItemClicked',
+  'ordering/menu/productDetail/productItemClicked',
   async ({ productId, categoryId }, { dispatch, getState }) => {
     const state = getState();
     const allProducts = getAllProducts(state);
