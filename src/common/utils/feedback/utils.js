@@ -20,14 +20,14 @@ export class BeepError extends Error {
   statusCode = 400;
 
   constructor(message, options = {}) {
-    const { code, statusCode, ...resetOptions } = options;
+    const { code, status, extraInfo } = options;
     super(message);
 
     Object.setPrototypeOf(this, BeepError.prototype);
 
-    this.code = options.code;
-    this.statusCode = options.statusCode;
-    this.extraInfo = resetOptions;
+    this.code = code;
+    this.statusCode = status;
+    this.extraInfo = extraInfo;
   }
 
   getErrorCode() {
