@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransition } from 'react-transition-group';
-import { CheckCircle, WarningCircle } from 'phosphor-react';
+import { CheckCircle, WarningCircle, Info } from 'phosphor-react';
 import './toast-animation.scss';
 import styles from './Toast.module.scss';
 import logger from '../../../utils/monitoring/logger';
@@ -21,6 +21,7 @@ const MESSAGE_TYPE_MAPPING = {
   },
   info: {
     key: 'info',
+    icon: <Info className={styles.ToastIcon} weight="fill" />,
   },
 };
 const DEFAULT_DURATION = 3000;
