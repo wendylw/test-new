@@ -28,7 +28,6 @@ import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks
 import { getIsAddressOutOfRange } from '../common/selectors';
 import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
-import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../common/utils/constants';
 import { BeepError } from '../../../../../common/utils/feedback/utils';
 import logger from '../../../../../utils/monitoring/logger';
 import { toast } from '../../../../../common/feedback';
@@ -217,9 +216,7 @@ export const selectLocation = createAsyncThunk(
       if (_isEmpty(store) || deliveryDistance > deliveryRadius) {
         toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions));
 
-        throw new BeepError('no available store according to the current time or delivery range', {
-          code: ERROR_CODES.OUT_OF_DELIVERY_RANGE,
-        });
+        throw new BeepError('no available store according to the current time or delivery range');
       }
 
       const storeId = _get(store, 'id', null);
@@ -242,6 +239,7 @@ export const loadSearchLocationListData = createAsyncThunk(
     if (_isEmpty(searchKey)) {
       return [];
     }
+
     try {
       const state = getState();
       const storeInfo = getStoreInfoData(state);
@@ -249,7 +247,7 @@ export const loadSearchLocationListData = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logger.error('failed to load search location list data', e);
+      logger.error('failed to load search location list data in ordering', e);
 
       return [];
     }
