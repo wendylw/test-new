@@ -1,5 +1,4 @@
 import _get from 'lodash/get';
-import _debounce from 'lodash/debounce';
 import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
 import _isEqual from 'lodash/isEqual';
@@ -30,17 +29,9 @@ import { getIsAddressOutOfRange } from '../common/selectors';
 import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../common/utils/constants';
+import { BeepError } from '../../../../../common/utils/feedback/utils';
 import logger from '../../../../../utils/monitoring/logger';
 import { toast } from '../../../../../common/feedback';
-
-class LocationSelectedError extends Error {
-  constructor(message, code) {
-    super(message);
-
-    this.name = 'LocationSelectedError';
-    this.code = code;
-  }
-}
 
 export const checkDeliveryRange = createAsyncThunk(
   'ordering/menu/address/checkDeliveryRange',
@@ -53,7 +44,6 @@ export const checkDeliveryRange = createAsyncThunk(
 
     toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
       type: 'error',
-      duration: 4500,
     });
   }
 );
@@ -200,10 +190,11 @@ export const selectLocation = createAsyncThunk(
       if (_isEmpty(coords)) {
         toast(i18next.t(`OrderingDelivery:AddressNotFound`), {
           type: 'error',
-          duration: 4500,
         });
 
-        throw new LocationSelectedError('address coordination is not found', ERROR_CODES.ADDRESS_NOT_FOUND);
+        throw new BeepError('address coordination is not found', {
+          code: ERROR_CODES.ADDRESS_NOT_FOUND,
+        });
       }
 
       let stores = getCoreStoreList(state);
@@ -228,13 +219,11 @@ export const selectLocation = createAsyncThunk(
       if (_isEmpty(store) || deliveryDistance > deliveryRadius) {
         toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
           type: 'error',
-          duration: 4500,
         });
 
-        throw new LocationSelectedError(
-          'no available store according to the current time or delivery range',
-          ERROR_CODES.OUT_OF_DELIVERY_RANGE
-        );
+        throw new BeepError('no available store according to the current time or delivery range', {
+          code: ERROR_CODES.OUT_OF_DELIVERY_RANGE,
+        });
       }
 
       const storeId = _get(store, 'id', null);
@@ -242,7 +231,7 @@ export const selectLocation = createAsyncThunk(
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
-      logger.error(`Failed to select location: ${e?.message}`);
+      logger.error(`Failed to select location: ${e?.getErrorMessage()}`);
       throw e;
     }
   }

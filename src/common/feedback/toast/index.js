@@ -8,7 +8,7 @@ const normalizeToastOptions = options => ({
   container: document.body,
   icon: null,
   type: null,
-  duration: 3000,
+  duration: 4500,
   show: true,
   className: '',
   style: {},

@@ -15,3 +15,26 @@ export const destroyTarget = target => {
 
   target.remove();
 };
+
+export class BeepError extends Error {
+  statusCode = 400;
+
+  constructor(message, options = {}) {
+    const { code, statusCode, ...resetOptions } = options;
+    super(message);
+
+    Object.setPrototypeOf(this, BeepError.prototype);
+
+    this.code = options.code;
+    this.statusCode = options.statusCode;
+    this.extraInfo = resetOptions;
+  }
+
+  getErrorCode() {
+    return this.code;
+  }
+
+  getErrorMessage() {
+    return this.message;
+  }
+}
