@@ -16,7 +16,7 @@ import {
   getIsLocationDrawerVisible,
   getIsPickUpType,
 } from '../../redux/common/selectors';
-import { showLocationDrawer, locationDrawerClosed } from '../../redux/common/thunks';
+import { locationDrawerOpened, locationDrawerClosed } from '../../redux/common/thunks';
 import {
   getHasStoreInfoInitialized,
   getAddressListInfo,
@@ -63,9 +63,9 @@ const MenuAddressDropdown = () => {
   const locationHistoryList = useSelector(getLocationHistoryListInfo);
   const storeInfoForCleverTap = useSelector(getStoreInfoForCleverTap);
 
-  const onHandleShowLocationDrawer = useCallback(() => {
+  const onHandleOpenLocationDrawer = useCallback(() => {
     if (!isPickUpType) {
-      dispatch(showLocationDrawer());
+      dispatch(locationDrawerOpened());
     }
   }, [isPickUpType, dispatch]);
   const onHandleCloseLocationDrawer = useCallback(() => {
@@ -108,7 +108,7 @@ const MenuAddressDropdown = () => {
     <div className="tw-flex-1">
       <button
         className={`${styles.addressDropdownButton}${isPickUpType ? '' : ' tw-cursor-pointer'}`}
-        onClick={onHandleShowLocationDrawer}
+        onClick={onHandleOpenLocationDrawer}
       >
         <div className="tw-flex tw-items-center">
           <LocationAndAddressIcon />

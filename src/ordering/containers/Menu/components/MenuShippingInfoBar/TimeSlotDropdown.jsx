@@ -11,7 +11,7 @@ import {
   getSelectedTimeDisplayValue,
   getTimeSlotDrawerVisible,
 } from '../../redux/common/selectors';
-import { showTimeSlotDrawer, timeSlotDrawerClosed } from '../../redux/common/thunks';
+import { timeSlotDrawerOpened, timeSlotDrawerClosed } from '../../redux/common/thunks';
 import {
   getIsOnlyPreOrder,
   getSelectedShippingType as getSelectedShippingTypeForDrawer,
@@ -113,7 +113,7 @@ const TimeSlotDropdown = () => {
           className={styles.timeSlotDropdownButton}
           disabled={!isTimeSlotAvailable}
           onClick={() => {
-            dispatch(showTimeSlotDrawer());
+            dispatch(timeSlotDrawerOpened());
           }}
         >
           <div className="tw-flex tw-items-center">

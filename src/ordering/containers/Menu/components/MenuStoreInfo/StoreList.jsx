@@ -8,7 +8,7 @@ import {
   getIsQrOrderingShippingType,
   getIsDeliveryType,
 } from '../../redux/common/selectors';
-import { showStoreListDrawer, storeListDrawerClosed } from '../../redux/common/thunks';
+import { storeListDrawerOpened, storeListDrawerClosed } from '../../redux/common/thunks';
 import { getHasStoreListInitialized, getStoreList, getTotalOutlet } from '../../redux/stores/selectors';
 import { storeDrawerShown, storeDrawerHidden, storeBranchSelected } from '../../redux/stores/thunks';
 import StoreListDrawer from '../../../../components/StoreListDrawer';
@@ -48,7 +48,7 @@ const StoreList = () => {
           <button
             className={styles.storeListDropdownButton}
             onClick={() => {
-              dispatch(showStoreListDrawer());
+              dispatch(storeListDrawerOpened());
             }}
           >
             <span className={styles.storeListSubtitle}>{storeDisplaySubTitle}</span>

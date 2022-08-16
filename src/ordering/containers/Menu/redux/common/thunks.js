@@ -110,19 +110,24 @@ export const cleanUpSelectedProductItemInfoIfNeeded = createAsyncThunk(
   }
 );
 
-export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLocationDrawer', (_, { getState }) => {
-  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLocationDrawer', () => {});
 
-  Clevertap.pushEvent('Menu page - Click delivery location', storeInfoForCleverTap);
-});
+export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {});
 
-export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {
-  Clevertap.pushEvent('Location Page - Click back');
-});
+export const locationDrawerOpened = createAsyncThunk(
+  'ordering/menu/common/locationDrawerOpened',
+  async (_, { getState, dispatch }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Menu page - Click delivery location', storeInfoForCleverTap);
+    await dispatch(showLocationDrawer());
+  }
+);
 
 export const locationDrawerClosed = createAsyncThunk(
   'ordering/menu/common/locationDrawerClosed',
   async (_, { dispatch }) => {
+    Clevertap.pushEvent('Location Page - Click back');
     await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
     await dispatch(hideLocationDrawer());
   }
@@ -621,37 +626,47 @@ export const shareStore = createAsyncThunk('ordering/menu/common/shareStore', as
 
 export const hideStoreInfoDrawer = createAsyncThunk('ordering/menu/common/hideStoreInfoDrawer', async () => {});
 
-export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', (_, { getState }) => {
-  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', () => {});
 
-  Clevertap.pushEvent('Menu page - Click timeslot', storeInfoForCleverTap);
-});
+export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {});
 
-export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {
-  Clevertap.pushEvent('Timeslot - back');
-});
+export const timeSlotDrawerOpened = createAsyncThunk(
+  'ordering/menu/common/timeSlotDrawerOpened',
+  async (_, { getState, dispatch }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Menu page - Click timeslot', storeInfoForCleverTap);
+    await dispatch(showTimeSlotDrawer());
+  }
+);
 
 export const timeSlotDrawerClosed = createAsyncThunk(
   'ordering/menu/common/timeSlotDrawerClosed',
   async (_, { dispatch }) => {
+    Clevertap.pushEvent('Timeslot - back');
     await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
     await dispatch(hideTimeSlotDrawer());
   }
 );
 
-export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', (_, { getState }) => {
-  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', () => {});
 
-  Clevertap.pushEvent('Menu page - Click store list', storeInfoForCleverTap);
-});
+export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {});
 
-export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {
-  Clevertap.pushEvent('Store List - Back');
-});
+export const storeListDrawerOpened = createAsyncThunk(
+  'ordering/menu/common/storeListDrawerOpened',
+  async (_, { getState, dispatch }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Menu page - Click store list', storeInfoForCleverTap);
+    await dispatch(showStoreListDrawer());
+  }
+);
 
 export const storeListDrawerClosed = createAsyncThunk(
   'ordering/menu/common/StoreListDrawerClosed',
   async (_, { dispatch }) => {
+    Clevertap.pushEvent('Store List - Back');
     await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
     await dispatch(hideStoreListDrawer());
   }
