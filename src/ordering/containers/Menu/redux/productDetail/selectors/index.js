@@ -473,7 +473,7 @@ export const getIfShowVariations = createSelector(
   productDetailData => productDetailData.variations.length
 );
 
-export const getShouldShowProductDetailDrawer = createSelector(
+export const getCouldShowProductDetailDrawer = createSelector(
   getIsProductListReady,
   getTimeSlotDrawerVisible,
   getIsLocationDrawerVisible,
