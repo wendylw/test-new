@@ -82,7 +82,7 @@ export const locationDrawerShown = createAsyncThunk(
       const deliveryRadius = getDeliveryRadius(getState());
 
       if (!_isNumber(deliveryRadius)) {
-        throw new Error('delivery radius is incorrect.');
+        throw new BeepError('delivery radius is incorrect.');
       }
 
       if (_isEmpty(storeId)) {
@@ -95,7 +95,7 @@ export const locationDrawerShown = createAsyncThunk(
       // FB-4039: we need to be aware that there is a possibility that the store cannot be found.
       // This issue has already been raised in production and we should take time to further investigate.
       if (_isEmpty(store)) {
-        throw new Error('store is not found.');
+        throw new BeepError('store is not found.');
       }
 
       const coords = {
@@ -104,7 +104,7 @@ export const locationDrawerShown = createAsyncThunk(
       };
 
       if (!_isNumber(coords.lat) || !_isNumber(coords.lng)) {
-        throw new Error('store coordinates is incorrect.');
+        throw new BeepError('store coordinates is incorrect.');
       }
 
       return {
@@ -192,9 +192,7 @@ export const selectLocation = createAsyncThunk(
           type: 'error',
         });
 
-        throw new BeepError('address coordination is not found', {
-          code: ERROR_CODES.ADDRESS_NOT_FOUND,
-        });
+        throw new BeepError('address coordination is not found');
       }
 
       let stores = getCoreStoreList(state);
@@ -217,9 +215,7 @@ export const selectLocation = createAsyncThunk(
       const deliveryDistance = (distance / 1000).toFixed(2);
 
       if (_isEmpty(store) || deliveryDistance > deliveryRadius) {
-        toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
-          type: 'error',
-        });
+        toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions));
 
         throw new BeepError('no available store according to the current time or delivery range', {
           code: ERROR_CODES.OUT_OF_DELIVERY_RANGE,
@@ -231,7 +227,7 @@ export const selectLocation = createAsyncThunk(
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
-      logger.error(`Failed to select location: ${e?.getErrorMessage()}`);
+      logger.error(`Failed to select location: ${e?.message}`);
       throw e;
     }
   }
