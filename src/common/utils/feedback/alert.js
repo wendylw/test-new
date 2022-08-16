@@ -10,6 +10,7 @@ import AlertContent from '../../components/Alert/AlertContent';
  * */
 const alertOptions = ({
   container = document.body,
+  title = null,
   customizeContent = false,
   animation = true,
   closeButtonContent = null,
@@ -20,6 +21,7 @@ const alertOptions = ({
   onClose = () => {},
 }) => ({
   container,
+  title,
   customizeContent,
   animation,
   closeButtonContent,
@@ -34,12 +36,15 @@ const createAlert = (content, options) =>
   new Promise(resolve => {
     const { container, customizeContent, title, onClose, ...restOptions } = options;
     const rootDOM = document.createElement('div');
-    // eslint-disable-next-line react/jsx-filename-extension
-    const children = customizeContent ? content : <AlertContent content={content} title={title} />;
+    const children = customizeContent ? (
+      content
+    ) : (
+      // eslint-disable-next-line react/jsx-filename-extension
+      <AlertContent content={content} title={title} />
+    );
     const alertInstance = React.createElement(
       Alert,
       {
-        title,
         ...restOptions,
         show: true,
         mountAtRoot: false,

@@ -1,8 +1,8 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './AlertContent.module.scss';
 
-const AlertContent = forwardRef(props => {
+const AlertContent = props => {
   const { content, title, style } = props;
 
   return (
@@ -15,7 +15,7 @@ const AlertContent = forwardRef(props => {
       ) : null}
     </div>
   );
-});
+};
 
 AlertContent.displayName = 'AlertContent';
 

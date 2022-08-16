@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, forwardRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import Modal from '../Modal';
@@ -6,7 +6,7 @@ import Button from '../Button';
 import styles from './Alert.module.scss';
 import logger from '../../../utils/monitoring/logger';
 
-const Alert = forwardRef(props => {
+const Alert = props => {
   const { t } = useTranslation();
   const {
     children,
@@ -54,7 +54,7 @@ const Alert = forwardRef(props => {
       </div>
     </Modal>
   );
-});
+};
 
 Alert.displayName = 'Alert';
 

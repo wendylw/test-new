@@ -1,10 +1,22 @@
 .ToastContent {
-  @apply tw-flex tw-items-start tw-justify-center tw-py-4 sm:tw-py-4px tw-px-8 sm:tw-px-8px tw-text-sm tw-rounded-xl;
+  @apply tw-flex tw-items-start tw-justify-center tw-py-4 sm:tw-py-4px tw-px-8 sm:tw-px-8px tw-text-sm tw-text-white tw-rounded-xl;
 
   height: auto;
 
+  &:global(.success) {
+    @apply tw-bg-green;
+  }
+
   &:global(.error) {
-    @apply tw-bg-red tw-text-white;
+    @apply tw-bg-red;
+  }
+
+  &:global(.warning) {
+    @apply tw-bg-yellow;
+  }
+
+  &:global(.info) {
+    @apply tw-bg-blue;
   }
 }
 
