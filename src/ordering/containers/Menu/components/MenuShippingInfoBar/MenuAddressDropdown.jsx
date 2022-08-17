@@ -8,13 +8,15 @@ import { useTranslation } from 'react-i18next';
 import { CaretDown } from 'phosphor-react';
 import { LocationAndAddressIcon } from '../../../../../common/components/Icons';
 import AddressLocationDrawer from '../../../../components/AddressLocationDrawer';
+import { confirm } from '../../../../../common/utils/feedback';
+import { CONFIRM_BUTTON_ALIGNMENT } from '../../../../../common/utils/feedback/utils';
 import {
   getSelectedLocationDisplayName,
   getShippingType,
   getStoreLocationStreetForPickup,
   getIsLocationDrawerVisible,
   getIsPickUpType,
-  // getIsLocationConfirmModalVisible,
+  getIsLocationConfirmModalVisible,
 } from '../../redux/common/selectors';
 import { locationDrawerOpened, locationDrawerClosed } from '../../redux/common/thunks';
 import {
@@ -33,6 +35,7 @@ import {
   loadPlaceInfo,
   updateSearchLocationList,
 } from '../../redux/address/thunks';
+import { addAddressButtonClicked, noThanksButtonClicked } from '../../redux/locationModal/thunks';
 import styles from './MenuAddressDropdown.module.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import { getStoreInfoForCleverTap } from '../../../../redux/modules/app';
@@ -62,7 +65,7 @@ const MenuAddressDropdown = () => {
   const isLocationHistoryListVisible = useSelector(getIsLocationHistoryListVisible) && !isSearchLocationListVisible;
   const locationHistoryList = useSelector(getLocationHistoryListInfo);
   const storeInfoForCleverTap = useSelector(getStoreInfoForCleverTap);
-  // const isLocationConfirmModalVisible = useSelector(getIsLocationConfirmModalVisible);
+  const isLocationConfirmModalVisible = useSelector(getIsLocationConfirmModalVisible);
 
   const onHandleOpenLocationDrawer = useCallback(() => {
     if (!isPickUpType) {
@@ -93,6 +96,34 @@ const MenuAddressDropdown = () => {
     // only run when isLocationDrawerVisible changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLocationDrawerVisible]);
+
+  useEffect(() => {
+    if (isLocationConfirmModalVisible) {
+      confirm(
+        <div className="tw-justify-center">
+          <img src="" alt="" />
+          <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">
+            {t('AddAddressConfirmTitle')}
+          </h4>
+          <div className="tw-flex tw-justify-center tw-mt-4 sm:tw-mt-4px tw-mb-8 sm:tw-mb-8px tw-leading-relaxed tw-text-gray-700">
+            {t('AddAddressConfirmDescription')}
+          </div>
+        </div>,
+        {
+          customizeContent: true,
+          buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.VERTICAL,
+          closeButtonContent: t('NoThanks'),
+          confirmButtonContent: t('AddAddress'),
+          onConfirm: () => {
+            dispatch(addAddressButtonClicked());
+          },
+          onClose: () => {
+            dispatch(noThanksButtonClicked());
+          },
+        }
+      );
+    }
+  }, [dispatch, isLocationConfirmModalVisible, t]);
 
   const handleSearchKeywordChanged = useCallback(
     async searchKey => {

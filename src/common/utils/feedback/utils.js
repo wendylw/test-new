@@ -12,6 +12,11 @@ export const FEEDBACK_STATUS = {
 
 export const TOAST_DEFAULT_DURATION = 4500;
 
+export const CONFIRM_BUTTON_ALIGNMENT = {
+  VERTICAL: 'vertical',
+  HORIZONTAL: 'horizontal',
+};
+
 export const destroyTarget = target => {
   ReactDOM.unmountComponentAtNode(target);
 
