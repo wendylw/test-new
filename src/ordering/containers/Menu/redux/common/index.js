@@ -146,10 +146,10 @@ export const { reducer, actions } = createSlice({
     [hideStoreListDrawer.fulfilled.type]: state => {
       state.storeListDrawerVisible = false;
     },
-    [showLocationConfirmModal]: state => {
+    [showLocationConfirmModal.fulfilled.type]: state => {
       state.locationConfirmModalVisible = true;
     },
-    [hideLocationConfirmModal]: state => {
+    [hideLocationConfirmModal.fulfilled.type]: state => {
       state.locationConfirmModalVisible = false;
     },
     [saveSelectedProductItemInfo.fulfilled.type]: (state, { payload }) => {
