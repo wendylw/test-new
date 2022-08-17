@@ -22,6 +22,7 @@ import {
   getIsInAppOrMiniProgram,
   getURLQueryObject,
   getStoreSupportShippingTypes,
+  getFoodTagsForCleverTap,
 } from '../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -375,8 +376,12 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
     }
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+    const foodTagsForCleverTap = getFoodTagsForCleverTap(getState());
 
-    Clevertap.pushEvent('Menu Page - View page', storeInfoForCleverTap);
+    Clevertap.pushEvent('Menu Page - View page', {
+      ...storeInfoForCleverTap,
+      foodTags: foodTagsForCleverTap,
+    });
 
     if (isBeepQR) {
       // Get EnablePayLater after core business loaded

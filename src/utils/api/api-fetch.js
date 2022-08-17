@@ -119,7 +119,7 @@ async function _fetch(url, opts) {
             detail: {
               type: opts.method,
               request: requestUrl,
-              code: body.code,
+              code: body.code.toString(),
               error: body.message,
               requestStart,
             },
