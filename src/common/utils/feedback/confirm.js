@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { destroyTarget } from './utils';
+import { destroyTarget, CONFIRM_BUTTON_ALIGNMENT } from './utils';
 import Confirm from '../../components/Confirm';
 import ConfirmContent from '../../components/Confirm/ConfirmContent';
 import ConfirmFooter from '../../components/Confirm/ConfirmFooter';
@@ -21,6 +21,7 @@ const confirmOptions = ({
   confirmButtonContent = null,
   confirmButtonClassName = '',
   confirmButtonStyle = {},
+  buttonAlignment = CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
   zIndex = 300,
   onClose = () => {},
   onConfirm = () => {},
@@ -36,6 +37,7 @@ const confirmOptions = ({
   confirmButtonContent,
   confirmButtonClassName,
   confirmButtonStyle,
+  buttonAlignment,
   zIndex,
   onClose,
   onConfirm,
