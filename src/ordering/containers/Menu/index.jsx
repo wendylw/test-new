@@ -16,8 +16,6 @@ import { getIsSearchingBannerVisible } from './redux/common/selectors';
 import { mounted } from './redux/common/thunks';
 import { getDeliveryInfo } from '../../redux/modules/app';
 
-import { toast } from '../../../common/utils/feedback';
-
 const Menu = () => {
   const dispatch = useDispatch();
   // for whether display searching banner, if not header, store info and promo banner display
@@ -26,8 +24,6 @@ const Menu = () => {
 
   useMount(() => {
     dispatch(mounted());
-
-    toast('test');
   });
 
   return (
