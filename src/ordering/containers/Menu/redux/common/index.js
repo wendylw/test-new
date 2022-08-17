@@ -25,7 +25,6 @@ import {
   hideLocationConfirmModal,
   saveSelectedProductItemInfo,
   clearSelectedProductItemInfo,
-  saveSelectedStore,
 } from './thunks';
 
 const initialState = {
@@ -51,10 +50,6 @@ const initialState = {
   timeSlotDrawerVisible: false,
   locationConfirmModalVisible: false,
   selectedProductItemInfo: null,
-  selectedStoreRequest: {
-    status: null,
-    error: null,
-  },
 };
 
 export const { reducer, actions } = createSlice({
@@ -163,17 +158,6 @@ export const { reducer, actions } = createSlice({
     },
     [clearSelectedProductItemInfo.fulfilled.type]: state => {
       state.selectedProductItemInfo = null;
-    },
-    [saveSelectedStore.pending.type]: state => {
-      state.selectedStoreRequest.status = API_REQUEST_STATUS.PENDING;
-      state.selectedStoreRequest.error = null;
-    },
-    [saveSelectedStore.fulfilled.type]: state => {
-      state.selectedStoreRequest.status = API_REQUEST_STATUS.FULFILLED;
-    },
-    [saveSelectedStore.rejected.type]: (state, { error }) => {
-      state.selectedStoreRequest.status = API_REQUEST_STATUS.REJECTED;
-      state.selectedStoreRequest.error = error;
     },
   },
 });

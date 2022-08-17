@@ -52,7 +52,7 @@ import Clevertap from '../../../../../utils/clevertap';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as TimeLib from '../../../../../utils/time-lib';
 import * as NativeMethods from '../../../../../utils/native-methods';
-import { fetchStoreFavStatus, saveStoreFavStatus, setSelectedStore } from './api-request';
+import { fetchStoreFavStatus, saveStoreFavStatus, updateStoreInfoCookies } from './api-request';
 import { shortenUrl } from '../../../../../utils/shortenUrl';
 import logger from '../../../../../utils/monitoring/logger';
 import { getShareLinkUrl } from '../../utils';
@@ -729,16 +729,6 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
   }
 });
 
-export const saveSelectedStore = createAsyncThunk('ordering/menu/common/saveSelectedStore', async h => {
-  try {
-    const res = await setSelectedStore(h);
-    return res;
-  } catch (e) {
-    logger.error('ordering.menu.save-selected-store-failure', { message: e?.message });
-    throw e;
-  }
-});
-
 export const changeStore = createAsyncThunk(
   'ordering/menu/common/changeStore',
   async (storeId, { dispatch, getState }) => {
@@ -750,7 +740,7 @@ export const changeStore = createAsyncThunk(
     const currentShippingType = getShippingType(state);
 
     try {
-      await dispatch(saveSelectedStore(h)).unwrap();
+      await updateStoreInfoCookies(h);
     } catch (e) {
       logger.error('ordering.menu.change-store-failure', { message: e?.message });
       throw e;
