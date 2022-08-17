@@ -44,7 +44,7 @@ export const checkDeliveryRange = createAsyncThunk(
       type: 'error',
     });
 
-    logger.log('OrderingMenuAddressCheckDeliveryRange');
+    logger.log('Menu_CheckedDeliveryAddressOufOfRange');
   }
 );
 
@@ -113,7 +113,7 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      logger.error('OrderingMenuAddressLocationDrawerShownError', {
+      logger.error('Menu_ShowLocationDrawerFailed', {
         message: e?.message,
       });
       throw e;
@@ -258,7 +258,7 @@ export const loadSearchLocationListData = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logger.error('OrderingMenuAddressLoadSearchLocationListDataError', {
+      logger.error('Menu_SearchLocationListFailed', {
         message: e?.message,
       });
 
