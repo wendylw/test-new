@@ -1,14 +1,15 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { destroyTarget } from './utils';
-import Alert from '../../components/Alert';
-import AlertContent from '../../components/Alert/AlertContent';
+import Confirm from '../../components/Confirm';
+import ConfirmContent from '../../components/Confirm/ConfirmContent';
+import ConfirmFooter from '../../components/Confirm/ConfirmFooter';
 
 /**
- * Use alert(...) function to call alert modal component, that alert can not customize display or closing.
- * If you want to customize your alert display and other props, we provide the Alert component, which can be imported directly in your component
+ * Use confirm(...) function to call confirm modal component, that confirm can not customize display or closing.
+ * If you want to customize your confirm display and other props, we provide the Confirm component, which can be imported directly in your component
  * */
-const alertOptions = ({
+const confirmOptions = ({
   container = document.body,
   title = null,
   customizeContent = false,
@@ -17,8 +18,12 @@ const alertOptions = ({
   className = '',
   closeButtonClassName = '',
   closeButtonStyle = {},
+  confirmButtonContent = null,
+  confirmButtonClassName = '',
+  confirmButtonStyle = {},
   zIndex = 300,
   onClose = () => {},
+  onConfirm = () => {},
 }) => ({
   container,
   title,
@@ -28,38 +33,68 @@ const alertOptions = ({
   className,
   closeButtonClassName,
   closeButtonStyle,
+  confirmButtonContent,
+  confirmButtonClassName,
+  confirmButtonStyle,
   zIndex,
   onClose,
+  onConfirm,
 });
 
-const createAlert = (content, options) =>
+const createConfirm = (content, options) =>
   new Promise(resolve => {
-    const { container, customizeContent, title, onClose, ...restOptions } = options;
+    const {
+      container,
+      title,
+      customizeContent,
+      closeButtonContent,
+      closeButtonClassName,
+      closeButtonStyle,
+      confirmButtonContent,
+      confirmButtonClassName,
+      confirmButtonStyle,
+      buttonAlignment,
+      onClose,
+      onConfirm,
+      ...restOptions
+    } = options;
     const rootDOM = document.createElement('div');
     const children = customizeContent ? (
       content
     ) : (
       // eslint-disable-next-line react/jsx-filename-extension
-      <AlertContent content={content} title={title} />
+      <ConfirmContent content={content} title={title} />
     );
-    const alertInstance = React.createElement(
-      Alert,
+    const confirmInstance = React.createElement(
+      Confirm,
       {
         ...restOptions,
         show: true,
         mountAtRoot: false,
-        onClose: () => {
-          destroyTarget(rootDOM);
-          resolve();
-          onClose();
-        },
+        footer: (
+          <ConfirmFooter
+            closeButtonContent={closeButtonContent}
+            closeButtonClassName={closeButtonClassName}
+            closeButtonStyle={closeButtonStyle}
+            confirmButtonContent={confirmButtonContent}
+            confirmButtonClassName={confirmButtonClassName}
+            confirmButtonStyle={confirmButtonStyle}
+            buttonAlignment={buttonAlignment}
+            onClose={() => {
+              destroyTarget(rootDOM);
+              resolve();
+              onClose();
+            }}
+            onConfirm={onConfirm}
+          />
+        ),
       },
       children
     );
 
     container.appendChild(rootDOM);
 
-    render(alertInstance, rootDOM);
+    render(confirmInstance, rootDOM);
   });
 
-export const alert = (content, options = {}) => createAlert(content, alertOptions(options));
+export const confirm = (content, options = {}) => createConfirm(content, confirmOptions(options));
