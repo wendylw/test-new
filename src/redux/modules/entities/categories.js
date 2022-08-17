@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { APP_TYPES } from '../../../ordering/redux/types';
 
 const initialState = {};
 
@@ -25,6 +26,8 @@ const reducer = (state = initialState, action) => {
       }
     });
     return { ...state, ...kvData };
+  } else if (action.type === APP_TYPES.RESET_ONLINECATEGORY_STATUS) {
+    return initialState;
   }
   return state;
 };
