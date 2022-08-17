@@ -38,6 +38,8 @@ import {
   getBusinessUTCOffset,
   getOnlineStoreInfo,
   getUser,
+  getFoodTagsForCleverTap,
+  getIsCoreBusinessAPICompleted,
   getIsFromBeepSiteOrderHistory,
 } from '../../../../redux/modules/app';
 import { loadOrder, loadOrderStatus } from '../../redux/thunks';
@@ -274,7 +276,7 @@ export class ThankYou extends PureComponent {
 
   // TODO: Current solution is not good enough, please refer to getThankYouSource function and logic in componentDidUpdate and consider to move this function in to componentDidUpdate right before handleGtmEventTracking.
   recordChargedEvent = () => {
-    const { order, business, onlineStoreInfo, orderStoreInfo } = this.props;
+    const { order, business, onlineStoreInfo, orderStoreInfo, foodTagsForCleverTap } = this.props;
 
     let totalQuantity = 0;
     let totalDiscount = 0;
@@ -320,6 +322,9 @@ export class ThankYou extends PureComponent {
       'Cashback Store': business,
       'promo/voucher applied': _get(order, 'displayPromotions[0].promotionCode'),
       'Lowest Price': _get(orderStoreInfo, 'isLowestPrice', false),
+      'merchant state': _get(orderStoreInfo, 'state', ''),
+      'merchant city': _get(orderStoreInfo, 'city', ''),
+      foodTags: foodTagsForCleverTap,
     });
   };
 
@@ -359,7 +364,15 @@ export class ThankYou extends PureComponent {
   async componentDidUpdate(prevProps) {
     const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
-    const { order, onlineStoreInfo, user, shippingType, loadStoreIdTableIdHashCode, loadStoreIdHashCode } = this.props;
+    const {
+      order,
+      onlineStoreInfo,
+      user,
+      shippingType,
+      loadStoreIdTableIdHashCode,
+      loadStoreIdHashCode,
+      isCoreBusinessAPICompleted,
+    } = this.props;
 
     if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
       this.showCompleteProfileIfNeeded();
@@ -377,7 +390,13 @@ export class ThankYou extends PureComponent {
       gtmSetUserProperties({ onlineStoreInfo, userInfo: user, store: { id: storeId } });
     }
 
-    if (!this.state.hasRecordedChargedEvent && this.state.from === 'payment' && this.props.order && onlineStoreInfo) {
+    if (
+      !this.state.hasRecordedChargedEvent &&
+      this.state.from === 'payment' &&
+      this.props.order &&
+      onlineStoreInfo &&
+      isCoreBusinessAPICompleted
+    ) {
       const orderInfo = this.props.order;
       this.recordChargedEvent();
       this.handleGtmEventTracking({ order: orderInfo });
@@ -1017,6 +1036,8 @@ export default compose(
       foodCourtId: getFoodCourtId(state),
       foodCourtHashCode: getFoodCourtHashCode(state),
       foodCourtMerchantName: getFoodCourtMerchantName(state),
+      foodTagsForCleverTap: getFoodTagsForCleverTap(state),
+      isCoreBusinessAPICompleted: getIsCoreBusinessAPICompleted(state),
       isFromBeepSiteOrderHistory: getIsFromBeepSiteOrderHistory(state),
     }),
     dispatch => ({
