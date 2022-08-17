@@ -23,6 +23,7 @@ import { actions as commonActions } from '../common/index';
 import { setDateTime } from '../../../../../utils/time-lib';
 import Clevertap from '../../../../../utils/clevertap';
 import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import logger from '../../../../../utils/monitoring/logger';
 
 export const loadTimeSlotSoldData = createAsyncThunk(
   'ordering/menu/timeSlot/loadTimeSlotSoldData',
@@ -188,48 +189,51 @@ export const changeTimeSlot = createAsyncThunk('ordering/menu/timeSlot/changeTim
   return value;
 });
 
-export const save = createAsyncThunk('ordering/menu/timeSlot/save', async (_, { getState, dispatch }) => {
-  try {
-    const state = getState();
-    const selectedShippingType = getSelectedShippingType(state);
-    const selectedDate = getSelectedDate(state);
-    const selectedTimeSlot = getSelectedTimeSlot(state);
-    const businessUTCOffset = getBusinessUTCOffset(state);
-    const shippingType = getShippingType(state);
-    const expectedDeliveryTime = getExpectedDeliveryTime(state);
-    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+export const timeSlotSelected = createAsyncThunk(
+  'ordering/menu/timeSlot/timeSlotSelected',
+  async (_, { getState, dispatch }) => {
+    try {
+      const state = getState();
+      const selectedShippingType = getSelectedShippingType(state);
+      const selectedDate = getSelectedDate(state);
+      const selectedTimeSlot = getSelectedTimeSlot(state);
+      const businessUTCOffset = getBusinessUTCOffset(state);
+      const shippingType = getShippingType(state);
+      const expectedDeliveryTime = getExpectedDeliveryTime(state);
+      const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-    Clevertap.pushEvent('Timeslot - confirm', storeInfoForCleverTap);
+      Clevertap.pushEvent('Timeslot - confirm', storeInfoForCleverTap);
 
-    const selectedExpectedDeliveryTime = (() => {
-      if (selectedTimeSlot === 'now') {
-        return 'now';
+      const selectedExpectedDeliveryTime = (() => {
+        if (selectedTimeSlot === 'now') {
+          return 'now';
+        }
+
+        const selectedDateBusinessTimeZone = storeUtils.getBusinessDateTime(businessUTCOffset, selectedDate);
+
+        return setDateTime(selectedTimeSlot, selectedDateBusinessTimeZone).toISOString();
+      })();
+
+      dispatch(AppActions.updateShippingType(selectedShippingType));
+
+      dispatch(
+        updateExpectedDeliveryDate({
+          expectedDate: selectedExpectedDeliveryTime,
+          shippingType: selectedShippingType,
+        })
+      );
+
+      if (selectedShippingType !== shippingType || expectedDeliveryTime !== selectedExpectedDeliveryTime) {
+        // need to reload the shopping cart and product list
+        dispatch(AppActions.loadShoppingCart());
+        dispatch(AppActions.loadProductList());
       }
 
-      const selectedDateBusinessTimeZone = storeUtils.getBusinessDateTime(businessUTCOffset, selectedDate);
-
-      return setDateTime(selectedTimeSlot, selectedDateBusinessTimeZone).toISOString();
-    })();
-
-    dispatch(AppActions.updateShippingType(selectedShippingType));
-
-    dispatch(
-      updateExpectedDeliveryDate({
-        expectedDate: selectedExpectedDeliveryTime,
-        shippingType: selectedShippingType,
-      })
-    );
-
-    if (selectedShippingType !== shippingType || expectedDeliveryTime !== selectedExpectedDeliveryTime) {
-      // need to reload the shopping cart and product list
-      dispatch(AppActions.loadShoppingCart());
-      dispatch(AppActions.loadProductList());
+      // Avoid calling hideTimeSlotDrawer because it will push the CT event "Timeslot - back"
+      dispatch(commonActions.setTimeSlotDrawerVisible(false));
+    } catch (error) {
+      logger.error('Menu_SelectTimeSlotFailed', { message: error?.message });
+      throw error;
     }
-
-    // Avoid calling hideTimeSlotDrawer because it will push the CT event "Timeslot - back"
-    dispatch(commonActions.setTimeSlotDrawerVisible(false));
-  } catch (error) {
-    console.error(error);
-    throw error;
   }
-});
+);

@@ -8,6 +8,14 @@ import _sumBy from 'lodash/sumBy';
 import _isNil from 'lodash/isNil';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { getAllProducts, getFormatCurrencyFunction } from '../../../../../redux/modules/app';
+import {
+  getIsProductListReady,
+  getTimeSlotDrawerVisible,
+  getIsLocationDrawerVisible,
+  getIsStoreListDrawerVisible,
+  getHasSelectedProductItemInfo,
+  getIsLocationConfirmModalVisible,
+} from '../../common/selectors';
 import { PRODUCT_STOCK_STATUS, PRODUCT_UNABLE_ADD_TO_CART_REASONS, PRODUCT_VARIATION_TYPE } from '../../../constants';
 import { variationStructuredSelector } from './variationSelector';
 import { variationOptionStructuredSelector, formatVariationOptionPriceDiff } from './variationOptionSelector';
@@ -463,4 +471,29 @@ export const getIfCommentsShowStatus = state => state.menu.productDetail.showCom
 export const getIfShowVariations = createSelector(
   getProductDetailData,
   productDetailData => productDetailData.variations.length
+);
+
+export const getCouldShowProductDetailDrawer = createSelector(
+  getIsProductListReady,
+  getTimeSlotDrawerVisible,
+  getIsLocationDrawerVisible,
+  getIsStoreListDrawerVisible,
+  getHasSelectedProductItemInfo,
+  getIsLocationConfirmModalVisible,
+  (
+    isProductListReady,
+    isTimeSlotDrawerVisible,
+    isLocationDrawerVisible,
+    isStoreListDrawerVisible,
+    hasSelectedProductItemInfo,
+    isLocationConfirmModalVisible
+  ) => {
+    // Only dispatch showProductDetailDrawer thunk when:
+    // 1. Product list data is ready
+    // 2. The selectedProductItemInfo exists
+    // 3. Location confirm modal is not visible
+    // 4. No drawer is visible now
+    const isAnyDrawerVisible = isTimeSlotDrawerVisible || isLocationDrawerVisible || isStoreListDrawerVisible;
+    return isProductListReady && hasSelectedProductItemInfo && !(isAnyDrawerVisible || isLocationConfirmModalVisible);
+  }
 );

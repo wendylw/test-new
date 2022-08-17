@@ -40,6 +40,7 @@ import {
   getIsInAppOrMiniProgram,
   getIsFromFoodCourt,
   getIsPickUpType,
+  getHasSelectedStore,
 } from '../../../../redux/modules/app';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as NativeMethods from '../../../../../utils/native-methods';
@@ -645,6 +646,8 @@ export const getIsStoreInfoDrawerVisible = state => state.menu.common.storeInfoD
 export const getIsLocationDrawerVisible = state => state.menu.common.locationDrawerVisible;
 export const getIsStoreListDrawerVisible = state => state.menu.common.storeListDrawerVisible;
 
+export const getIsLocationConfirmModalVisible = state => state.menu.common.locationConfirmModalVisible;
+
 export const getStoreLocation = createSelector(getDeliveryInfo, deliveryInfo => {
   const { storeAddress } = deliveryInfo;
   return storeAddress;
@@ -750,4 +753,39 @@ export const getIsAbleToReviewCart = createSelector(
  */
 export const getStoreLocationStreetForPickup = createSelector(getStore, getIsPickUpType, (store, isPickup) =>
   isPickup ? _get(store, 'street1', '') : ''
+);
+
+export const getSelectedProductItemInfo = state => state.menu.common.selectedProductItemInfo;
+
+export const getHasSelectedProductItemInfo = createSelector(
+  getSelectedProductItemInfo,
+  selectedProductItemInfo => !!selectedProductItemInfo
+);
+
+export const getShouldShowProductDetailDrawer = createSelector(
+  getIsQrOrderingShippingType,
+  getIsPickUpType,
+  getHasSelectedStore,
+  getIfAddressInfoExists,
+  getHasSelectedExpectedDeliveryTime,
+  (isQrOrderingShippingType, isPickUpType, hasStoreBranchSelected, hasLocationSelected, hasTimeSlotSelected) => {
+    if (isQrOrderingShippingType) {
+      return true;
+    }
+
+    if (!(isPickUpType || hasLocationSelected)) {
+      return false;
+    }
+
+    if (!hasStoreBranchSelected) {
+      return false;
+    }
+
+    if (!hasTimeSlotSelected) {
+      return false;
+    }
+
+    // For delivery/pick-up orders, we only show the product detail drawer after the user has selected the location, store branch, and time slot.
+    return true;
+  }
 );

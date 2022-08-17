@@ -11,7 +11,7 @@ import {
   getSelectedTimeDisplayValue,
   getTimeSlotDrawerVisible,
 } from '../../redux/common/selectors';
-import { showTimeSlotDrawer, hideTimeSlotDrawer } from '../../redux/common/thunks';
+import { timeSlotDrawerOpened, timeSlotDrawerClosed } from '../../redux/common/thunks';
 import {
   getIsOnlyPreOrder,
   getSelectedShippingType as getSelectedShippingTypeForDrawer,
@@ -28,7 +28,7 @@ import {
   changeDate,
   changeTimeSlot,
   loadTimeSlotSoldData,
-  save as saveTimeSlotData,
+  timeSlotSelected,
   timeSlotDrawerShown,
   timeSlotDrawerHidden,
 } from '../../redux/timeSlot/thunks';
@@ -113,7 +113,7 @@ const TimeSlotDropdown = () => {
           className={styles.timeSlotDropdownButton}
           disabled={!isTimeSlotAvailable}
           onClick={() => {
-            dispatch(showTimeSlotDrawer());
+            dispatch(timeSlotDrawerOpened());
           }}
         >
           <div className="tw-flex tw-items-center">
@@ -140,7 +140,7 @@ const TimeSlotDropdown = () => {
           isSaveButtonDisabled={isSaveButtonDisabled}
           isInitializing={isInitializing}
           onClose={() => {
-            dispatch(hideTimeSlotDrawer());
+            dispatch(timeSlotDrawerClosed());
           }}
           changeShippingType={value => {
             dispatch(changeShippingType(value));
@@ -152,7 +152,7 @@ const TimeSlotDropdown = () => {
             dispatch(changeTimeSlot(value));
           }}
           save={() => {
-            dispatch(saveTimeSlotData());
+            dispatch(timeSlotSelected());
           }}
         />
       </div>

@@ -8,9 +8,9 @@ import {
   getIsQrOrderingShippingType,
   getIsDeliveryType,
 } from '../../redux/common/selectors';
-import { showStoreListDrawer, hideStoreListDrawer } from '../../redux/common/thunks';
+import { storeListDrawerOpened, storeListDrawerClosed } from '../../redux/common/thunks';
 import { getHasStoreListInitialized, getStoreList, getTotalOutlet } from '../../redux/stores/selectors';
-import { storeDrawerShown, storeDrawerHidden, selectStoreBranch } from '../../redux/stores/thunks';
+import { storeDrawerShown, storeDrawerHidden, storeBranchSelected } from '../../redux/stores/thunks';
 import StoreListDrawer from '../../../../components/StoreListDrawer';
 import styles from './StoreList.module.scss';
 
@@ -27,8 +27,8 @@ const StoreList = () => {
   const storeDisplaySubTitle = useSelector(getStoreDisplaySubTitle);
   // if is initializing, if TRUE, show a loader
   const hasStoreListInitialized = useSelector(getHasStoreListInitialized);
-  const onHandleHideStoreListDrawer = useCallback(() => {
-    dispatch(hideStoreListDrawer());
+  const onHandleCloseStoreListDrawer = useCallback(() => {
+    dispatch(storeListDrawerClosed());
   }, [dispatch]);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const StoreList = () => {
           <button
             className={styles.storeListDropdownButton}
             onClick={() => {
-              dispatch(showStoreListDrawer());
+              dispatch(storeListDrawerOpened());
             }}
           >
             <span className={styles.storeListSubtitle}>{storeDisplaySubTitle}</span>
@@ -59,9 +59,9 @@ const StoreList = () => {
             isStoreListDrawerVisible={isStoreListDrawerVisible}
             totalOutletDisplayTitle={t('StoreListDrawerDescription', { totalOutlet })}
             storeList={storeList}
-            onClose={onHandleHideStoreListDrawer}
+            onClose={onHandleCloseStoreListDrawer}
             selectStoreBranch={id => {
-              dispatch(selectStoreBranch(id));
+              dispatch(storeBranchSelected(id));
             }}
           />
         </>
