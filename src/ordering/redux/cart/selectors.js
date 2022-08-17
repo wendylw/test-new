@@ -88,6 +88,13 @@ export const getCartReceiptNumber = state => state.app.cart.receiptNumber;
 
 export const getCartSubmissionReceiptNumber = state => state.app.cart.submission.receiptNumber;
 
+export const getCartSubmissionStatus = state => state.app.cart.submission.status;
+
+// will return true, if cart submission status is "completed" or "failed"
+export const getIsCartSubmissionStatusQueryPollingStoppable = createSelector(getCartSubmissionStatus, status =>
+  [CART_SUBMISSION_STATUS.COMPLETED, CART_SUBMISSION_STATUS.FAILED].includes(status)
+);
+
 export const getCartSubmissionPendingStatus = state =>
   state.app.cart.submission.status === CART_SUBMISSION_STATUS.PENDING;
 

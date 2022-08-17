@@ -102,7 +102,7 @@ class App extends Component {
         city,
       });
     } catch (e) {
-      logger.error('ordering.get-address', { message: e });
+      logger.error('ordering.get-address', { message: e.message, code: e.code, extra: e.extra });
     }
   };
 
