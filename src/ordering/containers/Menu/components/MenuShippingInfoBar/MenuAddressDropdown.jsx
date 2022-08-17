@@ -1,7 +1,6 @@
 import _isEmpty from 'lodash/isEmpty';
 import _trim from 'lodash/trim';
 import _nth from 'lodash/_baseNth';
-import _debounce from 'lodash/debounce';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -15,6 +14,7 @@ import {
   getStoreLocationStreetForPickup,
   getIsLocationDrawerVisible,
   getIsPickUpType,
+  getIsLocationConfirmModalVisible,
 } from '../../redux/common/selectors';
 import { showLocationDrawer, hideLocationDrawer } from '../../redux/common/thunks';
 import {
@@ -62,6 +62,7 @@ const MenuAddressDropdown = () => {
   const isLocationHistoryListVisible = useSelector(getIsLocationHistoryListVisible) && !isSearchLocationListVisible;
   const locationHistoryList = useSelector(getLocationHistoryListInfo);
   const storeInfoForCleverTap = useSelector(getStoreInfoForCleverTap);
+  const isLocationConfirmModalVisible = useSelector(getIsLocationConfirmModalVisible);
 
   const onHandleShowLocationDrawer = useCallback(() => {
     if (!isPickUpType) {

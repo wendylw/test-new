@@ -1,5 +1,4 @@
 import _get from 'lodash/get';
-import _debounce from 'lodash/debounce';
 import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
 import _isEqual from 'lodash/isEqual';
@@ -29,18 +28,8 @@ import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks
 import { getIsAddressOutOfRange } from '../common/selectors';
 import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
-import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../common/utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
 import { toast } from '../../../../../common/feedback';
-
-class LocationSelectedError extends Error {
-  constructor(message, code) {
-    super(message);
-
-    this.name = 'LocationSelectedError';
-    this.code = code;
-  }
-}
 
 export const checkDeliveryRange = createAsyncThunk(
   'ordering/menu/address/checkDeliveryRange',
@@ -53,8 +42,9 @@ export const checkDeliveryRange = createAsyncThunk(
 
     toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
       type: 'error',
-      duration: 4500,
     });
+
+    logger.log('OrderingMenuAddressCheckDeliveryRange');
   }
 );
 
@@ -123,7 +113,9 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      logger.error(`Failed to load storeInfo: ${e?.message}`);
+      logger.error('OrderingMenuAddressLocationDrawerShownError', {
+        message: e?.message,
+      });
       throw e;
     }
   }
@@ -200,10 +192,9 @@ export const selectLocation = createAsyncThunk(
       if (_isEmpty(coords)) {
         toast(i18next.t(`OrderingDelivery:AddressNotFound`), {
           type: 'error',
-          duration: 4500,
         });
 
-        throw new LocationSelectedError('address coordination is not found', ERROR_CODES.ADDRESS_NOT_FOUND);
+        throw new Error('address coordination is not found');
       }
 
       let stores = getCoreStoreList(state);
@@ -226,15 +217,9 @@ export const selectLocation = createAsyncThunk(
       const deliveryDistance = (distance / 1000).toFixed(2);
 
       if (_isEmpty(store) || deliveryDistance > deliveryRadius) {
-        toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
-          type: 'error',
-          duration: 4500,
-        });
+        toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions));
 
-        throw new LocationSelectedError(
-          'no available store according to the current time or delivery range',
-          ERROR_CODES.OUT_OF_DELIVERY_RANGE
-        );
+        throw new Error('no available store according to the current time or delivery range');
       }
 
       const storeId = _get(store, 'id', null);
@@ -242,7 +227,9 @@ export const selectLocation = createAsyncThunk(
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
-      logger.error(`Failed to select location: ${e?.message}`);
+      logger.error('OrderingMenuAddressSelectLocationError', {
+        message: e?.message,
+      });
       throw e;
     }
   }
@@ -257,6 +244,7 @@ export const loadSearchLocationListData = createAsyncThunk(
     if (_isEmpty(searchKey)) {
       return [];
     }
+
     try {
       const state = getState();
       const storeInfo = getStoreInfoData(state);
@@ -264,7 +252,9 @@ export const loadSearchLocationListData = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logger.error('failed to load search location list data', e);
+      logger.error('OrderingMenuAddressLoadSearchLocationListDataError', {
+        message: e?.message,
+      });
 
       return [];
     }
