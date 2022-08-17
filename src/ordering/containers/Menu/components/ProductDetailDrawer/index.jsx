@@ -26,14 +26,17 @@ import {
   getIsAbleAddToCart,
   getUnableAddToCartReason,
   getIsOutOfStockProduct,
+  getIsUnavailableProduct,
   getCouldShowProductDetailDrawer,
 } from '../../redux/productDetail/selectors';
 import {
+  addToCart,
   showProductDetailDrawer,
   hideProductDetailDrawer,
   increaseProductQuantity,
   decreaseProductQuantity,
-  addToCart,
+  productDetailDrawerShown,
+  productDetailDrawerHidden,
 } from '../../redux/productDetail/thunks';
 import { PRODUCT_UNABLE_ADD_TO_CART_REASONS } from '../../constants';
 import AddSpecialNotes from '../AddSpecialNotes';
@@ -68,6 +71,7 @@ const ProductDetailDrawer = () => {
   const isAbleAddCart = useSelector(getIsAbleAddToCart);
   const unableAddToCartReason = useSelector(getUnableAddToCartReason);
   const isOutOfStockProduct = useSelector(getIsOutOfStockProduct);
+  const isUnavailableProduct = useSelector(getIsUnavailableProduct);
   const selectedProductItemInfo = useSelector(getSelectedProductItemInfo);
   const couldShowProductDetailDrawer = useSelector(getCouldShowProductDetailDrawer);
 
@@ -82,10 +86,13 @@ const ProductDetailDrawer = () => {
   }, [dispatch, couldShowProductDetailDrawer, selectedProductItemInfo]);
 
   useEffect(() => {
-    if (!isDrawerVisible) {
+    if (isDrawerVisible) {
+      dispatch(productDetailDrawerShown());
+    } else {
       setShowTopArrow(false);
+      dispatch(productDetailDrawerHidden());
     }
-  }, [isDrawerVisible]);
+  }, [dispatch, isDrawerVisible]);
   const onContentScroll = useCallback(() => {
     if (!contentRef.current || !imageSectionRef.current) {
       return;
