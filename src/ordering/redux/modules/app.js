@@ -1262,6 +1262,10 @@ export const getIsCoreBusinessAPIFulfilled = createSelector(
   status => status === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsCoreBusinessAPICompleted = createSelector(getCoreBusinessAPIStatus, status =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
+);
+
 // TODO: Utils.getOrderTypeFromUrl() will replace be selector
 export const getEnablePayLater = createSelector(getBusinessInfo, businessInfo => {
   return (
@@ -1432,6 +1436,12 @@ export const getEnableCashback = createSelector(getBusinessInfo, businessInfo =>
 export const getQROrderingSettings = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings', null)
 );
+
+export const getSearchingTags = createSelector(getQROrderingSettings, qrOrderingSettings =>
+  _get(qrOrderingSettings, 'searchingTags', [])
+);
+
+export const getFoodTagsForCleverTap = createSelector(getSearchingTags, searchingTags => searchingTags.join(', '));
 
 export const getFreeShippingMinAmount = createSelector(getQROrderingSettings, qrOrderingSettings =>
   _get(qrOrderingSettings, 'defaultShippingZone.defaultShippingZoneMethod.freeShippingMinAmount', null)

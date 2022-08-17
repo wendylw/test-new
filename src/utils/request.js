@@ -183,7 +183,7 @@ async function handleResponse(url, response, method, requestStart) {
               type: method,
               request: url,
               error: REQUEST_ERROR_KEYS[code],
-              code,
+              code: code.toString(),
               requestStart,
             },
           })
