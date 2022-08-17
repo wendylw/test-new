@@ -199,7 +199,7 @@ export const showProductDetailDrawer = createAsyncThunk(
       throw new Error('unknown reason');
     } catch (e) {
       dispatch(saveSelectedProductItemInfo({ productId, categoryId }));
-      logger.error('ordering.menu.show-product-detail-drawer-failure', { message: e?.message });
+      logger.error('Menu_ShowProductDetailDrawerFailed', { message: e?.message });
       throw e;
     }
   }

@@ -250,7 +250,7 @@ export const locationSelected = createAsyncThunk(
       await dispatch(changeStore(storeId)).unwrap();
       await dispatch(hideLocationDrawer());
     } catch (e) {
-      logger.error(`Failed to select location: ${e?.message}`);
+      logger.error('Menu_SelectLocationFailed', { message: e?.message });
       throw e;
     }
   }

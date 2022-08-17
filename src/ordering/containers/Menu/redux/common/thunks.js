@@ -741,23 +741,22 @@ export const changeStore = createAsyncThunk(
 
     try {
       await updateStoreInfoCookies(h);
+      // NOTE: We need to reset api status to force the api to be called again.
+      dispatch(appActions.resetOnlineCategoryStatus());
+      dispatch(appActions.resetCoreBusinessStatus());
+
+      // Update store id in both redux and url query
+      dispatch(appActions.updateStoreId(storeId));
+
+      // If the new store doesn't support the current shipping type, then we need to change the shipping type to the available one.
+      const newShippingType = shippingTypes.includes(currentShippingType) ? currentShippingType : shippingTypes[0];
+
+      if (newShippingType !== currentShippingType) {
+        dispatch(appActions.updateShippingType(newShippingType));
+      }
     } catch (e) {
-      logger.error('ordering.menu.change-store-failure', { message: e?.message });
+      logger.error('Menu_ChangeStoreFailed', { message: e?.message });
       throw e;
-    }
-
-    // NOTE: We need to reset api status to force the api to be called again.
-    dispatch(appActions.resetOnlineCategoryStatus());
-    dispatch(appActions.resetCoreBusinessStatus());
-
-    // Update store id in both redux and url query
-    dispatch(appActions.updateStoreId(storeId));
-
-    // If the new store doesn't support the current shipping type, then we need to change the shipping type to the available one.
-    const newShippingType = shippingTypes.includes(currentShippingType) ? currentShippingType : shippingTypes[0];
-
-    if (newShippingType !== currentShippingType) {
-      dispatch(appActions.updateShippingType(newShippingType));
     }
   }
 );

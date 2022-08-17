@@ -23,6 +23,7 @@ import { actions as commonActions } from '../common/index';
 import { setDateTime } from '../../../../../utils/time-lib';
 import Clevertap from '../../../../../utils/clevertap';
 import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import logger from '../../../../../utils/monitoring/logger';
 
 export const loadTimeSlotSoldData = createAsyncThunk(
   'ordering/menu/timeSlot/loadTimeSlotSoldData',
@@ -231,7 +232,7 @@ export const timeSlotSelected = createAsyncThunk(
       // Avoid calling hideTimeSlotDrawer because it will push the CT event "Timeslot - back"
       dispatch(commonActions.setTimeSlotDrawerVisible(false));
     } catch (error) {
-      console.error(error);
+      logger.error('Menu_SelectTimeSlotFailed', { message: error?.message });
       throw error;
     }
   }

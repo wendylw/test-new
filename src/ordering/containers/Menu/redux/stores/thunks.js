@@ -53,7 +53,7 @@ export const storeBranchSelected = createAsyncThunk(
       await dispatch(changeStore(storeId)).unwrap();
       await dispatch(hideStoreListDrawer());
     } catch (e) {
-      logger.error('ordering.menu.select-store-branch-failure', { message: e?.message });
+      logger.error('Menu_SelectStoreBranchFailed', { message: e?.message });
       throw e;
     }
   }
