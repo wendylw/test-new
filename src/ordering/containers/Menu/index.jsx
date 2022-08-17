@@ -16,7 +16,7 @@ import { getIsSearchingBannerVisible } from './redux/common/selectors';
 import { mounted } from './redux/common/thunks';
 import { getDeliveryInfo } from '../../redux/modules/app';
 
-import { alert } from '../../../common/utils/feedback';
+import { toast } from '../../../common/utils/feedback';
 
 const Menu = () => {
   const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const Menu = () => {
   useMount(() => {
     dispatch(mounted());
 
-    alert('test');
+    toast('test');
   });
 
   return (

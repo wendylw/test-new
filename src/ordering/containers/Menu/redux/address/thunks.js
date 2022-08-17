@@ -28,8 +28,8 @@ import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks
 import { getIsAddressOutOfRange } from '../common/selectors';
 import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
-import logger from '../../../../../utils/monitoring/logger';
 import { toast } from '../../../../../common/utils/feedback';
+import logger from '../../../../../utils/monitoring/logger';
 
 export const checkDeliveryRange = createAsyncThunk(
   'ordering/menu/address/checkDeliveryRange',

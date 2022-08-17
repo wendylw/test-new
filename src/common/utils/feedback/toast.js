@@ -1,13 +1,13 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { destroyTarget, FEEDBACK_STATUS } from './utils';
+import { destroyTarget, FEEDBACK_STATUS, TOAST_DEFAULT_DURATION } from './utils';
 import Toast from '../../components/Toast';
 
 const toastOptions = ({
   container = document.body,
   icon = null,
   type = FEEDBACK_STATUS.ERROR,
-  duration = 4500,
+  duration = TOAST_DEFAULT_DURATION,
   className = '',
   style = {},
   onClose = () => {},
@@ -25,7 +25,6 @@ const createToast = (content, options) =>
     const { container, onClose, ...restOptions } = options;
     const rootDOM = document.createElement('div');
 
-    rootDOM.setAttribute('class', 'feedback__container-toast');
     container.appendChild(rootDOM);
 
     // eslint-disable-next-line react/no-children-prop

@@ -14,7 +14,7 @@ import {
   getStoreLocationStreetForPickup,
   getIsLocationDrawerVisible,
   getIsPickUpType,
-  getIsLocationConfirmModalVisible,
+  // getIsLocationConfirmModalVisible,
 } from '../../redux/common/selectors';
 import { showLocationDrawer, hideLocationDrawer } from '../../redux/common/thunks';
 import {
@@ -62,7 +62,7 @@ const MenuAddressDropdown = () => {
   const isLocationHistoryListVisible = useSelector(getIsLocationHistoryListVisible) && !isSearchLocationListVisible;
   const locationHistoryList = useSelector(getLocationHistoryListInfo);
   const storeInfoForCleverTap = useSelector(getStoreInfoForCleverTap);
-  const isLocationConfirmModalVisible = useSelector(getIsLocationConfirmModalVisible);
+  // const isLocationConfirmModalVisible = useSelector(getIsLocationConfirmModalVisible);
 
   const onHandleShowLocationDrawer = useCallback(() => {
     if (!isPickUpType) {

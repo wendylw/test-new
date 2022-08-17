@@ -10,6 +10,8 @@ export const FEEDBACK_STATUS = {
   INFO: 'info',
 };
 
+export const TOAST_DEFAULT_DURATION = 4500;
+
 export const destroyTarget = target => {
   ReactDOM.unmountComponentAtNode(target);
 

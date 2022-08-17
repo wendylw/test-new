@@ -2,7 +2,7 @@ import React, { useRef, useEffect, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransition } from 'react-transition-group';
 import { CheckCircle, WarningCircle, Info } from 'phosphor-react';
-import { FEEDBACK_STATUS } from '../../feedback/utils';
+import { FEEDBACK_STATUS, TOAST_DEFAULT_DURATION } from '../../utils/feedback/utils';
 import './toast-animation.scss';
 import styles from './Toast.module.scss';
 import logger from '../../../utils/monitoring/logger';
@@ -25,7 +25,6 @@ const MESSAGE_TYPE_MAPPING = {
     icon: <Info className={styles.ToastIcon} weight="fill" />,
   },
 };
-const DEFAULT_DURATION = 3000;
 const Toast = forwardRef(props => {
   const { children, icon, type, duration, show, onClose, className, style } = props;
   const timeoutRef = useRef(null);
@@ -53,11 +52,13 @@ const Toast = forwardRef(props => {
 
   return (
     <CSSTransition in={show} timeout={300} unmountOnExit classNames="toast-animation">
-      <div className={`${styles.ToastContent} ${type} toast-animation__content ${className}`} style={style}>
-        {iconNode}
-        <span className={styles.ToastText} ref={contentContainerRef}>
-          {children}
-        </span>
+      <div className={`${styles.ToastContainer} toast-animation__content ${className}`}>
+        <div className={`${styles.ToastContent} ${type}`} style={style}>
+          {iconNode}
+          <span className={styles.ToastText} ref={contentContainerRef}>
+            {children}
+          </span>
+        </div>
       </div>
     </CSSTransition>
   );
@@ -82,7 +83,7 @@ Toast.defaultProps = {
   children: null,
   icon: null,
   type: null,
-  duration: DEFAULT_DURATION,
+  duration: TOAST_DEFAULT_DURATION,
   show: false,
   className: '',
   style: {},
