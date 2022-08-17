@@ -12,9 +12,9 @@
 
 .confirmVerticalCloseButton {
   &:global(.type-text) {
-    @apply tw-text-orange
-      hover:tw-text-orange-dark
-      focus:tw-text-orange focus:hover:tw-text-orange-dark focus:active:tw-text-orange-light
-      active:tw-text-orange-light;
+    @apply tw-text-gray-800
+      hover:tw-text-gray-800
+      focus:tw-text-gray-800 focus:hover:tw-text-gray-800 focus:active:tw-text-gray-800
+      active:tw-text-gray-800;
   }
 }

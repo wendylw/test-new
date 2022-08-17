@@ -45,7 +45,7 @@ const ConfirmFooter = props => {
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.VERTICAL ? (
         <Button
           type="text"
-          className={`${styles.confirmVerticalCloseButton} tw-flex-1 tw-uppercase${
+          className={`${styles.confirmVerticalCloseButton} tw-flex-1${
             closeButtonClassName ? ` ${closeButtonClassName}` : ''
           }`}
           onClick={onClose}
