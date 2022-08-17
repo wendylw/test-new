@@ -2,25 +2,26 @@ import React, { useRef, useEffect, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransition } from 'react-transition-group';
 import { CheckCircle, WarningCircle, Info } from 'phosphor-react';
+import { FEEDBACK_STATUS } from '../../feedback/utils';
 import './toast-animation.scss';
 import styles from './Toast.module.scss';
 import logger from '../../../utils/monitoring/logger';
 
 const MESSAGE_TYPE_MAPPING = {
   success: {
-    key: 'success',
+    key: FEEDBACK_STATUS.SUCCESS,
     icon: <CheckCircle className={styles.ToastIcon} weight="fill" />,
   },
   error: {
-    key: 'error',
+    key: FEEDBACK_STATUS.ERROR,
     icon: <WarningCircle className={styles.ToastIcon} weight="fill" />,
   },
   warning: {
-    key: 'warning',
+    key: FEEDBACK_STATUS.WARNING,
     icon: <WarningCircle className={styles.ToastIcon} weight="fill" />,
   },
   info: {
-    key: 'info',
+    key: FEEDBACK_STATUS.INFO,
     icon: <Info className={styles.ToastIcon} weight="fill" />,
   },
 };

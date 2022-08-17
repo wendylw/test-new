@@ -1,12 +1,12 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { destroyTarget } from './utils';
+import { destroyTarget, FEEDBACK_STATUS } from './utils';
 import Toast from '../../components/Toast';
 
-const normalizeToastOptions = ({
+const toastOptions = ({
   container = document.body,
   icon = null,
-  type = 'error',
+  type = FEEDBACK_STATUS.ERROR,
   duration = 4500,
   className = '',
   style = {},
@@ -47,4 +47,12 @@ const createToast = (content, options) =>
     render(toastInstance, rootDOM);
   });
 
-export const toast = (content, options = {}) => createToast(content, normalizeToastOptions(options));
+export const toast = (content, options = {}) => createToast(content, toastOptions(options));
+
+toast.error = (content, options = {}) =>
+  createToast(content, toastOptions({ ...options, type: FEEDBACK_STATUS.ERROR }));
+toast.success = (content, options = {}) =>
+  createToast(content, toastOptions({ ...options, type: FEEDBACK_STATUS.SUCCESS }));
+toast.warning = (content, options = {}) =>
+  createToast(content, toastOptions({ ...options, type: FEEDBACK_STATUS.WARNING }));
+toast.info = (content, options = {}) => createToast(content, toastOptions({ ...options, type: FEEDBACK_STATUS.INFO }));

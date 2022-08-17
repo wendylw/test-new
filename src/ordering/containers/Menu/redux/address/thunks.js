@@ -29,7 +29,7 @@ import { getIsAddressOutOfRange } from '../common/selectors';
 import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 import logger from '../../../../../utils/monitoring/logger';
-import { toast } from '../../../../../common/feedback';
+import { toast } from '../../../../../common/utils/feedback';
 
 export const checkDeliveryRange = createAsyncThunk(
   'ordering/menu/address/checkDeliveryRange',
