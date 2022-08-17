@@ -24,7 +24,7 @@ import {
   updateLocationToHistoryList,
   loadPlaceInfoById,
 } from '../../../../redux/modules/locations/thunks';
-import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
+import { changeStore, hideLocationDrawer } from '../common/thunks';
 import { getIsAddressOutOfRange } from '../common/selectors';
 import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
@@ -167,8 +167,8 @@ const getFormatSelectAddressInfo = (addressOrLocationInfo, type) => {
 /**
  * select location from the location drawer
  */
-export const selectLocation = createAsyncThunk(
-  'ordering/menu/address/selectLocation',
+export const locationSelected = createAsyncThunk(
+  'ordering/menu/address/locationSelected',
   async ({ addressOrLocationInfo, type }, { dispatch, getState }) => {
     const addressInfo = getFormatSelectAddressInfo(addressOrLocationInfo, type);
     const state = getState();
@@ -200,6 +200,7 @@ export const selectLocation = createAsyncThunk(
       let stores = getCoreStoreList(state);
       const utcOffset = getBusinessUTCOffset(state);
       const currentDate = getCurrentDate(state);
+      const currentStoreId = getStoreId(state);
       const deliveryRadius = getDeliveryRadius(state);
 
       if (_isEmpty(stores)) {
@@ -225,11 +226,16 @@ export const selectLocation = createAsyncThunk(
       const storeId = _get(store, 'id', null);
 
       await dispatch(setAddressInfo(addressInfo));
-      await dispatch(refreshMenuPageForNewStore(storeId));
+
+      if (_isEqual(currentStoreId, storeId)) {
+        await dispatch(hideLocationDrawer());
+        return;
+      }
+
+      await dispatch(changeStore(storeId)).unwrap();
+      await dispatch(hideLocationDrawer());
     } catch (e) {
-      logger.error('OrderingMenuAddressSelectLocationError', {
-        message: e?.message,
-      });
+      logger.error('Menu_SelectLocationFailed', { message: e?.message });
       throw e;
     }
   }

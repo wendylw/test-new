@@ -21,6 +21,10 @@ import {
   hideTimeSlotDrawer,
   showStoreListDrawer,
   hideStoreListDrawer,
+  showLocationConfirmModal,
+  hideLocationConfirmModal,
+  saveSelectedProductItemInfo,
+  clearSelectedProductItemInfo,
 } from './thunks';
 
 const initialState = {
@@ -44,6 +48,8 @@ const initialState = {
   storeListDrawerVisible: false,
   enabledDeliveryRevamp: process.env.REACT_APP_ENABLED_DELIVERY_REVAMP === 'true',
   timeSlotDrawerVisible: false,
+  locationConfirmModalVisible: false,
+  selectedProductItemInfo: null,
 };
 
 export const { reducer, actions } = createSlice({
@@ -139,6 +145,19 @@ export const { reducer, actions } = createSlice({
     },
     [hideStoreListDrawer.fulfilled.type]: state => {
       state.storeListDrawerVisible = false;
+    },
+    [showLocationConfirmModal]: state => {
+      state.locationConfirmModalVisible = true;
+    },
+    [hideLocationConfirmModal]: state => {
+      state.locationConfirmModalVisible = false;
+    },
+    [saveSelectedProductItemInfo.fulfilled.type]: (state, { payload }) => {
+      const { productId, categoryId } = payload;
+      state.selectedProductItemInfo = { productId, categoryId };
+    },
+    [clearSelectedProductItemInfo.fulfilled.type]: state => {
+      state.selectedProductItemInfo = null;
     },
   },
 });

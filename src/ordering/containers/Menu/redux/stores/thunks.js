@@ -7,8 +7,9 @@ import {
   getStoreId,
   getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
-import { hideStoreListDrawer, refreshMenuPageForNewStore } from '../common/thunks';
+import { hideStoreListDrawer, changeStore } from '../common/thunks';
 import Clevertap from '../../../../../utils/clevertap';
+import logger from '../../../../../utils/monitoring/logger';
 
 /**
  * Store branch drawer shown
@@ -34,20 +35,26 @@ export const storeDrawerHidden = createAsyncThunk('ordering/menu/stores/storeDra
 /**
  * select store from the store branch drawer
  */
-export const selectStoreBranch = createAsyncThunk(
-  'ordering/menu/stores/selectStoreBranch',
+export const storeBranchSelected = createAsyncThunk(
+  'ordering/menu/stores/storeBranchSelected',
   async (storeId, { getState, dispatch }) => {
     const state = getState();
     const currentStoreId = getStoreId(state);
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
     if (_isEqual(currentStoreId, storeId)) {
-      dispatch(hideStoreListDrawer());
+      await dispatch(hideStoreListDrawer());
       return;
     }
 
     Clevertap.pushEvent('Store List - Select different store branch', storeInfoForCleverTap);
 
-    dispatch(refreshMenuPageForNewStore(storeId));
+    try {
+      await dispatch(changeStore(storeId)).unwrap();
+      await dispatch(hideStoreListDrawer());
+    } catch (e) {
+      logger.error('Menu_SelectStoreBranchFailed', { message: e?.message });
+      throw e;
+    }
   }
 );

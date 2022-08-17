@@ -16,7 +16,7 @@ import {
   getIsPickUpType,
   getIsLocationConfirmModalVisible,
 } from '../../redux/common/selectors';
-import { showLocationDrawer, hideLocationDrawer } from '../../redux/common/thunks';
+import { locationDrawerOpened, locationDrawerClosed } from '../../redux/common/thunks';
 import {
   getHasStoreInfoInitialized,
   getAddressListInfo,
@@ -28,7 +28,7 @@ import {
 import {
   locationDrawerShown,
   locationDrawerHidden,
-  selectLocation,
+  locationSelected,
   loadSearchLocationListData,
   loadPlaceInfo,
   updateSearchLocationList,
@@ -64,13 +64,13 @@ const MenuAddressDropdown = () => {
   const storeInfoForCleverTap = useSelector(getStoreInfoForCleverTap);
   const isLocationConfirmModalVisible = useSelector(getIsLocationConfirmModalVisible);
 
-  const onHandleShowLocationDrawer = useCallback(() => {
+  const onHandleOpenLocationDrawer = useCallback(() => {
     if (!isPickUpType) {
-      dispatch(showLocationDrawer());
+      dispatch(locationDrawerOpened());
     }
   }, [isPickUpType, dispatch]);
-  const onHandleHideLocationDrawer = useCallback(() => {
-    dispatch(hideLocationDrawer());
+  const onHandleCloseLocationDrawer = useCallback(() => {
+    dispatch(locationDrawerClosed());
   }, [dispatch]);
   const locationTitle = isPickUpType
     ? t(LOCATION_TITLE_KEYS[shippingType])
@@ -109,7 +109,7 @@ const MenuAddressDropdown = () => {
     <div className="tw-flex-1">
       <button
         className={`${styles.addressDropdownButton}${isPickUpType ? '' : ' tw-cursor-pointer'}`}
-        onClick={onHandleShowLocationDrawer}
+        onClick={onHandleOpenLocationDrawer}
       >
         <div className="tw-flex tw-items-center">
           <LocationAndAddressIcon />
@@ -132,7 +132,7 @@ const MenuAddressDropdown = () => {
         searchLocationList={searchLocationList}
         isSearchLocationListVisible={isSearchLocationListVisible}
         isEmptyList={!isAddressListVisible && !isLocationHistoryListVisible && !isSearchLocationListVisible}
-        onClose={onHandleHideLocationDrawer}
+        onClose={onHandleCloseLocationDrawer}
         onSelectAddress={selectedAddressInfo => {
           const { deliveryTo: fullName, postCode, city } = selectedAddressInfo;
 
@@ -147,7 +147,7 @@ const MenuAddressDropdown = () => {
             state,
           });
 
-          dispatch(selectLocation({ addressOrLocationInfo: selectedAddressInfo, type: 'address' }));
+          dispatch(locationSelected({ addressOrLocationInfo: selectedAddressInfo, type: 'address' }));
         }}
         onSelectLocation={selectedLocationInfo => {
           const {
@@ -161,7 +161,7 @@ const MenuAddressDropdown = () => {
             state,
           });
 
-          dispatch(selectLocation({ addressOrLocationInfo: selectedLocationInfo, type: 'location' }));
+          dispatch(locationSelected({ addressOrLocationInfo: selectedLocationInfo, type: 'location' }));
         }}
         onSelectSearchLocation={async (searchResult, index) => {
           if (searchResult) {
@@ -179,7 +179,7 @@ const MenuAddressDropdown = () => {
             });
 
             dispatch(updateSearchLocationList(formatPositionInfo));
-            dispatch(selectLocation({ addressOrLocationInfo: formatPositionInfo, type: 'location' }));
+            dispatch(locationSelected({ addressOrLocationInfo: formatPositionInfo, type: 'location' }));
           }
         }}
         onChangeSearchKeyword={handleSearchKeywordChanged}

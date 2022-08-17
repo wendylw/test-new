@@ -36,6 +36,7 @@ import {
   getIsAddressOutOfRange,
   getHasSelectedExpectedDeliveryTime,
   getStoreStatus,
+  getHasSelectedProductItemInfo,
 } from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
 import { PATH_NAME_MAPPING, SHIPPING_TYPES } from '../../../../../common/utils/constants';
@@ -52,7 +53,7 @@ import Clevertap from '../../../../../utils/clevertap';
 import * as StoreUtils from '../../../../../utils/store-utils';
 import * as TimeLib from '../../../../../utils/time-lib';
 import * as NativeMethods from '../../../../../utils/native-methods';
-import { fetchStoreFavStatus, saveStoreFavStatus } from './api-request';
+import { fetchStoreFavStatus, saveStoreFavStatus, updateStoreInfoCookies } from './api-request';
 import { shortenUrl } from '../../../../../utils/shortenUrl';
 import logger from '../../../../../utils/monitoring/logger';
 import { getShareLinkUrl } from '../../utils';
@@ -60,7 +61,6 @@ import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
 import { getStoreById } from '../../../../../redux/modules/entities/stores';
 import { SOURCE_TYPE, STORE_OPENING_STATUS } from '../../constants';
-import Utils from '../../../../../utils/utils';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -85,15 +85,54 @@ const ensureShippingType = () => {
 
 export const showStoreInfoDrawer = createAsyncThunk('ordering/menu/common/showStoreInfoDrawer', async () => {});
 
-export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLocationDrawer', (_, { getState }) => {
-  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+// FB-4011: We need to save the user's current selected product item information to the redux store. This data is used for:
+// 1. As one of the conditions to re-dispatch showProductDetailDrawer thunk when possible
+// 2. As a request payload to fetch product details before showing the product detail drawer
+export const saveSelectedProductItemInfo = createAsyncThunk(
+  'ordering/menu/productDetail/saveSelectedProductItemInfo',
+  async itemInfo => itemInfo
+);
 
-  Clevertap.pushEvent('Menu page - Click delivery location', storeInfoForCleverTap);
-});
+// FB-4011: We need to clear the user's current selected product item information from the redux store.
+// Once the user dismisses our modal/drawers during the new workflow journey, we will clear this information to avoid popping up the product detail drawer at the wrong time.
+export const clearSelectedProductItemInfo = createAsyncThunk(
+  'ordering/menu/productDetail/clearSelectedProductItemInfo',
+  async () => {}
+);
 
-export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {
-  Clevertap.pushEvent('Location Page - Click back');
-});
+export const cleanUpSelectedProductItemInfoIfNeeded = createAsyncThunk(
+  'ordering/menu/productDetail/cleanUpSelectedProductItemInfoIfNeeded',
+  async (_, { dispatch, getState }) => {
+    const hasSelectedProductItemInfo = getHasSelectedProductItemInfo(getState());
+
+    if (hasSelectedProductItemInfo) {
+      dispatch(clearSelectedProductItemInfo());
+    }
+  }
+);
+
+export const showLocationDrawer = createAsyncThunk('ordering/menu/common/showLocationDrawer', () => {});
+
+export const hideLocationDrawer = createAsyncThunk('ordering/menu/common/hideLocationDrawer', () => {});
+
+export const locationDrawerOpened = createAsyncThunk(
+  'ordering/menu/common/locationDrawerOpened',
+  async (_, { getState, dispatch }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Menu page - Click delivery location', storeInfoForCleverTap);
+    await dispatch(showLocationDrawer());
+  }
+);
+
+export const locationDrawerClosed = createAsyncThunk(
+  'ordering/menu/common/locationDrawerClosed',
+  async (_, { dispatch }) => {
+    Clevertap.pushEvent('Location Page - Click back');
+    await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
+    await dispatch(hideLocationDrawer());
+  }
+);
 
 /**
  * @params expectedDate: null | ISO string format | now
@@ -592,25 +631,55 @@ export const shareStore = createAsyncThunk('ordering/menu/common/shareStore', as
 
 export const hideStoreInfoDrawer = createAsyncThunk('ordering/menu/common/hideStoreInfoDrawer', async () => {});
 
-export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', (_, { getState }) => {
-  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+export const showTimeSlotDrawer = createAsyncThunk('ordering/menu/common/showTimeSlotDrawer', () => {});
 
-  Clevertap.pushEvent('Menu page - Click timeslot', storeInfoForCleverTap);
-});
+export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {});
 
-export const hideTimeSlotDrawer = createAsyncThunk('ordering/menu/common/hideTimeSlotDrawer', () => {
-  Clevertap.pushEvent('Timeslot - back');
-});
+export const timeSlotDrawerOpened = createAsyncThunk(
+  'ordering/menu/common/timeSlotDrawerOpened',
+  async (_, { getState, dispatch }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
-export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', (_, { getState }) => {
-  const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+    Clevertap.pushEvent('Menu page - Click timeslot', storeInfoForCleverTap);
+    await dispatch(showTimeSlotDrawer());
+  }
+);
 
-  Clevertap.pushEvent('Menu page - Click store list', storeInfoForCleverTap);
-});
+export const timeSlotDrawerClosed = createAsyncThunk(
+  'ordering/menu/common/timeSlotDrawerClosed',
+  async (_, { dispatch }) => {
+    Clevertap.pushEvent('Timeslot - back');
+    await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
+    await dispatch(hideTimeSlotDrawer());
+  }
+);
 
-export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {
-  Clevertap.pushEvent('Store List - Back');
-});
+export const showStoreListDrawer = createAsyncThunk('ordering/menu/common/showStoreListDrawer', () => {});
+
+export const hideStoreListDrawer = createAsyncThunk('ordering/menu/common/hideStoreListDrawer', () => {});
+
+export const storeListDrawerOpened = createAsyncThunk(
+  'ordering/menu/common/storeListDrawerOpened',
+  async (_, { getState, dispatch }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+
+    Clevertap.pushEvent('Menu page - Click store list', storeInfoForCleverTap);
+    await dispatch(showStoreListDrawer());
+  }
+);
+
+export const storeListDrawerClosed = createAsyncThunk(
+  'ordering/menu/common/StoreListDrawerClosed',
+  async (_, { dispatch }) => {
+    Clevertap.pushEvent('Store List - Back');
+    await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
+    await dispatch(hideStoreListDrawer());
+  }
+);
+
+export const showLocationConfirmModal = createAsyncThunk('ordering/menu/common/showLocationConfirmModal', () => {});
+
+export const hideLocationConfirmModal = createAsyncThunk('ordering/menu/common/hideLocationConfirmModal', () => {});
 
 /**
  * goto Review cart page
@@ -665,24 +734,34 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
   }
 });
 
-export const refreshMenuPageForNewStore = createAsyncThunk(
-  'ordering/menu/common/refreshMenuPageForNewStore',
-  async (storeId, { getState }) => {
+export const changeStore = createAsyncThunk(
+  'ordering/menu/common/changeStore',
+  async (storeId, { dispatch, getState }) => {
     const state = getState();
     const store = getStoreById(state, storeId);
-    const hashCode = _get(store, 'hash', null);
+    const h = _get(store, 'hash', null);
     const fulfillmentOptions = _get(store, 'fulfillmentOptions', []);
     const shippingTypes = fulfillmentOptions.map(option => option.toLowerCase());
-    const shippingType = getShippingType(state);
-    const h = decodeURIComponent(hashCode);
-    const queries = Utils.getQueryString();
+    const currentShippingType = getShippingType(state);
 
-    queries.h = h;
+    try {
+      await updateStoreInfoCookies(h);
+      // NOTE: We need to reset api status to force the api to be called again.
+      dispatch(appActions.resetOnlineCategoryStatus());
+      dispatch(appActions.resetCoreBusinessStatus());
 
-    // If the new store doesn't support the current shipping type, then we need to change the shipping type to the available one.
-    queries.type = shippingTypes.includes(shippingType) ? shippingType : shippingTypes[0];
+      // Update store id in both redux and url query
+      dispatch(appActions.updateStoreId(storeId));
 
-    const search = qs.stringify(queries, { addQueryPrefix: true });
-    window.location.href = `${PATH_NAME_MAPPING.ORDERING_BASE}${search}`;
+      // If the new store doesn't support the current shipping type, then we need to change the shipping type to the available one.
+      const newShippingType = shippingTypes.includes(currentShippingType) ? currentShippingType : shippingTypes[0];
+
+      if (newShippingType !== currentShippingType) {
+        dispatch(appActions.updateShippingType(newShippingType));
+      }
+    } catch (e) {
+      logger.error('Menu_ChangeStoreFailed', { message: e?.message });
+      throw e;
+    }
   }
 );

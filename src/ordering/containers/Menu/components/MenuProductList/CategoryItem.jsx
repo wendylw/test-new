@@ -7,7 +7,7 @@ import { ObjectFitImage } from '../../../../../common/components/Image';
 import Badge from '../../../../../common/components/Badge';
 import Tag from '../../../../../common/components/Tag';
 import IconBestSellerImage from '../../../../../images/bestseller.svg';
-import { showProductDetailDrawer } from '../../redux/productDetail/thunks';
+import { productItemClicked } from '../../redux/productDetail/thunks';
 import styles from './MenuProductList.module.scss';
 
 const ProductListProps = PropTypes.arrayOf(
@@ -36,7 +36,7 @@ const BestSellerCategoryProductList = ({ products, categoryId }) => {
             key={`bestSellerProductItem-${product.id}`}
             className={styles.menuProductItem}
             onClick={() => {
-              dispatch(showProductDetailDrawer({ productId: product.id, category: categoryId }));
+              dispatch(productItemClicked({ productId: product.id, categoryId }));
             }}
           >
             <div
@@ -91,7 +91,7 @@ const CategoryProductList = ({ products, categoryId }) => {
           key={product.id}
           className={`${styles.menuProductItem} tw-mx-8 sm:tw-mx-8px`}
           onClick={() => {
-            dispatch(showProductDetailDrawer({ productId: product.id, category: categoryId }));
+            dispatch(productItemClicked({ productId: product.id, categoryId }));
           }}
         >
           <div
