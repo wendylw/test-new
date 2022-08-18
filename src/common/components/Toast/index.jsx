@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, forwardRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransition } from 'react-transition-group';
 import { CheckCircle, WarningCircle, Info } from 'phosphor-react';
@@ -25,7 +25,7 @@ const MESSAGE_TYPE_MAPPING = {
     icon: <Info className={styles.ToastIcon} weight="fill" />,
   },
 };
-const Toast = forwardRef(props => {
+const Toast = props => {
   const { children, icon, type, duration, show, onClose, className, style } = props;
   const timeoutRef = useRef(null);
   const contentContainerRef = useRef(null);
@@ -62,7 +62,7 @@ const Toast = forwardRef(props => {
       </div>
     </CSSTransition>
   );
-});
+};
 
 Toast.displayName = 'Toast';
 

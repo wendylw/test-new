@@ -57,6 +57,7 @@ const createAlert = (content, options) =>
       children
     );
 
+    rootDOM.setAttribute('class', 'feedback__alert');
     container.appendChild(rootDOM);
 
     render(alertInstance, rootDOM);

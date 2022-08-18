@@ -3,7 +3,6 @@ import { render } from 'react-dom';
 import { destroyTarget, CONFIRM_BUTTON_ALIGNMENT } from './utils';
 import Confirm from '../../components/Confirm';
 import ConfirmContent from '../../components/Confirm/ConfirmContent';
-import ConfirmFooter from '../../components/Confirm/ConfirmFooter';
 
 /**
  * Use confirm(...) function to call confirm modal component, that confirm can not customize display or closing.
@@ -13,6 +12,8 @@ const confirmOptions = ({
   container = document.body,
   title = null,
   customizeContent = false,
+  closeByBackButton = true,
+  closeByBackDrop = true,
   animation = true,
   closeButtonContent = null,
   className = '',
@@ -30,6 +31,8 @@ const confirmOptions = ({
   title,
   customizeContent,
   animation,
+  closeByBackButton,
+  closeByBackDrop,
   closeButtonContent,
   className,
   closeButtonClassName,
@@ -73,27 +76,16 @@ const createConfirm = (content, options) =>
         ...restOptions,
         show: true,
         mountAtRoot: false,
-        footer: (
-          <ConfirmFooter
-            closeButtonContent={closeButtonContent}
-            closeButtonClassName={closeButtonClassName}
-            closeButtonStyle={closeButtonStyle}
-            confirmButtonContent={confirmButtonContent}
-            confirmButtonClassName={confirmButtonClassName}
-            confirmButtonStyle={confirmButtonStyle}
-            buttonAlignment={buttonAlignment}
-            onClose={() => {
-              destroyTarget(rootDOM);
-              resolve();
-              onClose();
-            }}
-            onConfirm={onConfirm}
-          />
-        ),
+        onClose: () => {
+          destroyTarget(rootDOM);
+          resolve();
+          onClose();
+        },
       },
       children
     );
 
+    rootDOM.setAttribute('class', 'feedback__confirm');
     container.appendChild(rootDOM);
 
     render(confirmInstance, rootDOM);

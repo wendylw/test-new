@@ -115,6 +115,7 @@ const MenuAddressDropdown = () => {
           closeButtonContent: t('NoThanks'),
           confirmButtonContent: t('AddAddress'),
           onConfirm: () => {
+            console.log(111);
             dispatch(addAddressButtonClicked());
           },
           onClose: () => {

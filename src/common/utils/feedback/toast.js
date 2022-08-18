@@ -24,9 +24,6 @@ const createToast = (content, options) =>
   new Promise(resolve => {
     const { container, onClose, ...restOptions } = options;
     const rootDOM = document.createElement('div');
-
-    container.appendChild(rootDOM);
-
     // eslint-disable-next-line react/no-children-prop
     const toastInstance = React.createElement(
       Toast,
@@ -42,6 +39,9 @@ const createToast = (content, options) =>
       },
       content
     );
+
+    rootDOM.setAttribute('class', 'feedback__toast');
+    container.appendChild(rootDOM);
 
     render(toastInstance, rootDOM);
   });
