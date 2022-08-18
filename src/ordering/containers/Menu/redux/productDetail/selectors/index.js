@@ -72,10 +72,8 @@ export const getSelectedCategory = createSelector(
   (allCategories, selectedCategoryId) => allCategories[selectedCategoryId]
 );
 
-export const getIfSelectedProductExists = createSelector(
-  getAllProducts,
-  getSelectedProductId,
-  (allProducts, productId) => _get(allProducts, `${productId}._exists`, false)
+export const getIfSelectedProductExists = createSelector(getSelectedProduct, selectedProduct =>
+  _get(selectedProduct, '_exists', false)
 );
 
 export const getSelectedProductInventoryType = createSelector(getSelectedProduct, selectedProduct =>
