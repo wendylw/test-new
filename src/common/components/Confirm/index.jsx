@@ -45,10 +45,6 @@ const ConfirmFooter = props => {
     onConfirm,
   } = props;
 
-  useEffect(() => {
-    console.log(onConfirm);
-  }, [onConfirm]);
-
   return (
     <div className={`${styles.confirmFooter} ${buttonAlignment}`}>
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL ? (

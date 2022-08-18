@@ -48,22 +48,13 @@ const confirmOptions = ({
 
 const createConfirm = (content, options) =>
   new Promise(resolve => {
-    const {
-      container,
-      title,
-      customizeContent,
-      closeButtonContent,
-      closeButtonClassName,
-      closeButtonStyle,
-      confirmButtonContent,
-      confirmButtonClassName,
-      confirmButtonStyle,
-      buttonAlignment,
-      onClose,
-      onConfirm,
-      ...restOptions
-    } = options;
+    const { container, title, customizeContent, onClose, onConfirm, ...restOptions } = options;
     const rootDOM = document.createElement('div');
+    const closeFunction = () => {
+      destroyTarget(rootDOM);
+      resolve();
+      onClose();
+    };
     const children = customizeContent ? (
       content
     ) : (
@@ -76,10 +67,13 @@ const createConfirm = (content, options) =>
         ...restOptions,
         show: true,
         mountAtRoot: false,
-        onClose: () => {
-          destroyTarget(rootDOM);
-          resolve();
-          onClose();
+        onClose: closeFunction,
+        onConfirm: () => {
+          onConfirm();
+
+          setTimeout(() => {
+            closeFunction();
+          }, 1000);
         },
       },
       children

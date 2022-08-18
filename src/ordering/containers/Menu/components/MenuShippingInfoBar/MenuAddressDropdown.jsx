@@ -114,9 +114,8 @@ const MenuAddressDropdown = () => {
           buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.VERTICAL,
           closeButtonContent: t('NoThanks'),
           confirmButtonContent: t('AddAddress'),
-          onConfirm: () => {
-            console.log(111);
-            dispatch(addAddressButtonClicked());
+          onConfirm: async () => {
+            await dispatch(addAddressButtonClicked());
           },
           onClose: () => {
             dispatch(noThanksButtonClicked());
