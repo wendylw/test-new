@@ -102,7 +102,7 @@ const MenuAddressDropdown = () => {
   useEffect(() => {
     if (isLocationConfirmModalVisible && !isLocationDrawerVisible) {
       confirm(
-        <div className="tw-justify-center">
+        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
           <div className={styles.addAddressConfirmationImage}>
             <ObjectFitImage src={LocationAddAddressConfirmationImage} noCompression />
           </div>
