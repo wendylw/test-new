@@ -24,7 +24,7 @@ const confirmOptions = ({
   confirmButtonStyle = {},
   buttonAlignment = CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
   zIndex = 300,
-  onClose = () => {},
+  onCancel = () => {},
   onConfirm = () => {},
 }) => ({
   container,
@@ -42,18 +42,17 @@ const confirmOptions = ({
   confirmButtonStyle,
   buttonAlignment,
   zIndex,
-  onClose,
+  onCancel,
   onConfirm,
 });
 
 const createConfirm = (content, options) =>
   new Promise(resolve => {
-    const { container, title, customizeContent, onClose, onConfirm, ...restOptions } = options;
+    const { container, title, customizeContent, onCancel, onConfirm, ...restOptions } = options;
     const rootDOM = document.createElement('div');
-    const closeFunction = () => {
+    const callbackFunction = () => {
       destroyTarget(rootDOM);
       resolve();
-      onClose();
     };
     const children = customizeContent ? (
       content
@@ -67,13 +66,16 @@ const createConfirm = (content, options) =>
         ...restOptions,
         show: true,
         mountAtRoot: false,
-        onClose: closeFunction,
+        onClose: () => {
+          callbackFunction();
+        },
+        onCancel: () => {
+          callbackFunction();
+          onCancel();
+        },
         onConfirm: () => {
+          callbackFunction();
           onConfirm();
-
-          setTimeout(() => {
-            closeFunction();
-          }, 1000);
         },
       },
       children

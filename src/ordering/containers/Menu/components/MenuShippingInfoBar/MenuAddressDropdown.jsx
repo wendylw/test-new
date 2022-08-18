@@ -98,7 +98,8 @@ const MenuAddressDropdown = () => {
   }, [isLocationDrawerVisible]);
 
   useEffect(() => {
-    if (isLocationConfirmModalVisible) {
+    console.log(isLocationConfirmModalVisible);
+    if (isLocationConfirmModalVisible && !isLocationDrawerVisible) {
       confirm(
         <div className="tw-justify-center">
           <img src="" alt="" />
@@ -111,19 +112,21 @@ const MenuAddressDropdown = () => {
         </div>,
         {
           customizeContent: true,
+          closeByBackButton: false,
+          closeByBackDrop: false,
           buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.VERTICAL,
           closeButtonContent: t('NoThanks'),
           confirmButtonContent: t('AddAddress'),
           onConfirm: async () => {
             await dispatch(addAddressButtonClicked());
           },
-          onClose: () => {
+          onCancel: () => {
             dispatch(noThanksButtonClicked());
           },
         }
       );
     }
-  }, [dispatch, isLocationConfirmModalVisible, t]);
+  }, [dispatch, isLocationConfirmModalVisible, isLocationDrawerVisible, t]);
 
   const handleSearchKeywordChanged = useCallback(
     async searchKey => {

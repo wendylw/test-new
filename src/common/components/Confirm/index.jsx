@@ -17,6 +17,7 @@ const ConfirmFooterPropsTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   confirmButtonStyle: PropTypes.object,
   buttonAlignment: PropTypes.oneOf(Object.values(CONFIRM_BUTTON_ALIGNMENT)),
+  onCancel: PropTypes.func,
   onConfirm: PropTypes.func,
 };
 
@@ -28,6 +29,7 @@ const ConfirmFooterDefaultProps = {
   confirmButtonClassName: '',
   confirmButtonStyle: {},
   buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
+  onCancel: () => {},
   onConfirm: () => {},
 };
 
@@ -41,7 +43,7 @@ const ConfirmFooter = props => {
     confirmButtonClassName,
     confirmButtonStyle,
     buttonAlignment,
-    onClose,
+    onCancel,
     onConfirm,
   } = props;
 
@@ -51,7 +53,7 @@ const ConfirmFooter = props => {
         <Button
           type="secondary"
           className={`tw-flex-1 tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
-          onClick={onClose}
+          onClick={onCancel}
           style={closeButtonStyle}
         >
           {closeButtonContent || t('ConfirmCloseButtonText')}
@@ -71,7 +73,7 @@ const ConfirmFooter = props => {
           className={`${styles.confirmVerticalCloseButton} tw-flex-1${
             closeButtonClassName ? ` ${closeButtonClassName}` : ''
           }`}
-          onClick={onClose}
+          onClick={onCancel}
           style={closeButtonStyle}
         >
           {closeButtonContent || t('ConfirmCloseButtonText')}
@@ -82,11 +84,8 @@ const ConfirmFooter = props => {
 };
 
 ConfirmFooter.displayName = 'ConfirmFooter';
-ConfirmFooter.propTypes = {
-  ...ConfirmFooterPropsTypes,
-  onClose: PropTypes.func,
-};
-ConfirmFooter.defaultProps = { ...ConfirmFooterDefaultProps, onClose: () => {} };
+ConfirmFooter.propTypes = ConfirmFooterPropsTypes;
+ConfirmFooter.defaultProps = ConfirmFooterDefaultProps;
 
 const Confirm = props => {
   const {
@@ -104,9 +103,10 @@ const Confirm = props => {
     confirmButtonClassName,
     confirmButtonStyle,
     buttonAlignment,
-    onConfirm,
     zIndex,
     onClose,
+    onCancel,
+    onConfirm,
   } = props;
   const contentContainerRef = useRef(null);
 
@@ -138,7 +138,7 @@ const Confirm = props => {
         confirmButtonClassName={confirmButtonClassName}
         confirmButtonStyle={confirmButtonStyle}
         buttonAlignment={buttonAlignment}
-        onClose={onClose}
+        onCancel={onCancel}
         onConfirm={onConfirm}
       />
     </Modal>
