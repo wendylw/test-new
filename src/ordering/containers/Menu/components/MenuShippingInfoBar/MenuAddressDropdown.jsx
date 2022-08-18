@@ -6,7 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
 import { CaretDown } from 'phosphor-react';
+import LocationAddAddressConfirmationImage from '../../../../../images/location-add-address-confirmation.svg';
 import { LocationAndAddressIcon } from '../../../../../common/components/Icons';
+import { ObjectFitImage } from '../../../../../common/components/Image';
 import AddressLocationDrawer from '../../../../components/AddressLocationDrawer';
 import { confirm } from '../../../../../common/utils/feedback';
 import { CONFIRM_BUTTON_ALIGNMENT } from '../../../../../common/utils/feedback/utils';
@@ -98,11 +100,13 @@ const MenuAddressDropdown = () => {
   }, [isLocationDrawerVisible]);
 
   useEffect(() => {
-    console.log(isLocationConfirmModalVisible);
     if (isLocationConfirmModalVisible && !isLocationDrawerVisible) {
       confirm(
         <div className="tw-justify-center">
-          <img src="" alt="" />
+          <div className={styles.addAddressConfirmationImage}>
+            <ObjectFitImage src={LocationAddAddressConfirmationImage} noCompression />
+          </div>
+
           <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">
             {t('AddAddressConfirmTitle')}
           </h4>

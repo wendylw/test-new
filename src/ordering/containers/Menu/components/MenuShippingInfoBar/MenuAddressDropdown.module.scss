@@ -1,3 +1,20 @@
+.addAddressConfirmationImage {
+  @apply tw-flex tw-flex-1 tw-justify-center tw-mb-16 sm:tw-mb-16px;
+
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
+  min-width: 60px;
+
+  figure {
+    @apply tw-bg-transparent;
+  }
+
+  img {
+    object-fit: contain;
+  }
+}
+
 .addressDropdownButton {
   @apply tw-flex tw-w-full tw-items-center tw-justify-between tw-px-12 sm:tw-px-12px tw-py-8 sm:tw-py-8px tw-border-none tw-bg-white tw-outline-none tw-shadow-none tw-text-black;
 }
