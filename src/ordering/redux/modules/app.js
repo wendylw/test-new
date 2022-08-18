@@ -658,6 +658,15 @@ export const actions = {
     dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
   },
 
+  reloadProductList: () => dispatch => {
+    // Reset product list and category list data
+    dispatch({
+      type: types.RESET_ONLINECATEGORY_STATUS,
+    });
+
+    dispatch(actions.loadProductList());
+  },
+
   loadProductDetail: productId => (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
