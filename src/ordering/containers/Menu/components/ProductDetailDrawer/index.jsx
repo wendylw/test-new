@@ -86,13 +86,19 @@ const ProductDetailDrawer = () => {
   }, [dispatch, couldShowProductDetailDrawer, selectedProductItemInfo]);
 
   useEffect(() => {
+    if (!isDrawerVisible) {
+      setShowTopArrow(false);
+    }
+  }, [dispatch, isDrawerVisible]);
+
+  useEffect(() => {
     if (isDrawerVisible) {
       dispatch(productDetailDrawerShown());
     } else {
-      setShowTopArrow(false);
       dispatch(productDetailDrawerHidden());
     }
   }, [dispatch, isDrawerVisible]);
+
   const onContentScroll = useCallback(() => {
     if (!contentRef.current || !imageSectionRef.current) {
       return;
