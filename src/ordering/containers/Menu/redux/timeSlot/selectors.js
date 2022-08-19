@@ -189,10 +189,10 @@ export const getIsSaveButtonDisabled = createSelector(
   getSelectedShippingTypeObj,
   getSelectedDateObj,
   getSelectedTimeSlotObj,
-  getIsSaveButtonLoaderVisible,
-  (selectedShippingTypeObj, selectedDateObj, selectedTimeSlotObj, isSaveButtonLoaderVisible) =>
+  getSaveRequestStatus,
+  (selectedShippingTypeObj, selectedDateObj, selectedTimeSlotObj, saveRequestStatus) =>
     !selectedShippingTypeObj?.available ||
     !selectedDateObj?.available ||
     !selectedTimeSlotObj?.available ||
-    isSaveButtonLoaderVisible
+    saveRequestStatus === API_REQUEST_STATUS.PENDING
 );
