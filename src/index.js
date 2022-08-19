@@ -6,7 +6,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import smoothscroll from 'smoothscroll-polyfill';
-import resizeObserverPolyfill from 'resize-observer-polyfill';
 import './i18n';
 import Bootstrap from './Bootstrap';
 import './index.css';
@@ -14,10 +13,6 @@ import './index.css';
 try {
   // kick off the polyfill!
   smoothscroll.polyfill();
-
-  if (!window.ResizeObserver) {
-    window.ResizeObserver = resizeObserverPolyfill.default;
-  }
 } catch (e) {
   throw e;
 } finally {
