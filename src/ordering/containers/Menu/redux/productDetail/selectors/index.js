@@ -72,10 +72,6 @@ export const getSelectedCategory = createSelector(
   (allCategories, selectedCategoryId) => allCategories[selectedCategoryId]
 );
 
-export const getIfSelectedProductExists = createSelector(getSelectedProduct, selectedProduct =>
-  _get(selectedProduct, '_exists', false)
-);
-
 export const getSelectedProductInventoryType = createSelector(getSelectedProduct, selectedProduct =>
   _get(selectedProduct, 'inventoryType', null)
 );
@@ -407,13 +403,9 @@ export const getIsOutOfStockProduct = createSelector(
   selectedProductStockStatus => selectedProductStockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK
 );
 
-// There are 2 conditions to mark the product as unavailable status:
-// 1. The product is sold out
-// 2. The product is not on the product list
 export const getIsUnavailableProduct = createSelector(
-  getIsOutOfStockProduct,
-  getIfSelectedProductExists,
-  (isOutOfStockProduct, ifSelectedProductExists) => isOutOfStockProduct || !ifSelectedProductExists
+  getSelectedProduct,
+  selectedProduct => !_get(selectedProduct, '_exists', false)
 );
 
 export const getIsAbleAddToCart = createSelector(
