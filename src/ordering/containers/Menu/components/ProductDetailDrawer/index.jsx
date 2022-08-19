@@ -90,7 +90,7 @@ const ProductDetailDrawer = () => {
     if (!isDrawerVisible) {
       setShowTopArrow(false);
     }
-  }, [dispatch, isDrawerVisible]);
+  }, [isDrawerVisible]);
 
   useEffect(() => {
     if (isDrawerVisible) {
