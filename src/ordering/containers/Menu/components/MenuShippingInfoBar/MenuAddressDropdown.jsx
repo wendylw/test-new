@@ -20,7 +20,12 @@ import {
   getIsPickUpType,
   getIsLocationConfirmModalVisible,
 } from '../../redux/common/selectors';
-import { locationDrawerOpened, locationDrawerClosed } from '../../redux/common/thunks';
+import {
+  locationDrawerOpened,
+  locationDrawerClosed,
+  addAddressButtonClicked,
+  noThanksButtonClicked,
+} from '../../redux/common/thunks';
 import {
   getHasStoreInfoInitialized,
   getAddressListInfo,
@@ -37,7 +42,6 @@ import {
   loadPlaceInfo,
   updateSearchLocationList,
 } from '../../redux/address/thunks';
-import { addAddressButtonClicked, noThanksButtonClicked } from '../../redux/locationModal/thunks';
 import styles from './MenuAddressDropdown.module.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import { getStoreInfoForCleverTap } from '../../../../redux/modules/app';
