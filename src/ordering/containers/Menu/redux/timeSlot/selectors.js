@@ -180,10 +180,19 @@ export const getSelectedTimeSlotObj = createSelector(getTimeSlotList, timeSlotLi
   timeSlotList.find(({ selected }) => selected)
 );
 
+export const getIsSaveButtonLoaderVisible = createSelector(
+  getSaveRequestStatus,
+  saveRequestStatus => saveRequestStatus === API_REQUEST_STATUS.PENDING
+);
+
 export const getIsSaveButtonDisabled = createSelector(
   getSelectedShippingTypeObj,
   getSelectedDateObj,
   getSelectedTimeSlotObj,
-  (selectedShippingTypeObj, selectedDateObj, selectedTimeSlotObj) =>
-    !selectedShippingTypeObj?.available || !selectedDateObj?.available || !selectedTimeSlotObj?.available
+  getIsSaveButtonLoaderVisible,
+  (selectedShippingTypeObj, selectedDateObj, selectedTimeSlotObj, isSaveButtonLoaderVisible) =>
+    !selectedShippingTypeObj?.available ||
+    !selectedDateObj?.available ||
+    !selectedTimeSlotObj?.available ||
+    isSaveButtonLoaderVisible
 );

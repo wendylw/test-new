@@ -215,7 +215,7 @@ export const timeSlotSelected = createAsyncThunk(
 
       dispatch(AppActions.updateShippingType(selectedShippingType));
 
-      dispatch(
+      await dispatch(
         updateExpectedDeliveryDate({
           expectedDate: selectedExpectedDeliveryTime,
           shippingType: selectedShippingType,
@@ -224,8 +224,7 @@ export const timeSlotSelected = createAsyncThunk(
 
       if (selectedShippingType !== shippingType || expectedDeliveryTime !== selectedExpectedDeliveryTime) {
         // need to reload the shopping cart and product list
-        dispatch(AppActions.loadShoppingCart());
-        dispatch(AppActions.reloadProductList());
+        await Promise.all([dispatch(AppActions.loadShoppingCart()), dispatch(AppActions.reloadProductList())]);
       }
 
       dispatch(hideTimeSlotDrawer());

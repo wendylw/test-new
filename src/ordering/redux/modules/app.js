@@ -650,21 +650,21 @@ export const actions = {
   }),
 
   // load product list group by category, and shopping cart
-  loadProductList: () => (dispatch, getState) => {
+  loadProductList: () => async (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
     const shippingType = Utils.getApiRequestShippingType();
 
-    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+    await dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
   },
 
-  reloadProductList: () => dispatch => {
+  reloadProductList: () => async dispatch => {
     // Reset product list and category list data
     dispatch({
       type: types.RESET_ONLINECATEGORY_STATUS,
     });
 
-    dispatch(actions.loadProductList());
+    await dispatch(actions.loadProductList());
   },
 
   loadProductDetail: productId => (dispatch, getState) => {
