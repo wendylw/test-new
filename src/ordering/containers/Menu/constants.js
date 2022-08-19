@@ -22,6 +22,7 @@ export const PRODUCT_SELECTION_AMOUNT_LIMIT_TYPE = {
 
 export const PRODUCT_UNABLE_ADD_TO_CART_REASONS = {
   OUT_OF_STOCK: 'outOfStock',
+  UNAVAILABLE: 'unavailable',
   VARIATION_UNFULFILLED: 'variationUnFulfilled',
   EXCEEDED_QUANTITY_ON_HAND: 'exceededQuantityOnHand',
 };

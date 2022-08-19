@@ -56,6 +56,7 @@ const UNABLE_ADD_TO_CART_REASON_KEY_MAP = {
   [PRODUCT_UNABLE_ADD_TO_CART_REASONS.VARIATION_UNFULFILLED]: 'SelectVariant',
   // TODO: get the copy from PO
   [PRODUCT_UNABLE_ADD_TO_CART_REASONS.EXCEEDED_QUANTITY_ON_HAND]: 'ExceedsMaximumStock',
+  [PRODUCT_UNABLE_ADD_TO_CART_REASONS.UNAVAILABLE]: 'Unavailable',
 };
 
 const ProductDetailDrawer = () => {
@@ -161,6 +162,10 @@ const ProductDetailDrawer = () => {
                 ) : null}
                 {isOutOfStockProduct ? (
                   <Tag className="tw-flex-shrink-0 tw-my-6 sm:tw-my-6px tw-font-bold tw-uppercase">{t('SoldOut')}</Tag>
+                ) : isUnavailableProduct ? (
+                  <Tag className="tw-flex-shrink-0 tw-my-6 sm:tw-my-6px tw-font-bold tw-uppercase">
+                    {t('Unavailable')}
+                  </Tag>
                 ) : null}
               </div>
               <div className="tw-my-4 sm:tw-my-4px tw-flex tw-w-full tw-flex-row">

@@ -402,37 +402,6 @@ export const getIsProductDetailDrawerFullScreen = createSelector(
   (images, variations) => images.length > 0 || variations.length > 0
 );
 
-export const getIsAbleAddToCart = createSelector(
-  getIsProductVariationFulfilled,
-  getSelectedProductStockStatus,
-  getIsExceededQuantityOnHand,
-  (isProductVariationFulfilled, selectedProductStockStatus, isExceededQuantityOnHand) =>
-    isProductVariationFulfilled &&
-    selectedProductStockStatus !== PRODUCT_STOCK_STATUS.OUT_OF_STOCK &&
-    !isExceededQuantityOnHand
-);
-
-export const getUnableAddToCartReason = createSelector(
-  getIsProductVariationFulfilled,
-  getSelectedProductStockStatus,
-  getIsExceededQuantityOnHand,
-  (isProductVariationFulfilled, selectedProductStockStatus, isExceededQuantityOnHand) => {
-    if (selectedProductStockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK) {
-      return PRODUCT_UNABLE_ADD_TO_CART_REASONS.OUT_OF_STOCK;
-    }
-
-    if (isExceededQuantityOnHand) {
-      return PRODUCT_UNABLE_ADD_TO_CART_REASONS.EXCEEDED_QUANTITY_ON_HAND;
-    }
-
-    if (!isProductVariationFulfilled) {
-      return PRODUCT_UNABLE_ADD_TO_CART_REASONS.VARIATION_UNFULFILLED;
-    }
-
-    return '';
-  }
-);
-
 export const getIsOutOfStockProduct = createSelector(
   getSelectedProductStockStatus,
   selectedProductStockStatus => selectedProductStockStatus === PRODUCT_STOCK_STATUS.OUT_OF_STOCK
@@ -445,6 +414,41 @@ export const getIsUnavailableProduct = createSelector(
   getIsOutOfStockProduct,
   getIfSelectedProductExists,
   (isOutOfStockProduct, ifSelectedProductExists) => isOutOfStockProduct || !ifSelectedProductExists
+);
+
+export const getIsAbleAddToCart = createSelector(
+  getIsOutOfStockProduct,
+  getIsUnavailableProduct,
+  getIsExceededQuantityOnHand,
+  getIsProductVariationFulfilled,
+  (isOutOfStockProduct, isUnavailableProduct, isExceededQuantityOnHand, isProductVariationFulfilled) =>
+    isProductVariationFulfilled && !(isOutOfStockProduct || isUnavailableProduct || isExceededQuantityOnHand)
+);
+
+export const getUnableAddToCartReason = createSelector(
+  getIsOutOfStockProduct,
+  getIsUnavailableProduct,
+  getIsExceededQuantityOnHand,
+  getIsProductVariationFulfilled,
+  (isOutOfStockProduct, isUnavailableProduct, isExceededQuantityOnHand, isProductVariationFulfilled) => {
+    if (isOutOfStockProduct) {
+      return PRODUCT_UNABLE_ADD_TO_CART_REASONS.OUT_OF_STOCK;
+    }
+
+    if (isUnavailableProduct) {
+      return PRODUCT_UNABLE_ADD_TO_CART_REASONS.UNAVAILABLE;
+    }
+
+    if (isExceededQuantityOnHand) {
+      return PRODUCT_UNABLE_ADD_TO_CART_REASONS.EXCEEDED_QUANTITY_ON_HAND;
+    }
+
+    if (!isProductVariationFulfilled) {
+      return PRODUCT_UNABLE_ADD_TO_CART_REASONS.VARIATION_UNFULFILLED;
+    }
+
+    return '';
+  }
 );
 
 export const getProductIdForGTMData = createSelector(
