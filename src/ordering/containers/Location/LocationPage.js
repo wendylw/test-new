@@ -9,7 +9,7 @@ import ErrorToast from '../../../components/ErrorToast';
 import AddressSelector from '../../../containers/AddressSelector';
 import Utils from '../../../utils/utils';
 import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators, getBusiness, getUserIsLogin } from '../../redux/modules/app';
+import { actions as appActionCreators, getBusiness, getUserIsLogin, getStoreId } from '../../redux/modules/app';
 import { getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getAddressList } from '../../redux/modules/addressList/selectors';
 import { loadAddressList } from '../../redux/modules/addressList/thunks';
@@ -30,8 +30,10 @@ class LocationPage extends Component {
   };
 
   async componentDidMount() {
+    const { storeId } = this.props;
+
     this.loadStoreInfo();
-    if (!config.storeId) {
+    if (!storeId) {
       await this.props.appActions.loadCoreBusiness();
       const { qrOrderingSettings, country } = this.props.allBusinesses[this.props.business] || {};
       const { deliveryRadius } = qrOrderingSettings || {};
@@ -72,9 +74,11 @@ class LocationPage extends Component {
   }
 
   async loadStoreInfo() {
+    const { storeId } = this.props;
+
     this.setState({ initializing: true });
     try {
-      const { business, storeId } = config;
+      const { business } = config;
       if (!business || !storeId) {
         return;
       }
@@ -234,6 +238,7 @@ export default compose(
       business: getBusiness(state),
       allBusinesses: getAllBusinesses(state),
       addressList: getAddressList(state),
+      storeId: getStoreId(state),
     }),
     dispatch => ({
       setAddressInfo: bindActionCreators(setAddressInfo, dispatch),

@@ -11,7 +11,7 @@ import _get from 'lodash/get';
 import {
   actions as locationAndDateActionCreator,
   getDeliveryType,
-  getStoreId,
+  getStoreId as getCachedStoreId,
   getAddressName,
   getOrderDateList,
   getSelectedOrderDate,
@@ -29,13 +29,13 @@ import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as storeUtils from '../../../utils/store-utils';
 import * as timeLib from '../../../utils/time-lib';
-import config from '../../../config';
 import {
   actions as appActionCreators,
   getBusinessDeliveryTypes,
   getBusinessUTCOffset,
   getStoreInfoForCleverTap,
   getStoreHashCode,
+  getStoreId as getSavedStoreId,
 } from '../../redux/modules/app';
 import { getAddressInfo as getSavedAddressInfo } from '../../../redux/modules/address/selectors';
 import { setAddressInfo } from '../../../redux/modules/address/thunks';
@@ -53,7 +53,7 @@ class LocationAndDate extends Component {
   resetWhenWillUnmount = false;
 
   componentDidMount = async () => {
-    const { actions, location, savedAddressInfo, cachedAddressInfo } = this.props;
+    const { actions, location, savedAddressInfo, cachedAddressInfo, savedStoreId } = this.props;
     const { selectedAddress: selectedAddressInfo = null } = location.state || {};
 
     const deliveryType = (this.query.type || '').toLowerCase();
@@ -63,7 +63,7 @@ class LocationAndDate extends Component {
     const expectedDay = _get(expectedDeliveryDate, 'date.date', null);
     const expectedFromTime = _get(expectedDeliveryDate, 'hour.from', null);
     // if delivery address updated from location page, should trigger `initial action` find nearest store
-    const storeId = selectedAddressInfo ? null : config.storeId;
+    const storeId = selectedAddressInfo ? null : savedStoreId;
 
     await actions.initial({
       currentDate: new Date(),
@@ -81,8 +81,8 @@ class LocationAndDate extends Component {
       );
     }
 
-    if (!this.props.storeId && deliveryType === DELIVERY_METHOD.PICKUP) {
-      this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || config.storeId);
+    if (!this.props.cachedStoreId && deliveryType === DELIVERY_METHOD.PICKUP) {
+      this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || savedStoreId);
     }
   };
 
@@ -129,9 +129,9 @@ class LocationAndDate extends Component {
   };
 
   handleGotoStoreListClick = () => {
-    const { deliveryType, storeId } = this.props;
+    const { deliveryType, cachedStoreId } = this.props;
 
-    this.gotoStoreList(deliveryType, storeId);
+    this.gotoStoreList(deliveryType, cachedStoreId);
   };
 
   ensureDeliveryType = deliveryType => {
@@ -226,7 +226,8 @@ class LocationAndDate extends Component {
       selectedOrderDate,
       selectedTime,
       appActions,
-      storeId,
+      savedStoreId,
+      cachedStoreId,
       originalDeliveryType,
       deliveryType,
       location,
@@ -260,7 +261,7 @@ class LocationAndDate extends Component {
       await setAddressInfo(cachedAddressInfo);
     }
 
-    await appActions.getStoreHashData(storeId);
+    await appActions.getStoreHashData(cachedStoreId);
     const h = decodeURIComponent(this.props.storeHashCode);
     const from = _get(location, 'state.from', null);
 
@@ -270,7 +271,7 @@ class LocationAndDate extends Component {
 
     if (from === ROUTER_PATHS.ORDERING_CUSTOMER_INFO) {
       const deliveryTypeHasChanged = this.query.type !== deliveryType;
-      const storeHasChanged = storeId !== config.storeId;
+      const storeHasChanged = cachedStoreId !== savedStoreId;
 
       if (deliveryTypeHasChanged) {
         this.gotoOrderingHomePage(deliveryType, h);
@@ -734,7 +735,8 @@ export default compose(
   connect(
     state => ({
       deliveryType: getDeliveryType(state),
-      storeId: getStoreId(state),
+      savedStoreId: getSavedStoreId(state),
+      cachedStoreId: getCachedStoreId(state),
       store: getStore(state),
       businessDeliveryTypes: getBusinessDeliveryTypes(state),
       orderDateList: getOrderDateList(state),

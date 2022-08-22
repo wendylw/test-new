@@ -469,8 +469,9 @@ export const actions = {
     type: types.RESET_COREBUSINESS_STATUS,
   }),
 
-  loadCoreBusiness: id => dispatch => {
-    const { storeId, business } = config;
+  loadCoreBusiness: id => (dispatch, getState) => {
+    const { business } = config;
+    const { storeId } = getStoreId(getState());
 
     return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
   },
