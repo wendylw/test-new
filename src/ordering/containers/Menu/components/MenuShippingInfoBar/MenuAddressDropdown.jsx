@@ -123,13 +123,14 @@ const MenuAddressDropdown = () => {
           closeByBackButton: false,
           closeByBackDrop: false,
           buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.VERTICAL,
-          closeButtonContent: t('NoThanks'),
+          cancelButtonContent: t('NoThanks'),
           confirmButtonContent: t('AddAddress'),
-          onConfirm: async () => {
-            await dispatch(addAddressButtonClicked());
-          },
-          onCancel: () => {
-            dispatch(noThanksButtonClicked());
+          onConfirm: async status => {
+            if (status) {
+              await dispatch(addAddressButtonClicked());
+            } else {
+              dispatch(noThanksButtonClicked());
+            }
           },
         }
       );

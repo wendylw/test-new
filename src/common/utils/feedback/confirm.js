@@ -15,16 +15,16 @@ const confirmOptions = ({
   closeByBackButton = true,
   closeByBackDrop = true,
   animation = true,
-  closeButtonContent = null,
+  cancelButtonContent = null,
   className = '',
-  closeButtonClassName = '',
-  closeButtonStyle = {},
+  cancelButtonClassName = '',
+  cancelButtonStyle = {},
   confirmButtonContent = null,
   confirmButtonClassName = '',
   confirmButtonStyle = {},
   buttonAlignment = CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
   zIndex = 300,
-  onCancel = () => {},
+  onClose = () => {},
   onConfirm = () => {},
 }) => ({
   container,
@@ -33,22 +33,22 @@ const confirmOptions = ({
   animation,
   closeByBackButton,
   closeByBackDrop,
-  closeButtonContent,
+  cancelButtonContent,
   className,
-  closeButtonClassName,
-  closeButtonStyle,
+  cancelButtonClassName,
+  cancelButtonStyle,
   confirmButtonContent,
   confirmButtonClassName,
   confirmButtonStyle,
   buttonAlignment,
   zIndex,
-  onCancel,
+  onClose,
   onConfirm,
 });
 
 const createConfirm = (content, options) =>
   new Promise(resolve => {
-    const { container, title, customizeContent, onCancel, onConfirm, ...restOptions } = options;
+    const { container, title, customizeContent, onClose, onConfirm, ...restOptions } = options;
     const rootDOM = document.createElement('div');
     const callbackFunction = () => {
       destroyTarget(rootDOM);
@@ -68,14 +68,11 @@ const createConfirm = (content, options) =>
         mountAtRoot: false,
         onClose: () => {
           callbackFunction();
+          onClose();
         },
-        onCancel: () => {
+        onConfirm: status => {
           callbackFunction();
-          onCancel();
-        },
-        onConfirm: () => {
-          callbackFunction();
-          onConfirm();
+          onConfirm(status);
         },
       },
       children

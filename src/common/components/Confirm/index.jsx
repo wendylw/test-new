@@ -8,42 +8,39 @@ import styles from './Confirm.module.scss';
 import logger from '../../../utils/monitoring/logger';
 
 const ConfirmFooterPropsTypes = {
-  closeButtonContent: PropTypes.node,
-  closeButtonClassName: PropTypes.string,
+  cancelButtonContent: PropTypes.node,
+  cancelButtonClassName: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
-  closeButtonStyle: PropTypes.object,
+  cancelButtonStyle: PropTypes.object,
   confirmButtonContent: PropTypes.node,
   confirmButtonClassName: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   confirmButtonStyle: PropTypes.object,
   buttonAlignment: PropTypes.oneOf(Object.values(CONFIRM_BUTTON_ALIGNMENT)),
-  onCancel: PropTypes.func,
   onConfirm: PropTypes.func,
 };
 
 const ConfirmFooterDefaultProps = {
-  closeButtonContent: null,
-  closeButtonClassName: '',
-  closeButtonStyle: {},
+  cancelButtonContent: null,
+  cancelButtonClassName: '',
+  cancelButtonStyle: {},
   confirmButtonContent: null,
   confirmButtonClassName: '',
   confirmButtonStyle: {},
   buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
-  onCancel: () => {},
   onConfirm: () => {},
 };
 
 const ConfirmFooter = props => {
   const { t } = useTranslation();
   const {
-    closeButtonContent,
-    closeButtonClassName,
-    closeButtonStyle,
+    cancelButtonContent,
+    cancelButtonClassName,
+    cancelButtonStyle,
     confirmButtonContent,
     confirmButtonClassName,
     confirmButtonStyle,
     buttonAlignment,
-    onCancel,
     onConfirm,
   } = props;
 
@@ -52,11 +49,11 @@ const ConfirmFooter = props => {
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL ? (
         <Button
           type="secondary"
-          className={`tw-flex-1 tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
-          onClick={onCancel}
-          style={closeButtonStyle}
+          className={`tw-flex-1 tw-uppercase${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
+          onClick={onConfirm}
+          style={cancelButtonStyle}
         >
-          {closeButtonContent || t('ConfirmCloseButtonText')}
+          {cancelButtonContent || t('ConfirmCloseButtonText')}
         </Button>
       ) : null}
       <Button
@@ -71,12 +68,12 @@ const ConfirmFooter = props => {
         <Button
           type="text"
           className={`${styles.confirmVerticalCloseButton} tw-flex-1${
-            closeButtonClassName ? ` ${closeButtonClassName}` : ''
+            cancelButtonClassName ? ` ${cancelButtonClassName}` : ''
           }`}
-          onClick={onCancel}
-          style={closeButtonStyle}
+          onClick={onConfirm}
+          style={cancelButtonStyle}
         >
-          {closeButtonContent || t('ConfirmCloseButtonText')}
+          {cancelButtonContent || t('ConfirmCloseButtonText')}
         </Button>
       ) : null}
     </div>
@@ -96,16 +93,15 @@ const Confirm = props => {
     closeByBackDrop,
     animation,
     className,
-    closeButtonContent,
-    closeButtonClassName,
-    closeButtonStyle,
+    cancelButtonContent,
+    cancelButtonClassName,
+    cancelButtonStyle,
     confirmButtonContent,
     confirmButtonClassName,
     confirmButtonStyle,
     buttonAlignment,
     zIndex,
     onClose,
-    onCancel,
     onConfirm,
   } = props;
   const contentContainerRef = useRef(null);
@@ -131,14 +127,13 @@ const Confirm = props => {
     >
       <div ref={contentContainerRef}>{children}</div>
       <ConfirmFooter
-        closeButtonContent={closeButtonContent}
-        closeButtonClassName={closeButtonClassName}
-        closeButtonStyle={closeButtonStyle}
+        cancelButtonContent={cancelButtonContent}
+        cancelButtonClassName={cancelButtonClassName}
+        cancelButtonStyle={cancelButtonStyle}
         confirmButtonContent={confirmButtonContent}
         confirmButtonClassName={confirmButtonClassName}
         confirmButtonStyle={confirmButtonStyle}
         buttonAlignment={buttonAlignment}
-        onCancel={onCancel}
         onConfirm={onConfirm}
       />
     </Modal>
