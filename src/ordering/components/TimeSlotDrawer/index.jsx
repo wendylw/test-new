@@ -25,6 +25,7 @@ const TimeSlotDrawer = ({
   dateList,
   timeSlotList,
   isSaveButtonDisabled,
+  isSaveButtonLoaderVisible,
   isInitializing,
   onClose,
   changeShippingType,
@@ -146,7 +147,12 @@ const TimeSlotDrawer = ({
           </div>
 
           <div className={styles.timeSlotFooter}>
-            <Button disabled={isSaveButtonDisabled} loading={false} onClick={save} className="tw-w-full tw-uppercase">
+            <Button
+              disabled={isSaveButtonDisabled}
+              loading={isSaveButtonLoaderVisible}
+              onClick={save}
+              className="tw-w-full tw-uppercase"
+            >
               {t('Continue')}
             </Button>
           </div>
@@ -169,6 +175,7 @@ TimeSlotDrawer.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   timeSlotList: PropTypes.array,
   isSaveButtonDisabled: PropTypes.bool,
+  isSaveButtonLoaderVisible: PropTypes.bool,
   isInitializing: PropTypes.bool,
   onClose: PropTypes.func,
   changeShippingType: PropTypes.func,
@@ -185,6 +192,7 @@ TimeSlotDrawer.defaultProps = {
   dateList: [],
   timeSlotList: [],
   isSaveButtonDisabled: true,
+  isSaveButtonLoaderVisible: false,
   isInitializing: true,
   onClose: () => {},
   changeShippingType: () => {},

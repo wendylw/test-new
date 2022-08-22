@@ -681,6 +681,10 @@ export const showLocationConfirmModal = createAsyncThunk('ordering/menu/common/s
 
 export const hideLocationConfirmModal = createAsyncThunk('ordering/menu/common/hideLocationConfirmModal', () => {});
 
+export const addAddressButtonClicked = createAsyncThunk('ordering/menu/common/addAddressButtonClicked', async () => {});
+
+export const noThanksButtonClicked = createAsyncThunk('ordering/menu/common/noThanksButtonClicked', async () => {});
+
 /**
  * goto Review cart page
  */
