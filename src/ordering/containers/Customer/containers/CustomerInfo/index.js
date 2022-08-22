@@ -179,6 +179,7 @@ class CustomerInfo extends Component {
 
     if (isTNGMiniProgram) {
       this.setState({ shouldShowRedirectLoader: !!orderId });
+      this.setState({ processing: !!orderId });
       return;
     }
 
