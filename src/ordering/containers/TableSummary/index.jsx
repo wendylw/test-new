@@ -7,8 +7,15 @@ import { compose } from 'redux';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
+import {
+  actions as appActions,
+  getUserIsLogin,
+  getBusinessInfo,
+  getShippingType,
+  getBusinessUTCOffset,
+  getIsWebview,
+} from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
-import { getUserIsLogin, getBusinessInfo, getShippingType, getBusinessUTCOffset } from '../../redux/modules/app';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
   loadOrders as loadOrdersThunk,
@@ -224,8 +231,8 @@ export class TableSummary extends React.Component {
     await loadOrders(receiptNumber);
   };
 
-  handleGotoPromotion = () => {
-    const { history, userIsLogin } = this.props;
+  handleGotoPromotion = async () => {
+    const { history, userIsLogin, isWebview, loginByBeepApp } = this.props;
 
     if (userIsLogin) {
       history.push({
@@ -233,13 +240,21 @@ export class TableSummary extends React.Component {
         search: window.location.search,
         state: { shouldGoBack: true },
       });
-    } else {
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-        state: { shouldGoBack: true },
-      });
+      return;
     }
+
+    if (isWebview) {
+      // BEEP-2920: In case users can click on the login button in the beep apps, we need to call the native login method.
+      await loginByBeepApp();
+      return;
+    }
+
+    // By default, redirect users to the web login page
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
   };
 
   handleClickPayButton = () => {
@@ -548,6 +563,8 @@ TableSummary.propTypes = {
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
   gotoPayment: PropTypes.func,
+  isWebview: PropTypes.bool,
+  loginByBeepApp: PropTypes.func,
   shouldShowRedirectLoader: PropTypes.bool,
   shouldShowPayNowButton: PropTypes.bool,
 };
@@ -584,6 +601,8 @@ TableSummary.defaultProps = {
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
   gotoPayment: () => {},
+  isWebview: false,
+  loginByBeepApp: () => {},
   shouldShowRedirectLoader: false,
   shouldShowPayNowButton: false,
 };
@@ -616,6 +635,7 @@ export default compose(
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
+      isWebview: getIsWebview(state),
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
     }),
@@ -628,6 +648,7 @@ export default compose(
       removePromo: removePromoThunk,
       removeVoucherPayLater: removeVoucherPayLaterThunk,
       gotoPayment: gotoPaymentThunk,
+      loginByBeepApp: appActions.loginByBeepApp,
     }
   )
 )(TableSummary);

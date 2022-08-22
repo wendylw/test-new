@@ -12,6 +12,7 @@ import {
   getShippingType,
   getHasSelectedStore,
   getIsBeepDeliveryShippingType,
+  getFoodTagsForCleverTap,
 } from '../../../../redux/modules/app';
 import { updateCartItems } from '../../../../redux/cart/thunks';
 import {
@@ -306,6 +307,7 @@ export const addToCart = createAsyncThunk(
     const category = getSelectedCategory(getState());
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
     const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+    const foodTagsForCleverTap = getFoodTagsForCleverTap(getState());
     const addToCartGtmData = getAddToCartGTMData(state);
     const comments = getNotesContents(state);
 
@@ -314,6 +316,7 @@ export const addToCart = createAsyncThunk(
     Clevertap.pushEvent('Menu Page - Add to Cart', {
       ...storeInfoForCleverTap,
       ...productCleverTapAttributes,
+      foodTags: foodTagsForCleverTap,
     });
 
     if (isEnablePayLater) {
