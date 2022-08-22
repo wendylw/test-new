@@ -1,0 +1,17 @@
+.RedirectPageLoaderContainer {
+  @apply tw-w-full tw-h-screen tw-absolute tw-left-0 tw-right-0
+    tw-flex tw-flex-col tw-justify-center tw-items-center;
+}
+
+.RedirectPageLoaderIcon {
+  @apply tw-block;
+
+  font-size: 2.4rem;
+  margin-bottom: 3.5rem;
+}
+
+.RedirectPageLoaderDescription {
+  @apply tw-text-gray-600 sm:tw-my-16px tw-my-16 tw-text-center tw-text-lg tw-leading-normal;
+
+  max-width: 285px;
+}

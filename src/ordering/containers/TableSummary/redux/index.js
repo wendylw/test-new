@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
-import { loadOrders, loadOrdersStatus, lockOrder } from './thunks';
+import { loadOrders, loadOrdersStatus, lockOrder, showRedirectLoader, hideRedirectLoader } from './thunks';
 
 const PromotionItemModel = {
   promotionId: null,
@@ -63,6 +63,8 @@ const initialState = {
     loadOrdersStatus: null,
     lockOrder: null,
   },
+
+  redirectLoaderVisible: false,
 };
 
 export const { reducer, actions } = createSlice({
@@ -120,6 +122,12 @@ export const { reducer, actions } = createSlice({
     [lockOrder.rejected.type]: (state, { error }) => {
       state.requestStatus.lockOrder = API_REQUEST_STATUS.REJECTED;
       state.error.lockOrder = error;
+    },
+    [showRedirectLoader.fulfilled.type]: state => {
+      state.redirectLoaderVisible = true;
+    },
+    [hideRedirectLoader.fulfilled.type]: state => {
+      state.redirectLoaderVisible = false;
     },
   },
 });

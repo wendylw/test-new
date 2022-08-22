@@ -41,7 +41,7 @@ export const selectedOneStore = createAsyncThunk(
 
     const redirectLocation = `${window.location.protocol}//${hostList.join('.')}${
       PATH_NAME_MAPPING.ORDERING_BASE
-    }${redirectUrl}${isTNGMiniProgram() || isWebview() ? `&source=${encodeURIComponent(document.location.href)}` : ''}`;
+    }${redirectUrl}&source=${encodeURIComponent(document.location.href)}`;
 
     if (userSignedIn) {
       window.location.href = redirectLocation;

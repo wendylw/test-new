@@ -13,6 +13,7 @@ import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
+import RedirectPageLoader from '../../../../components/RedirectPageLoader';
 import { actions as promotionActionCreators } from '../../../../redux/modules/promotion';
 import {
   actions as appActionCreators,
@@ -31,6 +32,8 @@ import {
   getUserConsumerId,
   getUserProfile,
   getIsUserProfileStatusFulfilled,
+  getIsWebview,
+  getIsTNGMiniProgram,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
@@ -50,6 +53,7 @@ class PayFirst extends Component {
       cartContainerHeight: '100%',
       productsContainerHeight: '0px',
       pendingBeforeCreateOrder: false,
+      shouldShowRedirectLoader: false,
     };
   }
 
@@ -224,8 +228,8 @@ class PayFirst extends Component {
     await appActions.loadShoppingCart();
   };
 
-  handleGotoPromotion = () => {
-    const { history, user, storeInfoForCleverTap } = this.props;
+  handleGotoPromotion = async () => {
+    const { history, user, storeInfoForCleverTap, isWebview, appActions } = this.props;
     const { isLogin } = user || {};
 
     CleverTap.pushEvent('Cart page - click add promo code/voucher', storeInfoForCleverTap);
@@ -235,16 +239,25 @@ class PayFirst extends Component {
         pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
         search: window.location.search,
       });
-    } else {
-      CleverTap.pushEvent('Login - view login screen', {
-        'Screen Name': 'Cart Page',
-      });
-      history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
-        search: window.location.search,
-        state: { shouldGoBack: true },
-      });
+      return;
     }
+
+    CleverTap.pushEvent('Login - view login screen', {
+      'Screen Name': 'Cart Page',
+    });
+
+    if (isWebview) {
+      // BEEP-2920: In case users can click on the login button in the beep apps, we need to call the native login method.
+      await appActions.loginByBeepApp();
+      return;
+    }
+
+    // By default, redirect users to the web login page
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
   };
 
   getUpdateShoppingCartItemData = ({ productId, comments, variations }, currentQuantity) => ({
@@ -367,6 +380,7 @@ class PayFirst extends Component {
         disabled={shouldDisablePayButton || pendingBeforeCreateOrder}
         validCreateOrder={isValidCreateOrder}
         beforeCreateOrder={this.handleBeforeCreateOrder}
+        afterCreateOrder={this.handleAfterCreateOrder}
         loaderText={t('Processing')}
         processing={pendingCheckingInventory || pendingBeforeCreateOrder}
       >
@@ -384,9 +398,14 @@ class PayFirst extends Component {
       consumerId,
       appActions,
       isUserProfileStatusFulfilled,
+      isTNGMiniProgram,
     } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
     this.setState({ pendingBeforeCreateOrder: true });
+
+    if (isTNGMiniProgram) {
+      this.setState({ shouldShowRedirectLoader: true });
+    }
 
     // if user login, and one of user name or phone is empty from delivery details data,
     // then update them from user profile.
@@ -415,6 +434,10 @@ class PayFirst extends Component {
     });
 
     this.setState({ pendingBeforeCreateOrder: false });
+  };
+
+  handleAfterCreateOrder = orderId => {
+    this.setState({ shouldShowRedirectLoader: !!orderId });
   };
 
   getOrderButtonContent = () => {
@@ -580,13 +603,17 @@ class PayFirst extends Component {
       shippingType,
       serviceChargeRate,
     } = this.props;
-    const { cartContainerHeight } = this.state;
+    const { cartContainerHeight, shouldShowRedirectLoader } = this.state;
     const { items } = shoppingCart || {};
     const { count, subtotal, takeawayCharges, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
     const { isLogin } = user || {};
 
     if (!(cartBilling && items)) {
       return null;
+    }
+
+    if (shouldShowRedirectLoader) {
+      return <RedirectPageLoader />;
     }
 
     return (
@@ -686,6 +713,7 @@ PayFirst.propTypes = {
     removeShoppingCartItem: PropTypes.func,
     getProfileInfo: PropTypes.func,
     updateDeliveryDetails: PropTypes.func,
+    loginByBeepApp: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
@@ -717,6 +745,8 @@ PayFirst.propTypes = {
   isUserProfileStatusFulfilled: PropTypes.bool,
   consumerId: PropTypes.string,
   serviceChargeRate: PropTypes.number,
+  isWebview: PropTypes.bool,
+  isTNGMiniProgram: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -727,6 +757,7 @@ PayFirst.defaultProps = {
     removeShoppingCartItem: () => {},
     getProfileInfo: () => {},
     updateDeliveryDetails: () => {},
+    loginByBeepApp: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},
@@ -752,6 +783,8 @@ PayFirst.defaultProps = {
   isUserProfileStatusFulfilled: false,
   consumerId: '',
   serviceChargeRate: 0,
+  isWebview: false,
+  isTNGMiniProgram: false,
 };
 
 /* TODO: backend data */
@@ -776,6 +809,8 @@ export default compose(
       consumerId: getUserConsumerId(state),
       userProfile: getUserProfile(state),
       isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
+      isWebview: getIsWebview(state),
+      isTNGMiniProgram: getIsTNGMiniProgram(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),

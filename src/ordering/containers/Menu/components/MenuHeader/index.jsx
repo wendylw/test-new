@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { goBack as historyGoBack } from 'connected-react-router';
 import { useTranslation } from 'react-i18next';
 import { CaretLeft } from 'phosphor-react';
 import _truncate from 'lodash/truncate';
@@ -20,10 +21,17 @@ import {
 import { getIsProductDetailDrawerVisible } from '../../redux/productDetail/selectors';
 import { hideProductDetailDrawer } from '../../redux/productDetail/thunks';
 import styles from './MenuHeader.module.scss';
-import { isWebview, isTakeAwayType, isDeliveryOrder, isFromBeepSite, isQROrder } from '../../../../../common/utils';
+import {
+  isWebview,
+  isTakeAwayType,
+  isDeliveryOrder,
+  isFromBeepSite,
+  isQROrder,
+  getSourceUrlFromSessionStorage,
+} from '../../../../../common/utils';
 import NativeHeader, { ICON_RES } from '../../../../../components/NativeHeader';
 import { closeWebView } from '../../../../../utils/native-methods';
-import { getDeliveryInfo, getIsFromBeepSite } from '../../../../redux/modules/app';
+import { getDeliveryInfo, getIsFromBeepSite, getIsFromFoodCourt } from '../../../../redux/modules/app';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import { goBack, loadUserFavStoreStatus, saveFavoriteStore, shareStore } from '../../redux/common/thunks';
 
@@ -71,6 +79,7 @@ const MenuHeader = ({ webHeaderVisibility }) => {
   const isProductDetailDrawerVisible = useSelector(getIsProductDetailDrawerVisible);
   const isInWebview = isWebview();
   const isFromBeepSitePage = useSelector(getIsFromBeepSite);
+  const isFromFoodCourt = useSelector(getIsFromFoodCourt);
   const { enableLiveOnline } = useSelector(getDeliveryInfo);
   const storeFullDisplayTitle = useSelector(getStoreFullDisplayTitle);
   const hasUserSaveStore = useSelector(getHasUserSaveStore);
@@ -153,6 +162,22 @@ const MenuHeader = ({ webHeaderVisibility }) => {
     return rightContents.filter(config => config);
   };
 
+  const handleClickNativeBackButton = useCallback(() => {
+    if (isProductDetailDrawerVisible) {
+      dispatch(hideProductDetailDrawer(false));
+      return;
+    }
+
+    if (isFromFoodCourt) {
+      const sourceUrl = getSourceUrlFromSessionStorage();
+      window.location.href = sourceUrl;
+      return;
+    }
+
+    // By default, just close the button
+    closeWebView();
+  }, [dispatch, isFromFoodCourt, isProductDetailDrawerVisible]);
+
   const rightContentForWebHeader = () => {
     if (isQROrder()) {
       if (tableId) {
@@ -192,13 +217,7 @@ const MenuHeader = ({ webHeaderVisibility }) => {
           isPage
           rightContent={rightContentForNativeHeader()}
           title={showStoreName ? storeDisplayTitle : ''}
-          navFunc={() => {
-            if (isProductDetailDrawerVisible) {
-              dispatch(hideProductDetailDrawer(false));
-            } else {
-              closeWebView();
-            }
-          }}
+          navFunc={() => handleClickNativeBackButton()}
         />
       ) : (
         webHeader
