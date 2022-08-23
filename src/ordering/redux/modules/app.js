@@ -471,7 +471,7 @@ export const actions = {
 
   loadCoreBusiness: id => (dispatch, getState) => {
     const { business } = config;
-    const { storeId } = getStoreId(getState());
+    const storeId = getStoreId(getState());
 
     return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
   },
