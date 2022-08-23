@@ -43,7 +43,6 @@ class CustomerInfo extends Component {
   state = {
     addressChange: false,
     processing: false,
-    shouldShowRedirectLoader: false,
   };
 
   async componentDidMount() {
@@ -141,19 +140,14 @@ class CustomerInfo extends Component {
   handleBeforeCreateOrder = () => {
     logger.log('customer.create-order-attempt');
 
-    const { customerInfoActions, isTNGMiniProgram } = this.props;
+    const { customerInfoActions } = this.props;
     const error = this.validateFields();
 
     if (error.show) {
       customerInfoActions.setCustomerError(error);
-      return;
+    } else {
+      this.setState({ processing: true });
     }
-
-    if (isTNGMiniProgram) {
-      this.setState({ shouldShowRedirectLoader: true });
-    }
-
-    this.setState({ processing: true });
   };
 
   handleErrorHide() {
@@ -177,9 +171,10 @@ class CustomerInfo extends Component {
   handleAfterCreateOrder = orderId => {
     const { isTNGMiniProgram } = this.props;
 
+    this.setState({ processing: !!orderId });
+
+    // FB-4206: TnG MP won't go to the payment page
     if (isTNGMiniProgram) {
-      this.setState({ shouldShowRedirectLoader: !!orderId });
-      this.setState({ processing: !!orderId });
       return;
     }
 
@@ -351,13 +346,16 @@ class CustomerInfo extends Component {
       storeInfoForCleverTap,
       isTNGMiniProgram,
     } = this.props;
-    const { addressChange, processing, shouldShowRedirectLoader } = this.state;
+    const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(phone);
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
     const { total, shippingFee } = cartBilling || {};
+    const shouldShowRedirectLoader = isTNGMiniProgram && processing;
 
+    // FB-4026: For TnG MP, we won't go to the payment page once the user clicks the continue button, we will immediately create an order and call TnG payment API.
+    // For such a case, we will show a redirect loader page to prevent users' further interaction and also provide the same payment flow as dine.
     if (shouldShowRedirectLoader) {
       return <RedirectPageLoader />;
     }
