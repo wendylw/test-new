@@ -48,6 +48,7 @@ import {
   isDineInType,
   removeExpectedDeliveryTime,
   setSessionVariable,
+  getStoreId as getStoreIdFromCookies,
 } from '../../../../../common/utils';
 import Clevertap from '../../../../../utils/clevertap';
 import * as StoreUtils from '../../../../../utils/store-utils';
@@ -751,12 +752,16 @@ export const changeStore = createAsyncThunk(
 
     try {
       await updateStoreInfoCookies(h);
+
+      // FB-4011: Due to one single source of truth principle, we only get the store id from cookies no matter how.
+      const newStoreId = getStoreIdFromCookies();
+
       // NOTE: We need to reset api status to force the api to be called again.
       dispatch(appActions.resetOnlineCategoryStatus());
       dispatch(appActions.resetCoreBusinessStatus());
 
       // Update store id in both redux and url query
-      dispatch(appActions.updateStoreId(storeId));
+      dispatch(appActions.updateStoreId(newStoreId));
 
       // If the new store doesn't support the current shipping type, then we need to change the shipping type to the available one.
       const newShippingType = shippingTypes.includes(currentShippingType) ? currentShippingType : shippingTypes[0];
