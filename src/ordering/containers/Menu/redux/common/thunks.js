@@ -59,6 +59,7 @@ import logger from '../../../../../utils/monitoring/logger';
 import { getShareLinkUrl } from '../../utils';
 import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
+import { resetAddressListStatus } from '../../../../redux/modules/addressList/thunks';
 import { getStoreById } from '../../../../../redux/modules/entities/stores';
 import { SOURCE_TYPE, STORE_OPENING_STATUS } from '../../constants';
 
@@ -762,6 +763,10 @@ export const changeStore = createAsyncThunk(
 
       if (newShippingType !== currentShippingType) {
         dispatch(appActions.updateShippingType(newShippingType));
+      }
+
+      if (getUserIsLogin(state)) {
+        await dispatch(resetAddressListStatus());
       }
     } catch (e) {
       logger.error('Menu_ChangeStoreFailed', { message: e?.message });
