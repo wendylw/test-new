@@ -37,7 +37,9 @@ const initialState = {
   searchingProductKeywords: '',
   beforeStartToSearchScrollTopPosition: 0,
   virtualKeyboardVisible: false,
-  currentTime: new Date().toISOString(), // current time
+  // For now, currentTime only will be updated when menu page mounted
+  // TODO: Need to further consideration currentTime updated strategy
+  currentTime: new Date().toISOString(),
   // User selected expected delivery time: "2022-06-01T01:00:00.000Z" | "now"
   expectedDeliveryTime: null,
   storeFavStatus: {
