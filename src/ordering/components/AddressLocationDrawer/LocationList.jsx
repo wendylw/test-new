@@ -31,6 +31,7 @@ LocationList.displayName = 'LocationList';
 
 LocationList.propTypes = {
   isLocationListVisible: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
   locationList: PropTypes.arrayOf(PropTypes.object),
   onSelectLocation: PropTypes.func,
 };

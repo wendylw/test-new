@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { CONFIRM_BUTTON_ALIGNMENT } from '../../utils/feedback/utils';
@@ -43,6 +43,12 @@ const ConfirmFooter = props => {
     buttonAlignment,
     onConfirm,
   } = props;
+  const onHandleCancelConfirmation = useCallback(() => {
+    onConfirm(false);
+  }, [onConfirm]);
+  const onHandleConfirm = useCallback(() => {
+    onConfirm(true);
+  }, [onConfirm]);
 
   return (
     <div className={`${styles.confirmFooter} ${buttonAlignment}`}>
@@ -50,7 +56,7 @@ const ConfirmFooter = props => {
         <Button
           type="secondary"
           className={`tw-flex-1 tw-uppercase${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
-          onClick={onConfirm}
+          onClick={onHandleCancelConfirmation}
           style={cancelButtonStyle}
         >
           {cancelButtonContent || t('ConfirmCloseButtonText')}
@@ -59,7 +65,7 @@ const ConfirmFooter = props => {
       <Button
         type="primary"
         className={`tw-flex-1 tw-uppercase${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
-        onClick={onConfirm}
+        onClick={onHandleConfirm}
         style={confirmButtonStyle}
       >
         {confirmButtonContent || t('Confirm')}
@@ -70,7 +76,7 @@ const ConfirmFooter = props => {
           className={`${styles.confirmVerticalCloseButton} tw-flex-1${
             cancelButtonClassName ? ` ${cancelButtonClassName}` : ''
           }`}
-          onClick={onConfirm}
+          onClick={onHandleCancelConfirmation}
           style={cancelButtonStyle}
         >
           {cancelButtonContent || t('ConfirmCloseButtonText')}

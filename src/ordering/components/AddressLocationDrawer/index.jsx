@@ -139,10 +139,13 @@ AddressLocationDrawer.propTypes = {
   isLocationDrawerVisible: PropTypes.bool,
   isEmptyList: PropTypes.bool,
   isAddressListVisible: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
   addressList: PropTypes.arrayOf(PropTypes.object),
   isLocationHistoryListVisible: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
   locationHistoryList: PropTypes.arrayOf(PropTypes.object),
   isSearchLocationListVisible: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
   searchLocationList: PropTypes.arrayOf(PropTypes.object),
   onChangeSearchKeyword: PropTypes.func,
   onClearSearchKeyword: PropTypes.func,
