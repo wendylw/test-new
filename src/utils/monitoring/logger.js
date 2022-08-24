@@ -66,7 +66,7 @@ const send = async (data, tags = '') => {
   }
 };
 
-const track = async (name, data, meta = {}) => {
+const track = async (name, data, options = {}) => {
   try {
     if (!name || typeof name !== 'string') {
       throw new Error('name should not be empty');
@@ -86,9 +86,9 @@ const track = async (name, data, meta = {}) => {
       data,
     };
     // todo: business name, page url, user agent, env, client timestamp, ...
-    dataToSend.level = meta.level || 'info';
+    dataToSend.level = options.level || 'info';
 
-    const tags = meta.tags ? (Array.isArray(meta.tags) ? meta.tags.join(',') : meta.tags) : '';
+    const tags = options.tags ? (Array.isArray(options.tags) ? options.tags.join(',') : options.tags) : '';
     if (tags && !/^\w+(,\w+)?$/.test(tags)) {
       throw new Error('Incorrect log tags format');
     }
@@ -102,8 +102,8 @@ const track = async (name, data, meta = {}) => {
   }
 };
 
-const log = (name, data = {}, meta = {}) => track(name, data, { level: 'info', ...meta });
-const warn = (name, data = {}, meta = {}) => track(name, data, { level: 'warning', ...meta });
-const error = (name, data = {}, meta = {}) => track(name, data, { level: 'error', ...meta });
+const log = (name, data = {}, options = {}) => track(name, data, { level: 'info', ...options });
+const warn = (name, data = {}, options = {}) => track(name, data, { level: 'warning', ...options });
+const error = (name, data = {}, options = {}) => track(name, data, { level: 'error', ...options });
 
 export default { log, warn, error };
