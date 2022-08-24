@@ -469,8 +469,9 @@ export const actions = {
     type: types.RESET_COREBUSINESS_STATUS,
   }),
 
-  loadCoreBusiness: id => dispatch => {
-    const { storeId, business } = config;
+  loadCoreBusiness: id => (dispatch, getState) => {
+    const { business } = config;
+    const storeId = getStoreId(getState());
 
     return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
   },
@@ -546,12 +547,7 @@ export const actions = {
       payload,
     });
 
-    const savedAddressId = getSavedAddressId(getState());
-    const ifDeliveryAddressInfoExists = !_isEmpty(savedAddressId);
-
-    if (ifDeliveryAddressInfoExists) {
-      dispatch(actions.loadDeliveryAddressDetails());
-    }
+    await dispatch(actions.loadDeliveryAddressDetailsIfNeeded());
   },
 
   updateDeliveryDetails: data => async (dispatch, getState) => {
@@ -621,6 +617,16 @@ export const actions = {
     });
   },
 
+  loadDeliveryAddressDetailsIfNeeded: () => async (dispatch, getState) => {
+    const state = getState();
+    const savedAddressId = getSavedAddressId(state);
+    const storeId = getStoreId(state);
+
+    if (!(_isEmpty(savedAddressId) || _isEmpty(storeId))) {
+      await dispatch(actions.loadDeliveryAddressDetails());
+    }
+  },
+
   loadCoreStores: address => (dispatch, getState) => {
     const business = getBusiness(getState());
 
@@ -650,12 +656,21 @@ export const actions = {
   }),
 
   // load product list group by category, and shopping cart
-  loadProductList: () => (dispatch, getState) => {
+  loadProductList: () => async (dispatch, getState) => {
     const businessUTCOffset = getBusinessUTCOffset(getState());
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
     const shippingType = Utils.getApiRequestShippingType();
 
-    dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+    await dispatch(fetchOnlineCategory({ fulfillDate, shippingType }));
+  },
+
+  reloadProductList: () => async dispatch => {
+    // Reset product list and category list data
+    dispatch({
+      type: types.RESET_ONLINECATEGORY_STATUS,
+    });
+
+    await dispatch(actions.loadProductList());
   },
 
   loadProductDetail: productId => (dispatch, getState) => {

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { loadAddressList } from './thunks';
+import { loadAddressList, resetAddressListStatus } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
 
 const initialState = {
@@ -43,6 +43,9 @@ export const { reducer, actions } = createSlice({
     [loadAddressList.rejected.type]: (state, action) => {
       state.addressList.status = API_REQUEST_STATUS.REJECTED;
       state.addressList.error = action.error;
+    },
+    [resetAddressListStatus.fulfilled.type]: state => {
+      state.addressList.status = null;
     },
   },
 });

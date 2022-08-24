@@ -144,20 +144,7 @@ export const showProductDetailDrawer = createAsyncThunk(
       await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
 
       try {
-        const allProducts = getAllProducts(getState());
-        const allCategories = getAllCategories(getState());
-        const product = _get(allProducts, productId, null);
-        const category = _get(allCategories, categoryId, null);
-        const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
-        const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
-
         const result = await dispatch(appActions.loadProductDetail(productId));
-
-        Clevertap.pushEvent('Menu Page - View products', {
-          ...storeInfoForCleverTap,
-          ...productCleverTapAttributes,
-        });
-
         const productInResult = _get(result, 'responseGql.data.product', null);
 
         gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
@@ -199,7 +186,7 @@ export const showProductDetailDrawer = createAsyncThunk(
       // No one should be able to reach here, but if they do, it indicates that we miss some other conditions.
       throw new Error('unknown reason');
     } catch (e) {
-      dispatch(saveSelectedProductItemInfo({ productId, categoryId }));
+      await dispatch(saveSelectedProductItemInfo({ productId, categoryId }));
       logger.error('Menu_ShowProductDetailDrawerFailed', { message: e?.message });
       throw e;
     }
@@ -211,6 +198,27 @@ export const showProductDetailDrawer = createAsyncThunk(
  */
 export const hideProductDetailDrawer = createAsyncThunk(
   'ordering/menu/productDetail/hideProductDetailDrawer',
+  async () => {}
+);
+
+export const productDetailDrawerShown = createAsyncThunk(
+  'ordering/menu/productDetail/productDetailDrawerShown',
+  async (_, { getState }) => {
+    const state = getState();
+    const product = getSelectedProduct(state);
+    const category = getSelectedCategory(state);
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+    const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+
+    Clevertap.pushEvent('Menu Page - View products', {
+      ...storeInfoForCleverTap,
+      ...productCleverTapAttributes,
+    });
+  }
+);
+
+export const productDetailDrawerHidden = createAsyncThunk(
+  'ordering/menu/productDetail/productDetailDrawerHidden',
   async () => {}
 );
 

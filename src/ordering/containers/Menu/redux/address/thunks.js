@@ -181,10 +181,11 @@ export const locationSelected = createAsyncThunk(
     }
 
     /**
-     * After the user selects the new valid location, there are 3 things that need to be done:
+     * After the user selects the new valid location, there are 4 things that need to be done:
      * 1. Find the nearest available store
      * 2. Sync up current address info with the BFF
-     * 3. Update the store id by hard-refreshing menu page
+     * 3. Update the delivery details in the Redux store
+     * 4. Change the store id
      */
     try {
       const coords = _get(addressInfo, 'coords', null);
@@ -226,6 +227,8 @@ export const locationSelected = createAsyncThunk(
       const storeId = _get(store, 'id', null);
 
       await dispatch(setAddressInfo(addressInfo));
+
+      await dispatch(appActionCreators.loadDeliveryAddressDetailsIfNeeded());
 
       if (_isEqual(currentStoreId, storeId)) {
         await dispatch(hideLocationDrawer());

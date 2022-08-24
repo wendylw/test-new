@@ -21,6 +21,8 @@ import {
   hideTimeSlotDrawer,
   showStoreListDrawer,
   hideStoreListDrawer,
+  noThanksButtonClicked,
+  addAddressButtonClicked,
   showLocationConfirmModal,
   hideLocationConfirmModal,
   saveSelectedProductItemInfo,
@@ -62,9 +64,6 @@ export const { reducer, actions } = createSlice({
     setCategoriesInView: (state, { payload: { categoryId, inView } }) => {
       state.categoriesInView[categoryId] = inView;
       state.activeCategoryId = null;
-    },
-    setTimeSlotDrawerVisible: (state, { payload }) => {
-      state.timeSlotDrawerVisible = payload;
     },
   },
   extraReducers: {
@@ -146,11 +145,19 @@ export const { reducer, actions } = createSlice({
     [hideStoreListDrawer.fulfilled.type]: state => {
       state.storeListDrawerVisible = false;
     },
-    [showLocationConfirmModal]: state => {
+    [showLocationConfirmModal.fulfilled.type]: state => {
       state.locationConfirmModalVisible = true;
     },
-    [hideLocationConfirmModal]: state => {
+    [hideLocationConfirmModal.fulfilled.type]: state => {
       state.locationConfirmModalVisible = false;
+    },
+    [addAddressButtonClicked.fulfilled.type]: state => {
+      state.locationConfirmModalVisible = false;
+      state.locationDrawerVisible = true;
+    },
+    [noThanksButtonClicked.fulfilled.type]: state => {
+      state.locationConfirmModalVisible = false;
+      state.selectedProductItemInfo = null;
     },
     [saveSelectedProductItemInfo.fulfilled.type]: (state, { payload }) => {
       const { productId, categoryId } = payload;

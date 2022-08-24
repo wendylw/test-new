@@ -22,6 +22,7 @@ import {
   getIsInitializing,
   getSelectedDate,
   getSelectedShippingType,
+  getIsSaveButtonLoaderVisible,
 } from '../../redux/timeSlot/selectors';
 import {
   changeShippingType,
@@ -66,6 +67,8 @@ const TimeSlotDropdown = () => {
   const timeSlotList = useSelector(getTimeSlotList);
   // is save button disabled
   const isSaveButtonDisabled = useSelector(getIsSaveButtonDisabled);
+  // is save button loader visible
+  const isSaveButtonLoaderVisible = useSelector(getIsSaveButtonLoaderVisible);
   // is initializing, if TRUE, show a loader
   const isInitializing = useSelector(getIsInitializing);
   const timeSlotTItle = t(TIME_SLOT_TITLE_KEYS[shippingType]) || t(TIME_SLOT_TITLE_KEYS.default);
@@ -138,6 +141,7 @@ const TimeSlotDropdown = () => {
           dateList={dateList}
           timeSlotList={timeSlotList}
           isSaveButtonDisabled={isSaveButtonDisabled}
+          isSaveButtonLoaderVisible={isSaveButtonLoaderVisible}
           isInitializing={isInitializing}
           onClose={() => {
             dispatch(timeSlotDrawerClosed());
