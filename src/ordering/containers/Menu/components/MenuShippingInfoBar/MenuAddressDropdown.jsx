@@ -104,7 +104,7 @@ const MenuAddressDropdown = () => {
   }, [isLocationDrawerVisible]);
 
   useEffect(() => {
-    if (isLocationConfirmModalVisible && !isLocationDrawerVisible) {
+    if (isLocationConfirmModalVisible) {
       confirm(
         <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
           <div className={styles.addAddressConfirmationImage}>
@@ -135,7 +135,7 @@ const MenuAddressDropdown = () => {
         }
       );
     }
-  }, [dispatch, isLocationConfirmModalVisible, isLocationDrawerVisible, t]);
+  }, [dispatch, isLocationConfirmModalVisible, t]);
 
   const handleSearchKeywordChanged = useCallback(
     async searchKey => {
