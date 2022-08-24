@@ -9,3 +9,5 @@ export const loadAddressList = createAsyncThunk('ordering/addressList/loadAddres
 
   return fetchAddressList(consumerId, storeId);
 });
+
+export const resetAddressListStatus = createAsyncThunk('ordering/addressList/resetAddressListStatus', async () => {});

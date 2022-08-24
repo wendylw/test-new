@@ -18,8 +18,7 @@ import {
 import { fetchTimeSlotSoldData } from './api-request';
 import { getSelectedDate, getSelectedDateObj, getSelectedShippingType, getSelectedTimeSlot } from './selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
-import { updateExpectedDeliveryDate } from '../common/thunks';
-import { actions as commonActions } from '../common/index';
+import { hideTimeSlotDrawer, updateExpectedDeliveryDate } from '../common/thunks';
 import { setDateTime } from '../../../../../utils/time-lib';
 import Clevertap from '../../../../../utils/clevertap';
 import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
@@ -216,7 +215,7 @@ export const timeSlotSelected = createAsyncThunk(
 
       dispatch(AppActions.updateShippingType(selectedShippingType));
 
-      dispatch(
+      await dispatch(
         updateExpectedDeliveryDate({
           expectedDate: selectedExpectedDeliveryTime,
           shippingType: selectedShippingType,
@@ -225,12 +224,10 @@ export const timeSlotSelected = createAsyncThunk(
 
       if (selectedShippingType !== shippingType || expectedDeliveryTime !== selectedExpectedDeliveryTime) {
         // need to reload the shopping cart and product list
-        dispatch(AppActions.loadShoppingCart());
-        dispatch(AppActions.loadProductList());
+        await Promise.all([dispatch(AppActions.loadShoppingCart()), dispatch(AppActions.reloadProductList())]);
       }
 
-      // Avoid calling hideTimeSlotDrawer because it will push the CT event "Timeslot - back"
-      dispatch(commonActions.setTimeSlotDrawerVisible(false));
+      dispatch(hideTimeSlotDrawer());
     } catch (error) {
       logger.error('Menu_SelectTimeSlotFailed', { message: error?.message });
       throw error;
