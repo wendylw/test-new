@@ -22,24 +22,24 @@ const AddressLocationContent = ({
   onSelectSearchLocation,
 }) => {
   const { t } = useTranslation();
-  const onHandleSelectAddress = useCallback(
-    selectedAddressInfo => {
-      onSelectAddress(selectedAddressInfo);
-    },
-    [onSelectAddress]
-  );
-  const onHandleSelectHistoryLocation = useCallback(
-    selectedHistoryLocationInfo => {
-      onSelectLocation(selectedHistoryLocationInfo);
-    },
-    [onSelectLocation]
-  );
-  const onHandleSelectSearchLocation = useCallback(
-    (selectedSearchLocationInfo, index) => {
-      onSelectSearchLocation(selectedSearchLocationInfo, index);
-    },
-    [onSelectSearchLocation]
-  );
+  // const onHandleSelectAddress = useCallback(
+  //   selectedAddressInfo => {
+  //     onSelectAddress(selectedAddressInfo);
+  //   },
+  //   [onSelectAddress]
+  // );
+  // const onHandleSelectHistoryLocation = useCallback(
+  //   selectedHistoryLocationInfo => {
+  //     onSelectLocation(selectedHistoryLocationInfo);
+  //   },
+  //   [onSelectLocation]
+  // );
+  // const onHandleSelectSearchLocation = useCallback(
+  //   (selectedSearchLocationInfo, index) => {
+  //     onSelectSearchLocation(selectedSearchLocationInfo, index);
+  //   },
+  //   [onSelectSearchLocation]
+  // );
 
   return (
     <div className="tw-flex-1 tw-px-16 sm:tw-px-16px tw-py-16 sm:tw-py-16px tw-overflow-x-auto">
@@ -74,7 +74,9 @@ const AddressLocationContent = ({
                         ) : null
                       }
                       description={address.deliveryTo}
-                      onSelect={onHandleSelectAddress}
+                      onSelect={() => {
+                        onSelectAddress(address);
+                      }}
                     />
                   </li>
                 ))}
@@ -90,7 +92,9 @@ const AddressLocationContent = ({
                     icon={<LocationAndAddressIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />}
                     title={locationHistory.displayComponents?.mainText}
                     description={locationHistory.displayComponents?.secondaryText}
-                    onSelect={onHandleSelectHistoryLocation}
+                    onSelect={() => {
+                      onSelectLocation(locationHistory);
+                    }}
                   />
                 </li>
               ))}
@@ -99,13 +103,15 @@ const AddressLocationContent = ({
           {/* search location history list */}
           {isSearchLocationListVisible ? (
             <ul>
-              {searchLocationList.map(searchLocation => (
+              {searchLocationList.map((searchLocation, index) => (
                 <li key={searchLocation.placeId} className={styles.addressLocationItem}>
                   <AddressLocationItem
                     icon={<LocationAndAddressIcon className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px" />}
                     title={searchLocation.displayComponents?.mainText}
                     description={searchLocation.displayComponents?.secondaryText}
-                    onSelect={onHandleSelectSearchLocation}
+                    onSelect={() => {
+                      onSelectSearchLocation(searchLocation, index);
+                    }}
                   />
                 </li>
               ))}
