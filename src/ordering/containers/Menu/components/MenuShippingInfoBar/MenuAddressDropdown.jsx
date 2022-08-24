@@ -25,6 +25,8 @@ import {
   locationDrawerClosed,
   addAddressButtonClicked,
   noThanksButtonClicked,
+  locationConfirmModalShown,
+  locationConfirmModalHidden,
 } from '../../redux/common/thunks';
 import {
   getHasStoreInfoInitialized,
@@ -105,6 +107,8 @@ const MenuAddressDropdown = () => {
 
   useEffect(() => {
     if (isLocationConfirmModalVisible) {
+      dispatch(locationConfirmModalShown());
+
       confirm(
         <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
           <div className={styles.addAddressConfirmationImage}>
@@ -134,6 +138,8 @@ const MenuAddressDropdown = () => {
           },
         }
       );
+    } else {
+      dispatch(locationConfirmModalHidden());
     }
   }, [dispatch, isLocationConfirmModalVisible, t]);
 
