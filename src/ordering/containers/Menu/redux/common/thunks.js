@@ -91,19 +91,19 @@ export const showStoreInfoDrawer = createAsyncThunk('ordering/menu/common/showSt
 // 1. As one of the conditions to re-dispatch showProductDetailDrawer thunk when possible
 // 2. As a request payload to fetch product details before showing the product detail drawer
 export const saveSelectedProductItemInfo = createAsyncThunk(
-  'ordering/menu/productDetail/saveSelectedProductItemInfo',
+  'ordering/menu/common/saveSelectedProductItemInfo',
   async itemInfo => itemInfo
 );
 
 // FB-4011: We need to clear the user's current selected product item information from the redux store.
 // Once the user dismisses our modal/drawers during the new workflow journey, we will clear this information to avoid popping up the product detail drawer at the wrong time.
 export const clearSelectedProductItemInfo = createAsyncThunk(
-  'ordering/menu/productDetail/clearSelectedProductItemInfo',
+  'ordering/menu/common/clearSelectedProductItemInfo',
   async () => {}
 );
 
 export const cleanUpSelectedProductItemInfoIfNeeded = createAsyncThunk(
-  'ordering/menu/productDetail/cleanUpSelectedProductItemInfoIfNeeded',
+  'ordering/menu/common/cleanUpSelectedProductItemInfoIfNeeded',
   async (_, { dispatch, getState }) => {
     const hasSelectedProductItemInfo = getHasSelectedProductItemInfo(getState());
 
@@ -140,7 +140,7 @@ export const locationDrawerClosed = createAsyncThunk(
  * @params expectedDate: null | ISO string format | now
  */
 export const updateExpectedDeliveryDate = createAsyncThunk(
-  'ordering/menu/updateExpectedDeliveryDate',
+  'ordering/menu/common/updateExpectedDeliveryDate',
   async ({ expectedDate, shippingType }, { getState }) => {
     try {
       const currentTime = getCurrentTime(getState());
@@ -220,7 +220,7 @@ export const updateExpectedDeliveryDate = createAsyncThunk(
 );
 
 export const initExpectedDeliveryDate = createAsyncThunk(
-  'ordering/menu/initExpectedDeliveryDate',
+  'ordering/menu/common/initExpectedDeliveryDate',
   async (_, { getState, dispatch }) => {
     try {
       const { date, hour: expectedDeliveryHour } = getExpectedDeliveryDateFromSession();
@@ -318,7 +318,7 @@ export const initExpectedDeliveryDate = createAsyncThunk(
 );
 
 export const updateCurrentTime = createAsyncThunk(
-  'ordering/menu/updateCurrentTime',
+  'ordering/menu/common/updateCurrentTime',
   async (currentTime = new Date().toISOString()) => currentTime
 );
 
@@ -336,7 +336,7 @@ export const loadUserFavStoreStatus = createAsyncThunk(
 /**
  * Ordering Menu page mounted
  */
-export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dispatch, getState }) => {
+export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_, { dispatch, getState }) => {
   // - Redirect to `/dine` page if missing `tableId`
   // - Load Product List
   // - Load user alcohol concept data if needed
@@ -473,7 +473,7 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
 /**
  * Ordering Menu Page willUnmount
  */
-export const willUnmount = createAsyncThunk('ordering/menu/willUnmount', async (_, { dispatch, getState }) => {
+export const willUnmount = createAsyncThunk('ordering/menu/common/willUnmount', async (_, { dispatch, getState }) => {
   // clear resources if need
   const state = getState();
   const enablePayLater = getIsEnablePayLater(state);
@@ -486,7 +486,7 @@ export const willUnmount = createAsyncThunk('ordering/menu/willUnmount', async (
 /**
  * Select a category
  */
-export const selectCategory = createAsyncThunk('ordering/menu/selectCategory', (categoryId, { getState }) => {
+export const selectCategory = createAsyncThunk('ordering/menu/common/selectCategory', (categoryId, { getState }) => {
   const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
   Clevertap.pushEvent('Menu Page - Click category', storeInfoForCleverTap);
   return categoryId;
@@ -495,12 +495,12 @@ export const selectCategory = createAsyncThunk('ordering/menu/selectCategory', (
 /**
  * show searching box
  */
-export const showSearchingBox = createAsyncThunk('ordering/menu/showSearchingBox', async () => {});
+export const showSearchingBox = createAsyncThunk('ordering/menu/common/showSearchingBox', async () => {});
 
 /**
  * hide searching box
  */
-export const hideSearchingBox = createAsyncThunk('ordering/menu/hideSearchingBox', async () => {});
+export const hideSearchingBox = createAsyncThunk('ordering/menu/common/hideSearchingBox', async () => {});
 
 /**
  * update searching keyword
@@ -513,13 +513,13 @@ export const updateSearchingKeyword = createAsyncThunk(
 /**
  * clear searching keyword
  */
-export const clearSearchingKeyword = createAsyncThunk('ordering/menu/clearSearchingKeyword', async () => {});
+export const clearSearchingKeyword = createAsyncThunk('ordering/menu/common/clearSearchingKeyword', async () => {});
 
 /**
  * set scrolling top position before starting to search
  */
 export const setBeforeStartToSearchScrollTopPosition = createAsyncThunk(
-  'ordering/menu/setBeforeStartToSearchScrollTopPosition',
+  'ordering/menu/common/setBeforeStartToSearchScrollTopPosition',
   async scrollTopPosition => scrollTopPosition
 );
 
@@ -527,7 +527,7 @@ export const setBeforeStartToSearchScrollTopPosition = createAsyncThunk(
  * clear scrolling top position before starting to search
  */
 export const clearBeforeStartToSearchScrollTopPosition = createAsyncThunk(
-  'ordering/menu/clearBeforeStartToSearchScrollTopPosition',
+  'ordering/menu/common/clearBeforeStartToSearchScrollTopPosition',
   async () => {}
 );
 
@@ -535,7 +535,7 @@ export const clearBeforeStartToSearchScrollTopPosition = createAsyncThunk(
  * toggle virtual keyboard status
  */
 export const updateStatusVirtualKeyboard = createAsyncThunk(
-  'ordering/menu/updateStatusVirtualKeyboard',
+  'ordering/menu/common/updateStatusVirtualKeyboard',
   async status => status
 );
 
