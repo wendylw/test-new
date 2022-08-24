@@ -317,7 +317,10 @@ export const initExpectedDeliveryDate = createAsyncThunk(
   }
 );
 
-export const updateCurrentTime = createAsyncThunk('ordering/menu/updateCurrentTime', async () => {});
+export const updateCurrentTime = createAsyncThunk(
+  'ordering/menu/updateCurrentTime',
+  async (currentTime = new Date().toISOString()) => currentTime
+);
 
 export const loadUserFavStoreStatus = createAsyncThunk(
   'ordering/menu/common/loadUserFavStoreStatus',

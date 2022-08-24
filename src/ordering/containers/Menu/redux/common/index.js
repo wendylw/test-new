@@ -93,8 +93,8 @@ export const { reducer, actions } = createSlice({
     [updateStatusVirtualKeyboard.fulfilled.type]: (state, { payload }) => {
       state.virtualKeyboardVisible = payload;
     },
-    [updateCurrentTime.fulfilled.type]: state => {
-      state.currentTime = new Date().toISOString();
+    [updateCurrentTime.fulfilled.type]: (state, { payload }) => {
+      state.currentTime = payload;
     },
     [updateExpectedDeliveryDate.fulfilled.type]: (state, { payload }) => {
       state.expectedDeliveryTime = payload;
