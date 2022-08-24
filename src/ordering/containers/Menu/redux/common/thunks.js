@@ -683,9 +683,22 @@ export const showLocationConfirmModal = createAsyncThunk('ordering/menu/common/s
 
 export const hideLocationConfirmModal = createAsyncThunk('ordering/menu/common/hideLocationConfirmModal', () => {});
 
-export const addAddressButtonClicked = createAsyncThunk('ordering/menu/common/addAddressButtonClicked', async () => {});
+export const addAddressButtonClicked = createAsyncThunk('ordering/menu/common/addAddressButtonClicked', async () => {
+  Clevertap.pushEvent('Menu Page - Location Needed Pop-up - Add address');
+});
 
-export const noThanksButtonClicked = createAsyncThunk('ordering/menu/common/noThanksButtonClicked', async () => {});
+export const noThanksButtonClicked = createAsyncThunk('ordering/menu/common/noThanksButtonClicked', async () => {
+  Clevertap.pushEvent('Menu page - Location Needed Pop-up - No thanks');
+});
+
+export const locationConfirmModalShown = createAsyncThunk(
+  'ordering/menu/common/locationConfirmModalShown',
+  async () => {
+    Clevertap.pushEvent('Menu page - Location Needed Pop-up - View Page');
+  }
+);
+
+export const locationConfirmModalHidden = createAsyncThunk('ordering/menu/common/locationDrawerHidden', async () => {});
 
 /**
  * goto Review cart page
