@@ -7,26 +7,15 @@ import Drawer from '../../../common/components/Drawer';
 import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
 import Search from '../../../common/components/Input/Search';
 import Loader from '../../../common/components/Loader';
-import AddressList from './AddressList';
-import LocationList from './LocationList';
-import LocationEmptyImage from '../../../images/location-empty-image.png';
 import styles from './AddressLocationDrawer.module.scss';
 
 const searchUpdateDebounce = _debounce((value, callback) => callback(value), 700);
 const AddressLocationDrawer = ({
+  children,
   isLocationDrawerVisible,
   isInitializing,
-  isLocationHistoryListVisible,
-  locationHistoryList,
-  isSearchLocationListVisible,
-  searchLocationList,
-  isAddressListVisible,
-  addressList,
   isEmptyList,
   onClose,
-  onSelectAddress,
-  onSelectLocation,
-  onSelectSearchLocation,
   onChangeSearchKeyword,
   onClearSearchKeyword,
 }) => {
@@ -35,24 +24,6 @@ const AddressLocationDrawer = ({
   const onHandleCloseDrawer = useCallback(() => {
     onClose();
   }, [onClose]);
-  const onHandleSelectAddress = useCallback(
-    selectedAddressInfo => {
-      onSelectAddress(selectedAddressInfo);
-    },
-    [onSelectAddress]
-  );
-  const onHandleSelectHistoryLocation = useCallback(
-    selectedHistoryLocationInfo => {
-      onSelectLocation(selectedHistoryLocationInfo);
-    },
-    [onSelectLocation]
-  );
-  const onHandleSelectSearchLocation = useCallback(
-    (selectedSearchLocationInfo, index) => {
-      onSelectSearchLocation(selectedSearchLocationInfo, index);
-    },
-    [onSelectSearchLocation]
-  );
   const onHandleChangeSearchKeyword = useCallback(
     searchKeyword => {
       searchUpdateDebounce(searchKeyword, onChangeSearchKeyword);
@@ -94,38 +65,7 @@ const AddressLocationDrawer = ({
               onClearInput={onHandleClearSearchKeyword}
             />
           </section>
-
-          <div className="tw-flex-1 tw-px-16 sm:tw-px-16px tw-py-16 sm:tw-py-16px tw-overflow-x-auto">
-            {isEmptyList ? (
-              <div className={styles.addressLocationDrawerEmptyContent}>
-                <img
-                  className={styles.addressLocationDrawerEmptyImage}
-                  src={LocationEmptyImage}
-                  alt="StoreHub - location empty"
-                />
-                <p className={styles.addressDropdownDrawerEmptyDescription}>{t('AddressListEmptyDescription')}</p>
-              </div>
-            ) : null}
-
-            {isAddressListVisible ? (
-              <>
-                <h3 className="tw-py-4 sm:tw-py-4px tw-leading-relaxed tw-font-bold">{t('SavedAddress')}</h3>
-                <AddressList addressList={addressList} onSelectAddress={onHandleSelectAddress} />
-              </>
-            ) : null}
-            {/* saved location history list */}
-            <LocationList
-              isLocationListVisible={isLocationHistoryListVisible}
-              locationList={locationHistoryList}
-              onSelectLocation={onHandleSelectHistoryLocation}
-            />
-            {/* search location history list */}
-            <LocationList
-              isLocationListVisible={isSearchLocationListVisible}
-              locationList={searchLocationList}
-              onSelectLocation={onHandleSelectSearchLocation}
-            />
-          </div>
+          {children}
         </div>
       )}
     </Drawer>
@@ -135,42 +75,23 @@ const AddressLocationDrawer = ({
 AddressLocationDrawer.displayName = 'AddressLocationDrawer';
 
 AddressLocationDrawer.propTypes = {
+  children: PropTypes.node,
   isInitializing: PropTypes.bool,
   isLocationDrawerVisible: PropTypes.bool,
   isEmptyList: PropTypes.bool,
-  isAddressListVisible: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  addressList: PropTypes.arrayOf(PropTypes.object),
-  isLocationHistoryListVisible: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  locationHistoryList: PropTypes.arrayOf(PropTypes.object),
-  isSearchLocationListVisible: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  searchLocationList: PropTypes.arrayOf(PropTypes.object),
   onChangeSearchKeyword: PropTypes.func,
   onClearSearchKeyword: PropTypes.func,
   onClose: PropTypes.func,
-  onSelectAddress: PropTypes.func,
-  onSelectLocation: PropTypes.func,
-  onSelectSearchLocation: PropTypes.func,
 };
 
 AddressLocationDrawer.defaultProps = {
+  children: null,
   isInitializing: false,
   isLocationDrawerVisible: true,
   isEmptyList: false,
-  addressList: [],
-  searchLocationList: [],
-  isAddressListVisible: false,
-  isSearchLocationListVisible: false,
-  isLocationHistoryListVisible: false,
-  locationHistoryList: [],
   onChangeSearchKeyword: () => {},
   onClearSearchKeyword: () => {},
   onClose: () => {},
-  onSelectAddress: () => {},
-  onSelectLocation: () => {},
-  onSelectSearchLocation: () => {},
 };
 
 export default AddressLocationDrawer;
