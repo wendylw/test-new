@@ -469,8 +469,9 @@ export const actions = {
     type: types.RESET_COREBUSINESS_STATUS,
   }),
 
-  loadCoreBusiness: id => dispatch => {
-    const { storeId, business } = config;
+  loadCoreBusiness: id => (dispatch, getState) => {
+    const { business } = config;
+    const storeId = getStoreId(getState());
 
     return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
   },
@@ -546,12 +547,7 @@ export const actions = {
       payload,
     });
 
-    const savedAddressId = getSavedAddressId(getState());
-    const ifDeliveryAddressInfoExists = !_isEmpty(savedAddressId);
-
-    if (ifDeliveryAddressInfoExists) {
-      dispatch(actions.loadDeliveryAddressDetails());
-    }
+    await dispatch(actions.loadDeliveryAddressDetailsIfNeeded());
   },
 
   updateDeliveryDetails: data => async (dispatch, getState) => {
@@ -619,6 +615,16 @@ export const actions = {
         ...Url.API_URLS.GET_DELIVERY_ADDRESS_DETAILS(consumerId, storeId, savedAddressId),
       },
     });
+  },
+
+  loadDeliveryAddressDetailsIfNeeded: () => async (dispatch, getState) => {
+    const state = getState();
+    const savedAddressId = getSavedAddressId(state);
+    const storeId = getStoreId(state);
+
+    if (!(_isEmpty(savedAddressId) || _isEmpty(storeId))) {
+      await dispatch(actions.loadDeliveryAddressDetails());
+    }
   },
 
   loadCoreStores: address => (dispatch, getState) => {

@@ -51,6 +51,7 @@ export const storeBranchSelected = createAsyncThunk(
 
     try {
       await dispatch(changeStore(storeId)).unwrap();
+      await dispatch(appActionCreators.loadDeliveryAddressDetailsIfNeeded());
       await dispatch(hideStoreListDrawer());
     } catch (e) {
       logger.error('Menu_SelectStoreBranchFailed', { message: e?.message });

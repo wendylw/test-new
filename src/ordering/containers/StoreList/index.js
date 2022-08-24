@@ -13,6 +13,7 @@ import {
   actions as appActionCreators,
   getOnlineStoreInfo,
   getBusinessUTCOffset,
+  getStoreId as getSavedStoreId,
   getStoresList,
   getStoreHashCode,
 } from '../../redux/modules/app';
@@ -20,7 +21,6 @@ import { getIfAddressInfoExists, getAddressCoords } from '../../../redux/modules
 import Utils from '../../../utils/utils';
 import { IconLocation } from '../../../components/Icons';
 import Tag from '../../../components/Tag';
-import config from '../../../config';
 import qs from 'qs';
 import './OrderingStores.scss';
 import { checkStoreIsOpened } from '../../../utils/store-utils';
@@ -80,12 +80,15 @@ StoreListItem.displayName = 'StoreListItem';
 class StoreList extends Component {
   constructor(props) {
     super(props);
+
+    const { savedStoreId } = this.props;
+
     this.state = {
-      storeid: config.storeId,
+      storeid: savedStoreId,
       search: qs.parse(this.props.history.location.search, { ignoreQueryPrefix: true }),
       storeList: [],
     };
-    this.state.storeid = this.state.search.storeid || config.storeId;
+    this.state.storeid = this.state.search.storeid || savedStoreId;
   }
 
   async componentDidMount() {
@@ -242,6 +245,7 @@ export default compose(
   withAddressInfo(),
   connect(
     state => ({
+      savedStoreId: getSavedStoreId(state),
       allStore: getStoresList(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHash: getStoreHashCode(state),
