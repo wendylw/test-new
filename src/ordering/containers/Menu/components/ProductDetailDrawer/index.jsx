@@ -176,7 +176,7 @@ const ProductDetailDrawer = () => {
               </div>
               <p className={styles.productDescription} dangerouslySetInnerHTML={{ __html: product.description }} />
             </section>
-            <session className={styles.productDetailVariationAndNote}>
+            <section className={styles.productDetailVariationAndNote}>
               <div>
                 {product.variations.map(variation =>
                   variation.type === 'SingleChoice' ? (
@@ -189,7 +189,7 @@ const ProductDetailDrawer = () => {
                 )}
               </div>
               <AddSpecialNotes />
-            </session>
+            </section>
             <section className={styles.quantitySection}>
               <QuantityAdjuster
                 size="large"

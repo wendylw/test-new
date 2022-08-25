@@ -195,7 +195,7 @@ class SavedCards extends Component {
           </div>
           {this.renderCardList()}
 
-          <Loader className={'loading-cover opacity'} loaded={!this.state.showLoading} />
+          {/* <Loader className={'loading-cover opacity'} loaded={!this.state.showLoading} /> */}
         </div>
         <footer
           ref={ref => (this.footerEl = ref)}

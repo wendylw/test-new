@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -22,39 +21,10 @@ import {
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
+import StripeWrapper from '../../components/StripeWrapper';
 import CheckoutForm from './CheckoutForm';
 
 const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
-// Make sure to call `loadStripe` outside of a component’s render to avoid
-// recreating the `Stripe` object on every render.
-const stripeMYPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '')
-  .then(stripe => {
-    window.newrelic?.addPageAction('common.stripe-load-success', {
-      country: 'MY',
-    });
-    return stripe;
-  })
-  .catch(err => {
-    window.newrelic?.addPageAction('common.stripe-load-failure', {
-      error: err?.message,
-      country: 'MY',
-    });
-    throw err;
-  });
-const stripeSGPromise = loadStripe(process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '')
-  .then(stripe => {
-    window.newrelic?.addPageAction('common.stripe-load-success', {
-      country: 'SG',
-    });
-    return stripe;
-  })
-  .catch(err => {
-    window.newrelic?.addPageAction('common.stripe-load-failure', {
-      error: err?.message,
-      country: 'SG',
-    });
-    throw err;
-  });
 
 // React Stripe.js reference: https://stripe.com/docs/stripe-js/react
 class Stripe extends Component {
@@ -83,11 +53,12 @@ class Stripe extends Component {
       supportSaveCard,
       cleverTapAttributes,
       receiptNumber,
+      stripePromise,
     } = this.props;
     const isAddCardPath = ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE === history.location.pathname;
 
     return (
-      <Elements stripe={merchantCountry === 'SG' ? stripeSGPromise : stripeMYPromise} options={{}}>
+      <Elements stripe={stripePromise} options={{}}>
         <CheckoutForm
           match={match}
           t={t}
@@ -128,4 +99,4 @@ export default compose(
       initialize: bindActionCreators(initializeThunkCreator, dispatch),
     })
   )
-)(Stripe);
+)(StripeWrapper(Stripe));

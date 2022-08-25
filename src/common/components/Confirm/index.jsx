@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { CONFIRM_BUTTON_ALIGNMENT } from '../../utils/feedback/utils';
@@ -17,7 +17,7 @@ const ConfirmFooterPropsTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   confirmButtonStyle: PropTypes.object,
   buttonAlignment: PropTypes.oneOf(Object.values(CONFIRM_BUTTON_ALIGNMENT)),
-  onConfirm: PropTypes.func,
+  onSelection: PropTypes.func,
 };
 
 const ConfirmFooterDefaultProps = {
@@ -28,7 +28,7 @@ const ConfirmFooterDefaultProps = {
   confirmButtonClassName: '',
   confirmButtonStyle: {},
   buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
-  onConfirm: () => {},
+  onSelection: () => {},
 };
 
 const ConfirmFooter = props => {
@@ -41,14 +41,14 @@ const ConfirmFooter = props => {
     confirmButtonClassName,
     confirmButtonStyle,
     buttonAlignment,
-    onConfirm,
+    onSelection,
   } = props;
   const onHandleCancelConfirmation = useCallback(() => {
-    onConfirm(false);
-  }, [onConfirm]);
+    onSelection(false);
+  }, [onSelection]);
   const onHandleConfirm = useCallback(() => {
-    onConfirm(true);
-  }, [onConfirm]);
+    onSelection(true);
+  }, [onSelection]);
 
   return (
     <div className={`${styles.confirmFooter} ${buttonAlignment}`}>
@@ -59,7 +59,7 @@ const ConfirmFooter = props => {
           onClick={onHandleCancelConfirmation}
           style={cancelButtonStyle}
         >
-          {cancelButtonContent || t('ConfirmCloseButtonText')}
+          {cancelButtonContent || t('Cancel')}
         </Button>
       ) : null}
       <Button
@@ -68,7 +68,7 @@ const ConfirmFooter = props => {
         onClick={onHandleConfirm}
         style={confirmButtonStyle}
       >
-        {confirmButtonContent || t('Confirm')}
+        {confirmButtonContent || t('OK')}
       </Button>
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.VERTICAL ? (
         <Button
@@ -95,8 +95,6 @@ const Confirm = props => {
     children,
     show,
     mountAtRoot,
-    closeByBackButton,
-    closeByBackDrop,
     animation,
     className,
     cancelButtonContent,
@@ -104,13 +102,15 @@ const Confirm = props => {
     cancelButtonStyle,
     confirmButtonContent,
     confirmButtonClassName,
+    closeByBackButton,
+    closeByBackDrop,
     confirmButtonStyle,
     buttonAlignment,
     zIndex,
-    onClose,
-    onConfirm,
+    onSelection,
   } = props;
   const contentContainerRef = useRef(null);
+  const [visibility, setVisibility] = useState(show);
 
   useEffect(() => {
     if (show && contentContainerRef.current) {
@@ -120,12 +120,16 @@ const Confirm = props => {
     }
   }, [children, show]);
 
+  if (!visibility) {
+    return null;
+  }
+
   return (
     <Modal
       show={show}
       mountAtRoot={mountAtRoot}
       className={`${styles.confirmContent}${className ? ` ${className}` : ''}`}
-      onClose={onClose}
+      onClose={() => {}}
       closeByBackButton={closeByBackButton}
       closeByBackDrop={closeByBackDrop}
       animation={animation}
@@ -140,7 +144,7 @@ const Confirm = props => {
         confirmButtonClassName={confirmButtonClassName}
         confirmButtonStyle={confirmButtonStyle}
         buttonAlignment={buttonAlignment}
-        onConfirm={onConfirm}
+        onSelection={onSelection}
       />
     </Modal>
   );
@@ -157,7 +161,6 @@ Confirm.propTypes = {
   mountAtRoot: PropTypes.bool,
   className: PropTypes.string,
   zIndex: PropTypes.number,
-  onClose: PropTypes.func,
   ...ConfirmFooterPropsTypes,
 };
 
@@ -170,7 +173,6 @@ Confirm.defaultProps = {
   mountAtRoot: false,
   className: '',
   zIndex: 300,
-  onClose: () => {},
   ...ConfirmFooterDefaultProps,
 };
 
