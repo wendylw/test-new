@@ -20,12 +20,15 @@ const AddSpecialNotes = () => {
   const [notes, setNotes] = useState('');
   const dispatch = useDispatch();
   const ifHasNotesContents = useSelector(getIfHasNotesContents);
-  const onClose = () => {
+  const onHandleShowNotesDrawer = useCallback(() => {
+    dispatch(showNotesDrawer());
+  }, [dispatch]);
+  const onHandleHideNotesDrawer = useCallback(() => {
     dispatch(hideNotesDrawer());
-  };
+  }, [dispatch]);
   const saveSpecialNotes = () => {
     dispatch(actions.updateAndSaveComments(notes));
-    onClose();
+    onHandleHideNotesDrawer();
   };
   const handleNotesChange = useCallback(
     event => {
@@ -34,9 +37,6 @@ const AddSpecialNotes = () => {
 
     [setNotes]
   );
-  const writeNotesContent = () => {
-    dispatch(showNotesDrawer());
-  };
 
   useEffect(() => {
     setNotes(notesContents);
@@ -54,7 +54,7 @@ const AddSpecialNotes = () => {
         <div className="tw-p-16 sm:tw-p-16px">
           <div className="tw-flex tw-justify-between tw-items-center">
             <span className="tw-font-bold">{t('SpecialInstructions')}</span>
-            <Button type="text" className={styles.AddSpecialNotesEditButton} onClick={writeNotesContent}>
+            <Button type="text" className={styles.AddSpecialNotesEditButton} onClick={onHandleShowNotesDrawer}>
               <PencilSimple size={18} className="tw-text-blue" />
               <span className="tw-font-bold tw-text-blue tw-text-base tw-not-italic tw-p-4 sm:tw-p-4px">
                 {t('Edit')}
@@ -65,7 +65,7 @@ const AddSpecialNotes = () => {
         </div>
       ) : (
         <div className="tw-mx-4 sm:tw-mx-4px tw-my-6 sm:tw-my-6px">
-          <Button type="text" onClick={writeNotesContent}>
+          <Button type="text" onClick={onHandleShowNotesDrawer}>
             <PencilSimple size={18} className="tw-text-blue" />
             <span className="tw-font-bold tw-text-blue tw-text-base tw-not-italic tw-p-4 sm:tw-p-4px">
               {t('AddSpecialInstructions')}
@@ -79,10 +79,16 @@ const AddSpecialNotes = () => {
           height: '80%',
         }}
         show={showComments}
-        onClose={onClose}
+        onClose={onHandleHideNotesDrawer}
         header={
           <DrawerHeader
-            left={<X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" onClick={onClose} />}
+            left={
+              <X
+                weight="light"
+                className="tw-flex-shrink-0 tw-text-2xl tw-text-gray"
+                onClick={onHandleHideNotesDrawer}
+              />
+            }
           >
             <div className="tw-flex tw-flex-col tw-items-center">
               <span className="tw-font-bold tw-text-lg tw-leading-relaxed">{t('SpecialInstructions')}</span>

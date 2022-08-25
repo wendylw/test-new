@@ -28,16 +28,19 @@ const normalizeAlertOptions = options => ({
   show: true,
   closeButtonContent: null,
   className: '',
+  containerClassName: '',
   style: {},
   onClose: () => {},
   ...options,
 });
+
 const createAlert = (content, options) =>
   new Promise(resolve => {
-    const { container, onClose, ...restOptions } = options;
+    const { container, onClose, containerClassName, ...restOptions } = options;
     const rootDOM = document.createElement('div');
+    const className = `feedback__container fixed-wrapper${containerClassName ? ` ${containerClassName}` : ''}`;
 
-    rootDOM.setAttribute('class', 'feedback__container fixed-wrapper');
+    rootDOM.setAttribute('class', className);
     container.appendChild(rootDOM);
 
     // Because history.back (which is called when the modal is closed) is an async method, we have to wait

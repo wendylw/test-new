@@ -1,23 +1,23 @@
-@import "../../../common/styles/variables.scss";
+@import "../../../../common/styles/variables.scss";
 
-.locationItemButtonTitle {
+.addressLocationItemButtonTitle {
   @apply tw-mx-8 sm:tw-mx-8px tw-text-gray-800 tw-leading-relaxed tw-font-bold;
 
   @include text-line-clamp(1);
 }
 
-.locationItemButtonDeliveryTo {
+.addressLocationItemButtonDescription {
   @apply tw-text-left tw-mx-8 sm:tw-mx-8px tw-my-2 sm:tw-my-2px tw-text-sm tw-leading-loose tw-text-gray-700;
 }
 
-.locationItemButton {
+.addressLocationItemButton {
   @apply tw-flex tw-w-full tw-py-8 sm:tw-py-8px tw-border-0 tw-bg-transparent tw-cursor-pointer;
 
   &:disabled {
     @apply tw-cursor-default;
 
-    .locationItemButtonTitle,
-    .locationItemButtonDeliveryTo {
+    .addressLocationItemButtonTitle,
+    .addressLocationItemButtonDescription {
       @apply tw-opacity-40;
     }
   }
@@ -25,8 +25,4 @@
   &:active {
     border-style: outset;
   }
-}
-
-.locationItem:nth-child(n + 2) .locationItemButton {
-  @apply tw-border-t tw-border-gray-300;
 }

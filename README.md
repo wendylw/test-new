@@ -89,7 +89,7 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 1. Update .env
 
    > 1. Update to `HOST={business}.local.beep.shub.us` on `frontend/.env` (1. local domain)
-   > 2. Update `REACT_APP_GOOGLE_MAPS_API_KEY`, `REACT_APP_CLEVER_TAP_ID` and `REACT_APP_CLEVER_TAP_SCRIPT_REGION` on `frontend/.env` (2. from Apollo)
+   > 2. Update `REACT_APP_GOOGLE_MAPS_API_KEY`, `REACT_APP_CLEVER_TAP_ID` and `REACT_APP_CLEVER_TAP_SCRIPT_REGION` on `frontend/.env` (2. from Apollo FAT)
 
 2. Start project
 
