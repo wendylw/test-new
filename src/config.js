@@ -1,31 +1,4 @@
-import Utils from './utils/utils';
 import business from './utils/business-name';
-
-/* eslint-disable */
-function guid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-/* eslint-enable */
-
-const getClientSID = () => {
-  try {
-    return (
-      Utils.getSessionVariable('client.sid') ||
-      (function generateSID() {
-        const clientSID = guid();
-        Utils.setSessionVariable('client.sid', clientSID);
-        console.info('client.sid generated! [%s]', clientSID);
-        return clientSID;
-      })()
-    );
-  } catch (e) {
-    return null;
-  }
-};
 
 const getTableId = () => {
   try {
@@ -90,7 +63,6 @@ const config = {
   business,
   table: getTableId(),
   storeId: getStoreId(),
-  clientSID: getClientSID(),
   consumerId: getConsumerId(),
   PUBLIC_URL: process.env.PUBLIC_URL || '',
   googleMapsAPIKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
