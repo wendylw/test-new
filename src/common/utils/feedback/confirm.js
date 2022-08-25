@@ -13,8 +13,8 @@ const confirmOptions = ({
   container = document.body,
   title = null,
   customizeContent = false,
-  closeByBackButton = true,
-  closeByBackDrop = true,
+  closeByBackButton = false,
+  closeByBackDrop = false,
   animation = true,
   cancelButtonContent = null,
   className = '',
@@ -74,7 +74,7 @@ const createConfirm = (content, options) =>
         confirmButtonContent: confirmButtonContent || i18next.t('Confirm'),
         onSelection: target => {
           destroyTarget(rootDOM);
-          resolve();
+          resolve(target === CONFIRM_TRIGGER_TARGET.CONFIRM);
           onSelection(target === CONFIRM_TRIGGER_TARGET.CONFIRM);
         },
       },
