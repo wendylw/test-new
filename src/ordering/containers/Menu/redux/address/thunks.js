@@ -11,7 +11,6 @@ import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import {
   getStoreId,
   getBusiness,
-  getCurrentDate,
   getDeliveryRadius,
   getMerchantCountry,
   getBusinessUTCOffset,
@@ -25,7 +24,7 @@ import {
   loadPlaceInfoById,
 } from '../../../../redux/modules/locations/thunks';
 import { changeStore, hideLocationDrawer } from '../common/thunks';
-import { getIsAddressOutOfRange } from '../common/selectors';
+import { getIsAddressOutOfRange, getCurrentDate } from '../common/selectors';
 import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 import { toast } from '../../../../../common/utils/feedback';
