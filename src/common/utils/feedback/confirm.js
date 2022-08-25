@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import i18next from 'i18next';
-import { destroyTarget, CONFIRM_BUTTON_ALIGNMENT } from './utils';
+import { destroyTarget, CONFIRM_BUTTON_ALIGNMENT, CONFIRM_TRIGGER_TARGET } from './utils';
 import Confirm from '../../components/Confirm';
 import ConfirmContent from '../../components/Confirm/ConfirmContent';
 
@@ -72,10 +72,10 @@ const createConfirm = (content, options) =>
         mountAtRoot: false,
         cancelButtonContent: cancelButtonContent || i18next.t('ConfirmCloseButtonText'),
         confirmButtonContent: confirmButtonContent || i18next.t('Confirm'),
-        onSelection: status => {
+        onSelection: target => {
           destroyTarget(rootDOM);
           resolve();
-          onSelection(status);
+          onSelection(target === CONFIRM_TRIGGER_TARGET.CONFIRM);
         },
       },
       children

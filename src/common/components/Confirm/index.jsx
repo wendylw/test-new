@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { CONFIRM_BUTTON_ALIGNMENT } from '../../utils/feedback/utils';
+import { CONFIRM_BUTTON_ALIGNMENT, CONFIRM_TRIGGER_TARGET } from '../../utils/feedback/utils';
 import Modal from '../Modal';
 import Button from '../Button';
 import styles from './Confirm.module.scss';
@@ -28,7 +28,8 @@ const ConfirmFooterDefaultProps = {
   confirmButtonClassName: '',
   confirmButtonStyle: {},
   buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
-  onSelection: () => {},
+  // target is one of CONFIRM_TRIGGER_TARGET
+  onSelection: target => {},
 };
 
 const ConfirmFooter = props => {
@@ -43,12 +44,6 @@ const ConfirmFooter = props => {
     buttonAlignment,
     onSelection,
   } = props;
-  const onHandleCancelConfirmation = useCallback(() => {
-    onSelection(false);
-  }, [onSelection]);
-  const onHandleConfirm = useCallback(() => {
-    onSelection(true);
-  }, [onSelection]);
 
   return (
     <div className={`${styles.confirmFooter} ${buttonAlignment}`}>
@@ -56,7 +51,9 @@ const ConfirmFooter = props => {
         <Button
           type="secondary"
           className={`tw-flex-1 tw-uppercase${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
-          onClick={onHandleCancelConfirmation}
+          onClick={() => {
+            onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
+          }}
           style={cancelButtonStyle}
         >
           {cancelButtonContent || t('Cancel')}
@@ -65,7 +62,9 @@ const ConfirmFooter = props => {
       <Button
         type="primary"
         className={`tw-flex-1 tw-uppercase${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
-        onClick={onHandleConfirm}
+        onClick={() => {
+          onSelection(CONFIRM_TRIGGER_TARGET.CONFIRM);
+        }}
         style={confirmButtonStyle}
       >
         {confirmButtonContent || t('OK')}
@@ -76,7 +75,9 @@ const ConfirmFooter = props => {
           className={`${styles.confirmVerticalCloseButton} tw-flex-1${
             cancelButtonClassName ? ` ${cancelButtonClassName}` : ''
           }`}
-          onClick={onHandleCancelConfirmation}
+          onClick={() => {
+            onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
+          }}
           style={cancelButtonStyle}
         >
           {cancelButtonContent || t('ConfirmCloseButtonText')}
@@ -110,7 +111,6 @@ const Confirm = props => {
     onSelection,
   } = props;
   const contentContainerRef = useRef(null);
-  const [visibility, setVisibility] = useState(show);
 
   useEffect(() => {
     if (show && contentContainerRef.current) {
@@ -120,16 +120,14 @@ const Confirm = props => {
     }
   }, [children, show]);
 
-  if (!visibility) {
-    return null;
-  }
-
   return (
     <Modal
       show={show}
       mountAtRoot={mountAtRoot}
       className={`${styles.confirmContent}${className ? ` ${className}` : ''}`}
-      onClose={() => {}}
+      onClose={() => {
+        onSelection(CONFIRM_TRIGGER_TARGET.OTHER);
+      }}
       closeByBackButton={closeByBackButton}
       closeByBackDrop={closeByBackDrop}
       animation={animation}
@@ -144,7 +142,7 @@ const Confirm = props => {
         confirmButtonClassName={confirmButtonClassName}
         confirmButtonStyle={confirmButtonStyle}
         buttonAlignment={buttonAlignment}
-        onSelection={onSelection}
+        onSelection={target => onSelection(target)}
       />
     </Modal>
   );
