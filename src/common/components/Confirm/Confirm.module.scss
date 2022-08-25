@@ -1,0 +1,36 @@
+@import "../../../Variables.scss";
+
+.confirm {
+  @apply tw-top-0 tw-h-full tw-z-100;
+
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.confirmContent {
+  @apply tw-p-16 sm:tw-p-16px tw-bg-white tw-rounded-xl tw-shadow tw-overflow-hidden;
+
+  max-width: 328px;
+  max-height: 80%;
+  width: 90%;
+}
+
+.confirmFooter {
+  @apply tw-flex tw-justify-between tw-py-8 sm:tw-py-8px;
+
+  &:global(.horizontal) {
+    @apply tw-flex-row tw-space-x-16 sm:tw-space-x-16px;
+  }
+
+  &:global(.vertical) {
+    @apply tw-flex-col tw-space-y-8 sm:tw-space-y-8px;
+  }
+}
+
+.confirmVerticalCloseButton {
+  &:global(.type-text) {
+    @apply tw-text-gray-800
+      hover:tw-text-gray-800
+      focus:tw-text-gray-800 focus:hover:tw-text-gray-800 focus:active:tw-text-gray-800
+      active:tw-text-gray-800;
+  }
+}

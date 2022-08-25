@@ -11,10 +11,10 @@ $contentWidthInBigScreen: 412px; // not including the border
 
 @mixin text-line-clamp($lines, $maxHeight: null, $display: inline-block) {
   @if $lines == 1 {
-    overflow: hidden;
+    @apply tw-overflow-hidden tw-whitespace-nowrap;
+
     -webkit-box-orient: vertical;
     display: $display;
-    white-space: nowrap;
   }
 
   @if $lines == 2 {

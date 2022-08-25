@@ -6,8 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
 import { CaretDown } from 'phosphor-react';
+import LocationAddAddressConfirmationImage from '../../../../../images/location-add-address-confirmation.svg';
 import { LocationAndAddressIcon } from '../../../../../common/components/Icons';
+import { ObjectFitImage } from '../../../../../common/components/Image';
 import AddressLocationDrawer from '../../../../components/AddressLocationDrawer';
+import { confirm } from '../../../../../common/utils/feedback';
+import { CONFIRM_BUTTON_ALIGNMENT } from '../../../../../common/utils/feedback/utils';
 import {
   getSelectedLocationDisplayName,
   getShippingType,
@@ -16,7 +20,12 @@ import {
   getIsPickUpType,
   getIsLocationConfirmModalVisible,
 } from '../../redux/common/selectors';
-import { locationDrawerOpened, locationDrawerClosed } from '../../redux/common/thunks';
+import {
+  locationDrawerOpened,
+  locationDrawerClosed,
+  addAddressButtonClicked,
+  noThanksButtonClicked,
+} from '../../redux/common/thunks';
 import {
   getHasStoreInfoInitialized,
   getAddressListInfo,
@@ -93,6 +102,39 @@ const MenuAddressDropdown = () => {
     // only run when isLocationDrawerVisible changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLocationDrawerVisible]);
+
+  useEffect(() => {
+    if (isLocationConfirmModalVisible && !isLocationDrawerVisible) {
+      confirm(
+        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
+          <div className={styles.addAddressConfirmationImage}>
+            <ObjectFitImage src={LocationAddAddressConfirmationImage} noCompression />
+          </div>
+
+          <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">
+            {t('AddAddressConfirmTitle')}
+          </h4>
+          <div className="tw-flex tw-justify-center tw-mt-4 sm:tw-mt-4px tw-mb-8 sm:tw-mb-8px tw-leading-relaxed tw-text-gray-700">
+            {t('AddAddressConfirmDescription')}
+          </div>
+        </div>,
+        {
+          customizeContent: true,
+          closeByBackButton: false,
+          closeByBackDrop: false,
+          buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.VERTICAL,
+          closeButtonContent: t('NoThanks'),
+          confirmButtonContent: t('AddAddress'),
+          onConfirm: async () => {
+            await dispatch(addAddressButtonClicked());
+          },
+          onCancel: () => {
+            dispatch(noThanksButtonClicked());
+          },
+        }
+      );
+    }
+  }, [dispatch, isLocationConfirmModalVisible, isLocationDrawerVisible, t]);
 
   const handleSearchKeywordChanged = useCallback(
     async searchKey => {
