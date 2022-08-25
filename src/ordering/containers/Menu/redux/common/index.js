@@ -37,7 +37,9 @@ const initialState = {
   searchingProductKeywords: '',
   beforeStartToSearchScrollTopPosition: 0,
   virtualKeyboardVisible: false,
-  currentTime: new Date().toISOString(), // current time
+  // For now, currentTime only will be updated when menu page mounted
+  // TODO: Need to further consideration currentTime updated strategy
+  currentTime: new Date().toISOString(),
   // User selected expected delivery time: "2022-06-01T01:00:00.000Z" | "now"
   expectedDeliveryTime: null,
   storeFavStatus: {
@@ -91,8 +93,8 @@ export const { reducer, actions } = createSlice({
     [updateStatusVirtualKeyboard.fulfilled.type]: (state, { payload }) => {
       state.virtualKeyboardVisible = payload;
     },
-    [updateCurrentTime.fulfilled.type]: state => {
-      state.currentTime = new Date().toISOString();
+    [updateCurrentTime.fulfilled.type]: (state, { payload }) => {
+      state.currentTime = payload;
     },
     [updateExpectedDeliveryDate.fulfilled.type]: (state, { payload }) => {
       state.expectedDeliveryTime = payload;
