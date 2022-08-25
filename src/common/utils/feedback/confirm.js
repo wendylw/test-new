@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
+import i18next from 'i18next';
 import { destroyTarget, CONFIRM_BUTTON_ALIGNMENT } from './utils';
 import Confirm from '../../components/Confirm';
 import ConfirmContent from '../../components/Confirm/ConfirmContent';
@@ -24,8 +25,7 @@ const confirmOptions = ({
   confirmButtonStyle = {},
   buttonAlignment = CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL,
   zIndex = 300,
-  onClose = () => {},
-  onConfirm = () => {},
+  onSelection = () => {},
 }) => ({
   container,
   title,
@@ -42,18 +42,22 @@ const confirmOptions = ({
   confirmButtonStyle,
   buttonAlignment,
   zIndex,
-  onClose,
-  onConfirm,
+  onSelection,
 });
 
 const createConfirm = (content, options) =>
   new Promise(resolve => {
-    const { container, title, customizeContent, onClose, onConfirm, ...restOptions } = options;
+    const {
+      container,
+      title,
+      customizeContent,
+      cancelButtonContent,
+      confirmButtonContent,
+      onSelection,
+      ...restOptions
+    } = options;
     const rootDOM = document.createElement('div');
-    const callbackFunction = () => {
-      destroyTarget(rootDOM);
-      resolve();
-    };
+
     const children = customizeContent ? (
       content
     ) : (
@@ -66,13 +70,12 @@ const createConfirm = (content, options) =>
         ...restOptions,
         show: true,
         mountAtRoot: false,
-        onClose: () => {
-          callbackFunction();
-          onClose();
-        },
-        onConfirm: status => {
-          callbackFunction();
-          onConfirm(status);
+        cancelButtonContent: cancelButtonContent || i18next.t('ConfirmCloseButtonText'),
+        confirmButtonContent: confirmButtonContent || i18next.t('Confirm'),
+        onSelection: status => {
+          destroyTarget(rootDOM);
+          resolve();
+          onSelection(status);
         },
       },
       children

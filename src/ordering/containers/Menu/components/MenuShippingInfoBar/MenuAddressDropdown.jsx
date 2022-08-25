@@ -130,7 +130,7 @@ const MenuAddressDropdown = () => {
           buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.VERTICAL,
           cancelButtonContent: t('NoThanks'),
           confirmButtonContent: t('AddAddress'),
-          onConfirm: async status => {
+          onSelection: async status => {
             if (status) {
               await dispatch(addAddressButtonClicked());
             } else {
