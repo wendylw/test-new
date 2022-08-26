@@ -6,6 +6,7 @@ import _difference from 'lodash/difference';
 import _uniqueId from 'lodash/uniqueId';
 import _once from 'lodash/once';
 import logger from './monitoring/logger';
+import useRefInitializer from '../common/utils/hooks/useRefInitializer';
 
 const parseHash = (hash = document.location.hash) => qs.parse(hash.replace(/^#/, ''));
 
@@ -90,9 +91,11 @@ window.addEventListener(
  */
 export const withBackButtonSupport = WrappedComponent => {
   class WithBackButtonSupport extends Component {
-    modalId = _uniqueId();
-
-    childRef = React.createRef();
+    constructor() {
+      super();
+      this.modalId = _uniqueId();
+      this.childRef = React.createRef();
+    }
 
     componentDidMount() {
       window.addEventListener('sh-modal-history-back', this.onModalHistoryBack);
@@ -154,7 +157,7 @@ export const useBackButtonSupport = ({
   onHistoryChangeCompleted,
   disabled = false,
 }) => {
-  const modalIdRef = useRef(_uniqueId());
+  const modalIdRef = useRefInitializer(() => _uniqueId());
   const onModalHistoryBack = useCallback(
     e => {
       if (disabled) return;
