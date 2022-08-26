@@ -20,7 +20,7 @@ export const CONFIRM_BUTTON_ALIGNMENT = {
 export const CONFIRM_TRIGGER_TARGET = {
   CONFIRM: 'confirm',
   CANCEL: 'cancel',
-  OTHER: 'Other',
+  OTHER: 'other',
 };
 
 export const destroyTarget = target => {
