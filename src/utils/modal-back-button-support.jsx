@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { Component, useEffect, useRef, useCallback } from 'react';
-import { useUpdateEffect } from 'react-use';
+import { useMount, useUnmount, useUpdateEffect } from 'react-use';
 import qs from 'qs';
 import _difference from 'lodash/difference';
 import _uniqueId from 'lodash/uniqueId';
@@ -181,6 +181,17 @@ export const useBackButtonSupport = ({
     };
   }, [onModalHistoryBack]);
 
+  // if the modal is mounted with visibility = true, we will add hash
+  useMount(() => {
+    if (disabled) return;
+    if (visibility) {
+      addModalIdHash(modalIdRef.current);
+      onHistoryChangeCompleted && onHistoryChangeCompleted(visibility);
+    }
+  });
+
+  // This hook is only executed when visibility changes (i.e. It won't be executed when the modal is mount). This is
+  // to prevent the onHistoryChangeCompleted is called when the modal is mounted with visibility = false.
   useUpdateEffect(() => {
     const execute = async () => {
       if (disabled) return;
@@ -194,7 +205,21 @@ export const useBackButtonSupport = ({
     execute();
     // Do NOT add onHistoryChangeCompleted to dependency list, we don't want to re-run the effect when onHistoryChangeCompleted is updated.
     // Otherwise we will get an infinite loop.
-  }, [visibility]);
+  }, [visibility, disabled]);
+
+  // If the modal is unmounted with visibility = true, we still need to remove hash by calling history.go(-1).
+  useUnmount(() => {
+    const execute = async () => {
+      if (disabled) return;
+      if (visibility) {
+        await removeModalIdHash(modalIdRef.current);
+        // Since the modal is unmounted, the visibility param for onHistoryChangeComplete will be false, even if the visibility in props is
+        // still true.
+        onHistoryChangeCompleted && onHistoryChangeCompleted(false);
+      }
+    };
+    execute();
+  });
 };
 
 // Currently we don't support to keep the modal open after the page is refresh,
