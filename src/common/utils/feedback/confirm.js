@@ -78,7 +78,6 @@ const createConfirm = (content, options) => {
           destroyTarget(rootDOM);
         },
         onHistoryBackCompleted: () => {
-          console.log(123123);
           resolve(resolvedSelection);
           onSelection(resolvedSelection);
         },
