@@ -146,16 +146,17 @@ export const withBackButtonSupport = WrappedComponent => {
 
 /**
  *
- * @param {*} visibility whether the modal is visible or not, used to determine whether to add or remove the modal id to the hash
- * @param {*} onHistoryBackReceived called when the use presses the back button, used to notify the modal to close
- * @param {*} onHistoryChangeCompleted called when the hash change is done (because the hash change is async)
+ * @param {boolean} visibility whether the modal is visible or not, used to determine whether to add or remove the modal id to the hash
+ * @param {function} onHistoryBackReceived called when the use presses the back button, used to notify the modal to close
+ * @param {function} onHistoryChangeCompleted called when the hash change is done (because the hash change is async)
+ * @param {boolean} disabled the hook will completely not functioning. IMPORTANT NOTE: It's only allowed to set this property on a component is mounted. Do NOT change the value in the rest life cycle of the component.
  * @returns
  */
 export const useBackButtonSupport = ({
   visibility,
   onHistoryBackReceived,
   onHistoryChangeCompleted,
-  disabled = false,
+  disabled = false, // IMPORTANT NOTE: It's only allowed to set this property on a component is mounted. Do NOT change the value in the rest life cycle of the component.
 }) => {
   const modalIdRef = useRefInitializer(() => _uniqueId());
   const onModalHistoryBack = useCallback(
