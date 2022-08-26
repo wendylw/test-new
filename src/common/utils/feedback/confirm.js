@@ -45,8 +45,9 @@ const confirmOptions = ({
   onSelection,
 });
 
-const createConfirm = (content, options) =>
-  new Promise(resolve => {
+const createConfirm = (content, options) => {
+  let resolvedSelection;
+  return new Promise(resolve => {
     const {
       container,
       title,
@@ -73,9 +74,13 @@ const createConfirm = (content, options) =>
         cancelButtonContent: cancelButtonContent || i18next.t('ConfirmCloseButtonText'),
         confirmButtonContent: confirmButtonContent || i18next.t('Confirm'),
         onSelection: target => {
+          resolvedSelection = target === CONFIRM_TRIGGER_TARGET.CONFIRM;
           destroyTarget(rootDOM);
-          resolve(target === CONFIRM_TRIGGER_TARGET.CONFIRM);
-          onSelection(target === CONFIRM_TRIGGER_TARGET.CONFIRM);
+        },
+        onHistoryBackCompleted: () => {
+          console.log(123123);
+          resolve(resolvedSelection);
+          onSelection(resolvedSelection);
         },
       },
       children
@@ -86,5 +91,6 @@ const createConfirm = (content, options) =>
 
     render(confirmInstance, rootDOM);
   });
+};
 
 export const confirm = (content, options = {}) => createConfirm(content, confirmOptions(options));
