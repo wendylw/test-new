@@ -1,4 +1,5 @@
-import { getUUID, getMerchantID, getFormattedTags, getFormattedActionName } from './logger';
+import { getMerchantID, getFormattedTags, getFormattedActionName } from './logger';
+import { getUUID } from '../../common/utils';
 
 const oldWindowLocation = window.location;
 

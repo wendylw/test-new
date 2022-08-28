@@ -7,12 +7,12 @@ import _once from 'lodash/once';
 import tids from './tracing-id';
 import debug from '../debug';
 import {
-  guid,
   isWebview,
   isTNGMiniProgram,
   isSiteApp,
   isIOSWebview,
   isAndroidWebview,
+  getUUID,
   getBusinessName,
 } from '../../common/utils';
 
@@ -50,15 +50,6 @@ const getAppPlatform = () => {
   }
 
   return isAndroidWebview() ? 'android' : isIOSWebview() ? 'ios' : 'web';
-};
-
-export const getUUID = () => {
-  try {
-    return crypto.randomUUID();
-  } catch {
-    // Our application is not mission-critical, so Broofa's answer is good enough for us as a backup plan since it is pretty slick and effective.
-    return guid();
-  }
 };
 
 export const getMerchantID = () => {
