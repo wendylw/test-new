@@ -43,14 +43,17 @@ describe('utils/monitoring/logger', () => {
 
   describe('test getFormattedActionName function', () => {
     test('return underline-concatenated action name if the words that are separated by underlines', () => {
-      expect(getFormattedActionName('location-data_continue')).toEqual('location-data_continue');
+      expect(getFormattedActionName('location_data_continue')).toEqual('location_data_continue');
+    });
+    test('return underline-concatenated action name if the words that are separated by white space', () => {
+      expect(getFormattedActionName('load core stores failed on location page')).toEqual(
+        'load_core_stores_failed_on_location_page'
+      );
     });
     test('return underline-concatenated action name if the words that are separated by period mark', () => {
       console.warn = jest.fn();
-      expect(getFormattedActionName('location-data.continue')).toEqual('location-data_continue');
-      expect(console.warn).toHaveBeenCalledWith(
-        'separate words by the period mark is strongly prohibited. Please use underlines.'
-      );
+      expect(getFormattedActionName('location-data.continue')).toEqual('location_data_continue');
+      expect(console.warn).toHaveBeenCalledWith('Illegal character in action name');
     });
   });
 

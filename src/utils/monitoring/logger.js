@@ -91,9 +91,12 @@ export const getFormattedActionName = name => {
     throw new Error('name should not be empty');
   }
 
-  if (/\.+/.test(name)) {
-    console.warn('separate words by the period mark is strongly prohibited. Please use underlines.');
-    return name.replace(/\.+/g, '_');
+  // For the name contains anything other than a letter, digit, or underscore, format the name and print a warning on the console.
+  const regexFormatRule = /\W+/g;
+
+  if (regexFormatRule.test(name)) {
+    console.warn('Illegal character in action name');
+    return name.replace(regexFormatRule, '_');
   }
 
   return name;
@@ -133,6 +136,7 @@ const track = async (name, data, options = {}) => {
 
     const { level, tags } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
+    const action = getFormattedActionName(name);
 
     // NOTE: the log structure as per: https://docs.google.com/spreadsheets/d/1GxqTy_RR00qvrNKk3Np69uNYuYCghSbFtDsIj6dzsio/edit?usp=sharing
     const payload = {
@@ -141,7 +145,7 @@ const track = async (name, data, options = {}) => {
       platform: 'Web',
       project: 'BeepV1Web',
       ts: new Date().valueOf(),
-      action: getFormattedActionName(name),
+      action,
       tags: getFormattedTags(tags),
       deviceId: getDeviceId(),
       business: getMerchantID(),
