@@ -151,8 +151,6 @@ const dsBridgeCall = nativeMethod => {
 
 export const getWebviewSource = () => window.webViewSource;
 
-export const getBeepAppVersion = () => window.beepAppVersion;
-
 export const startChat = ({ orderId, storeName, source }) => {
   const data = {
     method: 'beepModule-startChat',

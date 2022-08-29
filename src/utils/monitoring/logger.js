@@ -14,6 +14,7 @@ import {
   isAndroidWebview,
   getUUID,
   getBusinessName,
+  getBeepAppVersion,
 } from '../../common/utils';
 
 const { REACT_APP_LOG_SERVICE_URL, REACT_APP_LOG_SERVICE_TOKEN } = process.env;
@@ -160,6 +161,7 @@ const track = async (name, data, options = {}) => {
         permTid,
         path: window.location.pathname,
         appPlatform: getAppPlatform(),
+        appVersion: getBeepAppVersion(),
       },
       privateData: {
         [privateDataKeyName]: {

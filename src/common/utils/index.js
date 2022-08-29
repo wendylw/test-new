@@ -313,3 +313,5 @@ export const getBusinessName = (hostname = window.location.hostname) => {
   const hostNameArray = hostname.split('.');
   return hostNameArray.length > 2 ? hostNameArray.shift() : null;
 };
+
+export const getBeepAppVersion = () => window.beepAppVersion;
