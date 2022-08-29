@@ -26,6 +26,8 @@ const EVENT_LEVEL_TYPES = {
   ERROR: 'error',
 };
 
+const PROJECT_PREFIX_NAME = 'BeepV1Web';
+
 const getDeviceId = _once(() => {
   try {
     if (!isWebview()) {
@@ -102,6 +104,8 @@ export const getFormattedActionName = name => {
   return name;
 };
 
+export const getFormattedPrivateDateKeyName = actionName => [PROJECT_PREFIX_NAME, actionName].join('_');
+
 const send = async data => {
   debug('[Logger]\n%o', data);
 
@@ -137,6 +141,7 @@ const track = async (name, data, options = {}) => {
     const { level, tags } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
     const action = getFormattedActionName(name);
+    const privateDataKeyName = getFormattedPrivateDateKeyName(action);
 
     // NOTE: the log structure as per: https://docs.google.com/spreadsheets/d/1GxqTy_RR00qvrNKk3Np69uNYuYCghSbFtDsIj6dzsio/edit?usp=sharing
     const payload = {
@@ -156,7 +161,11 @@ const track = async (name, data, options = {}) => {
         path: window.location.pathname,
         appPlatform: getAppPlatform(),
       },
-      privateData: data,
+      privateData: {
+        [privateDataKeyName]: {
+          ...data,
+        },
+      },
     };
 
     send(payload);

@@ -1,4 +1,4 @@
-import { getMerchantID, getFormattedTags, getFormattedActionName } from './logger';
+import { getMerchantID, getFormattedTags, getFormattedActionName, getFormattedPrivateDateKeyName } from './logger';
 import { getUUID } from '../../common/utils';
 
 const oldWindowLocation = window.location;
@@ -114,7 +114,7 @@ describe('utils/monitoring/logger', () => {
     });
   });
 
-  describe('get getMerchantID function', () => {
+  describe('test getMerchantID function', () => {
     test('return business name from merchant URL', () => {
       window.location.hostname = 'mickeymouseclubhouse.beep.test17.shub.us';
       expect(getMerchantID()).toBe('mickeymouseclubhouse');
@@ -122,6 +122,21 @@ describe('utils/monitoring/logger', () => {
     test('from beepit.com from site URL', () => {
       window.location.hostname = 'www.beep.local.shub.us';
       expect(getMerchantID()).toBe('beepit.com');
+    });
+  });
+
+  describe('test getFormattedPrivateDateKey function', () => {
+    test('return underline-concatenated private data key name if the action name is separated by underlines', () => {
+      const actionName = getFormattedActionName('location_data_continue');
+      expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_location_data_continue');
+    });
+    test('return underline-concatenated private data key name if the action name is separated by white space', () => {
+      const actionName = getFormattedActionName('load core stores failed on location page');
+      expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_load_core_stores_failed_on_location_page');
+    });
+    test('return underline-concatenated private data key name if the action name is separated by period mark', () => {
+      const actionName = getFormattedActionName('google-maps-api.geocode-failure');
+      expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_google_maps_api_geocode_failure');
     });
   });
 });
