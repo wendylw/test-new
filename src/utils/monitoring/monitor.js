@@ -5,7 +5,7 @@ import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
 import './navigation-detector';
 import './click-detector';
 import logger from './logger';
-import Utils from '../utils';
+import { getAppPlatform } from '../../common/utils';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
   Sentry.init({
@@ -23,14 +23,6 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     },
   });
 }
-
-const getAppPlatform = () => {
-  if (Utils.isTNGMiniProgram()) {
-    return 'tng-mini-program';
-  }
-
-  return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
-};
 
 // inject xhr and fetch to inspect error
 const isRelativePath = url => {

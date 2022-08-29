@@ -6,16 +6,7 @@ import _isPlainObject from 'lodash/isPlainObject';
 import _once from 'lodash/once';
 import tids from './tracing-id';
 import debug from '../debug';
-import {
-  isWebview,
-  isTNGMiniProgram,
-  isSiteApp,
-  isIOSWebview,
-  isAndroidWebview,
-  getUUID,
-  getBusinessName,
-  getBeepAppVersion,
-} from '../../common/utils';
+import { isWebview, isSiteApp, getUUID, getAppPlatform, getBusinessName, getBeepAppVersion } from '../../common/utils';
 
 const { REACT_APP_LOG_SERVICE_URL, REACT_APP_LOG_SERVICE_TOKEN } = process.env;
 
@@ -46,14 +37,6 @@ const getDeviceId = _once(() => {
     return undefined;
   }
 });
-
-const getAppPlatform = () => {
-  if (isTNGMiniProgram()) {
-    return 'tng-mini-program';
-  }
-
-  return isAndroidWebview() ? 'android' : isIOSWebview() ? 'ios' : 'web';
-};
 
 export const getMerchantID = () => {
   if (isSiteApp()) {

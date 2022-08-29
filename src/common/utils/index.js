@@ -315,3 +315,11 @@ export const getBusinessName = (hostname = window.location.hostname) => {
 };
 
 export const getBeepAppVersion = () => window.beepAppVersion;
+
+export const getAppPlatform = () => {
+  if (isTNGMiniProgram()) {
+    return 'tng-mini-program';
+  }
+
+  return isAndroidWebview() ? 'android' : isIOSWebview() ? 'ios' : 'web';
+};
