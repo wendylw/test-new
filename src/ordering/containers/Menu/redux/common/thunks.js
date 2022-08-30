@@ -473,8 +473,8 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
     const isProductListReady = getIsProductListReady(getState());
 
     if (!isProductListReady) {
-      // Load Product List API depend on shippingType, deliveryTime and storeId data
-      // MUST put it after the "initializeForBeepDelivery" function
+      // MUST put loadProductList after the "initializeForBeepDelivery" function
+      // Since Load Product List API depend on shippingType, deliveryTime and storeId data
       await dispatch(appActions.loadProductList());
     }
   } catch (error) {
