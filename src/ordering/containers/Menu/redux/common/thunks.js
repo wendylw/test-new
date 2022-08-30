@@ -333,7 +333,7 @@ export const loadUserFavStoreStatus = createAsyncThunk(
   }
 );
 
-const initialForBeepQR = async ({ dispatch, getState }) => {
+const initializeForBeepQR = async ({ dispatch, getState }) => {
   const storeId = getStoreId(getState());
 
   // Get EnablePayLater after core business loaded
@@ -344,7 +344,7 @@ const initialForBeepQR = async ({ dispatch, getState }) => {
   }
 };
 
-const initialForBeepDelivery = async ({ dispatch, getState }) => {
+const initializeForBeepDelivery = async ({ dispatch, getState }) => {
   const state = getState();
   const isWebview = getIsWebview(state);
   const shippingType = getShippingType(state);
@@ -463,18 +463,18 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
     });
 
     if (isBeepQR) {
-      await initialForBeepQR({ getState, dispatch });
+      await initializeForBeepQR({ getState, dispatch });
     }
 
     if (isBeepDelivery) {
-      await initialForBeepDelivery({ getState, dispatch });
+      await initializeForBeepDelivery({ getState, dispatch });
     }
 
     const isProductListReady = getIsProductListReady(getState());
 
     if (!isProductListReady) {
       // Load Product List API depend on shippingType, deliveryTime and storeId data
-      // MUST put it after the "initialForBeepDelivery" function
+      // MUST put it after the "initializeForBeepDelivery" function
       await dispatch(appActions.loadProductList());
     }
   } catch (error) {
