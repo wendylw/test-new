@@ -122,10 +122,14 @@ const track = async (name, data, options = {}) => {
       throw new Error('data should be plain object');
     }
 
-    const { level, tags } = options;
+    const { level, tags, publicData } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
     const action = getFormattedActionName(name);
     const privateDataKeyName = getFormattedPrivateDateKeyName(action);
+
+    if (!(_isEmpty(publicData) || _isPlainObject(publicData))) {
+      throw new Error('public data should be plain object');
+    }
 
     // NOTE: the log structure as per: https://docs.google.com/spreadsheets/d/1GxqTy_RR00qvrNKk3Np69uNYuYCghSbFtDsIj6dzsio/edit?usp=sharing
     const payload = {
@@ -138,7 +142,7 @@ const track = async (name, data, options = {}) => {
       tags: getFormattedTags(tags),
       deviceId: getDeviceId(),
       business: getMerchantID(),
-      publicData: {},
+      publicData,
       webData: {
         sessTid,
         permTid,

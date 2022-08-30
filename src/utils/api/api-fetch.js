@@ -122,6 +122,7 @@ async function _fetch(url, opts) {
               code: body.code.toString(),
               error: body.message,
               requestStart,
+              status: e.response.status,
             },
           })
         );
@@ -137,8 +138,10 @@ async function _fetch(url, opts) {
             detail: {
               type: opts.method,
               request: requestUrl,
-              requestStart,
+              code: '99999',
               error: error.message,
+              requestStart,
+              status: e.response.status,
             },
           })
         );

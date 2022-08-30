@@ -103,6 +103,12 @@
     "whatwg-fetch": "^3.6.2",
     "yargs": "^15.3.1"
   },
+  "jest": {
+    "resetMocks": false,
+    "transformIgnorePatterns": [
+      "/node_modules/@mdhnpm/(?!Ky)"
+    ]
+  },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "TAILWIND_MODE=watch craco start",

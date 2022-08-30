@@ -131,30 +131,77 @@ window.addEventListener('sh-click', e => {
   logUserAction('common.click', e.detail);
 });
 
-const logApiSuccess = data => {
-  logger.log('common.api-responded', {
-    status: 'success',
-    ...data,
-  });
-};
-
-const logApiFailure = data => {
-  logger.error('common.api-responded', {
-    status: 'failure',
-    ...data,
-  });
-};
-
 window.addEventListener('sh-api-success', e => {
-  logApiSuccess(e.detail);
+  const { type: method, request: url, requestStart } = e.detail;
+
+  logger.log(
+    'Common_HttpRequest',
+    {},
+    {
+      publicData: {
+        httpInfo: {
+          result: 'Succeed',
+          method,
+          url,
+          path: '', // TODO: will update it in next commit
+          responseTime: new Date().valueOf() - requestStart,
+          httpStatusCode: 200,
+        },
+      },
+    }
+  );
 });
 
 window.addEventListener('sh-api-failure', e => {
-  logApiFailure(e.detail);
+  const {
+    type: method,
+    request: url,
+    requestStart,
+    error: message,
+    code: errorCode,
+    status: httpStatusCode,
+  } = e.detail;
+
+  logger.log(
+    'Common_HttpRequest',
+    {},
+    {
+      publicData: {
+        httpInfo: {
+          result: 'Failed',
+          method,
+          url,
+          path: '', // TODO: will update it in next commit
+          responseTime: new Date().valueOf() - requestStart,
+          httpStatusCode,
+          errorCode,
+          message,
+        },
+      },
+    }
+  );
 });
 
 window.addEventListener('sh-fetch-error', e => {
-  logger.error('common.fetch-error', e.detail);
+  const { type: method, request: url, requestStart, error: message } = e.detail;
+
+  logger.error(
+    'Common_HttpRequest',
+    {},
+    {
+      publicData: {
+        httpInfo: {
+          result: 'Failed',
+          method,
+          url,
+          path: '', // TODO: will update it in next commit
+          responseTime: new Date().valueOf() - requestStart,
+          httpStatusCode: 0,
+          message,
+        },
+      },
+    }
+  );
 });
 
 const initiallyLogged = false;

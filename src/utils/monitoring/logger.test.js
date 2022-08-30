@@ -1,25 +1,27 @@
 import { getMerchantID, getFormattedTags, getFormattedActionName, getFormattedPrivateDateKeyName } from './logger';
 import { getUUID } from '../../common/utils';
-
-const oldWindowLocation = window.location;
-
-beforeAll(() => {
-  delete window.location;
-
-  Object.defineProperty(window, 'location', {
-    value: {
-      hostname: oldWindowLocation.hostname,
-    },
-    writable: true,
-  });
-});
-
-afterAll(() => {
-  // restore `window.location` to the `jsdom` `Location` object
-  window.location = oldWindowLocation;
-});
+import { get as requestGet } from '../request';
+import { get as apiFetchGet } from '../api/api-fetch';
 
 describe('utils/monitoring/logger', () => {
+  const originalWindowLocation = window.location;
+
+  beforeAll(() => {
+    delete window.location;
+
+    Object.defineProperty(window, 'location', {
+      value: {
+        hostname: originalWindowLocation.hostname,
+      },
+      writable: true,
+    });
+  });
+
+  afterAll(() => {
+    // restore `window.location` to the `jsdom` `Location` object
+    window.location = originalWindowLocation;
+  });
+
   describe('test getUUID function', () => {
     // By default, window.crypto is not available on jsdom
     Object.defineProperty(window, 'crypto', {
@@ -137,6 +139,191 @@ describe('utils/monitoring/logger', () => {
     test('return underline-concatenated private data key name if the action name is separated by period mark', () => {
       const actionName = getFormattedActionName('google-maps-api.geocode-failure');
       expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_google_maps_api_geocode_failure');
+    });
+  });
+  describe('test public data httpInfo payload', () => {
+    const originalFetch = global.fetch;
+
+    beforeAll(() => {
+      global.fetch = fetch;
+    });
+
+    afterEach(() => {
+      fetch.resetMocks();
+      jest.restoreAllMocks();
+    });
+
+    afterAll(() => {
+      global.fetch = originalFetch;
+    });
+
+    test('check sh-api-success payload from request module', async () => {
+      fetch.mockResponseOnce(JSON.stringify({ login: true }));
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await requestGet('api/ping');
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-success');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        request: 'api/ping',
+        type: 'get',
+      });
+    });
+
+    test('check sh-fetch-error payload from request module', async () => {
+      fetch.mockRejectOnce(new TypeError('Type Error'));
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await requestGet('api/ping').catch(() => {});
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-fetch-error');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        type: 'get',
+        request: 'api/ping',
+        error: 'Type Error',
+      });
+    });
+
+    test('check HTTP status 400 payload from request module', async () => {
+      fetch.mockResponseOnce(JSON.stringify({ code: 40005, message: 'No business' }), { status: 400 });
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await requestGet('api/login').catch(() => {});
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-failure');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        type: 'get',
+        request: 'api/login',
+        error: 'No Business',
+        code: '40005',
+        status: 400,
+      });
+    });
+
+    test('check invalid HTTP status 400 payload from request module', async () => {
+      fetch.mockResponseOnce({ code: 500, message: 'Server error' }, { status: 500 });
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await requestGet('api/login').catch(() => {});
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-failure');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        type: 'get',
+        request: 'api/login',
+        error: 'invalid json response body at  reason: Unexpected token o in JSON at position 1',
+        code: '99999',
+        status: 500,
+      });
+    });
+
+    test('check HTTP status 401 payload from request module', async () => {
+      fetch.mockResponseOnce(JSON.stringify({ code: 401, message: 'Token Expired' }), { status: 401 });
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await requestGet('api/login').catch(() => {});
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-failure');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        type: 'get',
+        request: 'api/login',
+        error: 'Token Expired',
+        code: '401',
+        status: 401,
+      });
+    });
+
+    test('check invalid HTTP status 401 payload from request module', async () => {
+      fetch.mockResponseOnce({ code: 401, message: 'Server error' }, { status: 401 });
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await requestGet('api/login').catch(() => {});
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-failure');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        type: 'get',
+        request: 'api/login',
+        error: 'invalid json response body at  reason: Unexpected token o in JSON at position 1',
+        code: '99999',
+        status: 401,
+      });
+    });
+
+    test('check sh-api-success payload from api-fetch module', async () => {
+      fetch.mockResponse(
+        JSON.stringify({
+          code: 10000,
+          message: 'OK',
+          description: 'OK',
+          pagination: null,
+          data: {
+            addressInfo: {
+              savedAddressId: '62ff6243036cf415336581a9',
+              shortName: 'Pavilion Shopping Centre',
+              fullName:
+                'Pavilion Kuala Lumpur, Bukit Bintang Street, Bukit Bintang, Kuala Lumpur, Federal Territory of Kuala Lumpur, Malaysia',
+              coords: {
+                lat: 3.148855799999999,
+                lng: 101.7132547,
+              },
+              city: 'Kuala Lumpur',
+              postCode: '55100',
+              countryCode: 'MY',
+            },
+          },
+          extra: null,
+        })
+      );
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await apiFetchGet('api/v3/storage/selected-address');
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-success');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        request: 'api/v3/storage/selected-address',
+        type: 'get',
+      });
+    });
+
+    test('check sh-api-failure payload from api-fetch module with custom error code', async () => {
+      fetch.mockResponse(JSON.stringify({ code: 40000, message: 'Service Unavailable' }), {
+        status: 500,
+        headers: { 'content-type': 'application/json' },
+      });
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await apiFetchGet('api/v3/storage/selected-address').catch(() => {});
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-failure');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        type: 'get',
+        request: 'api/v3/storage/selected-address',
+        code: '40000',
+        error: 'Service Unavailable',
+        status: 500,
+      });
+    });
+
+    test('check sh-api-failure payload from api-fetch module without custom error code', async () => {
+      fetch.mockResponse(JSON.stringify({ message: 'Service Unavailable' }), {
+        status: 500,
+        headers: { 'content-type': 'application/json' },
+      });
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await apiFetchGet('api/v3/storage/selected-address').catch(() => {});
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-failure');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        type: 'get',
+        request: 'api/v3/storage/selected-address',
+        code: '99999',
+        error: '{"message":"Service Unavailable"}',
+        status: 500,
+      });
+    });
+
+    test('check sh-fetch-error payload from api-fetch module', async () => {
+      fetch.mockReject(new Error('Unknown Error'), { status: 500 });
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await apiFetchGet('api/v3/storage/selected-address').catch(() => {});
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-fetch-error');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        type: 'get',
+        request: 'api/v3/storage/selected-address',
+        error: 'Unknown Error',
+      });
     });
   });
 });
