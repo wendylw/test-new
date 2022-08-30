@@ -35,6 +35,7 @@ const AddressList = React.memo(({ addressList, onSelectAddress }) => {
 AddressList.displayName = 'AddressList';
 
 AddressList.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   addressList: PropTypes.arrayOf(PropTypes.object),
   onSelectAddress: PropTypes.func,
 };

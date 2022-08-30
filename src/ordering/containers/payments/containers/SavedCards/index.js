@@ -1,3 +1,4 @@
+import _get from 'lodash/get';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -7,8 +8,6 @@ import Utils from '../../../../../utils/utils';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import Radio from '../../../../../components/Radio';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
-import Loader from '../../components/Loader';
-import _get from 'lodash/get';
 
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getUser } from '../../../../redux/modules/app';
@@ -30,6 +29,7 @@ class SavedCards extends Component {
   state = {
     // TODO: Move whole state to redux store in Payment 2.0
     showLoading: false,
+    payNowLoading: false,
   };
 
   willUnmount = false;
@@ -81,6 +81,18 @@ class SavedCards extends Component {
   componentWillUnmount() {
     this.willUnmount = true;
   }
+
+  getPaymentEntryRequestData = () => {
+    const { user, selectedPaymentCard } = this.props;
+    const cardToken = _get(selectedPaymentCard, 'cardToken', null);
+
+    return {
+      userId: user.consumerId,
+      cardToken,
+      paymentProvider: Constants.PAYMENT_PROVIDERS.STRIPE,
+      paymentOption: Constants.PAYMENT_API_PAYMENT_OPTIONS.TOKENIZATION,
+    };
+  };
 
   loadCardList = async () => {
     const { user: userInfo, paymentProvider, fetchSavedCard } = this.props;
@@ -161,6 +173,7 @@ class SavedCards extends Component {
 
   render() {
     const { t, history, total, selectedPaymentCard, receiptNumber } = this.props;
+    const { payNowLoading } = this.state;
     const cardToken = _get(selectedPaymentCard, 'cardToken', null);
 
     return (
@@ -194,8 +207,6 @@ class SavedCards extends Component {
             />
           </div>
           {this.renderCardList()}
-
-          {/* <Loader className={'loading-cover opacity'} loaded={!this.state.showLoading} /> */}
         </div>
         <footer
           ref={ref => (this.footerEl = ref)}
@@ -207,16 +218,16 @@ class SavedCards extends Component {
             buttonType="submit"
             orderId={receiptNumber}
             total={total}
-            disabled={!cardToken}
-            beforeCreateOrder={async () => {
-              history.push({
-                pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_CVV,
-                search: window.location.search,
+            disabled={!cardToken || payNowLoading}
+            paymentExtraData={this.getPaymentEntryRequestData()}
+            beforeCreateOrder={() => {}}
+            validCreateOrder={true}
+            afterCreateOrder={orderId => {
+              this.setState({
+                payNowLoading: !!orderId,
               });
             }}
-            validCreateOrder={false}
-            afterCreateOrder={() => {}}
-            processing={false}
+            processing={payNowLoading}
             loaderText={t('Processing')}
           >
             <CurrencyNumber
