@@ -132,7 +132,7 @@ window.addEventListener('sh-click', e => {
 });
 
 window.addEventListener('sh-api-success', e => {
-  const { type: method, request: url, requestStart } = e.detail;
+  const { type: method, request: url, requestStart, status: httpStatusCode } = e.detail;
 
   logger.log(
     'Common_HttpRequest',
@@ -145,7 +145,7 @@ window.addEventListener('sh-api-success', e => {
           url,
           path: '', // TODO: will update it in next commit
           responseTime: new Date().valueOf() - requestStart,
-          httpStatusCode: 200,
+          httpStatusCode,
         },
       },
     }

@@ -123,6 +123,7 @@ async function handleResponse(url, response, method, requestStart) {
             type: method,
             request: url,
             requestStart,
+            status: 200,
           },
         })
       );

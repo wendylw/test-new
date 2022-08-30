@@ -160,12 +160,13 @@ describe('utils/monitoring/logger', () => {
     test('check sh-api-success payload from request module', async () => {
       fetch.mockResponseOnce(JSON.stringify({ login: true }));
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
-      await requestGet('api/ping');
+      await requestGet('api/ping').catch(() => {});
       expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
       expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-success');
       expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
         request: 'api/ping',
         type: 'get',
+        status: 200,
       });
     });
 
@@ -242,7 +243,7 @@ describe('utils/monitoring/logger', () => {
       });
     });
 
-    test('check sh-api-success payload from api-fetch module', async () => {
+    test('check sh-api-success HTTP 200 payload from api-fetch module', async () => {
       fetch.mockResponse(
         JSON.stringify({
           code: 10000,
@@ -274,6 +275,32 @@ describe('utils/monitoring/logger', () => {
       expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
         request: 'api/v3/storage/selected-address',
         type: 'get',
+        status: 200,
+      });
+    });
+
+    test('check sh-api-success HTTP 201 payload from api-fetch module', async () => {
+      fetch.mockResponse(
+        JSON.stringify({
+          code: 10000,
+          message: 'OK',
+          description: 'OK',
+          pagination: null,
+          data: null,
+          extra: null,
+        }),
+        {
+          status: 201,
+        }
+      );
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      await apiFetchGet('api/v3/storage/selected-address');
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+      expect(dispatchEventSpy.mock.calls[0][0].type).toBe('sh-api-success');
+      expect(dispatchEventSpy.mock.calls[0][0].detail).toMatchObject({
+        request: 'api/v3/storage/selected-address',
+        type: 'get',
+        status: 201,
       });
     });
 

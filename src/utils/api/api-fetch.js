@@ -100,6 +100,7 @@ async function _fetch(url, opts) {
           type: opts.method,
           request: requestUrl,
           requestStart,
+          status: resp.status,
         },
       })
     );
