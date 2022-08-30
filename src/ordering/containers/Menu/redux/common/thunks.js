@@ -334,7 +334,13 @@ export const loadUserFavStoreStatus = createAsyncThunk(
 );
 
 const initializeForBeepQR = async ({ dispatch, getState }) => {
-  const storeId = getStoreId(getState());
+  const state = getState();
+  const storeId = getStoreId(state);
+  const isStoreInfoReady = getIsStoreInfoReady(state);
+
+  if (!isStoreInfoReady) {
+    await dispatch(appActions.loadCoreBusiness());
+  }
 
   // Get EnablePayLater after core business loaded
   const enablePayLater = getIsEnablePayLater(getState());
@@ -348,6 +354,22 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
   const state = getState();
   const isWebview = getIsWebview(state);
   const shippingType = getShippingType(state);
+  const isStoreInfoReady = getIsStoreInfoReady(state);
+  const isCoreStoresLoaded = getIsCoreStoresLoaded(state);
+
+  const basicLoadDataList = [];
+
+  if (!isStoreInfoReady) {
+    basicLoadDataList.push(dispatch(appActions.loadCoreBusiness()));
+  }
+
+  if (!isCoreStoresLoaded) {
+    basicLoadDataList.push(dispatch(appActions.loadCoreStores()));
+  }
+
+  if (basicLoadDataList.length > 0) {
+    await Promise.all(basicLoadDataList);
+  }
 
   const store = getStore(getState());
   dispatch(updateCurrentTime());
@@ -429,29 +451,37 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
   // - CleverTap push event, `Menu Page - View page`
 
   const state = getState();
-  const isStoreInfoReady = getIsStoreInfoReady(state);
-  const isCoreStoresLoaded = getIsCoreStoresLoaded(state);
   const isBeepQR = getIsQrOrderingShippingType(state);
   const isBeepDelivery = getIsBeepDeliveryShippingType(state);
 
-  ensureShippingType();
-  if (isDineInType()) {
-    ensureTableId(state);
-  }
-
   try {
-    const basicLoadDataList = [];
+    ensureShippingType();
 
-    if (!isStoreInfoReady) {
-      basicLoadDataList.push(dispatch(appActions.loadCoreBusiness()));
+    if (isBeepQR) {
+      if (isDineInType()) {
+        ensureTableId(state);
+      }
+
+      const isProductListReady = getIsProductListReady(getState());
+
+      if (!isProductListReady) {
+        // don't need to add "await", for optimize performance sake
+        dispatch(appActions.loadProductList());
+      }
+
+      await initializeForBeepQR({ getState, dispatch });
     }
 
-    if (isBeepDelivery && !isCoreStoresLoaded) {
-      basicLoadDataList.push(dispatch(appActions.loadCoreStores()));
-    }
+    if (isBeepDelivery) {
+      await initializeForBeepDelivery({ getState, dispatch });
 
-    if (basicLoadDataList.length > 0) {
-      await Promise.all(basicLoadDataList);
+      const isProductListReady = getIsProductListReady(getState());
+
+      if (!isProductListReady) {
+        // MUST put loadProductList after the "initializeForBeepDelivery" function
+        // Since Load Product List API depend on shippingType, deliveryTime and storeId data
+        await dispatch(appActions.loadProductList());
+      }
     }
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
@@ -461,22 +491,6 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
       ...storeInfoForCleverTap,
       foodTags: foodTagsForCleverTap,
     });
-
-    if (isBeepQR) {
-      await initializeForBeepQR({ getState, dispatch });
-    }
-
-    if (isBeepDelivery) {
-      await initializeForBeepDelivery({ getState, dispatch });
-    }
-
-    const isProductListReady = getIsProductListReady(getState());
-
-    if (!isProductListReady) {
-      // MUST put loadProductList after the "initializeForBeepDelivery" function
-      // Since Load Product List API depend on shippingType, deliveryTime and storeId data
-      await dispatch(appActions.loadProductList());
-    }
   } catch (error) {
     console.error(error);
 
