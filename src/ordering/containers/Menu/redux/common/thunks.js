@@ -333,6 +333,88 @@ export const loadUserFavStoreStatus = createAsyncThunk(
   }
 );
 
+const initialForBeepQR = async ({ dispatch, getState }) => {
+  const storeId = getStoreId(getState());
+
+  // Get EnablePayLater after core business loaded
+  const enablePayLater = getIsEnablePayLater(getState());
+
+  if (storeId) {
+    enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
+  }
+};
+
+const initialForBeepDelivery = async ({ dispatch, getState }) => {
+  const state = getState();
+  const isWebview = getIsWebview(state);
+  const shippingType = getShippingType(state);
+
+  const store = getStore(getState());
+  dispatch(updateCurrentTime());
+
+  if (!store) {
+    // remove expectedDeliveryDate
+    await dispatch(
+      updateExpectedDeliveryDate({
+        expectedDate: null,
+        shippingType,
+      })
+    );
+    return;
+  }
+
+  const storeSupportShippingTypes = getStoreSupportShippingTypes(getState());
+
+  // if store not support current shipping type
+  // then update to its support shipping type
+  if (!storeSupportShippingTypes.includes(shippingType)) {
+    dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
+  }
+
+  if (isWebview) {
+    const shareLinkUrl = getShareLinkUrl();
+
+    shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
+  }
+
+  const storeStatus = getStoreStatus(getState());
+
+  if (storeStatus === STORE_OPENING_STATUS.CLOSED) {
+    // Show store info drawer automatically when store is closed
+    await dispatch(showStoreInfoDrawer());
+    return;
+  }
+
+  await dispatch(initExpectedDeliveryDate());
+
+  dispatch(appActions.loadShoppingCart()).then(() => {
+    const query = getURLQueryObject(getState());
+    const { source } = query;
+
+    // if there is source='shoppingCart' in query
+    // then show mini cart automatically once page mounted
+    if (source === SOURCE_TYPE.SHOPPING_CART) {
+      dispatch(showMiniCartDrawer());
+
+      const search = getFilteredQueryString('source');
+
+      // remove source='shoppingCart' from query
+      dispatch(
+        replace({
+          pathname: PATH_NAME_MAPPING.ORDERING_HOME,
+          search,
+        })
+      );
+    }
+  });
+
+  const isAddressOutOfRange = getIsAddressOutOfRange(getState());
+
+  if (isAddressOutOfRange) {
+    await dispatch(showLocationDrawer());
+  }
+};
+
 /**
  * Ordering Menu page mounted
  */
@@ -347,22 +429,14 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
   // - CleverTap push event, `Menu Page - View page`
 
   const state = getState();
-  const storeId = getStoreId(state);
   const isStoreInfoReady = getIsStoreInfoReady(state);
   const isCoreStoresLoaded = getIsCoreStoresLoaded(state);
-  const isProductListReady = getIsProductListReady(state);
   const isBeepQR = getIsQrOrderingShippingType(state);
   const isBeepDelivery = getIsBeepDeliveryShippingType(state);
-  const isWebview = getIsWebview(state);
-  const shippingType = getShippingType(state);
 
   ensureShippingType();
   if (isDineInType()) {
     ensureTableId(state);
-  }
-
-  if (!isProductListReady) {
-    dispatch(appActions.loadProductList());
   }
 
   try {
@@ -389,79 +463,19 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
     });
 
     if (isBeepQR) {
-      // Get EnablePayLater after core business loaded
-      const enablePayLater = getIsEnablePayLater(getState());
-
-      if (storeId) {
-        enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
-      }
+      await initialForBeepQR({ getState, dispatch });
     }
 
     if (isBeepDelivery) {
-      const store = getStore(getState());
-      dispatch(updateCurrentTime());
+      await initialForBeepDelivery({ getState, dispatch });
+    }
 
-      if (!store) {
-        // remove expectedDeliveryDate
-        await dispatch(
-          updateExpectedDeliveryDate({
-            expectedDate: null,
-            shippingType,
-          })
-        );
-        return;
-      }
+    const isProductListReady = getIsProductListReady(getState());
 
-      const storeSupportShippingTypes = getStoreSupportShippingTypes(getState());
-
-      // if store not support current shipping type
-      // then update to its support shipping type
-      if (!storeSupportShippingTypes.includes(shippingType)) {
-        dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
-      }
-
-      if (isWebview) {
-        const shareLinkUrl = getShareLinkUrl();
-
-        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
-      }
-
-      const storeStatus = getStoreStatus(getState());
-
-      if (storeStatus === STORE_OPENING_STATUS.CLOSED) {
-        // Show store info drawer automatically when store is closed
-        await dispatch(showStoreInfoDrawer());
-        return;
-      }
-
-      await dispatch(initExpectedDeliveryDate());
-
-      dispatch(appActions.loadShoppingCart()).then(() => {
-        const query = getURLQueryObject(getState());
-        const { source } = query;
-
-        // if there is source='shoppingCart' in query
-        // then show mini cart automatically once page mounted
-        if (source === SOURCE_TYPE.SHOPPING_CART) {
-          dispatch(showMiniCartDrawer());
-
-          const search = getFilteredQueryString('source');
-
-          // remove source='shoppingCart' from query
-          dispatch(
-            replace({
-              pathname: PATH_NAME_MAPPING.ORDERING_HOME,
-              search,
-            })
-          );
-        }
-      });
-
-      const isAddressOutOfRange = getIsAddressOutOfRange(getState());
-
-      if (isAddressOutOfRange) {
-        await dispatch(showLocationDrawer());
-      }
+    if (!isProductListReady) {
+      // Load Product List API depend on shippingType, deliveryTime and storeId data
+      // MUST put it after the "initialForBeepDelivery" function
+      await dispatch(appActions.loadProductList());
     }
   } catch (error) {
     console.error(error);
