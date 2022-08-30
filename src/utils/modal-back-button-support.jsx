@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { Component, useEffect, useRef, useCallback } from 'react';
-import { useUpdateEffect } from 'react-use';
+import { useMount, useUnmount, useUpdateEffect } from 'react-use';
 import qs from 'qs';
 import _difference from 'lodash/difference';
 import _uniqueId from 'lodash/uniqueId';
 import _once from 'lodash/once';
 import logger from './monitoring/logger';
+import useRefInitializer from '../common/utils/hooks/useRefInitializer';
 
 const parseHash = (hash = document.location.hash) => qs.parse(hash.replace(/^#/, ''));
 
@@ -90,9 +91,11 @@ window.addEventListener(
  */
 export const withBackButtonSupport = WrappedComponent => {
   class WithBackButtonSupport extends Component {
-    modalId = _uniqueId();
-
-    childRef = React.createRef();
+    constructor() {
+      super();
+      this.modalId = _uniqueId();
+      this.childRef = React.createRef();
+    }
 
     componentDidMount() {
       window.addEventListener('sh-modal-history-back', this.onModalHistoryBack);
@@ -143,18 +146,19 @@ export const withBackButtonSupport = WrappedComponent => {
 
 /**
  *
- * @param {*} visibility whether the modal is visible or not, used to determine whether to add or remove the modal id to the hash
- * @param {*} onHistoryBackReceived called when the use presses the back button, used to notify the modal to close
- * @param {*} onHistoryChangeCompleted called when the hash change is done (because the hash change is async)
+ * @param {boolean} visibility whether the modal is visible or not, used to determine whether to add or remove the modal id to the hash
+ * @param {function} onHistoryBackReceived called when the use presses the back button, used to notify the modal to close
+ * @param {function} onHistoryChangeCompleted called when the hash change is done (because the hash change is async)
+ * @param {boolean} disabled the hook will completely not functioning. IMPORTANT NOTE: It's only allowed to set this property on a component is mounted. Do NOT change the value in the rest life cycle of the component.
  * @returns
  */
 export const useBackButtonSupport = ({
   visibility,
   onHistoryBackReceived,
   onHistoryChangeCompleted,
-  disabled = false,
+  disabled = false, // IMPORTANT NOTE: It's only allowed to set this property on a component is mounted. Do NOT change the value in the rest life cycle of the component.
 }) => {
-  const modalIdRef = useRef(_uniqueId());
+  const modalIdRef = useRefInitializer(() => _uniqueId());
   const onModalHistoryBack = useCallback(
     e => {
       if (disabled) return;
@@ -181,6 +185,17 @@ export const useBackButtonSupport = ({
     };
   }, [onModalHistoryBack]);
 
+  // if the modal is mounted with visibility = true, we will add hash
+  useMount(() => {
+    if (disabled) return;
+    if (visibility) {
+      addModalIdHash(modalIdRef.current);
+      onHistoryChangeCompleted && onHistoryChangeCompleted(visibility);
+    }
+  });
+
+  // This hook is only executed when visibility changes (i.e. It won't be executed when the modal is mount). This is
+  // to prevent the onHistoryChangeCompleted is called when the modal is mounted with visibility = false.
   useUpdateEffect(() => {
     const execute = async () => {
       if (disabled) return;
@@ -194,7 +209,21 @@ export const useBackButtonSupport = ({
     execute();
     // Do NOT add onHistoryChangeCompleted to dependency list, we don't want to re-run the effect when onHistoryChangeCompleted is updated.
     // Otherwise we will get an infinite loop.
-  }, [visibility]);
+  }, [visibility, disabled]);
+
+  // If the modal is unmounted with visibility = true, we still need to remove hash by calling history.go(-1).
+  useUnmount(() => {
+    const execute = async () => {
+      if (disabled) return;
+      if (visibility) {
+        await removeModalIdHash(modalIdRef.current);
+        // Since the modal is unmounted, the visibility param for onHistoryChangeComplete will be false, even if the visibility in props is
+        // still true.
+        onHistoryChangeCompleted && onHistoryChangeCompleted(false);
+      }
+    };
+    execute();
+  });
 };
 
 // Currently we don't support to keep the modal open after the page is refresh,

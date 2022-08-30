@@ -686,18 +686,27 @@ export const showLocationConfirmModal = createAsyncThunk('ordering/menu/common/s
 
 export const hideLocationConfirmModal = createAsyncThunk('ordering/menu/common/hideLocationConfirmModal', () => {});
 
-export const addAddressButtonClicked = createAsyncThunk('ordering/menu/common/addAddressButtonClicked', async () => {
-  Clevertap.pushEvent('Menu Page - Location Needed Pop-up - Add address');
-});
+export const addAddressButtonClicked = createAsyncThunk(
+  'ordering/menu/common/addAddressButtonClicked',
+  async (_, { getState }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+    Clevertap.pushEvent('Menu Page - Location Needed Pop-up - Add address', storeInfoForCleverTap);
+  }
+);
 
-export const noThanksButtonClicked = createAsyncThunk('ordering/menu/common/noThanksButtonClicked', async () => {
-  Clevertap.pushEvent('Menu page - Location Needed Pop-up - No thanks');
-});
+export const noThanksButtonClicked = createAsyncThunk(
+  'ordering/menu/common/noThanksButtonClicked',
+  async (_, { getState }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+    Clevertap.pushEvent('Menu page - Location Needed Pop-up - No thanks', storeInfoForCleverTap);
+  }
+);
 
 export const locationConfirmModalShown = createAsyncThunk(
   'ordering/menu/common/locationConfirmModalShown',
-  async () => {
-    Clevertap.pushEvent('Menu page - Location Needed Pop-up - View Page');
+  async (_, { getState }) => {
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
+    Clevertap.pushEvent('Menu page - Location Needed Pop-up - View Page', storeInfoForCleverTap);
   }
 );
 

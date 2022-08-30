@@ -50,6 +50,8 @@ const createAlert = (content, options) =>
         mountAtRoot: false,
         onClose: () => {
           destroyTarget(rootDOM);
+        },
+        onHistoryBackCompleted: () => {
           resolve();
           onClose();
         },

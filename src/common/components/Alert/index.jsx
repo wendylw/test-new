@@ -19,6 +19,7 @@ const Alert = props => {
     closeButtonStyle,
     zIndex,
     onClose,
+    onHistoryBackCompleted,
   } = props;
   const contentContainerRef = useRef(null);
 
@@ -36,6 +37,7 @@ const Alert = props => {
       mountAtRoot={mountAtRoot}
       className={`${styles.alertContent}${className ? ` ${className}` : ''}`}
       onClose={onClose}
+      onHistoryBackCompleted={onHistoryBackCompleted}
       closeByBackButton={false}
       closeByBackDrop={false}
       animation={animation}
@@ -70,6 +72,7 @@ Alert.propTypes = {
   closeButtonStyle: PropTypes.object,
   zIndex: PropTypes.number,
   onClose: PropTypes.func,
+  onHistoryBackCompleted: PropTypes.func,
 };
 
 Alert.defaultProps = {
@@ -83,6 +86,7 @@ Alert.defaultProps = {
   closeButtonStyle: {},
   zIndex: 300,
   onClose: () => {},
+  onHistoryBackCompleted: () => {},
 };
 
 export default Alert;

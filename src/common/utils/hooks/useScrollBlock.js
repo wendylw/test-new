@@ -1,10 +1,11 @@
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import _uniqueId from 'lodash/uniqueId';
 import { useUnmount } from 'react-use';
+import useRefInitializer from './useRefInitializer';
 import { block, unblock } from '../scroll-blocker';
 
 const useScrollBlock = shouldBlock => {
-  const uid = useRef(_uniqueId());
+  const uid = useRefInitializer(() => _uniqueId());
   useEffect(() => {
     if (shouldBlock) {
       block(uid.current);

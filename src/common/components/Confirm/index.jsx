@@ -109,6 +109,7 @@ const Confirm = props => {
     buttonAlignment,
     zIndex,
     onSelection,
+    onHistoryBackCompleted,
   } = props;
   const contentContainerRef = useRef(null);
 
@@ -128,6 +129,7 @@ const Confirm = props => {
       onClose={() => {
         onSelection(CONFIRM_TRIGGER_TARGET.OTHER);
       }}
+      onHistoryBackCompleted={onHistoryBackCompleted}
       closeByBackButton={closeByBackButton}
       closeByBackDrop={closeByBackDrop}
       animation={animation}
@@ -159,6 +161,7 @@ Confirm.propTypes = {
   mountAtRoot: PropTypes.bool,
   className: PropTypes.string,
   zIndex: PropTypes.number,
+  onHistoryBackCompleted: PropTypes.func,
   ...ConfirmFooterPropsTypes,
 };
 
@@ -171,6 +174,7 @@ Confirm.defaultProps = {
   mountAtRoot: false,
   className: '',
   zIndex: 300,
+  onHistoryBackCompleted: () => {},
   ...ConfirmFooterDefaultProps,
 };
 
