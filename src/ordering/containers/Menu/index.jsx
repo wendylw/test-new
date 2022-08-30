@@ -29,6 +29,11 @@ const Menu = () => {
   return (
     <Frame>
       <>
+        {/*
+         * Checking [enableLiveOnline] whether equal null is ensuring the "CoreBusiness" API Request has completed
+         * if we don't add this checking, The page will display store closed view a few seconds.
+         * TODO: This isn't a better way, it will cause issue FB-4265, should check the API request status instead of it.
+         */}
         {enableLiveOnline == null ? null : !enableLiveOnline ? (
           <>
             <MenuHeader />
