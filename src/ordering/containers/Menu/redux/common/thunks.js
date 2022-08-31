@@ -372,7 +372,7 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
   }
 
   const store = getStore(getState());
-  dispatch(updateCurrentTime());
+  await dispatch(updateCurrentTime());
 
   if (!store) {
     // remove expectedDeliveryDate
