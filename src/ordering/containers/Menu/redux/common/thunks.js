@@ -389,6 +389,7 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
 
   // if store not support current shipping type
   // then update to its support shipping type
+  // TODO: For the better UX, should notify user the shippingType has been changed
   if (!storeSupportShippingTypes.includes(shippingType)) {
     dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
   }
