@@ -12,7 +12,7 @@ import CreateOrderButton from '../../../../components/CreateOrderButton';
 import { bindActionCreators, compose } from 'redux';
 import { actions as appActionCreators, getUser } from '../../../../redux/modules/app';
 import IconAddNew from '../../../../../images/icon-add-new.svg';
-import { getCardList, getSelectedPaymentCard } from './redux/selectors';
+import { getCardList, getSelectedPaymentCard, getIsRequestSavedCardsPending } from './redux/selectors';
 import { actions as savedCardsActions, thunks as savedCardsThunks } from './redux';
 import {
   getSelectedPaymentOptionSupportSaveCard,
@@ -26,19 +26,12 @@ import '../../styles/PaymentCreditCard.scss';
 
 const { PAYMENT_METHOD_LABELS } = Constants;
 class SavedCards extends Component {
-  state = {
-    // TODO: Move whole state to redux store in Payment 2.0
-    showLoading: false,
-    payNowLoading: false,
-  };
-
   willUnmount = false;
+
+  state = { processing: false };
 
   componentDidMount = async () => {
     try {
-      this.setState({
-        showLoading: true,
-      });
       await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 
       const { paymentProvider, history, cardList, supportSaveCard } = this.props;
@@ -71,10 +64,6 @@ class SavedCards extends Component {
       if (this.willUnmount) {
         return;
       }
-
-      this.setState({
-        showLoading: false,
-      });
     }
   };
 
@@ -95,9 +84,9 @@ class SavedCards extends Component {
   };
 
   loadCardList = async () => {
-    const { user: userInfo, paymentProvider, fetchSavedCard } = this.props;
+    const { user: userInfo, paymentProvider, fetchSavedCards } = this.props;
 
-    return fetchSavedCard({
+    return fetchSavedCards({
       userId: userInfo.consumerId,
       paymentName: paymentProvider,
     });
@@ -172,8 +161,8 @@ class SavedCards extends Component {
   }
 
   render() {
-    const { t, history, total, selectedPaymentCard, receiptNumber } = this.props;
-    const { payNowLoading } = this.state;
+    const { t, history, total, selectedPaymentCard, receiptNumber, isRequestSavedCardsPending } = this.props;
+    const { processing } = this.state;
     const cardToken = _get(selectedPaymentCard, 'cardToken', null);
 
     return (
@@ -218,17 +207,16 @@ class SavedCards extends Component {
             buttonType="submit"
             orderId={receiptNumber}
             total={total}
-            disabled={!cardToken || payNowLoading}
+            disabled={!cardToken || processing || isRequestSavedCardsPending}
             paymentExtraData={this.getPaymentEntryRequestData()}
-            beforeCreateOrder={() => {}}
             validCreateOrder={true}
             afterCreateOrder={orderId => {
               this.setState({
-                payNowLoading: !!orderId,
+                processing: !!orderId,
               });
             }}
-            processing={payNowLoading}
-            loaderText={t('Processing')}
+            processing={processing || isRequestSavedCardsPending}
+            loaderText={isRequestSavedCardsPending ? t('Loading') : t('Processing')}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"
@@ -254,11 +242,12 @@ export default compose(
       supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
       paymentProvider: getSelectedPaymentProvider(state),
       receiptNumber: getReceiptNumber(state),
+      isRequestSavedCardsPending: getIsRequestSavedCardsPending(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),
       initialize: bindActionCreators(initializeThunkCreator, dispatch),
-      fetchSavedCard: bindActionCreators(savedCardsThunks.fetchSavedCard, dispatch),
+      fetchSavedCards: bindActionCreators(savedCardsThunks.fetchSavedCards, dispatch),
       setPaymentCard: bindActionCreators(savedCardsActions.setPaymentCard, dispatch),
     })
   )
