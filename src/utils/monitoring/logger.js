@@ -6,11 +6,10 @@ import _isPlainObject from 'lodash/isPlainObject';
 import _once from 'lodash/once';
 import tids from './tracing-id';
 import debug from '../debug';
-import { isWebview, isSiteApp, getUUID, getAppPlatform, getBusinessName, getBeepAppVersion } from '../../common/utils';
+import { isWebview, isSiteApp, getBusinessName, getBeepAppVersion } from '../../common/utils';
+import { getUUID, getAppPlatform, getIsDebugMode } from './utils';
 
 const { REACT_APP_LOG_SERVICE_URL, REACT_APP_LOG_SERVICE_TOKEN } = process.env;
-
-const IS_DEV_ENV = process.env.NODE_ENV === 'development';
 
 const EVENT_LEVEL_TYPES = {
   INFO: 'info',
@@ -19,6 +18,8 @@ const EVENT_LEVEL_TYPES = {
 };
 
 const PROJECT_PREFIX_NAME = 'BeepV1Web';
+
+const isDebugMode = getIsDebugMode();
 
 const getDeviceId = _once(() => {
   try {
@@ -110,7 +111,7 @@ const send = async data => {
       credentials: 'omit',
     });
   } catch (e) {
-    if (IS_DEV_ENV) {
+    if (isDebugMode) {
       throw e;
     }
   }
@@ -160,7 +161,7 @@ const track = async (name, data, options = {}) => {
     send(payload);
   } catch (e) {
     console.warn(e.message);
-    if (IS_DEV_ENV) {
+    if (isDebugMode) {
       throw e;
     }
   }

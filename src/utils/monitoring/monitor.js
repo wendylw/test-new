@@ -5,7 +5,7 @@ import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
 import './navigation-detector';
 import './click-detector';
 import logger from './logger';
-import { getAppPlatform } from '../../common/utils';
+import { getAppPlatform, getAPIRequestRelativePath } from './utils';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
   Sentry.init({
@@ -133,6 +133,7 @@ window.addEventListener('sh-click', e => {
 
 window.addEventListener('sh-api-success', e => {
   const { type: method, request: url, requestStart, status: httpStatusCode } = e.detail;
+  const path = getAPIRequestRelativePath(url);
 
   logger.log(
     'Common_HttpRequest',
@@ -143,7 +144,7 @@ window.addEventListener('sh-api-success', e => {
           result: 'Succeed',
           method,
           url,
-          path: '', // TODO: will update it in next commit
+          path,
           responseTime: new Date().valueOf() - requestStart,
           httpStatusCode,
         },
@@ -161,6 +162,7 @@ window.addEventListener('sh-api-failure', e => {
     code: errorCode,
     status: httpStatusCode,
   } = e.detail;
+  const path = getAPIRequestRelativePath(url);
 
   logger.log(
     'Common_HttpRequest',
@@ -171,7 +173,7 @@ window.addEventListener('sh-api-failure', e => {
           result: 'Failed',
           method,
           url,
-          path: '', // TODO: will update it in next commit
+          path,
           responseTime: new Date().valueOf() - requestStart,
           httpStatusCode,
           errorCode,
@@ -184,6 +186,7 @@ window.addEventListener('sh-api-failure', e => {
 
 window.addEventListener('sh-fetch-error', e => {
   const { type: method, request: url, requestStart, error: message } = e.detail;
+  const path = getAPIRequestRelativePath(url);
 
   logger.error(
     'Common_HttpRequest',
@@ -194,7 +197,7 @@ window.addEventListener('sh-fetch-error', e => {
           result: 'Failed',
           method,
           url,
-          path: '', // TODO: will update it in next commit
+          path,
           responseTime: new Date().valueOf() - requestStart,
           httpStatusCode: 0,
           message,

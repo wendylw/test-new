@@ -294,32 +294,9 @@ export const getOpeningHours = ({
   return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
 };
 
-export const getUUID = () => {
-  try {
-    return crypto.randomUUID();
-  } catch {
-    // Our application is not mission-critical, so Broofa's answer is good enough for us as a backup plan since it is pretty slick and effective.
-    /* eslint-disable */
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (Math.random() * 16) | 0,
-        v = c == 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-    /* eslint-enable */
-  }
-};
-
 export const getBusinessName = (hostname = window.location.hostname) => {
   const hostNameArray = hostname.split('.');
   return hostNameArray.length > 2 ? hostNameArray.shift() : null;
 };
 
 export const getBeepAppVersion = () => window.beepAppVersion;
-
-export const getAppPlatform = () => {
-  if (isTNGMiniProgram()) {
-    return 'tng-mini-program';
-  }
-
-  return isAndroidWebview() ? 'android' : isIOSWebview() ? 'ios' : 'web';
-};

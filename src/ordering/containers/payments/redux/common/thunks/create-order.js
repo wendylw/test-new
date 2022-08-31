@@ -27,7 +27,6 @@ import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
 
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
 import { get, post } from '../../../../../../utils/api/api-fetch';
-import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import { alert } from '../../../../../../common/feedback';
 import { initPaymentWithOrder } from './api-info';
@@ -299,9 +298,7 @@ const createOrderRequest = async payload => {
 };
 
 const createOrderStatusRequest = async orderId => {
-  const { url } = API_INFO.getOrderStatus(orderId);
-
-  return get(url);
+  return get(Url.API_URLS.GET_ORDER_STATUS({ orderId }).url);
 };
 
 const initPayment = async (data, dispatch) => {

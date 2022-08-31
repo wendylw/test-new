@@ -5,10 +5,6 @@ export const API_INFO = {
     url: '/payment/online/options',
     queryParams: { storeId, shippingType, amount },
   }),
-  getSavedCardList: (userId, paymentProvider) => ({
-    url: `/api/consumers/${userId}/paymentMethods`,
-    queryParams: { provider: paymentProvider },
-  }),
 };
 
 // API for submit order and initPayment for all payment
