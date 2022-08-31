@@ -6,8 +6,8 @@ import _isPlainObject from 'lodash/isPlainObject';
 import _once from 'lodash/once';
 import tids from './tracing-id';
 import debug from '../debug';
-import { isWebview, isSiteApp, getBusinessName, getBeepAppVersion } from '../../common/utils';
-import { getUUID, getAppPlatform, getIsDebugMode } from './utils';
+import { isWebview, isSiteApp, getBusinessName, getBeepAppVersion, getUUID } from '../../common/utils';
+import { getAppPlatform, getIsDebugMode } from './utils';
 
 const { REACT_APP_LOG_SERVICE_URL, REACT_APP_LOG_SERVICE_TOKEN } = process.env;
 
@@ -18,8 +18,6 @@ const EVENT_LEVEL_TYPES = {
 };
 
 const PROJECT_PREFIX_NAME = 'BeepV1Web';
-
-const isDebugMode = getIsDebugMode();
 
 const getDeviceId = _once(() => {
   try {
@@ -82,7 +80,7 @@ export const getFormattedActionName = name => {
   const regexFormatRule = /\W+/g;
 
   if (regexFormatRule.test(name)) {
-    console.warn('Illegal character in action name');
+    getIsDebugMode() && console.warn('Illegal character in action name');
     return name.replace(regexFormatRule, '_');
   }
 
@@ -111,7 +109,7 @@ const send = async data => {
       credentials: 'omit',
     });
   } catch (e) {
-    if (isDebugMode) {
+    if (getIsDebugMode()) {
       throw e;
     }
   }
@@ -161,7 +159,7 @@ const track = async (name, data, options = {}) => {
     send(payload);
   } catch (e) {
     console.warn(e.message);
-    if (isDebugMode) {
+    if (getIsDebugMode()) {
       throw e;
     }
   }

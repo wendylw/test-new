@@ -300,3 +300,18 @@ export const getBusinessName = (hostname = window.location.hostname) => {
 };
 
 export const getBeepAppVersion = () => window.beepAppVersion;
+
+export const getUUID = () => {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    // Our application is not mission-critical, so Broofa's answer is good enough for us as a backup plan since it is pretty slick and effective.
+    /* eslint-disable */
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = (Math.random() * 16) | 0,
+        v = c == 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+    /* eslint-enable */
+  }
+};
