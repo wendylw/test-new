@@ -96,6 +96,16 @@ class SavedCards extends Component {
     this.props.setPaymentCard(card);
   };
 
+  beforeCreateOrder = () => {
+    this.setState({ processing: true });
+  };
+
+  afterCreateOrder = orderId => {
+    this.setState({
+      processing: !!orderId,
+    });
+  };
+
   renderCardList() {
     const { t, history, cardList, selectedPaymentCard, paymentProvider } = this.props;
 
@@ -210,11 +220,8 @@ class SavedCards extends Component {
             disabled={!cardToken || processing || isRequestSavedCardsPending}
             paymentExtraData={this.getPaymentEntryRequestData()}
             validCreateOrder={true}
-            afterCreateOrder={orderId => {
-              this.setState({
-                processing: !!orderId,
-              });
-            }}
+            beforeCreateOrder={this.beforeCreateOrder}
+            afterCreateOrder={this.afterCreateOrder}
             processing={processing || isRequestSavedCardsPending}
             loaderText={isRequestSavedCardsPending ? t('Loading') : t('Processing')}
           >

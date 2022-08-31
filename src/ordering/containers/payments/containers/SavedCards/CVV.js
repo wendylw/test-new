@@ -47,12 +47,14 @@ class CardCVV extends Component {
     // go to saved card list page directly, because we have deprecated cvv page
     history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS, search: window.location.search });
 
-    if (!selectedPaymentCard || !selectedPaymentCard.cardToken) {
-      history.goBack();
-      return;
-    }
+    return;
 
-    this.timeoutId = setTimeout(this.handleLoadTimeout, STRIPE_LOAD_TIME_OUT);
+    // if (!selectedPaymentCard || !selectedPaymentCard.cardToken) {
+    //   history.goBack();
+    //   return;
+    // }
+
+    // this.timeoutId = setTimeout(this.handleLoadTimeout, STRIPE_LOAD_TIME_OUT);
   }
 
   componentWillUnmount() {
