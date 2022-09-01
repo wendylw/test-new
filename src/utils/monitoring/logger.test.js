@@ -1,9 +1,10 @@
+/* eslint-disable dot-notation */
 import {
   getMerchantID,
   getFormattedTags,
   getFormattedActionName,
   getFormattedPrivateDateKeyName,
-  getSerializedData,
+  getStringifiedJSON,
 } from './logger';
 import { get as requestGet, RequestError } from '../request';
 import { get as apiFetchGet } from '../api/api-fetch';
@@ -163,43 +164,6 @@ describe('utils/monitoring/logger', () => {
     test('return underline-concatenated private data key name if the action name is separated by period mark', () => {
       const actionName = getFormattedActionName('google-maps-api.geocode-failure');
       expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_google_maps_api_geocode_failure');
-    });
-  });
-
-  describe('test getSerializedData function', () => {
-    test('return original data if the input value is non-error object', () => {
-      expect(getSerializedData()).toEqual(undefined);
-      expect(getSerializedData(undefined)).toEqual(undefined);
-      expect(getSerializedData(null)).toEqual(null);
-
-      const normalErrorEventData = {
-        message:
-          'Warning: forwardRef render functions accept exactly two parameters: props and ref. %s Did you forget to use the ref parameter?',
-        sentryId: 'ae3e530794b74e8f86ee83370cce25fd',
-      };
-      expect(getSerializedData(normalErrorEventData)).toEqual(normalErrorEventData);
-    });
-
-    test('return serialized data if the input value is native error object', () => {
-      expect(getSerializedData(new Error('native error object'))).toMatchObject({
-        message: 'native error object',
-        name: 'Error',
-      });
-    });
-
-    test('return serialized data if the input value is custom error object (with toJSON getter)', () => {
-      expect(getSerializedData(new NativeAPIError('JSON parse error', 'B0001'))).toMatchObject({
-        message: 'JSON parse error',
-        code: 'B0001',
-      });
-    });
-
-    test('return serialized data if the input value is custom error object (without toJSON getter)', () => {
-      expect(getSerializedData(new RequestError('Request failed', '50000'))).toMatchObject({
-        message: 'Request failed',
-        code: '50000',
-        name: 'Error',
-      });
     });
   });
 
@@ -412,6 +376,161 @@ describe('utils/monitoring/logger', () => {
         type: 'get',
         request: 'api/v3/storage/selected-address',
         error: 'Unknown Error',
+      });
+    });
+  });
+
+  describe('test getStringifiedJSON function', () => {
+    const payload = {
+      uuid: 'c90528b7-2412-427f-ab9f-396d132af7e0',
+      level: 'info',
+      platform: 'Web',
+      project: 'BeepV1Web',
+      ts: 1662012968975,
+      action: 'Common_HttpRequest',
+      tags: ['beep-web', 'test'],
+      business: 'mickeymouseclubhouse',
+      publicData: {
+        httpInfo: {
+          result: 'Succeed',
+          method: 'get',
+          url: '/api/v3/storage/selected-address',
+          path: '/api/v3/storage/selected-address',
+          responseTime: 706,
+          httpStatusCode: 200,
+        },
+      },
+      webData: {
+        sessTid: 'trnowCjfNo93cNxRm27Mhx',
+        permTid: 'bYnsS5JXu2AbTqT8B4bVKk',
+        path: '/ordering/',
+        appPlatform: 'web',
+      },
+      privateData: {},
+    };
+
+    beforeEach(() => {
+      payload.privateData = {};
+    });
+
+    test('return value should be the same if no private data', () => {
+      expect(getStringifiedJSON(payload)).toEqual(JSON.stringify(payload));
+    });
+
+    test("return value should be the same if the private data doesn't contain any error", () => {
+      payload.privateData['BeepV1Web_common_page_navigation'] = {
+        type: 'pageloaded',
+        query: '?type=delivery',
+      };
+
+      expect(getStringifiedJSON(payload)).toEqual(JSON.stringify(payload));
+    });
+
+    describe('return value should have error info if the private data contains error', () => {
+      describe('private data is Error type', () => {
+        test('return value should have error info if the private data contains native error', () => {
+          payload.privateData['BeepV1Web_common_error'] = new Error('Unexpected error');
+
+          const stringifiedJSON = getStringifiedJSON(payload);
+          expect(JSON.parse(stringifiedJSON)).toMatchObject({
+            ...payload,
+            privateData: {
+              BeepV1Web_common_error: {
+                message: 'Unexpected error',
+                name: 'Error',
+              },
+            },
+          });
+        });
+
+        test('return value should have error info if the private data contains custom error (with toJSON getter)', () => {
+          payload.privateData['BeepV1Web_native_error'] = new NativeAPIError('JSON parse error');
+
+          const stringifiedJSON = getStringifiedJSON(payload);
+          expect(JSON.parse(stringifiedJSON)).toMatchObject({
+            ...payload,
+            privateData: {
+              BeepV1Web_native_error: {
+                code: 'B0001',
+                message: 'JSON parse error',
+              },
+            },
+          });
+        });
+
+        test('return value should have error info if the private data contains custom error (without toJSON getter)', () => {
+          payload.privateData['BeepV1Web_native_error'] = new RequestError('API request error');
+
+          const stringifiedJSON = getStringifiedJSON(payload);
+          expect(JSON.parse(stringifiedJSON)).toMatchObject({
+            ...payload,
+            privateData: {
+              BeepV1Web_native_error: {
+                name: 'Error',
+                message: 'API request error',
+              },
+            },
+          });
+        });
+      });
+
+      describe('private data contains Error field', () => {
+        test('return value should have error info if the field contains native error', () => {
+          payload.privateData['BeepV1Web_common_error'] = new Error('Unexpected error');
+
+          const stringifiedJSON = getStringifiedJSON(payload);
+          expect(JSON.parse(stringifiedJSON)).toMatchObject({
+            ...payload,
+            privateData: {
+              BeepV1Web_common_error: {
+                message: 'Unexpected error',
+                name: 'Error',
+              },
+            },
+          });
+        });
+
+        test('return value should have error info if the field contains custom error (with toJSON getter)', () => {
+          payload.privateData['BeepV1Web_native_error'] = {
+            method: 'get-address',
+            e: new NativeAPIError('JSON parse error'),
+          };
+
+          const stringifiedJSON = getStringifiedJSON(payload);
+          expect(JSON.parse(stringifiedJSON)).toMatchObject({
+            ...payload,
+            privateData: {
+              BeepV1Web_native_error: {
+                method: 'get-address',
+                e: {
+                  code: 'B0001',
+                  message: 'JSON parse error',
+                },
+              },
+            },
+          });
+        });
+
+        test('return value should have error info if the field contains custom error (without toJSON getter)', () => {
+          payload.privateData['BeepV1Web_payment_error'] = {
+            paymentMethod: 'Stripe',
+            e: new RequestError('API request error'),
+          };
+
+          const stringifiedJSON = getStringifiedJSON(payload);
+          expect(JSON.parse(stringifiedJSON)).toMatchObject({
+            ...payload,
+            privateData: {
+              BeepV1Web_payment_error: {
+                paymentMethod: 'Stripe',
+                e: {
+                  name: 'Error',
+                  message: 'API request error',
+                },
+              },
+            },
+          });
+        });
       });
     });
   });
