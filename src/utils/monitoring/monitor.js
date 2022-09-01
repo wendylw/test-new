@@ -164,7 +164,7 @@ window.addEventListener('sh-api-failure', e => {
   } = e.detail;
   const path = getAPIRequestRelativePath(url);
 
-  logger.log(
+  logger.error(
     'Common_HttpRequest',
     {},
     {

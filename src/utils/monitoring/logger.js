@@ -82,7 +82,7 @@ export const getFormattedActionName = name => {
   const regexFormatRule = /\W+/g;
 
   if (regexFormatRule.test(name)) {
-    getIsDebugMode() && console.warn('Illegal character in action name');
+    getIsDebugMode() && console.warn(`Illegal character in action name: ${name}`);
     return name.replace(regexFormatRule, '_');
   }
 
@@ -123,7 +123,8 @@ const send = async data => {
 
 const track = async (name, data, options = {}) => {
   try {
-    if (!_isPlainObject(data)) {
+    // For Error type object, can ignore the plain object checking
+    if (!(_isPlainObject(data) || data instanceof Error)) {
       throw new Error('data should be plain object');
     }
 
@@ -156,9 +157,7 @@ const track = async (name, data, options = {}) => {
         appVersion: getBeepAppVersion(),
       },
       privateData: {
-        [privateDataKeyName]: {
-          ...data,
-        },
+        [privateDataKeyName]: data,
       },
     };
 
