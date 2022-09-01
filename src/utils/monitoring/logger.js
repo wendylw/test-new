@@ -8,6 +8,7 @@ import tids from './tracing-id';
 import debug from '../debug';
 import { isWebview, isSiteApp, getBusinessName, getBeepAppVersion, getUUID } from '../../common/utils';
 import { getAppPlatform, getIsDebugMode } from './utils';
+import { serializeError, isErrorLike } from '../serialize-error';
 
 const { REACT_APP_LOG_SERVICE_URL, REACT_APP_LOG_SERVICE_TOKEN } = process.env;
 
@@ -89,12 +90,15 @@ export const getFormattedActionName = name => {
 
 export const getFormattedPrivateDateKeyName = actionName => [PROJECT_PREFIX_NAME, actionName].join('_');
 
+export const getSerializedData = data => (isErrorLike(data) ? serializeError(data) : data);
+
 const send = async data => {
   debug('[Logger]\n%o', data);
 
   if (!REACT_APP_LOG_SERVICE_URL || !REACT_APP_LOG_SERVICE_TOKEN) {
     return;
   }
+
   const body = JSON.stringify(data);
 
   const endpoint = `${REACT_APP_LOG_SERVICE_URL}?token=${REACT_APP_LOG_SERVICE_TOKEN}`;
@@ -121,6 +125,7 @@ const track = async (name, data, options = {}) => {
       throw new Error('data should be plain object');
     }
 
+    const serializedData = getSerializedData(data);
     const { level, tags, publicData } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
     const action = getFormattedActionName(name);
@@ -151,7 +156,7 @@ const track = async (name, data, options = {}) => {
       },
       privateData: {
         [privateDataKeyName]: {
-          ...data,
+          ...serializedData,
         },
       },
     };

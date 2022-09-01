@@ -1,6 +1,13 @@
-import { getMerchantID, getFormattedTags, getFormattedActionName, getFormattedPrivateDateKeyName } from './logger';
-import { get as requestGet } from '../request';
+import {
+  getMerchantID,
+  getFormattedTags,
+  getFormattedActionName,
+  getFormattedPrivateDateKeyName,
+  getSerializedData,
+} from './logger';
+import { get as requestGet, RequestError } from '../request';
 import { get as apiFetchGet } from '../api/api-fetch';
+import { NativeAPIError } from '../native-methods';
 
 describe('utils/monitoring/logger', () => {
   const originalWindowLocation = window.location;
@@ -156,6 +163,43 @@ describe('utils/monitoring/logger', () => {
     test('return underline-concatenated private data key name if the action name is separated by period mark', () => {
       const actionName = getFormattedActionName('google-maps-api.geocode-failure');
       expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_google_maps_api_geocode_failure');
+    });
+  });
+
+  describe('test getSerializedData function', () => {
+    test('return original data if the input value is non-error object', () => {
+      expect(getSerializedData()).toEqual(undefined);
+      expect(getSerializedData(undefined)).toEqual(undefined);
+      expect(getSerializedData(null)).toEqual(null);
+
+      const normalErrorEventData = {
+        message:
+          'Warning: forwardRef render functions accept exactly two parameters: props and ref. %s Did you forget to use the ref parameter?',
+        sentryId: 'ae3e530794b74e8f86ee83370cce25fd',
+      };
+      expect(getSerializedData(normalErrorEventData)).toEqual(normalErrorEventData);
+    });
+
+    test('return serialized data if the input value is native error object', () => {
+      expect(getSerializedData(new Error('native error object'))).toMatchObject({
+        message: 'native error object',
+        name: 'Error',
+      });
+    });
+
+    test('return serialized data if the input value is custom error object (with toJSON getter)', () => {
+      expect(getSerializedData(new NativeAPIError('JSON parse error', 'B0001'))).toMatchObject({
+        message: 'JSON parse error',
+        code: 'B0001',
+      });
+    });
+
+    test('return serialized data if the input value is custom error object (without toJSON getter)', () => {
+      expect(getSerializedData(new RequestError('Request failed', '50000'))).toMatchObject({
+        message: 'Request failed',
+        code: '50000',
+        name: 'Error',
+      });
     });
   });
 
