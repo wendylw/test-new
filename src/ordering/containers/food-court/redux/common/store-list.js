@@ -20,6 +20,7 @@ import GRunImage from '../../../../../images/food-court-temp/merchant-grun.jpg';
 import StellarKLImage from '../../../../../images/food-court-temp/merchant-stellar-kl.jpg';
 import AltaburgerImage from '../../../../../images/food-court-temp/merchant-altaburger.jpg';
 import ThebaoguysImage from '../../../../../images/food-court-temp/merchant-thebaoguys.jpg';
+import HijauKualaLumpurImage from '../../../../../images/food-court-temp/merchant-hijau.jpeg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -176,7 +177,13 @@ export const AllFoodCourtStoreList = {
     id: '62ac9e5453c8fb0008d217bf',
     imageNoCompression: ThebaoguysImage,
     title: 'The Bao Guys',
-    tags: ['Baos'],
+    tags: ['Asian', 'Fusion', 'Baos'],
+  },
+  '62a93c5feaddfd0007134720': {
+    id: '62a93c5feaddfd0007134720',
+    imageNoCompression: HijauKualaLumpurImage,
+    title: 'Hijau Kuala Lumpur',
+    tags: ['Asian', 'Vegan', 'Sambal'],
   },
   '608b7c77cc9fd00006d831f3': {
     id: '608b7c77cc9fd00006d831f3',
