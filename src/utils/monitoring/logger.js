@@ -6,8 +6,9 @@ import _isPlainObject from 'lodash/isPlainObject';
 import _once from 'lodash/once';
 import tids from './tracing-id';
 import debug from '../debug';
-import { isWebview, isSiteApp, getBusinessName, getBeepAppVersion, getUUID } from '../../common/utils';
+import { isWebview, isSiteApp, getBeepAppVersion, getUUID } from '../../common/utils';
 import { getAppPlatform, getIsDebugMode } from './utils';
+import { getBusinessName } from '../../config';
 
 const { serializeError } = require('serialize-error');
 

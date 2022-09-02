@@ -1,4 +1,7 @@
-import business from './utils/business-name';
+export const getBusinessName = (hostname = window.location.hostname) => {
+  const hostNameArray = hostname.split('.');
+  return hostNameArray.length > 2 ? hostNameArray.shift() : null;
+};
 
 const getTableId = () => {
   try {
@@ -60,7 +63,7 @@ const config = {
       return null;
     }
   },
-  business,
+  business: getBusinessName(),
   table: getTableId(),
   storeId: getStoreId(),
   consumerId: getConsumerId(),
