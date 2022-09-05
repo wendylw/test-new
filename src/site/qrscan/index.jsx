@@ -95,7 +95,7 @@ class QRScan extends Component {
       const videoObj = { video: { facingMode: 'environment' }, audio: false },
         MediaErr = error => {
           console.warn('[QRScan] getCamera failed:', error);
-          logger.warn('qrscan.getCamera', {
+          logger.warn('Site_QRScan_GetCamera', {
             message: `[QRScan] getCamera failed: ${error?.message}`,
           });
           if (error.name !== 'NotAllowedError') {

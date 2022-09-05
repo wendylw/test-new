@@ -379,7 +379,9 @@ export const mounted = createAsyncThunk('ordering/menu/mounted', async (_, { dis
       if (isWebview) {
         const shareLinkUrl = getShareLinkUrl();
 
-        shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
+        shortenUrl(shareLinkUrl).catch(error =>
+          logger.error('Ordering_Menu_ShareStoreLinkOnDidMountFailed', { message: error.message })
+        );
       }
 
       const storeStatus = getStoreStatus(getState());
@@ -585,7 +587,7 @@ export const shareStore = createAsyncThunk('ordering/menu/common/shareStore', as
       cashback: cashbackRate,
     });
   } catch (error) {
-    logger.error(`failed to share store link(click): ${error.message}`);
+    logger.error('Ordering_Menu_ShareStoreLinkOnClickFailed', { message: error.message });
     throw error;
   }
 });

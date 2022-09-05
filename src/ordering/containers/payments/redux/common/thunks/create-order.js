@@ -406,7 +406,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       }
 
       Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
-      logger.log('create-order.offline-payment.to-thank-you', { orderId });
+      logger.log('Ordering_Payment_GoToThankYouPageForOfflinePayment', { orderId });
 
       // Add "type" in thankYouPageUrl query
       const urlObj = new URL(thankYouPageUrl, window.location.origin);
@@ -428,7 +428,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       receiptNumber: orderId,
     });
 
-    logger.error('ordering.initPayment.error', {
+    logger.error('Ordering_Payment_InitPaymentFailed', {
       error: error?.message,
       paymentProvider,
       receiptNumber: orderId,

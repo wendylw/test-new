@@ -123,7 +123,7 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      logger.error(`Failed to load storeInfo: ${e?.message}`);
+      logger.error('Ordering_Menu_LoadStoreInfoFailed', { message: e?.message });
       throw e;
     }
   }
@@ -242,7 +242,7 @@ export const selectLocation = createAsyncThunk(
       await dispatch(setAddressInfo(addressInfo));
       await dispatch(refreshMenuPageForNewStore(storeId));
     } catch (e) {
-      logger.error(`Failed to select location: ${e?.message}`);
+      logger.error('Ordering_Menu_SelectLocationFailed', { message: e?.message });
       throw e;
     }
   }
@@ -264,7 +264,7 @@ export const loadSearchLocationListData = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logger.error('failed to load search location list data', e);
+      logger.error('Ordering_Menu_LoadSearchLocationListFailed', e);
 
       return [];
     }

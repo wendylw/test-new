@@ -136,7 +136,7 @@ class CustomerInfo extends Component {
   }
 
   handleBeforeCreateOrder = () => {
-    logger.log('customer.create-order-attempt');
+    logger.log('Ordering_CustomerInfo_CreateOrder');
 
     const { customerInfoActions } = this.props;
     const error = this.validateFields();

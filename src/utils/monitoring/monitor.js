@@ -87,7 +87,7 @@ class SentryCapturedError extends Error {
 const trackError = (event, hint) => {
   try {
     const errorMessage = getErrorMessageFromHint(hint);
-    logger.error('common.error', { message: errorMessage, sentryId: event?.event_id });
+    logger.error('Common_Error', { message: errorMessage, sentryId: event?.event_id });
 
     window.newrelic?.addPageAction('common.error', {
       message: errorMessage,
@@ -99,14 +99,14 @@ const trackError = (event, hint) => {
 };
 
 const logUrlChange = type => {
-  logger.log('common.page-navigation', {
+  logger.log('Common_PageNavigation', {
     type,
     query: window.location.search,
   });
 };
 
 const logClientInfo = () => {
-  logger.log('common.client-info', {
+  logger.log('Common_ClientInfo', {
     userAgent: navigator.userAgent,
   });
 };
@@ -128,7 +128,7 @@ const logUserAction = (type, data) => {
 };
 
 window.addEventListener('sh-click', e => {
-  logUserAction('common.click', e.detail);
+  logUserAction('Common_Click', e.detail);
 });
 
 window.addEventListener('sh-api-success', e => {

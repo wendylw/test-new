@@ -42,7 +42,7 @@ const Toast = forwardRef(props => {
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
-      logger.log('feedback.toast.show', { text });
+      logger.log('Common_Feedback_ShowToast', { text });
       window.newrelic?.addPageAction('feedback.toast.show', { text });
     }
   }, [children, show]);

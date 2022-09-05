@@ -54,14 +54,14 @@ export const loadOrdersStatus = createAsyncThunk(
 );
 
 export const queryOrdersAndStatus = receiptNumber => async dispatch => {
-  logger.log('table-summary.query-orders-and-status', { action: 'start', receiptNumber });
+  logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', receiptNumber });
   try {
     const queryOrderStatus = () => {
       queryOrdersAndStatus.timer = setTimeout(async () => {
         await dispatch(loadOrdersStatus(receiptNumber));
         // Loop has been stopped
         if (!queryOrdersAndStatus.timer) {
-          logger.log('table-summary.query-orders-and-status', { action: 'quit-silently', receiptNumber });
+          logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'quit-silently', receiptNumber });
           return;
         }
 
@@ -88,7 +88,7 @@ export const hideRedirectLoader = createAsyncThunk('ordering/tableSummary/hideRe
 
 export const clearQueryOrdersAndStatus = () => () => {
   clearTimeout(queryOrdersAndStatus.timer);
-  logger.log('table-summary.query-orders-and-status', { action: 'stop' });
+  logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'stop' });
   queryOrdersAndStatus.timer = null;
 };
 
@@ -164,7 +164,7 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     const search = getLocationSearch(state);
     dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
   } catch (error) {
-    logger.error('ordering.table-summary.go-to-payment.error', {
+    logger.error('Ordering_TableSummary_GoToPaymentFailed', {
       error: error?.message,
       receiptNumber,
     });

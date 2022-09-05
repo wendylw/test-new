@@ -159,7 +159,7 @@ class PayFirst extends Component {
   handleClearAll = () => {
     const { history, storeInfoForCleverTap, appActions } = this.props;
 
-    logger.log('cart.clear-all-attempt');
+    logger.log('Ordering_PayFirstCart_ClearAllItems');
 
     CleverTap.pushEvent('Cart page - click clear all', storeInfoForCleverTap);
 
@@ -275,7 +275,7 @@ class PayFirst extends Component {
   handleIncreaseCartItem = cartItem => {
     const { appActions } = this.props;
 
-    logger.log('cart-list.item-operate-attempt');
+    logger.log('Ordering_PayFirstCart_IncreaseItemQuantity');
     const { quantity } = cartItem;
 
     this.handleGtmEventTracking(cartItem);
@@ -287,7 +287,7 @@ class PayFirst extends Component {
   handleDecreaseCartItem = cartItem => {
     const { appActions } = this.props;
 
-    logger.log('cart-list.item-operate-attempt');
+    logger.log('Ordering_PayFirstCart_DecreaseItemQuantity');
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -302,7 +302,7 @@ class PayFirst extends Component {
   handleRemoveCartItem = cartItem => {
     const { appActions } = this.props;
 
-    logger.log('cart-list.item-operate-attempt');
+    logger.log('Ordering_PayFirstCart_RemoveItem');
     const { productId, comments, variations } = cartItem;
 
     appActions
@@ -344,7 +344,7 @@ class PayFirst extends Component {
     const { cashback, promotion } = cartBilling || {};
     const { promoCode } = promotion || {};
 
-    logger.log('cart.pay-now');
+    logger.log('Ordering_PayFirstCart_ClickPayNowButton');
     CleverTap.pushEvent('Cart Page - click pay now', {
       ...storeInfoForCleverTap,
       'promo/voucher applied': promoCode || '',
@@ -422,7 +422,7 @@ class PayFirst extends Component {
       });
     }
 
-    logger.log('cart.create-order-attempt');
+    logger.log('Ordering_PayFirstCart_CreateOrder');
     this.handleClickPayButtonEventTracking();
     this.handleGtmEventTracking(() => {
       if (isValidCreateOrder) return;

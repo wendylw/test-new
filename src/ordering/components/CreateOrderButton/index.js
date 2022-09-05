@@ -94,7 +94,7 @@ class CreateOrderButton extends React.Component {
         paymentName: paymentName || 'N/A',
       });
 
-      logger.error('ordering.createOrder.error', {
+      logger.error('Ordering_CreateOrderButton_CreateOrderFailed', {
         error: error?.message,
         shippingType,
         paymentName: paymentName || 'N/A',
@@ -184,7 +184,7 @@ class CreateOrderButton extends React.Component {
           ORDER_STATUS.DELIVERED,
         ].includes(order.status)
       ) {
-        logger.log('ordering.order-has-paid', { orderId });
+        logger.log('Ordering_CreateOrderButton_OrderHasPaid', { orderId });
 
         alert(i18next.t('OrderHasPaidAlertDescription'), {
           closeButtonContent: i18next.t('Continue'),
@@ -214,7 +214,7 @@ class CreateOrderButton extends React.Component {
         total = order.total;
       }
 
-      logger.log('ordering.order-created', { orderId });
+      logger.log('Ordering_CreateOrderButton_OrderHasCreated', { orderId });
 
       if (orderId) {
         Utils.removeSessionVariable('additionalComments');
@@ -223,7 +223,7 @@ class CreateOrderButton extends React.Component {
 
       if (thankYouPageUrl) {
         Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.CASHBACK);
-        logger.log('ordering.to-thank-you', { orderId });
+        logger.log('Ordering_CreateOrderButton_GoToThankYouPage', { orderId });
         window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
 
         return;

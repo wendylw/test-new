@@ -114,7 +114,7 @@ export const toLocaleString = (date, countryCode, options) => {
   const dateObj = new Date(date);
   if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
-    logger.warn('datetime-lib.toLocaleString', {
+    logger.warn('Utils_DateTimeLib_ToLocaleString', {
       message: 'Invalid date object',
     });
     return '';
@@ -164,7 +164,7 @@ export const toISODateString = date => {
   const dateObj = new Date(date);
   if (!isValidDate(dateObj)) {
     console.warn('Invalid date object');
-    logger.warn('datetime-lib.toISODateString', {
+    logger.warn('Utils_DateTimeLib_ToISODateString', {
       message: 'Invalid date object',
     });
     return '';

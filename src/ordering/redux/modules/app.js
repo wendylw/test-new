@@ -381,7 +381,7 @@ export const actions = {
         );
       }
     } catch (error) {
-      logger.error('ordering.syncLoginFromNative.error', {
+      logger.error('Ordering_App_SyncLoginFromNativeFailed', {
         error: error?.message,
         code: error?.code,
       });
