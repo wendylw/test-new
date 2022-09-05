@@ -275,7 +275,7 @@ class PayFirst extends Component {
   handleIncreaseCartItem = cartItem => {
     const { appActions } = this.props;
 
-    logger.log('Ordering_PayFirstCart_IncreaseItemQuantity');
+    logger.log('Ordering_PayFirstCart_AdjustItemQuantity', { action: 'increase' });
     const { quantity } = cartItem;
 
     this.handleGtmEventTracking(cartItem);
@@ -287,7 +287,7 @@ class PayFirst extends Component {
   handleDecreaseCartItem = cartItem => {
     const { appActions } = this.props;
 
-    logger.log('Ordering_PayFirstCart_DecreaseItemQuantity');
+    logger.log('Ordering_PayFirstCart_AdjustItemQuantity', { action: 'decrease' });
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -302,7 +302,7 @@ class PayFirst extends Component {
   handleRemoveCartItem = cartItem => {
     const { appActions } = this.props;
 
-    logger.log('Ordering_PayFirstCart_RemoveItem');
+    logger.log('Ordering_PayFirstCart_AdjustItemQuantity', { action: 'remove' });
     const { productId, comments, variations } = cartItem;
 
     appActions

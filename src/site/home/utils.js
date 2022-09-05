@@ -68,7 +68,7 @@ export const submitStoreMenu = async ({ deliveryAddress, store, source, shipping
   const redirectUrl = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
 
   if (!Boolean(deliveryAddress)) {
-    logger.error('Site_Utils_GoToStoreFailed', { message: 'delivery address is empty' });
+    logger.error('Site_Utils_GoToStoreFailedByEmptyDeliveryAddress');
     console.error('delivery address is empty');
     return;
   }

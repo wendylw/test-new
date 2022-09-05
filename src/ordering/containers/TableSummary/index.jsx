@@ -81,9 +81,7 @@ export class TableSummary extends React.Component {
     if (receiptNumber && !emptyString.includes(receiptNumber)) {
       await queryOrdersAndStatus(receiptNumber);
     } else {
-      logger.error('Ordering_TableSummary_InitializeFailed', {
-        message: 'receiptNumber is missing',
-      });
+      logger.error('Ordering_TableSummary_InitializeFailedByMissingReceiptNumber');
 
       alert(t('ReceiptNumberInValidDescription'), {
         title: t('ReceiptNumberInValidTitle'),

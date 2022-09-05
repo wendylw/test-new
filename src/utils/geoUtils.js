@@ -31,9 +31,7 @@ const loadGoogleMapsAPI = async () => {
       window.newrelic?.addPageAction?.('common.script-load-error', {
         scriptName: 'google-map-api',
       });
-      logger.error('Common_ScriptLoadFailed', {
-        message: 'Failed to load google maps api',
-      });
+      logger.error('Common_LoadGoogleMapAPIFailed');
       return Promise.reject(new Error('Failed to load google maps api'));
     });
 };
@@ -82,9 +80,7 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
     let radiusNumber = radius;
     if ((locationCoords && typeof radiusNumber !== 'number') || (typeof radiusNumber === 'number' && !locationCoords)) {
       console.warn('getPlaceAutocompleteList: location and radius must be provided at the same time.');
-      logger.warn('Utils_GeoUtils_GetPlaceAutocompleteList', {
-        message: 'getPlaceAutocompleteList: location and radius must be provided at the same time.',
-      });
+      logger.warn('Utils_GeoUtils_GetPlaceAutocompleteListFromIncompleteLocationInfo');
       locationCoords = undefined;
       radiusNumber = undefined;
     }
@@ -180,9 +176,7 @@ export const standardizeGeoAddress = geoAddressComponent => {
 export const getDeviceCoordinates = option => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      logger.warn('Utils_GeoUtils_GetDeviceCoordinates', {
-        message: 'Your browser does not support location detection.',
-      });
+      logger.warn('Utils_GeoUtils_GetDeviceCoordinatesFailedByUnsupportedBrowser');
       reject('Your browser does not support location detection.');
       return;
     }
@@ -192,8 +186,8 @@ export const getDeviceCoordinates = option => {
       },
       error => {
         console.warn('Fail to detect location', error);
-        logger.warn('Utils_GeoUtils_GetDeviceCoordinates', {
-          message: `Fail to detect location, error: ${error?.message}`,
+        logger.warn('Utils_GeoUtils_GetDeviceCoordinatesFailed', {
+          message: error?.message,
         });
         reject(error);
       },

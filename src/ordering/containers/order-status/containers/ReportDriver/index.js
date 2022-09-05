@@ -73,7 +73,7 @@ class ReportDriver extends Component {
 
   loginAppWithNativeToken = async result => {
     if (!result?.access_token || !result?.refresh_token) {
-      logger.error('Ordering_ReportDriver_LoginByBeepAppFailed', { message: 'native token is invalid' });
+      logger.error('Ordering_ReportDriver_LoginByBeepAppFailedByInvalidNativeToken');
       return;
     }
     await this.props.loginApp({

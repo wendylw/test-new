@@ -109,7 +109,7 @@ class App extends Component {
 
     const res = isExpired ? await NativeMethods.tokenExpiredAsync() : await NativeMethods.getTokenAsync();
     if (_isNil(res)) {
-      logger.error('Cashback_App_PostAppMessage', { message: 'native token is invalid' });
+      logger.error('Cashback_App_PostAppMessageFailedByInvalidNativeToken');
     } else {
       const { access_token, refresh_token } = res;
       await appActions.loginApp({
