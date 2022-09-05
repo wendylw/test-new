@@ -284,6 +284,7 @@ function CheckoutForm({
                     }));
                   }}
                   onReady={e => {
+                    CleverTap.pushEvent('Stripe - loaded', { timeStamp: new Date().getTime() });
                     setCardExpiryDom(true);
                   }}
                   onBlur={() => {
