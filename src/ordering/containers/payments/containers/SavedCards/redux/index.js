@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { get } from '../../../../../../utils/api/api-fetch';
 import Url from '../../../../../../utils/url';
+import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import _first from 'lodash/first';
 
 const thunks = {
-  fetchSavedCard: createAsyncThunk('ordering/payments/savedCards/fetchSavedCard', async ({ userId, paymentName }) => {
+  fetchSavedCards: createAsyncThunk('ordering/payments/savedCards/fetchSavedCards', async ({ userId, paymentName }) => {
     return get(Url.API_URLS.GET_SAVED_CARD(userId).url, { queryParams: { provider: paymentName } });
   }),
 };
@@ -12,6 +13,7 @@ const thunks = {
 const initialState = {
   selectedPaymentCard: null,
   cardList: [],
+  loadSavedCardsStatus: false,
 };
 
 const { reducer, actions } = createSlice({
@@ -23,9 +25,16 @@ const { reducer, actions } = createSlice({
     },
   },
   extraReducers: {
-    [thunks.fetchSavedCard.fulfilled.type]: (state, { payload }) => {
+    [thunks.fetchSavedCards.pending.type]: state => {
+      state.loadSavedCardsStatus = API_REQUEST_STATUS.PENDING;
+    },
+    [thunks.fetchSavedCards.fulfilled.type]: (state, { payload }) => {
       state.cardList = payload.paymentMethods;
       state.selectedPaymentCard = state.selectedPaymentCard || _first(state.cardList);
+      state.loadSavedCardsStatus = API_REQUEST_STATUS.FULFILLED;
+    },
+    [thunks.fetchSavedCards.rejected.type]: state => {
+      state.loadSavedCardsStatus = API_REQUEST_STATUS.REJECTED;
     },
   },
 });

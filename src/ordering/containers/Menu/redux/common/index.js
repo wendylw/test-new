@@ -21,6 +21,12 @@ import {
   hideTimeSlotDrawer,
   showStoreListDrawer,
   hideStoreListDrawer,
+  noThanksButtonClicked,
+  addAddressButtonClicked,
+  showLocationConfirmModal,
+  hideLocationConfirmModal,
+  saveSelectedProductItemInfo,
+  clearSelectedProductItemInfo,
 } from './thunks';
 
 const initialState = {
@@ -31,7 +37,9 @@ const initialState = {
   searchingProductKeywords: '',
   beforeStartToSearchScrollTopPosition: 0,
   virtualKeyboardVisible: false,
-  currentTime: new Date().toISOString(), // current time
+  // For now, currentTime only will be updated when menu page mounted
+  // TODO: Need to further consideration currentTime updated strategy
+  currentTime: new Date().toISOString(),
   // User selected expected delivery time: "2022-06-01T01:00:00.000Z" | "now"
   expectedDeliveryTime: null,
   storeFavStatus: {
@@ -44,6 +52,8 @@ const initialState = {
   storeListDrawerVisible: false,
   enabledDeliveryRevamp: process.env.REACT_APP_ENABLED_DELIVERY_REVAMP === 'true',
   timeSlotDrawerVisible: false,
+  locationConfirmModalVisible: false,
+  selectedProductItemInfo: null,
 };
 
 export const { reducer, actions } = createSlice({
@@ -56,9 +66,6 @@ export const { reducer, actions } = createSlice({
     setCategoriesInView: (state, { payload: { categoryId, inView } }) => {
       state.categoriesInView[categoryId] = inView;
       state.activeCategoryId = null;
-    },
-    setTimeSlotDrawerVisible: (state, { payload }) => {
-      state.timeSlotDrawerVisible = payload;
     },
   },
   extraReducers: {
@@ -86,8 +93,8 @@ export const { reducer, actions } = createSlice({
     [updateStatusVirtualKeyboard.fulfilled.type]: (state, { payload }) => {
       state.virtualKeyboardVisible = payload;
     },
-    [updateCurrentTime.fulfilled.type]: state => {
-      state.currentTime = new Date().toISOString();
+    [updateCurrentTime.fulfilled.type]: (state, { payload }) => {
+      state.currentTime = payload;
     },
     [updateExpectedDeliveryDate.fulfilled.type]: (state, { payload }) => {
       state.expectedDeliveryTime = payload;
@@ -139,6 +146,27 @@ export const { reducer, actions } = createSlice({
     },
     [hideStoreListDrawer.fulfilled.type]: state => {
       state.storeListDrawerVisible = false;
+    },
+    [showLocationConfirmModal.fulfilled.type]: state => {
+      state.locationConfirmModalVisible = true;
+    },
+    [hideLocationConfirmModal.fulfilled.type]: state => {
+      state.locationConfirmModalVisible = false;
+    },
+    [addAddressButtonClicked.fulfilled.type]: state => {
+      state.locationConfirmModalVisible = false;
+      state.locationDrawerVisible = true;
+    },
+    [noThanksButtonClicked.fulfilled.type]: state => {
+      state.locationConfirmModalVisible = false;
+      state.selectedProductItemInfo = null;
+    },
+    [saveSelectedProductItemInfo.fulfilled.type]: (state, { payload }) => {
+      const { productId, categoryId } = payload;
+      state.selectedProductItemInfo = { productId, categoryId };
+    },
+    [clearSelectedProductItemInfo.fulfilled.type]: state => {
+      state.selectedProductItemInfo = null;
     },
   },
 });

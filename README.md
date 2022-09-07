@@ -89,14 +89,14 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 1. Update .env
 
    > 1. Update to `HOST={business}.local.beep.shub.us` on `frontend/.env` (1. local domain)
-   > 2. Update `REACT_APP_GOOGLE_MAPS_API_KEY`, `REACT_APP_CLEVER_TAP_ID` and `REACT_APP_CLEVER_TAP_SCRIPT_REGION` on `frontend/.env` (2. from Apollo)
+   > 2. Update `REACT_APP_GOOGLE_MAPS_API_KEY`, `REACT_APP_CLEVER_TAP_ID` and `REACT_APP_CLEVER_TAP_SCRIPT_REGION` on `frontend/.env` (2. from Apollo FAT)
 
 2. Start project
 
 - Quickly start ordering using the test environment (Recommendation)
   [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
 
-  > 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
+  > 1. Update `PROXY=https://{business}.beep.test{11~20}.shub.us` of `frontend/.env` (please confirm with project owner)
   > 2. `cd frontend/ && yarn start`
   > 3. Visiting URL: `{business}.local.beep.shub.us:3000`
   > 4. In `{business}.local.beep.shub.us:3000/ordering/location`.If you need to fill in location, please enter KLCC
@@ -131,11 +131,11 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 - Quickly start site using the test environment (Recommendation)
   [Proxying API Requests in Development](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
 
-  > 1. Update `PROXY=https://{business}.beep.test{11~19}.shub.us` of `frontend/.env` (please confirm with project owner)
+  > 1. Update `PROXY=https://scan.beep.test{11~20}.shub.us` of `frontend/.env` (please confirm with project owner)
   > 2. `cd frontend/ && yarn start`
-  > 3. Visiting Site URL: {business}.local.beep.shub.us:3000/home
-  > 4. In `{business}.local.beep.shub.us:3000/ordering/location`.If you need to fill in location, please enter KLCC
-  > 5. Visiting Scan Page URL: {business}.local.beep.shub.us:3000/qrscan
+  > 3. Visiting Site URL: scan.local.beep.shub.us:3000/home
+  > 4. In `scan.local.beep.shub.us:3000/ordering/location`.If you need to fill in location, please enter KLCC
+  > 5. Visiting Scan Page URL: scan.local.beep.shub.us:3000/qrscan
 
 - Start ordering using local backend (Same as F&B && Loyalty)
 

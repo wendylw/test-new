@@ -20,5 +20,9 @@
   "AddressChangeTitle": "Your delivery address has been changed",
   "AddressChangeDescription": "Based on the new address location, the delivery charges is now ",
   "ReportDriver": "Report Driver",
-  "SubmitOrderPromptDescription": "Cart will be locked until payment is completed"
+  "SubmitOrderPromptDescription": "Cart will be locked until payment is completed",
+  "AddAddressConfirmTitle": "One sec, we need your location",
+  "AddAddressConfirmDescription": "Location is required to browse further",
+  "AddAddress": "Add address",
+  "NoThanks": "No, thanks"
 }

@@ -91,6 +91,8 @@ export const setExpectedDeliveryTime = ({ date, hour }) => {
   setSessionVariable('expectedDeliveryHour', JSON.stringify(hour));
 };
 
+export const getStoreId = () => getCookieVariable('__s');
+
 export const getStoreHashCode = () => getCookieVariable('__h');
 
 export const saveSourceUrlToSessionStorage = sourceUrl => {

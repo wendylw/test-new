@@ -14,6 +14,7 @@ import MessageModal from '../../../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import AddressChangeModal from '../../components/AddressChangeModal';
+import RedirectPageLoader from '../../../../components/RedirectPageLoader';
 import {
   actions as appActionCreators,
   getBusiness,
@@ -25,6 +26,7 @@ import {
   getBusinessInfo,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
+  getIsTNGMiniProgram,
 } from '../../../../redux/modules/app';
 import { getAllBusinesses } from '../../../../../redux/modules/entities/businesses';
 import { actions as customerInfoActionCreators } from './redux';
@@ -158,12 +160,26 @@ class CustomerInfo extends Component {
     const { history, cartBilling } = this.props;
     const { total } = cartBilling || {};
 
-    if (total && !this.validateFields().show && !Utils.isTNGMiniProgram()) {
+    if (total && !this.validateFields().show) {
       history.push({
         pathname: ROUTER_PATHS.ORDERING_PAYMENT,
         search: window.location.search,
       });
     }
+  };
+
+  handleAfterCreateOrder = orderId => {
+    const { isTNGMiniProgram } = this.props;
+
+    this.setState({ processing: !!orderId });
+
+    // FB-4206: TnG MP won't go to the payment page
+    if (isTNGMiniProgram) {
+      return;
+    }
+
+    // By default, redirect to the payment page
+    this.visitPaymentPage();
   };
 
   handleAddressClick = () => {
@@ -321,13 +337,28 @@ class CustomerInfo extends Component {
   }
 
   render() {
-    const { t, history, deliveryDetails, cartBilling, customerError, storeInfoForCleverTap } = this.props;
+    const {
+      t,
+      history,
+      deliveryDetails,
+      cartBilling,
+      customerError,
+      storeInfoForCleverTap,
+      isTNGMiniProgram,
+    } = this.props;
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
     const formatPhone = formatPhoneNumberIntl(phone);
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
     const { total, shippingFee } = cartBilling || {};
+    const shouldShowRedirectLoader = isTNGMiniProgram && processing;
+
+    // FB-4026: For TnG MP, we won't go to the payment page once the user clicks the continue button, we will immediately create an order and call TnG payment API.
+    // For such a case, we will show a redirect loader page to prevent users' further interaction and also provide the same payment flow as dine.
+    if (shouldShowRedirectLoader) {
+      return <RedirectPageLoader />;
+    }
 
     return (
       <section className="ordering-customer flex flex-column" data-heap-name="ordering.customer.container">
@@ -431,16 +462,16 @@ class CustomerInfo extends Component {
             data-testid="customerContinue"
             data-heap-name="ordering.customer.continue-btn"
             disabled={processing}
-            validCreateOrder={(Utils.isTNGMiniProgram() || !total) && !this.validateFields().show}
+            validCreateOrder={(isTNGMiniProgram || !total) && !this.validateFields().show}
             beforeCreateOrder={() => {
               CleverTap.pushEvent('Checkout page - click continue', storeInfoForCleverTap);
               this.handleBeforeCreateOrder();
             }}
-            afterCreateOrder={this.visitPaymentPage}
+            afterCreateOrder={this.handleAfterCreateOrder}
             loaderText={t('Processing')}
             processing={processing}
           >
-            {processing ? t('Processing') : t('Continue')}
+            {processing ? t('Processing') : isTNGMiniProgram ? t('PayNow') : t('Continue')}
           </CreateOrderButton>
         </footer>
         {customerError.show ? (
@@ -476,6 +507,7 @@ export default compose(
       businessUTCOffset: getBusinessUTCOffset(state),
       storeInfoForCleverTap: getStoreInfoForCleverTap(state),
       shouldGoToAddNewAddressPage: getShouldGoToAddNewAddressPage(state),
+      isTNGMiniProgram: getIsTNGMiniProgram(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

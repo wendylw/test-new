@@ -9,9 +9,8 @@ import {
   getBusiness,
   getEnablePayLater,
   getStoreInfoForCleverTap,
-  getShippingType,
   getHasSelectedStore,
-  getIsBeepDeliveryShippingType,
+  getIsPickUpType,
   getFoodTagsForCleverTap,
 } from '../../../../redux/modules/app';
 import { updateCartItems } from '../../../../redux/cart/thunks';
@@ -31,9 +30,15 @@ import { getAllCategories } from '../../../../../redux/modules/entities/categori
 import { PRODUCT_STOCK_STATUS } from '../../constants';
 import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
-import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
-import { showLocationDrawer, showStoreListDrawer, showTimeSlotDrawer } from '../common/thunks';
-import { getHasSelectedExpectedDeliveryTime } from '../common/selectors';
+import {
+  showLocationConfirmModal,
+  showStoreListDrawer,
+  showTimeSlotDrawer,
+  saveSelectedProductItemInfo,
+  cleanUpSelectedProductItemInfoIfNeeded,
+} from '../common/thunks';
+import { getHasSelectedExpectedDeliveryTime, getShouldShowProductDetailDrawer } from '../common/selectors';
+import logger from '../../../../../utils/monitoring/logger';
 
 /**
  * get product clever tap data
@@ -131,62 +136,59 @@ const getViewProductGTMData = product => ({
 export const showProductDetailDrawer = createAsyncThunk(
   'ordering/menu/productDetail/showProductDetailDrawer',
   async ({ productId, categoryId }, { dispatch, getState }) => {
+    const state = getState();
+    const shouldShowProductDetailDrawer = getShouldShowProductDetailDrawer(state);
+
+    if (shouldShowProductDetailDrawer) {
+      // Immediately clean up the selected product item info to avoid duplicate dispatch thunks
+      await dispatch(cleanUpSelectedProductItemInfoIfNeeded());
+
+      try {
+        const result = await dispatch(appActions.loadProductDetail(productId));
+        const productInResult = _get(result, 'responseGql.data.product', null);
+
+        gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
+
+        return {
+          productId,
+          categoryId,
+          selectedOptionsByVariationId: getDefaultSelectedOptions(productInResult),
+        };
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+
+    // If product detail drawer cannot be shown, pop up responding drawer
+    // This only happens on delivery & pickup shipping types
+    const isPickUpType = getIsPickUpType(state);
+    const hasLocationSelected = getIfAddressInfoExists(state);
+    const hasStoreBranchSelected = getHasSelectedStore(state);
+    const hasTimeSlotSelected = getHasSelectedExpectedDeliveryTime(state);
+
     try {
-      const allProducts = getAllProducts(getState());
-      const allCategories = getAllCategories(getState());
-      const product = _get(allProducts, productId, null);
-      const category = _get(allCategories, categoryId, null);
-      const ifAddressInfoExists = getIfAddressInfoExists(getState());
-      const shippingType = getShippingType(getState());
-      const isBeepDelivery = getIsBeepDeliveryShippingType(getState());
-      const hasSelectedStore = getHasSelectedStore(getState());
-      const hasSelectedExpectedDeliveryTime = getHasSelectedExpectedDeliveryTime(getState());
-
-      // Show location drawer if no address info
-      if (shippingType === SHIPPING_TYPES.DELIVERY && !ifAddressInfoExists) {
-        await dispatch(showLocationDrawer());
-        return null;
+      if (!(isPickUpType || hasLocationSelected)) {
+        await dispatch(showLocationConfirmModal());
+        throw new Error('no location selected');
       }
 
-      // Show store list drawer if no selected store
-      if (isBeepDelivery && !hasSelectedStore) {
+      if (!hasStoreBranchSelected) {
         await dispatch(showStoreListDrawer());
-        return null;
+        throw new Error('no store branch selected');
       }
 
-      // Show time slot drawer if no selected time slot
-      if (isBeepDelivery && !hasSelectedExpectedDeliveryTime) {
+      if (!hasTimeSlotSelected) {
         await dispatch(showTimeSlotDrawer());
-        return null;
+        throw new Error('no time slot selected');
       }
 
-      const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
-      const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
-
-      Clevertap.pushEvent('Menu Page - Click product', {
-        ...storeInfoForCleverTap,
-        ...productCleverTapAttributes,
-      });
-
-      const result = await dispatch(appActions.loadProductDetail(productId));
-
-      Clevertap.pushEvent('Menu Page - View products', {
-        ...storeInfoForCleverTap,
-        ...productCleverTapAttributes,
-      });
-
-      const productInResult = _get(result, 'responseGql.data.product', null);
-
-      gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
-
-      return {
-        productId,
-        categoryId,
-        selectedOptionsByVariationId: getDefaultSelectedOptions(productInResult),
-      };
-    } catch (error) {
-      console.error(error);
-      throw error;
+      // No one should be able to reach here, but if they do, it indicates that we miss some other conditions.
+      throw new Error('unknown reason');
+    } catch (e) {
+      await dispatch(saveSelectedProductItemInfo({ productId, categoryId }));
+      logger.error('Menu_ShowProductDetailDrawerFailed', { message: e?.message });
+      throw e;
     }
   }
 );
@@ -197,6 +199,47 @@ export const showProductDetailDrawer = createAsyncThunk(
 export const hideProductDetailDrawer = createAsyncThunk(
   'ordering/menu/productDetail/hideProductDetailDrawer',
   async () => {}
+);
+
+export const productDetailDrawerShown = createAsyncThunk(
+  'ordering/menu/productDetail/productDetailDrawerShown',
+  async (_, { getState }) => {
+    const state = getState();
+    const product = getSelectedProduct(state);
+    const category = getSelectedCategory(state);
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+    const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+
+    Clevertap.pushEvent('Menu Page - View products', {
+      ...storeInfoForCleverTap,
+      ...productCleverTapAttributes,
+    });
+  }
+);
+
+export const productDetailDrawerHidden = createAsyncThunk(
+  'ordering/menu/productDetail/productDetailDrawerHidden',
+  async () => {}
+);
+
+export const productItemClicked = createAsyncThunk(
+  'ordering/menu/productDetail/productItemClicked',
+  async ({ productId, categoryId }, { dispatch, getState }) => {
+    const state = getState();
+    const allProducts = getAllProducts(state);
+    const allCategories = getAllCategories(state);
+    const product = _get(allProducts, productId, null);
+    const category = _get(allCategories, categoryId, null);
+    const storeInfoForCleverTap = getStoreInfoForCleverTap(state);
+    const productCleverTapAttributes = getProductCleverTapAttributes(product, category);
+
+    Clevertap.pushEvent('Menu Page - Click product', {
+      ...storeInfoForCleverTap,
+      ...productCleverTapAttributes,
+    });
+
+    await dispatch(showProductDetailDrawer({ productId, categoryId }));
+  }
 );
 
 export const decreaseProductQuantity = createAsyncThunk(

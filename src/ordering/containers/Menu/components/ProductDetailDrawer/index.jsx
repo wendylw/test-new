@@ -14,6 +14,7 @@ import styles from './ProductDetailDrawer.module.scss';
 import Button from '../../../../../common/components/Button';
 import Tag from '../../../../../common/components/Tag';
 import IconBestSellerImage from '../../../../../images/bestseller.svg';
+import { getSelectedProductItemInfo } from '../../redux/common/selectors';
 import {
   getIsProductDetailDrawerVisible,
   getIsProductDetailLoading,
@@ -25,12 +26,17 @@ import {
   getIsAbleAddToCart,
   getUnableAddToCartReason,
   getIsOutOfStockProduct,
+  getIsUnavailableProduct,
+  getCouldShowProductDetailDrawer,
 } from '../../redux/productDetail/selectors';
 import {
+  addToCart,
+  showProductDetailDrawer,
   hideProductDetailDrawer,
   increaseProductQuantity,
   decreaseProductQuantity,
-  addToCart,
+  productDetailDrawerShown,
+  productDetailDrawerHidden,
 } from '../../redux/productDetail/thunks';
 import { PRODUCT_UNABLE_ADD_TO_CART_REASONS } from '../../constants';
 import AddSpecialNotes from '../AddSpecialNotes';
@@ -50,6 +56,7 @@ const UNABLE_ADD_TO_CART_REASON_KEY_MAP = {
   [PRODUCT_UNABLE_ADD_TO_CART_REASONS.VARIATION_UNFULFILLED]: 'SelectVariant',
   // TODO: get the copy from PO
   [PRODUCT_UNABLE_ADD_TO_CART_REASONS.EXCEEDED_QUANTITY_ON_HAND]: 'ExceedsMaximumStock',
+  [PRODUCT_UNABLE_ADD_TO_CART_REASONS.UNAVAILABLE]: 'Unavailable',
 };
 
 const ProductDetailDrawer = () => {
@@ -65,16 +72,34 @@ const ProductDetailDrawer = () => {
   const isAbleAddCart = useSelector(getIsAbleAddToCart);
   const unableAddToCartReason = useSelector(getUnableAddToCartReason);
   const isOutOfStockProduct = useSelector(getIsOutOfStockProduct);
+  const isUnavailableProduct = useSelector(getIsUnavailableProduct);
+  const selectedProductItemInfo = useSelector(getSelectedProductItemInfo);
+  const couldShowProductDetailDrawer = useSelector(getCouldShowProductDetailDrawer);
 
   const contentRef = useRef();
   const imageSectionRef = useRef();
   const [showTopArrow, setShowTopArrow] = useState(false);
 
   useEffect(() => {
+    if (couldShowProductDetailDrawer) {
+      dispatch(showProductDetailDrawer(selectedProductItemInfo));
+    }
+  }, [dispatch, couldShowProductDetailDrawer, selectedProductItemInfo]);
+
+  useEffect(() => {
     if (!isDrawerVisible) {
       setShowTopArrow(false);
     }
   }, [isDrawerVisible]);
+
+  useEffect(() => {
+    if (isDrawerVisible) {
+      dispatch(productDetailDrawerShown());
+    } else {
+      dispatch(productDetailDrawerHidden());
+    }
+  }, [dispatch, isDrawerVisible]);
+
   const onContentScroll = useCallback(() => {
     if (!contentRef.current || !imageSectionRef.current) {
       return;
@@ -137,6 +162,10 @@ const ProductDetailDrawer = () => {
                 ) : null}
                 {isOutOfStockProduct ? (
                   <Tag className="tw-flex-shrink-0 tw-my-6 sm:tw-my-6px tw-font-bold tw-uppercase">{t('SoldOut')}</Tag>
+                ) : isUnavailableProduct ? (
+                  <Tag className="tw-flex-shrink-0 tw-my-6 sm:tw-my-6px tw-font-bold tw-uppercase">
+                    {t('Unavailable')}
+                  </Tag>
                 ) : null}
               </div>
               <div className="tw-my-4 sm:tw-my-4px tw-flex tw-w-full tw-flex-row">

@@ -11,7 +11,7 @@ import {
   getSelectedTimeDisplayValue,
   getTimeSlotDrawerVisible,
 } from '../../redux/common/selectors';
-import { showTimeSlotDrawer, hideTimeSlotDrawer } from '../../redux/common/thunks';
+import { timeSlotDrawerOpened, timeSlotDrawerClosed } from '../../redux/common/thunks';
 import {
   getIsOnlyPreOrder,
   getSelectedShippingType as getSelectedShippingTypeForDrawer,
@@ -22,13 +22,14 @@ import {
   getIsInitializing,
   getSelectedDate,
   getSelectedShippingType,
+  getIsSaveButtonLoaderVisible,
 } from '../../redux/timeSlot/selectors';
 import {
   changeShippingType,
   changeDate,
   changeTimeSlot,
   loadTimeSlotSoldData,
-  save as saveTimeSlotData,
+  timeSlotSelected,
   timeSlotDrawerShown,
   timeSlotDrawerHidden,
 } from '../../redux/timeSlot/thunks';
@@ -66,6 +67,8 @@ const TimeSlotDropdown = () => {
   const timeSlotList = useSelector(getTimeSlotList);
   // is save button disabled
   const isSaveButtonDisabled = useSelector(getIsSaveButtonDisabled);
+  // is save button loader visible
+  const isSaveButtonLoaderVisible = useSelector(getIsSaveButtonLoaderVisible);
   // is initializing, if TRUE, show a loader
   const isInitializing = useSelector(getIsInitializing);
   const timeSlotTItle = t(TIME_SLOT_TITLE_KEYS[shippingType]) || t(TIME_SLOT_TITLE_KEYS.default);
@@ -113,7 +116,7 @@ const TimeSlotDropdown = () => {
           className={styles.timeSlotDropdownButton}
           disabled={!isTimeSlotAvailable}
           onClick={() => {
-            dispatch(showTimeSlotDrawer());
+            dispatch(timeSlotDrawerOpened());
           }}
         >
           <div className="tw-flex tw-items-center">
@@ -138,9 +141,10 @@ const TimeSlotDropdown = () => {
           dateList={dateList}
           timeSlotList={timeSlotList}
           isSaveButtonDisabled={isSaveButtonDisabled}
+          isSaveButtonLoaderVisible={isSaveButtonLoaderVisible}
           isInitializing={isInitializing}
           onClose={() => {
-            dispatch(hideTimeSlotDrawer());
+            dispatch(timeSlotDrawerClosed());
           }}
           changeShippingType={value => {
             dispatch(changeShippingType(value));
@@ -152,7 +156,7 @@ const TimeSlotDropdown = () => {
             dispatch(changeTimeSlot(value));
           }}
           save={() => {
-            dispatch(saveTimeSlotData());
+            dispatch(timeSlotSelected());
           }}
         />
       </div>

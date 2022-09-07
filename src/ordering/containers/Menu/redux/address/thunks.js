@@ -1,5 +1,4 @@
 import _get from 'lodash/get';
-import _debounce from 'lodash/debounce';
 import _isEmpty from 'lodash/isEmpty';
 import _isNumber from 'lodash/isNumber';
 import _isEqual from 'lodash/isEqual';
@@ -12,7 +11,6 @@ import { getCoreStoreList } from '../../../../../redux/modules/entities/stores';
 import {
   getStoreId,
   getBusiness,
-  getCurrentDate,
   getDeliveryRadius,
   getMerchantCountry,
   getBusinessUTCOffset,
@@ -25,22 +23,12 @@ import {
   updateLocationToHistoryList,
   loadPlaceInfoById,
 } from '../../../../redux/modules/locations/thunks';
-import { refreshMenuPageForNewStore, hideLocationDrawer } from '../common/thunks';
-import { getIsAddressOutOfRange } from '../common/selectors';
+import { changeStore, hideLocationDrawer } from '../common/thunks';
+import { getIsAddressOutOfRange, getCurrentDate } from '../common/selectors';
 import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
-import { LOCATION_SELECTION_REASON_CODES as ERROR_CODES } from '../../../../../common/utils/constants';
+import { toast } from '../../../../../common/utils/feedback';
 import logger from '../../../../../utils/monitoring/logger';
-import { toast } from '../../../../../common/feedback';
-
-class LocationSelectedError extends Error {
-  constructor(message, code) {
-    super(message);
-
-    this.name = 'LocationSelectedError';
-    this.code = code;
-  }
-}
 
 export const checkDeliveryRange = createAsyncThunk(
   'ordering/menu/address/checkDeliveryRange',
@@ -53,8 +41,9 @@ export const checkDeliveryRange = createAsyncThunk(
 
     toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
       type: 'error',
-      duration: 4500,
     });
+
+    logger.log('Menu_CheckedDeliveryAddressOufOfRange');
   }
 );
 
@@ -175,8 +164,8 @@ const getFormatSelectAddressInfo = (addressOrLocationInfo, type) => {
 /**
  * select location from the location drawer
  */
-export const selectLocation = createAsyncThunk(
-  'ordering/menu/address/selectLocation',
+export const locationSelected = createAsyncThunk(
+  'ordering/menu/address/locationSelected',
   async ({ addressOrLocationInfo, type }, { dispatch, getState }) => {
     const addressInfo = getFormatSelectAddressInfo(addressOrLocationInfo, type);
     const state = getState();
@@ -189,10 +178,11 @@ export const selectLocation = createAsyncThunk(
     }
 
     /**
-     * After the user selects the new valid location, there are 3 things that need to be done:
+     * After the user selects the new valid location, there are 4 things that need to be done:
      * 1. Find the nearest available store
      * 2. Sync up current address info with the BFF
-     * 3. Update the store id by hard-refreshing menu page
+     * 3. Update the delivery details in the Redux store
+     * 4. Change the store id
      */
     try {
       const coords = _get(addressInfo, 'coords', null);
@@ -200,15 +190,15 @@ export const selectLocation = createAsyncThunk(
       if (_isEmpty(coords)) {
         toast(i18next.t(`OrderingDelivery:AddressNotFound`), {
           type: 'error',
-          duration: 4500,
         });
 
-        throw new LocationSelectedError('address coordination is not found', ERROR_CODES.ADDRESS_NOT_FOUND);
+        throw new Error('address coordination is not found');
       }
 
       let stores = getCoreStoreList(state);
       const utcOffset = getBusinessUTCOffset(state);
       const currentDate = getCurrentDate(state);
+      const currentStoreId = getStoreId(state);
       const deliveryRadius = getDeliveryRadius(state);
 
       if (_isEmpty(stores)) {
@@ -226,21 +216,24 @@ export const selectLocation = createAsyncThunk(
       const deliveryDistance = (distance / 1000).toFixed(2);
 
       if (_isEmpty(store) || deliveryDistance > deliveryRadius) {
-        toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions), {
-          type: 'error',
-          duration: 4500,
-        });
+        toast(i18next.t(`OrderingDelivery:OutOfDeliveryRange`, errorOptions));
 
-        throw new LocationSelectedError(
-          'no available store according to the current time or delivery range',
-          ERROR_CODES.OUT_OF_DELIVERY_RANGE
-        );
+        throw new Error('no available store according to the current time or delivery range');
       }
 
       const storeId = _get(store, 'id', null);
 
       await dispatch(setAddressInfo(addressInfo));
-      await dispatch(refreshMenuPageForNewStore(storeId));
+
+      await dispatch(appActionCreators.loadDeliveryAddressDetailsIfNeeded());
+
+      if (_isEqual(currentStoreId, storeId)) {
+        await dispatch(hideLocationDrawer());
+        return;
+      }
+
+      await dispatch(changeStore(storeId)).unwrap();
+      await dispatch(hideLocationDrawer());
     } catch (e) {
       logger.error('Ordering_Menu_SelectLocationFailed', { message: e?.message });
       throw e;
@@ -257,6 +250,7 @@ export const loadSearchLocationListData = createAsyncThunk(
     if (_isEmpty(searchKey)) {
       return [];
     }
+
     try {
       const state = getState();
       const storeInfo = getStoreInfoData(state);

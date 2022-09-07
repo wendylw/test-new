@@ -1,3 +1,6 @@
+import { createSelector } from 'reselect';
+import { APP_TYPES } from '../../../ordering/redux/types';
+
 const initialState = {};
 
 const reducer = (state = initialState, action) => {
@@ -16,6 +19,8 @@ const reducer = (state = initialState, action) => {
             ...product,
             // mark it as need more to fetch product detail
             _needMore: product.variations && product.variations.length,
+            // mark it to indicate the product exists in the current store
+            _exists: true,
           };
 
           if (kvData[product.id]) {
@@ -37,10 +42,16 @@ const reducer = (state = initialState, action) => {
           ...product,
           _needMore: false,
         };
+      } else {
+        // FB-4011: Mark selected product as not found if the product is not in the product list
+        mergedProduct._exists = false;
       }
 
       return { ...state, [product.id]: mergedProduct };
     }
+  } else if (action.type === APP_TYPES.RESET_ONLINECATEGORY_STATUS) {
+    // FB-4011: If we clear online category info, we also need to clear all product info in case the product is still regarded as purchasable even if it is not in any categories of the current store.
+    return initialState;
   }
 
   return state;

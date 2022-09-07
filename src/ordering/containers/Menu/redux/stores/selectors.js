@@ -3,7 +3,6 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import {
   getShippingType,
-  getCurrentDate,
   getBusinessUTCOffset,
   getDeliveryRadius,
   getStoreId,
@@ -16,6 +15,7 @@ import { computeStraightDistance } from '../../../../../utils/geoUtils';
 import Utils from '../../../../../utils/utils';
 import { formatTime } from '../../../../../utils/time-lib';
 import { API_REQUEST_STATUS, ADDRESS_RANGE, SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { getCurrentDate } from '../common/selectors';
 
 export const getStoreListInfo = state => state.menu.stores.storeListInfo;
 

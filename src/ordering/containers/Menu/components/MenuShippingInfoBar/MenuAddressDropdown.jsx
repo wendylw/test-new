@@ -1,22 +1,34 @@
 import _isEmpty from 'lodash/isEmpty';
 import _trim from 'lodash/trim';
 import _nth from 'lodash/_baseNth';
-import _debounce from 'lodash/debounce';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
 import { CaretDown } from 'phosphor-react';
+import LocationAddAddressConfirmationImage from '../../../../../images/location-add-address-confirmation.svg';
 import { LocationAndAddressIcon } from '../../../../../common/components/Icons';
+import { ObjectFitImage } from '../../../../../common/components/Image';
 import AddressLocationDrawer from '../../../../components/AddressLocationDrawer';
+import AddressLocationContent from '../../../../components/AddressLocationDrawer/AddressLocationContent';
+import { confirm } from '../../../../../common/utils/feedback';
+import { CONFIRM_BUTTON_ALIGNMENT } from '../../../../../common/utils/feedback/utils';
 import {
   getSelectedLocationDisplayName,
   getShippingType,
   getStoreLocationStreetForPickup,
   getIsLocationDrawerVisible,
   getIsPickUpType,
+  getIsLocationConfirmModalVisible,
 } from '../../redux/common/selectors';
-import { showLocationDrawer, hideLocationDrawer } from '../../redux/common/thunks';
+import {
+  locationDrawerOpened,
+  locationDrawerClosed,
+  addAddressButtonClicked,
+  noThanksButtonClicked,
+  locationConfirmModalShown,
+  locationConfirmModalHidden,
+} from '../../redux/common/thunks';
 import {
   getHasStoreInfoInitialized,
   getAddressListInfo,
@@ -28,7 +40,7 @@ import {
 import {
   locationDrawerShown,
   locationDrawerHidden,
-  selectLocation,
+  locationSelected,
   loadSearchLocationListData,
   loadPlaceInfo,
   updateSearchLocationList,
@@ -62,14 +74,15 @@ const MenuAddressDropdown = () => {
   const isLocationHistoryListVisible = useSelector(getIsLocationHistoryListVisible) && !isSearchLocationListVisible;
   const locationHistoryList = useSelector(getLocationHistoryListInfo);
   const storeInfoForCleverTap = useSelector(getStoreInfoForCleverTap);
+  const isLocationConfirmModalVisible = useSelector(getIsLocationConfirmModalVisible);
 
-  const onHandleShowLocationDrawer = useCallback(() => {
+  const onHandleOpenLocationDrawer = useCallback(() => {
     if (!isPickUpType) {
-      dispatch(showLocationDrawer());
+      dispatch(locationDrawerOpened());
     }
   }, [isPickUpType, dispatch]);
-  const onHandleHideLocationDrawer = useCallback(() => {
-    dispatch(hideLocationDrawer());
+  const onHandleCloseLocationDrawer = useCallback(() => {
+    dispatch(locationDrawerClosed());
   }, [dispatch]);
   const locationTitle = isPickUpType
     ? t(LOCATION_TITLE_KEYS[shippingType])
@@ -93,6 +106,44 @@ const MenuAddressDropdown = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLocationDrawerVisible]);
 
+  useEffect(() => {
+    if (isLocationConfirmModalVisible) {
+      dispatch(locationConfirmModalShown());
+
+      confirm(
+        <div className="tw-justify-center tw-py-8 sm:tw-py-8px">
+          <div className={styles.addAddressConfirmationImage}>
+            <ObjectFitImage src={LocationAddAddressConfirmationImage} noCompression />
+          </div>
+
+          <h4 className="tw-flex tw-justify-center tw-text-xl tw-leading-normal tw-font-bold">
+            {t('AddAddressConfirmTitle')}
+          </h4>
+          <div className="tw-flex tw-justify-center tw-mt-4 sm:tw-mt-4px tw-mb-8 sm:tw-mb-8px tw-leading-relaxed tw-text-gray-700">
+            {t('AddAddressConfirmDescription')}
+          </div>
+        </div>,
+        {
+          customizeContent: true,
+          closeByBackButton: false,
+          closeByBackDrop: false,
+          buttonAlignment: CONFIRM_BUTTON_ALIGNMENT.VERTICAL,
+          cancelButtonContent: t('NoThanks'),
+          confirmButtonContent: t('AddAddress'),
+          onSelection: async status => {
+            if (status) {
+              await dispatch(addAddressButtonClicked());
+            } else {
+              dispatch(noThanksButtonClicked());
+            }
+          },
+        }
+      );
+    } else {
+      dispatch(locationConfirmModalHidden());
+    }
+  }, [dispatch, isLocationConfirmModalVisible, t]);
+
   const handleSearchKeywordChanged = useCallback(
     async searchKey => {
       CleverTap.pushEvent('Location Page - Search for location');
@@ -108,7 +159,7 @@ const MenuAddressDropdown = () => {
     <div className="tw-flex-1">
       <button
         className={`${styles.addressDropdownButton}${isPickUpType ? '' : ' tw-cursor-pointer'}`}
-        onClick={onHandleShowLocationDrawer}
+        onClick={onHandleOpenLocationDrawer}
       >
         <div className="tw-flex tw-items-center">
           <LocationAndAddressIcon />
@@ -124,63 +175,8 @@ const MenuAddressDropdown = () => {
       <AddressLocationDrawer
         isLocationDrawerVisible={isLocationDrawerVisible}
         isInitializing={!hasStoreInfoInitialized}
-        addressList={addressList}
-        isAddressListVisible={isAddressListVisible}
-        locationHistoryList={locationHistoryList}
-        isLocationHistoryListVisible={isLocationHistoryListVisible}
-        searchLocationList={searchLocationList}
-        isSearchLocationListVisible={isSearchLocationListVisible}
         isEmptyList={!isAddressListVisible && !isLocationHistoryListVisible && !isSearchLocationListVisible}
-        onClose={onHandleHideLocationDrawer}
-        onSelectAddress={selectedAddressInfo => {
-          const { deliveryTo: fullName, postCode, city } = selectedAddressInfo;
-
-          const addressComponents = fullName.split(',');
-          const streetName = _trim(_nth(addressComponents, 1)) || '';
-          const state = _trim(_nth(addressComponents, -2)) || '';
-
-          CleverTap.pushEvent('Location Page - Click saved address', {
-            'street name': streetName,
-            postcode: postCode,
-            city,
-            state,
-          });
-
-          dispatch(selectLocation({ addressOrLocationInfo: selectedAddressInfo, type: 'address' }));
-        }}
-        onSelectLocation={selectedLocationInfo => {
-          const {
-            addressComponents: { street1, street2, postCode: postcode, city, state },
-          } = selectedLocationInfo;
-
-          CleverTap.pushEvent('Location Page - Click saved location', {
-            'street name': street1 || street2,
-            postcode,
-            city,
-            state,
-          });
-
-          dispatch(selectLocation({ addressOrLocationInfo: selectedLocationInfo, type: 'location' }));
-        }}
-        onSelectSearchLocation={async (searchResult, index) => {
-          if (searchResult) {
-            const formatPositionInfo = await loadPlaceInfo(searchResult);
-            const {
-              addressComponents: { street1, street2, postCode: postcode, city, state },
-            } = formatPositionInfo;
-
-            CleverTap.pushEvent('Location Page - Click location results', {
-              rank: index + 1,
-              'street name': street1 || street2,
-              postcode,
-              city,
-              state,
-            });
-
-            dispatch(updateSearchLocationList(formatPositionInfo));
-            dispatch(selectLocation({ addressOrLocationInfo: formatPositionInfo, type: 'location' }));
-          }
-        }}
+        onClose={onHandleCloseLocationDrawer}
         onChangeSearchKeyword={handleSearchKeywordChanged}
         onClearSearchKeyword={() => {
           CleverTap.pushEvent('Location Page - Click clear location search field');
@@ -188,7 +184,67 @@ const MenuAddressDropdown = () => {
           dispatch(loadSearchLocationListData());
           setSearchLocationList([]);
         }}
-      />
+      >
+        <AddressLocationContent
+          isInitializing={!hasStoreInfoInitialized}
+          isEmptyList={!isAddressListVisible && !isLocationHistoryListVisible && !isSearchLocationListVisible}
+          addressList={addressList}
+          searchLocationList={searchLocationList}
+          isAddressListVisible={isAddressListVisible}
+          isSearchLocationListVisible={isSearchLocationListVisible}
+          isLocationHistoryListVisible={isLocationHistoryListVisible}
+          locationHistoryList={locationHistoryList}
+          onSelectAddress={selectedAddressInfo => {
+            const { deliveryTo: fullName, postCode, city } = selectedAddressInfo;
+
+            const addressComponents = fullName.split(',');
+            const streetName = _trim(_nth(addressComponents, 1)) || '';
+            const state = _trim(_nth(addressComponents, -2)) || '';
+
+            CleverTap.pushEvent('Location Page - Click saved address', {
+              'street name': streetName,
+              postcode: postCode,
+              city,
+              state,
+            });
+
+            dispatch(locationSelected({ addressOrLocationInfo: selectedAddressInfo, type: 'address' }));
+          }}
+          onSelectLocation={selectedLocationInfo => {
+            const {
+              addressComponents: { street1, street2, postCode: postcode, city, state },
+            } = selectedLocationInfo;
+
+            CleverTap.pushEvent('Location Page - Click saved location', {
+              'street name': street1 || street2,
+              postcode,
+              city,
+              state,
+            });
+
+            dispatch(locationSelected({ addressOrLocationInfo: selectedLocationInfo, type: 'location' }));
+          }}
+          onSelectSearchLocation={async (searchResult, index) => {
+            if (searchResult) {
+              const formatPositionInfo = await loadPlaceInfo(searchResult);
+              const {
+                addressComponents: { street1, street2, postCode: postcode, city, state },
+              } = formatPositionInfo;
+
+              CleverTap.pushEvent('Location Page - Click location results', {
+                rank: index + 1,
+                'street name': street1 || street2,
+                postcode,
+                city,
+                state,
+              });
+
+              dispatch(updateSearchLocationList(formatPositionInfo));
+              dispatch(locationSelected({ addressOrLocationInfo: formatPositionInfo, type: 'location' }));
+            }
+          }}
+        />
+      </AddressLocationDrawer>
     </div>
   );
 };

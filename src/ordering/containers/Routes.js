@@ -27,6 +27,7 @@ const AddressList = lazy(() => Utils.attemptLoad(() => import('./Customer/contai
 const AddressDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressDetail')));
 const ContactDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/ContactDetail')));
 const SavedCards = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards')));
+// TODO: CVV will be removed, if payment & payout complete card and cardholder verification development
 const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards/CVV')));
 const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
 const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
@@ -53,6 +54,7 @@ class Routes extends Component {
             <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT} component={StripePayment} />
             <Route exact path={ROUTER_PATHS.ORDERING_STRIPE_PAYMENT_SAVE} component={StripePayment} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS} component={SavedCards} />
+            {/* TODO: CVV will be removed, if payment & payout complete card and cardholder verification development */}
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_CVV} component={CardCvv} />
             <Route exact path={ROUTER_PATHS.ORDERING_ONLINE_BANKING_PAYMENT} component={BankingPayment} />
             <Route exact path={ROUTER_PATHS.THANK_YOU} component={ThankYou} />

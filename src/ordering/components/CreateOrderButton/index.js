@@ -134,7 +134,7 @@ class CreateOrderButton extends React.Component {
       orderId: createdOrderId,
       total: createdOrderTotal,
     } = this.props;
-    const { tableId /*storeId*/ } = requestInfo;
+    const { tableId } = requestInfo;
     const { totalCashback } = cartBilling || {};
     const { type } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
     let orderId = createdOrderId,

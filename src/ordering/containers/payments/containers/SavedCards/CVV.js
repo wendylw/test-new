@@ -1,3 +1,4 @@
+// TODO: CVV will be removed, if payment & payout complete card and cardholder verification development
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -43,12 +44,17 @@ class CardCVV extends Component {
   componentDidMount() {
     const { selectedPaymentCard, history } = this.props;
 
-    if (!selectedPaymentCard || !selectedPaymentCard.cardToken) {
-      history.goBack();
-      return;
-    }
+    // go to saved card list page directly, because we have deprecated cvv page
+    history.push({ pathname: Constants.ROUTER_PATHS.ORDERING_ONLINE_SAVED_CARDS, search: window.location.search });
 
-    this.timeoutId = setTimeout(this.handleLoadTimeout, STRIPE_LOAD_TIME_OUT);
+    return;
+
+    // if (!selectedPaymentCard || !selectedPaymentCard.cardToken) {
+    //   history.goBack();
+    //   return;
+    // }
+
+    // this.timeoutId = setTimeout(this.handleLoadTimeout, STRIPE_LOAD_TIME_OUT);
   }
 
   componentWillUnmount() {
