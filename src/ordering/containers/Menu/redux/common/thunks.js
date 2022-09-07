@@ -397,7 +397,9 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
   if (isWebview) {
     const shareLinkUrl = getShareLinkUrl();
 
-    shortenUrl(shareLinkUrl).catch(error => logger.error(`failed to share store link(didMount): ${error.message}`));
+    shortenUrl(shareLinkUrl).catch(error =>
+      logger.error('Ordering_Menu_ShareStoreLinkOnDidMountFailed', { message: error.message })
+    );
   }
 
   const storeStatus = getStoreStatus(getState());
@@ -828,7 +830,7 @@ export const changeStore = createAsyncThunk(
         await dispatch(resetAddressListStatus());
       }
     } catch (e) {
-      logger.error('Menu_ChangeStoreFailed', { message: e?.message });
+      logger.error('Ordering_Menu_ChangeStoreFailed', { message: e?.message });
       throw e;
     }
   }

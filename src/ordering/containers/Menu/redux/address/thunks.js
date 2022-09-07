@@ -43,7 +43,7 @@ export const checkDeliveryRange = createAsyncThunk(
       type: 'error',
     });
 
-    logger.log('Menu_CheckedDeliveryAddressOufOfRange');
+    logger.log('Ordering_Menu_CheckIfDeliveryAddressOutOfRange');
   }
 );
 
