@@ -1,7 +1,6 @@
 import _sumBy from 'lodash/sumBy';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { get } from '../../../../../../utils/api/api-fetch';
-import { API_INFO } from './api-info';
+import { getPayments } from './api-info';
 import {
   actions as appActions,
   getCartStatus,
@@ -15,7 +14,7 @@ import {
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
-import { getBillingLoadedComplete, getTotal } from '../selectors';
+import { getTotal } from '../selectors';
 import logger from '../../../../../../utils/monitoring/logger';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
@@ -190,8 +189,8 @@ export const loadPaymentOptions = createAsyncThunk(
     const storeId = getStoreId(state);
     const shippingType = getShippingType(state);
 
-    const { url, queryParams } = API_INFO.getPayments(storeId, Utils.getApiRequestShippingType(shippingType), total);
-    const result = await get(url, { queryParams });
+    const result = await getPayments(storeId, Utils.getApiRequestShippingType(shippingType), total);
+
     if (!result.data) {
       throw result.error;
     }
