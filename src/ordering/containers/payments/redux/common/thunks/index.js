@@ -200,9 +200,9 @@ export const loadPaymentOptions = createAsyncThunk(
       const isNotSelectedOption = selectedPaymentMethod && selectedPaymentMethod !== option.key;
       const isUnavailable = !option.available;
       const isUnavailableAmount = option.minAmount && total < option.minAmount;
-      const isCashOnly = option.isStorePayByCashOnly;
+      const isUnsupported = !option.isStoreSupported;
 
-      if (isNotSelectedOption || isUnavailable || isUnavailableAmount || isCashOnly) {
+      if (isNotSelectedOption || isUnavailable || isUnavailableAmount || isUnsupported) {
         return false;
       }
 
