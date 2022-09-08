@@ -183,7 +183,7 @@ export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', asy
 
 export const loadPaymentOptions = createAsyncThunk(
   'ordering/payments/loadPaymentOptions',
-  async (selectedPaymentMethod, { dispatch, getState }) => {
+  async (selectedPaymentMethod, { getState }) => {
     const state = getState();
     const total = getTotal(state);
     const storeId = getStoreId(state);
@@ -197,15 +197,12 @@ export const loadPaymentOptions = createAsyncThunk(
 
     const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
     const selectedPaymentOption = paymentOptions.find(option => {
-      if (selectedPaymentMethod && selectedPaymentMethod !== option.key) {
-        return false;
-      }
+      const isNotSelectedOption = selectedPaymentMethod && selectedPaymentMethod !== option.key;
+      const isUnavailable = !option.available;
+      const isUnavailableAmount = option.minAmount && total < option.minAmount;
+      const isCashOnly = option.isStorePayByCashOnly;
 
-      if (!option.available) {
-        return false;
-      }
-
-      if (option.minAmount && total < option.minAmount) {
+      if (isNotSelectedOption || isUnavailable || isUnavailableAmount || isCashOnly) {
         return false;
       }
 
