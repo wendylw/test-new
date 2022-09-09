@@ -14,6 +14,8 @@ import {
   getShippingType,
   getBusinessUTCOffset,
   getIsWebview,
+  getIsTNGMiniProgram,
+  getHasLoginGuardPassed,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
@@ -58,6 +60,7 @@ import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import RedirectPageLoader from '../../components/RedirectPageLoader';
+import PageProcessingLoader from '../../components/PageProcessingLoader';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -67,6 +70,7 @@ export class TableSummary extends React.Component {
     super(props);
     this.state = {
       cartContainerHeight: '100%',
+      shouldShowProcessingLoader: false,
     };
   }
 
@@ -255,9 +259,39 @@ export class TableSummary extends React.Component {
     });
   };
 
-  handleClickPayButton = () => {
-    const { gotoPayment } = this.props;
-    gotoPayment();
+  handleLogin = async () => {
+    const { history, isWebview, isTNGMiniProgram, loginByBeepApp, loginByTngMiniProgram } = this.props;
+
+    if (isWebview) {
+      await loginByBeepApp();
+      return;
+    }
+
+    if (isTNGMiniProgram) {
+      this.setState({ shouldShowProcessingLoader: true });
+      await loginByTngMiniProgram();
+      this.setState({ shouldShowProcessingLoader: false });
+      return;
+    }
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
+  handleClickPayButton = async () => {
+    const { gotoPayment, hasLoginGuardPassed } = this.props;
+
+    if (!hasLoginGuardPassed) {
+      await this.handleLogin();
+      const { userIsLogin } = this.props;
+
+      if (!userIsLogin) return;
+    }
+
+    await gotoPayment();
   };
 
   showShortPromoCode() {
@@ -440,7 +474,7 @@ export class TableSummary extends React.Component {
       shouldShowRedirectLoader,
       shouldShowPayNowButton,
     } = this.props;
-    const { cartContainerHeight } = this.state;
+    const { cartContainerHeight, shouldShowProcessingLoader } = this.state;
 
     if (shouldShowRedirectLoader) {
       return <RedirectPageLoader />;
@@ -520,6 +554,7 @@ export class TableSummary extends React.Component {
             {shouldShowPayNowButton ? t('PayNow') : t('SelectPaymentMethod')}
           </button>
         </footer>
+        <PageProcessingLoader show={shouldShowProcessingLoader} loaderText={t('Processing')} />
       </section>
     );
   }
@@ -562,7 +597,10 @@ TableSummary.propTypes = {
   promoOrVoucherExist: PropTypes.bool,
   gotoPayment: PropTypes.func,
   isWebview: PropTypes.bool,
+  isTNGMiniProgram: PropTypes.bool,
   loginByBeepApp: PropTypes.func,
+  loginByTngMiniProgram: PropTypes.func,
+  hasLoginGuardPassed: PropTypes.bool,
   shouldShowRedirectLoader: PropTypes.bool,
   shouldShowPayNowButton: PropTypes.bool,
 };
@@ -600,7 +638,10 @@ TableSummary.defaultProps = {
   promoOrVoucherExist: false,
   gotoPayment: () => {},
   isWebview: false,
+  isTNGMiniProgram: false,
   loginByBeepApp: () => {},
+  loginByTngMiniProgram: () => {},
+  hasLoginGuardPassed: false,
   shouldShowRedirectLoader: false,
   shouldShowPayNowButton: false,
 };
@@ -634,6 +675,8 @@ export default compose(
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
       isWebview: getIsWebview(state),
+      isTNGMiniProgram: getIsTNGMiniProgram(state),
+      hasLoginGuardPassed: getHasLoginGuardPassed(state),
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
     }),
@@ -647,6 +690,7 @@ export default compose(
       removeVoucherPayLater: removeVoucherPayLaterThunk,
       gotoPayment: gotoPaymentThunk,
       loginByBeepApp: appActions.loginByBeepApp,
+      loginByTngMiniProgram: appActions.loginByTngMiniProgram,
     }
   )
 )(TableSummary);

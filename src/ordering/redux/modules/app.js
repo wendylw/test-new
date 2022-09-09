@@ -1651,10 +1651,7 @@ export const getIsQROrderingLoginFree = createSelector(
   getAllowAnonymousQROrdering,
   getIsQROrder,
   getEnablePayLater,
-  (allowAnonymousQROrdering, isQROrder, enablePayLater) => {
-    // The pay later of phase 1 support allow Anonymous QR Ordering on default
-    return isQROrder && (allowAnonymousQROrdering || enablePayLater);
-  }
+  (allowAnonymousQROrdering, isQROrder) => isQROrder && allowAnonymousQROrdering
 );
 
 export const getIsLoginFree = createSelector(
