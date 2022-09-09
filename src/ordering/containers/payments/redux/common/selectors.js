@@ -63,7 +63,7 @@ export const getAllPaymentsOptions = createSelector(
       option.disabledConditions = {
         minAmount: false,
         available: !available,
-        unSupport: isStoreSupported,
+        unSupport: !isStoreSupported,
       };
 
       if (minAmount && total < minAmount) {

@@ -364,7 +364,8 @@ Payment.displayName = 'Payment';
 
 Payment.propTypes = {
   initialize: PropTypes.func,
-  paymentActions: PropTypes.node,
+  // eslint-disable-next-line react/forbid-prop-types
+  paymentActions: PropTypes.object,
   createOrder: PropTypes.func,
   gotoPayment: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
@@ -385,7 +386,7 @@ Payment.propTypes = {
 
 Payment.defaultProps = {
   initialize: () => {},
-  paymentActions: null,
+  paymentActions: {},
   createOrder: () => {},
   gotoPayment: () => {},
   currentPaymentOption: {},
