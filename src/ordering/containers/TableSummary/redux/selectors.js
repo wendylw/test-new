@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
 import Constants from '../../../../utils/constants';
 import { getIsTNGMiniProgram } from '../../../redux/modules/app';
-import { getPromotionId, getSelectedPromo } from '../../../redux/modules/promotion';
+import { getSelectedPromo } from '../../../redux/modules/promotion';
 
 const { ORDER_STATUS } = Constants;
 
@@ -18,6 +18,8 @@ export const getTableNumber = state => state.tableSummary.order.tableId;
 export const getOrderTax = state => state.tableSummary.order.tax;
 
 export const getOrderServiceCharge = state => state.tableSummary.order.serviceCharge;
+
+export const getIsStorePayByCashOnly = state => state.tableSummary.order.isStorePayByCashOnly;
 
 export const getOrderServiceChargeRate = state =>
   _get(state.tableSummary.order.serviceChargeInfo, 'serviceChargeRate', 0);

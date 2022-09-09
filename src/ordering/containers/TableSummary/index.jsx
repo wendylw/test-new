@@ -14,6 +14,7 @@ import {
   getShippingType,
   getBusinessUTCOffset,
   getIsWebview,
+  getIsTNGMiniProgram,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
@@ -50,6 +51,7 @@ import {
   getPromoOrVoucherExist,
   getShouldShowRedirectLoader,
   getShouldShowPayNowButton,
+  getIsStorePayByCashOnly,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -441,6 +443,8 @@ export class TableSummary extends React.Component {
       orderPendingPaymentStatus,
       shouldShowRedirectLoader,
       shouldShowPayNowButton,
+      isTNGMiniProgram,
+      isStorePayByCashOnly,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -498,30 +502,37 @@ export class TableSummary extends React.Component {
             {this.renderPromotionItem()}
           </Billing>
         </div>
-        <footer
-          ref={ref => {
-            this.footerEl = ref;
-          }}
-          className="footer padding-small flex flex-middle"
-        >
-          {orderPlacedStatus ? (
-            <button
-              className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
-              onClick={this.goToMenuPage}
-            >
-              {t('AddItems')}
-            </button>
-          ) : null}
-
-          <button
-            className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
-            data-testid="pay"
-            data-heap-name="ordering.order-status.table-summary.pay-btn"
-            onClick={this.handleClickPayButton}
+        {isTNGMiniProgram && isStorePayByCashOnly ? (
+          <div className="table-summary__pay-by-cash-only flex flex-center padding-normal">
+            <p className="text-uppercase text-bold">{t('TnGAndPayByCashOnly')}</p>
+          </div>
+        ) : null}
+        {isTNGMiniProgram && isStorePayByCashOnly ? null : (
+          <footer
+            ref={ref => {
+              this.footerEl = ref;
+            }}
+            className="footer padding-small flex flex-middle"
           >
-            {shouldShowPayNowButton ? t('PayNow') : t('SelectPaymentMethod')}
-          </button>
-        </footer>
+            {orderPlacedStatus ? (
+              <button
+                className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+                onClick={this.goToMenuPage}
+              >
+                {t('AddItems')}
+              </button>
+            ) : null}
+
+            <button
+              className="button button__fill button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
+              data-testid="pay"
+              data-heap-name="ordering.order-status.table-summary.pay-btn"
+              onClick={this.handleClickPayButton}
+            >
+              {shouldShowPayNowButton ? t('PayNow') : t('SelectPaymentMethod')}
+            </button>
+          </footer>
+        )}
       </section>
     );
   }
@@ -552,13 +563,13 @@ TableSummary.propTypes = {
   clearQueryOrdersAndStatus: PropTypes.func,
   thankYouPageUrl: PropTypes.string,
   resetCartSubmission: PropTypes.func,
-  orderBillingPromo: PropTypes.number,
+  orderBillingPromo: PropTypes.string,
   loadOrders: PropTypes.func,
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,
   orderPromotionCode: PropTypes.string,
   removeVoucherPayLater: PropTypes.func,
-  voucherBilling: PropTypes.number,
+  voucherBilling: PropTypes.string,
   orderVoucherCode: PropTypes.string,
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
@@ -567,6 +578,8 @@ TableSummary.propTypes = {
   loginByBeepApp: PropTypes.func,
   shouldShowRedirectLoader: PropTypes.bool,
   shouldShowPayNowButton: PropTypes.bool,
+  isStorePayByCashOnly: PropTypes.bool,
+  isTNGMiniProgram: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -590,13 +603,13 @@ TableSummary.defaultProps = {
   clearQueryOrdersAndStatus: () => {},
   resetCartSubmission: () => {},
   thankYouPageUrl: '',
-  orderBillingPromo: 0,
+  orderBillingPromo: '',
   loadOrders: () => {},
   removePromo: () => {},
   oderPromoDiscount: 0,
   orderPromotionCode: '',
   removeVoucherPayLater: () => {},
-  voucherBilling: 0,
+  voucherBilling: '',
   orderVoucherCode: '',
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
@@ -605,6 +618,8 @@ TableSummary.defaultProps = {
   loginByBeepApp: () => {},
   shouldShowRedirectLoader: false,
   shouldShowPayNowButton: false,
+  isStorePayByCashOnly: false,
+  isTNGMiniProgram: false,
 };
 
 export default compose(
@@ -638,6 +653,8 @@ export default compose(
       isWebview: getIsWebview(state),
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
+      isTNGMiniProgram: getIsTNGMiniProgram(state),
+      isStorePayByCashOnly: getIsStorePayByCashOnly(state),
     }),
 
     {

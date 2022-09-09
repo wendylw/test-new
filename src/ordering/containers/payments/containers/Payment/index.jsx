@@ -1,20 +1,13 @@
+import qs from 'qs';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
-import { connect } from 'react-redux';
-import { bindActionCreators, compose } from 'redux';
-import { actions as appActionCreators } from '../../../../redux/modules/app';
-import {
-  getOnlineStoreInfo,
-  getBusiness,
-  getMerchantCountry,
-  getBusinessInfo,
-  getDeliveryInfo,
-  getShippingType,
-  getHasLoginGuardPassed,
-} from '../../../../redux/modules/app';
+import { actions as appActionCreators, getShippingType, getHasLoginGuardPassed } from '../../../../redux/modules/app';
 import {
   getLoaderVisibility,
   getAllPaymentsOptions,
@@ -26,13 +19,12 @@ import {
   getTotal,
   getCashback,
 } from '../../redux/common/selectors';
-import qs from 'qs';
 import {
   initialize as initializeThunkCreator,
   createOrder as createOrderThunkCreator,
   gotoPayment as gotoPaymentThunkCreator,
 } from '../../redux/common/thunks';
-import { actions as paymentActions } from '../../redux/common/index';
+import { actions as paymentActionsCreator } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
 import PaymentItem from '../../components/PaymentItem';
 import PayByCash from '../../components/PayByCash';
@@ -47,6 +39,7 @@ import { getPaymentType } from './utils';
 const { PAYMENT_PROVIDERS, ORDER_STATUS, ROUTER_PATHS } = Constants;
 
 class Payment extends Component {
+  // eslint-disable-next-line react/state-in-constructor
   state = {
     payNowLoading: false,
     cartContainerHeight: '100%',
@@ -102,6 +95,7 @@ class Payment extends Component {
       currentPaymentSupportSaveCard,
       hasLoginGuardPassed,
       paymentActions,
+      receiptNumber,
     } = this.props;
     logger.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
 
@@ -124,7 +118,7 @@ class Payment extends Component {
 
     if (currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
       // If order has created, no need to display the confirmation modal
-      if (this.props.receiptNumber) {
+      if (receiptNumber) {
         this.handlePayWithCash();
       } else {
         this.setState({
@@ -151,11 +145,9 @@ class Payment extends Component {
     // redirect to customized payment page when the payment contains pathname of page router
     if (pathname) {
       history.push({
-        pathname: pathname,
+        pathname,
         search: window.location.search,
       });
-
-      return;
     }
   };
 
@@ -177,8 +169,8 @@ class Payment extends Component {
 
   // TODO: This place logic almost same as the “handleCreateOrder” function that in CreateOrderButton component
   handlePayWithCash = async () => {
-    const { shippingType, currentPaymentOption } = this.props;
-    const paymentProvider = currentPaymentOption.paymentProvider;
+    const { shippingType, currentPaymentOption, receiptNumber } = this.props;
+    const { paymentProvider } = currentPaymentOption;
 
     try {
       const { t, cashback, createOrder, total, gotoPayment } = this.props;
@@ -188,7 +180,7 @@ class Payment extends Component {
 
       logger.log('payment.pay-attempt', { method: paymentProvider });
 
-      let orderId = this.props.receiptNumber;
+      let orderId = receiptNumber;
 
       // For pay later order, if order has already been paid, then let user goto Thankyou page directly
       if (orderId) {
@@ -283,9 +275,9 @@ class Payment extends Component {
 
     return (
       <ul>
-        {allPaymentOptions.map(option => {
-          return <PaymentItem key={option.key} option={option} />;
-        })}
+        {allPaymentOptions.map(option => (
+          <PaymentItem key={option.key} option={option} />
+        ))}
       </ul>
     );
   }
@@ -306,11 +298,12 @@ class Payment extends Component {
     return (
       <section className="ordering-payment flex flex-column" data-heap-name="ordering.payment.container">
         <HybridHeader
+          // eslint-disable-next-line no-return-assign
           headerRef={ref => (this.headerEl = ref)}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           data-heap-name="ordering.payment.header"
-          isPage={true}
+          isPage
           title={t('SelectPayment')}
           navFunc={() => {
             CleverTap.pushEvent('Payment Method - click back arrow');
@@ -332,6 +325,7 @@ class Payment extends Component {
         </div>
 
         <footer
+          // eslint-disable-next-line no-return-assign
           ref={ref => (this.footerEl = ref)}
           className="footer flex__shrink-fixed padding-top-bottom-small padding-left-right-normal"
         >
@@ -361,38 +355,71 @@ class Payment extends Component {
           </CreateOrderButton>
         </footer>
 
-        <Loader className={'loading-cover opacity'} loaded={!loaderVisibility} />
+        <Loader className="loading-cover opacity" loaded={!loaderVisibility} />
       </section>
     );
   }
 }
 Payment.displayName = 'Payment';
 
+Payment.propTypes = {
+  initialize: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  paymentActions: PropTypes.object,
+  createOrder: PropTypes.func,
+  gotoPayment: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  currentPaymentOption: PropTypes.object,
+  currentPaymentSupportSaveCard: PropTypes.bool,
+  hasLoginGuardPassed: PropTypes.bool,
+  receiptNumber: PropTypes.string,
+  loaderVisibility: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  allPaymentOptions: PropTypes.array,
+  areAllOptionsUnavailable: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  cleverTapAttributes: PropTypes.object,
+  total: PropTypes.number,
+  shippingType: PropTypes.string,
+  cashback: PropTypes.number,
+};
+
+Payment.defaultProps = {
+  initialize: () => {},
+  paymentActions: {},
+  createOrder: () => {},
+  gotoPayment: () => {},
+  currentPaymentOption: {},
+  currentPaymentSupportSaveCard: true,
+  hasLoginGuardPassed: true,
+  receiptNumber: null,
+  loaderVisibility: false,
+  allPaymentOptions: [],
+  areAllOptionsUnavailable: false,
+  cleverTapAttributes: {},
+  total: 0,
+  shippingType: '',
+  cashback: 0,
+};
+
 export default compose(
   withTranslation(['OrderingPayment']),
   connect(
-    state => {
-      return {
-        loaderVisibility: getLoaderVisibility(state),
-        allPaymentOptions: getAllPaymentsOptions(state),
-        currentPaymentOption: getSelectedPaymentOption(state),
-        currentPaymentSupportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
-        areAllOptionsUnavailable: getAllOptionsUnavailableState(state),
-        deliveryInfo: getDeliveryInfo(state),
-        business: getBusiness(state),
-        onlineStoreInfo: getOnlineStoreInfo(state),
-        businessInfo: getBusinessInfo(state),
-        merchantCountry: getMerchantCountry(state),
-        cleverTapAttributes: getCleverTapAttributes(state),
-        receiptNumber: getReceiptNumber(state),
-        total: getTotal(state),
-        shippingType: getShippingType(state),
-        cashback: getCashback(state),
-        hasLoginGuardPassed: getHasLoginGuardPassed(state),
-      };
-    },
+    state => ({
+      loaderVisibility: getLoaderVisibility(state),
+      allPaymentOptions: getAllPaymentsOptions(state),
+      currentPaymentOption: getSelectedPaymentOption(state),
+      currentPaymentSupportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
+      areAllOptionsUnavailable: getAllOptionsUnavailableState(state),
+      cleverTapAttributes: getCleverTapAttributes(state),
+      receiptNumber: getReceiptNumber(state),
+      total: getTotal(state),
+      shippingType: getShippingType(state),
+      cashback: getCashback(state),
+      hasLoginGuardPassed: getHasLoginGuardPassed(state),
+    }),
     dispatch => ({
-      paymentActions: bindActionCreators(paymentActions, dispatch),
+      paymentActions: bindActionCreators(paymentActionsCreator, dispatch),
       initialize: bindActionCreators(initializeThunkCreator, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       createOrder: bindActionCreators(createOrderThunkCreator, dispatch),
