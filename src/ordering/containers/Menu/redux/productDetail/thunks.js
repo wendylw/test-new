@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import i18next from 'i18next';
 import _get from 'lodash/get';
 import _find from 'lodash/find';
 import _findIndex from 'lodash/findIndex';
@@ -28,6 +29,7 @@ import {
 import Clevertap from '../../../../../utils/clevertap';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { PRODUCT_STOCK_STATUS } from '../../constants';
+import { toast } from '../../../../../common/utils/feedback/toast';
 import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
 import {
@@ -147,6 +149,10 @@ export const showProductDetailDrawer = createAsyncThunk(
         const result = await dispatch(appActions.loadProductDetail(productId));
         const productInResult = _get(result, 'responseGql.data.product', null);
 
+        if (result.type === 'ORDERING/APP/FETCH_PRODUCTDETAIL_FAILURE' && !productInResult) {
+          throw new Error('Load product detail failed');
+        }
+
         gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
 
         return {
@@ -155,6 +161,8 @@ export const showProductDetailDrawer = createAsyncThunk(
           selectedOptionsByVariationId: getDefaultSelectedOptions(productInResult),
         };
       } catch (error) {
+        toast.error(i18next.t('ApiError:NetworkIsDisconnected'));
+
         console.error(error);
         throw error;
       }
