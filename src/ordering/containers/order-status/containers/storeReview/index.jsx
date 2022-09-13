@@ -1,6 +1,6 @@
 import React from 'react';
 import { useMount } from 'react-use';
-import Frame from '../../../common/components/Frame';
+import Frame from '../../../../../common/components/Frame';
 
 const StoreReview = () => {
   useMount(() => {
