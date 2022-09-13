@@ -31,7 +31,7 @@ const SavedCards = lazy(() => Utils.attemptLoad(() => import('./payments/contain
 const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards/CVV')));
 const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
 const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
-const StoreReview = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/storeReview')));
+const StoreReview = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/StoreReview')));
 const TableSummary = lazy(() => Utils.attemptLoad(() => import('./TableSummary')));
 const FoodCourt = lazy(() => Utils.attemptLoad(() => import('./food-court')));
 
