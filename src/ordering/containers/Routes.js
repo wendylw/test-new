@@ -33,6 +33,7 @@ const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/c
 const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
 const TableSummary = lazy(() => Utils.attemptLoad(() => import('./TableSummary')));
 const FoodCourt = lazy(() => Utils.attemptLoad(() => import('./food-court')));
+const StoreReview = lazy(() => Utils.attemptLoad(() => import('./store-review')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -82,6 +83,7 @@ class Routes extends Component {
               component={ContactDetail}
             />
             <Route exact path={ROUTER_PATHS.FOOD_COURT} component={FoodCourt} />
+            <Route exact path={ROUTER_PATHS.STORE_REVIEW} component={StoreReview} />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>

@@ -69,6 +69,7 @@ export const PATH_NAME_MAPPING = {
   // dine
   DINE: '/dine',
   FOOD_COURT: '/food-court',
+  STORE_REVIEW: '/store-review',
 };
 
 export const PROMOTION_CLIENT_TYPES = {
