@@ -11,6 +11,7 @@ import OrderStatusDescription from './components/OrderStatusDescription';
 import LogisticsProcessing from './components/LogisticsProcessing';
 import RiderInfo from './components/RiderInfo';
 import CashbackInfo from './components/CashbackInfo';
+import StoreReviewInfo from './components/StoreReviewInfo';
 import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
@@ -42,7 +43,7 @@ import {
   getIsCoreBusinessAPICompleted,
   getIsFromBeepSiteOrderHistory,
 } from '../../../../redux/modules/app';
-import { loadOrder, loadOrderStatus } from '../../redux/thunks';
+import { loadOrder, loadOrderStatus, loadOrderStoreReview as loadOrderStoreReviewThunk } from '../../redux/thunks';
 import {
   getOrder,
   getOrderStatus,
@@ -54,6 +55,7 @@ import {
   getIsPreOrder,
   getIsUseStorehubLogistics,
   getIsPayLater,
+  getStoreRating,
 } from '../../redux/selector';
 import {
   getshowProfileVisibility,
@@ -62,6 +64,7 @@ import {
   getFoodCourtMerchantName,
 } from './redux/selector';
 import './OrderingThanks.scss';
+import { actions as commonActionCreators } from '../../redux/common';
 import { actions as thankYouActionCreators } from './redux';
 import {
   loadStoreIdHashCode,
@@ -78,6 +81,8 @@ import {
   getShouldShowCashbackCard,
   getShouldShowCashbackBanner,
   getHasOrderPaid,
+  getShouldShowStoreReviewCard,
+  getShouldLoadStoreReviewInfo,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -161,6 +166,7 @@ export class ThankYou extends PureComponent {
       loadStoreIdHashCode,
       loadStoreIdTableIdHashCode,
       loadFoodCourtIdHashCode,
+      loadOrderStoreReview,
       order,
       onlineStoreInfo,
     } = this.props;
@@ -177,7 +183,12 @@ export class ThankYou extends PureComponent {
 
     await this.loadOrder();
 
-    const { shippingType, foodCourtId } = this.props;
+    const { shippingType, foodCourtId, shouldLoadStoreReviewInfo } = this.props;
+
+    if (shouldLoadStoreReviewInfo) {
+      // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
+      loadOrderStoreReview();
+    }
 
     this.setContainerHeight();
 
@@ -362,7 +373,11 @@ export class ThankYou extends PureComponent {
   };
 
   async componentDidUpdate(prevProps) {
-    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
+    const {
+      order: prevOrder,
+      onlineStoreInfo: prevOnlineStoreInfo,
+      shouldLoadStoreReviewInfo: prevShouldLoadStoreReviewInfo,
+    } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const {
       order,
@@ -372,6 +387,8 @@ export class ThankYou extends PureComponent {
       loadStoreIdTableIdHashCode,
       loadStoreIdHashCode,
       isCoreBusinessAPICompleted,
+      loadOrderStoreReview,
+      shouldLoadStoreReviewInfo: currShouldLoadStoreReviewInfo,
     } = this.props;
 
     if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
@@ -403,6 +420,10 @@ export class ThankYou extends PureComponent {
       this.setState({ hasRecordedChargedEvent: true });
     }
 
+    if (!prevShouldLoadStoreReviewInfo && currShouldLoadStoreReviewInfo) {
+      loadOrderStoreReview();
+    }
+
     this.setContainerHeight();
   }
 
@@ -410,6 +431,8 @@ export class ThankYou extends PureComponent {
     clearInterval(this.pollOrderStatusTimer);
     this.closeMap();
     clearTimeout(this.timer);
+    // BEEP-3035: reset load store review API request status to avoid blink UI issue
+    this.props.resetLoadStoreReviewDataRequest();
   };
 
   handleGtmEventTracking = ({ order = {} }) => {
@@ -899,15 +922,29 @@ export class ThankYou extends PureComponent {
     this.props.setShowProfileVisibility(false);
   };
 
+  handleChangeStoreRating = rating => {
+    const { history, updateStoreRating } = this.props;
+    const { ROUTER_PATHS } = Constants;
+
+    updateStoreRating(rating);
+
+    history.push({
+      pathname: ROUTER_PATHS.STORE_REVIEW,
+      search: window.location.search,
+    });
+  };
+
   render() {
     const {
       t,
       history,
       match,
       order,
+      storeRating,
       businessUTCOffset,
       onlineStoreInfo,
       shouldShowCashbackCard,
+      shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
     } = this.props;
     const date = new Date();
@@ -958,9 +995,12 @@ export class ThankYou extends PureComponent {
               inApp={Utils.isWebview()}
               cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
             />
+            {shouldShowStoreReviewCard && (
+              <StoreReviewInfo rating={storeRating} onRatingChanged={this.handleChangeStoreRating} />
+            )}
+            {shouldShowCashbackCard && <CashbackInfo />}
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
-            {shouldShowCashbackCard && <CashbackInfo />}
             <OrderSummary
               history={history}
               businessUTCOffset={businessUTCOffset}
@@ -1010,6 +1050,7 @@ export default compose(
   withTranslation(['OrderingThankYou']),
   connect(
     state => ({
+      storeRating: getStoreRating(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
@@ -1039,6 +1080,8 @@ export default compose(
       foodTagsForCleverTap: getFoodTagsForCleverTap(state),
       isCoreBusinessAPICompleted: getIsCoreBusinessAPICompleted(state),
       isFromBeepSiteOrderHistory: getIsFromBeepSiteOrderHistory(state),
+      shouldShowStoreReviewCard: getShouldShowStoreReviewCard(state),
+      shouldLoadStoreReviewInfo: getShouldLoadStoreReviewInfo(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -1052,7 +1095,13 @@ export default compose(
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
+      loadOrderStoreReview: bindActionCreators(loadOrderStoreReviewThunk, dispatch),
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
+      updateStoreRating: bindActionCreators(commonActionCreators.updateStoreRating, dispatch),
+      resetLoadStoreReviewDataRequest: bindActionCreators(
+        commonActionCreators.resetLoadStoreReviewDataRequest,
+        dispatch
+      ),
     })
   )
 )(ThankYou);
