@@ -62,6 +62,7 @@ class Payment extends Component {
     });
 
     if (prevStates.cartContainerHeight !== containerHeight) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({
         cartContainerHeight: containerHeight,
       });
