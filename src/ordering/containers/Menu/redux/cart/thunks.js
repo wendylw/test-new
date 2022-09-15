@@ -66,7 +66,7 @@ export const viewOnGoingOrder = createAsyncThunk(
 export const removeAllCartItems = createAsyncThunk(
   'ordering/menu/cart/removeAllCartItems',
   async (_, { dispatch, getState }) => {
-    logger.log('cart-list-drawer.clear-all-attempt');
+    logger.log('Ordering_MenuCart_ClearAllItems');
 
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
 
@@ -113,7 +113,7 @@ const getCartItemGTMData = cartItem =>
 export const increaseCartItemQuantity = createAsyncThunk(
   'ordering/menu/cart/increaseCartItemQuantity',
   async ({ cartItemId }, { dispatch, getState }) => {
-    logger.log('cart-list-drawer.item-operate-attempt');
+    logger.log('Ordering_MenuCart_AdjustItemQuantity', { action: 'increase' });
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -170,7 +170,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
 export const removeCartItem = createAsyncThunk(
   'ordering/menu/cart/removeCartItem',
   async ({ cartItemId }, { dispatch, getState }) => {
-    logger.log('cart-list-drawer.item-operate-attempt');
+    logger.log('Ordering_MenuCart_AdjustItemQuantity', { action: 'remove' });
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -202,7 +202,7 @@ export const removeCartItem = createAsyncThunk(
 export const decreaseCartItemQuantity = createAsyncThunk(
   'ordering/menu/cart/decreaseCartItemQuantity',
   async ({ cartItemId }, { dispatch, getState }) => {
-    logger.log('cart-list-drawer.item-operate-attempt');
+    logger.log('Ordering_MenuCart_AdjustItemQuantity', { action: 'decrease' });
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);

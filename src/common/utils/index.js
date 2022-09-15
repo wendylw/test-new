@@ -61,7 +61,7 @@ export const isAndroidWebview = () => window.webViewSource === WEB_VIEW_SOURCE.A
 
 export const isWebview = () => isAndroidWebview() || isIOSWebview();
 
-export const isSiteApp = (domain = document.location.hostname) => {
+export const isSiteApp = (domain = window.location.hostname) => {
   const domainList = (process.env.REACT_APP_QR_SCAN_DOMAINS || '')
     .split(',')
     .map(d => d.trim())
@@ -294,4 +294,21 @@ export const getOpeningHours = ({
   }
 
   return [`${formatValidTimes[0]} - ${formatValidTimes[1]}`];
+};
+
+export const getBeepAppVersion = () => window.beepAppVersion;
+
+export const getUUID = () => {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    // Our application is not mission-critical, so Broofa's answer is good enough for us as a backup plan since it is pretty slick and effective.
+    /* eslint-disable */
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = (Math.random() * 16) | 0,
+        v = c == 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+    /* eslint-enable */
+  }
 };

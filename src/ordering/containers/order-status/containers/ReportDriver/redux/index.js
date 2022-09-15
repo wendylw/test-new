@@ -71,7 +71,7 @@ export const thunks = {
           dispatch(actions.setUploadPhotoFileLocation(result.location));
           location = result.location;
         } catch (e) {
-          logger.error('order-status.report-driver.upload-photo-error', { message: e.message });
+          logger.error('Ordering_ReportDriver_UploadPhotoFailed', { message: e.message });
 
           alert.raw(
             <p className="padding-small text-size-biggest text-weight-bolder">{i18next.t('ConnectionIssue')}</p>
@@ -90,7 +90,7 @@ export const thunks = {
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.SUBMITTED));
     } catch (e) {
       dispatch(actions.updateSubmitStatus(SUBMIT_STATUS.NOT_SUBMIT));
-      logger.error('order-status.report-driver.submit-error', { message: e.message });
+      logger.error('Ordering_ReportDriver_SubmitFailed', { message: e.message });
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
         // which is a bad practice, we will fix it in the future, for now we just keep a useless

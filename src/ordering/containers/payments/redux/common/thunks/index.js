@@ -135,7 +135,7 @@ export const initialize = createAsyncThunk(
         initialPaymentMethod,
       });
 
-      logger.error('ordering.paymentInitialize.error', {
+      logger.error('Ordering_Payment_InitializeFailed', {
         error: error?.message,
         initialPaymentMethod,
       });

@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { API_REQUEST_STATUS } from '../../../../utils/api/api-utils';
+import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import { loadOrders, loadOrdersStatus, lockOrder, showRedirectLoader, hideRedirectLoader } from './thunks';
 
 const PromotionItemModel = {

@@ -27,7 +27,6 @@ import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
 
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
 import { get, post } from '../../../../../../utils/api/api-fetch';
-import { API_INFO } from '../../../../../../utils/api/api-utils';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
 import { alert } from '../../../../../../common/feedback';
 import { initPaymentWithOrder } from './api-info';
@@ -299,9 +298,7 @@ const createOrderRequest = async payload => {
 };
 
 const createOrderStatusRequest = async orderId => {
-  const { url } = API_INFO.getOrderStatus(orderId);
-
-  return get(url);
+  return get(Url.API_URLS.GET_ORDER_STATUS({ orderId }).url);
 };
 
 const initPayment = async (data, dispatch) => {
@@ -409,7 +406,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       }
 
       Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
-      logger.log('create-order.offline-payment.to-thank-you', { orderId });
+      logger.log('Ordering_Payment_GoToThankYouPageForOfflinePayment', { orderId });
 
       // Add "type" in thankYouPageUrl query
       const urlObj = new URL(thankYouPageUrl, window.location.origin);
@@ -431,7 +428,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       receiptNumber: orderId,
     });
 
-    logger.error('ordering.initPayment.error', {
+    logger.error('Ordering_Payment_InitPaymentFailed', {
       error: error?.message,
       paymentProvider,
       receiptNumber: orderId,

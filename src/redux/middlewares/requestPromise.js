@@ -33,7 +33,7 @@ export default store => next => action => {
 
       if (!response) {
         console.warn('requestPromise returns nothing in promise.then() when types =', types);
-        logger.warn('requestPromise.default', {
+        logger.warn('Common_RequestPromise', {
           message: `requestPromise returns nothing in promise.then() when types = ${types}`,
         });
       }

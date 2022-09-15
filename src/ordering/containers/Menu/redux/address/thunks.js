@@ -43,7 +43,7 @@ export const checkDeliveryRange = createAsyncThunk(
       type: 'error',
     });
 
-    logger.log('Menu_CheckedDeliveryAddressOufOfRange');
+    logger.log('Ordering_Menu_CheckIfDeliveryAddressOutOfRange');
   }
 );
 
@@ -112,9 +112,7 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      logger.error('Menu_ShowLocationDrawerFailed', {
-        message: e?.message,
-      });
+      logger.error('Ordering_Menu_LoadStoreInfoFailed', { message: e?.message });
       throw e;
     }
   }
@@ -237,7 +235,7 @@ export const locationSelected = createAsyncThunk(
       await dispatch(changeStore(storeId)).unwrap();
       await dispatch(hideLocationDrawer());
     } catch (e) {
-      logger.error('Menu_SelectLocationFailed', { message: e?.message });
+      logger.error('Ordering_Menu_SelectLocationFailed', { message: e?.message });
       throw e;
     }
   }
@@ -260,9 +258,7 @@ export const loadSearchLocationListData = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logger.error('Menu_SearchLocationListFailed', {
-        message: e?.message,
-      });
+      logger.error('Ordering_Menu_LoadSearchLocationListFailed', e);
 
       return [];
     }
