@@ -19,7 +19,7 @@ export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/
 
     return result;
   } catch (e) {
-    logger.error('Load cashback info error: ', e);
+    logger.error('Ordering_ThankYou_LoadCashbackInfoFailed', e);
 
     throw e;
   }
@@ -80,7 +80,7 @@ export const cancelOrder = createAsyncThunk(
 
       window.location.reload();
     } catch (e) {
-      logger.error('Cancel order error: ', e);
+      logger.error('Ordering_ThankYou_CancelOrderFailed', e);
 
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
@@ -129,7 +129,7 @@ export const loadFoodCourtIdHashCode = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logger.error('Load food court hash code error: ', e);
+      logger.error('Ordering_ThankYou_LoadFoodCourtHashCodeFailed', e);
 
       throw e;
     }

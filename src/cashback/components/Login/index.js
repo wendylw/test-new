@@ -55,12 +55,12 @@ class Login extends React.Component {
         throw new Error('ReCaptcha response is expired');
       }
 
-      logger.log('cashback.otp-login.complete-captcha-success');
+      logger.log('Cashback_Login_CompleteCaptchaSucceed');
 
       return token;
     } catch (e) {
       // We will set the attribute 'message' even if it is always empty
-      logger.error('cashback.otp-login.complete-captcha-error', { message: e?.message });
+      logger.error('Cashback_Login_CompleteCaptchaFailed', { message: e?.message });
       throw e;
     }
   }
@@ -79,7 +79,7 @@ class Login extends React.Component {
   async handleSubmitPhoneNumber(phone, type) {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
-    logger.log('cashback.login-attempt');
+    logger.log('Cashback_Login_SubmitPhoneNumber');
 
     try {
       const isWhatsAppType = type === Constants.OTP_REQUEST_TYPES.WHATSAPP;

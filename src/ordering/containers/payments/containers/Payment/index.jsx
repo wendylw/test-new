@@ -98,7 +98,7 @@ class Payment extends Component {
       paymentActions,
       receiptNumber,
     } = this.props;
-    logger.log('payment.pay-attempt', { method: currentPaymentOption.paymentProvider });
+    logger.log('Ordering_Payment_PayBySelectedOption', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
       payNowLoading: true,
@@ -179,7 +179,7 @@ class Payment extends Component {
         payNowLoading: true,
       });
 
-      logger.log('payment.pay-attempt', { method: paymentProvider });
+      logger.log('Ordering_Payment_PayByCash', { method: paymentProvider });
 
       let orderId = receiptNumber;
 
@@ -199,7 +199,7 @@ class Payment extends Component {
             ORDER_STATUS.DELIVERED,
           ].includes(order.status)
         ) {
-          logger.log('ordering.order-has-paid', { order });
+          logger.log('Ordering_Payment_OrderHasPaid', { order });
 
           alert(t('OrderHasPaidAlertDescription'), {
             closeButtonContent: t('Continue'),
@@ -225,7 +225,7 @@ class Payment extends Component {
 
         orderId = order.orderId;
 
-        logger.log('ordering.order-created', { orderId });
+        logger.log('Ordering_Payment_OrderCreated', { orderId });
 
         if (orderId) {
           Utils.removeSessionVariable('additionalComments');
@@ -248,7 +248,7 @@ class Payment extends Component {
         paymentName: paymentProvider,
       });
 
-      logger.error('ordering.createOrder.error', {
+      logger.error('Ordering_Payment_CreateOrderFailed', {
         error: error?.message,
         shippingType,
         paymentName: paymentProvider,

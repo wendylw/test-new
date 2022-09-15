@@ -578,7 +578,7 @@ class CreditCard extends Component {
             beforeCreateOrder={this.handleBeforeCreateOrder}
             validCreateOrder={Boolean(this.isFromComplete())}
             afterCreateOrder={orderId => {
-              logger.log('credit-card.pay-attempt', { orderId });
+              logger.log('Ordering_Payment_OrderCreatedByCreditCard', { orderId });
               this.setState({
                 payNowLoading: !!orderId,
               });

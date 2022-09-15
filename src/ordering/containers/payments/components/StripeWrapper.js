@@ -27,7 +27,7 @@ const getStripePromise = country => {
         country,
       });
 
-      logger.error('common.stripe-load-failure', {
+      logger.error('Common_StripeLoadFailed', {
         error: err?.message,
         country,
       });

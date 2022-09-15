@@ -79,7 +79,7 @@ export const updateLocationToHistoryList = createAsyncThunk(
     try {
       await postLocationToHistoryList(formatPositionInfo);
     } catch (e) {
-      logger.error('failed to put location delivery addresses', e);
+      logger.error('Ordering_Location_UpdateLocationHistoryListFailed', e);
 
       throw e;
     }

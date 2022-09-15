@@ -26,7 +26,7 @@ export const addModalIdHash = modalId => {
   }
   // don't use `document.location.hash = `#${qs.stringify(newHashObj)}``, for it causes a weird issue on iOS (BEEP-1011)
   window.history.pushState(window.history.state, '', `#${qs.stringify(newHashObj)}`);
-  logger.log('modal-back-button-support.add-modal-id-hash', { modalId });
+  logger.log('Utils_ModalBackButtonSupport_AddModalIdHash', { modalId });
 };
 
 let preventHashPoppedId = null;
@@ -40,12 +40,12 @@ export const removeModalIdHash = modalId =>
       preventHashPoppedId = modalId;
       // history.go is a async function, so we need to find a way to notice the caller that the url has been changed.
       const onPopState = () => {
-        logger.log('modal-back-button-support.remove-modal-id-hash.done', { modalId });
+        logger.log('Utils_ModalBackButtonSupport_FinishRemoveModalIdHash', { modalId });
         window.removeEventListener('popstate', onPopState);
         resolve();
       };
       window.addEventListener('popstate', onPopState);
-      logger.log('modal-back-button-support.remove-modal-id-hash.start', { modalId });
+      logger.log('Utils_ModalBackButtonSupport_StartRemoveModalIdHash', { modalId });
       window.history.go(-1);
     } else {
       resolve();
@@ -61,7 +61,7 @@ window.addEventListener(
     // poppedModalIds is expected to have no more than one item.
     if (poppedModalIds.length) {
       const modalId = poppedModalIds[0];
-      logger.log('modal-back-button-support.on-hash-change', { modalId, preventHashPoppedId });
+      logger.log('Utils_ModalBackButtonSupport_OnHashChange', { modalId, preventHashPoppedId });
       if (modalId === preventHashPoppedId) {
         preventHashPoppedId = null;
         return;

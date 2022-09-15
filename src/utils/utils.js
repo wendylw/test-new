@@ -1,4 +1,3 @@
-import qs from 'qs';
 import Constants from './constants';
 import _get from 'lodash/get';
 import dayjs from 'dayjs';

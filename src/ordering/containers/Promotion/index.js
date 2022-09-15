@@ -110,7 +110,7 @@ class Promotion extends Component {
 
   handleApplyPromotion = async () => {
     const { enablePayLater, applyPromo, selectPromoOrVoucherPayLater, applyVoucherPayLater } = this.props;
-    logger.log('promotion.apply-attempt');
+    logger.log('Ordering_Promotion_ApplyPromotion');
 
     if (this.props.inProcess || this.props.applyPromoOrVoucherPendingStatus) {
       return false;

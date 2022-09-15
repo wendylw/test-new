@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { getAllProducts } from '../../../redux/modules/entities/products';
 import { getAllCategories } from '../../../redux/modules/entities/categories';
 import { CART_SUBMISSION_STATUS, CART_STATUS } from './constants';
-import { API_REQUEST_STATUS } from '../../../utils/api/api-utils';
+import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 
 export const getCartVersion = state => state.app.cart.version;
 

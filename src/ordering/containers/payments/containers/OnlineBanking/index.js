@@ -182,7 +182,10 @@ class OnlineBanking extends Component {
               });
             }}
             afterCreateOrder={orderId => {
-              logger.log('online-banking.pay-attempt', { orderId, method: currentOnlineBanking.agentCode });
+              logger.log('Ordering_Payment_OrderCreatedByOnlineBanking', {
+                orderId,
+                method: currentOnlineBanking.agentCode,
+              });
               this.setState({
                 payNowLoading: !!orderId,
               });

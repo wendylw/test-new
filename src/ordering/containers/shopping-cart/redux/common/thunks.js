@@ -21,7 +21,7 @@ export const loadStockStatus = createAsyncThunk('ordering/cart/common/fetchStock
 
     return result;
   } catch (e) {
-    logger.error('Load stock status error: ', e);
+    logger.error('Ordering_ShoppingCart_LoadStockStatusFailed', e);
 
     if (e.code && ERROR_CODE_MAP[e.code]) {
       const { desc, title, buttonText, redirectUrl } = ERROR_CODE_MAP[e.code];
