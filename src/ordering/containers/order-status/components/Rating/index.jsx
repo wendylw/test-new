@@ -4,10 +4,17 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import styles from './Rating.module.scss';
 
-const Rating = ({ onRatingChanged }) => {
+const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChanged }) => {
+  const starSizes = {
+    tiny: 16,
+    small: 24,
+    medium: 36,
+    big: 48,
+  };
+
   const { t } = useTranslation();
 
-  const [rating, setRating] = useState(null);
+  const [rating, setRating] = useState(initialStarNum);
 
   const handleUpdateRating = useCallback(
     key => {
@@ -37,30 +44,38 @@ const Rating = ({ onRatingChanged }) => {
   return (
     <div className={styles.RatingContainer}>
       <ul className={styles.Rating}>
-        {Array(5)
+        {Array(totalStarNum)
           .fill(null)
           .map((item, key) => (
             <li key={`star-${key.toString()}`}>
               <Star
-                className={`${styles.Star} ${rating && key < rating ? styles.Yellow : styles.Gray}`}
+                className={`${styles.Star} ${rating && key < rating ? 'tw-text-yellow' : 'tw-text-gray-600'}`}
                 weight={rating && key < rating ? 'fill' : 'light'}
-                size={48}
+                size={starSizes[starSize]}
                 onClick={() => handleUpdateRating(key + 1)}
               />
             </li>
           ))}
       </ul>
-      <div className={styles.RatingText}>{text}</div>
+      {showText && <div className={styles.RatingText}>{text}</div>}
     </div>
   );
 };
 
 Rating.propTypes = {
   onRatingChanged: PropTypes.func,
+  initialStarNum: PropTypes.number,
+  totalStarNum: PropTypes.number,
+  showText: PropTypes.bool,
+  starSize: PropTypes.string,
 };
 
 Rating.defaultProps = {
   onRatingChanged: () => {},
+  initialStarNum: 0,
+  totalStarNum: 5,
+  showText: true,
+  starSize: 'big',
 };
 
 Rating.displayName = 'Rating';
