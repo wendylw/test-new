@@ -1,0 +1,25 @@
+.RatingContainer {
+  @apply tw-flex tw-flex-col tw-items-center;
+  justify-content: center;
+}
+
+.Rating {
+  @apply tw-flex tw-flex-row tw-items-center;
+  justify-content: center;
+}
+
+.Star {
+  @apply sm:tw-m-4px tw-m-4;
+}
+
+.RatingText {
+  @apply tw-text-lg tw-leading-relaxed tw-font-black;
+}
+
+.Yellow {
+  @apply tw-text-yellow;
+}
+
+.Gray {
+  @apply tw-text-gray-600;
+}
