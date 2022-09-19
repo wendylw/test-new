@@ -49,7 +49,7 @@ const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChan
           .map((item, key) => (
             <li key={`star-${key.toString()}`}>
               <Star
-                className={`${styles.Star} ${rating && key < rating ? 'tw-text-yellow' : 'tw-text-gray-600'}`}
+                className={`sm:tw-m-4px tw-m-4 ${rating && key < rating ? 'tw-text-yellow' : 'tw-text-gray-600'}`}
                 weight={rating && key < rating ? 'fill' : 'light'}
                 size={starSizes[starSize]}
                 onClick={() => handleUpdateRating(key + 1)}
@@ -57,7 +57,7 @@ const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChan
             </li>
           ))}
       </ul>
-      {showText && <div className={styles.RatingText}>{text}</div>}
+      {showText && <div className="tw-text-lg tw-leading-relaxed tw-font-black">{text}</div>}
     </div>
   );
 };
