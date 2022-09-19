@@ -4,12 +4,7 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import styles from './Rating.module.scss';
 
-const starSizes = {
-  tiny: 16,
-  small: 24,
-  medium: 36,
-  big: 48,
-};
+const STAR_SIZES = [16, 24, 36, 48];
 
 const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChanged }) => {
   const { t } = useTranslation();
@@ -53,7 +48,7 @@ const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChan
               <Star
                 className={`sm:tw-m-4px tw-m-4 ${rating && key < rating ? 'tw-text-yellow' : 'tw-text-gray-600'}`}
                 weight={rating && key < rating ? 'fill' : 'light'}
-                size={starSizes[starSize]}
+                size={starSize}
                 onClick={() => handleUpdateRating(key + 1)}
               />
             </li>
@@ -69,7 +64,7 @@ Rating.propTypes = {
   initialStarNum: PropTypes.number,
   totalStarNum: PropTypes.number,
   showText: PropTypes.bool,
-  starSize: PropTypes.string,
+  starSize: PropTypes.oneOf(Object.values(STAR_SIZES)),
 };
 
 Rating.defaultProps = {
@@ -77,7 +72,7 @@ Rating.defaultProps = {
   initialStarNum: 0,
   totalStarNum: 5,
   showText: true,
-  starSize: 'big',
+  starSize: 48,
 };
 
 Rating.displayName = 'Rating';

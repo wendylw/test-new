@@ -1,9 +1,7 @@
 .RatingContainer {
-  @apply tw-flex tw-flex-col tw-items-center;
-  justify-content: center;
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center;
 }
 
 .Rating {
-  @apply tw-flex tw-flex-row tw-items-center;
-  justify-content: center;
+  @apply tw-flex tw-flex-row tw-items-center tw-justify-center;
 }
