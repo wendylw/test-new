@@ -5,7 +5,7 @@ import shouldFilter, { getErrorMessageFromHint } from './filter-sentry-events';
 import './navigation-detector';
 import './click-detector';
 import logger from './logger';
-import Utils from '../utils';
+import { getAppPlatform, getAPIRequestRelativePath } from './utils';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
   Sentry.init({
@@ -23,14 +23,6 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     },
   });
 }
-
-const getAppPlatform = () => {
-  if (Utils.isTNGMiniProgram()) {
-    return 'tng-mini-program';
-  }
-
-  return Utils.isAndroidWebview() ? 'android' : Utils.isIOSWebview() ? 'ios' : 'web';
-};
 
 // inject xhr and fetch to inspect error
 const isRelativePath = url => {
@@ -95,7 +87,7 @@ class SentryCapturedError extends Error {
 const trackError = (event, hint) => {
   try {
     const errorMessage = getErrorMessageFromHint(hint);
-    logger.error('common.error', { message: errorMessage, sentryId: event?.event_id });
+    logger.error('Common_SentryCapturedError', { message: errorMessage, sentryId: event?.event_id });
 
     window.newrelic?.addPageAction('common.error', {
       message: errorMessage,
@@ -107,14 +99,14 @@ const trackError = (event, hint) => {
 };
 
 const logUrlChange = type => {
-  logger.log('common.page-navigation', {
+  logger.log('Common_PageNavigation', {
     type,
     query: window.location.search,
   });
 };
 
 const logClientInfo = () => {
-  logger.log('common.client-info', {
+  logger.log('Common_ClientInfo', {
     userAgent: navigator.userAgent,
   });
 };
@@ -136,33 +128,83 @@ const logUserAction = (type, data) => {
 };
 
 window.addEventListener('sh-click', e => {
-  logUserAction('common.click', e.detail);
+  logUserAction('Common_Click', e.detail);
 });
 
-const logApiSuccess = data => {
-  logger.log('common.api-responded', {
-    status: 'success',
-    ...data,
-  });
-};
-
-const logApiFailure = data => {
-  logger.error('common.api-responded', {
-    status: 'failure',
-    ...data,
-  });
-};
-
 window.addEventListener('sh-api-success', e => {
-  logApiSuccess(e.detail);
+  const { type: method, request: url, requestStart, status: httpStatusCode } = e.detail;
+  const path = getAPIRequestRelativePath(url);
+
+  logger.log(
+    'Common_HttpRequest',
+    {},
+    {
+      publicData: {
+        httpInfo: {
+          result: 'Succeed',
+          method,
+          url,
+          path,
+          responseTime: new Date().valueOf() - requestStart,
+          httpStatusCode,
+        },
+      },
+    }
+  );
 });
 
 window.addEventListener('sh-api-failure', e => {
-  logApiFailure(e.detail);
+  const {
+    type: method,
+    request: url,
+    requestStart,
+    error: message,
+    code: errorCode,
+    status: httpStatusCode,
+  } = e.detail;
+  const path = getAPIRequestRelativePath(url);
+
+  logger.error(
+    'Common_HttpRequest',
+    {},
+    {
+      publicData: {
+        httpInfo: {
+          result: 'Failed',
+          method,
+          url,
+          path,
+          responseTime: new Date().valueOf() - requestStart,
+          httpStatusCode,
+          errorCode,
+          message,
+        },
+      },
+    }
+  );
 });
 
 window.addEventListener('sh-fetch-error', e => {
-  logger.error('common.fetch-error', e.detail);
+  const { type: method, request: url, requestStart, error: message } = e.detail;
+  const path = getAPIRequestRelativePath(url);
+
+  logger.error(
+    'Common_HttpRequest',
+    {},
+    {
+      publicData: {
+        httpInfo: {
+          result: 'Failed',
+          method,
+          url,
+          path,
+          responseTime: new Date().valueOf() - requestStart,
+          httpStatusCode: 0,
+          message,
+        },
+      },
+    }
+  );
 });
 
 const initiallyLogged = false;

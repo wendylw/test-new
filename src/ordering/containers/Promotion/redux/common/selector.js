@@ -1,9 +1,8 @@
 import { createSelector } from 'reselect';
-import { API_REQUEST_STATUS } from '../../../../../utils/api/api-utils';
 import { getPromotionId, getSelectedPromo } from '../../../../redux/modules/promotion';
 import Constants from '../../../../../utils/constants';
 
-const { PROMO_TYPE } = Constants;
+const { PROMO_TYPE, API_REQUEST_STATUS } = Constants;
 
 export const getApplyPromoPendingStatus = state =>
   state.promoPayLater.common.requestStatus.applyPromo === API_REQUEST_STATUS.PENDING;

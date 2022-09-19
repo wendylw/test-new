@@ -97,7 +97,7 @@ class OrderHistory extends React.Component {
       return;
     }
 
-    logger.error(`site.order-history.invalid-source-url`, { sourceUrl });
+    logger.error('Site_OrderHistory_InvalidSourceUrl', { sourceUrl });
     history.goBack(); // Fallback plan: go back to the previous page.
   };
 

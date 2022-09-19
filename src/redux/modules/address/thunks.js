@@ -16,7 +16,7 @@ export const setAddressInfo = createAsyncThunk('app/address/setAddressInfo', asy
     try {
       NativeMethods.setAddress(snapshot);
     } catch (e) {
-      logger.error('ordering.set-address', { message: e.message, code: e.code, extra: e.extra });
+      logger.error('Common_Address_SetAddress', { message: e.message, code: e.code, extra: e.extra });
     }
   }
   return snapshot;

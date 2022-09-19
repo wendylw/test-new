@@ -71,6 +71,9 @@ const fetchData = function(url, requestOptions) {
       return handleResponse(url, response, method.toLowerCase(), requestStart);
     })
     .catch(error => {
+      // NOTE: There are only 2 kinds of exceptions: AbortError or TypeError.
+      // AbortError is called by ourselves so it shouldn't be treated as an error, that is why we only check the TypeError instances.
+      // Refer to: https://developer.mozilla.org/en-US/docs/Web/API/fetch
       if (error instanceof TypeError) {
         window.dispatchEvent(
           new CustomEvent('sh-fetch-error', {
@@ -120,6 +123,7 @@ async function handleResponse(url, response, method, requestStart) {
             type: method,
             request: url,
             requestStart,
+            status: 200,
           },
         })
       );
@@ -129,14 +133,15 @@ async function handleResponse(url, response, method, requestStart) {
     return response
       .json()
       .catch(e => {
-        console.error(e);
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
               type: method,
               request: url,
+              code: '99999',
               error: e.message,
               requestStart,
+              status: 401,
             },
           })
         );
@@ -150,8 +155,9 @@ async function handleResponse(url, response, method, requestStart) {
               type: method,
               request: url,
               error: REQUEST_ERROR_KEYS[code],
-              code,
+              code: body.code?.toString(),
               requestStart,
+              status: 401,
             },
           })
         );
@@ -161,13 +167,14 @@ async function handleResponse(url, response, method, requestStart) {
     return response
       .json()
       .catch(e => {
-        console.error(e);
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
             detail: {
               type: method,
               request: url,
+              code: '99999',
               error: e.message,
+              status: response.status,
               requestStart,
             },
           })
@@ -175,7 +182,9 @@ async function handleResponse(url, response, method, requestStart) {
         return Promise.reject(new RequestError('Error Page', '50000'));
       })
       .then(function(body) {
+        // NOTE: Don't change the code if you don't understand it.
         const code = body.code || response.status;
+        const errorCode = body.code?.toString();
         const { extraInfo } = body;
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
@@ -183,7 +192,8 @@ async function handleResponse(url, response, method, requestStart) {
               type: method,
               request: url,
               error: REQUEST_ERROR_KEYS[code],
-              code: code.toString(),
+              code: errorCode,
+              status: response.status,
               requestStart,
             },
           })
