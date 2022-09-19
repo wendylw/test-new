@@ -1,17 +1,17 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Star } from 'phosphor-react';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import styles from './Rating.module.scss';
 
-const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChanged }) => {
-  const starSizes = {
-    tiny: 16,
-    small: 24,
-    medium: 36,
-    big: 48,
-  };
+const starSizes = {
+  tiny: 16,
+  small: 24,
+  medium: 36,
+  big: 48,
+};
 
+const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChanged }) => {
   const { t } = useTranslation();
 
   const [rating, setRating] = useState(initialStarNum);
@@ -19,10 +19,11 @@ const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChan
   const handleUpdateRating = useCallback(
     key => {
       setRating(key);
-      onRatingChanged(key);
     },
-    [setRating, onRatingChanged]
+    [setRating]
   );
+
+  useEffect(() => onRatingChanged(rating), [rating, onRatingChanged]);
 
   const text = useMemo(() => {
     switch (rating) {
@@ -47,7 +48,8 @@ const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChan
         {Array(totalStarNum)
           .fill(null)
           .map((item, key) => (
-            <li key={`star-${key.toString()}`}>
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={`star-${key}`}>
               <Star
                 className={`sm:tw-m-4px tw-m-4 ${rating && key < rating ? 'tw-text-yellow' : 'tw-text-gray-600'}`}
                 weight={rating && key < rating ? 'fill' : 'light'}
