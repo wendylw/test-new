@@ -40,6 +40,8 @@ export { PROMOTIONS_TYPES };
 export const SOURCE_TYPE = {
   SHOPPING_CART: 'shoppingCart',
   SHARED_LINK: 'SharedLink',
+  PUSH_NOTIFICATION: 'PushNotification',
+  SMS: 'SMS',
 };
 
 export const STORE_OPENING_STATUS = {
