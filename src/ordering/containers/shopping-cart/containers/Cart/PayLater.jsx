@@ -25,13 +25,13 @@ import {
   getCartSubmissionRequestingStatus,
   getCartReceiptNumber,
 } from '../../../../redux/cart/selectors';
+import { getUserIsLogin, getHasLoginGuardPassed } from '../../../../redux/modules/app';
 import { IconClose, IconError } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils';
-import Constants from '../../../../../utils/constants';
+import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
-
 import logger from '../../../../../utils/monitoring/logger';
 import { alert } from '../../../../../common/feedback';
 
@@ -46,7 +46,13 @@ class PayLater extends Component {
   }
 
   componentDidMount = async () => {
-    const { queryCartAndStatus } = this.props;
+    const { queryCartAndStatus, userIsLogin } = this.props;
+    const from = Utils.getCookieVariable('__pl_cp_source');
+    Utils.removeCookieVariable('__pl_cp_source');
+
+    if (userIsLogin && from === REFERRER_SOURCE_TYPES.LOGIN) {
+      await this.handleSubmitCart();
+    }
 
     await queryCartAndStatus();
 
@@ -66,7 +72,7 @@ class PayLater extends Component {
     await clearQueryCartStatus();
   };
 
-  handleClickContinue = async () => {
+  handleSubmitCart = async () => {
     try {
       const { history, submitCart } = this.props;
       const { additionalComments } = this.state;
@@ -114,6 +120,25 @@ class PayLater extends Component {
         });
       }
     }
+  };
+
+  handleClickContinue = async () => {
+    const { history, hasLoginGuardPassed } = this.props;
+
+    if (!hasLoginGuardPassed) {
+      // FB-4196: we only need to handle the web login here since the Beep app and TnG MP customers should have already logged in on the menu page.
+      Utils.setCookieVariable('__pl_cp_source', REFERRER_SOURCE_TYPES.LOGIN);
+
+      history.push({
+        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        search: window.location.search,
+        state: { shouldGoBack: true },
+      });
+
+      return;
+    }
+
+    await this.handleSubmitCart();
   };
 
   handleChangeAdditionalComments = e => {
@@ -242,7 +267,7 @@ class PayLater extends Component {
 
   handleDecreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
-    logger.log('pay-later-cart.item-operate-attempt');
+    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { action: 'decrease' });
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -254,13 +279,13 @@ class PayLater extends Component {
 
   handleIncreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
-    logger.log('pay-later-cart.item-operate-attempt');
+    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { action: 'increase' });
 
     updateCartItems(this.getUpdateShoppingCartItemData(cartItem, 1));
   };
 
   handleRemoveCartItem = cartItem => {
-    logger.log('pay-later-cart.item-operate-attempt');
+    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { action: 'remove' });
     const { id } = cartItem;
     const { removeCartItemsById } = this.props;
     removeCartItemsById(id);
@@ -419,6 +444,7 @@ class PayLater extends Component {
 PayLater.displayName = 'PayLater';
 
 PayLater.propTypes = {
+  userIsLogin: PropTypes.bool,
   queryCartAndStatus: PropTypes.func,
   loadCartStatus: PropTypes.func,
   receiptNumber: PropTypes.string,
@@ -435,15 +461,18 @@ PayLater.propTypes = {
   count: PropTypes.number,
   cartNotSubmittedAndEmpty: PropTypes.bool,
   cartSubmissionRequesting: PropTypes.bool,
+  hasLoginGuardPassed: PropTypes.bool,
 };
 
 PayLater.defaultProps = {
+  userIsLogin: false,
   cartItems: [],
   unavailableCartItems: [],
   count: 0,
   cartSubmittedStatus: false,
   cartNotSubmittedAndEmpty: false,
   cartSubmissionRequesting: false,
+  hasLoginGuardPassed: false,
   receiptNumber: null,
   queryCartAndStatus: () => {},
   loadCartStatus: () => {},
@@ -458,6 +487,7 @@ export default compose(
   withTranslation(['OrderingCart']),
   connect(
     state => ({
+      userIsLogin: getUserIsLogin(state),
       cartItems: getCartItems(state),
       unavailableCartItems: getCartUnavailableItems(state),
       count: getCartItemsCount(state),
@@ -465,6 +495,7 @@ export default compose(
       cartNotSubmittedAndEmpty: getCartNotSubmittedAndEmpty(state),
       cartSubmissionRequesting: getCartSubmissionRequestingStatus(state),
       receiptNumber: getCartReceiptNumber(state),
+      hasLoginGuardPassed: getHasLoginGuardPassed(state),
     }),
     {
       removeCartItemsById: removeCartItemsByIdThunk,

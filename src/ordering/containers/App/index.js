@@ -46,7 +46,7 @@ class App extends Component {
           if (isURL(source)) {
             Utils.saveSourceUrlToSessionStorage(source);
           } else {
-            logger.error(`ordering.invalid-source`, { source });
+            logger.error('Ordering_App_InvalidSource', { source });
           }
       }
     }
@@ -102,7 +102,7 @@ class App extends Component {
         city,
       });
     } catch (e) {
-      logger.error('ordering.get-address', { message: e.message, code: e.code, extra: e.extra });
+      logger.error('Ordering_App_GetAddress', { message: e.message, code: e.code, extra: e.extra });
     }
   };
 

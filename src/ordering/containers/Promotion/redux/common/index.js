@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { applyPromo, removePromo, applyVoucherPayLater, removeVoucherPayLater } from './thunks';
-import { API_REQUEST_STATUS } from '../../../../../utils/api/api-utils';
+import { API_REQUEST_STATUS } from '../../../../../utils/constants';
 
 const initialState = {
   requestStatus: {

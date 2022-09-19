@@ -11,7 +11,7 @@ export const getPlaceInfoByDeviceByAskPermission = async () => {
     return placeInfo;
   } catch (e) {
     console.warn(e);
-    logger.warn('utils.getPlaceInfoByDeviceByAskPermission', {
+    logger.warn('Site_Utils_GetPlaceInfoByDeviceByAskPermission', {
       message: e?.message,
     });
   }
@@ -30,7 +30,7 @@ export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) =>
       if (placeInfo) source = DEVICE;
     } catch (e) {
       console.warn(e);
-      logger.warn('utils.getPlaceInfo', {
+      logger.warn('Site_Utils_GetPlaceInfo', {
         message: e?.message,
       });
     }
@@ -43,7 +43,7 @@ export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) =>
       placeInfo = await getPositionInfoBySource(IP, false);
       if (placeInfo) source = IP;
     } catch (e) {
-      logger.error('utils.get-place-info', {
+      logger.error('Site_Utils_GetPlaceInfoFailed', {
         message: e?.message,
       });
     }
@@ -53,7 +53,7 @@ export const getPlaceInfo = async ({ fromDevice = true, fromIp = true } = {}) =>
 };
 
 export const submitStoreMenu = async ({ deliveryAddress, store, source, shippingType = 'delivery' }) => {
-  logger.log('beepit.click-store', {
+  logger.log('Site_Utils_ClickStore', {
     targetBusiness: store.business,
     source,
   });
@@ -68,7 +68,7 @@ export const submitStoreMenu = async ({ deliveryAddress, store, source, shipping
   const redirectUrl = Utils.getMerchantStoreUrl({ ...storeUrlParams, type: shippingType });
 
   if (!Boolean(deliveryAddress)) {
-    logger.error('beepit.to-store-failure', { message: 'delivery address is empty' });
+    logger.error('Site_Utils_GoToStoreFailedByEmptyDeliveryAddress');
     console.error('delivery address is empty');
     return;
   }

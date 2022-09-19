@@ -43,7 +43,7 @@ class Bootstrap extends Component {
       host: document.location.host,
       href: document.location.href,
     });
-    logger.error('common.render-error', {
+    logger.error('Common_RenderError', {
       sentryId: eventId,
       errorMessage: error?.message,
     });

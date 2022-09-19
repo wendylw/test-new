@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import Utils from '../../../utils/utils';
-import { API_REQUEST_STATUS } from '../../../utils/api/api-utils';
+import { API_REQUEST_STATUS } from '../../../common/utils/constants';
 import {
   loadCart,
   loadCartStatus,
