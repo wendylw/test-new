@@ -8,13 +8,37 @@ const initialState = {
   updateShippingTypeStatus: null, // pending || fulfilled || rejected
   updateOrderStatus: null, // pending || fulfilled || rejected
   cancelOrderStatus: null, // pending || fulfilled || rejected
+  storeReviewInfo: {
+    data: {
+      rating: null,
+      comments: '',
+      storeName: null,
+      shippingType: null,
+      googleReviewURL: null,
+      hasReviewed: false,
+      isReviewable: false,
+      isMerchantContactAllowable: false,
+    },
+    status: null,
+    error: null,
+  },
   error: null,
 };
 
 const { reducer, actions } = createSlice({
   name: 'ordering/orderStatus/common',
   initialState,
-  reducers: {},
+  reducers: {
+    updateStoreRating(state, action) {
+      state.storeReviewInfo.data.rating = action.payload;
+    },
+    updateAndSaveComments(state, action) {
+      state.storeReviewInfo.data.comments = action.payload;
+    },
+    updateAndSaveRating(state, action) {
+      state.storeReviewInfo.data.rating = action.payload;
+    },
+  },
   extraReducers: {
     [loadOrder.pending.type]: state => {
       state.updateOrderStatus = 'pending';
