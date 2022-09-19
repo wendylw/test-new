@@ -1,0 +1,6 @@
+.fullScreenFeedbackBody {
+  @apply tw-justify-center;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
