@@ -13,7 +13,9 @@ function StoreReviewInfo({ rating, onRatingChanged }) {
       <div className="padding-small">
         <h2 className="flex flex-middle flex-center margin-top-bottom-small text-line-height-base">
           <img src={IconStoreReview} className="icon icon__small" alt="Beep Store Review" />
-          <span className="text-size-big text-weight-bolder">{t('StoreReviewCardTitle')}</span>
+          <span className="text-size-big text-weight-bolder padding-left-right-smaller">
+            {t('StoreReviewCardTitle')}
+          </span>
         </h2>
         <p className="margin-top-bottom-small">{t('StoreReviewCardDescription')}</p>
         <Rating
