@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Star } from 'phosphor-react';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -6,7 +6,7 @@ import styles from './Rating.module.scss';
 
 const STAR_SIZES = [16, 24, 36, 48];
 
-const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChanged }) => {
+const Rating = ({ className, initialStarNum, totalStarNum, showText, starSize, onRatingChanged }) => {
   const { t } = useTranslation();
 
   const [rating, setRating] = useState(initialStarNum);
@@ -14,11 +14,10 @@ const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChan
   const handleUpdateRating = useCallback(
     key => {
       setRating(key);
+      onRatingChanged(key);
     },
-    [setRating]
+    [setRating, onRatingChanged]
   );
-
-  useEffect(() => onRatingChanged(rating), [rating, onRatingChanged]);
 
   const text = useMemo(() => {
     switch (rating) {
@@ -38,13 +37,14 @@ const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChan
   }, [rating, t]);
 
   return (
-    <div className={styles.RatingContainer}>
+    <div className={`${styles.RatingContainer} ${className}`}>
       <ul className={styles.Rating}>
         {Array(totalStarNum)
           .fill(null)
           .map((item, key) => (
+            // TODO: wendy: may need to add tw-flex-middle
             // eslint-disable-next-line react/no-array-index-key
-            <li key={`star-${key}`}>
+            <li key={`star-${key}`} className="tw-flex">
               <Star
                 className={`sm:tw-m-4px tw-m-4 ${rating && key < rating ? 'tw-text-yellow' : 'tw-text-gray-600'}`}
                 weight={rating && key < rating ? 'fill' : 'light'}
@@ -60,6 +60,7 @@ const Rating = ({ initialStarNum, totalStarNum, showText, starSize, onRatingChan
 };
 
 Rating.propTypes = {
+  className: PropTypes.string,
   onRatingChanged: PropTypes.func,
   initialStarNum: PropTypes.number,
   totalStarNum: PropTypes.number,
@@ -68,6 +69,7 @@ Rating.propTypes = {
 };
 
 Rating.defaultProps = {
+  className: '',
   onRatingChanged: () => {},
   initialStarNum: 0,
   totalStarNum: 5,

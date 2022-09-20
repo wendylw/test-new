@@ -12,6 +12,10 @@ import {
   getTimeoutLookingForRider,
   getOrderOriginalShippingType,
   getOrderStoreInfo,
+  getHasStoreReviewed,
+  getIsStoreReviewable,
+  getIsLoadStoreReviewInfoRequestSent,
+  getIsLoadStoreReviewInfoRequestStatusCompleted,
 } from '../../../redux/selector';
 import {
   getMerchantCountry,
@@ -157,3 +161,16 @@ export const getFoodCourtId = createSelector(getOrder, order => _get(order, 'foo
 export const getFoodCourtMerchantName = createSelector(getOrder, order => _get(order, 'foodCourtMerchantName', null));
 
 export const getFoodCourtHashCode = state => state.orderStatus.thankYou.foodCourtInfo.hashCode;
+
+export const getShouldLoadStoreReviewInfo = createSelector(
+  getHasOrderPaid,
+  getIsLoadStoreReviewInfoRequestSent,
+  (hasOrderPaid, isRequestSent) => hasOrderPaid && !isRequestSent
+);
+
+export const getShouldShowStoreReviewCard = createSelector(
+  getHasStoreReviewed,
+  getIsStoreReviewable,
+  getIsLoadStoreReviewInfoRequestStatusCompleted,
+  (hasReviewed, isReviewable, isRequestStatusCompleted) => isRequestStatusCompleted && isReviewable && !hasReviewed
+);

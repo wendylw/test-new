@@ -98,6 +98,8 @@
   "PromptUserEnableAppNotificationTitle": "Track Your Order Status",
   "PromptUserEnableAppNotificationContent": "No more SMS! Track your order status by enabling Beep notifications in your phone's Settings.",
   "PendingPaymentDescriptionForPayLater": "Please show your table and order number to the cashier",
+  "StoreReviewCardTitle": "Did you enjoy your order?",
+  "StoreReviewCardDescription": "Rate your experience with us",
   "Terrible": "Terrible",
   "Bad": "Bad",
   "Okay": "Okay",
