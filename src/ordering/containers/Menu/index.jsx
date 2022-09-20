@@ -16,6 +16,9 @@ import { getIsSearchingBannerVisible } from './redux/common/selectors';
 import { mounted } from './redux/common/thunks';
 import { getDeliveryInfo } from '../../redux/modules/app';
 
+import Result from '../../../common/components/Result';
+import ResultContent from '../../../common/components/Result/ResultContent';
+
 const Menu = () => {
   const dispatch = useDispatch();
   // for whether display searching banner, if not header, store info and promo banner display
@@ -58,6 +61,9 @@ const Menu = () => {
             <AlcoholModal />
           </>
         )}
+        <Result show closeByBackButton onClose={() => {}}>
+          <ResultContent title="test" content="test" />
+        </Result>
       </>
     </Frame>
   );
