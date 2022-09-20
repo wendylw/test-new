@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useBackButtonSupport } from '../../../utils/modal-back-button-support';
+import Button from '../Button';
 import FullScreenFrame from '../FullScreenFrame';
 import styles from './Result.module.scss';
 import logger from '../../../utils/monitoring/logger';
@@ -11,6 +13,7 @@ const Result = props => {
   const {
     children,
     show,
+    mountAtRoot,
     className,
     closeButtonContent,
     closeButtonClassName,
@@ -40,34 +43,43 @@ const Result = props => {
     visibility: show,
     onHistoryBackReceived,
     onHistoryChangeCompleted,
-    disabled: disableBackButtonSupport,
+    disabled: true,
   });
 
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
       logger.log('Common_Feedback_ShowResult', { text });
-      window.newrelic?.addPageAction('feedback.fullScreenFeedback.show', { text });
+      window.newrelic?.addPageAction('feedback.result.show', { text });
     }
   }, [children, show]);
 
-  return (
-    <FullScreenFrame className="full-screen-feedback" zIndex={zIndex}>
-      <div className={`full-screen-feedback__content ${styles.container} ${className}`}>
-        {children}
-        <div className={styles.fullScreenFeedbackFooter}>
-          <Button
-            type="primary"
-            className={`tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
-            onClick={onClose}
-            style={closeButtonStyle}
-          >
-            {closeButtonContent || t('OK')}
-          </Button>
-        </div>
+  const renderContent = (
+    <div className={`tw-flex tw-flex-col tw-flex-1 ${styles.resultContent} ${className}`}>
+      {children}
+      <div className={styles.fullScreenFeedbackFooter}>
+        <Button
+          type="primary"
+          className={`tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
+          onClick={onClose}
+          style={closeButtonStyle}
+        >
+          {closeButtonContent || t('OK')}
+        </Button>
       </div>
-    </FullScreenFrame>
+    </div>
   );
+
+  if (mountAtRoot) {
+    return createPortal(
+      <FullScreenFrame className="result" zIndex={zIndex}>
+        {renderContent}
+      </FullScreenFrame>,
+      document.getElementById('modal-mount-point')
+    );
+  }
+
+  return renderContent;
 };
 
 Result.displayName = 'Result';
@@ -77,7 +89,6 @@ Result.propTypes = {
   show: PropTypes.bool,
   mountAtRoot: PropTypes.bool,
   closeByBackButton: PropTypes.bool,
-  disableBackButtonSupport: PropTypes.bool,
   closeButtonContent: PropTypes.node,
   className: PropTypes.string,
   closeButtonClassName: PropTypes.string,
@@ -94,7 +105,6 @@ Result.defaultProps = {
   mountAtRoot: false,
   closeButtonContent: null,
   closeByBackButton: false,
-  disableBackButtonSupport: false,
   className: '',
   closeButtonClassName: '',
   closeButtonStyle: {},

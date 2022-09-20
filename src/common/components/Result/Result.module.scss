@@ -1,19 +1,9 @@
 @import "../../../Variables.scss";
 
 .result {
-  @apply tw-top-0 tw-h-full tw-z-100;
-
-  background-color: rgba(0, 0, 0, 0.7);
+  @apply tw-top-0 tw-h-full tw-bg-white tw-z-400;
 }
 
 .resultContent {
-  @apply tw-p-16 sm:tw-p-16px tw-bg-white tw-rounded-xl tw-shadow tw-overflow-hidden;
-
-  max-width: 328px;
-  max-height: 80%;
-  width: 90%;
-}
-
-.resultFooter {
-  @apply tw-py-8 sm:tw-py-8px;
+  @apply tw-p-16 sm:tw-p-16px;
 }
