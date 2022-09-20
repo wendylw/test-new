@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useMount } from 'react-use';
+import { useMount, useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -22,11 +22,18 @@ import {
   getHasStoreReviewed,
 } from '../../redux/selector';
 import { getI18nKeyFromApiRequestShippingType } from '../../../../../common/utils';
+import { mounted, unmounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
 
 const StoreReview = () => {
-  useMount(() => {});
-
   const dispatch = useDispatch();
+
+  useMount(() => {
+    dispatch(mounted());
+  });
+
+  useUnmount(() => {
+    dispatch(unmounted());
+  });
 
   const headerEl = useRef(0);
   const footerEl = useRef(0);
@@ -49,7 +56,7 @@ const StoreReview = () => {
   const reviewContents = useSelector(getStoreComment);
   const saveReview = useCallback(
     value => {
-      dispatch(actions.updateComment(value));
+      dispatch(actions.updateStoreComment(value));
     },
     [dispatch]
   );
@@ -96,7 +103,9 @@ const StoreReview = () => {
     calculateReviewContainerHeight(reviewContainerHeight);
   });
 
-  const handleClick = () => {};
+  const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
+
+  const handleClickSubmitButton = useCallback(() => dispatch(submitButtonClicked()), [dispatch]);
 
   return (
     <Frame>
@@ -107,6 +116,7 @@ const StoreReview = () => {
           contentClassName="flex-middle"
           isPage
           title={t('StoreReview')}
+          navFunc={handleClickBackButton}
         />
         <div
           className="store-review__container"
@@ -190,7 +200,7 @@ const StoreReview = () => {
           </div>
         </div>
         <div className="store-review__footer tw-flex tw-p-8 sm:tw-p-8px" ref={footerEl}>
-          <Button disabled={submitButtonDisabled} onClick={handleClick} className="tw-w-full tw-uppercase">
+          <Button disabled={submitButtonDisabled} onClick={handleClickSubmitButton} className="tw-w-full tw-uppercase">
             {t('Submit')}
           </Button>
         </div>

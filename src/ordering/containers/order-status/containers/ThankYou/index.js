@@ -931,6 +931,7 @@ export class ThankYou extends PureComponent {
     history.push({
       pathname: ROUTER_PATHS.STORE_REVIEW,
       search: window.location.search,
+      state: { from: ROUTER_PATHS.THANK_YOU },
     });
   };
 

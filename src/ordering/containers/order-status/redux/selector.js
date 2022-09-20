@@ -1,4 +1,5 @@
 import _get from 'lodash/get';
+import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import { getUserProfile } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
@@ -109,6 +110,11 @@ export const getIsLoadStoreReviewInfoRequestStatusCompleted = createSelector(
   request => [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(request.status)
 );
 
+export const getIfStoreReviewInfoExists = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => !_isEmpty(storeReviewInfoData)
+);
+
 export const getStoreRating = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
   _get(storeReviewInfoData, 'rating', 0)
 );
@@ -126,21 +132,18 @@ export const getStoreShippingType = createSelector(getStoreReviewInfoData, store
   _get(storeReviewInfoData, 'shippingType', '')
 );
 
-export const getIsMerchantContactAllowable = createSelector(
-  getStoreReviewInfoData,
-  storeReviewInfoData => storeReviewInfoData.isMerchantContactAllowable
+export const getIsMerchantContactAllowable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'isMerchantContactAllowable', false)
 );
 
-export const getHasStoreReviewed = createSelector(
-  getStoreReviewInfoData,
-  storeReviewInfoData => storeReviewInfoData.hasReviewed
+export const getHasStoreReviewed = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'hasReviewed', false)
 );
 
-export const getIsStoreReviewable = createSelector(
-  getStoreReviewInfoData,
-  storeReviewInfoData => storeReviewInfoData.isReviewable
+export const getIsStoreReviewable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'isReviewable', false)
 );
 
-export const getIsGoogleReviewURLAvailable = createSelector(getStoreReviewInfoData, getStoreReviewInfoData =>
-  _get(getStoreReviewInfoData, 'googleReviewURL', '')
+export const getIsGoogleReviewURLAvailable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'googleReviewURL', '')
 );
