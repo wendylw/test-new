@@ -41,11 +41,8 @@ const { reducer, actions } = createSlice({
       state.storeReviewInfo.loadDataRequest.status = null;
       state.storeReviewInfo.loadDataRequest.error = null;
     },
-    updateAndSaveComments(state, action) {
+    updateComment(state, action) {
       state.storeReviewInfo.data.comments = action.payload;
-    },
-    updateAndSaveRating(state, action) {
-      state.storeReviewInfo.data.rating = action.payload;
     },
   },
   extraReducers: {

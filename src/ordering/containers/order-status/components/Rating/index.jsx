@@ -7,7 +7,7 @@ import styles from './Rating.module.scss';
 const STAR_SIZES = [16, 24, 36, 48];
 
 const Rating = ({ className, initialStarNum, totalStarNum, showText, starSize, onRatingChanged }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('OrderingThankYou');
 
   const [rating, setRating] = useState(initialStarNum);
 
