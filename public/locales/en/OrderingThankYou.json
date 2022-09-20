@@ -109,5 +109,6 @@
   "TellExperience": "Tell us more about your experience (optional)",
   "WriteReview": "Write a review",
   "AllowContact": "Allow this store to contact me directly",
-  "Submit": "Submit"
+  "Submit": "Submit",
+  "ExceedMaximum": "Exceeded the maximum number of characters"
 }
