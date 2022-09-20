@@ -14,7 +14,7 @@ import Tag from '../../../../../common/components/Tag';
 import './StoreReview.scss';
 import StoreReviewImg from '../../../../../images/store-review.svg';
 import { actions } from '../../redux/common';
-import { getStoreComment, getStoreName, getStoreRating } from '../../redux/selector';
+import { getStoreComment, getStoreName, getStoreRating, getStoreShippingType } from '../../redux/selector';
 
 const StoreReview = () => {
   useMount(() => {});
@@ -27,6 +27,8 @@ const StoreReview = () => {
   const { t, i18n } = useTranslation('OrderingThankYou');
 
   const storeName = useSelector(getStoreName);
+
+  const shippingType = useSelector(getStoreShippingType);
 
   const [TextExcess, setTextExcess] = useState(false);
 
@@ -97,7 +99,9 @@ const StoreReview = () => {
           </div>
           <div className="store-review__container-tag">
             <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
-              <span className="tw-text-orange tw-text-xs tw-font-bold">{t('DineIn')}</span>
+              <span className="tw-text-orange tw-text-xs tw-font-bold tw-capitalize">
+                {shippingType[0].toUpperCase() + shippingType.slice(1)}
+              </span>
             </Tag>
           </div>
           <div className="tw-my-24 sm:tw-my-24px">

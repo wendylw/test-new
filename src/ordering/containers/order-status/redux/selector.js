@@ -94,3 +94,5 @@ export const getStoreComment = state => state.orderStatus.common.storeReviewInfo
 export const getStoreName = state => state.orderStatus.common.storeReviewInfo.data.storeName;
 
 export const getStoreRating = state => state.orderStatus.common.storeReviewInfo.data.rating;
+
+export const getStoreShippingType = state => state.orderStatus.common.storeReviewInfo.data.shippingType;
