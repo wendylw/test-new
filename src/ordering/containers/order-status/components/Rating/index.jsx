@@ -42,6 +42,7 @@ const Rating = ({ className, initialStarNum, totalStarNum, showText, starSize, o
         {Array(totalStarNum)
           .fill(null)
           .map((item, key) => (
+            // TODO: wendy: may need to add tw-flex-middle
             // eslint-disable-next-line react/no-array-index-key
             <li key={`star-${key}`} className="tw-flex">
               <Star
