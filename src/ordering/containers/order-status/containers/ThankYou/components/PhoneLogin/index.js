@@ -67,7 +67,7 @@ class PhoneLogin extends React.Component {
     if (Utils.isWebview()) {
       const res = await NativeMethods.getTokenAsync();
       if (_isNil(res)) {
-        logger.error('order-status.thank-you.phone-login', { message: 'native token is invalid' });
+        logger.error('Ordering_PhoneLogin_LoginByBeepAppFailedByInvalidNativeToken');
       } else {
         const { access_token, refresh_token } = res;
         await appActions.loginApp({

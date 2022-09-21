@@ -99,12 +99,12 @@ class PageLogin extends React.Component {
         throw new Error('ReCaptcha response is expired');
       }
 
-      logger.log('ordering.otp-login.complete-captcha-success');
+      logger.log('Ordering_PageLogin_CompleteCaptchaSucceed');
 
       return token;
     } catch (e) {
       // We will set the attribute 'message' even if it is always empty
-      logger.error('ordering.otp-login.complete-captcha-error', { message: e?.message });
+      logger.error('Ordering_PageLogin_CompleteCaptchaFailed', { message: e?.message });
       throw e;
     }
   }
@@ -126,7 +126,7 @@ class PageLogin extends React.Component {
   async handleSubmitPhoneNumber(phone, type) {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
-    logger.log('ordering.login-attempt');
+    logger.log('Ordering_PageLogin_SubmitPhoneNumber');
 
     try {
       const isWhatsAppType = type === Constants.OTP_REQUEST_TYPES.WHATSAPP;

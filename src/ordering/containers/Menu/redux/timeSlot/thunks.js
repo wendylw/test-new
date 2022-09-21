@@ -229,7 +229,7 @@ export const timeSlotSelected = createAsyncThunk(
 
       dispatch(hideTimeSlotDrawer());
     } catch (error) {
-      logger.error('Menu_SelectTimeSlotFailed', { message: error?.message });
+      logger.error('Ordering_Menu_SelectTimeSlotFailed', { message: error?.message });
       throw error;
     }
   }

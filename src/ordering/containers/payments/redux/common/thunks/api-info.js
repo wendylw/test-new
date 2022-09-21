@@ -9,7 +9,7 @@ export const API_INFO = {
 
 // get payment options
 export const getPayments = (storeId, shippingType, amount) =>
-  get('/payment/online/options', { storeId, shippingType, amount });
+  get('/payment/online/options', { queryParams: { storeId, shippingType, amount } });
 
 // API for submit order and initPayment for all payment
 export const initPaymentWithOrder = data => post('/payment/init-with-order', data);

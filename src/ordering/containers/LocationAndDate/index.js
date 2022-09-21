@@ -221,7 +221,7 @@ class LocationAndDate extends Component {
   };
 
   goToNext = async () => {
-    logger.log('location-data.continue');
+    logger.log('Ordering_LocationAndDate_ClickContinueButton');
     const {
       selectedOrderDate,
       selectedTime,

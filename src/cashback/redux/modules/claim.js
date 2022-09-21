@@ -44,7 +44,7 @@ export const actions = {
   getCashbackReceiptNumber: hash => ({
     [API_REQUEST]: {
       types: [types.FETCH_RECEIPTNUMBER_REQUEST, types.FETCH_RECEIPTNUMBER_SUCCESS, types.FETCH_RECEIPTNUMBER_FAILURE],
-      ...Url.API_URLS.GET_GET_CASHBACK_HASH_DATA(hash),
+      ...Url.API_URLS.GET_CASHBACK_HASH_DATA(hash),
     },
   }),
 };

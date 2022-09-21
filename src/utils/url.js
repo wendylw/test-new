@@ -39,7 +39,7 @@ const API_URLS = {
     url: '/api/cashback',
     method: 'post',
   },
-  GET_GET_CASHBACK_HASH_DATA: hash => ({
+  GET_CASHBACK_HASH_DATA: hash => ({
     url: `/api/cashback/hash/${hash}/decode`,
     method: 'get',
   }),
@@ -173,10 +173,6 @@ const API_URLS = {
     url: '/api/stores/collection',
     method: 'get',
   },
-  CREATE_AND_UPDATE_PROFILE: consumerId => ({
-    url: `/api/consumers/${consumerId}/profile`,
-    method: 'put',
-  }),
   GET_ADDRESS_LIST: (consumerId, storeId) => ({
     url: `/api/consumers/${consumerId}/store/${storeId}/address`,
     method: 'get',
@@ -187,10 +183,6 @@ const API_URLS = {
   }),
   UPDATE_ADDRESS: (consumerId, addressId) => ({
     url: `/api/consumers/${consumerId}/address/${addressId}`,
-    method: 'put',
-  }),
-  CANCEL_ORDER: receiptNumber => ({
-    url: `/api/transactions/${receiptNumber}/status/cancel`,
     method: 'put',
   }),
   PAYMENT_RISK: () => ({

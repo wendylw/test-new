@@ -58,7 +58,10 @@ const dsBridgeSyncCall = (method, params) => {
   } catch (error) {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
-    logger.error(`dsBridge-methods.${method}`, errorData);
+    logger.error('Utils_DSBridge_SyncCallFailed', {
+      method,
+      ...errorData,
+    });
 
     throw error;
   }
@@ -87,7 +90,10 @@ const dsBridgeAsyncCall = (method, params) =>
   }).catch(error => {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
-    logger.error(`dsBridge-methods.${method}`, errorData);
+    logger.error('Utils_DSBridge_AsyncCallFailed', {
+      method,
+      ...errorData,
+    });
 
     throw error;
   });
@@ -150,8 +156,6 @@ const dsBridgeCall = nativeMethod => {
 };
 
 export const getWebviewSource = () => window.webViewSource;
-
-export const getBeepAppVersion = () => window.beepAppVersion;
 
 export const startChat = ({ orderId, storeName, source }) => {
   const data = {
