@@ -1,7 +1,7 @@
 @mixin hintStyle($color: null) {
-  @apply tw-px-8 sm:tw-px-8px tw-not-italic;
+  @apply tw-px-8 sm:tw-px-8px;
 
-  @if $color == "gray" {
+  @if ($color == "gray") {
     @apply tw-text-gray-700 tw-bg-gray-200;
   }
 }

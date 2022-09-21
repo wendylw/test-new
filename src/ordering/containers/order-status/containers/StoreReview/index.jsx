@@ -4,7 +4,6 @@ import { useMount, useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import TextareaAutosize from 'react-textarea-autosize';
-import Utils from '../../../../../utils/utils';
 import Button from '../../../../../common/components/Button';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CheckBox from '../../../../../common/components/CheckBox';
@@ -26,6 +25,7 @@ import {
 import { getHasCommentCharLimitExceeded, getShouldDisableSubmitButton } from './redux/selectors';
 import { mounted, unmounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES } from './constants';
+import PageFooter from '../../../../../common/components/PageFooter';
 
 const StoreReview = () => {
   const dispatch = useDispatch();
@@ -45,9 +45,6 @@ const StoreReview = () => {
   useUnmount(() => {
     dispatch(unmounted());
   });
-
-  const headerEl = useRef(0);
-  const footerEl = useRef(0);
 
   const { t, i18n } = useTranslation('OrderingThankYou');
 
@@ -78,128 +75,107 @@ const StoreReview = () => {
     [dispatch]
   );
 
-  const [reviewContainerHeight, setReviewContainerHeight] = useState('100%');
-  const calculateReviewContainerHeight = preContainerHeight => {
-    const containerHeight = Utils.containerHeight({
-      headerEls: [headerEl.current],
-      footerEls: [footerEl.current],
-    });
-
-    if (preContainerHeight !== containerHeight) {
-      setReviewContainerHeight(containerHeight);
-    }
-  };
-  useEffect(() => {
-    calculateReviewContainerHeight(reviewContainerHeight);
-  });
-
   const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
 
   const handleClickSubmitButton = useCallback(() => dispatch(submitButtonClicked()), [dispatch]);
 
   return (
     <Frame>
-      <section className="tw-h-screen">
+      <section>
         <HybridHeader
-          headerRef={headerEl}
           className="flex-middle border__bottom-divider"
           contentClassName="flex-middle"
           isPage
           title={t('StoreReview')}
           navFunc={handleClickBackButton}
         />
-        <div
-          style={{
-            top: `${Utils.mainTop({
-              headerEls: [headerEl],
-            })}px`,
-            height: reviewContainerHeight,
-          }}
-        >
-          <div className="tw-flex tw-flex-col tw-justify-center">
+        <div className="tw-flex tw-flex-col tw-justify-center">
+          <div className="tw-flex tw-justify-center sm:tw-my-16px tw-my-16">
             <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
-            <div className="tw-flex tw-justify-center tw-leading-normal">
-              {storeHasReviewed ? t('AlreadyRated') : t('HearAboutExperience')}
-            </div>
-            <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-font-bold tw-mb-8 sm:tw-mb-8px">
-              {storeName}
-            </div>
-            <div className="tw-flex tw-justify-center">
-              <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
-                <span className="tw-text-orange tw-text-xs tw-font-bold">
-                  {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
-                </span>
-              </Tag>
-            </div>
           </div>
-
-          <div className="tw-my-24 sm:tw-my-24px">
-            <Rating initialStarNum={rating} onRatingChanged={handleChangeRating} />
+          <div className="tw-flex tw-justify-center tw-leading-normal">
+            {storeHasReviewed ? t('AlreadyRated') : t('HearAboutExperience')}
           </div>
-          {storeHasReviewed ? (
-            (reviewContents || '').length ? (
-              <>
-                <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
-                  <TextareaAutosize
-                    className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-sm tw-border-gray-400`}
-                    minRows={4}
-                    value={reviewContents}
-                  />
-                </div>
-              </>
-            ) : (
-              <></>
-            )
-          ) : (
-            <>
-              <div className="tw-flex tw-justify-center">
-                <Hint
-                  className="tw-h-28 sm:tw-h-28px"
-                  color="gray"
-                  radiusSize="s"
-                  icon={
-                    <Info
-                      weight="light"
-                      size={16}
-                      className="tw-flex-shrink-0 tw-text-gray-700 tw-my-6 sm:tw-my-6px tw-mx-2 sm:tw-mx-2px"
-                    />
-                  }
-                  content={t('ReviewNotPublic')}
-                />
-              </div>
-              <div className="tw-border-gray-400 tw-mx-16 sm:tw-mx-16px tw-mt-16 sm:tw-mt-16px tw-border tw-border-b-0 tw-border-solid tw-rounded-t-sm tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px">
-                {t('WriteReview')}
-              </div>
-              <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
-                <TextareaAutosize
-                  className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-b-sm ${
-                    hasCommentCharLimitExceeded ? 'tw-border-red' : 'tw-border-gray-400'
-                  }`}
-                  onChange={handleChangeComment}
-                  minRows={4}
-                  value={reviewContents}
-                  placeholder={t('TellExperience')}
-                />
-              </div>
-              {hasCommentCharLimitExceeded && (
-                <div className="tw-text-red tw-font-bold tw-mt-12 sm:tw-mt-12px tw-ml-16 sm:tw-ml-16px">
-                  {t('ExceedMaximum')}
-                </div>
-              )}
-            </>
-          )}
-
-          <div className="tw-flex tw-mt-16 sm:tw-mt-16px tw-ml-16 sm:tw-ml-16px">
-            <CheckBox
-              size="small"
-              className="tw-my-2 sm:tw-my-2px"
-              checked={allowContact}
-              onChange={handleToggleContactConsent}
-            />
-            <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
+          <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-font-bold tw-mb-8 sm:tw-mb-8px">
+            {storeName}
+          </div>
+          <div className="tw-flex tw-justify-center">
+            <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
+              <span className="tw-text-orange tw-text-xs tw-font-bold">
+                {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
+              </span>
+            </Tag>
           </div>
         </div>
-        <div className={styles.StoreReviewFooter} ref={footerEl}>
+
+        <div className="tw-my-24 sm:tw-my-24px">
+          <Rating initialStarNum={rating} onRatingChanged={handleChangeRating} />
+        </div>
+
+        {storeHasReviewed ? (
+          (reviewContents || '').length ? (
+            <>
+              <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
+                <TextareaAutosize
+                  className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-sm tw-border-gray-400`}
+                  minRows={4}
+                  value={reviewContents}
+                />
+              </div>
+            </>
+          ) : (
+            <></>
+          )
+        ) : (
+          <>
+            <div className="tw-flex tw-justify-center">
+              <Hint
+                className="tw-h-28 sm:tw-h-28px"
+                color="gray"
+                radiusSize="s"
+                icon={
+                  <Info
+                    weight="light"
+                    size={16}
+                    className="tw-flex-shrink-0 tw-text-gray-700 tw-my-6 sm:tw-my-6px tw-mx-2 sm:tw-mx-2px"
+                  />
+                }
+                content={t('ReviewNotPublic')}
+              />
+            </div>
+            <div className="tw-border-gray-400 tw-mx-16 sm:tw-mx-16px tw-mt-16 sm:tw-mt-16px tw-border tw-border-b-0 tw-border-solid tw-rounded-t-sm tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px">
+              {t('WriteReview')}
+            </div>
+            <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
+              <TextareaAutosize
+                className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-b-sm ${
+                  hasCommentCharLimitExceeded ? 'tw-border-red' : 'tw-border-gray-400'
+                }`}
+                onChange={handleChangeComment}
+                minRows={4}
+                value={reviewContents}
+                placeholder={t('TellExperience')}
+              />
+            </div>
+            {hasCommentCharLimitExceeded && (
+              <div className="tw-text-red tw-font-bold tw-mt-12 sm:tw-mt-12px tw-ml-16 sm:tw-ml-16px">
+                {t('ExceedMaximum')}
+              </div>
+            )}
+          </>
+        )}
+
+        <div className="tw-flex tw-my-16 sm:tw-my-16px tw-ml-16 sm:tw-ml-16px">
+          <CheckBox
+            size="small"
+            className="tw-m-2 sm:tw-m-2px"
+            checked={allowContact}
+            onChange={handleToggleContactConsent}
+          />
+          <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
+        </div>
+
+        <PageFooter className={styles.StoreReviewFooter}>
           <Button
             disabled={shouldDisableSubmitButton}
             onClick={handleClickSubmitButton}
@@ -207,7 +183,7 @@ const StoreReview = () => {
           >
             {t('Submit')}
           </Button>
-        </div>
+        </PageFooter>
       </section>
     </Frame>
   );

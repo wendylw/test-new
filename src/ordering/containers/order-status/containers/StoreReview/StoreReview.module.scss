@@ -1,6 +1,6 @@
 .StoreReviewContainerImg {
-  @apply sm:tw-my-16px tw-my-16;
-  height: 120px;
+  width: 70%;
+  max-width: 172px;
 }
 
 .StoreReviewContainerTextareaInput {
@@ -14,6 +14,5 @@
 }
 
 .StoreReviewFooter {
-  @apply tw-flex tw-p-8 sm:tw-p-8px;
-  box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
+  @apply tw-flex tw-p-8 sm:tw-p-8px tw-shadow-xl;
 }
