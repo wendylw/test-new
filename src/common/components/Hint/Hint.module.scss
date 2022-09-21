@@ -1,7 +1,5 @@
 @mixin hintStyle($color: null) {
-  @apply tw-px-8 sm:tw-px-8px tw-not-italic tw-inline-block;
-
-  font-size: 0;
+  @apply tw-px-8 sm:tw-px-8px tw-not-italic;
 
   @if $color == "gray" {
     @apply tw-text-gray-700 tw-bg-gray-200;
@@ -10,15 +8,12 @@
 
 @mixin hintBorderRadius($radiusSize: null) {
   @if ($radiusSize == "s") {
-    @apply tw-px-8 sm:tw-px-8px;
-
-    border-radius: 4px;
-  } @else {
-    @apply tw-rounded;
+    @apply tw-px-8 sm:tw-px-8px tw-rounded-sm;
   }
 }
 
 .hint {
+  @apply tw-flex tw-items-center;
   @include hintStyle;
   @include hintBorderRadius;
 

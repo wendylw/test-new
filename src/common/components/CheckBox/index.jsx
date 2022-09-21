@@ -106,7 +106,7 @@ CheckBox.propTypes = {
   containerStyle: PropTypes.object,
   id: PropTypes.string,
   disabled: PropTypes.bool,
-  size: PropTypes.oneOf(['medium', 'big']),
+  size: PropTypes.oneOf(['small']),
 };
 CheckBox.defaultProps = {
   className: '',
@@ -120,7 +120,7 @@ CheckBox.defaultProps = {
   containerStyle: {},
   id: undefined,
   disabled: false,
-  size: 'big',
+  size: null,
 };
 CheckBox.Group = CheckBoxGroup;
 

@@ -1,15 +1,6 @@
-.StoreReviewContainer {
-  @apply tw-flex tw-flex-col tw-overflow-y-auto;
-}
-
 .StoreReviewContainerImg {
   @apply sm:tw-my-16px tw-my-16;
   height: 120px;
-}
-
-.StoreReviewContainerTagText {
-  @apply tw-text-gray-700 tw-text-sm;
-  line-height: 2.33333333333;
 }
 
 .StoreReviewContainerTextareaInput {

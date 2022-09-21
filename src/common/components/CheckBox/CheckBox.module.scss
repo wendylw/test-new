@@ -1,4 +1,4 @@
-$checkboxMediumWidth: 18px;
+$checkboxSmallWidth: 18px;
 $checkboxWidth: 24px;
 
 .checkbox {
@@ -22,13 +22,13 @@ $checkboxWidth: 24px;
     background-position: 50% 50%;
   }
 
-  &:global(.medium) {
-    width: $checkboxMediumWidth;
-    height: $checkboxMediumWidth;
+  &:global(.small) {
+    width: $checkboxSmallWidth;
+    height: $checkboxSmallWidth;
   }
 
   &:global(.medium):checked::before {
-    background-size: #{$checkboxMediumWidth + 8px} #{$checkboxMediumWidth + 8px};
+    background-size: #{$checkboxSmallWidth + 8px} #{$checkboxSmallWidth + 8px};
   }
 
   &:disabled::before {

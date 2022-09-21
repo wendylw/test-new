@@ -109,7 +109,6 @@ const StoreReview = () => {
           navFunc={handleClickBackButton}
         />
         <div
-          className={styles.StoreReviewContainer}
           style={{
             top: `${Utils.mainTop({
               headerEls: [headerEl],
@@ -117,20 +116,23 @@ const StoreReview = () => {
             height: reviewContainerHeight,
           }}
         >
-          <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
-          <div className="tw-flex tw-justify-center tw-leading-normal">
-            {storeHasReviewed ? t('AlreadyRated') : t('HearAboutExperience')}
+          <div className="tw-flex tw-flex-col tw-justify-center">
+            <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
+            <div className="tw-flex tw-justify-center tw-leading-normal">
+              {storeHasReviewed ? t('AlreadyRated') : t('HearAboutExperience')}
+            </div>
+            <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-font-bold tw-mb-8 sm:tw-mb-8px">
+              {storeName}
+            </div>
+            <div className="tw-flex tw-justify-center">
+              <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
+                <span className="tw-text-orange tw-text-xs tw-font-bold">
+                  {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
+                </span>
+              </Tag>
+            </div>
           </div>
-          <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-font-bold tw-mb-8 sm:tw-mb-8px">
-            {storeName}
-          </div>
-          <div className="tw-flex tw-justify-center">
-            <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
-              <span className="tw-text-orange tw-text-xs tw-font-bold">
-                {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
-              </span>
-            </Tag>
-          </div>
+
           <div className="tw-my-24 sm:tw-my-24px">
             <Rating initialStarNum={rating} onRatingChanged={handleChangeRating} />
           </div>
@@ -151,14 +153,19 @@ const StoreReview = () => {
           ) : (
             <>
               <div className="tw-flex tw-justify-center">
-                <Hint className="tw-h-28 sm:tw-h-28px" color="gray" radiusSize="s" innerClassName="tw-flex">
-                  <Info
-                    weight="light"
-                    size={16}
-                    className="tw-flex-shrink-0 tw-text-gray-700 tw-my-6 sm:tw-my-6px tw-mx-2 sm:tw-mx-2px"
-                  />
-                  <span className={styles.StoreReviewContainerTagText}>{t('ReviewNotPublic')}</span>
-                </Hint>
+                <Hint
+                  className="tw-h-28 sm:tw-h-28px"
+                  color="gray"
+                  radiusSize="s"
+                  icon={
+                    <Info
+                      weight="light"
+                      size={16}
+                      className="tw-flex-shrink-0 tw-text-gray-700 tw-my-6 sm:tw-my-6px tw-mx-2 sm:tw-mx-2px"
+                    />
+                  }
+                  content={t('ReviewNotPublic')}
+                />
               </div>
               <div className="tw-border-gray-400 tw-mx-16 sm:tw-mx-16px tw-mt-16 sm:tw-mt-16px tw-border tw-border-b-0 tw-border-solid tw-rounded-t-sm tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px">
                 {t('WriteReview')}
@@ -184,7 +191,7 @@ const StoreReview = () => {
 
           <div className="tw-flex tw-mt-16 sm:tw-mt-16px tw-ml-16 sm:tw-ml-16px">
             <CheckBox
-              size="medium"
+              size="small"
               className="tw-my-2 sm:tw-my-2px"
               checked={allowContact}
               onChange={handleToggleContactConsent}
