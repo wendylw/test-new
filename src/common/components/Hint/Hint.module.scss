@@ -27,7 +27,7 @@
 }
 
 .hintInner {
-  @apply tw-text-sm tw-leading-relaxed;
+  @apply tw-text-sm tw-leading-relaxed tw-ml-2 sm:tw-ml-2px;
 
   color: inherit;
   font-weight: inherit;

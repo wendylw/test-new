@@ -134,11 +134,7 @@ const StoreReview = () => {
                 color="gray"
                 radiusSize="s"
                 icon={
-                  <Info
-                    weight="light"
-                    size={16}
-                    className="tw-flex-shrink-0 tw-text-gray-700 tw-my-6 sm:tw-my-6px tw-mx-2 sm:tw-mx-2px"
-                  />
+                  <Info weight="light" size={16} className="tw-flex-shrink-0 tw-text-gray-700 tw-my-6 sm:tw-my-6px" />
                 }
                 content={t('ReviewNotPublic')}
               />
