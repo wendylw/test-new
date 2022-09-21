@@ -23,8 +23,9 @@ import {
   getHasStoreReviewed,
   getIsMerchantContactAllowable,
 } from '../../redux/selector';
-import { STORE_REVIEW_SHIPPING_TYPES } from '../../constants';
+import { getHasCommentCharLimitExceeded, getShouldDisableSubmitButton } from './redux/selectors';
 import { mounted, unmounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
+import { STORE_REVIEW_SHIPPING_TYPES } from './constants';
 
 const StoreReview = () => {
   const dispatch = useDispatch();
@@ -60,45 +61,22 @@ const StoreReview = () => {
 
   const allowContact = useSelector(getIsMerchantContactAllowable);
 
-  // Depend on whether rated && whether exceed character limit
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(!rating);
+  const shouldDisableSubmitButton = useSelector(getShouldDisableSubmitButton);
 
-  const [textExcess, setTextExcess] = useState(false);
+  const hasCommentCharLimitExceeded = useSelector(getHasCommentCharLimitExceeded);
 
   const reviewContents = useSelector(getStoreComment);
-  const saveReview = useCallback(
-    value => {
-      dispatch(actions.updateStoreComment(value));
-    },
+
+  const handleChangeComment = useCallback(event => dispatch(actions.updateStoreComment(event.target.value)), [
+    dispatch,
+  ]);
+
+  const handleChangeRating = useCallback(val => dispatch(actions.updateStoreRating(val)), [dispatch]);
+
+  const handleToggleContactConsent = useCallback(
+    event => dispatch(actions.updateIsMerchantContactAllowable(event.target.checked)),
     [dispatch]
   );
-  const handleReviewChange = useCallback(
-    event => {
-      saveReview(event.target.value);
-      if (event.target.value.length > 4050) {
-        setTextExcess(true);
-        setSubmitButtonDisabled(true);
-      } else {
-        setTextExcess(false);
-        if (rating) {
-          setSubmitButtonDisabled(false);
-        }
-      }
-    },
-    [rating, saveReview]
-  );
-
-  const contentAllowedChangeSubmitButtonDisabled = useCallback(() => {
-    if ((reviewContents || '').length <= 4050) {
-      setSubmitButtonDisabled(false);
-    }
-  }, [reviewContents]);
-
-  const handleChangeRating = val => {
-    dispatch(actions.updateStoreRating(val));
-    // When review content length < 4050, if rate, enable Submit button.
-    contentAllowedChangeSubmitButtonDisabled();
-  };
 
   const [reviewContainerHeight, setReviewContainerHeight] = useState('100%');
   const calculateReviewContainerHeight = preContainerHeight => {
@@ -188,15 +166,15 @@ const StoreReview = () => {
               <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
                 <TextareaAutosize
                   className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-b-sm ${
-                    textExcess ? 'tw-border-red' : 'tw-border-gray-400'
+                    hasCommentCharLimitExceeded ? 'tw-border-red' : 'tw-border-gray-400'
                   }`}
-                  onChange={handleReviewChange}
+                  onChange={handleChangeComment}
                   minRows={4}
                   value={reviewContents}
                   placeholder={t('TellExperience')}
                 />
               </div>
-              {textExcess && (
+              {hasCommentCharLimitExceeded && (
                 <div className="tw-text-red tw-font-bold tw-mt-12 sm:tw-mt-12px tw-ml-16 sm:tw-ml-16px">
                   {t('ExceedMaximum')}
                 </div>
@@ -209,15 +187,17 @@ const StoreReview = () => {
               size="medium"
               className="tw-my-2 sm:tw-my-2px"
               checked={allowContact}
-              onChange={e => {
-                dispatch(actions.updateIsMerchantContactAllowable(e.target.checked));
-              }}
+              onChange={handleToggleContactConsent}
             />
             <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
           </div>
         </div>
         <div className={styles.StoreReviewFooter} ref={footerEl}>
-          <Button disabled={submitButtonDisabled} onClick={handleClickSubmitButton} className="tw-w-full tw-uppercase">
+          <Button
+            disabled={shouldDisableSubmitButton}
+            onClick={handleClickSubmitButton}
+            className="tw-w-full tw-uppercase"
+          >
             {t('Submit')}
           </Button>
         </div>

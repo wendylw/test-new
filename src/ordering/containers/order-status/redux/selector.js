@@ -115,12 +115,14 @@ export const getIfStoreReviewInfoExists = createSelector(
   storeReviewInfoData => !_isEmpty(storeReviewInfoData)
 );
 
-export const getStoreRating = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
-  _get(storeReviewInfoData, 'rating', 0)
+export const getStoreRating = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => _get(storeReviewInfoData, 'rating', 0) || 0
 );
 
-export const getStoreComment = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
-  _get(storeReviewInfoData, 'comments', '')
+export const getStoreComment = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => _get(storeReviewInfoData, 'comments', '') || ''
 );
 
 export const getStoreFullDisplayName = createSelector(
