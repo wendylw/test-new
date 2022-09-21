@@ -41,6 +41,9 @@ const { reducer, actions } = createSlice({
     resetStoreReviewData(state) {
       state.storeReviewInfo.data = null;
     },
+    updateIsMerchantContactAllowable(state, action) {
+      state.storeReviewInfo.data.isMerchantContactAllowable = action.payload;
+    },
   },
   extraReducers: {
     [loadOrder.pending.type]: state => {

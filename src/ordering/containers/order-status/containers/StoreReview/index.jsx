@@ -21,6 +21,7 @@ import {
   getStoreRating,
   getStoreShippingType,
   getHasStoreReviewed,
+  getIsMerchantContactAllowable,
 } from '../../redux/selector';
 import { STORE_REVIEW_SHIPPING_TYPES } from '../../constants';
 import { mounted, unmounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
@@ -56,6 +57,8 @@ const StoreReview = () => {
   const shippingType = useSelector(getStoreShippingType);
 
   const rating = useSelector(getStoreRating);
+
+  const allowContact = useSelector(getIsMerchantContactAllowable);
 
   // Depend on whether rated && whether exceed character limit
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(!rating);
@@ -156,9 +159,9 @@ const StoreReview = () => {
           {storeHasReviewed ? (
             (reviewContents || '').length ? (
               <>
-                <div className="store-review__container-textarea tw-flex tw-mx-16 sm:tw-mx-16px">
+                <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
                   <TextareaAutosize
-                    className="store-review__container-textarea-input tw-w-full tw-border tw-border-solid tw-rounded-sm tw-p-12 sm:tw-p-12px tw-overflow-hidden tw-border-gray-400"
+                    className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-sm tw-border-gray-400`}
                     minRows={4}
                     value={reviewContents}
                   />
@@ -179,12 +182,12 @@ const StoreReview = () => {
                   <span className={styles.StoreReviewContainerTagText}>{t('ReviewNotPublic')}</span>
                 </Hint>
               </div>
-              <div className="tw-bg-gray-400 tw-mx-16 sm:tw-mx-16px tw-mt-16 sm:tw-mt-16px tw-border tw-border-b-0 tw-border-solid tw-rounded-t-sm tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px">
+              <div className="tw-border-gray-400 tw-mx-16 sm:tw-mx-16px tw-mt-16 sm:tw-mt-16px tw-border tw-border-b-0 tw-border-solid tw-rounded-t-sm tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px">
                 {t('WriteReview')}
               </div>
-              <div className="store-review__container-textarea tw-flex tw-mx-16 sm:tw-mx-16px">
+              <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
                 <TextareaAutosize
-                  className={`${styles.StoreReviewContainerTextareaInput} ${
+                  className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-b-sm ${
                     textExcess ? 'tw-border-red' : 'tw-border-gray-400'
                   }`}
                   onChange={handleReviewChange}
@@ -201,12 +204,19 @@ const StoreReview = () => {
             </>
           )}
 
-          <div className="store-review__container-allow tw-mt-16 sm:tw-mt-16px tw-ml-16 sm:tw-ml-16px">
-            <CheckBox />
-            <span className="tw-ml-4 sm:tw-ml-4px tw-leading-relaxed">{t('AllowContact')}</span>
+          <div className="tw-flex tw-mt-16 sm:tw-mt-16px tw-ml-16 sm:tw-ml-16px">
+            <CheckBox
+              size="medium"
+              className="tw-my-2 sm:tw-my-2px"
+              checked={allowContact}
+              onChange={e => {
+                dispatch(actions.updateIsMerchantContactAllowable(e.target.checked));
+              }}
+            />
+            <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
           </div>
         </div>
-        <div className="store-review__footer tw-flex tw-p-8 sm:tw-p-8px" ref={footerEl}>
+        <div className={styles.StoreReviewFooter} ref={footerEl}>
           <Button disabled={submitButtonDisabled} onClick={handleClickSubmitButton} className="tw-w-full tw-uppercase">
             {t('Submit')}
           </Button>

@@ -1,3 +1,4 @@
+$checkboxMediumWidth: 18px;
 $checkboxWidth: 24px;
 
 .checkbox {
@@ -19,6 +20,15 @@ $checkboxWidth: 24px;
     @apply tw-border-none;
     background-size: #{$checkboxWidth + 8px} #{$checkboxWidth + 8px};
     background-position: 50% 50%;
+  }
+
+  &:global(.medium) {
+    width: $checkboxMediumWidth;
+    height: $checkboxMediumWidth;
+  }
+
+  &:global(.medium):checked::before {
+    background-size: #{$checkboxMediumWidth + 8px} #{$checkboxMediumWidth + 8px};
   }
 
   &:disabled::before {

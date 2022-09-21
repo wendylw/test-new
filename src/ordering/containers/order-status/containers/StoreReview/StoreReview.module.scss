@@ -13,7 +13,7 @@
 }
 
 .StoreReviewContainerTextareaInput {
-  @apply tw-w-full tw-border tw-border-solid tw-rounded-b-sm tw-p-12 sm:tw-p-12px tw-overflow-hidden;
+  @apply tw-w-full tw-border tw-border-solid tw-p-12 sm:tw-p-12px tw-overflow-hidden;
   resize: none;
   -webkit-appearance: none;
   box-shadow: none;
@@ -22,6 +22,7 @@
   -moz-border-radius: 0 0 4px 4px;
 }
 
-.store-review__footer {
+.StoreReviewFooter {
+  @apply tw-flex tw-p-8 sm:tw-p-8px;
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
 }
