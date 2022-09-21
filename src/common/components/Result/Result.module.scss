@@ -7,3 +7,11 @@
 .resultContent {
   @apply tw-p-16 sm:tw-p-16px;
 }
+
+.resultFooter {
+  @apply tw-flex tw-justify-center tw-py-16 sm:tw-py-16px;
+}
+
+.closeButtonClassName {
+  min-width: 120px;
+}

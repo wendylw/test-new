@@ -9,6 +9,7 @@ const Button = props => {
     className = '',
     style = {},
     type = 'primary',
+    size,
     danger = false,
     icon = null,
     loading = false,
@@ -27,7 +28,7 @@ const Button = props => {
   return (
     <button
       onClick={onButtonClick}
-      className={`${styles.button} type-${type}${danger ? '-danger' : ''} ${className}`}
+      className={`${styles.button} type-${type}${danger ? '-danger' : ''}${size ? ` size-${size}` : ''} ${className}`}
       style={style}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...rest}
@@ -55,6 +56,7 @@ Button.propTypes = {
   icon: propTypes.element,
   loading: propTypes.bool,
   type: propTypes.oneOf(['primary', 'secondary', 'text']),
+  size: propTypes.oneOf(['small']),
   danger: propTypes.bool,
   onClick: propTypes.func,
 };
@@ -66,6 +68,7 @@ Button.defaultProps = {
   loading: false,
   style: {},
   type: 'primary',
+  size: null,
   danger: false,
   onClick: () => {},
 };

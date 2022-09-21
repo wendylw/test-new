@@ -61,8 +61,17 @@ const Menu = () => {
             <AlcoholModal />
           </>
         )}
-        <Result show closeByBackButton onClose={() => {}}>
-          <ResultContent title="test" content="test" />
+        <Result
+          mountAtRoot
+          show
+          closeByBackButton
+          header={<MenuHeader webHeaderVisibility={!isSearchingBannerVisible} />}
+          onClose={() => {}}
+        >
+          <ResultContent
+            title="Oops, review for this order has expired"
+            content="Keep your review fresh on next order!"
+          />
         </Result>
       </>
     </Frame>

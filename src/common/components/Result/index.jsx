@@ -11,6 +11,7 @@ import logger from '../../../utils/monitoring/logger';
 const Result = props => {
   const { t } = useTranslation();
   const {
+    header,
     children,
     show,
     mountAtRoot,
@@ -57,12 +58,15 @@ const Result = props => {
   const renderContent = (
     <div className={`tw-flex tw-flex-col tw-flex-1 ${styles.resultContent} ${className}`}>
       {children}
-      <div className={styles.fullScreenFeedbackFooter}>
+      <div className={styles.resultFooter}>
         <Button
           type="primary"
-          className={`tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
+          className={`${styles.closeButtonClassName} tw-uppercase${
+            closeButtonClassName ? ` ${closeButtonClassName}` : ''
+          }`}
           onClick={onClose}
           style={closeButtonStyle}
+          size="small"
         >
           {closeButtonContent || t('OK')}
         </Button>
@@ -72,7 +76,8 @@ const Result = props => {
 
   if (mountAtRoot) {
     return createPortal(
-      <FullScreenFrame className="result" zIndex={zIndex}>
+      <FullScreenFrame className="tw-bg-white" zIndex={zIndex}>
+        {header}
         {renderContent}
       </FullScreenFrame>,
       document.getElementById('modal-mount-point')
@@ -85,6 +90,7 @@ const Result = props => {
 Result.displayName = 'Result';
 
 Result.propTypes = {
+  header: PropTypes.node,
   children: PropTypes.node,
   show: PropTypes.bool,
   mountAtRoot: PropTypes.bool,
@@ -100,6 +106,7 @@ Result.propTypes = {
 };
 
 Result.defaultProps = {
+  header: null,
   children: null,
   show: false,
   mountAtRoot: false,
