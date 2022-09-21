@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get, post } from '../../../../utils/api/api-fetch';
 import Constants from '../../../../utils/constants';
-import { getReceiptNumber } from './selector';
-import { API_INFO, getOrderStoreReview } from './api-info';
+import { getReceiptNumber, getStoreRating, getStoreComment, getIsMerchantContactAllowable } from './selector';
+import { API_INFO, getOrderStoreReview, postOrderStoreReview } from './api-info';
 
 const { DELIVERY_METHOD } = Constants;
 
@@ -31,5 +31,18 @@ export const loadOrderStoreReview = createAsyncThunk(
     const { data } = await getOrderStoreReview(orderId);
 
     return data;
+  }
+);
+
+export const saveOrderStoreReview = createAsyncThunk(
+  'ordering/orderStatus/common/saveOrderStoreReview',
+  async (_, { getState }) => {
+    const state = getState();
+    const orderId = getReceiptNumber(state);
+    const rating = getStoreRating(state);
+    const comments = getStoreComment(state);
+    const allowMerchantContact = getIsMerchantContactAllowable(state);
+
+    await postOrderStoreReview({ orderId, rating, comments, allowMerchantContact });
   }
 );

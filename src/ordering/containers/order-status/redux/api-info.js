@@ -39,3 +39,6 @@ export const postFoodCourtIdHashCode = (foodCourtId, payload) => {
 };
 
 export const getOrderStoreReview = orderId => get(`/api/transactions/${orderId}/review`);
+
+export const postOrderStoreReview = ({ orderId, rating, comments, allowMerchantContact }) =>
+  post(`/api/transactions/${orderId}/review`, { rating, comments, allowMerchantContact });
