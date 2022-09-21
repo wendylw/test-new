@@ -19,8 +19,8 @@ Hint.displayName = 'Hint';
 Hint.propTypes = {
   icon: PropTypes.node,
   color: PropTypes.oneOf(['gray']),
-  // If radiusSize is set to 's', the Hint's border radius will be 4px and padding will change to 8px.
-  radiusSize: PropTypes.oneOf(['s']),
+  // If radiusSize is set to 'sm', the Hint's border radius will be 4px and padding will change to 8px.
+  radiusSize: PropTypes.oneOf(['sm']),
   className: PropTypes.string,
   content: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types

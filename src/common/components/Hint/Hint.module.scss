@@ -7,7 +7,7 @@
 }
 
 @mixin hintBorderRadius($radiusSize: null) {
-  @if ($radiusSize == "s") {
+  @if ($radiusSize == "sm") {
     @apply tw-px-8 sm:tw-px-8px tw-rounded-sm;
   }
 }
@@ -21,8 +21,8 @@
     @include hintStyle("gray");
   }
 
-  &:global(.s) {
-    @include hintBorderRadius("s");
+  &:global(.sm) {
+    @include hintBorderRadius("sm");
   }
 }
 

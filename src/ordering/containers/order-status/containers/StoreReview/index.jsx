@@ -89,10 +89,8 @@ const StoreReview = () => {
           title={t('StoreReview')}
           navFunc={handleClickBackButton}
         />
-        <div className="tw-flex tw-flex-col tw-justify-center">
-          <div className="tw-flex tw-justify-center sm:tw-my-16px tw-my-16">
-            <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
-          </div>
+        <div className="tw-flex tw-flex-col tw-justify-center tw-items-center">
+          <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
           <div className="tw-flex tw-justify-center tw-leading-normal">
             {storeHasReviewed ? t('AlreadyRated') : t('HearAboutExperience')}
           </div>
@@ -132,7 +130,7 @@ const StoreReview = () => {
               <Hint
                 className="tw-h-28 sm:tw-h-28px"
                 color="gray"
-                radiusSize="s"
+                radiusSize="sm"
                 icon={
                   <Info weight="light" size={16} className="tw-flex-shrink-0 tw-text-gray-700 tw-my-6 sm:tw-my-6px" />
                 }

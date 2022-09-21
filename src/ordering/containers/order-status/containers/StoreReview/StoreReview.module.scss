@@ -1,5 +1,6 @@
 .StoreReviewContainerImg {
-  width: 70%;
+  @apply sm:tw-my-16px tw-my-16;
+  width: 45%;
   max-width: 172px;
 }
 
