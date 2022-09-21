@@ -337,6 +337,14 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:OK',
     showModal: true,
   },
+  // pay later and pay at counter only, TNG mini program can not place an order
+  41027: {
+    title: 'ApiError:41027Title',
+    desc: 'ApiError:41027Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:Continue',
+    showModal: true,
+  },
   80000: {
     title: 'ApiError:80000Title',
     desc: 'ApiError:80000Description',
