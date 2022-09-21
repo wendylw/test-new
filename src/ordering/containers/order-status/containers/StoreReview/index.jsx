@@ -10,8 +10,9 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import CheckBox from '../../../../../common/components/CheckBox';
 import Frame from '../../../../../common/components/Frame';
 import Rating from '../../components/Rating';
+import Hint from '../../../../../common/components/Hint';
 import Tag from '../../../../../common/components/Tag';
-import './StoreReview.scss';
+import styles from './StoreReview.module.scss';
 import StoreReviewImg from '../../../../../images/store-review.svg';
 import { actions } from '../../redux/common';
 import {
@@ -21,7 +22,7 @@ import {
   getStoreShippingType,
   getHasStoreReviewed,
 } from '../../redux/selector';
-import { getI18nKeyFromApiRequestShippingType } from '../../../../../common/utils';
+import { STORE_REVIEW_SHIPPING_TYPES } from '../../constants';
 
 const StoreReview = () => {
   useMount(() => {});
@@ -100,7 +101,7 @@ const StoreReview = () => {
 
   return (
     <Frame>
-      <section className="store-review">
+      <section className="tw-h-screen">
         <HybridHeader
           headerRef={headerEl}
           className="flex-middle border__bottom-divider"
@@ -109,7 +110,7 @@ const StoreReview = () => {
           title={t('StoreReview')}
         />
         <div
-          className="store-review__container"
+          className={styles.StoreReviewContainer}
           style={{
             top: `${Utils.mainTop({
               headerEls: [headerEl],
@@ -117,17 +118,17 @@ const StoreReview = () => {
             height: reviewContainerHeight,
           }}
         >
-          <img className="store-review__container-img sm:tw-my-16px tw-my-16" src={StoreReviewImg} alt="Store Review" />
-          <div className="store-review__container-hear tw-leading-normal">
+          <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
+          <div className="tw-flex tw-justify-center tw-leading-normal">
             {storeHasReviewed ? t('AlreadyRated') : t('HearAboutExperience')}
           </div>
-          <div className="store-review__container-hear tw-leading-normal tw-text-lg tw-font-bold tw-mb-8 sm:tw-mb-8px">
+          <div className="tw-flex tw-justify-center tw-leading-normal tw-text-lg tw-font-bold tw-mb-8 sm:tw-mb-8px">
             {storeName}
           </div>
-          <div className="store-review__container-tag">
+          <div className="tw-flex tw-justify-center">
             <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
               <span className="tw-text-orange tw-text-xs tw-font-bold">
-                {t(getI18nKeyFromApiRequestShippingType(shippingType))}
+                {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
               </span>
             </Tag>
           </div>
@@ -150,24 +151,22 @@ const StoreReview = () => {
             )
           ) : (
             <>
-              <div className="store-review__container-tag">
-                <Tag className="tw-h-28 sm:tw-h-28px" color="gray" radiusSize="xs" innerClassName="tw-flex">
+              <div className="tw-flex tw-justify-center">
+                <Hint className="tw-h-28 sm:tw-h-28px" color="gray" radiusSize="s" innerClassName="tw-flex">
                   <Info
                     weight="light"
                     size={16}
                     className="tw-flex-shrink-0 tw-text-gray-700 tw-my-6 sm:tw-my-6px tw-mx-2 sm:tw-mx-2px"
                   />
-                  <span className="store-review__container-tag-text tw-text-gray-700 tw-text-sm">
-                    {t('ReviewNotPublic')}
-                  </span>
-                </Tag>
+                  <span className={styles.StoreReviewContainerTagText}>{t('ReviewNotPublic')}</span>
+                </Hint>
               </div>
-              <div className="store-review__container-textarea-title tw-mx-16 sm:tw-mx-16px tw-mt-16 sm:tw-mt-16px tw-border tw-border-b-0 tw-border-solid tw-rounded-t-sm tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px">
+              <div className="tw-bg-gray-400 tw-mx-16 sm:tw-mx-16px tw-mt-16 sm:tw-mt-16px tw-border tw-border-b-0 tw-border-solid tw-rounded-t-sm tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px">
                 {t('WriteReview')}
               </div>
               <div className="store-review__container-textarea tw-flex tw-mx-16 sm:tw-mx-16px">
                 <TextareaAutosize
-                  className={`store-review__container-textarea-input tw-w-full tw-border tw-border-solid tw-rounded-b-sm tw-p-12 sm:tw-p-12px tw-overflow-hidden ${
+                  className={`${styles.StoreReviewContainerTextareaInput} ${
                     textExcess ? 'tw-border-red' : 'tw-border-gray-400'
                   }`}
                   onChange={handleReviewChange}

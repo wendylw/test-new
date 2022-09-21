@@ -1,0 +1,27 @@
+.StoreReviewContainer {
+  @apply tw-flex tw-flex-col tw-overflow-y-auto;
+}
+
+.StoreReviewContainerImg {
+  @apply sm:tw-my-16px tw-my-16;
+  height: 120px;
+}
+
+.StoreReviewContainerTagText {
+  @apply tw-text-gray-700 tw-text-sm;
+  line-height: 2.33333333333;
+}
+
+.StoreReviewContainerTextareaInput {
+  @apply tw-w-full tw-border tw-border-solid tw-rounded-b-sm tw-p-12 sm:tw-p-12px tw-overflow-hidden;
+  resize: none;
+  -webkit-appearance: none;
+  box-shadow: none;
+  outline: none;
+  -webkit-border-radius: 0 0 4px 4px;
+  -moz-border-radius: 0 0 4px 4px;
+}
+
+.store-review__footer {
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
+}

@@ -206,25 +206,6 @@ export const getApiRequestShippingType = shippingType => {
   }
 };
 
-export const getI18nKeyFromApiRequestShippingType = shippingType => {
-  const type = (shippingType || getQueryString('type')).toLowerCase();
-
-  switch (type) {
-    case SHIPPING_TYPES.DINE_IN:
-      return 'DineIn';
-    case 'dinein':
-      return 'DineIn';
-    case SHIPPING_TYPES.TAKE_AWAY:
-      return 'Takeaway';
-    case SHIPPING_TYPES.DELIVERY:
-      return 'Delivery';
-    case SHIPPING_TYPES.PICKUP:
-      return 'Pickup';
-    default:
-      return type;
-  }
-};
-
 export const getMerchantStoreUrl = ({ business, hash, source = '', type = '' }) => {
   let storeUrl = `${config.beepOnlineStoreUrl(business)}/ordering/?h=${hash}`;
   if (type) storeUrl += `&type=${type}`;
