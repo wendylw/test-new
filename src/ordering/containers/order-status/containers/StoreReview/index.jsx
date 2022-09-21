@@ -113,9 +113,9 @@ const StoreReview = () => {
         {storeHasReviewed ? (
           (reviewContents || '').length ? (
             <>
-              <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
+              <div className="tw-flex tw-m-16 sm:tw-m-16px">
                 <TextareaAutosize
-                  className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-sm tw-border-gray-400`}
+                  className={`${styles.StoreReviewContainerTextareaInput} tw-border tw-border-solid tw-rounded-sm tw-border-gray-400`}
                   minRows={4}
                   value={reviewContents}
                 />
@@ -137,29 +137,37 @@ const StoreReview = () => {
                 content={t('ReviewNotPublic')}
               />
             </div>
-            <div className="tw-border-gray-400 tw-mx-16 sm:tw-mx-16px tw-mt-16 sm:tw-mt-16px tw-border tw-border-b-0 tw-border-solid tw-rounded-t-sm tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px">
-              {t('WriteReview')}
-            </div>
-            <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
-              <TextareaAutosize
-                className={`${styles.StoreReviewContainerTextareaInput} tw-rounded-b-sm ${
+            <div
+              className={`tw-rounded-sm tw-m-16 sm:tw-m-16px tw-border tw-border-solid tw-overflow-hidden ${
+                hasCommentCharLimitExceeded ? 'tw-border-red' : 'tw-border-gray-400'
+              }`}
+            >
+              <div
+                className={`${
                   hasCommentCharLimitExceeded ? 'tw-border-red' : 'tw-border-gray-400'
-                }`}
-                onChange={handleChangeComment}
-                minRows={4}
-                value={reviewContents}
-                placeholder={t('TellExperience')}
-              />
+                } tw-border tw-border-t-0 tw-border-l-0 tw-border-r-0 tw-border-solid tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px`}
+              >
+                {t('WriteReview')}
+              </div>
+              <div className="tw-flex">
+                <TextareaAutosize
+                  className={`${styles.StoreReviewContainerTextareaInput} tw-border-0`}
+                  onChange={handleChangeComment}
+                  minRows={4}
+                  value={reviewContents}
+                  placeholder={t('TellExperience')}
+                />
+              </div>
             </div>
             {hasCommentCharLimitExceeded && (
-              <div className="tw-text-red tw-font-bold tw-mt-12 sm:tw-mt-12px tw-ml-16 sm:tw-ml-16px">
+              <div className="tw-text-red tw-font-bold tw-m-12 sm:tw-m-12px tw-ml-16 sm:tw-ml-16px">
                 {t('ExceedMaximum')}
               </div>
             )}
           </>
         )}
 
-        <div className="tw-flex tw-my-16 sm:tw-my-16px tw-ml-16 sm:tw-ml-16px">
+        <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
           <CheckBox
             size="small"
             className="tw-m-2 sm:tw-m-2px"

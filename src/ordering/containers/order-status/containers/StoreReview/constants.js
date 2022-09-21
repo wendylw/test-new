@@ -7,5 +7,4 @@ export const STORE_REVIEW_SHIPPING_TYPES = {
   [SHIPPING_TYPES.TAKE_AWAY]: 'Takeaway',
   [SHIPPING_TYPES.DELIVERY]: 'Delivery',
   [SHIPPING_TYPES.PICKUP]: 'Pickup',
-  dinein: 'DineIn',
 };

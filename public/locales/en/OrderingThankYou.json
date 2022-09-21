@@ -113,5 +113,5 @@
   "WriteReview": "Write a review",
   "AllowContact": "Allow this store to contact me directly",
   "Submit": "Submit",
-  "ExceedMaximum": "Exceeded the maximum number of characters"
+  "ExceedMaximum": "Exceeded the character limit"
 }
