@@ -16,9 +16,6 @@ import { getIsSearchingBannerVisible } from './redux/common/selectors';
 import { mounted } from './redux/common/thunks';
 import { getDeliveryInfo } from '../../redux/modules/app';
 
-import Result from '../../../common/components/Result';
-import ResultContent from '../../../common/components/Result/ResultContent';
-
 const Menu = () => {
   const dispatch = useDispatch();
   // for whether display searching banner, if not header, store info and promo banner display
@@ -61,18 +58,6 @@ const Menu = () => {
             <AlcoholModal />
           </>
         )}
-        <Result
-          mountAtRoot
-          show
-          closeByBackButton
-          header={<MenuHeader webHeaderVisibility={!isSearchingBannerVisible} />}
-          onClose={() => {}}
-        >
-          <ResultContent
-            title="Oops, review for this order has expired"
-            content="Keep your review fresh on next order!"
-          />
-        </Result>
       </>
     </Frame>
   );
