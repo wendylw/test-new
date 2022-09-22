@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Star } from 'phosphor-react';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -10,6 +10,10 @@ const Rating = ({ className, initialStarNum, totalStarNum, showText, starSize, o
   const { t } = useTranslation('OrderingThankYou');
 
   const [rating, setRating] = useState(initialStarNum);
+
+  useEffect(() => {
+    setRating(initialStarNum);
+  }, [initialStarNum]);
 
   const handleUpdateRating = useCallback(
     key => {
