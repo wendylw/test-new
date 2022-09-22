@@ -1,0 +1,14 @@
+.StoreReviewContainerImg {
+  @apply sm:tw-my-16px tw-my-16;
+  width: 45%;
+  max-width: 172px;
+}
+
+.StoreReviewContainerTextareaInput {
+  @apply tw-w-full tw-p-12 sm:tw-p-12px tw-overflow-hidden tw-resize-none tw-shadow-none tw-outline-none;
+  -webkit-appearance: none;
+}
+
+.StoreReviewFooter {
+  @apply tw-flex tw-p-8 sm:tw-p-8px tw-shadow-xl;
+}

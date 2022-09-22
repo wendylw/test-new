@@ -97,5 +97,21 @@
   "SelfPickUpPromptConfirmedText": "Yes, switch",
   "PromptUserEnableAppNotificationTitle": "Track Your Order Status",
   "PromptUserEnableAppNotificationContent": "No more SMS! Track your order status by enabling Beep notifications in your phone's Settings.",
-  "PendingPaymentDescriptionForPayLater": "Please show your table and order number to the cashier"
+  "PendingPaymentDescriptionForPayLater": "Please show your table and order number to the cashier",
+  "StoreReviewCardTitle": "Did you enjoy your order?",
+  "StoreReviewCardDescription": "Rate your experience with us",
+  "Terrible": "Terrible",
+  "Bad": "Bad",
+  "Okay": "Okay",
+  "Good": "Good",
+  "Great": "Great!",
+  "HearAboutExperience": "Rate your experience with",
+  "AlreadyRated": "You’ve successfully rated",
+  "ReviewNotPublic": "Your review will not be displayed publicly",
+  "StoreReview": "Store Review",
+  "TellExperience": "Tell us more about your experience (optional)",
+  "WriteReview": "Write a review",
+  "AllowContact": "Allow this store to contact me directly",
+  "Submit": "Submit",
+  "ExceedMaximum": "Exceeded the character limit"
 }
