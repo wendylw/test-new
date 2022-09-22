@@ -2,6 +2,7 @@ import React from 'react';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import FoodCourtLogo from '../../../../../images/food-court-temp/food-court-logo.jpeg';
 import FoodDistrictLogo from '../../../../../images/food-court-temp/food-district-logo.png';
+import FoodSyopzLogo from '../../../../../images/food-court-temp/food-Syopz-logo.png';
 import styles from './FoodCourtInfo.module.scss';
 
 const OWNERS_MAPPING = {
@@ -14,6 +15,11 @@ const OWNERS_MAPPING = {
     name: 'REXKL',
     logo: FoodCourtLogo,
     location: 'Kuala Lumpur',
+  },
+  syopzmall: {
+    name: 'Syopz Mall',
+    logo: FoodSyopzLogo,
+    location: "Taylor's University Subang Jaya",
   },
 };
 
