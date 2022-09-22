@@ -5,7 +5,9 @@
 }
 
 .resultContent {
-  @apply tw-p-16 sm:tw-p-16px;
+  @apply tw-flex tw-flex-col tw-flex-1 tw-relative tw-p-16 sm:tw-p-16px;
+
+  top: 15vh;
 }
 
 .resultFooter {

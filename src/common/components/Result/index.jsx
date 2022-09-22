@@ -56,7 +56,7 @@ const Result = props => {
   }, [children, show]);
 
   const renderContent = (
-    <div className={`tw-flex tw-flex-col tw-flex-1 ${styles.resultContent} ${className}`}>
+    <div className={`${styles.resultContent} ${className}`}>
       {children}
       <div className={styles.resultFooter}>
         <Button
