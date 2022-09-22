@@ -39,6 +39,8 @@
   "40025Description": "Cookie is not available.",
   "40026Title": "Unable to save data",
   "40026Description": "Data should not be empty.",
+  "40027Title": "Store is Closed (Error: 40027)",
+  "40027Description": "The store is closed at the moment. Please try again later.",
   "54012Title": "We're sorry, some items are unavailable (#54012)",
   "54012Description": "Some items in your cart are sold out or unavailable. Please edit the cart and try again.",
   "54013Title": "Out of Stock",

@@ -71,10 +71,22 @@ const getNotDeliveryTitleAndDescription = (
     };
   }
 
-  if (shippingType === DELIVERY_METHOD.PICKUP) {
+  if (shippingType === DELIVERY_METHOD.PICKUP && orderStatus !== ORDER_STATUS.PICKED_UP) {
     return {
       titleKey: 'ThankYou',
       descriptionKey: deliveryToSelfPickup ? 'ThankYouForUpdatedToPickingUpForUS' : 'ThankYouForPickingUpForUS',
+      emoji: (
+        <span role="img" aria-label="Goofy">
+          😋
+        </span>
+      ),
+    };
+  }
+
+  if (shippingType === DELIVERY_METHOD.PICKUP && orderStatus === ORDER_STATUS.PICKED_UP) {
+    return {
+      titleKey: 'ThankYou',
+      descriptionKey: deliveryToSelfPickup ? 'ThankYouForUpdatedToPickingUpForUS' : 'ThankYouForAlreadyPickUp',
       emoji: (
         <span role="img" aria-label="Goofy">
           😋
