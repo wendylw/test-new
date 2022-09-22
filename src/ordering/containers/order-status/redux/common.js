@@ -83,6 +83,8 @@ const { reducer, actions } = createSlice({
         storeName: _get(transaction, 'store.name', null),
         storeDisplayName: _get(transaction, 'store.storeDisplayName', null),
         shippingType: _get(transaction, 'shippingType', null),
+        orderId: _get(transaction, 'receiptNumber', null),
+        storeId: _get(transaction, 'storeId', null),
       };
       state.storeReviewInfo.loadDataRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
@@ -95,6 +97,8 @@ const { reducer, actions } = createSlice({
       state.storeReviewInfo.saveDataRequest.error = null;
     },
     [saveOrderStoreReview.fulfilled.type]: state => {
+      const prevStoreReviewInfoData = state.storeReviewInfo.data;
+      state.storeReviewInfo.data = { ...prevStoreReviewInfoData, hasReviewed: true };
       state.storeReviewInfo.saveDataRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
     [saveOrderStoreReview.rejected.type]: (state, { error }) => {

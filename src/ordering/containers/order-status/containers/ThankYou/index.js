@@ -90,6 +90,7 @@ import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { ICON_RES } from '../../../../../components/NativeHeader';
+import { SOURCE_TYPE } from '../../../../../common/utils/constants';
 
 const {
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
@@ -923,15 +924,23 @@ export class ThankYou extends PureComponent {
   };
 
   handleChangeStoreRating = rating => {
-    const { history, updateStoreRating } = this.props;
+    const { order, history, updateStoreRating } = this.props;
     const { ROUTER_PATHS } = Constants;
 
+    CleverTap.pushEvent('Thank You Page - Click Share Feedback', {
+      'order id': _get(order, 'orderId', ''),
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'shipping type': _get(order, 'shippingType', ''),
+    });
+
     updateStoreRating(rating);
+
+    Utils.setSessionVariable('BeepOrderingSource', SOURCE_TYPE.THANK_YOU);
 
     history.push({
       pathname: ROUTER_PATHS.STORE_REVIEW,
       search: window.location.search,
-      state: { from: ROUTER_PATHS.THANK_YOU },
     });
   };
 

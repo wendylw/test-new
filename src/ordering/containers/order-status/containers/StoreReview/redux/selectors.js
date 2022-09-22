@@ -1,7 +1,13 @@
+import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import { getIsTNGMiniProgram } from '../../../../../redux/modules/app';
-import { getStoreRating, getStoreComment, getStoreGoogleReviewURL } from '../../../redux/selector';
+import {
+  getStoreRating,
+  getStoreComment,
+  getStoreGoogleReviewURL,
+  getStoreReviewInfoData,
+} from '../../../redux/selector';
 import { STORE_REVIEW_COMMENT_CHAR_MAX, STORE_REVIEW_HIGH_RATING } from '../constants';
 
 export const getHasRated = createSelector(getStoreRating, rating => rating > 0);
@@ -33,3 +39,11 @@ export const getShouldShowOkayButtonOnly = createSelector(
   (isTNGMiniProgram, isHighRatedReview, isGoogleReviewURLAvailable) =>
     isTNGMiniProgram || !(isHighRatedReview && isGoogleReviewURLAvailable)
 );
+
+// This selector is used for CleverTap only
+export const getTransactionInfoForCleverTap = createSelector(getStoreReviewInfoData, storeReviewInfoData => ({
+  'order id': _get(storeReviewInfoData, 'orderId', ''),
+  'store name': _get(storeReviewInfoData, 'storeName', ''),
+  'store id': _get(storeReviewInfoData, 'storeId', ''),
+  'shipping type': _get(storeReviewInfoData, 'shippingType', ''),
+}));
