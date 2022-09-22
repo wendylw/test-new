@@ -1,7 +1,13 @@
 import _get from 'lodash/get';
 import Utils from '../../../../utils/utils';
 import { createSlice } from '@reduxjs/toolkit';
-import { loadOrder, loadOrderStoreReview, saveOrderStoreReview } from './thunks';
+import {
+  loadOrder,
+  loadOrderStoreReview,
+  saveOrderStoreReview,
+  showStoreReviewThankYouModal,
+  hideStoreReviewThankYouModal,
+} from './thunks';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 const initialState = {
@@ -21,6 +27,7 @@ const initialState = {
       status: null,
       error: null,
     },
+    thankYouModalVisible: false,
   },
 };
 
@@ -29,20 +36,23 @@ const { reducer, actions } = createSlice({
   initialState,
   reducers: {
     updateStoreRating(state, action) {
-      state.storeReviewInfo.data.rating = action.payload;
+      const prevStoreReviewInfoData = state.storeReviewInfo.data;
+      state.storeReviewInfo.data = { ...prevStoreReviewInfoData, rating: action.payload };
     },
     resetLoadStoreReviewDataRequest(state) {
       state.storeReviewInfo.loadDataRequest.status = null;
       state.storeReviewInfo.loadDataRequest.error = null;
     },
     updateStoreComment(state, action) {
-      state.storeReviewInfo.data.comments = action.payload;
+      const prevStoreReviewInfoData = state.storeReviewInfo.data;
+      state.storeReviewInfo.data = { ...prevStoreReviewInfoData, comments: action.payload };
     },
     resetStoreReviewData(state) {
       state.storeReviewInfo.data = null;
     },
     updateIsMerchantContactAllowable(state, action) {
-      state.storeReviewInfo.data.isMerchantContactAllowable = action.payload;
+      const prevStoreReviewInfoData = state.storeReviewInfo.data;
+      state.storeReviewInfo.data = { ...prevStoreReviewInfoData, isMerchantContactAllowable: action.payload };
     },
   },
   extraReducers: {
@@ -90,6 +100,12 @@ const { reducer, actions } = createSlice({
     [saveOrderStoreReview.rejected.type]: (state, { error }) => {
       state.storeReviewInfo.saveDataRequest.status = API_REQUEST_STATUS.REJECTED;
       state.storeReviewInfo.saveDataRequest.error = error;
+    },
+    [showStoreReviewThankYouModal.fulfilled.type]: state => {
+      state.storeReviewInfo.thankYouModalVisible = true;
+    },
+    [hideStoreReviewThankYouModal.fulfilled.type]: state => {
+      state.storeReviewInfo.thankYouModalVisible = false;
     },
   },
 });

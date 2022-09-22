@@ -1,16 +1,18 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMount, useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import TextareaAutosize from 'react-textarea-autosize';
 import Button from '../../../../../common/components/Button';
-import HybridHeader from '../../../../../components/HybridHeader';
+import PageFooter from '../../../../../common/components/PageFooter';
+import PageHeader from '../../../../../common/components/PageHeader';
 import CheckBox from '../../../../../common/components/CheckBox';
 import Frame from '../../../../../common/components/Frame';
 import Rating from '../../components/Rating';
 import Hint from '../../../../../common/components/Hint';
 import Tag from '../../../../../common/components/Tag';
+import ThankYouModal from './components/ThankYouModal';
 import styles from './StoreReview.module.scss';
 import StoreReviewImg from '../../../../../images/store-review.svg';
 import { actions } from '../../redux/common';
@@ -25,8 +27,6 @@ import {
 import { getHasCommentCharLimitExceeded, getShouldDisableSubmitButton } from './redux/selectors';
 import { mounted, unmounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES } from './constants';
-import PageFooter from '../../../../../common/components/PageFooter';
-import PageHeader from '../../../../../common/components/PageHeader';
 
 const StoreReview = () => {
   const dispatch = useDispatch();
@@ -39,15 +39,7 @@ const StoreReview = () => {
     dispatch(unmounted());
   });
 
-  useMount(() => {
-    dispatch(mounted());
-  });
-
-  useUnmount(() => {
-    dispatch(unmounted());
-  });
-
-  const { t, i18n } = useTranslation('OrderingThankYou');
+  const { t } = useTranslation('OrderingThankYou');
 
   const storeHasReviewed = useSelector(getHasStoreReviewed);
 
@@ -184,6 +176,7 @@ const StoreReview = () => {
           </div>
         </PageFooter>
       </section>
+      <ThankYouModal />
     </Frame>
   );
 };

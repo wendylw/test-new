@@ -1,13 +1,23 @@
 import _get from 'lodash/get';
+import i18next from 'i18next';
 import _isEmpty from 'lodash/isEmpty';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push } from 'connected-react-router';
 import { actions as commonActions } from '../../../redux/common';
-import { loadOrderStoreReview, saveOrderStoreReview } from '../../../redux/thunks';
-import { getIfStoreReviewInfoExists } from '../../../redux/selector';
+import { loadOrderStoreReview, saveOrderStoreReview, hideStoreReviewThankYouModal } from '../../../redux/thunks';
+import { getIfStoreReviewInfoExists, getStoreComment, getStoreGoogleReviewURL } from '../../../redux/selector';
 import { getLocation, getIsWebview } from '../../../../../redux/modules/app';
-import { goBack as nativeGoBack } from '../../../../../../utils/native-methods';
+import {
+  goBack as nativeGoBack,
+  openBrowserURL,
+  hasMethodInNative,
+  BROWSER_TYPES,
+  BEEP_MODULE_METHODS,
+} from '../../../../../../utils/native-methods';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
+import { toast } from '../../../../../../common/utils/feedback';
+import { copyDataToClipboard } from '../../../../../../utils/utils';
+import { FEEDBACK_STATUS } from '../../../../../../common/utils/feedback/utils';
 
 export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack', async (_, { getState, dispatch }) => {
   const state = getState();
@@ -35,6 +45,32 @@ export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack'
 
   dispatch(historyGoBack());
 });
+
+export const openGoogleReviewURL = createAsyncThunk(
+  'ordering/orderStatus/storeReview/openGoogleReviewURL',
+  async (_, { getState }) => {
+    const state = getState();
+    const isWebview = getIsWebview(state);
+    const googleReviewUrl = getStoreGoogleReviewURL(state);
+
+    if (!isWebview) {
+      window.open(googleReviewUrl, '_blank');
+      return;
+    }
+
+    const hasOpenBrowserURLSupport = hasMethodInNative(BEEP_MODULE_METHODS.OPEN_BROWSER_URL);
+
+    if (!hasOpenBrowserURLSupport) {
+      window.location.href = googleReviewUrl;
+      return;
+    }
+
+    openBrowserURL({
+      url: googleReviewUrl,
+      type: BROWSER_TYPES.CHROME,
+    });
+  }
+);
 
 export const mounted = createAsyncThunk(
   'ordering/orderStatus/storeReview/mounted',
@@ -73,19 +109,40 @@ export const leaveButtonClicked = createAsyncThunk(
   async () => {}
 );
 
-export const okayButtonClicked = createAsyncThunk('ordering/orderStatus/storeReview/okayButtonClicked', async () => {});
+export const okayButtonClicked = createAsyncThunk(
+  'ordering/orderStatus/storeReview/okayButtonClicked',
+  async (_, { dispatch }) => {
+    await dispatch(goBack());
+  }
+);
 
 export const noThanksButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/noThanksButtonClicked',
-  async () => {}
+  async (_, { dispatch }) => {
+    await dispatch(goBack());
+  }
 );
 
 export const rateNowButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/rateNowButtonClicked',
-  async () => {}
+  async (_, { dispatch }) => {
+    await dispatch(hideStoreReviewThankYouModal());
+    await dispatch(openGoogleReviewURL());
+  }
 );
 
 export const copyRateButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/copyRateButtonClicked',
-  async () => {}
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const comment = getStoreComment(state);
+
+    await dispatch(hideStoreReviewThankYouModal());
+
+    await copyDataToClipboard(comment);
+
+    toast(i18next.t(`OrderingThankYou:ReviewTextCopiedTip`), { type: FEEDBACK_STATUS.SUCCESS });
+
+    await dispatch(openGoogleReviewURL());
+  }
 );

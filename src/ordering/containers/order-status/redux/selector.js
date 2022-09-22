@@ -93,6 +93,11 @@ export const getLiveChatUserProfile = createSelector(getUserProfile, profile => 
 // Store Review
 export const getStoreReviewInfo = state => state.orderStatus.common.storeReviewInfo;
 
+export const getIsStoreThankYouModalVisible = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.thankYouModalVisible
+);
+
 export const getStoreReviewInfoLoadDataRequest = createSelector(
   getStoreReviewInfo,
   storeReviewInfo => storeReviewInfo.loadDataRequest
@@ -146,6 +151,6 @@ export const getIsStoreReviewable = createSelector(getStoreReviewInfoData, store
   _get(storeReviewInfoData, 'isReviewable', false)
 );
 
-export const getIsGoogleReviewURLAvailable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+export const getStoreGoogleReviewURL = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
   _get(storeReviewInfoData, 'googleReviewURL', '')
 );
