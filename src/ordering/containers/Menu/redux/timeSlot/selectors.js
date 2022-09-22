@@ -1,11 +1,6 @@
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS, SHIPPING_TYPES } from '../../../../../common/utils/constants';
-import {
-  getBusinessUTCOffset,
-  getStore,
-  getIsEnablePauseMode,
-  getStoreSupportShippingTypes,
-} from '../../../../redux/modules/app';
+import { getBusinessUTCOffset, getStore, getStoreSupportShippingTypes } from '../../../../redux/modules/app';
 import { getCurrentTime, getStoreStatus } from '../common/selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
 import * as timeLib from '../../../../../utils/time-lib';
@@ -83,8 +78,7 @@ export const getDateList = createSelector(
   getSelectedShippingType,
   getCurrentTime,
   getBusinessUTCOffset,
-  getIsEnablePauseMode,
-  (selectedDate, store, selectedShippingType, currentTime, businessUTCOffset, isEnablePauseMode) => {
+  (selectedDate, store, selectedShippingType, currentTime, businessUTCOffset) => {
     if (!store) {
       return [];
     }
@@ -101,7 +95,7 @@ export const getDateList = createSelector(
         displayMonth: dateDayJs.format('MMM'), // month string, example: "Jun"
         displayWeek: dateDayJs.format('ddd'), // week string, example: "Tue"
         displayDay: dateDayJs.format('D'), // day string, example: "30"
-        available: !isEnablePauseMode && isOpen,
+        available: isOpen,
         selected: dateDayJs.isSame(selectedDate, 'day'),
         isToday,
         isTomorrow: dateDayJs.isSame(tomorrowDateDayJs, 'day'),
@@ -122,7 +116,6 @@ export const getTimeSlotList = createSelector(
   getSelectedDateObj,
   getSelectedShippingType,
   getTimeSlotSoldData,
-  getIsEnablePauseMode,
   (
     store,
     selectedTimeSlot,
@@ -130,10 +123,9 @@ export const getTimeSlotList = createSelector(
     businessUTCOffset,
     selectedDateObj,
     selectedShippingType,
-    timeSlotSoldData,
-    isEnablePauseMode
+    timeSlotSoldData
   ) => {
-    if (!store || !selectedDateObj || !selectedDateObj.available || isEnablePauseMode) {
+    if (!store || !selectedDateObj || !selectedDateObj.available) {
       return [];
     }
 

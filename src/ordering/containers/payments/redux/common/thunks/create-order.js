@@ -9,7 +9,6 @@ import Constants from '../../../../../../utils/constants';
 import * as storeUtils from '../../../../../../utils/store-utils';
 import * as timeLib from '../../../../../../utils/time-lib';
 import { callTradePay } from '../../../../../../utils/tng-utils';
-import { gotoHome } from '../../../../../../utils/native-methods';
 import { getCartItems, getDeliveryDetails, getShippingType } from '../../../../../redux/modules/app';
 import {
   actions as appActions,
@@ -22,7 +21,6 @@ import {
   getUserName,
   getUserPhone,
   getIsTNGMiniProgram,
-  getIsWebview,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
@@ -30,9 +28,7 @@ import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
 import { getVoucherOrderingInfoFromSessionStorage } from '../../../../../../voucher/utils';
 import { get, post } from '../../../../../../utils/api/api-fetch';
 import { getPaymentRedirectAndWebHookUrl } from '../../../utils';
-import config from '../../../../../../config';
 import { alert } from '../../../../../../common/feedback';
-import { alert as alertV2 } from '../../../../../../common/utils/feedback';
 import { initPaymentWithOrder } from './api-info';
 import { push } from 'connected-react-router';
 import logger from '../../../../../../utils/monitoring/logger';
@@ -95,7 +91,6 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
   const isDigital = Utils.isDigitalType();
   const cartItems = getCartItems(getState());
   const paymentProvider = getSelectedPaymentProvider(getState());
-  const isWebview = getIsWebview(getState());
 
   if (isDigital) {
     const business = getBusiness(getState());
@@ -276,19 +271,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       throw error;
     }
   } catch (error) {
-    if (error.code === '40027') {
-      alertV2(i18next.t('ApiError:40027Description'), {
-        title: i18next.t('ApiError:40027Title'),
-        closeButtonContent: i18next.t('Common:BackToHome'),
-        onClose: () => {
-          if (isWebview) {
-            gotoHome();
-          }
-
-          window.location.href = config.beepitComUrl;
-        },
-      });
-    } else if (error.code) {
+    if (error.code) {
       // TODO: This type is actually not used, because apiError does not respect action type,
       // which is a bad practice, we will fix it in the future, for now we just keep a useless
       // action type.

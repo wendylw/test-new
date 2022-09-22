@@ -23,7 +23,6 @@ import {
   getIsBeepDeliveryShippingType,
   getIsDeliveryType,
   getStore,
-  getIsEnablePauseMode,
   getBusinessUTCOffset,
   getIsWebview,
   getUserLoginByBeepAppStatus,
@@ -435,14 +434,9 @@ export const getSelectedStoreStatus = createSelector(
   getShippingType,
   getBusinessUTCOffset,
   getCurrentTime,
-  getIsEnablePauseMode,
-  (store, shippingType, businessUTCOffset, currentTime, isEnabledPauseMode) => {
+  (store, shippingType, businessUTCOffset, currentTime) => {
     if (!store) {
       return null;
-    }
-
-    if (isEnabledPauseMode) {
-      return STORE_OPENING_STATUS.CLOSED;
     }
 
     const isAvailableOnDemand = StoreUtils.isAvailableOnDemandOrderTime(
@@ -478,12 +472,6 @@ export const getAllStoresStatus = createSelector(
   (storeList, shippingType, businessUTCOffset, currentTime) => {
     if (storeList.length === 0) {
       return null;
-    }
-
-    const isEnabledPauseMode = storeList.every(store => _get(store, 'qrOrderingSettings.pauseModeEnabled', false));
-
-    if (isEnabledPauseMode) {
-      return STORE_OPENING_STATUS.CLOSED;
     }
 
     const isAvailableOnDemand = storeList.some(store =>

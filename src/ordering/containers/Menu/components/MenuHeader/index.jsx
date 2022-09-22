@@ -149,7 +149,7 @@ const MenuHeader = ({ webHeaderVisibility }) => {
         return { text: t('TableIdText', { tableId }) };
       }
       if (isTakeAwayType()) {
-        return { text: t('TakeAway').toUpperCase() };
+        return { text: t('TakeAway') };
       }
     }
 
@@ -184,7 +184,7 @@ const MenuHeader = ({ webHeaderVisibility }) => {
         return createRightContentHtml(t('TableIdText', { tableId }));
       }
       if (isTakeAwayType()) {
-        return createRightContentHtml(t('TakeAway').toUpperCase());
+        return createRightContentHtml(t('TakeAway'));
       }
     }
     return null;

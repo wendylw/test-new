@@ -42,9 +42,7 @@ export const types = {
 
 export const actions = {
   loadCoreStores: () => (dispatch, getState) => {
-    const state = getState();
-    const business = getBusiness(state);
-
+    const business = getBusiness(getState());
     return dispatch(fetchCoreStores({ business }));
   },
 

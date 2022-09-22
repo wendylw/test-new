@@ -1,3 +1,4 @@
+import qs from 'qs';
 import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push, replace } from 'connected-react-router';
@@ -390,7 +391,7 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
   // then update to its support shipping type
   // TODO: For the better UX, should notify user the shippingType has been changed
   if (!storeSupportShippingTypes.includes(shippingType)) {
-    await dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
+    dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
   }
 
   if (isWebview) {
@@ -817,6 +818,13 @@ export const changeStore = createAsyncThunk(
 
       // Update store id in both redux and url query
       dispatch(appActions.updateStoreId(newStoreId));
+
+      // If the new store doesn't support the current shipping type, then we need to change the shipping type to the available one.
+      const newShippingType = shippingTypes.includes(currentShippingType) ? currentShippingType : shippingTypes[0];
+
+      if (newShippingType !== currentShippingType) {
+        dispatch(appActions.updateShippingType(newShippingType));
+      }
 
       if (getUserIsLogin(state)) {
         await dispatch(resetAddressListStatus());
