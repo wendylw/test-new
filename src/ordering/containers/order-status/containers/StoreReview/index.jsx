@@ -167,7 +167,7 @@ const StoreReview = () => {
           </>
         )}
 
-        <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
+        <div className="tw-flex tw-mx-16 sm:tw-mx-16px tw-mb-24 sm:tw-mb-24px">
           <CheckBox
             size="small"
             className="tw-m-2 sm:tw-m-2px"
@@ -177,14 +177,16 @@ const StoreReview = () => {
           <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
         </div>
 
-        <PageFooter className={styles.StoreReviewFooter}>
-          <Button
-            disabled={shouldDisableSubmitButton}
-            onClick={handleClickSubmitButton}
-            className="tw-w-full tw-uppercase"
-          >
-            {t('Submit')}
-          </Button>
+        <PageFooter>
+          <div className={styles.StoreReviewFooter}>
+            <Button
+              disabled={shouldDisableSubmitButton}
+              onClick={handleClickSubmitButton}
+              className="tw-w-full tw-uppercase"
+            >
+              {t('Submit')}
+            </Button>
+          </div>
         </PageFooter>
       </section>
     </Frame>

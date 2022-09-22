@@ -26,7 +26,7 @@ const Rating = ({ className, initialStarNum, totalStarNum, showText, starSize, o
       case 4:
         return t('Good');
       case 3:
-        return t('Okie');
+        return t('Okay');
       case 2:
         return t('Bad');
       case 1:
@@ -54,7 +54,7 @@ const Rating = ({ className, initialStarNum, totalStarNum, showText, starSize, o
             </li>
           ))}
       </ul>
-      {showText && <div className="tw-text-lg tw-leading-relaxed tw-font-black">{text}</div>}
+      {showText && <div className="tw-text-xl tw-leading-relaxed tw-font-black">{text}</div>}
     </div>
   );
 };
