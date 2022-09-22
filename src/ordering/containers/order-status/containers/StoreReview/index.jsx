@@ -26,6 +26,7 @@ import { getHasCommentCharLimitExceeded, getShouldDisableSubmitButton } from './
 import { mounted, unmounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES } from './constants';
 import PageFooter from '../../../../../common/components/PageFooter';
+import PageHeader from '../../../../../common/components/PageHeader';
 
 const StoreReview = () => {
   const dispatch = useDispatch();
@@ -82,13 +83,7 @@ const StoreReview = () => {
   return (
     <Frame>
       <section>
-        <HybridHeader
-          className="flex-middle border__bottom-divider"
-          contentClassName="flex-middle"
-          isPage
-          title={t('StoreReview')}
-          navFunc={handleClickBackButton}
-        />
+        <PageHeader title={t('StoreReview')} handleGoBack={handleClickBackButton} />
         <div className="tw-flex tw-flex-col tw-justify-center tw-items-center">
           <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
           <div className="tw-flex tw-justify-center tw-leading-normal">
