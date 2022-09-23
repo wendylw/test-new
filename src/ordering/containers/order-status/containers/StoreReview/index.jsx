@@ -83,7 +83,7 @@ const StoreReview = () => {
   return (
     <Frame>
       <section>
-        <PageHeader title={t('StoreReview')} handleGoBack={handleClickBackButton} />
+        <PageHeader title={t('StoreReview')} onBackArrowClick={handleClickBackButton} />
         <div className="tw-flex tw-flex-col tw-justify-center tw-items-center">
           <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
           <div className="tw-flex tw-justify-center tw-leading-normal">

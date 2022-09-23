@@ -1,18 +1,22 @@
-.MenuHeaderLeftContainer {
+.PageHeaderContainer {
+  @apply tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+}
+
+.PageHeaderLeftContainer {
   @apply tw-flex tw-flex-shrink-0 tw-p-12 sm:tw-p-12px tw-w-3/10 tw-whitespace-nowrap;
 
   min-width: 116px;
   max-width: 600px;
 }
 
-.MenuHeaderTitle {
+.PageHeaderTitle {
   @apply tw-font-bold tw-text-lg tw-leading-relaxed tw-mx-16 sm:tw-mx-16px;
 }
 
-.MenuHeaderLogo {
+.PageHeaderLogo {
   width: 100%;
 }
 
-.MenuHeaderBackArrow {
+.PageHeaderBackArrow {
   width: 20%;
 }

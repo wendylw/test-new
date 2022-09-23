@@ -4,30 +4,23 @@ import styles from './PageHeader.module.scss';
 import { isWebview } from '../../utils';
 import NativeHeader from '../../../components/NativeHeader';
 import BackArrow from '../../../images/back-arrow-header.svg';
-import PowerByBeepLogo from '../../../images/powered-by-beep-logo.svg';
 
 const isInWebview = isWebview();
 
 const PageHeader = props => {
-  const { className, style, title, isShowBackButton, handleGoBack, rightContent } = props;
-
-  const leftContentForWebHeader = () => {
-    if (isShowBackButton) {
-      return <img className={styles.MenuHeaderBackArrow} src={BackArrow} alt="" onClick={handleGoBack} />;
-    }
-
-    return <img className={styles.MenuHeaderLogo} src={PowerByBeepLogo} alt="" />;
-  };
+  const { className, title, isShowBackButton, onBackArrowClick, rightContent } = props;
 
   return (
     <>
       {isInWebview ? (
-        <NativeHeader isPage rightContent={rightContent} title={title} navFunc={handleGoBack} />
+        <NativeHeader isPage rightContent={rightContent} title={title} navFunc={onBackArrowClick} />
       ) : (
-        <header className="tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
-          <div className={styles.MenuHeaderLeftContainer}>
-            {leftContentForWebHeader()}
-            <div className={styles.MenuHeaderTitle}>{title}</div>
+        <header className={`${styles.PageHeaderContainer} ${className}`}>
+          <div className={styles.PageHeaderLeftContainer}>
+            {isShowBackButton && (
+              <img className={styles.PageHeaderBackArrow} src={BackArrow} alt="" onClick={onBackArrowClick} />
+            )}
+            <div className={styles.PageHeaderTitle}>{title}</div>
           </div>
           {rightContent}
         </header>
@@ -40,20 +33,17 @@ PageHeader.displayName = 'PageHeader';
 
 PageHeader.propTypes = {
   className: PropTypes.string,
-  // eslint-disable-next-line react/forbid-prop-types
-  style: PropTypes.object,
   title: PropTypes.string,
   isShowBackButton: PropTypes.bool,
-  handleGoBack: PropTypes.func,
+  onBackArrowClick: PropTypes.func,
   rightContent: PropTypes.node,
 };
 
 PageHeader.defaultProps = {
   className: '',
-  style: {},
   title: '',
   isShowBackButton: true,
-  handleGoBack: () => {},
+  onBackArrowClick: () => {},
   rightContent: null,
 };
 
