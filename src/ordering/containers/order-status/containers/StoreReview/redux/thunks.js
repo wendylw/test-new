@@ -11,7 +11,7 @@ import {
   getStoreGoogleReviewURL,
   getIsMerchantContactAllowable,
 } from '../../../redux/selector';
-import { getLocation, getIsWebview } from '../../../../../redux/modules/app';
+import { getIsWebview } from '../../../../../redux/modules/app';
 import { getIsCommentEmpty, getTransactionInfoForCleverTap } from './selectors';
 import {
   goBack as nativeGoBack,
@@ -23,14 +23,13 @@ import {
 import { STORE_REVIEW_SOURCE_TYPE_MAPPING } from '../constants';
 import { PATH_NAME_MAPPING, SOURCE_TYPE } from '../../../../../../common/utils/constants';
 import { toast } from '../../../../../../common/utils/feedback';
-import { getSessionVariable } from '../../../../../../common/utils';
+import { getFilteredQueryString, getSessionVariable } from '../../../../../../common/utils';
 import { copyDataToClipboard } from '../../../../../../utils/utils';
 import { FEEDBACK_STATUS } from '../../../../../../common/utils/feedback/utils';
 import CleverTap from '../../../../../../utils/clevertap';
 
 export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack', async (_, { getState, dispatch }) => {
   const state = getState();
-  const { search } = getLocation(state);
   const isWebview = getIsWebview(state);
   const sourceType = getSessionVariable('BeepOrderingSource');
 
@@ -49,7 +48,7 @@ export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack'
       dispatch(
         push({
           pathname: PATH_NAME_MAPPING.ORDERING_HOME,
-          search,
+          search: getFilteredQueryString('receiptNumber'),
         })
       );
       break;
