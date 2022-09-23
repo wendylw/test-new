@@ -927,7 +927,7 @@ export class ThankYou extends PureComponent {
     const { order, history, updateStoreRating } = this.props;
     const { ROUTER_PATHS } = Constants;
 
-    CleverTap.pushEvent('Thank You Page - Click Share Feedback', {
+    CleverTap.pushEvent('Thank You Page - Click Share Feedback Card', {
       'order id': _get(order, 'orderId', ''),
       'store name': _get(order, 'storeInfo.name', ''),
       'store id': _get(order, 'storeId', ''),

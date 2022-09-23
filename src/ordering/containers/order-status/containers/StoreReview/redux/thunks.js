@@ -12,7 +12,7 @@ import {
   getIsMerchantContactAllowable,
 } from '../../../redux/selector';
 import { getLocation, getIsWebview } from '../../../../../redux/modules/app';
-import { getTransactionInfoForCleverTap } from './selectors';
+import { getIsCommentEmpty, getTransactionInfoForCleverTap } from './selectors';
 import {
   goBack as nativeGoBack,
   openBrowserURL,
@@ -131,7 +131,7 @@ export const submitButtonClicked = createAsyncThunk(
 
     CleverTap.pushEvent('Feedback Page - Click Submit', {
       rating,
-      'contact consent state': isMerchantContactAllowable,
+      'allow store to contact': isMerchantContactAllowable,
       ...transactionInfoCleverTap,
     });
     await dispatch(saveOrderStoreReview());
@@ -156,9 +156,16 @@ export const okayButtonClicked = createAsyncThunk(
 export const noThanksButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/noThanksButtonClicked',
   async (_, { getState, dispatch }) => {
-    const transactionInfoCleverTap = getTransactionInfoForCleverTap(getState());
+    const state = getState();
+    const rating = getStoreRating(state);
+    const isCommentEmpty = getIsCommentEmpty(state);
+    const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
 
-    CleverTap.pushEvent('Feedback Page popup - Click No Thanks', transactionInfoCleverTap);
+    CleverTap.pushEvent('Feedback Page popup - Click No Thanks', {
+      rating,
+      'empty review': isCommentEmpty,
+      ...transactionInfoCleverTap,
+    });
 
     await dispatch(hideStoreReviewThankYouModal());
     await dispatch(goBack());
@@ -169,8 +176,13 @@ export const rateNowButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/rateNowButtonClicked',
   async (_, { dispatch, getState }) => {
     const state = getState();
+    const rating = getStoreRating(state);
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
-    CleverTap.pushEvent('Feedback Page popup - Click Rate Now', transactionInfoCleverTap);
+    CleverTap.pushEvent('Feedback Page popup - Click Rate Now', {
+      rating,
+      'empty review': false,
+      ...transactionInfoCleverTap,
+    });
 
     await dispatch(hideStoreReviewThankYouModal());
     await dispatch(openGoogleReviewURL());
@@ -181,10 +193,15 @@ export const copyRateButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/copyRateButtonClicked',
   async (_, { dispatch, getState }) => {
     const state = getState();
+    const rating = getStoreRating(state);
     const comment = getStoreComment(state);
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
 
-    CleverTap.pushEvent('Feedback Page popup - Click Copy & Rate', transactionInfoCleverTap);
+    CleverTap.pushEvent('Feedback Page popup - Click Copy & Rate', {
+      rating,
+      'empty review': false,
+      ...transactionInfoCleverTap,
+    });
 
     await dispatch(hideStoreReviewThankYouModal());
 
