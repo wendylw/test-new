@@ -140,7 +140,7 @@ const StoreReview = () => {
               <div
                 className={`${
                   hasCommentCharLimitExceeded ? 'tw-border-red' : 'tw-border-gray-400'
-                } tw-border tw-border-t-0 tw-border-l-0 tw-border-r-0 tw-border-solid tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px`}
+                } tw-border tw-border-t-0 tw-border-l-0 tw-border-r-0 tw-border-solid tw-align-middle tw-font-bold tw-text-lg tw-leading-normal tw-py-8 sm:tw-py-8px tw-pl-12 sm:tw-pl-12px`}
               >
                 {t('WriteReview')}
               </div>
