@@ -9,19 +9,20 @@ import styles from './FoodCourtHeader.module.scss';
 import { isWebview } from '../../../../../common/utils';
 import NativeHeader from '../../../../../components/NativeHeader';
 import { closeWebView } from '../../../../../utils/native-methods';
-import { getUserIsLogin } from '../../../../redux/modules/app';
+import { getUserIsLogin, getShippingType } from '../../../../redux/modules/app';
 import config from '../../../../../config';
-import Constants from '../../../../../utils/constants';
+import { PATH_NAME_MAPPING, SHIPPING_TYPES } from '../../../../../common/utils/constants';
 
 const FoodCourtHeader = () => {
   const { t } = useTranslation();
   const tableId = useSelector(getFoodCourtTableId);
   const isInWebview = isWebview();
   const userIsLogin = useSelector(getUserIsLogin);
+  const shippingType = useSelector(getShippingType);
   const history = useHistory();
 
   const goOrderHistoryPage = () => {
-    const redirectLocation = `${config.beepitComUrl + Constants.ROUTER_PATHS.ORDER_HISTORY}?source=${encodeURIComponent(
+    const redirectLocation = `${config.beepitComUrl + PATH_NAME_MAPPING.ORDER_HISTORY}?source=${encodeURIComponent(
       document.location.href
     )}`;
 
@@ -29,7 +30,7 @@ const FoodCourtHeader = () => {
       window.location.href = redirectLocation;
     } else {
       history.push({
-        pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+        pathname: PATH_NAME_MAPPING.ORDERING_LOGIN,
         search: window.location.search,
         state: {
           shouldGoBack: true,
@@ -41,6 +42,8 @@ const FoodCourtHeader = () => {
   };
 
   const rightContentForNativeHeader = { text: t('TableIdText', { tableId }) };
+  const tableIdOrShippingType =
+    shippingType === SHIPPING_TYPES.TAKE_AWAY ? t('TakeAway') : tableId ? t('TableIdText', { tableId }) : null;
 
   return (
     <>
@@ -59,8 +62,8 @@ const FoodCourtHeader = () => {
             <img className={styles.FoodCourtHeaderLogo} src={PowerByBeepLogo} alt="" />
           </h2>
           <div className="tw-flex tw-items-center tw-flex-shrink-0">
-            {tableId ? (
-              <span className="tw-p-16 sm:tw-p-16px tw-text-gray-700">{t('TableIdText', { tableId })}</span>
+            {tableIdOrShippingType ? (
+              <span className="tw-p-16 sm:tw-p-16px tw-text-gray-700">{tableIdOrShippingType}</span>
             ) : null}
             <img onClick={goOrderHistoryPage} className={styles.OrderHistoryEntry} src={OrderHistoryEntry} alt="" />
           </div>
