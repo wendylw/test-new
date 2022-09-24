@@ -59,7 +59,9 @@ const FoodCourtHeader = () => {
             <img className={styles.FoodCourtHeaderLogo} src={PowerByBeepLogo} alt="" />
           </h2>
           <div className="tw-flex tw-items-center tw-flex-shrink-0">
-            <span className="tw-p-16 sm:tw-p-16px tw-text-gray-700">{t('TableIdText', { tableId })}</span>
+            {tableId ? (
+              <span className="tw-p-16 sm:tw-p-16px tw-text-gray-700">{t('TableIdText', { tableId })}</span>
+            ) : null}
             <img onClick={goOrderHistoryPage} className={styles.OrderHistoryEntry} src={OrderHistoryEntry} alt="" />
           </div>
         </header>
