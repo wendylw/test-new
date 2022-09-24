@@ -56,7 +56,7 @@ Button.propTypes = {
   icon: propTypes.element,
   loading: propTypes.bool,
   type: propTypes.oneOf(['primary', 'secondary', 'text']),
-  size: propTypes.oneOf(['small']),
+  size: propTypes.oneOf(['small', 'normal']),
   danger: propTypes.bool,
   onClick: propTypes.func,
 };
@@ -68,7 +68,7 @@ Button.defaultProps = {
   loading: false,
   style: {},
   type: 'primary',
-  size: null,
+  size: 'normal',
   danger: false,
   onClick: () => {},
 };

@@ -23,6 +23,7 @@ const Result = props => {
     zIndex,
     onClose,
     onHistoryBackCompleted,
+    disableBackButtonSupport,
   } = props;
   const contentContainerRef = useRef(null);
   const onHistoryChangeCompleted = useCallback(
@@ -44,7 +45,7 @@ const Result = props => {
     visibility: show,
     onHistoryBackReceived,
     onHistoryChangeCompleted,
-    disabled: true,
+    disabled: disableBackButtonSupport,
   });
 
   useEffect(() => {
@@ -114,6 +115,7 @@ Result.propTypes = {
   zIndex: PropTypes.number,
   onClose: PropTypes.func,
   onHistoryBackCompleted: PropTypes.func,
+  disableBackButtonSupport: PropTypes.bool,
 };
 
 Result.defaultProps = {
@@ -129,6 +131,7 @@ Result.defaultProps = {
   zIndex: 400,
   onClose: () => {},
   onHistoryBackCompleted: () => {},
+  disableBackButtonSupport: false,
 };
 
 export default Result;
