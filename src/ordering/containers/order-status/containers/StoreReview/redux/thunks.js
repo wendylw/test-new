@@ -1,7 +1,6 @@
 import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push } from 'connected-react-router';
-import { actions as commonActions } from '../../../redux/common';
 import { loadOrderStoreReview, saveOrderStoreReview, hideStoreReviewThankYouModal } from '../../../redux/thunks';
 import {
   getIfStoreReviewInfoExists,
@@ -101,10 +100,6 @@ export const mounted = createAsyncThunk(
     });
   }
 );
-
-export const unmounted = createAsyncThunk('ordering/orderStatus/storeReview/unmounted', async (_, { dispatch }) => {
-  dispatch(commonActions.resetStoreReviewData());
-});
 
 export const backButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/backButtonClicked',
