@@ -98,22 +98,7 @@ export const getIsStoreThankYouModalVisible = createSelector(
   storeReviewInfo => storeReviewInfo.thankYouModalVisible
 );
 
-export const getStoreReviewInfoLoadDataRequest = createSelector(
-  getStoreReviewInfo,
-  storeReviewInfo => storeReviewInfo.loadDataRequest
-);
-
 export const getStoreReviewInfoData = createSelector(getStoreReviewInfo, storeReviewInfo => storeReviewInfo.data);
-
-export const getIsLoadStoreReviewInfoRequestSent = createSelector(
-  getStoreReviewInfoLoadDataRequest,
-  request => request.status !== null
-);
-
-export const getIsLoadStoreReviewInfoRequestStatusCompleted = createSelector(
-  getStoreReviewInfoLoadDataRequest,
-  request => [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(request.status)
-);
 
 export const getIfStoreReviewInfoExists = createSelector(
   getStoreReviewInfoData,

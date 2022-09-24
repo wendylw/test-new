@@ -82,7 +82,6 @@ import {
   getShouldShowCashbackBanner,
   getHasOrderPaid,
   getShouldShowStoreReviewCard,
-  getShouldLoadStoreReviewInfo,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -147,10 +146,13 @@ export class ThankYou extends PureComponent {
   };
 
   componentDidMount = async () => {
-    const { user, loadCashbackInfo } = this.props;
+    const { user, loadCashbackInfo, loadOrderStoreReview } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
+
+    // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
+    loadOrderStoreReview();
 
     const from = Utils.getCookieVariable('__ty_source');
 
@@ -167,7 +169,6 @@ export class ThankYou extends PureComponent {
       loadStoreIdHashCode,
       loadStoreIdTableIdHashCode,
       loadFoodCourtIdHashCode,
-      loadOrderStoreReview,
       order,
       onlineStoreInfo,
     } = this.props;
@@ -184,12 +185,7 @@ export class ThankYou extends PureComponent {
 
     await this.loadOrder();
 
-    const { shippingType, foodCourtId, shouldLoadStoreReviewInfo } = this.props;
-
-    if (shouldLoadStoreReviewInfo) {
-      // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
-      loadOrderStoreReview();
-    }
+    const { shippingType, foodCourtId } = this.props;
 
     this.setContainerHeight();
 
@@ -374,11 +370,7 @@ export class ThankYou extends PureComponent {
   };
 
   async componentDidUpdate(prevProps) {
-    const {
-      order: prevOrder,
-      onlineStoreInfo: prevOnlineStoreInfo,
-      shouldLoadStoreReviewInfo: prevShouldLoadStoreReviewInfo,
-    } = prevProps;
+    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo, hasOrderPaid: prevHasOrderPaid } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const {
       order,
@@ -389,7 +381,7 @@ export class ThankYou extends PureComponent {
       loadStoreIdHashCode,
       isCoreBusinessAPICompleted,
       loadOrderStoreReview,
-      shouldLoadStoreReviewInfo: currShouldLoadStoreReviewInfo,
+      hasOrderPaid: currHasOrderPaid,
     } = this.props;
 
     if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
@@ -421,7 +413,7 @@ export class ThankYou extends PureComponent {
       this.setState({ hasRecordedChargedEvent: true });
     }
 
-    if (!prevShouldLoadStoreReviewInfo && currShouldLoadStoreReviewInfo) {
+    if (!prevHasOrderPaid && currHasOrderPaid) {
       loadOrderStoreReview();
     }
 
@@ -432,8 +424,6 @@ export class ThankYou extends PureComponent {
     clearInterval(this.pollOrderStatusTimer);
     this.closeMap();
     clearTimeout(this.timer);
-    // BEEP-3035: reset load store review API request status to avoid blink UI issue
-    this.props.resetLoadStoreReviewDataRequest();
   };
 
   handleGtmEventTracking = ({ order = {} }) => {
@@ -1091,7 +1081,6 @@ export default compose(
       isCoreBusinessAPICompleted: getIsCoreBusinessAPICompleted(state),
       isFromBeepSiteOrderHistory: getIsFromBeepSiteOrderHistory(state),
       shouldShowStoreReviewCard: getShouldShowStoreReviewCard(state),
-      shouldLoadStoreReviewInfo: getShouldLoadStoreReviewInfo(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -1108,10 +1097,6 @@ export default compose(
       loadOrderStoreReview: bindActionCreators(loadOrderStoreReviewThunk, dispatch),
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
       updateStoreRating: bindActionCreators(commonActionCreators.updateStoreRating, dispatch),
-      resetLoadStoreReviewDataRequest: bindActionCreators(
-        commonActionCreators.resetLoadStoreReviewDataRequest,
-        dispatch
-      ),
     })
   )
 )(ThankYou);
