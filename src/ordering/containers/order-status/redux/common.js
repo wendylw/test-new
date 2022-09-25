@@ -7,6 +7,8 @@ import {
   saveOrderStoreReview,
   showStoreReviewThankYouModal,
   hideStoreReviewThankYouModal,
+  showStoreReviewWarningModal,
+  hideStoreReviewWarningModal,
 } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
@@ -28,6 +30,7 @@ const initialState = {
       error: null,
     },
     thankYouModalVisible: false,
+    warningModalVisible: false,
   },
 };
 
@@ -93,6 +96,12 @@ const { reducer, actions } = createSlice({
     },
     [hideStoreReviewThankYouModal.fulfilled.type]: state => {
       state.storeReviewInfo.thankYouModalVisible = false;
+    },
+    [showStoreReviewWarningModal.fulfilled.type]: state => {
+      state.storeReviewInfo.warningModalVisible = true;
+    },
+    [hideStoreReviewWarningModal.fulfilled.type]: state => {
+      state.storeReviewInfo.warningModalVisible = false;
     },
   },
 });

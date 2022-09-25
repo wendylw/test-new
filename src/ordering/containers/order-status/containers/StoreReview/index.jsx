@@ -15,6 +15,7 @@ import Rating from '../../components/Rating';
 import Hint from '../../../../../common/components/Hint';
 import Tag from '../../../../../common/components/Tag';
 import ThankYouModal from './components/ThankYouModal';
+import WarningModal from './components/WarningModal';
 import styles from './StoreReview.module.scss';
 import StoreReviewImg from '../../../../../images/store-review.svg';
 import {
@@ -74,7 +75,10 @@ const StoreReview = () => {
     setIsContactAllowable,
   ]);
 
-  const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
+  const handleClickBackButton = useCallback(
+    () => dispatch(backButtonClicked({ rating, comments, isMerchantContactAllowable: isContactAllowable })),
+    [dispatch, rating, comments, isContactAllowable]
+  );
 
   const handleClickSubmitButton = useCallback(
     () => dispatch(submitButtonClicked({ rating, comments, allowMerchantContact: isContactAllowable })),
@@ -201,6 +205,7 @@ const StoreReview = () => {
         </PageFooter>
       </section>
       <ThankYouModal />
+      <WarningModal />
     </Frame>
   );
 };

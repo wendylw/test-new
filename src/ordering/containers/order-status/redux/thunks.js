@@ -37,6 +37,16 @@ export const hideStoreReviewThankYouModal = createAsyncThunk(
   async () => {}
 );
 
+export const showStoreReviewWarningModal = createAsyncThunk(
+  'ordering/orderStatus/common/showStoreReviewWarningModal',
+  async () => {}
+);
+
+export const hideStoreReviewWarningModal = createAsyncThunk(
+  'ordering/orderStatus/common/hideStoreReviewWarningModal',
+  async () => {}
+);
+
 export const loadOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/loadOrderStoreReview',
   async (_, { getState }) => {
