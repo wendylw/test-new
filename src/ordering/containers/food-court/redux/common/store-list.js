@@ -21,6 +21,11 @@ import StellarKLImage from '../../../../../images/food-court-temp/merchant-stell
 import AltaburgerImage from '../../../../../images/food-court-temp/merchant-altaburger.jpg';
 import ThebaoguysImage from '../../../../../images/food-court-temp/merchant-thebaoguys.jpg';
 import HijauKualaLumpurImage from '../../../../../images/food-court-temp/merchant-hijau.jpeg';
+import FaceImage from '../../../../../images/food-court-temp/merchant-face.png';
+import JuiceImage from '../../../../../images/food-court-temp/merchant-Juice.jpeg';
+import JoeImage from '../../../../../images/food-court-temp/merchant-Joe.jpeg';
+import RiceImage from '../../../../../images/food-court-temp/merchant-rice.jpeg';
+import SeoulImage from '../../../../../images/food-court-temp/merchant-Seoul.png';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -81,6 +86,56 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '08:00',
       validTimeTo: '23:59',
+    },
+  },
+  '63217375583346000766a2b6': {
+    id: '63217375583346000766a2b6',
+    imageNoCompression: FaceImage,
+    title: 'Face To Face',
+    tags: ['Asian', 'Noodles'],
+    businessHours: {
+      validTimeFrom: '09:00',
+      validTimeTo: '21:00',
+    },
+  },
+  '632194803f0a0e0007c2900e': {
+    id: '632194803f0a0e0007c2900e',
+    imageNoCompression: JoeImage,
+    title: "Joe's Western",
+    tags: ['Western', 'Pasta'],
+    businessHours: {
+      validTimeFrom: '09:00',
+      validTimeTo: '21:00',
+    },
+  },
+  '63217375583346000766a27d': {
+    id: '63217375583346000766a27d',
+    imageNoCompression: JuiceImage,
+    title: 'Juicelab',
+    tags: ['Juice', 'Fruit Bowls', 'Healthy'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '20:00',
+    },
+  },
+  '6321943e3f0a0e0007c27275': {
+    id: '6321943e3f0a0e0007c27275',
+    imageNoCompression: RiceImage,
+    title: 'Rice On! Subang Jaya',
+    tags: ['Fusion', 'Rice Bowls'],
+    businessHours: {
+      validTimeFrom: '11:00',
+      validTimeTo: '19:00',
+    },
+  },
+  '6321937dce39120008396bf4': {
+    id: '6321937dce39120008396bf4',
+    imageNoCompression: SeoulImage,
+    title: 'Seoul Korean Street Foods',
+    tags: ['Korean', 'Asian'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '20:00',
     },
   },
   '61b93058cef3c900060ca990': {
