@@ -169,6 +169,7 @@ const StoreReview = () => {
             className="tw-m-2 sm:tw-m-2px"
             checked={allowContact}
             onChange={handleToggleContactConsent}
+            disabled={storeHasReviewed}
           />
           <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
         </div>
