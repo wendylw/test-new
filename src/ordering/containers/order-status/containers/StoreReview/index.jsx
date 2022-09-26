@@ -164,17 +164,19 @@ const StoreReview = () => {
           <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
         </div>
 
-        <PageFooter>
-          <div className={styles.StoreReviewFooter}>
-            <Button
-              disabled={shouldDisableSubmitButton}
-              onClick={handleClickSubmitButton}
-              className="tw-w-full tw-uppercase"
-            >
-              {t('Submit')}
-            </Button>
-          </div>
-        </PageFooter>
+        {!storeHasReviewed && (
+          <PageFooter>
+            <div className={styles.StoreReviewFooter}>
+              <Button
+                disabled={shouldDisableSubmitButton}
+                onClick={handleClickSubmitButton}
+                className="tw-w-full tw-uppercase"
+              >
+                {t('Submit')}
+              </Button>
+            </div>
+          </PageFooter>
+        )}
       </section>
       <ThankYouModal />
     </Frame>
