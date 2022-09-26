@@ -98,6 +98,11 @@ export const getIsStoreThankYouModalVisible = createSelector(
   storeReviewInfo => storeReviewInfo.thankYouModalVisible
 );
 
+export const getIsStoreWarningModalVisible = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.warningModalVisible
+);
+
 export const getStoreReviewInfoData = createSelector(getStoreReviewInfo, storeReviewInfo => storeReviewInfo.data);
 
 export const getIfStoreReviewInfoExists = createSelector(
@@ -113,6 +118,11 @@ export const getStoreRating = createSelector(
 export const getStoreComment = createSelector(
   getStoreReviewInfoData,
   storeReviewInfoData => _get(storeReviewInfoData, 'comments', '') || ''
+);
+
+export const getStoreTableId = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => storeReviewInfoData.tableId
 );
 
 export const getStoreFullDisplayName = createSelector(

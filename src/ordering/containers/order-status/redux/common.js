@@ -7,6 +7,8 @@ import {
   saveOrderStoreReview,
   showStoreReviewThankYouModal,
   hideStoreReviewThankYouModal,
+  showStoreReviewWarningModal,
+  hideStoreReviewWarningModal,
 } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
@@ -28,26 +30,14 @@ const initialState = {
       error: null,
     },
     thankYouModalVisible: false,
+    warningModalVisible: false,
   },
 };
 
 const { reducer, actions } = createSlice({
   name: 'ordering/orderStatus/common',
   initialState,
-  reducers: {
-    updateStoreRating(state, action) {
-      state.storeReviewInfo.data.rating = action.payload;
-    },
-    updateStoreComment(state, action) {
-      state.storeReviewInfo.data.comments = action.payload;
-    },
-    resetStoreReviewData(state) {
-      state.storeReviewInfo.data = {};
-    },
-    updateIsMerchantContactAllowable(state, action) {
-      state.storeReviewInfo.data.isMerchantContactAllowable = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: {
     [loadOrder.pending.type]: state => {
       state.updateOrderStatus = API_REQUEST_STATUS.PENDING;
@@ -78,6 +68,7 @@ const { reducer, actions } = createSlice({
       state.storeReviewInfo.data.shippingType = _get(transaction, 'shippingType', null);
       state.storeReviewInfo.data.orderId = _get(transaction, 'receiptNumber', null);
       state.storeReviewInfo.data.storeId = _get(transaction, 'storeId', null);
+      state.storeReviewInfo.data.tableId = _get(transaction, 'tableId', null);
       state.storeReviewInfo.loadDataRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
     [loadOrderStoreReview.rejected.type]: (state, { error }) => {
@@ -88,7 +79,12 @@ const { reducer, actions } = createSlice({
       state.storeReviewInfo.saveDataRequest.status = API_REQUEST_STATUS.PENDING;
       state.storeReviewInfo.saveDataRequest.error = null;
     },
-    [saveOrderStoreReview.fulfilled.type]: state => {
+    [saveOrderStoreReview.fulfilled.type]: (state, { payload }) => {
+      const { rating, comments, allowMerchantContact } = payload;
+
+      state.storeReviewInfo.data.rating = rating;
+      state.storeReviewInfo.data.comments = comments;
+      state.storeReviewInfo.data.isMerchantContactAllowable = allowMerchantContact;
       state.storeReviewInfo.data.hasReviewed = true;
       state.storeReviewInfo.saveDataRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
@@ -101,6 +97,12 @@ const { reducer, actions } = createSlice({
     },
     [hideStoreReviewThankYouModal.fulfilled.type]: state => {
       state.storeReviewInfo.thankYouModalVisible = false;
+    },
+    [showStoreReviewWarningModal.fulfilled.type]: state => {
+      state.storeReviewInfo.warningModalVisible = true;
+    },
+    [hideStoreReviewWarningModal.fulfilled.type]: state => {
+      state.storeReviewInfo.warningModalVisible = false;
     },
   },
 });

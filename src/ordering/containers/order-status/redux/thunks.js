@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get, post } from '../../../../utils/api/api-fetch';
 import Constants from '../../../../utils/constants';
-import { getReceiptNumber, getStoreRating, getStoreComment, getIsMerchantContactAllowable } from './selector';
+import { getReceiptNumber } from './selector';
 import { API_INFO, getOrderStoreReview, postOrderStoreReview } from './api-info';
 import { alert } from '../../../../common/utils/feedback';
 
@@ -37,6 +37,16 @@ export const hideStoreReviewThankYouModal = createAsyncThunk(
   async () => {}
 );
 
+export const showStoreReviewWarningModal = createAsyncThunk(
+  'ordering/orderStatus/common/showStoreReviewWarningModal',
+  async () => {}
+);
+
+export const hideStoreReviewWarningModal = createAsyncThunk(
+  'ordering/orderStatus/common/hideStoreReviewWarningModal',
+  async () => {}
+);
+
 export const loadOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/loadOrderStoreReview',
   async (_, { getState }) => {
@@ -49,16 +59,15 @@ export const loadOrderStoreReview = createAsyncThunk(
 
 export const saveOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/saveOrderStoreReview',
-  async (_, { dispatch, getState }) => {
+  async ({ rating, comments, allowMerchantContact }, { dispatch, getState }) => {
     const state = getState();
     const orderId = getReceiptNumber(state);
-    const rating = getStoreRating(state);
-    const comments = getStoreComment(state);
-    const allowMerchantContact = getIsMerchantContactAllowable(state);
 
     try {
       await postOrderStoreReview({ orderId, rating, comments, allowMerchantContact });
       await dispatch(showStoreReviewThankYouModal());
+
+      return { rating, comments, allowMerchantContact };
     } catch (e) {
       if (e.code === '40028') {
         alert(i18next.t('ApiError:40028Description'), {

@@ -64,7 +64,6 @@ import {
   getFoodCourtMerchantName,
 } from './redux/selector';
 import './OrderingThanks.scss';
-import { actions as commonActionCreators } from '../../redux/common';
 import { actions as thankYouActionCreators } from './redux';
 import {
   loadStoreIdHashCode,
@@ -914,7 +913,7 @@ export class ThankYou extends PureComponent {
   };
 
   handleChangeStoreRating = rating => {
-    const { order, history, updateStoreRating } = this.props;
+    const { order, history } = this.props;
     const { ROUTER_PATHS } = Constants;
 
     CleverTap.pushEvent('Thank You Page - Click Share Feedback Card', {
@@ -924,13 +923,12 @@ export class ThankYou extends PureComponent {
       'shipping type': _get(order, 'shippingType', ''),
     });
 
-    updateStoreRating(rating);
-
     Utils.setSessionVariable('BeepOrderingSource', SOURCE_TYPE.THANK_YOU);
 
     history.push({
       pathname: ROUTER_PATHS.STORE_REVIEW,
       search: window.location.search,
+      state: { rating },
     });
   };
 
@@ -1096,7 +1094,6 @@ export default compose(
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       loadOrderStoreReview: bindActionCreators(loadOrderStoreReviewThunk, dispatch),
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
-      updateStoreRating: bindActionCreators(commonActionCreators.updateStoreRating, dispatch),
     })
   )
 )(ThankYou);
