@@ -93,22 +93,17 @@ export const getLiveChatUserProfile = createSelector(getUserProfile, profile => 
 // Store Review
 export const getStoreReviewInfo = state => state.orderStatus.common.storeReviewInfo;
 
-export const getStoreReviewInfoLoadDataRequest = createSelector(
+export const getIsStoreThankYouModalVisible = createSelector(
   getStoreReviewInfo,
-  storeReviewInfo => storeReviewInfo.loadDataRequest
+  storeReviewInfo => storeReviewInfo.thankYouModalVisible
+);
+
+export const getIsStoreWarningModalVisible = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.warningModalVisible
 );
 
 export const getStoreReviewInfoData = createSelector(getStoreReviewInfo, storeReviewInfo => storeReviewInfo.data);
-
-export const getIsLoadStoreReviewInfoRequestSent = createSelector(
-  getStoreReviewInfoLoadDataRequest,
-  request => request.status !== null
-);
-
-export const getIsLoadStoreReviewInfoRequestStatusCompleted = createSelector(
-  getStoreReviewInfoLoadDataRequest,
-  request => [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(request.status)
-);
 
 export const getIfStoreReviewInfoExists = createSelector(
   getStoreReviewInfoData,
@@ -123,6 +118,11 @@ export const getStoreRating = createSelector(
 export const getStoreComment = createSelector(
   getStoreReviewInfoData,
   storeReviewInfoData => _get(storeReviewInfoData, 'comments', '') || ''
+);
+
+export const getStoreTableId = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => storeReviewInfoData.tableId
 );
 
 export const getStoreFullDisplayName = createSelector(
@@ -146,6 +146,6 @@ export const getIsStoreReviewable = createSelector(getStoreReviewInfoData, store
   _get(storeReviewInfoData, 'isReviewable', false)
 );
 
-export const getIsGoogleReviewURLAvailable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+export const getStoreGoogleReviewURL = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
   _get(storeReviewInfoData, 'googleReviewURL', '')
 );
