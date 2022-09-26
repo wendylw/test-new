@@ -152,18 +152,16 @@ export const backButtonClicked = createAsyncThunk(
 
 export const submitButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/submitButtonClicked',
-  async (_, { getState, dispatch }) => {
+  async ({ rating, comments, allowMerchantContact }, { getState, dispatch }) => {
     const state = getState();
-    const rating = getStoreRating(state);
-    const isMerchantContactAllowable = getIsMerchantContactAllowable(state);
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
 
     CleverTap.pushEvent('Feedback Page - Click Submit', {
       rating,
-      'allow store to contact': isMerchantContactAllowable,
+      'allow store to contact': allowMerchantContact,
       ...transactionInfoCleverTap,
     });
-    await dispatch(saveOrderStoreReview());
+    await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact }));
   }
 );
 
