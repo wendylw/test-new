@@ -41,9 +41,9 @@ const FoodCourtHeader = () => {
     }
   };
 
-  const rightContentForNativeHeader = { text: t('TableIdText', { tableId }) };
   const tableIdOrShippingType =
     shippingType === SHIPPING_TYPES.TAKE_AWAY ? t('TakeAway') : tableId ? t('TableIdText', { tableId }) : null;
+  const rightContentForNativeHeader = tableIdOrShippingType;
 
   return (
     <>
