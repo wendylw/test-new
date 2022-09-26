@@ -138,9 +138,10 @@ export const backButtonClicked = createAsyncThunk(
     });
 
     if (
-      currRating !== prevRating ||
-      currComments !== prevComments ||
-      currIsMerchantContactAllowable !== prevIsMerchantContactAllowable
+      !hasStoreReviewed &&
+      (currRating !== prevRating ||
+        currComments !== prevComments ||
+        currIsMerchantContactAllowable !== prevIsMerchantContactAllowable)
     ) {
       await dispatch(showStoreReviewWarningModal());
       return;
