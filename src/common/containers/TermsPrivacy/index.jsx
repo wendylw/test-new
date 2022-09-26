@@ -34,11 +34,7 @@ export class TermsPrivacy extends Component {
 
     const data = await getFiles(pageName)
       .then(response => response.text())
-      .then(
-        fileData =>
-          // data就是我们请求的repos
-          fileData
-      )
+      .then(fileData => fileData)
       .catch(error => {
         logger.error('Site_TermsPrivacy_LoadFileFailed', error);
       });
