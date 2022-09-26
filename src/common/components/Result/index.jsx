@@ -80,7 +80,7 @@ const Result = props => {
           style={closeButtonStyle}
           size="small"
         >
-          {closeButtonContent || t('OK')}
+          {closeButtonContent || t('Okay')}
         </Button>
       </div>
     </div>
