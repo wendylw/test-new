@@ -172,7 +172,7 @@ const StoreReview = () => {
           <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
         </div>
 
-        <PageFooter>
+        <PageFooter className="tw-shadow-xl">
           <div className={styles.StoreReviewFooter}>
             <Button
               disabled={shouldDisableSubmitButton}
