@@ -1,8 +1,13 @@
 import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push } from 'connected-react-router';
-import { actions as commonActions } from '../../../redux/common';
-import { loadOrderStoreReview, saveOrderStoreReview, hideStoreReviewThankYouModal } from '../../../redux/thunks';
+import {
+  loadOrderStoreReview,
+  saveOrderStoreReview,
+  hideStoreReviewThankYouModal,
+  showStoreReviewWarningModal,
+  hideStoreReviewWarningModal,
+} from '../../../redux/thunks';
 import {
   getIfStoreReviewInfoExists,
   getStoreRating,
@@ -102,19 +107,30 @@ export const mounted = createAsyncThunk(
   }
 );
 
-export const unmounted = createAsyncThunk('ordering/orderStatus/storeReview/unmounted', async (_, { dispatch }) => {
-  dispatch(commonActions.resetStoreReviewData());
-});
-
 export const backButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/backButtonClicked',
-  async (_, { getState, dispatch }) => {
+  async (
+    { rating: currRating, comments: currComments, isMerchantContactAllowable: currIsMerchantContactAllowable },
+    { getState, dispatch }
+  ) => {
     const state = getState();
+    const prevRating = getStoreRating(state);
+    const prevComments = getStoreComment(state);
     const hasStoreReviewed = getHasStoreReviewed(state);
+    const prevIsMerchantContactAllowable = getIsMerchantContactAllowable(state);
 
     CleverTap.pushEvent('Feedback Page - Click Back button', {
       'form submitted': hasStoreReviewed,
     });
+
+    if (
+      currRating !== prevRating ||
+      currComments !== prevComments ||
+      currIsMerchantContactAllowable !== prevIsMerchantContactAllowable
+    ) {
+      await dispatch(showStoreReviewWarningModal());
+      return;
+    }
 
     await dispatch(goBack());
   }
@@ -137,11 +153,19 @@ export const submitButtonClicked = createAsyncThunk(
   }
 );
 
-export const stayButtonClicked = createAsyncThunk('ordering/orderStatus/storeReview/stayButtonClicked', async () => {});
+export const stayButtonClicked = createAsyncThunk(
+  'ordering/orderStatus/storeReview/stayButtonClicked',
+  async (_, { getState, dispatch }) => {
+    await dispatch(hideStoreReviewWarningModal());
+  }
+);
 
 export const leaveButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/leaveButtonClicked',
-  async () => {}
+  async (_, { dispatch }) => {
+    await dispatch(hideStoreReviewWarningModal());
+    await dispatch(goBack());
+  }
 );
 
 export const okayButtonClicked = createAsyncThunk(

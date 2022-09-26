@@ -1,6 +1,8 @@
-import React, { useCallback } from 'react';
+import _get from 'lodash/get';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useMount, useUnmount } from 'react-use';
+import { useLocation } from 'react-router-dom';
+import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -13,9 +15,9 @@ import Rating from '../../components/Rating';
 import Hint from '../../../../../common/components/Hint';
 import Tag from '../../../../../common/components/Tag';
 import ThankYouModal from './components/ThankYouModal';
+import WarningModal from './components/WarningModal';
 import styles from './StoreReview.module.scss';
 import StoreReviewImg from '../../../../../images/store-review.svg';
-import { actions } from '../../redux/common';
 import {
   getStoreComment,
   getStoreFullDisplayName,
@@ -24,19 +26,16 @@ import {
   getHasStoreReviewed,
   getIsMerchantContactAllowable,
 } from '../../redux/selector';
-import { getHasCommentCharLimitExceeded, getShouldDisableSubmitButton } from './redux/selectors';
-import { mounted, unmounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
-import { STORE_REVIEW_SHIPPING_TYPES } from './constants';
+import { mounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
+import { STORE_REVIEW_SHIPPING_TYPES, STORE_REVIEW_COMMENT_CHAR_MAX } from './constants';
 
 const StoreReview = () => {
   const dispatch = useDispatch();
+  const { state: locationState } = useLocation();
+  const selectedRating = _get(locationState, 'rating', 0);
 
   useMount(() => {
     dispatch(mounted());
-  });
-
-  useUnmount(() => {
-    dispatch(unmounted());
   });
 
   const { t } = useTranslation('OrderingThankYou');
@@ -47,30 +46,59 @@ const StoreReview = () => {
 
   const shippingType = useSelector(getStoreShippingType);
 
-  const rating = useSelector(getStoreRating);
+  const storeRating = useSelector(getStoreRating);
 
   const allowContact = useSelector(getIsMerchantContactAllowable);
 
-  const shouldDisableSubmitButton = useSelector(getShouldDisableSubmitButton);
+  const storeComment = useSelector(getStoreComment);
 
-  const hasCommentCharLimitExceeded = useSelector(getHasCommentCharLimitExceeded);
+  const [rating, setRating] = useState(selectedRating || storeRating);
 
-  const reviewContents = useSelector(getStoreComment);
+  const [comments, setComments] = useState(storeComment);
 
-  const handleChangeComment = useCallback(event => dispatch(actions.updateStoreComment(event.target.value)), [
-    dispatch,
+  const [isContactAllowable, setIsContactAllowable] = useState(allowContact);
+
+  const hasRated = useMemo(() => rating > 0, [rating]);
+
+  const hasCommentCharLimitExceeded = useMemo(() => comments.length > STORE_REVIEW_COMMENT_CHAR_MAX, [comments]);
+
+  const shouldDisableSubmitButton = useMemo(() => !hasRated || hasCommentCharLimitExceeded, [
+    hasRated,
+    hasCommentCharLimitExceeded,
   ]);
 
-  const handleChangeRating = useCallback(val => dispatch(actions.updateStoreRating(val)), [dispatch]);
+  const handleChangeComment = useCallback(event => setComments(event.target.value), [setComments]);
 
-  const handleToggleContactConsent = useCallback(
-    event => dispatch(actions.updateIsMerchantContactAllowable(event.target.checked)),
-    [dispatch]
+  const handleChangeRating = useCallback(val => setRating(val), [setRating]);
+
+  const handleToggleContactConsent = useCallback(event => setIsContactAllowable(event.target.checked), [
+    setIsContactAllowable,
+  ]);
+
+  const handleClickBackButton = useCallback(
+    () => dispatch(backButtonClicked({ rating, comments, isMerchantContactAllowable: isContactAllowable })),
+    [dispatch, rating, comments, isContactAllowable]
   );
 
-  const handleClickBackButton = useCallback(() => dispatch(backButtonClicked()), [dispatch]);
+  const handleClickSubmitButton = useCallback(
+    () => dispatch(submitButtonClicked({ rating, comments, allowMerchantContact: isContactAllowable })),
+    [dispatch, rating, comments, isContactAllowable]
+  );
 
-  const handleClickSubmitButton = useCallback(() => dispatch(submitButtonClicked()), [dispatch]);
+  useEffect(() => {
+    // BEEP-3153: Only update the rating when it has value. Otherwise, the rating will be updated here accidentally even if we want to show the rating selected from the thank you page.
+    if (storeRating) {
+      setRating(storeRating);
+    }
+  }, [storeRating]);
+
+  useEffect(() => {
+    setComments(comments);
+  }, [comments]);
+
+  useEffect(() => {
+    setIsContactAllowable(isContactAllowable);
+  }, [isContactAllowable]);
 
   return (
     <Frame>
@@ -98,13 +126,13 @@ const StoreReview = () => {
         </div>
 
         {storeHasReviewed ? (
-          (reviewContents || '').length ? (
+          (comments || '').length ? (
             <>
               <div className="tw-flex tw-m-16 sm:tw-m-16px">
                 <TextareaAutosize
                   className={`${styles.StoreReviewContainerTextareaInput} tw-border tw-border-solid tw-rounded-sm tw-border-gray-400`}
                   minRows={4}
-                  value={reviewContents}
+                  value={comments}
                 />
               </div>
             </>
@@ -141,7 +169,7 @@ const StoreReview = () => {
                   className={`${styles.StoreReviewContainerTextareaInput} tw-border-0`}
                   onChange={handleChangeComment}
                   minRows={4}
-                  value={reviewContents}
+                  value={comments}
                   placeholder={t('TellExperience')}
                 />
               </div>
@@ -158,7 +186,7 @@ const StoreReview = () => {
           <CheckBox
             size="small"
             className="tw-m-2 sm:tw-m-2px"
-            checked={allowContact}
+            checked={isContactAllowable}
             onChange={handleToggleContactConsent}
           />
           <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
@@ -177,6 +205,7 @@ const StoreReview = () => {
         </PageFooter>
       </section>
       <ThankYouModal />
+      <WarningModal />
     </Frame>
   );
 };
