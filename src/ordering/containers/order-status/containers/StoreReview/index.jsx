@@ -93,12 +93,12 @@ const StoreReview = () => {
   }, [storeRating]);
 
   useEffect(() => {
-    setComments(comments);
-  }, [comments]);
+    setComments(storeComment);
+  }, [storeComment]);
 
   useEffect(() => {
-    setIsContactAllowable(isContactAllowable);
-  }, [isContactAllowable]);
+    setIsContactAllowable(allowContact);
+  }, [allowContact]);
 
   return (
     <Frame>
