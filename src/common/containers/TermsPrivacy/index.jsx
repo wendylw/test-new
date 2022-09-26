@@ -32,12 +32,9 @@ export class TermsPrivacy extends Component {
   async componentDidMount() {
     const { pageName } = this.props;
 
-    const data = await getFiles(pageName)
-      .then(response => response.text())
-      .then(fileData => fileData)
-      .catch(error => {
-        logger.error('Site_TermsPrivacy_LoadFileFailed', error);
-      });
+    const data = await getFiles(pageName).catch(error => {
+      logger.error('Site_TermsPrivacy_LoadFileFailed', error);
+    });
 
     this.setState({ termsPrivacyData: data });
   }
