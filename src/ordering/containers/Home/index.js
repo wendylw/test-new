@@ -705,7 +705,7 @@ class Home extends Component {
           </span>
         );
       case DELIVERY_METHOD.TAKE_AWAY:
-        return <span className="flex__shrink-fixed padding-normal text-opacity">{t('TakeAway').toUpperCase()}</span>;
+        return <span className="flex__shrink-fixed padding-normal text-opacity tw-uppercase">{t('TakeAway')}</span>;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
         return h || (allStore && allStore.length === 1) ? (
