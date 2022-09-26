@@ -17,7 +17,7 @@ export const mounted = createAsyncThunk('ordering/foodCourt/common/mounted', asy
   const shippingType = getShippingType(state);
 
   try {
-    const foodCourtStoreList = await fetchFoodCourtStoreList(foodCourtId, shippingType);
+    const foodCourtStoreList = await fetchFoodCourtStoreList({ foodCourtId, type: shippingType });
 
     return foodCourtStoreList;
   } catch (e) {
