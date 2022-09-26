@@ -10,5 +10,9 @@
 }
 
 .StoreReviewFooter {
-  @apply tw-flex tw-p-8 sm:tw-p-8px tw-shadow-xl;
+  @apply tw-flex tw-p-8 sm:tw-p-8px;
+}
+
+.StoreReviewOpacity {
+  @apply tw-opacity-40;
 }

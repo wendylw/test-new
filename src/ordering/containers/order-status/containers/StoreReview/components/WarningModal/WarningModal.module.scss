@@ -1,19 +1,19 @@
-.ThankYouModalContainer {
+.WarningModalContainer {
   @apply tw-flex tw-flex-grow-0 tw-items-center tw-flex-col tw-px-8 sm:tw-px-8px tw-pt-16 sm:tw-pt-16px tw-pb-8 sm:tw-pb-8px tw-text-center;
 }
 
-.ThankYouModalTitle {
+.WarningModalTitle {
   @apply tw-text-center tw-font-bold tw-text-xl tw-leading-normal tw-px-8 sm:tw-px-8px;
 }
 
-.ThankYouModalDescription {
+.WarningModalDescription {
   @apply tw-text-gray-700 tw-text-base tw-leading-relaxed sm:tw-m-8px tw-m-8;
 }
 
-.ThankYouModalButtonWrapper {
+.WarningModalButtonWrapper {
   @apply tw-flex tw-flex-1 tw-w-full tw-items-center tw-justify-around;
 }
 
-.ThankYouModalButton {
+.WarningModalButton {
   @apply tw-w-full tw-m-8 sm:tw-m-8px tw-p-16 sm:tw-p-16px tw-rounded tw-font-bold tw-uppercase;
 }

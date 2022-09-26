@@ -26,7 +26,7 @@ const ThankYouModal = () => {
   const isCommentEmpty = useSelector(getIsCommentEmpty);
   const isTNGMiniProgram = useSelector(getIsTNGMiniProgram);
   const isHighRatedReview = useSelector(getIsHighRatedReview);
-  const isThankYouModalVisible = useSelector(getIsStoreThankYouModalVisible);
+  const isModalVisible = useSelector(getIsStoreThankYouModalVisible);
   const shouldShowOkayButtonOnly = useSelector(getShouldShowOkayButtonOnly);
   const isGoogleReviewURLAvailable = useSelector(getIsGoogleReviewURLAvailable);
 
@@ -63,7 +63,7 @@ const ThankYouModal = () => {
   const clickOkayButtonHandler = useCallback(async () => dispatch(okayButtonClicked()), [dispatch]);
 
   return (
-    <Modal show={isThankYouModalVisible} className={styles.ThankYouModalContainer} disableBackButtonSupport>
+    <Modal show={isModalVisible} className={styles.ThankYouModalContainer} disableBackButtonSupport>
       <h2 className={styles.ThankYouModalTitle}>{title}</h2>
       {description && <p className={styles.ThankYouModalDescription}>{description}</p>}
       <div className={styles.ThankYouModalButtonWrapper}>
