@@ -1,0 +1,19 @@
+@import "../../../Variables.scss";
+
+.result {
+  @apply tw-top-0 tw-h-full tw-bg-white tw-z-100;
+}
+
+.resultContent {
+  @apply tw-flex tw-flex-col tw-flex-1 tw-relative tw-p-16 sm:tw-p-16px;
+
+  top: 15vh;
+}
+
+.resultFooter {
+  @apply tw-flex tw-justify-center tw-py-16 sm:tw-py-16px;
+}
+
+.closeButtonClassName {
+  min-width: 120px;
+}

@@ -78,6 +78,7 @@ const Modal = props => {
   if (mountAtRoot) {
     return createPortal(renderContent, document.getElementById('modal-mount-point'));
   }
+
   return renderContent;
 };
 
