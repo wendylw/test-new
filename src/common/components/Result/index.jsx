@@ -61,17 +61,6 @@ const Result = props => {
       {children}
       <div className={styles.resultFooter}>
         <Button
-          type="secondary"
-          className={`${styles.closeButtonClassName} tw-uppercase${
-            closeButtonClassName ? ` ${closeButtonClassName}` : ''
-          }`}
-          onClick={onClose}
-          style={closeButtonStyle}
-          size="small"
-        >
-          {closeButtonContent || t('OK')}
-        </Button>
-        <Button
           type="primary"
           className={`${styles.closeButtonClassName} tw-uppercase${
             closeButtonClassName ? ` ${closeButtonClassName}` : ''
