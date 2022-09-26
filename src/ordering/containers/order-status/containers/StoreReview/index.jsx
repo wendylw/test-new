@@ -1,16 +1,18 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMount, useUnmount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import TextareaAutosize from 'react-textarea-autosize';
 import Button from '../../../../../common/components/Button';
-import HybridHeader from '../../../../../components/HybridHeader';
+import PageFooter from '../../../../../common/components/PageFooter';
+import PageHeader from '../../../../../common/components/PageHeader';
 import CheckBox from '../../../../../common/components/CheckBox';
 import Frame from '../../../../../common/components/Frame';
 import Rating from '../../components/Rating';
 import Hint from '../../../../../common/components/Hint';
 import Tag from '../../../../../common/components/Tag';
+import ThankYouModal from './components/ThankYouModal';
 import styles from './StoreReview.module.scss';
 import StoreReviewImg from '../../../../../images/store-review.svg';
 import { actions } from '../../redux/common';
@@ -25,7 +27,6 @@ import {
 import { getHasCommentCharLimitExceeded, getShouldDisableSubmitButton } from './redux/selectors';
 import { mounted, unmounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES } from './constants';
-import PageFooter from '../../../../../common/components/PageFooter';
 
 const StoreReview = () => {
   const dispatch = useDispatch();
@@ -38,15 +39,7 @@ const StoreReview = () => {
     dispatch(unmounted());
   });
 
-  useMount(() => {
-    dispatch(mounted());
-  });
-
-  useUnmount(() => {
-    dispatch(unmounted());
-  });
-
-  const { t, i18n } = useTranslation('OrderingThankYou');
+  const { t } = useTranslation('OrderingThankYou');
 
   const storeHasReviewed = useSelector(getHasStoreReviewed);
 
@@ -82,13 +75,7 @@ const StoreReview = () => {
   return (
     <Frame>
       <section>
-        <HybridHeader
-          className="flex-middle border__bottom-divider"
-          contentClassName="flex-middle"
-          isPage
-          title={t('StoreReview')}
-          navFunc={handleClickBackButton}
-        />
+        <PageHeader title={t('StoreReview')} onBackArrowClick={handleClickBackButton} />
         <div className="tw-flex tw-flex-col tw-justify-center tw-items-center">
           <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
           <div className="tw-flex tw-justify-center tw-leading-normal">
@@ -145,7 +132,7 @@ const StoreReview = () => {
               <div
                 className={`${
                   hasCommentCharLimitExceeded ? 'tw-border-red' : 'tw-border-gray-400'
-                } tw-border tw-border-t-0 tw-border-l-0 tw-border-r-0 tw-border-solid tw-text-lg tw-font-bold tw-align-middle tw-leading-normal tw-py-4 sm:py-4px tw-pl-12 sm:tw-pl-12px`}
+                } tw-border tw-border-t-0 tw-border-l-0 tw-border-r-0 tw-border-solid tw-align-middle tw-font-bold tw-text-lg tw-leading-normal tw-py-8 sm:tw-py-8px tw-pl-12 sm:tw-pl-12px`}
               >
                 {t('WriteReview')}
               </div>
@@ -167,7 +154,7 @@ const StoreReview = () => {
           </>
         )}
 
-        <div className="tw-flex tw-mx-16 sm:tw-mx-16px">
+        <div className="tw-flex tw-mx-16 sm:tw-mx-16px tw-mb-24 sm:tw-mb-24px">
           <CheckBox
             size="small"
             className="tw-m-2 sm:tw-m-2px"
@@ -177,16 +164,19 @@ const StoreReview = () => {
           <span className="tw-ml-4 sm:tw-ml-4px tw-leading-loose">{t('AllowContact')}</span>
         </div>
 
-        <PageFooter className={styles.StoreReviewFooter}>
-          <Button
-            disabled={shouldDisableSubmitButton}
-            onClick={handleClickSubmitButton}
-            className="tw-w-full tw-uppercase"
-          >
-            {t('Submit')}
-          </Button>
+        <PageFooter>
+          <div className={styles.StoreReviewFooter}>
+            <Button
+              disabled={shouldDisableSubmitButton}
+              onClick={handleClickSubmitButton}
+              className="tw-w-full tw-uppercase"
+            >
+              {t('Submit')}
+            </Button>
+          </div>
         </PageFooter>
       </section>
+      <ThankYouModal />
     </Frame>
   );
 };

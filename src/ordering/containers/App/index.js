@@ -23,7 +23,7 @@ import faviconImage from '../../../images/favicon.ico';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
-import { SOURCE_TYPE } from '../Menu/constants';
+import { SOURCE_TYPE } from '../../../common/utils/constants';
 import { isURL } from '../../../common/utils';
 
 const { ROUTER_PATHS } = Constants;

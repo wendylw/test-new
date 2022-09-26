@@ -53,6 +53,8 @@
   "41017Description": "Please specify cancellation reason and try again.",
   "40024Title": "Oops! This is awkward…",
   "40024Description": "Looks like you’ve entered this email before. Please try logging in or use a different email address.",
+  "40028Title": "Submission Failed (Error: 40028)",
+  "40028Description": "This store review has already submitted.",
   "54023Title": "Cancellation Error (Error: 54023)",
   "54023Description": "Your order cannot be cancelled. Please contact customer support if you wish to proceed.",
   "54028Title": "Cancellation Error (Error: 54028)",

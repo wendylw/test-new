@@ -39,7 +39,7 @@ import {
   getHasSelectedProductItemInfo,
 } from './selectors';
 import { queryCartAndStatus, clearQueryCartStatus } from '../../../../redux/cart/thunks';
-import { PATH_NAME_MAPPING, SHIPPING_TYPES } from '../../../../../common/utils/constants';
+import { PATH_NAME_MAPPING, SHIPPING_TYPES, SOURCE_TYPE } from '../../../../../common/utils/constants';
 import {
   getExpectedDeliveryDateFromSession,
   getFilteredQueryString,
@@ -62,7 +62,7 @@ import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
 import { resetAddressListStatus } from '../../../../redux/modules/addressList/thunks';
 import { getStoreById } from '../../../../../redux/modules/entities/stores';
-import { SOURCE_TYPE, STORE_OPENING_STATUS } from '../../constants';
+import { STORE_OPENING_STATUS } from '../../constants';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);

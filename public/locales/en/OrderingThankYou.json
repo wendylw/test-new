@@ -113,5 +113,17 @@
   "WriteReview": "Write a review",
   "AllowContact": "Allow this store to contact me directly",
   "Submit": "Submit",
-  "ExceedMaximum": "Exceeded the character limit"
+  "ExceedMaximum": "Exceeded the character limit",
+  "NoThanks": "No, thanks",
+  "RateNow": "Rate now",
+  "CopyAndRate": "Copy & rate",
+  "ReviewTextCopiedTip": "Review text copied. You may paste it on Google review",
+  "ThankYouModalLowRatingTitle": "Thanks for your feedback!",
+  "ThankYouModalLowRatingDescription": "We’ll make things better for your next order",
+  "ThankYouModalHighRatingTitle": "That’s awesome! Thanks for your feedback!",
+  "ThankYouModalHighRatingGoogleReviewTitle": "Thanks for your review!<0></0>How about rating us on Google?",
+  "ThankYouModalHighRatingGoogleReviewDescriptionWithComment": "It’ll really help us. Your text review will be automatically copied!",
+  "ThankYouModalHighRatingGoogleReviewDescriptionWithoutComment": "It’ll really help us",
+  "SubmissionFailedTitle": "Submission Failed",
+  "SubmissionFailedDescription": "We could not process your submission. Please check your network and try again"
 }
