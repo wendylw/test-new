@@ -12,7 +12,9 @@ import {
   getIfStoreReviewInfoExists,
   getStoreRating,
   getStoreComment,
+  getStoreTableId,
   getHasStoreReviewed,
+  getStoreShippingType,
   getStoreGoogleReviewURL,
   getIsMerchantContactAllowable,
 } from '../../../redux/selector';
@@ -28,7 +30,7 @@ import {
 import { STORE_REVIEW_SOURCE_TYPE_MAPPING } from '../constants';
 import { PATH_NAME_MAPPING, SOURCE_TYPE } from '../../../../../../common/utils/constants';
 import { toast } from '../../../../../../common/utils/feedback';
-import { getFilteredQueryString, getSessionVariable } from '../../../../../../common/utils';
+import { getSessionVariable, getQueryString } from '../../../../../../common/utils';
 import { copyDataToClipboard } from '../../../../../../utils/utils';
 import { FEEDBACK_STATUS } from '../../../../../../common/utils/feedback/utils';
 import CleverTap from '../../../../../../utils/clevertap';
@@ -36,6 +38,10 @@ import CleverTap from '../../../../../../utils/clevertap';
 export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack', async (_, { getState, dispatch }) => {
   const state = getState();
   const isWebview = getIsWebview(state);
+  const tableId = getStoreTableId(state);
+  const options = [`h=${getQueryString('h')}`];
+  // BEEP-3153: if user chooses to leave before the API response receive, we retrieve shipping type from URL by default.
+  const shippingType = getStoreShippingType(state) || getQueryString('type');
   const sourceType = getSessionVariable('BeepOrderingSource');
 
   switch (sourceType) {
@@ -49,11 +55,19 @@ export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack'
       dispatch(historyGoBack());
       break;
     default:
+      if (tableId) {
+        options.push(`table=${tableId}`);
+      }
+
+      if (shippingType) {
+        options.push(`type=${shippingType}`);
+      }
+
       // By default, go to the menu page
       dispatch(
         push({
           pathname: PATH_NAME_MAPPING.ORDERING_HOME,
-          search: getFilteredQueryString('receiptNumber'),
+          search: `?${options.join('&')}`,
         })
       );
       break;

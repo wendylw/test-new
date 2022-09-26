@@ -68,6 +68,7 @@ const { reducer, actions } = createSlice({
       state.storeReviewInfo.data.shippingType = _get(transaction, 'shippingType', null);
       state.storeReviewInfo.data.orderId = _get(transaction, 'receiptNumber', null);
       state.storeReviewInfo.data.storeId = _get(transaction, 'storeId', null);
+      state.storeReviewInfo.data.tableId = _get(transaction, 'tableId', null);
       state.storeReviewInfo.loadDataRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
     [loadOrderStoreReview.rejected.type]: (state, { error }) => {

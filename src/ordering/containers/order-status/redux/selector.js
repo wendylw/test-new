@@ -120,6 +120,11 @@ export const getStoreComment = createSelector(
   storeReviewInfoData => _get(storeReviewInfoData, 'comments', '') || ''
 );
 
+export const getStoreTableId = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => storeReviewInfoData.tableId
+);
+
 export const getStoreFullDisplayName = createSelector(
   getStoreReviewInfoData,
   storeReviewInfoData => _get(storeReviewInfoData, 'storeDisplayName', '') || _get(storeReviewInfoData, 'storeName', '')
