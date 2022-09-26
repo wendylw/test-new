@@ -93,18 +93,23 @@ const StoreReview = () => {
           </div>
         </div>
 
-        <div className="tw-my-24 sm:tw-my-24px">
-          <Rating initialStarNum={rating} onRatingChanged={handleChangeRating} />
+        <div className={`tw-my-24 sm:tw-my-24px ${storeHasReviewed ? styles.StoreReviewOpacity : ''}`}>
+          <Rating
+            initialStarNum={rating}
+            onRatingChanged={storeHasReviewed ? () => {} : handleChangeRating}
+            disableRatingChange={storeHasReviewed}
+          />
         </div>
 
         {storeHasReviewed ? (
           (reviewContents || '').length ? (
             <>
-              <div className="tw-flex tw-m-16 sm:tw-m-16px">
+              <div className={`tw-flex tw-m-16 sm:tw-m-16px ${storeHasReviewed ? styles.StoreReviewOpacity : ''}`}>
                 <TextareaAutosize
                   className={`${styles.StoreReviewContainerTextareaInput} tw-border tw-border-solid tw-rounded-sm tw-border-gray-400`}
                   minRows={4}
                   value={reviewContents}
+                  disabled={storeHasReviewed}
                 />
               </div>
             </>
@@ -154,7 +159,11 @@ const StoreReview = () => {
           </>
         )}
 
-        <div className="tw-flex tw-mx-16 sm:tw-mx-16px tw-mb-24 sm:tw-mb-24px">
+        <div
+          className={`tw-flex tw-mx-16 sm:tw-mx-16px tw-mb-24 sm:tw-mb-24px ${
+            storeHasReviewed ? styles.StoreReviewOpacity : ''
+          }`}
+        >
           <CheckBox
             size="small"
             className="tw-m-2 sm:tw-m-2px"

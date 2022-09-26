@@ -6,7 +6,15 @@ import styles from './Rating.module.scss';
 
 const STAR_SIZES = [16, 24, 36, 48];
 
-const Rating = ({ className, initialStarNum, totalStarNum, showText, starSize, onRatingChanged }) => {
+const Rating = ({
+  className,
+  initialStarNum,
+  totalStarNum,
+  showText,
+  starSize,
+  onRatingChanged,
+  disableRatingChange,
+}) => {
   const { t } = useTranslation('OrderingThankYou');
 
   const [rating, setRating] = useState(initialStarNum);
@@ -17,10 +25,12 @@ const Rating = ({ className, initialStarNum, totalStarNum, showText, starSize, o
 
   const handleUpdateRating = useCallback(
     key => {
-      setRating(key);
-      onRatingChanged(key);
+      if (!disableRatingChange) {
+        setRating(key);
+        onRatingChanged(key);
+      }
     },
-    [setRating, onRatingChanged]
+    [disableRatingChange, setRating, onRatingChanged]
   );
 
   const text = useMemo(() => {
@@ -70,6 +80,7 @@ Rating.propTypes = {
   totalStarNum: PropTypes.number,
   showText: PropTypes.bool,
   starSize: PropTypes.oneOf(Object.values(STAR_SIZES)),
+  disableRatingChange: PropTypes.bool,
 };
 
 Rating.defaultProps = {
@@ -79,6 +90,7 @@ Rating.defaultProps = {
   totalStarNum: 5,
   showText: true,
   starSize: 48,
+  disableRatingChange: false,
 };
 
 Rating.displayName = 'Rating';
