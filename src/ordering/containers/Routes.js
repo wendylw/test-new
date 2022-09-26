@@ -31,7 +31,9 @@ const SavedCards = lazy(() => Utils.attemptLoad(() => import('./payments/contain
 const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards/CVV')));
 const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
 const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
-const StoreReview = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/StoreReview')));
+const StoreReviewProxy = lazy(() =>
+  Utils.attemptLoad(() => import('./order-status/containers/StoreReview/StoreReviewProxy'))
+);
 const TableSummary = lazy(() => Utils.attemptLoad(() => import('./TableSummary')));
 const FoodCourt = lazy(() => Utils.attemptLoad(() => import('./food-court')));
 
@@ -83,7 +85,7 @@ class Routes extends Component {
               component={ContactDetail}
             />
             <Route exact path={ROUTER_PATHS.FOOD_COURT} component={FoodCourt} />
-            <Route exact path={ROUTER_PATHS.STORE_REVIEW} component={StoreReview} />
+            <Route exact path={ROUTER_PATHS.STORE_REVIEW} component={StoreReviewProxy} />
             <Route path={'*'} component={NotFound} />
           </Switch>
         </Suspense>
