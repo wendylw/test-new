@@ -13,8 +13,9 @@ const Result = props => {
   const {
     header,
     children,
-    show,
     mountAtRoot,
+    isFullScreen,
+    show,
     className,
     closeButtonContent,
     closeButtonClassName,
@@ -57,35 +58,37 @@ const Result = props => {
   }, [children, show]);
 
   const renderContent = (
-    <div className={`${styles.resultContent} ${className}`}>
-      {children}
-      <div className={styles.resultFooter}>
-        <Button
-          type="primary"
-          className={`${styles.closeButtonClassName} tw-uppercase${
-            closeButtonClassName ? ` ${closeButtonClassName}` : ''
-          }`}
-          onClick={onClose}
-          style={closeButtonStyle}
-          size="small"
-        >
-          {closeButtonContent || t('Okay')}
-        </Button>
+    <>
+      {header}
+      <div className={`${styles.resultContent} ${className}`}>
+        {children}
+        <div className={styles.resultFooter}>
+          <Button
+            type="primary"
+            className={`${styles.closeButtonClassName} tw-uppercase${
+              closeButtonClassName ? ` ${closeButtonClassName}` : ''
+            }`}
+            onClick={onClose}
+            style={closeButtonStyle}
+            size="small"
+          >
+            {closeButtonContent || t('Okay')}
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
+  );
+  const fullScreenResult = (
+    <FullScreenFrame className="tw-bg-white" zIndex={zIndex}>
+      {renderContent}
+    </FullScreenFrame>
   );
 
   if (mountAtRoot) {
-    return createPortal(
-      <FullScreenFrame className="tw-bg-white" zIndex={zIndex}>
-        {header}
-        {renderContent}
-      </FullScreenFrame>,
-      document.getElementById('modal-mount-point')
-    );
+    return createPortal(fullScreenResult, document.getElementById('modal-mount-point'));
   }
 
-  return renderContent;
+  return isFullScreen ? fullScreenResult : renderContent;
 };
 
 Result.displayName = 'Result';
@@ -93,6 +96,7 @@ Result.displayName = 'Result';
 Result.propTypes = {
   header: PropTypes.node,
   children: PropTypes.node,
+  isFullScreen: PropTypes.bool,
   show: PropTypes.bool,
   mountAtRoot: PropTypes.bool,
   closeByBackButton: PropTypes.bool,
@@ -109,7 +113,9 @@ Result.propTypes = {
 
 Result.defaultProps = {
   header: null,
+  container: null,
   children: null,
+  isFullScreen: false,
   show: false,
   mountAtRoot: false,
   closeButtonContent: null,
