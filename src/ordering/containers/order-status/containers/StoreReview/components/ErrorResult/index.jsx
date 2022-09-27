@@ -7,7 +7,7 @@ import PageHeader from '../../../../../../../common/components/PageHeader';
 import ResultContent from '../../../../../../../common/components/Result/ResultContent';
 import { goBack } from '../../redux/thunks';
 
-const ErrorResult = ({ title, content, onCloseButtonClick }) => {
+const ErrorResult = ({ title, content, buttonText, imageSrc, onCloseButtonClick }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation('OrderingThankYou');
 
@@ -17,11 +17,12 @@ const ErrorResult = ({ title, content, onCloseButtonClick }) => {
     <Result
       show
       mountAtRoot
+      closeButtonContent={buttonText}
       onClose={onCloseButtonClick}
       header={<PageHeader title={t('StoreReview')} onBackArrowClick={handleClickBackButton} />}
       disableBackButtonSupport
     >
-      <ResultContent content={content} title={title} />
+      <ResultContent content={content} title={title} imageSrc={imageSrc} />
     </Result>
   );
 };
@@ -31,12 +32,16 @@ ErrorResult.displayName = 'ErrorResult';
 ErrorResult.propTypes = {
   title: PropTypes.string,
   content: PropTypes.string,
+  buttonText: PropTypes.string,
+  imageSrc: PropTypes.string,
   onCloseButtonClick: PropTypes.func,
 };
 
 ErrorResult.defaultProps = {
   title: '',
   content: '',
+  buttonText: '',
+  imageSrc: '',
   onCloseButtonClick: () => {},
 };
 

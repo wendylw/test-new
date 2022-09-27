@@ -5,7 +5,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import StoreReview from '.';
 import ErrorResult from './components/ErrorResult';
 import Frame from '../../../../../common/components/Frame';
-import { mounted, goToMenuPage } from './redux/thunks';
+import PageLoader from '../../../../../components/PageLoader';
+import BeepErrorImage from '../../../../../images/network-error.svg';
+import { mounted, ErrorResultOkayButtonClicked as okayButtonClicked, retryButtonClicked } from './redux/thunks';
+import { getShouldShowPageLoader, getShouldShowUnsupportedError } from './redux/selectors';
 import { getIsStoreReviewExpired, getIsStoreReviewable } from '../../redux/selector';
 
 const StoreReviewProxy = () => {
@@ -16,14 +19,19 @@ const StoreReviewProxy = () => {
     dispatch(mounted());
   });
 
+  const shouldShowPageLoader = useSelector(getShouldShowPageLoader);
   const shouldShowExpiredError = useSelector(getIsStoreReviewExpired);
+  const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
   const shouldShowSurveySheet = useSelector(getIsStoreReviewable);
 
-  const handleClickOkayButton = useCallback(() => dispatch(goToMenuPage()), [dispatch]);
+  const handleClickOkayButton = useCallback(() => dispatch(okayButtonClicked()), [dispatch]);
+  const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);
 
   return (
     <Frame>
-      {shouldShowSurveySheet ? (
+      {shouldShowPageLoader ? (
+        <PageLoader />
+      ) : shouldShowSurveySheet ? (
         <StoreReview />
       ) : shouldShowExpiredError ? (
         <ErrorResult
@@ -31,11 +39,19 @@ const StoreReviewProxy = () => {
           content={t('ExpiredErrorDescription')}
           onCloseButtonClick={handleClickOkayButton}
         />
-      ) : (
+      ) : shouldShowUnsupportedError ? (
         <ErrorResult
           title={t('UnsupportedErrorTitle')}
           content={t('UnsupportedErrorDescription')}
           onCloseButtonClick={handleClickOkayButton}
+        />
+      ) : (
+        <ErrorResult
+          title={t('NetworkErrorTitle')}
+          content={t('NetworkErrorDescription')}
+          imageSrc={BeepErrorImage}
+          buttonText={t('Retry')}
+          onCloseButtonClick={handleClickRetryButton}
         />
       )}
     </Frame>

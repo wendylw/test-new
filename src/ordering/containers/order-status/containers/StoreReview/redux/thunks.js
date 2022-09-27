@@ -7,6 +7,7 @@ import {
   hideStoreReviewThankYouModal,
   showStoreReviewWarningModal,
   hideStoreReviewWarningModal,
+  showStoreReviewLoadingIndicator,
 } from '../../../redux/thunks';
 import {
   getIfStoreReviewInfoExists,
@@ -27,7 +28,7 @@ import {
   BROWSER_TYPES,
   BEEP_MODULE_METHODS,
 } from '../../../../../../utils/native-methods';
-import { STORE_REVIEW_SOURCE_TYPE_MAPPING } from '../constants';
+import { STORE_REVIEW_SOURCE_TYPE_MAPPING, STORE_REVIEW_TEXT_COPIED_TIP_DURATION } from '../constants';
 import { PATH_NAME_MAPPING, SOURCE_TYPE } from '../../../../../../common/utils/constants';
 import { toast } from '../../../../../../common/utils/feedback';
 import { getSessionVariable, getQueryString } from '../../../../../../common/utils';
@@ -85,7 +86,7 @@ export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack'
 
 export const openGoogleReviewURL = createAsyncThunk(
   'ordering/orderStatus/storeReview/openGoogleReviewURL',
-  async (_, { getState }) => {
+  async (_, { getState, dispatch }) => {
     const state = getState();
     const isWebview = getIsWebview(state);
     const googleReviewUrl = getStoreGoogleReviewURL(state);
@@ -98,6 +99,7 @@ export const openGoogleReviewURL = createAsyncThunk(
     const hasOpenBrowserURLSupport = hasMethodInNative(BEEP_MODULE_METHODS.OPEN_BROWSER_URL);
 
     if (!hasOpenBrowserURLSupport) {
+      await dispatch(showStoreReviewLoadingIndicator());
       window.location.href = googleReviewUrl;
       return;
     }
@@ -190,7 +192,7 @@ export const leaveButtonClicked = createAsyncThunk(
   }
 );
 
-export const okayButtonClicked = createAsyncThunk(
+export const thankYouModalOkayButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/okayButtonClicked',
   async (_, { dispatch }) => {
     await dispatch(hideStoreReviewThankYouModal());
@@ -252,8 +254,21 @@ export const copyRateButtonClicked = createAsyncThunk(
 
     await copyDataToClipboard(comment);
 
-    toast(i18next.t(`OrderingThankYou:ReviewTextCopiedTip`), { type: FEEDBACK_STATUS.SUCCESS });
-
+    await toast(i18next.t(`OrderingThankYou:ReviewTextCopiedTip`), {
+      type: FEEDBACK_STATUS.SUCCESS,
+      duration: STORE_REVIEW_TEXT_COPIED_TIP_DURATION,
+    });
     await dispatch(openGoogleReviewURL());
   }
+);
+
+export const ErrorResultOkayButtonClicked = createAsyncThunk(
+  'ordering/orderStatus/storeReview/okayButtonClicked',
+  async (_, { dispatch }) => {
+    await dispatch(goToMenuPage());
+  }
+);
+
+export const retryButtonClicked = createAsyncThunk('ordering/orderStatus/storeReview/retryButtonClicked', async () =>
+  window.location.reload()
 );

@@ -47,6 +47,16 @@ export const hideStoreReviewWarningModal = createAsyncThunk(
   async () => {}
 );
 
+export const showStoreReviewLoadingIndicator = createAsyncThunk(
+  'ordering/orderStatus/common/showStoreReviewLoadingIndicator',
+  async () => {}
+);
+
+export const hideStoreReviewLoadingIndicator = createAsyncThunk(
+  'ordering/orderStatus/common/hideStoreReviewLoadingIndicator',
+  async () => {}
+);
+
 export const loadOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/loadOrderStoreReview',
   async (_, { getState }) => {
@@ -64,11 +74,15 @@ export const saveOrderStoreReview = createAsyncThunk(
     const orderId = getReceiptNumber(state);
 
     try {
+      await dispatch(showStoreReviewLoadingIndicator());
       await postOrderStoreReview({ orderId, rating, comments, allowMerchantContact });
+      await dispatch(hideStoreReviewLoadingIndicator());
       await dispatch(showStoreReviewThankYouModal());
 
       return { rating, comments, allowMerchantContact };
     } catch (e) {
+      await dispatch(hideStoreReviewLoadingIndicator());
+
       if (e.code === '40028') {
         alert(i18next.t('ApiError:40028Description'), {
           title: i18next.t('ApiError:40028Title'),

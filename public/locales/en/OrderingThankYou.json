@@ -133,5 +133,7 @@
   "ExpiredErrorTitle": "Oops, review for this order has expired",
   "ExpiredErrorDescription": "Keep your review fresh on next order!",
   "UnsupportedErrorTitle": "Oops, review for this order is not supported",
-  "UnsupportedErrorDescription": "Make an order today and keep your review fresh!"
+  "UnsupportedErrorDescription": "Make an order today and keep your review fresh!",
+  "Loading": "Loading...",
+  "Retry": "Retry"
 }

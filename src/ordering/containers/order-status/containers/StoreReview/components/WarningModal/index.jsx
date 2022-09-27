@@ -26,18 +26,18 @@ const WarningModal = () => {
           className={styles.WarningModalButton}
           data-testid="refuseButton"
           data-heap-name="ordering.order-status.store-review.confirm.reject"
-          onClick={clickStayButtonHandler}
+          onClick={clickLeaveButtonHandler}
         >
-          {t('Stay')}
+          {t('Leave')}
         </Button>
         <Button
           type="primary"
           className={styles.WarningModalButton}
           data-testid="acceptButton"
           data-heap-name="ordering.order-status.store-review.confirm.accept"
-          onClick={clickLeaveButtonHandler}
+          onClick={clickStayButtonHandler}
         >
-          {t('Leave')}
+          {t('Stay')}
         </Button>
       </div>
     </Modal>

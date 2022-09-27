@@ -7,8 +7,11 @@ import {
   getStoreComment,
   getStoreGoogleReviewURL,
   getStoreReviewInfoData,
+  getIsStoreReviewSupportable,
+  getStoreReviewLoadDataRequest,
 } from '../../../redux/selector';
-import { STORE_REVIEW_HIGH_RATING } from '../constants';
+import { STORE_REVIEW_HIGH_RATING, STORE_REVIEW_ERROR_CODES } from '../constants';
+import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 
 export const getIsHighRatedReview = createSelector(getStoreRating, rating => rating >= STORE_REVIEW_HIGH_RATING);
 
@@ -34,3 +37,30 @@ export const getTransactionInfoForCleverTap = createSelector(getStoreReviewInfoD
   'store id': _get(storeReviewInfoData, 'storeId', ''),
   'shipping type': _get(storeReviewInfoData, 'shippingType', ''),
 }));
+
+export const getIsLoadDataRequestCompleted = createSelector(getStoreReviewLoadDataRequest, loadDataRequest =>
+  [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(loadDataRequest.status)
+);
+
+export const getIsLoadDataRequestStatusFulfilled = createSelector(
+  getStoreReviewLoadDataRequest,
+  loadDataRequest => loadDataRequest.status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getShouldShowPageLoader = createSelector(
+  getIsLoadDataRequestCompleted,
+  isLoadDataRequestCompleted => !isLoadDataRequestCompleted
+);
+
+export const getIsInvalidReceiptNumberError = createSelector(getStoreReviewLoadDataRequest, loadDataRequest => {
+  const errorCode = _get(loadDataRequest.error, 'code', '');
+  return errorCode === STORE_REVIEW_ERROR_CODES.INVALID_RECEIPT_NUMBER;
+});
+
+export const getShouldShowUnsupportedError = createSelector(
+  getIsStoreReviewSupportable,
+  getIsInvalidReceiptNumberError,
+  getIsLoadDataRequestStatusFulfilled,
+  (isSupportable, isInvalidReceiptNumberError, isLoadDataRequestStatusFulfilled) =>
+    (isLoadDataRequestStatusFulfilled && !isSupportable) || isInvalidReceiptNumberError
+);

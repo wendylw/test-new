@@ -103,7 +103,22 @@ export const getIsStoreWarningModalVisible = createSelector(
   storeReviewInfo => storeReviewInfo.warningModalVisible
 );
 
+export const getIsStoreLoadingIndicatorVisible = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.loadingIndicatorVisible
+);
+
 export const getStoreReviewInfoData = createSelector(getStoreReviewInfo, storeReviewInfo => storeReviewInfo.data);
+
+export const getStoreReviewLoadDataRequest = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.loadDataRequest
+);
+
+export const getStoreReviewSaveDataRequest = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.saveDataRequest
+);
 
 export const getIfStoreReviewInfoExists = createSelector(
   getStoreReviewInfoData,
@@ -150,7 +165,10 @@ export const getStoreGoogleReviewURL = createSelector(getStoreReviewInfoData, st
   _get(storeReviewInfoData, 'googleReviewURL', '')
 );
 
-export const getIsStoreReviewExpired = createSelector(
-  getStoreReviewInfoData,
-  storeReviewInfoData => storeReviewInfoData.isExpired
+export const getIsStoreReviewExpired = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'isExpired', false)
+);
+
+export const getIsStoreReviewSupportable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'isSupportable', false)
 );

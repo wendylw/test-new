@@ -12,7 +12,7 @@ import {
 import { getIsStoreThankYouModalVisible } from '../../../../redux/selector';
 import { getIsTNGMiniProgram } from '../../../../../../redux/modules/app';
 import {
-  okayButtonClicked,
+  thankYouModalOkayButtonClicked as okayButtonClicked,
   noThanksButtonClicked,
   rateNowButtonClicked,
   copyRateButtonClicked,
