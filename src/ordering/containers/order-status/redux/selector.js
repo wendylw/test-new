@@ -149,3 +149,8 @@ export const getIsStoreReviewable = createSelector(getStoreReviewInfoData, store
 export const getStoreGoogleReviewURL = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
   _get(storeReviewInfoData, 'googleReviewURL', '')
 );
+
+export const getIsStoreReviewExpired = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => storeReviewInfoData.isExpired
+);

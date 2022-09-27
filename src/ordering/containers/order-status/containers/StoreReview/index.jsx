@@ -2,7 +2,6 @@ import _get from 'lodash/get';
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { useMount } from 'react-use';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -26,17 +25,13 @@ import {
   getHasStoreReviewed,
   getIsMerchantContactAllowable,
 } from '../../redux/selector';
-import { mounted, backButtonClicked, submitButtonClicked } from './redux/thunks';
+import { backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES, STORE_REVIEW_COMMENT_CHAR_MAX } from './constants';
 
 const StoreReview = () => {
   const dispatch = useDispatch();
   const { state: locationState } = useLocation();
   const selectedRating = _get(locationState, 'rating', 0);
-
-  useMount(() => {
-    dispatch(mounted());
-  });
 
   const { t } = useTranslation('OrderingThankYou');
 
