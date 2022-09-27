@@ -139,7 +139,6 @@ const legacyFiles = [
   'src/ordering/containers/payments/containers/OnlineBanking/index.js',
   'src/ordering/containers/payments/containers/OnlineBanking/redux/index.js',
   'src/ordering/containers/payments/containers/OnlineBanking/redux/selectors.js',
-  'src/ordering/containers/payments/containers/Payment/index.js',
   'src/ordering/containers/payments/containers/SavedCards/components/StripeCVV.js',
   'src/ordering/containers/payments/containers/SavedCards/CVV.js',
   'src/ordering/containers/payments/containers/SavedCards/index.js',

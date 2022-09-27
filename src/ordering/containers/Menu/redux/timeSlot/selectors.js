@@ -1,6 +1,11 @@
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS, SHIPPING_TYPES } from '../../../../../common/utils/constants';
-import { getBusinessUTCOffset, getStore, getStoreSupportShippingTypes } from '../../../../redux/modules/app';
+import {
+  getBusinessUTCOffset,
+  getStore,
+  getIsEnablePauseMode,
+  getStoreSupportShippingTypes,
+} from '../../../../redux/modules/app';
 import { getCurrentTime, getStoreStatus } from '../common/selectors';
 import * as storeUtils from '../../../../../utils/store-utils';
 import * as timeLib from '../../../../../utils/time-lib';
@@ -78,7 +83,8 @@ export const getDateList = createSelector(
   getSelectedShippingType,
   getCurrentTime,
   getBusinessUTCOffset,
-  (selectedDate, store, selectedShippingType, currentTime, businessUTCOffset) => {
+  getIsEnablePauseMode,
+  (selectedDate, store, selectedShippingType, currentTime, businessUTCOffset, isEnablePauseMode) => {
     if (!store) {
       return [];
     }
@@ -95,7 +101,7 @@ export const getDateList = createSelector(
         displayMonth: dateDayJs.format('MMM'), // month string, example: "Jun"
         displayWeek: dateDayJs.format('ddd'), // week string, example: "Tue"
         displayDay: dateDayJs.format('D'), // day string, example: "30"
-        available: isOpen,
+        available: !isEnablePauseMode && isOpen,
         selected: dateDayJs.isSame(selectedDate, 'day'),
         isToday,
         isTomorrow: dateDayJs.isSame(tomorrowDateDayJs, 'day'),
@@ -116,6 +122,7 @@ export const getTimeSlotList = createSelector(
   getSelectedDateObj,
   getSelectedShippingType,
   getTimeSlotSoldData,
+  getIsEnablePauseMode,
   (
     store,
     selectedTimeSlot,
@@ -123,9 +130,10 @@ export const getTimeSlotList = createSelector(
     businessUTCOffset,
     selectedDateObj,
     selectedShippingType,
-    timeSlotSoldData
+    timeSlotSoldData,
+    isEnablePauseMode
   ) => {
-    if (!store || !selectedDateObj || !selectedDateObj.available) {
+    if (!store || !selectedDateObj || !selectedDateObj.available || isEnablePauseMode) {
       return [];
     }
 

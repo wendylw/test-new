@@ -39,6 +39,7 @@
   "PreOrderDeliverySMS": "We will SMS the order status to you on the day of delivery.",
   "Total": "Total",
   "ThankYouForPickingUpForUS": "Thank you for ordering with us! The pick up details are below, please do be on time to pick up your food",
+  "ThankYouForAlreadyPickUp": "Thank you for ordering with us! We hope you enjoy your food",
   "ThankYouForUpdatedToPickingUpForUS": "You've switched to self-pickup. The pickup details are below, we hope you enjoy your food!",
   "EarnedCashBackTitle": "You’ve earned cash back",
   "EarnedCashBackDescription": "This will automatically be used when you buy from us again!",

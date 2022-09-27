@@ -1,4 +1,3 @@
-import qs from 'qs';
 import _get from 'lodash/get';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push, replace } from 'connected-react-router';
@@ -48,7 +47,6 @@ import {
   isDineInType,
   removeExpectedDeliveryTime,
   setSessionVariable,
-  getStoreId as getStoreIdFromCookies,
 } from '../../../../../common/utils';
 import Clevertap from '../../../../../utils/clevertap';
 import * as StoreUtils from '../../../../../utils/store-utils';
@@ -391,7 +389,7 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
   // then update to its support shipping type
   // TODO: For the better UX, should notify user the shippingType has been changed
   if (!storeSupportShippingTypes.includes(shippingType)) {
-    dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
+    await dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
   }
 
   if (isWebview) {
@@ -809,22 +807,12 @@ export const changeStore = createAsyncThunk(
     try {
       await updateStoreInfoCookies(h);
 
-      // FB-4011: Due to one single source of truth principle, we only get the store id from cookies no matter how.
-      const newStoreId = getStoreIdFromCookies();
-
       // NOTE: We need to reset api status to force the api to be called again.
       dispatch(appActions.resetOnlineCategoryStatus());
       dispatch(appActions.resetCoreBusinessStatus());
 
       // Update store id in both redux and url query
-      dispatch(appActions.updateStoreId(newStoreId));
-
-      // If the new store doesn't support the current shipping type, then we need to change the shipping type to the available one.
-      const newShippingType = shippingTypes.includes(currentShippingType) ? currentShippingType : shippingTypes[0];
-
-      if (newShippingType !== currentShippingType) {
-        dispatch(appActions.updateShippingType(newShippingType));
-      }
+      dispatch(appActions.updateStoreId(storeId));
 
       if (getUserIsLogin(state)) {
         await dispatch(resetAddressListStatus());

@@ -31,7 +31,7 @@ let METHODS_LIST = [
   {
     name: DELIVERY_METHOD.TAKE_AWAY,
     logo: TakeAwayImage,
-    labelKey: 'TakeAwayStore',
+    labelKey: 'TakeAway',
     pathname: '',
   },
 ];
