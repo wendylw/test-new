@@ -19,6 +19,7 @@ const ErrorResult = ({ title, content, onCloseButtonClick }) => {
       mountAtRoot
       onClose={onCloseButtonClick}
       header={<PageHeader title={t('StoreReview')} onBackArrowClick={handleClickBackButton} />}
+      disableBackButtonSupport
     >
       <ResultContent content={content} title={title} />
     </Result>
