@@ -3,20 +3,14 @@
 }
 
 .PageHeaderLeftContainer {
-  @apply tw-flex tw-flex-shrink-0 tw-p-12 sm:tw-p-12px tw-w-3/10 tw-whitespace-nowrap;
-
-  min-width: 116px;
-  max-width: 600px;
+  @apply tw-flex tw-flex-shrink-0 tw-items-center tw-w-3/10 tw-whitespace-nowrap;
 }
 
 .PageHeaderTitle {
-  @apply tw-font-bold tw-text-lg tw-leading-relaxed tw-mx-16 sm:tw-mx-16px;
+  @apply tw-font-bold tw-text-lg tw-leading-relaxed;
 }
 
-.PageHeaderLogo {
-  width: 100%;
-}
-
-.PageHeaderBackArrow {
-  width: 20%;
+.PageHeaderIconWrapper {
+  @apply tw-flex tw-flex-shrink-0 tw-items-stretch sm:tw-p-12px tw-p-12
+    tw-border-none tw-outline-none tw-bg-transparent tw-text-gray tw-cursor-pointer;
 }

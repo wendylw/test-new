@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { CaretLeft } from 'phosphor-react';
 import styles from './PageHeader.module.scss';
 import { isWebview } from '../../utils';
 import NativeHeader from '../../../components/NativeHeader';
-import BackArrow from '../../../images/back-arrow-header.svg';
 
 const isInWebview = isWebview();
 
@@ -18,7 +18,9 @@ const PageHeader = props => {
         <header className={`${styles.PageHeaderContainer} ${className}`}>
           <div className={styles.PageHeaderLeftContainer}>
             {isShowBackButton && (
-              <img className={styles.PageHeaderBackArrow} src={BackArrow} alt="" onClick={onBackArrowClick} />
+              <button className={styles.PageHeaderIconWrapper} onClick={onBackArrowClick}>
+                <CaretLeft size={24} weight="light" />
+              </button>
             )}
             <div className={styles.PageHeaderTitle}>{title}</div>
           </div>
