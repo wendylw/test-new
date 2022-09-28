@@ -39,10 +39,6 @@ const getConsumerId = () => {
 };
 
 const config = {
-  termsPrivacyURLS: {
-    terms: process.env.REACT_APP_TERMS_URL,
-    privacy: process.env.REACT_APP_PRIVACY_URL,
-  },
   beepOnlineStoreUrl: business => (process.env.REACT_APP_MERCHANT_STORE_URL || '').replace('%business%', business),
   storehubPaymentResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_RESPONSE_URL,
   storehubPaymentBackendResponseURL: process.env.REACT_APP_STOREHUB_PAYMENT_BACKEND_RESPONSE_URL,

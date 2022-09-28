@@ -39,6 +39,7 @@ const initialState = {
     orderStatus: null,
     receiptNumber: null,
     tableId: null,
+    isStorePayByCashOnly: false,
     tax: 0,
     cashback: 0,
     displayPromotions: [],

@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../utils/constants';
 import { getIsTNGMiniProgram } from '../../../redux/modules/app';
-import { getPromotionId, getSelectedPromo } from '../../../redux/modules/promotion';
+import { getSelectedPromo } from '../../../redux/modules/promotion';
 
 const { ORDER_STATUS, API_REQUEST_STATUS } = Constants;
 
@@ -17,6 +17,8 @@ export const getTableNumber = state => state.tableSummary.order.tableId;
 export const getOrderTax = state => state.tableSummary.order.tax;
 
 export const getOrderServiceCharge = state => state.tableSummary.order.serviceCharge;
+
+export const getIsStorePayByCashOnly = state => state.tableSummary.order.isStorePayByCashOnly;
 
 export const getOrderServiceChargeRate = state =>
   _get(state.tableSummary.order.serviceChargeInfo, 'serviceChargeRate', 0);

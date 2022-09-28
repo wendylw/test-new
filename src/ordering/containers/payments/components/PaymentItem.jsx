@@ -54,6 +54,10 @@ class PaymentItem extends Component {
       );
     }
 
+    if (disabledConditions.unSupport) {
+      return <p className="margin-top-bottom-smaller">{`${t('UnsupportedInThisStore')}`}</p>;
+    }
+
     return <p className="margin-top-bottom-smaller">{`(${t('TemporarilyUnavailable')})`}</p>;
   }
 
@@ -115,6 +119,7 @@ const optionType = PropTypes.shape({
   disabledConditions: PropTypes.shape({
     minAmount: PropTypes.bool,
     available: PropTypes.bool,
+    unSupport: PropTypes.bool,
   }),
 });
 
