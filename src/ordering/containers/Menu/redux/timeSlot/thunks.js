@@ -213,7 +213,7 @@ export const timeSlotSelected = createAsyncThunk(
         return setDateTime(selectedTimeSlot, selectedDateBusinessTimeZone).toISOString();
       })();
 
-      dispatch(AppActions.updateShippingType(selectedShippingType));
+      await dispatch(AppActions.updateShippingType(selectedShippingType));
 
       await dispatch(
         updateExpectedDeliveryDate({

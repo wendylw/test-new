@@ -262,6 +262,13 @@ const ERROR_CODE_MAP = {
     buttonText: 'Common:Continue',
     showModal: false,
   },
+  40027: {
+    title: 'ApiError:40027Title',
+    desc: 'ApiError:40027Description',
+    redirectUrl: '',
+    buttonText: 'Common:BackToHome',
+    showModal: false,
+  },
   41000: {
     title: 'ApiError:41000Title',
     desc: 'ApiError:41000Description',
@@ -335,6 +342,14 @@ const ERROR_CODE_MAP = {
     desc: 'ApiError:57013Description',
     redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.CONTACT_DETAIL}`,
     buttonText: 'Common:OK',
+    showModal: true,
+  },
+  // pay later and pay at counter only, TNG mini program can not place an order
+  41027: {
+    title: 'ApiError:41027Title',
+    desc: 'ApiError:41027Description',
+    redirectUrl: `${ROUTER_PATHS.ORDERING_BASE}${ROUTER_PATHS.ORDERING_CART}`,
+    buttonText: 'Common:Continue',
     showModal: true,
   },
   80000: {
@@ -634,7 +649,7 @@ export const ORDER_SHIPPING_TYPE_DISPLAY_NAME_MAPPING = {
   [DELIVERY_METHOD.DINE_IN]: 'dine in',
   [DELIVERY_METHOD.PICKUP]: 'self pickup',
   [DELIVERY_METHOD.DELIVERY]: 'delivery',
-  [DELIVERY_METHOD.TAKE_AWAY]: 'take away',
+  [DELIVERY_METHOD.TAKE_AWAY]: 'takeaway',
 };
 
 export const PROMOTION_CLIENT_TYPES = ConstantsV2.PROMOTION_CLIENT_TYPES;

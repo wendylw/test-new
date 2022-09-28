@@ -72,6 +72,7 @@ const StoreInfoDrawer = () => {
         onClose={() => dispatch(hideStoreInfoDrawer())}
         header={
           <DrawerHeader
+            titleClassName="tw-w-full"
             left={
               <X
                 weight="light"

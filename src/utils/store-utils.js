@@ -366,7 +366,11 @@ export const checkStoreIsOpened = (store, date, utcOffset) => {
   }
 
   const { qrOrderingSettings } = store;
-  const { enablePreOrder } = qrOrderingSettings;
+  const { enablePreOrder, pauseModeEnabled } = qrOrderingSettings;
+
+  if (pauseModeEnabled) {
+    return false;
+  }
 
   if (enablePreOrder) {
     return true;
