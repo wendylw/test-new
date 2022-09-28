@@ -10,7 +10,6 @@ import ResultContent from '../../components/Result/ResultContent';
  * */
 const resultOptions = ({
   container = document.body,
-  header = null,
   title = null,
   customizeContent = false,
   closeButtonContent = null,
@@ -21,7 +20,6 @@ const resultOptions = ({
   onClose = () => {},
 }) => ({
   container,
-  header,
   title,
   customizeContent,
   closeButtonContent,
@@ -47,6 +45,7 @@ const createResult = (content, options) =>
       {
         ...restOptions,
         show: true,
+        isFullScreen: true,
         mountAtRoot: false,
         onClose: () => {
           destroyTarget(rootDOM);
@@ -59,7 +58,7 @@ const createResult = (content, options) =>
       children
     );
 
-    rootDOM.setAttribute('class', 'feedback__result');
+    rootDOM.setAttribute('class', 'feedback__result tw-h-full tw-w-full tw-overflow-hidden');
     container.appendChild(rootDOM);
 
     render(resultInstance, rootDOM);
