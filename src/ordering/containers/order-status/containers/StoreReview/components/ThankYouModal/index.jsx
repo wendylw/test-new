@@ -40,7 +40,7 @@ const ThankYouModal = () => {
 
     if (isTNGMiniProgram || !isGoogleReviewURLAvailable) {
       return {
-        title: t('ThankYouModalHighRatingTitle'),
+        title: <Trans t={t} i18nKey="ThankYouModalHighRatingTitle" components={[<br />]} />,
         description: null,
       };
     }
