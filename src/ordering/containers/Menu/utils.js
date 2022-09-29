@@ -43,7 +43,8 @@ export const getShareLinkUrl = () => {
 
     return storeUrl.toString();
   } catch (error) {
-    console.error(error);
+    console.error(`Failed to get share link: ${error}`);
+
     return window.location.href;
   }
 };

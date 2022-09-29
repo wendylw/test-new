@@ -46,9 +46,7 @@ export const loadCart = createAsyncThunk('ordering/app/cart/loadCart', async (_,
 
     return result;
   } catch (error) {
-    console.error(error);
-
-    throw error;
+    throw new Error(`Failed to load cart for pay later: ${error.message}`);
   }
 });
 
@@ -77,9 +75,9 @@ export const loadCartStatus = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      console.error(`Failed to load cart status for pay later: ${error.message}`);
 
-      throw error;
+      throw new Error(error);
     }
   }
 );
@@ -104,9 +102,9 @@ export const queryCartAndStatus = () => async dispatch => {
     await dispatch(loadCart());
     queryCartStatus();
   } catch (error) {
-    console.error(error);
+    console.error(`Failed to load and query cart status for pay later: ${error.message}`);
 
-    throw error;
+    throw new Error(error);
   }
 };
 
@@ -139,7 +137,7 @@ export const updateCartItems = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      console.error(`Failed to update cart items for pay later: ${error.message}`);
 
       throw error;
     }
@@ -166,9 +164,9 @@ export const removeCartItemsById = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      console.error(`Failed to remove cart by id for pay later: ${error.message}`);
 
-      throw error;
+      throw new Error(error);
     }
   }
 );
@@ -187,9 +185,9 @@ export const clearCart = createAsyncThunk('ordering/app/cart/clearCart', async (
   try {
     await deleteCart(options);
   } catch (error) {
-    console.error(error);
+    console.error(`Failed to empty cart for pay later: ${error.message}`);
 
-    throw error;
+    throw new Error(error);
   }
 });
 
@@ -218,7 +216,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
 
     return result;
   } catch (error) {
-    console.error(error);
+    console.error(`Failed to submit cart for pay later ${error.message}`);
 
     // new stock status error code maps to old code
     const NEW_ERROR_CODE_MAPPING = {
@@ -249,7 +247,7 @@ export const submitCart = createAsyncThunk('ordering/app/cart/submitCart', async
       });
     }
 
-    throw error;
+    throw new Error(error);
   }
 });
 
@@ -263,9 +261,9 @@ export const loadCartSubmissionStatus = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      console.error(`Failed to load cart submission status for pay later: ${error.message}`);
 
-      throw error;
+      throw new Error(error);
     }
   }
 );
@@ -301,9 +299,9 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
 
     pollingCartSubmissionStatus();
   } catch (error) {
-    console.error(error);
+    console.error(`Failed to query cart submission status for pay later: ${error.message}`);
 
-    throw error;
+    throw new Error(error);
   }
 };
 
