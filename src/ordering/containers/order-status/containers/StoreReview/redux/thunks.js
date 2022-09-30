@@ -92,7 +92,8 @@ export const openGoogleReviewURL = createAsyncThunk(
     const googleReviewUrl = getStoreGoogleReviewURL(state);
 
     if (!isWebview) {
-      window.open(googleReviewUrl, '_blank');
+      await dispatch(showStoreReviewLoadingIndicator());
+      window.location.href = googleReviewUrl;
       return;
     }
 
