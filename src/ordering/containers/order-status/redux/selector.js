@@ -1,9 +1,10 @@
 import _get from 'lodash/get';
+import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import { getUserProfile } from '../../../redux/modules/app';
 import Constants from '../../../../utils/constants';
 
-const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS } = Constants;
+const { PROMO_TYPE, DELIVERY_METHOD, ORDER_STATUS, API_REQUEST_STATUS } = Constants;
 
 export const getOrder = state => state.orderStatus.common.order;
 
@@ -88,3 +89,86 @@ export const getLiveChatUserProfile = createSelector(getUserProfile, profile => 
   name: profile.name || '',
   email: profile.email || '',
 }));
+
+// Store Review
+export const getStoreReviewInfo = state => state.orderStatus.common.storeReviewInfo;
+
+export const getIsStoreThankYouModalVisible = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.thankYouModalVisible
+);
+
+export const getIsStoreWarningModalVisible = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.warningModalVisible
+);
+
+export const getIsStoreLoadingIndicatorVisible = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.loadingIndicatorVisible
+);
+
+export const getStoreReviewInfoData = createSelector(getStoreReviewInfo, storeReviewInfo => storeReviewInfo.data);
+
+export const getStoreReviewLoadDataRequest = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.loadDataRequest
+);
+
+export const getStoreReviewSaveDataRequest = createSelector(
+  getStoreReviewInfo,
+  storeReviewInfo => storeReviewInfo.saveDataRequest
+);
+
+export const getIfStoreReviewInfoExists = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => !_isEmpty(storeReviewInfoData)
+);
+
+export const getStoreRating = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => _get(storeReviewInfoData, 'rating', 0) || 0
+);
+
+export const getStoreComment = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => _get(storeReviewInfoData, 'comments', '') || ''
+);
+
+export const getStoreTableId = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => storeReviewInfoData.tableId
+);
+
+export const getStoreFullDisplayName = createSelector(
+  getStoreReviewInfoData,
+  storeReviewInfoData => _get(storeReviewInfoData, 'storeDisplayName', '') || _get(storeReviewInfoData, 'storeName', '')
+);
+
+export const getStoreShippingType = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'shippingType', '')
+);
+
+export const getIsMerchantContactAllowable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'isMerchantContactAllowable', false)
+);
+
+export const getHasStoreReviewed = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'hasReviewed', false)
+);
+
+export const getIsStoreReviewable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'isReviewable', false)
+);
+
+export const getStoreGoogleReviewURL = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'googleReviewURL', '')
+);
+
+export const getIsStoreReviewExpired = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'isExpired', false)
+);
+
+export const getIsStoreReviewSupportable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
+  _get(storeReviewInfoData, 'isSupportable', false)
+);

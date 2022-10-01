@@ -37,11 +37,6 @@ export const PROMOTIONS_SHIPPING_TYPES_MAPPING = {
 };
 export { PROMOTIONS_TYPES };
 
-export const SOURCE_TYPE = {
-  SHOPPING_CART: 'shoppingCart',
-  SHARED_LINK: 'SharedLink',
-};
-
 export const STORE_OPENING_STATUS = {
   ON_DEMAND: 'onDemand',
   PRE_ORDER: 'preOrder',

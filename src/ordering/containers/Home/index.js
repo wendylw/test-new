@@ -77,7 +77,7 @@ import { getIfAddressInfoExists, getAddressCoords, getAddressName } from '../../
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
-import { SOURCE_TYPE } from '../Menu/constants';
+import { SOURCE_TYPE } from '../../../common/utils/constants';
 
 const localState = {
   blockScrollTop: 0,
