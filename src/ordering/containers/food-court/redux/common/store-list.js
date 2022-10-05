@@ -88,8 +88,8 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '23:59',
     },
   },
-  '63217375583346000766a2b6': {
-    id: '63217375583346000766a2b6',
+  '633a4f52378c39000766b2a7': {
+    id: '633a4f52378c39000766b2a7',
     imageNoCompression: FaceImage,
     title: 'Face To Face',
     tags: ['Asian', 'Noodles'],
@@ -98,8 +98,8 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '21:00',
     },
   },
-  '632194803f0a0e0007c2900e': {
-    id: '632194803f0a0e0007c2900e',
+  '633a539bb537780006036edf': {
+    id: '633a539bb537780006036edf',
     imageNoCompression: JoeImage,
     title: "Joe's Western",
     tags: ['Western', 'Pasta'],
@@ -108,8 +108,8 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '21:00',
     },
   },
-  '63217375583346000766a27d': {
-    id: '63217375583346000766a27d',
+  '5935311ca80222a3745165f2': {
+    id: '5935311ca80222a3745165f2',
     imageNoCompression: JuiceImage,
     title: 'Juicelab',
     tags: ['Juice', 'Fruit Bowls', 'Healthy'],
@@ -118,8 +118,8 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '20:00',
     },
   },
-  '6321943e3f0a0e0007c27275': {
-    id: '6321943e3f0a0e0007c27275',
+  '633aa8ceea43070008742e64': {
+    id: '633aa8ceea43070008742e64',
     imageNoCompression: RiceImage,
     title: 'Rice On! Subang Jaya',
     tags: ['Fusion', 'Rice Bowls'],
@@ -128,8 +128,8 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '19:00',
     },
   },
-  '6321937dce39120008396bf4': {
-    id: '6321937dce39120008396bf4',
+  '625636f66d26b300084124eb': {
+    id: '625636f66d26b300084124eb',
     imageNoCompression: SeoulImage,
     title: 'Seoul Korean Street Foods',
     tags: ['Korean', 'Asian'],
