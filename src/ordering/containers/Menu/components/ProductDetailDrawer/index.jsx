@@ -220,11 +220,11 @@ const ProductDetailDrawer = () => {
                 }}
                 className="tw-w-full tw-uppercase"
               >
-                {t('AddToCart', { price: formattedTotalPrice })}
+                <span>{t('AddToCart', { price: formattedTotalPrice })}</span>
               </Button>
             ) : (
               <Button className="tw-w-full tw-uppercase" disabled>
-                {t(UNABLE_ADD_TO_CART_REASON_KEY_MAP[unableAddToCartReason])}
+                <span>{t(UNABLE_ADD_TO_CART_REASON_KEY_MAP[unableAddToCartReason])}</span>
               </Button>
             )}
           </div>

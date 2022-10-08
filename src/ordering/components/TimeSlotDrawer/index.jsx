@@ -153,7 +153,7 @@ const TimeSlotDrawer = ({
               onClick={save}
               className="tw-w-full tw-uppercase"
             >
-              {t('Continue')}
+              <span>{t('Continue')}</span>
             </Button>
           </div>
         </>

@@ -73,8 +73,10 @@ const AlcoholModal = ({ history }) => {
           </div>
           <h2 className={styles.AlcoholDesTitle}>{t('CheckIfDrinkingAge')}</h2>
           <p className={styles.AlcoholDes}>
-            {country === 'MY' && t('AlcoholLimitationsMY')}
-            {country === 'PH' && t('AlcoholLimitationsPH')}
+            <span>
+              {country === 'MY' && t('AlcoholLimitationsMY')}
+              {country === 'PH' && t('AlcoholLimitationsPH')}
+            </span>
           </p>
 
           <div className={styles.AlcoholButton}>
