@@ -170,7 +170,7 @@ const MenuAddressDropdown = () => {
             )}
           </div>
         </div>
-        {isPickUpType ? null : <CaretDown className="tw-text-gray-600" />}
+        {isPickUpType ? null : <CaretDown className="tw-text-gray" />}
       </button>
       <AddressLocationDrawer
         isLocationDrawerVisible={isLocationDrawerVisible}

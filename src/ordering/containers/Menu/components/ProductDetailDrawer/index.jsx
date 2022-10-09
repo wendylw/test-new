@@ -139,7 +139,7 @@ const ProductDetailDrawer = () => {
             pointerEvents: showTopArrow ? 'auto' : 'none',
           }}
         >
-          <CaretUp className="tw-align-middle" size={20} weight="thin" />
+          <CaretUp className="tw-align-middle tw-text-gray" size={20} weight="thin" />
         </button>
 
         <div className={styles.productDetailWrapper}>

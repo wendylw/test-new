@@ -131,7 +131,7 @@ const TimeSlotDropdown = () => {
             </div>
           </div>
 
-          <CaretDown className="tw-text-gray-600" />
+          <CaretDown className="tw-text-gray" />
         </button>
         <TimeSlotDrawer
           timeSlotDrawerVisible={timeSlotDrawerVisible}

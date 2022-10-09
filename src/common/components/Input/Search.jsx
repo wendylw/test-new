@@ -21,9 +21,7 @@ const Search = React.forwardRef(
     },
     searchRef
   ) => {
-    const classNameList = [
-      'tw-flex tw-flex-1 tw-items-center tw-border tw-border-solid tw-border-gray-400 tw-rounded-2xl',
-    ];
+    const classNameList = ['tw-flex tw-flex-1 tw-items-center tw-border-0 tw-rounded-2xl tw-bg-gray-200'];
     // Search input value use state of component, because Chinese typing
     const [inputValue, setInputValue] = useState(defaultSearchKeyword);
     const currentRef = useRef(null);
@@ -56,7 +54,7 @@ const Search = React.forwardRef(
             searchInputRef.current = ref;
           }}
           placeholder={placeholder}
-          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500"
+          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500 tw-bg-gray-200"
           type="text"
           value={inputValue}
           onChange={e => {
