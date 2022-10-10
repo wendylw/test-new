@@ -101,7 +101,6 @@ export const ADDRESS_RANGE = {
 export const SOURCE_TYPE = {
   SHOPPING_CART: 'shoppingCart',
   SHARED_LINK: 'SharedLink',
-  THANK_YOU: 'ThankYou',
   PUSH_NOTIFICATION: 'PushNotification',
   SMS: 'SMS',
 };

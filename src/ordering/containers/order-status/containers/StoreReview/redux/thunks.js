@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import _isEmpty from 'lodash/isEmpty';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push } from 'connected-react-router';
 import {
@@ -30,8 +31,14 @@ import {
 } from '../../../../../../utils/native-methods';
 import { STORE_REVIEW_SOURCE_TYPE_MAPPING, STORE_REVIEW_TEXT_COPIED_TIP_DURATION } from '../constants';
 import { PATH_NAME_MAPPING, SOURCE_TYPE } from '../../../../../../common/utils/constants';
+import { REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
 import { toast } from '../../../../../../common/utils/feedback';
-import { getSessionVariable, getQueryString } from '../../../../../../common/utils';
+import {
+  getSessionVariable,
+  setSessionVariable,
+  removeSessionVariable,
+  getQueryString,
+} from '../../../../../../common/utils';
 import { copyDataToClipboard } from '../../../../../../utils/utils';
 import { FEEDBACK_STATUS } from '../../../../../../common/utils/feedback/utils';
 import CleverTap from '../../../../../../utils/clevertap';
@@ -65,10 +72,12 @@ export const goToMenuPage = createAsyncThunk(
 export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack', async (_, { getState, dispatch }) => {
   const state = getState();
   const isWebview = getIsWebview(state);
-  const sourceType = getSessionVariable('BeepOrderingSource');
+  const sourceType = getSessionVariable('__sr_source');
+
+  removeSessionVariable('__sr_source');
 
   switch (sourceType) {
-    case SOURCE_TYPE.THANK_YOU:
+    case REFERRER_SOURCE_TYPES.THANK_YOU:
       // Go to the previous page if it exists
       if (isWebview) {
         nativeGoBack();
@@ -117,6 +126,13 @@ export const mounted = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const state = getState();
     const ifStoreReviewInfoExists = getIfStoreReviewInfoExists(state);
+    let sourceType = getSessionVariable('__sr_source');
+
+    if (_isEmpty(sourceType)) {
+      sourceType = getSessionVariable('BeepOrderingSource');
+
+      setSessionVariable('__sr_source', sourceType);
+    }
 
     // No need to send API request again for better performance
     if (!ifStoreReviewInfoExists) {
@@ -124,7 +140,6 @@ export const mounted = createAsyncThunk(
     }
 
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(getState());
-    const sourceType = getSessionVariable('BeepOrderingSource');
 
     CleverTap.pushEvent('Feedback Page - View Feedback page', {
       'URL source': STORE_REVIEW_SOURCE_TYPE_MAPPING[sourceType],
