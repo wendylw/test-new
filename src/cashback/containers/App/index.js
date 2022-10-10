@@ -63,8 +63,9 @@ class App extends Component {
   getAppLoginStatus() {
     try {
       return NativeMethods.getLoginStatus();
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(`Fail to get login status: ${error.message}`);
+
       return false;
     }
   }

@@ -24,7 +24,7 @@ export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', a
 
     return result;
   } catch (error) {
-    console.error(error);
+    console.error(`Fail to load order for table summary: ${error.message}`);
 
     throw error;
   }
@@ -46,7 +46,7 @@ export const loadOrdersStatus = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      console.error(`Fail to load order status for table summary: ${error.message}`);
 
       throw error;
     }
@@ -72,7 +72,7 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
     dispatch(loadOrders(receiptNumber));
     queryOrderStatus();
   } catch (error) {
-    console.error(error);
+    console.error(`Fail to query order and order status for table summary: ${error.message}`);
 
     throw error;
   }
@@ -168,6 +168,7 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
       error: error?.message,
       receiptNumber,
     });
+
     throw error;
   }
 });
