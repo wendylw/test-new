@@ -43,7 +43,7 @@ const Button = props => {
           </span>
         </span>
       ) : null}
-      {children}
+      <div>{children}</div>
     </button>
   );
 };
