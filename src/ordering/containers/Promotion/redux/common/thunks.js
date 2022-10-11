@@ -5,19 +5,6 @@ import Utils from '../../../../../utils/utils';
 
 const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
 
-const removePromoOrVoucher = async removeMethods => {
-  const receiptNumber = Utils.getQueryString('receiptNumber');
-  try {
-    const result = await removeMethods({ receiptNumber });
-
-    return result;
-  } catch (e) {
-    console.error(e);
-
-    throw e;
-  }
-};
-
 /**
  * Promotion part
  */
@@ -30,15 +17,24 @@ export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo
 
     return result;
   } catch (e) {
-    console.error(formatErrorOfApplyPromoOrVoucher(e));
+    console.error(`Fail to apply promo: ${e.message}`);
 
     throw formatErrorOfApplyPromoOrVoucher(e);
   }
 });
 
-export const removePromo = createAsyncThunk('ordering/promotion/common/removePromotion', () =>
-  removePromoOrVoucher(removePromotion)
-);
+export const removePromo = createAsyncThunk('ordering/promotion/common/removePromotion', async () => {
+  const receiptNumber = Utils.getQueryString('receiptNumber');
+  try {
+    const result = await removePromotion({ receiptNumber });
+
+    return result;
+  } catch (e) {
+    console.error(`Fail to remove promo: ${e.message}`);
+
+    throw e;
+  }
+});
 
 /**
  * Voucher part
@@ -54,13 +50,22 @@ export const applyVoucherPayLater = createAsyncThunk(
 
       return result;
     } catch (e) {
-      console.error(formatErrorOfApplyPromoOrVoucher(e));
+      console.error(`Fail to apply voucher for pay later: ${e}`);
 
       throw formatErrorOfApplyPromoOrVoucher(e);
     }
   }
 );
 
-export const removeVoucherPayLater = createAsyncThunk('ordering/promotion/common/removeVoucherPayLater', () =>
-  removePromoOrVoucher(removeVoucher)
-);
+export const removeVoucherPayLater = createAsyncThunk('ordering/promotion/common/removeVoucherPayLater', async () => {
+  const receiptNumber = Utils.getQueryString('receiptNumber');
+  try {
+    const result = await removeVoucher({ receiptNumber });
+
+    return result;
+  } catch (e) {
+    console.error(`Fail to remove voucher for pay later: ${e.message}`);
+
+    throw e;
+  }
+});
