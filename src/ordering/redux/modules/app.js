@@ -470,10 +470,12 @@ export const actions = {
   }),
 
   loadCoreBusiness: id => (dispatch, getState) => {
+    const state = getState();
     const { business } = config;
-    const storeId = getStoreId(getState());
+    const storeId = getStoreId(state);
+    const shippingType = getShippingType(state);
 
-    return dispatch(fetchCoreBusiness({ business, storeId: id || storeId }));
+    return dispatch(fetchCoreBusiness({ business, storeId: id || storeId, shippingType }));
   },
 
   // load shopping cart
@@ -628,14 +630,16 @@ export const actions = {
   },
 
   loadCoreStores: address => (dispatch, getState) => {
-    const business = getBusiness(getState());
+    const state = getState();
+    const business = getBusiness(state);
+    const shippingType = getShippingType(state);
 
     // will be handle in src/redux/modules/entities/stores.js
     return dispatch({
       [FETCH_GRAPHQL]: {
         types: [types.FETCH_CORESTORES_REQUEST, types.FETCH_CORESTORES_SUCCESS, types.FETCH_CORESTORES_FAILURE],
         endpoint: Url.apiGql('CoreStores'),
-        variables: { business, ...address },
+        variables: { business, shippingType, ...address },
       },
     });
   },
@@ -744,7 +748,7 @@ export const actions = {
     return getUserIsLogin(getState());
   },
 
-  updateShippingType: newShippingType => (dispatch, getState) => {
+  updateShippingType: newShippingType => async (dispatch, getState) => {
     const state = getState();
     const shippingType = getShippingType(state);
 
@@ -761,12 +765,14 @@ export const actions = {
           search: qs.stringify(queryObj, { addQueryPrefix: true }),
         })
       );
-    }
 
-    dispatch({
-      type: types.UPDATE_SHIPPING_TYPE,
-      payload: newShippingType,
-    });
+      dispatch({
+        type: types.UPDATE_SHIPPING_TYPE,
+        payload: newShippingType,
+      });
+
+      await Promise.all([dispatch(actions.loadCoreBusiness()), dispatch(actions.loadCoreStores())]);
+    }
   },
 
   updateStoreId: newStoreId => (dispatch, getState) => {
@@ -1375,6 +1381,10 @@ export const getIsEnablePerTimeSlotLimitForPreOrder = createSelector(getStore, s
 
 export const getStoreSupportShippingTypes = createSelector(getStoreFulfillmentOptions, storeFulfillmentOptions =>
   storeFulfillmentOptions.map(_lowerCase)
+);
+
+export const getIsEnablePauseMode = createSelector(getStore, store =>
+  _get(store, 'qrOrderingSettings.pauseModeEnabled', false)
 );
 
 export const getCartItems = state => state.app.shoppingCart.items;

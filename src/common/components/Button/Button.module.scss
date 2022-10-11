@@ -1,3 +1,11 @@
+@mixin buttonHeight($size: null) {
+  @if $size == "small" {
+    height: 40px;
+  } @else {
+    height: 50px;
+  }
+}
+
 .button {
   @apply tw-flex tw-items-center tw-justify-center tw-py-12 tw-px-16 tw-rounded tw-leading-normal tw-tracking-wide /* dimension*/
   tw-border tw-border-transparent tw-border-solid /* border */
@@ -23,6 +31,10 @@
     tw-transition;
 
     height: 50px;
+
+    &:global(.size-small) {
+      @include buttonHeight("small");
+    }
   }
   &:global(.type-primary-danger) {
     @apply tw-bg-red hover:tw-bg-red-dark /* color */
@@ -31,6 +43,10 @@
     tw-transition;
 
     height: 50px;
+
+    &:global(.size-small) {
+      @include buttonHeight("small");
+    }
   }
 
   &:global(.type-secondary) {
@@ -41,6 +57,10 @@
       disabled:tw-border-gray-400 disabled:tw-text-gray-400;
 
     height: 50px;
+
+    &:global(.size-small) {
+      @include buttonHeight("small");
+    }
   }
   &:global(.type-secondary-danger) {
     @apply tw-border-red tw-bg-white tw-text-red tw-font-bold tw-tracking-wider
@@ -50,6 +70,10 @@
       disabled:tw-border-gray-400 disabled:tw-text-gray-400;
 
     height: 50px;
+
+    &:global(.size-small) {
+      @include buttonHeight("small");
+    }
   }
 
   &:global(.type-text) {

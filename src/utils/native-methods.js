@@ -23,6 +23,7 @@ export const BEEP_MODULE_METHODS = {
   SET_ADDRESS: 'beepModule-setAddress',
   SHARE_LINK: 'beepModule-shareLink',
   HAS_SAVE_FAVORITE_STORE_SUPPORT: 'beepModule-hasSaveFavoriteStoreSupport',
+  OPEN_BROWSER_URL: 'beepModule-openBrowserURL',
 };
 
 export class NativeAPIError extends Error {
@@ -58,7 +59,7 @@ const dsBridgeSyncCall = (method, params) => {
   } catch (error) {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
-    logger.error('Utils_DSBridge_SyncCallFailed', {
+    logger.error('Utils_DSBridge_CallAPIFailed', {
       method,
       ...errorData,
     });
@@ -90,7 +91,7 @@ const dsBridgeAsyncCall = (method, params) =>
   }).catch(error => {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
 
-    logger.error('Utils_DSBridge_AsyncCallFailed', {
+    logger.error('Utils_DSBridge_CallAPIFailed', {
       method,
       ...errorData,
     });
@@ -227,6 +228,23 @@ export const setAddress = addressInfo => {
     mode: MODE.SYNC,
   };
 
+  return dsBridgeCall(data);
+};
+
+export const BROWSER_TYPES = {
+  CHROME: 'chrome',
+  DEFAULT: 'default',
+};
+
+export const openBrowserURL = ({ url, type = BROWSER_TYPES.DEFAULT }) => {
+  const data = {
+    method: BEEP_MODULE_METHODS.OPEN_BROWSER_URL,
+    params: {
+      url,
+      type,
+    },
+    mode: MODE.SYNC,
+  };
   return dsBridgeCall(data);
 };
 

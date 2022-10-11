@@ -5,7 +5,7 @@ import utc from 'dayjs/plugin/utc';
 import * as timeLib from './time-lib';
 import Cookies from 'js-cookie';
 import * as UtilsV2 from '../common/utils';
-import { SOURCE_TYPE } from '../ordering/containers/Menu/constants';
+import { SOURCE_TYPE } from '../common/utils/constants';
 
 dayjs.extend(utc);
 

@@ -1,4 +1,4 @@
-import { SOURCE_TYPE } from './constants';
+import { SOURCE_TYPE } from '../../../common/utils/constants';
 
 export const bodyScrollTopPosition = () =>
   document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;

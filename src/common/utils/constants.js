@@ -69,6 +69,7 @@ export const PATH_NAME_MAPPING = {
   // dine
   DINE: '/dine',
   FOOD_COURT: '/food-court',
+  STORE_REVIEW: '/store-review',
 };
 
 export const PROMOTION_CLIENT_TYPES = {
@@ -95,4 +96,12 @@ export const ADDRESS_RANGE = {
   CITY: 4,
   STATE: 5,
   COUNTRY: 6,
+};
+
+export const SOURCE_TYPE = {
+  SHOPPING_CART: 'shoppingCart',
+  SHARED_LINK: 'SharedLink',
+  THANK_YOU: 'ThankYou',
+  PUSH_NOTIFICATION: 'PushNotification',
+  SMS: 'SMS',
 };

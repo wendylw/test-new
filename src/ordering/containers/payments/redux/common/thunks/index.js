@@ -1,7 +1,6 @@
 import _sumBy from 'lodash/sumBy';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { get } from '../../../../../../utils/api/api-fetch';
-import { API_INFO } from './api-info';
+import { getPayments } from './api-info';
 import {
   actions as appActions,
   getCartStatus,
@@ -15,7 +14,7 @@ import {
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
-import { getBillingLoadedComplete, getTotal } from '../selectors';
+import { getTotal } from '../selectors';
 import logger from '../../../../../../utils/monitoring/logger';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
@@ -184,29 +183,26 @@ export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', asy
 
 export const loadPaymentOptions = createAsyncThunk(
   'ordering/payments/loadPaymentOptions',
-  async (selectedPaymentMethod, { dispatch, getState }) => {
+  async (selectedPaymentMethod, { getState }) => {
     const state = getState();
     const total = getTotal(state);
     const storeId = getStoreId(state);
     const shippingType = getShippingType(state);
 
-    const { url, queryParams } = API_INFO.getPayments(storeId, Utils.getApiRequestShippingType(shippingType), total);
-    const result = await get(url, { queryParams });
+    const result = await getPayments(storeId, Utils.getApiRequestShippingType(shippingType), total);
+
     if (!result.data) {
       throw result.error;
     }
 
     const paymentOptions = preprocessPaymentOptions(result.data, PaymentOptionModel, PAYMENTS_MAPPING);
     const selectedPaymentOption = paymentOptions.find(option => {
-      if (selectedPaymentMethod && selectedPaymentMethod !== option.key) {
-        return false;
-      }
+      const isNotSelectedOption = selectedPaymentMethod && selectedPaymentMethod !== option.key;
+      const isUnavailable = !option.available;
+      const isUnavailableAmount = option.minAmount && total < option.minAmount;
+      const isUnsupported = !option.isStoreSupported;
 
-      if (!option.available) {
-        return false;
-      }
-
-      if (option.minAmount && total < option.minAmount) {
+      if (isNotSelectedOption || isUnavailable || isUnavailableAmount || isUnsupported) {
         return false;
       }
 

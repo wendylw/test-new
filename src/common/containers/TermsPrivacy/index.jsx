@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
+import propTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import DocumentHeadInfo from '../../../components/DocumentHeadInfo';
 
-import config from '../config';
-import DocumentHeadInfo from '../components/DocumentHeadInfo';
-
-import '../Common.scss';
-import Utils from '../utils/utils';
-import HybridHeader from '../components/HybridHeader';
+import '../../../Common.scss';
+import Utils from '../../../utils/utils';
+import HybridHeader from '../../../components/HybridHeader';
+import { getFiles } from './api-request';
 import './TermsPrivacy.scss';
-// Example1 URL: http://nike.storehub.local:3000/#/terms-conditions
-// Example1 URL: http://nike.storehub.local:3000/#/privacy
+import logger from '../../../utils/monitoring/logger';
 
 const PAGE_NAMES = {
   TERMS: 'terms',
@@ -17,10 +16,6 @@ const PAGE_NAMES = {
 };
 
 export class TermsPrivacy extends Component {
-  state = {
-    termsPrivacyData: null,
-  };
-
   // remove fixed style in beepit.com
   constructor(props) {
     super(props);
@@ -28,27 +23,18 @@ export class TermsPrivacy extends Component {
       document.body.style.position = '';
       document.body.style.overflow = '';
     }
+
+    this.state = {
+      termsPrivacyData: null,
+    };
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     const { pageName } = this.props;
 
-    const data = await fetch(`/api/privacy?filePath=${config.termsPrivacyURLS[pageName]}`, {
-      method: 'GET',
-      mode: 'cors',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      }),
-    })
-      .then(response => response.text())
-      .then(fileData => {
-        // data就是我们请求的repos
-        return fileData;
-      })
-      .catch(error => {
-        return Promise.reject(error);
-      });
+    const data = await getFiles(pageName).catch(error => {
+      logger.error('Site_TermsPrivacy_LoadFileFailed', error);
+    });
 
     this.setState({ termsPrivacyData: data });
   }
@@ -86,6 +72,7 @@ export class TermsPrivacy extends Component {
       <DocumentHeadInfo title={t('Beep')}>
         {headerVisible && <HybridHeader title={this.getHeaderTitle()} />}
         {/* remove link style in tng mini program */}
+        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
           className={Utils.isTNGMiniProgram() ? 'terms-privacy__remove-link-style' : ''}
           onClick={this.handleContentClick}
@@ -96,5 +83,13 @@ export class TermsPrivacy extends Component {
   }
 }
 TermsPrivacy.displayName = 'TermsPrivacy';
+
+TermsPrivacy.propTypes = {
+  pageName: propTypes.string,
+};
+
+TermsPrivacy.defaultProps = {
+  pageName: '',
+};
 
 export default withTranslation()(TermsPrivacy);

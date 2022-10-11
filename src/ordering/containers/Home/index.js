@@ -77,7 +77,7 @@ import { getIfAddressInfoExists, getAddressCoords, getAddressName } from '../../
 import './OrderingHome.scss';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
-import { SOURCE_TYPE } from '../Menu/constants';
+import { SOURCE_TYPE } from '../../../common/utils/constants';
 
 const localState = {
   blockScrollTop: 0,
@@ -705,7 +705,8 @@ class Home extends Component {
           </span>
         );
       case DELIVERY_METHOD.TAKE_AWAY:
-        return <span className="flex__shrink-fixed padding-normal text-opacity">{t('TAKE_AWAY')}</span>;
+
+        return <span className="flex__shrink-fixed padding-normal text-opacity tw-uppercase">{t('TakeAway')}</span>;
       case DELIVERY_METHOD.DELIVERY:
       case DELIVERY_METHOD.PICKUP:
         return h || (allStore && allStore.length === 1) ? (

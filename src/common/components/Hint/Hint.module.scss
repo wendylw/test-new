@@ -1,0 +1,34 @@
+@mixin hintStyle($color: null) {
+  @apply tw-px-8 sm:tw-px-8px;
+
+  @if ($color == "gray") {
+    @apply tw-text-gray-700 tw-bg-gray-200;
+  }
+}
+
+@mixin hintBorderRadius($radiusSize: null) {
+  @if ($radiusSize == "sm") {
+    @apply tw-px-8 sm:tw-px-8px tw-rounded-sm;
+  }
+}
+
+.hint {
+  @apply tw-flex tw-items-center;
+  @include hintStyle;
+  @include hintBorderRadius;
+
+  &:global(.gray) {
+    @include hintStyle("gray");
+  }
+
+  &:global(.sm) {
+    @include hintBorderRadius("sm");
+  }
+}
+
+.hintInner {
+  @apply tw-text-sm tw-leading-relaxed tw-ml-2 sm:tw-ml-2px;
+
+  color: inherit;
+  font-weight: inherit;
+}

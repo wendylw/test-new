@@ -14,7 +14,7 @@ import Constants from '../utils/constants';
 
 const { ROUTER_PATHS } = Constants;
 
-const AsyncTermsPrivacy = lazy(() => import('../containers/TermsPrivacy'));
+const AsyncTermsPrivacy = lazy(() => import('../common/containers/TermsPrivacy'));
 const OrderHistory = lazy(() => import('./order-history'));
 
 const SiteRoute = () => {

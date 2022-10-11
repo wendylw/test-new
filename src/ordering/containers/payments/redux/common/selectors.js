@@ -58,11 +58,12 @@ export const getAllPaymentsOptions = createSelector(
   (originalPaymentOptions, total) => {
     return originalPaymentOptions.map(originalOption => {
       const option = { ...originalOption };
-      const { available, minAmount } = option;
+      const { available, minAmount, isStoreSupported } = option;
 
       option.disabledConditions = {
         minAmount: false,
         available: !available,
+        unSupport: !isStoreSupported,
       };
 
       if (minAmount && total < minAmount) {

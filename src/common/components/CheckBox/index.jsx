@@ -4,6 +4,8 @@ import styles from './CheckBox.module.scss';
 
 const CheckBoxGroupContext = React.createContext(null);
 
+const getClassName = classList => classList.filter(className => !!className).join(' ');
+
 export const CheckBoxGroup = props => {
   const { children, name, value, onChange } = props;
   const controlled = useMemo(() => value !== undefined, [value]);
@@ -52,6 +54,7 @@ const CheckBox = props => {
     disabled = false,
     containerClassName = '',
     containerStyle = {},
+    size,
   } = props;
   const context = useContext(CheckBoxGroupContext);
   const { name: nameFromContext, valueSet: valueSetFromContext, onChange: onChangeFromContext, controlled } =
@@ -71,7 +74,7 @@ const CheckBox = props => {
       name={context ? nameFromContext : name}
       checked={context && controlled ? valueSetFromContext.has(value) : checked}
       onChange={onChangeCallback}
-      className={`${styles.checkbox} ${className}`}
+      className={getClassName([styles.checkbox, className, size])}
       style={style}
       disabled={disabled}
     />
@@ -103,6 +106,7 @@ CheckBox.propTypes = {
   containerStyle: PropTypes.object,
   id: PropTypes.string,
   disabled: PropTypes.bool,
+  size: PropTypes.oneOf(['small']),
 };
 CheckBox.defaultProps = {
   className: '',
@@ -116,6 +120,7 @@ CheckBox.defaultProps = {
   containerStyle: {},
   id: undefined,
   disabled: false,
+  size: null,
 };
 CheckBox.Group = CheckBoxGroup;
 
