@@ -72,7 +72,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
     // will restore the position in an async way.
     setTimeout(() => {
       onCategoryItemClick(stagedCategoryId);
-    }, 0);
+    }, 10);
   }, [stagedCategoryId, onCategoryItemClick]);
   const onCategorySelected = useCallback(id => {
     setStagedCategoryId(id);
