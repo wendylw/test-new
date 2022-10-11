@@ -53,7 +53,7 @@ module.exports = {
       DEFAULT: '0 2px 16px rgba(0, 0, 0, 0.06)',
       sm: '0 -4px 16px rgba(0, 0, 0, 0.06)',
       lg: '0 4px 16px rgba(0, 0, 0, 0.06)',
-      lg: '0 4px 24px rgba(0, 0, 0, 0.06)',
+      xl: '0 4px 24px rgba(0, 0, 0, 0.06)',
       none: 'none',
     },
     spacing: {

@@ -1,7 +1,10 @@
+import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get, post } from '../../../../utils/api/api-fetch';
 import Constants from '../../../../utils/constants';
-import { API_INFO } from './api-info';
+import { getReceiptNumber } from './selector';
+import { API_INFO, getOrderStoreReview, postOrderStoreReview } from './api-info';
+import { alert } from '../../../../common/utils/feedback';
 
 const { DELIVERY_METHOD } = Constants;
 
@@ -21,4 +24,77 @@ export const loadOrder = createAsyncThunk('ordering/orderStatus/common/fetchOrde
 
 export const loadOrderStatus = createAsyncThunk('ordering/orderStatus/common/fetchOrderStatus', async orderId =>
   get(API_INFO.getOrderStatus(orderId).url)
+);
+
+// Store Review
+export const showStoreReviewThankYouModal = createAsyncThunk(
+  'ordering/orderStatus/common/showStoreReviewThankYouModal',
+  async () => {}
+);
+
+export const hideStoreReviewThankYouModal = createAsyncThunk(
+  'ordering/orderStatus/common/hideStoreReviewThankYouModal',
+  async () => {}
+);
+
+export const showStoreReviewWarningModal = createAsyncThunk(
+  'ordering/orderStatus/common/showStoreReviewWarningModal',
+  async () => {}
+);
+
+export const hideStoreReviewWarningModal = createAsyncThunk(
+  'ordering/orderStatus/common/hideStoreReviewWarningModal',
+  async () => {}
+);
+
+export const showStoreReviewLoadingIndicator = createAsyncThunk(
+  'ordering/orderStatus/common/showStoreReviewLoadingIndicator',
+  async () => {}
+);
+
+export const hideStoreReviewLoadingIndicator = createAsyncThunk(
+  'ordering/orderStatus/common/hideStoreReviewLoadingIndicator',
+  async () => {}
+);
+
+export const loadOrderStoreReview = createAsyncThunk(
+  'ordering/orderStatus/common/loadOrderStoreReview',
+  async (_, { getState }) => {
+    const orderId = getReceiptNumber(getState());
+    const { data } = await getOrderStoreReview(orderId);
+
+    return data;
+  }
+);
+
+export const saveOrderStoreReview = createAsyncThunk(
+  'ordering/orderStatus/common/saveOrderStoreReview',
+  async ({ rating, comments, allowMerchantContact }, { dispatch, getState }) => {
+    const state = getState();
+    const orderId = getReceiptNumber(state);
+
+    try {
+      await dispatch(showStoreReviewLoadingIndicator());
+      await postOrderStoreReview({ orderId, rating, comments, allowMerchantContact });
+      await dispatch(hideStoreReviewLoadingIndicator());
+      await dispatch(showStoreReviewThankYouModal());
+
+      return { rating, comments, allowMerchantContact };
+    } catch (e) {
+      await dispatch(hideStoreReviewLoadingIndicator());
+
+      if (e.code === '40028') {
+        alert(i18next.t('ApiError:40028Description'), {
+          title: i18next.t('ApiError:40028Title'),
+          closeButtonContent: i18next.t('Okay'),
+        });
+      } else {
+        alert(i18next.t('OrderingThankYou:SubmissionFailedDescription'), {
+          title: i18next.t('OrderingThankYou:SubmissionFailedTitle'),
+          closeButtonContent: i18next.t('Okay'),
+        });
+      }
+      throw e;
+    }
+  }
 );

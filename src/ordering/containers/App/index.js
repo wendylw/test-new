@@ -23,7 +23,7 @@ import faviconImage from '../../../images/favicon.ico';
 import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import logger from '../../../utils/monitoring/logger';
-import { SOURCE_TYPE } from '../Menu/constants';
+import { SOURCE_TYPE } from '../../../common/utils/constants';
 import { isURL } from '../../../common/utils';
 
 const { ROUTER_PATHS } = Constants;
@@ -36,8 +36,10 @@ class App extends Component {
 
     if (source) {
       switch (source) {
+        case SOURCE_TYPE.SMS:
         case SOURCE_TYPE.SHARED_LINK:
-          Utils.setSessionVariable('BeepOrderingSource', SOURCE_TYPE.SHARED_LINK);
+        case SOURCE_TYPE.PUSH_NOTIFICATION:
+          Utils.setSessionVariable('BeepOrderingSource', source);
           break;
         case SOURCE_TYPE.SHOPPING_CART:
           // no need to do anything in here, it will be used on the menu page.

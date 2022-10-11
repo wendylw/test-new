@@ -11,6 +11,7 @@ import OrderStatusDescription from './components/OrderStatusDescription';
 import LogisticsProcessing from './components/LogisticsProcessing';
 import RiderInfo from './components/RiderInfo';
 import CashbackInfo from './components/CashbackInfo';
+import StoreReviewInfo from './components/StoreReviewInfo';
 import CashbackBanner from './components/CashbackBanner';
 import OrderSummary from './components/OrderSummary';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
@@ -42,7 +43,7 @@ import {
   getIsCoreBusinessAPICompleted,
   getIsFromBeepSiteOrderHistory,
 } from '../../../../redux/modules/app';
-import { loadOrder, loadOrderStatus } from '../../redux/thunks';
+import { loadOrder, loadOrderStatus, loadOrderStoreReview as loadOrderStoreReviewThunk } from '../../redux/thunks';
 import {
   getOrder,
   getOrderStatus,
@@ -54,6 +55,7 @@ import {
   getIsPreOrder,
   getIsUseStorehubLogistics,
   getIsPayLater,
+  getStoreRating,
 } from '../../redux/selector';
 import {
   getshowProfileVisibility,
@@ -78,6 +80,7 @@ import {
   getShouldShowCashbackCard,
   getShouldShowCashbackBanner,
   getHasOrderPaid,
+  getShouldShowStoreReviewCard,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -85,6 +88,7 @@ import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { ICON_RES } from '../../../../../components/NativeHeader';
+import { SOURCE_TYPE } from '../../../../../common/utils/constants';
 
 const {
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
@@ -141,10 +145,13 @@ export class ThankYou extends PureComponent {
   };
 
   componentDidMount = async () => {
-    const { user, loadCashbackInfo } = this.props;
+    const { user, loadCashbackInfo, loadOrderStoreReview } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
+
+    // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
+    loadOrderStoreReview();
 
     const from = Utils.getCookieVariable('__ty_source');
 
@@ -362,7 +369,7 @@ export class ThankYou extends PureComponent {
   };
 
   async componentDidUpdate(prevProps) {
-    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo } = prevProps;
+    const { order: prevOrder, onlineStoreInfo: prevOnlineStoreInfo, hasOrderPaid: prevHasOrderPaid } = prevProps;
     const { storeId: prevStoreId } = prevOrder || {};
     const {
       order,
@@ -372,6 +379,8 @@ export class ThankYou extends PureComponent {
       loadStoreIdTableIdHashCode,
       loadStoreIdHashCode,
       isCoreBusinessAPICompleted,
+      loadOrderStoreReview,
+      hasOrderPaid: currHasOrderPaid,
     } = this.props;
 
     if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
@@ -401,6 +410,10 @@ export class ThankYou extends PureComponent {
       this.recordChargedEvent();
       this.handleGtmEventTracking({ order: orderInfo });
       this.setState({ hasRecordedChargedEvent: true });
+    }
+
+    if (!prevHasOrderPaid && currHasOrderPaid) {
+      loadOrderStoreReview();
     }
 
     this.setContainerHeight();
@@ -899,15 +912,37 @@ export class ThankYou extends PureComponent {
     this.props.setShowProfileVisibility(false);
   };
 
+  handleChangeStoreRating = rating => {
+    const { order, history } = this.props;
+    const { ROUTER_PATHS } = Constants;
+
+    CleverTap.pushEvent('Thank You Page - Click Share Feedback Card', {
+      'order id': _get(order, 'orderId', ''),
+      'store name': _get(order, 'storeInfo.name', ''),
+      'store id': _get(order, 'storeId', ''),
+      'shipping type': _get(order, 'shippingType', ''),
+    });
+
+    Utils.setSessionVariable('BeepOrderingSource', SOURCE_TYPE.THANK_YOU);
+
+    history.push({
+      pathname: ROUTER_PATHS.STORE_REVIEW,
+      search: window.location.search,
+      state: { rating },
+    });
+  };
+
   render() {
     const {
       t,
       history,
       match,
       order,
+      storeRating,
       businessUTCOffset,
       onlineStoreInfo,
       shouldShowCashbackCard,
+      shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
     } = this.props;
     const date = new Date();
@@ -958,9 +993,12 @@ export class ThankYou extends PureComponent {
               inApp={Utils.isWebview()}
               cancelAmountEl={<CurrencyNumber className="text-size-big text-weight-bolder" money={total || 0} />}
             />
+            {shouldShowStoreReviewCard && (
+              <StoreReviewInfo rating={storeRating} onRatingChanged={this.handleChangeStoreRating} />
+            )}
+            {shouldShowCashbackCard && <CashbackInfo />}
             {this.renderDeliveryInfo()}
             {this.renderPickupTakeAwayDineInInfo()}
-            {shouldShowCashbackCard && <CashbackInfo />}
             <OrderSummary
               history={history}
               businessUTCOffset={businessUTCOffset}
@@ -1010,6 +1048,7 @@ export default compose(
   withTranslation(['OrderingThankYou']),
   connect(
     state => ({
+      storeRating: getStoreRating(state),
       onlineStoreInfo: getOnlineStoreInfo(state),
       storeHashCode: getStoreHashCode(state),
       order: getOrder(state),
@@ -1039,6 +1078,7 @@ export default compose(
       foodTagsForCleverTap: getFoodTagsForCleverTap(state),
       isCoreBusinessAPICompleted: getIsCoreBusinessAPICompleted(state),
       isFromBeepSiteOrderHistory: getIsFromBeepSiteOrderHistory(state),
+      shouldShowStoreReviewCard: getShouldShowStoreReviewCard(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
@@ -1052,6 +1092,7 @@ export default compose(
       loadOrder: bindActionCreators(loadOrder, dispatch),
       loadOrderStatus: bindActionCreators(loadOrderStatus, dispatch),
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
+      loadOrderStoreReview: bindActionCreators(loadOrderStoreReviewThunk, dispatch),
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
     })
   )

@@ -6,6 +6,7 @@ export const API_REQUEST_URL_PATTERNS = {
   '/api/consumers/*/customer': /^\/api\/consumers\/\w+\/customer$/,
   '/api/consumers/*/vouchers': /^\/api\/consumers\/\w+\/vouchers$/,
   '/api/transactions/*/status': /^\/api\/transactions\/\w+\/status$/,
+  '/api/transactions/*/review': /^\/api\/transactions\/\w+\/review$/,
   '/api/consumers/*/address/*': /^\/api\/consumers\/\w+\/address\/\w+$/,
   '/api/cashback/hash/*/decode': /^\/api\/cashback\/hash\/.+\/decode$/,
   '/api/consumers/*/transactions': /^\/api\/consumers\/\w+\/transactions$/,

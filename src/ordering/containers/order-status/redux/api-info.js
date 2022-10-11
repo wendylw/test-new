@@ -1,4 +1,4 @@
-import { post } from '../../../../utils/api/api-fetch';
+import { post, get } from '../../../../utils/api/api-fetch';
 
 export const API_INFO = {
   getOrderDetail: () => ({
@@ -37,3 +37,8 @@ export const API_INFO = {
 export const postFoodCourtIdHashCode = (foodCourtId, payload) => {
   return post(`/api/ordering/stores/${foodCourtId}`, payload);
 };
+
+export const getOrderStoreReview = orderId => get(`/api/transactions/${orderId}/review`);
+
+export const postOrderStoreReview = ({ orderId, rating, comments, allowMerchantContact }) =>
+  post(`/api/transactions/${orderId}/review`, { rating, comments, allowMerchantContact });
