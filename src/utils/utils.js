@@ -11,7 +11,6 @@ dayjs.extend(utc);
 
 const {
   SH_LOGISTICS_VALID_TIME,
-  CLIENTS,
   ROUTER_PATHS,
   REGISTRATION_SOURCE,
   REGISTRATION_TOUCH_POINT,
@@ -654,21 +653,7 @@ Utils.getOrderSourceForCleverTab = () => {
   return mapping[orderSource];
 };
 
-Utils.getClient = () => {
-  if (Utils.isTNGMiniProgram()) {
-    return CLIENTS.TNG_MINI_PROGRAM;
-  }
-
-  if (Utils.isAndroidWebview()) {
-    return CLIENTS.ANDROID;
-  }
-
-  if (Utils.isIOSWebview()) {
-    return CLIENTS.IOS;
-  }
-
-  return CLIENTS.WEB;
-};
+Utils.getClient = UtilsV2.getClient;
 
 export const copyDataToClipboard = async text => {
   try {

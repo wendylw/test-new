@@ -611,14 +611,7 @@ const PAYMENT_API_PAYMENT_OPTIONS = {
 const TIME_SLOT_NOW = 'now';
 
 export const AVAILABLE_REPORT_DRIVER_ORDER_STATUSES = [ORDER_STATUS.DELIVERED, ORDER_STATUS.PICKED_UP];
-const CLIENTS = {
-  WEB: 'web',
-  IOS: 'iOS',
-  ANDROID: 'Android',
-  MAC: 'Mac',
-  PC: 'PC',
-  TNG_MINI_PROGRAM: 'tngMiniProgram',
-};
+const CLIENTS = ConstantsV2.CLIENTS;
 
 export const REGISTRATION_TOUCH_POINT = {
   CLAIM_CASHBACK: 'ClaimCashback',

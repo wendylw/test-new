@@ -1,7 +1,7 @@
 import qs from 'qs';
 import _once from 'lodash/once';
 import Cookies from 'js-cookie';
-import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING } from './constants';
+import { WEB_VIEW_SOURCE, SHIPPING_TYPES, PATH_NAME_MAPPING, CLIENTS } from './constants';
 // eslint-disable-next-line import/no-cycle
 import config from '../../config';
 
@@ -70,6 +70,22 @@ export const isSiteApp = (domain = window.location.hostname) => {
 };
 
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
+
+export const getClient = () => {
+  if (isTNGMiniProgram()) {
+    return CLIENTS.TNG_MINI_PROGRAM;
+  }
+
+  if (isAndroidWebview()) {
+    return CLIENTS.ANDROID;
+  }
+
+  if (isIOSWebview()) {
+    return CLIENTS.IOS;
+  }
+
+  return CLIENTS.WEB;
+};
 
 export const getExpectedDeliveryDateFromSession = () => {
   const selectedDate = JSON.parse(getSessionVariable('expectedDeliveryDate') || '{}');

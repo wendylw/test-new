@@ -1,11 +1,12 @@
 import originalKy from 'ky';
 import qs from 'qs';
-import Utils from '../utils';
+import { getClient } from '../../common/utils';
+import APIError from './api-error';
 
 export const ky = originalKy.create({
   hooks: {
     // Update headers when consumer enter beep from different client
-    beforeRequest: [req => req.headers.set('client', Utils.getClient())],
+    beforeRequest: [req => req.headers.set('client', getClient())],
   },
   // TODO: There is a RETRY strategy in ky, but it might not work well with our use case.
   // Need to monitor it and decide whether to use it.
@@ -128,10 +129,9 @@ async function _fetch(url, opts) {
           })
         );
       } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
-        error = new Error({
+        error = new APIError(typeof body === 'string' ? body : JSON.stringify(body), {
           code: '50000',
           status: e.status,
-          message: typeof body === 'string' ? body : JSON.stringify(body),
         });
         // Send log to Log service
         window.dispatchEvent(
