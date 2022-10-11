@@ -94,7 +94,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
         <span className={styles.menuProductHighlightedCategory}>
           {highlightedCategory ? highlightedCategory.name : null}
         </span>
-        <CaretDown className="tw-flex-shrink-0 tw-text-xl tw-my-4 sm:tw-my-4px tw-text-gray-600" size={16} />
+        <CaretDown className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px tw-text-gray-600" size={16} />
       </Button>
       <Drawer
         className={styles.menuProductCategoryDrawer}
