@@ -4,7 +4,7 @@ import propTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useInView } from 'react-hook-inview';
-import { Star, MapPin } from 'phosphor-react';
+import { Star } from 'phosphor-react';
 import Tag from '../../../../../common/components/Tag';
 import StoreInfoDrawer from './StoreInfoDrawer';
 import { ObjectFitImage } from '../../../../../common/components/Image';

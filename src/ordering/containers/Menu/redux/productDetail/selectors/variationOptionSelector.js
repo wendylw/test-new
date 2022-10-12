@@ -25,9 +25,6 @@ const getSelectedOptionsByVariationId = (_, __, selectedOptionsByVariationId) =>
 
 const getProductChildrenMap = (_, __, ___, productChildrenMap) => productChildrenMap;
 
-const getLatestSelectedSingleChoiceVariationId = (_, __, ___, ____, latestSelectedSingleChoiceVariationId) =>
-  latestSelectedSingleChoiceVariationId;
-
 const getFormatCurrencyFunction = (_, __, ___, ____, _____, formatCurrency) => formatCurrency;
 
 /** End Base Selector */

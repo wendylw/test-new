@@ -92,6 +92,7 @@ const MenuProductList = () => {
           <CategoryDropdown
             onCategoryItemClick={categoryId => {
               const categoryElement = document.getElementById(generateScrollHandleId(categoryId));
+              console.log('categoryElement', categoryElement);
               if (categoryElement) {
                 // stop intersection observer temporarily, otherwise the active category will be cleared
                 // because of the setCategoriesInView action

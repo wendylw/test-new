@@ -6,22 +6,12 @@ import { clearCart, updateCartItems, removeCartItemsById, clearQueryCartStatus }
 import { getOriginalCartItems } from './selectors';
 import {
   actions as appActions,
-  getShippingType,
-  getDeliveryInfo,
-  getUserIsLogin,
   getReceiptNumber,
   getEnablePayLater,
   getStoreInfoForCleverTap,
 } from '../../../../redux/modules/app';
-import {
-  isWebview,
-  isTNGMiniProgram,
-  getSessionVariable,
-  getExpectedDeliveryDateFromSession,
-  getStoreHashCode,
-  getShippingTypeFromUrl,
-} from '../../../../../common/utils';
-import { SHIPPING_TYPES, PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
+import { getStoreHashCode, getShippingTypeFromUrl } from '../../../../../common/utils';
+import { PATH_NAME_MAPPING } from '../../../../../common/utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
 import Clevertap from '../../../../../utils/clevertap';
 import { gtmEventTracking, GTM_TRACKING_EVENTS, STOCK_STATUS_MAPPING } from '../../../../../utils/gtm';
