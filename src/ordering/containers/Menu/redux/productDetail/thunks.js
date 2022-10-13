@@ -161,7 +161,7 @@ export const showProductDetailDrawer = createAsyncThunk(
           selectedOptionsByVariationId: getDefaultSelectedOptions(productInResult),
         };
       } catch (error) {
-        toast.error(i18next.t('ApiError:NetworkIsDisconnected'));
+        toast.error(i18next.t('ApiError:NoInternetConnection'));
 
         console.error(error);
         throw error;
