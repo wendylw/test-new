@@ -7,9 +7,14 @@ import Button from '../Button';
 import Loader from '../Loader';
 import styles from './Search.module.scss';
 
-const BG_COLOR = {
+const INPUT_BG_COLOR = {
   white: '',
   gray: 'tw-bg-gray-200',
+};
+
+const CONTAINER_STYLE = {
+  white: 'tw-border tw-border-solid tw-border-gray-400',
+  gray: 'tw-border-0 tw-bg-gray-200',
 };
 
 const Search = React.forwardRef(
@@ -27,7 +32,8 @@ const Search = React.forwardRef(
     },
     searchRef
   ) => {
-    const classNameList = ['tw-flex tw-flex-1 tw-items-center tw-border-0 tw-rounded-2xl tw-bg-gray-200'];
+    // eslint-disable-next-line prefer-template
+    const classNameList = ['tw-flex tw-flex-1 tw-items-center tw-rounded-2xl ' + CONTAINER_STYLE[backgroundColor]];
     // Search input value use state of component, because Chinese typing
     const [inputValue, setInputValue] = useState(defaultSearchKeyword);
     const currentRef = useRef(null);
@@ -60,7 +66,7 @@ const Search = React.forwardRef(
             searchInputRef.current = ref;
           }}
           placeholder={placeholder}
-          className={`tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500 ${BG_COLOR[backgroundColor]}`}
+          className={`tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500 ${INPUT_BG_COLOR[backgroundColor]}`}
           type="text"
           value={inputValue}
           onChange={e => {
