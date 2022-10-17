@@ -13,8 +13,8 @@ const INPUT_BG_COLOR = {
 };
 
 const CONTAINER_STYLE = {
-  white: 'tw-border tw-border-solid tw-border-gray-400',
-  gray: 'tw-border-0 tw-bg-gray-200',
+  white: 'tw-border-gray-400',
+  gray: 'tw-border-gray-200 tw-bg-gray-200',
 };
 
 const Search = React.forwardRef(
@@ -33,7 +33,9 @@ const Search = React.forwardRef(
     searchRef
   ) => {
     // eslint-disable-next-line prefer-template
-    const classNameList = ['tw-flex tw-flex-1 tw-items-center tw-rounded-2xl ' + CONTAINER_STYLE[backgroundColor]];
+    const classNameList = [
+      'tw-flex tw-flex-1 tw-items-center tw-rounded-2xl tw-border tw-border-solid ' + CONTAINER_STYLE[backgroundColor],
+    ];
     // Search input value use state of component, because Chinese typing
     const [inputValue, setInputValue] = useState(defaultSearchKeyword);
     const currentRef = useRef(null);
