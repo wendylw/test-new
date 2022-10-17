@@ -4,6 +4,28 @@ iNoBounce.disable();
 
 const { body, documentElement: html } = document;
 
+const getiOSVersion = () => {
+  let version = 0;
+
+  if (/iP(hone|od|ad)/.test(navigator.platform)) {
+    // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
+    // versionArray format: [main_version, sub_version, sub_version, ...]
+    const versionArray = navigator.userAgent
+      .match(/OS (\d+)_(\d+)_?(\d+)?/)
+      .filter(versionItem => !!versionItem)
+      .map(itemString => parseInt(itemString, 10));
+
+    versionArray.forEach((versionNumber, index) => {
+      // Add the main version and subversion to get the corresponding version number
+      version += versionNumber * (index / 10);
+    });
+
+    return version;
+  }
+
+  return version;
+};
+
 // [START: Safari Document Scroll Blocker]
 // This is to prevent the html from scrolling when there's fixed, fullscreen content on the front.
 // The purpose of this is to prevent the address bar to be expanded / collapsed when we can fixed, fullscreen content,
@@ -11,8 +33,12 @@ const { body, documentElement: html } = document;
 // Inspired by https://pqina.nl/blog/how-to-prevent-scrolling-the-page-on-ios-safari/
 // and https://github.com/lazd/iNoBounce
 const shouldEnableDocumentScrollBlocker = (() => {
-  return false;
-  // eslint-disable-next-line no-unreachable
+  const iOSVersion = getiOSVersion();
+
+  if (iOSVersion >= 15.5) {
+    return false;
+  }
+
   const ua = navigator.userAgent.toLowerCase();
   const isSafari = ua.indexOf('safari') > -1 && ua.indexOf('chrome') < 0 && /ipad|iphone|ipod/.test(ua);
   if (!isSafari) return false;

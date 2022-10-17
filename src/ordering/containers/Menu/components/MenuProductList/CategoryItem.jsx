@@ -165,7 +165,6 @@ const CategoryItem = ({ category, onIntersectionChange, products }) => {
   });
   useEffect(() => {
     if (onIntersectionChange) {
-      console.log('@@@', category.name, isVisible);
       onIntersectionChange({ inView: isVisible, categoryId: category.id });
     }
   }, [onIntersectionChange, isVisible, category.id]);

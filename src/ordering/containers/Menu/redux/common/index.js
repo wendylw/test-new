@@ -64,8 +64,6 @@ export const { reducer, actions } = createSlice({
       state.storeNameInView = payload;
     },
     setCategoriesInView: (state, { payload: { categoryId, inView } }) => {
-      console.log('setCategoriesInView', categoryId);
-
       state.categoriesInView[categoryId] = inView;
       state.activeCategoryId = null;
     },

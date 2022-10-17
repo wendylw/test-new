@@ -71,10 +71,6 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
     // Must add this setTimeout, otherwise scrollIntoView won't work. I suspect that the history.back
     // will restore the position in an async way.
     onCategoryItemClick(stagedCategoryId);
-
-    // setTimeout(() => {
-    //   onCategoryItemClick(stagedCategoryId);
-    // }, 0);
   }, [stagedCategoryId, onCategoryItemClick]);
   const onCategorySelected = useCallback(id => {
     setStagedCategoryId(id);

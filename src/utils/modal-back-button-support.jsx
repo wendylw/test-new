@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { Component, useEffect, useRef, useCallback } from 'react';
+import React, { Component, useEffect, useCallback } from 'react';
 import { useMount, useUnmount, useUpdateEffect } from 'react-use';
 import qs from 'qs';
 import _difference from 'lodash/difference';
