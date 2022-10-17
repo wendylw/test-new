@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 import _isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useRef, useState } from 'react';
 import { useMount } from 'react-use';
@@ -32,7 +33,6 @@ const Search = React.forwardRef(
     },
     searchRef
   ) => {
-    // eslint-disable-next-line prefer-template
     const classNameList = [
       'tw-flex tw-flex-1 tw-items-center tw-rounded-2xl tw-border tw-border-solid ' + CONTAINER_STYLE[backgroundColor],
     ];
