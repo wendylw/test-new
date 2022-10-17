@@ -7,6 +7,11 @@ import Button from '../Button';
 import Loader from '../Loader';
 import styles from './Search.module.scss';
 
+const BG_COLOR = {
+  white: '',
+  gray: 'tw-bg-gray-200',
+};
+
 const Search = React.forwardRef(
   (
     {
@@ -18,6 +23,7 @@ const Search = React.forwardRef(
       searching,
       onChangeInputValue,
       onClearInput,
+      backgroundColor,
     },
     searchRef
   ) => {
@@ -54,7 +60,7 @@ const Search = React.forwardRef(
             searchInputRef.current = ref;
           }}
           placeholder={placeholder}
-          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500 tw-bg-gray-200"
+          className={`tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500 ${BG_COLOR[backgroundColor]}`}
           type="text"
           value={inputValue}
           onChange={e => {
@@ -101,6 +107,7 @@ Search.propTypes = {
   searching: PropTypes.bool,
   onChangeInputValue: PropTypes.func,
   onClearInput: PropTypes.func,
+  backgroundColor: PropTypes.oneOf(['white', 'gray']),
 };
 Search.defaultProps = {
   addOnIcon: null,
@@ -111,6 +118,7 @@ Search.defaultProps = {
   searching: false,
   onChangeInputValue: () => {},
   onClearInput: () => {},
+  backgroundColor: 'white',
 };
 
 export default Search;
