@@ -33,15 +33,15 @@ const getiOSVersion = () => {
 // Inspired by https://pqina.nl/blog/how-to-prevent-scrolling-the-page-on-ios-safari/
 // and https://github.com/lazd/iNoBounce
 const shouldEnableDocumentScrollBlocker = (() => {
-  const iOSVersion = getiOSVersion();
-
-  if (iOSVersion >= 15.5) {
-    return false;
-  }
-
   const ua = navigator.userAgent.toLowerCase();
   const isSafari = ua.indexOf('safari') > -1 && ua.indexOf('chrome') < 0 && /ipad|iphone|ipod/.test(ua);
   if (!isSafari) return false;
+  // On iOS 15.5 and above, we will not be compatible with expanded/collapsed of Safari's address bar.
+  // Compatibility processing will cause confusion in scroll monitoring in versions above 15.5,
+  // resulting in unknown errors
+  const iOSVersion = getiOSVersion();
+  if (iOSVersion >= 15.5) return false;
+
   // this following code is to avoid enable the plugin on chrome's ios simulator
   // refer to: https://github.com/lazd/iNoBounce/blob/master/inobounce.js#L106
   const testDiv = document.createElement('div');
