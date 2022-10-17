@@ -689,6 +689,45 @@ export const LIVE_CHAT_SOURCE_TYPES = {
   ORDER_DETAILS: 'order details',
 };
 
+export const OTP_COMMON_ERROR_TYPES = {
+  NETWORK_ERROR: 'Network Error',
+  UNKNOWN_ERROR: 'Unknown Error',
+};
+
+export const OTP_API_ERROR_CODES = {
+  PHONE_INVALID: 394761,
+  REQUEST_TOO_FAST: 394757,
+  MEET_DAY_LIMIT: 394755,
+};
+
+export const SMS_API_ERROR_CODES = {
+  PHONE_INVALID: 395011,
+  NO_AVAILABLE_PROVIDER: 395012,
+};
+
+export const OTP_ERROR_POPUP_I18N_KEYS = {
+  [OTP_API_ERROR_CODES.MEET_DAY_LIMIT]: {
+    title: 'ApiError:394755Title',
+    description: 'ApiError:394755Description',
+  },
+  [OTP_COMMON_ERROR_TYPES.NETWORK_ERROR]: {
+    title: 'NetworkErrorTitle',
+    description: 'NetworkErrorDescription',
+  },
+  [OTP_COMMON_ERROR_TYPES.SERVER_ERROR]: {
+    title: 'UnknownErrorTitle',
+    description: 'UnknownErrorDescription',
+  },
+};
+
+export const OTP_SERVER_ERROR_I18N_KEYS = {
+  [OTP_API_ERROR_CODES.PHONE_INVALID]: 'ApiError:394761ShortDescription',
+  [SMS_API_ERROR_CODES.PHONE_INVALID]: 'ApiError:395011ShortDescription',
+  [OTP_API_ERROR_CODES.MEET_DAY_LIMIT]: 'ApiError:394755ShortDescription',
+  [OTP_API_ERROR_CODES.REQUEST_TOO_FAST]: 'ApiError:394757ShortDescription',
+  [SMS_API_ERROR_CODES.NO_AVAILABLE_PROVIDER]: 'ApiError:395012ShortDescription',
+};
+
 export default {
   OTP_CODE_SIZE,
   OTP_TIMEOUT,
@@ -745,4 +784,9 @@ export default {
   DISPLAY_ICON_TYPES,
   LOCATION_SELECTION_REASON_CODES,
   LIVE_CHAT_SOURCE_TYPES,
+  OTP_API_ERROR_CODES,
+  SMS_API_ERROR_CODES,
+  OTP_COMMON_ERROR_TYPES,
+  OTP_ERROR_POPUP_I18N_KEYS,
+  OTP_SERVER_ERROR_I18N_KEYS,
 };

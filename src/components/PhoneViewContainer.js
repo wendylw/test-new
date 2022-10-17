@@ -39,13 +39,20 @@ class PhoneViewContainer extends React.Component {
   }
 
   render() {
-    const { t, children, title, className, country, buttonText, content, phone, isLoading } = this.props;
+    const {
+      t,
+      children,
+      title,
+      className,
+      country,
+      buttonText,
+      content,
+      phone,
+      showError,
+      errorText,
+      isProcessing,
+    } = this.props;
     const classList = ['phone-view'];
-    let buttonContent = buttonText;
-
-    if (isLoading) {
-      buttonContent = t('Processing');
-    }
 
     if (className) {
       classList.push(className);
@@ -64,6 +71,7 @@ class PhoneViewContainer extends React.Component {
           international // If input want to show country code when phone number is empty, pls add international on props
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
+          className={showError ? 'tw-border-red tw-border' : null}
           data-heap-name="common.phone-view-container.phone-number-input"
           value={formatPhoneNumberIntl(phone)}
           defaultCountry={country}
@@ -72,13 +80,14 @@ class PhoneViewContainer extends React.Component {
           onChange={newPhone => this.handleUpdatePhoneNumber(newPhone)}
           onCountryChange={newCountry => this.handleUpdateCountry(newCountry)}
         />
+        {showError && <p className="tw-text-red">{errorText}</p>}
         <button
           className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
           data-heap-name="common.phone-view-container.submit-btn"
           onClick={this.handleSubmitPhoneNumber.bind(this)}
-          disabled={!phone || isLoading || !isValidPhoneNumber(phone || '')}
+          disabled={!phone || isProcessing || !isValidPhoneNumber(phone || '')}
         >
-          {buttonContent}
+          {buttonText}
         </button>
         {children}
       </section>
@@ -92,14 +101,18 @@ PhoneViewContainer.propTypes = {
   title: PropTypes.string,
   country: PropTypes.string,
   buttonText: PropTypes.string,
-  isLoading: PropTypes.bool,
+  isProcessing: PropTypes.bool,
+  errorText: PropTypes.string,
+  showError: PropTypes.bool,
   updatePhoneNumber: PropTypes.func,
   updateCountry: PropTypes.func,
   onSubmit: PropTypes.func,
 };
 
 PhoneViewContainer.defaultProps = {
-  isLoading: false,
+  isProcessing: false,
+  errorText: '',
+  showError: false,
   updatePhoneNumber: () => {},
   updateCountry: () => {},
   onSubmit: () => {},
