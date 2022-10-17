@@ -1,3 +1,4 @@
+import _isNaN from 'lodash/isNaN';
 import iNoBounce from 'inobounce';
 
 iNoBounce.disable();
@@ -5,25 +6,19 @@ iNoBounce.disable();
 const { body, documentElement: html } = document;
 
 const getiOSVersion = () => {
-  let version = 0;
-
   if (/iP(hone|od|ad)/.test(navigator.platform)) {
     // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
-    // versionArray format: [main_version, sub_version, sub_version, ...]
-    const versionArray = navigator.userAgent
+    // versionArray format: main_version.sub_version.sub_version.
+    const version = navigator.userAgent
       .match(/OS (\d+)_(\d+)_?(\d+)?/)
-      .filter(versionItem => !!versionItem)
-      .map(itemString => parseInt(itemString, 10));
-
-    versionArray.forEach((versionNumber, index) => {
-      // Add the main version and subversion to get the corresponding version number
-      version += versionNumber * (index / 10);
-    });
+      .map(versionItem => parseInt(versionItem || 0, 10))
+      .filter(number => !_isNaN(number))
+      .join('.');
 
     return version;
   }
 
-  return version;
+  return 0;
 };
 
 // [START: Safari Document Scroll Blocker]
@@ -40,7 +35,7 @@ const shouldEnableDocumentScrollBlocker = (() => {
   // Compatibility processing will cause confusion in scroll monitoring in versions above 15.5,
   // resulting in unknown errors
   const iOSVersion = getiOSVersion();
-  if (iOSVersion >= 15.5) return false;
+  if (iOSVersion >= '15.5') return false;
 
   // this following code is to avoid enable the plugin on chrome's ios simulator
   // refer to: https://github.com/lazd/iNoBounce/blob/master/inobounce.js#L106
