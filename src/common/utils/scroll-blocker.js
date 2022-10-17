@@ -11,6 +11,8 @@ const { body, documentElement: html } = document;
 // Inspired by https://pqina.nl/blog/how-to-prevent-scrolling-the-page-on-ios-safari/
 // and https://github.com/lazd/iNoBounce
 const shouldEnableDocumentScrollBlocker = (() => {
+  return false;
+  // eslint-disable-next-line no-unreachable
   const ua = navigator.userAgent.toLowerCase();
   const isSafari = ua.indexOf('safari') > -1 && ua.indexOf('chrome') < 0 && /ipad|iphone|ipod/.test(ua);
   if (!isSafari) return false;
