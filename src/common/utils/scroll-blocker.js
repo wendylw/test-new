@@ -5,6 +5,10 @@ iNoBounce.disable();
 
 const { body, documentElement: html } = document;
 
+/**
+ *
+ * @returns {number}
+ */
 // get iOS version from stackoverflow: <https://stackoverflow.com/a/14223920>
 const getiOSVersion = () => {
   if (/iP(hone|od|ad)/.test(navigator.platform)) {
