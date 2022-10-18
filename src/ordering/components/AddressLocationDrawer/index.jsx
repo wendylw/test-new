@@ -61,7 +61,6 @@ const AddressLocationDrawer = ({
               ref={searchInputRef}
               placeholder={t('SearchYourLocation')}
               searching={false}
-              backgroundColor="gray"
               onChangeInputValue={onHandleChangeSearchKeyword}
               onClearInput={onHandleClearSearchKeyword}
             />

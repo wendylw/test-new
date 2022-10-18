@@ -1,4 +1,3 @@
-/* eslint-disable prefer-template */
 import _isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useRef, useState } from 'react';
 import { useMount } from 'react-use';
@@ -7,16 +6,6 @@ import { MagnifyingGlass, XCircle } from 'phosphor-react';
 import Button from '../Button';
 import Loader from '../Loader';
 import styles from './Search.module.scss';
-
-const INPUT_BG_COLOR = {
-  white: '',
-  gray: 'tw-bg-gray-200',
-};
-
-const CONTAINER_STYLE = {
-  white: 'tw-border-gray-400',
-  gray: 'tw-border-gray-200 tw-bg-gray-200',
-};
 
 const Search = React.forwardRef(
   (
@@ -29,13 +18,10 @@ const Search = React.forwardRef(
       searching,
       onChangeInputValue,
       onClearInput,
-      backgroundColor,
     },
     searchRef
   ) => {
-    const classNameList = [
-      'tw-flex tw-flex-1 tw-items-center tw-rounded-2xl tw-border tw-border-solid ' + CONTAINER_STYLE[backgroundColor],
-    ];
+    const classNameList = [styles.SearchContainer];
     // Search input value use state of component, because Chinese typing
     const [inputValue, setInputValue] = useState(defaultSearchKeyword);
     const currentRef = useRef(null);
@@ -68,7 +54,7 @@ const Search = React.forwardRef(
             searchInputRef.current = ref;
           }}
           placeholder={placeholder}
-          className={`tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500 ${INPUT_BG_COLOR[backgroundColor]}`}
+          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500 tw-border-gray-200 tw-bg-gray-200"
           type="text"
           value={inputValue}
           onChange={e => {
@@ -115,7 +101,6 @@ Search.propTypes = {
   searching: PropTypes.bool,
   onChangeInputValue: PropTypes.func,
   onClearInput: PropTypes.func,
-  backgroundColor: PropTypes.oneOf(['white', 'gray']),
 };
 Search.defaultProps = {
   addOnIcon: null,
@@ -126,7 +111,6 @@ Search.defaultProps = {
   searching: false,
   onChangeInputValue: () => {},
   onClearInput: () => {},
-  backgroundColor: 'white',
 };
 
 export default Search;

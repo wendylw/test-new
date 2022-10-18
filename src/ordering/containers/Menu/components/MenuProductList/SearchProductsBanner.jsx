@@ -104,7 +104,6 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
       {isSearchingBannerVisible ? (
         <>
           <Search
-            backgroundColor="gray"
             ref={searchInputRef}
             placeholder={t('MenuSearchingBoxPlaceholder')}
             defaultSearchKeyword={searchingProductKeywords}
