@@ -81,7 +81,6 @@ const MenuProductList = () => {
   const searchInputRef = useRef(null);
   const handleOnIntersectionChange = useCallback(
     ({ inView, categoryId }) => {
-      // console.log('blockIntersectionObserver.current', blockIntersectionObserver.current);
       if (blockIntersectionObserver.current) return;
       dispatch(commonActions.setCategoriesInView({ categoryId, inView }));
     },
