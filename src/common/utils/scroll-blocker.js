@@ -9,16 +9,22 @@ const { body, documentElement: html } = document;
 const getiOSVersion = () => {
   if (/iP(hone|od|ad)/.test(navigator.platform)) {
     // supports iOS 2.0 and later
-    // versionArray format: main_version.sub_version.sub_version.
-    const version = navigator.userAgent
-      .match(/OS (\d+)_(\d+)_?(\d+)?/)
-      .map(versionItem => parseInt(versionItem || 0, 10))
-      .filter(number => !_isNaN(number));
+    // versionArray format: [main_version, sub_version, sub_version, sub_version]
+    // Only the first two digits of the version number are returned
+    const versionArray = navigator.userAgent.match(/OS (\d+)_(\d+)_?(\d+)?/);
+
+    // The length of the version is not checked, it is the regex to ensure that it must be an array of > 2 elements
+    const version = versionArray
+      ? versionArray
+          .map(versionItem => parseInt(versionItem || 0, 10))
+          .filter(number => !_isNaN(number))
+          .slice(0, 2)
+      : [0, 0];
 
     return version;
   }
 
-  return [0];
+  return [0, 0];
 };
 
 // [START: Safari Document Scroll Blocker]
