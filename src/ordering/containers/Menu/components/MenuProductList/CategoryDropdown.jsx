@@ -91,7 +91,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
           }
         }}
       >
-        <img className="tw-flex-shrink-0 tw-text-2xl" src={MenuFilled} alt="" />
+        <img className="tw-flex-shrink-0 tw-text-2xl" src={MenuFilled} alt="Selected Category" />
         <span className={styles.menuProductHighlightedCategory}>
           {highlightedCategory ? highlightedCategory.name : null}
         </span>
