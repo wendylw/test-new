@@ -1,4 +1,3 @@
-import { createSelector } from 'reselect';
 import _get from 'lodash/get';
 
 const initialState = {};

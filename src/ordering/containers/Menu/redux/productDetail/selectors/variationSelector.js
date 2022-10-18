@@ -3,8 +3,6 @@ import _get from 'lodash/get';
 import _sumBy from 'lodash/sumBy';
 import { PRODUCT_SELECTION_AMOUNT_LIMIT_TYPE, PRODUCT_VARIATION_TYPE } from '../../../constants';
 
-const getVariation = variation => variation;
-
 const getSelectedOptionsByVariationId = (_, selectedOptionsByVariationId) => selectedOptionsByVariationId;
 
 const getVariationId = variation => variation.id;
@@ -12,8 +10,6 @@ const getVariationId = variation => variation.id;
 const getVariationName = variation => variation.name;
 
 const getVariationModifier = variation => variation.isModifier;
-
-const getVariationOptionValues = variation => variation.optionValues;
 
 const getVariationType = variation => {
   switch (variation.variationType) {

@@ -221,6 +221,7 @@ export const getHighlightedCategory = createSelector(
   getFirstCategoryInView,
   (activeCategoryId, categories, firstCategoryInView) => {
     const activeCategory = activeCategoryId ? categories.find(category => category.id === activeCategoryId) : null;
+
     return activeCategory || firstCategoryInView;
   }
 );
