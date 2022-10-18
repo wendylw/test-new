@@ -66,13 +66,11 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
   // trigger onCategoryItemClick after the history.back finished.
   const [showDrawer, setShowDrawer] = useState(false);
   const [stagedCategoryId, setStagedCategoryId] = useState(null);
-  const onHistoryBackCompleted = useCallback(() => {
+  const onHiddenCategoryDrawer = useCallback(() => {
     setStagedCategoryId(null);
     // Must add this setTimeout, otherwise scrollIntoView won't work. I suspect that the history.back
     // will restore the position in an async way.
-    setTimeout(() => {
-      onCategoryItemClick(stagedCategoryId);
-    }, 0);
+    onCategoryItemClick(stagedCategoryId);
   }, [stagedCategoryId, onCategoryItemClick]);
   const onCategorySelected = useCallback(id => {
     setStagedCategoryId(id);
@@ -100,7 +98,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
         className={styles.menuProductCategoryDrawer}
         show={showDrawer}
         onClose={() => setShowDrawer(false)}
-        onHistoryBackCompleted={onHistoryBackCompleted}
+        onHidden={onHiddenCategoryDrawer}
         header={
           <DrawerHeader
             left={
