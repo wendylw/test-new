@@ -13,13 +13,12 @@ const getiOSVersion = () => {
     const version = navigator.userAgent
       .match(/OS (\d+)_(\d+)_?(\d+)?/)
       .map(versionItem => parseInt(versionItem || 0, 10))
-      .filter(number => !_isNaN(number))
-      .join('.');
+      .filter(number => !_isNaN(number));
 
     return version;
   }
 
-  return 0;
+  return [0];
 };
 
 // [START: Safari Document Scroll Blocker]
@@ -39,7 +38,8 @@ const shouldEnableDocumentScrollBlocker = (() => {
   // Compatibility processing will cause confusion in scroll monitoring in versions above 15.5,
   // resulting in unknown errors
   const iOSVersion = getiOSVersion();
-  if (iOSVersion >= '15.5') return false;
+  const isGreaterOrEqualExpectedVersion = [15, 5].every((versionNumber, index) => iOSVersion[index] >= versionNumber);
+  if (isGreaterOrEqualExpectedVersion) return false;
 
   // this following code is to avoid enable the plugin on chrome's ios simulator
   // refer to: https://github.com/lazd/iNoBounce/blob/master/inobounce.js#L106
