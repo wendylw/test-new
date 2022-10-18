@@ -5,9 +5,10 @@ iNoBounce.disable();
 
 const { body, documentElement: html } = document;
 
+// get iOS version from stackoverflow: <https://stackoverflow.com/a/14223920>
 const getiOSVersion = () => {
   if (/iP(hone|od|ad)/.test(navigator.platform)) {
-    // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
+    // supports iOS 2.0 and later
     // versionArray format: main_version.sub_version.sub_version.
     const version = navigator.userAgent
       .match(/OS (\d+)_(\d+)_?(\d+)?/)
@@ -31,7 +32,10 @@ const shouldEnableDocumentScrollBlocker = (() => {
   const ua = navigator.userAgent.toLowerCase();
   const isSafari = ua.indexOf('safari') > -1 && ua.indexOf('chrome') < 0 && /ipad|iphone|ipod/.test(ua);
   if (!isSafari) return false;
-  // On iOS 15.5 and above, we will not be compatible with expanded/collapsed of Safari's address bar.
+
+  // [Reason]: To solve category does not work on the menu page: https://storehub.atlassian.net/browse/WB-4316
+  // Only for the iOS version did the solution distinction
+  // [Solution]: On iOS 15.5 and above, we will not be compatible with expanded/collapsed of Safari's address bar.
   // Compatibility processing will cause confusion in scroll monitoring in versions above 15.5,
   // resulting in unknown errors
   const iOSVersion = getiOSVersion();
