@@ -58,7 +58,7 @@ Button.propTypes = {
   style: propTypes.object,
   icon: propTypes.element,
   loading: propTypes.bool,
-  type: propTypes.oneOf(['primary', 'secondary', 'text', 'link']),
+  type: propTypes.oneOf(['primary', 'secondary', 'text']),
   size: propTypes.oneOf(['small', 'normal']),
   block: propTypes.bool,
   danger: propTypes.bool,
