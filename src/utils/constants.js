@@ -659,7 +659,6 @@ export const REFERRER_SOURCE_TYPES = {
   CASHBACK: 'cashback',
   PAY_AT_COUNTER: 'payAtCounter',
   LOGIN: 'login',
-  THANK_YOU: 'thankyou',
 };
 
 const LOGISTICS_RIDER_TYPE = {

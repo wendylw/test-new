@@ -1,5 +1,4 @@
 import { SHIPPING_TYPES, SOURCE_TYPE } from '../../../../../common/utils/constants';
-import { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 
 export const STORE_REVIEW_HIGH_RATING = 4;
 
@@ -17,7 +16,7 @@ export const STORE_REVIEW_SHIPPING_TYPES = {
 export const STORE_REVIEW_SOURCE_TYPE_MAPPING = {
   [SOURCE_TYPE.PUSH_NOTIFICATION]: 'Push Notification',
   [SOURCE_TYPE.SMS]: 'SMS',
-  [REFERRER_SOURCE_TYPES.THANK_YOU]: 'Thank You Page',
+  [SOURCE_TYPE.THANK_YOU]: 'Thank You Page',
 };
 
 export const STORE_REVIEW_ERROR_CODES = {
