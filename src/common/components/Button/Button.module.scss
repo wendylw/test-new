@@ -1,8 +1,43 @@
-@mixin buttonHeight($size: null) {
-  @if $size == "small" {
+@mixin buttonHeight($size: null, $type: null) {
+  @if ($type == "text") {
+    height: auto;
+  } @else if $size == "small" {
     height: 40px;
   } @else {
     height: 50px;
+  }
+}
+
+@mixin buttonBasic($type: "text") {
+  @apply tw-transition; /* https://tailwindcss.com/docs/transition-property */
+
+  /* tw-tracking-wide: letter spacing */
+  @if ($type == "text") {
+    @apply tw-p-8 sm:tw-p-8px tw-tracking-wide;
+  } @else {
+    @apply tw-py-12 tw-px-16 tw-tracking-wider;
+  }
+}
+
+@mixin buttonTypeColor($type: null, $color: "orange") {
+  @if ($type == "primary") {
+    @apply disabled:tw-bg-gray-400 /* color */
+    tw-text-white tw-font-bold; /* typography */
+  }
+}
+
+.button {
+  @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px tw-rounded tw-leading-normal tw-tracking-wide
+  tw-border tw-border-transparent tw-border-solid /* border */
+  tw-text-orange /* default color */
+  tw-cursor-pointer disabled:tw-cursor-default;
+
+  &:global(.size-normal) {
+    @include buttonHeight();
+  }
+
+  &:global(.size-small) {
+    @include buttonHeight("small");
   }
 }
 
