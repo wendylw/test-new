@@ -54,7 +54,7 @@ const Search = React.forwardRef(
             searchInputRef.current = ref;
           }}
           placeholder={placeholder}
-          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500 tw-border-gray-200 tw-bg-gray-200"
+          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-600 tw-border-gray-200 tw-bg-gray-200"
           type="text"
           value={inputValue}
           onChange={e => {
@@ -79,7 +79,7 @@ const Search = React.forwardRef(
                 disabled={_isEmpty(inputValue)}
                 onClick={onHandleClearSearchKeyword}
               >
-                <XCircle className="tw-text-2xl tw-text-gray-500" weight="fill" />
+                <XCircle className="tw-text-2xl tw-text-gray-600" weight="fill" />
               </Button>
             ) : null}
           </>
