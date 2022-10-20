@@ -1,7 +1,3 @@
-.SearchClearButton:global(.type-text) {
-  @apply tw-flex-shrink-0 tw-cursor-pointer;
-}
-
-.SearchHideClearButton:global(.type-text) {
-  @apply tw-opacity-0 tw-cursor-default;
+.SearchClearButton {
+  @apply tw-flex-shrink-0;
 }

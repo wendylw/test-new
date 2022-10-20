@@ -82,7 +82,9 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
   return (
     <div className="tw-flex-1 beep-line-clamp-flex-container">
       <Button
+        block
         type="secondary"
+        size="small"
         className={styles.menuProductCategoryButton}
         onClick={() => {
           if (isProductListReady) {

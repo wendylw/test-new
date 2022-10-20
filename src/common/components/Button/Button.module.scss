@@ -8,18 +8,16 @@
   }
 }
 
-@mixin buttonBasic($type: "text") {
+@mixin buttonStyle($type: null, $color: "orange") {
   @apply tw-font-bold tw-transition; /* https://tailwindcss.com/docs/transition-property */
 
   /* tw-tracking-wide: letter spacing */
   @if ($type == "text") {
     @apply tw-p-8 sm:tw-p-8px tw-tracking-wide;
   } @else {
-    @apply tw-py-12 tw-px-16 tw-tracking-wider;
+    @apply tw-py-12 sm:tw-py-12px tw-px-16 sm:tw-px-16px tw-tracking-wider;
   }
-}
 
-@mixin buttonTypeColor($type: null, $color: "orange") {
   @if ($type == "primary") {
     @apply tw-text-white
     tw-bg-#{$color} hover:tw-bg-#{$color}-dark
@@ -41,9 +39,10 @@
 }
 
 .button {
-  @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px tw-rounded tw-leading-normal tw-tracking-wide
-  tw-border tw-border-transparent tw-border-solid /* border */
-  tw-text-orange /* default color */
+  @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px
+  tw-border tw-border-transparent tw-border-solid tw-rounded/* border */
+  tw-text-gray /* default color */
+  tw-leading-normal
   tw-cursor-pointer disabled:tw-cursor-default;
 
   &:global(.size-normal) {
@@ -53,12 +52,6 @@
   &:global(.size-small) {
     @include buttonHeight("small");
   }
-}
-
-.button {
-  @apply tw-flex tw-items-center tw-justify-center tw-py-12 tw-px-16 tw-rounded tw-leading-normal tw-tracking-wide /* dimension*/
-  tw-border tw-border-transparent tw-border-solid /* border */
-  tw-cursor-pointer disabled:tw-cursor-default;
 
   .iconWrapper {
     @apply tw-inline-block tw-h-0 tw-align-middle tw-relative tw-mr-6 sm:tw-mr-6px;
@@ -73,82 +66,49 @@
     }
   }
 
-  &:global(.type-primary) {
-    @apply tw-bg-orange hover:tw-bg-orange-dark /* color */
-    focus:tw-bg-orange focus:hover:tw-bg-orange-dark focus:active:tw-bg-orange-light active:tw-bg-orange-light disabled:tw-bg-gray-400 /* color */
-    tw-text-white tw-font-bold tw-tracking-wider/* typography */
-    tw-transition;
-
-    height: 50px;
-
-    &:global(.size-small) {
-      @include buttonHeight("small");
-    }
+  &:global(.type-primary),
+  &:global(.type-primary-theme) {
+    @include buttonStyle("primary");
   }
+
   &:global(.type-primary-danger) {
-    @apply tw-bg-red hover:tw-bg-red-dark /* color */
-    focus:tw-bg-red focus:hover:tw-bg-red-dark focus:active:tw-bg-red-light active:tw-bg-red-light disabled:tw-bg-gray-400 /* color */
-    tw-text-white tw-font-bold tw-tracking-wider/* typography */
-    tw-transition;
-
-    height: 50px;
-
-    &:global(.size-small) {
-      @include buttonHeight("small");
-    }
+    @include buttonStyle("primary", "red");
   }
 
-  &:global(.type-secondary) {
-    @apply tw-border-orange tw-bg-white tw-text-orange tw-font-bold tw-tracking-wider
-      hover:tw-border-orange-dark hover:tw-text-orange-dark
-      focus:tw-border-orange focus:tw-text-orange focus:hover:tw-border-orange-dark focus:hover:tw-text-orange-dark focus:active:tw-border-orange-light focus:active:tw-text-orange-light
-      active:tw-border-orange-light active:tw-text-orange-light
-      disabled:tw-border-gray-400 disabled:tw-text-gray-400;
-
-    height: 50px;
-
-    &:global(.size-small) {
-      @include buttonHeight("small");
-    }
+  &:global(.type-primary-info) {
+    @include buttonStyle("primary", "blue");
   }
+
+  &:global(.type-secondary),
+  &:global(.type-secondary-theme) {
+    @include buttonStyle("secondary");
+  }
+
   &:global(.type-secondary-danger) {
-    @apply tw-border-red tw-bg-white tw-text-red tw-font-bold tw-tracking-wider
-      hover:tw-border-red-dark hover:tw-text-red-dark
-      focus:tw-border-red focus:tw-text-red focus:hover:tw-border-red-dark  focus:hover:tw-text-red-dark focus:active:tw-border-red-light focus:active:tw-text-red-light
-      active:tw-border-red-light active:tw-text-red-light
-      disabled:tw-border-gray-400 disabled:tw-text-gray-400;
+    @include buttonStyle("secondary", "red");
+  }
 
-    height: 50px;
-
-    &:global(.size-small) {
-      @include buttonHeight("small");
-    }
+  &:global(.type-secondary-info) {
+    @include buttonStyle("secondary", "blue");
   }
 
   &:global(.type-text) {
-    @apply tw-p-8
-      tw-bg-transparent tw-text-blue tw-font-bold
-      hover:tw-text-blue-dark
-      focus:tw-text-blue focus:hover:tw-text-blue-dark focus:active:tw-text-blue-light
-      active:tw-text-blue-light
-      disabled:tw-text-gray-400;
+    @include buttonHeight("text");
+    @include buttonStyle("text", "gray");
   }
+
+  &:global(.type-text-theme) {
+    @include buttonHeight("text");
+    @include buttonStyle("text");
+  }
+
   &:global(.type-text-danger) {
-    @apply tw-p-8
-      tw-bg-transparent tw-text-red tw-font-bold
-      hover:tw-text-red-dark
-      focus:tw-text-red focus:hover:tw-text-red-dark focus:active:tw-text-red-light
-      active:tw-text-red-light
-      disabled:tw-text-gray-400;
+    @include buttonHeight("text");
+    @include buttonStyle("text", "red");
   }
-}
 
-@media (min-width: 420px) {
-  .button {
-    @apply tw-py-12px tw-px-16px;
-
-    &:global(.type-text) {
-      @apply tw-p-8px;
-    }
+  &:global(.type-text-info) {
+    @include buttonHeight("text");
+    @include buttonStyle("text", "blue");
   }
 }

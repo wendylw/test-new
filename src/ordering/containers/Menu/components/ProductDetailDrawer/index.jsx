@@ -214,16 +214,18 @@ const ProductDetailDrawer = () => {
           <div className={styles.productDetailFooter}>
             {isAbleAddCart ? (
               <Button
+                block
+                type="primary"
                 loading={isAddToCartLoading}
                 onClick={() => {
                   dispatch(addToCart());
                 }}
-                className="tw-w-full tw-uppercase"
+                className="tw-uppercase"
               >
                 {t('AddToCart', { price: formattedTotalPrice })}
               </Button>
             ) : (
-              <Button className="tw-w-full tw-uppercase" disabled>
+              <Button block type="primary" className="tw-uppercase" disabled>
                 {t(UNABLE_ADD_TO_CART_REASON_KEY_MAP[unableAddToCartReason])}
               </Button>
             )}

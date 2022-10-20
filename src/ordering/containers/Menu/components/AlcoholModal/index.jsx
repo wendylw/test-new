@@ -81,6 +81,7 @@ const AlcoholModal = ({ history }) => {
 
           <div className={styles.AlcoholButton}>
             <Button
+              block
               type="secondary"
               className={styles.AlcoholCloseButton}
               data-testid="noIamNot"
@@ -90,6 +91,7 @@ const AlcoholModal = ({ history }) => {
               {t('AlcoholNo')}
             </Button>
             <Button
+              block
               type="primary"
               className={styles.AlcoholOkButton}
               data-testid="yesIam"
@@ -112,6 +114,7 @@ const AlcoholModal = ({ history }) => {
           <p className={styles.AlcoholDesDenied}>{t('AlcoholNotAllowed')}</p>
           <div className={styles.AlcoholButton}>
             <Button
+              block
               type="primary"
               className={styles.AlcoholDeniedButton}
               data-heap-name="ordering.home.confirm.got"

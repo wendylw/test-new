@@ -390,7 +390,7 @@ class CollectionPage extends React.Component {
                 onClick={this.handleCloseDrawer}
                 className={`${styles.CollectionPageCategoryDrawerHeaderButton} beep-text-reset`}
               >
-                <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+                <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
               </Button>
             }
           >

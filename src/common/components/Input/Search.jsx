@@ -74,10 +74,11 @@ const Search = React.forwardRef(
           <Loader className="tw-text-2xl tw-text-gray-500" weight="light" />
         ) : (
           <>
-            {allowClear ? (
+            {allowClear && !_isEmpty(inputValue) ? (
               <Button
                 type="text"
-                className={_isEmpty(inputValue) ? styles.SearchHideClearButton : styles.SearchClearButton}
+                status="theme"
+                className={styles.SearchClearButton}
                 disabled={_isEmpty(inputValue)}
                 onClick={onHandleClearSearchKeyword}
               >

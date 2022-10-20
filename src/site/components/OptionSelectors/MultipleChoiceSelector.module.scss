@@ -9,21 +9,13 @@
 }
 
 .MultipleChoiceSelectorFooterButton {
-  @apply tw-uppercase tw-text-base tw-leading-relaxed tw-border-none tw-border-0 tw-bg-transparent
-    tw-py-12 sm:tw-py-12px tw-px-16 sm:tw-px-16px;
-
-  height: 50px;
-  width: 43.5897vw;
+  @apply tw-leading-relaxed tw-uppercase;
 }
 
 .MultipleChoiceSelectorFooterResetButton {
-  @extend .MultipleChoiceSelectorFooterButton;
+  @apply tw-leading-relaxed tw-uppercase;
 
-  @apply tw-text-gray;
-
-  &:disabled {
-    @apply tw-text-opacity-40;
-  }
+  height: 50px;
 }
 
 @media (min-width: 420px) {

@@ -54,13 +54,13 @@ const MiniCart = () => {
           }
           right={
             <Button
+              danger
+              type="text"
+              className={styles.removeAllButton}
+              icon={<Trash size={18} />}
               onClick={() => {
                 dispatch(removeAllCartItems());
               }}
-              className={styles.removeAllButton}
-              type="text"
-              danger
-              icon={<Trash size={18} />}
             >
               {t('RemoveAll')}
             </Button>

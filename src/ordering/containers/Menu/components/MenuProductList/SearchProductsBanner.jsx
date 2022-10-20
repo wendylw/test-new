@@ -65,7 +65,8 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
     <div className={`${styles.menuSearchProductsBanner} ${isSearchingBannerVisible ? 'tw-flex-1' : ''}`}>
       {isSearchingBannerVisible ? null : (
         <Button
-          type="secondary"
+          block
+          type="text"
           className={styles.menuSearchProductsBannerButton}
           onClick={async () => {
             // get window scroll position
@@ -130,6 +131,7 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
           />
           <Button
             type="text"
+            status="theme"
             className={styles.menuSearchProductsBannerCancelButton}
             onClick={async () => {
               await dispatch(hideSearchingBox());

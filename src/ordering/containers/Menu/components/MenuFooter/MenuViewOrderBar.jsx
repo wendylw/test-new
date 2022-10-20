@@ -23,7 +23,7 @@ const MenuViewOrderBar = () => {
         <ActivePointIcon />
         <span className="tw-mx-8 sm:tw-mx-8px tw-text-sm tw-text-gray-800">{t('OrderOngoing')}</span>
       </div>
-      <Button className={styles.MenuViewOrderBarButton} type="text" onClick={() => dispatch(viewOnGoingOrder())}>
+      <Button type="text" className={styles.MenuViewOrderBarButton} onClick={() => dispatch(viewOnGoingOrder())}>
         {t('ViewOrder')}
       </Button>
     </div>
