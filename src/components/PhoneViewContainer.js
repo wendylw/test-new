@@ -71,7 +71,7 @@ class PhoneViewContainer extends React.Component {
           international // If input want to show country code when phone number is empty, pls add international on props
           smartCaret={false}
           placeholder={t('EnterPhoneNumber')}
-          className={showError ? 'tw-border-red tw-border' : null}
+          className={showError ? 'phone-view__input-error' : ''}
           data-heap-name="common.phone-view-container.phone-number-input"
           value={formatPhoneNumberIntl(phone)}
           defaultCountry={country}
@@ -80,7 +80,7 @@ class PhoneViewContainer extends React.Component {
           onChange={newPhone => this.handleUpdatePhoneNumber(newPhone)}
           onCountryChange={newCountry => this.handleUpdateCountry(newCountry)}
         />
-        {showError && <p className="tw-text-red">{errorText}</p>}
+        {showError && <p className="phone-view__error-message">{errorText}</p>}
         <button
           className="button button__fill button__block margin-top-bottom-small text-weight-bolder text-uppercase"
           data-heap-name="common.phone-view-container.submit-btn"
