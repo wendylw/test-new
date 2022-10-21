@@ -324,6 +324,7 @@ export const actions = {
 
       // BEEP-2685: New Relic needs to know the OTP first send time.
       window.newrelic?.addPageAction('ordering.login.get-otp-start');
+      logger.log('Ordering_App_StartToGetOTP');
 
       dispatch({ type: types.GET_OTP_REQUEST, payload: { otpType } });
 
