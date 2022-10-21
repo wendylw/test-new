@@ -3,5 +3,5 @@
 }
 
 .MenuViewOrderBarButton:global(.type-text) {
-  @apply tw-text-sm tw-capitalize;
+  @apply tw-text-sm tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-capitalize;
 }

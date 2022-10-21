@@ -47,7 +47,7 @@ const Button = props => {
           </span>
         </span>
       ) : null}
-      <div className={`${block ? ' tw-w-full' : ''} ${contentClassName}`}>{children}</div>
+      <div className={contentClassName}>{children}</div>
     </button>
   );
 };

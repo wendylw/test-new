@@ -131,7 +131,7 @@ const ProductDetailDrawer = () => {
           onClose();
         }}
       >
-        <button
+        <Button
           className={styles.topArrowBtn}
           onClick={onTopArrowClick}
           style={{
@@ -140,7 +140,7 @@ const ProductDetailDrawer = () => {
           }}
         >
           <CaretUp className="tw-align-middle" size={20} weight="thin" />
-        </button>
+        </Button>
 
         <div className={styles.productDetailWrapper}>
           <div className={styles.productDetailContent} ref={contentRef} onScroll={onContentScroll}>

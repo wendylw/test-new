@@ -58,6 +58,7 @@ const AddSpecialNotes = () => {
               type="text"
               status="info"
               className={styles.AddSpecialNotesEditButton}
+              contentClassName="tw-flex  tw-items-center"
               onClick={onHandleShowNotesDrawer}
             >
               <PencilSimple size={18} className="tw-text-blue" />
@@ -70,7 +71,12 @@ const AddSpecialNotes = () => {
         </div>
       ) : (
         <div className="tw-mx-4 sm:tw-mx-4px tw-my-6 sm:tw-my-6px">
-          <Button type="text" status="info" onClick={onHandleShowNotesDrawer}>
+          <Button
+            type="text"
+            status="info"
+            contentClassName="tw-flex  tw-items-center"
+            onClick={onHandleShowNotesDrawer}
+          >
             <PencilSimple size={18} className="tw-text-blue" />
             <span className="tw-font-bold tw-text-blue tw-text-base tw-not-italic tw-p-4 sm:tw-p-4px">
               {t('AddSpecialInstructions')}

@@ -2,14 +2,12 @@
   @apply tw-flex tw-items-center tw-flex-shrink-0 tw--mr-16 sm:tw--mr-16px;
 }
 
-.menuSearchProductsBannerButton {
-  &:global(.type-secondary) {
-    @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-px-12 sm:tw-px-12px tw-py-6 sm:tw-py-6px tw-mr-4 sm:tw-mr-4px;
+.menuSearchProductsBannerButton:global(.type-text) {
+  @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-px-12 sm:tw-px-12px tw-py-6 sm:tw-py-6px tw-mr-4 sm:tw-mr-4px;
 
-    height: 40px;
-  }
+  height: 40px;
 }
 
-.menuSearchProductsBannerCancelButton:global(.type-text) {
-  @apply tw-flex-shrink-0 tw-px-12 sm:tw-px-12px tw-text-sm;
+.menuSearchProductsBannerCancelButton:global(.type-text-theme) {
+  @apply tw-flex-shrink-0 tw-px-12px sm:tw-px-12px tw-text-sm;
 }

@@ -65,7 +65,6 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
     <div className={`${styles.menuSearchProductsBanner} ${isSearchingBannerVisible ? 'tw-flex-1' : ''}`}>
       {isSearchingBannerVisible ? null : (
         <Button
-          block
           type="text"
           className={styles.menuSearchProductsBannerButton}
           onClick={async () => {

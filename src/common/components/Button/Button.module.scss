@@ -58,6 +58,12 @@
 
   > div {
     @apply tw-leading-normal;
+
+    font-size: inherit;
+
+    &:global(.beep-text-reset) {
+      font-size: 0;
+    }
   }
 
   &:global(.size-normal) {

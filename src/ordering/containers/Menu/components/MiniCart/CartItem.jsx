@@ -30,7 +30,7 @@ const CartItemOperator = ({
           }}
           className={styles.removeItemButton}
           type="text"
-          danger
+          status="danger"
         >
           {t('RemoveItem')}
         </Button>
