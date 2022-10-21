@@ -151,6 +151,7 @@ export const AllFoodCourtStoreList = {
       validTimeFrom: '10:00',
       validTimeTo: '22:00',
     },
+    unable: true,
   },
   '63523a1e1258800008658c81': {
     id: '63523a1e1258800008658c81',
@@ -161,6 +162,7 @@ export const AllFoodCourtStoreList = {
       validTimeFrom: '10:00',
       validTimeTo: '19:00',
     },
+    unable: true,
   },
   '63523bccda13950007f6f714': {
     id: '63523bccda13950007f6f714',
@@ -171,6 +173,7 @@ export const AllFoodCourtStoreList = {
       validTimeFrom: '10:00',
       validTimeTo: '19:30',
     },
+    unable: true,
   },
   '63523c45da13950007f71dd9': {
     id: '63523c45da13950007f71dd9',
@@ -181,6 +184,7 @@ export const AllFoodCourtStoreList = {
       validTimeFrom: '10:00',
       validTimeTo: '20:00',
     },
+    unable: true,
   },
   '61b93058cef3c900060ca990': {
     id: '61b93058cef3c900060ca990',
