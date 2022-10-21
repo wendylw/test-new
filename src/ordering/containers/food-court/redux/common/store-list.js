@@ -26,6 +26,10 @@ import JuiceImage from '../../../../../images/food-court-temp/merchant-Juice.jpe
 import JoeImage from '../../../../../images/food-court-temp/merchant-Joe.jpeg';
 import RiceImage from '../../../../../images/food-court-temp/merchant-rice.jpeg';
 import SeoulImage from '../../../../../images/food-court-temp/merchant-Seoul.png';
+import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.jpg';
+import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
+import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
+import XOXOImage from '../../../../../images/food-court-temp/merchant-XOXO.jpg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -133,6 +137,46 @@ export const AllFoodCourtStoreList = {
     imageNoCompression: SeoulImage,
     title: 'Seoul Korean Street Foods',
     tags: ['Korean', 'Asian'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '20:00',
+    },
+  },
+  '63523a12a66d9d00073eda38': {
+    id: '63523a12a66d9d00073eda38',
+    title: 'Subway',
+    imageNoCompression: SubwayImage,
+    tags: ['Subs', 'Cookies', 'Sandwiches'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '22:00',
+    },
+  },
+  '63523a1e1258800008658c81': {
+    id: '63523a1e1258800008658c81',
+    title: 'Mr Boba Teahouse',
+    imageNoCompression: BobaTeaHouseImage,
+    tags: ['Boba', 'Drinks', 'Milk Tea'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '19:00',
+    },
+  },
+  '63523bccda13950007f6f714': {
+    id: '63523bccda13950007f6f714',
+    title: 'Salad Atelier',
+    imageNoCompression: SaladAtelierImage,
+    tags: ['Salad Bar', 'Healthy', 'Fresh'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '19:30',
+    },
+  },
+  '63523c45da13950007f71dd9': {
+    id: '63523c45da13950007f71dd9',
+    title: 'XOXO Cafe',
+    imageNoCompression: XOXOImage,
+    tags: ['Cafe', 'Coffee', 'Comfort Food'],
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '20:00',
