@@ -83,9 +83,9 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
     <div className="tw-flex-1 beep-line-clamp-flex-container">
       <Button
         block
-        type="secondary"
-        size="small"
+        type="text"
         className={styles.menuProductCategoryButton}
+        contentClassName={styles.menuProductCategoryContentButton}
         onClick={() => {
           if (isProductListReady) {
             setShowDrawer(true);

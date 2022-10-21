@@ -9,7 +9,11 @@
 }
 
 @mixin buttonStyle($type: null, $color: "orange") {
-  @apply tw-font-bold tw-transition; /* https://tailwindcss.com/docs/transition-property */
+  @apply tw-transition; /* https://tailwindcss.com/docs/transition-property */
+
+  > div {
+    @apply tw-font-bold;
+  }
 
   /* tw-tracking-wide: letter spacing */
   @if ($type == "text") {
@@ -30,11 +34,19 @@
       active:tw-border-#{$color}-light active:tw-text-#{$color}-light
       disabled:tw-border-gray-400 disabled:tw-text-gray-400;
   } @else if ($type == "text") {
-    @apply tw-bg-transparent tw-text-#{$color}
-    hover:tw-text-#{$color}-dark
-    focus:tw-text-#{$color} focus:hover:tw-text-#{$color}-dark focus:active:tw-text-#{$color}-light
-    active:tw-text-#{$color}-light
-    disabled:tw-text-gray-400;
+    @if ($color == "gray") {
+      @apply tw-bg-transparent tw-text-gray
+      hover:tw-text-gray-900
+      focus:tw-text-gray focus:hover:tw-text-gray-900 focus:active:tw-text-gray-700
+      active:tw-text-gray-700
+      disabled:tw-text-gray-400;
+    } @else {
+      @apply tw-bg-transparent tw-text-#{$color}
+      hover:tw-text-#{$color}-dark
+      focus:tw-text-#{$color} focus:hover:tw-text-#{$color}-dark focus:active:tw-text-#{$color}-light
+      active:tw-text-#{$color}-light
+      disabled:tw-text-gray-400;
+    }
   }
 }
 
@@ -42,8 +54,11 @@
   @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px
   tw-border tw-border-transparent tw-border-solid tw-rounded/* border */
   tw-text-gray /* default color */
-  tw-leading-normal
   tw-cursor-pointer disabled:tw-cursor-default;
+
+  > div {
+    @apply tw-leading-normal;
+  }
 
   &:global(.size-normal) {
     @include buttonHeight();
@@ -93,22 +108,22 @@
   }
 
   &:global(.type-text) {
-    @include buttonHeight("text");
+    @include buttonHeight(null, "text");
     @include buttonStyle("text", "gray");
   }
 
   &:global(.type-text-theme) {
-    @include buttonHeight("text");
+    @include buttonHeight(null, "text");
     @include buttonStyle("text");
   }
 
   &:global(.type-text-danger) {
-    @include buttonHeight("text");
+    @include buttonHeight(null, "text");
     @include buttonStyle("text", "red");
   }
 
   &:global(.type-text-info) {
-    @include buttonHeight("text");
+    @include buttonHeight(null, "text");
     @include buttonStyle("text", "blue");
   }
 }

@@ -1,14 +1,14 @@
 @import "../../../../../common/styles/variables.scss";
 
-.menuProductCategoryButton {
-  &:global(.type-secondary) {
-    @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-py-6 sm:tw-py-6px tw-border-gray-400 tw-rounded-2xl
-    hover:tw-border-gray-400
-    focus:tw-border-gray-400 focus:hover:tw-border-gray-400 focus:active:tw-border-gray-400
-    active:tw-border-gray-400;
+.menuProductCategoryButton:global(.type-text) {
+  @apply tw-px-16 sm:tw-px-16px tw-py-4 sm:tw-py-4px tw-border tw-border-solid tw-border-gray-400 tw-rounded-2xl;
 
-    border-radius: 24px;
-  }
+  height: 40px;
+  border-radius: 24px;
+}
+
+.menuProductCategoryContentButton {
+  @apply tw-flex tw-flex-grow tw-items-center tw-justify-between;
 }
 
 .menuProductHighlightedCategory {

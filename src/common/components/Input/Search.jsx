@@ -21,9 +21,7 @@ const Search = React.forwardRef(
     },
     searchRef
   ) => {
-    const classNameList = [
-      'tw-flex tw-flex-1 tw-items-center tw-border tw-border-solid tw-border-gray-400 tw-rounded-2xl',
-    ];
+    const classNameList = [styles.SearchContainer, allowClear ? '' : 'not-allow-clear'];
     // Search input value use state of component, because Chinese typing
     const [inputValue, setInputValue] = useState(defaultSearchKeyword);
     const currentRef = useRef(null);
@@ -74,11 +72,11 @@ const Search = React.forwardRef(
           <Loader className="tw-text-2xl tw-text-gray-500" weight="light" />
         ) : (
           <>
-            {allowClear && !_isEmpty(inputValue) ? (
+            {allowClear ? (
               <Button
                 type="text"
-                status="theme"
-                className={styles.SearchClearButton}
+                className={_isEmpty(inputValue) ? 'tw-opacity-0' : 'tw-flex-shrink-0'}
+                contentClassName="beep-text-reset"
                 disabled={_isEmpty(inputValue)}
                 onClick={onHandleClearSearchKeyword}
               >

@@ -7,6 +7,7 @@ const Button = props => {
   const {
     children,
     className = '',
+    contentClassName = '',
     style = {},
     type = 'text',
     size = 'normal',
@@ -46,7 +47,7 @@ const Button = props => {
           </span>
         </span>
       ) : null}
-      <div>{children}</div>
+      <div className={`${block ? ' tw-w-full' : ''} ${contentClassName}`}>{children}</div>
     </button>
   );
 };
@@ -54,6 +55,7 @@ const Button = props => {
 Button.propTypes = {
   children: propTypes.node,
   className: propTypes.string,
+  contentClassName: propTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   style: propTypes.object,
   icon: propTypes.element,
@@ -68,6 +70,7 @@ Button.propTypes = {
 Button.defaultProps = {
   children: null,
   className: '',
+  contentClassName: '',
   icon: null,
   loading: false,
   style: {},

@@ -15,6 +15,7 @@ import MenuOfflineModal from './components/MenuOfflineModal';
 import { getIsSearchingBannerVisible } from './redux/common/selectors';
 import { mounted } from './redux/common/thunks';
 import { getDeliveryInfo } from '../../redux/modules/app';
+import { confirm } from '../../../common/utils/feedback';
 
 const Menu = () => {
   const dispatch = useDispatch();
