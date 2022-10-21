@@ -977,7 +977,8 @@ const user = (state = initialState.user, action) => {
     case types.GET_WHATSAPPSUPPORT_SUCCESS:
       return { ...state, noWhatsAppAccount: !supportWhatsApp };
     case types.GET_WHATSAPPSUPPORT_FAILURE:
-      return { ...state };
+      // Write down here just for the sake of completeness, we won't handle this failure case for now.
+      return state;
     default:
       return state;
   }
