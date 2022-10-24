@@ -714,6 +714,7 @@ export const OTP_ERROR_POPUP_I18N_KEYS = {
     title: 'NetworkErrorTitle',
     description: 'NetworkErrorDescription',
   },
+  // If the error does not require manual handling or does not belong to the network issue, we will use this generic error message instead.
   [OTP_COMMON_ERROR_TYPES.UNKNOWN_ERROR]: {
     title: 'UnknownErrorTitle',
     description: 'UnknownErrorDescription',
