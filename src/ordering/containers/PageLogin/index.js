@@ -131,9 +131,9 @@ class PageLogin extends React.Component {
   }
 
   async handleGetOtpCode(payload) {
-    this.setState({ isOtpErrorFieldVisible: true });
-
     await this.props.appActions.getOtp(payload);
+
+    this.setState({ isOtpErrorFieldVisible: true });
 
     const { t, isOtpRequestFailed, shouldShowErrorPopUp, errorPopUpI18nKeys } = this.props;
 
@@ -214,10 +214,10 @@ class PageLogin extends React.Component {
     const loginOptions = location.state?.loginOptions || {};
     const { shippingType } = loginOptions;
 
-    this.setState({ isLoginErrorFieldVisible: true });
-
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
+
+    this.setState({ isLoginErrorFieldVisible: true });
 
     const { user } = this.props;
     const { accessToken, refreshToken } = user;
