@@ -714,7 +714,7 @@ export const OTP_ERROR_POPUP_I18N_KEYS = {
     title: 'NetworkErrorTitle',
     description: 'NetworkErrorDescription',
   },
-  [OTP_COMMON_ERROR_TYPES.SERVER_ERROR]: {
+  [OTP_COMMON_ERROR_TYPES.UNKNOWN_ERROR]: {
     title: 'UnknownErrorTitle',
     description: 'UnknownErrorDescription',
   },
