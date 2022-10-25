@@ -2,10 +2,7 @@
 
 .menuProductCategoryButton {
   &:global(.type-secondary) {
-    @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-py-6 sm:tw-py-6px  tw-w-full tw-border-gray-400 tw-rounded-2xl
-    hover:tw-border-gray-400
-    focus:tw-border-gray-400 focus:hover:tw-border-gray-400 focus:active:tw-border-gray-400
-    active:tw-border-gray-400;
+    @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-py-6 sm:tw-py-6px  tw-w-full tw-rounded-2xl tw-bg-gray-200 tw-border-0;
 
     height: 40px;
     border-radius: 24px;
@@ -13,7 +10,7 @@
 }
 
 .menuProductHighlightedCategory {
-  @apply tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800;
+  @apply tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800 tw-font-bold;
   @include text-line-clamp(1);
 }
 

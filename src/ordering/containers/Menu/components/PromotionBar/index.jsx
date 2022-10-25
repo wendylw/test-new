@@ -39,7 +39,7 @@ const PromotionBar = () => {
           ))}
         </ul>
         <div className={styles.arrowWrapper}>
-          <CaretRight className="tw-text-lg tw-text-gray-600" />
+          <CaretRight className="tw-text-gray-600" size={16} />
         </div>
       </div>
       <PromotionDrawer />
