@@ -116,10 +116,6 @@ const REQUEST_ERROR_KEYS = {
   40000: 'Email has been occupied',
 };
 
-const LOGIN_PROMPT = {
-  400: 'Your One Time Passcode is invalid.',
-};
-
 const CREATE_ORDER_ERROR_CODES = {
   PROMOTION_EXCEEDED_TOTAL_CLAIM_LIMIT: 4050,
   PROMOTION_INVALID: 4051,
@@ -748,7 +744,6 @@ export default {
   PEOPLE_COUNT,
   AUTH_INFO,
   REQUEST_ERROR_KEYS,
-  LOGIN_PROMPT,
   POLYFILL_FEATURES_URL,
   POLYFILL_FEATURES,
   LANGUAGES,
