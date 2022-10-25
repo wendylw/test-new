@@ -36,10 +36,12 @@ class App extends Component {
 
     if (source) {
       switch (source) {
-        case SOURCE_TYPE.SMS:
         case SOURCE_TYPE.SHARED_LINK:
-        case SOURCE_TYPE.PUSH_NOTIFICATION:
           Utils.setSessionVariable('BeepOrderingSource', source);
+          break;
+        case SOURCE_TYPE.SMS:
+        case SOURCE_TYPE.PUSH_NOTIFICATION:
+          Utils.setSessionVariable('__sr_source', source);
           break;
         case SOURCE_TYPE.SHOPPING_CART:
           // no need to do anything in here, it will be used on the menu page.

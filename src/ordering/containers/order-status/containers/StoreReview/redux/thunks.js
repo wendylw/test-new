@@ -29,7 +29,8 @@ import {
   BEEP_MODULE_METHODS,
 } from '../../../../../../utils/native-methods';
 import { STORE_REVIEW_SOURCE_TYPE_MAPPING, STORE_REVIEW_TEXT_COPIED_TIP_DURATION } from '../constants';
-import { PATH_NAME_MAPPING, SOURCE_TYPE } from '../../../../../../common/utils/constants';
+import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
+import { REFERRER_SOURCE_TYPES } from '../../../../../../utils/constants';
 import { toast } from '../../../../../../common/utils/feedback';
 import { getSessionVariable, getQueryString } from '../../../../../../common/utils';
 import { copyDataToClipboard } from '../../../../../../utils/utils';
@@ -65,10 +66,10 @@ export const goToMenuPage = createAsyncThunk(
 export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack', async (_, { getState, dispatch }) => {
   const state = getState();
   const isWebview = getIsWebview(state);
-  const sourceType = getSessionVariable('BeepOrderingSource');
+  const sourceType = getSessionVariable('__sr_source');
 
   switch (sourceType) {
-    case SOURCE_TYPE.THANK_YOU:
+    case REFERRER_SOURCE_TYPES.THANK_YOU:
       // Go to the previous page if it exists
       if (isWebview) {
         nativeGoBack();
@@ -124,7 +125,7 @@ export const mounted = createAsyncThunk(
     }
 
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(getState());
-    const sourceType = getSessionVariable('BeepOrderingSource');
+    const sourceType = getSessionVariable('__sr_source');
 
     CleverTap.pushEvent('Feedback Page - View Feedback page', {
       'URL source': STORE_REVIEW_SOURCE_TYPE_MAPPING[sourceType],

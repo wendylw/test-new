@@ -128,11 +128,11 @@ async function _fetch(url, opts) {
           })
         );
       } else if (typeof body === 'string' || (typeof body === 'object' && !body.code)) {
-        error = new Error({
+        error = {
           code: '50000',
           status: e.status,
           message: typeof body === 'string' ? body : JSON.stringify(body),
-        });
+        };
         // Send log to Log service
         window.dispatchEvent(
           new CustomEvent('sh-api-failure', {
