@@ -73,7 +73,9 @@ class PageLogin extends React.Component {
   };
 
   handleCloseOtpModal() {
-    this.setState({ shouldShowModal: false });
+    const { appActions } = this.props;
+
+    this.setState({ shouldShowModal: false }, () => appActions.resetSendOtpRequest());
   }
 
   handleChangeOtpCode() {

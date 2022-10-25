@@ -37,7 +37,9 @@ class Login extends React.Component {
   captchaRef = React.createRef();
 
   handleCloseOtpModal() {
-    this.setState({ shouldShowModal: false });
+    const { appActions } = this.props;
+
+    this.setState({ shouldShowModal: false }, () => appActions.resetSendOtpRequest());
   }
 
   handleChangeOtpCode() {
