@@ -6,11 +6,11 @@
   }
 
   &__input-error {
-    border: 1px solid #e15343;
+    border: 1px solid $status-error-basic;
   }
 
   &__error-message {
-    color: #e15343;
+    color: $status-error-basic;
   }
 
   .PhoneInput .PhoneInputInput,
