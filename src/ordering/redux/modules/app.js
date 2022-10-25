@@ -318,6 +318,10 @@ export const actions = {
     }
   },
 
+  resetGetOtpRequest: () => ({
+    type: types.RESET_GET_OTP_REQUEST,
+  }),
+
   getOtp: payload => async dispatch => {
     try {
       const { type: otpType } = payload;
@@ -348,6 +352,10 @@ export const actions = {
       });
     }
   },
+
+  resetSendOtpRequest: () => ({
+    type: types.RESET_CREATE_OTP_REQUEST,
+  }),
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
@@ -825,6 +833,8 @@ const user = (state = initialState.user, action) => {
   const isFromBeepApp = source === REGISTRATION_SOURCE.BEEP_APP;
 
   switch (type) {
+    case types.RESET_CREATE_OTP_REQUEST:
+      return { ...state, isFetching: false, isError: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
     case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true };
@@ -840,6 +850,8 @@ const user = (state = initialState.user, action) => {
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isError: true };
+    case types.RESET_GET_OTP_REQUEST:
+      return { ...state, otpRequest: initialState.user.otpRequest };
     case types.GET_OTP_REQUEST:
       return {
         ...state,

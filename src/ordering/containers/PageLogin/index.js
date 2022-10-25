@@ -17,7 +17,7 @@ import {
   getOtpErrorTextI18nKey,
   getShouldShowErrorPopUp,
   getOtpErrorPopUpI18nKeys,
-  getIsDisplayableOtpError,
+  getIsOtpErrorFieldVisible,
   getIsOtpInitialRequestFailed,
   getIsOtpRequestStatusPending,
   getIsOtpRequestStatusRejected,
@@ -36,8 +36,6 @@ class PageLogin extends React.Component {
   state = {
     sendOtp: false,
     shouldShowModal: false,
-    isOtpErrorFieldVisible: true,
-    isLoginErrorFieldVisible: true,
   };
 
   captchaRef = React.createRef();
@@ -79,24 +77,23 @@ class PageLogin extends React.Component {
   }
 
   handleChangeOtpCode() {
-    const { isLoginErrorFieldVisible } = this.state;
+    const { isLoginRequestFailed, appActions } = this.props;
 
-    if (!isLoginErrorFieldVisible) return;
+    if (!isLoginRequestFailed) return;
 
-    // Only update isLoginErrorFieldVisible when needed
-    this.setState({ isLoginErrorFieldVisible: false });
+    // Only update create otp status when needed
+    appActions.resetSendOtpRequest();
   }
 
   handleUpdateUser(user) {
-    const { appActions } = this.props;
-    const { isOtpErrorFieldVisible } = this.state;
+    const { appActions, isOtpRequestFailed } = this.props;
 
     appActions.updateUser(user);
 
-    if (!isOtpErrorFieldVisible) return;
+    // Only reset otp status when needed
+    if (!isOtpRequestFailed) return;
 
-    // Only update isOtpErrorFieldVisible when needed
-    this.setState({ isOtpErrorFieldVisible: false });
+    appActions.resetGetOtpRequest();
   }
 
   async handleCompleteReCAPTCHA() {
@@ -132,8 +129,6 @@ class PageLogin extends React.Component {
 
   async handleGetOtpCode(payload) {
     await this.props.appActions.getOtp(payload);
-
-    this.setState({ isOtpErrorFieldVisible: true });
 
     const { t, isOtpRequestFailed, shouldShowErrorPopUp, errorPopUpI18nKeys } = this.props;
 
@@ -217,8 +212,6 @@ class PageLogin extends React.Component {
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
 
-    this.setState({ isLoginErrorFieldVisible: true });
-
     const { user } = this.props;
     const { accessToken, refreshToken } = user;
 
@@ -262,9 +255,8 @@ class PageLogin extends React.Component {
 
   renderOtpModal() {
     const { user, shouldShowLoader, isOtpRequestPending, isLoginRequestFailed } = this.props;
-    const { sendOtp, shouldShowModal, isLoginErrorFieldVisible } = this.state;
+    const { sendOtp, shouldShowModal } = this.state;
     const { phone, noWhatsAppAccount, country } = user || {};
-    const showError = isLoginErrorFieldVisible && isLoginRequestFailed;
 
     if (!shouldShowModal) return null;
 
@@ -280,7 +272,7 @@ class PageLogin extends React.Component {
         sendOtp={this.handleWebLogin.bind(this)}
         isLoading={shouldShowLoader}
         isResending={isOtpRequestPending}
-        showError={showError}
+        showError={isLoginRequestFailed}
         shouldCountdown={sendOtp}
       />
     );
@@ -310,13 +302,10 @@ class PageLogin extends React.Component {
       errorTextI18nKey,
       isRequestSucceed,
       isOtpRequestPending,
-      isDisplayableOtpError,
-      isOtpInitialRequestFailed,
+      isOtpErrorFieldVisible,
     } = this.props;
-    const { isOtpErrorFieldVisible } = this.state;
     const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
-    const showError = isOtpErrorFieldVisible && isOtpInitialRequestFailed && isDisplayableOtpError;
 
     if (Utils.isTNGMiniProgram()) {
       return <PageLoader />;
@@ -366,7 +355,7 @@ class PageLogin extends React.Component {
               buttonText={isOtpRequestPending ? t('Processing') : t('Continue')}
               show={true}
               isProcessing={isOtpRequestPending}
-              showError={showError}
+              showError={isOtpErrorFieldVisible}
               errorText={t(errorTextI18nKey)}
               updatePhoneNumber={this.handleUpdateUser.bind(this)}
               updateCountry={this.handleUpdateUser.bind(this)}
@@ -405,9 +394,9 @@ export default compose(
       errorPopUpI18nKeys: getOtpErrorPopUpI18nKeys(state),
       shouldShowErrorPopUp: getShouldShowErrorPopUp(state),
       isLoginRequestFailed: getIsLoginRequestFailed(state),
-      isDisplayableOtpError: getIsDisplayableOtpError(state),
       isOtpRequestPending: getIsOtpRequestStatusPending(state),
       isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
+      isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
     }),
     dispatch => ({

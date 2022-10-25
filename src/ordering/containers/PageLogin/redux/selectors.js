@@ -54,6 +54,12 @@ export const getIsDisplayableOtpError = createSelector(getOtpErrorCode, errorCod
   ].some(code => errorCode === code.toString())
 );
 
+export const getIsOtpErrorFieldVisible = createSelector(
+  getIsOtpInitialRequestFailed,
+  getIsDisplayableOtpError,
+  (isOtpInitialRequestFailed, isDisplayableOtpError) => isOtpInitialRequestFailed && isDisplayableOtpError
+);
+
 export const getOtpErrorTextI18nKey = createSelector(
   getOtpErrorCode,
   errorCode => OTP_SERVER_ERROR_I18N_KEYS[errorCode]
