@@ -64,7 +64,6 @@ const Result = props => {
         {children}
         <div className={styles.resultFooter}>
           <Button
-            type="primary"
             size="small"
             className={`${styles.closeButtonClassName} tw-uppercase${
               closeButtonClassName ? ` ${closeButtonClassName}` : ''

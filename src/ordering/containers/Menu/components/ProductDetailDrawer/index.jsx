@@ -132,6 +132,9 @@ const ProductDetailDrawer = () => {
         }}
       >
         <Button
+          block
+          type="text"
+          theme="ghost"
           className={styles.topArrowBtn}
           onClick={onTopArrowClick}
           style={{
@@ -215,7 +218,6 @@ const ProductDetailDrawer = () => {
             {isAbleAddCart ? (
               <Button
                 block
-                type="primary"
                 loading={isAddToCartLoading}
                 onClick={() => {
                   dispatch(addToCart());
@@ -225,7 +227,7 @@ const ProductDetailDrawer = () => {
                 {t('AddToCart', { price: formattedTotalPrice })}
               </Button>
             ) : (
-              <Button block type="primary" className="tw-uppercase" disabled>
+              <Button block className="tw-uppercase" disabled>
                 {t(UNABLE_ADD_TO_CART_REASON_KEY_MAP[unableAddToCartReason])}
               </Button>
             )}

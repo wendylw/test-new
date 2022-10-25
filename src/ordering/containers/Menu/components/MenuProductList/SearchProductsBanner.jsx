@@ -66,6 +66,7 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
       {isSearchingBannerVisible ? null : (
         <Button
           type="text"
+          theme="ghost"
           className={styles.menuSearchProductsBannerButton}
           onClick={async () => {
             // get window scroll position
@@ -130,7 +131,6 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
           />
           <Button
             type="text"
-            status="theme"
             className={styles.menuSearchProductsBannerCancelButton}
             onClick={async () => {
               await dispatch(hideSearchingBox());

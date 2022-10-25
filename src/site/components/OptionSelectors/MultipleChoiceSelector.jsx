@@ -54,6 +54,7 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
         <Button
           block
           type="text"
+          theme="ghost"
           className={styles.MultipleChoiceSelectorFooterResetButton}
           disabled={shouldDisableFooterButton}
           onClick={() => onResetButtonClick(category)}
@@ -63,7 +64,6 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
         </Button>
         <Button
           block
-          type="primary"
           className={styles.MultipleChoiceSelectorFooterButton}
           disabled={shouldDisableFooterButton}
           onClick={() => onApplyButtonClick(category, options)}

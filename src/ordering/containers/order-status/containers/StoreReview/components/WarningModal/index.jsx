@@ -33,7 +33,6 @@ const WarningModal = () => {
         </Button>
         <Button
           block
-          type="primary"
           className={styles.WarningModalButton}
           data-testid="acceptButton"
           data-heap-name="ordering.order-status.store-review.confirm.accept"

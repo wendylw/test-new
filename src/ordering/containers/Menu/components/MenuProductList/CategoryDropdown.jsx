@@ -82,6 +82,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
       <Button
         block
         type="text"
+        theme="ghost"
         className={styles.menuProductCategoryButton}
         contentClassName={styles.menuProductCategoryContentButton}
         onClick={() => {
@@ -106,6 +107,7 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
             left={
               <Button
                 type="text"
+                theme="ghost"
                 onClick={() => setShowDrawer(false)}
                 className={`${styles.menuProductCategoryDrawerHeaderCloseButton} beep-text-reset`}
               >

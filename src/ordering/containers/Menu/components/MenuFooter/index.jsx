@@ -71,7 +71,6 @@ const MenuFooter = () => {
             )}
           </div>
           <Button
-            type="primary"
             className={styles.MenuFooterOrderButton}
             disabled={!isAbleToReviewCart}
             onClick={() => {

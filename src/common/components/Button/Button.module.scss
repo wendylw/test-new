@@ -87,8 +87,7 @@
     }
   }
 
-  &:global(.type-primary),
-  &:global(.type-primary-theme) {
+  &:global(.type-primary-default) {
     @include buttonStyle("primary");
   }
 
@@ -100,8 +99,7 @@
     @include buttonStyle("primary", "blue");
   }
 
-  &:global(.type-secondary),
-  &:global(.type-secondary-theme) {
+  &:global(.type-secondary-default) {
     @include buttonStyle("secondary");
   }
 
@@ -113,12 +111,12 @@
     @include buttonStyle("secondary", "blue");
   }
 
-  &:global(.type-text) {
+  &:global(.type-text-ghost) {
     @include buttonHeight(null, "text");
     @include buttonStyle("text", "gray");
   }
 
-  &:global(.type-text-theme) {
+  &:global(.type-text-default) {
     @include buttonHeight(null, "text");
     @include buttonStyle("text");
   }

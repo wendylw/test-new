@@ -9,9 +9,9 @@ const Button = props => {
     className = '',
     contentClassName = '',
     style = {},
-    type = 'text',
+    type = 'primary',
     size = 'normal',
-    status = null,
+    theme = 'default',
     block = false,
     icon = null,
     loading = false,
@@ -30,7 +30,7 @@ const Button = props => {
   return (
     <button
       onClick={onButtonClick}
-      className={`${styles.button} type-${type}${status ? `-${status}` : ''}${size ? ` size-${size}` : ''}${
+      className={`${styles.button} type-${type}${theme ? `-${theme}` : ''}${size ? ` size-${size}` : ''}${
         block ? ' tw-w-full' : ''
       } ${className}`}
       style={style}
@@ -62,7 +62,7 @@ Button.propTypes = {
   loading: propTypes.bool,
   type: propTypes.oneOf(['primary', 'secondary', 'text']),
   size: propTypes.oneOf(['small', 'normal']),
-  status: propTypes.oneOf(['theme', 'danger', 'info']),
+  theme: propTypes.oneOf(['default', 'danger', 'info', 'ghost']),
   block: propTypes.bool,
   onClick: propTypes.func,
 };
@@ -74,9 +74,9 @@ Button.defaultProps = {
   icon: null,
   loading: false,
   style: {},
-  type: 'text',
+  type: 'primary',
   size: 'normal',
-  status: null,
+  theme: 'default',
   block: false,
   onClick: () => {},
 };

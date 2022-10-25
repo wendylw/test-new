@@ -387,6 +387,7 @@ class CollectionPage extends React.Component {
             left={
               <Button
                 type="text"
+                theme="ghost"
                 onClick={this.handleCloseDrawer}
                 className={`${styles.CollectionPageCategoryDrawerHeaderButton} beep-text-reset`}
               >

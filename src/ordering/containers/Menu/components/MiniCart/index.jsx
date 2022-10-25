@@ -54,8 +54,8 @@ const MiniCart = () => {
           }
           right={
             <Button
-              status="danger"
               type="text"
+              theme="danger"
               className={styles.removeAllButton}
               icon={<Trash size={18} />}
               onClick={() => {

@@ -49,8 +49,9 @@ const ConfirmFooter = props => {
     <div className={`${styles.confirmFooter} ${buttonAlignment}`}>
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL ? (
         <Button
+          block
           type="secondary"
-          className={`tw-flex-1 tw-uppercase${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
+          className={`tw-uppercase${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
           onClick={() => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
@@ -60,8 +61,8 @@ const ConfirmFooter = props => {
         </Button>
       ) : null}
       <Button
-        type="primary"
-        className={`tw-flex-1 tw-uppercase${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
+        block
+        className={`tw-uppercase${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
         onClick={() => {
           onSelection(CONFIRM_TRIGGER_TARGET.CONFIRM);
         }}
@@ -71,10 +72,10 @@ const ConfirmFooter = props => {
       </Button>
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.VERTICAL ? (
         <Button
+          block
           type="text"
-          className={`${styles.confirmVerticalCloseButton} tw-flex-1${
-            cancelButtonClassName ? ` ${cancelButtonClassName}` : ''
-          }`}
+          theme="ghost"
+          className={`${styles.confirmVerticalCloseButton}${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
           onClick={() => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}

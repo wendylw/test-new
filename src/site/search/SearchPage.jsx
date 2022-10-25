@@ -430,6 +430,7 @@ class SearchPage extends React.Component {
             left={
               <Button
                 type="text"
+                theme="ghost"
                 onClick={this.handleCloseDrawer}
                 className={`${styles.SearchPageCategoryDrawerHeaderButton} beep-text-reset`}
               >
