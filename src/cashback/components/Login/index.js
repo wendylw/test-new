@@ -4,38 +4,60 @@ import OtpModal from '../../../components/OtpModal';
 import PhoneViewContainer from '../../../components/PhoneViewContainer';
 import Constants from '../../../utils/constants';
 import TermsAndPrivacy from '../../../components/TermsAndPrivacy';
-import Alert from '../../../common/feedback/alert/Alert';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import { actions as appActionCreators, getUser, getIsOtpError } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUser,
+  getShouldShowLoader,
+  getOtpErrorTextI18nKey,
+  getOtpErrorPopUpI18nKeys,
+  getShouldShowErrorPopUp,
+  getIsLoginRequestFailed,
+  getIsOtpRequestStatusPending,
+  getIsOtpRequestStatusRejected,
+  getIsOtpErrorFieldVisible,
+  getIsOtpInitialRequestFailed,
+} from '../../redux/modules/app';
 import config from '../../../config';
 import logger from '../../../utils/monitoring/logger';
+import { alert } from '../../../common/utils/feedback';
 import './LoyaltyLogin.scss';
+
+const { OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
 
 class Login extends React.Component {
   state = {
     sendOtp: false,
-    shouldShowAlert: false,
+    shouldShowModal: false,
   };
 
   captchaRef = React.createRef();
 
   handleCloseOtpModal() {
-    const { appActions } = this.props;
+    this.setState({ shouldShowModal: false });
+  }
 
-    appActions.resetOtpStatus();
+  handleChangeOtpCode() {
+    const { isLoginRequestFailed, appActions } = this.props;
+
+    if (!isLoginRequestFailed) return;
+
+    // Only update create otp status when needed
+    appActions.resetSendOtpRequest();
   }
 
   handleUpdateUser(user) {
-    const { appActions } = this.props;
+    const { appActions, isOtpRequestFailed } = this.props;
 
     appActions.updateUser(user);
-  }
 
-  handleCloseAlert() {
-    this.setState({ shouldShowAlert: false });
+    // Only reset otp status when needed
+    if (!isOtpRequestFailed) return;
+
+    appActions.resetGetOtpRequest();
   }
 
   async handleCompleteReCAPTCHA() {
@@ -59,6 +81,10 @@ class Login extends React.Component {
 
       return token;
     } catch (e) {
+      const { t } = this.props;
+
+      alert(t('NetworkErrorDescription'), { title: t('NetworkErrorTitle'), closeButtonClassName: 'button__block' });
+
       // We will set the attribute 'message' even if it is always empty
       logger.error('Cashback_Login_CompleteCaptchaFailed', { message: e?.message });
       throw e;
@@ -68,21 +94,50 @@ class Login extends React.Component {
   async handleGetOtpCode(payload) {
     await this.props.appActions.getOtp(payload);
 
-    if (this.props.isOtpError) {
-      window.newrelic?.addPageAction('cashback.login.get-otp-failed');
-      throw new Error('OTP verification failed');
+    const { t, isOtpRequestFailed, shouldShowErrorPopUp, errorPopUpI18nKeys } = this.props;
+
+    if (!isOtpRequestFailed) return;
+
+    if (shouldShowErrorPopUp) {
+      const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
+
+      alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block' });
     }
 
-    window.newrelic?.addPageAction('cashback.login.get-otp-success');
+    throw new Error('Failed to get OTP code');
   }
 
-  async handleSubmitPhoneNumber(phone, type) {
+  async handleClickContinueButton(phone, type) {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
-    logger.log('Cashback_Login_SubmitPhoneNumber');
+    logger.log('Cashback_Login_ClickContinueButton');
 
     try {
-      const isWhatsAppType = type === Constants.OTP_REQUEST_TYPES.WHATSAPP;
+      const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled;
+
+      if (!shouldSkipReCAPTCHACheck) {
+        payload.captchaToken = await this.handleCompleteReCAPTCHA();
+        payload.siteKey = config.googleRecaptchaSiteKey;
+      }
+
+      // We don't need to wait this API's response, it won't block us from fetching OTP API.
+      this.props.appActions.getPhoneWhatsAppSupport(phone);
+
+      await this.handleGetOtpCode(payload);
+
+      this.setState({ sendOtp: true, shouldShowModal: true });
+    } catch (e) {
+      logger.error('Cashback_Login_FetchOTPCodeFailed', { message: e?.message });
+    }
+  }
+
+  async handleClickResendButton(phone, type) {
+    const payload = { phone, type };
+    this.setState({ sendOtp: false });
+    logger.log('Cashback_Login_ClickResendButton', { type });
+
+    try {
+      const isWhatsAppType = type === OTP_REQUEST_TYPES.WHATSAPP;
       const shouldSkipReCAPTCHACheck = !config.recaptchaEnabled || isWhatsAppType;
 
       if (!shouldSkipReCAPTCHACheck) {
@@ -94,11 +149,13 @@ class Login extends React.Component {
 
       this.setState({ sendOtp: true });
     } catch (e) {
-      this.setState({ shouldShowAlert: true });
+      logger.error('Cashback_Login_RefetchOTPFailed', { type, message: e?.message });
     }
   }
 
   handleCaptchaLoad() {
+    const { t } = this.props;
+
     const hasLoadSuccess = !!window.grecaptcha;
     const scriptName = 'google-recaptcha';
 
@@ -106,7 +163,9 @@ class Login extends React.Component {
       scriptName: scriptName,
     });
 
-    this.setState({ shouldShowAlert: !hasLoadSuccess });
+    if (!hasLoadSuccess) {
+      alert(t('NetworkErrorDescription'), { title: t('NetworkErrorTitle'), closeButtonClassName: 'button__block' });
+    }
   }
 
   async handleWebLogin(otp) {
@@ -125,33 +184,25 @@ class Login extends React.Component {
     }
   }
 
-  updateOtpStatus() {
-    this.props.appActions.updateOtpStatus();
-  }
-
   renderOtpModal() {
-    const { user, t } = this.props;
-    const { sendOtp } = this.state;
-    const { isFetching, isResending, isLogin, hasOtp, isError, phone, noWhatsAppAccount, country } = user || {};
-    const { RESEND_OTP_TIME } = Constants;
+    const { user, shouldShowLoader, isOtpRequestPending, isLoginRequestFailed } = this.props;
+    const { sendOtp, shouldShowModal } = this.state;
+    const { phone, noWhatsAppAccount, country } = user || {};
 
-    if (!hasOtp || isLogin) {
-      return null;
-    }
+    if (!shouldShowModal) return null;
 
     return (
       <OtpModal
-        buttonText={t('OK')}
-        ResendOtpTime={RESEND_OTP_TIME}
+        resendOtpTime={RESEND_OTP_TIME}
         phone={phone}
         showWhatsAppResendBtn={!noWhatsAppAccount && country === 'MY'}
         onClose={this.handleCloseOtpModal.bind(this)}
-        getOtp={this.handleSubmitPhoneNumber.bind(this)}
+        onChange={this.handleChangeOtpCode.bind(this)}
+        getOtp={this.handleClickResendButton.bind(this)}
         sendOtp={this.handleWebLogin.bind(this)}
-        updateOtpStatus={this.updateOtpStatus.bind(this)}
-        isLoading={isFetching || isLogin}
-        isResending={isResending}
-        isError={isError}
+        isLoading={shouldShowLoader}
+        isResending={isOtpRequestPending}
+        showError={isLoginRequestFailed}
         shouldCountdown={sendOtp}
       />
     );
@@ -174,9 +225,8 @@ class Login extends React.Component {
   }
 
   render() {
-    const { shouldShowAlert } = this.state;
-    const { user, title, className, t } = this.props;
-    const { isFetching, isLogin, phone, country } = user || {};
+    const { user, title, className, t, errorTextI18nKey, isOtpRequestPending, isOtpErrorFieldVisible } = this.props;
+    const { isLogin, phone, country } = user || {};
     const classList = ['login'];
 
     if (className) {
@@ -194,12 +244,14 @@ class Login extends React.Component {
           title={title}
           phone={phone}
           country={country}
-          buttonText={t('Continue')}
+          buttonText={isOtpRequestPending ? t('Processing') : t('Continue')}
           show={true}
-          isLoading={isFetching}
+          isProcessing={isOtpRequestPending}
+          showError={isOtpErrorFieldVisible}
+          errorText={t(errorTextI18nKey)}
           updatePhoneNumber={this.handleUpdateUser.bind(this)}
           updateCountry={this.handleUpdateUser.bind(this)}
-          onSubmit={this.handleSubmitPhoneNumber.bind(this)}
+          onSubmit={this.handleClickContinueButton.bind(this)}
         >
           <p className="text-center margin-top-bottom-small text-line-height-base text-opacity login__terms-privacy">
             <TermsAndPrivacy
@@ -211,21 +263,6 @@ class Login extends React.Component {
         </PhoneViewContainer>
         {this.renderOtpModal()}
         {this.renderReCAPTCHA()}
-        <Alert
-          show={shouldShowAlert}
-          onClose={this.handleCloseAlert.bind(this)}
-          closeButtonContent={t('Dismiss')}
-          content={
-            <>
-              <h4 className="alert__title padding-small text-size-biggest text-weight-bolder">
-                {t('NetworkErrorTitle')}
-              </h4>
-              <div className="alert__description padding-small text-line-height-base">
-                {t('NetworkErrorDescription')}
-              </div>
-            </>
-          }
-        />
       </section>
     );
   }
@@ -241,11 +278,19 @@ Login.defaultProps = {};
 Login.displayName = 'CashbackLogin';
 
 export default compose(
-  withTranslation('Common'),
+  withTranslation(['ApiError', 'Common']),
   connect(
     state => ({
       user: getUser(state),
-      isOtpError: getIsOtpError(state),
+      shouldShowLoader: getShouldShowLoader(state),
+      errorTextI18nKey: getOtpErrorTextI18nKey(state),
+      errorPopUpI18nKeys: getOtpErrorPopUpI18nKeys(state),
+      shouldShowErrorPopUp: getShouldShowErrorPopUp(state),
+      isLoginRequestFailed: getIsLoginRequestFailed(state),
+      isOtpRequestPending: getIsOtpRequestStatusPending(state),
+      isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
+      isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
+      isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

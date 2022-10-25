@@ -836,8 +836,9 @@ const user = (state = initialState.user, action) => {
     case types.RESET_CREATE_OTP_REQUEST:
       return { ...state, isFetching: false, isError: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-    case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true };
+    case types.CREATE_OTP_REQUEST:
+      return { ...state, isFetching: true, isError: false };
     case types.CREATE_LOGIN_REQUEST:
       return {
         ...state,
@@ -846,6 +847,7 @@ const user = (state = initialState.user, action) => {
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.PENDING : null,
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
+      return { ...state, isFetching: false };
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
@@ -1004,14 +1006,6 @@ const error = (state = initialState.error, action) => {
     return null;
   } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     let errorMessage = message;
-
-    return {
-      ...state,
-      code,
-      message: errorMessage,
-    };
-  } else if (code && code !== 401 && type === types.CREATE_OTP_FAILURE) {
-    let errorMessage = Constants.LOGIN_PROMPT[code];
 
     return {
       ...state,
