@@ -165,9 +165,9 @@ const CategoryItem = ({ category, onIntersectionChange, products }) => {
   });
   useEffect(() => {
     if (onIntersectionChange) {
-      onIntersectionChange(isVisible);
+      onIntersectionChange({ inView: isVisible, categoryId: category.id });
     }
-  }, [onIntersectionChange, isVisible]);
+  }, [onIntersectionChange, isVisible, category.id]);
 
   return (
     <div className="tw-pb-16 sm:tw-pb-16px tw-relative" ref={ref}>

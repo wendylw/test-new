@@ -800,9 +800,6 @@ export const changeStore = createAsyncThunk(
     const state = getState();
     const store = getStoreById(state, storeId);
     const h = _get(store, 'hash', null);
-    const fulfillmentOptions = _get(store, 'fulfillmentOptions', []);
-    const shippingTypes = fulfillmentOptions.map(option => option.toLowerCase());
-    const currentShippingType = getShippingType(state);
 
     try {
       await updateStoreInfoCookies(h);

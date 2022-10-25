@@ -26,6 +26,7 @@ const Drawer = props => {
     zIndex = 100,
     onHistoryBackCompleted = () => {},
     disableBackButtonSupport = false,
+    onHidden = () => {},
   } = props;
   const ref = useRef(null);
   const onHistoryBackReceived = useCallback(() => {
@@ -91,7 +92,7 @@ const Drawer = props => {
     // return show ? drawerContent : null;
   } else {
     renderContent = (
-      <CSSTransition in={show} timeout={300} unmountOnExit classNames="drawer-animation">
+      <CSSTransition in={show} timeout={300} unmountOnExit classNames="drawer-animation" onExited={onHidden}>
         {drawerContent}
       </CSSTransition>
     );
@@ -122,6 +123,9 @@ Drawer.propTypes = {
   onClose: PropTypes.func,
   /* Whether show and hide with animation. `true` by default */
   animation: PropTypes.bool,
+  /* Whether support animation. If animation is `true` to trigger function hidden drawer */
+  /* PS: If other animations will be triggered hidden drawer, we recommend to use this instead of next animation in onHistoryBackCompleted  */
+  onHidden: PropTypes.func,
   /* Whether force the height to be same as the screen, even if the content is not long enough */
   fullScreen: PropTypes.bool,
   /* Whether covers the footer */
@@ -131,6 +135,7 @@ Drawer.propTypes = {
   /* Whether mount the component at a common portal at the root. `true` by default */
   mountAtRoot: PropTypes.bool,
   /* Whether history back finished on close, used it if you have some operation on history or body scroll */
+  /* PS: If os > iOS16 && animation is `true` safari cancel next animation of CSSTransition. Please use onHidden */
   onHistoryBackCompleted: PropTypes.func,
   /* Disable back button support. Please be noted that DON'T change it after the component is already mounted */
   disableBackButtonSupport: PropTypes.bool,
@@ -145,6 +150,7 @@ Drawer.defaultProps = {
   style: {},
   onClose: () => {},
   animation: true,
+  onHidden: () => {},
   fullScreen: false,
   respectSpaceOccupation: false,
   zIndex: 100,

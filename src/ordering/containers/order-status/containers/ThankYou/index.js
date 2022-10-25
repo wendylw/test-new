@@ -923,7 +923,7 @@ export class ThankYou extends PureComponent {
       'shipping type': _get(order, 'shippingType', ''),
     });
 
-    Utils.setSessionVariable('BeepOrderingSource', SOURCE_TYPE.THANK_YOU);
+    Utils.setSessionVariable('__sr_source', REFERRER_SOURCE_TYPES.THANK_YOU);
 
     history.push({
       pathname: ROUTER_PATHS.STORE_REVIEW,

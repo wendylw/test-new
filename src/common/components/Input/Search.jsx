@@ -36,6 +36,7 @@ const Search = React.forwardRef(
       searchInputRef.current?.focus();
     });
 
+    // TODO: move this useEffect to reference component
     useMount(() => {
       searchInputRef.current?.focus();
     });
