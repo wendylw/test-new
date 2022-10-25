@@ -2,6 +2,6 @@
   @apply tw-flex tw-items-center tw-flex-1 tw-w-full tw-justify-between tw-bg-yellow-light tw-shadow-sm;
 }
 
-.MenuViewOrderBarButton:global(.type-text) {
+.MenuViewOrderBarButton:global(.type-text-ghost) {
   @apply tw-text-sm tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-capitalize;
 }

@@ -1,6 +1,6 @@
 @import "../../../../../common/styles/variables.scss";
 
-.menuProductCategoryButton:global(.type-text) {
+.menuProductCategoryButton:global(.type-text-ghost) {
   @apply tw-px-16 sm:tw-px-16px tw-py-4 sm:tw-py-4px tw-border tw-border-solid tw-border-gray-400 tw-rounded-2xl;
 
   height: 40px;
@@ -20,7 +20,7 @@
   @apply tw-p-0;
 }
 
-.menuProductCategoryDrawerHeaderCloseButton:global(.type-text) {
+.menuProductCategoryDrawerHeaderCloseButton:global(.type-text-ghost) {
   @apply tw-flex-shrink-0 tw-p-0;
 }
 
@@ -38,12 +38,6 @@
 }
 
 @media (min-width: 420px) {
-  .menuProductCategory {
-    &__button:global(.type-secondary) {
-      @apply tw-py-6px;
-    }
-  }
-
   .menuProductCategoryDrawerHeader::after {
     @apply tw-p-16px;
   }

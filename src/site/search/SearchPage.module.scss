@@ -35,8 +35,8 @@
   }
 }
 
-.SearchPageCategoryDrawerHeaderButton:global(.type-text) {
-  @apply tw-flex-shrink-0 tw-border-0;
+.SearchPageCategoryDrawerHeaderButton:global(.type-text-ghost) {
+  @apply tw-flex-shrink-0 tw-p-0 tw-border-0;
 }
 
 .SearchPageCategoryDrawerHeaderTitle {
