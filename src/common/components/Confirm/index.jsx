@@ -62,6 +62,7 @@ const ConfirmFooter = props => {
       ) : null}
       <Button
         block
+        type="primary"
         className={`tw-uppercase${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
         onClick={() => {
           onSelection(CONFIRM_TRIGGER_TARGET.CONFIRM);

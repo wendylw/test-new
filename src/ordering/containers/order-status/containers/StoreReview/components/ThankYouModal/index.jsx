@@ -70,6 +70,7 @@ const ThankYouModal = () => {
         {shouldShowOkayButtonOnly ? (
           <Button
             block
+            type="primary"
             className={styles.ThankYouModalButton}
             data-testid="OkayButton"
             data-heap-name="ordering.order-status.store-review.confirm.okay"
@@ -91,6 +92,7 @@ const ThankYouModal = () => {
             </Button>
             <Button
               block
+              type="primary"
               className={styles.ThankYouModalButton}
               data-testid="acceptButton"
               data-heap-name="ordering.order-status.store-review.confirm.accept"

@@ -92,6 +92,7 @@ const AlcoholModal = ({ history }) => {
             </Button>
             <Button
               block
+              type="primary"
               className={styles.AlcoholOkButton}
               data-testid="yesIam"
               data-heap-name="ordering.home.confirm.accept"
@@ -114,6 +115,7 @@ const AlcoholModal = ({ history }) => {
           <div className={styles.AlcoholButton}>
             <Button
               block
+              type="primary"
               className={styles.AlcoholDeniedButton}
               data-heap-name="ordering.home.confirm.got"
               onClick={() => dispatch(confirmAlcoholDenied(history))}

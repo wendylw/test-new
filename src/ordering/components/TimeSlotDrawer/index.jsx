@@ -149,6 +149,7 @@ const TimeSlotDrawer = ({
           <div className={styles.timeSlotFooter}>
             <Button
               block
+              type="primary"
               disabled={isSaveButtonDisabled}
               loading={isSaveButtonLoaderVisible}
               onClick={save}

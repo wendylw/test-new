@@ -64,6 +64,7 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
         </Button>
         <Button
           block
+          type="primary"
           className={styles.MultipleChoiceSelectorFooterButton}
           disabled={shouldDisableFooterButton}
           onClick={() => onApplyButtonClick(category, options)}

@@ -201,6 +201,7 @@ const StoreReview = () => {
           <div className={styles.StoreReviewFooter}>
             <Button
               block
+              type="primary"
               disabled={shouldDisableSubmitButton}
               onClick={handleClickSubmitButton}
               className="tw-uppercase"
