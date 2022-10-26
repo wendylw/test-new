@@ -29,7 +29,7 @@ $attributes: (
     focus:hover:tw-border-#{$color-dark} focus:hover:tw-bg-#{$color-dark}
     focus:active:tw-border-#{$color-light} focus:active:tw-bg-#{$color-light} /* focus style */
     active:tw-border-#{$color-light} active:tw-bg-#{$color-light} /* active style */
-    disabled:tw-bg-gray-400; /* disabled style */
+    disabled:tw-border-gray-400 disabled:tw-bg-gray-400; /* disabled style */
   } @else if ($type == "secondary") {
     @apply hover:tw-border-#{$color-dark} hover:tw-text-#{$color-dark} /* hover style */
     focus:tw-border-#{$color} focus:tw-text-#{$color}
