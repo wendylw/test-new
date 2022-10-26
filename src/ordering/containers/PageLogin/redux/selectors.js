@@ -80,28 +80,30 @@ export const getShouldShowErrorPopUp = createSelector(
 
 export const getShouldShowNetworkErrorPopUp = createSelector(getOtpRequestError, error => error instanceof TypeError);
 
-export const getShouldShowReachedDailyLimitErrorPopUp = createSelector(
+export const getShouldShowOtpApiErrorPopUp = createSelector(
   getOtpErrorCode,
-  errorCode => errorCode === OTP_API_ERROR_CODES.MEET_DAY_LIMIT.toString()
+  getIsOtpInitialRequest,
+  (errorCode, isOtpInitialRequest) => {
+    const isHighRiskError = errorCode === OTP_API_ERROR_CODES.HIGH_RISK.toString();
+
+    if (isHighRiskError) return true;
+
+    const isReachedDailyLimitError = errorCode === OTP_API_ERROR_CODES.MEET_DAY_LIMIT.toString();
+
+    return !isOtpInitialRequest && isReachedDailyLimitError;
+  }
 );
 
 export const getOtpErrorPopUpI18nKeys = createSelector(
-  getIsOtpInitialRequest,
+  getOtpErrorCode,
+  getShouldShowOtpApiErrorPopUp,
   getShouldShowNetworkErrorPopUp,
-  getShouldShowReachedDailyLimitErrorPopUp,
-  (isOtpInitialRequest, shouldShowNetworkErrorPopUp, shouldShowReachedDailyLimitErrorPopUp) => {
-    if (isOtpInitialRequest) {
-      return shouldShowNetworkErrorPopUp
-        ? OTP_ERROR_POPUP_I18N_KEYS[OTP_COMMON_ERROR_TYPES.NETWORK_ERROR]
-        : OTP_ERROR_POPUP_I18N_KEYS[OTP_COMMON_ERROR_TYPES.UNKNOWN_ERROR];
-    }
-
-    return shouldShowReachedDailyLimitErrorPopUp
-      ? OTP_ERROR_POPUP_I18N_KEYS[OTP_API_ERROR_CODES.MEET_DAY_LIMIT]
+  (errorCode, shouldShowOtpApiErrorPopUp, shouldShowNetworkErrorPopUp) =>
+    shouldShowOtpApiErrorPopUp
+      ? OTP_ERROR_POPUP_I18N_KEYS[errorCode]
       : shouldShowNetworkErrorPopUp
       ? OTP_ERROR_POPUP_I18N_KEYS[OTP_COMMON_ERROR_TYPES.NETWORK_ERROR]
-      : OTP_ERROR_POPUP_I18N_KEYS[OTP_COMMON_ERROR_TYPES.UNKNOWN_ERROR];
-  }
+      : OTP_ERROR_POPUP_I18N_KEYS[OTP_COMMON_ERROR_TYPES.UNKNOWN_ERROR]
 );
 
 export const getShouldShowLoader = createSelector(

@@ -694,6 +694,7 @@ export const OTP_API_ERROR_CODES = {
   PHONE_INVALID: 394761,
   REQUEST_TOO_FAST: 394757,
   MEET_DAY_LIMIT: 394755,
+  HIGH_RISK: 394756,
 };
 
 export const SMS_API_ERROR_CODES = {
@@ -705,6 +706,10 @@ export const OTP_ERROR_POPUP_I18N_KEYS = {
   [OTP_API_ERROR_CODES.MEET_DAY_LIMIT]: {
     title: 'ApiError:394755Title',
     description: 'ApiError:394755Description',
+  },
+  [OTP_API_ERROR_CODES.HIGH_RISK]: {
+    title: 'ApiError:394756Title',
+    description: 'ApiError:394756Description',
   },
   [OTP_COMMON_ERROR_TYPES.NETWORK_ERROR]: {
     title: 'NetworkErrorTitle',
