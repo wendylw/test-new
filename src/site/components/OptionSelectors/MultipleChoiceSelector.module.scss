@@ -12,8 +12,10 @@
   @apply tw-leading-relaxed tw-uppercase;
 }
 
+.MultipleChoiceSelectorFooterResetButton {
+  height: 50px;
+}
+
 .MultipleChoiceSelectorFooterResetButtonContent {
   @apply tw-leading-relaxed tw-uppercase;
-
-  height: 50px;
 }
