@@ -1,3 +1,4 @@
+// It is an array of several UI attributes of button, each button item contains $type $theme $color
 $attributes: (
   "primary" "default" "orange",
   "primary" "danger" "red",
@@ -88,6 +89,7 @@ $attributes: (
         @apply tw-py-12 sm:tw-py-12px tw-px-16 sm:tw-px-16px tw-tracking-wider;
       }
 
+      // Initialize UI for different types of buttons
       @if ($type == "primary") {
         @apply tw-text-white tw-bg-#{$color} tw-border-#{$color};
       } @else if ($type == "secondary") {
@@ -98,7 +100,7 @@ $attributes: (
 
       // Can't swap the order with the styles above, it will change the style priority
       // buttonPseudoClasses: buttonPseudoStyle is Pseudo-classes for setting different types of buttons, Pseudo-classes: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes
-      @if ($type == "text" and $color == "gray") {
+      @if ($theme == "ghost" and $type == "text") {
         @include buttonPseudoClasses("text", $color, #{$color}-900, #{$color}-700);
       } @else {
         @include buttonPseudoClasses($type, $color, #{$color}-dark, #{$color}-light);
