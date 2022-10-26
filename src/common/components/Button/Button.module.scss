@@ -50,6 +50,19 @@
   }
 }
 
+$attributes: (
+  "primary" "default" "orange",
+  "primary" "danger" "red",
+  "primary" "info" "blue",
+  "secondary" "default" "orange",
+  "secondary" "danger" "red",
+  "secondary" "info" "blue",
+  "text" "default" "orange",
+  "text" "ghost" "gray",
+  "text" "danger" "red",
+  "text" "info" "blue"
+);
+
 .button {
   @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px
   tw-border tw-border-transparent tw-border-solid tw-rounded/* border */
@@ -73,6 +86,22 @@
 
     & > * {
       vertical-align: top;
+    }
+  }
+
+  @each $type, $theme, $color in $attributes {
+    &:global(.type-#{$type}-#{$theme}) {
+      @apply tw-transition; /* https://tailwindcss.com/docs/transition-property */
+
+      .buttonContent {
+        @apply tw-font-bold;
+      }
+
+      @if ($type == "primary") {
+        @apply tw-text-white;
+      } @else if ($type == "secondary" or $type == "text") {
+        @apply tw-text-#{$color};
+      }
     }
   }
 

@@ -12,7 +12,7 @@
 }
 
 .menuProductHighlightedCategory {
-  @apply tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800;
+  @apply tw-flex-1 tw-text-left tw-px-6 sm:tw-px-6px tw-text-gray-800 tw-font-bold;
   @include text-line-clamp(1);
 }
 
