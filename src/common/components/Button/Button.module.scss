@@ -55,16 +55,6 @@
   tw-border tw-border-transparent tw-border-solid tw-rounded/* border */
   tw-cursor-pointer disabled:tw-cursor-default;
 
-  .buttonContent {
-    @apply tw-leading-normal;
-
-    font-size: inherit;
-
-    &:global(.beep-text-reset) {
-      font-size: 0;
-    }
-  }
-
   &:global(.size-normal) {
     @include buttonHeight();
   }
@@ -129,4 +119,10 @@
     @include buttonHeight(null, "text");
     @include buttonStyle("text", "blue");
   }
+}
+
+.buttonContent {
+  @apply tw-leading-normal;
+
+  font-size: inherit;
 }

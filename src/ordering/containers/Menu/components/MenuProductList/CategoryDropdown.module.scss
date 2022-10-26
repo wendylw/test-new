@@ -24,6 +24,10 @@
   @apply tw-flex-shrink-0 tw-p-0;
 }
 
+.menuProductCategoryDrawerHeaderCloseButtonContent {
+  font-size: 0;
+}
+
 .menuProductCategoryItem {
   @apply tw-items-center tw-py-16;
 

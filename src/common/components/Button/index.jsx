@@ -47,7 +47,7 @@ const Button = props => {
           </span>
         </span>
       ) : null}
-      <div className={`${styles.buttonContent}${contentClassName ? ` contentClassName` : ''}`}>{children}</div>
+      <div className={`${styles.buttonContent}${contentClassName ? ` ${contentClassName}` : ''}`}>{children}</div>
     </button>
   );
 };

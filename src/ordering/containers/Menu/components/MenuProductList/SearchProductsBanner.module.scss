@@ -8,6 +8,10 @@
   height: 40px;
 }
 
+.menuSearchProductsBannerButtonContent {
+  font-size: 0;
+}
+
 .menuSearchProductsBannerCancelButton:global(.type-text-default) {
   @apply tw-flex-shrink-0 tw-px-12px sm:tw-px-12px tw-text-sm;
 }

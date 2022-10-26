@@ -68,7 +68,7 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
           type="text"
           theme="ghost"
           className={styles.menuSearchProductsBannerButton}
-          contentClassName="beep-text-reset"
+          contentClassName={styles.menuSearchProductsBannerButtonContent}
           onClick={async () => {
             // get window scroll position
             const scrollTopPosition = bodyScrollTopPosition();

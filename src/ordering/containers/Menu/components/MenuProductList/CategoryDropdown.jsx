@@ -109,7 +109,8 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
                 type="text"
                 theme="ghost"
                 onClick={() => setShowDrawer(false)}
-                className={`${styles.menuProductCategoryDrawerHeaderCloseButton} beep-text-reset`}
+                className={styles.menuProductCategoryDrawerHeaderCloseButton}
+                contentClassName={styles.menuProductCategoryDrawerHeaderCloseButtonContent}
               >
                 <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
               </Button>
