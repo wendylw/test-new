@@ -853,7 +853,7 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isError: true };
     case types.RESET_GET_OTP_REQUEST:
-      return { ...state, otpRequest: initialState.user.otpRequest };
+      return { ...state, otpRequest: { ...initialState.user.otpRequest } };
     case types.GET_OTP_REQUEST:
       return {
         ...state,
