@@ -47,7 +47,7 @@ const Button = props => {
           </span>
         </span>
       ) : null}
-      <div className={contentClassName}>{children}</div>
+      <div className={`${styles.buttonContent}${contentClassName ? ` contentClassName` : ''}`}>{children}</div>
     </button>
   );
 };
@@ -63,6 +63,7 @@ Button.propTypes = {
   type: propTypes.oneOf(['primary', 'secondary', 'text']),
   size: propTypes.oneOf(['small', 'normal']),
   theme: propTypes.oneOf(['default', 'danger', 'info', 'ghost']),
+  // The size and placement of buttons can change as parent containers, such as cards, adapt for larger screens.
   block: propTypes.bool,
   onClick: propTypes.func,
 };

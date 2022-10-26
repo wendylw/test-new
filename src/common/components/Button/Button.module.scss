@@ -11,7 +11,7 @@
 @mixin buttonStyle($type: null, $color: "orange") {
   @apply tw-transition; /* https://tailwindcss.com/docs/transition-property */
 
-  > div {
+  .buttonContent {
     @apply tw-font-bold;
   }
 
@@ -53,10 +53,9 @@
 .button {
   @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px
   tw-border tw-border-transparent tw-border-solid tw-rounded/* border */
-  tw-text-gray /* default color */
   tw-cursor-pointer disabled:tw-cursor-default;
 
-  > div {
+  .buttonContent {
     @apply tw-leading-normal;
 
     font-size: inherit;
@@ -88,7 +87,7 @@
   }
 
   &:global(.type-primary-default) {
-    @include buttonStyle("primary");
+    @include buttonStyle("primary", "orange");
   }
 
   &:global(.type-primary-danger) {
@@ -100,7 +99,7 @@
   }
 
   &:global(.type-secondary-default) {
-    @include buttonStyle("secondary");
+    @include buttonStyle("secondary", "orange");
   }
 
   &:global(.type-secondary-danger) {
