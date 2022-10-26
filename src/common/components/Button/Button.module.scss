@@ -1,55 +1,3 @@
-@mixin buttonHeight($size: null, $type: null) {
-  @if ($type == "text") {
-    height: auto;
-  } @else if $size == "small" {
-    height: 40px;
-  } @else {
-    height: 50px;
-  }
-}
-
-@mixin buttonStyle($type: null, $color: "orange") {
-  @apply tw-transition; /* https://tailwindcss.com/docs/transition-property */
-
-  .buttonContent {
-    @apply tw-font-bold;
-  }
-
-  /* tw-tracking-wide: letter spacing */
-  @if ($type == "text") {
-    @apply tw-p-8 sm:tw-p-8px tw-tracking-wide;
-  } @else {
-    @apply tw-py-12 sm:tw-py-12px tw-px-16 sm:tw-px-16px tw-tracking-wider;
-  }
-
-  @if ($type == "primary") {
-    @apply tw-text-white
-    tw-bg-#{$color} hover:tw-bg-#{$color}-dark
-    focus:tw-bg-#{$color} focus:hover:tw-bg-#{$color}-dark focus:active:tw-bg-#{$color}-light
-    active:tw-bg-#{$color}-light disabled:tw-bg-gray-400;
-  } @else if ($type == "secondary") {
-    @apply tw-border-#{$color} tw-bg-white tw-text-#{$color}
-      hover:tw-border-#{$color}-dark hover:tw-text-#{$color}-dark
-      focus:tw-border-#{$color} focus:tw-text-#{$color} focus:hover:tw-border-#{$color}-dark focus:hover:tw-text-#{$color}-dark focus:active:tw-border-#{$color}-light focus:active:tw-text-#{$color}-light
-      active:tw-border-#{$color}-light active:tw-text-#{$color}-light
-      disabled:tw-border-gray-400 disabled:tw-text-gray-400;
-  } @else if ($type == "text") {
-    @if ($color == "gray") {
-      @apply tw-bg-transparent tw-text-gray
-      hover:tw-text-gray-900
-      focus:tw-text-gray focus:hover:tw-text-gray-900 focus:active:tw-text-gray-700
-      active:tw-text-gray-700
-      disabled:tw-text-gray-400;
-    } @else {
-      @apply tw-bg-transparent tw-text-#{$color}
-      hover:tw-text-#{$color}-dark
-      focus:tw-text-#{$color} focus:hover:tw-text-#{$color}-dark focus:active:tw-text-#{$color}-light
-      active:tw-text-#{$color}-light
-      disabled:tw-text-gray-400;
-    }
-  }
-}
-
 $attributes: (
   "primary" "default" "orange",
   "primary" "danger" "red",
@@ -63,17 +11,52 @@ $attributes: (
   "text" "info" "blue"
 );
 
+@mixin buttonHeight($size, $type) {
+  @if ($type == "text") {
+    height: auto;
+  } @else if $size == "small" {
+    height: 40px;
+  } @else if $size == "normal" {
+    height: 50px;
+  }
+}
+
+@mixin buttonPseudoClasses($type, $color, $color-dark, $color-light) {
+  @if ($type == "primary") {
+    @apply hover:tw-border-#{$color-dark} hover:tw-bg-#{$color-dark} /* hover style */
+    focus:tw-border-#{$color} focus:tw-bg-#{$color}
+    focus:hover:tw-border-#{$color-dark} focus:hover:tw-bg-#{$color-dark}
+    focus:active:tw-border-#{$color-light} focus:active:tw-bg-#{$color-light} /* focus style */
+    active:tw-border-#{$color-light} active:tw-bg-#{$color-light} /* active style */
+    disabled:tw-bg-gray-400; /* disabled style */
+  } @else if ($type == "secondary") {
+    @apply hover:tw-border-#{$color-dark} hover:tw-text-#{$color-dark} /* hover style */
+    focus:tw-border-#{$color} focus:tw-text-#{$color}
+    focus:hover:tw-border-#{$color-dark} focus:hover:tw-text-#{$color-dark}
+    focus:active:tw-border-#{$color-light} focus:active:tw-text-#{$color-light} /* focus style */
+    active:tw-border-#{$color-light} active:tw-text-#{$color-light} /* active style */
+    disabled:tw-border-gray-400 disabled:tw-text-gray-400; /* disabled style */
+  } @else if ($type == "text") {
+    @apply hover:tw-text-#{$color-dark} /* hover style */
+    focus:tw-text-#{$color}
+    focus:hover:tw-text-#{$color-dark}
+    focus:active:tw-text-#{$color-light} /* focus style */
+    active:tw-text-#{$color-light} /* active style */
+    disabled:tw-text-gray-400; /* disabled style */
+  }
+}
+
 .button {
   @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px
   tw-border tw-border-transparent tw-border-solid tw-rounded/* border */
   tw-cursor-pointer disabled:tw-cursor-default;
 
   &:global(.size-normal) {
-    @include buttonHeight();
+    @include buttonHeight("normal", null);
   }
 
   &:global(.size-small) {
-    @include buttonHeight("small");
+    @include buttonHeight("small", null);
   }
 
   .iconWrapper {
@@ -97,56 +80,30 @@ $attributes: (
         @apply tw-font-bold;
       }
 
+      /* tw-tracking-wide: letter spacing */
+      @if ($type == "text") {
+        @apply tw-p-8 sm:tw-p-8px tw-tracking-wide;
+        @include buttonHeight(null, "text");
+      } @else {
+        @apply tw-py-12 sm:tw-py-12px tw-px-16 sm:tw-px-16px tw-tracking-wider;
+      }
+
       @if ($type == "primary") {
-        @apply tw-text-white;
-      } @else if ($type == "secondary" or $type == "text") {
-        @apply tw-text-#{$color};
+        @apply tw-text-white tw-bg-#{$color} tw-border-#{$color};
+      } @else if ($type == "secondary") {
+        @apply tw-text-#{$color} tw-bg-white tw-border-#{$color};
+      } @else if ($type == "text") {
+        @apply tw-text-#{$color} tw-bg-transparent;
+      }
+
+      // Can't swap the order with the styles above, it will change the style priority
+      // buttonPseudoClasses: buttonPseudoStyle is Pseudo-classes for setting different types of buttons, Pseudo-classes: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes
+      @if ($type == "text" and $color == "gray") {
+        @include buttonPseudoClasses("text", $color, #{$color}-900, #{$color}-700);
+      } @else {
+        @include buttonPseudoClasses($type, $color, #{$color}-dark, #{$color}-light);
       }
     }
-  }
-
-  &:global(.type-primary-default) {
-    @include buttonStyle("primary", "orange");
-  }
-
-  &:global(.type-primary-danger) {
-    @include buttonStyle("primary", "red");
-  }
-
-  &:global(.type-primary-info) {
-    @include buttonStyle("primary", "blue");
-  }
-
-  &:global(.type-secondary-default) {
-    @include buttonStyle("secondary", "orange");
-  }
-
-  &:global(.type-secondary-danger) {
-    @include buttonStyle("secondary", "red");
-  }
-
-  &:global(.type-secondary-info) {
-    @include buttonStyle("secondary", "blue");
-  }
-
-  &:global(.type-text-ghost) {
-    @include buttonHeight(null, "text");
-    @include buttonStyle("text", "gray");
-  }
-
-  &:global(.type-text-default) {
-    @include buttonHeight(null, "text");
-    @include buttonStyle("text");
-  }
-
-  &:global(.type-text-danger) {
-    @include buttonHeight(null, "text");
-    @include buttonStyle("text", "red");
-  }
-
-  &:global(.type-text-info) {
-    @include buttonHeight(null, "text");
-    @include buttonStyle("text", "blue");
   }
 }
 

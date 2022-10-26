@@ -78,7 +78,7 @@ const Search = React.forwardRef(
                 type="text"
                 theme="ghost"
                 className={_isEmpty(inputValue) ? 'tw-opacity-0' : 'tw-flex-shrink-0'}
-                contentClassName="beep-text-reset"
+                contentClassName={styles.SearchClearButtonContent}
                 disabled={_isEmpty(inputValue)}
                 onClick={onHandleClearSearchKeyword}
               >
