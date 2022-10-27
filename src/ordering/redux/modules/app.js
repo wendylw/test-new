@@ -5,6 +5,7 @@ import _uniq from 'lodash/uniq';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import _lowerCase from 'lodash/lowerCase';
+import _cloneDeep from 'lodash/cloneDeep';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
@@ -853,7 +854,7 @@ const user = (state = initialState.user, action) => {
     case types.CREATE_OTP_FAILURE:
       return { ...state, isFetching: false, isError: true };
     case types.RESET_GET_OTP_REQUEST:
-      return { ...state, otpRequest: { ...initialState.user.otpRequest } };
+      return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
     case types.GET_OTP_REQUEST:
       return {
         ...state,
