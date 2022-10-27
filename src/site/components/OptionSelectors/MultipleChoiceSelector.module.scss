@@ -8,11 +8,7 @@
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
 }
 
-.MultipleChoiceSelectorFooterResetButtonContent {
-  @apply tw-leading-relaxed tw-uppercase;
-}
-
-.MultipleChoiceSelectorFooterResetButton {
+.MultipleChoiceSelectorFooterResetButton:global(.type-text-ghost) {
   height: 50px;
 }
 
