@@ -85,7 +85,10 @@ class Login extends React.Component {
     } catch (e) {
       const { t } = this.props;
 
-      alert(t('NetworkErrorDescription'), { title: t('NetworkErrorTitle'), closeButtonClassName: 'button__block' });
+      alert(t('NetworkErrorDescription'), {
+        title: t('NetworkErrorTitle'),
+        closeButtonClassName: 'button__block text-uppercase',
+      });
 
       // We will set the attribute 'message' even if it is always empty
       logger.error('Cashback_Login_CompleteCaptchaFailed', { message: e?.message });
@@ -103,7 +106,7 @@ class Login extends React.Component {
     if (shouldShowErrorPopUp) {
       const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
 
-      alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block' });
+      alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
     }
 
     throw new Error('Failed to get OTP code');
@@ -166,7 +169,10 @@ class Login extends React.Component {
     });
 
     if (!hasLoadSuccess) {
-      alert(t('NetworkErrorDescription'), { title: t('NetworkErrorTitle'), closeButtonClassName: 'button__block' });
+      alert(t('NetworkErrorDescription'), {
+        title: t('NetworkErrorTitle'),
+        closeButtonClassName: 'button__block text-uppercase',
+      });
     }
   }
 
