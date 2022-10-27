@@ -6,6 +6,7 @@ import { getOtpRequest, getIsLoginRequestStatusPending } from '../../../redux/mo
 
 const {
   OTP_REQUEST_TYPES,
+  OTP_BFF_ERROR_CODES,
   OTP_API_ERROR_CODES,
   SMS_API_ERROR_CODES,
   OTP_COMMON_ERROR_TYPES,
@@ -46,6 +47,7 @@ export const getIsOtpInitialRequestFailed = createSelector(
 
 export const getIsDisplayableOtpError = createSelector(getOtpErrorCode, errorCode =>
   [
+    OTP_BFF_ERROR_CODES.PHONE_INVALID,
     OTP_API_ERROR_CODES.PHONE_INVALID,
     OTP_API_ERROR_CODES.MEET_DAY_LIMIT,
     OTP_API_ERROR_CODES.REQUEST_TOO_FAST,
