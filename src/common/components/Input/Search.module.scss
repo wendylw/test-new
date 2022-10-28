@@ -5,3 +5,7 @@
 .SearchHideClearButton:global(.type-text) {
   @apply tw-opacity-0 tw-cursor-default;
 }
+
+.SearchContainer {
+  @apply tw-flex tw-flex-1 tw-items-center tw-rounded-2xl tw-border tw-border-solid tw-border-gray-200 tw-bg-gray-200;
+}

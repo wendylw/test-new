@@ -49,8 +49,8 @@ const StoreList = () => {
               dispatch(storeListDrawerOpened());
             }}
           >
-            <span className={styles.storeListSubtitle}>{storeDisplaySubTitle}</span>
-            <CaretDown className="tw-mx-4 sm:tw-mx-4px tw-text-xs tw-text-gray-600" />
+            <span className={styles.storeListSubtitle}>{storeDisplaySubTitle || t('SelectStoreDefault')}</span>
+            <CaretDown className="tw-mx-4 sm:tw-mx-4px tw-text-gray-600 tw-flex-shrink-0" size={16} />
           </button>
           <StoreListDrawer
             isInitializing={!hasStoreListInitialized}

@@ -21,9 +21,7 @@ const Search = React.forwardRef(
     },
     searchRef
   ) => {
-    const classNameList = [
-      'tw-flex tw-flex-1 tw-items-center tw-border tw-border-solid tw-border-gray-400 tw-rounded-2xl',
-    ];
+    const classNameList = [styles.SearchContainer];
     // Search input value use state of component, because Chinese typing
     const [inputValue, setInputValue] = useState(defaultSearchKeyword);
     const currentRef = useRef(null);
@@ -57,7 +55,7 @@ const Search = React.forwardRef(
             searchInputRef.current = ref;
           }}
           placeholder={placeholder}
-          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-500"
+          className="tw-flex-1 tw-border-0 tw-leading-relaxed tw-text-gray tw-placeholder-gray-600 tw-border-gray-200 tw-bg-gray-200"
           type="text"
           value={inputValue}
           onChange={e => {
@@ -82,7 +80,7 @@ const Search = React.forwardRef(
                 disabled={_isEmpty(inputValue)}
                 onClick={onHandleClearSearchKeyword}
               >
-                <XCircle className="tw-text-2xl tw-text-gray-500" weight="fill" />
+                <XCircle className="tw-text-2xl tw-text-gray-600" weight="fill" />
               </Button>
             ) : null}
           </>
