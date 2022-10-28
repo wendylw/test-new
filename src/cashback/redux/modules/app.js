@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import _get from 'lodash/get';
+import _cloneDeep from 'lodash/cloneDeep';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
@@ -12,25 +13,42 @@ import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { getBusinessByName } from '../../../redux/modules/entities/businesses';
-import { get, post } from '../../../utils/request';
+import { get } from '../../../utils/request';
+import { post } from '../../../utils/api/api-fetch';
 import { createSelector } from 'reselect';
+import logger from '../../../utils/monitoring/logger';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
-const { AUTH_INFO, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
+const {
+  AUTH_INFO,
+  OTP_REQUEST_PLATFORM,
+  API_REQUEST_STATUS,
+  OTP_REQUEST_TYPES,
+  OTP_BFF_ERROR_CODES,
+  OTP_API_ERROR_CODES,
+  SMS_API_ERROR_CODES,
+  OTP_COMMON_ERROR_TYPES,
+  OTP_SERVER_ERROR_I18N_KEYS,
+  OTP_ERROR_POPUP_I18N_KEYS,
+} = Constants;
 
 export const initialState = {
   user: {
     isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
-    hasOtp: false,
     consumerId: config.consumerId,
     customerId: '',
     storeCreditsBalance: 0,
     isError: false,
-    otpType: OTP_REQUEST_TYPES.OTP,
-    isOtpError: false,
+    otpRequest: {
+      data: {
+        type: OTP_REQUEST_TYPES.OTP,
+      },
+      status: null,
+      error: null,
+    },
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
@@ -83,32 +101,61 @@ export const actions = {
     }
   },
 
-  resetOtpStatus: () => ({
-    type: types.RESET_OTP_STATUS,
+  getPhoneWhatsAppSupport: phone => async dispatch => {
+    try {
+      dispatch({ type: types.GET_WHATSAPPSUPPORT_REQUEST });
+
+      const { supportWhatsApp } = await post(Url.API_URLS.GET_WHATSAPP_SUPPORT.url, {
+        phone,
+      });
+
+      dispatch({ type: types.GET_WHATSAPPSUPPORT_SUCCESS, response: { supportWhatsApp } });
+    } catch (error) {
+      dispatch({
+        type: types.GET_WHATSAPPSUPPORT_FAILURE,
+        error,
+      });
+    }
+  },
+
+  resetGetOtpRequest: () => ({
+    type: types.RESET_GET_OTP_REQUEST,
   }),
 
   getOtp: payload => async dispatch => {
     try {
-      dispatch({ type: types.GET_OTP_REQUEST });
+      const { type: otpType } = payload;
 
-      const { isSent, errorCode } = await post(Url.API_URLS.GET_OTP.url, {
+      // BEEP-2685: New Relic needs to know the OTP first send time.
+      window.newrelic?.addPageAction('cashback.login.get-otp-start');
+      logger.log('Cashback_App_StartToGetOTP');
+
+      dispatch({ type: types.GET_OTP_REQUEST, payload: { otpType } });
+
+      await post(Url.API_URLS.GET_OTP.url, {
         ...payload,
         platform: OTP_REQUEST_PLATFORM,
       });
 
-      if (isSent) {
-        dispatch({ type: types.GET_OTP_SUCCESS });
-      } else {
-        dispatch({ type: types.GET_OTP_FAILURE, error: errorCode });
-      }
+      window.newrelic?.addPageAction('cashback.login.get-otp-success');
+
+      dispatch({ type: types.GET_OTP_SUCCESS });
     } catch (error) {
-      // For sake of completeness: this won't be called because of the the response code will always be 200
+      window.newrelic?.addPageAction('cashback.login.get-otp-failed', {
+        error: error?.message,
+        code: error?.code,
+      });
+
       dispatch({
         type: types.GET_OTP_FAILURE,
-        error: error,
+        error,
       });
     }
   },
+
+  resetSendOtpRequest: () => ({
+    type: types.RESET_CREATE_OTP_REQUEST,
+  }),
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
@@ -279,33 +326,39 @@ const fetchCustomerProfile = consumerId => ({
 });
 
 const user = (state = initialState.user, action) => {
-  const { type, response, responseGql, prompt, error } = action;
-  const { login, consumerId, noWhatsAppAccount } = response || {};
+  const { type, response, responseGql, prompt, error, payload } = action;
+  const { login, consumerId, supportWhatsApp } = response || {};
+  const otpType = _get(payload, 'otpType', null);
 
   switch (type) {
-    case types.FETCH_LOGIN_STATUS_REQUEST:
+    case types.RESET_CREATE_OTP_REQUEST:
+      return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_REQUEST:
       return {
         ...state,
-        isFetching: true,
-        isResending: true,
-        isOtpError: false,
-        otpType: OTP_REQUEST_TYPES.RE_SEND_OTP,
+        otpRequest: {
+          ...state.otpRequest,
+          data: { ...state.otpRequest.data, type: otpType },
+          status: API_REQUEST_STATUS.PENDING,
+          error: null,
+        },
       };
-    case types.CREATE_OTP_REQUEST:
+    case types.FETCH_LOGIN_STATUS_REQUEST:
       return { ...state, isFetching: true };
+    case types.CREATE_OTP_REQUEST:
+      return { ...state, isFetching: true, isError: false };
     case types.FETCH_LOGIN_STATUS_FAILURE:
+      return { ...state, isFetching: false };
     case types.GET_OTP_FAILURE:
-      // We won't handle the error code separately for now, because we don't want users to see the error details in the phase 1.
-      return { ...state, isFetching: false, isResending: false, isOtpError: true };
+      return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false, isResending: false, isError: true };
-    case types.RESET_OTP_STATUS:
-      return { ...state, isFetching: false, hasOtp: false };
+      return { ...state, isFetching: false, isError: true };
+    case types.RESET_GET_OTP_REQUEST:
+      return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
     case types.UPDATE_OTP_STATUS:
       return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
-      return { ...state, isFetching: false, isResending: false, hasOtp: true, noWhatsAppAccount };
+      return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.FULFILLED } };
     case types.CREATE_OTP_SUCCESS:
       const { access_token, refresh_token } = response;
 
@@ -364,6 +417,13 @@ const user = (state = initialState.user, action) => {
       } else {
         return state;
       }
+    case types.GET_WHATSAPPSUPPORT_REQUEST:
+      return { ...state, noWhatsAppAccount: true };
+    case types.GET_WHATSAPPSUPPORT_SUCCESS:
+      return { ...state, noWhatsAppAccount: !supportWhatsApp };
+    case types.GET_WHATSAPPSUPPORT_FAILURE:
+      // Write down here just for the sake of completeness, we won't handle this failure case for now.
+      return state;
     default:
       return state;
   }
@@ -375,16 +435,12 @@ const error = (state = initialState.error, action) => {
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
   } else if (code && code !== 401) {
-    let errorMessage = message;
-
-    if (type === types.CREATE_OTP_FAILURE) {
-      errorMessage = Constants.LOGIN_PROMPT[code];
-    }
+    if (type === types.CREATE_OTP_FAILURE) return null;
 
     return {
       ...state,
       code,
-      message: errorMessage,
+      message,
     };
   }
 
@@ -462,7 +518,7 @@ export default combineReducers({
 
 // selectors
 export const getUser = state => state.app.user;
-export const getIsOtpError = state => state.app.user.isOtpError;
+export const getOtpRequest = state => state.app.user.otpRequest;
 export const getBusiness = state => state.app.business;
 export const getBusinessInfo = state => {
   return getBusinessByName(state, state.app.business);
@@ -479,3 +535,107 @@ export const getBusinessUTCOffset = createSelector(getBusinessInfo, businessInfo
 );
 
 export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
+
+export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
+
+export const getOtpRequestStatus = createSelector(getOtpRequest, otp => otp.status);
+
+export const getOtpRequestError = createSelector(getOtpRequest, otp => otp.error);
+
+export const getOtpType = createSelector(getOtpRequest, otp => _get(otp, 'data.type', null));
+
+export const getOtpErrorCode = createSelector(getOtpRequestError, error => _get(error, 'code', null));
+
+export const getIsOtpRequestStatusPending = createSelector(
+  getOtpRequestStatus,
+  status => status === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsOtpRequestStatusRejected = createSelector(
+  getOtpRequestStatus,
+  status => status === API_REQUEST_STATUS.REJECTED
+);
+
+export const getIsOtpRequestStatusFulfilled = createSelector(
+  getOtpRequestStatus,
+  status => status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getIsOtpInitialRequest = createSelector(getOtpType, otpType => otpType === OTP_REQUEST_TYPES.OTP);
+
+export const getIsOtpInitialRequestFailed = createSelector(
+  getIsOtpInitialRequest,
+  getIsOtpRequestStatusRejected,
+  (isOtpInitialRequest, isOtpRequestStatusRejected) => isOtpInitialRequest && isOtpRequestStatusRejected
+);
+
+export const getIsDisplayableOtpError = createSelector(getOtpErrorCode, errorCode =>
+  [
+    OTP_BFF_ERROR_CODES.PHONE_INVALID,
+    OTP_API_ERROR_CODES.PHONE_INVALID,
+    OTP_API_ERROR_CODES.MEET_DAY_LIMIT,
+    OTP_API_ERROR_CODES.REQUEST_TOO_FAST,
+    SMS_API_ERROR_CODES.PHONE_INVALID,
+    SMS_API_ERROR_CODES.NO_AVAILABLE_PROVIDER,
+  ].some(code => errorCode === code.toString())
+);
+
+export const getIsOtpErrorFieldVisible = createSelector(
+  getIsOtpInitialRequestFailed,
+  getIsDisplayableOtpError,
+  (isOtpInitialRequestFailed, isDisplayableOtpError) => isOtpInitialRequestFailed && isDisplayableOtpError
+);
+
+export const getOtpErrorTextI18nKey = createSelector(
+  getOtpErrorCode,
+  errorCode => OTP_SERVER_ERROR_I18N_KEYS[errorCode]
+);
+
+export const getShouldShowErrorPopUp = createSelector(
+  getIsOtpInitialRequest,
+  getIsDisplayableOtpError,
+  getIsOtpRequestStatusRejected,
+  (isOtpInitialRequest, isDisplayableOtpError, isRequestRejected) => {
+    if (!isRequestRejected) return false;
+
+    if (isOtpInitialRequest) return !isDisplayableOtpError;
+
+    return true;
+  }
+);
+
+export const getShouldShowNetworkErrorPopUp = createSelector(getOtpRequestError, error => error instanceof TypeError);
+
+export const getShouldShowOtpApiErrorPopUp = createSelector(
+  getOtpErrorCode,
+  getIsOtpInitialRequest,
+  (errorCode, isOtpInitialRequest) => {
+    const isHighRiskError = errorCode === OTP_API_ERROR_CODES.HIGH_RISK.toString();
+
+    if (isHighRiskError) return true;
+
+    const isReachedDailyLimitError = errorCode === OTP_API_ERROR_CODES.MEET_DAY_LIMIT.toString();
+
+    return !isOtpInitialRequest && isReachedDailyLimitError;
+  }
+);
+
+export const getOtpErrorPopUpI18nKeys = createSelector(
+  getOtpErrorCode,
+  getShouldShowOtpApiErrorPopUp,
+  getShouldShowNetworkErrorPopUp,
+  (errorCode, shouldShowOtpApiErrorPopUp, shouldShowNetworkErrorPopUp) =>
+    shouldShowOtpApiErrorPopUp
+      ? OTP_ERROR_POPUP_I18N_KEYS[errorCode]
+      : shouldShowNetworkErrorPopUp
+      ? OTP_ERROR_POPUP_I18N_KEYS[OTP_COMMON_ERROR_TYPES.NETWORK_ERROR]
+      : OTP_ERROR_POPUP_I18N_KEYS[OTP_COMMON_ERROR_TYPES.UNKNOWN_ERROR]
+);
+
+export const getShouldShowLoader = createSelector(
+  getIsOtpRequestStatusPending,
+  getIsLoginRequestStatusPending,
+  (isOtpRequestStatusPending, isLoginRequestStatusPending) => isOtpRequestStatusPending || isLoginRequestStatusPending
+);
