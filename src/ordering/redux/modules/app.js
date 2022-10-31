@@ -1,3 +1,5 @@
+import qs from 'qs';
+import i18next from 'i18next';
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import _get from 'lodash/get';
@@ -12,13 +14,11 @@ import config from '../../../config';
 import Url from '../../../utils/url';
 import * as ApiRequest from '../../../utils/api-request';
 import CleverTap from '../../../utils/clevertap';
-import qs from 'qs';
 
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
 import { get, post } from '../../../utils/request';
-import i18next from 'i18next';
 import url from '../../../utils/url';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
 import { getCoreStoreList, getStoreById } from '../../../redux/modules/entities/stores';
@@ -40,6 +40,7 @@ import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import logger from '../../../utils/monitoring/logger';
 import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
 import { replace } from 'connected-react-router';
+import { toast } from '../../../common/utils/feedback';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -704,6 +705,10 @@ export const actions = {
         await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
       }
     } catch (e) {
+      if (e.code === 'B0001') {
+        toast(i18next.t('B0001Description'));
+      }
+
       console.error('Failed to get tokens from native: ', e.message);
     }
   },
