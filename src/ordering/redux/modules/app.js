@@ -382,6 +382,10 @@ export const actions = {
         );
       }
     } catch (error) {
+      if (error?.code === 'B0001') {
+        toast(i18next.t('B0001Description'));
+      }
+
       logger.error('Ordering_App_SyncLoginFromNativeFailed', {
         error: error?.message,
         code: error?.code,
@@ -705,7 +709,7 @@ export const actions = {
         await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
       }
     } catch (e) {
-      if (e.code === 'B0001') {
+      if (e?.code === 'B0001') {
         toast(i18next.t('B0001Description'));
       }
 
