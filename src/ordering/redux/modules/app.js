@@ -727,9 +727,9 @@ export const actions = {
       }
     } catch (e) {
       if (e?.code === 'B0001') {
-        toast(i18next.t('B0001Description'));
+        toast(i18next.t('ApiError:APB0001Description'));
       } else {
-        toast(i18next.t('UnknownError'));
+        toast(i18next.t('Common:UnknownError'));
       }
 
       console.error('Failed to get tokens from native: ', e.message);
