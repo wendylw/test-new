@@ -716,12 +716,13 @@ export const actions = {
 
       const isTokenExpired = getUserIsExpired(getState());
 
+      throw new NativeAPIError(`Couldn't find the method:`, NativeMethods.NATIVE_API_ERROR_CODES.UNKNOWN_ERROR);
+
+      // eslint-disable-next-line no-unreachable
       if (isTokenExpired) {
         const tokens = await NativeMethods.tokenExpiredAsync();
-
-        throw new NativeAPIError(`Couldn't find the method:`, NativeMethods.NATIVE_API_ERROR_CODES.UNKNOWN_ERROR);
-
         const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
         await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
       }
     } catch (e) {
