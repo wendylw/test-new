@@ -727,7 +727,7 @@ export const actions = {
       }
     } catch (e) {
       if (e?.code === 'B0001') {
-        toast(i18next.t('ApiError:APB0001Description'));
+        toast(i18next.t('ApiError:B0001Description'));
       } else {
         toast(i18next.t('Common:UnknownError'));
       }
