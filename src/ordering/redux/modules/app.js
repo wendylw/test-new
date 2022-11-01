@@ -705,9 +705,6 @@ export const actions = {
 
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
-      throw new NativeAPIError(`Couldn't find the method:`, NativeMethods.NATIVE_API_ERROR_CODES.UNKNOWN_ERROR);
-
-      // eslint-disable-next-line no-unreachable
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
@@ -733,6 +730,8 @@ export const actions = {
       }
 
       console.error('Failed to get tokens from native: ', e.message);
+
+      logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
     }
   },
 
