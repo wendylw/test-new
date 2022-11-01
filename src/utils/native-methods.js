@@ -138,11 +138,6 @@ const dsBridgeCall = nativeMethod => {
   const { method, params, mode } = nativeMethod || {};
   const hasNativeMethod = hasMethodInNative(method);
 
-  throw new NativeAPIError(`Couldn't find the method: ${method}`, NATIVE_API_ERROR_CODES.UNKNOWN_ERROR, {
-    method,
-  });
-
-  // eslint-disable-next-line no-unreachable
   if (!hasNativeMethod) {
     throw new NativeAPIError(`Couldn't find the method: ${method}`, NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST, {
       method,
