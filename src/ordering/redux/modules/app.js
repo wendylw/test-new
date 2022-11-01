@@ -705,6 +705,9 @@ export const actions = {
 
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
+      throw new NativeAPIError(`Couldn't find the method:`, NativeMethods.NATIVE_API_ERROR_CODES.UNKNOWN_ERROR);
+
+      // eslint-disable-next-line no-unreachable
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
@@ -716,9 +719,6 @@ export const actions = {
 
       const isTokenExpired = getUserIsExpired(getState());
 
-      throw new NativeAPIError(`Couldn't find the method:`, NativeMethods.NATIVE_API_ERROR_CODES.UNKNOWN_ERROR);
-
-      // eslint-disable-next-line no-unreachable
       if (isTokenExpired) {
         const tokens = await NativeMethods.tokenExpiredAsync();
         const { access_token: accessToken, refresh_token: refreshToken } = tokens;
