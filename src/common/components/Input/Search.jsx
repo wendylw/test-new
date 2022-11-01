@@ -1,6 +1,5 @@
 import _isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useRef, useState } from 'react';
-// import { useMount } from 'react-use';
 import PropTypes from 'prop-types';
 import { MagnifyingGlass, XCircle } from 'phosphor-react';
 import Button from '../Button';
