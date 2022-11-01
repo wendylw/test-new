@@ -144,6 +144,7 @@ class App extends Component {
         appActions.syncLoginFromNative();
       }
 
+      // Must go after initAddressInfo & getLoginStatus finish
       await appActions.initDeliveryDetails();
 
       const { user, businessInfo, onlineStoreInfo } = this.props;
