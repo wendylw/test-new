@@ -19,7 +19,7 @@ const AddressLocationDrawer = ({
   const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const onHandleShownDrawer = useCallback(() => {
-    // WB-4109: Only trigger focus animation shown drawer, otherwise drawer slide-up animation will drop frames or miss frames, which looks very stuck.
+    // Only trigger focus animation shown drawer, otherwise drawer slide-up animation will drop frames or miss frames, which looks very stuck.
     searchInputRef.current?.focus();
   }, []);
   const onHandleCloseDrawer = useCallback(() => {
