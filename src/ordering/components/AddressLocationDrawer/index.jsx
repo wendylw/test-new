@@ -12,8 +12,6 @@ const searchUpdateDebounce = _debounce((value, callback) => callback(value), 700
 const AddressLocationDrawer = ({
   children,
   isLocationDrawerVisible,
-  isInitializing,
-  isEmptyList,
   onClose,
   onChangeSearchKeyword,
   onClearSearchKeyword,
@@ -21,6 +19,7 @@ const AddressLocationDrawer = ({
   const { t } = useTranslation();
   const searchInputRef = useRef(null);
   const onHandleShownDrawer = useCallback(() => {
+    // WB-4109: Only trigger focus animation shown drawer, otherwise drawer slide-up animation will drop frames or miss frames, which looks very stuck.
     searchInputRef.current?.focus();
   }, []);
   const onHandleCloseDrawer = useCallback(() => {
@@ -73,9 +72,7 @@ AddressLocationDrawer.displayName = 'AddressLocationDrawer';
 
 AddressLocationDrawer.propTypes = {
   children: PropTypes.node,
-  isInitializing: PropTypes.bool,
   isLocationDrawerVisible: PropTypes.bool,
-  isEmptyList: PropTypes.bool,
   onChangeSearchKeyword: PropTypes.func,
   onClearSearchKeyword: PropTypes.func,
   onClose: PropTypes.func,
@@ -83,9 +80,7 @@ AddressLocationDrawer.propTypes = {
 
 AddressLocationDrawer.defaultProps = {
   children: null,
-  isInitializing: false,
   isLocationDrawerVisible: true,
-  isEmptyList: false,
   onChangeSearchKeyword: () => {},
   onClearSearchKeyword: () => {},
   onClose: () => {},
