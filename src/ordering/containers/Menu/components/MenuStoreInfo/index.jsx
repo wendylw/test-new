@@ -26,6 +26,8 @@ import { STORE_STATUS_KEY_MAPPING, STORE_STATUS_COLOR_MAPPING } from './utils/co
 import StoreList from './StoreList';
 import styles from './MenuStoreInfo.module.scss';
 
+import DevToolsTrigger from '../../../../../components/DevToolsTrigger';
+
 const StoreStatusTag = ({ containerClassName, className, show, status }) => {
   const { t } = useTranslation();
   const classList = ['tw-inline-flex'];
@@ -104,7 +106,9 @@ const MenuStoreInfo = () => {
     <div className="tw-flex tw-items-center tw-px-16 sm:tw-px-16px">
       {storeLogo ? (
         <div className={`${styles.menuStoreInfo__logo} tw-relative tw-flex-shrink-0`}>
-          <ObjectFitImage className="tw-rounded" src={storeLogo} />
+          <DevToolsTrigger>
+            <ObjectFitImage className="tw-rounded" src={storeLogo} />
+          </DevToolsTrigger>
           <StoreStatusTag
             containerClassName={styles.menuStoreInfoTag}
             show={!_isEmpty(storeDisplayStatus)}
