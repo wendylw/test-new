@@ -132,17 +132,7 @@ class App extends Component {
     this.visitErrorPage();
 
     try {
-      const initRequests = [
-        this.initAddressInfo(),
-        appActions.getLoginStatus(),
-        appActions.initDeliveryDetails(),
-        appActions.fetchOnlineStoreInfo(),
-      ];
-      // const { responseGql = {} } = await
-
-      if (Utils.isWebview()) {
-        appActions.syncLoginFromNative();
-      }
+      const initRequests = [this.initAddressInfo(), appActions.getLoginStatus(), appActions.fetchOnlineStoreInfo()];
 
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {
         initRequests.push(appActions.loadCoreBusiness());
@@ -150,8 +140,13 @@ class App extends Component {
 
       await Promise.all(initRequests);
 
+      if (Utils.isWebview()) {
+        appActions.syncLoginFromNative();
+      }
+
+      await appActions.initDeliveryDetails();
+
       const { user, businessInfo, onlineStoreInfo } = this.props;
-      // const { onlineStoreInfo } = responseGql.data || {};
 
       const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
 
