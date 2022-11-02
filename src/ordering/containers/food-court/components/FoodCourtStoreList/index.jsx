@@ -24,7 +24,7 @@ const FoodCourtStoreList = () => {
               key={`bestSellerProductItem-${store.id}`}
               className={store.isClosed ? styles.foodCourtStoreClosed : styles.foodCourtStore}
               onClick={() => {
-                if (!store.isClosed) {
+                if (!store.unavailable) {
                   dispatch(selectedOneStore({ businessName: store.businessName, redirectUrl: store.redirectUrl }));
                 }
               }}

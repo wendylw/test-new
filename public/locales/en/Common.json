@@ -294,6 +294,7 @@
   "AddressListEmptyDescription": "Enter your delivery location",
   "StoreListDrawerTitle": "Select store branch",
   "StoreListDrawerDescription": "{{totalOutlet}} outlets near you",
+  "SelectStoreDefault": "Select Store",
   "Promos": "Promos",
   "Date": "Date",
   "Time": "Time"

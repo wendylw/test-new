@@ -9,6 +9,7 @@ import Drawer from '../../../../../common/components/Drawer';
 import DrawerHeader from '../../../../../common/components/Drawer/DrawerHeader';
 import { getCategories, getIsProductListReady, getHighlightedCategory } from '../../redux/common/selectors';
 import styles from './CategoryDropdown.module.scss';
+import MenuFilled from '../../../../../images/menu-filled.svg';
 
 const categoriesPropTypes = PropTypes.arrayOf(
   PropTypes.shape({
@@ -88,11 +89,11 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
           }
         }}
       >
-        <BookOpen className="tw-flex-shrink-0 tw-text-2xl tw-text-gray-600" />
+        <img className="tw-flex-shrink-0 tw-text-2xl" src={MenuFilled} alt="Selected Category" />
         <span className={styles.menuProductHighlightedCategory}>
           {highlightedCategory ? highlightedCategory.name : null}
         </span>
-        <CaretDown className="tw-flex-shrink-0 tw-text-xl tw-my-4 sm:tw-my-4px tw-text-gray-600" weight="light" />
+        <CaretDown className="tw-flex-shrink-0 tw-my-4 sm:tw-my-4px tw-text-gray-600" size={16} />
       </Button>
       <Drawer
         className={styles.menuProductCategoryDrawer}
