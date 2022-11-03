@@ -11,6 +11,9 @@ export const setCookieVariable = (name, value, attributes) => Cookies.set(name, 
 
 export const getCookieVariable = name => Cookies.get(name);
 
+// IMPORTANT! When deleting a cookie and you're not relying on the default attributes, you must pass the exact same path and domain attributes that were used to set the cookie
+export const removeCookieVariable = (name, attributes) => Cookies.remove(name, attributes);
+
 /* If sessionStorage is not operational, cookies will be used to store global variables */
 export const setSessionVariable = (name, value) => {
   try {
@@ -29,6 +32,15 @@ export const getSessionVariable = name => {
     const cookieNameOfSessionStorage = `sessionStorage_${name}`;
 
     return getCookieVariable(cookieNameOfSessionStorage);
+  }
+};
+
+export const removeSessionVariable = name => {
+  try {
+    sessionStorage.removeItem(name);
+  } catch (e) {
+    const cookieNameOfSessionStorage = `sessionStorage_${name}`;
+    removeCookieVariable(cookieNameOfSessionStorage);
   }
 };
 
@@ -234,16 +246,6 @@ export const submitForm = (action, data = {}) => {
   form.submit();
 
   document.body.removeChild(form);
-};
-
-export const removeSessionVariable = name => {
-  try {
-    sessionStorage.removeItem(name);
-  } catch (e) {
-    const { removeCookieVariable } = Utils;
-    const cookieNameOfSessionStorage = 'sessionStorage_' + name;
-    removeCookieVariable(cookieNameOfSessionStorage);
-  }
 };
 
 export const getFilteredQueryString = (keys, queryString = window.location.search) => {
