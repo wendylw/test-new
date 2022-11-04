@@ -1,9 +1,0 @@
-{
-  "ScanQRCode": "สแกน QR Code",
-  "ScannerSorryText": "ขออภัย เบราว์เซอร์ของคุณไม่รองรับฟีเจอร์นี้",
-  "ScanDescribeText": "ขยับ QR Code ในกรอบเพื่อสแกน",
-  "IosSorryText": "กรุณาเปิด beepit.com ใน <1>Safari</1>",
-  "AndroidSorryText": "กรุณาเปิด beepit.com ใน <1>Google Chrome</1>",
-  "UnsupportedBrowser": "เบราว์เซอร์ไม่รองรับ",
-  "UseChromeMessage": "เราแนะนำให้คุณใช้ Google Chrome"
-}
