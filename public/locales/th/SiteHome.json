@@ -1,0 +1,15 @@
+{
+  "CollectionPickUp": "มารับเอง",
+  "CollectionIftarWithBeep": "ฮาลาล",
+  "CollectionDesserts": "ของหวาน",
+  "CollectionWestern": "Western",
+  "PopularCategories": "หมวดหมู่ยอดนิยม",
+  "OtherCategories": "หมวดหมู่อื่น ๆ",
+  "MvpFreeDeliveryPrompt": "โปรส่งฟรี",
+  "FreeDelivery": "จัดส่งฟรี",
+  "SeeAll": "ดูทั้งหมด",
+  "SatisfyYourCravingsHere": "คลายความหิวที่นี่เลย",
+  "CollectionNotFoundErrorTitle": "Beep คืออะไร?",
+  "CollectionNotFoundErrorContent": "ขออภัย ดูเหมือนว่าหน้านี้จะไม่สามารถใช้งานได้ กรุณาย้อนกลับไปยังหน้าแรกและสั่งอาหารหรือเครื่องดื่มจากร้านค้าที่อยู่ใกล้คุณ",
+  "LowestPrice": "ราคาถูกสุด"
+}

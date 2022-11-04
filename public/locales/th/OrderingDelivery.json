@@ -7,10 +7,22 @@
   "Subtotal": "จำนวนเงิน",
   "Tax": "ภาษี",
   "DeliveryCharge": "ค่าบริการจัดส่ง",
+  "TakeawayCharge": "ค่าบริการสั่งกลับบ้าน",
   "FailToLoadStoreInfo": "การโหลดข้อมูลร้านล้มเหลว กรุณาลองใหม่อีกครั้ง",
   "FailToGetPlaceInfo": "การโหลดข้อมูลร้านล้มเหลว กรุณาลองใหม่อีกครั้ง",
   "OutOfDeliveryRange": "ขออภัย พื้นที่ที่คุณเลือกอยู่นอกพื้นที่จัดส่ง ({{distance}} กิโลเมตร)",
+  "AddressNotFound": "ไม่พบที่อยู่ กรุณาลองใหม่",
   "SearchYourAddress": "ค้นหาที่อยู่ของคุณ",
   "DetectingLocation": "กำลังค้นหาพื้นที่...",
-  "LocationSharingIsOff": "ปิดการใช้งานแชร์พื้นที่"
+  "LocationSharingIsOff": "ปิดการใช้งานแชร์พื้นที่",
+  "DeliveryTimeAndAddressTitle": "เวลาในการจัดส่งและที่อยู่",
+  "PickUpTimeAndAddressTitle": "เวลาในการมารับอาหารและที่อยู่",
+  "AddressChangeTitle": "เปลี่ยนที่อยู่การจัดส่งของคุณเรียบร้อยแล้ว",
+  "AddressChangeDescription": "คำนวนจากที่อยู่ใหม่ของคุณ ค่าจัดส่งจะอยู่ที่ ",
+  "ReportDriver": "รายงานคนขับ",
+  "SubmitOrderPromptDescription": "รถเข็นของคุณถูกล็อกจนกว่าการชำระเงินจะเสร็จสิ้น",
+  "AddAddressConfirmTitle": "รอสักครู่ เราต้องการที่อยู่ของคุณ",
+  "AddAddressConfirmDescription": "จำเป็นต้องมีที่อยู่เพื่อการค้นหาต่อไป",
+  "AddAddress": "เพิ่มที่อยู่",
+  "NoThanks": "ไม่ ขอบคุณ"
 }

@@ -1,0 +1,16 @@
+{
+  "TableSummary": "สรุปยอดโต๊ะ",
+  "SubmitOrderPromptDescription": "รถเข็นของคุณถูกล็อกจนกว่าการชำระเงินจะเสร็จสิ้น",
+  "OrderPlaced": "สั่งออเดอร์แล้ว",
+  "PendingPayment": "รอการชำระเงิน",
+  "TnGAndPayByCashOnly": "ดำเนินการชำระเงินต่อที่เคาเตอร์",
+  "SelectPaymentMethod": "เลือกวิธีการชำระเงิน",
+  "CreatedOrderTime": "สร้างเมื่อ {{submittedTime}}",
+  "UnableBackMenuTitle": "ต้องการดูเมนูหรือไม่?",
+  "UnableBackMenuDescription": "ระบบจะนำคุณกลับไปยังหน้าเมนูเมื่อคุณทำการ  <bold>ชำระเงินเรียบร้อยแล้ว</bold> กรุณา “เลือกวิธีการชำระเงิน” เพื่อดำเนินการต่อ",
+  "UnableBackMenuAndPendingPaymentDescription": "คุณอาจจะย้อนกลับไปที่เมนูเมื่อคุณ <bold>ชำระเงินเรียบร้อยแล้ว</bold> เลือก 'จ่ายเลย' เพื่อดำเนินการต่อ",
+  "AddItems": "เพิ่มสินค้า",
+  "ReceiptNumberInValidTitle": "ออเดอร์ไม่มีอยู่",
+  "ReceiptNumberInValidDescription": "กรุณากลับไปยังรถเข็นและลองใหม่อีกครั้ง และสามารถติดต่อทีมงานเพื่อขอความช่วยเหลือเพิ่มเติม",
+  "ReturnToCart": "กลับไปยังรถเข็น"
+}
