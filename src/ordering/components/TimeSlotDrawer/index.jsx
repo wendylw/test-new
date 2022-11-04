@@ -84,7 +84,7 @@ const TimeSlotDrawer = ({
                     mode: 'free-snap',
                     slides: {
                       perView: 'auto',
-                      spacing: 18,
+                      spacing: 16,
                     },
                   }}
                 >
