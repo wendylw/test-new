@@ -1,0 +1,26 @@
+.SliderContainer {
+  @apply tw-w-full;
+}
+
+.SliderOnlyContainer {
+  @apply tw-w-full;
+}
+
+.SliderDots {
+  @apply tw-absolute tw-flex tw-justify-center tw-w-full;
+  bottom: 10px;
+}
+
+.SliderDot {
+  @apply tw-border-0 tw-cursor-pointer tw-bg-black tw-opacity-20;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 0 4px;
+  padding: 4px;
+  cursor: pointer;
+
+  &:global(.active) {
+    @apply tw-bg-orange tw-opacity-100;
+  }
+}

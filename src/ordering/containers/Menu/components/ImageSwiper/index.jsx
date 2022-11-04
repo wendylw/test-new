@@ -1,30 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import SwiperCore, { Pagination } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import { ObjectFitImage } from '../../../../../common/components/Image';
-import 'swiper/swiper.scss';
-import 'swiper/components/pagination/pagination.scss';
-
-SwiperCore.use([Pagination]);
+import styles from './ImageSwiper.module.scss';
+import Slider from '../../../../components/Slider';
 
 const ImageSwiper = props => {
   const { images = [] } = props;
   return (
     <div>
       {images.length > 1 ? (
-        <Swiper
-          pagination={{
-            clickable: true,
-            bulletClass: 'swiper-pagination-bullet',
-          }}
-        >
+        <Slider showPagination>
           {images.map(image => (
-            <SwiperSlide key={image}>
+            <div key={image} className={`keen-slider__slide ${styles.SliderItemContainer}`}>
               <ObjectFitImage src={image} dimension="500x500" width="100%" height="30vh" />
-            </SwiperSlide>
+            </div>
           ))}
-        </Swiper>
+        </Slider>
       ) : images.length === 1 ? (
         <ObjectFitImage src={images[0]} dimension="500x500" width="100%" height="30vh" />
       ) : null}
