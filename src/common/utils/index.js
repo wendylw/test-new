@@ -45,10 +45,9 @@ export const removeSessionVariable = name => {
 };
 
 export const getUserAgentInfo = _once(() => {
-  /* eslint-disable */
   /* https://www.regextester.com/97574 */
+  // eslint-disable-next-line
   const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/g;
-  /* eslint-enabled */
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(
     navigator.userAgent
   );
@@ -60,9 +59,7 @@ export const getUserAgentInfo = _once(() => {
   };
 });
 
-export const isSafari = _once(() => {
-  return getUserAgentInfo().browser.includes('Safari');
-});
+export const isSafari = _once(() => getUserAgentInfo().browser.includes('Safari'));
 
 export const isMobile = () => getUserAgentInfo().isMobile;
 
@@ -81,6 +78,7 @@ export const isSiteApp = (domain = window.location.hostname) => {
   return domainList.some(d => domain.toLowerCase() === d.toLowerCase());
 };
 
+// eslint-disable-next-line no-underscore-dangle
 export const isTNGMiniProgram = () => window._isTNGMiniProgram_;
 
 export const getExpectedDeliveryDateFromSession = () => {
