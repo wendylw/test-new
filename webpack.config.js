@@ -53,8 +53,20 @@ module.exports = {
       }
     });
 
-    // Allow more parallel requests, since we are using HTTP/2
-    // TODO: will complete & test it in BEEP-2911
+    /**
+     * Allow more parallel requests to split chunks into more smaller sizes
+     * Since we are using HTTP/2, modern browsers won't set parallel requests limitation
+     * We will use the webpack recommendation configurations that are used in a multi-page application example
+     * Refer to: https://github.com/webpack/webpack/blob/9fcaa243573005d6fdece9a3f8d89a0e8b399613/examples/many-pages/webpack.config.js#L15
+     */
+
+    // BEEP-2911: Based on our research, we can achieve the maximum chunks if the value is equal to or larger than 10
+    // But we will increase the value to 20 in order to prevent future loading performance bottlenecks
+    webpackConfig.optimization.splitChunks.maxAsyncRequests = 20;
+
+    // BEEP-2911: Based on our research, we can achieve the maximum chunks if the value is equal to or larger than 2.
+    // But we will increase the value to 20 in order to prevent future loading performance bottlenecks
+    webpackConfig.optimization.splitChunks.maxInitialRequests = 20;
 
     // Define the chunk name of the chunks generated that can be used to decide what chunks should be preloaded.
     webpackConfig.optimization.splitChunks.name = true;
