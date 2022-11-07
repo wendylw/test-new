@@ -1,21 +1,21 @@
 import React, { lazy } from 'react';
 import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
+import Account from './account';
+import QRScan from './qrscan';
+import Error from './error';
 import NotFound from './components/NotFound';
+import Auth from './auth';
 import ProtectedRoute from './components/ProtectedRoute';
+import Location from './ordering/containers/Location';
+import CollectionPage from './collections/CollectionPage';
+import SearchPage from './search/SearchPage';
 import Constants from '../utils/constants';
 
 const { ROUTER_PATHS } = Constants;
 
 const Home = lazy(() => import(/* webpackChunkName: "SITE_HM" */ './home'));
-const Auth = lazy(() => import(/* webpackChunkName: "SITE_AUTH" */ './auth'));
-const QRScan = lazy(() => import(/* webpackChunkName: "SITE_QRSCN" */ './qrscan'));
-const Account = lazy(() => import(/* webpackChunkName: "SITE_ACT" */ './account'));
 const OrderHistory = lazy(() => import(/* webpackChunkName: "SITE_OH" */ './order-history'));
-const SearchPage = lazy(() => import(/* webpackChunkName: "SITE_SP" */ './search/SearchPage'));
-const Location = lazy(() => import(/* webpackChunkName: "SITE_LOC" */ './ordering/containers/Location'));
-const CollectionPage = lazy(() => import(/* webpackChunkName: "SITE_CP" */ './collections/CollectionPage'));
 const AsyncTermsPrivacy = lazy(() => import(/* webpackChunkName: "SITE_TP" */ '../common/containers/TermsPrivacy'));
-const Error = lazy(() => import(/* webpackChunkName: "SITE_ERR" */ './error'));
 
 const SiteRoute = () => {
   return (
