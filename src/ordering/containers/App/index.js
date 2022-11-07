@@ -140,11 +140,13 @@ class App extends Component {
 
       await Promise.all(initRequests);
 
+      // Must go after getLoginStatus finishes
+      // Potentially change consumerId through CREATE_LOGIN_SUCCESS, so go before initDeliveryDetails
       if (Utils.isWebview()) {
-        appActions.syncLoginFromNative();
+        await appActions.syncLoginFromNative();
       }
 
-      // Must go after initAddressInfo & getLoginStatus finish
+      // Must go after initAddressInfo & getLoginStatus & syncLoginFromNative finish
       await appActions.initDeliveryDetails();
 
       const { user, businessInfo, onlineStoreInfo } = this.props;
