@@ -113,7 +113,6 @@ Result.propTypes = {
 
 Result.defaultProps = {
   header: null,
-  container: null,
   children: null,
   isFullScreen: false,
   show: false,
