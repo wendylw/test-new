@@ -1,5 +1,6 @@
 const debug = require('debug')('postprocess:preload');
 const fs = require('fs-extra');
+const once = require('lodash/once');
 const path = require('path');
 
 /**
@@ -30,17 +31,8 @@ const PRELOADED_COMMON_I18N = ['Common', 'ApiError'];
 
 const { PUBLIC_URL = '' } = process.env;
 
-let i18nLocaleFilenames = [];
-
 // Cache the i18n locales for better build performance
-const getI18nLocales = () => {
-  if (!!i18nLocaleFilenames) {
-    i18nLocaleFilenames = fs.readdirSync(path.resolve(__dirname, '../../build/i18n'));
-    return i18nLocaleFilenames;
-  }
-
-  return i18nLocaleFilenames;
-};
+const getI18nLocales = once(() => fs.readdirSync(path.resolve(__dirname, '../../build/i18n')));
 
 const getI18nFiles = () => {
   const i18nFiles = {};
