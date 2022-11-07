@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
+import '../../../common/styles/base.scss';
 import ErrorToast from '../../../components/ErrorToast';
 import SiteFooter from '../../components/SiteFooter';
 import { appActionCreators, getError } from '../../redux/modules/app';
 import Routes from '../../Routes';
-
 class SiteApp extends React.Component {
   showSiteFooter = false; // hide the siteFooter temporarily, could show it in the future
 

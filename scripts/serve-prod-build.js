@@ -47,6 +47,7 @@ function enablePreloadTags(html, req) {
   const lang = req.acceptsLanguages('en', 'th') || 'en';
   const trimmedPath = path.replace(/\/$/, '');
   let pageName = '';
+
   if (ogSource === 'beepit.com') {
     if (trimmedPath === '' || trimmedPath === '/home') {
       pageName = 'SITE_HM';
@@ -80,6 +81,8 @@ function enablePreloadTags(html, req) {
 }
 
 app.use(async (req, res) => {
+  req.ogSource === process.env.REACT_APP_QR_SCAN_DOMAINS.split(',').includes(req.hostname) ? 'beepit.com' : '';
+
   try {
     let html = await fs.readFile(path.resolve(__dirname, '../build/index.html'), 'utf8');
     html = enablePreloadTags(html, req);
