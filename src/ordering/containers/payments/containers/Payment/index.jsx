@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation } from 'react-i18next';
-import _get from 'lodash/get';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
@@ -54,7 +53,6 @@ class Payment extends Component {
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
     await initialize();
-    this.cleverTapViewPageEvent('Payment Method - View page');
   };
 
   componentDidUpdate(prevProps, prevStates) {
@@ -74,16 +72,6 @@ class Payment extends Component {
   componentWillUnmount() {
     this.willUnmount = true;
   }
-
-  cleverTapViewPageEvent = eventName => {
-    const { cleverTapAttributes, currentPaymentOption } = this.props;
-    const paymentName = _get(currentPaymentOption, 'paymentName', '');
-
-    CleverTap.pushEvent(eventName, {
-      ...cleverTapAttributes,
-      'payment method': paymentName,
-    });
-  };
 
   getPaymentEntryRequestData = () => {
     const { currentPaymentOption } = this.props;
