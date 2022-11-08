@@ -18,12 +18,12 @@ const PRELOADED_CHUNK_IDS = [
 ];
 
 const PRELOADED_I18N_BY_PAGE = {
-  ORD_MNU: ['OrderingHome'],
+  ORD_MNU: ['OrderingDelivery'],
   ORD_SC: ['OrderingCart', 'OrderingPromotion'],
   ORD_PMT: ['OrderingPayment'],
   ORD_TY: ['OrderingThankYou'],
   ORD_PL: [],
-  SITE_HM: [],
+  SITE_HM: ['SiteHome'],
   CB_CL: ['Cashback'],
 };
 
@@ -44,8 +44,8 @@ const getI18nFiles = () => {
     const languageFiles = fs.readdirSync(path.resolve(__dirname, '../../build/i18n', locale));
 
     languageFiles.forEach(fileName => {
-      const fileNameFirstPart = fileName.split('.')[0];
-      i18nFiles[locale][fileNameFirstPart] = fileName;
+      const moduleName = fileName.split('.')[0];
+      i18nFiles[locale][moduleName] = fileName;
     });
   });
 
@@ -69,16 +69,16 @@ const generatePreloadTags = manifest => {
       const preloadArray = preloadTagsByPageAndLanguage[`${locale}/${preloadChunkName}`];
 
       // common i18n
-      PRELOADED_COMMON_I18N.forEach(id => {
-        const i18nFilename = i18nFiles[locale][id];
+      PRELOADED_COMMON_I18N.forEach(ns => {
+        const i18nFilename = i18nFiles[locale][ns];
         if (i18nFilename) {
           preloadArray.push(generateLinkTag(`${PUBLIC_URL}/i18n/${locale}/${i18nFilename}`));
         }
       });
 
       // page level i18n
-      PRELOADED_I18N_BY_PAGE[preloadChunkName].forEach(id => {
-        const i18nFilename = i18nFiles[locale][id];
+      PRELOADED_I18N_BY_PAGE[preloadChunkName].forEach(ns => {
+        const i18nFilename = i18nFiles[locale][ns];
         if (i18nFilename) {
           preloadArray.push(generateLinkTag(`${PUBLIC_URL}/i18n/${locale}/${i18nFilename}`));
         }
