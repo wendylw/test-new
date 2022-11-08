@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import propTypes from 'prop-types';
 import 'keen-slider/keen-slider.min.css';
-import { useKeenSlider } from 'keen-slider/react'; // import from 'keen-slider/react.es' for to get an ES module
+import { useKeenSlider } from 'keen-slider/react';
 import styles from './Slider.module.scss';
 
 const Slider = ({ children, showPagination, options }) => {
