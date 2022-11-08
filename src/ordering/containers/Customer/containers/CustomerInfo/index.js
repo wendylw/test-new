@@ -1,4 +1,3 @@
-import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
@@ -23,6 +22,9 @@ import {
   getRequestInfo,
   getBusinessUTCOffset,
   getCartBilling,
+  getCartCount,
+  getCartSubtotal,
+  getMinimumConsumption,
   getBusinessInfo,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
@@ -76,16 +78,13 @@ class CustomerInfo extends Component {
   }
 
   cleverTapViewPageEvent = eventName => {
-    const { cartBilling, businessInfo, storeInfoForCleverTap } = this.props;
-    const cartItemsCount = _get(cartBilling, 'count', 0);
-    const minimumConsumption = _get(businessInfo, 'qrOrderingSettings.minimumConsumption', 0);
-    const cartSubtotal = _get(cartBilling, 'subtotal', 0);
+    const { cartCount, cartSubtotal, minimumConsumption, storeInfoForCleverTap } = this.props;
 
     CleverTap.pushEvent(eventName, {
       ...storeInfoForCleverTap,
-      'cart items quantity': cartItemsCount,
+      'cart items quantity': cartCount,
       'cart amount': cartSubtotal,
-      'has met minimum order value': cartSubtotal >= minimumConsumption ? true : false,
+      'has met minimum order value': cartSubtotal >= minimumConsumption,
     });
   };
 
@@ -517,6 +516,9 @@ export default compose(
       allBusinessInfo: getAllBusinesses(state),
       deliveryDetails: getDeliveryDetails(state),
       cartBilling: getCartBilling(state),
+      cartCount: getCartCount(state),
+      cartSubtotal: getCartSubtotal(state),
+      minimumConsumption: getMinimumConsumption(state),
       requestInfo: getRequestInfo(state),
       customerError: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),

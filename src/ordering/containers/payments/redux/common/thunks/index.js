@@ -1,4 +1,3 @@
-import _get from 'lodash/get';
 import _sumBy from 'lodash/sumBy';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getPayments } from './api-info';
@@ -15,7 +14,7 @@ import {
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
-import { getTotal, getCleverTapAttributes, getSelectedPaymentOption } from '../selectors';
+import { getTotal, getCleverTapAttributes, getPaymentName } from '../selectors';
 import CleverTap from '../../../../../../utils/clevertap';
 import logger from '../../../../../../utils/monitoring/logger';
 
@@ -124,8 +123,7 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) => {
 
 const cleverTapViewPageEvent = (eventName, getState) => {
   const cleverTapAttributes = getCleverTapAttributes(getState());
-  const currentPaymentOption = getSelectedPaymentOption(getState());
-  const paymentName = _get(currentPaymentOption, 'paymentName', '');
+  const paymentName = getPaymentName(getState());
 
   CleverTap.pushEvent(eventName, {
     ...cleverTapAttributes,
