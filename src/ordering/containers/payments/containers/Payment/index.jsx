@@ -52,7 +52,7 @@ class Payment extends Component {
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
-    await initialize();
+    initialize();
   };
 
   componentDidUpdate(prevProps, prevStates) {
