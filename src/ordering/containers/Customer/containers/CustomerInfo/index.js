@@ -1,3 +1,4 @@
+import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
@@ -8,7 +9,6 @@ import { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import { formatToDeliveryTime } from '../../../../../utils/datetime-lib';
-import _get from 'lodash/get';
 import HybridHeader from '../../../../../components/HybridHeader';
 import MessageModal from '../../../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
