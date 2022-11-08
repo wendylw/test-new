@@ -20,7 +20,7 @@ import Clevertap from '../../../../../utils/clevertap';
 
 const AlcoholModal = ({ history }) => {
   const dispatch = useDispatch();
-  const { t } = useTranslation('OrderingHome');
+  const { t } = useTranslation('Common');
   const shouldModal = useSelector(getShouldShowAlcoholModal);
   const shouldShowAlcoholModal = useSelector(getAlcoholModalVisibility);
   const legalForAlcohol = useSelector(isLegalForAlcohol);
