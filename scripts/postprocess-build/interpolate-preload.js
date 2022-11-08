@@ -55,7 +55,7 @@ const getI18nFiles = () => {
 
 const generateLinkTag = url => {
   const as = url.endsWith('.js') ? 'script' : url.endsWith('.css') ? 'style' : 'fetch';
-  return `<link rel="preload" href="${url}" as="${as}" ${as === 'fetch' ? 'crossorigin' : ''}/>`;
+  return `<link className="custom-preload" rel="preload" href="${url}" as="${as}" ${as === 'fetch' ? 'crossorigin' : ''}/>`;
 };
 
 const generatePreloadTags = manifest => {

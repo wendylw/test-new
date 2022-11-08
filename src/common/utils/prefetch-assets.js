@@ -25,22 +25,29 @@ const hasChunkLoaded = href => {
   if (loadedChunkAssets.has(href)) {
     return true;
   }
+
   const cssSet = new Set(
     Array.from(document.styleSheets)
       .map(css => css.href)
       .filter(url => !!url)
   );
+
   if (href.endsWith('.css')) {
     if (cssSet.has(href)) {
       loadedChunkAssets.add(href);
       return true;
     }
+
+    // If no in the set, return false to skip the js checking
+    return false;
   }
+
   const jsSet = new Set(
     Array.from(document.scripts)
       .map(script => script.src)
       .filter(url => !!url)
   );
+
   if (href.endsWith('.js')) {
     if (jsSet.has(href)) {
       loadedChunkAssets.add(href);
@@ -50,7 +57,32 @@ const hasChunkLoaded = href => {
   return false;
 };
 
-const prefetchI18nFile = i18nName => {
+const hasI18nLoaded = href => {
+  if (loadedI18nAssets.has(href)) {
+    return true;
+  }
+
+  // i18n links will probably be inserted in the following cases:
+  // 1. During the build time - we use the 'custom-preload' class name to track the links
+  // 2. After the page is mounted - we use the 'custom-prefetch' class name to track the links
+  // Given that, we only need to include the first case in our possible set
+  const set = new Set(
+    document
+      .getElementsByClassName('custom-preload')
+      .map(link => link.href)
+      .filter(url => !!url)
+      .filter(url => url.endsWith('.json'))
+  );
+
+  if (set.has(href)) {
+    loadedI18nAssets.add(href);
+    return true;
+  }
+
+  return false;
+};
+
+const prefetchI18nFiles = i18nName => {
   const { I18N_FOLDER_PATH_MAPPING } = window;
 
   if (!I18N_FOLDER_PATH_MAPPING) return;
@@ -58,13 +90,12 @@ const prefetchI18nFile = i18nName => {
   let i18nFileHref = null;
 
   Object.entries(I18N_FOLDER_PATH_MAPPING).forEach(([namespace, filePath]) => {
-    const filePathWithOrigin = namespace.startsWith('/') ? `${window.location.origin}${filePath}` : filePath;
+    const filePathWithOrigin = `${window.location.origin}${filePath}`;
     if (new RegExp(`\\b${i18nName}\\b`).test(namespace)) {
-      if (!loadedI18nAssets.has(filePathWithOrigin)) {
+      if (!hasI18nLoaded(filePathWithOrigin)) {
         i18nFileHref = filePathWithOrigin;
         loadedI18nAssets.add(filePathWithOrigin);
       }
-      i18nFileHref = filePathWithOrigin;
     }
   });
 
@@ -75,7 +106,7 @@ const prefetchI18nFile = i18nName => {
   }
 };
 
-const prefetchAssets = chunkName => {
+const prefetchChunkFiles = chunkName => {
   const { ASSETS_MANIFEST } = window;
   if (!ASSETS_MANIFEST) return;
   let parentChunkName;
@@ -107,8 +138,8 @@ const prefetchAssets = chunkName => {
 const prefetch = (chunkNames, i18nNames) => {
   const run = () => {
     try {
-      chunkNames.forEach(prefetchAssets);
-      i18nNames.forEach(prefetchI18nFile);
+      chunkNames.forEach(prefetchChunkFiles);
+      i18nNames.forEach(prefetchI18nFiles);
       if (i18nNames) {
         i18next.loadNamespaces(i18nNames);
       }
@@ -116,6 +147,7 @@ const prefetch = (chunkNames, i18nNames) => {
       console.error('Failed to prefetch assets', e);
     }
   };
+
   if (window.requestIdleCallback) {
     window.requestIdleCallback(run);
   } else {
