@@ -20,6 +20,7 @@ import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import orderSuccessImage from '../../../../../images/order-success-1.svg';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
+import CleverTap from '../../../../../utils/clevertap';
 import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
@@ -28,6 +29,8 @@ class CartSubmissionStatus extends Component {
     const submissionId = Utils.getQueryString('submissionId');
 
     await queryCartSubmissionStatus(submissionId);
+
+    CleverTap.pushEvent('Order Placed Page - View Order');
 
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
@@ -46,6 +49,8 @@ class CartSubmissionStatus extends Component {
 
   handleClickBack = () => {
     const { history } = this.props;
+
+    CleverTap.pushEvent('Order Placed Page - Back');
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
@@ -79,6 +84,8 @@ class CartSubmissionStatus extends Component {
 
   handleClickAddMoreItems = () => {
     const { history } = this.props;
+
+    CleverTap.pushEvent('Order Placed Page - Add More Items');
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
@@ -135,7 +142,7 @@ class CartSubmissionStatus extends Component {
           <div className="ordering-submission__failure flex__fluid-content flex flex-column flex-middle">
             <img className="ordering-submission__image-container-common" src={orderFailureImage} alt="order failure" />
             <div className="margin-top-bottom-small margin-left-right-smaller text-center">
-              <h2 className="text-size-biggest text-weight-bold text-line-height-base">
+              <h2 className="text-size-biggest text-weight-bolder text-line-height-base">
                 {t('OrderSubmittedFailedTitle')}
               </h2>
               <p className="ordering-submission__failure-description margin-top-bottom-smaller text-center text-size-big text-line-height-base">
@@ -145,7 +152,7 @@ class CartSubmissionStatus extends Component {
             <div className="padding-top-bottom-normal margin-smaller">
               <button
                 onClick={this.handleClickBack}
-                className="button button__fill padding-normal text-uppercase text-weight-bolder"
+                className="ordering-submission__return-button button button__fill padding-normal text-uppercase text-weight-bolder"
               >
                 {t('ReturnToCart')}
               </button>
