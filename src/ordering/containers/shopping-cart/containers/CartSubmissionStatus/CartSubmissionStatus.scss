@@ -4,8 +4,10 @@
   width: 100%;
   height: 100vh;
 
-  &__success {
-    top: 15vh;
+  &__success,
+  &__failure {
+    position: relative;
+    top: 7vh;
   }
 
   &__failure-description {
@@ -23,13 +25,12 @@
     max-width: 140px;
   }
 
-  &__warning {
-    top: 0;
-    width: 100%;
-    height: 34px;
-    background-color: #ffefcb;
-    box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.08);
-    z-index: 1;
+  &__description {
+    line-height: 1.6;
+  }
+
+  &__link {
+    color: $status-blue;
   }
 
   &__button-container {
@@ -37,16 +38,10 @@
     row-gap: 2.4vw;
   }
 
-  &__button,
   &__button-second {
     max-width: 296px;
     width: 75%;
     border-radius: 8px;
-    border: 1px solid $theme-color;
-  }
-
-  &__button-second {
-    color: $theme-color;
   }
 }
 

@@ -21,9 +21,8 @@
   "ScanQRDescription": "Please return to the main menu or scan the QR again. If this problem persists, please reach out to the staff",
   "ReturnToCart": "Return to cart",
   "ReturnToTableSummary": "Return to table summary",
-  "OrderPlacedTitle":"Pay anytime, before or after your meal!",
-  "OrderPlacedDescription": "Yay! We are preparing your order now",
+  "OrderPlacedDescription": "Yay! We're preparing your order now",
   "OrderPlacedStatus": "Order Placed",
-  "AddMoreItems": " ADD MORE ITEMS",
-  "ViewOrderOrPay": "VIEW ORDER/ PAY"
+  "AddMoreItems": "Add More Items",
+  "ViewOrderOrPay": "Pay now"
 }

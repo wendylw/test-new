@@ -3,6 +3,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+import { PlusCircle } from 'phosphor-react';
 import { IconChecked } from '../../../../../components/Icons';
 import RedirectPageLoader from '../../../../components/RedirectPageLoader';
 import {
@@ -68,7 +69,7 @@ class CartSubmissionStatus extends Component {
 
     return (
       options && (
-        <div className={`${options.className} flex flex-middle padding-small`}>
+        <div className={`${options.className} flex flex-middle padding-normal`}>
           {options.icon}
           {options.title}
         </div>
@@ -98,28 +99,29 @@ class CartSubmissionStatus extends Component {
     const { t, pendingCartSubmissionResult, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
 
     return (
-      <section className="ordering-submission absolute-wrapper flex flex-column flex-center flex-middle">
+      <section className="ordering-submission absolute-wrapper">
         {pendingCartSubmissionResult && <RedirectPageLoader />}
         {cartSubmittedStatus && (
           <>
-            <div className="ordering-submission__warning absolute-wrapper padding-small flex flex-middle flex-center">
-              <span>{t('OrderPlacedTitle')}</span>
+            <div className="flex flex-end">
+              <button
+                className="ordering-submission__link button button__link padding-normal text-weight-bolder flex flex-middle"
+                onClick={this.handleClickAddMoreItems}
+              >
+                <PlusCircle size={20} weight="light" />
+                <span className="margin-left-right-smaller text-weight-bold">{t('AddMoreItems')}</span>
+              </button>
             </div>
-            <div className="ordering-submission__success absolute-wrapper flex flex-column flex-middle">
+
+            <div className="ordering-submission__success flex__fluid-content flex flex-column flex-middle">
               {this.getOrderStatusOptionsEl()}
               <img className="ordering-submission__image-container-new" src={orderSuccessImage} alt="order success" />
-              <h2 className="ordering-submission__description text-size-big padding-left-right-normal margin-top-bottom-normal text-line-height-base">
+              <h2 className="ordering-submission__description text-size-big padding-left-right-normal margin-top-bottom-normal">
                 {t('OrderPlacedDescription')}
               </h2>
-              <div className="ordering-submission__button-container flex flex-column flex-middle flex-center">
+              <div className="ordering-submission__button-container flex flex-column flex-middle flex-center margin-small">
                 <button
-                  className="ordering-submission__button button button__fill margin-small padding-normal text-uppercase text-weight-bolder"
-                  onClick={this.handleClickAddMoreItems}
-                >
-                  {t('AddMoreItems')}
-                </button>
-                <button
-                  className="ordering-submission__button-second button margin-small padding-normal text-uppercase text-weight-bolder"
+                  className="ordering-submission__button-second button button__fill padding-normal text-uppercase text-weight-bolder"
                   onClick={this.handleClickViewTableSummary}
                 >
                   {t('ViewOrderOrPay')}
@@ -130,9 +132,9 @@ class CartSubmissionStatus extends Component {
         )}
 
         {cartSubmissionFailedStatus && (
-          <>
+          <div className="ordering-submission__failure flex__fluid-content flex flex-column flex-middle">
             <img className="ordering-submission__image-container-common" src={orderFailureImage} alt="order failure" />
-            <div className="margin-smaller text-center">
+            <div className="margin-top-bottom-small margin-left-right-smaller text-center">
               <h2 className="text-size-biggest text-weight-bold text-line-height-base">
                 {t('OrderSubmittedFailedTitle')}
               </h2>
@@ -148,7 +150,7 @@ class CartSubmissionStatus extends Component {
                 {t('ReturnToCart')}
               </button>
             </div>
-          </>
+          </div>
         )}
       </section>
     );
