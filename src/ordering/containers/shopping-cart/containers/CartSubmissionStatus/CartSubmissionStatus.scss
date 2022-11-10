@@ -20,7 +20,7 @@
   }
 
   &__image-container-common {
-    width: 35%;
+    width: 50%;
     max-width: 200px;
     margin-bottom: 16px;
   }
@@ -48,7 +48,7 @@
     max-width: 296px;
     width: 75%;
     border-radius: 8px;
-    border-color: $theme-color;
+    border: 1px solid $theme-color;
   }
 
   .button__outline {
