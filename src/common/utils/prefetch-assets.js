@@ -19,8 +19,6 @@ const createPrefetchLink = href => {
 
 const loadedChunkAssets = new Set();
 
-const loadedI18nAssets = new Set();
-
 const hasChunkLoaded = href => {
   if (loadedChunkAssets.has(href)) {
     return true;
@@ -57,55 +55,6 @@ const hasChunkLoaded = href => {
   return false;
 };
 
-const hasI18nLoaded = href => {
-  if (loadedI18nAssets.has(href)) {
-    return true;
-  }
-
-  // i18n links will probably be inserted in the following cases:
-  // 1. During the build time - we use the 'custom-preload' class name to track the links
-  // 2. After the page is mounted - we use the 'custom-prefetch' class name to track the links
-  // Given that, we only need to include the first case in our possible set
-  const set = new Set(
-    document
-      .getElementsByClassName('custom-preload')
-      .map(link => link.href)
-      .filter(url => !!url)
-      .filter(url => url.endsWith('.json'))
-  );
-
-  if (set.has(href)) {
-    loadedI18nAssets.add(href);
-    return true;
-  }
-
-  return false;
-};
-
-const prefetchI18nFiles = i18nName => {
-  const { I18N_FOLDER_PATH_MAPPING } = window;
-
-  if (!I18N_FOLDER_PATH_MAPPING) return;
-
-  let i18nFileHref = null;
-
-  Object.entries(I18N_FOLDER_PATH_MAPPING).forEach(([namespace, filePath]) => {
-    const filePathWithOrigin = `${window.location.origin}${filePath}`;
-    if (new RegExp(`\\b${i18nName}\\b`).test(namespace)) {
-      if (!hasI18nLoaded(filePathWithOrigin)) {
-        i18nFileHref = filePathWithOrigin;
-        loadedI18nAssets.add(filePathWithOrigin);
-      }
-    }
-  });
-
-  if (i18nFileHref) {
-    const fragment = document.createDocumentFragment();
-    fragment.appendChild(createPrefetchLink(i18nFileHref));
-    document.head.appendChild(fragment);
-  }
-};
-
 const prefetchChunkFiles = chunkName => {
   const { ASSETS_MANIFEST } = window;
   if (!ASSETS_MANIFEST) return;
@@ -136,15 +85,19 @@ const prefetchChunkFiles = chunkName => {
 };
 
 const prefetch = (chunkNames, i18nNames) => {
-  const run = () => {
+  const run = async () => {
+    // load chunk files
     try {
       chunkNames.forEach(prefetchChunkFiles);
-      i18nNames.forEach(prefetchI18nFiles);
-      if (i18nNames) {
-        i18next.loadNamespaces(i18nNames);
-      }
     } catch (e) {
-      console.error('Failed to prefetch assets', e);
+      console.error('Failed to prefetch chunk assets: ', e);
+    }
+
+    // load i18n files
+    if (i18nNames) {
+      i18next.loadNamespaces(i18nNames, error => {
+        console.error('Failed to prefetch i18n assets: ', error);
+      });
     }
   };
 
