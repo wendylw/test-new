@@ -14,7 +14,8 @@ import {
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
 import Constants from '../../../../../../utils/constants';
-import { getTotal } from '../selectors';
+import { getTotal, getCleverTapAttributes, getPaymentName } from '../selectors';
+import CleverTap from '../../../../../../utils/clevertap';
 import logger from '../../../../../../utils/monitoring/logger';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
@@ -120,6 +121,16 @@ const preprocessOnlineBankings = (data = [], onlineBankModel) => {
 };
 /* end of Model */
 
+const cleverTapViewPageEvent = (eventName, getState) => {
+  const cleverTapAttributes = getCleverTapAttributes(getState());
+  const paymentName = getPaymentName(getState());
+
+  CleverTap.pushEvent(eventName, {
+    ...cleverTapAttributes,
+    'payment method': paymentName,
+  });
+};
+
 export const initialize = createAsyncThunk(
   'ordering/payments/initialize',
   async (initialPaymentMethod = null, { dispatch, getState }) => {
@@ -129,6 +140,7 @@ export const initialize = createAsyncThunk(
       // MUST call [loadBilling] thunk before calling this function
       // because paymentOptions data depends on billing total
       await dispatch(loadPaymentOptions(initialPaymentMethod)).unwrap();
+      cleverTapViewPageEvent('Payment Method - View page', getState);
     } catch (error) {
       window.newrelic?.addPageAction('ordering.paymentInitialize.error', {
         error: error?.message,

@@ -74,16 +74,10 @@ const error = (state = initialState.error, action) => {
   if (type === types.CLEAR_ERROR || code === 200) {
     return null;
   } else if (code && code !== 401 && code < 40000) {
-    let errorMessage = message;
-
-    if (type === types.CREATE_OTP_FAILURE) {
-      errorMessage = Constants.LOGIN_PROMPT[code];
-    }
-
     return {
       ...state,
       code,
-      message: errorMessage,
+      message,
     };
   }
 
