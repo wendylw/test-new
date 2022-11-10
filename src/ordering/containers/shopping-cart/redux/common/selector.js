@@ -1,6 +1,6 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
-import { getCartItems, getIsBillingTotalInvalid, getBusinessInfo, getCartBilling } from '../../../../redux/modules/app';
+import { getCartItems, getIsBillingTotalInvalid, getBusinessInfo } from '../../../../redux/modules/app';
 
 export const getCheckingInventoryPendingState = ({ cart }) => cart.common.cartInventory.status === 'pending';
 
@@ -13,10 +13,6 @@ export const getShouldDisablePayButton = createSelector(
     return hasNoCartItem || isBillingTotalInvalid || pendingCheckingInventory;
   }
 );
-
-export const getItemsQuantity = createSelector(getCartBilling, data => data.itemsQuantity);
-export const getTotal = createSelector(getCartBilling, data => data.total);
-export const getSubtotal = createSelector(getCartBilling, data => data.subtotal);
 
 export const getCleverTapAttributes = createSelector(getBusinessInfo, businessInfo => ({
   'store name': _get(businessInfo, 'stores.0.name', ''),
