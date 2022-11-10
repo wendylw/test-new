@@ -127,7 +127,7 @@ class CartSubmissionStatus extends Component {
                   className="ordering-submission__button button button__outline padding-normal text-uppercase text-weight-bolder"
                   onClick={this.handleClickAddMoreItems}
                 >
-                  <span className="margin-left-right-smaller text-weight-bold">{t('AddMoreItems')}</span>
+                  {t('AddMoreItems')}
                 </button>
               </div>
             </div>
