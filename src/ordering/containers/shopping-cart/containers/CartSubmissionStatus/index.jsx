@@ -169,7 +169,8 @@ CartSubmissionStatus.propTypes = {
   receiptNumber: PropTypes.string,
   clearQueryCartSubmissionStatus: PropTypes.func,
   queryCartSubmissionStatus: PropTypes.func,
-  cleverTapAttributes: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  cleverTapAttributes: PropTypes.object,
 };
 
 CartSubmissionStatus.defaultProps = {
@@ -179,7 +180,7 @@ CartSubmissionStatus.defaultProps = {
   receiptNumber: null,
   clearQueryCartSubmissionStatus: () => {},
   queryCartSubmissionStatus: () => {},
-  cleverTapAttributes: () => {},
+  cleverTapAttributes: {},
 };
 
 export default compose(
