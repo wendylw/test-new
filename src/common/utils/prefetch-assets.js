@@ -91,13 +91,13 @@ const prefetch = (chunkNames, i18nNames) => {
     try {
       chunkNames.forEach(prefetchChunkFiles);
     } catch (e) {
-      logger.error('Failed to prefetch chunk assets: ', e);
+      logger.error('Common_Utils_PrefetchChunkAssetsFailed', { message: e?.message });
     }
 
     // load i18n files
     if (i18nNames) {
       i18next.loadNamespaces(i18nNames, error => {
-        logger.error('Failed to prefetch i18n assets: ', error);
+        logger.error('Common_Utils_PrefetchI18nAssetsFailed', { message: error?.message });
       });
     }
   };
