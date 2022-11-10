@@ -120,7 +120,7 @@ class CartSubmissionStatus extends Component {
                   className="ordering-submission__button button button__fill padding-normal text-uppercase text-weight-bolder"
                   onClick={this.handleClickViewTableSummary}
                 >
-                  {t('ViewOrderOrPay')}
+                  {t('ViewOrder')}
                 </button>
                 <button
                   className="ordering-submission__button button button__outline padding-normal text-uppercase text-weight-bolder"
