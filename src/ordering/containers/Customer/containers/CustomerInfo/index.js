@@ -8,7 +8,6 @@ import { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import { formatToDeliveryTime } from '../../../../../utils/datetime-lib';
-
 import HybridHeader from '../../../../../components/HybridHeader';
 import MessageModal from '../../../../components/MessageModal';
 import { IconAccountCircle, IconMotorcycle, IconLocation, IconNext } from '../../../../../components/Icons';
@@ -23,6 +22,9 @@ import {
   getRequestInfo,
   getBusinessUTCOffset,
   getCartBilling,
+  getCartCount,
+  getCartSubtotal,
+  getMinimumConsumption,
   getBusinessInfo,
   getStoreInfoForCleverTap,
   getDeliveryDetails,
@@ -57,7 +59,8 @@ class CustomerInfo extends Component {
       phone: deliveryDetails.phone || userProfile.phone,
     });
 
-    appActions.loadShoppingCart();
+    await appActions.loadShoppingCart();
+    this.cleverTapViewPageEvent('Checkout page - View page');
   }
 
   componentDidUpdate(prevProps) {
@@ -73,6 +76,17 @@ class CustomerInfo extends Component {
   componentWillUnmount() {
     this.setState({ processing: false });
   }
+
+  cleverTapViewPageEvent = eventName => {
+    const { cartCount, cartSubtotal, minimumConsumption, storeInfoForCleverTap } = this.props;
+
+    CleverTap.pushEvent(eventName, {
+      ...storeInfoForCleverTap,
+      'cart items quantity': cartCount,
+      'cart amount': cartSubtotal,
+      'has met minimum order value': cartSubtotal >= minimumConsumption,
+    });
+  };
 
   getBusinessCountry = () => {
     try {
@@ -502,6 +516,9 @@ export default compose(
       allBusinessInfo: getAllBusinesses(state),
       deliveryDetails: getDeliveryDetails(state),
       cartBilling: getCartBilling(state),
+      cartCount: getCartCount(state),
+      cartSubtotal: getCartSubtotal(state),
+      minimumConsumption: getMinimumConsumption(state),
       requestInfo: getRequestInfo(state),
       customerError: getCustomerError(state),
       businessUTCOffset: getBusinessUTCOffset(state),
