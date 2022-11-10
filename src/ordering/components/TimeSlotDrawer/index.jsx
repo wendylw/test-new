@@ -87,6 +87,7 @@ const TimeSlotDrawer = ({
                       spacing: 16,
                     },
                   }}
+                  liStyle={{ width: 'auto' }}
                 >
                   {dateList.map(({ value, displayWeek, displayDay, available, selected, isToday, isTomorrow }) => {
                     const classNameList = [isTomorrow ? styles.timeSlotDateItemOverWidth : styles.timeSlotDateItem];
@@ -103,20 +104,18 @@ const TimeSlotDrawer = ({
 
                     return (
                       // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-                      <li
+                      <div
                         data-text={isTomorrow ? dateContentList[0] : ''}
-                        tag="li"
                         key={value}
-                        className={`keen-slider__slide ${classNameList.join(' ')}`}
+                        className={classNameList.join(' ')}
                         onClick={() => (available ? changeDate(value) : {})}
-                        style={{ width: 'auto' }}
                       >
                         {dateContentList.map(content => (
                           <span key={content} className={styles.timeSlotDateItemText}>
                             {content}
                           </span>
                         ))}
-                      </li>
+                      </div>
                     );
                   })}
                 </Slider>
