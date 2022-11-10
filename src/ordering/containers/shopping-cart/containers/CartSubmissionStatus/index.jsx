@@ -3,7 +3,6 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import { PlusCircle } from 'phosphor-react';
 import { IconChecked } from '../../../../../components/Icons';
 import RedirectPageLoader from '../../../../components/RedirectPageLoader';
 import {
@@ -74,7 +73,7 @@ class CartSubmissionStatus extends Component {
 
     return (
       options && (
-        <div className={`${options.className} flex flex-middle padding-normal`}>
+        <div className={`${options.className} flex flex-middle`}>
           {options.icon}
           {options.title}
         </div>
@@ -110,28 +109,24 @@ class CartSubmissionStatus extends Component {
         {pendingCartSubmissionResult && <RedirectPageLoader />}
         {cartSubmittedStatus && (
           <>
-            <div className="flex flex-end">
-              <button
-                className="ordering-submission__link button button__link padding-normal text-weight-bolder flex flex-middle"
-                onClick={this.handleClickAddMoreItems}
-              >
-                <PlusCircle size={20} weight="light" />
-                <span className="margin-left-right-smaller text-weight-bold">{t('AddMoreItems')}</span>
-              </button>
-            </div>
-
             <div className="ordering-submission__success flex__fluid-content flex flex-column flex-middle">
               {this.getOrderStatusOptionsEl()}
               <img className="ordering-submission__image-container-new" src={orderSuccessImage} alt="order success" />
               <h2 className="ordering-submission__description text-size-big padding-left-right-normal margin-top-bottom-normal">
                 {t('OrderPlacedDescription')}
               </h2>
-              <div className="ordering-submission__button-container flex flex-column flex-middle flex-center margin-small">
+              <div className="ordering-submission__button-container flex flex-column flex-middle flex-center padding-small">
                 <button
-                  className="ordering-submission__button-second button button__fill padding-normal text-uppercase text-weight-bolder"
+                  className="ordering-submission__button button button__fill padding-normal text-uppercase text-weight-bolder"
                   onClick={this.handleClickViewTableSummary}
                 >
                   {t('ViewOrderOrPay')}
+                </button>
+                <button
+                  className="ordering-submission__button button button__outline padding-normal text-uppercase text-weight-bolder"
+                  onClick={this.handleClickAddMoreItems}
+                >
+                  <span className="margin-left-right-smaller text-weight-bold">{t('AddMoreItems')}</span>
                 </button>
               </div>
             </div>
