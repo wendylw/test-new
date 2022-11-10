@@ -15,6 +15,7 @@ import {
   queryCartSubmissionStatus as queryCartSubmissionStatusThunk,
   clearQueryCartSubmissionStatus as clearQueryCartSubmissionStatusThunk,
 } from '../../../../redux/cart/thunks';
+import { getCleverTapAttributes } from '../../redux/common/selector';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import orderSuccessImage from '../../../../../images/order-success-1.svg';
@@ -24,12 +25,12 @@ import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
-    const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber } = this.props;
+    const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber, cleverTapAttributes } = this.props;
     const submissionId = Utils.getQueryString('submissionId');
 
     await queryCartSubmissionStatus(submissionId);
 
-    CleverTap.pushEvent('Order Placed Page - View Page');
+    CleverTap.pushEvent('Order Placed Page - View Page', cleverTapAttributes);
 
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
@@ -80,9 +81,9 @@ class CartSubmissionStatus extends Component {
   };
 
   handleClickAddMoreItems = () => {
-    const { history } = this.props;
+    const { history, cleverTapAttributes } = this.props;
 
-    CleverTap.pushEvent('Order Placed Page - Add More Items');
+    CleverTap.pushEvent('Order Placed Page - Add More Items', cleverTapAttributes);
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
@@ -91,9 +92,9 @@ class CartSubmissionStatus extends Component {
   };
 
   handleClickViewTableSummary = () => {
-    const { history, receiptNumber } = this.props;
+    const { history, receiptNumber, cleverTapAttributes } = this.props;
 
-    CleverTap.pushEvent('Order Placed Page - View Order');
+    CleverTap.pushEvent('Order Placed Page - View Order', cleverTapAttributes);
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
@@ -168,6 +169,7 @@ CartSubmissionStatus.propTypes = {
   receiptNumber: PropTypes.string,
   clearQueryCartSubmissionStatus: PropTypes.func,
   queryCartSubmissionStatus: PropTypes.func,
+  cleverTapAttributes: PropTypes.func,
 };
 
 CartSubmissionStatus.defaultProps = {
@@ -177,6 +179,7 @@ CartSubmissionStatus.defaultProps = {
   receiptNumber: null,
   clearQueryCartSubmissionStatus: () => {},
   queryCartSubmissionStatus: () => {},
+  cleverTapAttributes: () => {},
 };
 
 export default compose(
@@ -187,6 +190,7 @@ export default compose(
       pendingCartSubmissionResult: getCartSubmissionHasNotResult(state),
       cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
       receiptNumber: getCartSubmissionReceiptNumber(state),
+      cleverTapAttributes: getCleverTapAttributes(state),
     }),
     dispatch => ({
       clearQueryCartSubmissionStatus: bindActionCreators(clearQueryCartSubmissionStatusThunk, dispatch),
