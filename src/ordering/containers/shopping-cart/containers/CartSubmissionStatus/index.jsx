@@ -29,7 +29,7 @@ class CartSubmissionStatus extends Component {
 
     await queryCartSubmissionStatus(submissionId);
 
-    CleverTap.pushEvent('Order Placed Page - View Order');
+    CleverTap.pushEvent('Order Placed Page - View Page');
 
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
@@ -48,8 +48,6 @@ class CartSubmissionStatus extends Component {
 
   handleClickBack = () => {
     const { history } = this.props;
-
-    CleverTap.pushEvent('Order Placed Page - Back');
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_CART,
@@ -94,6 +92,8 @@ class CartSubmissionStatus extends Component {
 
   handleClickViewTableSummary = () => {
     const { history, receiptNumber } = this.props;
+
+    CleverTap.pushEvent('Order Placed Page - View Order');
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
