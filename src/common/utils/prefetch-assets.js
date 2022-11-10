@@ -1,5 +1,6 @@
 import { isSafari } from './index';
 import i18next from '../../i18n';
+import logger from '../../utils/monitoring/logger';
 
 // Only Safari doesn't support link prefetching mechanism by default
 // Refer to https://caniuse.com/link-rel-prefetch
@@ -90,13 +91,13 @@ const prefetch = (chunkNames, i18nNames) => {
     try {
       chunkNames.forEach(prefetchChunkFiles);
     } catch (e) {
-      console.error('Failed to prefetch chunk assets: ', e);
+      logger.error('Failed to prefetch chunk assets: ', e);
     }
 
     // load i18n files
     if (i18nNames) {
       i18next.loadNamespaces(i18nNames, error => {
-        console.error('Failed to prefetch i18n assets: ', error);
+        logger.error('Failed to prefetch i18n assets: ', error);
       });
     }
   };
