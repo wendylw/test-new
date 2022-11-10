@@ -1,5 +1,6 @@
 import { isSafari } from './index';
 import i18next from '../../i18n';
+import logger from '../../utils/monitoring/logger';
 
 // Only Safari doesn't support link prefetching mechanism by default
 // Refer to https://caniuse.com/link-rel-prefetch
@@ -19,28 +20,33 @@ const createPrefetchLink = href => {
 
 const loadedChunkAssets = new Set();
 
-const loadedI18nAssets = new Set();
-
 const hasChunkLoaded = href => {
   if (loadedChunkAssets.has(href)) {
     return true;
   }
+
   const cssSet = new Set(
     Array.from(document.styleSheets)
       .map(css => css.href)
       .filter(url => !!url)
   );
+
   if (href.endsWith('.css')) {
     if (cssSet.has(href)) {
       loadedChunkAssets.add(href);
       return true;
     }
+
+    // If no in the set, return false to skip the js checking
+    return false;
   }
+
   const jsSet = new Set(
     Array.from(document.scripts)
       .map(script => script.src)
       .filter(url => !!url)
   );
+
   if (href.endsWith('.js')) {
     if (jsSet.has(href)) {
       loadedChunkAssets.add(href);
@@ -50,32 +56,7 @@ const hasChunkLoaded = href => {
   return false;
 };
 
-const prefetchI18nFile = i18nName => {
-  const { I18N_FOLDER_PATH_MAPPING } = window;
-
-  if (!I18N_FOLDER_PATH_MAPPING) return;
-
-  let i18nFileHref = null;
-
-  Object.entries(I18N_FOLDER_PATH_MAPPING).forEach(([namespace, filePath]) => {
-    const filePathWithOrigin = namespace.startsWith('/') ? `${window.location.origin}${filePath}` : filePath;
-    if (new RegExp(`\\b${i18nName}\\b`).test(namespace)) {
-      if (!loadedI18nAssets.has(filePathWithOrigin)) {
-        i18nFileHref = filePathWithOrigin;
-        loadedI18nAssets.add(filePathWithOrigin);
-      }
-      i18nFileHref = filePathWithOrigin;
-    }
-  });
-
-  if (i18nFileHref) {
-    const fragment = document.createDocumentFragment();
-    fragment.appendChild(createPrefetchLink(i18nFileHref));
-    document.head.appendChild(fragment);
-  }
-};
-
-const prefetchAssets = chunkName => {
+const prefetchChunkFiles = chunkName => {
   const { ASSETS_MANIFEST } = window;
   if (!ASSETS_MANIFEST) return;
   let parentChunkName;
@@ -105,17 +86,22 @@ const prefetchAssets = chunkName => {
 };
 
 const prefetch = (chunkNames, i18nNames) => {
-  const run = () => {
+  const run = async () => {
+    // load chunk files
     try {
-      chunkNames.forEach(prefetchAssets);
-      i18nNames.forEach(prefetchI18nFile);
-      if (i18nNames) {
-        i18next.loadNamespaces(i18nNames);
-      }
+      chunkNames.forEach(prefetchChunkFiles);
     } catch (e) {
-      console.error('Failed to prefetch assets', e);
+      logger.error('Common_Utils_PrefetchChunkAssetsFailed', { message: e?.message });
+    }
+
+    // load i18n files
+    if (i18nNames) {
+      i18next.loadNamespaces(i18nNames, error => {
+        logger.error('Common_Utils_PrefetchI18nAssetsFailed', { message: error?.message });
+      });
     }
   };
+
   if (window.requestIdleCallback) {
     window.requestIdleCallback(run);
   } else {
