@@ -81,7 +81,11 @@ const API_URLS = {
     mode: 'cors',
   }),
   GET_OTP: {
-    url: '/api/otp',
+    url: '/api/v3/otp',
+    method: 'post',
+  },
+  GET_WHATSAPP_SUPPORT: {
+    url: '/api/v3/otp/check-phone',
     method: 'post',
   },
   GET_CUSTOMER_PROFILE: consumerId => ({
