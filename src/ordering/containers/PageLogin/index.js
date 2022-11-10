@@ -23,6 +23,7 @@ import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import config from '../../../config';
+import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 
@@ -35,6 +36,8 @@ class PageLogin extends React.Component {
   captchaRef = React.createRef();
 
   componentDidMount() {
+    prefetch(['ORD_MNU'], ['OrderingDelivery']);
+
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
     }

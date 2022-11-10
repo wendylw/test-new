@@ -4,6 +4,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconLocation } from '../../../components/Icons';
 import Image from '../../../components/Image';
 
+import prefetch from '../../../common/utils/prefetch-assets';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
@@ -32,6 +33,8 @@ class PageClaim extends React.Component {
   }
 
   async componentDidMount() {
+    prefetch(['CB_HM'], ['Cashback']);
+
     const { t, user, history, appActions, claimActions } = this.props;
     const { isLogin } = user || {};
     const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });

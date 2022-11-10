@@ -17,6 +17,7 @@ import OrderSummary from './components/OrderSummary';
 import PendingPaymentOrderDetail from './components/PendingPaymentOrderDetail';
 
 import config from '../../../../../config';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import IconCelebration from '../../../../../images/icon-celebration.svg';
 import cashbackSuccessImage from '../../../../../images/succeed-animation.gif';
 import CleverTap from '../../../../../utils/clevertap';
@@ -147,6 +148,8 @@ export class ThankYou extends PureComponent {
   componentDidMount = async () => {
     const { user, loadCashbackInfo, loadOrderStoreReview } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
+
+    prefetch(['ORD_MNU', 'ORD_OD', 'ORD_SR'], ['OrderingDelivery', 'OrderingThankYou']);
 
     loadCashbackInfo(receiptNumber);
 

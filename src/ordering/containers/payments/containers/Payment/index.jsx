@@ -26,6 +26,7 @@ import {
 } from '../../redux/common/thunks';
 import { actions as paymentActionsCreator } from '../../redux/common/index';
 import Utils from '../../../../../utils/utils';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import PaymentItem from '../../components/PaymentItem';
 import PayByCash from '../../components/PayByCash';
 import Loader from '../../components/Loader';
@@ -49,6 +50,8 @@ class Payment extends Component {
 
   componentDidMount = async () => {
     const { initialize, paymentActions } = this.props;
+
+    prefetch(['ORD_OLB', 'ORD_SCS', 'ORD_SRP'], ['OrderingPayment']);
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 

@@ -18,6 +18,7 @@ import {
   getHasLoginGuardPassed,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
+import prefetch from '../../../common/utils/prefetch-assets';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
   loadOrders as loadOrdersThunk,
@@ -76,6 +77,8 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PROMO'], ['OrderingDelivery', 'OrderingCart', 'OrderingPromotion']);
+
     const { t, history, queryOrdersAndStatus } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
     const emptyString = ['null', 'undefined', ''];

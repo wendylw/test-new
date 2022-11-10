@@ -17,12 +17,15 @@ import {
 } from '../../../../redux/cart/thunks';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import orderSuccessImage from '../../../../../images/order-success-1.svg';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
 import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_TS'], ['OrderingDelivery', 'OrderingCart', 'OrderingTableSummary']);
+
     const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber } = this.props;
     const submissionId = Utils.getQueryString('submissionId');
 

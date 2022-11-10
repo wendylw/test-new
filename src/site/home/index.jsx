@@ -36,6 +36,7 @@ import Banners from './components/Banners';
 import Carousel from './components/Carousel';
 import BeepAppLink from './containers/CampaignBar/components/images/beep-app-link.jpg';
 import DevToolsTrigger from '../../components/DevToolsTrigger';
+import prefetch from '../../common/utils/prefetch-assets';
 import Utils from '../../utils/utils';
 import {
   getAddressInfo as getAddress,
@@ -69,6 +70,8 @@ class Home extends React.Component {
   }
 
   componentDidMount = async () => {
+    prefetch(['ORD_LOC'], ['SiteHome', 'OrderingDelivery']);
+
     if (checkStateRestoreStatus()) {
       const { getAddressInfo, addressCoords } = this.props;
       Home.lastUsedAddressCoords = addressCoords;
