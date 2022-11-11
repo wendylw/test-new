@@ -10,6 +10,8 @@ export const getOrder = state => state.orderStatus.common.order;
 
 export const getReceiptNumber = state => state.orderStatus.common.receiptNumber;
 
+export const getShippingType = state => state.orderStatus.common.shippingType;
+
 export const getOrderStatus = createSelector(getOrder, order => _get(order, 'status', null));
 
 export const getRiderLocations = createSelector(getOrder, order => _get(order, 'riderLocations', null));
