@@ -58,9 +58,11 @@ const Rating = ({
           .map((item, key) => (
             // TODO: wendy: may need to add tw-flex-middle
             // eslint-disable-next-line react/no-array-index-key
-            <li key={`star-${key}`} className="tw-flex">
+            <li key={`star-${key}`} className={styles.RatingStarItem}>
               <Star
-                className={`sm:tw-m-4px tw-m-4 ${rating && key < rating ? 'tw-text-yellow' : 'tw-text-gray-600'}`}
+                className={`${styles.RatingStar} ${
+                  rating && key < rating ? styles.RatingStarSelected : styles.RatingStarDefault
+                }`}
                 weight={rating && key < rating ? 'fill' : 'light'}
                 size={starSize}
                 onClick={() => handleUpdateRating(key + 1)}
