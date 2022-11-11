@@ -52,6 +52,7 @@ import {
 } from '../redux/modules/filter/thunks';
 import { TYPES, IDS, FILTER_DRAWER_SUPPORT_TYPES, FILTER_BACKUP_STORAGE_KEYS } from '../redux/modules/filter/constants';
 import { SHIPPING_TYPES } from '../../common/utils/constants';
+import prefetch from '../../common/utils/prefetch-assets';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import CleverTap from '../../utils/clevertap';
 import FilterBar from '../components/FilterBar';
@@ -76,6 +77,8 @@ class CollectionPage extends React.Component {
   };
 
   componentDidMount = async () => {
+    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
+
     const { collectionCardActions, fetchAddressInfo, loadSearchOptionList, loadStoreList } = this.props;
     await collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
 

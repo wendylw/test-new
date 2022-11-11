@@ -4,6 +4,7 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import Utils from '../../../../../utils/utils';
 import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../../../redux/modules/app';
@@ -15,6 +16,8 @@ const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class ContactDetail extends Component {
   componentDidMount() {
+    prefetch(['ORD_CI'], ['OrderingCustomer', 'OrderingDelivery']);
+
     const { deliveryDetails, init } = this.props;
     const { phone, username } = deliveryDetails;
     init({ phone, username });

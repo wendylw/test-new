@@ -4,7 +4,7 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import PageLoader from '../../../../../components/PageLoader';
 import feedBackThankyou from '../../../../../images/feedback-thankyou.png';
@@ -45,6 +45,8 @@ class ReportDriver extends Component {
   inputRefOfEmail = null;
 
   componentDidMount = async () => {
+    prefetch(['ORD_TY'], ['OrderingThankYou']);
+
     const { receiptNumber, loadOrder, fetchReport, user } = this.props;
 
     await loadOrder(receiptNumber);

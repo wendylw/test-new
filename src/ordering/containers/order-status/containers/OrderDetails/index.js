@@ -26,6 +26,7 @@ import {
   getIsPayLater,
 } from '../../redux/selector';
 import './OrderingDetails.scss';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import * as NativeMethods from '../../../../../utils/native-methods';
 import HybridHeader from '../../../../../components/HybridHeader';
 import { ICON_RES } from '../../../../../components/NativeHeader';
@@ -41,6 +42,8 @@ export class OrderDetails extends Component {
   state = {};
 
   componentDidMount() {
+    prefetch(['ORD_MI', 'ORD_RD', 'ORD_MNU'], ['OrderingDelivery', 'ReportDriver']);
+
     const { loadOrder } = this.props;
 
     loadOrder(this.getReceiptNumber());

@@ -73,6 +73,7 @@ import { SHIPPING_TYPES } from '../../common/utils/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
+import prefetch from '../../common/utils/prefetch-assets';
 import styles from './SearchPage.module.scss';
 
 const { COLLECTIONS_TYPE } = constants;
@@ -88,6 +89,8 @@ class SearchPage extends React.Component {
   };
 
   componentDidMount = async () => {
+    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
+
     const {
       otherCollections,
       popularCollections,

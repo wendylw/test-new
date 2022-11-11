@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import qs from 'qs';
 import HybridHeader from '../../../../../components/HybridHeader';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -16,6 +17,8 @@ const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 export class MerchantInfo extends Component {
   componentDidMount() {
+    prefetch(['ORD_RD', 'ORD_TY'], ['ReportDriver', 'OrderingThankYou']);
+
     const { loadOrder, receiptNumber } = this.props;
 
     loadOrder(receiptNumber);

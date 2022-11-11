@@ -20,6 +20,7 @@ import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
 import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import _trim from 'lodash/trim';
 import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
@@ -36,6 +37,8 @@ class AddressDetail extends Component {
   };
 
   componentDidMount = async () => {
+    prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
+
     const { init, location } = this.props;
     const { type: actionType, selectedAddress } = location.state || {};
     await init({ actionType, selectedAddress });

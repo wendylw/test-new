@@ -5,6 +5,7 @@ import { IconLeftArrow } from '../../components/Icons';
 import ShapeImage from '../../images/shape.png';
 import Constants from '../../utils/constants';
 import logger from '../../utils/monitoring/logger';
+import prefetch from '../../common/utils/prefetch-assets';
 import './index.scss';
 
 const { ERROR, SCAN_NOT_SUPPORT } = Constants.ROUTER_PATHS;
@@ -60,6 +61,8 @@ class QRScan extends Component {
   timer = null;
 
   componentDidMount() {
+    prefetch(['SITE_HM'], ['SiteHome']);
+
     this.getCamera();
   }
 

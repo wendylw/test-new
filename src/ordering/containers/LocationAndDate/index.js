@@ -43,6 +43,7 @@ import { withAddressInfo } from '../Location/withAddressInfo';
 import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
 import logger from '../../../utils/monitoring/logger';
+import prefetch from '../../../common/utils/prefetch-assets';
 import './OrderingLocationDate.scss';
 
 const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRESS_RANGE } = Constants;
@@ -53,6 +54,8 @@ class LocationAndDate extends Component {
   resetWhenWillUnmount = false;
 
   componentDidMount = async () => {
+    prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
+
     const { actions, location, savedAddressInfo, cachedAddressInfo, savedStoreId } = this.props;
     const { selectedAddress: selectedAddressInfo = null } = location.state || {};
 
