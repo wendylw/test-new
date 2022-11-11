@@ -727,7 +727,7 @@ export const actions = {
 
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
-      throw new NativeAPIError(`Couldn't find the method:`, NativeMethods.NATIVE_API_ERROR_CODES.METHOD_NOT_EXIST);
+      throw new NativeAPIError(`Couldn't find the method:`, NativeMethods.NATIVE_API_ERROR_CODES.UNKNOWN_ERROR);
       // const tokens = await NativeMethods.getTokenAsync();
       // const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
