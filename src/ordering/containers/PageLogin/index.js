@@ -121,7 +121,10 @@ class PageLogin extends React.Component {
     } catch (e) {
       const { t } = this.props;
 
-      alert(t('NetworkErrorDescription'), { title: t('NetworkErrorTitle') });
+      alert(t('NetworkErrorDescription'), {
+        title: t('NetworkErrorTitle'),
+        closeButtonClassName: 'button__block text-uppercase',
+      });
 
       // We will set the attribute 'message' even if it is always empty
       logger.error('Ordering_PageLogin_CompleteCaptchaFailed', { message: e?.message });
@@ -139,7 +142,7 @@ class PageLogin extends React.Component {
     if (shouldShowErrorPopUp) {
       const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
 
-      alert(t(descriptionKey), { title: t(titleKey) });
+      alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
     }
 
     throw new Error('Failed to get OTP code');
@@ -202,7 +205,10 @@ class PageLogin extends React.Component {
     });
 
     if (!hasLoadSuccess) {
-      alert(t('NetworkErrorDescription'), { title: t('NetworkErrorTitle') });
+      alert(t('NetworkErrorDescription'), {
+        title: t('NetworkErrorTitle'),
+        closeButtonClassName: 'button__block text-uppercase',
+      });
     }
   }
 

@@ -280,6 +280,7 @@ export const createOrder = ({ cashback, shippingType }) => async (dispatch, getS
       alertV2(i18next.t('ApiError:40027Description'), {
         title: i18next.t('ApiError:40027Title'),
         closeButtonContent: i18next.t('Common:BackToHome'),
+        closeButtonClassName: 'button__block text-uppercase',
         onClose: () => {
           if (isWebview) {
             gotoHome();
