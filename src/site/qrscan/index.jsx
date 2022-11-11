@@ -2,7 +2,7 @@ import QrcodeDecoder from 'qrcode-decoder';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../components/Icons';
-import ShapeImage from '../../images/shape.png';
+import LogoImage from '../../images/qrscan-logo.png';
 import Constants from '../../utils/constants';
 import logger from '../../utils/monitoring/logger';
 import prefetch from '../../common/utils/prefetch-assets';
@@ -244,7 +244,7 @@ class QRScan extends Component {
         <video ref={this.videoRef} className="qrscan__video-player" autoPlay playsInline />
         <canvas ref={this.canvasRef} className="qrscan__canvas" />
         <section className="qrscan__cover">
-          <img className="qrscan__logo" src={ShapeImage} alt="" />
+          <img className="qrscan__logo" src={LogoImage} alt="" />
           <span className="qrscan__tips text-center">{t('ScanDescribeText')}</span>
           <div className="qrscan__qrcode">
             <div />
