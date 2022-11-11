@@ -86,12 +86,10 @@ export const saveOrderStoreReview = createAsyncThunk(
       if (e.code === '40028') {
         alert(i18next.t('ApiError:40028Description'), {
           title: i18next.t('ApiError:40028Title'),
-          closeButtonContent: i18next.t('Okay'),
         });
       } else {
         alert(i18next.t('OrderingThankYou:SubmissionFailedDescription'), {
           title: i18next.t('OrderingThankYou:SubmissionFailedTitle'),
-          closeButtonContent: i18next.t('Okay'),
         });
       }
       throw e;

@@ -5,6 +5,7 @@ import _uniq from 'lodash/uniq';
 import _isEmpty from 'lodash/isEmpty';
 import _isEqual from 'lodash/isEqual';
 import _lowerCase from 'lodash/lowerCase';
+import _cloneDeep from 'lodash/cloneDeep';
 import Constants, { API_REQUEST_STATUS } from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import * as VoucherUtils from '../../../voucher/utils';
@@ -17,7 +18,8 @@ import qs from 'qs';
 import { APP_TYPES } from '../types';
 import { API_REQUEST } from '../../../redux/middlewares/api';
 import { FETCH_GRAPHQL } from '../../../redux/middlewares/apiGql';
-import { get, post } from '../../../utils/request';
+import { get } from '../../../utils/request';
+import { post } from '../../../utils/api/api-fetch';
 import i18next from 'i18next';
 import url from '../../../utils/url';
 import { getBusinessByName, getAllBusinesses } from '../../../redux/modules/entities/businesses';
@@ -94,11 +96,9 @@ const CartModel = {
 
 export const initialState = {
   user: {
-    showLoginPage: false,
     isWebview: Utils.isWebview(),
     isLogin: false,
     isExpired: false,
-    hasOtp: false,
     consumerId: config.consumerId,
     customerId: '',
     storeCreditsBalance: 0,
@@ -110,8 +110,13 @@ export const initialState = {
       status: '',
     },
     isError: false,
-    otpType: OTP_REQUEST_TYPES.OTP,
-    isOtpError: false,
+    otpRequest: {
+      data: {
+        type: OTP_REQUEST_TYPES.OTP,
+      },
+      status: null,
+      error: null,
+    },
     country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
@@ -268,14 +273,6 @@ const fetchProductDetail = variables => {
 
 //action creators
 export const actions = {
-  showLogin: () => ({
-    type: types.SHOW_LOGIN_PAGE,
-  }),
-
-  hideLogin: () => ({
-    type: types.HIDE_LOGIN_PAGE,
-  }),
-
   loginApp: ({ accessToken, refreshToken, source = null, shippingType = null }) => async (dispatch, getState) => {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
@@ -305,32 +302,61 @@ export const actions = {
     }
   },
 
-  resetOtpStatus: () => ({
-    type: types.RESET_OTP_STATUS,
+  getPhoneWhatsAppSupport: phone => async dispatch => {
+    try {
+      dispatch({ type: types.GET_WHATSAPPSUPPORT_REQUEST });
+
+      const { supportWhatsApp } = await post(Url.API_URLS.GET_WHATSAPP_SUPPORT.url, {
+        phone,
+      });
+
+      dispatch({ type: types.GET_WHATSAPPSUPPORT_SUCCESS, response: { supportWhatsApp } });
+    } catch (error) {
+      dispatch({
+        type: types.GET_WHATSAPPSUPPORT_FAILURE,
+        error,
+      });
+    }
+  },
+
+  resetGetOtpRequest: () => ({
+    type: types.RESET_GET_OTP_REQUEST,
   }),
 
   getOtp: payload => async dispatch => {
     try {
-      dispatch({ type: types.GET_OTP_REQUEST });
+      const { type: otpType } = payload;
 
-      const { isSent, errorCode } = await post(Url.API_URLS.GET_OTP.url, {
+      // BEEP-2685: New Relic needs to know the OTP first send time.
+      window.newrelic?.addPageAction('ordering.login.get-otp-start');
+      logger.log('Ordering_App_StartToGetOTP');
+
+      dispatch({ type: types.GET_OTP_REQUEST, payload: { otpType } });
+
+      await post(Url.API_URLS.GET_OTP.url, {
         ...payload,
         platform: OTP_REQUEST_PLATFORM,
       });
 
-      if (isSent) {
-        dispatch({ type: types.GET_OTP_SUCCESS });
-      } else {
-        dispatch({ type: types.GET_OTP_FAILURE, error: errorCode });
-      }
+      window.newrelic?.addPageAction('ordering.login.get-otp-success');
+
+      dispatch({ type: types.GET_OTP_SUCCESS });
     } catch (error) {
-      // For sake of completeness: this won't be called because of the the response code will always be 200
+      window.newrelic?.addPageAction('ordering.login.get-otp-failed', {
+        error: error?.message,
+        code: error?.code,
+      });
+
       dispatch({
         type: types.GET_OTP_FAILURE,
-        error: error,
+        error,
       });
     }
   },
+
+  resetSendOtpRequest: () => ({
+    type: types.RESET_CREATE_OTP_REQUEST,
+  }),
 
   sendOtp: ({ otp }) => ({
     [API_REQUEST]: {
@@ -436,10 +462,6 @@ export const actions = {
   updateProfileInfo: fields => ({
     type: types.UPDATE_PROFILE_INFO,
     fields,
-  }),
-
-  updateOtpStatus: () => ({
-    type: types.UPDATE_OTP_STATUS,
   }),
 
   getProfileInfo: consumerId => ({
@@ -806,18 +828,18 @@ export const actions = {
 
 const user = (state = initialState.user, action) => {
   const { type, response, prompt, error, fields, responseGql, payload } = action;
-  const { consumerId, login, noWhatsAppAccount } = response || {};
+  const { consumerId, login, supportWhatsApp } = response || {};
   const source = _get(payload, 'source', null);
+  const otpType = _get(payload, 'otpType', null);
   const isFromBeepApp = source === REGISTRATION_SOURCE.BEEP_APP;
 
   switch (type) {
-    case types.SHOW_LOGIN_PAGE:
-      return { ...state, showLoginPage: true };
-    case types.HIDE_LOGIN_PAGE:
-      return { ...state, showLoginPage: false };
+    case types.RESET_CREATE_OTP_REQUEST:
+      return { ...state, isFetching: false, isError: false };
     case types.FETCH_LOGIN_STATUS_REQUEST:
-    case types.CREATE_OTP_REQUEST:
       return { ...state, isFetching: true };
+    case types.CREATE_OTP_REQUEST:
+      return { ...state, isFetching: true, isError: false };
     case types.CREATE_LOGIN_REQUEST:
       return {
         ...state,
@@ -826,25 +848,25 @@ const user = (state = initialState.user, action) => {
         loginByBeepAppStatus: isFromBeepApp ? API_REQUEST_STATUS.PENDING : null,
       };
     case types.FETCH_LOGIN_STATUS_FAILURE:
+      return { ...state, isFetching: false };
     case types.GET_OTP_FAILURE:
-      // We won't handle the error code separately for now, because we don't want users to see the error details in the phase 1.
-      return { ...state, isFetching: false, isResending: false, isOtpError: true };
+      return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false, isResending: false, isError: true };
+      return { ...state, isFetching: false, isError: true };
+    case types.RESET_GET_OTP_REQUEST:
+      return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
     case types.GET_OTP_REQUEST:
       return {
         ...state,
-        isFetching: true,
-        isResending: true,
-        isOtpError: false,
-        otpType: OTP_REQUEST_TYPES.RE_SEND_OTP,
+        otpRequest: {
+          ...state.otpRequest,
+          data: { ...state.otpRequest.data, type: otpType },
+          status: API_REQUEST_STATUS.PENDING,
+          error: null,
+        },
       };
-    case types.RESET_OTP_STATUS:
-      return { ...state, isFetching: false, hasOtp: false };
-    case types.UPDATE_OTP_STATUS:
-      return { ...state, isFetching: false, isError: false };
     case types.GET_OTP_SUCCESS:
-      return { ...state, isFetching: false, isResending: false, hasOtp: true, noWhatsAppAccount };
+      return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.FULFILLED } };
     case types.CREATE_OTP_SUCCESS:
       const { access_token, refresh_token } = response;
 
@@ -876,7 +898,6 @@ const user = (state = initialState.user, action) => {
           status: API_REQUEST_STATUS.FULFILLED,
         },
         isLogin: true,
-        hasOtp: false,
         isExpired: false,
         isFetching: false,
         loginRequestStatus: API_REQUEST_STATUS.FULFILLED,
@@ -967,6 +988,13 @@ const user = (state = initialState.user, action) => {
         return state;
       }
 
+    case types.GET_WHATSAPPSUPPORT_REQUEST:
+      return { ...state, noWhatsAppAccount: true };
+    case types.GET_WHATSAPPSUPPORT_SUCCESS:
+      return { ...state, noWhatsAppAccount: !supportWhatsApp };
+    case types.GET_WHATSAPPSUPPORT_FAILURE:
+      // Write down here just for the sake of completeness, we won't handle this failure case for now.
+      return state;
     default:
       return state;
   }
@@ -979,14 +1007,6 @@ const error = (state = initialState.error, action) => {
     return null;
   } else if (code && code !== 401 && Object.values(Constants.CREATE_ORDER_ERROR_CODES).includes(code)) {
     let errorMessage = message;
-
-    return {
-      ...state,
-      code,
-      message: errorMessage,
-    };
-  } else if (code && code !== 401 && type === types.CREATE_OTP_FAILURE) {
-    let errorMessage = Constants.LOGIN_PROMPT[code];
 
     return {
       ...state,
@@ -1255,11 +1275,17 @@ export default combineReducers({
 
 // selectors
 export const getUser = state => state.app.user;
-export const getOtpType = state => state.app.user.otpType;
-export const getIsOtpError = state => state.app.user.isOtpError;
+export const getOtpRequest = state => state.app.user.otpRequest;
 export const getUserIsExpired = state => state.app.user.isExpired;
 export const getBusiness = state => state.app.business;
 export const getError = state => state.app.error;
+
+export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
+
+export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
+
+export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
+
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
@@ -1273,8 +1299,6 @@ export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
 export const getRequestInfo = state => state.app.requestInfo;
 
 export const getApiError = state => state.app.apiError;
-
-export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogin', false));
 
 export const getUserLoginRequestStatus = state => state.app.user.loginRequestStatus;
 

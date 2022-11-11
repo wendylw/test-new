@@ -15,21 +15,25 @@ import {
   queryCartSubmissionStatus as queryCartSubmissionStatusThunk,
   clearQueryCartSubmissionStatus as clearQueryCartSubmissionStatusThunk,
 } from '../../../../redux/cart/thunks';
+import { getCleverTapAttributes } from '../../redux/common/selector';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import orderSuccessImage from '../../../../../images/order-success-1.svg';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
+import CleverTap from '../../../../../utils/clevertap';
 import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
     prefetch(['ORD_MNU', 'ORD_SC', 'ORD_TS'], ['OrderingDelivery', 'OrderingCart', 'OrderingTableSummary']);
 
-    const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber } = this.props;
+    const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber, cleverTapAttributes } = this.props;
     const submissionId = Utils.getQueryString('submissionId');
 
     await queryCartSubmissionStatus(submissionId);
+
+    CleverTap.pushEvent('Order Placed Page - View Page', cleverTapAttributes);
 
     // In order to prevent the user from going to this page but cartSubmittedStatus is true, so that it jumps directly away
     if (cartSubmittedStatus) {
@@ -71,7 +75,7 @@ class CartSubmissionStatus extends Component {
 
     return (
       options && (
-        <div className={`${options.className} flex flex-middle padding-small`}>
+        <div className={`${options.className} flex flex-middle`}>
           {options.icon}
           {options.title}
         </div>
@@ -80,7 +84,9 @@ class CartSubmissionStatus extends Component {
   };
 
   handleClickAddMoreItems = () => {
-    const { history } = this.props;
+    const { history, cleverTapAttributes } = this.props;
+
+    CleverTap.pushEvent('Order Placed Page - Add More Items', cleverTapAttributes);
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
@@ -89,7 +95,9 @@ class CartSubmissionStatus extends Component {
   };
 
   handleClickViewTableSummary = () => {
-    const { history, receiptNumber } = this.props;
+    const { history, receiptNumber, cleverTapAttributes } = this.props;
+
+    CleverTap.pushEvent('Order Placed Page - View Order', cleverTapAttributes);
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
@@ -101,31 +109,28 @@ class CartSubmissionStatus extends Component {
     const { t, pendingCartSubmissionResult, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
 
     return (
-      <section className="ordering-submission absolute-wrapper flex flex-column flex-center flex-middle">
+      <section className="ordering-submission absolute-wrapper">
         {pendingCartSubmissionResult && <RedirectPageLoader />}
         {cartSubmittedStatus && (
           <>
-            <div className="ordering-submission__warning absolute-wrapper padding-small flex flex-middle flex-center">
-              <span>{t('OrderPlacedTitle')}</span>
-            </div>
-            <div className="ordering-submission__success absolute-wrapper flex flex-column flex-middle">
+            <div className="ordering-submission__success flex__fluid-content flex flex-column flex-middle">
               {this.getOrderStatusOptionsEl()}
               <img className="ordering-submission__image-container-new" src={orderSuccessImage} alt="order success" />
-              <h2 className="ordering-submission__description text-size-big padding-left-right-normal margin-top-bottom-normal text-line-height-base">
+              <h2 className="ordering-submission__description text-size-big padding-left-right-normal margin-top-bottom-normal">
                 {t('OrderPlacedDescription')}
               </h2>
-              <div className="ordering-submission__button-container flex flex-column flex-middle flex-center">
+              <div className="ordering-submission__button-container flex flex-column flex-middle flex-center padding-small">
                 <button
-                  className="ordering-submission__button button button__fill margin-small padding-normal text-uppercase text-weight-bolder"
+                  className="ordering-submission__button button button__fill padding-normal text-uppercase text-weight-bolder"
+                  onClick={this.handleClickViewTableSummary}
+                >
+                  {t('ViewOrder')}
+                </button>
+                <button
+                  className="ordering-submission__button button button__outline padding-normal text-uppercase text-weight-bolder"
                   onClick={this.handleClickAddMoreItems}
                 >
                   {t('AddMoreItems')}
-                </button>
-                <button
-                  className="ordering-submission__button-second button margin-small padding-normal text-uppercase text-weight-bolder"
-                  onClick={this.handleClickViewTableSummary}
-                >
-                  {t('ViewOrderOrPay')}
                 </button>
               </div>
             </div>
@@ -133,10 +138,10 @@ class CartSubmissionStatus extends Component {
         )}
 
         {cartSubmissionFailedStatus && (
-          <>
+          <div className="ordering-submission__failure flex__fluid-content flex flex-column flex-middle">
             <img className="ordering-submission__image-container-common" src={orderFailureImage} alt="order failure" />
-            <div className="margin-smaller text-center">
-              <h2 className="text-size-biggest text-weight-bold text-line-height-base">
+            <div className="margin-top-bottom-small margin-left-right-smaller text-center">
+              <h2 className="text-size-biggest text-weight-bolder text-line-height-base">
                 {t('OrderSubmittedFailedTitle')}
               </h2>
               <p className="ordering-submission__failure-description margin-top-bottom-smaller text-center text-size-big text-line-height-base">
@@ -146,12 +151,12 @@ class CartSubmissionStatus extends Component {
             <div className="padding-top-bottom-normal margin-smaller">
               <button
                 onClick={this.handleClickBack}
-                className="button button__fill padding-normal text-uppercase text-weight-bolder"
+                className="ordering-submission__return-button button button__fill padding-normal text-uppercase text-weight-bolder"
               >
                 {t('ReturnToCart')}
               </button>
             </div>
-          </>
+          </div>
         )}
       </section>
     );
@@ -167,6 +172,8 @@ CartSubmissionStatus.propTypes = {
   receiptNumber: PropTypes.string,
   clearQueryCartSubmissionStatus: PropTypes.func,
   queryCartSubmissionStatus: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  cleverTapAttributes: PropTypes.object,
 };
 
 CartSubmissionStatus.defaultProps = {
@@ -176,6 +183,7 @@ CartSubmissionStatus.defaultProps = {
   receiptNumber: null,
   clearQueryCartSubmissionStatus: () => {},
   queryCartSubmissionStatus: () => {},
+  cleverTapAttributes: {},
 };
 
 export default compose(
@@ -186,6 +194,7 @@ export default compose(
       pendingCartSubmissionResult: getCartSubmissionHasNotResult(state),
       cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
       receiptNumber: getCartSubmissionReceiptNumber(state),
+      cleverTapAttributes: getCleverTapAttributes(state),
     }),
     dispatch => ({
       clearQueryCartSubmissionStatus: bindActionCreators(clearQueryCartSubmissionStatusThunk, dispatch),
