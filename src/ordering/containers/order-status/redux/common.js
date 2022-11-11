@@ -16,7 +16,6 @@ import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
 const initialState = {
   receiptNumber: Utils.getQueryString('receiptNumber'),
-  shippingType: Utils.getQueryString('type'),
   order: null,
   updateShippingTypeStatus: null, // pending || fulfilled || rejected
   updateOrderStatus: null, // pending || fulfilled || rejected

@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get, post } from '../../../../utils/api/api-fetch';
 import Constants from '../../../../utils/constants';
-import { getReceiptNumber, getShippingType } from './selector';
+import { getReceiptNumber } from './selector';
 import { API_INFO, getOrderStoreReview, postOrderStoreReview } from './api-info';
 import { alert } from '../../../../common/utils/feedback';
 
@@ -61,8 +61,7 @@ export const loadOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/loadOrderStoreReview',
   async (_, { getState }) => {
     const orderId = getReceiptNumber(getState());
-    const shippingType = getShippingType(getState());
-    const { data } = await getOrderStoreReview(orderId, shippingType);
+    const { data } = await getOrderStoreReview(orderId);
 
     return data;
   }
