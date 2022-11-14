@@ -51,7 +51,7 @@ const Alert = props => {
           onClick={onClose}
           style={closeButtonStyle}
         >
-          {closeButtonContent || t('OK')}
+          {closeButtonContent || t('OKay')}
         </Button>
       </div>
     </Modal>
