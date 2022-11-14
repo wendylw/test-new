@@ -83,6 +83,10 @@ export const getSelectedPaymentOption = ({ payments }) => {
   return selectedPaymentOption || {};
 };
 
+export const getPaymentName = createSelector(getSelectedPaymentOption, selectedPaymentOption => {
+  return selectedPaymentOption.paymentName;
+});
+
 export const getSelectedPaymentOptionSupportSaveCard = createSelector(
   getUser,
   getSelectedPaymentOption,
