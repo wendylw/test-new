@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
+import prefetch from '../../../common/utils/prefetch-assets';
 import ErrorPage from '../../../components/Error';
 
 import { connect } from 'react-redux';
@@ -10,6 +11,10 @@ import Utils from '../../../utils/utils';
 import * as NativeMethods from '../../../utils/native-methods';
 import NativeHeader from '../../../components/NativeHeader';
 export class Error extends Component {
+  componentDidMount() {
+    prefetch(['SITE_HM'], ['SiteHome']);
+  }
+
   getCurrentErrorType(type) {
     if (!type) {
       return {};

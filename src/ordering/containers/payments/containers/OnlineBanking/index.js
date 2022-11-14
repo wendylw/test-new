@@ -28,6 +28,7 @@ import { initialize as initializeThunkCreator } from '../../redux/common/thunks'
 import { actions } from './redux';
 import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -40,6 +41,8 @@ class OnlineBanking extends Component {
   };
 
   async componentDidMount() {
+    prefetch(['ORD_PMT'], ['OrderingPayment']);
+
     const { initialize } = this.props;
 
     /**

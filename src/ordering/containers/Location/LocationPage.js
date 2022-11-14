@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import _get from 'lodash/get';
+import prefetch from '../../../common/utils/prefetch-assets';
 import HybridHeader from '../../../components/HybridHeader';
 import { post } from '../../../utils/request';
 import config from '../../../config';
@@ -30,6 +31,8 @@ class LocationPage extends Component {
   };
 
   async componentDidMount() {
+    prefetch(['ORD_LAD']);
+
     const { storeId } = this.props;
 
     this.loadStoreInfo();

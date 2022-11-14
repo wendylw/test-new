@@ -1,6 +1,7 @@
 import React from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
+import prefetch from '../../../../common/utils/prefetch-assets';
 import { tryGetDeviceCoordinates } from '../../../../components/LocationPicker';
 import { withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../../../components/Icons';
@@ -21,6 +22,8 @@ class Location extends React.Component {
   };
 
   componentDidMount = async () => {
+    prefetch(['SITE_HM'], ['SiteHome']);
+
     const { location, hasUserLoggedIn, loadAddressList } = this.props;
     const { state = {} } = location;
     const { coords } = state;

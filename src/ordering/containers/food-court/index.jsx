@@ -11,7 +11,7 @@ import { mounted } from './redux/common/thunks';
 const FoodCourt = () => {
   const dispatch = useDispatch();
 
-  usePrefetch(['ORD_PL']);
+  usePrefetch(['ORD_PL', 'ORD_MNU', 'SITE_OH'], ['OrderingDelivery', 'OrderHistory']);
 
   useMount(() => {
     dispatch(mounted());

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import qs from 'qs';
 import _pick from 'lodash/pick';
 import { withTranslation } from 'react-i18next';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
@@ -21,6 +22,8 @@ const PROVIDER_TO_METHOD = {
 
 class Sorry extends Component {
   async componentDidMount() {
+    prefetch(['ORD_MNU', 'ORD_SC'], ['OrderingDelivery', 'OrderingCart']);
+
     const { t } = this.props;
     const queryParams = Utils.getQueryString();
     const isPayLater = queryParams.isPayLater === 'true';
