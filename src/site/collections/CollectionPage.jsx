@@ -77,8 +77,6 @@ class CollectionPage extends React.Component {
   };
 
   componentDidMount = async () => {
-    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
-
     const { collectionCardActions, fetchAddressInfo, loadSearchOptionList, loadStoreList } = this.props;
     await collectionCardActions.getCurrentCollection(this.props.match.params.urlPath);
 
@@ -108,6 +106,7 @@ class CollectionPage extends React.Component {
       'collection name': name,
       'collection id': beepCollectionId,
     });
+    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
   };
 
   componentDidUpdate = async prevProps => {

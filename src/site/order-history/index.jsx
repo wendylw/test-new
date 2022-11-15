@@ -30,8 +30,6 @@ import logger from '../../utils/monitoring/logger';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
-    prefetch(['ORD_FC']);
-
     const { isLogin, initOrderHistoryData, isPingRequestDone } = this.props;
 
     if (isLogin) {
@@ -41,6 +39,8 @@ class OrderHistory extends React.Component {
     if (isPingRequestDone && !isLogin) {
       this.login();
     }
+
+    prefetch(['ORD_FC']);
   };
 
   componentDidUpdate(prevProps) {

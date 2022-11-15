@@ -69,8 +69,6 @@ class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-    prefetch(['ORD_LOC', 'ORD_PL'], ['SiteHome', 'OrderingDelivery']);
-
     if (checkStateRestoreStatus()) {
       const { getAddressInfo, addressCoords } = this.props;
       Home.lastUsedAddressCoords = addressCoords;
@@ -91,6 +89,7 @@ class Home extends React.Component {
     await this.reloadAddressInfoByDeviceIfNeeded(source);
 
     CleverTap.pushEvent('Home Page - view home page');
+    prefetch(['ORD_LOC', 'ORD_PL'], ['SiteHome', 'OrderingDelivery']);
   };
 
   componentDidUpdate(prevProps) {

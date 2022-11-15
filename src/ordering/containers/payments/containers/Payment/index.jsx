@@ -51,11 +51,10 @@ class Payment extends Component {
   componentDidMount = async () => {
     const { initialize, paymentActions } = this.props;
 
-    prefetch(['ORD_OLB', 'ORD_SCS', 'ORD_SRP', 'ORD_PL'], ['OrderingPayment']);
-
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
     initialize();
+    prefetch(['ORD_OLB', 'ORD_SCS', 'ORD_SRP', 'ORD_PL'], ['OrderingPayment']);
   };
 
   componentDidUpdate(prevProps, prevStates) {

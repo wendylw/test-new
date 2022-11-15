@@ -54,8 +54,6 @@ class LocationAndDate extends Component {
   resetWhenWillUnmount = false;
 
   componentDidMount = async () => {
-    prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
-
     const { actions, location, savedAddressInfo, cachedAddressInfo, savedStoreId } = this.props;
     const { selectedAddress: selectedAddressInfo = null } = location.state || {};
 
@@ -87,6 +85,8 @@ class LocationAndDate extends Component {
     if (!this.props.cachedStoreId && deliveryType === DELIVERY_METHOD.PICKUP) {
       this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || savedStoreId);
     }
+
+    prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   componentWillUnmount() {

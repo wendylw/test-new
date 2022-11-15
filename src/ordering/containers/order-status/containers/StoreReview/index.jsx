@@ -34,8 +34,6 @@ const StoreReview = () => {
   const { state: locationState } = useLocation();
   const selectedRating = _get(locationState, 'rating', 0);
 
-  usePrefetch(['ORD_MNU', 'ORD_TY'], ['OrderingDelivery', 'OrderingThankYou']);
-
   const { t } = useTranslation('OrderingThankYou');
 
   const storeHasReviewed = useSelector(getHasStoreReviewed);
@@ -97,6 +95,8 @@ const StoreReview = () => {
   useEffect(() => {
     setIsContactAllowable(allowContact);
   }, [allowContact]);
+
+  usePrefetch(['ORD_MNU', 'ORD_TY'], ['OrderingDelivery', 'OrderingThankYou']);
 
   return (
     <section>

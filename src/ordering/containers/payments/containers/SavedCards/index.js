@@ -33,8 +33,6 @@ class SavedCards extends Component {
 
   componentDidMount = async () => {
     try {
-      prefetch(['ORD_PMT', 'ORD_SRP', 'ORD_CC', 'ORD_PL'], ['OrderingPayment']);
-
       await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 
       const { paymentProvider, history, cardList, supportSaveCard } = this.props;
@@ -59,6 +57,8 @@ class SavedCards extends Component {
         });
         return;
       }
+
+      prefetch(['ORD_PMT', 'ORD_SRP', 'ORD_CC', 'ORD_PL'], ['OrderingPayment']);
     } catch (error) {
       // TODO: Handle this error in Payment 2.0
       console.error(error);

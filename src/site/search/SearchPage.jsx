@@ -89,8 +89,6 @@ class SearchPage extends React.Component {
   };
 
   componentDidMount = async () => {
-    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
-
     const {
       otherCollections,
       popularCollections,
@@ -114,6 +112,8 @@ class SearchPage extends React.Component {
       // Silently fetch address Info without blocking current process
       fetchAddressInfo();
     }
+
+    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
   };
 
   componentDidUpdate = async prevProps => {

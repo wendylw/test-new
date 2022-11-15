@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
+import usePrefetch from '../../../common/utils/hooks/usePrefetch';
 import Frame from '../../../common/components/Frame';
 import MenuShippingInfoBar from './components/MenuShippingInfoBar';
 import MenuHeader from './components/MenuHeader';
@@ -25,6 +26,8 @@ const Menu = () => {
   useMount(() => {
     dispatch(mounted());
   });
+
+  usePrefetch(['ORD_SC', 'ORD_TS', 'ORD_PL'], ['OrderingCart', 'OrderingPromotion', 'OrderingTableSummary']);
 
   return (
     <Frame>

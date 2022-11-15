@@ -61,9 +61,8 @@ class QRScan extends Component {
   timer = null;
 
   componentDidMount() {
-    prefetch(['SITE_HM'], ['SiteHome']);
-
     this.getCamera();
+    prefetch(['SITE_HM'], ['SiteHome']);
   }
 
   componentWillUnmount() {

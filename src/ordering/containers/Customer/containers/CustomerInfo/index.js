@@ -49,8 +49,6 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    prefetch(['ORD_SC', 'ORD_PMT', 'ORD_AL', 'ORD_PL'], ['OrderingCart', 'OrderingPayment']);
-
     const { user, deliveryDetails, appActions } = this.props;
     const { consumerId } = user || {};
     consumerId && (await appActions.getProfileInfo(consumerId));
@@ -63,6 +61,7 @@ class CustomerInfo extends Component {
     });
 
     await appActions.loadShoppingCart();
+    prefetch(['ORD_SC', 'ORD_PMT', 'ORD_AL', 'ORD_PL'], ['OrderingCart', 'OrderingPayment']);
     this.cleverTapViewPageEvent('Checkout page - View page');
   }
 

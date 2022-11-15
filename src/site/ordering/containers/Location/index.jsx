@@ -22,8 +22,6 @@ class Location extends React.Component {
   };
 
   componentDidMount = async () => {
-    prefetch(['SITE_HM'], ['SiteHome']);
-
     const { location, hasUserLoggedIn, loadAddressList } = this.props;
     const { state = {} } = location;
     const { coords } = state;
@@ -60,6 +58,8 @@ class Location extends React.Component {
     if (hasUserLoggedIn) {
       await loadAddressList();
     }
+
+    prefetch(['SITE_HM'], ['SiteHome']);
   };
 
   componentDidUpdate = async prevProps => {

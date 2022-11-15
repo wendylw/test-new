@@ -77,8 +77,6 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
-    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PROMO', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart', 'OrderingPromotion']);
-
     const { t, history, queryOrdersAndStatus } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');
     const emptyString = ['null', 'undefined', ''];
@@ -101,6 +99,8 @@ export class TableSummary extends React.Component {
           }),
       });
     }
+
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PROMO', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart', 'OrderingPromotion']);
   }
 
   componentDidUpdate(prevProps, prevStates) {

@@ -149,8 +149,6 @@ export class ThankYou extends PureComponent {
     const { user, loadCashbackInfo, loadOrderStoreReview } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
-    prefetch(['ORD_MNU', 'ORD_OD', 'ORD_SR', 'ORD_PL'], ['OrderingDelivery', 'OrderingThankYou']);
-
     loadCashbackInfo(receiptNumber);
 
     // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
@@ -202,6 +200,8 @@ export class ThankYou extends PureComponent {
     if ((shippingType === DELIVERY_METHOD.DELIVERY || shippingType === DELIVERY_METHOD.PICKUP) && Utils.isWebview()) {
       this.promptUserEnableAppNotification();
     }
+
+    prefetch(['ORD_MNU', 'ORD_OD', 'ORD_SR', 'ORD_PL'], ['OrderingDelivery', 'OrderingThankYou']);
   };
 
   promptUserEnableAppNotification() {

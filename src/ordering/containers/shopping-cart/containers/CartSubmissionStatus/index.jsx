@@ -26,8 +26,6 @@ import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
   componentDidMount = async () => {
-    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_TS', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart', 'OrderingTableSummary']);
-
     const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber, cleverTapAttributes } = this.props;
     const submissionId = Utils.getQueryString('submissionId');
 
@@ -42,6 +40,8 @@ class CartSubmissionStatus extends Component {
         search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}&receiptNumber=${receiptNumber}`,
       });
     }
+
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_TS', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart', 'OrderingTableSummary']);
   };
 
   componentWillUnmount = () => {

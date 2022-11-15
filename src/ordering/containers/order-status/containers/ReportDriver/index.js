@@ -45,8 +45,6 @@ class ReportDriver extends Component {
   inputRefOfEmail = null;
 
   componentDidMount = async () => {
-    prefetch(['ORD_TY', 'ORD_PL'], ['OrderingThankYou']);
-
     const { receiptNumber, loadOrder, fetchReport, user } = this.props;
 
     await loadOrder(receiptNumber);
@@ -71,6 +69,7 @@ class ReportDriver extends Component {
     this.preFillEmail();
 
     fetchReport();
+    prefetch(['ORD_TY', 'ORD_PL'], ['OrderingThankYou']);
   };
 
   loginAppWithNativeToken = async result => {

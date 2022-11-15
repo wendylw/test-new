@@ -33,8 +33,6 @@ class PageClaim extends React.Component {
   }
 
   async componentDidMount() {
-    prefetch(['CB_HM'], ['Cashback']);
-
     const { t, user, history, appActions, claimActions } = this.props;
     const { isLogin } = user || {};
     const { h = '' } = qs.parse(history.location.search, { ignoreQueryPrefix: true });
@@ -56,6 +54,8 @@ class PageClaim extends React.Component {
     }
 
     this.setMessage(this.props.cashbackInfo);
+
+    prefetch(['CB_HM'], ['Cashback']);
   }
 
   componentWillReceiveProps(nextProps) {

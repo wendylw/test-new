@@ -62,16 +62,14 @@ class CreditCard extends Component {
   };
 
   async componentDidMount() {
-    prefetch(['ORD_PMT', 'ORD_PL'], ['OrderingPayment']);
-
     const script = document.createElement('script');
 
     script.src = config.storehubPaymentScriptSrc;
     document.body.appendChild(script);
 
     this.setState({ domLoaded: true });
-
     this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+    prefetch(['ORD_PMT', 'ORD_PL'], ['OrderingPayment']);
   }
 
   getPaymentEntryRequestData = () => {

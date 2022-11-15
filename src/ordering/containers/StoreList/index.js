@@ -93,8 +93,6 @@ class StoreList extends Component {
   }
 
   async componentDidMount() {
-    prefetch(['ORD_LAD', 'ORD_PL'], ['OrderingDelivery']);
-
     const { addressCoords } = this.props;
 
     const address = addressCoords && {
@@ -109,6 +107,7 @@ class StoreList extends Component {
     );
 
     this.getStoreList();
+    prefetch(['ORD_LAD', 'ORD_PL'], ['OrderingDelivery']);
   }
 
   getStoreList = () => {

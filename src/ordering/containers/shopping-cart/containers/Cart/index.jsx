@@ -12,7 +12,7 @@ function Cart(props) {
   const { history, businessInfo, enablePayLater } = props;
   const businessInfoKeysLength = Object.keys(businessInfo || {}).length;
 
-  usePrefetch(['ORD_MNU', 'ORD_PMT', 'ORD_TS'], ['OrderingDelivery', 'OrderingPayment', 'OrderingTableSummary']);
+  usePrefetch(['ORD_MNU', 'ORD_PL'], ['OrderingDelivery']);
 
   if (!businessInfoKeysLength) {
     return <PageLoader />;

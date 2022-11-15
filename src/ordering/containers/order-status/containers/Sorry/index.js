@@ -22,8 +22,6 @@ const PROVIDER_TO_METHOD = {
 
 class Sorry extends Component {
   async componentDidMount() {
-    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart']);
-
     const { t } = this.props;
     const queryParams = Utils.getQueryString();
     const isPayLater = queryParams.isPayLater === 'true';
@@ -51,6 +49,8 @@ class Sorry extends Component {
         }),
       });
     }
+
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart']);
   }
 
   getDescription = () => {
