@@ -15,3 +15,7 @@
 .alertFooter {
   @apply tw-py-8 sm:tw-py-8px;
 }
+
+.alertFooterButton {
+  @apply tw-w-full tw-uppercase;
+}

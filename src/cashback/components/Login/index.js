@@ -87,7 +87,6 @@ class Login extends React.Component {
 
       alert(t('NetworkErrorDescription'), {
         title: t('NetworkErrorTitle'),
-        closeButtonClassName: 'button__block text-uppercase',
       });
 
       // We will set the attribute 'message' even if it is always empty
@@ -171,7 +170,6 @@ class Login extends React.Component {
     if (!hasLoadSuccess) {
       alert(t('NetworkErrorDescription'), {
         title: t('NetworkErrorTitle'),
-        closeButtonClassName: 'button__block text-uppercase',
       });
     }
   }
