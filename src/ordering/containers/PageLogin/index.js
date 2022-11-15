@@ -46,7 +46,7 @@ class PageLogin extends React.Component {
       this.loginInTngMiniProgram();
     }
 
-    prefetch(['ORD_MNU', 'ORD_PL'], ['OrderingDelivery']);
+    prefetch(['ORD_MNU'], ['OrderingDelivery']);
   }
 
   componentDidUpdate(prevProps) {

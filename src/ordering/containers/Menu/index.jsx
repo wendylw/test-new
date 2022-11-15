@@ -27,7 +27,7 @@ const Menu = () => {
     dispatch(mounted());
   });
 
-  usePrefetch(['ORD_SC', 'ORD_TS', 'ORD_PL'], ['OrderingCart', 'OrderingPromotion', 'OrderingTableSummary']);
+  usePrefetch(['ORD_SC', 'ORD_TS'], ['OrderingCart', 'OrderingPromotion', 'OrderingTableSummary']);
 
   return (
     <Frame>

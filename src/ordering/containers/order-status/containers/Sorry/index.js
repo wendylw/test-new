@@ -50,7 +50,7 @@ class Sorry extends Component {
       });
     }
 
-    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart']);
+    prefetch(['ORD_MNU', 'ORD_SC'], ['OrderingDelivery', 'OrderingCart']);
   }
 
   getDescription = () => {

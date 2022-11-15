@@ -86,7 +86,7 @@ class LocationAndDate extends Component {
       this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || savedStoreId);
     }
 
-    prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
+    prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   componentWillUnmount() {
