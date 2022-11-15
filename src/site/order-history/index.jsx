@@ -30,6 +30,8 @@ import logger from '../../utils/monitoring/logger';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
+    prefetch(['ORD_FC']);
+
     const { isLogin, initOrderHistoryData, isPingRequestDone } = this.props;
 
     if (isLogin) {

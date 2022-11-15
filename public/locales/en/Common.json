@@ -299,5 +299,12 @@
   "SelectStoreDefault": "Select Store",
   "Promos": "Promos",
   "Date": "Date",
-  "Time": "Time"
+  "Time": "Time",
+  "CheckIfDrinkingAge": "Are you of legal drinking age?",
+  "AlcoholLimitationsMY": "Our alcohol products can only be purchased by non-Muslims aged 21 years old and above.",
+  "AlcoholLimitationsPH": "Our alcohol products can only be purchased by persons aged 18 years old and above.",
+  "AlcoholNo": "NO, I'M NOT",
+  "AlcoholYes": "YES, I AM",
+  "AlcoholDenied": "Access Denied",
+  "AlcoholNotAllowed": "Aww, sorry... This store sells alcoholic beverages. If it is not suitable, you can check out the other stores instead. \uD83D\uDE42"
 }

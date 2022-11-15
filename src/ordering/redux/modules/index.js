@@ -2,7 +2,6 @@ import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 import entities from '../../../redux/modules/entities';
 import app from './app';
-import home from '../../containers/Home/redux/index';
 import profile from '../../containers/Profile/redux/index';
 import cart from '../../containers/shopping-cart/redux';
 import promotion from './promotion';
@@ -23,7 +22,6 @@ const rootReducer = history =>
     router: connectRouter(history),
     entities,
     app,
-    home,
     cart,
     customer,
     payments,
