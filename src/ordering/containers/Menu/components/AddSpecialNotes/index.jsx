@@ -105,7 +105,7 @@ const AddSpecialNotes = () => {
             onChange={handleNotesChange}
             className={styles.AddSpecialNotesInputContent}
             placeholder={t('EgLessSugar')}
-            row={5}
+            rows={5}
             maxLength={NOTES_MAX_LENGTH}
             autoFocus
           />

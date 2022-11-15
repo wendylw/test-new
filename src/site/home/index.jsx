@@ -46,7 +46,6 @@ import {
 } from '../../redux/modules/address/selectors';
 import { getAddressInfo, setAddressInfo } from '../../redux/modules/address/thunks';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../../redux/modules/address/constants';
-import '../../common/styles/base.scss';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 

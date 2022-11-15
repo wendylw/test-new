@@ -87,7 +87,6 @@ class Login extends React.Component {
 
       alert(t('NetworkErrorDescription'), {
         title: t('NetworkErrorTitle'),
-        closeButtonClassName: 'button__block text-uppercase',
       });
 
       // We will set the attribute 'message' even if it is always empty
@@ -106,7 +105,7 @@ class Login extends React.Component {
     if (shouldShowErrorPopUp) {
       const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
 
-      alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
+      alert(t(descriptionKey), { title: t(titleKey) });
     }
 
     throw new Error('Failed to get OTP code');
@@ -171,7 +170,6 @@ class Login extends React.Component {
     if (!hasLoadSuccess) {
       alert(t('NetworkErrorDescription'), {
         title: t('NetworkErrorTitle'),
-        closeButtonClassName: 'button__block text-uppercase',
       });
     }
   }

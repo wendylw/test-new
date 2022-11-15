@@ -26,6 +26,10 @@
   }
 }
 
+.confirmFooterButton {
+  @apply tw-flex-1 tw-uppercase;
+}
+
 .confirmVerticalCloseButton {
   &:global(.type-text) {
     @apply tw-text-gray-800

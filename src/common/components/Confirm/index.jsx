@@ -50,7 +50,7 @@ const ConfirmFooter = props => {
       {buttonAlignment === CONFIRM_BUTTON_ALIGNMENT.HORIZONTAL ? (
         <Button
           type="secondary"
-          className={`tw-flex-1 tw-uppercase${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
+          className={`${styles.confirmFooterButton}${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
           onClick={() => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
@@ -61,7 +61,7 @@ const ConfirmFooter = props => {
       ) : null}
       <Button
         type="primary"
-        className={`tw-flex-1 tw-uppercase${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
+        className={`${styles.confirmFooterButton}${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
         onClick={() => {
           onSelection(CONFIRM_TRIGGER_TARGET.CONFIRM);
         }}

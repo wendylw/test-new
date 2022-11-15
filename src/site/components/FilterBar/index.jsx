@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { CaretDown, FunnelSimple } from 'phosphor-react';
 import ChipSelector from './components/ChipSelector';
 import { DISPLAY_ICON_TYPES } from '../../../utils/constants';
+import 'swiper/swiper.scss';
 import styles from './FilterBar.module.scss';
 
 const FilterBar = ({

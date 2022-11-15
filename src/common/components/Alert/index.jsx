@@ -47,7 +47,7 @@ const Alert = props => {
       <div className={styles.alertFooter}>
         <Button
           type="primary"
-          className={`tw-w-full tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
+          className={`${styles.alertFooterButton}${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
           onClick={onClose}
           style={closeButtonStyle}
         >
