@@ -105,7 +105,7 @@ class Login extends React.Component {
     if (shouldShowErrorPopUp) {
       const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
 
-      alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
+      alert(t(descriptionKey), { title: t(titleKey) });
     }
 
     throw new Error('Failed to get OTP code');
