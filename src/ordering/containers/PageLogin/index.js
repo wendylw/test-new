@@ -42,7 +42,7 @@ class PageLogin extends React.Component {
   captchaRef = React.createRef();
 
   componentDidMount() {
-    prefetch(['ORD_MNU'], ['OrderingDelivery']);
+    prefetch(['ORD_MNU', 'ORD_PL'], ['OrderingDelivery']);
 
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();

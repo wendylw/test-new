@@ -17,7 +17,7 @@ const { AVAILABLE_REPORT_DRIVER_ORDER_STATUSES } = Constants;
 
 export class MerchantInfo extends Component {
   componentDidMount() {
-    prefetch(['ORD_RD', 'ORD_TY'], ['ReportDriver', 'OrderingThankYou']);
+    prefetch(['ORD_RD', 'ORD_TY', 'ORD_PL'], ['ReportDriver', 'OrderingThankYou']);
 
     const { loadOrder, receiptNumber } = this.props;
 

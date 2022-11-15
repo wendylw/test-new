@@ -45,7 +45,7 @@ class ReportDriver extends Component {
   inputRefOfEmail = null;
 
   componentDidMount = async () => {
-    prefetch(['ORD_TY'], ['OrderingThankYou']);
+    prefetch(['ORD_TY', 'ORD_PL'], ['OrderingThankYou']);
 
     const { receiptNumber, loadOrder, fetchReport, user } = this.props;
 

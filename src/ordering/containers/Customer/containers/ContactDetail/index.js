@@ -16,7 +16,7 @@ const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class ContactDetail extends Component {
   componentDidMount() {
-    prefetch(['ORD_CI'], ['OrderingCustomer', 'OrderingDelivery']);
+    prefetch(['ORD_CI', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
 
     const { deliveryDetails, init } = this.props;
     const { phone, username } = deliveryDetails;

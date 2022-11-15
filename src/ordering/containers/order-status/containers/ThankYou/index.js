@@ -149,7 +149,7 @@ export class ThankYou extends PureComponent {
     const { user, loadCashbackInfo, loadOrderStoreReview } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
-    prefetch(['ORD_MNU', 'ORD_OD', 'ORD_SR'], ['OrderingDelivery', 'OrderingThankYou']);
+    prefetch(['ORD_MNU', 'ORD_OD', 'ORD_SR', 'ORD_PL'], ['OrderingDelivery', 'OrderingThankYou']);
 
     loadCashbackInfo(receiptNumber);
 

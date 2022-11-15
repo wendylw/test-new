@@ -54,7 +54,7 @@ class LocationAndDate extends Component {
   resetWhenWillUnmount = false;
 
   componentDidMount = async () => {
-    prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
+    prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
 
     const { actions, location, savedAddressInfo, cachedAddressInfo, savedStoreId } = this.props;
     const { selectedAddress: selectedAddressInfo = null } = location.state || {};

@@ -30,7 +30,7 @@ const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
 // React Stripe.js reference: https://stripe.com/docs/stripe-js/react
 class Stripe extends Component {
   async componentDidMount() {
-    prefetch(['ORD_PMT'], ['OrderingPayment']);
+    prefetch(['ORD_PMT', 'ORD_PL'], ['OrderingPayment']);
 
     this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
   }

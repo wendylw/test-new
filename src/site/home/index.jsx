@@ -69,7 +69,7 @@ class Home extends React.Component {
   }
 
   componentDidMount = async () => {
-    prefetch(['ORD_LOC'], ['SiteHome', 'OrderingDelivery']);
+    prefetch(['ORD_LOC', 'ORD_PL'], ['SiteHome', 'OrderingDelivery']);
 
     if (checkStateRestoreStatus()) {
       const { getAddressInfo, addressCoords } = this.props;

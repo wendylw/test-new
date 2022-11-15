@@ -77,7 +77,7 @@ export class TableSummary extends React.Component {
   }
 
   async componentDidMount() {
-    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PROMO'], ['OrderingDelivery', 'OrderingCart', 'OrderingPromotion']);
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PROMO', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart', 'OrderingPromotion']);
 
     const { t, history, queryOrdersAndStatus } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber');

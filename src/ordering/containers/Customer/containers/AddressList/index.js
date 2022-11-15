@@ -20,7 +20,7 @@ import CleverTap from '../../../../../utils/clevertap';
 
 class AddressList extends Component {
   componentDidMount = async () => {
-    prefetch(['ORD_LOC', 'ORD_AD', 'ORD_CI'], ['OrderingCustomer', 'OrderingDelivery']);
+    prefetch(['ORD_LOC', 'ORD_AD', 'ORD_CI', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
 
     const { loadAddressList } = this.props;
 

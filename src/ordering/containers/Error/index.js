@@ -12,7 +12,7 @@ import * as NativeMethods from '../../../utils/native-methods';
 import NativeHeader from '../../../components/NativeHeader';
 export class Error extends Component {
   componentDidMount() {
-    prefetch(['SITE_HM'], ['SiteHome']);
+    prefetch(['SITE_HM', 'ORD_PL'], ['SiteHome']);
   }
 
   getCurrentErrorType(type) {

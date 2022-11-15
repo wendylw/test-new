@@ -33,7 +33,7 @@ class SavedCards extends Component {
 
   componentDidMount = async () => {
     try {
-      prefetch(['ORD_PMT', 'ORD_SRP', 'ORD_CC'], ['OrderingPayment']);
+      prefetch(['ORD_PMT', 'ORD_SRP', 'ORD_CC', 'ORD_PL'], ['OrderingPayment']);
 
       await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 

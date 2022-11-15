@@ -31,7 +31,7 @@ class LocationPage extends Component {
   };
 
   async componentDidMount() {
-    prefetch(['ORD_LAD']);
+    prefetch(['ORD_LAD', 'ORD_PL']);
 
     const { storeId } = this.props;
 

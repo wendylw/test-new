@@ -41,7 +41,7 @@ class OnlineBanking extends Component {
   };
 
   async componentDidMount() {
-    prefetch(['ORD_PMT'], ['OrderingPayment']);
+    prefetch(['ORD_PMT', 'ORD_PL'], ['OrderingPayment']);
 
     const { initialize } = this.props;
 

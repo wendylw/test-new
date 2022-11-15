@@ -37,7 +37,7 @@ class AddressDetail extends Component {
   };
 
   componentDidMount = async () => {
-    prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
+    prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
 
     const { init, location } = this.props;
     const { type: actionType, selectedAddress } = location.state || {};

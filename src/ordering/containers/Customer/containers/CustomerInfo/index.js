@@ -49,7 +49,7 @@ class CustomerInfo extends Component {
   };
 
   async componentDidMount() {
-    prefetch(['ORD_SC', 'ORD_PMT', 'ORD_AL'], ['OrderingCart', 'OrderingPayment']);
+    prefetch(['ORD_SC', 'ORD_PMT', 'ORD_AL', 'ORD_PL'], ['OrderingCart', 'OrderingPayment']);
 
     const { user, deliveryDetails, appActions } = this.props;
     const { consumerId } = user || {};
