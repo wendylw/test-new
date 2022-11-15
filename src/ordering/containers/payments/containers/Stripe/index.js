@@ -31,7 +31,7 @@ const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
 class Stripe extends Component {
   async componentDidMount() {
     this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
-    prefetch(['ORD_PMT', 'ORD_PL'], ['OrderingPayment']);
+    prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
   getPaymentEntryRequestData = () => {

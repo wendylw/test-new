@@ -47,7 +47,7 @@ class OnlineBanking extends Component {
      * Load all payment options action and except saved card list
      */
     initialize(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
-    prefetch(['ORD_PMT', 'ORD_PL'], ['OrderingPayment']);
+    prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
   getPaymentEntryRequestData = () => {
