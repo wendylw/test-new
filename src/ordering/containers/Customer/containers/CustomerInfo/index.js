@@ -61,7 +61,7 @@ class CustomerInfo extends Component {
     });
 
     await appActions.loadShoppingCart();
-    prefetch(['ORD_SC', 'ORD_PMT', 'ORD_AL', 'ORD_PL'], ['OrderingCart', 'OrderingPayment']);
+    prefetch(['ORD_SC', 'ORD_PMT', 'ORD_AL'], ['OrderingCart', 'OrderingPayment']);
     this.cleverTapViewPageEvent('Checkout page - View page');
   }
 

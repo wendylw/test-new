@@ -41,7 +41,7 @@ class AddressDetail extends Component {
     const { type: actionType, selectedAddress } = location.state || {};
     await init({ actionType, selectedAddress });
 
-    prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
+    prefetch(['ORD_AL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   handleClickBack = () => {

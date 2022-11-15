@@ -24,7 +24,7 @@ class AddressList extends Component {
 
     await loadAddressList();
 
-    prefetch(['ORD_LOC', 'ORD_AD', 'ORD_CI', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
+    prefetch(['ORD_LOC', 'ORD_AD', 'ORD_CI'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   addNewAddress = () => {

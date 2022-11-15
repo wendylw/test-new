@@ -54,7 +54,7 @@ class Payment extends Component {
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
     initialize();
-    prefetch(['ORD_OLB', 'ORD_SCS', 'ORD_SRP', 'ORD_PL'], ['OrderingPayment']);
+    prefetch(['ORD_OLB', 'ORD_SCS', 'ORD_SRP'], ['OrderingPayment']);
   };
 
   componentDidUpdate(prevProps, prevStates) {

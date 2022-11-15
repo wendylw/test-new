@@ -58,7 +58,7 @@ class SavedCards extends Component {
         return;
       }
 
-      prefetch(['ORD_PMT', 'ORD_SRP', 'ORD_CC', 'ORD_PL'], ['OrderingPayment']);
+      prefetch(['ORD_PMT', 'ORD_SRP', 'ORD_CC'], ['OrderingPayment']);
     } catch (error) {
       // TODO: Handle this error in Payment 2.0
       console.error(error);

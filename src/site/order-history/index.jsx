@@ -40,7 +40,7 @@ class OrderHistory extends React.Component {
       this.login();
     }
 
-    prefetch(['ORD_FC']);
+    prefetch(['ORD_FC', 'ORD_OD', 'ORD_TY'], ['OrderingDelivery', 'OrderingThankYou']);
   };
 
   componentDidUpdate(prevProps) {

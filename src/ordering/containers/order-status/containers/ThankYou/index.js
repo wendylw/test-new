@@ -201,7 +201,7 @@ export class ThankYou extends PureComponent {
       this.promptUserEnableAppNotification();
     }
 
-    prefetch(['ORD_MNU', 'ORD_OD', 'ORD_SR', 'ORD_PL'], ['OrderingDelivery', 'OrderingThankYou']);
+    prefetch(['ORD_MNU', 'ORD_OD', 'ORD_SR'], ['OrderingDelivery', 'OrderingThankYou']);
   };
 
   promptUserEnableAppNotification() {
