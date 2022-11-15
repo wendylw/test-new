@@ -64,7 +64,7 @@ class LocationPage extends Component {
       await loadAddressList();
     }
 
-    prefetch(['ORD_LAD', 'ORD_PL']);
+    prefetch(['ORD_LAD']);
   }
 
   async componentDidUpdate(prevProps) {

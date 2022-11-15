@@ -89,7 +89,7 @@ class Home extends React.Component {
     await this.reloadAddressInfoByDeviceIfNeeded(source);
 
     CleverTap.pushEvent('Home Page - view home page');
-    prefetch(['ORD_LOC', 'ORD_PL'], ['SiteHome', 'OrderingDelivery']);
+    prefetch(['ORD_LOC'], ['SiteHome', 'OrderingDelivery']);
   };
 
   componentDidUpdate(prevProps) {
