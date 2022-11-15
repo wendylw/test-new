@@ -69,7 +69,7 @@ class CreditCard extends Component {
 
     this.setState({ domLoaded: true });
     this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
-    prefetch(['ORD_PMT', 'ORD_PL'], ['OrderingPayment']);
+    prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
   getPaymentEntryRequestData = () => {

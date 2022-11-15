@@ -107,7 +107,7 @@ class StoreList extends Component {
     );
 
     this.getStoreList();
-    prefetch(['ORD_LAD', 'ORD_PL'], ['OrderingDelivery']);
+    prefetch(['ORD_LAD'], ['OrderingDelivery']);
   }
 
   getStoreList = () => {

@@ -45,7 +45,7 @@ export class OrderDetails extends Component {
     const { loadOrder } = this.props;
 
     loadOrder(this.getReceiptNumber());
-    prefetch(['ORD_MI', 'ORD_RD', 'ORD_MNU', 'ORD_PL'], ['OrderingDelivery', 'ReportDriver']);
+    prefetch(['ORD_MI', 'ORD_RD', 'ORD_MNU'], ['OrderingDelivery', 'ReportDriver']);
   }
 
   getReceiptNumber = () => {

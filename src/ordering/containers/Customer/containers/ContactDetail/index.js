@@ -4,7 +4,6 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import Utils from '../../../../../utils/utils';
 import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
-import prefetch from '../../../../../common/utils/prefetch-assets';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { getUser, getDeliveryDetails } from '../../../../redux/modules/app';
@@ -19,8 +18,6 @@ class ContactDetail extends Component {
     const { deliveryDetails, init } = this.props;
     const { phone, username } = deliveryDetails;
     init({ phone, username });
-
-    prefetch(['ORD_CI', 'ORD_PL'], ['OrderingCustomer', 'OrderingDelivery']);
   }
 
   handleClickBack = () => {
