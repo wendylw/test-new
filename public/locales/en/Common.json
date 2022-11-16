@@ -290,10 +290,13 @@
   "EgLessSugar": "Eg: Less sugar",
   "NetworkErrorTitle": "No internet connection",
   "NetworkErrorDescription": "Ugh! Something's not right with your internet, check your connection and try again",
+  "UnknownErrorTitle": "Oops!",
+  "UnknownErrorDescription": "Something went wrong, please try again",
   "SearchYourLocation": "Search your location",
   "AddressListEmptyDescription": "Enter your delivery location",
   "StoreListDrawerTitle": "Select store branch",
   "StoreListDrawerDescription": "{{totalOutlet}} outlets near you",
+  "SelectStoreDefault": "Select Store",
   "Promos": "Promos",
   "Date": "Date",
   "Time": "Time"

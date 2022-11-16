@@ -5,6 +5,14 @@
     display: block;
   }
 
+  &__input-error {
+    border: 1px solid $status-error-basic;
+  }
+
+  &__error-message {
+    color: $status-error-basic;
+  }
+
   .PhoneInput .PhoneInputInput,
   .PhoneInput .PhoneInputInput:focus {
     height: 54px;
