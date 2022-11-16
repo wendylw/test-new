@@ -3,13 +3,13 @@ import { useSelector } from 'react-redux';
 import { getStoreId } from './redux/common/selectors';
 import Menu from '.';
 
-const MenuProxy = props => {
+const MenuWrapper = props => {
   const storeId = useSelector(getStoreId);
 
   // FB-4011: we use key property to force <Menu /> to re-render when store id changes. Otherwise, the time slot and product information will probably be incorrect.
   // eslint-disable-next-line react/jsx-props-no-spreading
   return <Menu key={storeId} {...props} />;
 };
-MenuProxy.displayName = 'MenuProxy';
+MenuWrapper.displayName = 'MenuWrapper';
 
-export default MenuProxy;
+export default MenuWrapper;
