@@ -6,21 +6,22 @@ import { X } from 'phosphor-react';
 import Drawer from '../../../common/components/Drawer';
 import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
 import Search from '../../../common/components/Input/Search';
-import Loader from '../../../common/components/Loader';
 import styles from './AddressLocationDrawer.module.scss';
 
 const searchUpdateDebounce = _debounce((value, callback) => callback(value), 700);
 const AddressLocationDrawer = ({
   children,
   isLocationDrawerVisible,
-  isInitializing,
-  isEmptyList,
   onClose,
   onChangeSearchKeyword,
   onClearSearchKeyword,
 }) => {
   const { t } = useTranslation();
   const searchInputRef = useRef(null);
+  const onHandleShownDrawer = useCallback(() => {
+    // Only trigger focus animation shows the drawer, otherwise, drawer slide-up animation will drop frames or miss frames, which looks very stuck.
+    searchInputRef.current?.focus();
+  }, []);
   const onHandleCloseDrawer = useCallback(() => {
     onClose();
   }, [onClose]);
@@ -37,9 +38,7 @@ const AddressLocationDrawer = ({
   return (
     <Drawer
       fullScreen
-      className={`${isInitializing ? styles.addressDropdownDrawerInitializing : styles.addressLocationDrawer}${
-        isEmptyList ? ` ${styles.addressLocationDrawerEmpty}` : ''
-      }`}
+      className={styles.addressLocationDrawer}
       show={isLocationDrawerVisible}
       header={
         <DrawerHeader
@@ -49,25 +48,22 @@ const AddressLocationDrawer = ({
           <span className="tw-font-bold tw-text-lg tw-leading-relaxed">{t('DeliverTo')}</span>
         </DrawerHeader>
       }
+      onShown={onHandleShownDrawer}
       onClose={onHandleCloseDrawer}
     >
-      {isInitializing ? (
-        <Loader className={styles.loader} weight="bold" />
-      ) : (
-        <div className={styles.addressLocationDrawerContent}>
-          <section className="tw-flex-shrink-0 tw-pb-16 sm:tw-pb-16px tw-px-16 sm:tw-px-16px tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
-            <Search
-              isDebounce
-              ref={searchInputRef}
-              placeholder={t('SearchYourLocation')}
-              searching={false}
-              onChangeInputValue={onHandleChangeSearchKeyword}
-              onClearInput={onHandleClearSearchKeyword}
-            />
-          </section>
-          {children}
-        </div>
-      )}
+      <div className={styles.addressLocationDrawerContent}>
+        <section className="tw-flex-shrink-0 tw-pb-16 sm:tw-pb-16px tw-px-16 sm:tw-px-16px tw-border-0 tw-border-b tw-border-solid tw-border-gray-200">
+          <Search
+            isDebounce
+            ref={searchInputRef}
+            placeholder={t('SearchYourLocation')}
+            searching={false}
+            onChangeInputValue={onHandleChangeSearchKeyword}
+            onClearInput={onHandleClearSearchKeyword}
+          />
+        </section>
+        {children}
+      </div>
     </Drawer>
   );
 };
@@ -76,9 +72,7 @@ AddressLocationDrawer.displayName = 'AddressLocationDrawer';
 
 AddressLocationDrawer.propTypes = {
   children: PropTypes.node,
-  isInitializing: PropTypes.bool,
   isLocationDrawerVisible: PropTypes.bool,
-  isEmptyList: PropTypes.bool,
   onChangeSearchKeyword: PropTypes.func,
   onClearSearchKeyword: PropTypes.func,
   onClose: PropTypes.func,
@@ -86,9 +80,7 @@ AddressLocationDrawer.propTypes = {
 
 AddressLocationDrawer.defaultProps = {
   children: null,
-  isInitializing: false,
   isLocationDrawerVisible: true,
-  isEmptyList: false,
   onChangeSearchKeyword: () => {},
   onClearSearchKeyword: () => {},
   onClose: () => {},

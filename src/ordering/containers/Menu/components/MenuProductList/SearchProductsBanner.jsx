@@ -61,6 +61,12 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
     };
   }, []);
 
+  useEffect(() => {
+    if (isSearchingBannerVisible) {
+      searchInputRef.current?.focus();
+    }
+  }, [isSearchingBannerVisible, searchInputRef]);
+
   return (
     <div className={`${styles.menuSearchProductsBanner} ${isSearchingBannerVisible ? 'tw-flex-1' : ''}`}>
       {isSearchingBannerVisible ? null : (
