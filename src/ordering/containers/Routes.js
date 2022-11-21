@@ -6,7 +6,7 @@ import Constants from '../../utils/constants';
 import NotFound from '../../containers/NotFound';
 import history from '../orderingHistory';
 
-const MenuProxy = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_MNU" */ './Menu/MenuProxy')));
+const MenuWrapper = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_MNU" */ './Menu/MenuWrapper')));
 const Cart = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_SC" */ './shopping-cart/containers/Cart'))
 );
@@ -85,7 +85,7 @@ class Routes extends Component {
       <ConnectedRouter history={history}>
         <Suspense fallback={<div className="loader theme full-page"></div>}>
           <Switch>
-            <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={MenuProxy} />
+            <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={MenuWrapper} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />
             <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />
