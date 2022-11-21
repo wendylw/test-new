@@ -71,12 +71,12 @@ const MenuFooter = () => {
             )}
           </div>
           <Button
+            type="primary"
+            className={styles.MenuFooterOrderButton}
+            disabled={!isAbleToReviewCart}
             onClick={() => {
               dispatch(reviewCart());
             }}
-            className={styles.MenuFooterOrderButton}
-            type="primary"
-            disabled={!isAbleToReviewCart}
           >
             {!isFulfillMinimumConsumption
               ? t('MinMumConsumptionButtonPrompt', { minimumConsumptionFormattedPrice })

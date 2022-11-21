@@ -81,8 +81,11 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
   return (
     <div className="tw-flex-1 beep-line-clamp-flex-container">
       <Button
-        type="secondary"
+        block
+        type="text"
+        theme="ghost"
         className={styles.menuProductCategoryButton}
+        contentClassName={styles.menuProductCategoryContentButton}
         onClick={() => {
           if (isProductListReady) {
             setShowDrawer(true);
@@ -105,8 +108,10 @@ const CategoryDropdown = ({ onCategoryItemClick }) => {
             left={
               <Button
                 type="text"
+                theme="ghost"
                 onClick={() => setShowDrawer(false)}
-                className={`${styles.menuProductCategoryDrawerHeaderCloseButton} beep-text-reset`}
+                className={styles.menuProductCategoryDrawerHeaderCloseButton}
+                contentClassName={styles.menuProductCategoryDrawerHeaderCloseButtonContent}
               >
                 <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
               </Button>

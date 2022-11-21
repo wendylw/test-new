@@ -40,8 +40,10 @@ export class AlcoholModal extends PureComponent {
           </div>
           <h2 className="text-size-biggest text-weight-bolder text-line-height-base">{t('CheckIfDrinkingAge')}</h2>
           <p className="margin-small text-line-height-base">
-            {country === 'MY' && t('AlcoholLimitationsMY')}
-            {country === 'PH' && t('AlcoholLimitationsPH')}
+            <span>
+              {country === 'MY' && t('AlcoholLimitationsMY')}
+              {country === 'PH' && t('AlcoholLimitationsPH')}
+            </span>
           </p>
         </Modal.Body>
 

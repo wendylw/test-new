@@ -25,12 +25,12 @@ const CartItemOperator = ({
     <>
       {isOutOfStock ? (
         <Button
+          type="text"
+          theme="danger"
+          className={styles.removeItemButton}
           onClick={() => {
             dispatch(removeCartItem({ cartItemId: id }));
           }}
-          className={styles.removeItemButton}
-          type="text"
-          danger
         >
           {t('RemoveItem')}
         </Button>

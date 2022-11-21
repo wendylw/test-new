@@ -71,8 +71,10 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
     <div className={`${styles.menuSearchProductsBanner} ${isSearchingBannerVisible ? 'tw-flex-1' : ''}`}>
       {isSearchingBannerVisible ? null : (
         <Button
-          type="secondary"
+          type="text"
+          theme="ghost"
           className={styles.menuSearchProductsBannerButton}
+          contentClassName={styles.menuSearchProductsBannerButtonContent}
           onClick={async () => {
             // get window scroll position
             const scrollTopPosition = bodyScrollTopPosition();

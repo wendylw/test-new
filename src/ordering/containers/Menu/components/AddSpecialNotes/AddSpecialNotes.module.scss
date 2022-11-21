@@ -2,8 +2,8 @@
   @apply tw-p-0;
 }
 
-.AddSpecialNotesEditButton:global(.type-text) {
-  @apply tw--m-12 sm:tw--m-12px tw-bg-transparent;
+.AddSpecialNotesEditButton:global(.type-text-info) {
+  @apply tw--m-12 sm:tw--m-12px;
 }
 
 .AddSpecialNotesInputContainer {
