@@ -730,23 +730,23 @@ export const actions = {
       throw new NativeAPIError('Failed to review cart');
 
       // eslint-disable-next-line no-unreachable
-      const tokens = await NativeMethods.getTokenAsync();
-      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+      // const tokens = await NativeMethods.getTokenAsync();
+      // const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
-      if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
+      // if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
 
-      const source = REGISTRATION_SOURCE.BEEP_APP;
+      // const source = REGISTRATION_SOURCE.BEEP_APP;
 
-      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+      // await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
 
-      const isTokenExpired = getUserIsExpired(getState());
+      // const isTokenExpired = getUserIsExpired(getState());
 
-      if (isTokenExpired) {
-        const tokens = await NativeMethods.tokenExpiredAsync();
-        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+      // if (isTokenExpired) {
+      //   const tokens = await NativeMethods.tokenExpiredAsync();
+      //   const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
-        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
-      }
+      //   await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+      // }
     } catch (e) {
       if (e?.code === 'B0001') {
         toast(i18next.t('ApiError:B0001Description'));
