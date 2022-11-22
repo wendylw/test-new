@@ -48,6 +48,23 @@ const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PL
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
+class NativeAPIError extends Error {
+  constructor(message, code = 'B0001', extra) {
+    super(message);
+    this.code = code;
+    this.extra = extra;
+  }
+
+  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior
+  toJSON() {
+    return {
+      message: this.message,
+      code: this.code,
+      extra: this.extra,
+    };
+  }
+}
+
 export const types = APP_TYPES;
 
 export { getCategoryList, getAllProducts };
@@ -710,6 +727,9 @@ export const actions = {
 
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
+      throw new NativeAPIError('Failed to review cart');
+
+      // eslint-disable-next-line no-unreachable
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
