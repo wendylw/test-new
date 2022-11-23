@@ -48,23 +48,6 @@ const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PL
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
-class NativeAPIError extends Error {
-  constructor(message, code = 'B0001', extra) {
-    super(message);
-    this.code = code;
-    this.extra = extra;
-  }
-
-  // Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior
-  toJSON() {
-    return {
-      message: this.message,
-      code: this.code,
-      extra: this.extra,
-    };
-  }
-}
-
 export const types = APP_TYPES;
 
 export { getCategoryList, getAllProducts };
@@ -727,26 +710,23 @@ export const actions = {
 
   loginByBeepApp: () => async (dispatch, getState) => {
     try {
-      throw new NativeAPIError('Failed to review cart');
+      const tokens = await NativeMethods.getTokenAsync();
+      const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
-      // eslint-disable-next-line no-unreachable
-      // const tokens = await NativeMethods.getTokenAsync();
-      // const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+      if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
 
-      // if (_isEmpty(accessToken) || _isEmpty(refreshToken)) return;
+      const source = REGISTRATION_SOURCE.BEEP_APP;
 
-      // const source = REGISTRATION_SOURCE.BEEP_APP;
+      await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
 
-      // await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+      const isTokenExpired = getUserIsExpired(getState());
 
-      // const isTokenExpired = getUserIsExpired(getState());
+      if (isTokenExpired) {
+        const tokens = await NativeMethods.tokenExpiredAsync();
+        const { access_token: accessToken, refresh_token: refreshToken } = tokens;
 
-      // if (isTokenExpired) {
-      //   const tokens = await NativeMethods.tokenExpiredAsync();
-      //   const { access_token: accessToken, refresh_token: refreshToken } = tokens;
-
-      //   await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
-      // }
+        await dispatch(actions.loginApp({ accessToken, refreshToken, source }));
+      }
     } catch (e) {
       if (e?.code === 'B0001') {
         toast(i18next.t('ApiError:B0001Description'));
