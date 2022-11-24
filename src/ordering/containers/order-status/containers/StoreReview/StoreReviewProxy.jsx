@@ -22,17 +22,15 @@ const StoreReviewProxy = () => {
   const shouldShowPageLoader = useSelector(getShouldShowPageLoader);
   const shouldShowExpiredError = useSelector(getIsStoreReviewExpired);
   const shouldShowUnsupportedError = useSelector(getShouldShowUnsupportedError);
-  const shouldShowSurveySheet = useSelector(getIsStoreReviewable);
+  // const shouldShowSurveySheet = useSelector(getIsStoreReviewable);
 
   const handleClickOkayButton = useCallback(() => dispatch(okayButtonClicked()), [dispatch]);
-  const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);
+  // const handleClickRetryButton = useCallback(() => dispatch(retryButtonClicked()), [dispatch]);
 
   return (
     <Frame>
       {shouldShowPageLoader ? (
         <PageLoader />
-      ) : shouldShowSurveySheet ? (
-        <StoreReview />
       ) : shouldShowExpiredError ? (
         <ErrorResult
           title={t('ExpiredErrorTitle')}
@@ -46,13 +44,7 @@ const StoreReviewProxy = () => {
           onCloseButtonClick={handleClickOkayButton}
         />
       ) : (
-        <ErrorResult
-          title={t('NetworkErrorTitle')}
-          content={t('NetworkErrorDescription')}
-          imageSrc={BeepErrorImage}
-          buttonText={t('Retry')}
-          onCloseButtonClick={handleClickRetryButton}
-        />
+        <StoreReview />
       )}
     </Frame>
   );

@@ -65,12 +65,12 @@ const Result = props => {
         <div className={styles.resultFooter}>
           <Button
             type="primary"
+            size="small"
             className={`${styles.closeButtonClassName} tw-uppercase${
               closeButtonClassName ? ` ${closeButtonClassName}` : ''
             }`}
             onClick={onClose}
             style={closeButtonStyle}
-            size="small"
           >
             {closeButtonContent || t('Okay')}
           </Button>
@@ -113,7 +113,6 @@ Result.propTypes = {
 
 Result.defaultProps = {
   header: null,
-  container: null,
   children: null,
   isFullScreen: false,
   show: false,

@@ -25,12 +25,3 @@
     @apply tw-flex-col tw-space-y-8 sm:tw-space-y-8px;
   }
 }
-
-.confirmVerticalCloseButton {
-  &:global(.type-text) {
-    @apply tw-text-gray-800
-      hover:tw-text-gray-800
-      focus:tw-text-gray-800 focus:hover:tw-text-gray-800 focus:active:tw-text-gray-800
-      active:tw-text-gray-800;
-  }
-}

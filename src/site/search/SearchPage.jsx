@@ -430,10 +430,12 @@ class SearchPage extends React.Component {
             left={
               <Button
                 type="text"
+                theme="ghost"
                 onClick={this.handleCloseDrawer}
-                className={`${styles.SearchPageCategoryDrawerHeaderButton} beep-text-reset`}
+                className={styles.SearchPageCategoryDrawerHeaderButton}
+                contentClassName={styles.SearchPageCategoryDrawerHeaderButtonContent}
               >
-                <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+                <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
               </Button>
             }
           >

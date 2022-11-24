@@ -3,31 +3,15 @@
 }
 
 .MultipleChoiceSelectorFooterContainer {
-  @apply tw-flex tw-items-center tw-justify-between tw-px-16 sm:tw-px-16px tw-py-8 sm:tw-py-8px;
+  @apply tw-flex tw-items-center tw-justify-between tw-px-16 sm:tw-px-16px tw-py-8 sm:tw-py-8px tw-gap-x-16 sm:tw-gap-x-16px;
 
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
 }
 
-.MultipleChoiceSelectorFooterButton {
-  @apply tw-uppercase tw-text-base tw-leading-relaxed tw-border-none tw-border-0 tw-bg-transparent
-    tw-py-12 sm:tw-py-12px tw-px-16 sm:tw-px-16px;
-
+.MultipleChoiceSelectorFooterResetButton:global(.type-text-ghost) {
   height: 50px;
-  width: 43.5897vw;
 }
 
-.MultipleChoiceSelectorFooterResetButton {
-  @extend .MultipleChoiceSelectorFooterButton;
-
-  @apply tw-text-gray;
-
-  &:disabled {
-    @apply tw-text-opacity-40;
-  }
-}
-
-@media (min-width: 420px) {
-  .MultipleChoiceSelectorFooterButton {
-    width: 170px;
-  }
+.MultipleChoiceSelectorFooterResetButtonContent {
+  @apply tw-leading-relaxed tw-uppercase;
 }

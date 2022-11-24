@@ -1,5 +1,7 @@
+import logger from './monitoring/logger';
+
 if (typeof Node === 'function' && Node.prototype) {
-  // NOTE: if you've seen this error in sentry, it's very likely there's some 3rd party plugin
+  // NOTE: if you've seen this error in logger, it's very likely there's some 3rd party plugin
   // (mostly Google in-page translate) mutates the DOM, which is incompatible which react and
   // causes the page crash. This monkey patch is not able to maintain a correct dom. It only
   // prevent the page from crashing by not throwing exception.
@@ -30,10 +32,8 @@ if (typeof Node === 'function' && Node.prototype) {
   };
   Node.prototype.removeChild = function(child) {
     if (child.parentNode !== this) {
-      if (console) {
-        // If you see this error on sentry, please refer to above comment.
-        console.error(`Cannot remove a child from a different parent, child text: ${getText(child)}`);
-      }
+      // If you see this error on logger, please refer to above comment.
+      logger.error(`Cannot remove a child from a different parent, child text: ${getText(child)}`);
       return child;
     }
     return originalRemoveChild.apply(this, arguments);
@@ -42,14 +42,10 @@ if (typeof Node === 'function' && Node.prototype) {
   const originalInsertBefore = Node.prototype.insertBefore;
   Node.prototype.insertBefore = function(newNode, referenceNode) {
     if (referenceNode && referenceNode.parentNode !== this) {
-      if (console) {
-        // If you see this error on sentry, please refer to above comment.
-        console.error(
-          `Cannot insert before a reference node from a different parent, reference node text: ${getText(
-            referenceNode
-          )}`
-        );
-      }
+      // If you see this error on logger, please refer to above comment.
+      logger.error(
+        `Cannot insert before a reference node from a different parent, reference node text: ${getText(referenceNode)}`
+      );
       return newNode;
     }
     return originalInsertBefore.apply(this, arguments);

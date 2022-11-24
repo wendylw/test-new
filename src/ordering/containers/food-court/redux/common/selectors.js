@@ -11,7 +11,7 @@ export const getFoodCourtStoreList = createSelector(getFoodCourtStores, foodCour
   foodCourtStoreListData.map(store => {
     const staticData = AllFoodCourtStoreList[store.id];
     const { isClosed } = store || {};
-    const { unable } = staticData;
+    const { unable } = staticData || {};
 
     return {
       unavailable: unable || isClosed,

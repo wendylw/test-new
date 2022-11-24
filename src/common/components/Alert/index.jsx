@@ -46,8 +46,9 @@ const Alert = props => {
       <div ref={contentContainerRef}>{children}</div>
       <div className={styles.alertFooter}>
         <Button
+          block
           type="primary"
-          className={`tw-w-full tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
+          className={`tw-uppercase${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
           onClick={onClose}
           style={closeButtonStyle}
         >

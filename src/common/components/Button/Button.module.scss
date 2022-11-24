@@ -1,15 +1,64 @@
-@mixin buttonHeight($size: null) {
-  @if $size == "small" {
+// It is an array of several UI attributes of button, each button item contains $type $theme $color
+$attributes: (
+  "primary" "default" "orange",
+  "primary" "danger" "red",
+  "primary" "info" "blue",
+  "secondary" "default" "orange",
+  "secondary" "danger" "red",
+  "secondary" "info" "blue",
+  "text" "default" "orange",
+  "text" "ghost" "gray",
+  "text" "danger" "red",
+  "text" "info" "blue"
+);
+
+@mixin buttonHeight($size, $type) {
+  @if ($type == "text") {
+    height: auto;
+  } @else if $size == "small" {
     height: 40px;
-  } @else {
+  } @else if $size == "normal" {
     height: 50px;
   }
 }
 
+@mixin buttonPseudoClasses($type, $color, $color-dark, $color-light) {
+  @if ($type == "primary") {
+    @apply hover:tw-border-#{$color-dark} hover:tw-bg-#{$color-dark} /* hover style */
+    focus:tw-border-#{$color} focus:tw-bg-#{$color}
+    focus:hover:tw-border-#{$color-dark} focus:hover:tw-bg-#{$color-dark}
+    focus:active:tw-border-#{$color-light} focus:active:tw-bg-#{$color-light} /* focus style */
+    active:tw-border-#{$color-light} active:tw-bg-#{$color-light} /* active style */
+    disabled:tw-border-gray-400 disabled:tw-bg-gray-400; /* disabled style */
+  } @else if ($type == "secondary") {
+    @apply hover:tw-border-#{$color-dark} hover:tw-text-#{$color-dark} /* hover style */
+    focus:tw-border-#{$color} focus:tw-text-#{$color}
+    focus:hover:tw-border-#{$color-dark} focus:hover:tw-text-#{$color-dark}
+    focus:active:tw-border-#{$color-light} focus:active:tw-text-#{$color-light} /* focus style */
+    active:tw-border-#{$color-light} active:tw-text-#{$color-light} /* active style */
+    disabled:tw-border-gray-400 disabled:tw-text-gray-400; /* disabled style */
+  } @else if ($type == "text") {
+    @apply hover:tw-text-#{$color-dark} /* hover style */
+    focus:tw-text-#{$color}
+    focus:hover:tw-text-#{$color-dark}
+    focus:active:tw-text-#{$color-light} /* focus style */
+    active:tw-text-#{$color-light} /* active style */
+    disabled:tw-text-gray-400; /* disabled style */
+  }
+}
+
 .button {
-  @apply tw-flex tw-items-center tw-justify-center tw-py-12 tw-px-16 tw-rounded tw-leading-normal tw-tracking-wide /* dimension*/
-  tw-border tw-border-transparent tw-border-solid /* border */
+  @apply tw-flex tw-items-center tw-justify-center tw-p-8 sm:tw-p-8px
+  tw-border tw-border-transparent tw-border-solid tw-rounded/* border */
   tw-cursor-pointer disabled:tw-cursor-default;
+
+  &:global(.size-normal) {
+    @include buttonHeight("normal", null);
+  }
+
+  &:global(.size-small) {
+    @include buttonHeight("small", null);
+  }
 
   .iconWrapper {
     @apply tw-inline-block tw-h-0 tw-align-middle tw-relative tw-mr-6 sm:tw-mr-6px;
@@ -24,82 +73,44 @@
     }
   }
 
-  &:global(.type-primary) {
-    @apply tw-bg-orange hover:tw-bg-orange-dark /* color */
-    focus:tw-bg-orange focus:hover:tw-bg-orange-dark focus:active:tw-bg-orange-light active:tw-bg-orange-light disabled:tw-bg-gray-400 /* color */
-    tw-text-white tw-font-bold tw-tracking-wider/* typography */
-    tw-transition;
+  @each $type, $theme, $color in $attributes {
+    &:global(.type-#{$type}-#{$theme}) {
+      @apply tw-transition; /* https://tailwindcss.com/docs/transition-property */
 
-    height: 50px;
+      .buttonContent {
+        @apply tw-font-bold;
+      }
 
-    &:global(.size-small) {
-      @include buttonHeight("small");
+      /* tw-tracking-wide: letter spacing */
+      @if ($type == "text") {
+        @apply tw-p-8 sm:tw-p-8px tw-tracking-wide;
+        @include buttonHeight(null, "text");
+      } @else {
+        @apply tw-py-12 sm:tw-py-12px tw-px-16 sm:tw-px-16px tw-tracking-wider;
+      }
+
+      // Initialize UI for different types of buttons
+      @if ($type == "primary") {
+        @apply tw-text-white tw-bg-#{$color} tw-border-#{$color};
+      } @else if ($type == "secondary") {
+        @apply tw-text-#{$color} tw-bg-white tw-border-#{$color};
+      } @else if ($type == "text") {
+        @apply tw-text-#{$color} tw-bg-transparent;
+      }
+
+      // Can't swap the order with the styles above, it will change the style priority
+      // buttonPseudoClasses: buttonPseudoStyle is Pseudo-classes for setting different types of buttons, Pseudo-classes: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes
+      @if ($theme == "ghost" and $type == "text") {
+        @include buttonPseudoClasses("text", $color, #{$color}-900, #{$color}-700);
+      } @else {
+        @include buttonPseudoClasses($type, $color, #{$color}-dark, #{$color}-light);
+      }
     }
-  }
-  &:global(.type-primary-danger) {
-    @apply tw-bg-red hover:tw-bg-red-dark /* color */
-    focus:tw-bg-red focus:hover:tw-bg-red-dark focus:active:tw-bg-red-light active:tw-bg-red-light disabled:tw-bg-gray-400 /* color */
-    tw-text-white tw-font-bold tw-tracking-wider/* typography */
-    tw-transition;
-
-    height: 50px;
-
-    &:global(.size-small) {
-      @include buttonHeight("small");
-    }
-  }
-
-  &:global(.type-secondary) {
-    @apply tw-border-orange tw-bg-white tw-text-orange tw-font-bold tw-tracking-wider
-      hover:tw-border-orange-dark hover:tw-text-orange-dark
-      focus:tw-border-orange focus:tw-text-orange focus:hover:tw-border-orange-dark focus:hover:tw-text-orange-dark focus:active:tw-border-orange-light focus:active:tw-text-orange-light
-      active:tw-border-orange-light active:tw-text-orange-light
-      disabled:tw-border-gray-400 disabled:tw-text-gray-400;
-
-    height: 50px;
-
-    &:global(.size-small) {
-      @include buttonHeight("small");
-    }
-  }
-  &:global(.type-secondary-danger) {
-    @apply tw-border-red tw-bg-white tw-text-red tw-font-bold tw-tracking-wider
-      hover:tw-border-red-dark hover:tw-text-red-dark
-      focus:tw-border-red focus:tw-text-red focus:hover:tw-border-red-dark  focus:hover:tw-text-red-dark focus:active:tw-border-red-light focus:active:tw-text-red-light
-      active:tw-border-red-light active:tw-text-red-light
-      disabled:tw-border-gray-400 disabled:tw-text-gray-400;
-
-    height: 50px;
-
-    &:global(.size-small) {
-      @include buttonHeight("small");
-    }
-  }
-
-  &:global(.type-text) {
-    @apply tw-p-8
-      tw-bg-transparent tw-text-blue tw-font-bold
-      hover:tw-text-blue-dark
-      focus:tw-text-blue focus:hover:tw-text-blue-dark focus:active:tw-text-blue-light
-      active:tw-text-blue-light
-      disabled:tw-text-gray-400;
-  }
-  &:global(.type-text-danger) {
-    @apply tw-p-8
-      tw-bg-transparent tw-text-red tw-font-bold
-      hover:tw-text-red-dark
-      focus:tw-text-red focus:hover:tw-text-red-dark focus:active:tw-text-red-light
-      active:tw-text-red-light
-      disabled:tw-text-gray-400;
   }
 }
 
-@media (min-width: 420px) {
-  .button {
-    @apply tw-py-12px tw-px-16px;
+.buttonContent {
+  @apply tw-leading-normal;
 
-    &:global(.type-text) {
-      @apply tw-p-8px;
-    }
-  }
+  font-size: inherit;
 }

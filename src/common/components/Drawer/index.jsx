@@ -26,6 +26,7 @@ const Drawer = props => {
     zIndex = 100,
     onHistoryBackCompleted = () => {},
     disableBackButtonSupport = false,
+    onShown = () => {},
     onHidden = () => {},
   } = props;
   const ref = useRef(null);
@@ -92,7 +93,14 @@ const Drawer = props => {
     // return show ? drawerContent : null;
   } else {
     renderContent = (
-      <CSSTransition in={show} timeout={300} unmountOnExit classNames="drawer-animation" onExited={onHidden}>
+      <CSSTransition
+        in={show}
+        timeout={300}
+        unmountOnExit
+        classNames="drawer-animation"
+        onEntered={onShown}
+        onExited={onHidden}
+      >
         {drawerContent}
       </CSSTransition>
     );
@@ -126,6 +134,9 @@ Drawer.propTypes = {
   /* Whether support animation. If animation is `true` to trigger function hidden drawer */
   /* PS: If other animations will be triggered hidden drawer, we recommend to use this instead of next animation in onHistoryBackCompleted  */
   onHidden: PropTypes.func,
+  /* Whether support animation. If animation is `true` to trigger function shown drawer */
+  /* PS: If other animations will be triggered shown drawer, multiple animations will effect each other with css-transition in Safari  */
+  onShown: PropTypes.func,
   /* Whether force the height to be same as the screen, even if the content is not long enough */
   fullScreen: PropTypes.bool,
   /* Whether covers the footer */
@@ -150,6 +161,7 @@ Drawer.defaultProps = {
   style: {},
   onClose: () => {},
   animation: true,
+  onShown: () => {},
   onHidden: () => {},
   fullScreen: false,
   respectSpaceOccupation: false,
