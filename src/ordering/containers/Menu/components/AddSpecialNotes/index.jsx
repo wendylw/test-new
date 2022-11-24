@@ -54,7 +54,13 @@ const AddSpecialNotes = () => {
         <div className="tw-p-16 sm:tw-p-16px">
           <div className="tw-flex tw-justify-between tw-items-center">
             <span className="tw-font-bold">{t('SpecialInstructions')}</span>
-            <Button type="text" className={styles.AddSpecialNotesEditButton} onClick={onHandleShowNotesDrawer}>
+            <Button
+              type="text"
+              theme="info"
+              className={styles.AddSpecialNotesEditButton}
+              contentClassName="tw-flex tw-items-center"
+              onClick={onHandleShowNotesDrawer}
+            >
               <PencilSimple size={18} className="tw-text-blue" />
               <span className="tw-font-bold tw-text-blue tw-text-base tw-not-italic tw-p-4 sm:tw-p-4px">
                 {t('Edit')}
@@ -65,7 +71,7 @@ const AddSpecialNotes = () => {
         </div>
       ) : (
         <div className="tw-mx-4 sm:tw-mx-4px tw-my-6 sm:tw-my-6px">
-          <Button type="text" onClick={onHandleShowNotesDrawer}>
+          <Button type="text" theme="info" contentClassName="tw-flex tw-items-center" onClick={onHandleShowNotesDrawer}>
             <PencilSimple size={18} className="tw-text-blue" />
             <span className="tw-font-bold tw-text-blue tw-text-base tw-not-italic tw-p-4 sm:tw-p-4px">
               {t('AddSpecialInstructions')}
@@ -114,7 +120,7 @@ const AddSpecialNotes = () => {
           </p>
         </div>
         <div className={styles.AddSpecialNotesSaveContainer}>
-          <Button type="primary" className={styles.AddSpecialNotesSaveButton} onClick={saveSpecialNotes}>
+          <Button block type="primary" className={styles.AddSpecialNotesSaveButton} onClick={saveSpecialNotes}>
             {t('Save')}
           </Button>
         </div>

@@ -2,12 +2,6 @@
   @apply tw-flex tw-items-center tw-flex-1 tw-w-full tw-justify-between tw-bg-yellow-light tw-shadow-sm;
 }
 
-.MenuViewOrderBarButton:global(.type-text) {
-  @apply tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-text-sm tw-text-gray tw-capitalize
-  hover:tw-text-gray
-  focus:tw-text-gray focus:hover:tw-text-gray focus:active:tw-text-gray
-  active:tw-text-gray
-  disabled:tw-text-gray-400;
-
-  letter-spacing: 0.2px;
+.MenuViewOrderBarButton:global(.type-text-ghost) {
+  @apply tw-text-sm tw-px-16 sm:tw-px-16px tw-py-12 sm:tw-py-12px tw-capitalize;
 }

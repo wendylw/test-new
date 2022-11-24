@@ -46,6 +46,7 @@ const Alert = props => {
       <div ref={contentContainerRef}>{children}</div>
       <div className={styles.alertFooter}>
         <Button
+          block
           type="primary"
           className={`${styles.alertFooterButton}${closeButtonClassName ? ` ${closeButtonClassName}` : ''}`}
           onClick={onClose}

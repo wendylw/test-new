@@ -30,6 +30,7 @@ import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.j
 import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
 import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
 import XOXOImage from '../../../../../images/food-court-temp/merchant-XOXO.jpg';
+import HopeCoffeeIMage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -153,16 +154,15 @@ export const AllFoodCourtStoreList = {
     },
     unable: true,
   },
-  '63523a1e1258800008658c81': {
-    id: '63523a1e1258800008658c81',
-    title: 'Mr Boba Teahouse',
+  '63745ceb7b7f960007de8dc5': {
+    id: '63745ceb7b7f960007de8dc5',
+    title: 'Boba Tea House',
     imageNoCompression: BobaTeaHouseImage,
     tags: ['Boba', 'Drinks', 'Milk Tea'],
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '19:00',
     },
-    unable: true,
   },
   '63523bccda13950007f6f714': {
     id: '63523bccda13950007f6f714',
@@ -185,6 +185,16 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '20:00',
     },
     unable: true,
+  },
+  '63747d2aa07b6a0008108c24': {
+    id: '63747d2aa07b6a0008108c24',
+    title: 'Hope Coffee',
+    imageNoCompression: HopeCoffeeIMage,
+    tags: ['Street Food', 'Toast', 'Croffle', 'Coffee'],
+    businessHours: {
+      validTimeFrom: '08:00',
+      validTimeTo: '19:30',
+    },
   },
   '61b93058cef3c900060ca990': {
     id: '61b93058cef3c900060ca990',

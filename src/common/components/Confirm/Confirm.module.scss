@@ -29,12 +29,3 @@
 .confirmFooterButton {
   @apply tw-flex-1 tw-uppercase;
 }
-
-.confirmVerticalCloseButton {
-  &:global(.type-text) {
-    @apply tw-text-gray-800
-      hover:tw-text-gray-800
-      focus:tw-text-gray-800 focus:hover:tw-text-gray-800 focus:active:tw-text-gray-800
-      active:tw-text-gray-800;
-  }
-}

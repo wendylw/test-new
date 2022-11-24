@@ -61,12 +61,20 @@ const SearchProductsBanner = ({ menuProductCategorySearchRef, menuProductListRef
     };
   }, []);
 
+  useEffect(() => {
+    if (isSearchingBannerVisible) {
+      searchInputRef.current?.focus();
+    }
+  }, [isSearchingBannerVisible, searchInputRef]);
+
   return (
     <div className={`${styles.menuSearchProductsBanner} ${isSearchingBannerVisible ? 'tw-flex-1' : ''}`}>
       {isSearchingBannerVisible ? null : (
         <Button
-          type="secondary"
+          type="text"
+          theme="ghost"
           className={styles.menuSearchProductsBannerButton}
+          contentClassName={styles.menuSearchProductsBannerButtonContent}
           onClick={async () => {
             // get window scroll position
             const scrollTopPosition = bodyScrollTopPosition();

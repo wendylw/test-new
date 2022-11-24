@@ -1,5 +1,19 @@
 .loader {
-  @apply tw-absolute tw-text-2xl tw-text-gray-600;
+  @apply tw-text-2xl tw-text-gray-600;
+}
+
+.addressLocationContentCommonStyle {
+  @apply tw-flex-1 tw-px-16 sm:tw-px-16px tw-py-16 sm:tw-py-16px;
+}
+
+.addressLocationContent {
+  @extend .addressLocationContentCommonStyle;
+  @apply tw-overflow-x-auto;
+}
+
+.addressLocationContentInitializing {
+  @extend .addressLocationContentCommonStyle;
+  @apply tw-flex tw-items-center tw-justify-center;
 }
 
 .addressLocationDrawerEmptyContent {

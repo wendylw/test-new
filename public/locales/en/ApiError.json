@@ -93,6 +93,7 @@
   "57013Description": "The selected shipping method is not supported. Please select another shipping method and try again",
   "41027Title": "Online payment is not supported",
   "41027Description": "Online payment via Beep is not supported at this store.",
+  "B0001Description": "An error occurred. Exit app and try again",
   "41001ShortDescription": "Please enter a valid phone number",
   "394761ShortDescription": "Please enter a valid phone number",
   "395011ShortDescription": "Please enter a valid phone number",

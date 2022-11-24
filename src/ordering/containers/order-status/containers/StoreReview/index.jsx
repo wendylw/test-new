@@ -203,9 +203,11 @@ const StoreReview = () => {
         <PageFooter className="tw-shadow-xl">
           <div className={styles.StoreReviewFooter}>
             <Button
+              block
+              type="primary"
               disabled={shouldDisableSubmitButton}
               onClick={handleClickSubmitButton}
-              className="tw-w-full tw-uppercase"
+              className="tw-uppercase"
             >
               {t('Submit')}
             </Button>

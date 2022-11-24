@@ -1,3 +1,4 @@
+import qs from 'qs';
 import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { goBack as historyGoBack, push } from 'connected-react-router';
@@ -42,7 +43,8 @@ export const goToMenuPage = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const state = getState();
     const tableId = getStoreTableId(state);
-    const options = [`h=${getQueryString('h')}`];
+    // BEEP-3225: we need to encode the h by using the same decode algorithm from the qs.
+    const options = [qs.stringify({ h: getQueryString('h') })];
     // BEEP-3153: if user chooses to leave before the API response receive, we retrieve shipping type from URL by default.
     const shippingType = getStoreShippingType(state) || getQueryString('type');
 
