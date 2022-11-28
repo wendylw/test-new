@@ -133,15 +133,21 @@ class Billing extends Component {
           ) : null}
           {enableCashback ? (
             <li
-              className={`padding-top-bottom-small padding-left-right-normal border-radius-base flex flex-middle flex-space-between ${
+              className={`padding-top-bottom-small padding-left-right-small border-radius-base flex flex-middle flex-space-between ${
                 isLogin ? 'margin-small billing__item-primary' : ''
               }`}
             >
-              <label className="margin-top-bottom-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</label>
+              <label className="margin-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</label>
               {orderPendingPaymentStatus || isLogin ? (
-                <span>
-                  - <CurrencyNumber className="text-size-big text-weight-bolder" money={creditsBalance || 0} />
-                </span>
+                <div className="flex flex-middle flex__shrink-fixed">
+                  <label class="billing__switch-container margin-left-right-small">
+                    <input class="billing__toggle-checkbox" type="checkbox" />
+                    <div class="billing__toggle-switch"></div>
+                  </label>
+                  <span className="margin-smaller">
+                    - <CurrencyNumber className="text-size-big text-weight-bolder" money={creditsBalance || 0} />
+                  </span>
+                </div>
               ) : (
                 <button
                   onClick={this.handleLogin}
