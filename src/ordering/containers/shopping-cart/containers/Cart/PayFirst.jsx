@@ -17,7 +17,6 @@ import RedirectPageLoader from '../../../../components/RedirectPageLoader';
 import { actions as promotionActionCreators } from '../../../../redux/modules/promotion';
 import {
   actions as appActionCreators,
-  getUser,
   getBusinessInfo,
   getShoppingCart,
   getServiceChargeRate,
@@ -34,6 +33,8 @@ import {
   getIsUserProfileStatusFulfilled,
   getIsWebview,
   getIsTNGMiniProgram,
+  getEnableCashback,
+  getUserIsLogin,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
@@ -80,8 +81,7 @@ class PayFirst extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, appActions, loadStockStatus } = this.props;
-    const { isLogin } = user || {};
+    const { isLogin, history, appActions, loadStockStatus } = this.props;
 
     const { error } = await loadStockStatus();
     const redirectLocation = {
@@ -229,8 +229,7 @@ class PayFirst extends Component {
   };
 
   handleGotoPromotion = async () => {
-    const { history, user, storeInfoForCleverTap, isWebview, appActions } = this.props;
-    const { isLogin } = user || {};
+    const { history, isLogin, storeInfoForCleverTap, isWebview, appActions } = this.props;
 
     CleverTap.pushEvent('Cart page - click add promo code/voucher', storeInfoForCleverTap);
 
@@ -467,6 +466,27 @@ class PayFirst extends Component {
     return pendingCheckingInventory || pendingBeforeCreateOrder ? processingContent : buttonContent;
   };
 
+  handleClickLoginButton = async () => {
+    const { history, appActions, isWebview } = this.props;
+
+    CleverTap.pushEvent('Login - view login screen', {
+      'Screen Name': 'Cart Page',
+    });
+
+    if (isWebview) {
+      // BEEP-2663: In case users can click on the login button in the beep apps, we need to call the native login method.
+      await appActions.loginByBeepApp();
+      return;
+    }
+
+    // By default, redirect users to the web login page
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
   formatCleverTapAttributes(product) {
     return {
       'category name': product.categoryName,
@@ -493,6 +513,42 @@ class PayFirst extends Component {
       return promotion.promoCode;
     }
     return '';
+  }
+
+  renderCashbackItem() {
+    const { t, isLogin, isCashbackEnabled, cartBilling } = this.props;
+    const { cashback } = cartBilling || {};
+
+    if (!isCashbackEnabled) return null;
+
+    return (
+      <li
+        className={`padding-top-bottom-small padding-left-right-small border-radius-base flex flex-middle flex-space-between ${
+          isLogin ? 'margin-small cart-cashback__item-primary' : ''
+        }`}
+      >
+        <span className="margin-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</span>
+        {isLogin ? (
+          <div className="flex flex-middle flex__shrink-fixed">
+            <label className="cart-cashback__switch-container margin-left-right-small" htmlFor="cashback-switch">
+              <input id="cashback-switch" className="cart-cashback__toggle-checkbox" type="checkbox" />
+              <div className="cart-cashback__toggle-switch" />
+            </label>
+            <span className="margin-smaller">
+              - <CurrencyNumber className="text-size-big text-weight-bolder" money={cashback || 0} />
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={this.handleClickLoginButton}
+            className="cart-cashback__button-login button button__fill padding-top-bottom-smaller padding-left-right-normal"
+            data-heap-name="ordering.cart.cashback.login-btn"
+          >
+            {t('Login')}
+          </button>
+        )}
+      </li>
+    );
   }
 
   renderPromotionItem() {
@@ -597,7 +653,7 @@ class PayFirst extends Component {
       cartBilling,
       shoppingCart,
       businessInfo,
-      user,
+      isLogin,
       history,
       storeInfoForCleverTap,
       shippingType,
@@ -606,7 +662,6 @@ class PayFirst extends Component {
     const { cartContainerHeight, shouldShowRedirectLoader } = this.state;
     const { items } = shoppingCart || {};
     const { count, subtotal, takeawayCharges, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
-    const { isLogin } = user || {};
 
     if (!(cartBilling && items)) {
       return null;
@@ -671,12 +726,10 @@ class PayFirst extends Component {
             takeawayCharges={takeawayCharges}
             subtotal={subtotal}
             total={total}
-            creditsBalance={cashback}
             isDeliveryType={Utils.isDeliveryType()}
             shippingFee={shippingFee}
-            isLogin={isLogin}
-            history={history}
           >
+            {this.renderCashbackItem()}
             {this.renderPromotionItem()}
           </Billing>
         </div>
@@ -720,8 +773,7 @@ PayFirst.propTypes = {
   }),
   loadStockStatus: PropTypes.func,
   pendingCheckingInventory: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  user: PropTypes.object,
+  isLogin: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   cartBilling: PropTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
@@ -747,6 +799,7 @@ PayFirst.propTypes = {
   serviceChargeRate: PropTypes.number,
   isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
+  isCashbackEnabled: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -764,7 +817,7 @@ PayFirst.defaultProps = {
   },
   loadStockStatus: () => {},
   pendingCheckingInventory: false,
-  user: {},
+  isLogin: false,
   cartBilling: {},
   shoppingCart: {},
   businessInfo: {},
@@ -785,6 +838,7 @@ PayFirst.defaultProps = {
   serviceChargeRate: 0,
   isWebview: false,
   isTNGMiniProgram: false,
+  isCashbackEnabled: false,
 };
 
 /* TODO: backend data */
@@ -793,7 +847,7 @@ export default compose(
   connect(
     state => ({
       pendingCheckingInventory: getCheckingInventoryPendingState(state),
-      user: getUser(state),
+      isLogin: getUserIsLogin(state),
       cartBilling: getCartBilling(state),
       shoppingCart: getShoppingCart(state),
       serviceChargeRate: getServiceChargeRate(state),
@@ -811,6 +865,7 @@ export default compose(
       isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
+      isCashbackEnabled: getEnableCashback(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),

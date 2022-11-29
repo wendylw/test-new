@@ -16,6 +16,7 @@ import {
   getIsWebview,
   getIsTNGMiniProgram,
   getHasLoginGuardPassed,
+  getEnableCashback,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
@@ -62,6 +63,7 @@ import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../comp
 import Billing from '../../components/Billing';
 import RedirectPageLoader from '../../components/RedirectPageLoader';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
+import CleverTap from '../../../utils/clevertap';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -235,9 +237,9 @@ export class TableSummary extends React.Component {
   };
 
   handleGotoPromotion = async () => {
-    const { history, userIsLogin, isWebview, loginByBeepApp } = this.props;
+    const { history, isLogin, isWebview, loginByBeepApp } = this.props;
 
-    if (userIsLogin) {
+    if (isLogin) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
         search: window.location.search,
@@ -287,12 +289,33 @@ export class TableSummary extends React.Component {
 
     if (!hasLoginGuardPassed) {
       await this.handleLogin();
-      const { userIsLogin } = this.props;
+      const { isLogin } = this.props;
 
-      if (!userIsLogin) return;
+      if (!isLogin) return;
     }
 
     await gotoPayment();
+  };
+
+  handleClickLoginButton = async () => {
+    const { history, isWebview, loginByBeepApp } = this.props;
+
+    CleverTap.pushEvent('Login - view login screen', {
+      'Screen Name': 'Cart Page',
+    });
+
+    if (isWebview) {
+      // BEEP-2663: In case users can click on the login button in the beep apps, we need to call the native login method.
+      await loginByBeepApp();
+      return;
+    }
+
+    // By default, redirect users to the web login page
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
   };
 
   showShortPromoCode() {
@@ -319,6 +342,41 @@ export class TableSummary extends React.Component {
     return '';
   }
 
+  renderCashbackItem() {
+    const { t, isLogin, cashback, isCashbackEnabled, orderPendingPaymentStatus } = this.props;
+
+    if (!isCashbackEnabled) return null;
+
+    return (
+      <li
+        className={`padding-top-bottom-small padding-left-right-small border-radius-base flex flex-middle flex-space-between ${
+          isLogin ? 'margin-small table-summary__item-primary' : ''
+        }`}
+      >
+        <span className="margin-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</span>
+        {orderPendingPaymentStatus || isLogin ? (
+          <div className="flex flex-middle flex__shrink-fixed">
+            <label className="table-summary__switch-container margin-left-right-small" htmlFor="cashback-switch">
+              <input id="cashback-switch" className="table-summary__toggle-checkbox" type="checkbox" />
+              <div className="table-summary__toggle-switch" />
+            </label>
+            <span className="margin-smaller">
+              - <CurrencyNumber className="text-size-big text-weight-bolder" money={cashback || 0} />
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={this.handleClickLoginButton}
+            className="table-summary__button-login button button__fill padding-top-bottom-smaller padding-left-right-normal"
+            data-heap-name="ordering.table-summary.cashback.login-btn"
+          >
+            {t('Login')}
+          </button>
+        )}
+      </li>
+    );
+  }
+
   renderPromotionItem() {
     const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist } = this.props;
 
@@ -334,7 +392,7 @@ export class TableSummary extends React.Component {
               <button
                 onClick={this.handleDismissPromotion}
                 className="button flex__shrink-fixed"
-                data-heap-name="ordering.cart.dismiss-promo"
+                data-heap-name="ordering.table-summary.dismiss-promo"
               >
                 <IconClose className="icon icon__small" />
               </button>
@@ -351,7 +409,7 @@ export class TableSummary extends React.Component {
           <button
             className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
-            data-heap-name="ordering.cart.add-promo"
+            data-heap-name="ordering.table-summary.add-promo"
           >
             <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
             <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
@@ -460,7 +518,7 @@ export class TableSummary extends React.Component {
     const {
       t,
       history,
-      userIsLogin,
+      isLogin,
       businessInfo,
       shippingType,
       tax,
@@ -495,7 +553,7 @@ export class TableSummary extends React.Component {
           titleAlignment="center"
           className="flex-middle"
           contentClassName="table-summary__header-content flex-middle flex-center flex-space-between text-capitalize"
-          data-heap-name="ordering.need-help.header"
+          data-heap-name="ordering.table-summary.header"
           isPage
           title={t('TableSummary')}
           navFunc={this.handleHeaderNavFunc}
@@ -522,14 +580,11 @@ export class TableSummary extends React.Component {
             serviceChargeRate={serviceChargeRate}
             subtotal={subtotal}
             total={total}
-            creditsBalance={cashback}
             shippingFee={shippingFee}
             businessInfo={businessInfo}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
-            isLogin={userIsLogin}
-            history={history}
-            orderPendingPaymentStatus={orderPendingPaymentStatus}
           >
+            {this.renderCashbackItem()}
             {this.renderPromotionItem()}
           </Billing>
         </div>
@@ -586,7 +641,7 @@ TableSummary.propTypes = {
   shippingFee: PropTypes.number,
   // eslint-disable-next-line react/forbid-prop-types
   subOrdersMapping: PropTypes.object,
-  userIsLogin: PropTypes.bool,
+  isLogin: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   businessInfo: PropTypes.object,
   businessUTCOffset: PropTypes.number,
@@ -614,6 +669,7 @@ TableSummary.propTypes = {
   shouldShowRedirectLoader: PropTypes.bool,
   shouldShowPayNowButton: PropTypes.bool,
   isStorePayByCashOnly: PropTypes.bool,
+  isCashbackEnabled: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -629,7 +685,7 @@ TableSummary.defaultProps = {
   cashback: 0,
   shippingFee: 0,
   subOrdersMapping: {},
-  userIsLogin: false,
+  isLogin: false,
   businessInfo: {},
   businessUTCOffset: 480,
   shippingType: null,
@@ -656,6 +712,7 @@ TableSummary.defaultProps = {
   shouldShowRedirectLoader: false,
   shouldShowPayNowButton: false,
   isStorePayByCashOnly: false,
+  isCashbackEnabled: false,
 };
 
 export default compose(
@@ -676,7 +733,7 @@ export default compose(
       shippingFee: getOrderShippingFee(state),
       subOrdersMapping: getSubOrdersMapping(state),
       businessUTCOffset: getBusinessUTCOffset(state),
-      userIsLogin: getUserIsLogin(state),
+      isLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
       orderBillingPromo: getOrderBillingPromoIfExist(state),
@@ -692,6 +749,7 @@ export default compose(
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
       isStorePayByCashOnly: getIsStorePayByCashOnly(state),
+      isCashbackEnabled: getEnableCashback(state),
     }),
 
     {
