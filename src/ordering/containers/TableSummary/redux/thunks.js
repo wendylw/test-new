@@ -32,13 +32,10 @@ export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', a
   }
 });
 
-export const cleverTapViewPageEvent = createAsyncThunk(
-  'ordering/tableSummary/cleverTapViewPageEvent',
-  async (_, { dispatch, getState }) => {
-    const cleverTapAttributes = getCleverTapAttributes(getState());
-    CleverTap.pushEvent('Table Summary - View Page', cleverTapAttributes);
-  }
-);
+const cleverTapViewPageEvent = (eventName, getState) => {
+  const cleverTapAttributes = getCleverTapAttributes(getState());
+  CleverTap.pushEvent(eventName, cleverTapAttributes);
+};
 
 export const loadOrdersStatus = createAsyncThunk(
   'ordering/tableSummary/loadOrdersStatus',
@@ -63,7 +60,7 @@ export const loadOrdersStatus = createAsyncThunk(
   }
 );
 
-export const queryOrdersAndStatus = receiptNumber => async dispatch => {
+export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) => {
   logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', receiptNumber });
   try {
     const queryOrderStatus = () => {
@@ -80,7 +77,7 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
     };
 
     await dispatch(loadOrders(receiptNumber));
-    dispatch(cleverTapViewPageEvent());
+    cleverTapViewPageEvent('Table Summary - View Page', getState);
     queryOrderStatus();
   } catch (error) {
     console.error(error);
