@@ -1,7 +1,15 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../utils/constants';
-import { getIsTNGMiniProgram } from '../../../redux/modules/app';
+import {
+  getBusinessInfo,
+  getCashbackRate,
+  getEnableCashback,
+  getMerchantCountry,
+  getMinimumConsumption,
+  getShippingType,
+  getIsTNGMiniProgram,
+} from '../../../redux/modules/app';
 import { getSelectedPromo } from '../../../redux/modules/promotion';
 
 const { ORDER_STATUS, API_REQUEST_STATUS } = Constants;
@@ -111,4 +119,45 @@ export const getShouldShowPayNowButton = createSelector(
   getIsTNGMiniProgram,
   getOrderPendingPaymentStatus,
   (isTNGMiniProgram, orderPendingPaymentStatus) => isTNGMiniProgram || !orderPendingPaymentStatus
+);
+
+export const getCartItemsQuantity = createSelector(getOrderItems, orderItems => {
+  let count = 0;
+
+  (orderItems || []).forEach(item => {
+    const { quantity } = item || {};
+    count += quantity;
+  });
+  return count;
+});
+
+export const getCleverTapAttributes = createSelector(
+  getBusinessInfo,
+  getShippingType,
+  getMerchantCountry,
+  getEnableCashback,
+  getCashbackRate,
+  getMinimumConsumption,
+  getCartItemsQuantity,
+  getOrderSubtotal,
+  (
+    businessInfo,
+    shippingType,
+    country,
+    enableCashback,
+    cashbackRate,
+    minimumConsumption,
+    cartItemsQuantity,
+    orderSubtotal
+  ) => ({
+    'store name': _get(businessInfo, 'stores.0.name', ''),
+    'store id': _get(businessInfo, 'stores.0.id', ''),
+    'shipping type': shippingType,
+    country,
+    cashback: enableCashback ? cashbackRate : undefined,
+    'minimum order value': minimumConsumption,
+    'cart items quantity': cartItemsQuantity,
+    'cart amount': orderSubtotal,
+    'has met minimum order value': orderSubtotal >= minimumConsumption,
+  })
 );

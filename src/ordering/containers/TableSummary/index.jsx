@@ -53,7 +53,9 @@ import {
   getShouldShowRedirectLoader,
   getShouldShowPayNowButton,
   getIsStorePayByCashOnly,
+  getCleverTapAttributes,
 } from './redux/selectors';
+import CleverTap from '../../../utils/clevertap';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import { alert } from '../../../common/feedback';
@@ -147,7 +149,8 @@ export class TableSummary extends React.Component {
   }
 
   goToMenuPage = () => {
-    const { history, shippingType } = this.props;
+    const { history, shippingType, cleverTapAttributes } = this.props;
+    CleverTap.pushEvent('Table Summary - Add items', cleverTapAttributes);
     const hashCode = Utils.getStoreHashCode();
     const search = qs.stringify(
       {
@@ -181,7 +184,9 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { orderPlacedStatus } = this.props;
+    const { orderPlacedStatus, cleverTapAttributes } = this.props;
+
+    CleverTap.pushEvent('Table Summary - Back', cleverTapAttributes);
 
     if (orderPlacedStatus) {
       this.goToMenuPage();
@@ -283,7 +288,9 @@ export class TableSummary extends React.Component {
   };
 
   handleClickPayButton = async () => {
-    const { gotoPayment, hasLoginGuardPassed } = this.props;
+    const { gotoPayment, hasLoginGuardPassed, cleverTapAttributes } = this.props;
+
+    CleverTap.pushEvent('Table Summary - Pay now', cleverTapAttributes);
 
     if (!hasLoginGuardPassed) {
       await this.handleLogin();
@@ -606,6 +613,8 @@ TableSummary.propTypes = {
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
   gotoPayment: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  cleverTapAttributes: PropTypes.object,
   isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
   loginByBeepApp: PropTypes.func,
@@ -648,6 +657,7 @@ TableSummary.defaultProps = {
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
   gotoPayment: () => {},
+  cleverTapAttributes: {},
   isWebview: false,
   isTNGMiniProgram: false,
   loginByBeepApp: () => {},
@@ -686,6 +696,7 @@ export default compose(
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
+      cleverTapAttributes: getCleverTapAttributes(state),
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
