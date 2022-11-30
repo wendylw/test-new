@@ -6,7 +6,6 @@ import {
   getCashbackRate,
   getEnableCashback,
   getMerchantCountry,
-  getMinimumConsumption,
   getShippingType,
   getIsTNGMiniProgram,
 } from '../../../redux/modules/app';
@@ -121,7 +120,7 @@ export const getShouldShowPayNowButton = createSelector(
   (isTNGMiniProgram, orderPendingPaymentStatus) => isTNGMiniProgram || !orderPendingPaymentStatus
 );
 
-export const getCartItemsQuantity = createSelector(getOrderItems, orderItems => {
+export const getCartItemsQuantityCleverTap = createSelector(getOrderItems, orderItems => {
   let count = 0;
 
   (orderItems || []).forEach(item => {
@@ -137,27 +136,15 @@ export const getCleverTapAttributes = createSelector(
   getMerchantCountry,
   getEnableCashback,
   getCashbackRate,
-  getMinimumConsumption,
-  getCartItemsQuantity,
+  getCartItemsQuantityCleverTap,
   getOrderSubtotal,
-  (
-    businessInfo,
-    shippingType,
-    country,
-    enableCashback,
-    cashbackRate,
-    minimumConsumption,
-    cartItemsQuantity,
-    orderSubtotal
-  ) => ({
+  (businessInfo, shippingType, country, enableCashback, cashbackRate, cartItemsQuantity, orderSubtotal) => ({
     'store name': _get(businessInfo, 'stores.0.name', ''),
     'store id': _get(businessInfo, 'stores.0.id', ''),
     'shipping type': shippingType,
     country,
     cashback: enableCashback ? cashbackRate : undefined,
-    'minimum order value': minimumConsumption,
     'cart items quantity': cartItemsQuantity,
     'cart amount': orderSubtotal,
-    'has met minimum order value': orderSubtotal >= minimumConsumption,
   })
 );
