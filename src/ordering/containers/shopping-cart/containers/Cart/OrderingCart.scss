@@ -90,7 +90,7 @@
     visibility: hidden;
 
     &:checked {
-      + .billing__toggle-switch {
+      + .cart-cashback__toggle-switch {
         background: $theme-color;
 
         &:before {

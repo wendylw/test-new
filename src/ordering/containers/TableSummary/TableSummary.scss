@@ -139,7 +139,7 @@ $table-summary-background: #fffbe6;
     visibility: hidden;
 
     &:checked {
-      + .billing__toggle-switch {
+      + .table-summary__toggle-switch {
         background: $theme-color;
 
         &:before {
