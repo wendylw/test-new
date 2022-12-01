@@ -329,6 +329,10 @@ export function getSelectedPromo(state) {
   return state.promotion.selectedPromo;
 }
 
-export function getPromotionId(state) {
-  return _get(state.promotion, 'foundPromo.availablePromos[0].id', '');
+export function getSelectedPromoId(state) {
+  return _get(state.promotion, 'selectedPromo.id', '');
+}
+
+export function getSelectedPromoCode(state) {
+  return _get(state.promotion, 'selectedPromo.code', '');
 }
