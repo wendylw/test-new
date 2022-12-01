@@ -42,7 +42,7 @@
   "ThankYouForAlreadyPickUp": "Thank you for ordering with us! We hope you enjoy your food",
   "ThankYouForUpdatedToPickingUpForUS": "You've switched to self-pickup. The pickup details are below, we hope you enjoy your food!",
   "EarnedCashBackTitle": "You’ve earned cash back",
-  "EarnedCashBackDescription": "This may be used when you buy from us again!",
+  "EarnedCashBackDescription": "This can be used when you buy from us again!",
   "GotCashBackTitle": "You’ve got {{currency}} cashback",
   "GotCashBackDescription": "Login or sign up below to claim your cashback now!",
   "WantCashBackTitle": "I want cashback",
