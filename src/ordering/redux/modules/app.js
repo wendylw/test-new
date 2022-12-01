@@ -1461,6 +1461,7 @@ export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeli
 
 export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
 export const getCartSubtotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'subtotal', null));
+export const getCartCashback = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'cashback', null));
 export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =>
   _get(cartBilling, 'totalCashback', null)
 );
@@ -1832,4 +1833,7 @@ export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
 );
 
 export const getCheckoutInfo = state => state.app.checkoutInfo;
+
 export const getIsCashbackApplied = createSelector(getCheckoutInfo, checkoutInfo => checkoutInfo.applyCashback);
+
+export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => !!cashback);

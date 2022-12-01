@@ -55,6 +55,7 @@ import {
   getShouldShowRedirectLoader,
   getShouldShowPayNowButton,
   getIsStorePayByCashOnly,
+  getShouldShowSwitchButton,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -350,7 +351,15 @@ export class TableSummary extends React.Component {
   }
 
   renderCashbackItem() {
-    const { t, isLogin, cashback, isCashbackEnabled, isCashbackApplied, orderPendingPaymentStatus } = this.props;
+    const {
+      t,
+      isLogin,
+      cashback,
+      isCashbackEnabled,
+      isCashbackApplied,
+      orderPendingPaymentStatus,
+      shouldShowSwitchButton,
+    } = this.props;
 
     if (!isCashbackEnabled) return null;
 
@@ -363,18 +372,22 @@ export class TableSummary extends React.Component {
         <span className="margin-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</span>
         {orderPendingPaymentStatus || isLogin ? (
           <div className="flex flex-middle flex__shrink-fixed">
-            <label className="table-summary__switch-container margin-left-right-small" htmlFor="cashback-switch">
-              <input
-                id="cashback-switch"
-                className="table-summary__toggle-checkbox"
-                type="checkbox"
-                checked={isCashbackApplied}
-                onChange={this.handleToggleCashbackSwitch}
-              />
-              <div className="table-summary__toggle-switch" />
-            </label>
+            {shouldShowSwitchButton ? (
+              <label className="table-summary__switch-container margin-left-right-small" htmlFor="cashback-switch">
+                <input
+                  id="cashback-switch"
+                  className="table-summary__toggle-checkbox"
+                  type="checkbox"
+                  checked={isCashbackApplied}
+                  onChange={this.handleToggleCashbackSwitch}
+                />
+                <div className="table-summary__toggle-switch" />
+              </label>
+            ) : null}
             <span
-              className={`margin-smaller table-summary__switch-label__${isCashbackApplied ? 'active' : 'inactive'}`}
+              className={`margin-smaller table-summary__switch-label__${
+                isCashbackApplied || !shouldShowSwitchButton ? 'active' : 'inactive'
+              }`}
             >
               - <CurrencyNumber className="text-size-big" money={cashback || 0} />
             </span>
@@ -687,6 +700,7 @@ TableSummary.propTypes = {
   isStorePayByCashOnly: PropTypes.bool,
   isCashbackEnabled: PropTypes.bool,
   isCashbackApplied: PropTypes.bool,
+  shouldShowSwitchButton: false,
 };
 
 TableSummary.defaultProps = {
@@ -732,6 +746,7 @@ TableSummary.defaultProps = {
   isStorePayByCashOnly: false,
   isCashbackEnabled: false,
   isCashbackApplied: false,
+  shouldShowSwitchButton: false,
 };
 
 export default compose(
@@ -770,6 +785,7 @@ export default compose(
       isStorePayByCashOnly: getIsStorePayByCashOnly(state),
       isCashbackEnabled: getEnableCashback(state),
       isCashbackApplied: getIsCashbackApplied(state),
+      shouldShowSwitchButton: getShouldShowSwitchButton(state),
     }),
 
     {

@@ -111,3 +111,5 @@ export const getShouldShowPayNowButton = createSelector(
   getOrderPendingPaymentStatus,
   (isTNGMiniProgram, orderPendingPaymentStatus) => isTNGMiniProgram || !orderPendingPaymentStatus
 );
+
+export const getShouldShowSwitchButton = createSelector(getOrderCashback, cashback => !!cashback);
