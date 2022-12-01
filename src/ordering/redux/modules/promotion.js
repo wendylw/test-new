@@ -3,7 +3,7 @@ import Url from '../../../utils/url';
 import Constants from '../../../utils/constants';
 import Utils from '../../../utils/utils';
 import { API_REQUEST } from '../../../redux/middlewares/api';
-import { getBusinessUTCOffset, getCartBilling } from './app';
+import { getBusinessUTCOffset, getCartBilling, getIsCashbackApplied } from './app';
 import _get from 'lodash/get';
 const { PROMO_TYPE } = Constants;
 
@@ -33,6 +33,7 @@ export const actions = {
     const state = getState();
     const { selectedPromo } = state.promotion;
     const businessUTCOffset = getBusinessUTCOffset(state);
+    const applyCashback = getIsCashbackApplied(state);
 
     const result = await dispatch({
       [API_REQUEST]: {
@@ -46,6 +47,7 @@ export const actions = {
           promoId: selectedPromo.id,
           fulfillDate: Utils.getFulfillDate(businessUTCOffset),
           shippingType: Utils.getApiRequestShippingType(),
+          applyCashback,
         },
       },
     });
@@ -56,6 +58,7 @@ export const actions = {
     const state = getState();
     const { selectedPromo } = state.promotion;
     const businessUTCOffset = getBusinessUTCOffset(state);
+    const applyCashback = getIsCashbackApplied(state);
 
     const result = await dispatch({
       [API_REQUEST]: {
@@ -69,6 +72,7 @@ export const actions = {
           voucherCode: selectedPromo.code,
           fulfillDate: Utils.getFulfillDate(businessUTCOffset),
           shippingType: Utils.getApiRequestShippingType(),
+          applyCashback,
         },
       },
     });

@@ -491,6 +491,7 @@ class PayFirst extends Component {
   handleToggleCashbackSwitch = event => {
     const { appActions } = this.props;
     appActions.updateCashbackApplyStatus(event.target.checked);
+    appActions.loadShoppingCart();
   };
 
   formatCleverTapAttributes(product) {

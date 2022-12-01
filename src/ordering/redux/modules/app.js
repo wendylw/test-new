@@ -195,11 +195,11 @@ const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate, applyCashback) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate, applyCashback),
     },
   };
 };
@@ -510,6 +510,7 @@ export const actions = {
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
     const businessUTCOffset = getBusinessUTCOffset(state);
+    const applyCashback = getIsCashbackApplied(state);
 
     if (isDigital) {
       await dispatch(generatorShoppingCartForVoucherOrdering());
@@ -536,7 +537,7 @@ export const actions = {
 
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
+    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate, applyCashback));
   },
 
   removeShoppingCartItem: variables => dispatch => {

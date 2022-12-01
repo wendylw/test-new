@@ -1,12 +1,13 @@
 import Utils from './utils';
 const API_URLS = {
-  GET_CART_TYPE: (isDeliveryType, deliveryCoords, fulfillDate) => {
+  GET_CART_TYPE: (isDeliveryType, deliveryCoords, fulfillDate, applyCashback) => {
     const CartObj = {
       url: '/api/cart',
       method: 'get',
     };
     const params = {
       shippingType: Utils.getApiRequestShippingType(),
+      applyCashback,
     };
 
     if (isDeliveryType && deliveryCoords) {
