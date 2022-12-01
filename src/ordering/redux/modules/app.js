@@ -171,6 +171,9 @@ export const initialState = {
     countryCode: '',
     fetchRequestStatus: null,
   },
+  checkoutInfo: {
+    applyCashback: false,
+  },
 };
 
 const fetchCoreBusiness = variables => ({
@@ -834,6 +837,11 @@ export const actions = {
       payload: newStoreId,
     });
   },
+
+  updateCashbackApplyStatus: newStatus => ({
+    type: types.UPDATE_CASHBACK_APPLY_STATUS,
+    payload: newStatus,
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -1267,6 +1275,14 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
   }
 };
 
+const checkoutInfo = (state = initialState.checkoutInfo, action) => {
+  if (action.type === types.UPDATE_CASHBACK_APPLY_STATUS) {
+    return { ...state, applyCashback: action.payload };
+  }
+
+  return state;
+};
+
 export default combineReducers({
   user,
   error,
@@ -1281,6 +1297,7 @@ export default combineReducers({
   coreBusiness,
   onlineCategory,
   coreStores,
+  checkoutInfo,
 });
 
 // selectors
@@ -1812,3 +1829,6 @@ export const getURLQueryObject = createSelector(getLocationSearch, locationSearc
 export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'stores[0].reviewInfo.rating', null)
 );
+
+export const getCheckoutInfo = state => state.app.checkoutInfo;
+export const getIsCashbackApplied = createSelector(getCheckoutInfo, checkoutInfo => checkoutInfo.applyCashback);

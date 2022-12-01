@@ -34,6 +34,7 @@ import {
   getIsWebview,
   getIsTNGMiniProgram,
   getEnableCashback,
+  getIsCashbackApplied,
   getUserIsLogin,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
@@ -487,6 +488,11 @@ class PayFirst extends Component {
     });
   };
 
+  handleToggleCashbackSwitch = event => {
+    const { appActions } = this.props;
+    appActions.updateCashbackApplyStatus(event.target.checked);
+  };
+
   formatCleverTapAttributes(product) {
     return {
       'category name': product.categoryName,
@@ -516,7 +522,7 @@ class PayFirst extends Component {
   }
 
   renderCashbackItem() {
-    const { t, isLogin, isCashbackEnabled, cartBilling } = this.props;
+    const { t, isLogin, isCashbackEnabled, isCashbackApplied, cartBilling } = this.props;
     const { cashback } = cartBilling || {};
 
     if (!isCashbackEnabled) return null;
@@ -531,11 +537,19 @@ class PayFirst extends Component {
         {isLogin ? (
           <div className="flex flex-middle flex__shrink-fixed">
             <label className="cart-cashback__switch-container margin-left-right-small" htmlFor="cashback-switch">
-              <input id="cashback-switch" className="cart-cashback__toggle-checkbox" type="checkbox" />
+              <input
+                id="cashback-switch"
+                className="cart-cashback__toggle-checkbox"
+                type="checkbox"
+                checked={isCashbackApplied}
+                onChange={this.handleToggleCashbackSwitch}
+              />
               <div className="cart-cashback__toggle-switch" />
             </label>
-            <span className="margin-smaller">
-              - <CurrencyNumber className="text-size-big text-weight-bolder" money={cashback || 0} />
+            <span
+              className={`margin-smaller cart-cashback__switch-label__${isCashbackApplied ? 'active' : 'inactive'}`}
+            >
+              - <CurrencyNumber className="text-size-big" money={cashback || 0} />
             </span>
           </div>
         ) : (
@@ -767,6 +781,7 @@ PayFirst.propTypes = {
     getProfileInfo: PropTypes.func,
     updateDeliveryDetails: PropTypes.func,
     loginByBeepApp: PropTypes.func,
+    updateCashbackApplyStatus: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
@@ -800,6 +815,7 @@ PayFirst.propTypes = {
   isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
   isCashbackEnabled: PropTypes.bool,
+  isCashbackApplied: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -811,6 +827,7 @@ PayFirst.defaultProps = {
     getProfileInfo: () => {},
     updateDeliveryDetails: () => {},
     loginByBeepApp: () => {},
+    updateCashbackApplyStatus: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},
@@ -839,6 +856,7 @@ PayFirst.defaultProps = {
   isWebview: false,
   isTNGMiniProgram: false,
   isCashbackEnabled: false,
+  isCashbackApplied: false,
 };
 
 /* TODO: backend data */
@@ -866,6 +884,7 @@ export default compose(
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
       isCashbackEnabled: getEnableCashback(state),
+      isCashbackApplied: getIsCashbackApplied(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),

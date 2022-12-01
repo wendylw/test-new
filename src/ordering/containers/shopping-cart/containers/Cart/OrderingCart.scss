@@ -85,6 +85,20 @@
     display: inline-block;
   }
 
+  &__switch-label {
+    &__active {
+      color: $basic-text-basic;
+
+      span {
+        font-weight: $font-weight-bolder;
+      }
+    }
+
+    &__inactive {
+      color: $gray-2;
+    }
+  }
+
   &__toggle-checkbox {
     position: absolute;
     visibility: hidden;

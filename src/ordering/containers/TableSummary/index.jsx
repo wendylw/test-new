@@ -17,6 +17,7 @@ import {
   getIsTNGMiniProgram,
   getHasLoginGuardPassed,
   getEnableCashback,
+  getIsCashbackApplied,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
@@ -297,6 +298,12 @@ export class TableSummary extends React.Component {
     await gotoPayment();
   };
 
+  handleToggleCashbackSwitch = event => {
+    const { updateCashbackApplyStatus } = this.props;
+
+    updateCashbackApplyStatus(event.target.checked);
+  };
+
   handleClickLoginButton = async () => {
     const { history, isWebview, loginByBeepApp } = this.props;
 
@@ -343,7 +350,7 @@ export class TableSummary extends React.Component {
   }
 
   renderCashbackItem() {
-    const { t, isLogin, cashback, isCashbackEnabled, orderPendingPaymentStatus } = this.props;
+    const { t, isLogin, cashback, isCashbackEnabled, isCashbackApplied, orderPendingPaymentStatus } = this.props;
 
     if (!isCashbackEnabled) return null;
 
@@ -357,11 +364,19 @@ export class TableSummary extends React.Component {
         {orderPendingPaymentStatus || isLogin ? (
           <div className="flex flex-middle flex__shrink-fixed">
             <label className="table-summary__switch-container margin-left-right-small" htmlFor="cashback-switch">
-              <input id="cashback-switch" className="table-summary__toggle-checkbox" type="checkbox" />
+              <input
+                id="cashback-switch"
+                className="table-summary__toggle-checkbox"
+                type="checkbox"
+                checked={isCashbackApplied}
+                onChange={this.handleToggleCashbackSwitch}
+              />
               <div className="table-summary__toggle-switch" />
             </label>
-            <span className="margin-smaller">
-              - <CurrencyNumber className="text-size-big text-weight-bolder" money={cashback || 0} />
+            <span
+              className={`margin-smaller table-summary__switch-label__${isCashbackApplied ? 'active' : 'inactive'}`}
+            >
+              - <CurrencyNumber className="text-size-big" money={cashback || 0} />
             </span>
           </div>
         ) : (
@@ -665,11 +680,13 @@ TableSummary.propTypes = {
   isTNGMiniProgram: PropTypes.bool,
   loginByBeepApp: PropTypes.func,
   loginByTngMiniProgram: PropTypes.func,
+  updateCashbackApplyStatus: PropTypes.func,
   hasLoginGuardPassed: PropTypes.bool,
   shouldShowRedirectLoader: PropTypes.bool,
   shouldShowPayNowButton: PropTypes.bool,
   isStorePayByCashOnly: PropTypes.bool,
   isCashbackEnabled: PropTypes.bool,
+  isCashbackApplied: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -708,11 +725,13 @@ TableSummary.defaultProps = {
   isTNGMiniProgram: false,
   loginByBeepApp: () => {},
   loginByTngMiniProgram: () => {},
+  updateCashbackApplyStatus: () => {},
   hasLoginGuardPassed: false,
   shouldShowRedirectLoader: false,
   shouldShowPayNowButton: false,
   isStorePayByCashOnly: false,
   isCashbackEnabled: false,
+  isCashbackApplied: false,
 };
 
 export default compose(
@@ -750,6 +769,7 @@ export default compose(
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
       isStorePayByCashOnly: getIsStorePayByCashOnly(state),
       isCashbackEnabled: getEnableCashback(state),
+      isCashbackApplied: getIsCashbackApplied(state),
     }),
 
     {
@@ -762,6 +782,7 @@ export default compose(
       gotoPayment: gotoPaymentThunk,
       loginByBeepApp: appActions.loginByBeepApp,
       loginByTngMiniProgram: appActions.loginByTngMiniProgram,
+      updateCashbackApplyStatus: appActions.updateCashbackApplyStatus,
     }
   )
 )(TableSummary);
