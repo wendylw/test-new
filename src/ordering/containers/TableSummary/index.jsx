@@ -100,12 +100,20 @@ export class TableSummary extends React.Component {
           }),
       });
     }
+    const { cleverTapAttributes } = this.props;
+    if (cleverTapAttributes.country) {
+      CleverTap.pushEvent('Table Summary - View Page', cleverTapAttributes);
+    }
   }
 
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
 
-    const { thankYouPageUrl, shippingType } = this.props;
+    const { thankYouPageUrl, shippingType, cleverTapAttributes } = this.props;
+
+    if (prevProps.cleverTapAttributes.country !== cleverTapAttributes.country) {
+      CleverTap.pushEvent('Table Summary - View Page', cleverTapAttributes);
+    }
 
     if (thankYouPageUrl) {
       // Add "type" into thankYouPageUrl query

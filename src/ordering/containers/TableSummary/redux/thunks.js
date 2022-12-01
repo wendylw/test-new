@@ -10,13 +10,11 @@ import {
   getSelectedPromoCode,
   getOrderCashback,
   getOrderTotal,
-  getCleverTapAttributes,
 } from './selectors';
 import { getUserConsumerId, getLocationSearch, getIsTNGMiniProgram } from '../../../redux/modules/app';
 import { getPromotionId } from '../../../redux/modules/promotion';
 import { gotoPayment as initPayment, loadBilling } from '../../payments/redux/common/thunks';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
-import CleverTap from '../../../../utils/clevertap';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
@@ -31,11 +29,6 @@ export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', a
     throw error;
   }
 });
-
-const cleverTapViewPageEvent = (eventName, getState) => {
-  const cleverTapAttributes = getCleverTapAttributes(getState());
-  CleverTap.pushEvent(eventName, cleverTapAttributes);
-};
 
 export const loadOrdersStatus = createAsyncThunk(
   'ordering/tableSummary/loadOrdersStatus',
@@ -77,7 +70,6 @@ export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) 
     };
 
     await dispatch(loadOrders(receiptNumber));
-    cleverTapViewPageEvent('Table Summary - View Page', getState);
     queryOrderStatus();
   } catch (error) {
     console.error(error);
