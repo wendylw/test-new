@@ -31,12 +31,9 @@ export const getOrderCashback = state =>
 
 export const getOrderShippingFee = state => state.tableSummary.order.shippingFee;
 
-export const getOrderPlacedStatus = state =>
-  state.tableSummary.requestStatus.loadOrders !== API_REQUEST_STATUS.PENDING &&
-  state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED;
+export const getIsOrderPlaced = state => state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED;
 
-export const getOrderPendingPaymentStatus = state =>
-  state.tableSummary.order.orderStatus === ORDER_STATUS.PENDING_PAYMENT;
+export const getIsOrderPendingPayment = state => state.tableSummary.order.orderStatus === ORDER_STATUS.PENDING_PAYMENT;
 
 export const getSubOrders = state => state.tableSummary.order.subOrders;
 
@@ -108,8 +105,12 @@ export const getShouldShowRedirectLoader = state => state.tableSummary.redirectL
 
 export const getShouldShowPayNowButton = createSelector(
   getIsTNGMiniProgram,
-  getOrderPendingPaymentStatus,
-  (isTNGMiniProgram, orderPendingPaymentStatus) => isTNGMiniProgram || !orderPendingPaymentStatus
+  getIsOrderPendingPayment,
+  (isTNGMiniProgram, isOrderPendingPayment) => isTNGMiniProgram || !isOrderPendingPayment
 );
 
-export const getShouldShowSwitchButton = createSelector(getOrderCashback, cashback => !!cashback);
+export const getShouldShowSwitchButton = createSelector(
+  getOrderCashback,
+  getIsOrderPendingPayment,
+  (cashback, isOrderPendingPayment) => !(isOrderPendingPayment || !cashback)
+);

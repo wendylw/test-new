@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { applyPromotion, removePromotion, applyVoucher, removeVoucher } from './api-request';
 import { getSelectedPromoId, getSelectedPromoCode } from '../../../../redux/modules/promotion';
+import { getIsCashbackApplied } from '../../../../redux/modules/app';
 import Utils from '../../../../../utils/utils';
 
 const formatErrorOfApplyPromoOrVoucher = e => ({ name: JSON.stringify(e.extra), code: e.code, message: e.message });
@@ -24,9 +25,10 @@ const removePromoOrVoucher = async removeMethods => {
 export const applyPromo = createAsyncThunk('ordering/promotion/common/applyPromo', async (_, { getState }) => {
   const state = getState();
   const promotionId = getSelectedPromoId(state);
+  const applyCashback = getIsCashbackApplied(state);
   const receiptNumber = Utils.getQueryString('receiptNumber');
   try {
-    const result = await applyPromotion({ receiptNumber, promotionId });
+    const result = await applyPromotion({ receiptNumber, promotionId, applyCashback });
 
     return result;
   } catch (e) {
@@ -48,9 +50,10 @@ export const applyVoucherPayLater = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState();
     const voucherCode = getSelectedPromoCode(state);
+    const applyCashback = getIsCashbackApplied(state);
     const receiptNumber = Utils.getQueryString('receiptNumber');
     try {
-      const result = await applyVoucher({ receiptNumber, voucherCode });
+      const result = await applyVoucher({ receiptNumber, voucherCode, applyCashback });
 
       return result;
     } catch (e) {
