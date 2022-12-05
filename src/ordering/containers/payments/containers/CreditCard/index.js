@@ -30,6 +30,7 @@ import { initialize as initializeThunkCreator } from '../../redux/common/thunks'
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
 import PaymentCardBrands from '../../components/PaymentCardBrands';
 import '../../styles/PaymentCreditCard.scss';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import CleverTap from '../../../../../utils/clevertap';
 import * as ApiFetch from '../../../../../utils/api/api-fetch';
 import logger from '../../../../../utils/monitoring/logger';
@@ -67,8 +68,8 @@ class CreditCard extends Component {
     document.body.appendChild(script);
 
     this.setState({ domLoaded: true });
-
     this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+    prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
   getPaymentEntryRequestData = () => {

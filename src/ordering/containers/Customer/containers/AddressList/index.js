@@ -13,6 +13,7 @@ import {
 import { loadAddressList } from '../../../../redux/modules/addressList/thunks';
 import { getAddressList } from '../../../../redux/modules/addressList/selectors';
 import Utils from '../../../../../utils/utils';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import { ADDRESS_DISPLAY_MODES } from '../../../../redux/modules/addressList/constants';
 import './AddressList.scss';
 import CleverTap from '../../../../../utils/clevertap';
@@ -22,6 +23,8 @@ class AddressList extends Component {
     const { loadAddressList } = this.props;
 
     await loadAddressList();
+
+    prefetch(['ORD_LOC', 'ORD_AD', 'ORD_CI'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   addNewAddress = () => {

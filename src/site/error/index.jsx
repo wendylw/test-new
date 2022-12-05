@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { IconLeftArrow } from '../../components/Icons';
+import prefetch from '../../common/utils/prefetch-assets';
 import beepWarningImage from '../../images/beep-warning.png';
 import './index.scss';
 
 class Error extends Component {
+  componentDidMount() {
+    prefetch(['SITE_HM'], ['SiteHome']);
+  }
+
   getErrorContent() {
     const { t, location, match } = this.props;
     const { isIOS } = location.state || {};

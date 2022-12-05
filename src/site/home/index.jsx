@@ -36,6 +36,7 @@ import Banners from './components/Banners';
 import Carousel from './components/Carousel';
 import BeepAppLink from './containers/CampaignBar/components/images/beep-app-link.jpg';
 import DevToolsTrigger from '../../components/DevToolsTrigger';
+import prefetch from '../../common/utils/prefetch-assets';
 import Utils from '../../utils/utils';
 import {
   getAddressInfo as getAddress,
@@ -45,7 +46,6 @@ import {
 } from '../../redux/modules/address/selectors';
 import { getAddressInfo, setAddressInfo } from '../../redux/modules/address/thunks';
 import { ADDRESS_INFO_SOURCE_TYPE } from '../../redux/modules/address/constants';
-import '../../common/styles/base.scss';
 
 const { ROUTER_PATHS /*ADDRESS_RANGE*/, COLLECTIONS_TYPE } = Constants;
 
@@ -89,6 +89,7 @@ class Home extends React.Component {
     await this.reloadAddressInfoByDeviceIfNeeded(source);
 
     CleverTap.pushEvent('Home Page - view home page');
+    prefetch(['ORD_LOC'], ['OrderingDelivery']);
   };
 
   componentDidUpdate(prevProps) {

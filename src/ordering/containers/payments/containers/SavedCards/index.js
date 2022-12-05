@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import HybridHeader from '../../../../../components/HybridHeader';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import Radio from '../../../../../components/Radio';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
@@ -56,6 +57,8 @@ class SavedCards extends Component {
         });
         return;
       }
+
+      prefetch(['ORD_PMT', 'ORD_SRP', 'ORD_CC'], ['OrderingPayment']);
     } catch (error) {
       // TODO: Handle this error in Payment 2.0
       console.error(error);

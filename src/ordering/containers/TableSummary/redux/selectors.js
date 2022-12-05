@@ -97,6 +97,8 @@ export const getOrderPromoDiscount = state => state.tableSummary.order.displayPr
 
 export const getOrderPromotionCode = state => state.tableSummary.order.displayPromotions[0]?.promotionCode;
 
+export const getOrderPromotionId = state => state.tableSummary.order.displayPromotions[0]?.promotionId;
+
 export const getVoucherBillingIfExist = state => state.tableSummary.order.appliedVoucher?.voucherId || '';
 
 export const getOrderVoucherCode = state => state.tableSummary.order.appliedVoucher?.voucherCode;
@@ -109,8 +111,6 @@ export const getPromoOrVoucherExist = createSelector(
   (orderBillingPromoIfExist, voucherBillingIfExist) => !!(orderBillingPromoIfExist || voucherBillingIfExist)
 );
 export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
-
-export const getSelectedPromoCode = createSelector(getSelectedPromo, selectedPromo => selectedPromo.code);
 
 export const getShouldShowRedirectLoader = state => state.tableSummary.redirectLoaderVisible;
 

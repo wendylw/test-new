@@ -226,16 +226,6 @@ export const getHighlightedCategory = createSelector(
   }
 );
 
-export const getEnableDeliveryRevamp = state => state.menu.common.enabledDeliveryRevamp;
-
-export const getIsMenuRevamp = createSelector(
-  getIsQrOrderingShippingType,
-  getIsDeliveryOrder,
-  getEnableDeliveryRevamp,
-  (isQrOrderingShippingType, isDeliveryOrder, enabledDeliveryRevamp) =>
-    isQrOrderingShippingType || (isDeliveryOrder && enabledDeliveryRevamp)
-);
-
 export const getIsSearchingBannerVisible = state => state.menu.common.searchingBannerVisible;
 
 export const getSearchingProductKeywords = state => state.menu.common.searchingProductKeywords;

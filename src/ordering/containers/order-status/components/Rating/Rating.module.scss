@@ -5,3 +5,19 @@
 .Rating {
   @apply tw-flex tw-flex-row tw-items-center tw-justify-center;
 }
+
+.RatingStarItem {
+  @apply tw-flex;
+}
+
+.RatingStar {
+  @apply sm:tw-m-4px tw-m-4;
+}
+
+.RatingStarSelected {
+  @apply tw-text-yellow;
+}
+
+.RatingStarDefault {
+  @apply tw-text-gray-600;
+}

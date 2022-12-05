@@ -24,7 +24,6 @@ import {
   getAllStores,
   showStores,
 } from '../../redux/modules/home';
-import OfflineStoreModal from '../../../ordering/containers/Home/components/OfflineStoreModal';
 import NativeHeader from '../../../components/NativeHeader';
 
 const { ROUTER_PATHS } = Constants;
@@ -112,11 +111,6 @@ class Home extends Component {
   isDinePath() {
     return this.props.match.path === Constants.ROUTER_PATHS.DINE;
   }
-
-  renderOfflineModal = () => {
-    Utils.removeSessionVariable('creatOfflineStoreOrderName');
-    return <OfflineStoreModal currentStoreName={this.state.creatOfflineStoreOrderName} enableLiveOnline={false} />;
-  };
 
   render() {
     const { t, show, stores, onlineStoreInfo } = this.props;

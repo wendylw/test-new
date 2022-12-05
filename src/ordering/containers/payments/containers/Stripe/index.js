@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import { bindActionCreators, compose } from 'redux';
 import {
@@ -30,6 +31,7 @@ const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
 class Stripe extends Component {
   async componentDidMount() {
     this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+    prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
   getPaymentEntryRequestData = () => {
