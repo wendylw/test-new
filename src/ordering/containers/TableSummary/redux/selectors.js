@@ -9,7 +9,6 @@ import {
   getShippingType,
   getIsTNGMiniProgram,
 } from '../../../redux/modules/app';
-import { getSelectedPromo } from '../../../redux/modules/promotion';
 
 const { ORDER_STATUS, API_REQUEST_STATUS } = Constants;
 
