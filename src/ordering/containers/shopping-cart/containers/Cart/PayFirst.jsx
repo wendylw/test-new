@@ -8,6 +8,7 @@ import _replace from 'lodash/replace';
 import _isNil from 'lodash/isNil';
 import Billing from '../../../../components/Billing';
 import CartList from '../../components/CartList';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
@@ -66,7 +67,7 @@ class PayFirst extends Component {
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
     this.addResizeEventHandler();
-
+    prefetch(['ORD_PMT', 'ORD_PROMO', 'ORD_CI'], ['OrderingPayment', 'OrderingPromotion']);
     CleverTap.pushEvent('Cart page - view cart page', storeInfoForCleverTap);
   }
 

@@ -38,6 +38,7 @@ import { withAvailableAddressDetails } from './withAvailableAddressDetails';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 
 const { ADDRESS_RANGE, ROUTER_PATHS } = Constants;
 
@@ -60,6 +61,7 @@ class CustomerInfo extends Component {
     });
 
     await appActions.loadShoppingCart();
+    prefetch(['ORD_SC', 'ORD_PMT', 'ORD_AL'], ['OrderingCart', 'OrderingPayment']);
     this.cleverTapViewPageEvent('Checkout page - View page');
   }
 

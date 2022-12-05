@@ -2,6 +2,7 @@
   color: #00b0ff;
   user-select: none;
   cursor: pointer;
+  padding: 4.102564vw 3.076923vw;
 
   &:active {
     opacity: 0.5;
@@ -10,18 +11,49 @@
   &__loading-text {
     font-size: 1.1rem;
     letter-spacing: 0.01em;
+    padding-left: 0.51282vw;
+    padding-right: 0.51282vw;
   }
 
   &__loader {
     color: #00b0ff;
     margin: 2.4vw;
   }
+
+  &__icon {
+    margin-left: 0.51282vw;
+    margin-right: 0.51282vw;
+  }
+
+  &__text {
+    padding-left: 0.51282vw;
+    padding-right: 0.51282vw;
+    line-height: 1.5;
+  }
 }
 
 @media (min-width: 420px) {
   .live-chat {
+    padding: 16px 12px;
+
     &__loader {
       margin: 8px;
+    }
+
+    &__loading-text {
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+
+    &__icon {
+      margin-left: 2px;
+      margin-right: 2px;
+    }
+
+    &__text {
+      padding-left: 2px;
+      padding-right: 2px;
+      line-height: 1.5;
     }
   }
 }

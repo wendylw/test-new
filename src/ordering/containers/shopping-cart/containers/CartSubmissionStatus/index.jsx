@@ -18,6 +18,7 @@ import {
 import { getCleverTapAttributes } from '../../redux/common/selector';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import orderSuccessImage from '../../../../../images/order-success-1.svg';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
 import CleverTap from '../../../../../utils/clevertap';
@@ -39,6 +40,8 @@ class CartSubmissionStatus extends Component {
         search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}&receiptNumber=${receiptNumber}`,
       });
     }
+
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_TS', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart', 'OrderingTableSummary']);
   };
 
   componentWillUnmount = () => {

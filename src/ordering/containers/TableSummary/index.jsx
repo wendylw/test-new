@@ -18,6 +18,7 @@ import {
   getHasLoginGuardPassed,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
+import prefetch from '../../../common/utils/prefetch-assets';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import {
   loadOrders as loadOrdersThunk,
@@ -98,6 +99,8 @@ export class TableSummary extends React.Component {
           }),
       });
     }
+
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PROMO', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart', 'OrderingPromotion']);
   }
 
   componentDidUpdate(prevProps, prevStates) {

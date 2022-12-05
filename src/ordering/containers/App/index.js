@@ -132,21 +132,24 @@ class App extends Component {
     this.visitErrorPage();
 
     try {
-      await this.initAddressInfo();
-      await appActions.getLoginStatus();
-      await appActions.initDeliveryDetails();
-      const { responseGql = {} } = await appActions.fetchOnlineStoreInfo();
-
-      if (Utils.isWebview()) {
-        appActions.syncLoginFromNative();
-      }
+      const initRequests = [this.initAddressInfo(), appActions.getLoginStatus(), appActions.fetchOnlineStoreInfo()];
 
       if (Utils.notHomeOrLocationPath(window.location.pathname)) {
-        await appActions.loadCoreBusiness();
+        initRequests.push(appActions.loadCoreBusiness());
       }
 
-      const { user, businessInfo } = this.props;
-      const { onlineStoreInfo } = responseGql.data || {};
+      await Promise.all(initRequests);
+
+      // Must go after getLoginStatus finishes
+      // Potentially change consumerId through CREATE_LOGIN_SUCCESS, so go before initDeliveryDetails
+      if (Utils.isWebview()) {
+        await appActions.syncLoginFromNative();
+      }
+
+      // Must go after initAddressInfo & getLoginStatus & syncLoginFromNative finish
+      await appActions.initDeliveryDetails();
+
+      const { user, businessInfo, onlineStoreInfo } = this.props;
 
       const thankYouPageUrl = `${Constants.ROUTER_PATHS.ORDERING_BASE}${Constants.ROUTER_PATHS.THANK_YOU}`;
 
