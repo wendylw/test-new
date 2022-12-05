@@ -23,6 +23,7 @@ import {
   getUserPhone,
   getIsTNGMiniProgram,
   getIsWebview,
+  getIsCashbackApplied,
 } from '../../../../../redux/modules/app';
 import { getBusinessByName } from '../../../../../../redux/modules/entities/businesses';
 import { getSelectedPaymentProvider, getModifiedTime } from '../selectors';
@@ -383,6 +384,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
     const modifiedTime = getModifiedTime(state);
     const enablePayLater = getEnablePayLater(state);
     const consumerId = getUserConsumerId(state);
+    const applyCashback = getIsCashbackApplied(state);
     const payload = {
       receiptNumber: orderId,
       orderSource: source,
@@ -390,6 +392,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       redirectURL,
       ...paymentArgs,
       paymentProvider,
+      applyCashback,
     };
 
     if (enablePayLater) {

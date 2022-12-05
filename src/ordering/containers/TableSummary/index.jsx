@@ -40,8 +40,8 @@ import {
   getOrderTotal,
   getOrderCashback,
   getOrderShippingFee,
-  getOrderPlacedStatus,
-  getOrderPendingPaymentStatus,
+  getIsOrderPlaced,
+  getIsOrderPendingPayment,
   getSubOrdersMapping,
   getThankYouPageUrl,
   getOrderServiceChargeRate,
@@ -168,12 +168,12 @@ export class TableSummary extends React.Component {
   };
 
   showUnableBackMenuPageAlert = () => {
-    const { t, orderPendingPaymentStatus } = this.props;
+    const { t, isOrderPendingPayment } = this.props;
 
     alert(
       <Trans
         t={t}
-        i18nKey={orderPendingPaymentStatus ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
+        i18nKey={isOrderPendingPayment ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
         components={{ bold: <strong className="text-size-big" /> }}
       />,
       {
@@ -185,9 +185,9 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { orderPlacedStatus } = this.props;
+    const { isOrderPlaced } = this.props;
 
-    if (orderPlacedStatus) {
+    if (isOrderPlaced) {
       this.goToMenuPage();
 
       return;
@@ -197,16 +197,16 @@ export class TableSummary extends React.Component {
   };
 
   getOrderStatusOptionsEl = () => {
-    const { t, orderPlacedStatus, orderPendingPaymentStatus } = this.props;
+    const { t, isOrderPlaced, isOrderPendingPayment } = this.props;
     let options = null;
 
-    if (orderPlacedStatus) {
+    if (isOrderPlaced) {
       options = {
         className: 'table-summary__base-info-status--created',
         icon: <IconChecked className="icon icon__success padding-small" />,
         title: <span className="margin-left-right-smaller text-size-big text-capitalize">{t('OrderPlaced')}</span>,
       };
-    } else if (orderPendingPaymentStatus) {
+    } else if (isOrderPendingPayment) {
       options = {
         className: 'table-summary__base-info-status--locked',
         icon: <IconError className="icon icon__primary padding-small" />,
@@ -300,9 +300,11 @@ export class TableSummary extends React.Component {
   };
 
   handleToggleCashbackSwitch = event => {
-    const { updateCashbackApplyStatus } = this.props;
+    const { updateCashbackApplyStatus, loadOrders } = this.props;
+    const receiptNumber = Utils.getQueryString('receiptNumber');
 
     updateCashbackApplyStatus(event.target.checked);
+    loadOrders(receiptNumber);
   };
 
   handleClickLoginButton = async () => {
@@ -357,7 +359,7 @@ export class TableSummary extends React.Component {
       cashback,
       isCashbackEnabled,
       isCashbackApplied,
-      orderPendingPaymentStatus,
+      isOrderPendingPayment,
       shouldShowSwitchButton,
     } = this.props;
 
@@ -370,7 +372,7 @@ export class TableSummary extends React.Component {
         }`}
       >
         <span className="margin-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</span>
-        {orderPendingPaymentStatus || isLogin ? (
+        {isOrderPendingPayment || isLogin ? (
           <div className="flex flex-middle flex__shrink-fixed">
             {shouldShowSwitchButton ? (
               <label className="table-summary__switch-container margin-left-right-small" htmlFor="cashback-switch">
@@ -556,8 +558,8 @@ export class TableSummary extends React.Component {
       total,
       cashback,
       shippingFee,
-      orderPlacedStatus,
-      orderPendingPaymentStatus,
+      isOrderPlaced,
+      isOrderPendingPayment,
       shouldShowRedirectLoader,
       shouldShowPayNowButton,
       isTNGMiniProgram,
@@ -628,7 +630,7 @@ export class TableSummary extends React.Component {
             }}
             className="footer padding-small flex flex-middle"
           >
-            {orderPlacedStatus ? (
+            {isOrderPlaced ? (
               <button
                 className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
                 onClick={this.goToMenuPage}
@@ -656,8 +658,8 @@ export class TableSummary extends React.Component {
 TableSummary.displayName = 'TableSummary';
 
 TableSummary.propTypes = {
-  orderPlacedStatus: PropTypes.bool,
-  orderPendingPaymentStatus: PropTypes.bool,
+  isOrderPlaced: PropTypes.bool,
+  isOrderPendingPayment: PropTypes.bool,
   orderNumber: PropTypes.string,
   tableNumber: PropTypes.string,
   tax: PropTypes.number,
@@ -704,8 +706,8 @@ TableSummary.propTypes = {
 };
 
 TableSummary.defaultProps = {
-  orderPlacedStatus: false,
-  orderPendingPaymentStatus: false,
+  isOrderPlaced: false,
+  isOrderPendingPayment: false,
   orderNumber: null,
   tableNumber: null,
   tax: 0,
@@ -753,8 +755,8 @@ export default compose(
   withTranslation(['OrderingTableSummary']),
   connect(
     state => ({
-      orderPlacedStatus: getOrderPlacedStatus(state),
-      orderPendingPaymentStatus: getOrderPendingPaymentStatus(state),
+      isOrderPlaced: getIsOrderPlaced(state),
+      isOrderPendingPayment: getIsOrderPendingPayment(state),
       orderNumber: getOrderPickUpCode(state),
       tableNumber: getTableNumber(state),
       tax: getOrderTax(state),

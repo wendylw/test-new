@@ -1,9 +1,5 @@
 import { get, post } from '../../../../utils/api/api-fetch';
 
-// post an order of cashback
-export const fetchOrderIncludeCashback = ({ receiptNumber }) =>
-  get(`/api/v3/transactions/${receiptNumber}/calculation`);
-
 // fetch order submission status
 export const fetchOrderSubmissionStatus = ({ receiptNumber }) => get(`/api/v3/transactions/${receiptNumber}/status`);
 

@@ -7,7 +7,12 @@ import { withTranslation } from 'react-i18next';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
 import Constants from '../../../../../utils/constants';
-import { actions as appActionCreators, getShippingType, getHasLoginGuardPassed } from '../../../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getShippingType,
+  getHasLoginGuardPassed,
+  getIsCashbackApplied,
+} from '../../../../redux/modules/app';
 import {
   getLoaderVisibility,
   getAllPaymentsOptions,
@@ -170,7 +175,7 @@ class Payment extends Component {
 
   // TODO: This place logic almost same as the “handleCreateOrder” function that in CreateOrderButton component
   handlePayWithCash = async () => {
-    const { shippingType, currentPaymentOption, receiptNumber } = this.props;
+    const { shippingType, currentPaymentOption, receiptNumber, isCashbackApplied } = this.props;
     const { paymentProvider } = currentPaymentOption;
 
     try {
@@ -185,7 +190,7 @@ class Payment extends Component {
 
       // For pay later order, if order has already been paid, then let user goto Thankyou page directly
       if (orderId) {
-        const order = await fetchOrder(orderId);
+        const order = await fetchOrder({ receiptNumber: orderId, applyCashback: isCashbackApplied });
 
         if (
           [
@@ -383,6 +388,7 @@ Payment.propTypes = {
   total: PropTypes.number,
   shippingType: PropTypes.string,
   cashback: PropTypes.number,
+  isCashbackApplied: PropTypes.bool,
 };
 
 Payment.defaultProps = {
@@ -401,6 +407,7 @@ Payment.defaultProps = {
   total: 0,
   shippingType: '',
   cashback: 0,
+  isCashbackApplied: false,
 };
 
 export default compose(
@@ -418,6 +425,7 @@ export default compose(
       shippingType: getShippingType(state),
       cashback: getCashback(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      isCashbackApplied: getIsCashbackApplied(state),
     }),
     dispatch => ({
       paymentActions: bindActionCreators(paymentActionsCreator, dispatch),
