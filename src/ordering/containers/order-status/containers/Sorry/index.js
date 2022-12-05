@@ -17,6 +17,7 @@ const PROVIDER_TO_METHOD = {
   BeepTHLinePay: 'onlineBanking',
   BeepPHCreditCard: 'creditCard',
   BeepPHCCPPGcash: 'onlineBanking',
+  GetzPay: 'getz',
 };
 
 class Sorry extends Component {
@@ -58,6 +59,7 @@ class Sorry extends Component {
     const methods = {
       onlineBanking: t('OnlineBanking'),
       creditCard: t('CreditAndDebitCard'),
+      getz: t('Getz'),
     };
     const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
 
@@ -75,6 +77,7 @@ class Sorry extends Component {
       const methods = {
         onlineBanking: t('OnlineBanking'),
         creditCard: t('CreditAndDebitCard'),
+        getz: t('Getz'),
       };
 
       const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
@@ -98,4 +101,4 @@ class Sorry extends Component {
 }
 Sorry.displayName = 'OrderingSorry';
 
-export default withTranslation()(Sorry);
+export default withTranslation('OrderingPayment')(Sorry);

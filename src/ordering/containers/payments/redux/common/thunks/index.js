@@ -85,6 +85,10 @@ const PAYMENTS_MAPPING = {
     key: 'Cash',
     logo: 'paymentPayByCashImage',
   },
+  GetzPay: {
+    key: 'GetzPay',
+    logo: 'paymentBankingImage',
+  },
 };
 
 const PaymentOptionModel = {
