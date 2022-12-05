@@ -700,7 +700,7 @@ TableSummary.propTypes = {
   isStorePayByCashOnly: PropTypes.bool,
   isCashbackEnabled: PropTypes.bool,
   isCashbackApplied: PropTypes.bool,
-  shouldShowSwitchButton: false,
+  shouldShowSwitchButton: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
