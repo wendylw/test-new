@@ -101,6 +101,8 @@ export const getPromoOrVoucherExist = createSelector(
 );
 export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
 
+export const getOrderApplyCashback = state => state.tableSummary.order.applyCashback;
+
 export const getShouldShowRedirectLoader = state => state.tableSummary.redirectLoaderVisible;
 
 export const getShouldShowPayNowButton = createSelector(
@@ -112,5 +114,5 @@ export const getShouldShowPayNowButton = createSelector(
 export const getShouldShowSwitchButton = createSelector(
   getOrderCashback,
   getIsOrderPendingPayment,
-  (cashback, isOrderPendingPayment) => !(isOrderPendingPayment || !cashback)
+  (cashback, isOrderPendingPayment) => !isOrderPendingPayment && cashback > 0
 );

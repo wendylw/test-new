@@ -1,7 +1,14 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
-import { loadOrders, loadOrdersStatus, lockOrder, showRedirectLoader, hideRedirectLoader } from './thunks';
+import {
+  loadOrders,
+  loadOrdersStatus,
+  lockOrder,
+  showRedirectLoader,
+  hideRedirectLoader,
+  updateCashbackApplyStatus,
+} from './thunks';
 
 const PromotionItemModel = {
   promotionId: null,
@@ -33,6 +40,11 @@ const initialState = {
     loadOrders: API_REQUEST_STATUS.FULFILLED,
     loadOrdersStatus: API_REQUEST_STATUS.FULFILLED,
     lockOrder: null,
+  },
+
+  cashbackRequest: {
+    status: null,
+    error: null,
   },
 
   order: {
@@ -129,6 +141,17 @@ export const { reducer, actions } = createSlice({
     },
     [hideRedirectLoader.fulfilled.type]: state => {
       state.redirectLoaderVisible = false;
+    },
+    [updateCashbackApplyStatus.pending.type]: state => {
+      state.cashbackRequest.error = null;
+      state.cashbackRequest.status = API_REQUEST_STATUS.PENDING;
+    },
+    [updateCashbackApplyStatus.fulfilled.type]: state => {
+      state.cashbackRequest.status = API_REQUEST_STATUS.FULFILLED;
+    },
+    [updateCashbackApplyStatus.rejected.type]: (state, { error }) => {
+      state.cashbackRequest.error = error;
+      state.cashbackRequest.status = API_REQUEST_STATUS.REJECTED;
     },
   },
 });

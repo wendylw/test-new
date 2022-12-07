@@ -10,7 +10,6 @@ import {
   getCartCount,
   getStoreId,
   getShippingType,
-  getIsCashbackApplied,
 } from '../../../../../redux/modules/app';
 import Utils from '../../../../../../utils/utils';
 import { fetchOrder } from '../../../../../../utils/api-request';
@@ -162,11 +161,10 @@ export const initialize = createAsyncThunk(
  * For pay later order, update the Billing data by order data
  */
 export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', async (_, { dispatch, getState }) => {
-  const applyCashback = getIsCashbackApplied(getState());
   const receiptNumber = Utils.getQueryString('receiptNumber');
   // For Pay Later order, update Billing data by order data
   if (receiptNumber) {
-    const data = await fetchOrder({ receiptNumber, applyCashback });
+    const data = await fetchOrder({ receiptNumber });
     const { total, subtotal, items, modifiedTime } = data;
 
     return {

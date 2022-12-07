@@ -38,5 +38,4 @@ export const login = ({ accessToken, refreshToken, fulfillDate, shippingType }) 
     return data;
   });
 
-export const fetchOrder = ({ receiptNumber, applyCashback }) =>
-  get(`/api/v3/transactions/${receiptNumber}/calculation`, { queryParams: { applyCashback } });
+export const fetchOrder = ({ receiptNumber }) => get(`/api/v3/transactions/${receiptNumber}/calculation`);

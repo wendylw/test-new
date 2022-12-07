@@ -34,12 +34,15 @@ import {
   getIsWebview,
   getIsTNGMiniProgram,
   getEnableCashback,
-  getIsCashbackApplied,
+  getCartApplyCashback,
   getShouldShowCashbackSwitchButton,
   getUserIsLogin,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
-import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
+import {
+  loadStockStatus as loadStockStatusThunk,
+  updateCashbackApplyStatus as updateCashbackApplyStatusThunk,
+} from '../../redux/common/thunks';
 import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import CleverTap from '../../../../../utils/clevertap';
@@ -489,10 +492,11 @@ class PayFirst extends Component {
     });
   };
 
-  handleToggleCashbackSwitch = event => {
-    const { appActions } = this.props;
-    appActions.updateCashbackApplyStatus(event.target.checked);
-    appActions.loadShoppingCart();
+  handleToggleCashbackSwitch = async event => {
+    const { updateCashbackApplyStatus } = this.props;
+    const newStatus = event.target.checked;
+
+    await updateCashbackApplyStatus(newStatus);
   };
 
   formatCleverTapAttributes(product) {
@@ -787,12 +791,12 @@ PayFirst.propTypes = {
     getProfileInfo: PropTypes.func,
     updateDeliveryDetails: PropTypes.func,
     loginByBeepApp: PropTypes.func,
-    updateCashbackApplyStatus: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
   }),
   loadStockStatus: PropTypes.func,
+  updateCashbackApplyStatus: PropTypes.func,
   pendingCheckingInventory: PropTypes.bool,
   isLogin: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
@@ -834,12 +838,12 @@ PayFirst.defaultProps = {
     getProfileInfo: () => {},
     updateDeliveryDetails: () => {},
     loginByBeepApp: () => {},
-    updateCashbackApplyStatus: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},
   },
   loadStockStatus: () => {},
+  updateCashbackApplyStatus: () => {},
   pendingCheckingInventory: false,
   isLogin: false,
   cartBilling: {},
@@ -892,11 +896,12 @@ export default compose(
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
       isCashbackEnabled: getEnableCashback(state),
-      isCashbackApplied: getIsCashbackApplied(state),
+      isCashbackApplied: getCartApplyCashback(state),
       shouldShowSwitchButton: getShouldShowCashbackSwitchButton(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),
+      updateCashbackApplyStatus: bindActionCreators(updateCashbackApplyStatusThunk, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
     })

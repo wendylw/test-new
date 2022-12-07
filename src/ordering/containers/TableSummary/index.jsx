@@ -17,7 +17,6 @@ import {
   getIsTNGMiniProgram,
   getHasLoginGuardPassed,
   getEnableCashback,
-  getIsCashbackApplied,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
@@ -26,6 +25,7 @@ import {
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
   gotoPayment as gotoPaymentThunk,
+  updateCashbackApplyStatus as updateCashbackApplyStatusThunk,
 } from './redux/thunks';
 import {
   removePromo as removePromoThunk,
@@ -50,6 +50,7 @@ import {
   getOrderPromotionCode,
   getVoucherBillingIfExist,
   getOrderVoucherCode,
+  getOrderApplyCashback,
   getOrderVoucherDiscount,
   getPromoOrVoucherExist,
   getShouldShowRedirectLoader,
@@ -299,12 +300,11 @@ export class TableSummary extends React.Component {
     await gotoPayment();
   };
 
-  handleToggleCashbackSwitch = event => {
-    const { updateCashbackApplyStatus, loadOrders } = this.props;
-    const receiptNumber = Utils.getQueryString('receiptNumber');
+  handleToggleCashbackSwitch = async event => {
+    const { updateCashbackApplyStatus } = this.props;
+    const newStatus = event.target.checked;
 
-    updateCashbackApplyStatus(event.target.checked);
-    loadOrders(receiptNumber);
+    await updateCashbackApplyStatus(newStatus);
   };
 
   handleClickLoginButton = async () => {
@@ -786,7 +786,7 @@ export default compose(
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
       isStorePayByCashOnly: getIsStorePayByCashOnly(state),
       isCashbackEnabled: getEnableCashback(state),
-      isCashbackApplied: getIsCashbackApplied(state),
+      isCashbackApplied: getOrderApplyCashback(state),
       shouldShowSwitchButton: getShouldShowSwitchButton(state),
     }),
 
@@ -800,7 +800,7 @@ export default compose(
       gotoPayment: gotoPaymentThunk,
       loginByBeepApp: appActions.loginByBeepApp,
       loginByTngMiniProgram: appActions.loginByTngMiniProgram,
-      updateCashbackApplyStatus: appActions.updateCashbackApplyStatus,
+      updateCashbackApplyStatus: updateCashbackApplyStatusThunk,
     }
   )
 )(TableSummary);

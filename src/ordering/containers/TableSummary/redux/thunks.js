@@ -2,7 +2,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { push } from 'connected-react-router';
-import { fetchOrderSubmissionStatus, submitOrder } from './api-request';
+import { fetchOrderSubmissionStatus, submitOrder, applyCashback, unapplyCashback } from './api-request';
 import { fetchOrder } from '../../../../utils/api-request';
 import logger from '../../../../utils/monitoring/logger';
 import {
@@ -13,21 +13,15 @@ import {
   getOrderPromotionId,
   getOrderVoucherCode,
 } from './selectors';
-import {
-  getUserConsumerId,
-  getLocationSearch,
-  getIsTNGMiniProgram,
-  getIsCashbackApplied,
-} from '../../../redux/modules/app';
+import { getUserConsumerId, getLocationSearch, getIsTNGMiniProgram } from '../../../redux/modules/app';
 import { gotoPayment as initPayment, loadBilling } from '../../payments/redux/common/thunks';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 
 const ORDER_STATUS_INTERVAL = 2 * 1000;
 
-export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', async (receiptNumber, { getState }) => {
+export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', async receiptNumber => {
   try {
-    const applyCashback = getIsCashbackApplied(getState());
-    const result = await fetchOrder({ receiptNumber, applyCashback });
+    const result = await fetchOrder({ receiptNumber });
 
     return result;
   } catch (error) {
@@ -109,14 +103,12 @@ export const payByCoupons = createAsyncThunk(
     const consumerId = getUserConsumerId(state);
     const modifiedTime = getOrderModifiedTime(state);
     const voucherCode = getOrderVoucherCode(state);
-    const applyCashback = getIsCashbackApplied(state);
     const data = {
       consumerId,
       modifiedTime,
       cashback,
       promotionId,
       voucherCode,
-      applyCashback,
     };
 
     await dispatch(lockOrder({ receiptNumber, data })).unwrap();
@@ -180,3 +172,20 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     throw error;
   }
 });
+
+export const updateCashbackApplyStatus = createAsyncThunk(
+  'ordering/tableSummary/updateCashbackApplyStatus',
+  async (newStatus, { dispatch, getState }) => {
+    try {
+      const receiptNumber = getOrderReceiptNumber(getState());
+
+      newStatus ? await applyCashback(receiptNumber) : await unapplyCashback(receiptNumber);
+
+      await dispatch(loadOrders(receiptNumber)).unwrap();
+    } catch (e) {
+      logger.error('Ordering_TableSummary_UpdateCashbackApplyStatusFailed', { message: e?.message });
+
+      throw e;
+    }
+  }
+);

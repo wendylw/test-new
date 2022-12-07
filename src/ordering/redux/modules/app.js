@@ -92,6 +92,7 @@ const CartModel = {
       validFrom: null,
       promoType: '',
     },
+    applyCashback: false,
   },
 };
 
@@ -171,9 +172,6 @@ export const initialState = {
     countryCode: '',
     fetchRequestStatus: null,
   },
-  checkoutInfo: {
-    applyCashback: false,
-  },
 };
 
 const fetchCoreBusiness = variables => ({
@@ -195,11 +193,11 @@ const generatorShoppingCartForVoucherOrdering = () => {
   };
 };
 
-export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate, applyCashback) => {
+export const fetchShoppingCart = (isDeliveryType, deliveryCoords, fulfillDate) => {
   return {
     [API_REQUEST]: {
       types: [types.FETCH_SHOPPINGCART_REQUEST, types.FETCH_SHOPPINGCART_SUCCESS, types.FETCH_SHOPPINGCART_FAILURE],
-      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate, applyCashback),
+      ...Url.API_URLS.GET_CART_TYPE(isDeliveryType, deliveryCoords, fulfillDate),
     },
   };
 };
@@ -510,7 +508,6 @@ export const actions = {
     const isDelivery = Utils.isDeliveryType();
     const isDigital = Utils.isDigitalType();
     const businessUTCOffset = getBusinessUTCOffset(state);
-    const applyCashback = getIsCashbackApplied(state);
 
     if (isDigital) {
       await dispatch(generatorShoppingCartForVoucherOrdering());
@@ -537,7 +534,7 @@ export const actions = {
 
     const fulfillDate = Utils.getFulfillDate(businessUTCOffset);
 
-    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate, applyCashback));
+    await dispatch(fetchShoppingCart(isDelivery, deliveryCoords, fulfillDate));
   },
 
   removeShoppingCartItem: variables => dispatch => {
@@ -838,11 +835,6 @@ export const actions = {
       payload: newStoreId,
     });
   },
-
-  updateCashbackApplyStatus: newStatus => ({
-    type: types.UPDATE_CASHBACK_APPLY_STATUS,
-    payload: newStatus,
-  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -1276,14 +1268,6 @@ const storeHashCodeReducer = (state = initialState.storeHashCode, action) => {
   }
 };
 
-const checkoutInfo = (state = initialState.checkoutInfo, action) => {
-  if (action.type === types.UPDATE_CASHBACK_APPLY_STATUS) {
-    return { ...state, applyCashback: action.payload };
-  }
-
-  return state;
-};
-
 export default combineReducers({
   user,
   error,
@@ -1298,7 +1282,6 @@ export default combineReducers({
   coreBusiness,
   onlineCategory,
   coreStores,
-  checkoutInfo,
 });
 
 // selectors
@@ -1467,6 +1450,10 @@ export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =
 );
 export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
 
+export const getCartApplyCashback = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'applyCashback', false)
+);
+
 export const getServiceChargeRate = createSelector(getCartBilling, cartBilling =>
   _get(cartBilling, 'serviceChargeInfo.serviceChargeRate', 0)
 );
@@ -1527,6 +1514,8 @@ export const getStoreInfoForCleverTap = state => {
 
   return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
 };
+
+export const getIsCartStatusRejected = createSelector(getCartStatus, status => status === API_REQUEST_STATUS.REJECTED);
 
 export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
 
@@ -1832,8 +1821,4 @@ export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'stores[0].reviewInfo.rating', null)
 );
 
-export const getCheckoutInfo = state => state.app.checkoutInfo;
-
-export const getIsCashbackApplied = createSelector(getCheckoutInfo, checkoutInfo => checkoutInfo.applyCashback);
-
-export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => !!cashback);
+export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => cashback > 0);

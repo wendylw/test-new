@@ -11,7 +11,6 @@ import {
   getCartBilling,
   getHasLoginGuardPassed,
   getIsCoreBusinessAPIFulfilled,
-  getIsCashbackApplied,
 } from '../../redux/modules/app';
 import { createOrder, gotoPayment } from '../../containers/payments/redux/common/thunks';
 import withDataAttributes from '../../../components/withDataAttributes';
@@ -134,7 +133,6 @@ class CreateOrderButton extends React.Component {
       gotoPayment,
       orderId: createdOrderId,
       total: createdOrderTotal,
-      isCashbackApplied,
     } = this.props;
     const { tableId } = requestInfo;
     const { totalCashback } = cartBilling || {};
@@ -172,7 +170,7 @@ class CreateOrderButton extends React.Component {
 
     // For pay later order, if order has already been paid, then let user goto Thankyou page directly
     if (orderId) {
-      const order = await fetchOrder({ receiptNumber: orderId, applyCashback: isCashbackApplied });
+      const order = await fetchOrder({ receiptNumber: orderId });
 
       if (
         [
@@ -289,7 +287,6 @@ CreateOrderButton.propTypes = {
   loaderText: PropTypes.string,
   cartBilling: PropTypes.object,
   getHasLoginGuardPassed: PropTypes.bool,
-  isCashbackApplied: PropTypes.bool,
 };
 
 CreateOrderButton.defaultProps = {
@@ -303,7 +300,6 @@ CreateOrderButton.defaultProps = {
   getHasLoginGuardPassed: false,
   beforeCreateOrder: () => {},
   afterCreateOrder: () => {},
-  isCashbackApplied: false,
 };
 
 export default compose(
@@ -317,7 +313,6 @@ export default compose(
         cartBilling: getCartBilling(state),
         hasLoginGuardPassed: getHasLoginGuardPassed(state),
         isCoreBusinessFulfilled: getIsCoreBusinessAPIFulfilled(state),
-        isCashbackApplied: getIsCashbackApplied(state),
       };
     },
     {
