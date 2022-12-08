@@ -25,3 +25,7 @@
     @apply tw-flex-col tw-space-y-8 sm:tw-space-y-8px;
   }
 }
+
+.confirmFooterButton {
+  @apply tw-flex-1 tw-uppercase;
+}

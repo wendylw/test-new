@@ -26,6 +26,7 @@ import beepLoginDisabled from '../../../images/beep-login-disabled.png';
 import beepLoginActive from '../../../images/beep-login-active.svg';
 import './OrderingPageLogin.scss';
 import config from '../../../config';
+import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
@@ -44,6 +45,8 @@ class PageLogin extends React.Component {
     if (Utils.isTNGMiniProgram()) {
       this.loginInTngMiniProgram();
     }
+
+    prefetch(['ORD_MNU'], ['OrderingDelivery']);
   }
 
   componentDidUpdate(prevProps) {
@@ -121,7 +124,9 @@ class PageLogin extends React.Component {
     } catch (e) {
       const { t } = this.props;
 
-      alert(t('NetworkErrorDescription'), { title: t('NetworkErrorTitle') });
+      alert(t('NetworkErrorDescription'), {
+        title: t('NetworkErrorTitle'),
+      });
 
       // We will set the attribute 'message' even if it is always empty
       logger.error('Ordering_PageLogin_CompleteCaptchaFailed', { message: e?.message });
@@ -139,7 +144,7 @@ class PageLogin extends React.Component {
     if (shouldShowErrorPopUp) {
       const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
 
-      alert(t(descriptionKey), { title: t(titleKey) });
+      alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
     }
 
     throw new Error('Failed to get OTP code');
@@ -202,7 +207,9 @@ class PageLogin extends React.Component {
     });
 
     if (!hasLoadSuccess) {
-      alert(t('NetworkErrorDescription'), { title: t('NetworkErrorTitle') });
+      alert(t('NetworkErrorDescription'), {
+        title: t('NetworkErrorTitle'),
+      });
     }
   }
 

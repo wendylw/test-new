@@ -54,7 +54,7 @@ export const loadOrdersStatus = createAsyncThunk(
   }
 );
 
-export const queryOrdersAndStatus = receiptNumber => async dispatch => {
+export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) => {
   logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', receiptNumber });
   try {
     const queryOrderStatus = () => {
@@ -70,7 +70,7 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
       }, ORDER_STATUS_INTERVAL);
     };
 
-    dispatch(loadOrders(receiptNumber));
+    await dispatch(loadOrders(receiptNumber));
     queryOrderStatus();
   } catch (error) {
     console.error(error);

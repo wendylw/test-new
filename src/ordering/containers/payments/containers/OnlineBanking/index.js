@@ -28,6 +28,7 @@ import { initialize as initializeThunkCreator } from '../../redux/common/thunks'
 import { actions } from './redux';
 import { getSelectedOnlineBanking } from './redux/selectors';
 import './OrderingBanking.scss';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
@@ -46,6 +47,7 @@ class OnlineBanking extends Component {
      * Load all payment options action and except saved card list
      */
     initialize(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
+    prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
   getPaymentEntryRequestData = () => {

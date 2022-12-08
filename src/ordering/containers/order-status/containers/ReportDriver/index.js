@@ -4,7 +4,7 @@ import qs from 'qs';
 
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import PageLoader from '../../../../../components/PageLoader';
 import feedBackThankyou from '../../../../../images/feedback-thankyou.png';
@@ -69,6 +69,7 @@ class ReportDriver extends Component {
     this.preFillEmail();
 
     fetchReport();
+    prefetch(['ORD_TY', 'ORD_PL'], ['OrderingThankYou']);
   };
 
   loginAppWithNativeToken = async result => {

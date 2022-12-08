@@ -20,6 +20,7 @@ import {
   getEnableCashback,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
+import prefetch from '../../../common/utils/prefetch-assets';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
 import { actions as tableSummaryActionCreators } from './redux';
 import {
@@ -65,7 +66,9 @@ import {
   getIsPayByCouponsRequestPending,
   getIsReloadBillingByCashbackRequestPending,
   getIsReloadBillingByCashbackRequestRejected,
+  getCleverTapAttributes,
 } from './redux/selectors';
+import CleverTap from '../../../utils/clevertap';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
 import Image from '../../../components/Image';
@@ -74,7 +77,6 @@ import Billing from '../../components/Billing';
 import RedirectPageLoader from '../../components/RedirectPageLoader';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
 import { toast, alert } from '../../../common/utils/feedback';
-import CleverTap from '../../../utils/clevertap';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -110,12 +112,24 @@ export class TableSummary extends React.Component {
           }),
       });
     }
+    const { cleverTapAttributes } = this.props;
+    // Can record CT only after coreBusiness Loaded. I use one attribute country to trace that.
+    if (cleverTapAttributes.country) {
+      CleverTap.pushEvent('Table Summary - View Page', cleverTapAttributes);
+    }
+
+    prefetch(['ORD_MNU', 'ORD_SC', 'ORD_PROMO', 'ORD_PL'], ['OrderingDelivery', 'OrderingCart', 'OrderingPromotion']);
   }
 
   componentDidUpdate(prevProps, prevStates) {
     this.setCartContainerHeight(prevStates.cartContainerHeight);
 
-    const { thankYouPageUrl, shippingType } = this.props;
+    const { thankYouPageUrl, shippingType, cleverTapAttributes } = this.props;
+
+    // Can record CT only after coreBusiness Loaded. I use one attribute country to trace that.
+    if (prevProps.cleverTapAttributes.country !== cleverTapAttributes.country) {
+      CleverTap.pushEvent('Table Summary - View Page', cleverTapAttributes);
+    }
 
     if (thankYouPageUrl) {
       // Add "type" into thankYouPageUrl query
@@ -159,7 +173,8 @@ export class TableSummary extends React.Component {
   }
 
   goToMenuPage = () => {
-    const { history, shippingType } = this.props;
+    const { history, shippingType, cleverTapAttributes } = this.props;
+    CleverTap.pushEvent('Table Summary - Add items', cleverTapAttributes);
     const hashCode = Utils.getStoreHashCode();
     const search = qs.stringify(
       {
@@ -193,7 +208,9 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { isOrderPlaced } = this.props;
+    const { isOrderPlaced, cleverTapAttributes } = this.props;
+
+    CleverTap.pushEvent('Table Summary - Back', cleverTapAttributes);
 
     if (isOrderPlaced) {
       this.goToMenuPage();
@@ -303,7 +320,9 @@ export class TableSummary extends React.Component {
   };
 
   handleClickPayButton = async () => {
-    const { gotoPayment, hasLoginGuardPassed } = this.props;
+    const { gotoPayment, hasLoginGuardPassed, cleverTapAttributes } = this.props;
+
+    CleverTap.pushEvent('Table Summary - Pay now', cleverTapAttributes);
 
     if (!hasLoginGuardPassed) {
       await this.handleLogin();
@@ -744,6 +763,8 @@ TableSummary.propTypes = {
   orderVoucherDiscount: PropTypes.number,
   promoOrVoucherExist: PropTypes.bool,
   gotoPayment: PropTypes.func,
+  // eslint-disable-next-line react/forbid-prop-types
+  cleverTapAttributes: PropTypes.object,
   isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
   loginByBeepApp: PropTypes.func,
@@ -797,6 +818,7 @@ TableSummary.defaultProps = {
   orderVoucherDiscount: 0,
   promoOrVoucherExist: false,
   gotoPayment: () => {},
+  cleverTapAttributes: {},
   isWebview: false,
   isTNGMiniProgram: false,
   loginByBeepApp: () => {},
@@ -846,6 +868,7 @@ export default compose(
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),
       promoOrVoucherExist: getPromoOrVoucherExist(state),
+      cleverTapAttributes: getCleverTapAttributes(state),
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),

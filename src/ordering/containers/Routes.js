@@ -2,40 +2,80 @@ import React, { Component, lazy, Suspense } from 'react';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import Utils from '../../utils/utils';
-import MenuProxy from './Menu/MenuProxy';
-import Cart from './shopping-cart/containers/Cart/index';
-import CartSubmissionStatus from './shopping-cart/containers/CartSubmissionStatus';
-import Payment from './payments/containers/Payment';
-import CustomerInfo from './Customer/containers/CustomerInfo';
 import Constants from '../../utils/constants';
 import NotFound from '../../containers/NotFound';
 import history from '../orderingHistory';
 
-const Location = lazy(() => Utils.attemptLoad(() => import('./Location/LocationPage')));
-const StripePayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/Stripe')));
-const CreditCard = lazy(() => Utils.attemptLoad(() => import('./payments/containers/CreditCard')));
-const BankingPayment = lazy(() => Utils.attemptLoad(() => import('./payments/containers/OnlineBanking')));
-const ThankYou = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ThankYou')));
-const Sorry = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/Sorry')));
-const ErrorPage = lazy(() => Utils.attemptLoad(() => import('./Error')));
-const LocationAndDate = lazy(() => Utils.attemptLoad(() => import('./LocationAndDate')));
-const Promotion = lazy(() => Utils.attemptLoad(() => import('./Promotion')));
-const ReportDriver = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/ReportDriver')));
-const PageLogin = lazy(() => Utils.attemptLoad(() => import('./PageLogin')));
-const StoreList = lazy(() => Utils.attemptLoad(() => import('./StoreList')));
-const AddressList = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressList')));
-const AddressDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/AddressDetail')));
-const ContactDetail = lazy(() => Utils.attemptLoad(() => import('./Customer/containers/ContactDetail')));
-const SavedCards = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards')));
-// TODO: CVV will be removed, if payment & payout complete card and cardholder verification development
-const CardCvv = lazy(() => Utils.attemptLoad(() => import('./payments/containers/SavedCards/CVV')));
-const OrderDetails = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/OrderDetails')));
-const MerchantInfo = lazy(() => Utils.attemptLoad(() => import('./order-status/containers/MerchantInfo')));
-const StoreReviewProxy = lazy(() =>
-  Utils.attemptLoad(() => import('./order-status/containers/StoreReview/StoreReviewProxy'))
+const MenuWrapper = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_MNU" */ './Menu/MenuWrapper')));
+const Cart = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_SC" */ './shopping-cart/containers/Cart'))
 );
-const TableSummary = lazy(() => Utils.attemptLoad(() => import('./TableSummary')));
-const FoodCourt = lazy(() => Utils.attemptLoad(() => import('./food-court')));
+const CartSubmissionStatus = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_CSS" */ './shopping-cart/containers/CartSubmissionStatus'))
+);
+const Payment = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_PMT" */ './payments/containers/Payment'))
+);
+const CustomerInfo = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_CI" */ './Customer/containers/CustomerInfo'))
+);
+const Location = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_LOC" */ './Location/LocationPage'))
+);
+const StripePayment = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_SRP" */ './payments/containers/Stripe'))
+);
+const CreditCard = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_CC" */ './payments/containers/CreditCard'))
+);
+const BankingPayment = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_OLB" */ './payments/containers/OnlineBanking'))
+);
+const ThankYou = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_TY" */ './order-status/containers/ThankYou'))
+);
+const Sorry = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_SRY" */ './order-status/containers/Sorry'))
+);
+const ErrorPage = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_ERR" */ './Error')));
+const LocationAndDate = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_LAD" */ './LocationAndDate'))
+);
+const Promotion = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_PROMO" */ './Promotion')));
+const ReportDriver = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_RD" */ './order-status/containers/ReportDriver'))
+);
+const PageLogin = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_PL" */ './PageLogin')));
+const StoreList = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_SL" */ './StoreList')));
+const AddressList = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_AL" */ './Customer/containers/AddressList'))
+);
+const AddressDetail = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_AD" */ './Customer/containers/AddressDetail'))
+);
+const ContactDetail = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_CD" */ './Customer/containers/ContactDetail'))
+);
+const SavedCards = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_SCS" */ './payments/containers/SavedCards'))
+);
+// TODO: CVV will be removed, if payment & payout complete card and cardholder verification development
+const CardCvv = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_CVV" */ './payments/containers/SavedCards/CVV'))
+);
+const OrderDetails = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_OD" */ './order-status/containers/OrderDetails'))
+);
+const MerchantInfo = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_MI" */ './order-status/containers/MerchantInfo'))
+);
+const StoreReviewProxy = lazy(() =>
+  Utils.attemptLoad(() =>
+    import(/* webpackChunkName: "ORD_SR" */ './order-status/containers/StoreReview/StoreReviewProxy')
+  )
+);
+const TableSummary = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_TS" */ './TableSummary')));
+const FoodCourt = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_FC" */ './food-court')));
 
 const { ROUTER_PATHS } = Constants;
 
@@ -45,7 +85,7 @@ class Routes extends Component {
       <ConnectedRouter history={history}>
         <Suspense fallback={<div className="loader theme full-page"></div>}>
           <Switch>
-            <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={MenuProxy} />
+            <Route exact path={ROUTER_PATHS.ORDERING_HOME} component={MenuWrapper} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART} component={Cart} />
             <Route exact path={ROUTER_PATHS.ORDERING_CART_SUBMISSION_STATUS} component={CartSubmissionStatus} />
             <Route exact path={ROUTER_PATHS.ORDERING_PROMOTION} component={Promotion} />

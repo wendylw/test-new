@@ -3,10 +3,12 @@ import { Switch, Route, BrowserRouter as Router, withRouter } from 'react-router
 import Utils from '../../utils/utils';
 import NotFound from '../../containers/NotFound';
 
-const RecentActivities = lazy(() => Utils.attemptLoad(() => import('./Home/components/RecentActivities')));
-const Claim = lazy(() => Utils.attemptLoad(() => import('./Claim')));
-const Home = lazy(() => Utils.attemptLoad(() => import('./Home')));
-const Error = lazy(() => Utils.attemptLoad(() => import('./Error')));
+const RecentActivities = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "CB_RA" */ './Home/components/RecentActivities'))
+);
+const Claim = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_CL" */ './Claim')));
+const Home = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_HM" */ './Home')));
+const Error = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "CB_ERR" */ './Error')));
 
 class Routes extends Component {
   render() {

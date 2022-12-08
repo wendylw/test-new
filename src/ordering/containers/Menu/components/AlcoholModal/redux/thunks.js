@@ -30,7 +30,7 @@ export const confirmAlcoholDenied = createAsyncThunk('ordering/menu/alcohol/conf
   history.go(-1);
 });
 
-export const getUserAlcoholConsent = createAsyncThunk('ordering/home/common/getUserAlcoholConsent', async () => {
+export const getUserAlcoholConsent = createAsyncThunk('ordering/menu/alcohol/getUserAlcoholConsent', async () => {
   const { alcoholConsentTime = null } = await getAlcoholConsent();
   return alcoholConsentTime;
 });

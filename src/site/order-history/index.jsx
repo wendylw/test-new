@@ -39,6 +39,8 @@ class OrderHistory extends React.Component {
     if (isPingRequestDone && !isLogin) {
       this.login();
     }
+
+    prefetch(['ORD_FC', 'ORD_OD', 'ORD_TY'], ['OrderingDelivery', 'OrderingThankYou']);
   };
 
   componentDidUpdate(prevProps) {
