@@ -72,6 +72,7 @@ import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../comp
 import Billing from '../../components/Billing';
 import RedirectPageLoader from '../../components/RedirectPageLoader';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
+import { toast } from '../../../common/utils/feedback';
 import CleverTap from '../../../utils/clevertap';
 import './TableSummary.scss';
 
@@ -314,7 +315,7 @@ export class TableSummary extends React.Component {
   };
 
   handleToggleCashbackSwitch = async event => {
-    const { updateCashbackApplyStatus, reloadBillingByCashback } = this.props;
+    const { t, updateCashbackApplyStatus, reloadBillingByCashback } = this.props;
     const nextApplyStatus = event.target.checked;
 
     // Optimistic update
@@ -327,6 +328,7 @@ export class TableSummary extends React.Component {
     if (hasUpdateCashbackApplyStatusFailed) {
       // Revert cashback apply status to the original one
       updateCashbackApplyStatus(!nextApplyStatus);
+      toast(t(`${nextApplyStatus ? 'ApplyCashbackFailedDescription' : 'RemoveCashbackFailedDescription'}`));
     }
   };
 

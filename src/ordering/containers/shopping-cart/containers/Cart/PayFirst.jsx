@@ -51,6 +51,7 @@ import {
   getIsReloadBillingByCashbackRequestRejected,
 } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
+import { toast } from '../../../../../common/utils/feedback';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
@@ -499,7 +500,7 @@ class PayFirst extends Component {
   };
 
   handleToggleCashbackSwitch = async event => {
-    const { reloadBillingByCashback, appActions } = this.props;
+    const { reloadBillingByCashback, appActions, t } = this.props;
     const nextApplyStatus = event.target.checked;
 
     // Optimistic update
@@ -512,6 +513,7 @@ class PayFirst extends Component {
     if (hasUpdateCashbackApplyStatusFailed) {
       // Revert cashback apply status to the original one
       appActions.updateCashbackApplyStatus(!nextApplyStatus);
+      toast(t(`${nextApplyStatus ? 'ApplyCashbackFailedDescription' : 'RemoveCashbackFailedDescription'}`));
     }
   };
 

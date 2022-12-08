@@ -299,5 +299,7 @@
   "SelectStoreDefault": "Select Store",
   "Promos": "Promos",
   "Date": "Date",
-  "Time": "Time"
+  "Time": "Time",
+  "ApplyCashbackFailedDescription": "Oops, unable to apply cashback. Please try again.",
+  "RemoveCashbackFailedDescription": "Oops, unable to remove cashback. Please try again."
 }
