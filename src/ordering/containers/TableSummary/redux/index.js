@@ -5,6 +5,7 @@ import {
   loadOrders,
   loadOrdersStatus,
   lockOrder,
+  payByCoupons,
   showRedirectLoader,
   hideRedirectLoader,
   showProcessingLoader,
@@ -45,6 +46,11 @@ const initialState = {
   },
 
   reloadBillingByCashbackRequest: {
+    status: null,
+    error: null,
+  },
+
+  payByCouponsRequest: {
     status: null,
     error: null,
   },
@@ -166,6 +172,17 @@ export const { reducer, actions } = createSlice({
     [reloadBillingByCashback.rejected.type]: (state, { error }) => {
       state.reloadBillingByCashbackRequest.error = error;
       state.reloadBillingByCashbackRequest.status = API_REQUEST_STATUS.REJECTED;
+    },
+    [payByCoupons.pending.type]: state => {
+      state.payByCouponsRequest.error = null;
+      state.payByCouponsRequest.status = API_REQUEST_STATUS.PENDING;
+    },
+    [payByCoupons.fulfilled.type]: state => {
+      state.payByCouponsRequest.status = API_REQUEST_STATUS.FULFILLED;
+    },
+    [payByCoupons.rejected.type]: (state, { error }) => {
+      state.payByCouponsRequest.error = error;
+      state.payByCouponsRequest.status = API_REQUEST_STATUS.REJECTED;
     },
   },
 });

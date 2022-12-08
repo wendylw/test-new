@@ -115,7 +115,13 @@ export const payByCoupons = createAsyncThunk(
       voucherCode,
     };
 
-    await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+    try {
+      await dispatch(showProcessingLoader());
+      await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+    } catch (error) {
+      await dispatch(hideProcessingLoader());
+      throw error;
+    }
   }
 );
 
@@ -154,6 +160,7 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     // Special case for free charge
     if (total === 0) {
       await dispatch(payByCoupons()).unwrap();
+      await dispatch(hideProcessingLoader());
       return;
     }
 

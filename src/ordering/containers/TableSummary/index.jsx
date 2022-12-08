@@ -62,6 +62,7 @@ import {
   getIsStorePayByCashOnly,
   getShouldShowSwitchButton,
   getShouldShowProcessingLoader,
+  getIsPayByCouponsRequestPending,
   getIsReloadBillingByCashbackRequestPending,
   getIsReloadBillingByCashbackRequestRejected,
 } from './redux/selectors';
@@ -604,6 +605,7 @@ export class TableSummary extends React.Component {
       isOrderPlaced,
       isOrderPendingPayment,
       shouldShowLoadingText,
+      shouldDisablePayButton,
       shouldShowRedirectLoader,
       shouldShowProcessingLoader,
       shouldShowPayNowButton,
@@ -689,6 +691,7 @@ export class TableSummary extends React.Component {
               data-testid="pay"
               data-heap-name="ordering.order-status.table-summary.pay-btn"
               onClick={this.handleClickPayButton}
+              disabled={shouldDisablePayButton}
             >
               {shouldShowPayNowButton ? t('PayNow') : t('SelectPaymentMethod')}
             </button>
@@ -756,6 +759,7 @@ TableSummary.propTypes = {
   isCashbackEnabled: PropTypes.bool,
   isCashbackApplied: PropTypes.bool,
   shouldShowSwitchButton: PropTypes.bool,
+  shouldDisablePayButton: PropTypes.bool,
   hasUpdateCashbackApplyStatusFailed: PropTypes.bool,
 };
 
@@ -808,6 +812,7 @@ TableSummary.defaultProps = {
   isCashbackEnabled: false,
   isCashbackApplied: false,
   shouldShowSwitchButton: false,
+  shouldDisablePayButton: false,
   hasUpdateCashbackApplyStatusFailed: false,
 };
 
@@ -849,6 +854,7 @@ export default compose(
       isCashbackApplied: getOrderApplyCashback(state),
       shouldShowSwitchButton: getShouldShowSwitchButton(state),
       shouldShowProcessingLoader: getShouldShowProcessingLoader(state),
+      shouldDisablePayButton: getIsPayByCouponsRequestPending(state),
       shouldShowLoadingText: getIsReloadBillingByCashbackRequestPending(state),
       hasUpdateCashbackApplyStatusFailed: getIsReloadBillingByCashbackRequestRejected(state),
     }),

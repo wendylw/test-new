@@ -130,3 +130,10 @@ export const getIsReloadBillingByCashbackRequestRejected = createSelector(
   getReloadBillingByCashbackRequest,
   request => request.status === API_REQUEST_STATUS.REJECTED
 );
+
+export const getPayByCouponsRequest = state => state.tableSummary.payByCouponsRequest;
+
+export const getIsPayByCouponsRequestPending = createSelector(
+  getPayByCouponsRequest,
+  request => request.status === API_REQUEST_STATUS.PENDING
+);

@@ -39,6 +39,7 @@ import {
   getCartApplyCashback,
   getShouldShowCashbackSwitchButton,
   getUserIsLogin,
+  getIsFreeOrder,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
@@ -68,6 +69,7 @@ class PayFirst extends Component {
       productsContainerHeight: '0px',
       pendingBeforeCreateOrder: false,
       shouldShowRedirectLoader: false,
+      isCreatingOrder: false,
     };
   }
 
@@ -382,19 +384,19 @@ class PayFirst extends Component {
 
   renderCreateOrderButton = () => {
     const { t, history, isValidCreateOrder, pendingCheckingInventory, shouldDisablePayButton } = this.props;
-    const { pendingBeforeCreateOrder } = this.state;
+    const { pendingBeforeCreateOrder, isCreatingOrder } = this.state;
     return (
       <CreateOrderButton
         className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
         history={history}
         data-testid="pay"
         data-heap-name="ordering.cart.pay-btn"
-        disabled={shouldDisablePayButton || pendingBeforeCreateOrder}
+        disabled={shouldDisablePayButton || pendingBeforeCreateOrder || isCreatingOrder}
         validCreateOrder={isValidCreateOrder}
         beforeCreateOrder={this.handleBeforeCreateOrder}
         afterCreateOrder={this.handleAfterCreateOrder}
         loaderText={t('Processing')}
-        processing={pendingCheckingInventory || pendingBeforeCreateOrder}
+        processing={pendingCheckingInventory || pendingBeforeCreateOrder || isCreatingOrder}
       >
         {this.getOrderButtonContent()}
       </CreateOrderButton>
@@ -411,11 +413,14 @@ class PayFirst extends Component {
       appActions,
       isUserProfileStatusFulfilled,
       isTNGMiniProgram,
+      isFreeOrder,
     } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
     this.setState({ pendingBeforeCreateOrder: true });
 
-    if (isTNGMiniProgram) {
+    if (isFreeOrder) {
+      this.setState({ isCreatingOrder: true });
+    } else if (isTNGMiniProgram) {
       this.setState({ shouldShowRedirectLoader: true });
     }
 
@@ -449,6 +454,7 @@ class PayFirst extends Component {
   };
 
   handleAfterCreateOrder = orderId => {
+    this.setState({ isCreatingOrder: false });
     this.setState({ shouldShowRedirectLoader: !!orderId });
   };
 
@@ -853,6 +859,7 @@ PayFirst.propTypes = {
   hasLoginGuardPassed: PropTypes.bool,
   isBillingTotalInvalid: PropTypes.bool,
   validBillingTotal: PropTypes.number,
+  isFreeOrder: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   deliveryDetails: PropTypes.object,
   userProfile: PropTypes.shape({
@@ -898,6 +905,7 @@ PayFirst.defaultProps = {
   shouldDisablePayButton: false,
   hasLoginGuardPassed: false,
   isBillingTotalInvalid: false,
+  isFreeOrder: false,
   validBillingTotal: 0,
   deliveryDetails: {},
   userProfile: {
@@ -929,6 +937,7 @@ export default compose(
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
       validBillingTotal: getValidBillingTotal(state),
+      isFreeOrder: getIsFreeOrder(state),
       isValidCreateOrder: getIsValidCreateOrder(state),
       shouldDisablePayButton: getShouldDisablePayButton(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),

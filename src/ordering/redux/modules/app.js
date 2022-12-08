@@ -1725,14 +1725,15 @@ export const getHasLoginGuardPassed = createSelector(
   (isUserLogin, isLoginFree) => isUserLogin || isLoginFree
 );
 
+export const getIsFreeOrder = createSelector(getCartBilling, cartBilling => {
+  const billingTotal = _get(cartBilling, 'total', 0);
+  return billingTotal === 0;
+});
+
 export const getIsValidCreateOrder = createSelector(
-  getCartBilling,
+  getIsFreeOrder,
   getIsTNGMiniProgram,
-  (cartBilling, isTNGMiniProgram) => {
-    const { total } = cartBilling || {};
-    const isFree = !total;
-    return isTNGMiniProgram || isFree;
-  }
+  (isFreeOrder, isTNGMiniProgram) => isTNGMiniProgram || isFreeOrder
 );
 
 export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCart => {
