@@ -7,7 +7,9 @@ import {
   lockOrder,
   showRedirectLoader,
   hideRedirectLoader,
-  updateCashbackApplyStatus,
+  showProcessingLoader,
+  hideProcessingLoader,
+  reloadBillingByCashback,
 } from './thunks';
 
 const PromotionItemModel = {
@@ -42,7 +44,7 @@ const initialState = {
     lockOrder: null,
   },
 
-  cashbackRequest: {
+  reloadBillingByCashbackRequest: {
     status: null,
     error: null,
   },
@@ -65,6 +67,7 @@ const initialState = {
     shippingFee: 0,
     subOrders: [],
     items: [],
+    applyCashback: false,
   },
 
   submission: {
@@ -78,12 +81,17 @@ const initialState = {
   },
 
   redirectLoaderVisible: false,
+  processingLoaderVisible: false,
 };
 
 export const { reducer, actions } = createSlice({
   name: 'ordering/tableSummary',
   initialState,
-  reducers: {},
+  reducers: {
+    updateCashbackApplyStatus(state, action) {
+      state.order.applyCashback = action.payload;
+    },
+  },
   extraReducers: {
     [loadOrders.pending.type]: state => {
       state.requestStatus.loadOrders = API_REQUEST_STATUS.PENDING;
@@ -142,16 +150,22 @@ export const { reducer, actions } = createSlice({
     [hideRedirectLoader.fulfilled.type]: state => {
       state.redirectLoaderVisible = false;
     },
-    [updateCashbackApplyStatus.pending.type]: state => {
-      state.cashbackRequest.error = null;
-      state.cashbackRequest.status = API_REQUEST_STATUS.PENDING;
+    [showProcessingLoader.fulfilled.type]: state => {
+      state.processingLoaderVisible = true;
     },
-    [updateCashbackApplyStatus.fulfilled.type]: state => {
-      state.cashbackRequest.status = API_REQUEST_STATUS.FULFILLED;
+    [hideProcessingLoader.fulfilled.type]: state => {
+      state.processingLoaderVisible = false;
     },
-    [updateCashbackApplyStatus.rejected.type]: (state, { error }) => {
-      state.cashbackRequest.error = error;
-      state.cashbackRequest.status = API_REQUEST_STATUS.REJECTED;
+    [reloadBillingByCashback.pending.type]: state => {
+      state.reloadBillingByCashbackRequest.error = null;
+      state.reloadBillingByCashbackRequest.status = API_REQUEST_STATUS.PENDING;
+    },
+    [reloadBillingByCashback.fulfilled.type]: state => {
+      state.reloadBillingByCashbackRequest.status = API_REQUEST_STATUS.FULFILLED;
+    },
+    [reloadBillingByCashback.rejected.type]: (state, { error }) => {
+      state.reloadBillingByCashbackRequest.error = error;
+      state.reloadBillingByCashbackRequest.status = API_REQUEST_STATUS.REJECTED;
     },
   },
 });

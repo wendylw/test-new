@@ -87,6 +87,10 @@ export const showRedirectLoader = createAsyncThunk('ordering/tableSummary/showRe
 
 export const hideRedirectLoader = createAsyncThunk('ordering/tableSummary/hideRedirectLoader', async () => {});
 
+export const showProcessingLoader = createAsyncThunk('ordering/tableSummary/showProcessingLoader', async () => {});
+
+export const hideProcessingLoader = createAsyncThunk('ordering/tableSummary/hideProcessingLoader', async () => {});
+
 export const clearQueryOrdersAndStatus = () => () => {
   clearTimeout(queryOrdersAndStatus.timer);
   logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'stop' });
@@ -173,17 +177,22 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
   }
 });
 
-export const updateCashbackApplyStatus = createAsyncThunk(
-  'ordering/tableSummary/updateCashbackApplyStatus',
-  async (newStatus, { dispatch, getState }) => {
+export const reloadBillingByCashback = createAsyncThunk(
+  'ordering/tableSummary/reloadBillingByCashback',
+  async (applyStatus, { dispatch, getState }) => {
     try {
+      await dispatch(showProcessingLoader());
+
       const receiptNumber = getOrderReceiptNumber(getState());
 
-      newStatus ? await applyCashback(receiptNumber) : await unapplyCashback(receiptNumber);
+      applyStatus ? await applyCashback(receiptNumber) : await unapplyCashback(receiptNumber);
 
       await dispatch(loadOrders(receiptNumber)).unwrap();
+      await dispatch(hideProcessingLoader());
     } catch (e) {
-      logger.error('Ordering_TableSummary_UpdateCashbackApplyStatusFailed', { message: e?.message });
+      logger.error('Ordering_TableSummary_ReloadBillingByCashbackFailed', { message: e?.message });
+
+      await dispatch(hideProcessingLoader());
 
       throw e;
     }

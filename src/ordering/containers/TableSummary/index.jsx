@@ -20,12 +20,15 @@ import {
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
+import { actions as tableSummaryActionCreators } from './redux';
 import {
   loadOrders as loadOrdersThunk,
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
   gotoPayment as gotoPaymentThunk,
-  updateCashbackApplyStatus as updateCashbackApplyStatusThunk,
+  reloadBillingByCashback as reloadBillingByCashbackThunk,
+  showProcessingLoader as showProcessingLoaderThunk,
+  hideProcessingLoader as hideProcessingLoaderThunk,
 } from './redux/thunks';
 import {
   removePromo as removePromoThunk,
@@ -57,6 +60,9 @@ import {
   getShouldShowPayNowButton,
   getIsStorePayByCashOnly,
   getShouldShowSwitchButton,
+  getShouldShowProcessingLoader,
+  getIsReloadBillingByCashbackRequestPending,
+  getIsReloadBillingByCashbackRequestRejected,
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
@@ -76,7 +82,6 @@ export class TableSummary extends React.Component {
     super(props);
     this.state = {
       cartContainerHeight: '100%',
-      shouldShowProcessingLoader: false,
     };
   }
 
@@ -266,7 +271,15 @@ export class TableSummary extends React.Component {
   };
 
   handleLogin = async () => {
-    const { history, isWebview, isTNGMiniProgram, loginByBeepApp, loginByTngMiniProgram } = this.props;
+    const {
+      history,
+      isWebview,
+      isTNGMiniProgram,
+      loginByBeepApp,
+      loginByTngMiniProgram,
+      showProcessingLoader,
+      hideProcessingLoader,
+    } = this.props;
 
     if (isWebview) {
       await loginByBeepApp();
@@ -274,9 +287,9 @@ export class TableSummary extends React.Component {
     }
 
     if (isTNGMiniProgram) {
-      this.setState({ shouldShowProcessingLoader: true });
+      await showProcessingLoader();
       await loginByTngMiniProgram();
-      this.setState({ shouldShowProcessingLoader: false });
+      await hideProcessingLoader();
       return;
     }
 
@@ -301,10 +314,20 @@ export class TableSummary extends React.Component {
   };
 
   handleToggleCashbackSwitch = async event => {
-    const { updateCashbackApplyStatus } = this.props;
-    const newStatus = event.target.checked;
+    const { updateCashbackApplyStatus, reloadBillingByCashback } = this.props;
+    const nextApplyStatus = event.target.checked;
 
-    await updateCashbackApplyStatus(newStatus);
+    // Optimistic update
+    updateCashbackApplyStatus(nextApplyStatus);
+
+    await reloadBillingByCashback(nextApplyStatus);
+
+    const { hasUpdateCashbackApplyStatusFailed } = this.props;
+
+    if (hasUpdateCashbackApplyStatusFailed) {
+      // Revert cashback apply status to the original one
+      updateCashbackApplyStatus(!nextApplyStatus);
+    }
   };
 
   handleClickLoginButton = async () => {
@@ -560,12 +583,14 @@ export class TableSummary extends React.Component {
       shippingFee,
       isOrderPlaced,
       isOrderPendingPayment,
+      shouldShowLoadingText,
       shouldShowRedirectLoader,
+      shouldShowProcessingLoader,
       shouldShowPayNowButton,
       isTNGMiniProgram,
       isStorePayByCashOnly,
     } = this.props;
-    const { cartContainerHeight, shouldShowProcessingLoader } = this.state;
+    const { cartContainerHeight } = this.state;
 
     if (shouldShowRedirectLoader) {
       return <RedirectPageLoader />;
@@ -649,7 +674,10 @@ export class TableSummary extends React.Component {
             </button>
           </footer>
         )}
-        <PageProcessingLoader show={shouldShowProcessingLoader} loaderText={t('Processing')} />
+        <PageProcessingLoader
+          show={shouldShowProcessingLoader}
+          loaderText={shouldShowLoadingText ? t('Loading') : t('Processing')}
+        />
       </section>
     );
   }
@@ -695,14 +723,20 @@ TableSummary.propTypes = {
   isTNGMiniProgram: PropTypes.bool,
   loginByBeepApp: PropTypes.func,
   loginByTngMiniProgram: PropTypes.func,
+  reloadBillingByCashback: PropTypes.func,
   updateCashbackApplyStatus: PropTypes.func,
+  showProcessingLoader: PropTypes.func,
+  hideProcessingLoader: PropTypes.func,
   hasLoginGuardPassed: PropTypes.bool,
   shouldShowRedirectLoader: PropTypes.bool,
+  shouldShowProcessingLoader: PropTypes.bool,
+  shouldShowLoadingText: PropTypes.bool,
   shouldShowPayNowButton: PropTypes.bool,
   isStorePayByCashOnly: PropTypes.bool,
   isCashbackEnabled: PropTypes.bool,
   isCashbackApplied: PropTypes.bool,
   shouldShowSwitchButton: PropTypes.bool,
+  hasUpdateCashbackApplyStatusFailed: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
@@ -741,14 +775,20 @@ TableSummary.defaultProps = {
   isTNGMiniProgram: false,
   loginByBeepApp: () => {},
   loginByTngMiniProgram: () => {},
+  reloadBillingByCashback: () => {},
   updateCashbackApplyStatus: () => {},
+  showProcessingLoader: () => {},
+  hideProcessingLoader: () => {},
   hasLoginGuardPassed: false,
   shouldShowRedirectLoader: false,
+  shouldShowProcessingLoader: false,
+  shouldShowLoadingText: false,
   shouldShowPayNowButton: false,
   isStorePayByCashOnly: false,
   isCashbackEnabled: false,
   isCashbackApplied: false,
   shouldShowSwitchButton: false,
+  hasUpdateCashbackApplyStatusFailed: false,
 };
 
 export default compose(
@@ -788,6 +828,9 @@ export default compose(
       isCashbackEnabled: getEnableCashback(state),
       isCashbackApplied: getOrderApplyCashback(state),
       shouldShowSwitchButton: getShouldShowSwitchButton(state),
+      shouldShowProcessingLoader: getShouldShowProcessingLoader(state),
+      shouldShowLoadingText: getIsReloadBillingByCashbackRequestPending(state),
+      hasUpdateCashbackApplyStatusFailed: getIsReloadBillingByCashbackRequestRejected(state),
     }),
 
     {
@@ -800,7 +843,10 @@ export default compose(
       gotoPayment: gotoPaymentThunk,
       loginByBeepApp: appActions.loginByBeepApp,
       loginByTngMiniProgram: appActions.loginByTngMiniProgram,
-      updateCashbackApplyStatus: updateCashbackApplyStatusThunk,
+      reloadBillingByCashback: reloadBillingByCashbackThunk,
+      updateCashbackApplyStatus: tableSummaryActionCreators.updateCashbackApplyStatus,
+      showProcessingLoader: showProcessingLoaderThunk,
+      hideProcessingLoader: hideProcessingLoaderThunk,
     }
   )
 )(TableSummary);

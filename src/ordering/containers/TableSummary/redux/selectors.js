@@ -105,6 +105,8 @@ export const getOrderApplyCashback = state => state.tableSummary.order.applyCash
 
 export const getShouldShowRedirectLoader = state => state.tableSummary.redirectLoaderVisible;
 
+export const getShouldShowProcessingLoader = state => state.tableSummary.processingLoaderVisible;
+
 export const getShouldShowPayNowButton = createSelector(
   getIsTNGMiniProgram,
   getIsOrderPendingPayment,
@@ -115,4 +117,16 @@ export const getShouldShowSwitchButton = createSelector(
   getOrderCashback,
   getIsOrderPendingPayment,
   (cashback, isOrderPendingPayment) => !isOrderPendingPayment && cashback > 0
+);
+
+export const getReloadBillingByCashbackRequest = state => state.tableSummary.reloadBillingByCashbackRequest;
+
+export const getIsReloadBillingByCashbackRequestPending = createSelector(
+  getReloadBillingByCashbackRequest,
+  request => request.status === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsReloadBillingByCashbackRequestRejected = createSelector(
+  getReloadBillingByCashbackRequest,
+  request => request.status === API_REQUEST_STATUS.REJECTED
 );

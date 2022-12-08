@@ -49,11 +49,11 @@ export const loadStockStatus = createAsyncThunk('ordering/cart/common/fetchStock
   }
 });
 
-export const updateCashbackApplyStatus = createAsyncThunk(
-  'ordering/cart/common/updateCashbackApplyStatus',
-  async (newStatus, { dispatch, getState }) => {
+export const reloadBillingByCashback = createAsyncThunk(
+  'ordering/cart/common/reloadBillingByCashback',
+  async (applyStatus, { dispatch, getState }) => {
     try {
-      newStatus ? await applyCashback() : await unapplyCashback();
+      applyStatus ? await applyCashback() : await unapplyCashback();
 
       await dispatch(appActions.loadShoppingCart());
 
@@ -63,7 +63,7 @@ export const updateCashbackApplyStatus = createAsyncThunk(
         throw new Error('Shopping cart failed to update');
       }
     } catch (e) {
-      logger.error('Ordering_ShoppingCart_UpdateCashbackApplyStatusFailed', { message: e?.message });
+      logger.error('Ordering_ShoppingCart_ReloadBillingByCashbackFailed', { message: e?.message });
 
       throw e;
     }

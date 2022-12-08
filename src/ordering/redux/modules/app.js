@@ -835,6 +835,11 @@ export const actions = {
       payload: newStoreId,
     });
   },
+
+  updateCashbackApplyStatus: newStatus => ({
+    type: types.UPDATE_SHOPPINGCART_APPLYCASHBACK,
+    payload: newStatus,
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -1182,6 +1187,8 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
     return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED };
+  } else if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
+    return { ...state, billing: { ...state.billing, applyCashback: action.payload } };
   }
 
   return state;

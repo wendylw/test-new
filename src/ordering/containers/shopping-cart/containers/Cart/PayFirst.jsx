@@ -14,6 +14,7 @@ import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import RedirectPageLoader from '../../../../components/RedirectPageLoader';
+import PageProcessingLoader from '../../../../components/PageProcessingLoader';
 import { actions as promotionActionCreators } from '../../../../redux/modules/promotion';
 import {
   actions as appActionCreators,
@@ -41,9 +42,14 @@ import {
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import {
   loadStockStatus as loadStockStatusThunk,
-  updateCashbackApplyStatus as updateCashbackApplyStatusThunk,
+  reloadBillingByCashback as reloadBillingByCashbackThunk,
 } from '../../redux/common/thunks';
-import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
+import {
+  getCheckingInventoryPendingState,
+  getShouldDisablePayButton,
+  getIsReloadBillingByCashbackRequestPending,
+  getIsReloadBillingByCashbackRequestRejected,
+} from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
@@ -493,10 +499,20 @@ class PayFirst extends Component {
   };
 
   handleToggleCashbackSwitch = async event => {
-    const { updateCashbackApplyStatus } = this.props;
-    const newStatus = event.target.checked;
+    const { reloadBillingByCashback, appActions } = this.props;
+    const nextApplyStatus = event.target.checked;
 
-    await updateCashbackApplyStatus(newStatus);
+    // Optimistic update
+    appActions.updateCashbackApplyStatus(nextApplyStatus);
+
+    await reloadBillingByCashback(nextApplyStatus);
+
+    const { hasUpdateCashbackApplyStatusFailed } = this.props;
+
+    if (hasUpdateCashbackApplyStatusFailed) {
+      // Revert cashback apply status to the original one
+      appActions.updateCashbackApplyStatus(!nextApplyStatus);
+    }
   };
 
   formatCleverTapAttributes(product) {
@@ -682,6 +698,7 @@ class PayFirst extends Component {
       storeInfoForCleverTap,
       shippingType,
       serviceChargeRate,
+      shouldShowProcessingLoader,
     } = this.props;
     const { cartContainerHeight, shouldShowRedirectLoader } = this.state;
     const { items } = shoppingCart || {};
@@ -775,6 +792,7 @@ class PayFirst extends Component {
           </button>
           {Utils.isQROrder() ? this.renderCreateOrderButton() : this.renderPayOrderButton()}
         </footer>
+        <PageProcessingLoader show={shouldShowProcessingLoader} loaderText={t('Loading')} />
       </section>
     );
   }
@@ -791,12 +809,13 @@ PayFirst.propTypes = {
     getProfileInfo: PropTypes.func,
     updateDeliveryDetails: PropTypes.func,
     loginByBeepApp: PropTypes.func,
+    updateCashbackApplyStatus: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
   }),
   loadStockStatus: PropTypes.func,
-  updateCashbackApplyStatus: PropTypes.func,
+  reloadBillingByCashback: PropTypes.func,
   pendingCheckingInventory: PropTypes.bool,
   isLogin: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
@@ -827,6 +846,8 @@ PayFirst.propTypes = {
   isCashbackEnabled: PropTypes.bool,
   isCashbackApplied: PropTypes.bool,
   shouldShowSwitchButton: PropTypes.bool,
+  shouldShowProcessingLoader: PropTypes.bool,
+  hasUpdateCashbackApplyStatusFailed: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -838,12 +859,13 @@ PayFirst.defaultProps = {
     getProfileInfo: () => {},
     updateDeliveryDetails: () => {},
     loginByBeepApp: () => {},
+    updateCashbackApplyStatus: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},
   },
   loadStockStatus: () => {},
-  updateCashbackApplyStatus: () => {},
+  reloadBillingByCashback: () => {},
   pendingCheckingInventory: false,
   isLogin: false,
   cartBilling: {},
@@ -869,6 +891,8 @@ PayFirst.defaultProps = {
   isCashbackEnabled: false,
   isCashbackApplied: false,
   shouldShowSwitchButton: false,
+  shouldShowProcessingLoader: false,
+  hasUpdateCashbackApplyStatusFailed: false,
 };
 
 /* TODO: backend data */
@@ -898,10 +922,12 @@ export default compose(
       isCashbackEnabled: getEnableCashback(state),
       isCashbackApplied: getCartApplyCashback(state),
       shouldShowSwitchButton: getShouldShowCashbackSwitchButton(state),
+      shouldShowProcessingLoader: getIsReloadBillingByCashbackRequestPending(state),
+      hasUpdateCashbackApplyStatusFailed: getIsReloadBillingByCashbackRequestRejected(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),
-      updateCashbackApplyStatus: bindActionCreators(updateCashbackApplyStatusThunk, dispatch),
+      reloadBillingByCashback: bindActionCreators(reloadBillingByCashbackThunk, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
     })

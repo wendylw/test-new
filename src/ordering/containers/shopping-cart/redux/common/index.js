@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { loadStockStatus, updateCashbackApplyStatus } from './thunks';
+import { loadStockStatus, reloadBillingByCashback } from './thunks';
 import { API_REQUEST_STATUS } from '../../../../../common/utils/constants';
 
 const initialState = {
@@ -9,7 +9,7 @@ const initialState = {
     status: '',
     error: {},
   },
-  cashbackRequest: {
+  reloadBillingByCashbackRequest: {
     status: null,
     error: null,
   },
@@ -30,16 +30,16 @@ const { reducer, actions } = createSlice({
       state.cartInventory.error = error;
       state.cartInventory.status = API_REQUEST_STATUS.REJECTED;
     },
-    [updateCashbackApplyStatus.pending.type]: state => {
-      state.cashbackRequest.error = null;
-      state.cashbackRequest.status = API_REQUEST_STATUS.PENDING;
+    [reloadBillingByCashback.pending.type]: state => {
+      state.reloadBillingByCashbackRequest.error = null;
+      state.reloadBillingByCashbackRequest.status = API_REQUEST_STATUS.PENDING;
     },
-    [updateCashbackApplyStatus.fulfilled.type]: state => {
-      state.cashbackRequest.status = API_REQUEST_STATUS.FULFILLED;
+    [reloadBillingByCashback.fulfilled.type]: state => {
+      state.reloadBillingByCashbackRequest.status = API_REQUEST_STATUS.FULFILLED;
     },
-    [updateCashbackApplyStatus.rejected.type]: (state, { error }) => {
-      state.cashbackRequest.error = error;
-      state.cashbackRequest.status = API_REQUEST_STATUS.REJECTED;
+    [reloadBillingByCashback.rejected.type]: (state, { error }) => {
+      state.reloadBillingByCashbackRequest.error = error;
+      state.reloadBillingByCashbackRequest.status = API_REQUEST_STATUS.REJECTED;
     },
   },
 });
