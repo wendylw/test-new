@@ -575,13 +575,15 @@ class PayFirst extends Component {
       >
         <div className="margin-smaller flex flex-middle flex__shrink-fixed">
           <span className="text-size-big text-weight-bolder">{t('BeepCashback')}</span>
-          <button
-            className="flex padding-smaller cart-cashback__info-button"
-            aria-label="Beep Cashback Info"
-            onClick={this.handleClickCashbackInfoButton}
-          >
-            <Info size={16} />
-          </button>
+          {cashback > 0 ? (
+            <button
+              className="flex padding-smaller cart-cashback__info-button"
+              aria-label="Beep Cashback Info"
+              onClick={this.handleClickCashbackInfoButton}
+            >
+              <Info size={16} />
+            </button>
+          ) : null}
         </div>
         {isLogin ? (
           <div className="flex flex-middle">

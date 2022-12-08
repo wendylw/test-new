@@ -408,13 +408,15 @@ export class TableSummary extends React.Component {
       >
         <div className="margin-smaller flex flex-middle flex__shrink-fixed">
           <span className="text-size-big text-weight-bolder">{t('BeepCashback')}</span>
-          <button
-            className="flex padding-smaller table-summary__cashback-info-button"
-            aria-label="Beep Cashback Info"
-            onClick={this.handleClickCashbackInfoButton}
-          >
-            <Info size={16} />
-          </button>
+          {cashback > 0 ? (
+            <button
+              className="flex padding-smaller table-summary__cashback-info-button"
+              aria-label="Beep Cashback Info"
+              onClick={this.handleClickCashbackInfoButton}
+            >
+              <Info size={16} />
+            </button>
+          ) : null}
         </div>
         {isOrderPendingPayment || isLogin ? (
           <div className="flex flex-middle">
