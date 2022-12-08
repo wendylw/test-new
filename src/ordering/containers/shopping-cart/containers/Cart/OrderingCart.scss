@@ -76,6 +76,13 @@
     height: 30px;
   }
 
+  &__info-button {
+    outline: none;
+    cursor: pointer;
+    border-style: none;
+    background-color: transparent;
+  }
+
   &__item-primary {
     background-color: $theme-color-translucent-light;
   }

@@ -6,6 +6,7 @@ import { withTranslation, Trans } from 'react-i18next';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import _isNil from 'lodash/isNil';
+import { Info } from 'phosphor-react';
 import Billing from '../../../../components/Billing';
 import CartList from '../../components/CartList';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
@@ -51,7 +52,7 @@ import {
   getIsReloadBillingByCashbackRequestRejected,
 } from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
-import { toast } from '../../../../../common/utils/feedback';
+import { toast, alert } from '../../../../../common/utils/feedback';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
@@ -517,6 +518,15 @@ class PayFirst extends Component {
     }
   };
 
+  handleClickCashbackInfoButton = () => {
+    const { t } = this.props;
+
+    alert(t('CashbackInfoDescription'), {
+      title: t('CashbackInfoTitle'),
+      closeButtonContent: t('GotIt'),
+    });
+  };
+
   formatCleverTapAttributes(product) {
     return {
       'category name': product.categoryName,
@@ -557,9 +567,18 @@ class PayFirst extends Component {
           isLogin ? 'margin-small cart-cashback__item-primary' : ''
         }`}
       >
-        <span className="margin-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</span>
+        <div className="margin-smaller flex flex-middle flex__shrink-fixed">
+          <span className="text-size-big text-weight-bolder">{t('BeepCashback')}</span>
+          <button
+            className="flex padding-smaller cart-cashback__info-button"
+            aria-label="Beep Cashback Info"
+            onClick={this.handleClickCashbackInfoButton}
+          >
+            <Info size={16} />
+          </button>
+        </div>
         {isLogin ? (
-          <div className="flex flex-middle flex__shrink-fixed">
+          <div className="flex flex-middle">
             {shouldShowSwitchButton ? (
               <label className="cart-cashback__switch-container margin-left-right-small" htmlFor="cashback-switch">
                 <input

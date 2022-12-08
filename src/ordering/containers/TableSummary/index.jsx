@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { Info } from 'phosphor-react';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
@@ -66,13 +67,12 @@ import {
 } from './redux/selectors';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import RedirectPageLoader from '../../components/RedirectPageLoader';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
-import { toast } from '../../../common/utils/feedback';
+import { toast, alert } from '../../../common/utils/feedback';
 import CleverTap from '../../../utils/clevertap';
 import './TableSummary.scss';
 
@@ -332,6 +332,15 @@ export class TableSummary extends React.Component {
     }
   };
 
+  handleClickCashbackInfoButton = () => {
+    const { t } = this.props;
+
+    alert(t('CashbackInfoDescription'), {
+      title: t('CashbackInfoTitle'),
+      closeButtonContent: t('GotIt'),
+    });
+  };
+
   handleClickLoginButton = async () => {
     const { history, isWebview, loginByBeepApp } = this.props;
 
@@ -396,9 +405,18 @@ export class TableSummary extends React.Component {
           isLogin ? 'margin-small table-summary__item-primary' : ''
         }`}
       >
-        <span className="margin-smaller text-size-big text-weight-bolder">{t('BeepCashback')}</span>
+        <div className="margin-smaller flex flex-middle flex__shrink-fixed">
+          <span className="text-size-big text-weight-bolder">{t('BeepCashback')}</span>
+          <button
+            className="flex padding-smaller table-summary__cashback-info-button"
+            aria-label="Beep Cashback Info"
+            onClick={this.handleClickCashbackInfoButton}
+          >
+            <Info size={16} />
+          </button>
+        </div>
         {isOrderPendingPayment || isLogin ? (
-          <div className="flex flex-middle flex__shrink-fixed">
+          <div className="flex flex-middle">
             {shouldShowSwitchButton ? (
               <label className="table-summary__switch-container margin-left-right-small" htmlFor="cashback-switch">
                 <input

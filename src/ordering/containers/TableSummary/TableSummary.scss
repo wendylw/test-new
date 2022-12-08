@@ -129,6 +129,13 @@ $table-summary-background: #fffbe6;
     height: 30px;
   }
 
+  &__cashback-info-button {
+    outline: none;
+    cursor: pointer;
+    border-style: none;
+    background-color: transparent;
+  }
+
   &__switch-container {
     cursor: pointer;
     display: inline-block;
