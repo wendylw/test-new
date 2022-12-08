@@ -21,7 +21,7 @@ const ORDER_STATUS_INTERVAL = 2 * 1000;
 
 export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', async receiptNumber => {
   try {
-    const result = await fetchOrder({ receiptNumber });
+    const result = await fetchOrder(receiptNumber);
 
     return result;
   } catch (error) {

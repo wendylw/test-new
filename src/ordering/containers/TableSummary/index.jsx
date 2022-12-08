@@ -612,8 +612,6 @@ export class TableSummary extends React.Component {
   render() {
     const {
       t,
-      history,
-      isLogin,
       businessInfo,
       shippingType,
       tax,
@@ -621,10 +619,8 @@ export class TableSummary extends React.Component {
       serviceChargeRate,
       subtotal,
       total,
-      cashback,
       shippingFee,
       isOrderPlaced,
-      isOrderPendingPayment,
       shouldShowLoadingText,
       shouldDisablePayButton,
       shouldShowRedirectLoader,

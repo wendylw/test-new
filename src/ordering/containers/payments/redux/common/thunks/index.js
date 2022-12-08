@@ -164,7 +164,7 @@ export const loadBilling = createAsyncThunk('ordering/payments/loadBilling', asy
   const receiptNumber = Utils.getQueryString('receiptNumber');
   // For Pay Later order, update Billing data by order data
   if (receiptNumber) {
-    const data = await fetchOrder({ receiptNumber });
+    const data = await fetchOrder(receiptNumber);
     const { total, subtotal, items, modifiedTime } = data;
 
     return {

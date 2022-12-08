@@ -170,7 +170,7 @@ class CreateOrderButton extends React.Component {
 
     // For pay later order, if order has already been paid, then let user goto Thankyou page directly
     if (orderId) {
-      const order = await fetchOrder({ receiptNumber: orderId });
+      const order = await fetchOrder(orderId);
 
       if (
         [

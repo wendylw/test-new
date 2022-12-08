@@ -723,8 +723,6 @@ class PayFirst extends Component {
       cartBilling,
       shoppingCart,
       businessInfo,
-      isLogin,
-      history,
       storeInfoForCleverTap,
       shippingType,
       serviceChargeRate,
