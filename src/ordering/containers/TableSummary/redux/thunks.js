@@ -160,7 +160,6 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     // Special case for free charge
     if (total === 0) {
       await dispatch(payByCoupons()).unwrap();
-      await dispatch(hideProcessingLoader());
       return;
     }
 
