@@ -145,6 +145,20 @@ export const getIsPayByCouponsRequestPending = createSelector(
   request => request.status === API_REQUEST_STATUS.PENDING
 );
 
+export const getIsPayByCouponsRequestFulfilled = createSelector(
+  getPayByCouponsRequest,
+  request => request.status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getShouldDisablePayButton = createSelector(
+  getIsPayByCouponsRequestPending,
+  getIsPayByCouponsRequestFulfilled,
+  (isRequestPending, isRequestFulfilled) =>
+    // WB-4761: window location redirection will take some time, if we only consider pending status then the button will be activated accidentally.
+    // Therefore, we should also need to take fulfilled status into consideration.
+    isRequestPending || isRequestFulfilled
+);
+
 export const getCartItemsQuantityCleverTap = createSelector(getOrderItems, orderItems => {
   let count = 0;
 
