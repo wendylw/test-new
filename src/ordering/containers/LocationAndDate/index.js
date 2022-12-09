@@ -43,6 +43,7 @@ import { withAddressInfo } from '../Location/withAddressInfo';
 import dayjs from 'dayjs';
 import CleverTap from '../../../utils/clevertap';
 import logger from '../../../utils/monitoring/logger';
+import prefetch from '../../../common/utils/prefetch-assets';
 import './OrderingLocationDate.scss';
 
 const { DELIVERY_METHOD, ROUTER_PATHS, WEEK_DAYS_I18N_KEYS, TIME_SLOT_NOW, ADDRESS_RANGE } = Constants;
@@ -84,6 +85,8 @@ class LocationAndDate extends Component {
     if (!this.props.cachedStoreId && deliveryType === DELIVERY_METHOD.PICKUP) {
       this.gotoStoreList(DELIVERY_METHOD.PICKUP, this.query.storeid || savedStoreId);
     }
+
+    prefetch(['ORD_SL', 'ORD_CI', 'ORD_LOC'], ['OrderingCustomer', 'OrderingDelivery']);
   };
 
   componentWillUnmount() {

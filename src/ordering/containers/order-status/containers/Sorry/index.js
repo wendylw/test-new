@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import qs from 'qs';
 import _pick from 'lodash/pick';
 import { withTranslation } from 'react-i18next';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
@@ -48,6 +49,8 @@ class Sorry extends Component {
         }),
       });
     }
+
+    prefetch(['ORD_MNU', 'ORD_SC'], ['OrderingDelivery', 'OrderingCart']);
   }
 
   getDescription = () => {

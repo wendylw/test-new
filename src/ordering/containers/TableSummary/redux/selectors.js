@@ -1,8 +1,14 @@
 import _get from 'lodash/get';
 import { createSelector } from 'reselect';
 import Constants from '../../../../utils/constants';
-import { getIsTNGMiniProgram } from '../../../redux/modules/app';
-import { getSelectedPromo } from '../../../redux/modules/promotion';
+import {
+  getBusinessInfo,
+  getCashbackRate,
+  getEnableCashback,
+  getMerchantCountry,
+  getShippingType,
+  getIsTNGMiniProgram,
+} from '../../../redux/modules/app';
 
 const { ORDER_STATUS, API_REQUEST_STATUS } = Constants;
 
@@ -90,6 +96,8 @@ export const getOrderPromoDiscount = state => state.tableSummary.order.displayPr
 
 export const getOrderPromotionCode = state => state.tableSummary.order.displayPromotions[0]?.promotionCode;
 
+export const getOrderPromotionId = state => state.tableSummary.order.displayPromotions[0]?.promotionId;
+
 export const getVoucherBillingIfExist = state => state.tableSummary.order.appliedVoucher?.voucherId || '';
 
 export const getOrderVoucherCode = state => state.tableSummary.order.appliedVoucher?.voucherCode;
@@ -103,12 +111,39 @@ export const getPromoOrVoucherExist = createSelector(
 );
 export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
 
-export const getSelectedPromoCode = createSelector(getSelectedPromo, selectedPromo => selectedPromo.code);
-
 export const getShouldShowRedirectLoader = state => state.tableSummary.redirectLoaderVisible;
 
 export const getShouldShowPayNowButton = createSelector(
   getIsTNGMiniProgram,
   getOrderPendingPaymentStatus,
   (isTNGMiniProgram, orderPendingPaymentStatus) => isTNGMiniProgram || !orderPendingPaymentStatus
+);
+
+export const getCartItemsQuantityCleverTap = createSelector(getOrderItems, orderItems => {
+  let count = 0;
+
+  (orderItems || []).forEach(item => {
+    const { quantity } = item || {};
+    count += quantity;
+  });
+  return count;
+});
+
+export const getCleverTapAttributes = createSelector(
+  getBusinessInfo,
+  getShippingType,
+  getMerchantCountry,
+  getEnableCashback,
+  getCashbackRate,
+  getCartItemsQuantityCleverTap,
+  getOrderSubtotal,
+  (businessInfo, shippingType, country, enableCashback, cashbackRate, cartItemsQuantity, orderSubtotal) => ({
+    'store name': _get(businessInfo, 'stores.0.name', ''),
+    'store id': _get(businessInfo, 'stores.0.id', ''),
+    'shipping type': shippingType,
+    country,
+    cashback: enableCashback ? cashbackRate : undefined,
+    'cart items quantity': cartItemsQuantity,
+    'cart amount': orderSubtotal,
+  })
 );

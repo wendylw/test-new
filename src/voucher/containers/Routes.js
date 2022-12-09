@@ -9,8 +9,8 @@ import PageLoader from '../components/PageLoader';
 
 const { ROUTER_PATHS } = Constants;
 
-const ThankYou = lazy(() => Utils.attemptLoad(() => import('./ThankYou')));
-const Sorry = lazy(() => Utils.attemptLoad(() => import('./Sorry')));
+const ThankYou = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "VOU_TY" */ './ThankYou')));
+const Sorry = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "VOU_SRY" */ './Sorry')));
 
 class Routes extends Component {
   render() {

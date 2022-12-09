@@ -51,7 +51,7 @@ const ConfirmFooter = props => {
         <Button
           block
           type="secondary"
-          className={`tw-uppercase${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
+          className={`${styles.confirmFooterButton}${cancelButtonClassName ? ` ${cancelButtonClassName}` : ''}`}
           onClick={() => {
             onSelection(CONFIRM_TRIGGER_TARGET.CANCEL);
           }}
@@ -63,7 +63,7 @@ const ConfirmFooter = props => {
       <Button
         block
         type="primary"
-        className={`tw-uppercase${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
+        className={`${styles.confirmFooterButton}${confirmButtonClassName ? ` ${confirmButtonClassName}` : ''}`}
         onClick={() => {
           onSelection(CONFIRM_TRIGGER_TARGET.CONFIRM);
         }}
