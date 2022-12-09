@@ -71,12 +71,13 @@ import {
 import CleverTap from '../../../utils/clevertap';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
+import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import RedirectPageLoader from '../../components/RedirectPageLoader';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
-import { toast, alert } from '../../../common/utils/feedback';
+import { toast, alert as alertV2 } from '../../../common/utils/feedback';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -355,7 +356,7 @@ export class TableSummary extends React.Component {
   handleClickCashbackInfoButton = () => {
     const { t } = this.props;
 
-    alert(t('CashbackInfoDescription'), {
+    alertV2(t('CashbackInfoDescription'), {
       title: t('CashbackInfoTitle'),
       closeButtonContent: t('GotIt'),
     });
