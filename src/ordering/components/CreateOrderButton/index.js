@@ -242,7 +242,9 @@ class CreateOrderButton extends React.Component {
         // paymentExtraData could be changed after beforeCreateOrder is executed.
         await gotoPayment({ orderId, total }, this.props.paymentExtraData);
       }
-    } catch (e) {}
+    } catch (e) {
+      logger.error();
+    }
   };
 
   render() {

@@ -414,7 +414,11 @@ class PayFirst extends Component {
     if (consumerId && (!deliveryDetails.username || !deliveryDetails.phone)) {
       if (!isUserProfileStatusFulfilled) {
         try {
-          await appActions.getProfileInfo(consumerId);
+          const result = await appActions.getProfileInfo(consumerId);
+
+          if (result.type === 'ORDERING/APP/FETCH_PROFILE_FAILURE') {
+            throw new Error(`Failed to get user profile info: ${result.message}`);
+          }
         } catch (e) {
           logger.error(
             'Ordering_Cart_CreateOrderFailed',
