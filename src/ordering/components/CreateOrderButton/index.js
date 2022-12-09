@@ -140,107 +140,109 @@ class CreateOrderButton extends React.Component {
     let orderId = createdOrderId,
       total = createdOrderTotal;
 
-    if (beforeCreateOrder) {
-      await beforeCreateOrder();
-    }
-
-    // for Pay at counter it will fully handle order creation logic by itself in beforeCreateOrder
-    if (paymentName === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
-      return;
-    }
-
-    const { validCreateOrder } = this.props;
-
-    const isValidToCreateOrder = () => {
-      if (!validCreateOrder) {
-        return false;
+    try {
+      if (beforeCreateOrder) {
+        await beforeCreateOrder();
       }
 
-      if (!hasLoginGuardPassed) {
-        return false;
-      }
-
-      return true;
-    };
-
-    if (!isValidToCreateOrder()) {
-      afterCreateOrder && afterCreateOrder();
-      return;
-    }
-
-    // For pay later order, if order has already been paid, then let user goto Thankyou page directly
-    if (orderId) {
-      const order = await fetchOrder(orderId);
-
-      if (
-        [
-          ORDER_STATUS.PAID,
-          ORDER_STATUS.READY_FOR_DELIVERY,
-          ORDER_STATUS.READY_FOR_PICKUP,
-          ORDER_STATUS.SHIPPED,
-          ORDER_STATUS.ACCEPTED,
-          ORDER_STATUS.LOGISTICS_CONFIRMED,
-          ORDER_STATUS.CONFIRMED,
-          ORDER_STATUS.DELIVERED,
-        ].includes(order.status)
-      ) {
-        logger.log('Ordering_CreateOrderButton_OrderHasPaid', { orderId });
-
-        alert(i18next.t('OrderHasPaidAlertDescription'), {
-          closeButtonContent: i18next.t('Continue'),
-          title: i18next.t('OrderHasPaidAlertTitle'),
-          onClose: () => {
-            this.gotoThankyouPage(orderId, type);
-          },
-        });
+      // for Pay at counter it will fully handle order creation logic by itself in beforeCreateOrder
+      if (paymentName === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
         return;
       }
-    }
 
-    if (!orderId) {
-      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
-        paymentName: paymentName || 'N/A',
-      });
+      const { validCreateOrder } = this.props;
 
-      this.setState({ isLoadingCreatedOrder: true });
-      const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
-      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
-        paymentName: paymentName || 'N/A',
-      });
+      const isValidToCreateOrder = () => {
+        if (!validCreateOrder) {
+          return false;
+        }
 
-      const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
-      if (order) {
-        orderId = order.orderId;
-        total = order.total;
+        if (!hasLoginGuardPassed) {
+          return false;
+        }
+
+        return true;
+      };
+
+      if (!isValidToCreateOrder()) {
+        afterCreateOrder && afterCreateOrder();
+        return;
       }
 
-      logger.log('Ordering_CreateOrderButton_OrderHasCreated', { orderId });
+      // For pay later order, if order has already been paid, then let user goto Thankyou page directly
+      if (orderId) {
+        const order = await fetchOrder(orderId);
+
+        if (
+          [
+            ORDER_STATUS.PAID,
+            ORDER_STATUS.READY_FOR_DELIVERY,
+            ORDER_STATUS.READY_FOR_PICKUP,
+            ORDER_STATUS.SHIPPED,
+            ORDER_STATUS.ACCEPTED,
+            ORDER_STATUS.LOGISTICS_CONFIRMED,
+            ORDER_STATUS.CONFIRMED,
+            ORDER_STATUS.DELIVERED,
+          ].includes(order.status)
+        ) {
+          logger.log('Ordering_CreateOrderButton_OrderHasPaid', { orderId });
+
+          alert(i18next.t('OrderHasPaidAlertDescription'), {
+            closeButtonContent: i18next.t('Continue'),
+            title: i18next.t('OrderHasPaidAlertTitle'),
+            onClose: () => {
+              this.gotoThankyouPage(orderId, type);
+            },
+          });
+          return;
+        }
+      }
+
+      if (!orderId) {
+        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
+          paymentName: paymentName || 'N/A',
+        });
+
+        this.setState({ isLoadingCreatedOrder: true });
+        const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
+        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
+          paymentName: paymentName || 'N/A',
+        });
+
+        const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
+        if (order) {
+          orderId = order.orderId;
+          total = order.total;
+        }
+
+        logger.log('Ordering_CreateOrderButton_OrderHasCreated', { orderId });
+
+        if (orderId) {
+          Utils.removeSessionVariable('additionalComments');
+          Utils.removeSessionVariable('deliveryComments');
+        }
+
+        if (thankYouPageUrl) {
+          Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.CASHBACK);
+          logger.log('Ordering_CreateOrderButton_GoToThankYouPage', { orderId });
+          window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
+
+          return;
+        }
+      }
+
+      this.setState({ isLoadingCreatedOrder: false });
+
+      if (afterCreateOrder) {
+        afterCreateOrder(orderId);
+      }
 
       if (orderId) {
-        Utils.removeSessionVariable('additionalComments');
-        Utils.removeSessionVariable('deliveryComments');
+        // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
+        // paymentExtraData could be changed after beforeCreateOrder is executed.
+        await gotoPayment({ orderId, total }, this.props.paymentExtraData);
       }
-
-      if (thankYouPageUrl) {
-        Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.CASHBACK);
-        logger.log('Ordering_CreateOrderButton_GoToThankYouPage', { orderId });
-        window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
-
-        return;
-      }
-    }
-
-    this.setState({ isLoadingCreatedOrder: false });
-
-    if (afterCreateOrder) {
-      afterCreateOrder(orderId);
-    }
-
-    if (orderId) {
-      // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
-      // paymentExtraData could be changed after beforeCreateOrder is executed.
-      await gotoPayment({ orderId, total }, this.props.paymentExtraData);
-    }
+    } catch (e) {}
   };
 
   render() {

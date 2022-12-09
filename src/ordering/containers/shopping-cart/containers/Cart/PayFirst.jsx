@@ -413,14 +413,48 @@ class PayFirst extends Component {
     // Resolve bugs of BEEP-1561 && BEEP-1554
     if (consumerId && (!deliveryDetails.username || !deliveryDetails.phone)) {
       if (!isUserProfileStatusFulfilled) {
-        await appActions.getProfileInfo(consumerId);
+        try {
+          await appActions.getProfileInfo(consumerId);
+        } catch (e) {
+          logger.error(
+            'Ordering_Cart_CreateOrderFailed',
+            {
+              message: `Failed to get user profile info: ${e.message}`,
+            },
+            {
+              beepData: {
+                bizFlow: {
+                  step: 'Submit Order',
+                  flow: 'Payment Flow',
+                },
+              },
+            }
+          );
+        }
       }
       const { userProfile } = this.props;
 
-      await appActions.updateDeliveryDetails({
-        username: deliveryDetails.username || userProfile.name,
-        phone: deliveryDetails.phone || userProfile.phone,
-      });
+      try {
+        await appActions.updateDeliveryDetails({
+          username: deliveryDetails.username || userProfile.name,
+          phone: deliveryDetails.phone || userProfile.phone,
+        });
+      } catch (e) {
+        logger.error(
+          'Ordering_Cart_CreateOrderFailed',
+          {
+            message: `Failed to update user current location info: ${e.message}`,
+          },
+          {
+            beepData: {
+              bizFlow: {
+                step: 'Submit Order',
+                flow: 'Payment Flow',
+              },
+            },
+          }
+        );
+      }
     }
 
     logger.log('Ordering_PayFirstCart_CreateOrder');
