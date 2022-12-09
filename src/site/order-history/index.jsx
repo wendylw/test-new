@@ -27,6 +27,7 @@ import Clevertap from '../../utils/clevertap';
 import _get from 'lodash/get';
 import WebHeader from '../../components/WebHeader';
 import logger from '../../utils/monitoring/logger';
+import prefetch from '../../common/utils/prefetch-assets';
 
 class OrderHistory extends React.Component {
   componentDidMount = async () => {
