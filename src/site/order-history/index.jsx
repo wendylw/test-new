@@ -1,5 +1,6 @@
-/* eslint-disable */
+import _get from 'lodash/get';
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withTranslation } from 'react-i18next';
@@ -8,7 +9,10 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Utils from '../../utils/utils';
 import { appActionCreators, getUserIsLogin, getIsPingRequestDone } from '../redux/modules/app';
 import PageLoader from '../../components/PageLoader';
-import { loadNextOrderHistoryData, initOrderHistoryData } from './redux/thunks';
+import {
+  loadNextOrderHistoryData as loadNextOrderHistoryDataThunk,
+  initOrderHistoryData as initOrderHistoryDataThunk,
+} from './redux/thunks';
 import {
   getOrderHistoryList,
   getHasMore,
@@ -24,7 +28,6 @@ import RequireLoginPage from './components/RequireLoginPage';
 import './order-history.scss';
 import OrderListEmptyView from './components/OrderListEmptyView';
 import Clevertap from '../../utils/clevertap';
-import _get from 'lodash/get';
 import WebHeader from '../../components/WebHeader';
 import logger from '../../utils/monitoring/logger';
 import prefetch from '../../common/utils/prefetch-assets';
@@ -45,21 +48,25 @@ class OrderHistory extends React.Component {
   };
 
   componentDidUpdate(prevProps) {
+    const { isLogin, initOrderHistoryData, isPingRequestDone } = this.props;
+
     // TODO: use react hooks will be more simple
-    if (this.props.isLogin && prevProps.isLogin !== this.props.isLogin) {
-      this.props.initOrderHistoryData();
+    if (isLogin && prevProps.isLogin !== isLogin) {
+      initOrderHistoryData();
     }
 
-    if (this.props.isPingRequestDone && prevProps.isPingRequestDone !== this.props.isPingRequestDone) {
-      if (!this.props.isLogin) {
+    if (isPingRequestDone && prevProps.isPingRequestDone !== isPingRequestDone) {
+      if (!isLogin) {
         this.login();
       }
     }
   }
 
   login = async () => {
+    const { loginByTngMiniProgram } = this.props;
+
     if (Utils.isTNGMiniProgram()) {
-      await this.props.loginByTngMiniProgram();
+      await loginByTngMiniProgram();
     }
   };
 
@@ -76,11 +83,14 @@ class OrderHistory extends React.Component {
   };
 
   handleRefresh = async () => {
-    await this.props.initOrderHistoryData();
+    const { initOrderHistoryData } = this.props;
+
+    await initOrderHistoryData();
   };
 
   handleLoadMore = async () => {
     const { isRequestOrderDataInPending, loadNextOrderHistoryData } = this.props;
+
     if (isRequestOrderDataInPending) {
       return;
     }
@@ -142,8 +152,9 @@ class OrderHistory extends React.Component {
     return (
       <>
         <WebHeader
+          // eslint-disable-next-line no-return-assign
           headerRef={ref => (this.headerEl = ref)}
-          isPage={true}
+          isPage
           title={t('MyOrderHistory')}
           navFunc={this.handleBackButtonClick}
         />
@@ -181,6 +192,34 @@ class OrderHistory extends React.Component {
 }
 
 OrderHistory.displayName = 'OrderHistory';
+OrderHistory.propTypes = {
+  isLogin: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  orderHistoryList: PropTypes.array,
+  hasMore: PropTypes.bool,
+  page: PropTypes.number,
+  isRequestOrderDataDone: PropTypes.bool,
+  pageLoaderVisibility: PropTypes.bool,
+  isPingRequestDone: PropTypes.bool,
+  isRequestOrderDataInPending: PropTypes.bool,
+  initOrderHistoryData: PropTypes.func,
+  loginByTngMiniProgram: PropTypes.func,
+  loadNextOrderHistoryData: PropTypes.func,
+};
+
+OrderHistory.defaultProps = {
+  isLogin: false,
+  orderHistoryList: [],
+  hasMore: true,
+  page: 1,
+  isRequestOrderDataDone: null,
+  pageLoaderVisibility: true,
+  isPingRequestDone: false,
+  isRequestOrderDataInPending: false,
+  initOrderHistoryData: () => {},
+  loginByTngMiniProgram: () => {},
+  loadNextOrderHistoryData: () => {},
+};
 
 export default compose(
   withTranslation('OrderHistory'),
@@ -197,8 +236,8 @@ export default compose(
     }),
     {
       loginByTngMiniProgram: appActionCreators.loginByTngMiniProgram,
-      initOrderHistoryData,
-      loadNextOrderHistoryData,
+      initOrderHistoryData: initOrderHistoryDataThunk,
+      loadNextOrderHistoryData: loadNextOrderHistoryDataThunk,
     }
   )
 )(OrderHistory);
