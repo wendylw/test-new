@@ -7,7 +7,7 @@ import _once from 'lodash/once';
 import tids from './tracing-id';
 import debug from '../debug';
 import { isWebview, isSiteApp, getBeepAppVersion, getUUID } from '../../common/utils';
-import { getAppPlatform, getIsDebugMode } from './utils';
+import { getAppPlatform, getIsDebugMode, getBeepDataFlowAndStep } from './utils';
 import { getBusinessName } from '../../config';
 
 const { serializeError } = require('serialize-error');
@@ -129,7 +129,7 @@ const track = async (name, data, options = {}) => {
       throw new Error('data should be plain object');
     }
 
-    const { level, tags, publicData } = options;
+    const { level, tags, publicData, flow, step } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
     const action = getFormattedActionName(name);
     const privateDataKeyName = getFormattedPrivateDateKeyName(action);
@@ -161,6 +161,10 @@ const track = async (name, data, options = {}) => {
         [privateDataKeyName]: data,
       },
     };
+
+    if (flow || step) {
+      payload.webData.beepData = getBeepDataFlowAndStep(flow, step);
+    }
 
     send(payload);
   } catch (e) {

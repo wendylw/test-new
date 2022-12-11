@@ -119,18 +119,31 @@ class Payment extends Component {
       return;
     }
 
-    if (currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
-      // If order has created, no need to display the confirmation modal
-      if (receiptNumber) {
-        this.handlePayWithCash();
-      } else {
-        this.setState({
-          payNowLoading: false,
-        });
-        paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
-      }
+    try {
+      if (currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
+        // If order has created, no need to display the confirmation modal
+        if (receiptNumber) {
+          this.handlePayWithCash();
+        } else {
+          this.setState({
+            payNowLoading: false,
+          });
+          paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
+        }
 
-      return;
+        return;
+      }
+    } catch (e) {
+      logger.error(
+        'Ordering_Payment_SubmitOrderFailed',
+        {
+          message: `Failed to pay with cash: ${e.message}`,
+        },
+        {
+          step: 'Submit Order',
+          flow: 'Payment Flow',
+        }
+      );
     }
 
     const { pathname, paymentProvider } = currentPaymentOption;
@@ -353,6 +366,9 @@ class Payment extends Component {
             paymentExtraData={this.getPaymentEntryRequestData()}
             processing={payNowLoading}
             loaderText={t('Processing')}
+            createOrderErrorLog={{
+              action: 'Ordering_Payment_SubmitOrderFailed',
+            }}
           >
             {payNowLoading ? t('Processing') : t('Continue')}
           </CreateOrderButton>

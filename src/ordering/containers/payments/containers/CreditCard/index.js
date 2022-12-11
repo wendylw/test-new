@@ -588,6 +588,9 @@ class CreditCard extends Component {
             paymentExtraData={this.getPaymentEntryRequestData()}
             processing={payNowLoading}
             loaderText={t('Processing')}
+            createOrderErrorLog={{
+              action: 'Ordering_CreditCard_PayOrderFailed',
+            }}
           >
             {payNowLoading ? (
               t('Processing')

@@ -80,7 +80,16 @@ export const cancelOrder = createAsyncThunk(
 
       window.location.reload();
     } catch (e) {
-      logger.error('Ordering_ThankYou_CancelOrderFailed', e);
+      logger.error(
+        'Ordering_OrderStatus_CancelOrderFailed',
+        {
+          message: `Failed to cancel order in thank page: ${e.message}`,
+        },
+        {
+          step: 'Change Order',
+          flow: 'Refund FLow',
+        }
+      );
 
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
@@ -102,8 +111,39 @@ export const updateOrderShippingType = createAsyncThunk(
   'ordering/orderStatus/common/updateOrderShippingType',
   async ({ orderId, shippingType }, { dispatch }) => {
     try {
-      await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
-      await dispatch(loadOrder(orderId));
+      try {
+        await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
+      } catch (e) {
+        logger.error(
+          'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
+          {
+            message: `Failed to update order shipping type: ${e.message}`,
+          },
+          {
+            step: 'Change Order',
+            flow: 'Refund FLow',
+          }
+        );
+
+        throw e;
+      }
+
+      try {
+        await dispatch(loadOrder(orderId));
+      } catch (e) {
+        logger.error(
+          'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
+          {
+            message: `Failed to load order details in thank you page: ${e.message}`,
+          },
+          {
+            step: 'Change Order',
+            flow: 'Refund FLow',
+          }
+        );
+
+        throw e;
+      }
     } catch (e) {
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
@@ -113,8 +153,6 @@ export const updateOrderShippingType = createAsyncThunk(
       } else {
         alert(i18next.t('ApiError:57002Description'), { title: i18next.t('ApiError:57002Title') });
       }
-
-      throw e;
     }
   }
 );

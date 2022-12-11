@@ -90,6 +90,7 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 import { SOURCE_TYPE } from '../../../../../common/utils/constants';
+import logger from '../../../../../utils/monitoring/logger';
 
 const {
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
@@ -689,6 +690,17 @@ export class ThankYou extends PureComponent {
         title: t('YourFoodIsOnTheWay'),
         closeButtonContent: t('GotIt'),
       });
+
+      logger.error(
+        'Ordering_OrderStatus_CancelOrderFailed',
+        {
+          message: `Can’t cancel order, rider has picked order`,
+        },
+        {
+          step: 'Change Order',
+          flow: 'Refund FLow',
+        }
+      );
       return;
     }
 

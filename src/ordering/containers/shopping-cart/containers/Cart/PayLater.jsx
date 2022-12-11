@@ -120,6 +120,28 @@ class PayLater extends Component {
               search: window.location.search,
             }),
         });
+
+        logger.error(
+          'Ordering_Cart_PlaceOrderFailed',
+          {
+            message: 'Failed to create pay later pre-order due to shopping cart is not newest',
+          },
+          {
+            step: 'Submit Order',
+            flow: 'Payment Flow',
+          }
+        );
+      } else {
+        logger.error(
+          'Ordering_Cart_PlaceOrderFailed',
+          {
+            message: `Failed to create pay later pre-order: ${e.message}`,
+          },
+          {
+            step: 'Submit Order',
+            flow: 'Payment Flow',
+          }
+        );
       }
     }
   };

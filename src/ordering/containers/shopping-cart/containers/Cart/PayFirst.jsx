@@ -384,6 +384,10 @@ class PayFirst extends Component {
         afterCreateOrder={this.handleAfterCreateOrder}
         loaderText={t('Processing')}
         processing={pendingCheckingInventory || pendingBeforeCreateOrder}
+        createOrderErrorLog={{
+          action: 'Ordering_Cart_CreateOrderFailed',
+          message: 'Failed to create free order',
+        }}
       >
         {this.getOrderButtonContent()}
       </CreateOrderButton>
@@ -412,30 +416,27 @@ class PayFirst extends Component {
     // then update them from user profile.
     // Resolve bugs of BEEP-1561 && BEEP-1554
     if (consumerId && (!deliveryDetails.username || !deliveryDetails.phone)) {
-      if (!isUserProfileStatusFulfilled) {
-        try {
+      try {
+        if (!isUserProfileStatusFulfilled) {
           const result = await appActions.getProfileInfo(consumerId);
 
           if (result.type === 'ORDERING/APP/FETCH_PROFILE_FAILURE') {
-            throw new Error(`Failed to get user profile info: ${result.message}`);
+            throw new Error(result.message);
           }
-        } catch (e) {
-          logger.error(
-            'Ordering_Cart_CreateOrderFailed',
-            {
-              message: `Failed to get user profile info: ${e.message}`,
-            },
-            {
-              beepData: {
-                bizFlow: {
-                  step: 'Submit Order',
-                  flow: 'Payment Flow',
-                },
-              },
-            }
-          );
         }
+      } catch (e) {
+        logger.error(
+          'Ordering_Cart_CreateOrderFailed',
+          {
+            message: `Failed to get user profile info: ${e.message}`,
+          },
+          {
+            step: 'Submit Order',
+            flow: 'Payment Flow',
+          }
+        );
       }
+
       const { userProfile } = this.props;
 
       try {
@@ -450,12 +451,8 @@ class PayFirst extends Component {
             message: `Failed to update user current location info: ${e.message}`,
           },
           {
-            beepData: {
-              bizFlow: {
-                step: 'Submit Order',
-                flow: 'Payment Flow',
-              },
-            },
+            step: 'Submit Order',
+            flow: 'Payment Flow',
           }
         );
       }

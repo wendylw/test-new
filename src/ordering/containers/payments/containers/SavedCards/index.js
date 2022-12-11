@@ -227,6 +227,9 @@ class SavedCards extends Component {
             afterCreateOrder={this.afterCreateOrder}
             processing={processing || isRequestSavedCardsPending}
             loaderText={isRequestSavedCardsPending ? t('Loading') : t('Processing')}
+            createOrderErrorLog={{
+              action: 'Ordering_SavedCard_PayOrderFailed',
+            }}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"

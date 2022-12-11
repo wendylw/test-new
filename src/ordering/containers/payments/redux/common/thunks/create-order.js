@@ -445,11 +445,19 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       receiptNumber: orderId,
     });
 
-    logger.error('Ordering_Payment_InitPaymentFailed', {
-      error: error?.message,
-      paymentProvider,
-      receiptNumber: orderId,
-    });
+    logger.error(
+      'Ordering_Payment_InitPaymentFailed',
+      {
+        message: `Failed to get or submit payment details for payment flow: ${error?.message || ''}`,
+        error: error?.message,
+        paymentProvider,
+        receiptNumber: orderId,
+      },
+      {
+        step: 'Submit Order',
+        flow: 'Payment Flow',
+      }
+    );
 
     if (error.code) {
       // TODO: This type is actually not used, because apiError does not respect action type,

@@ -196,6 +196,9 @@ class OnlineBanking extends Component {
             paymentExtraData={this.getPaymentEntryRequestData()}
             processing={payNowLoading}
             loaderText={t('Processing')}
+            createOrderErrorLog={{
+              action: 'Ordering_OnlineBanking_CreateOrderFailed',
+            }}
           >
             {payNowLoading ? (
               t('Processing')

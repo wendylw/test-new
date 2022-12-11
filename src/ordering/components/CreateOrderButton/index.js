@@ -140,36 +140,36 @@ class CreateOrderButton extends React.Component {
     let orderId = createdOrderId,
       total = createdOrderTotal;
 
+    if (beforeCreateOrder) {
+      await beforeCreateOrder();
+    }
+
+    // for Pay at counter it will fully handle order creation logic by itself in beforeCreateOrder
+    if (paymentName === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
+      return;
+    }
+
+    const { validCreateOrder } = this.props;
+
+    const isValidToCreateOrder = () => {
+      if (!validCreateOrder) {
+        return false;
+      }
+
+      if (!hasLoginGuardPassed) {
+        return false;
+      }
+
+      return true;
+    };
+
+    if (!isValidToCreateOrder()) {
+      afterCreateOrder && afterCreateOrder();
+      return;
+    }
+
+    // For pay later order, if order has already been paid, then let user goto Thankyou page directly
     try {
-      if (beforeCreateOrder) {
-        await beforeCreateOrder();
-      }
-
-      // for Pay at counter it will fully handle order creation logic by itself in beforeCreateOrder
-      if (paymentName === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
-        return;
-      }
-
-      const { validCreateOrder } = this.props;
-
-      const isValidToCreateOrder = () => {
-        if (!validCreateOrder) {
-          return false;
-        }
-
-        if (!hasLoginGuardPassed) {
-          return false;
-        }
-
-        return true;
-      };
-
-      if (!isValidToCreateOrder()) {
-        afterCreateOrder && afterCreateOrder();
-        return;
-      }
-
-      // For pay later order, if order has already been paid, then let user goto Thankyou page directly
       if (orderId) {
         const order = await fetchOrder(orderId);
 
@@ -197,7 +197,21 @@ class CreateOrderButton extends React.Component {
           return;
         }
       }
+    } catch (e) {
+      logger.error(
+        'Ordering_Cart_PlaceOrderFailed',
+        {
+          message: `Failed to pay later get thank you page URL ${e.message}`,
+          paymentName: paymentName || 'N/A',
+        },
+        {
+          step: 'Submit Order',
+          flow: 'Payment Flow',
+        }
+      );
+    }
 
+    try {
       if (!orderId) {
         window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
           paymentName: paymentName || 'N/A',
@@ -236,14 +250,26 @@ class CreateOrderButton extends React.Component {
       if (afterCreateOrder) {
         afterCreateOrder(orderId);
       }
-
-      if (orderId) {
-        // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
-        // paymentExtraData could be changed after beforeCreateOrder is executed.
-        await gotoPayment({ orderId, total }, this.props.paymentExtraData);
-      }
     } catch (e) {
-      logger.error();
+      const { createOrderErrorLog } = this.props;
+      const { action, message } = createOrderErrorLog || {};
+
+      logger.error(
+        action || 'Common_CreateOrderFailed',
+        {
+          message: `${message || 'Failed to create order'}: ${e.message}`,
+        },
+        {
+          step: 'Submit Order',
+          flow: 'Payment Flow',
+        }
+      );
+    }
+
+    if (orderId) {
+      // NOTE: We MUST access paymentExtraData here instead of the beginning of the function, because the value of
+      // paymentExtraData could be changed after beforeCreateOrder is executed.
+      await gotoPayment({ orderId, total }, this.props.paymentExtraData);
     }
   };
 
