@@ -300,6 +300,9 @@ export const actions = {
         error: error,
         payload: { source },
       });
+
+      // TODO: pending verify, is it can be throw
+      throw error;
     }
   },
 
@@ -737,6 +740,8 @@ export const actions = {
       console.error('Failed to get tokens from native: ', e.message);
 
       logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
+
+      return e;
     }
   },
 
@@ -772,6 +777,10 @@ export const actions = {
       dispatch({
         type: types.CREATE_LOGIN_FAILURE,
         error,
+      });
+
+      logger.error('Common_TNGMiniProgram_LoginFailed', {
+        message: error?.message,
       });
 
       return false;

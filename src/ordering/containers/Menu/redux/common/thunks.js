@@ -781,12 +781,42 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
     return;
   }
 
-  if (isTNGMiniProgram) {
-    await dispatch(appActions.loginByTngMiniProgram());
+  try {
+    if (isTNGMiniProgram) {
+      const result = await dispatch(appActions.loginByTngMiniProgram());
+
+      if (result === false) {
+        throw new Error(`Failed to log into TnG mini program`);
+      }
+    }
+  } catch (e) {
+    logger.error(
+      'Ordering_Menu_ReviewCartFailed',
+      {
+        message: e.message,
+      },
+      {
+        step: 'Sign Into App',
+        flow: 'Login FLow',
+      }
+    );
   }
 
-  if (isWebview) {
-    await dispatch(appActions.loginByBeepApp());
+  try {
+    if (isWebview) {
+      await dispatch(appActions.loginByBeepApp());
+    }
+  } catch (e) {
+    logger.error(
+      'Ordering_Menu_ReviewCartFailed',
+      {
+        message: `Failed to log into Beep app: ${e.message}`,
+      },
+      {
+        step: 'Sign Into App',
+        flow: 'Login FLow',
+      }
+    );
   }
 
   if (getUserIsLogin(getState())) {

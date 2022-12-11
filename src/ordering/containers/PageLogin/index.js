@@ -129,7 +129,14 @@ class PageLogin extends React.Component {
       });
 
       // We will set the attribute 'message' even if it is always empty
-      logger.error('Ordering_PageLogin_CompleteCaptchaFailed', { message: e?.message });
+      logger.error(
+        'Ordering_PageLogin_CompleteCaptchaFailed',
+        { message: e?.message },
+        {
+          step: 'Receive OTP',
+          flow: 'Login Flow',
+        }
+      );
       throw e;
     }
   }
@@ -192,7 +199,17 @@ class PageLogin extends React.Component {
 
       this.setState({ sendOtp: true });
     } catch (e) {
-      logger.error('Ordering_PageLogin_RefetchOTPFailed', { type, message: e?.message });
+      logger.error(
+        'Ordering_PageLogin_RefetchOTPFailed',
+        {
+          type,
+          message: `Failed to resend OTP coede: ${e?.message}`,
+        },
+        {
+          step: 'Receive OTP',
+          flow: 'Login Flow',
+        }
+      );
     }
   }
 
@@ -219,18 +236,49 @@ class PageLogin extends React.Component {
     const { shippingType } = loginOptions;
 
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
-    await appActions.sendOtp({ otp });
 
-    const { user } = this.props;
-    const { accessToken, refreshToken } = user;
+    try {
+      const result = await appActions.sendOtp({ otp });
 
-    if (accessToken && refreshToken) {
-      window.newrelic?.addPageAction('ordering.login.verify-otp-done');
-      appActions.loginApp({
-        accessToken,
-        refreshToken,
-        shippingType,
-      });
+      if (result.type === 'ORDERING/APP/CREATE_OTP_FAILURE') {
+        throw new Error(`Failed to verify OTP: ${result.message}`);
+      }
+    } catch (e) {
+      logger.error(
+        'Ordering_PageLogin_LoginFailed',
+        {
+          message: e.message,
+        },
+        {
+          step: 'Submit OTP',
+          flow: 'Login FLow',
+        }
+      );
+    }
+
+    try {
+      const { user } = this.props;
+      const { accessToken, refreshToken } = user;
+
+      if (accessToken && refreshToken) {
+        window.newrelic?.addPageAction('ordering.login.verify-otp-done');
+        appActions.loginApp({
+          accessToken,
+          refreshToken,
+          shippingType,
+        });
+      }
+    } catch (e) {
+      logger.error(
+        'Ordering_PageLogin_LoginFailed',
+        {
+          message: `Failed to login:${e.message}`,
+        },
+        {
+          step: 'Submit OTP',
+          flow: 'Login FLow',
+        }
+      );
     }
   }
 
