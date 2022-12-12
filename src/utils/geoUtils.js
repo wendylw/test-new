@@ -26,9 +26,14 @@ const loadGoogleMapsAPI = async () => {
 
   return loader
     .load()
-    .then(google => google.maps)
+    .then(google => {
+      window.newrelic?.addPageAction?.('common.script-load-succeeded', {
+        scriptName: 'google-map-api',
+      });
+      return google.maps;
+    })
     .catch(() => {
-      window.newrelic?.addPageAction?.('common.script-load-error', {
+      window.newrelic?.addPageAction?.('common.script-load-failed', {
         scriptName: 'google-map-api',
       });
       logger.error('Common_LoadGoogleMapAPIFailed');

@@ -163,7 +163,7 @@ class Login extends React.Component {
     const hasLoadSuccess = !!window.grecaptcha;
     const scriptName = 'google-recaptcha';
 
-    window.newrelic?.addPageAction(`cashback.otp-login.script-load-${hasLoadSuccess ? 'success' : 'error'}`, {
+    window.newrelic?.addPageAction(`common.script-load-${hasLoadSuccess ? 'succeeded' : 'failed'}`, {
       scriptName: scriptName,
     });
 
