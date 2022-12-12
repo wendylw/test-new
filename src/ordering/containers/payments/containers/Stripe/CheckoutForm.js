@@ -16,6 +16,8 @@ import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
 import logger from '../../../../../utils/monitoring/logger';
+import { getBeepData } from '../../../../../utils/monitoring/utils';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { STRIPE_LOAD_TIME_OUT } from './constants';
 
 const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS } = Constants;
@@ -147,8 +149,10 @@ function CheckoutForm({
           message: `Failed to create payment method via Stripe: ${error.message}`,
         },
         {
-          step: 'Submit Order',
-          flow: 'Payment Flow',
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          }),
         }
       );
 
@@ -441,6 +445,7 @@ function CheckoutForm({
           loaderText={t('Processing')}
           createOrderErrorLog={{
             action: 'Ordering_CreditCard_PayOrderFailed',
+            message: 'Failed to create order via Stripe',
           }}
         >
           {processing ? (

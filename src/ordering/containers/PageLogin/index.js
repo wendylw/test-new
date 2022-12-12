@@ -30,6 +30,8 @@ import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
+import { getBeepData } from '../../../utils/monitoring/utils';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 
 const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
 
@@ -133,8 +135,10 @@ class PageLogin extends React.Component {
         'Ordering_PageLogin_CompleteCaptchaFailed',
         { message: e?.message },
         {
-          step: 'Receive OTP',
-          flow: 'Login Flow',
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          }),
         }
       );
       throw e;
@@ -152,6 +156,17 @@ class PageLogin extends React.Component {
       const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
 
       alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
+
+      logger.error(
+        'Ordering_PageLogin_FetchOTPCodeFailed',
+        { message: 'Failed to send OTP code' },
+        {
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          }),
+        }
+      );
     }
 
     throw new Error('Failed to get OTP code');
@@ -177,7 +192,16 @@ class PageLogin extends React.Component {
 
       this.setState({ sendOtp: true, shouldShowModal: true });
     } catch (e) {
-      logger.error('Ordering_PageLogin_FetchOTPCodeFailed', { message: e?.message });
+      logger.error(
+        'Ordering_PageLogin_FetchOTPCodeFailed',
+        { message: e?.message },
+        {
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          }),
+        }
+      );
     }
   }
 
@@ -203,11 +227,13 @@ class PageLogin extends React.Component {
         'Ordering_PageLogin_RefetchOTPFailed',
         {
           type,
-          message: `Failed to resend OTP coede: ${e?.message}`,
+          message: `Failed to resend OTP code: ${e?.message}`,
         },
         {
-          step: 'Receive OTP',
-          flow: 'Login Flow',
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          }),
         }
       );
     }
@@ -250,8 +276,10 @@ class PageLogin extends React.Component {
           message: e.message,
         },
         {
-          step: 'Submit OTP',
-          flow: 'Login FLow',
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SUBMIT_OTP,
+          }),
         }
       );
     }

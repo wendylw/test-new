@@ -34,6 +34,8 @@ import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
 import logger from '../../../../../utils/monitoring/logger';
+import { getBeepData } from '../../../../../utils/monitoring/utils';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { alert } from '../../../../../common/feedback';
 
 class PayLater extends Component {
@@ -127,8 +129,10 @@ class PayLater extends Component {
             message: 'Failed to create pay later pre-order due to shopping cart is not newest',
           },
           {
-            step: 'Submit Order',
-            flow: 'Payment Flow',
+            beepData: getBeepData({
+              flow: KEY_EVENTS_FLOWS.PAYMENT,
+              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+            }),
           }
         );
       } else {
@@ -138,8 +142,10 @@ class PayLater extends Component {
             message: `Failed to create pay later pre-order: ${e.message}`,
           },
           {
-            step: 'Submit Order',
-            flow: 'Payment Flow',
+            beepData: getBeepData({
+              flow: KEY_EVENTS_FLOWS.PAYMENT,
+              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+            }),
           }
         );
       }

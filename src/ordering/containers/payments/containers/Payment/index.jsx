@@ -33,6 +33,8 @@ import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
+import { getBeepData } from '../../../../../utils/monitoring/utils';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
 import { getPaymentType } from './utils';
@@ -140,8 +142,10 @@ class Payment extends Component {
           message: `Failed to pay with cash: ${e.message}`,
         },
         {
-          step: 'Submit Order',
-          flow: 'Payment Flow',
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          }),
         }
       );
     }

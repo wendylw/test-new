@@ -89,8 +89,9 @@ import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { ICON_RES } from '../../../../../components/NativeHeader';
-import { SOURCE_TYPE } from '../../../../../common/utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
+import { getBeepData } from '../../../../../utils/monitoring/utils';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const {
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
@@ -697,10 +698,13 @@ export class ThankYou extends PureComponent {
           message: `Can’t cancel order, rider has picked order`,
         },
         {
-          step: 'Change Order',
-          flow: 'Refund FLow',
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.REFUND,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
+          }),
         }
       );
+
       return;
     }
 

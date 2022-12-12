@@ -43,6 +43,8 @@ import logger from '../../../utils/monitoring/logger';
 import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
 import { replace } from 'connected-react-router';
 import { toast } from '../../../common/utils/feedback';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
+import { getBeepData } from '../../../utils/monitoring/utils';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -274,7 +276,10 @@ const fetchProductDetail = variables => {
 
 //action creators
 export const actions = {
-  loginApp: ({ accessToken, refreshToken, source = null, shippingType = null }) => async (dispatch, getState) => {
+  loginApp: ({ accessToken, refreshToken, source = null, shippingType = null, loggerActionName }) => async (
+    dispatch,
+    getState
+  ) => {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
 
@@ -301,8 +306,18 @@ export const actions = {
         payload: { source },
       });
 
-      // TODO: pending verify, is it can be throw
-      throw error;
+      logger.error(
+        loggerActionName || 'Common_loginFailed',
+        {
+          message: `Failed to login: ${error.message}`,
+        },
+        {
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SUBMIT_OTP,
+          }),
+        }
+      );
     }
   },
 
@@ -711,7 +726,7 @@ export const actions = {
     return dispatch(fetchProductDetail({ productId, fulfillDate, shippingType }));
   },
 
-  loginByBeepApp: () => async (dispatch, getState) => {
+  loginByBeepApp: ({ loggerActionName } = {}) => async (dispatch, getState) => {
     try {
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
@@ -739,13 +754,23 @@ export const actions = {
 
       console.error('Failed to get tokens from native: ', e.message);
 
-      logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
-
-      return e;
+      logger.error(
+        loggerActionName || 'Common_LoginByBeepAppFailed',
+        {
+          message: `Failed to log into Beep app: ${e?.message}`,
+          code: e?.code,
+        },
+        {
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
+          }),
+        }
+      );
     }
   },
 
-  loginByTngMiniProgram: () => async (dispatch, getState) => {
+  loginByTngMiniProgram: ({ loggerActionName } = {}) => async (dispatch, getState) => {
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
@@ -779,9 +804,18 @@ export const actions = {
         error,
       });
 
-      logger.error('Common_TNGMiniProgram_LoginFailed', {
-        message: error?.message,
-      });
+      logger.error(
+        loggerActionName || 'Common_TNGMiniProgram_LoginFailed',
+        {
+          message: `Failed to log into TnG mini program: ${error?.message}`,
+        },
+        {
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
+          }),
+        }
+      );
 
       return false;
     }

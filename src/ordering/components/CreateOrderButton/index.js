@@ -17,6 +17,8 @@ import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import logger from '../../../utils/monitoring/logger';
+import { getBeepData } from '../../../utils/monitoring/utils';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../utils/api-request';
 import i18next from 'i18next';
 import { alert } from '../../../common/feedback/';
@@ -94,11 +96,20 @@ class CreateOrderButton extends React.Component {
         paymentName: paymentName || 'N/A',
       });
 
-      logger.error('Ordering_CreateOrderButton_CreateOrderFailed', {
-        error: error?.message,
-        shippingType,
-        paymentName: paymentName || 'N/A',
-      });
+      logger.error(
+        'Ordering_CreateOrderButton_CreateOrderFailed',
+        {
+          error: error?.message,
+          shippingType,
+          paymentName: paymentName || 'N/A',
+        },
+        {
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          }),
+        }
+      );
 
       this.props.afterCreateOrder && this.props.afterCreateOrder();
     }
@@ -201,12 +212,14 @@ class CreateOrderButton extends React.Component {
       logger.error(
         'Ordering_Cart_PlaceOrderFailed',
         {
-          message: `Failed to pay later get thank you page URL ${e.message}`,
+          message: `Failed to pay later get thank you page URL: ${e.message}`,
           paymentName: paymentName || 'N/A',
         },
         {
-          step: 'Submit Order',
-          flow: 'Payment Flow',
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          }),
         }
       );
     }
@@ -260,8 +273,10 @@ class CreateOrderButton extends React.Component {
           message: `${message || 'Failed to create order'}: ${e.message}`,
         },
         {
-          step: 'Submit Order',
-          flow: 'Payment Flow',
+          beepData: getBeepData({
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          }),
         }
       );
     }

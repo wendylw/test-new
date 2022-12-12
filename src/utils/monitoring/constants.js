@@ -30,3 +30,23 @@ export const API_REQUEST_URL_PATTERNS = {
   '/api/v3/transactions/*/remove-promotions': /^\/api\/v3\/transactions\/\w+\/remove-promotions$/,
   '/api/v3/transactions/*/change-shipping-type': /^\/api\/v3\/transactions\/\w+\/change-shipping-type$/,
 };
+
+export const KEY_EVENTS_FLOWS = {
+  LOGIN: 'Login Flow',
+  PAYMENT: 'Payment Flow',
+  REFUND: 'Refund Flow',
+};
+
+export const KEY_EVENTS_STEPS = {
+  [KEY_EVENTS_FLOWS.LOGIN]: {
+    SIGN_INTO_APP: 'Sign Into App',
+    RECEIVE_OTP: 'Receive OTP',
+    SUBMIT_OTP: 'Submit OTP',
+  },
+  [KEY_EVENTS_FLOWS.PAYMENT]: {
+    SUBMIT_ORDER: 'Submit Order',
+  },
+  [KEY_EVENTS_FLOWS.REFUND]: {
+    CHANGE_ORDER: 'Change Order',
+  },
+};

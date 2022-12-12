@@ -590,6 +590,7 @@ class CreditCard extends Component {
             loaderText={t('Processing')}
             createOrderErrorLog={{
               action: 'Ordering_CreditCard_PayOrderFailed',
+              message: 'Failed to create order via 2C2P',
             }}
           >
             {payNowLoading ? (
