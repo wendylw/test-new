@@ -100,6 +100,7 @@
     "spherical-geometry-js": "^2.0.0",
     "swiper": "^6.1.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+    "web-vitals": "^3.1.0",
     "whatwg-fetch": "^3.6.2",
     "yargs": "^15.3.1"
   },
