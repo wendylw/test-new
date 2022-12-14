@@ -31,7 +31,7 @@ class LiveChat extends Component {
     };
 
     const loadSuccessHandler = () => {
-      window.newrelic?.addPageAction('common.script-load-succeeded', {
+      window.newrelic?.addPageAction('third-party-lib.load-script-succeeded', {
         scriptName: 'intercom',
       });
       this.setState({ hasScriptLoaded: true });
@@ -39,7 +39,7 @@ class LiveChat extends Component {
 
     const loadFailedHandler = err => {
       delete window.Intercom;
-      window.newrelic?.addPageAction('common.script-load-failed', {
+      window.newrelic?.addPageAction('third-party-lib.load-script-failed', {
         scriptName: 'intercom',
         error: err?.message,
       });
