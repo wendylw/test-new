@@ -11,7 +11,12 @@ import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
+import {
+  actions as appActionCreators,
+  getUser,
+  getIsLoginRequestFailed,
+  getIsCreateOTPRequestRejected,
+} from '../../redux/modules/app';
 import {
   getShouldShowLoader,
   getOtpErrorTextI18nKey,
