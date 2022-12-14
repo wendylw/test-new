@@ -99,10 +99,10 @@ class CreateOrderButton extends React.Component {
         'Ordering_CreateOrderButton_CreateOrderFailed',
         {
           error: error?.message,
-          shippingType,
           paymentName: paymentName || 'N/A',
         },
         {
+          shippingType,
           bizFlow: {
             flow: KEY_EVENTS_FLOWS.PAYMENT,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
