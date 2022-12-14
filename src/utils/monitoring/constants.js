@@ -35,6 +35,7 @@ export const KEY_EVENTS_FLOWS = {
   LOGIN: 'Login Flow',
   PAYMENT: 'Payment Flow',
   REFUND: 'Refund Flow',
+  CHECKOUT: 'Checkout Flow',
 };
 
 export const KEY_EVENTS_STEPS = {
@@ -48,5 +49,10 @@ export const KEY_EVENTS_STEPS = {
   },
   [KEY_EVENTS_FLOWS.REFUND]: {
     CHANGE_ORDER: 'Change Order',
+  },
+  [KEY_EVENTS_FLOWS.CHECKOUT]: {
+    SelectPaymentMethod: 'Select Payment Method',
+    SUBMIT_ORDER: 'Submit Order',
+    ProceedToCheckout: 'Proceed to Checkout',
   },
 };
