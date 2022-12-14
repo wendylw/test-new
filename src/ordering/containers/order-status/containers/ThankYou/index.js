@@ -694,7 +694,7 @@ export class ThankYou extends PureComponent {
       logger.error(
         'Ordering_OrderStatus_CancelOrderFailed',
         {
-          message: `Can’t cancel order, rider has picked order`,
+          message: 'Can’t cancel order, rider has picked order',
         },
         {
           bizFlow: {

@@ -145,7 +145,7 @@ function CheckoutForm({
       logger.error(
         'Ordering_CreditCard_PayOrderFailed',
         {
-          message: `Failed to create payment method via Stripe: ${error.message}`,
+          message: 'Failed to create payment method via Stripe',
         },
         {
           bizFlow: {

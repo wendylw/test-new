@@ -262,18 +262,15 @@ class PageLogin extends React.Component {
 
     window.newrelic?.addPageAction('ordering.login.verify-otp-start');
 
-    try {
-      const result = await appActions.sendOtp({ otp });
-      const { isOtpRequestFailed } = this.props;
+    await appActions.sendOtp({ otp });
 
-      if (isOtpRequestFailed) {
-        throw new Error(`Failed to verify OTP: ${result.message}`);
-      }
-    } catch (e) {
+    const { isOtpRequestFailed } = this.props;
+
+    if (isOtpRequestFailed) {
       logger.error(
         'Ordering_PageLogin_LoginFailed',
         {
-          message: e.message,
+          message: 'Failed to verify OTP',
         },
         {
           bizFlow: {
