@@ -904,7 +904,12 @@ const user = (state = initialState.user, action) => {
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
-      return { ...state, isFetching: false, isError: true };
+      return {
+        ...state,
+        isFetching: false,
+        isError: true,
+        otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error },
+      };
     case types.RESET_GET_OTP_REQUEST:
       return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
     case types.GET_OTP_REQUEST:

@@ -264,8 +264,9 @@ class PageLogin extends React.Component {
 
     try {
       const result = await appActions.sendOtp({ otp });
+      const { isOtpRequestFailed } = this.props;
 
-      if (result.type === 'ORDERING/APP/CREATE_OTP_FAILURE') {
+      if (isOtpRequestFailed) {
         throw new Error(`Failed to verify OTP: ${result.message}`);
       }
     } catch (e) {

@@ -39,6 +39,7 @@ import {
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
 import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
+import { getIsProfileInfoRequestStatusRejected } from './redux/selectors';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
@@ -420,8 +421,9 @@ class PayFirst extends Component {
       try {
         if (!isUserProfileStatusFulfilled) {
           const result = await appActions.getProfileInfo(consumerId);
+          const { isProfileInfoRequestStatusRejected } = this.props;
 
-          if (result.type === 'ORDERING/APP/FETCH_PROFILE_FAILURE') {
+          if (isProfileInfoRequestStatusRejected) {
             throw new Error(`Failed to get user profile info: ${result?.message}`);
           }
         }
@@ -788,6 +790,7 @@ PayFirst.propTypes = {
   serviceChargeRate: PropTypes.number,
   isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
+  isProfileInfoRequestStatusRejected: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -826,6 +829,7 @@ PayFirst.defaultProps = {
   serviceChargeRate: 0,
   isWebview: false,
   isTNGMiniProgram: false,
+  isProfileInfoRequestStatusRejected: false,
 };
 
 /* TODO: backend data */
@@ -852,6 +856,7 @@ export default compose(
       isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
+      isProfileInfoRequestStatusRejected: getIsProfileInfoRequestStatusRejected(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),
