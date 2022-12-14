@@ -192,7 +192,7 @@ class PageLogin extends React.Component {
       this.setState({ sendOtp: true, shouldShowModal: true });
     } catch (e) {
       logger.error(
-        'Ordering_PageLogin_FetchOTPCodeFailed',
+        'Ordering_PageLogin_SubmitPhoneNumberFailed',
         { message: e?.message },
         {
           bizFlow: {
@@ -226,7 +226,7 @@ class PageLogin extends React.Component {
         'Ordering_PageLogin_RefetchOTPFailed',
         {
           type,
-          message: `Failed to resend OTP code: ${e?.message}`,
+          message: 'Failed to resend OTP code',
         },
         {
           bizFlow: {

@@ -179,48 +179,32 @@ class CreateOrderButton extends React.Component {
     }
 
     // For pay later order, if order has already been paid, then let user goto Thankyou page directly
-    try {
-      if (orderId) {
-        const order = await fetchOrder(orderId);
+    if (orderId) {
+      const order = await fetchOrder(orderId);
 
-        if (
-          [
-            ORDER_STATUS.PAID,
-            ORDER_STATUS.READY_FOR_DELIVERY,
-            ORDER_STATUS.READY_FOR_PICKUP,
-            ORDER_STATUS.SHIPPED,
-            ORDER_STATUS.ACCEPTED,
-            ORDER_STATUS.LOGISTICS_CONFIRMED,
-            ORDER_STATUS.CONFIRMED,
-            ORDER_STATUS.DELIVERED,
-          ].includes(order.status)
-        ) {
-          logger.log('Ordering_CreateOrderButton_OrderHasPaid', { orderId });
+      if (
+        [
+          ORDER_STATUS.PAID,
+          ORDER_STATUS.READY_FOR_DELIVERY,
+          ORDER_STATUS.READY_FOR_PICKUP,
+          ORDER_STATUS.SHIPPED,
+          ORDER_STATUS.ACCEPTED,
+          ORDER_STATUS.LOGISTICS_CONFIRMED,
+          ORDER_STATUS.CONFIRMED,
+          ORDER_STATUS.DELIVERED,
+        ].includes(order.status)
+      ) {
+        logger.log('Ordering_CreateOrderButton_OrderHasPaid', { orderId });
 
-          alert(i18next.t('OrderHasPaidAlertDescription'), {
-            closeButtonContent: i18next.t('Continue'),
-            title: i18next.t('OrderHasPaidAlertTitle'),
-            onClose: () => {
-              this.gotoThankyouPage(orderId, type);
-            },
-          });
-          return;
-        }
-      }
-    } catch (e) {
-      logger.error(
-        'Ordering_Cart_PlaceOrderFailed',
-        {
-          message: 'Failed to pay later get thank you page URL',
-          paymentName: paymentName || 'N/A',
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.PAYMENT,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+        alert(i18next.t('OrderHasPaidAlertDescription'), {
+          closeButtonContent: i18next.t('Continue'),
+          title: i18next.t('OrderHasPaidAlertTitle'),
+          onClose: () => {
+            this.gotoThankyouPage(orderId, type);
           },
-        }
-      );
+        });
+        return;
+      }
     }
 
     try {

@@ -756,7 +756,7 @@ export const actions = {
       logger.error(
         loggerActionName || 'Common_LoginByBeepAppFailed',
         {
-          message: `Failed to log into Beep app: ${e?.message}`,
+          message: 'Failed to log into Beep app',
           code: e?.code,
         },
         {
