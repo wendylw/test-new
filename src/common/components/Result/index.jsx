@@ -61,7 +61,7 @@ const Result = props => {
     <>
       {header}
       <div className={`${styles.resultContent} ${className}`}>
-        {children}
+        <div ref={contentContainerRef}>{children}</div>
         <div className={styles.resultFooter}>
           <Button
             type="primary"
