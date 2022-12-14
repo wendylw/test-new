@@ -1,6 +1,7 @@
 import React from 'react';
 import _get from 'lodash/get';
 // GetzPay reuses Online Banking Image
+// WB-4764 [FE] Add a new payment option 'Pay Online' (GetzPay)
 import paymentBankingImage from '../../../../images/payment-banking.png';
 import paymentCreditImage from '../../../../images/payment-credit.png';
 import paymentBoostImage from '../../../../images/payment-boost.png';
