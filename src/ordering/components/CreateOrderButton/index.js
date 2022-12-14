@@ -17,7 +17,6 @@ import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import logger from '../../../utils/monitoring/logger';
-import { getBeepData } from '../../../utils/monitoring/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../utils/api-request';
 import i18next from 'i18next';
@@ -104,10 +103,10 @@ class CreateOrderButton extends React.Component {
           paymentName: paymentName || 'N/A',
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.PAYMENT,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-          }),
+          },
         }
       );
 
@@ -216,10 +215,10 @@ class CreateOrderButton extends React.Component {
           paymentName: paymentName || 'N/A',
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.PAYMENT,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-          }),
+          },
         }
       );
     }
@@ -273,10 +272,10 @@ class CreateOrderButton extends React.Component {
           message: `${message || 'Failed to create order'}: ${e.message}`,
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.PAYMENT,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-          }),
+          },
         }
       );
     }

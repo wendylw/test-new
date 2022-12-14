@@ -90,7 +90,6 @@ import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 import logger from '../../../../../utils/monitoring/logger';
-import { getBeepData } from '../../../../../utils/monitoring/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const {
@@ -698,10 +697,10 @@ export class ThankYou extends PureComponent {
           message: `Can’t cancel order, rider has picked order`,
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.REFUND,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
-          }),
+          },
         }
       );
 

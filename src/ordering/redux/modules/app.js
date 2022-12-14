@@ -44,7 +44,6 @@ import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../
 import { replace } from 'connected-react-router';
 import { toast } from '../../../common/utils/feedback';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
-import { getBeepData } from '../../../utils/monitoring/utils';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -312,10 +311,10 @@ export const actions = {
           message: `Failed to login: ${error.message}`,
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SUBMIT_OTP,
-          }),
+          },
         }
       );
     }
@@ -761,10 +760,10 @@ export const actions = {
           code: e?.code,
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
-          }),
+          },
         }
       );
     }
@@ -810,10 +809,10 @@ export const actions = {
           message: `Failed to log into TnG mini program: ${error?.message}`,
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
-          }),
+          },
         }
       );
 

@@ -45,10 +45,3 @@ export const getAPIRequestRelativePath = path => {
 
   return filteredQueryPath;
 };
-
-export const getBeepData = ({ flow = '', step = '' } = {}) => ({
-  bizFlow: {
-    step,
-    flow,
-  },
-});

@@ -129,10 +129,11 @@ const track = async (name, data, options = {}) => {
       throw new Error('data should be plain object');
     }
 
-    const { level, tags, publicData, beepData } = options;
+    const { level, tags, publicData, bizFlow } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
     const action = getFormattedActionName(name);
     const privateDataKeyName = getFormattedPrivateDateKeyName(action);
+    const beepData = bizFlow ? { bizFlow } : undefined;
 
     if (!(_isEmpty(publicData) || _isPlainObject(publicData))) {
       throw new Error('public data should be plain object');
@@ -156,18 +157,12 @@ const track = async (name, data, options = {}) => {
         path: window.location.pathname,
         appPlatform: getAppPlatform(),
         appVersion: getBeepAppVersion(),
+        beepData,
       },
       privateData: {
         [privateDataKeyName]: data,
       },
     };
-
-    if (beepData) {
-      send({
-        ...payload,
-        beepData,
-      });
-    }
 
     send(payload);
   } catch (e) {

@@ -11,7 +11,6 @@ import { actions as appActions, getBusinessInfo } from '../../../../../redux/mod
 import { getOrder } from '../../../redux/selector';
 import { loadOrder } from '../../../redux/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
-import { getBeepData } from '../../../../../../utils/monitoring/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/monitoring/constants';
 
 export const loadCashbackInfo = createAsyncThunk('ordering/orderStatus/thankYou/fetchCashbackInfo', async orderId => {
@@ -88,10 +87,10 @@ export const cancelOrder = createAsyncThunk(
           message: `Failed to cancel order in thank page: ${e.message}`,
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.REFUND,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
-          }),
+          },
         }
       );
 
@@ -124,10 +123,10 @@ export const updateOrderShippingType = createAsyncThunk(
             message: `Failed to update order shipping type: ${e.message}`,
           },
           {
-            beepData: getBeepData({
+            bizFlow: {
               flow: KEY_EVENTS_FLOWS.REFUND,
               step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
-            }),
+            },
           }
         );
 
@@ -143,10 +142,10 @@ export const updateOrderShippingType = createAsyncThunk(
             message: `Failed to load order details in thank you page: ${e.message}`,
           },
           {
-            beepData: getBeepData({
+            bizFlow: {
               flow: KEY_EVENTS_FLOWS.REFUND,
               step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
-            }),
+            },
           }
         );
 

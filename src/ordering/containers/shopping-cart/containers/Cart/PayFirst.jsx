@@ -43,7 +43,6 @@ import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm'
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
-import { getBeepData } from '../../../../../utils/monitoring/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const { ROUTER_PATHS } = Constants;
@@ -433,10 +432,10 @@ class PayFirst extends Component {
             message: e.message,
           },
           {
-            beepData: getBeepData({
+            bizFlow: {
               flow: KEY_EVENTS_FLOWS.PAYMENT,
               step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-            }),
+            },
           }
         );
       }
@@ -455,10 +454,10 @@ class PayFirst extends Component {
             message: `Failed to update user current location info: ${e.message}`,
           },
           {
-            beepData: getBeepData({
+            bizFlow: {
               flow: KEY_EVENTS_FLOWS.PAYMENT,
               step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-            }),
+            },
           }
         );
       }

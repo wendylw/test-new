@@ -30,7 +30,6 @@ import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
-import { getBeepData } from '../../../utils/monitoring/utils';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 
 const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
@@ -135,10 +134,10 @@ class PageLogin extends React.Component {
         'Ordering_PageLogin_CompleteCaptchaFailed',
         { message: e?.message },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
-          }),
+          },
         }
       );
       throw e;
@@ -161,10 +160,10 @@ class PageLogin extends React.Component {
         'Ordering_PageLogin_FetchOTPCodeFailed',
         { message: 'Failed to send OTP code' },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
-          }),
+          },
         }
       );
     }
@@ -196,10 +195,10 @@ class PageLogin extends React.Component {
         'Ordering_PageLogin_FetchOTPCodeFailed',
         { message: e?.message },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
-          }),
+          },
         }
       );
     }
@@ -230,10 +229,10 @@ class PageLogin extends React.Component {
           message: `Failed to resend OTP code: ${e?.message}`,
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
-          }),
+          },
         }
       );
     }
@@ -276,10 +275,10 @@ class PageLogin extends React.Component {
           message: e.message,
         },
         {
-          beepData: getBeepData({
+          bizFlow: {
             flow: KEY_EVENTS_FLOWS.LOGIN,
             step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SUBMIT_OTP,
-          }),
+          },
         }
       );
     }
