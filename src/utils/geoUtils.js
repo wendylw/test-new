@@ -103,12 +103,8 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
         },
         (results, status) => {
           if (status === googleMapsAPI.places.PlacesServiceStatus.OK) {
-            window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-success');
             resolve(results);
           } else {
-            window.newrelic?.addPageAction('google-maps-api.getPlacePredictions-failure', {
-              error: status,
-            });
             logger.error('Utils_GeoUtils_GetPlacePredictionsFromGoogleMapsAPIFailed', {
               error: status,
               input: text,
@@ -236,12 +232,8 @@ export const getPlacesFromCoordinates = async coords => {
     return await new Promise((resolve, reject) => {
       geocoder.geocode({ location }, (result, status) => {
         if (status === googleMapsAPI.GeocoderStatus.OK && result.length) {
-          window.newrelic?.addPageAction('google-maps-api.geocode-success');
           resolve(result);
         } else {
-          window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
-            error: status,
-          });
           logger.error('Utils_GeoUtils_GetGeocodeFromGoogleMapsAPIFailed', {
             error: status,
             location,
@@ -317,12 +309,8 @@ export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
             addressComponents: standardizeGeoAddress(place.address_components),
             placeId: place.place_id,
           };
-          window.newrelic?.addPageAction('google-maps-api.geocode-success');
           resolve(result);
         } else {
-          window.newrelic?.addPageAction('google-maps-api.geocode-failure', {
-            error: status,
-          });
           logger.error('Utils_GeoUtils_GetGeocodeFromGoogleMapsAPIFailed', {
             error: status,
             placeId,
@@ -354,12 +342,8 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
       },
       (result, status) => {
         if (status === googleMapsAPI.places.PlacesServiceStatus.OK) {
-          window.newrelic?.addPageAction('google-maps-api.placesGetDetails-success');
           resolve(result);
         } else {
-          window.newrelic?.addPageAction('google-maps-api.placesGetDetails-failure', {
-            error: status,
-          });
           logger.error('Utils_GeoUtils_GetPlaceDetailsFromGoogleMapsAPIFailed', {
             error: status,
             fields,
@@ -389,13 +373,9 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
 export const fetchGeolocationByIp = () => {
   return fetch('https://pro.ip-api.com/json?key=5I9whkNNfV2ObFJ')
     .then(data => {
-      window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-success');
       return data.json();
     })
     .catch(err => {
-      window.newrelic?.addPageAction('ip-api.fetchGeolocationByIp-failure', {
-        error: err?.message,
-      });
       logger.error('Utils_GeoUtils_FetchGeolocationByIPFailed', {
         error: err?.message,
       });

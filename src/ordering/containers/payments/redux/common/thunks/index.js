@@ -142,11 +142,6 @@ export const initialize = createAsyncThunk(
       await dispatch(loadPaymentOptions(initialPaymentMethod)).unwrap();
       cleverTapViewPageEvent('Payment Method - View page', getState);
     } catch (error) {
-      window.newrelic?.addPageAction('ordering.paymentInitialize.error', {
-        error: error?.message,
-        initialPaymentMethod,
-      });
-
       logger.error('Ordering_Payment_InitializeFailed', {
         error: error?.message,
         initialPaymentMethod,

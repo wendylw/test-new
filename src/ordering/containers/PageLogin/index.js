@@ -218,14 +218,12 @@ class PageLogin extends React.Component {
     const loginOptions = location.state?.loginOptions || {};
     const { shippingType } = loginOptions;
 
-    window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
 
     const { user } = this.props;
     const { accessToken, refreshToken } = user;
 
     if (accessToken && refreshToken) {
-      window.newrelic?.addPageAction('ordering.login.verify-otp-done');
       appActions.loginApp({
         accessToken,
         refreshToken,

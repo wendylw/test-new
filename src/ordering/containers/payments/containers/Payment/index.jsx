@@ -215,15 +215,7 @@ class Payment extends Component {
       }
 
       if (!orderId) {
-        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
-          paymentName: paymentProvider,
-        });
-
         const { order } = await createOrder({ cashback, shippingType });
-
-        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
-          paymentName: paymentProvider,
-        });
 
         orderId = order.orderId;
 
@@ -244,12 +236,6 @@ class Payment extends Component {
         );
       }
     } catch (error) {
-      window.newrelic?.addPageAction('ordering.createOrder.error', {
-        error: error?.message,
-        shippingType,
-        paymentName: paymentProvider,
-      });
-
       logger.error('Ordering_Payment_CreateOrderFailed', {
         error: error?.message,
         shippingType,
