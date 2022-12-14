@@ -31,6 +31,12 @@ export const API_REQUEST_URL_PATTERNS = {
   '/api/v3/transactions/*/change-shipping-type': /^\/api\/v3\/transactions\/\w+\/change-shipping-type$/,
 };
 
+/**
+ * Flow & Step for key event logs
+ * Please don't touch it if you don't understand what it stands for
+ * Refer to: https://storehub.atlassian.net/wiki/spaces/TS/pages/2281734145/Beep+Web+Monitoring+-+Critical+Order+Flow+Summary
+ */
+
 export const KEY_EVENTS_FLOWS = {
   LOGIN: 'Login Flow',
   SELECTION: 'Selection Flow',
