@@ -36,6 +36,7 @@ export const KEY_EVENTS_FLOWS = {
   PAYMENT: 'Payment Flow',
   REFUND: 'Refund Flow',
   CHECKOUT: 'Checkout Flow',
+  SELECTION: 'Selection Flow',
 };
 
 export const KEY_EVENTS_STEPS = {
@@ -51,8 +52,18 @@ export const KEY_EVENTS_STEPS = {
     CHANGE_ORDER: 'Change Order',
   },
   [KEY_EVENTS_FLOWS.CHECKOUT]: {
+    SelectAddress: 'Select Address',
+    SelectTimeSlot: 'Select Time Slot',
     SelectPaymentMethod: 'Select Payment Method',
     SUBMIT_ORDER: 'Submit Order',
     ProceedToCheckout: 'Proceed to Checkout',
+    PayATable: 'Pay a table',
+    UpdateDeliveryAddress: 'Update delivery address',
+    CreateOrUpdateAddress: 'Create or update an address',
+    SelectLocation: 'Select a location',
+  },
+  [KEY_EVENTS_FLOWS.SELECTION]: {
+    ViewProducts: 'View Products',
+    AddToCart: 'Add to cart',
   },
 };
