@@ -211,7 +211,7 @@ class CreateOrderButton extends React.Component {
       logger.error(
         'Ordering_Cart_PlaceOrderFailed',
         {
-          message: `Failed to pay later get thank you page URL: ${e.message}`,
+          message: 'Failed to pay later get thank you page URL',
           paymentName: paymentName || 'N/A',
         },
         {
@@ -269,7 +269,7 @@ class CreateOrderButton extends React.Component {
       logger.error(
         action || 'Common_CreateOrderFailed',
         {
-          message: `${message || 'Failed to create order'}: ${e.message}`,
+          message: message || 'Failed to create order',
         },
         {
           bizFlow: {

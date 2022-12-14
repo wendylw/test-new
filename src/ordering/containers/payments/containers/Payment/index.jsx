@@ -138,7 +138,7 @@ class Payment extends Component {
       logger.error(
         'Ordering_Payment_SubmitOrderFailed',
         {
-          message: `Failed to pay with cash: ${e.message}`,
+          message: 'Failed to pay with cash',
         },
         {
           bizFlow: {

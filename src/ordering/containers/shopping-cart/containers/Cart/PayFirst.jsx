@@ -453,7 +453,7 @@ class PayFirst extends Component {
         logger.error(
           'Ordering_Cart_CreateOrderFailed',
           {
-            message: `Failed to update user current location info: ${e.message}`,
+            message: 'Failed to update user current location info',
           },
           {
             bizFlow: {

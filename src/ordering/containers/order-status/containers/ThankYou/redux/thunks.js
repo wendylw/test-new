@@ -84,7 +84,7 @@ export const cancelOrder = createAsyncThunk(
       logger.error(
         'Ordering_OrderStatus_CancelOrderFailed',
         {
-          message: `Failed to cancel order in thank page: ${e.message}`,
+          message: 'Failed to cancel order in thank page',
         },
         {
           bizFlow: {
@@ -120,7 +120,7 @@ export const updateOrderShippingType = createAsyncThunk(
         logger.error(
           'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
           {
-            message: `Failed to update order shipping type: ${e.message}`,
+            message: 'Failed to update order shipping type',
           },
           {
             bizFlow: {
@@ -139,7 +139,7 @@ export const updateOrderShippingType = createAsyncThunk(
         logger.error(
           'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
           {
-            message: `Failed to load order details in thank you page: ${e.message}`,
+            message: 'Failed to load order details in thank you page',
           },
           {
             bizFlow: {
