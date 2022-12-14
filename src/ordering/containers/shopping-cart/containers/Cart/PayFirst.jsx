@@ -35,11 +35,11 @@ import {
   getIsUserProfileStatusFulfilled,
   getIsWebview,
   getIsTNGMiniProgram,
+  getIsProfileInfoRequestStatusRejected,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
 import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
-import { getIsProfileInfoRequestStatusRejected } from './redux/selectors';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';

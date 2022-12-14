@@ -264,9 +264,9 @@ class PageLogin extends React.Component {
 
     await appActions.sendOtp({ otp });
 
-    const { isOtpRequestFailed } = this.props;
+    const { isCreateOTPRequestRejected } = this.props;
 
-    if (isOtpRequestFailed) {
+    if (isCreateOTPRequestRejected) {
       logger.error(
         'Ordering_PageLogin_LoginFailed',
         {
@@ -480,6 +480,7 @@ export default compose(
       isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
       isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
+      isCreateOTPRequestRejected: getIsCreateOTPRequestRejected(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

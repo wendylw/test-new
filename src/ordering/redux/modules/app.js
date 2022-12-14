@@ -908,7 +908,6 @@ const user = (state = initialState.user, action) => {
         ...state,
         isFetching: false,
         isError: true,
-        otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error },
       };
     case types.RESET_GET_OTP_REQUEST:
       return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
@@ -1343,6 +1342,11 @@ export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
 
+export const getIsCreateOTPRequestRejected = createSelector(
+  getIsLoginRequestFailed,
+  isLoginRequestFailed => isLoginRequestFailed === API_REQUEST_STATUS.REJECTED
+);
+
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];
 };
@@ -1362,6 +1366,11 @@ export const getUserLoginRequestStatus = state => state.app.user.loginRequestSta
 export const getUserLoginByBeepAppStatus = state => state.app.user.loginByBeepAppStatus;
 
 export const getUserProfileStatus = state => state.app.user.profile.status;
+
+export const getIsProfileInfoRequestStatusRejected = createSelector(
+  getUserProfileStatus,
+  userProfileStatus => userProfileStatus === API_REQUEST_STATUS.REJECTED
+);
 
 export const getUserProfile = state => state.app.user.profile;
 
