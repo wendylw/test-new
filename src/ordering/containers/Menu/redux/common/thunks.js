@@ -800,6 +800,7 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
 
   // WB-4690: If users are unable to log in, then they will be stuck on the menu page.
   // We need to log this failure event for further troubleshooting.
+  // NOTE: We probably will change the way how we log this event by the login refactor
   logger.error(
     'Ordering_Menu_ReviewCartFailed',
     {
