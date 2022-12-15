@@ -103,9 +103,10 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
         },
         (results, status) => {
           if (status === googleMapsAPI.places.PlacesServiceStatus.OK) {
+            logger.log('Utils_GeoUtils_GetGoogleMapsAPIPlacePredictionsSucceeded');
             resolve(results);
           } else {
-            logger.error('Utils_GeoUtils_GetPlacePredictionsFromGoogleMapsAPIFailed', {
+            logger.error('Utils_GeoUtils_GetGoogleMapsAPIPlacePredictionsFailed', {
               error: status,
               input: text,
               location: locationCoords,
@@ -342,9 +343,10 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
       },
       (result, status) => {
         if (status === googleMapsAPI.places.PlacesServiceStatus.OK) {
+          logger.log('Utils_GeoUtils_GetGoogleMapsAPIPlaceDetailsSucceeded');
           resolve(result);
         } else {
-          logger.error('Utils_GeoUtils_GetPlaceDetailsFromGoogleMapsAPIFailed', {
+          logger.error('Utils_GeoUtils_GetGoogleMapsAPIPlaceDetailsFailed', {
             error: status,
             fields,
             placeId,
