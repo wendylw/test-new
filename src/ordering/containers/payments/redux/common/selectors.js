@@ -26,6 +26,10 @@ export const getBillingData = createSelector(getBilling, billing => billing.data
 export const getBillingStatus = createSelector(getBilling, billing => billing.status);
 export const getBillingError = createSelector(getBilling, billing => billing.error);
 
+export const getInitPaymentRequest = state => state.payments.common.initPaymentRequest;
+export const getInitPaymentRequestStatus = createSelector(getInitPaymentRequest, initRequest => initRequest.status);
+export const getInitPaymentRequestError = createSelector(getInitPaymentRequest, initRequest => initRequest.error);
+
 export const getReceiptNumber = createSelector(getBillingData, data => data.receiptNumber);
 export const getModifiedTime = createSelector(getBillingData, data => data.modifiedTime);
 export const getTotal = createSelector(getBillingData, data => data.total);
@@ -146,4 +150,13 @@ export const getCleverTapAttributes = createSelector(
       'has met minimum order value': subtotal >= minimumConsumption,
     };
   }
+);
+
+export const getInitPaymentRequestErrorMessage = createSelector(getInitPaymentRequestError, initRequestError =>
+  _get(initRequestError, 'message', '')
+);
+
+export const getIsInitPaymentRequestStatusRejected = createSelector(
+  getInitPaymentRequestStatus,
+  initRequestStatus => initRequestStatus === API_REQUEST_STATUS.REJECTED
 );

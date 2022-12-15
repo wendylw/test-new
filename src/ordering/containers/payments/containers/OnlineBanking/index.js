@@ -23,6 +23,8 @@ import {
   getTotal,
   getCleverTapAttributes,
   getReceiptNumber,
+  getInitPaymentRequestErrorMessage,
+  getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { actions } from './redux';
@@ -47,7 +49,25 @@ class OnlineBanking extends Component {
     /**
      * Load all payment options action and except saved card list
      */
-    initialize(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
+    await initialize(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
+
+    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+
+    if (isInitPaymentFailed) {
+      logger.error(
+        'Ordering_OnlineBanking_InitializeFailed',
+        {
+          message: initPaymentErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+          },
+        }
+      );
+    }
+
     prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
@@ -254,6 +274,8 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
+        initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+        isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
       };
     },
     dispatch => ({

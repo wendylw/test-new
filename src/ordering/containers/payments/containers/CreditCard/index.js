@@ -25,6 +25,8 @@ import {
   getSelectedPaymentOption,
   getTotal,
   getReceiptNumber,
+  getInitPaymentRequestErrorMessage,
+  getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
@@ -69,7 +71,26 @@ class CreditCard extends Component {
     document.body.appendChild(script);
 
     this.setState({ domLoaded: true });
-    this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+
+    await this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+
+    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+
+    if (isInitPaymentFailed) {
+      logger.error(
+        'Ordering_2C2PCreditCard_InitializeFailed',
+        {
+          message: initPaymentErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+          },
+        }
+      );
+    }
+
     prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
@@ -641,6 +662,8 @@ export default compose(
         merchantCountry: getMerchantCountry(state),
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
+        initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+        isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
       };
     },
     dispatch => ({

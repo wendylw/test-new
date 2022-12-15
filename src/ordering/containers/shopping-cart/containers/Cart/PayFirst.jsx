@@ -414,28 +414,24 @@ class PayFirst extends Component {
     // then update them from user profile.
     // Resolve bugs of BEEP-1561 && BEEP-1554
     if (consumerId && (!deliveryDetails.username || !deliveryDetails.phone)) {
-      try {
-        if (!isUserProfileStatusFulfilled) {
-          const result = await appActions.getProfileInfo(consumerId);
-          const { isProfileInfoRequestStatusRejected } = this.props;
+      if (!isUserProfileStatusFulfilled) {
+        const result = await appActions.getProfileInfo(consumerId);
+        const { isProfileInfoRequestStatusRejected } = this.props;
 
-          if (isProfileInfoRequestStatusRejected) {
-            throw new Error(`Failed to get user profile info: ${result?.message}`);
-          }
-        }
-      } catch (e) {
-        logger.error(
-          'Ordering_Cart_CreateOrderFailed',
-          {
-            message: e.message,
-          },
-          {
-            bizFlow: {
-              flow: KEY_EVENTS_FLOWS.PAYMENT,
-              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+        if (isProfileInfoRequestStatusRejected) {
+          logger.error(
+            'Ordering_Cart_CreateOrderFailed',
+            {
+              message: 'Failed to get user profile info',
             },
-          }
-        );
+            {
+              bizFlow: {
+                flow: KEY_EVENTS_FLOWS.PAYMENT,
+                step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+              },
+            }
+          );
+        }
       }
 
       const { userProfile } = this.props;

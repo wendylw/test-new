@@ -17,6 +17,7 @@ import Constants from '../../../../../../utils/constants';
 import { getTotal, getCleverTapAttributes, getPaymentName } from '../selectors';
 import CleverTap from '../../../../../../utils/clevertap';
 import logger from '../../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/monitoring/constants';
 
 const { API_REQUEST_STATUS, PAYMENT_METHOD_LABELS } = Constants;
 
@@ -151,6 +152,8 @@ export const initialize = createAsyncThunk(
         error: error?.message,
         initialPaymentMethod,
       });
+
+      throw error;
     }
   }
 );

@@ -20,6 +20,8 @@ import {
   getSelectedPaymentProvider,
   getTotal,
   getReceiptNumber,
+  getInitPaymentRequestErrorMessage,
+  getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
@@ -37,7 +39,29 @@ class SavedCards extends Component {
     try {
       await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
 
-      const { paymentProvider, history, cardList, supportSaveCard } = this.props;
+      const {
+        paymentProvider,
+        history,
+        cardList,
+        supportSaveCard,
+        isInitPaymentFailed,
+        initPaymentErrorMessage,
+      } = this.props;
+
+      if (isInitPaymentFailed) {
+        logger.error(
+          'Ordering_SavedCards_InitializeFailed',
+          {
+            message: initPaymentErrorMessage,
+          },
+          {
+            bizFlow: {
+              flow: KEY_EVENTS_FLOWS.CHECKOUT,
+              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+            },
+          }
+        );
+      }
 
       if (!supportSaveCard) {
         history.replace({
@@ -270,6 +294,8 @@ export default compose(
       paymentProvider: getSelectedPaymentProvider(state),
       receiptNumber: getReceiptNumber(state),
       isRequestSavedCardsPending: getIsRequestSavedCardsPending(state),
+      initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+      isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

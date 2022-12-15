@@ -120,7 +120,7 @@ export const updateOrderShippingType = createAsyncThunk(
         logger.error(
           'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
           {
-            message: 'Failed to update order shipping type',
+            message: e?.message,
           },
           {
             bizFlow: {

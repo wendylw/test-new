@@ -100,6 +100,19 @@ function CheckoutForm({
 
     alert(t('ConnectionIssue'), { title: t('TimeOut') });
 
+    logger.error(
+      'Ordering_StripeCreditCard_InitializeFailed',
+      {
+        message: `Failed to drawer credit card UI`,
+      },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.CHECKOUT,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SelectPaymentMethod,
+        },
+      }
+    );
+
     history.goBack();
   }, [t, history, isReady]);
 

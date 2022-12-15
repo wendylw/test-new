@@ -5,6 +5,7 @@ import { alert } from '../../../../common/feedback';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 import CleverTap from '../../../../utils/clevertap';
 import logger from '../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../utils/monitoring/constants';
 
 const MY_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_MY_KEY || '';
 const SG_STRIPE_KEY = process.env.REACT_APP_PAYMENT_STRIPE_SG_KEY || '';
@@ -23,14 +24,22 @@ const getStripePromise = country => {
     })
     .catch(err => {
       window.newrelic?.addPageAction('common.stripe-load-failure', {
-        error: err?.message,
         country,
       });
 
-      logger.error('Common_StripeLoadFailed', {
-        error: err?.message,
-        country,
-      });
+      logger.error(
+        'Ordering_StripeCreditCard_InitializeFailed',
+        {
+          message: `Failed to load stripe.js in ${country}`,
+          country,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SelectPaymentMethod,
+          },
+        }
+      );
 
       alert(i18next.t('GotoPaymentFailedDescription'), {
         onClose: () => {
