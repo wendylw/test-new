@@ -31,16 +31,12 @@ class LiveChat extends Component {
     };
 
     const loadSuccessHandler = () => {
-      window.newrelic?.addPageAction('third-party-lib.load-script-succeeded', {
-        scriptName: 'intercom',
-      });
       this.setState({ hasScriptLoaded: true });
     };
 
     const loadFailedHandler = err => {
       delete window.Intercom;
-      window.newrelic?.addPageAction('third-party-lib.load-script-failed', {
-        scriptName: 'intercom',
+      window.newrelic?.addPageAction('common.intercom-load-failure', {
         error: err?.message,
       });
       this.setState({ hasScriptLoaded: false });

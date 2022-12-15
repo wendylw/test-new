@@ -26,14 +26,9 @@ const loadGoogleMapsAPI = async () => {
 
   return loader
     .load()
-    .then(google => {
-      // WB-4699: we only report load google map API success events to Kibana first.
-      // If the cost is affordable, we will send success events to New relic in phase 2.
-      logger.log('Common_LoadGoogleMapAPISucceeded');
-      return google.maps;
-    })
+    .then(google => google.maps)
     .catch(() => {
-      window.newrelic?.addPageAction?.('third-party-lib.load-script-failed', {
+      window.newrelic?.addPageAction?.('common.script-load-error', {
         scriptName: 'google-map-api',
       });
       logger.error('Common_LoadGoogleMapAPIFailed');

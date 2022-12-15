@@ -16,15 +16,13 @@ const getStripePromise = country => {
 
   return loadStripe(country === 'SG' ? SG_STRIPE_KEY : MY_STRIPE_KEY)
     .then(stripe => {
-      window.newrelic?.addPageAction('third-party-lib.load-script-succeeded', {
-        scriptName: 'stripe',
+      window.newrelic?.addPageAction('common.stripe-load-success', {
         country,
       });
       return stripe;
     })
     .catch(err => {
-      window.newrelic?.addPageAction('third-party-lib.load-script-failed', {
-        scriptName: 'stripe',
+      window.newrelic?.addPageAction('common.stripe-load-failure', {
         error: err?.message,
         country,
       });

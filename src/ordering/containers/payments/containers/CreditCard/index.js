@@ -46,7 +46,7 @@ class CreditCard extends Component {
 
   state = {
     payNowLoading: false,
-    hasScriptLoaded: false,
+    domLoaded: false,
     cardNumberSelectionStart: 0,
     card: {},
     validDate: '',
@@ -61,30 +61,13 @@ class CreditCard extends Component {
     },
   };
 
-  loadScriptSucceedHandler = () => {
-    window.newrelic?.addPageAction('third-party-lib.load-script-succeeded', {
-      scriptName: '2c2p',
-    });
-    this.setState({ hasScriptLoaded: true });
-  };
-
-  loadScriptFailedHandler = err => {
-    delete window.Intercom;
-    window.newrelic?.addPageAction('third-party-lib.load-script-failed', {
-      scriptName: '2c2p',
-      error: err?.message,
-    });
-    this.setState({ hasScriptLoaded: false });
-  };
-
   async componentDidMount() {
     const script = document.createElement('script');
 
     script.src = config.storehubPaymentScriptSrc;
-    script.onload = this.loadScriptSucceedHandler;
-    script.onerror = this.loadFailedHandler;
     document.body.appendChild(script);
 
+    this.setState({ domLoaded: true });
     this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
     prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
@@ -549,7 +532,7 @@ class CreditCard extends Component {
 
   render() {
     const { t, match, history, total, merchantCountry, receiptNumber } = this.props;
-    const { payNowLoading, hasScriptLoaded } = this.state;
+    const { payNowLoading, domLoaded } = this.state;
 
     return (
       <section
@@ -617,7 +600,7 @@ class CreditCard extends Component {
             )}
           </CreateOrderButton>
         </footer>
-        <Loader className="loading-cover opacity" loaded={hasScriptLoaded} />
+        <Loader className="loading-cover opacity" loaded={domLoaded} />
       </section>
     );
   }
