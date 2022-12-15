@@ -451,7 +451,6 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       {
         message: 'Failed to get or submit payment details for payment flow',
         paymentName: paymentProvider,
-        receiptNumber: orderId,
       },
       {
         bizFlow: {

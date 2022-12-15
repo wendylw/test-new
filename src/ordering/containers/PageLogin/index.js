@@ -155,17 +155,6 @@ class PageLogin extends React.Component {
       const { title: titleKey, description: descriptionKey } = errorPopUpI18nKeys;
 
       alert(t(descriptionKey), { title: t(titleKey), closeButtonClassName: 'button__block text-uppercase' });
-
-      logger.error(
-        'Ordering_PageLogin_FetchOTPCodeFailed',
-        { message: 'Failed to send OTP code' },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.LOGIN,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
-          },
-        }
-      );
     }
 
     throw new Error('Failed to get OTP code');
