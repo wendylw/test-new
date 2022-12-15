@@ -6,7 +6,7 @@ import _isPlainObject from 'lodash/isPlainObject';
 import _once from 'lodash/once';
 import tids from './tracing-id';
 import debug from '../debug';
-import { isWebview, isSiteApp, getBeepAppVersion, getUUID } from '../../common/utils';
+import { isWebview, isSiteApp, getBeepAppVersion, getUUID, getQueryString } from '../../common/utils';
 import { getAppPlatform, getIsDebugMode } from './utils';
 import { getBusinessName } from '../../config';
 
@@ -129,8 +129,9 @@ const track = async (name, data, options = {}) => {
       throw new Error('data should be plain object');
     }
 
-    const { level, tags, publicData, bizFlow, shippingType } = options;
+    const { level, tags, publicData, bizFlow } = options;
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
+    const shippingType = getQueryString('type');
     const action = getFormattedActionName(name);
     const privateDataKeyName = getFormattedPrivateDateKeyName(action);
 
