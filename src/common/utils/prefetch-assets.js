@@ -97,6 +97,8 @@ const prefetch = (chunkNames, i18nNames) => {
     // load i18n files
     if (i18nNames) {
       i18next.loadNamespaces(i18nNames, error => {
+        // WB-4786: The callback will called every time, it becomes a non-empty value only when the error occurs.
+        if (!error) return;
         logger.error('Common_Utils_PrefetchI18nAssetsFailed', { message: error?.message });
       });
     }
