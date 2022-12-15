@@ -289,10 +289,13 @@ class Payment extends Component {
     });
 
     if (!orderId) {
+      const { currentPaymentOption } = this.props;
+
       logger.error(
         'Ordering_Payment_SubmitOrderFailed',
         {
           message: 'Failed to submit order',
+          paymentName: currentPaymentOption.paymentProvider,
         },
         {
           bizFlow: {
