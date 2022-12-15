@@ -207,61 +207,43 @@ class CreateOrderButton extends React.Component {
       }
     }
 
-    try {
-      if (!orderId) {
-        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
-          paymentName: paymentName || 'N/A',
-        });
+    if (!orderId) {
+      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
+        paymentName: paymentName || 'N/A',
+      });
 
-        this.setState({ isLoadingCreatedOrder: true });
-        const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
-        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
-          paymentName: paymentName || 'N/A',
-        });
+      this.setState({ isLoadingCreatedOrder: true });
+      const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
+      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
+        paymentName: paymentName || 'N/A',
+      });
 
-        const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
-        if (order) {
-          orderId = order.orderId;
-          total = order.total;
-        }
-
-        logger.log('Ordering_CreateOrderButton_OrderHasCreated', { orderId });
-
-        if (orderId) {
-          Utils.removeSessionVariable('additionalComments');
-          Utils.removeSessionVariable('deliveryComments');
-        }
-
-        if (thankYouPageUrl) {
-          Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.CASHBACK);
-          logger.log('Ordering_CreateOrderButton_GoToThankYouPage', { orderId });
-          window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
-
-          return;
-        }
+      const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
+      if (order) {
+        orderId = order.orderId;
+        total = order.total;
       }
 
-      this.setState({ isLoadingCreatedOrder: false });
+      logger.log('Ordering_CreateOrderButton_OrderHasCreated', { orderId });
 
-      if (afterCreateOrder) {
-        afterCreateOrder(orderId);
+      if (orderId) {
+        Utils.removeSessionVariable('additionalComments');
+        Utils.removeSessionVariable('deliveryComments');
       }
-    } catch (e) {
-      const { createOrderErrorLog } = this.props;
-      const { action, message } = createOrderErrorLog || {};
 
-      logger.error(
-        action || 'Common_CreateOrderFailed',
-        {
-          message: message || 'Failed to create order',
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.PAYMENT,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-          },
-        }
-      );
+      if (thankYouPageUrl) {
+        Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.CASHBACK);
+        logger.log('Ordering_CreateOrderButton_GoToThankYouPage', { orderId });
+        window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
+
+        return;
+      }
+    }
+
+    this.setState({ isLoadingCreatedOrder: false });
+
+    if (afterCreateOrder) {
+      afterCreateOrder(orderId);
     }
 
     if (orderId) {

@@ -31,6 +31,7 @@ import './OrderingBanking.scss';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -70,6 +71,35 @@ class OnlineBanking extends Component {
     if (agentCode !== currentAgentCode && available) {
       updateBankingSelected(currentAgentCode);
     }
+  };
+
+  handleAfterCreateOrder = orderId => {
+    this.setState({
+      payNowLoading: !!orderId,
+    });
+
+    if (!orderId) {
+      logger.error(
+        'Ordering_OnlineBanking_CreateOrderFailed',
+        {
+          message: 'Failed to create order via online banking',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+      return;
+    }
+
+    const { currentOnlineBanking } = this.props;
+
+    logger.log('Ordering_Payment_OrderCreatedByOnlineBanking', {
+      orderId,
+      method: currentOnlineBanking.agentCode,
+    });
   };
 
   renderBankingList() {
@@ -183,22 +213,11 @@ class OnlineBanking extends Component {
                 payNowLoading: true,
               });
             }}
-            afterCreateOrder={orderId => {
-              logger.log('Ordering_Payment_OrderCreatedByOnlineBanking', {
-                orderId,
-                method: currentOnlineBanking.agentCode,
-              });
-              this.setState({
-                payNowLoading: !!orderId,
-              });
-            }}
+            afterCreateOrder={this.handleAfterCreateOrder}
             paymentName={currentPaymentOption.paymentProvider}
             paymentExtraData={this.getPaymentEntryRequestData()}
             processing={payNowLoading}
             loaderText={t('Processing')}
-            createOrderErrorLog={{
-              action: 'Ordering_OnlineBanking_CreateOrderFailed',
-            }}
           >
             {payNowLoading ? (
               t('Processing')

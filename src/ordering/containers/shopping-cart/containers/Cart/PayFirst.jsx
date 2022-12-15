@@ -386,10 +386,6 @@ class PayFirst extends Component {
         afterCreateOrder={this.handleAfterCreateOrder}
         loaderText={t('Processing')}
         processing={pendingCheckingInventory || pendingBeforeCreateOrder}
-        createOrderErrorLog={{
-          action: 'Ordering_Cart_CreateOrderFailed',
-          message: 'Failed to create free order',
-        }}
       >
         {this.getOrderButtonContent()}
       </CreateOrderButton>
@@ -481,6 +477,21 @@ class PayFirst extends Component {
 
   handleAfterCreateOrder = orderId => {
     this.setState({ shouldShowRedirectLoader: !!orderId });
+
+    if (!orderId) {
+      logger.error(
+        'Ordering_Cart_CreateOrderFailed',
+        {
+          message: 'Failed to create free order',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+    }
   };
 
   getOrderButtonContent = () => {

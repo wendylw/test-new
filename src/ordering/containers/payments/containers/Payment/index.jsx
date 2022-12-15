@@ -287,6 +287,21 @@ class Payment extends Component {
     this.setState({
       payNowLoading: !!orderId,
     });
+
+    if (!orderId) {
+      logger.error(
+        'Ordering_Payment_SubmitOrderFailed',
+        {
+          message: 'Failed to submit order',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+    }
   };
 
   renderPaymentList() {
@@ -369,9 +384,6 @@ class Payment extends Component {
             paymentExtraData={this.getPaymentEntryRequestData()}
             processing={payNowLoading}
             loaderText={t('Processing')}
-            createOrderErrorLog={{
-              action: 'Ordering_Payment_SubmitOrderFailed',
-            }}
           >
             {payNowLoading ? t('Processing') : t('Continue')}
           </CreateOrderButton>

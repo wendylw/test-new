@@ -34,6 +34,7 @@ import prefetch from '../../../../../common/utils/prefetch-assets';
 import CleverTap from '../../../../../utils/clevertap';
 import * as ApiFetch from '../../../../../utils/api/api-fetch';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
@@ -334,6 +335,30 @@ class CreditCard extends Component {
     }
   };
 
+  handleAfterCreateOrder = orderId => {
+    this.setState({
+      payNowLoading: !!orderId,
+    });
+
+    if (!orderId) {
+      logger.error(
+        'Ordering_CreditCard_PayOrderFailed',
+        {
+          message: 'Failed to create order via 2C2P',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+      return;
+    }
+
+    logger.log('Ordering_Payment_OrderCreatedByCreditCard', { orderId });
+  };
+
   checkCardRisky = async () => {
     try {
       const { card } = this.state;
@@ -578,20 +603,11 @@ class CreditCard extends Component {
             disabled={payNowLoading}
             beforeCreateOrder={this.handleBeforeCreateOrder}
             validCreateOrder={Boolean(this.isFromComplete())}
-            afterCreateOrder={orderId => {
-              logger.log('Ordering_Payment_OrderCreatedByCreditCard', { orderId });
-              this.setState({
-                payNowLoading: !!orderId,
-              });
-            }}
+            afterCreateOrder={this.handleAfterCreateOrder}
             paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY)}
             paymentExtraData={this.getPaymentEntryRequestData()}
             processing={payNowLoading}
             loaderText={t('Processing')}
-            createOrderErrorLog={{
-              action: 'Ordering_CreditCard_PayOrderFailed',
-              message: 'Failed to create order via 2C2P',
-            }}
           >
             {payNowLoading ? (
               t('Processing')

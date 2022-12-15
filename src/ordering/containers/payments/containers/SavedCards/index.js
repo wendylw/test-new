@@ -23,6 +23,8 @@ import {
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { getCardLabel, getCardIcon, getCreditCardFormPathname } from '../../utils';
+import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import '../../styles/PaymentCreditCard.scss';
 
 const { PAYMENT_METHOD_LABELS } = Constants;
@@ -107,6 +109,21 @@ class SavedCards extends Component {
     this.setState({
       processing: !!orderId,
     });
+
+    if (!orderId) {
+      logger.error(
+        'Ordering_SavedCard_PayOrderFailed',
+        {
+          message: 'Failed to pay order by saved card',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+    }
   };
 
   renderCardList() {
@@ -227,9 +244,6 @@ class SavedCards extends Component {
             afterCreateOrder={this.afterCreateOrder}
             processing={processing || isRequestSavedCardsPending}
             loaderText={isRequestSavedCardsPending ? t('Loading') : t('Processing')}
-            createOrderErrorLog={{
-              action: 'Ordering_SavedCard_PayOrderFailed',
-            }}
           >
             <CurrencyNumber
               className="text-center text-weight-bolder text-uppercase"
