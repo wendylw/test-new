@@ -31,12 +31,18 @@ export const API_REQUEST_URL_PATTERNS = {
   '/api/v3/transactions/*/change-shipping-type': /^\/api\/v3\/transactions\/\w+\/change-shipping-type$/,
 };
 
+/**
+ * Flow & Step for key event logs
+ * Please don't touch it if you don't understand what it stands for
+ * Refer to: https://storehub.atlassian.net/wiki/spaces/TS/pages/2281734145/Beep+Web+Monitoring+-+Critical+Order+Flow+Summary
+ */
+
 export const KEY_EVENTS_FLOWS = {
   LOGIN: 'Login Flow',
+  SELECTION: 'Selection Flow',
+  CHECKOUT: 'Checkout Flow',
   PAYMENT: 'Payment Flow',
   REFUND: 'Refund Flow',
-  CHECKOUT: 'Checkout Flow',
-  SELECTION: 'Selection Flow',
 };
 
 export const KEY_EVENTS_STEPS = {
@@ -45,25 +51,23 @@ export const KEY_EVENTS_STEPS = {
     RECEIVE_OTP: 'Receive OTP',
     SUBMIT_OTP: 'Submit OTP',
   },
+  [KEY_EVENTS_FLOWS.SELECTION]: {
+    SELECT_ADDRESS: 'Select Address',
+    SELECT_TIME_SLOT: 'Select Time Slot',
+    VIEW_PRODUCTS: 'View Products',
+    ADD_TO_CART: 'Add to cart',
+  },
+  [KEY_EVENTS_FLOWS.CHECKOUT]: {
+    CHANGE_ADDRESS: 'Change Address',
+    CHANGE_TIME_SLOT: 'Change Time Slot',
+    SELECT_PAYMENT_METHOD: 'Select Payment Method',
+  },
   [KEY_EVENTS_FLOWS.PAYMENT]: {
     SUBMIT_ORDER: 'Submit Order',
+    VIEW_ORDER: 'View Order',
+    PAY_ORDER: 'Pay Order',
   },
   [KEY_EVENTS_FLOWS.REFUND]: {
     CHANGE_ORDER: 'Change Order',
-  },
-  [KEY_EVENTS_FLOWS.CHECKOUT]: {
-    SelectAddress: 'Select Address',
-    SelectTimeSlot: 'Select Time Slot',
-    SelectPaymentMethod: 'Select Payment Method',
-    SUBMIT_ORDER: 'Submit Order',
-    ProceedToCheckout: 'Proceed to Checkout',
-    PayATable: 'Pay a table',
-    UpdateDeliveryAddress: 'Update delivery address',
-    CreateOrUpdateAddress: 'Create or update an address',
-    SelectLocation: 'Select a location',
-  },
-  [KEY_EVENTS_FLOWS.SELECTION]: {
-    ViewProducts: 'View Products',
-    AddToCart: 'Add to cart',
   },
 };
