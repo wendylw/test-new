@@ -84,7 +84,7 @@ export const cancelOrder = createAsyncThunk(
       logger.error(
         'Ordering_OrderStatus_CancelOrderFailed',
         {
-          message: 'Failed to cancel order in thank page',
+          message: e?.message,
         },
         {
           bizFlow: {
@@ -133,24 +133,7 @@ export const updateOrderShippingType = createAsyncThunk(
         throw e;
       }
 
-      try {
-        await dispatch(loadOrder(orderId));
-      } catch (e) {
-        logger.error(
-          'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
-          {
-            message: 'Failed to load order details in thank you page',
-          },
-          {
-            bizFlow: {
-              flow: KEY_EVENTS_FLOWS.REFUND,
-              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
-            },
-          }
-        );
-
-        throw e;
-      }
+      await dispatch(loadOrder(orderId));
     } catch (e) {
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,

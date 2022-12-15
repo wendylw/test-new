@@ -904,11 +904,7 @@ const user = (state = initialState.user, action) => {
     case types.GET_OTP_FAILURE:
       return { ...state, otpRequest: { ...state.otpRequest, status: API_REQUEST_STATUS.REJECTED, error } };
     case types.CREATE_OTP_FAILURE:
-      return {
-        ...state,
-        isFetching: false,
-        isError: true,
-      };
+      return { ...state, isFetching: false, isError: true };
     case types.RESET_GET_OTP_REQUEST:
       return { ...state, otpRequest: _cloneDeep(initialState.user.otpRequest) };
     case types.GET_OTP_REQUEST:
@@ -1341,11 +1337,6 @@ export const getUserIsLogin = createSelector(getUser, user => _get(user, 'isLogi
 export const getIsLoginRequestFailed = createSelector(getUser, user => _get(user, 'isError', false));
 
 export const getIsLoginRequestStatusPending = createSelector(getUser, user => _get(user, 'isFetching', false));
-
-export const getIsCreateOTPRequestRejected = createSelector(
-  getIsLoginRequestFailed,
-  isLoginRequestFailed => isLoginRequestFailed === API_REQUEST_STATUS.REJECTED
-);
 
 export const getOnlineStoreInfo = state => {
   return state.entities.onlineStores[state.app.onlineStoreInfo.id];

@@ -11,12 +11,7 @@ import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import {
-  actions as appActionCreators,
-  getUser,
-  getIsLoginRequestFailed,
-  getIsCreateOTPRequestRejected,
-} from '../../redux/modules/app';
+import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
 import {
   getShouldShowLoader,
   getOtpErrorTextI18nKey,
@@ -231,7 +226,7 @@ class PageLogin extends React.Component {
         'Ordering_PageLogin_RefetchOTPFailed',
         {
           type,
-          message: 'Failed to resend OTP code',
+          message: e?.message,
         },
         {
           bizFlow: {
@@ -269,9 +264,9 @@ class PageLogin extends React.Component {
 
     await appActions.sendOtp({ otp });
 
-    const { isCreateOTPRequestRejected } = this.props;
+    const { isLoginRequestFailed } = this.props;
 
-    if (isCreateOTPRequestRejected) {
+    if (isLoginRequestFailed) {
       logger.error(
         'Ordering_PageLogin_LoginFailed',
         {
@@ -286,29 +281,17 @@ class PageLogin extends React.Component {
       );
     }
 
-    try {
-      const { user } = this.props;
-      const { accessToken, refreshToken } = user;
+    const { user } = this.props;
+    const { accessToken, refreshToken } = user;
 
-      if (accessToken && refreshToken) {
-        window.newrelic?.addPageAction('ordering.login.verify-otp-done');
-        appActions.loginApp({
-          accessToken,
-          refreshToken,
-          shippingType,
-        });
-      }
-    } catch (e) {
-      logger.error(
-        'Ordering_PageLogin_LoginFailed',
-        {
-          message: `Failed to login:${e.message}`,
-        },
-        {
-          step: 'Submit OTP',
-          flow: 'Login FLow',
-        }
-      );
+    if (accessToken && refreshToken) {
+      window.newrelic?.addPageAction('ordering.login.verify-otp-done');
+      appActions.loginApp({
+        accessToken,
+        refreshToken,
+        shippingType,
+        loggerActionName: 'Ordering_PageLogin_LoginFailed',
+      });
     }
   }
 
@@ -485,7 +468,6 @@ export default compose(
       isOtpRequestFailed: getIsOtpRequestStatusRejected(state),
       isOtpErrorFieldVisible: getIsOtpErrorFieldVisible(state),
       isOtpInitialRequestFailed: getIsOtpInitialRequestFailed(state),
-      isCreateOTPRequestRejected: getIsCreateOTPRequestRejected(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

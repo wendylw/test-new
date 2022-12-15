@@ -138,7 +138,7 @@ class PayLater extends Component {
         logger.error(
           'Ordering_Cart_PlaceOrderFailed',
           {
-            message: 'Failed to create pay later pre-order',
+            message: e?.message,
           },
           {
             bizFlow: {

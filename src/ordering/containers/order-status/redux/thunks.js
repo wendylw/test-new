@@ -24,7 +24,7 @@ export const loadOrder = createAsyncThunk('ordering/orderStatus/common/fetchOrde
     return result;
   } catch (e) {
     logger.error('Ordering_OrderStatus_loadOrderFailed', {
-      message: 'Failed to load order',
+      message: e?.message,
     });
 
     throw e;
