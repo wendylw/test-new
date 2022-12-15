@@ -61,6 +61,7 @@ import { getIfAddressInfoExists } from '../../../../../redux/modules/address/sel
 import { resetAddressListStatus } from '../../../../redux/modules/addressList/thunks';
 import { getStoreById } from '../../../../../redux/modules/entities/stores';
 import { STORE_OPENING_STATUS } from '../../constants';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -781,17 +782,37 @@ export const reviewCart = createAsyncThunk('ordering/menu/common/reviewCart', as
     return;
   }
 
+  // Force a login for Beep app & Beep TnG MP
   if (isTNGMiniProgram) {
-    await dispatch(appActions.loginByTngMiniProgram({ loggerActionName: 'Ordering_Menu_ReviewCartFailed' }));
+    await dispatch(appActions.loginByTngMiniProgram());
   }
 
   if (isWebview) {
-    await dispatch(appActions.loginByBeepApp({ loggerActionName: 'Ordering_Menu_ReviewCartFailed' }));
+    await dispatch(appActions.loginByBeepApp());
   }
 
-  if (getUserIsLogin(getState())) {
+  const isUserLogin = getUserIsLogin(getState());
+
+  if (isUserLogin) {
     gotoReviewCartPage();
+    return;
   }
+
+  // WB-4690: If users are unable to log in, then they will be stuck on the menu page.
+  // We need to log this failure event for further troubleshooting.
+  logger.error(
+    'Ordering_Menu_ReviewCartFailed',
+    {
+      // NOTE: It is safe to record all non-app users as TnG MP users since we only 3 types of clients for now
+      message: `Failed to log into ${isWebview ? 'Beep app' : 'TnG mini program'}`,
+    },
+    {
+      bizFlow: {
+        flow: KEY_EVENTS_FLOWS.LOGIN,
+        step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
+      },
+    }
+  );
 });
 
 export const changeStore = createAsyncThunk(

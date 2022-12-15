@@ -1,4 +1,5 @@
 import React from 'react';
+import _get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import OtpModal from '../../../components/OtpModal';
@@ -260,13 +261,38 @@ class PageLogin extends React.Component {
     const loginOptions = location.state?.loginOptions || {};
     const { shippingType } = loginOptions;
 
-    window.newrelic?.addPageAction('ordering.login.verify-otp-start');
+    try {
+      window.newrelic?.addPageAction('ordering.login.verify-otp-start');
 
-    await appActions.sendOtp({ otp });
+      await appActions.sendOtp({ otp });
 
-    const { isLoginRequestFailed } = this.props;
+      const { isLoginRequestFailed } = this.props;
 
-    if (isLoginRequestFailed) {
+      if (isLoginRequestFailed) {
+        throw new Error('Failed to verify OTP');
+      }
+
+      const { user } = this.props;
+      const { accessToken, refreshToken } = user;
+
+      if (accessToken && refreshToken) {
+        window.newrelic?.addPageAction('ordering.login.verify-otp-done');
+        await appActions.loginApp({
+          accessToken,
+          refreshToken,
+          shippingType,
+        });
+
+        const hasLoggedIn = _get(this.props.user, 'isLogin', false);
+
+        if (!hasLoggedIn) {
+          throw new Error('Failed to login');
+        }
+      } else {
+        throw new Error(`Missing ${!accessToken ? 'accessToken' : 'refreshToken'}`);
+      }
+    } catch (error) {
+      // NOTE: No need to throw an error, the error is used to log an event only.
       logger.error(
         'Ordering_PageLogin_LoginFailed',
         {
@@ -279,19 +305,6 @@ class PageLogin extends React.Component {
           },
         }
       );
-    }
-
-    const { user } = this.props;
-    const { accessToken, refreshToken } = user;
-
-    if (accessToken && refreshToken) {
-      window.newrelic?.addPageAction('ordering.login.verify-otp-done');
-      appActions.loginApp({
-        accessToken,
-        refreshToken,
-        shippingType,
-        loggerActionName: 'Ordering_PageLogin_LoginFailed',
-      });
     }
   }
 

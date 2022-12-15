@@ -43,7 +43,6 @@ import logger from '../../../utils/monitoring/logger';
 import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
 import { replace } from 'connected-react-router';
 import { toast } from '../../../common/utils/feedback';
-import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
@@ -275,10 +274,7 @@ const fetchProductDetail = variables => {
 
 //action creators
 export const actions = {
-  loginApp: ({ accessToken, refreshToken, source = null, shippingType = null, loggerActionName }) => async (
-    dispatch,
-    getState
-  ) => {
+  loginApp: ({ accessToken, refreshToken, source = null, shippingType = null }) => async (dispatch, getState) => {
     try {
       const businessUTCOffset = getBusinessUTCOffset(getState());
 
@@ -304,19 +300,6 @@ export const actions = {
         error: error,
         payload: { source },
       });
-
-      logger.error(
-        loggerActionName || 'Common_loginFailed',
-        {
-          message: `Failed to login: ${error.message}`,
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.LOGIN,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SUBMIT_OTP,
-          },
-        }
-      );
     }
   },
 
@@ -725,7 +708,7 @@ export const actions = {
     return dispatch(fetchProductDetail({ productId, fulfillDate, shippingType }));
   },
 
-  loginByBeepApp: ({ loggerActionName } = {}) => async (dispatch, getState) => {
+  loginByBeepApp: () => async (dispatch, getState) => {
     try {
       const tokens = await NativeMethods.getTokenAsync();
       const { access_token: accessToken, refresh_token: refreshToken } = tokens;
@@ -753,23 +736,11 @@ export const actions = {
 
       console.error('Failed to get tokens from native: ', e.message);
 
-      logger.error(
-        loggerActionName || 'Common_LoginByBeepAppFailed',
-        {
-          message: 'Failed to log into Beep app',
-          code: e?.code,
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.LOGIN,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
-          },
-        }
-      );
+      logger.error('Common_LoginByBeepAppFailed', { message: e?.message, code: e?.code });
     }
   },
 
-  loginByTngMiniProgram: ({ loggerActionName } = {}) => async (dispatch, getState) => {
+  loginByTngMiniProgram: () => async (dispatch, getState) => {
     if (!Utils.isTNGMiniProgram()) {
       throw new Error('Not in tng mini program');
     }
@@ -803,18 +774,7 @@ export const actions = {
         error,
       });
 
-      logger.error(
-        loggerActionName || 'Common_TNGMiniProgram_LoginFailed',
-        {
-          message: `Failed to log into TnG mini program: ${error?.message}`,
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.LOGIN,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SIGN_INTO_APP,
-          },
-        }
-      );
+      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
 
       return false;
     }
