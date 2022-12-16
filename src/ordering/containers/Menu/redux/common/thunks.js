@@ -542,8 +542,8 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
     }
 
     const isOnlineCategoryRequestFailed = getIsOnlineCategoryRequestRejected(getState());
-    
-    if (isGetOnlineCategoryRejected) {
+
+    if (isOnlineCategoryRequestFailed) {
       logger.error(
         'Ordering_loadProductListFailed',
         { message: 'Failed to load product list' },
