@@ -108,7 +108,7 @@ function CheckoutForm({
       {
         bizFlow: {
           flow: KEY_EVENTS_FLOWS.CHECKOUT,
-          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SelectPaymentMethod,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
         },
       }
     );

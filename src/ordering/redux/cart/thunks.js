@@ -23,6 +23,7 @@ import {
   fetchCartStatus,
 } from './api-request';
 import logger from '../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 
 const TIMEOUT_CART_SUBMISSION_TIME = 30 * 1000;
 const CART_SUBMISSION_INTERVAL = 2 * 1000;
@@ -46,7 +47,7 @@ export const loadCart = createAsyncThunk('ordering/app/cart/loadCart', async (_,
 
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error('Ordering_Cart_LoadCartFailed', { message: error?.message });
 
     throw error;
   }
@@ -77,7 +78,7 @@ export const loadCartStatus = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      logger.error('Ordering_Cart_LoadCartStatusFailed', { message: error?.message });
 
       throw error;
     }
@@ -104,7 +105,7 @@ export const queryCartAndStatus = () => async dispatch => {
     await dispatch(loadCart());
     queryCartStatus();
   } catch (error) {
-    console.error(error);
+    logger.error('Ordering_Cart_QueryCartAndStatusFailed', { message: error?.message });
 
     throw error;
   }
@@ -139,7 +140,7 @@ export const updateCartItems = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      logger.error('Ordering_Cart_UpdateCartItemFailed', { message: error?.message });
 
       throw error;
     }
@@ -166,7 +167,7 @@ export const removeCartItemsById = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      logger.error('Ordering_Cart_removeCartItemByIdFailed', { message: error?.message });
 
       throw error;
     }
@@ -187,7 +188,7 @@ export const clearCart = createAsyncThunk('ordering/app/cart/clearCart', async (
   try {
     await deleteCart(options);
   } catch (error) {
-    console.error(error);
+    logger.error('Ordering_Cart_ClearCartFailed', { message: error?.message });
 
     throw error;
   }
@@ -263,7 +264,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.error(error);
+      logger.error('Ordering_Cart_LoadCartSubmissionStatusFailed', { message: error?.message });
 
       throw error;
     }
@@ -301,7 +302,16 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
 
     pollingCartSubmissionStatus();
   } catch (error) {
-    console.error(error);
+    logger.error(
+      'Ordering_Cart_ViewOrderFailed',
+      { message: error?.message },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.PAYMENT,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].VIEW_ORDER,
+        },
+      }
+    );
 
     throw error;
   }

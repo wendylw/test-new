@@ -121,33 +121,20 @@ class PayLater extends Component {
               search: window.location.search,
             }),
         });
-
-        logger.error(
-          'Ordering_Cart_PlaceOrderFailed',
-          {
-            message: 'Failed to create pay later pre-order due to shopping cart is not newest',
-          },
-          {
-            bizFlow: {
-              flow: KEY_EVENTS_FLOWS.PAYMENT,
-              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-            },
-          }
-        );
-      } else {
-        logger.error(
-          'Ordering_Cart_PlaceOrderFailed',
-          {
-            message: e?.message,
-          },
-          {
-            bizFlow: {
-              flow: KEY_EVENTS_FLOWS.PAYMENT,
-              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-            },
-          }
-        );
       }
+
+      logger.error(
+        'Ordering_Cart_PlaceOrderFailed',
+        {
+          message: e?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
     }
   };
 

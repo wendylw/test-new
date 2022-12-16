@@ -22,6 +22,9 @@ import {
   getURLQueryObject,
   getStoreSupportShippingTypes,
   getFoodTagsForCleverTap,
+  getIsCoreBusinessRequestRejected,
+  getIsCoreStoresRequestRejected,
+  getIsOnlineCategoryRequestRejected,
 } from '../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -55,13 +58,13 @@ import * as NativeMethods from '../../../../../utils/native-methods';
 import { fetchStoreFavStatus, saveStoreFavStatus, updateStoreInfoCookies } from './api-request';
 import { shortenUrl } from '../../../../../utils/shortenUrl';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { getShareLinkUrl } from '../../utils';
 import { hideMiniCartDrawer, showMiniCartDrawer } from '../cart/thunks';
 import { getIfAddressInfoExists } from '../../../../../redux/modules/address/selectors';
 import { resetAddressListStatus } from '../../../../redux/modules/addressList/thunks';
 import { getStoreById } from '../../../../../redux/modules/entities/stores';
 import { STORE_OPENING_STATUS } from '../../constants';
-import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const ensureTableId = state => {
   const tableId = getTableId(state);
@@ -213,6 +216,7 @@ export const updateExpectedDeliveryDate = createAsyncThunk(
       return expectedDateDayJsObj.toISOString();
     } catch (error) {
       console.error(error);
+
       throw error;
     }
   }
@@ -337,15 +341,38 @@ const initializeForBeepQR = async ({ dispatch, getState }) => {
   const storeId = getStoreId(state);
   const isStoreInfoReady = getIsStoreInfoReady(state);
 
-  if (!isStoreInfoReady) {
-    await dispatch(appActions.loadCoreBusiness());
-  }
+  try {
+    if (!isStoreInfoReady) {
+      await dispatch(appActions.loadCoreBusiness());
+      const isCoreBusinessRequestRejected = getIsCoreBusinessRequestRejected(getState());
 
-  // Get EnablePayLater after core business loaded
-  const enablePayLater = getIsEnablePayLater(getState());
+      // 40005 and business does not existed should be filtered out from error log
+      if (isCoreBusinessRequestRejected) {
+        throw new Error('Failed to load core business data');
+      }
+    }
 
-  if (storeId) {
-    enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
+    // Get EnablePayLater after core business loaded
+    const enablePayLater = getIsEnablePayLater(getState());
+
+    if (storeId) {
+      enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
+    }
+  } catch (error) {
+    logger.error(
+      'Ordering_Menu_InitializeForBeepQRFailed',
+      {
+        message: error?.message,
+      },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.SELECTION,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
+        },
+      }
+    );
+
+    throw error;
   }
 };
 
@@ -358,84 +385,113 @@ const initializeForBeepDelivery = async ({ dispatch, getState }) => {
 
   const basicLoadDataList = [];
 
-  if (!isStoreInfoReady) {
-    basicLoadDataList.push(dispatch(appActions.loadCoreBusiness()));
-  }
+  try {
+    if (!isStoreInfoReady) {
+      basicLoadDataList.push(dispatch(appActions.loadCoreBusiness()));
+    }
 
-  if (!isCoreStoresLoaded) {
-    basicLoadDataList.push(dispatch(appActions.loadCoreStores()));
-  }
+    if (!isCoreStoresLoaded) {
+      basicLoadDataList.push(dispatch(appActions.loadCoreStores()));
+    }
 
-  if (basicLoadDataList.length > 0) {
-    await Promise.all(basicLoadDataList);
-  }
+    if (basicLoadDataList.length > 0) {
+      await Promise.all(basicLoadDataList);
 
-  const store = getStore(getState());
-  await dispatch(updateCurrentTime());
+      const isCoreBusinessRequestRejected = getIsCoreBusinessRequestRejected(getState());
+      const isCoreStoresRequestRejected = getIsCoreStoresRequestRejected(getState());
 
-  if (!store) {
-    // remove expectedDeliveryDate
-    await dispatch(
-      updateExpectedDeliveryDate({
-        expectedDate: null,
-        shippingType,
-      })
-    );
-    return;
-  }
+      // 40005 and business does not existed should be filtered out from error log
+      if (isCoreBusinessRequestRejected) {
+        throw new Error('Failed to load core business data');
+      }
 
-  const storeSupportShippingTypes = getStoreSupportShippingTypes(getState());
+      if (isCoreStoresRequestRejected) {
+        throw new Error('Failed to load core stores data');
+      }
+    }
 
-  // if store not support current shipping type
-  // then update to its support shipping type
-  // TODO: For the better UX, should notify user the shippingType has been changed
-  if (!storeSupportShippingTypes.includes(shippingType)) {
-    await dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
-  }
+    const store = getStore(getState());
+    await dispatch(updateCurrentTime());
 
-  if (isWebview) {
-    const shareLinkUrl = getShareLinkUrl();
-
-    shortenUrl(shareLinkUrl).catch(error =>
-      logger.error('Ordering_Menu_ShareStoreLinkOnDidMountFailed', { message: error.message })
-    );
-  }
-
-  const storeStatus = getStoreStatus(getState());
-
-  if (storeStatus === STORE_OPENING_STATUS.CLOSED) {
-    // Show store info drawer automatically when store is closed
-    await dispatch(showStoreInfoDrawer());
-    return;
-  }
-
-  await dispatch(initExpectedDeliveryDate());
-
-  dispatch(appActions.loadShoppingCart()).then(() => {
-    const query = getURLQueryObject(getState());
-    const { source } = query;
-
-    // if there is source='shoppingCart' in query
-    // then show mini cart automatically once page mounted
-    if (source === SOURCE_TYPE.SHOPPING_CART) {
-      dispatch(showMiniCartDrawer());
-
-      const search = getFilteredQueryString('source');
-
-      // remove source='shoppingCart' from query
-      dispatch(
-        replace({
-          pathname: PATH_NAME_MAPPING.ORDERING_HOME,
-          search,
+    if (!store) {
+      // remove expectedDeliveryDate
+      await dispatch(
+        updateExpectedDeliveryDate({
+          expectedDate: null,
+          shippingType,
         })
       );
+      return;
     }
-  });
 
-  const isAddressOutOfRange = getIsAddressOutOfRange(getState());
+    const storeSupportShippingTypes = getStoreSupportShippingTypes(getState());
 
-  if (isAddressOutOfRange) {
-    await dispatch(showLocationDrawer());
+    // if store not support current shipping type
+    // then update to its support shipping type
+    // TODO: For the better UX, should notify user the shippingType has been changed
+    if (!storeSupportShippingTypes.includes(shippingType)) {
+      await dispatch(appActions.updateShippingType(storeSupportShippingTypes[0]));
+    }
+
+    if (isWebview) {
+      const shareLinkUrl = getShareLinkUrl();
+
+      shortenUrl(shareLinkUrl).catch(error =>
+        logger.error('Ordering_Menu_ShareStoreLinkOnDidMountFailed', { message: error.message })
+      );
+    }
+
+    const storeStatus = getStoreStatus(getState());
+
+    if (storeStatus === STORE_OPENING_STATUS.CLOSED) {
+      // Show store info drawer automatically when store is closed
+      await dispatch(showStoreInfoDrawer());
+      return;
+    }
+
+    await dispatch(initExpectedDeliveryDate());
+
+    dispatch(appActions.loadShoppingCart()).then(() => {
+      const query = getURLQueryObject(getState());
+      const { source } = query;
+
+      // if there is source='shoppingCart' in query
+      // then show mini cart automatically once page mounted
+      if (source === SOURCE_TYPE.SHOPPING_CART) {
+        dispatch(showMiniCartDrawer());
+
+        const search = getFilteredQueryString('source');
+
+        // remove source='shoppingCart' from query
+        dispatch(
+          replace({
+            pathname: PATH_NAME_MAPPING.ORDERING_HOME,
+            search,
+          })
+        );
+      }
+    });
+
+    const isAddressOutOfRange = getIsAddressOutOfRange(getState());
+
+    if (isAddressOutOfRange) {
+      await dispatch(showLocationDrawer());
+    }
+  } catch (error) {
+    logger.error(
+      'Ordering_Menu_InitializeForBeepDeliveryFailed',
+      {
+        message: error?.message,
+      },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.SELECTION,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
+        },
+      }
+    );
+
+    throw error;
   }
 };
 
@@ -467,7 +523,6 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
       const isProductListReady = getIsProductListReady(getState());
 
       if (!isProductListReady) {
-        // don't need to add "await", for optimize performance sake
         dispatch(appActions.loadProductList());
       }
 
@@ -486,6 +541,21 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
       }
     }
 
+    const isOnlineCategoryRequestFailed = getIsOnlineCategoryRequestRejected(getState());
+
+    if (isOnlineCategoryRequestFailed) {
+      logger.error(
+        'Ordering_loadProductListFailed',
+        { message: 'Failed to load product list' },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.SELECTION,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
+          },
+        }
+      );
+    }
+
     const storeInfoForCleverTap = getStoreInfoForCleverTap(getState());
     const foodTagsForCleverTap = getFoodTagsForCleverTap(getState());
 
@@ -494,7 +564,18 @@ export const mounted = createAsyncThunk('ordering/menu/common/mounted', async (_
       foodTags: foodTagsForCleverTap,
     });
   } catch (error) {
-    console.error(error);
+    logger.error(
+      'Ordering_Menu_LoadPageFailed',
+      {
+        message: error?.message,
+      },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.SELECTION,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
+        },
+      }
+    );
 
     throw error;
   }

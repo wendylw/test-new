@@ -68,8 +68,8 @@ function SelfPickup({
           </button>
           <button
             className="self-pickup__modal-fill-button button button__fill flex__fluid-content text-weight-bolder text-uppercase"
-            onClick={() => {
-              updateOrderShippingType({ orderId, shippingType: DELIVERY_METHOD.PICKUP });
+            onClick={async () => {
+              await updateOrderShippingType({ orderId, shippingType: DELIVERY_METHOD.PICKUP });
 
               onChangeToSelfPickup();
             }}
