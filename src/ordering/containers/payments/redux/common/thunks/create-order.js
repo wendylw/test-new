@@ -439,12 +439,6 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
 
     Utils.submitForm(paymentUrl);
   } catch (error) {
-    window.newrelic?.addPageAction('ordering.initPayment.error', {
-      error: error?.message,
-      paymentProvider,
-      receiptNumber: orderId,
-    });
-
     logger.error('Ordering_Payment_InitPaymentFailed', {
       error: error?.message,
       paymentProvider,

@@ -164,7 +164,6 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
     const {
       loadStoreIdHashCode,
       loadStoreIdTableIdHashCode,

@@ -157,7 +157,7 @@
       }
       var logScriptLoadError = function (scriptName) {
         if (window.newrelic && window.newrelic.addPageAction) {
-          window.newrelic.addPageAction('common.script-load-error', {
+          window.newrelic.addPageAction('third-party-lib.load-script-failed', {
             scriptName: scriptName
           })
         }

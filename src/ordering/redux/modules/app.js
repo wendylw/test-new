@@ -328,8 +328,6 @@ export const actions = {
     try {
       const { type: otpType } = payload;
 
-      // BEEP-2685: New Relic needs to know the OTP first send time.
-      window.newrelic?.addPageAction('ordering.login.get-otp-start');
       logger.log('Ordering_App_StartToGetOTP');
 
       dispatch({ type: types.GET_OTP_REQUEST, payload: { otpType } });
@@ -339,15 +337,8 @@ export const actions = {
         platform: OTP_REQUEST_PLATFORM,
       });
 
-      window.newrelic?.addPageAction('ordering.login.get-otp-success');
-
       dispatch({ type: types.GET_OTP_SUCCESS });
     } catch (error) {
-      window.newrelic?.addPageAction('ordering.login.get-otp-failed', {
-        error: error?.message,
-        code: error?.code,
-      });
-
       dispatch({
         type: types.GET_OTP_FAILURE,
         error,
@@ -409,11 +400,6 @@ export const actions = {
       }
     } catch (error) {
       logger.error('Ordering_App_SyncLoginFromNativeFailed', {
-        error: error?.message,
-        code: error?.code,
-      });
-
-      window.newrelic?.addPageAction('ordering.syncLoginFromNative.error', {
         error: error?.message,
         code: error?.code,
       });

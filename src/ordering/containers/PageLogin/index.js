@@ -202,7 +202,7 @@ class PageLogin extends React.Component {
     const hasLoadSuccess = !!window.grecaptcha;
     const scriptName = 'google-recaptcha';
 
-    window.newrelic?.addPageAction(`ordering.otp-login.script-load-${hasLoadSuccess ? 'success' : 'error'}`, {
+    window.newrelic?.addPageAction(`third-party-lib.load-script-${hasLoadSuccess ? 'succeeded' : 'failed'}`, {
       scriptName: scriptName,
     });
 
@@ -218,14 +218,12 @@ class PageLogin extends React.Component {
     const loginOptions = location.state?.loginOptions || {};
     const { shippingType } = loginOptions;
 
-    window.newrelic?.addPageAction('ordering.login.verify-otp-start');
     await appActions.sendOtp({ otp });
 
     const { user } = this.props;
     const { accessToken, refreshToken } = user;
 
     if (accessToken && refreshToken) {
-      window.newrelic?.addPageAction('ordering.login.verify-otp-done');
       appActions.loginApp({
         accessToken,
         refreshToken,

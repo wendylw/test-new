@@ -88,12 +88,6 @@ class CreateOrderButton extends React.Component {
       const { paymentName } = this.props;
       const shippingType = Utils.getOrderTypeFromUrl();
 
-      window.newrelic?.addPageAction('ordering.createOrder.error', {
-        error: error?.message,
-        shippingType,
-        paymentName: paymentName || 'N/A',
-      });
-
       logger.error('Ordering_CreateOrderButton_CreateOrderFailed', {
         error: error?.message,
         shippingType,
@@ -198,15 +192,8 @@ class CreateOrderButton extends React.Component {
     }
 
     if (!orderId) {
-      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
-        paymentName: paymentName || 'N/A',
-      });
-
       this.setState({ isLoadingCreatedOrder: true });
       const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
-      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
-        paymentName: paymentName || 'N/A',
-      });
 
       const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
       if (order) {

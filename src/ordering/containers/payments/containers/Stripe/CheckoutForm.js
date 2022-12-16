@@ -15,6 +15,7 @@ import ErrorMessage from './ErrorMessage';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
+import logger from '../../../../../utils/monitoring/logger';
 import { STRIPE_LOAD_TIME_OUT } from './constants';
 
 const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS } = Constants;
@@ -138,8 +139,12 @@ function CheckoutForm({
         throw payload.error;
       }
 
+      logger.log('Ordering_Payment_CreatePaymentMethodByStripeSucceeded');
       setPaymentMethod(payload.paymentMethod);
     } catch (error) {
+      logger.error('Ordering_Payment_CreatePaymentMethodByStripeFailed', {
+        message: error?.message,
+      });
       setError(error);
       setProcessing(false);
     }
