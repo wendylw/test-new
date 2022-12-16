@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { withTranslation, Trans } from 'react-i18next';
+import _get from 'lodash/get';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import _isNil from 'lodash/isNil';
@@ -35,7 +36,6 @@ import {
   getIsUserProfileStatusFulfilled,
   getIsWebview,
   getIsTNGMiniProgram,
-  getIsProfileInfoRequestStatusRejected,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
 import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
@@ -94,6 +94,19 @@ class PayFirst extends Component {
 
     if (error) {
       await appActions.loadShoppingCart();
+
+      logger.error(
+        'Ordering_Cart_CheckStockStatusFailed',
+        {
+          message: _get(error, 'message', ''),
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SUBMIT_ORDER,
+          },
+        }
+      );
 
       return;
     }
@@ -415,46 +428,14 @@ class PayFirst extends Component {
     // Resolve bugs of BEEP-1561 && BEEP-1554
     if (consumerId && (!deliveryDetails.username || !deliveryDetails.phone)) {
       if (!isUserProfileStatusFulfilled) {
-        const result = await appActions.getProfileInfo(consumerId);
-        const { isProfileInfoRequestStatusRejected } = this.props;
-
-        if (isProfileInfoRequestStatusRejected) {
-          logger.error(
-            'Ordering_Cart_CreateOrderFailed',
-            {
-              message: 'Failed to get user profile info',
-            },
-            {
-              bizFlow: {
-                flow: KEY_EVENTS_FLOWS.PAYMENT,
-                step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-              },
-            }
-          );
-        }
+        await appActions.getProfileInfo(consumerId);
       }
-
       const { userProfile } = this.props;
 
-      try {
-        await appActions.updateDeliveryDetails({
-          username: deliveryDetails.username || userProfile.name,
-          phone: deliveryDetails.phone || userProfile.phone,
-        });
-      } catch (e) {
-        logger.error(
-          'Ordering_Cart_CreateOrderFailed',
-          {
-            message: 'Failed to update user current location info',
-          },
-          {
-            bizFlow: {
-              flow: KEY_EVENTS_FLOWS.PAYMENT,
-              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
-            },
-          }
-        );
-      }
+      await appActions.updateDeliveryDetails({
+        username: deliveryDetails.username || userProfile.name,
+        phone: deliveryDetails.phone || userProfile.phone,
+      });
     }
 
     logger.log('Ordering_PayFirstCart_CreateOrder');
@@ -474,7 +455,10 @@ class PayFirst extends Component {
   handleAfterCreateOrder = orderId => {
     this.setState({ shouldShowRedirectLoader: !!orderId });
 
-    if (!orderId) {
+    const { isValidCreateOrder } = this.props;
+
+    // WB-4594: Please remember the users might go to the payment, then the order id will be empty. This is expected.
+    if (isValidCreateOrder && !orderId) {
       logger.error(
         'Ordering_Cart_CreateOrderFailed',
         {
@@ -797,7 +781,6 @@ PayFirst.propTypes = {
   serviceChargeRate: PropTypes.number,
   isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
-  isProfileInfoRequestStatusRejected: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -836,7 +819,6 @@ PayFirst.defaultProps = {
   serviceChargeRate: 0,
   isWebview: false,
   isTNGMiniProgram: false,
-  isProfileInfoRequestStatusRejected: false,
 };
 
 /* TODO: backend data */
@@ -863,7 +845,6 @@ export default compose(
       isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
-      isProfileInfoRequestStatusRejected: getIsProfileInfoRequestStatusRejected(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),

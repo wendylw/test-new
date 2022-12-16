@@ -3,27 +3,10 @@ import { get } from '../../../../../../utils/api/api-fetch';
 import Url from '../../../../../../utils/url';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import _first from 'lodash/first';
-import logger from '../../../../../../utils/monitoring/logger';
-import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/monitoring/constants';
 
 const thunks = {
   fetchSavedCards: createAsyncThunk('ordering/payments/savedCards/fetchSavedCards', async ({ userId, paymentName }) => {
-    try {
-      return get(Url.API_URLS.GET_SAVED_CARD(userId).url, { queryParams: { provider: paymentName } });
-    } catch (error) {
-      logger.error(
-        'Ordering_StripeCreditCard_InitializeFailed',
-        {
-          message: `Failed to drawer credit card UI`,
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.CHECKOUT,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SelectPaymentMethod,
-          },
-        }
-      );
-    }
+    return get(Url.API_URLS.GET_SAVED_CARD(userId).url, { queryParams: { provider: paymentName } });
   }),
 };
 

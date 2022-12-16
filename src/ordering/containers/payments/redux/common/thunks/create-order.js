@@ -449,7 +449,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
     logger.error(
       'Ordering_Payment_InitPaymentFailed',
       {
-        message: 'Failed to get or submit payment details for payment flow',
+        message: error?.message,
         paymentName: paymentProvider,
       },
       {

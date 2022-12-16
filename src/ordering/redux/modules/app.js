@@ -147,6 +147,9 @@ export const initialState = {
     shippingType: Utils.getOrderTypeFromUrl(),
   },
   shoppingCart: CartModel,
+  addOrUpdateShoppingCartItemRequest: {
+    status: null,
+  },
   storeHashCode: {
     data: null,
     status: null,
@@ -155,6 +158,9 @@ export const initialState = {
     status: null,
   },
   coreStores: {
+    status: null,
+  },
+  productDetail: {
     status: null,
   },
   deliveryDetails: {
@@ -1096,6 +1102,19 @@ const coreStores = (state = initialState.coreStores, action) => {
   }
 };
 
+const productDetail = (state = initialState.productDetail, action) => {
+  switch (action.type) {
+    case types.FETCH_PRODUCTDETAIL_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_PRODUCTDETAIL_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_PRODUCTDETAIL_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
 const apiError = (state = initialState.apiError, action) => {
   const { type, code, response, responseGql, payload } = action;
   const { error: payloadError } = payload || {};
@@ -1188,6 +1207,19 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
   return state;
 };
 
+const addOrUpdateShoppingCartItemRequest = (state = initialState.addOrUpdateShoppingCartItemRequest, action) => {
+  switch (action.type) {
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
 const deliveryDetails = (state = initialState.deliveryDetails, action) => {
   switch (action.type) {
     case types.DELIVERY_DETAILS_INIT:
@@ -1277,12 +1309,14 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  addOrUpdateShoppingCartItemRequest,
   cart: cartReducer,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
   coreBusiness,
   onlineCategory,
   coreStores,
+  productDetail,
 });
 
 // selectors
@@ -1308,6 +1342,11 @@ export const getCoreStoresStatus = state => state.app.coreStores.status;
 
 export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
 
+export const getIsOnlineCategoryRequestRejected = createSelector(
+  getOnlineCategoryStatus,
+  onlineCategoryStatus => onlineCategoryStatus === API_REQUEST_STATUS.REJECTED
+);
+
 export const getRequestInfo = state => state.app.requestInfo;
 
 export const getApiError = state => state.app.apiError;
@@ -1317,11 +1356,6 @@ export const getUserLoginRequestStatus = state => state.app.user.loginRequestSta
 export const getUserLoginByBeepAppStatus = state => state.app.user.loginByBeepAppStatus;
 
 export const getUserProfileStatus = state => state.app.user.profile.status;
-
-export const getIsProfileInfoRequestStatusRejected = createSelector(
-  getUserProfileStatus,
-  userProfileStatus => userProfileStatus === API_REQUEST_STATUS.REJECTED
-);
 
 export const getUserProfile = state => state.app.user.profile;
 
@@ -1366,8 +1400,20 @@ export const getIsCoreBusinessAPIFulfilled = createSelector(
   status => status === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsCoreBusinessRequestRejected = createSelector(
+  getCoreBusinessAPIStatus,
+  status => status === API_REQUEST_STATUS.REJECTED
+);
+
 export const getIsCoreBusinessAPICompleted = createSelector(getCoreBusinessAPIStatus, status =>
   [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
+);
+
+export const getProductDetailStatus = state => state.app.productDetail.status;
+
+export const getIsProductDetailRequestRejected = createSelector(
+  getProductDetailStatus,
+  productDetailStatus => productDetailStatus === API_REQUEST_STATUS.REJECTED
 );
 
 // TODO: Utils.getOrderTypeFromUrl() will replace be selector
@@ -1435,6 +1481,11 @@ export const getCartBilling = state => state.app.shoppingCart.billing;
 export const getCartUnavailableItems = state => state.app.shoppingCart.unavailableItems;
 
 export const getCartStatus = state => state.app.shoppingCart.status;
+
+export const getIsGetCartFailed = createSelector(
+  getCartStatus,
+  cartStatus => cartStatus === API_REQUEST_STATUS.REJECTED
+);
 
 export const getShippingFee = createSelector(getCartBilling, billing => billing.shippingFee);
 
@@ -1802,6 +1853,11 @@ export const getIsCoreStoresLoaded = createSelector(
   coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsCoreStoresRequestRejected = createSelector(
+  getCoreStoresStatus,
+  coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.REJECTED
+);
+
 export const getDeliveryRadius = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings.deliveryRadius', null)
 );
@@ -1818,4 +1874,11 @@ export const getURLQueryObject = createSelector(getLocationSearch, locationSearc
 
 export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'stores[0].reviewInfo.rating', null)
+);
+
+export const getAddOrUpdateShoppingCartItemStatus = state => state.app.addOrUpdateShoppingCartItemRequest.status;
+
+export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
+  getAddOrUpdateShoppingCartItemStatus,
+  addOrUpdateShoppingCartItemStatus => addOrUpdateShoppingCartItemStatus === API_REQUEST_STATUS.REJECTED
 );

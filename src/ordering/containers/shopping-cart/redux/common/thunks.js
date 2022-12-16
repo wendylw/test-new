@@ -4,6 +4,7 @@ import { getShoppingCart, getBusinessUTCOffset } from '../../../../redux/modules
 import Utils from '../../../../../utils/utils';
 import { fetchStockStatus } from './api-request';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { alert } from '../../../../../common/feedback';
 import Constants from '../../../../../utils/constants';
 
@@ -21,7 +22,18 @@ export const loadStockStatus = createAsyncThunk('ordering/cart/common/fetchStock
 
     return result;
   } catch (e) {
-    logger.error('Ordering_ShoppingCart_LoadStockStatusFailed', e);
+    logger.error(
+      'Ordering_Cart_CheckStockStatusFailed',
+      {
+        message: e?.message,
+      },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.CHECKOUT,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SUBMIT_ORDER,
+        },
+      }
+    );
 
     if (e.code && ERROR_CODE_MAP[e.code]) {
       const { desc, title, buttonText, redirectUrl } = ERROR_CODE_MAP[e.code];

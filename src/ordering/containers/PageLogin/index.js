@@ -285,7 +285,7 @@ class PageLogin extends React.Component {
       logger.error(
         'Ordering_PageLogin_LoginFailed',
         {
-          message: 'Failed to verify OTP',
+          message: error?.message,
         },
         {
           bizFlow: {

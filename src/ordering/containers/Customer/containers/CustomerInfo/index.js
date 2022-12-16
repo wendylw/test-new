@@ -38,6 +38,7 @@ import { withAvailableAddressDetails } from './withAvailableAddressDetails';
 import './CustomerInfo.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 
 const { ADDRESS_RANGE, ROUTER_PATHS } = Constants;
@@ -161,6 +162,18 @@ class CustomerInfo extends Component {
 
     if (error.show) {
       customerInfoActions.setCustomerError(error);
+      logger.error(
+        'Ordering_CustomerInfo_CreateOrderFailed',
+        {
+          message: error.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SUBMIT_ORDER,
+          },
+        }
+      );
     } else {
       this.setState({ processing: true });
     }

@@ -82,6 +82,10 @@ import {
   getShouldShowCashbackBanner,
   getHasOrderPaid,
   getShouldShowStoreReviewCard,
+  getIsCancelOrderRequestRejected,
+  getCancelOrderRequestErrorMessage,
+  getIsUpdateShippingTypeRequestRejected,
+  getUpdateShippingTypeRequestErrorMessage,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -513,7 +517,7 @@ export class ThankYou extends PureComponent {
   };
 
   handleChangeToSelfPickup = () => {
-    const { order, businessInfo } = this.props;
+    const { order, businessInfo, isUpdateShippingTypeRequestFailed, updateShippingTypRequestErrorMessage } = this.props;
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -522,6 +526,21 @@ export class ThankYou extends PureComponent {
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
+
+    if (isUpdateShippingTypeRequestFailed) {
+      logger.error(
+        'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
+        {
+          message: updateShippingTypRequestErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.REFUND,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
+          },
+        }
+      );
+    }
   };
 
   getLogsInfoByStatus = (statusUpdateLogs, statusType) => {
@@ -685,16 +704,34 @@ export class ThankYou extends PureComponent {
   handleOrderCancellation = async ({ reason, detail }) => {
     const { t, receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
 
-    if (!isOrderCancellable) {
-      alert(t('OrderCannotBeCancelledAsARiderFound'), {
-        title: t('YourFoodIsOnTheWay'),
-        closeButtonContent: t('GotIt'),
+    try {
+      if (!isOrderCancellable) {
+        alert(t('OrderCannotBeCancelledAsARiderFound'), {
+          title: t('YourFoodIsOnTheWay'),
+          closeButtonContent: t('GotIt'),
+        });
+
+        throw new Error('Rider has picked order');
+      }
+
+      await cancelOrder({
+        orderId: receiptNumber,
+        reason,
+        detail,
       });
 
+      updateCancellationReasonVisibleState(false);
+
+      const { isCancelOrderRequestFailed, cancelOrderRequestErrorMessage } = this.props;
+
+      if (isCancelOrderRequestFailed) {
+        throw new Error(cancelOrderRequestErrorMessage);
+      }
+    } catch (e) {
       logger.error(
         'Ordering_OrderStatus_CancelOrderFailed',
         {
-          message: 'Rider has picked order',
+          message: e?.message,
         },
         {
           bizFlow: {
@@ -703,17 +740,7 @@ export class ThankYou extends PureComponent {
           },
         }
       );
-
-      return;
     }
-
-    await cancelOrder({
-      orderId: receiptNumber,
-      reason,
-      detail,
-    });
-
-    updateCancellationReasonVisibleState(false);
   };
 
   handleHideOrderCancellationReasonAside = () => {
@@ -1097,6 +1124,10 @@ export default compose(
       isCoreBusinessAPICompleted: getIsCoreBusinessAPICompleted(state),
       isFromBeepSiteOrderHistory: getIsFromBeepSiteOrderHistory(state),
       shouldShowStoreReviewCard: getShouldShowStoreReviewCard(state),
+      isCancelOrderRequestFailed: getIsCancelOrderRequestRejected(state),
+      cancelOrderRequestErrorMessage: getCancelOrderRequestErrorMessage(state),
+      isUpdateShippingTypeRequestFailed: getIsUpdateShippingTypeRequestRejected(state),
+      updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(

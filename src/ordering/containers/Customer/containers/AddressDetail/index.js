@@ -25,6 +25,8 @@ import _trim from 'lodash/trim';
 import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import './AddressDetail.scss';
+import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const actions = {
   EDIT: 'edit',
@@ -150,53 +152,68 @@ class AddressDetail extends Component {
     } = addressInfo;
     const { consumerId } = user || {};
 
-    const data = {
-      contactName: _trim(contactName),
-      contactNumber: contactNumber,
-      addressName: _trim(name),
-      deliveryTo: _trim(address),
-      addressDetails: _trim(details),
-      comments: _trim(comments),
-      location: coords,
-      city,
-      countryCode,
-      postCode,
-    };
+    try {
+      const data = {
+        contactName: _trim(contactName),
+        contactNumber: contactNumber,
+        addressName: _trim(name),
+        deliveryTo: _trim(address),
+        addressDetails: _trim(details),
+        comments: _trim(comments),
+        location: coords,
+        city,
+        countryCode,
+        postCode,
+      };
 
-    let requestUrl;
-    let response;
-    if (actionType === actions.ADD) {
-      requestUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
-      response = await post(requestUrl.url, data);
-    }
-    if (actionType === actions.EDIT) {
-      requestUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, id);
-      response = await put(requestUrl.url, data);
-    }
+      let requestUrl;
+      let response;
+      if (actionType === actions.ADD) {
+        requestUrl = url.API_URLS.CREATE_ADDRESS(consumerId);
+        response = await post(requestUrl.url, data);
+      }
+      if (actionType === actions.EDIT) {
+        requestUrl = url.API_URLS.UPDATE_ADDRESS(consumerId, id);
+        response = await put(requestUrl.url, data);
+      }
 
-    const savedAddressName = _get(response, 'addressName', name);
+      const savedAddressName = _get(response, 'addressName', name);
 
-    appActions.updateDeliveryDetails({
-      addressId: _get(response, '_id', ''),
-      addressName: savedAddressName,
-      addressDetails: _get(response, 'addressDetails', details),
-      deliveryComments: _get(response, 'comments', comments),
-      deliveryToAddress: _get(response, 'deliveryTo', address),
-      deliveryToLocation: _get(response, 'location', coords),
-      deliveryToCity: _get(response, 'city', city),
-      postCode: _get(response, 'postCode', postCode),
-      countryCode: _get(response, 'countryCode', countryCode),
-      username: _get(response, 'contactName', contactName),
-      phone: _get(response, 'contactNumber', contactNumber),
-    });
-
-    customerActions.removeAddressInfo();
-
-    if (response) {
-      history.push({
-        pathname: '/customer',
-        search: Utils.getFilteredQueryString('callbackUrl'),
+      appActions.updateDeliveryDetails({
+        addressId: _get(response, '_id', ''),
+        addressName: savedAddressName,
+        addressDetails: _get(response, 'addressDetails', details),
+        deliveryComments: _get(response, 'comments', comments),
+        deliveryToAddress: _get(response, 'deliveryTo', address),
+        deliveryToLocation: _get(response, 'location', coords),
+        deliveryToCity: _get(response, 'city', city),
+        postCode: _get(response, 'postCode', postCode),
+        countryCode: _get(response, 'countryCode', countryCode),
+        username: _get(response, 'contactName', contactName),
+        phone: _get(response, 'contactNumber', contactNumber),
       });
+
+      customerActions.removeAddressInfo();
+
+      if (response) {
+        history.push({
+          pathname: '/customer',
+          search: Utils.getFilteredQueryString('callbackUrl'),
+        });
+      }
+    } catch (error) {
+      logger.error(
+        'Ordering_AddAddress_SaveAddressFailed',
+        {
+          error: error?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].CHANGE_ADDRESS,
+          },
+        }
+      );
     }
   };
 

@@ -81,18 +81,7 @@ export const cancelOrder = createAsyncThunk(
 
       window.location.reload();
     } catch (e) {
-      logger.error(
-        'Ordering_OrderStatus_CancelOrderFailed',
-        {
-          message: e?.message,
-        },
-        {
-          bizFlow: {
-            flow: KEY_EVENTS_FLOWS.REFUND,
-            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
-          },
-        }
-      );
+      logger.error('Ordering_ThankYou_CancelOrderFailed', e);
 
       if (e.code) {
         // TODO: This type is actually not used, because apiError does not respect action type,
@@ -114,25 +103,7 @@ export const updateOrderShippingType = createAsyncThunk(
   'ordering/orderStatus/common/updateOrderShippingType',
   async ({ orderId, shippingType }, { dispatch }) => {
     try {
-      try {
-        await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
-      } catch (e) {
-        logger.error(
-          'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
-          {
-            message: e?.message,
-          },
-          {
-            bizFlow: {
-              flow: KEY_EVENTS_FLOWS.REFUND,
-              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
-            },
-          }
-        );
-
-        throw e;
-      }
-
+      await post(API_INFO.updateOrderShippingType(orderId).url, { value: shippingType });
       await dispatch(loadOrder(orderId));
     } catch (e) {
       if (e.code) {
@@ -143,6 +114,8 @@ export const updateOrderShippingType = createAsyncThunk(
       } else {
         alert(i18next.t('ApiError:57002Description'), { title: i18next.t('ApiError:57002Title') });
       }
+
+      throw e;
     }
   }
 );
