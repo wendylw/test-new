@@ -527,6 +527,9 @@ export class ThankYou extends PureComponent {
       country: _get(businessInfo, 'country', ''),
     });
 
+    // Currently there is only one thunk to update shipping type.
+    // In fact, no matter where the modification is triggered,
+    // it should be logged. It is recommended to put it in thunk in the future.
     if (isUpdateShippingTypeRequestFailed) {
       logger.error(
         'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',

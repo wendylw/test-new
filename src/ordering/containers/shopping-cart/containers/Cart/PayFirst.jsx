@@ -95,6 +95,7 @@ class PayFirst extends Component {
     if (error) {
       await appActions.loadShoppingCart();
 
+      // duplicate log can be removed in future
       logger.error(
         'Ordering_Cart_CheckStockStatusFailed',
         {

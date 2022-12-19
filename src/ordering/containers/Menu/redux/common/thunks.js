@@ -25,6 +25,7 @@ import {
   getIsCoreBusinessRequestRejected,
   getIsCoreStoresRequestRejected,
   getIsOnlineCategoryRequestRejected,
+  getIsGetCartFailed,
 } from '../../../../redux/modules/app';
 import {
   getIsProductListReady,
@@ -357,6 +358,13 @@ const initializeForBeepQR = async ({ dispatch, getState }) => {
 
     if (storeId) {
       enablePayLater ? dispatch(queryCartAndStatus()) : dispatch(appActions.loadShoppingCart());
+    }
+
+    // There must be a log for the error of loadShoppingCart. If there is no cart, the footer of the review cart button will not be displayed.
+    const isGetCartFailed = getIsGetCartFailed(getState());
+
+    if (!enablePayLater && isGetCartFailed) {
+      throw new Error('Failed to load shopping cart');
     }
   } catch (error) {
     logger.error(
