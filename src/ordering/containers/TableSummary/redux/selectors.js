@@ -38,12 +38,9 @@ export const getOrderCashback = state =>
 
 export const getOrderShippingFee = state => state.tableSummary.order.shippingFee;
 
-export const getOrderPlacedStatus = state =>
-  state.tableSummary.requestStatus.loadOrders !== API_REQUEST_STATUS.PENDING &&
-  state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED;
+export const getIsOrderPlaced = state => state.tableSummary.order.orderStatus === ORDER_STATUS.CREATED;
 
-export const getOrderPendingPaymentStatus = state =>
-  state.tableSummary.order.orderStatus === ORDER_STATUS.PENDING_PAYMENT;
+export const getIsOrderPendingPayment = state => state.tableSummary.order.orderStatus === ORDER_STATUS.PENDING_PAYMENT;
 
 export const getSubOrders = state => state.tableSummary.order.subOrders;
 
@@ -111,12 +108,55 @@ export const getPromoOrVoucherExist = createSelector(
 );
 export const getVoucherBilling = state => state.tableSummary.order.appliedVoucher;
 
+export const getOrderApplyCashback = state => state.tableSummary.order.applyCashback;
+
 export const getShouldShowRedirectLoader = state => state.tableSummary.redirectLoaderVisible;
+
+export const getShouldShowProcessingLoader = state => state.tableSummary.processingLoaderVisible;
 
 export const getShouldShowPayNowButton = createSelector(
   getIsTNGMiniProgram,
-  getOrderPendingPaymentStatus,
-  (isTNGMiniProgram, orderPendingPaymentStatus) => isTNGMiniProgram || !orderPendingPaymentStatus
+  getIsOrderPendingPayment,
+  (isTNGMiniProgram, isOrderPendingPayment) => isTNGMiniProgram || !isOrderPendingPayment
+);
+
+export const getShouldShowSwitchButton = createSelector(
+  getOrderCashback,
+  getIsOrderPendingPayment,
+  (cashback, isOrderPendingPayment) => !isOrderPendingPayment && cashback > 0
+);
+
+export const getReloadBillingByCashbackRequest = state => state.tableSummary.reloadBillingByCashbackRequest;
+
+export const getIsReloadBillingByCashbackRequestPending = createSelector(
+  getReloadBillingByCashbackRequest,
+  request => request.status === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsReloadBillingByCashbackRequestRejected = createSelector(
+  getReloadBillingByCashbackRequest,
+  request => request.status === API_REQUEST_STATUS.REJECTED
+);
+
+export const getPayByCouponsRequest = state => state.tableSummary.payByCouponsRequest;
+
+export const getIsPayByCouponsRequestPending = createSelector(
+  getPayByCouponsRequest,
+  request => request.status === API_REQUEST_STATUS.PENDING
+);
+
+export const getIsPayByCouponsRequestFulfilled = createSelector(
+  getPayByCouponsRequest,
+  request => request.status === API_REQUEST_STATUS.FULFILLED
+);
+
+export const getShouldDisablePayButton = createSelector(
+  getIsPayByCouponsRequestPending,
+  getIsPayByCouponsRequestFulfilled,
+  (isRequestPending, isRequestFulfilled) =>
+    // WB-4761: window location redirection will take some time, if we only consider pending status then the button will be activated accidentally.
+    // Therefore, we should also need to take fulfilled status into consideration.
+    isRequestPending || isRequestFulfilled
 );
 
 export const getCartItemsQuantityCleverTap = createSelector(getOrderItems, orderItems => {
