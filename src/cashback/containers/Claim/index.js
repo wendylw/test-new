@@ -4,6 +4,7 @@ import CurrencyNumber from '../../components/CurrencyNumber';
 import { IconLocation } from '../../../components/Icons';
 import Image from '../../../components/Image';
 
+import prefetch from '../../../common/utils/prefetch-assets';
 import Utils from '../../../utils/utils';
 import Constants from '../../../utils/constants';
 
@@ -53,6 +54,8 @@ class PageClaim extends React.Component {
     }
 
     this.setMessage(this.props.cashbackInfo);
+
+    prefetch(['CB_HM'], ['Cashback']);
   }
 
   componentWillReceiveProps(nextProps) {

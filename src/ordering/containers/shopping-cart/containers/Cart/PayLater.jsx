@@ -29,6 +29,7 @@ import { getUserIsLogin, getHasLoginGuardPassed } from '../../../../redux/module
 import { IconClose, IconError } from '../../../../../components/Icons';
 import IconDeleteImage from '../../../../../images/icon-delete.svg';
 import Utils from '../../../../../utils/utils';
+import prefetch from '../../../../../common/utils/prefetch-assets';
 import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
@@ -59,6 +60,7 @@ class PayLater extends Component {
     window.scrollTo(0, 0);
     this.setCartContainerHeight();
     this.setProductsContainerHeight();
+    prefetch(['ORD_CSS', 'ORD_TS'], ['OrderingTableSummary']);
   };
 
   componentDidUpdate(prevProps, prevStates) {

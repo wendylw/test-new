@@ -2,20 +2,16 @@
   @apply tw-flex tw-items-center tw-flex-shrink-0 tw--mr-16 sm:tw--mr-16px;
 }
 
-.menuSearchProductsBannerButton {
-  &:global(.type-secondary) {
-    @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-px-12 sm:tw-px-12px tw-py-6 sm:tw-py-6px tw-mr-4 sm:tw-mr-4px tw-w-full tw-border-transparent
-    hover:tw-border-transparent
-    focus:tw-border-transparent focus:hover:tw-border-transparent focus:active:tw-border-transparent
-    active:tw-border-transparent;
+.menuSearchProductsBannerButton:global(.type-text-ghost) {
+  @apply tw-flex tw-flex-grow tw-items-center tw-justify-between tw-px-12 sm:tw-px-12px tw-py-6 sm:tw-py-6px tw-mr-4 sm:tw-mr-4px;
 
-    height: 40px;
-  }
+  height: 40px;
 }
 
-.menuSearchProductsBannerCancelButton:global(.type-text) {
-  @apply tw-flex-shrink-0 tw-px-12 sm:tw-px-12px tw-text-sm tw-font-bold tw-text-orange
-  hover:tw-text-orange
-  focus:tw-text-orange focus:hover:tw-text-orange focus:active:tw-text-orange
-  active:tw-text-orange;
+.menuSearchProductsBannerButtonContent {
+  font-size: 0;
+}
+
+.menuSearchProductsBannerCancelButton:global(.type-text-default) {
+  @apply tw-flex-shrink-0 tw-px-12px sm:tw-px-12px tw-text-sm;
 }

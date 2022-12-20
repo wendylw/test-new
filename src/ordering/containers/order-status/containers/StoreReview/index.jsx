@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'phosphor-react';
 import TextareaAutosize from 'react-textarea-autosize';
+import usePrefetch from '../../../../../common/utils/hooks/usePrefetch';
 import Button from '../../../../../common/components/Button';
 import PageFooter from '../../../../../common/components/PageFooter';
 import PageHeader from '../../../../../common/components/PageHeader';
@@ -94,6 +95,8 @@ const StoreReview = () => {
   useEffect(() => {
     setIsContactAllowable(allowContact);
   }, [allowContact]);
+
+  usePrefetch(['ORD_MNU', 'ORD_TY'], ['OrderingDelivery', 'OrderingThankYou']);
 
   return (
     <section>
@@ -200,9 +203,11 @@ const StoreReview = () => {
         <PageFooter className="tw-shadow-xl">
           <div className={styles.StoreReviewFooter}>
             <Button
+              block
+              type="primary"
               disabled={shouldDisableSubmitButton}
               onClick={handleClickSubmitButton}
-              className="tw-w-full tw-uppercase"
+              className="tw-uppercase"
             >
               {t('Submit')}
             </Button>

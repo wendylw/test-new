@@ -52,8 +52,11 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
       </ul>
       <div className={styles.MultipleChoiceSelectorFooterContainer}>
         <Button
-          className={styles.MultipleChoiceSelectorFooterResetButton}
+          block
           type="text"
+          theme="ghost"
+          className={styles.MultipleChoiceSelectorFooterResetButton}
+          contentClassName={styles.MultipleChoiceSelectorFooterResetButtonContent}
           disabled={shouldDisableFooterButton}
           onClick={() => onResetButtonClick(category)}
           data-heap-name="site.common.option-selector.reset-btn"
@@ -61,8 +64,9 @@ const MultipleChoiceSelector = ({ className, category, onResetButtonClick, onApp
           {t('Reset')}
         </Button>
         <Button
-          className={styles.MultipleChoiceSelectorFooterButton}
+          block
           type="primary"
+          contentClassName={styles.MultipleChoiceSelectorFooterButton}
           disabled={shouldDisableFooterButton}
           onClick={() => onApplyButtonClick(category, options)}
           data-heap-name="site.common.option-selector.apply-btn"

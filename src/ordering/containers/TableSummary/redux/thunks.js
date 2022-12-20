@@ -7,12 +7,12 @@ import logger from '../../../../utils/monitoring/logger';
 import {
   getOrderModifiedTime,
   getOrderReceiptNumber,
-  getSelectedPromoCode,
   getOrderCashback,
   getOrderTotal,
+  getOrderPromotionId,
+  getOrderVoucherCode,
 } from './selectors';
 import { getUserConsumerId, getLocationSearch, getIsTNGMiniProgram } from '../../../redux/modules/app';
-import { getPromotionId } from '../../../redux/modules/promotion';
 import { gotoPayment as initPayment, loadBilling } from '../../payments/redux/common/thunks';
 import { PATH_NAME_MAPPING } from '../../../../common/utils/constants';
 
@@ -53,7 +53,7 @@ export const loadOrdersStatus = createAsyncThunk(
   }
 );
 
-export const queryOrdersAndStatus = receiptNumber => async dispatch => {
+export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) => {
   logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', receiptNumber });
   try {
     const queryOrderStatus = () => {
@@ -69,7 +69,7 @@ export const queryOrdersAndStatus = receiptNumber => async dispatch => {
       }, ORDER_STATUS_INTERVAL);
     };
 
-    dispatch(loadOrders(receiptNumber));
+    await dispatch(loadOrders(receiptNumber));
     queryOrderStatus();
   } catch (error) {
     console.error(error);
@@ -98,10 +98,10 @@ export const payByCoupons = createAsyncThunk(
     const state = getState();
     const receiptNumber = getOrderReceiptNumber(state);
     const cashback = getOrderCashback(state);
-    const promotionId = getPromotionId(state);
+    const promotionId = getOrderPromotionId(state);
     const consumerId = getUserConsumerId(state);
     const modifiedTime = getOrderModifiedTime(state);
-    const { voucherCode } = getSelectedPromoCode(state) || {};
+    const voucherCode = getOrderVoucherCode(state);
     const data = {
       consumerId,
       modifiedTime,

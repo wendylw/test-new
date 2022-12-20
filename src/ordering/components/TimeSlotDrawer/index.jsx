@@ -151,10 +151,12 @@ const TimeSlotDrawer = ({
 
           <div className={styles.timeSlotFooter}>
             <Button
+              block
+              type="primary"
               disabled={isSaveButtonDisabled}
               loading={isSaveButtonLoaderVisible}
               onClick={save}
-              className="tw-w-full tw-uppercase"
+              className="tw-uppercase"
             >
               {t('Continue')}
             </Button>

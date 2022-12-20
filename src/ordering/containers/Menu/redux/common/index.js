@@ -50,7 +50,6 @@ const initialState = {
   storeInfoDrawerVisible: false,
   locationDrawerVisible: false,
   storeListDrawerVisible: false,
-  enabledDeliveryRevamp: process.env.REACT_APP_ENABLED_DELIVERY_REVAMP === 'true',
   timeSlotDrawerVisible: false,
   locationConfirmModalVisible: false,
   selectedProductItemInfo: null,

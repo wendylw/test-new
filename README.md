@@ -158,9 +158,9 @@ Please contact the project administrator to access apollo https://apollo.shub.us
    ```sh
    yarn serve:sourcemap --bucket beep-v2-web
    ```
-   #### on uat environment
+   #### on staging environment
    ```sh
-   yarn serve:sourcemap --bucket beep-v2-uat
+   yarn serve:sourcemap --bucket beep-v2-staging
    ```
 
 <a name="customize-workbox-service-workers"></a>

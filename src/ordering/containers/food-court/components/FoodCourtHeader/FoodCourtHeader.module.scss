@@ -21,7 +21,7 @@
 }
 
 .FoodCourtHeaderButton {
-  &__default:global(.type-text) {
+  &__default:global(.type-text-ghost) {
     @apply tw-px-8 sm:tw-px-8px tw-py-12 sm:tw-py-12px tw-border-0 tw-text-black hover:tw-text-black active:tw-text-gray focus:tw-text-black focus:hover:tw-text-black  focus:active:tw-text-gray;
   }
 

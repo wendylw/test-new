@@ -1,29 +1,12 @@
-.loader {
-  @apply tw-absolute tw-text-2xl tw-text-gray-600;
-}
-.addressDropdownDrawerInitializing {
-  @apply tw-p-0;
-
-  :global(.drawer-animation__children) {
-    @apply tw-relative tw-flex tw-items-center tw-justify-center;
-  }
-}
-
-.addressLocationDrawerEmpty {
-  :global(.drawer-animation__children) {
-    overflow: hidden;
-
-    .addressLocationDrawerContent {
-      @apply tw-h-full;
-    }
-  }
-}
-
 .addressLocationDrawer {
   @apply tw-p-0;
 
   .header {
     @apply tw-border-b-0;
+  }
+
+  :global(.drawer-animation__children) {
+    @apply tw-flex;
   }
 }
 

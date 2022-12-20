@@ -4,10 +4,9 @@
  */
 const fs = require('fs-extra');
 const path = require('path');
-const debug = require('debug')('build-i18n-files');
+const debug = require('debug')('postprocess:i18n');
 const crypto = require('crypto');
 
-const BUILD_FOLDER_NAME = 'build';
 const SRC_FOLDER_NAME = 'locales';
 const DEST_FOLDER_NAME = 'i18n';
 
@@ -43,12 +42,12 @@ const calculateHash = str => {
   return hash.digest('hex');
 };
 
-const main = async () => {
-  const rootPath = __dirname;
-  const buildPath = path.join(rootPath, BUILD_FOLDER_NAME);
+const interpolateI18N = async (buildPath) => {
   const localeSrcPath = path.join(buildPath, SRC_FOLDER_NAME);
   const destRootPath = path.join(buildPath, DEST_FOLDER_NAME);
   const i18nMapping = {};
+
+  console.log('[postprocess-build] Start generating i18n files into build...');
 
   try {
     await traverseFolder(localeSrcPath, async fileFullPath => {
@@ -69,27 +68,36 @@ const main = async () => {
         i18nMapping[i18nKey] = `/i18n/${destRelPath}`;
       }
     });
+
     debug('all i18n files is generated %j', i18nMapping);
+
+    console.log('[postprocess-build] Finished generating i18n files into build.');
+
+    console.log('[postprocess-build] Start adding i18n mappings into HTML...');
 
     const indexHtmlPath = path.join(buildPath, 'index.html');
 
     let indexHtml = await fs.readFile(indexHtmlPath, { encoding: 'utf8' });
+
     debug('file loaded from indexHtmlPath');
+
     const injectedScript = `window.I18N_FOLDER_PATH_MAPPING = ${JSON.stringify(i18nMapping)};`;
+
     indexHtml = indexHtml.replace(
       '<script id="I18N_FOLDER_PATH_SCRIPT"></script>',
       `<script id="I18N_FOLDER_PATH_SCRIPT">${injectedScript}</script>`
     );
+
     if (!indexHtml.includes(injectedScript)) {
       throw new Error('Failed to inject script.');
     }
-    await fs.writeFile(indexHtmlPath, indexHtml);
-    debug('file written to indexHtmlPath');
-    console.log('I18N files is built successfully.');
+
+    console.log('[postprocess-build] Finished adding i18n mappings into HTML.');
+
+    return indexHtml;
   } catch (e) {
-    console.error(e.message);
-    process.exit(1);
+    throw e;
   }
 };
 
-main();
+module.exports = interpolateI18N;

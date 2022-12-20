@@ -73,6 +73,7 @@ import { SHIPPING_TYPES } from '../../common/utils/constants';
 import { isSameAddressCoords, scrollTopPosition } from '../utils';
 import constants from '../../utils/constants';
 import CleverTap from '../../utils/clevertap';
+import prefetch from '../../common/utils/prefetch-assets';
 import styles from './SearchPage.module.scss';
 
 const { COLLECTIONS_TYPE } = constants;
@@ -111,6 +112,8 @@ class SearchPage extends React.Component {
       // Silently fetch address Info without blocking current process
       fetchAddressInfo();
     }
+
+    prefetch(['SITE_HM', 'ORD_MNU'], ['SiteHome', 'OrderingDelivery']);
   };
 
   componentDidUpdate = async prevProps => {
@@ -430,10 +433,12 @@ class SearchPage extends React.Component {
             left={
               <Button
                 type="text"
+                theme="ghost"
                 onClick={this.handleCloseDrawer}
-                className={`${styles.SearchPageCategoryDrawerHeaderButton} beep-text-reset`}
+                className={styles.SearchPageCategoryDrawerHeaderButton}
+                contentClassName={styles.SearchPageCategoryDrawerHeaderButtonContent}
               >
-                <X weight="light" className="tw-flex-shrink-0 tw-text-gray" size={24} />
+                <X weight="light" className="tw-flex-shrink-0 tw-text-2xl tw-text-gray" />
               </Button>
             }
           >

@@ -18,7 +18,7 @@ class OtpModal extends React.Component {
 
   state = {
     otp: '',
-    currentOtpTime: this.props.ResendOtpTime,
+    currentOtpTime: this.props.resendOtpTime,
     isNewInput: true,
   };
 
@@ -81,12 +81,12 @@ class OtpModal extends React.Component {
     const { shouldCountdown: prevShouldCountdown } = prevProps;
 
     if (!prevShouldCountdown && currShouldCountdown) {
-      this.countDown(this.props.ResendOtpTime);
+      this.countDown(this.props.resendOtpTime);
     }
   }
 
   updateAndValidateOtp = otp => {
-    const { sendOtp, updateOtpStatus } = this.props;
+    const { sendOtp, onChange } = this.props;
     this.setState(
       {
         otp,
@@ -94,7 +94,7 @@ class OtpModal extends React.Component {
       () => {
         const { otp: newOtp } = this.state;
         if (newOtp.length !== Constants.OTP_CODE_SIZE) {
-          updateOtpStatus();
+          onChange();
         }
 
         if (newOtp.length === Constants.OTP_CODE_SIZE) {
@@ -122,7 +122,7 @@ class OtpModal extends React.Component {
   }
 
   render() {
-    const { t, onClose, getOtp, isLoading, isResending, phone, showWhatsAppResendBtn, isError } = this.props;
+    const { t, onClose, getOtp, isLoading, isResending, phone, showWhatsAppResendBtn, showError } = this.props;
     const { currentOtpTime, otp } = this.state;
 
     return (
@@ -135,7 +135,7 @@ class OtpModal extends React.Component {
 
         <section ref={this.addressAsideInnerRef} className="text-center">
           <figure className="otp-modal__image-container padding-top-bottom-normal margin-top-bottom-small">
-            {isError ? <img src={beepOtpError} alt="otp" /> : <img src={beepOtpLock} alt="otp" />}
+            {showError ? <img src={beepOtpError} alt="otp" /> : <img src={beepOtpLock} alt="otp" />}
           </figure>
           <div className="otp-modal__content text-left">
             <h2 className="text-size-biggest text-line-height-base">{t('EnterOTP')}</h2>
@@ -147,13 +147,13 @@ class OtpModal extends React.Component {
             <div className="otp-modal__input-group">
               <div
                 className={`otp-modal__form-group form__group flex flex-middle flex-space-between text-size-larger ${
-                  isError ? 'otp-modal__form-group--error' : ''
+                  showError ? 'otp-modal__form-group--error' : ''
                 }`}
               >
                 <input
                   id="newOtpInput"
                   ref={this.inputRef}
-                  value={isError ? '' : otp}
+                  value={showError ? '' : otp}
                   className="otp-modal__input form__input text-size-larger"
                   data-heap-name="common.otp-modal.new-otp-input"
                   onChange={e => this.updateAndValidateOtp(e.target.value)}
@@ -163,7 +163,7 @@ class OtpModal extends React.Component {
                   autoComplete="off"
                 />
               </div>
-              {isError && (
+              {showError && (
                 <p className="otp-modal__failed-otp padding-top-bottom-small">{t('CodeVerificationFailed')}</p>
               )}
             </div>
@@ -228,24 +228,25 @@ class OtpModal extends React.Component {
 
 OtpModal.propTypes = {
   phone: PropTypes.string,
-  buttonText: PropTypes.string,
-  ResendOtpTime: PropTypes.number,
+  resendOtpTime: PropTypes.number,
   isLoading: PropTypes.bool,
-  isError: PropTypes.bool,
+  showError: PropTypes.bool,
   showWhatsAppResendBtn: PropTypes.bool,
   shouldCountdown: PropTypes.bool,
   onClose: PropTypes.func,
+  onChange: PropTypes.func,
   getOtp: PropTypes.func,
   sendOtp: PropTypes.func,
 };
 
 OtpModal.defaultProps = {
   phone: '',
-  buttonText: '',
-  ResendOtpTime: 0,
+  resendOtpTime: 0,
+  showError: false,
   isLoading: false,
   shouldCountdown: false,
   onClose: () => {},
+  onChange: () => {},
   sendOtp: () => {},
 };
 OtpModal.displayName = 'OtpModal';
