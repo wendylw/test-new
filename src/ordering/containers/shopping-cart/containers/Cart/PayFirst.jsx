@@ -7,6 +7,7 @@ import _get from 'lodash/get';
 import _floor from 'lodash/floor';
 import _replace from 'lodash/replace';
 import _isNil from 'lodash/isNil';
+import { Info } from 'phosphor-react';
 import Billing from '../../../../components/Billing';
 import CartList from '../../components/CartList';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -16,10 +17,10 @@ import Constants from '../../../../../utils/constants';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CurrencyNumber from '../../../../components/CurrencyNumber';
 import RedirectPageLoader from '../../../../components/RedirectPageLoader';
+import PageProcessingLoader from '../../../../components/PageProcessingLoader';
 import { actions as promotionActionCreators } from '../../../../redux/modules/promotion';
 import {
   actions as appActionCreators,
-  getUser,
   getBusinessInfo,
   getShoppingCart,
   getServiceChargeRate,
@@ -36,11 +37,25 @@ import {
   getIsUserProfileStatusFulfilled,
   getIsWebview,
   getIsTNGMiniProgram,
+  getEnableCashback,
+  getCartApplyCashback,
+  getShouldShowCashbackSwitchButton,
+  getUserIsLogin,
+  getIsFreeOrder,
 } from '../../../../redux/modules/app';
 import { IconError, IconClose, IconLocalOffer } from '../../../../../components/Icons';
-import { loadStockStatus as loadStockStatusThunk } from '../../redux/common/thunks';
-import { getCheckingInventoryPendingState, getShouldDisablePayButton } from '../../redux/common/selector';
+import {
+  loadStockStatus as loadStockStatusThunk,
+  reloadBillingByCashback as reloadBillingByCashbackThunk,
+} from '../../redux/common/thunks';
+import {
+  getCheckingInventoryPendingState,
+  getShouldDisablePayButton,
+  getIsReloadBillingByCashbackRequestPending,
+  getIsReloadBillingByCashbackRequestRejected,
+} from '../../redux/common/selector';
 import { GTM_TRACKING_EVENTS, gtmEventTracking } from '../../../../../utils/gtm';
+import { toast, alert } from '../../../../../common/utils/feedback';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
 import CreateOrderButton from '../../../../components/CreateOrderButton';
@@ -57,6 +72,7 @@ class PayFirst extends Component {
       productsContainerHeight: '0px',
       pendingBeforeCreateOrder: false,
       shouldShowRedirectLoader: false,
+      isCreatingOrder: false,
     };
   }
 
@@ -83,8 +99,7 @@ class PayFirst extends Component {
   };
 
   handleClickContinue = async () => {
-    const { user, history, appActions, loadStockStatus } = this.props;
-    const { isLogin } = user || {};
+    const { isLogin, history, appActions, loadStockStatus } = this.props;
 
     const { error } = await loadStockStatus();
     const redirectLocation = {
@@ -246,8 +261,7 @@ class PayFirst extends Component {
   };
 
   handleGotoPromotion = async () => {
-    const { history, user, storeInfoForCleverTap, isWebview, appActions } = this.props;
-    const { isLogin } = user || {};
+    const { history, isLogin, storeInfoForCleverTap, isWebview, appActions } = this.props;
 
     CleverTap.pushEvent('Cart page - click add promo code/voucher', storeInfoForCleverTap);
 
@@ -387,19 +401,19 @@ class PayFirst extends Component {
 
   renderCreateOrderButton = () => {
     const { t, history, isValidCreateOrder, pendingCheckingInventory, shouldDisablePayButton } = this.props;
-    const { pendingBeforeCreateOrder } = this.state;
+    const { pendingBeforeCreateOrder, isCreatingOrder } = this.state;
     return (
       <CreateOrderButton
         className="button button__fill button__block padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
         history={history}
         data-testid="pay"
         data-heap-name="ordering.cart.pay-btn"
-        disabled={shouldDisablePayButton || pendingBeforeCreateOrder}
+        disabled={shouldDisablePayButton || pendingBeforeCreateOrder || isCreatingOrder}
         validCreateOrder={isValidCreateOrder}
         beforeCreateOrder={this.handleBeforeCreateOrder}
         afterCreateOrder={this.handleAfterCreateOrder}
         loaderText={t('Processing')}
-        processing={pendingCheckingInventory || pendingBeforeCreateOrder}
+        processing={pendingCheckingInventory || pendingBeforeCreateOrder || isCreatingOrder}
       >
         {this.getOrderButtonContent()}
       </CreateOrderButton>
@@ -416,11 +430,14 @@ class PayFirst extends Component {
       appActions,
       isUserProfileStatusFulfilled,
       isTNGMiniProgram,
+      isFreeOrder,
     } = this.props;
     const pathname = hasLoginGuardPassed ? ROUTER_PATHS.ORDERING_PAYMENT : ROUTER_PATHS.ORDERING_LOGIN;
     this.setState({ pendingBeforeCreateOrder: true });
 
-    if (isTNGMiniProgram) {
+    if (isFreeOrder) {
+      this.setState({ isCreatingOrder: true });
+    } else if (isTNGMiniProgram) {
       this.setState({ shouldShowRedirectLoader: true });
     }
 
@@ -454,6 +471,7 @@ class PayFirst extends Component {
   };
 
   handleAfterCreateOrder = orderId => {
+    this.setState({ isCreatingOrder: false });
     this.setState({ shouldShowRedirectLoader: !!orderId });
 
     const { isValidCreateOrder } = this.props;
@@ -502,6 +520,54 @@ class PayFirst extends Component {
     return pendingCheckingInventory || pendingBeforeCreateOrder ? processingContent : buttonContent;
   };
 
+  handleClickLoginButton = async () => {
+    const { history, appActions, isWebview } = this.props;
+
+    CleverTap.pushEvent('Login - view login screen', {
+      'Screen Name': 'Cart Page',
+    });
+
+    if (isWebview) {
+      // BEEP-2663: In case users can click on the login button in the beep apps, we need to call the native login method.
+      await appActions.loginByBeepApp();
+      return;
+    }
+
+    // By default, redirect users to the web login page
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
+  };
+
+  handleToggleCashbackSwitch = async event => {
+    const { reloadBillingByCashback, appActions, t } = this.props;
+    const nextApplyStatus = event.target.checked;
+
+    // Optimistic update
+    appActions.updateCashbackApplyStatus(nextApplyStatus);
+
+    await reloadBillingByCashback(nextApplyStatus);
+
+    const { hasUpdateCashbackApplyStatusFailed } = this.props;
+
+    if (hasUpdateCashbackApplyStatusFailed) {
+      // Revert cashback apply status to the original one
+      appActions.updateCashbackApplyStatus(!nextApplyStatus);
+      toast(t(`${nextApplyStatus ? 'ApplyCashbackFailedDescription' : 'RemoveCashbackFailedDescription'}`));
+    }
+  };
+
+  handleClickCashbackInfoButton = () => {
+    const { t } = this.props;
+
+    alert(t('CashbackInfoDescription'), {
+      title: t('CashbackInfoTitle'),
+      closeButtonContent: t('GotIt'),
+    });
+  };
+
   formatCleverTapAttributes(product) {
     return {
       'category name': product.categoryName,
@@ -528,6 +594,65 @@ class PayFirst extends Component {
       return promotion.promoCode;
     }
     return '';
+  }
+
+  renderCashbackItem() {
+    const { t, isLogin, isCashbackEnabled, isCashbackApplied, shouldShowSwitchButton, cartBilling } = this.props;
+    const { cashback } = cartBilling || {};
+
+    if (!isCashbackEnabled) return null;
+
+    return (
+      <li
+        className={`padding-top-bottom-small padding-left-right-small border-radius-base flex flex-middle flex-space-between ${
+          isLogin ? 'margin-small cart-cashback__item-primary' : ''
+        }`}
+      >
+        <div className="margin-smaller flex flex-middle flex__shrink-fixed">
+          <span className="text-size-big text-weight-bolder">{t('BeepCashback')}</span>
+          {cashback > 0 ? (
+            <button
+              className="flex padding-smaller cart-cashback__info-button"
+              aria-label="Beep Cashback Info"
+              onClick={this.handleClickCashbackInfoButton}
+            >
+              <Info size={16} />
+            </button>
+          ) : null}
+        </div>
+        {isLogin ? (
+          <div className="flex flex-middle">
+            {shouldShowSwitchButton ? (
+              <label className="cart-cashback__switch-container margin-left-right-small" htmlFor="cashback-switch">
+                <input
+                  id="cashback-switch"
+                  className="cart-cashback__toggle-checkbox"
+                  type="checkbox"
+                  checked={isCashbackApplied}
+                  onChange={this.handleToggleCashbackSwitch}
+                />
+                <div className="cart-cashback__toggle-switch" />
+              </label>
+            ) : null}
+            <span
+              className={`margin-smaller cart-cashback__switch-label__${
+                isCashbackApplied || !shouldShowSwitchButton ? 'active' : 'inactive'
+              }`}
+            >
+              - <CurrencyNumber className="text-size-big" money={cashback || 0} />
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={this.handleClickLoginButton}
+            className="cart-cashback__button-login button button__fill padding-top-bottom-smaller padding-left-right-normal"
+            data-heap-name="ordering.cart.cashback.login-btn"
+          >
+            {t('Login')}
+          </button>
+        )}
+      </li>
+    );
   }
 
   renderPromotionItem() {
@@ -632,16 +757,14 @@ class PayFirst extends Component {
       cartBilling,
       shoppingCart,
       businessInfo,
-      user,
-      history,
       storeInfoForCleverTap,
       shippingType,
       serviceChargeRate,
+      shouldShowProcessingLoader,
     } = this.props;
     const { cartContainerHeight, shouldShowRedirectLoader } = this.state;
     const { items } = shoppingCart || {};
     const { count, subtotal, takeawayCharges, total, tax, serviceCharge, cashback, shippingFee } = cartBilling || {};
-    const { isLogin } = user || {};
 
     if (!(cartBilling && items)) {
       return null;
@@ -706,12 +829,10 @@ class PayFirst extends Component {
             takeawayCharges={takeawayCharges}
             subtotal={subtotal}
             total={total}
-            creditsBalance={cashback}
             isDeliveryType={Utils.isDeliveryType()}
             shippingFee={shippingFee}
-            isLogin={isLogin}
-            history={history}
           >
+            {this.renderCashbackItem()}
             {this.renderPromotionItem()}
           </Billing>
         </div>
@@ -733,6 +854,7 @@ class PayFirst extends Component {
           </button>
           {Utils.isQROrder() ? this.renderCreateOrderButton() : this.renderPayOrderButton()}
         </footer>
+        <PageProcessingLoader show={shouldShowProcessingLoader} loaderText={t('Loading')} />
       </section>
     );
   }
@@ -749,14 +871,15 @@ PayFirst.propTypes = {
     getProfileInfo: PropTypes.func,
     updateDeliveryDetails: PropTypes.func,
     loginByBeepApp: PropTypes.func,
+    updateCashbackApplyStatus: PropTypes.func,
   }),
   promotionActions: PropTypes.shape({
     dismissPromotion: PropTypes.func,
   }),
   loadStockStatus: PropTypes.func,
+  reloadBillingByCashback: PropTypes.func,
   pendingCheckingInventory: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  user: PropTypes.object,
+  isLogin: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   cartBilling: PropTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
@@ -771,6 +894,7 @@ PayFirst.propTypes = {
   hasLoginGuardPassed: PropTypes.bool,
   isBillingTotalInvalid: PropTypes.bool,
   validBillingTotal: PropTypes.number,
+  isFreeOrder: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   deliveryDetails: PropTypes.object,
   userProfile: PropTypes.shape({
@@ -782,6 +906,11 @@ PayFirst.propTypes = {
   serviceChargeRate: PropTypes.number,
   isWebview: PropTypes.bool,
   isTNGMiniProgram: PropTypes.bool,
+  isCashbackEnabled: PropTypes.bool,
+  isCashbackApplied: PropTypes.bool,
+  shouldShowSwitchButton: PropTypes.bool,
+  shouldShowProcessingLoader: PropTypes.bool,
+  hasUpdateCashbackApplyStatusFailed: PropTypes.bool,
 };
 
 PayFirst.defaultProps = {
@@ -793,13 +922,15 @@ PayFirst.defaultProps = {
     getProfileInfo: () => {},
     updateDeliveryDetails: () => {},
     loginByBeepApp: () => {},
+    updateCashbackApplyStatus: () => {},
   },
   promotionActions: {
     dismissPromotion: () => {},
   },
   loadStockStatus: () => {},
+  reloadBillingByCashback: () => {},
   pendingCheckingInventory: false,
-  user: {},
+  isLogin: false,
   cartBilling: {},
   shoppingCart: {},
   businessInfo: {},
@@ -809,6 +940,7 @@ PayFirst.defaultProps = {
   shouldDisablePayButton: false,
   hasLoginGuardPassed: false,
   isBillingTotalInvalid: false,
+  isFreeOrder: false,
   validBillingTotal: 0,
   deliveryDetails: {},
   userProfile: {
@@ -820,6 +952,11 @@ PayFirst.defaultProps = {
   serviceChargeRate: 0,
   isWebview: false,
   isTNGMiniProgram: false,
+  isCashbackEnabled: false,
+  isCashbackApplied: false,
+  shouldShowSwitchButton: false,
+  shouldShowProcessingLoader: false,
+  hasUpdateCashbackApplyStatusFailed: false,
 };
 
 /* TODO: backend data */
@@ -828,13 +965,14 @@ export default compose(
   connect(
     state => ({
       pendingCheckingInventory: getCheckingInventoryPendingState(state),
-      user: getUser(state),
+      isLogin: getUserIsLogin(state),
       cartBilling: getCartBilling(state),
       shoppingCart: getShoppingCart(state),
       serviceChargeRate: getServiceChargeRate(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
       validBillingTotal: getValidBillingTotal(state),
+      isFreeOrder: getIsFreeOrder(state),
       isValidCreateOrder: getIsValidCreateOrder(state),
       shouldDisablePayButton: getShouldDisablePayButton(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
@@ -846,9 +984,15 @@ export default compose(
       isUserProfileStatusFulfilled: getIsUserProfileStatusFulfilled(state),
       isWebview: getIsWebview(state),
       isTNGMiniProgram: getIsTNGMiniProgram(state),
+      isCashbackEnabled: getEnableCashback(state),
+      isCashbackApplied: getCartApplyCashback(state),
+      shouldShowSwitchButton: getShouldShowCashbackSwitchButton(state),
+      shouldShowProcessingLoader: getIsReloadBillingByCashbackRequestPending(state),
+      hasUpdateCashbackApplyStatusFailed: getIsReloadBillingByCashbackRequestRejected(state),
     }),
     dispatch => ({
       loadStockStatus: bindActionCreators(loadStockStatusThunk, dispatch),
+      reloadBillingByCashback: bindActionCreators(reloadBillingByCashbackThunk, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       promotionActions: bindActionCreators(promotionActionCreators, dispatch),
     })

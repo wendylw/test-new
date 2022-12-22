@@ -92,6 +92,7 @@ const CartModel = {
       validFrom: null,
       promoType: '',
     },
+    applyCashback: false,
   },
 };
 
@@ -334,8 +335,6 @@ export const actions = {
     try {
       const { type: otpType } = payload;
 
-      // BEEP-2685: New Relic needs to know the OTP first send time.
-      window.newrelic?.addPageAction('ordering.login.get-otp-start');
       logger.log('Ordering_App_StartToGetOTP');
 
       dispatch({ type: types.GET_OTP_REQUEST, payload: { otpType } });
@@ -345,15 +344,8 @@ export const actions = {
         platform: OTP_REQUEST_PLATFORM,
       });
 
-      window.newrelic?.addPageAction('ordering.login.get-otp-success');
-
       dispatch({ type: types.GET_OTP_SUCCESS });
     } catch (error) {
-      window.newrelic?.addPageAction('ordering.login.get-otp-failed', {
-        error: error?.message,
-        code: error?.code,
-      });
-
       dispatch({
         type: types.GET_OTP_FAILURE,
         error,
@@ -415,11 +407,6 @@ export const actions = {
       }
     } catch (error) {
       logger.error('Ordering_App_SyncLoginFromNativeFailed', {
-        error: error?.message,
-        code: error?.code,
-      });
-
-      window.newrelic?.addPageAction('ordering.syncLoginFromNative.error', {
         error: error?.message,
         code: error?.code,
       });
@@ -842,6 +829,11 @@ export const actions = {
       payload: newStoreId,
     });
   },
+
+  updateCashbackApplyStatus: newStatus => ({
+    type: types.UPDATE_SHOPPINGCART_APPLYCASHBACK,
+    payload: newStatus,
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -1202,6 +1194,8 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
     return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED };
+  } else if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
+    return { ...state, billing: { ...state.billing, applyCashback: action.payload } };
   }
 
   return state;
@@ -1501,10 +1495,15 @@ export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeli
 
 export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
 export const getCartSubtotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'subtotal', null));
+export const getCartCashback = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'cashback', null));
 export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =>
   _get(cartBilling, 'totalCashback', null)
 );
 export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
+
+export const getCartApplyCashback = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'applyCashback', false)
+);
 
 export const getServiceChargeRate = createSelector(getCartBilling, cartBilling =>
   _get(cartBilling, 'serviceChargeInfo.serviceChargeRate', 0)
@@ -1566,6 +1565,8 @@ export const getStoreInfoForCleverTap = state => {
 
   return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
 };
+
+export const getIsCartStatusRejected = createSelector(getCartStatus, status => status === API_REQUEST_STATUS.REJECTED);
 
 export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
 
@@ -1768,14 +1769,15 @@ export const getHasLoginGuardPassed = createSelector(
   (isUserLogin, isLoginFree) => isUserLogin || isLoginFree
 );
 
+export const getIsFreeOrder = createSelector(getCartBilling, cartBilling => {
+  const billingTotal = _get(cartBilling, 'total', 0);
+  return billingTotal === 0;
+});
+
 export const getIsValidCreateOrder = createSelector(
-  getCartBilling,
+  getIsFreeOrder,
   getIsTNGMiniProgram,
-  (cartBilling, isTNGMiniProgram) => {
-    const { total } = cartBilling || {};
-    const isFree = !total;
-    return isTNGMiniProgram || isFree;
-  }
+  (isFreeOrder, isTNGMiniProgram) => isTNGMiniProgram || isFreeOrder
 );
 
 export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCart => {
@@ -1882,3 +1884,4 @@ export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
   getAddOrUpdateShoppingCartItemStatus,
   addOrUpdateShoppingCartItemStatus => addOrUpdateShoppingCartItemStatus === API_REQUEST_STATUS.REJECTED
 );
+export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => cashback > 0);

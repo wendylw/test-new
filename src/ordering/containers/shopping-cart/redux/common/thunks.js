@@ -1,8 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
-import { getShoppingCart, getBusinessUTCOffset } from '../../../../redux/modules/app';
+import {
+  getShoppingCart,
+  getBusinessUTCOffset,
+  actions as appActions,
+  getIsCartStatusRejected,
+} from '../../../../redux/modules/app';
 import Utils from '../../../../../utils/utils';
-import { fetchStockStatus } from './api-request';
+import { fetchStockStatus, applyCashback, unapplyCashback } from './api-request';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { alert } from '../../../../../common/feedback';
@@ -55,3 +60,24 @@ export const loadStockStatus = createAsyncThunk('ordering/cart/common/fetchStock
     throw e;
   }
 });
+
+export const reloadBillingByCashback = createAsyncThunk(
+  'ordering/cart/common/reloadBillingByCashback',
+  async (applyStatus, { dispatch, getState }) => {
+    try {
+      applyStatus ? await applyCashback() : await unapplyCashback();
+
+      await dispatch(appActions.loadShoppingCart());
+
+      const isShoppingCartRequestFailed = getIsCartStatusRejected(getState());
+
+      if (isShoppingCartRequestFailed) {
+        throw new Error('Shopping cart failed to update');
+      }
+    } catch (e) {
+      logger.error('Ordering_ShoppingCart_ReloadBillingByCashbackFailed', { message: e?.message });
+
+      throw e;
+    }
+  }
+);

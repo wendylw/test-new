@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { withTranslation, Trans } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { Info } from 'phosphor-react';
 import Utils from '../../../utils/utils';
 import { getLocaleTimeTo24hour } from '../../../utils/time-lib';
 import Constants from '../../../utils/constants';
@@ -16,15 +17,20 @@ import {
   getIsWebview,
   getIsTNGMiniProgram,
   getHasLoginGuardPassed,
+  getEnableCashback,
 } from '../../redux/modules/app';
 import logger from '../../../utils/monitoring/logger';
 import prefetch from '../../../common/utils/prefetch-assets';
 import { actions as resetCartSubmissionActions } from '../../redux/cart/index';
+import { actions as tableSummaryActionCreators } from './redux';
 import {
   loadOrders as loadOrdersThunk,
   queryOrdersAndStatus as queryOrdersAndStatusThunk,
   clearQueryOrdersAndStatus as clearQueryOrdersAndStatusThunk,
   gotoPayment as gotoPaymentThunk,
+  reloadBillingByCashback as reloadBillingByCashbackThunk,
+  showProcessingLoader as showProcessingLoaderThunk,
+  hideProcessingLoader as hideProcessingLoaderThunk,
 } from './redux/thunks';
 import {
   removePromo as removePromoThunk,
@@ -39,8 +45,8 @@ import {
   getOrderTotal,
   getOrderCashback,
   getOrderShippingFee,
-  getOrderPlacedStatus,
-  getOrderPendingPaymentStatus,
+  getIsOrderPlaced,
+  getIsOrderPendingPayment,
   getSubOrdersMapping,
   getThankYouPageUrl,
   getOrderServiceChargeRate,
@@ -49,11 +55,17 @@ import {
   getOrderPromotionCode,
   getVoucherBillingIfExist,
   getOrderVoucherCode,
+  getOrderApplyCashback,
   getOrderVoucherDiscount,
   getPromoOrVoucherExist,
   getShouldShowRedirectLoader,
   getShouldShowPayNowButton,
   getIsStorePayByCashOnly,
+  getShouldShowSwitchButton,
+  getShouldDisablePayButton,
+  getShouldShowProcessingLoader,
+  getIsReloadBillingByCashbackRequestPending,
+  getIsReloadBillingByCashbackRequestRejected,
   getCleverTapAttributes,
 } from './redux/selectors';
 import CleverTap from '../../../utils/clevertap';
@@ -65,6 +77,7 @@ import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../comp
 import Billing from '../../components/Billing';
 import RedirectPageLoader from '../../components/RedirectPageLoader';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
+import { toast, alert as alertV2 } from '../../../common/utils/feedback';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -74,7 +87,6 @@ export class TableSummary extends React.Component {
     super(props);
     this.state = {
       cartContainerHeight: '100%',
-      shouldShowProcessingLoader: false,
     };
   }
 
@@ -180,12 +192,12 @@ export class TableSummary extends React.Component {
   };
 
   showUnableBackMenuPageAlert = () => {
-    const { t, orderPendingPaymentStatus } = this.props;
+    const { t, isOrderPendingPayment } = this.props;
 
     alert(
       <Trans
         t={t}
-        i18nKey={orderPendingPaymentStatus ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
+        i18nKey={isOrderPendingPayment ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
         components={{ bold: <strong className="text-size-big" /> }}
       />,
       {
@@ -197,11 +209,11 @@ export class TableSummary extends React.Component {
   };
 
   handleHeaderNavFunc = () => {
-    const { orderPlacedStatus, cleverTapAttributes } = this.props;
+    const { isOrderPlaced, cleverTapAttributes } = this.props;
 
     CleverTap.pushEvent('Table Summary - Back', cleverTapAttributes);
 
-    if (orderPlacedStatus) {
+    if (isOrderPlaced) {
       this.goToMenuPage();
 
       return;
@@ -211,16 +223,16 @@ export class TableSummary extends React.Component {
   };
 
   getOrderStatusOptionsEl = () => {
-    const { t, orderPlacedStatus, orderPendingPaymentStatus } = this.props;
+    const { t, isOrderPlaced, isOrderPendingPayment } = this.props;
     let options = null;
 
-    if (orderPlacedStatus) {
+    if (isOrderPlaced) {
       options = {
         className: 'table-summary__base-info-status--created',
         icon: <IconChecked className="icon icon__success padding-small" />,
         title: <span className="margin-left-right-smaller text-size-big text-capitalize">{t('OrderPlaced')}</span>,
       };
-    } else if (orderPendingPaymentStatus) {
+    } else if (isOrderPendingPayment) {
       options = {
         className: 'table-summary__base-info-status--locked',
         icon: <IconError className="icon icon__primary padding-small" />,
@@ -253,9 +265,9 @@ export class TableSummary extends React.Component {
   };
 
   handleGotoPromotion = async () => {
-    const { history, userIsLogin, isWebview, loginByBeepApp } = this.props;
+    const { history, isLogin, isWebview, loginByBeepApp } = this.props;
 
-    if (userIsLogin) {
+    if (isLogin) {
       history.push({
         pathname: Constants.ROUTER_PATHS.ORDERING_PROMOTION,
         search: window.location.search,
@@ -279,7 +291,15 @@ export class TableSummary extends React.Component {
   };
 
   handleLogin = async () => {
-    const { history, isWebview, isTNGMiniProgram, loginByBeepApp, loginByTngMiniProgram } = this.props;
+    const {
+      history,
+      isWebview,
+      isTNGMiniProgram,
+      loginByBeepApp,
+      loginByTngMiniProgram,
+      showProcessingLoader,
+      hideProcessingLoader,
+    } = this.props;
 
     if (isWebview) {
       await loginByBeepApp();
@@ -287,9 +307,9 @@ export class TableSummary extends React.Component {
     }
 
     if (isTNGMiniProgram) {
-      this.setState({ shouldShowProcessingLoader: true });
+      await showProcessingLoader();
       await loginByTngMiniProgram();
-      this.setState({ shouldShowProcessingLoader: false });
+      await hideProcessingLoader();
       return;
     }
 
@@ -307,12 +327,60 @@ export class TableSummary extends React.Component {
 
     if (!hasLoginGuardPassed) {
       await this.handleLogin();
-      const { userIsLogin } = this.props;
+      const { isLogin } = this.props;
 
-      if (!userIsLogin) return;
+      if (!isLogin) return;
     }
 
     await gotoPayment();
+  };
+
+  handleToggleCashbackSwitch = async event => {
+    const { t, updateCashbackApplyStatus, reloadBillingByCashback } = this.props;
+    const nextApplyStatus = event.target.checked;
+
+    // Optimistic update
+    updateCashbackApplyStatus(nextApplyStatus);
+
+    await reloadBillingByCashback(nextApplyStatus);
+
+    const { hasUpdateCashbackApplyStatusFailed } = this.props;
+
+    if (hasUpdateCashbackApplyStatusFailed) {
+      // Revert cashback apply status to the original one
+      updateCashbackApplyStatus(!nextApplyStatus);
+      toast(t(`${nextApplyStatus ? 'ApplyCashbackFailedDescription' : 'RemoveCashbackFailedDescription'}`));
+    }
+  };
+
+  handleClickCashbackInfoButton = () => {
+    const { t } = this.props;
+
+    alertV2(t('CashbackInfoDescription'), {
+      title: t('CashbackInfoTitle'),
+      closeButtonContent: t('GotIt'),
+    });
+  };
+
+  handleClickLoginButton = async () => {
+    const { history, isWebview, loginByBeepApp } = this.props;
+
+    CleverTap.pushEvent('Login - view login screen', {
+      'Screen Name': 'Cart Page',
+    });
+
+    if (isWebview) {
+      // BEEP-2663: In case users can click on the login button in the beep apps, we need to call the native login method.
+      await loginByBeepApp();
+      return;
+    }
+
+    // By default, redirect users to the web login page
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_LOGIN,
+      search: window.location.search,
+      state: { shouldGoBack: true },
+    });
   };
 
   showShortPromoCode() {
@@ -339,6 +407,72 @@ export class TableSummary extends React.Component {
     return '';
   }
 
+  renderCashbackItem() {
+    const {
+      t,
+      isLogin,
+      cashback,
+      isCashbackEnabled,
+      isCashbackApplied,
+      isOrderPendingPayment,
+      shouldShowSwitchButton,
+    } = this.props;
+
+    if (!isCashbackEnabled) return null;
+
+    return (
+      <li
+        className={`padding-top-bottom-small padding-left-right-small border-radius-base flex flex-middle flex-space-between ${
+          isLogin ? 'margin-small table-summary__item-primary' : ''
+        }`}
+      >
+        <div className="margin-smaller flex flex-middle flex__shrink-fixed">
+          <span className="text-size-big text-weight-bolder">{t('BeepCashback')}</span>
+          {cashback > 0 ? (
+            <button
+              className="flex padding-smaller table-summary__cashback-info-button"
+              aria-label="Beep Cashback Info"
+              onClick={this.handleClickCashbackInfoButton}
+            >
+              <Info size={16} />
+            </button>
+          ) : null}
+        </div>
+        {isOrderPendingPayment || isLogin ? (
+          <div className="flex flex-middle">
+            {shouldShowSwitchButton ? (
+              <label className="table-summary__switch-container margin-left-right-small" htmlFor="cashback-switch">
+                <input
+                  id="cashback-switch"
+                  className="table-summary__toggle-checkbox"
+                  type="checkbox"
+                  checked={isCashbackApplied}
+                  onChange={this.handleToggleCashbackSwitch}
+                />
+                <div className="table-summary__toggle-switch" />
+              </label>
+            ) : null}
+            <span
+              className={`margin-smaller table-summary__switch-label__${
+                isCashbackApplied || !shouldShowSwitchButton ? 'active' : 'inactive'
+              }`}
+            >
+              - <CurrencyNumber className="text-size-big" money={cashback || 0} />
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={this.handleClickLoginButton}
+            className="table-summary__button-login button button__fill padding-top-bottom-smaller padding-left-right-normal"
+            data-heap-name="ordering.table-summary.cashback.login-btn"
+          >
+            {t('Login')}
+          </button>
+        )}
+      </li>
+    );
+  }
+
   renderPromotionItem() {
     const { t, oderPromoDiscount, orderVoucherDiscount, promoOrVoucherExist } = this.props;
 
@@ -354,7 +488,7 @@ export class TableSummary extends React.Component {
               <button
                 onClick={this.handleDismissPromotion}
                 className="button flex__shrink-fixed"
-                data-heap-name="ordering.cart.dismiss-promo"
+                data-heap-name="ordering.table-summary.dismiss-promo"
               >
                 <IconClose className="icon icon__small" />
               </button>
@@ -371,7 +505,7 @@ export class TableSummary extends React.Component {
           <button
             className="table-summary__button-acquisition button button__block text-left padding-top-bottom-smaller padding-left-right-normal"
             onClick={this.handleGotoPromotion}
-            data-heap-name="ordering.cart.add-promo"
+            data-heap-name="ordering.table-summary.add-promo"
           >
             <IconLocalOffer className="icon icon__small icon__primary text-middle flex__shrink-fixed" />
             <span className="margin-left-right-small text-size-big text-middle">{t('AddPromoCode')}</span>
@@ -479,8 +613,6 @@ export class TableSummary extends React.Component {
   render() {
     const {
       t,
-      history,
-      userIsLogin,
       businessInfo,
       shippingType,
       tax,
@@ -488,16 +620,17 @@ export class TableSummary extends React.Component {
       serviceChargeRate,
       subtotal,
       total,
-      cashback,
       shippingFee,
-      orderPlacedStatus,
-      orderPendingPaymentStatus,
+      isOrderPlaced,
+      shouldShowLoadingText,
+      shouldDisablePayButton,
       shouldShowRedirectLoader,
+      shouldShowProcessingLoader,
       shouldShowPayNowButton,
       isTNGMiniProgram,
       isStorePayByCashOnly,
     } = this.props;
-    const { cartContainerHeight, shouldShowProcessingLoader } = this.state;
+    const { cartContainerHeight } = this.state;
 
     if (shouldShowRedirectLoader) {
       return <RedirectPageLoader />;
@@ -515,7 +648,7 @@ export class TableSummary extends React.Component {
           titleAlignment="center"
           className="flex-middle"
           contentClassName="table-summary__header-content flex-middle flex-center flex-space-between text-capitalize"
-          data-heap-name="ordering.need-help.header"
+          data-heap-name="ordering.table-summary.header"
           isPage
           title={t('TableSummary')}
           navFunc={this.handleHeaderNavFunc}
@@ -542,14 +675,11 @@ export class TableSummary extends React.Component {
             serviceChargeRate={serviceChargeRate}
             subtotal={subtotal}
             total={total}
-            creditsBalance={cashback}
             shippingFee={shippingFee}
             businessInfo={businessInfo}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
-            isLogin={userIsLogin}
-            history={history}
-            orderPendingPaymentStatus={orderPendingPaymentStatus}
           >
+            {this.renderCashbackItem()}
             {this.renderPromotionItem()}
           </Billing>
         </div>
@@ -565,7 +695,7 @@ export class TableSummary extends React.Component {
             }}
             className="footer padding-small flex flex-middle"
           >
-            {orderPlacedStatus ? (
+            {isOrderPlaced ? (
               <button
                 className="table-summary__outline-button button button__outline button__block flex__grow-1 padding-normal margin-top-bottom-smaller margin-left-right-small text-uppercase text-weight-bolder"
                 onClick={this.goToMenuPage}
@@ -579,12 +709,16 @@ export class TableSummary extends React.Component {
               data-testid="pay"
               data-heap-name="ordering.order-status.table-summary.pay-btn"
               onClick={this.handleClickPayButton}
+              disabled={shouldDisablePayButton}
             >
               {shouldShowPayNowButton ? t('PayNow') : t('SelectPaymentMethod')}
             </button>
           </footer>
         )}
-        <PageProcessingLoader show={shouldShowProcessingLoader} loaderText={t('Processing')} />
+        <PageProcessingLoader
+          show={shouldShowProcessingLoader}
+          loaderText={shouldShowLoadingText ? t('Loading') : t('Processing')}
+        />
       </section>
     );
   }
@@ -593,8 +727,8 @@ export class TableSummary extends React.Component {
 TableSummary.displayName = 'TableSummary';
 
 TableSummary.propTypes = {
-  orderPlacedStatus: PropTypes.bool,
-  orderPendingPaymentStatus: PropTypes.bool,
+  isOrderPlaced: PropTypes.bool,
+  isOrderPendingPayment: PropTypes.bool,
   orderNumber: PropTypes.string,
   tableNumber: PropTypes.string,
   tax: PropTypes.number,
@@ -606,7 +740,7 @@ TableSummary.propTypes = {
   shippingFee: PropTypes.number,
   // eslint-disable-next-line react/forbid-prop-types
   subOrdersMapping: PropTypes.object,
-  userIsLogin: PropTypes.bool,
+  isLogin: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   businessInfo: PropTypes.object,
   businessUTCOffset: PropTypes.number,
@@ -632,15 +766,26 @@ TableSummary.propTypes = {
   isTNGMiniProgram: PropTypes.bool,
   loginByBeepApp: PropTypes.func,
   loginByTngMiniProgram: PropTypes.func,
+  reloadBillingByCashback: PropTypes.func,
+  updateCashbackApplyStatus: PropTypes.func,
+  showProcessingLoader: PropTypes.func,
+  hideProcessingLoader: PropTypes.func,
   hasLoginGuardPassed: PropTypes.bool,
   shouldShowRedirectLoader: PropTypes.bool,
+  shouldShowProcessingLoader: PropTypes.bool,
+  shouldShowLoadingText: PropTypes.bool,
   shouldShowPayNowButton: PropTypes.bool,
   isStorePayByCashOnly: PropTypes.bool,
+  isCashbackEnabled: PropTypes.bool,
+  isCashbackApplied: PropTypes.bool,
+  shouldShowSwitchButton: PropTypes.bool,
+  shouldDisablePayButton: PropTypes.bool,
+  hasUpdateCashbackApplyStatusFailed: PropTypes.bool,
 };
 
 TableSummary.defaultProps = {
-  orderPlacedStatus: false,
-  orderPendingPaymentStatus: false,
+  isOrderPlaced: false,
+  isOrderPendingPayment: false,
   orderNumber: null,
   tableNumber: null,
   tax: 0,
@@ -651,7 +796,7 @@ TableSummary.defaultProps = {
   cashback: 0,
   shippingFee: 0,
   subOrdersMapping: {},
-  userIsLogin: false,
+  isLogin: false,
   businessInfo: {},
   businessUTCOffset: 480,
   shippingType: null,
@@ -675,18 +820,29 @@ TableSummary.defaultProps = {
   isTNGMiniProgram: false,
   loginByBeepApp: () => {},
   loginByTngMiniProgram: () => {},
+  reloadBillingByCashback: () => {},
+  updateCashbackApplyStatus: () => {},
+  showProcessingLoader: () => {},
+  hideProcessingLoader: () => {},
   hasLoginGuardPassed: false,
   shouldShowRedirectLoader: false,
+  shouldShowProcessingLoader: false,
+  shouldShowLoadingText: false,
   shouldShowPayNowButton: false,
   isStorePayByCashOnly: false,
+  isCashbackEnabled: false,
+  isCashbackApplied: false,
+  shouldShowSwitchButton: false,
+  shouldDisablePayButton: false,
+  hasUpdateCashbackApplyStatusFailed: false,
 };
 
 export default compose(
   withTranslation(['OrderingTableSummary']),
   connect(
     state => ({
-      orderPlacedStatus: getOrderPlacedStatus(state),
-      orderPendingPaymentStatus: getOrderPendingPaymentStatus(state),
+      isOrderPlaced: getIsOrderPlaced(state),
+      isOrderPendingPayment: getIsOrderPendingPayment(state),
       orderNumber: getOrderPickUpCode(state),
       tableNumber: getTableNumber(state),
       tax: getOrderTax(state),
@@ -699,7 +855,7 @@ export default compose(
       shippingFee: getOrderShippingFee(state),
       subOrdersMapping: getSubOrdersMapping(state),
       businessUTCOffset: getBusinessUTCOffset(state),
-      userIsLogin: getUserIsLogin(state),
+      isLogin: getUserIsLogin(state),
       businessInfo: getBusinessInfo(state),
       shippingType: getShippingType(state),
       orderBillingPromo: getOrderBillingPromoIfExist(state),
@@ -716,6 +872,13 @@ export default compose(
       shouldShowRedirectLoader: getShouldShowRedirectLoader(state),
       shouldShowPayNowButton: getShouldShowPayNowButton(state),
       isStorePayByCashOnly: getIsStorePayByCashOnly(state),
+      isCashbackEnabled: getEnableCashback(state),
+      isCashbackApplied: getOrderApplyCashback(state),
+      shouldShowSwitchButton: getShouldShowSwitchButton(state),
+      shouldShowProcessingLoader: getShouldShowProcessingLoader(state),
+      shouldDisablePayButton: getShouldDisablePayButton(state),
+      shouldShowLoadingText: getIsReloadBillingByCashbackRequestPending(state),
+      hasUpdateCashbackApplyStatusFailed: getIsReloadBillingByCashbackRequestRejected(state),
     }),
 
     {
@@ -728,6 +891,10 @@ export default compose(
       gotoPayment: gotoPaymentThunk,
       loginByBeepApp: appActions.loginByBeepApp,
       loginByTngMiniProgram: appActions.loginByTngMiniProgram,
+      reloadBillingByCashback: reloadBillingByCashbackThunk,
+      updateCashbackApplyStatus: tableSummaryActionCreators.updateCashbackApplyStatus,
+      showProcessingLoader: showProcessingLoaderThunk,
+      hideProcessingLoader: hideProcessingLoaderThunk,
     }
   )
 )(TableSummary);

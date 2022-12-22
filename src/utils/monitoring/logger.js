@@ -4,6 +4,8 @@ import _isArray from 'lodash/isArray';
 import _isString from 'lodash/isString';
 import _isPlainObject from 'lodash/isPlainObject';
 import _once from 'lodash/once';
+import _get from 'lodash/get';
+import Bowser from 'bowser';
 import tids from './tracing-id';
 import debug from '../debug';
 import { isWebview, isSiteApp, getBeepAppVersion, getUUID, getQueryString } from '../../common/utils';
@@ -47,6 +49,17 @@ export const getMerchantID = () => {
 
   return getBusinessName();
 };
+
+export const getClientInfo = _once(() => {
+  const browserInfo = Bowser.parse(window.navigator.userAgent);
+
+  return {
+    browserName: _get(browserInfo, 'browser.name', ''),
+    browserVersion: _get(browserInfo, 'browser.version', ''),
+    osName: _get(browserInfo, 'os.name', ''),
+    osVersion: _get(browserInfo, 'os.version', ''),
+  };
+});
 
 export const getFormattedTags = tags => {
   const getCustomTags = () => {
@@ -161,6 +174,7 @@ const track = async (name, data, options = {}) => {
           bizFlow,
           shippingType,
         },
+        clientInfo: getClientInfo(),
       },
       privateData: {
         [privateDataKeyName]: data,

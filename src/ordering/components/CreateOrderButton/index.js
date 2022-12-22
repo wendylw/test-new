@@ -207,15 +207,8 @@ class CreateOrderButton extends React.Component {
     }
 
     if (!orderId) {
-      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
-        paymentName: paymentName || 'N/A',
-      });
-
       this.setState({ isLoadingCreatedOrder: true });
       const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
-      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
-        paymentName: paymentName || 'N/A',
-      });
 
       const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
       if (order) {

@@ -153,6 +153,7 @@ function CheckoutForm({
         throw payload.error;
       }
 
+      logger.log('Ordering_Payment_CreatePaymentMethodByStripeSucceeded');
       setPaymentMethod(payload.paymentMethod);
     } catch (error) {
       logger.error(

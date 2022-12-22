@@ -53,7 +53,6 @@ const Result = props => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
       logger.log('Common_Feedback_ShowResult', { text });
-      window.newrelic?.addPageAction('feedback.result.show', { text });
     }
   }, [children, show]);
 
@@ -61,7 +60,7 @@ const Result = props => {
     <>
       {header}
       <div className={`${styles.resultContent} ${className}`}>
-        {children}
+        <div ref={contentContainerRef}>{children}</div>
         <div className={styles.resultFooter}>
           <Button
             type="primary"
