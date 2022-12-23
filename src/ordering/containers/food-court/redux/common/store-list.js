@@ -26,7 +26,7 @@ import JuiceImage from '../../../../../images/food-court-temp/merchant-Juice.jpe
 import JoeImage from '../../../../../images/food-court-temp/merchant-Joe.jpeg';
 import RiceImage from '../../../../../images/food-court-temp/merchant-rice.jpeg';
 import SeoulImage from '../../../../../images/food-court-temp/merchant-Seoul.png';
-import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.jpg';
+import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.png';
 import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
 import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
 import XOXOImage from '../../../../../images/food-court-temp/merchant-XOXO.jpg';
