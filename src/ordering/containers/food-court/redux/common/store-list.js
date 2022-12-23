@@ -143,16 +143,15 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '20:00',
     },
   },
-  '63523a12a66d9d00073eda38': {
-    id: '63523a12a66d9d00073eda38',
-    title: 'Subway',
+  '63a29c30e677e80008f0470d': {
+    id: '63a29c30e677e80008f0470d',
+    title: 'Subway Syopz',
     imageNoCompression: SubwayImage,
-    tags: ['Subs', 'Cookies', 'Sandwiches'],
+    tags: ['Sandwiches', 'Subs', 'Cookies'],
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '22:00',
     },
-    unable: true,
   },
   '63745ceb7b7f960007de8dc5': {
     id: '63745ceb7b7f960007de8dc5',
@@ -164,16 +163,15 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '19:00',
     },
   },
-  '63523bccda13950007f6f714': {
-    id: '63523bccda13950007f6f714',
-    title: 'Salad Atelier',
+  '63a2a5a16b6f220007796bc7': {
+    id: '63a2a5a16b6f220007796bc7',
+    title: "Salad Atelier OTG (Taylor's Lakeside)",
     imageNoCompression: SaladAtelierImage,
-    tags: ['Salad Bar', 'Healthy', 'Fresh'],
+    tags: ['Healthy', 'Salad', 'Fresh'],
     businessHours: {
-      validTimeFrom: '10:00',
+      validTimeFrom: '8:30',
       validTimeTo: '19:30',
     },
-    unable: true,
   },
   '63523c45da13950007f71dd9': {
     id: '63523c45da13950007f71dd9',
