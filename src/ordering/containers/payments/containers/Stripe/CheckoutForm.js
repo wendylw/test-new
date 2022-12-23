@@ -15,7 +15,9 @@ import ErrorMessage from './ErrorMessage';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
+import logger from '../../../../../utils/monitoring/logger';
 import { STRIPE_LOAD_TIME_OUT } from './constants';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const { PAYMENT_PROVIDERS, PAYMENT_API_PAYMENT_OPTIONS } = Constants;
 
@@ -98,6 +100,19 @@ function CheckoutForm({
 
     alert(t('ConnectionIssue'), { title: t('TimeOut') });
 
+    logger.error(
+      'Ordering_StripeCreditCard_InitializeFailed',
+      {
+        message: `Failed to drawer credit card UI`,
+      },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.CHECKOUT,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+        },
+      }
+    );
+
     history.goBack();
   }, [t, history, isReady]);
 
@@ -138,8 +153,22 @@ function CheckoutForm({
         throw payload.error;
       }
 
+      logger.log('Ordering_Payment_CreatePaymentMethodByStripeSucceeded');
       setPaymentMethod(payload.paymentMethod);
     } catch (error) {
+      logger.error(
+        'Ordering_CreditCard_PayOrderFailed',
+        {
+          message: 'Failed to create payment method via Stripe',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+
       setError(error);
       setProcessing(false);
     }
@@ -147,6 +176,21 @@ function CheckoutForm({
 
   const handleAfterCreateOrder = useCallback(async orderId => {
     setProcessing(!!orderId);
+
+    if (!orderId) {
+      logger.error(
+        'Ordering_CreditCard_PayOrderFailed',
+        {
+          message: 'Failed to create order via Stripe',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+    }
   }, []);
 
   const title = isAddCardPath ? t('AddCreditCardTitle') : t('PayViaCard');

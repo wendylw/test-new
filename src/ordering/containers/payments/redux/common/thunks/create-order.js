@@ -36,6 +36,7 @@ import { alert as alertV2 } from '../../../../../../common/utils/feedback';
 import { initPaymentWithOrder } from './api-info';
 import { push } from 'connected-react-router';
 import logger from '../../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../../utils/monitoring/constants';
 
 const { DELIVERY_METHOD, PAYMENT_PROVIDERS, REFERRER_SOURCE_TYPES } = Constants;
 
@@ -445,11 +446,19 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       receiptNumber: orderId,
     });
 
-    logger.error('Ordering_Payment_InitPaymentFailed', {
-      error: error?.message,
-      paymentProvider,
-      receiptNumber: orderId,
-    });
+    logger.error(
+      'Ordering_Payment_InitPaymentFailed',
+      {
+        message: error?.message,
+        paymentName: paymentProvider,
+      },
+      {
+        bizFlow: {
+          flow: KEY_EVENTS_FLOWS.PAYMENT,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+        },
+      }
+    );
 
     if (error.code) {
       // TODO: This type is actually not used, because apiError does not respect action type,

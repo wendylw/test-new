@@ -1,4 +1,4 @@
-import { get } from '../../../../../utils/api/api-fetch';
+import { get, post } from '../../../../../utils/api/api-fetch';
 
 export const fetchStockStatus = ({ fulfillDate, shippingType, cartItemIds }) =>
   get(`/api/cart/checkInventory`, {
@@ -9,3 +9,7 @@ export const fetchStockStatus = ({ fulfillDate, shippingType, cartItemIds }) =>
       cartItemIds,
     },
   });
+
+export const applyCashback = () => post('/api/cart/apply-cashback');
+
+export const unapplyCashback = () => post('/api/cart/unapply-cashback');

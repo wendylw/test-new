@@ -119,7 +119,6 @@ const Confirm = props => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
       logger.log('Common_Feedback_ShowConfirm', { text });
-      window.newrelic?.addPageAction('feedback.confirm.show', { text });
     }
   }, [children, show]);
 

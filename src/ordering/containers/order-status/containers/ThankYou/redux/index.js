@@ -23,6 +23,7 @@ const initialState = {
   updateShippingTypeStatus: null, // pending || fulfilled || rejected
   updateShippingTypeError: null,
   cancelOrderStatus: null, // pending || fulfilled || rejected
+  cancelOrderError: null,
   profileModalVisibility: false,
   foodCourtInfo: {
     hashCode: null,
@@ -75,16 +76,18 @@ const { reducer, actions } = createSlice({
     },
     [cancelOrder.pending.type]: state => {
       state.cancelOrderStatus = 'pending';
+      state.cancelOrderError = null;
     },
     [cancelOrder.fulfilled.type]: state => {
       state.cancelOrderStatus = 'fulfilled';
     },
     [cancelOrder.rejected.type]: (state, { error }) => {
-      state.error = error;
+      state.cancelOrderError = error;
       state.cancelOrderStatus = 'rejected';
     },
     [updateOrderShippingType.pending.type]: state => {
       state.updateShippingTypeStatus = 'pending';
+      state.updateShippingTypeError = null;
     },
     [updateOrderShippingType.fulfilled.type]: state => {
       state.updateShippingTypeStatus = 'fulfilled';

@@ -55,6 +55,10 @@ const dsBridgeSyncCall = (method, params) => {
       throw new NativeAPIError(message, code, data);
     }
 
+    logger.log('Utils_DSBridge_CallAPISucceeded', {
+      method,
+    });
+
     return data;
   } catch (error) {
     const errorData = error instanceof NativeAPIError ? error.toJSON() : { message: error.message || error.toString() };
@@ -82,6 +86,10 @@ const dsBridgeAsyncCall = (method, params) =>
           reject(new NativeAPIError(message, code, data));
           return;
         }
+
+        logger.log('Utils_DSBridge_CallAPISucceeded', {
+          method,
+        });
 
         resolve(data);
       });

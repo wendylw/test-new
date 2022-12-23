@@ -44,6 +44,7 @@
     "@tailwindcss/line-clamp": "^0.3.1",
     "autoprefixer": "^9",
     "aws-sdk": "^2.706.0",
+    "bowser": "^2.11.0",
     "connected-react-router": "^6.9.2",
     "craco-esbuild": "^0.5.0",
     "dayjs": "^1.9.7",
@@ -101,6 +102,7 @@
     "spherical-geometry-js": "^2.0.0",
     "swiper": "^6.1.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+    "web-vitals": "^3.1.0",
     "whatwg-fetch": "^3.6.2",
     "yargs": "^15.3.1"
   },
