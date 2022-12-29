@@ -30,7 +30,13 @@ import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.p
 import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
 import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
 import XOXOImage from '../../../../../images/food-court-temp/merchant-XOXO.jpg';
-import HopeCoffeeIMage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
+import HopeCoffeeImage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
+import IronBarImage from '../../../../../images/food-court-temp/merchant-Iron-Bar.png';
+import YuByRainGardenImage from '../../../../../images/food-court-temp/merchant-Yu-by-Rain-Garden.png';
+import FengImage from '../../../../../images/food-court-temp/merchant-Feng.png';
+import ShunImage from '../../../../../images/food-court-temp/merchant-Shun.png';
+import ShunYuanImage from '../../../../../images/food-court-temp/merchant-SHUN-YUAN .jpeg';
+import BKTImage from '../../../../../images/food-court-temp/merchant-BKT.jpeg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -187,7 +193,7 @@ export const AllFoodCourtStoreList = {
   '63747d2aa07b6a0008108c24': {
     id: '63747d2aa07b6a0008108c24',
     title: 'Hope Coffee',
-    imageNoCompression: HopeCoffeeIMage,
+    imageNoCompression: HopeCoffeeImage,
     tags: ['Street Food', 'Toast', 'Croffle', 'Coffee'],
     businessHours: {
       validTimeFrom: '08:00',
@@ -295,6 +301,42 @@ export const AllFoodCourtStoreList = {
     imageNoCompression: HijauKualaLumpurImage,
     title: 'Hijau Kuala Lumpur',
     tags: ['Asian', 'Vegan', 'Sambal'],
+  },
+  '638eaf1ae3ad8a0009890c1d': {
+    id: '638eaf1ae3ad8a0009890c1d',
+    imageNoCompression: YuByRainGardenImage,
+    title: '雨 Yu By Rain Garden',
+    tags: ['Local Food', 'Beverages'],
+  },
+  '639008f3fe077600070ddf07': {
+    id: '639008f3fe077600070ddf07',
+    imageNoCompression: FengImage,
+    title: '峰 Feng Western Food',
+    tags: ['Western food'],
+  },
+  '639023ced5944b00074f3a23': {
+    id: '639023ced5944b00074f3a23',
+    imageNoCompression: ShunImage,
+    title: '顺 中国味道	',
+    tags: ['Chinese food'],
+  },
+  '6390241ec596ab000733c1a9': {
+    id: '6390241ec596ab000733c1a9',
+    imageNoCompression: ShunYuanImage,
+    title: '顺原宫保',
+    tags: ['Asian'],
+  },
+  '63902438f87109000728b09e': {
+    id: '63902438f87109000728b09e',
+    imageNoCompression: BKTImage,
+    title: '肉骨茶',
+    tags: ['Pork'],
+  },
+  '63902490e56c4c000880cede': {
+    id: '63902490e56c4c000880cede',
+    imageNoCompression: IronBarImage,
+    title: 'Iron Bar',
+    tags: ['Alcohol'],
   },
   '608b7c77cc9fd00006d831f3': {
     id: '608b7c77cc9fd00006d831f3',
