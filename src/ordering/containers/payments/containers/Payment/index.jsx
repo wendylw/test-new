@@ -18,6 +18,8 @@ import {
   getReceiptNumber,
   getTotal,
   getCashback,
+  getInitPaymentRequestErrorMessage,
+  getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import {
   initialize as initializeThunkCreator,
@@ -33,6 +35,7 @@ import Loader from '../../components/Loader';
 import './OrderingPayment.scss';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../../../utils/api-request';
 import { alert } from '../../../../../common/feedback';
 import { getPaymentType } from './utils';
@@ -53,7 +56,25 @@ class Payment extends Component {
 
     paymentActions.updatePayByCashPromptDisplayStatus({ status: false });
 
-    initialize();
+    await initialize();
+
+    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+
+    if (isInitPaymentFailed) {
+      logger.error(
+        'Ordering_Payment_InitializeFailed',
+        {
+          message: initPaymentErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+          },
+        }
+      );
+    }
+
     prefetch(['ORD_OLB', 'ORD_SCS', 'ORD_SRP'], ['OrderingPayment']);
   };
 
@@ -119,18 +140,33 @@ class Payment extends Component {
       return;
     }
 
-    if (currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
-      // If order has created, no need to display the confirmation modal
-      if (receiptNumber) {
-        this.handlePayWithCash();
-      } else {
-        this.setState({
-          payNowLoading: false,
-        });
-        paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
-      }
+    try {
+      if (currentPaymentOption.paymentProvider === PAYMENT_PROVIDERS.SH_OFFLINE_PAYMENT) {
+        // If order has created, no need to display the confirmation modal
+        if (receiptNumber) {
+          this.handlePayWithCash();
+        } else {
+          this.setState({
+            payNowLoading: false,
+          });
+          paymentActions.updatePayByCashPromptDisplayStatus({ status: true });
+        }
 
-      return;
+        return;
+      }
+    } catch (e) {
+      logger.error(
+        'Ordering_Payment_SubmitOrderFailed',
+        {
+          message: 'Failed to pay with cash',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
     }
 
     const { pathname, paymentProvider } = currentPaymentOption;
@@ -215,15 +251,7 @@ class Payment extends Component {
       }
 
       if (!orderId) {
-        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
-          paymentName: paymentProvider,
-        });
-
         const { order } = await createOrder({ cashback, shippingType });
-
-        window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
-          paymentName: paymentProvider,
-        });
 
         orderId = order.orderId;
 
@@ -244,12 +272,6 @@ class Payment extends Component {
         );
       }
     } catch (error) {
-      window.newrelic?.addPageAction('ordering.createOrder.error', {
-        error: error?.message,
-        shippingType,
-        paymentName: paymentProvider,
-      });
-
       logger.error('Ordering_Payment_CreateOrderFailed', {
         error: error?.message,
         shippingType,
@@ -271,6 +293,24 @@ class Payment extends Component {
     this.setState({
       payNowLoading: !!orderId,
     });
+
+    if (!orderId) {
+      const { currentPaymentOption } = this.props;
+
+      logger.error(
+        'Ordering_Payment_SubmitOrderFailed',
+        {
+          message: 'Failed to submit order',
+          paymentName: currentPaymentOption.paymentProvider,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+    }
   };
 
   renderPaymentList() {
@@ -385,6 +425,8 @@ Payment.propTypes = {
   total: PropTypes.number,
   shippingType: PropTypes.string,
   cashback: PropTypes.number,
+  initPaymentErrorMessage: PropTypes.string,
+  isInitPaymentFailed: PropTypes.bool,
 };
 
 Payment.defaultProps = {
@@ -403,6 +445,8 @@ Payment.defaultProps = {
   total: 0,
   shippingType: '',
   cashback: 0,
+  initPaymentErrorMessage: '',
+  isInitPaymentFailed: false,
 };
 
 export default compose(
@@ -420,6 +464,8 @@ export default compose(
       shippingType: getShippingType(state),
       cashback: getCashback(state),
       hasLoginGuardPassed: getHasLoginGuardPassed(state),
+      initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+      isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
     }),
     dispatch => ({
       paymentActions: bindActionCreators(paymentActionsCreator, dispatch),

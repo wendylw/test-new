@@ -19,18 +19,40 @@ import {
   getSelectedPaymentProvider,
   getTotal,
   getReceiptNumber,
+  getInitPaymentRequestErrorMessage,
+  getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import '../../styles/PaymentCreditCard.scss';
 import StripeWrapper from '../../components/StripeWrapper';
 import CheckoutForm from './CheckoutForm';
+import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const { PAYMENT_PROVIDERS, ROUTER_PATHS, PAYMENT_METHOD_LABELS } = Constants;
 
 // React Stripe.js reference: https://stripe.com/docs/stripe-js/react
 class Stripe extends Component {
   async componentDidMount() {
-    this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+    await this.props.initialize(PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+
+    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+
+    if (isInitPaymentFailed) {
+      logger.error(
+        'Ordering_StripeCreditCard_InitializeFailed',
+        {
+          message: initPaymentErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+          },
+        }
+      );
+    }
+
     prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
@@ -94,6 +116,8 @@ export default compose(
         supportSaveCard: getSelectedPaymentOptionSupportSaveCard(state),
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
+        initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+        isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
       };
     },
     dispatch => ({

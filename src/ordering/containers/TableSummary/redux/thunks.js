@@ -2,7 +2,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { push } from 'connected-react-router';
-import { fetchOrderIncludeCashback, fetchOrderSubmissionStatus, submitOrder } from './api-request';
+import { fetchOrderSubmissionStatus, submitOrder, applyCashback, unapplyCashback } from './api-request';
+import { fetchOrder } from '../../../../utils/api-request';
 import logger from '../../../../utils/monitoring/logger';
 import {
   getOrderModifiedTime,
@@ -20,7 +21,7 @@ const ORDER_STATUS_INTERVAL = 2 * 1000;
 
 export const loadOrders = createAsyncThunk('ordering/tableSummary/loadOrders', async receiptNumber => {
   try {
-    const result = await fetchOrderIncludeCashback({ receiptNumber });
+    const result = await fetchOrder(receiptNumber);
 
     return result;
   } catch (error) {
@@ -86,6 +87,10 @@ export const showRedirectLoader = createAsyncThunk('ordering/tableSummary/showRe
 
 export const hideRedirectLoader = createAsyncThunk('ordering/tableSummary/hideRedirectLoader', async () => {});
 
+export const showProcessingLoader = createAsyncThunk('ordering/tableSummary/showProcessingLoader', async () => {});
+
+export const hideProcessingLoader = createAsyncThunk('ordering/tableSummary/hideProcessingLoader', async () => {});
+
 export const clearQueryOrdersAndStatus = () => () => {
   clearTimeout(queryOrdersAndStatus.timer);
   logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'stop' });
@@ -110,7 +115,13 @@ export const payByCoupons = createAsyncThunk(
       voucherCode,
     };
 
-    await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+    try {
+      await dispatch(showProcessingLoader());
+      await dispatch(lockOrder({ receiptNumber, data })).unwrap();
+    } catch (error) {
+      await dispatch(hideProcessingLoader());
+      throw error;
+    }
   }
 );
 
@@ -171,3 +182,25 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     throw error;
   }
 });
+
+export const reloadBillingByCashback = createAsyncThunk(
+  'ordering/tableSummary/reloadBillingByCashback',
+  async (applyStatus, { dispatch, getState }) => {
+    try {
+      await dispatch(showProcessingLoader());
+
+      const receiptNumber = getOrderReceiptNumber(getState());
+
+      applyStatus ? await applyCashback(receiptNumber) : await unapplyCashback(receiptNumber);
+
+      await dispatch(loadOrders(receiptNumber)).unwrap();
+      await dispatch(hideProcessingLoader());
+    } catch (e) {
+      logger.error('Ordering_TableSummary_ReloadBillingByCashbackFailed', { message: e?.message });
+
+      await dispatch(hideProcessingLoader());
+
+      throw e;
+    }
+  }
+);

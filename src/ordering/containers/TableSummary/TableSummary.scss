@@ -5,11 +5,6 @@ $table-summary-background: #fffbe6;
   height: 100vh;
   background-color: $gray-5;
 
-  .billing__label,
-  .billing__text {
-    opacity: 0.5;
-  }
-
   &__back-menu-alert {
     .alert__content {
       max-width: 340px;
@@ -124,6 +119,84 @@ $table-summary-background: #fffbe6;
     background-color: $table-summary-background;
     box-shadow: 0px -4px 24px 0 rgba(0, 0, 0, 0.08);
     z-index: 1;
+  }
+
+  &__item-primary {
+    background-color: $theme-color-translucent-light;
+  }
+
+  &__button-login {
+    height: 30px;
+  }
+
+  &__cashback-info-button {
+    outline: none;
+    cursor: pointer;
+    border-style: none;
+    background-color: transparent;
+    color: $main-color;
+  }
+
+  &__switch-container {
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  &__switch-label {
+    &__active {
+      color: $basic-text-basic;
+
+      span {
+        font-weight: $font-weight-bolder;
+      }
+    }
+
+    &__inactive {
+      color: $gray-2;
+    }
+  }
+
+  &__toggle-checkbox {
+    position: absolute;
+    visibility: hidden;
+
+    &:checked {
+      + .table-summary__toggle-switch {
+        background: $theme-color;
+
+        &:before {
+          left: 22px;
+        }
+      }
+    }
+  }
+
+  &__toggle-switch {
+    display: inline-block;
+    background: $gray-4;
+    border-radius: 18px;
+    width: 48px;
+    height: 28px;
+    position: relative;
+    vertical-align: middle;
+    transition: background 0.25s;
+
+    &:before,
+    &:after {
+      content: "";
+    }
+
+    &:before {
+      display: block;
+      background: $white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: left 0.25s;
+    }
   }
 }
 

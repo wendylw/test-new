@@ -92,6 +92,7 @@ const CartModel = {
       validFrom: null,
       promoType: '',
     },
+    applyCashback: false,
   },
 };
 
@@ -147,6 +148,9 @@ export const initialState = {
     shippingType: Utils.getOrderTypeFromUrl(),
   },
   shoppingCart: CartModel,
+  addOrUpdateShoppingCartItemRequest: {
+    status: null,
+  },
   storeHashCode: {
     data: null,
     status: null,
@@ -155,6 +159,9 @@ export const initialState = {
     status: null,
   },
   coreStores: {
+    status: null,
+  },
+  productDetail: {
     status: null,
   },
   deliveryDetails: {
@@ -328,8 +335,6 @@ export const actions = {
     try {
       const { type: otpType } = payload;
 
-      // BEEP-2685: New Relic needs to know the OTP first send time.
-      window.newrelic?.addPageAction('ordering.login.get-otp-start');
       logger.log('Ordering_App_StartToGetOTP');
 
       dispatch({ type: types.GET_OTP_REQUEST, payload: { otpType } });
@@ -339,15 +344,8 @@ export const actions = {
         platform: OTP_REQUEST_PLATFORM,
       });
 
-      window.newrelic?.addPageAction('ordering.login.get-otp-success');
-
       dispatch({ type: types.GET_OTP_SUCCESS });
     } catch (error) {
-      window.newrelic?.addPageAction('ordering.login.get-otp-failed', {
-        error: error?.message,
-        code: error?.code,
-      });
-
       dispatch({
         type: types.GET_OTP_FAILURE,
         error,
@@ -409,11 +407,6 @@ export const actions = {
       }
     } catch (error) {
       logger.error('Ordering_App_SyncLoginFromNativeFailed', {
-        error: error?.message,
-        code: error?.code,
-      });
-
-      window.newrelic?.addPageAction('ordering.syncLoginFromNative.error', {
         error: error?.message,
         code: error?.code,
       });
@@ -774,6 +767,8 @@ export const actions = {
         error,
       });
 
+      logger.error('Common_LoginByTngMiniProgramFailed', { message: error?.message });
+
       return false;
     }
 
@@ -834,6 +829,11 @@ export const actions = {
       payload: newStoreId,
     });
   },
+
+  updateCashbackApplyStatus: newStatus => ({
+    type: types.UPDATE_SHOPPINGCART_APPLYCASHBACK,
+    payload: newStatus,
+  }),
 };
 
 const user = (state = initialState.user, action) => {
@@ -1094,6 +1094,19 @@ const coreStores = (state = initialState.coreStores, action) => {
   }
 };
 
+const productDetail = (state = initialState.productDetail, action) => {
+  switch (action.type) {
+    case types.FETCH_PRODUCTDETAIL_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.FETCH_PRODUCTDETAIL_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.FETCH_PRODUCTDETAIL_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
+};
+
 const apiError = (state = initialState.apiError, action) => {
   const { type, code, response, responseGql, payload } = action;
   const { error: payloadError } = payload || {};
@@ -1181,9 +1194,24 @@ const shoppingCart = (state = initialState.shoppingCart, action) => {
     };
   } else if (action.type === types.FETCH_SHOPPINGCART_FAILURE) {
     return { ...state, isFetching: false, status: API_REQUEST_STATUS.REJECTED };
+  } else if (action.type === types.UPDATE_SHOPPINGCART_APPLYCASHBACK) {
+    return { ...state, billing: { ...state.billing, applyCashback: action.payload } };
   }
 
   return state;
+};
+
+const addOrUpdateShoppingCartItemRequest = (state = initialState.addOrUpdateShoppingCartItemRequest, action) => {
+  switch (action.type) {
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_REQUEST:
+      return { ...state, status: API_REQUEST_STATUS.PENDING };
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_SUCCESS:
+      return { ...state, status: API_REQUEST_STATUS.FULFILLED };
+    case types.ADDORUPDATE_SHOPPINGCARTITEM_FAILURE:
+      return { ...state, status: API_REQUEST_STATUS.REJECTED };
+    default:
+      return state;
+  }
 };
 
 const deliveryDetails = (state = initialState.deliveryDetails, action) => {
@@ -1275,12 +1303,14 @@ export default combineReducers({
   requestInfo,
   apiError,
   shoppingCart,
+  addOrUpdateShoppingCartItemRequest,
   cart: cartReducer,
   deliveryDetails,
   storeHashCode: storeHashCodeReducer,
   coreBusiness,
   onlineCategory,
   coreStores,
+  productDetail,
 });
 
 // selectors
@@ -1305,6 +1335,11 @@ export const getOnlineStoreInfoStatus = state => state.app.onlineStoreInfo.statu
 export const getCoreStoresStatus = state => state.app.coreStores.status;
 
 export const getOnlineCategoryStatus = state => state.app.onlineCategory.status;
+
+export const getIsOnlineCategoryRequestRejected = createSelector(
+  getOnlineCategoryStatus,
+  onlineCategoryStatus => onlineCategoryStatus === API_REQUEST_STATUS.REJECTED
+);
 
 export const getRequestInfo = state => state.app.requestInfo;
 
@@ -1359,8 +1394,20 @@ export const getIsCoreBusinessAPIFulfilled = createSelector(
   status => status === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsCoreBusinessRequestRejected = createSelector(
+  getCoreBusinessAPIStatus,
+  status => status === API_REQUEST_STATUS.REJECTED
+);
+
 export const getIsCoreBusinessAPICompleted = createSelector(getCoreBusinessAPIStatus, status =>
   [API_REQUEST_STATUS.FULFILLED, API_REQUEST_STATUS.REJECTED].includes(status)
+);
+
+export const getProductDetailStatus = state => state.app.productDetail.status;
+
+export const getIsProductDetailRequestRejected = createSelector(
+  getProductDetailStatus,
+  productDetailStatus => productDetailStatus === API_REQUEST_STATUS.REJECTED
 );
 
 // TODO: Utils.getOrderTypeFromUrl() will replace be selector
@@ -1429,6 +1476,11 @@ export const getCartUnavailableItems = state => state.app.shoppingCart.unavailab
 
 export const getCartStatus = state => state.app.shoppingCart.status;
 
+export const getIsGetCartFailed = createSelector(
+  getCartStatus,
+  cartStatus => cartStatus === API_REQUEST_STATUS.REJECTED
+);
+
 export const getShippingFee = createSelector(getCartBilling, billing => billing.shippingFee);
 
 export const getDeliveryDetails = state => state.app.deliveryDetails;
@@ -1443,10 +1495,15 @@ export const getHasFetchDeliveryDetailsRequestCompleted = createSelector(getDeli
 
 export const getCartTotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'total', null));
 export const getCartSubtotal = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'subtotal', null));
+export const getCartCashback = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'cashback', null));
 export const getCartTotalCashback = createSelector(getCartBilling, cartBilling =>
   _get(cartBilling, 'totalCashback', null)
 );
 export const getCartCount = createSelector(getCartBilling, cartBilling => _get(cartBilling, 'count', 0));
+
+export const getCartApplyCashback = createSelector(getCartBilling, cartBilling =>
+  _get(cartBilling, 'applyCashback', false)
+);
 
 export const getServiceChargeRate = createSelector(getCartBilling, cartBilling =>
   _get(cartBilling, 'serviceChargeInfo.serviceChargeRate', 0)
@@ -1508,6 +1565,8 @@ export const getStoreInfoForCleverTap = state => {
 
   return StoreUtils.getStoreInfoForCleverTap({ business, allBusinessInfo, cartSummary });
 };
+
+export const getIsCartStatusRejected = createSelector(getCartStatus, status => status === API_REQUEST_STATUS.REJECTED);
 
 export const getUserEmail = createSelector(getUser, user => _get(user, 'profile.email', ''));
 
@@ -1710,14 +1769,15 @@ export const getHasLoginGuardPassed = createSelector(
   (isUserLogin, isLoginFree) => isUserLogin || isLoginFree
 );
 
+export const getIsFreeOrder = createSelector(getCartBilling, cartBilling => {
+  const billingTotal = _get(cartBilling, 'total', 0);
+  return billingTotal === 0;
+});
+
 export const getIsValidCreateOrder = createSelector(
-  getCartBilling,
+  getIsFreeOrder,
   getIsTNGMiniProgram,
-  (cartBilling, isTNGMiniProgram) => {
-    const { total } = cartBilling || {};
-    const isFree = !total;
-    return isTNGMiniProgram || isFree;
-  }
+  (isFreeOrder, isTNGMiniProgram) => isTNGMiniProgram || isFreeOrder
 );
 
 export const getTotalItemPrice = createSelector(getShoppingCart, shoppingCart => {
@@ -1795,6 +1855,11 @@ export const getIsCoreStoresLoaded = createSelector(
   coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.FULFILLED
 );
 
+export const getIsCoreStoresRequestRejected = createSelector(
+  getCoreStoresStatus,
+  coreStoresStatus => coreStoresStatus === API_REQUEST_STATUS.REJECTED
+);
+
 export const getDeliveryRadius = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'qrOrderingSettings.deliveryRadius', null)
 );
@@ -1812,3 +1877,11 @@ export const getURLQueryObject = createSelector(getLocationSearch, locationSearc
 export const getStoreRating = createSelector(getBusinessInfo, businessInfo =>
   _get(businessInfo, 'stores[0].reviewInfo.rating', null)
 );
+
+export const getAddOrUpdateShoppingCartItemStatus = state => state.app.addOrUpdateShoppingCartItemRequest.status;
+
+export const getIsAddOrUpdateShoppingCartItemRejected = createSelector(
+  getAddOrUpdateShoppingCartItemStatus,
+  addOrUpdateShoppingCartItemStatus => addOrUpdateShoppingCartItemStatus === API_REQUEST_STATUS.REJECTED
+);
+export const getShouldShowCashbackSwitchButton = createSelector(getCartCashback, cashback => cashback > 0);

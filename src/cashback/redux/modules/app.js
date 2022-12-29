@@ -126,10 +126,6 @@ export const actions = {
     try {
       const { type: otpType } = payload;
 
-      // BEEP-2685: New Relic needs to know the OTP first send time.
-      window.newrelic?.addPageAction('cashback.login.get-otp-start');
-      logger.log('Cashback_App_StartToGetOTP');
-
       dispatch({ type: types.GET_OTP_REQUEST, payload: { otpType } });
 
       await post(Url.API_URLS.GET_OTP.url, {
@@ -137,15 +133,8 @@ export const actions = {
         platform: OTP_REQUEST_PLATFORM,
       });
 
-      window.newrelic?.addPageAction('cashback.login.get-otp-success');
-
       dispatch({ type: types.GET_OTP_SUCCESS });
     } catch (error) {
-      window.newrelic?.addPageAction('cashback.login.get-otp-failed', {
-        error: error?.message,
-        code: error?.code,
-      });
-
       dispatch({
         type: types.GET_OTP_FAILURE,
         error,

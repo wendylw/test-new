@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../../utils/constants';
-import { loadBilling, loadPaymentOptions } from './thunks';
+import { initialize, loadBilling, loadPaymentOptions } from './thunks';
 
 const initialState = {
   options: [],
@@ -17,6 +17,10 @@ const initialState = {
       itemsQuantity: 0,
       cashback: null, // create order api needs this
     },
+    status: null,
+    error: null,
+  },
+  initPaymentRequest: {
     status: null,
     error: null,
   },
@@ -66,6 +70,17 @@ const { reducer, actions } = createSlice({
     [loadPaymentOptions.rejected]: (state, { error }) => {
       state.status = API_REQUEST_STATUS.REJECTED;
       state.error = error;
+    },
+    [initialize.pending]: state => {
+      state.initPaymentRequest.status = API_REQUEST_STATUS.PENDING;
+      state.initPaymentRequest.error = null;
+    },
+    [initialize.fulfilled]: state => {
+      state.initPaymentRequest.status = API_REQUEST_STATUS.FULFILLED;
+    },
+    [initialize.rejected]: (state, { error }) => {
+      state.initPaymentRequest.status = API_REQUEST_STATUS.REJECTED;
+      state.initPaymentRequest.error = error;
     },
   },
 });

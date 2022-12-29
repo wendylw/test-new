@@ -25,6 +25,8 @@ import {
   getSelectedPaymentOption,
   getTotal,
   getReceiptNumber,
+  getInitPaymentRequestErrorMessage,
+  getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { getPaymentName, getSupportCreditCardBrands, creditCardDetector } from '../../utils';
@@ -34,6 +36,7 @@ import prefetch from '../../../../../common/utils/prefetch-assets';
 import CleverTap from '../../../../../utils/clevertap';
 import * as ApiFetch from '../../../../../utils/api/api-fetch';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class CreditCard extends Component {
@@ -46,7 +49,7 @@ class CreditCard extends Component {
 
   state = {
     payNowLoading: false,
-    domLoaded: false,
+    hasScriptLoaded: false,
     cardNumberSelectionStart: 0,
     card: {},
     validDate: '',
@@ -61,14 +64,51 @@ class CreditCard extends Component {
     },
   };
 
+  loadScriptSucceedHandler = () => {
+    window.newrelic?.addPageAction('third-party-lib.load-script-succeeded', {
+      scriptName: '2c2p',
+    });
+    this.setState({ hasScriptLoaded: true });
+  };
+
+  loadScriptFailedHandler = err => {
+    delete window.Intercom;
+    window.newrelic?.addPageAction('third-party-lib.load-script-failed', {
+      scriptName: '2c2p',
+      error: err?.message,
+    });
+    this.setState({ hasScriptLoaded: false });
+  };
+
   async componentDidMount() {
     const script = document.createElement('script');
 
     script.src = config.storehubPaymentScriptSrc;
+    script.onload = this.loadScriptSucceedHandler;
+    script.onerror = this.loadFailedHandler;
     document.body.appendChild(script);
 
     this.setState({ domLoaded: true });
-    this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+
+    await this.props.initialize(Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY);
+
+    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+
+    if (isInitPaymentFailed) {
+      logger.error(
+        'Ordering_2C2PCreditCard_InitializeFailed',
+        {
+          message: initPaymentErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+          },
+        }
+      );
+    }
+
     prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
@@ -334,6 +374,30 @@ class CreditCard extends Component {
     }
   };
 
+  handleAfterCreateOrder = orderId => {
+    this.setState({
+      payNowLoading: !!orderId,
+    });
+
+    if (!orderId) {
+      logger.error(
+        'Ordering_CreditCard_PayOrderFailed',
+        {
+          message: 'Failed to create order via 2C2P',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+      return;
+    }
+
+    logger.log('Ordering_Payment_OrderCreatedByCreditCard', { orderId });
+  };
+
   checkCardRisky = async () => {
     try {
       const { card } = this.state;
@@ -532,7 +596,7 @@ class CreditCard extends Component {
 
   render() {
     const { t, match, history, total, merchantCountry, receiptNumber } = this.props;
-    const { payNowLoading, domLoaded } = this.state;
+    const { payNowLoading, hasScriptLoaded } = this.state;
 
     return (
       <section
@@ -578,12 +642,7 @@ class CreditCard extends Component {
             disabled={payNowLoading}
             beforeCreateOrder={this.handleBeforeCreateOrder}
             validCreateOrder={Boolean(this.isFromComplete())}
-            afterCreateOrder={orderId => {
-              logger.log('Ordering_Payment_OrderCreatedByCreditCard', { orderId });
-              this.setState({
-                payNowLoading: !!orderId,
-              });
-            }}
+            afterCreateOrder={this.handleAfterCreateOrder}
             paymentName={getPaymentName(merchantCountry, Constants.PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY)}
             paymentExtraData={this.getPaymentEntryRequestData()}
             processing={payNowLoading}
@@ -600,7 +659,7 @@ class CreditCard extends Component {
             )}
           </CreateOrderButton>
         </footer>
-        <Loader className="loading-cover opacity" loaded={domLoaded} />
+        <Loader className="loading-cover opacity" loaded={hasScriptLoaded} />
       </section>
     );
   }
@@ -621,6 +680,8 @@ export default compose(
         merchantCountry: getMerchantCountry(state),
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
+        initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+        isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
       };
     },
     dispatch => ({
