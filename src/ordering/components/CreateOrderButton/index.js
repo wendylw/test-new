@@ -17,6 +17,7 @@ import withDataAttributes from '../../../components/withDataAttributes';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
 import Constants from '../../../utils/constants';
 import logger from '../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 import { fetchOrder } from '../../../utils/api-request';
 import i18next from 'i18next';
 import { alert } from '../../../common/feedback/';
@@ -94,11 +95,19 @@ class CreateOrderButton extends React.Component {
         paymentName: paymentName || 'N/A',
       });
 
-      logger.error('Ordering_CreateOrderButton_CreateOrderFailed', {
-        error: error?.message,
-        shippingType,
-        paymentName: paymentName || 'N/A',
-      });
+      logger.error(
+        'Ordering_CreateOrderButton_CreateOrderFailed',
+        {
+          message: error?.message,
+          paymentName: paymentName || 'N/A',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
 
       this.props.afterCreateOrder && this.props.afterCreateOrder();
     }
@@ -198,15 +207,8 @@ class CreateOrderButton extends React.Component {
     }
 
     if (!orderId) {
-      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-start', {
-        paymentName: paymentName || 'N/A',
-      });
-
       this.setState({ isLoadingCreatedOrder: true });
       const createOrderResult = await createOrder({ cashback: totalCashback, shippingType: type });
-      window.newrelic?.addPageAction('ordering.common.create-order-btn.create-order-done', {
-        paymentName: paymentName || 'N/A',
-      });
 
       const { order, redirectUrl: thankYouPageUrl } = createOrderResult || {};
       if (order) {

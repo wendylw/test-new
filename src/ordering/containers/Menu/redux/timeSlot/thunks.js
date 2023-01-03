@@ -7,6 +7,8 @@ import {
   getIsEnablePerTimeSlotLimitForPreOrder,
   getStoreSupportShippingTypes,
   getStoreInfoForCleverTap,
+  getIsGetCartFailed,
+  getIsOnlineCategoryRequestRejected,
 } from '../../../../redux/modules/app';
 import {
   getBusinessTimeZoneCurrentDayjs,
@@ -23,6 +25,7 @@ import { setDateTime } from '../../../../../utils/time-lib';
 import Clevertap from '../../../../../utils/clevertap';
 import { SHIPPING_TYPES } from '../../../../../common/utils/constants';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 export const loadTimeSlotSoldData = createAsyncThunk(
   'ordering/menu/timeSlot/loadTimeSlotSoldData',
@@ -103,6 +106,18 @@ export const timeSlotDrawerShown = createAsyncThunk('ordering/menu/timeSlot/time
     };
   } catch (error) {
     console.error(error);
+
+    logger.error(
+      'Ordering_Menu_LoadTimeSlotDataFailed',
+      { message: error?.message },
+      {
+        bizFLow: {
+          flow: KEY_EVENTS_FLOWS.CHECKOUT,
+          step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_TIME_SLOT,
+        },
+      }
+    );
+
     throw error;
   }
 });
@@ -225,11 +240,33 @@ export const timeSlotSelected = createAsyncThunk(
       if (selectedShippingType !== shippingType || expectedDeliveryTime !== selectedExpectedDeliveryTime) {
         // need to reload the shopping cart and product list
         await Promise.all([dispatch(AppActions.loadShoppingCart()), dispatch(AppActions.reloadProductList())]);
+
+        const isGetCartFailed = getIsGetCartFailed(getState());
+
+        if (isGetCartFailed) {
+          throw new Error('Failed to load shopping cart');
+        }
+
+        const isOnlineCategoryRequestFailed = getIsOnlineCategoryRequestRejected(getState());
+
+        if (isOnlineCategoryRequestFailed) {
+          throw new Error('Failed to reload product list');
+        }
       }
 
       dispatch(hideTimeSlotDrawer());
     } catch (error) {
-      logger.error('Ordering_Menu_SelectTimeSlotFailed', { message: error?.message });
+      dispatch(hideTimeSlotDrawer());
+      logger.error(
+        'Ordering_Menu_SelectTimeSlotFailed',
+        { message: error?.message },
+        {
+          bizFLow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_TIME_SLOT,
+          },
+        }
+      );
       throw error;
     }
   }

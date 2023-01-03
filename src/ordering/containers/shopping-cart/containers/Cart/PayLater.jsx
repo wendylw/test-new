@@ -34,6 +34,7 @@ import Constants, { REFERRER_SOURCE_TYPES } from '../../../../../utils/constants
 import HybridHeader from '../../../../../components/HybridHeader';
 import CartEmptyResult from '../../components/CartEmptyResult';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { alert } from '../../../../../common/feedback';
 
 class PayLater extends Component {
@@ -121,6 +122,19 @@ class PayLater extends Component {
             }),
         });
       }
+
+      logger.error(
+        'Ordering_Cart_PlaceOrderFailed',
+        {
+          message: e?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
     }
   };
 

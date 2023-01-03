@@ -29,6 +29,7 @@ import { getStoreInfoData, getErrorOptions } from './selectors';
 import { findNearestAvailableStore } from '../../../../../utils/store-utils';
 import { toast } from '../../../../../common/utils/feedback';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 export const checkDeliveryRange = createAsyncThunk(
   'ordering/menu/address/checkDeliveryRange',
@@ -57,15 +58,15 @@ export const locationDrawerShown = createAsyncThunk(
     const storeId = getStoreId(state);
     const business = getBusiness(state);
 
-    if (isLoadableAddressList) {
-      await dispatch(loadAddressList());
-    } else {
-      await dispatch(loadLocationHistoryList());
-    }
-
-    await dispatch(checkDeliveryRange());
-
     try {
+      if (isLoadableAddressList) {
+        await dispatch(loadAddressList());
+      } else {
+        await dispatch(loadLocationHistoryList());
+      }
+
+      await dispatch(checkDeliveryRange());
+
       if (_isEmpty(business)) return {};
 
       // Has checked with Luke, because this thunk is only called from the address slide-up page, we probably don't need to fetch the core business API again for better performance.
@@ -112,7 +113,17 @@ export const locationDrawerShown = createAsyncThunk(
         radius: deliveryRadius * 1000,
       };
     } catch (e) {
-      logger.error('Ordering_Menu_LoadStoreInfoFailed', { message: e?.message });
+      logger.error(
+        'Ordering_Menu_LoadStoreInfoFailed',
+        { message: e?.message },
+        {
+          bizFLow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_ADDRESS,
+          },
+        }
+      );
+
       throw e;
     }
   }
@@ -235,7 +246,16 @@ export const locationSelected = createAsyncThunk(
       await dispatch(changeStore(storeId)).unwrap();
       await dispatch(hideLocationDrawer());
     } catch (e) {
-      logger.error('Ordering_Menu_SelectLocationFailed', { message: e?.message });
+      logger.error(
+        'Ordering_Menu_SelectLocationFailed',
+        { message: e?.message },
+        {
+          bizFLow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_ADDRESS,
+          },
+        }
+      );
       throw e;
     }
   }

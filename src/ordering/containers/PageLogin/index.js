@@ -1,4 +1,5 @@
 import React from 'react';
+import _get from 'lodash/get';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import OtpModal from '../../../components/OtpModal';
@@ -30,6 +31,7 @@ import prefetch from '../../../common/utils/prefetch-assets';
 import logger from '../../../utils/monitoring/logger';
 import Utils from '../../../utils/utils';
 import { alert } from '../../../common/utils/feedback';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../utils/monitoring/constants';
 
 const { ROUTER_PATHS, OTP_REQUEST_TYPES, RESEND_OTP_TIME } = Constants;
 
@@ -129,7 +131,16 @@ class PageLogin extends React.Component {
       });
 
       // We will set the attribute 'message' even if it is always empty
-      logger.error('Ordering_PageLogin_CompleteCaptchaFailed', { message: e?.message });
+      logger.error(
+        'Ordering_PageLogin_CompleteCaptchaFailed',
+        { message: e?.message },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          },
+        }
+      );
       throw e;
     }
   }
@@ -170,7 +181,16 @@ class PageLogin extends React.Component {
 
       this.setState({ sendOtp: true, shouldShowModal: true });
     } catch (e) {
-      logger.error('Ordering_PageLogin_FetchOTPCodeFailed', { message: e?.message });
+      logger.error(
+        'Ordering_PageLogin_SubmitPhoneNumberFailed',
+        { message: e?.message },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          },
+        }
+      );
     }
   }
 
@@ -192,7 +212,19 @@ class PageLogin extends React.Component {
 
       this.setState({ sendOtp: true });
     } catch (e) {
-      logger.error('Ordering_PageLogin_RefetchOTPFailed', { type, message: e?.message });
+      logger.error(
+        'Ordering_PageLogin_RefetchOTPFailed',
+        {
+          type,
+          message: e?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].RECEIVE_OTP,
+          },
+        }
+      );
     }
   }
 
@@ -202,7 +234,7 @@ class PageLogin extends React.Component {
     const hasLoadSuccess = !!window.grecaptcha;
     const scriptName = 'google-recaptcha';
 
-    window.newrelic?.addPageAction(`ordering.otp-login.script-load-${hasLoadSuccess ? 'success' : 'error'}`, {
+    window.newrelic?.addPageAction(`third-party-lib.load-script-${hasLoadSuccess ? 'succeeded' : 'failed'}`, {
       scriptName: scriptName,
     });
 
@@ -218,19 +250,50 @@ class PageLogin extends React.Component {
     const loginOptions = location.state?.loginOptions || {};
     const { shippingType } = loginOptions;
 
-    window.newrelic?.addPageAction('ordering.login.verify-otp-start');
-    await appActions.sendOtp({ otp });
+    try {
+      window.newrelic?.addPageAction('ordering.login.verify-otp-start');
 
-    const { user } = this.props;
-    const { accessToken, refreshToken } = user;
+      await appActions.sendOtp({ otp });
 
-    if (accessToken && refreshToken) {
-      window.newrelic?.addPageAction('ordering.login.verify-otp-done');
-      appActions.loginApp({
-        accessToken,
-        refreshToken,
-        shippingType,
-      });
+      const { isLoginRequestFailed } = this.props;
+
+      if (isLoginRequestFailed) {
+        throw new Error('Failed to verify OTP');
+      }
+
+      const { user } = this.props;
+      const { accessToken, refreshToken } = user;
+
+      if (accessToken && refreshToken) {
+        window.newrelic?.addPageAction('ordering.login.verify-otp-done');
+        await appActions.loginApp({
+          accessToken,
+          refreshToken,
+          shippingType,
+        });
+
+        const hasLoggedIn = _get(this.props.user, 'isLogin', false);
+
+        if (!hasLoggedIn) {
+          throw new Error('Failed to login');
+        }
+      } else {
+        throw new Error(`Missing ${!accessToken ? 'accessToken' : 'refreshToken'}`);
+      }
+    } catch (error) {
+      // NOTE: No need to throw an error, the error is used to log an event only.
+      logger.error(
+        'Ordering_PageLogin_LoginFailed',
+        {
+          message: error?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.LOGIN,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.LOGIN].SUBMIT_OTP,
+          },
+        }
+      );
     }
   }
 

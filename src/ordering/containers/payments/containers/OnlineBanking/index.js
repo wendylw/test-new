@@ -23,6 +23,8 @@ import {
   getTotal,
   getCleverTapAttributes,
   getReceiptNumber,
+  getInitPaymentRequestErrorMessage,
+  getIsInitPaymentRequestStatusRejected,
 } from '../../redux/common/selectors';
 import { initialize as initializeThunkCreator } from '../../redux/common/thunks';
 import { actions } from './redux';
@@ -31,6 +33,7 @@ import './OrderingBanking.scss';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import CleverTap from '../../../../../utils/clevertap';
 import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 // Example URL: http://nike.storehub.local:3002/#/payment/bankcard
 
 class OnlineBanking extends Component {
@@ -46,7 +49,25 @@ class OnlineBanking extends Component {
     /**
      * Load all payment options action and except saved card list
      */
-    initialize(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
+    await initialize(Constants.PAYMENT_METHOD_LABELS.ONLINE_BANKING_PAY);
+
+    const { isInitPaymentFailed, initPaymentErrorMessage } = this.props;
+
+    if (isInitPaymentFailed) {
+      logger.error(
+        'Ordering_OnlineBanking_InitializeFailed',
+        {
+          message: initPaymentErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.CHECKOUT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.CHECKOUT].SELECT_PAYMENT_METHOD,
+          },
+        }
+      );
+    }
+
     prefetch(['ORD_PMT'], ['OrderingPayment']);
   }
 
@@ -70,6 +91,35 @@ class OnlineBanking extends Component {
     if (agentCode !== currentAgentCode && available) {
       updateBankingSelected(currentAgentCode);
     }
+  };
+
+  handleAfterCreateOrder = orderId => {
+    this.setState({
+      payNowLoading: !!orderId,
+    });
+
+    if (!orderId) {
+      logger.error(
+        'Ordering_OnlineBanking_CreateOrderFailed',
+        {
+          message: 'Failed to create order via online banking',
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.PAYMENT,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.PAYMENT].SUBMIT_ORDER,
+          },
+        }
+      );
+      return;
+    }
+
+    const { currentOnlineBanking } = this.props;
+
+    logger.log('Ordering_Payment_OrderCreatedByOnlineBanking', {
+      orderId,
+      method: currentOnlineBanking.agentCode,
+    });
   };
 
   renderBankingList() {
@@ -183,15 +233,7 @@ class OnlineBanking extends Component {
                 payNowLoading: true,
               });
             }}
-            afterCreateOrder={orderId => {
-              logger.log('Ordering_Payment_OrderCreatedByOnlineBanking', {
-                orderId,
-                method: currentOnlineBanking.agentCode,
-              });
-              this.setState({
-                payNowLoading: !!orderId,
-              });
-            }}
+            afterCreateOrder={this.handleAfterCreateOrder}
             paymentName={currentPaymentOption.paymentProvider}
             paymentExtraData={this.getPaymentEntryRequestData()}
             processing={payNowLoading}
@@ -232,6 +274,8 @@ export default compose(
         onlineStoreInfo: getOnlineStoreInfo(state),
         cleverTapAttributes: getCleverTapAttributes(state),
         receiptNumber: getReceiptNumber(state),
+        initPaymentErrorMessage: getInitPaymentRequestErrorMessage(state),
+        isInitPaymentFailed: getIsInitPaymentRequestStatusRejected(state),
       };
     },
     dispatch => ({

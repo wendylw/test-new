@@ -13,6 +13,8 @@ import {
   getHasSelectedStore,
   getIsPickUpType,
   getFoodTagsForCleverTap,
+  getIsProductDetailRequestRejected,
+  getIsAddOrUpdateShoppingCartItemRejected,
 } from '../../../../redux/modules/app';
 import { updateCartItems } from '../../../../redux/cart/thunks';
 import {
@@ -27,6 +29,7 @@ import {
   getNotesContents,
 } from './selectors';
 import Clevertap from '../../../../../utils/clevertap';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 import { getAllCategories } from '../../../../../redux/modules/entities/categories';
 import { PRODUCT_STOCK_STATUS } from '../../constants';
 import { toast } from '../../../../../common/utils/feedback/toast';
@@ -148,9 +151,10 @@ export const showProductDetailDrawer = createAsyncThunk(
       try {
         const result = await dispatch(appActions.loadProductDetail(productId));
         const productInResult = _get(result, 'responseGql.data.product', null);
+        const isProductDetailRequestFailed = getIsProductDetailRequestRejected(state);
 
-        if (result.type === 'ORDERING/APP/FETCH_PRODUCTDETAIL_FAILURE' && !productInResult) {
-          throw new Error('Load product detail failed');
+        if (isProductDetailRequestFailed) {
+          throw new Error('Failed to load product detail');
         }
 
         gtmEventTracking(GTM_TRACKING_EVENTS.VIEW_PRODUCT, getViewProductGTMData(productInResult));
@@ -162,7 +166,16 @@ export const showProductDetailDrawer = createAsyncThunk(
         };
       } catch (error) {
         toast.error(i18next.t('ApiError:NoInternetConnection'));
-
+        logger.error(
+          'Ordering_Menu_ShowProductDetailDrawerFailed',
+          { message: error?.message },
+          {
+            bizFlow: {
+              step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
+              flow: KEY_EVENTS_FLOWS.SELECTION,
+            },
+          }
+        );
         console.error(error);
         throw error;
       }
@@ -178,25 +191,34 @@ export const showProductDetailDrawer = createAsyncThunk(
     try {
       if (!(isPickUpType || hasLocationSelected)) {
         await dispatch(showLocationConfirmModal());
-        throw new Error('no location selected');
+        throw new Error('No location selected');
       }
 
       if (!hasStoreBranchSelected) {
         await dispatch(showStoreListDrawer());
-        throw new Error('no store branch selected');
+        throw new Error('No store branch selected');
       }
 
       if (!hasTimeSlotSelected) {
         await dispatch(showTimeSlotDrawer());
-        throw new Error('no time slot selected');
+        throw new Error('No time slot selected');
       }
 
       // No one should be able to reach here, but if they do, it indicates that we miss some other conditions.
-      throw new Error('unknown reason');
-    } catch (e) {
+      throw new Error('Unknown reason');
+    } catch (error) {
       await dispatch(saveSelectedProductItemInfo({ productId, categoryId }));
-      logger.error('Ordering_Menu_ShowProductDetailDrawerFailed', { message: e?.message });
-      throw e;
+      logger.error(
+        'Ordering_Menu_ShowProductDetailDrawerFailed',
+        { message: error?.message },
+        {
+          bizFlow: {
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].VIEW_PRODUCTS,
+            flow: KEY_EVENTS_FLOWS.SELECTION,
+          },
+        }
+      );
+      throw error;
     }
   }
 );
@@ -362,37 +384,60 @@ export const addToCart = createAsyncThunk(
     const addToCartGtmData = getAddToCartGTMData(state);
     const comments = getNotesContents(state);
 
-    gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, addToCartGtmData);
+    try {
+      gtmEventTracking(GTM_TRACKING_EVENTS.ADD_TO_CART, addToCartGtmData);
 
-    Clevertap.pushEvent('Menu Page - Add to Cart', {
-      ...storeInfoForCleverTap,
-      ...productCleverTapAttributes,
-      foodTags: foodTagsForCleverTap,
-    });
+      Clevertap.pushEvent('Menu Page - Add to Cart', {
+        ...storeInfoForCleverTap,
+        ...productCleverTapAttributes,
+        foodTags: foodTagsForCleverTap,
+      });
 
-    if (isEnablePayLater) {
-      dispatch(
-        updateCartItems({
-          productId: childProductId || parentProductId,
-          quantityChange: quantity,
-          comments,
-          variations,
-        })
+      if (isEnablePayLater) {
+        dispatch(
+          updateCartItems({
+            productId: childProductId || parentProductId,
+            quantityChange: quantity,
+            comments,
+            variations,
+          })
+        );
+      } else {
+        await dispatch(
+          appActions.addOrUpdateShoppingCartItem({
+            action: 'add',
+            business,
+            productId: childProductId || parentProductId,
+            quantity,
+            comments,
+            variations,
+          })
+        );
+
+        const isAddOrUpdateShoppingCartItemRejected = getIsAddOrUpdateShoppingCartItemRejected(getState());
+
+        if (isAddOrUpdateShoppingCartItemRejected) {
+          throw new Error('Failed to add or update items to shopping cart');
+        }
+        await dispatch(appActions.loadShoppingCart());
+      }
+      dispatch(hideProductDetailDrawer());
+    } catch (error) {
+      dispatch(hideProductDetailDrawer());
+      logger.error(
+        'Ordering_Menu_AddToCartFailed',
+        {
+          message: error?.message,
+        },
+        {
+          bizFLow: {
+            flow: KEY_EVENTS_FLOWS.SELECTION,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.SELECTION].ADD_TO_CART,
+          },
+        }
       );
-    } else {
-      await dispatch(
-        appActions.addOrUpdateShoppingCartItem({
-          action: 'add',
-          business,
-          productId: childProductId || parentProductId,
-          quantity,
-          comments,
-          variations,
-        })
-      );
-      await dispatch(appActions.loadShoppingCart());
+      throw error;
     }
-    dispatch(hideProductDetailDrawer());
   }
 );
 

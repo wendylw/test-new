@@ -82,6 +82,10 @@ import {
   getShouldShowCashbackBanner,
   getHasOrderPaid,
   getShouldShowStoreReviewCard,
+  getIsCancelOrderRequestRejected,
+  getCancelOrderRequestErrorMessage,
+  getIsUpdateShippingTypeRequestRejected,
+  getUpdateShippingTypeRequestErrorMessage,
 } from './redux/selector';
 import OrderCancellationReasonsAside from './components/OrderCancellationReasonsAside';
 import OrderDelayMessage from './components/OrderDelayMessage';
@@ -89,7 +93,8 @@ import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
 import CompleteProfileModal from '../../../../containers/Profile/index';
 import { ICON_RES } from '../../../../../components/NativeHeader';
-import { SOURCE_TYPE } from '../../../../../common/utils/constants';
+import logger from '../../../../../utils/monitoring/logger';
+import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
 
 const {
   AVAILABLE_REPORT_DRIVER_ORDER_STATUSES,
@@ -164,7 +169,6 @@ export class ThankYou extends PureComponent {
     // expected delivery time is for pre order
     // but there is no harm to do the cleanup for every order
     Utils.removeExpectedDeliveryTime();
-    window.newrelic?.addPageAction('ordering.thank-you.visit-thank-you');
     const {
       loadStoreIdHashCode,
       loadStoreIdTableIdHashCode,
@@ -512,7 +516,7 @@ export class ThankYou extends PureComponent {
   };
 
   handleChangeToSelfPickup = () => {
-    const { order, businessInfo } = this.props;
+    const { order, businessInfo, isUpdateShippingTypeRequestFailed, updateShippingTypRequestErrorMessage } = this.props;
 
     CleverTap.pushEvent('Thank you Page - Switch to Self-Pickup(Self-Pickup Confirmed)', {
       'store name': _get(order, 'storeInfo.name', ''),
@@ -521,6 +525,24 @@ export class ThankYou extends PureComponent {
       'order amount': _get(order, 'total', ''),
       country: _get(businessInfo, 'country', ''),
     });
+
+    // Currently there is only one thunk to update shipping type.
+    // In fact, no matter where the modification is triggered,
+    // it should be logged. It is recommended to put it in thunk in the future.
+    if (isUpdateShippingTypeRequestFailed) {
+      logger.error(
+        'Ordering_OrderStatus_SwitchOrderShippingTypeFailed',
+        {
+          message: updateShippingTypRequestErrorMessage,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.REFUND,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
+          },
+        }
+      );
+    }
   };
 
   getLogsInfoByStatus = (statusUpdateLogs, statusType) => {
@@ -684,21 +706,43 @@ export class ThankYou extends PureComponent {
   handleOrderCancellation = async ({ reason, detail }) => {
     const { t, receiptNumber, cancelOrder, updateCancellationReasonVisibleState, isOrderCancellable } = this.props;
 
-    if (!isOrderCancellable) {
-      alert(t('OrderCannotBeCancelledAsARiderFound'), {
-        title: t('YourFoodIsOnTheWay'),
-        closeButtonContent: t('GotIt'),
+    try {
+      if (!isOrderCancellable) {
+        alert(t('OrderCannotBeCancelledAsARiderFound'), {
+          title: t('YourFoodIsOnTheWay'),
+          closeButtonContent: t('GotIt'),
+        });
+
+        throw new Error('Rider has picked order');
+      }
+
+      await cancelOrder({
+        orderId: receiptNumber,
+        reason,
+        detail,
       });
-      return;
+
+      updateCancellationReasonVisibleState(false);
+
+      const { isCancelOrderRequestFailed, cancelOrderRequestErrorMessage } = this.props;
+
+      if (isCancelOrderRequestFailed) {
+        throw new Error(cancelOrderRequestErrorMessage);
+      }
+    } catch (e) {
+      logger.error(
+        'Ordering_OrderStatus_CancelOrderFailed',
+        {
+          message: e?.message,
+        },
+        {
+          bizFlow: {
+            flow: KEY_EVENTS_FLOWS.REFUND,
+            step: KEY_EVENTS_STEPS[KEY_EVENTS_FLOWS.REFUND].CHANGE_ORDER,
+          },
+        }
+      );
     }
-
-    await cancelOrder({
-      orderId: receiptNumber,
-      reason,
-      detail,
-    });
-
-    updateCancellationReasonVisibleState(false);
   };
 
   handleHideOrderCancellationReasonAside = () => {
@@ -1082,6 +1126,10 @@ export default compose(
       isCoreBusinessAPICompleted: getIsCoreBusinessAPICompleted(state),
       isFromBeepSiteOrderHistory: getIsFromBeepSiteOrderHistory(state),
       shouldShowStoreReviewCard: getShouldShowStoreReviewCard(state),
+      isCancelOrderRequestFailed: getIsCancelOrderRequestRejected(state),
+      cancelOrderRequestErrorMessage: getCancelOrderRequestErrorMessage(state),
+      isUpdateShippingTypeRequestFailed: getIsUpdateShippingTypeRequestRejected(state),
+      updateShippingTypRequestErrorMessage: getUpdateShippingTypeRequestErrorMessage(state),
     }),
     dispatch => ({
       updateCancellationReasonVisibleState: bindActionCreators(
