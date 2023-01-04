@@ -14,7 +14,7 @@ import {
 } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from './redux';
 import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
-import { init } from './redux/thunk';
+import { init, completePhoneNumber } from './redux/thunk';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
@@ -221,8 +221,9 @@ class AddressDetail extends Component {
     this.props.customerActions.startEditPhoneNumber();
   };
 
-  handleNameInputBlur = () => {
-    this.props.customerActions.completePhoneNumber();
+  handleNameInputBlur = async () => {
+    const { completePhoneNumber } = this.props;
+    completePhoneNumber();
   };
 
   render() {
@@ -420,6 +421,7 @@ export default compose(
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       init: bindActionCreators(init, dispatch),
+      completePhoneNumber: bindActionCreators(completePhoneNumber, dispatch),
     })
   )
 )(AddressDetail);
