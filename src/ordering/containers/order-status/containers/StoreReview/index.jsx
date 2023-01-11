@@ -30,6 +30,10 @@ import { getOrderCreatedDate, getOffline } from './redux/selectors';
 import { backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES, STORE_REVIEW_COMMENT_CHAR_MAX } from './constants';
 import { actions as storeReviewAction } from './redux/index';
+import { gotoHome } from '../../../../../utils/native-methods';
+import { isWebview } from '../../../../../common/utils';
+
+const isInWebview = isWebview();
 
 const StoreReview = () => {
   const dispatch = useDispatch();
@@ -107,7 +111,11 @@ const StoreReview = () => {
 
   return (
     <section>
-      <PageHeader title={t('StoreReview')} onBackArrowClick={handleClickBackButton} isShowBackButton={!offline} />
+      <PageHeader
+        title={t('StoreReview')}
+        onBackArrowClick={isInWebview ? gotoHome : handleClickBackButton}
+        isShowBackButton={!offline || isInWebview}
+      />
       <div className="tw-flex tw-flex-col tw-justify-center tw-items-center">
         <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
         <div className="tw-flex tw-justify-center tw-leading-normal">
