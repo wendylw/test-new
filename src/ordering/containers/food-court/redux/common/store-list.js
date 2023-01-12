@@ -37,6 +37,8 @@ import FengImage from '../../../../../images/food-court-temp/merchant-Feng.png';
 import ShunImage from '../../../../../images/food-court-temp/merchant-Shun.png';
 import ShunYuanImage from '../../../../../images/food-court-temp/merchant-SHUN-YUAN .jpeg';
 import BKTImage from '../../../../../images/food-court-temp/merchant-BKT.jpeg';
+import FoodImage from '../../../../../images/food-court-temp/merchant-Food.jpeg';
+import DrinkImage from '../../../../../images/food-court-temp/merchant-Drink.jpeg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -177,6 +179,36 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '8:30',
       validTimeTo: '19:30',
+    },
+  },
+  '63974c018f6d940007f79bb9': {
+    id: '63974c018f6d940007f79bb9',
+    title: 'Food',
+    imageNoCompression: FoodImage,
+    tags: ['Food'],
+    businessHours: {
+      validTimeFrom: '0:00',
+      validTimeTo: '24:00',
+    },
+  },
+  '63b63252202918000780b2db': {
+    id: '63b63252202918000780b2db',
+    title: 'Drink',
+    imageNoCompression: DrinkImage,
+    tags: ['Drinks', 'Beverage'],
+    businessHours: {
+      validTimeFrom: '0:00',
+      validTimeTo: '24:00',
+    },
+  },
+  '63b6324b95cea90007c31bf2': {
+    id: '63b6324b95cea90007c31bf2',
+    title: 'Drink',
+    imageNoCompression: DrinkImage,
+    tags: ['Drinks', 'Beverage'],
+    businessHours: {
+      validTimeFrom: '0:00',
+      validTimeTo: '24:00',
     },
   },
   '63523c45da13950007f71dd9': {
