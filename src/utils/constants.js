@@ -46,6 +46,7 @@ const PAYMENT_METHOD_LABELS = {
   TNG_PAY: 'TouchNGo',
   GCASH_PAY: 'GCash',
   LINE_PAY: 'Line',
+  GETZ_PAY: 'GetzPay',
 };
 
 const PAYMENT_PROVIDERS = {

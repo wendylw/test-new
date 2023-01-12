@@ -251,8 +251,6 @@ class PageLogin extends React.Component {
     const { shippingType } = loginOptions;
 
     try {
-      window.newrelic?.addPageAction('ordering.login.verify-otp-start');
-
       await appActions.sendOtp({ otp });
 
       const { isLoginRequestFailed } = this.props;
@@ -265,7 +263,6 @@ class PageLogin extends React.Component {
       const { accessToken, refreshToken } = user;
 
       if (accessToken && refreshToken) {
-        window.newrelic?.addPageAction('ordering.login.verify-otp-done');
         await appActions.loginApp({
           accessToken,
           refreshToken,
