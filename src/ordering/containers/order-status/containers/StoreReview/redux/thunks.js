@@ -21,7 +21,7 @@ import {
   getIsMerchantContactAllowable,
 } from '../../../redux/selector';
 import { getIsWebview } from '../../../../../redux/modules/app';
-import { getIsCommentEmpty, getTransactionInfoForCleverTap } from './selectors';
+import { getIsCommentEmpty, getTransactionInfoForCleverTap, getOffline } from './selectors';
 import {
   goBack as nativeGoBack,
   openBrowserURL,
@@ -120,10 +120,11 @@ export const mounted = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const state = getState();
     const ifStoreReviewInfoExists = getIfStoreReviewInfoExists(state);
+    const offline = getOffline(state);
 
     // No need to send API request again for better performance
     if (!ifStoreReviewInfoExists) {
-      await dispatch(loadOrderStoreReview());
+      await dispatch(loadOrderStoreReview({ offline: !!offline }));
     }
 
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(getState());
@@ -168,7 +169,7 @@ export const backButtonClicked = createAsyncThunk(
 
 export const submitButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/submitButtonClicked',
-  async ({ rating, comments, allowMerchantContact }, { getState, dispatch }) => {
+  async ({ rating, comments, allowMerchantContact, offline }, { getState, dispatch }) => {
     const state = getState();
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
 
@@ -177,7 +178,7 @@ export const submitButtonClicked = createAsyncThunk(
       'allow store to contact': allowMerchantContact,
       ...transactionInfoCleverTap,
     });
-    await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact }));
+    await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact, offline }));
   }
 );
 

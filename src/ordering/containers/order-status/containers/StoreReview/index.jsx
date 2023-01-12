@@ -29,7 +29,6 @@ import {
 import { getOrderCreatedDate, getOffline } from './redux/selectors';
 import { backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES, STORE_REVIEW_COMMENT_CHAR_MAX } from './constants';
-import { actions as storeReviewAction } from './redux/index';
 import { gotoHome } from '../../../../../utils/native-methods';
 import { isWebview } from '../../../../../common/utils';
 
@@ -37,7 +36,6 @@ const isInWebview = isWebview();
 
 const StoreReview = () => {
   const dispatch = useDispatch();
-  dispatch(storeReviewAction.init());
   const { state: locationState } = useLocation();
   const selectedRating = _get(locationState, 'rating', 0);
 
@@ -88,8 +86,8 @@ const StoreReview = () => {
   );
 
   const handleClickSubmitButton = useCallback(
-    () => dispatch(submitButtonClicked({ rating, comments, allowMerchantContact: isContactAllowable })),
-    [dispatch, rating, comments, isContactAllowable]
+    () => dispatch(submitButtonClicked({ rating, comments, allowMerchantContact: isContactAllowable, offline })),
+    [dispatch, rating, comments, isContactAllowable, offline]
   );
 
   useEffect(() => {
