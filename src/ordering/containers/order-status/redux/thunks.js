@@ -68,9 +68,9 @@ export const hideStoreReviewLoadingIndicator = createAsyncThunk(
 
 export const loadOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/loadOrderStoreReview',
-  async (_, { getState }) => {
+  async ({ offline }, { getState }) => {
     const orderId = getReceiptNumber(getState());
-    const { data } = await getOrderStoreReview(orderId);
+    const { data } = await getOrderStoreReview(orderId, offline);
 
     return data;
   }
@@ -78,13 +78,13 @@ export const loadOrderStoreReview = createAsyncThunk(
 
 export const saveOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/saveOrderStoreReview',
-  async ({ rating, comments, allowMerchantContact }, { dispatch, getState }) => {
+  async ({ rating, comments, allowMerchantContact, offline }, { dispatch, getState }) => {
     const state = getState();
     const orderId = getReceiptNumber(state);
 
     try {
       await dispatch(showStoreReviewLoadingIndicator());
-      await postOrderStoreReview({ orderId, rating, comments, allowMerchantContact });
+      await postOrderStoreReview({ orderId, rating, comments, allowMerchantContact, offline });
       await dispatch(hideStoreReviewLoadingIndicator());
       await dispatch(showStoreReviewThankYouModal());
 

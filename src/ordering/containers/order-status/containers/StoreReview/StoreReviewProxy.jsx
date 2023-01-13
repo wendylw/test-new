@@ -10,12 +10,14 @@ import BeepErrorImage from '../../../../../images/network-error.svg';
 import { mounted, ErrorResultOkayButtonClicked as okayButtonClicked, retryButtonClicked } from './redux/thunks';
 import { getShouldShowPageLoader, getShouldShowUnsupportedError } from './redux/selectors';
 import { getIsStoreReviewExpired, getIsStoreReviewable } from '../../redux/selector';
+import { actions as storeReviewAction } from './redux/index';
 
 const StoreReviewProxy = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation('OrderingThankYou');
 
   useMount(() => {
+    dispatch(storeReviewAction.init());
     dispatch(mounted());
   });
 
