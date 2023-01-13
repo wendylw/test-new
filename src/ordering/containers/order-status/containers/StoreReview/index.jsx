@@ -26,15 +26,24 @@ import {
   getHasStoreReviewed,
   getIsMerchantContactAllowable,
 } from '../../redux/selector';
+import { getOrderCreatedDate, getOffline } from './redux/selectors';
 import { backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES, STORE_REVIEW_COMMENT_CHAR_MAX } from './constants';
+import { actions as storeReviewAction } from './redux/index';
+import { gotoHome } from '../../../../../utils/native-methods';
+import { isWebview } from '../../../../../common/utils';
+
+const isInWebview = isWebview();
 
 const StoreReview = () => {
   const dispatch = useDispatch();
+  dispatch(storeReviewAction.init());
   const { state: locationState } = useLocation();
   const selectedRating = _get(locationState, 'rating', 0);
 
   const { t } = useTranslation('OrderingThankYou');
+
+  const offline = useSelector(getOffline);
 
   const storeHasReviewed = useSelector(getHasStoreReviewed);
 
@@ -47,6 +56,8 @@ const StoreReview = () => {
   const allowContact = useSelector(getIsMerchantContactAllowable);
 
   const storeComment = useSelector(getStoreComment);
+
+  const orderCreatedDate = useSelector(getOrderCreatedDate);
 
   const [rating, setRating] = useState(selectedRating || storeRating);
 
@@ -100,7 +111,11 @@ const StoreReview = () => {
 
   return (
     <section>
-      <PageHeader title={t('StoreReview')} onBackArrowClick={handleClickBackButton} />
+      <PageHeader
+        title={t('StoreReview')}
+        onBackArrowClick={isInWebview ? gotoHome : handleClickBackButton}
+        isShowBackButton={!offline || isInWebview}
+      />
       <div className="tw-flex tw-flex-col tw-justify-center tw-items-center">
         <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />
         <div className="tw-flex tw-justify-center tw-leading-normal">
@@ -110,11 +125,15 @@ const StoreReview = () => {
           {storeName}
         </div>
         <div className="tw-flex tw-justify-center">
-          <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
-            <span className="tw-text-orange tw-text-xs tw-font-bold">
-              {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
-            </span>
-          </Tag>
+          {offline ? (
+            <span className="tw-text-sm tw-text-gray-700">{orderCreatedDate}</span>
+          ) : (
+            <Tag className="tw-leading-loose" color="pink" radiusSize="xs">
+              <span className="tw-text-orange tw-text-xs tw-font-bold">
+                {t(STORE_REVIEW_SHIPPING_TYPES[shippingType.toLowerCase()])}
+              </span>
+            </Tag>
+          )}
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
+import dayjs from 'dayjs';
 import { getIsTNGMiniProgram } from '../../../../../redux/modules/app';
 import {
   getStoreRating,
@@ -12,6 +13,7 @@ import {
 } from '../../../redux/selector';
 import { STORE_REVIEW_HIGH_RATING, STORE_REVIEW_ERROR_CODES } from '../constants';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
+import { isValidDate } from '../../../../../../utils/datetime-lib';
 
 export const getIsHighRatedReview = createSelector(getStoreRating, rating => rating >= STORE_REVIEW_HIGH_RATING);
 
@@ -64,3 +66,11 @@ export const getShouldShowUnsupportedError = createSelector(
   (isSupportable, isInvalidReceiptNumberError, isLoadDataRequestStatusFulfilled) =>
     (isLoadDataRequestStatusFulfilled && !isSupportable) || isInvalidReceiptNumberError
 );
+
+export const getOrderCreatedDate = createSelector(getStoreReviewInfoData, storeReviewInfoData => {
+  const createdTime = _get(storeReviewInfoData, 'createdTime', '');
+  const day = dayjs(createdTime);
+  return isValidDate(day.toDate()) ? day.format('DD MMMM YYYY') : '';
+});
+
+export const getOffline = state => state.orderStatus.storeReview.offline;
