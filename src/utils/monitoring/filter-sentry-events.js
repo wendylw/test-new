@@ -166,6 +166,17 @@ const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
   }
 };
 
+const isDuplicateAlert = hint => {
+  // alert duplicate is expectation issue
+  // so we can ignore it.
+  try {
+    const message = getErrorMessageFromHint(hint);
+    return message.includes('Failed to create alert: id existed');
+  } catch {
+    return false;
+  }
+};
+
 const shouldFilter = (event, hint) => {
   try {
     return (
@@ -180,7 +191,8 @@ const shouldFilter = (event, hint) => {
       isIgnoreObjectNotFoundMatchingId(event, hint) ||
       isTikTokIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
-      isReadGoogleMapsPropertiesFromNullIssues(event, hint)
+      isReadGoogleMapsPropertiesFromNullIssues(event, hint) ||
+      isDuplicateAlert(hint)
     );
   } catch {
     return false;
