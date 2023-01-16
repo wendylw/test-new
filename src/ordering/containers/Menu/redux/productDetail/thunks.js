@@ -151,7 +151,7 @@ export const showProductDetailDrawer = createAsyncThunk(
       try {
         const result = await dispatch(appActions.loadProductDetail(productId));
         const productInResult = _get(result, 'responseGql.data.product', null);
-        const isProductDetailRequestFailed = getIsProductDetailRequestRejected(state);
+        const isProductDetailRequestFailed = getIsProductDetailRequestRejected(getState());
 
         if (isProductDetailRequestFailed) {
           throw new Error('Failed to load product detail');
