@@ -10,6 +10,7 @@
   "GCash": "GCash",
   "Line": "LINE Pay",
   "Cash": "Pay at Counter",
+  "GetzPay": "Pay Online",
   "PayByCashPromptDescription": "Your order will only be confirmed after payment is made.",
   "PayByCashPromptConfirmedText": "Pay at counter",
   "RequiredMessage": "Required",

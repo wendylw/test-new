@@ -26,6 +26,9 @@ const PAYMENT_NAME_COUNTRY_MAP = {
     [PAYMENT_METHOD_LABELS.CREDIT_CARD_PAY]: 'BeepPHCreditCard',
     [PAYMENT_METHOD_LABELS.GCASH_PAY]: 'BeepPHCCPPGcash',
   },
+  SG: {
+    [PAYMENT_METHOD_LABELS.GETZ_PAY]: 'GetzPay',
+  },
 };
 
 export function getPaymentName(country, paymentLabel) {
