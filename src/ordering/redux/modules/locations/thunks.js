@@ -52,21 +52,15 @@ export const loadLocationHistoryList = createAsyncThunk('app/location/loadLocati
  * @return {object} positionInfo {displayComponents: {mainText, secondaryText}, address: `${mainText}, ${secondaryText, coords, placeId, addressComponents}`}
  */
 export const loadPlaceInfoById = async (placeInfo, options) => {
-  try {
-    /* eslint-disable camelcase */
-    const { place_id } = placeInfo;
-    const positionInfo = await getPlaceInfoFromPlaceId(place_id, options);
+  /* eslint-disable camelcase */
+  const { place_id } = placeInfo;
+  const positionInfo = await getPlaceInfoFromPlaceId(place_id, options);
 
-    return getDisplayPositionInfo({
-      ...placeInfo,
-      ...positionInfo,
-    });
-    /* eslint-enable camelcase */
-  } catch (e) {
-    console.error('load place info by id failed', e);
-
-    throw e;
-  }
+  return getDisplayPositionInfo({
+    ...placeInfo,
+    ...positionInfo,
+  });
+  /* eslint-enable camelcase */
 };
 
 /**
