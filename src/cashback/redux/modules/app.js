@@ -16,7 +16,6 @@ import { getBusinessByName } from '../../../redux/modules/entities/businesses';
 import { get } from '../../../utils/request';
 import { post } from '../../../utils/api/api-fetch';
 import { createSelector } from 'reselect';
-import logger from '../../../utils/monitoring/logger';
 
 const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
