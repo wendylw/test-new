@@ -1,3 +1,4 @@
+import _isError from 'lodash/isError';
 import React from 'react';
 import qs from 'qs';
 import PropTypes from 'prop-types';
@@ -71,13 +72,12 @@ import {
 import CleverTap from '../../../utils/clevertap';
 import HybridHeader from '../../../components/HybridHeader';
 import CurrencyNumber from '../../components/CurrencyNumber';
-import { alert } from '../../../common/feedback';
 import Image from '../../../components/Image';
 import { IconChecked, IconError, IconClose, IconLocalOffer } from '../../../components/Icons';
 import Billing from '../../components/Billing';
 import RedirectPageLoader from '../../components/RedirectPageLoader';
 import PageProcessingLoader from '../../components/PageProcessingLoader';
-import { toast, alert as alertV2 } from '../../../common/utils/feedback';
+import { toast, alert } from '../../../common/utils/feedback';
 import './TableSummary.scss';
 
 const { DELIVERY_METHOD } = Constants;
@@ -104,6 +104,7 @@ export class TableSummary extends React.Component {
       logger.error('Ordering_TableSummary_InitializeFailedByMissingReceiptNumber');
 
       alert(t('ReceiptNumberInValidDescription'), {
+        id: 'ReceiptNumberInValidAlert',
         title: t('ReceiptNumberInValidTitle'),
         closeButtonContent: t('ReturnToCart'),
         onClose: () =>
@@ -195,17 +196,23 @@ export class TableSummary extends React.Component {
     const { t, isOrderPendingPayment } = this.props;
 
     alert(
-      <Trans
-        t={t}
-        i18nKey={isOrderPendingPayment ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
-        components={{ bold: <strong className="text-size-big" /> }}
-      />,
+      <p className="block">
+        <Trans
+          t={t}
+          i18nKey={isOrderPendingPayment ? 'UnableBackMenuAndPendingPaymentDescription' : 'UnableBackMenuDescription'}
+          components={{ bold: <strong className="text-size-big" /> }}
+        />
+      </p>,
       {
+        id: 'UnableBackMenuPageAlert',
         title: t('UnableBackMenuTitle'),
         closeButtonContent: t('GotIt'),
-        className: 'table-summary__back-menu-alert',
       }
-    );
+    ).then(value => {
+      if (_isError(value)) {
+        logger.error('Ordering_TableSummary_BackMenuPageFailed');
+      }
+    });
   };
 
   handleHeaderNavFunc = () => {
@@ -356,7 +363,7 @@ export class TableSummary extends React.Component {
   handleClickCashbackInfoButton = () => {
     const { t } = this.props;
 
-    alertV2(t('CashbackInfoDescription'), {
+    alert(t('CashbackInfoDescription'), {
       title: t('CashbackInfoTitle'),
       closeButtonContent: t('GotIt'),
     });
