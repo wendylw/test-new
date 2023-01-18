@@ -8,16 +8,7 @@ import {
   getAddressPostCode,
   getAddressCountryCode,
 } from '../../../../../../redux/modules/address/selectors';
-import { getAddressInfo, getContactNumber } from './selectors';
-
-let isValidPhoneNumber;
-
-async function getReactPhoneNumberLib() {
-  await import('react-phone-number-input/mobile').then(lib => {
-    isValidPhoneNumber = lib.isValidPhoneNumber;
-  });
-  return isValidPhoneNumber;
-}
+import { getAddressInfo } from './selectors';
 
 export const init = createAsyncThunk(
   'ordering/customer/addressDetail',
@@ -86,21 +77,8 @@ export const init = createAsyncThunk(
       payload.countryCode = _get(selectedAddress, 'countryCode', '') || getAddressCountryCode(state);
     }
 
-    await getReactPhoneNumberLib();
-
     return payload;
   }
 );
 
-export const completePhoneNumber = createAsyncThunk(
-  'ordering/customer/completePhoneNumber',
-  async (_, { getState }) => {
-    const state = getState();
-    const contactNumber = getContactNumber(state);
-    const payload = {
-      isValid: false,
-    };
-    payload.isValid = isValidPhoneNumber ? isValidPhoneNumber(contactNumber) : true;
-    return payload;
-  }
-);
+export const completePhoneNumber = createAsyncThunk('ordering/customer/completePhoneNumber', async isValid => isValid);

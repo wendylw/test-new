@@ -22,12 +22,12 @@ import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import _trim from 'lodash/trim';
-import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import './AddressDetail.scss';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
+import { COUNTRIES_MAPPING } from '../../../../../common/utils/phone-number-constants';
 const actions = {
   EDIT: 'edit',
   ADD: 'add',
@@ -79,8 +79,8 @@ class AddressDetail extends Component {
   phoneInputChange = phone => {
     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
     const phoneInput =
-      (metadataMobile.countries[selectedCountry] &&
-        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0])) ||
+      (COUNTRIES_MAPPING[selectedCountry] &&
+        Utils.getFormatPhoneNumber(phone || '', COUNTRIES_MAPPING[selectedCountry])) ||
       '';
     this.props.customerActions.updatePhoneNumber(phoneInput);
     this.setState({
@@ -221,9 +221,11 @@ class AddressDetail extends Component {
     this.props.customerActions.startEditPhoneNumber();
   };
 
-  handleNameInputBlur = async () => {
+  handlePhoneNumberInputBlur = async event => {
     const { completePhoneNumber } = this.props;
-    completePhoneNumber();
+    const isValid = isValidPhoneNumber(event.target.value);
+
+    completePhoneNumber(isValid);
   };
 
   render() {
@@ -293,10 +295,9 @@ class AddressDetail extends Component {
                     placeholder={t('EnterPhoneNumber')}
                     value={formatPhoneNumberIntl(contactNumber)}
                     country={country}
-                    metadata={metadataMobile}
                     onChange={this.phoneInputChange}
                     onFocus={this.handlePhoneNumberFocus}
-                    onBlur={this.handleNameInputBlur}
+                    onBlur={this.handlePhoneNumberInputBlur}
                   />
                 </div>
               </div>

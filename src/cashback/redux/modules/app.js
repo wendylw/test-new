@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import _get from 'lodash/get';
 import _cloneDeep from 'lodash/cloneDeep';
 import Constants from '../../../utils/constants';
+import { COUNTRIES } from '../../../common/utils/phone-number-constants';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
@@ -17,7 +18,6 @@ import { get } from '../../../utils/request';
 import { post } from '../../../utils/api/api-fetch';
 import { createSelector } from 'reselect';
 
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
 const {
   AUTH_INFO,
@@ -48,7 +48,7 @@ export const initialState = {
       status: null,
       error: null,
     },
-    country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
+    country: Utils.getCountry(localePhoneNumber, navigator.language, COUNTRIES, 'MY'),
     phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
     noWhatsAppAccount: true,

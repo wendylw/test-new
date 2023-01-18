@@ -6,28 +6,29 @@ import PhoneInput, {
   isValidPhoneNumber,
   parsePhoneNumber,
 } from 'react-phone-number-input/mobile';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import './PhoneViewContainer.scss';
 
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
-
 class PhoneViewContainer extends React.Component {
   handleUpdatePhoneNumber(phone) {
-    const { updatePhoneNumber } = this.props;
-    const { number } = (phone && parsePhoneNumberFromString(phone)) || {};
+    const { updatePhoneNumber, onValidation } = this.props;
+    const { number } = (phone && parsePhoneNumber(phone)) || {};
 
     updatePhoneNumber({ phone: number || '' });
+
+    onValidation(isValidPhoneNumber(number || ''));
   }
 
   handleUpdateCountry(country) {
-    const { updateCountry } = this.props;
+    const { updateCountry, phone, onValidation } = this.props;
 
     if (country) {
-      updateCountry({ country: country });
+      updateCountry({ country });
     }
+
+    onValidation(isValidPhoneNumber(phone || ''));
   }
 
   handleSubmitPhoneNumber() {
@@ -80,7 +81,6 @@ class PhoneViewContainer extends React.Component {
           value={formatPhoneNumberIntl(phone)}
           defaultCountry={country}
           country={country}
-          metadata={metadataMobile}
           onChange={newPhone => this.handleUpdatePhoneNumber(newPhone)}
           onCountryChange={newCountry => this.handleUpdateCountry(newCountry)}
         />
@@ -111,6 +111,7 @@ PhoneViewContainer.propTypes = {
   updatePhoneNumber: PropTypes.func,
   updateCountry: PropTypes.func,
   onSubmit: PropTypes.func,
+  onValidation: PropTypes.func,
 };
 
 PhoneViewContainer.defaultProps = {
@@ -120,6 +121,7 @@ PhoneViewContainer.defaultProps = {
   updatePhoneNumber: () => {},
   updateCountry: () => {},
   onSubmit: () => {},
+  onValidation: () => {},
 };
 PhoneViewContainer.displayName = 'PhoneViewContainer';
 
