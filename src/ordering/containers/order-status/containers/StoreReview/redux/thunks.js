@@ -69,6 +69,12 @@ export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack'
   const state = getState();
   const isWebview = getIsWebview(state);
   const sourceType = getSessionVariable('__sr_source');
+  const offline = getOffline(state);
+
+  // WB-4816: For offline orders, we simply hide modal.
+  if (offline) {
+    return;
+  }
 
   switch (sourceType) {
     case REFERRER_SOURCE_TYPES.THANK_YOU:
@@ -269,7 +275,14 @@ export const copyRateButtonClicked = createAsyncThunk(
 
 export const ErrorResultOkayButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/okayButtonClicked',
-  async (_, { dispatch }) => {
+  async (_, { getState, dispatch }) => {
+    const state = getState();
+    const offline = getOffline(state);
+
+    // WB-4816: For offline orders, we don't go to Menu page.
+    if (offline) {
+      return;
+    }
     await dispatch(goToMenuPage());
   }
 );
