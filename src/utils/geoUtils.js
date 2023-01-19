@@ -356,7 +356,6 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
             fields,
             placeId,
           });
-          console.error('Fail to get place detail:', status, placeId);
           reject(new Error('Fail to get place detail'));
         }
       }
