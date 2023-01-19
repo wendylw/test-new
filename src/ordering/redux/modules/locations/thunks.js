@@ -41,7 +41,7 @@ export const loadLocationHistoryList = createAsyncThunk('app/location/loadLocati
 
     return result;
   } catch (e) {
-    console.error('failed to get location history', e);
+    logger.error('Utils_GeoUtils_FailedToLoadLocationHistoryList', { message: e?.message });
 
     return [];
   }
