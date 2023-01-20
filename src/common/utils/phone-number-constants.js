@@ -1,4 +1,4 @@
-export const COUNTRIES_MAPPING = {
+export const COUNTRY_PHONE_CODES = {
   AC: '247',
   AD: '376',
   AE: '971',
@@ -246,4 +246,4 @@ export const COUNTRIES_MAPPING = {
   ZW: '263',
 };
 
-export const COUNTRIES = Object.keys(COUNTRIES_MAPPING);
+export const COUNTRIES = Object.keys(COUNTRY_PHONE_CODES);

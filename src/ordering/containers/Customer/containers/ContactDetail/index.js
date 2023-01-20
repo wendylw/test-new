@@ -4,7 +4,7 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import Utils from '../../../../../utils/utils';
 import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
-import { COUNTRIES_MAPPING } from '../../../../../common/utils/phone-number-constants';
+import { COUNTRY_PHONE_CODES } from '../../../../../common/utils/phone-number-constants';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { getUser, getDeliveryDetails } from '../../../../redux/modules/app';
@@ -78,8 +78,8 @@ class ContactDetail extends Component {
                     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
                     updatePhone(
-                      COUNTRIES_MAPPING[selectedCountry] &&
-                        Utils.getFormatPhoneNumber(phone || '', COUNTRIES_MAPPING[selectedCountry])
+                      COUNTRY_PHONE_CODES[selectedCountry] &&
+                        Utils.getFormatPhoneNumber(phone || '', COUNTRY_PHONE_CODES[selectedCountry])
                     );
                   }}
                 />
