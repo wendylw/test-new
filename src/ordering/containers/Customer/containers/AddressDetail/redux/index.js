@@ -63,7 +63,7 @@ export const { actions, reducer } = createSlice({
     [completePhoneNumber.fulfilled.type]: (state, action) => {
       const { payload } = action;
       state.contactNumber = _trim(state.contactNumber);
-      state.contactNumberValidStatus.isValid = payload.isValid;
+      state.contactNumberValidStatus.isValid = payload;
       state.contactNumberValidStatus.isComplete = true;
     },
   },
