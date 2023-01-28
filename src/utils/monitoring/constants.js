@@ -24,6 +24,8 @@ export const API_REQUEST_URL_PATTERNS = {
   '/api/v3/transactions/*/submission': /\/api\/v3\/transactions\/\w+\/submission$/,
   '/api/v3/transactions/*/calculation': /\/api\/v3\/transactions\/\w+\/calculation$/,
   '/api/v3/transactions/*/status/cancel': /^\/api\/v3\/transactions\/\w+\/status\/cancel$/,
+  '/api/v3/transactions/*/apply-cashback': /^\/api\/v3\/transactions\/\w+\/apply-cashback$/,
+  '/api/v3/transactions/*/remove-cashback': /^\/api\/v3\/transactions\/\w+\/remove-cashback$/,
   '/api/v3/transactions/*/apply-voucher': /^\/api\/v3\/transactions\/\w+\/apply-voucher$/,
   '/api/v3/transactions/*/remove-voucher': /^\/api\/v3\/transactions\/\w+\/remove-voucher$/,
   '/api/v3/transactions/*/apply-promotions': /^\/api\/v3\/transactions\/\w+\/apply-promotions$/,
