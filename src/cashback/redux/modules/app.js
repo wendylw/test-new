@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import _get from 'lodash/get';
 import _cloneDeep from 'lodash/cloneDeep';
 import Constants from '../../../utils/constants';
-import { COUNTRIES } from '../../../common/utils/phone-number-constants';
+import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 import Utils from '../../../utils/utils';
 import CleverTap from '../../../utils/clevertap';
 import config from '../../../config';
@@ -48,7 +48,7 @@ export const initialState = {
       status: null,
       error: null,
     },
-    country: Utils.getCountry(localePhoneNumber, navigator.language, COUNTRIES, 'MY'),
+    country: Utils.getCountry(localePhoneNumber, navigator.language, AVAILABLE_COUNTRIES, 'MY'),
     phone: localePhoneNumber,
     prompt: 'Do you have a Beep account? Login with your mobile phone number.',
     noWhatsAppAccount: true,

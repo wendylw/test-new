@@ -13,22 +13,22 @@ import './PhoneViewContainer.scss';
 
 class PhoneViewContainer extends React.Component {
   handleUpdatePhoneNumber(phone) {
-    const { updatePhoneNumber, onValidation } = this.props;
+    const { updatePhoneNumber, onValidate } = this.props;
     const { number } = (phone && parsePhoneNumber(phone)) || {};
 
     updatePhoneNumber({ phone: number || '' });
 
-    onValidation(isValidPhoneNumber(number || ''));
+    onValidate(isValidPhoneNumber(number || ''));
   }
 
   handleUpdateCountry(country) {
-    const { updateCountry, phone, onValidation } = this.props;
+    const { updateCountry, phone, onValidate } = this.props;
 
     if (country) {
       updateCountry({ country });
     }
 
-    onValidation(isValidPhoneNumber(phone || ''));
+    onValidate(isValidPhoneNumber(phone || ''));
   }
 
   handleSubmitPhoneNumber() {
@@ -111,7 +111,7 @@ PhoneViewContainer.propTypes = {
   updatePhoneNumber: PropTypes.func,
   updateCountry: PropTypes.func,
   onSubmit: PropTypes.func,
-  onValidation: PropTypes.func,
+  onValidate: PropTypes.func,
 };
 
 PhoneViewContainer.defaultProps = {
@@ -121,7 +121,7 @@ PhoneViewContainer.defaultProps = {
   updatePhoneNumber: () => {},
   updateCountry: () => {},
   onSubmit: () => {},
-  onValidation: () => {},
+  onValidate: () => {},
 };
 PhoneViewContainer.displayName = 'PhoneViewContainer';
 

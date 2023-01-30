@@ -433,7 +433,7 @@ class PageLogin extends React.Component {
               errorText={t(errorTextI18nKey)}
               updatePhoneNumber={this.handleUpdateUser.bind(this)}
               updateCountry={this.handleUpdateUser.bind(this)}
-              onValidation={this.handleUpdateIsValidPhoneNumber}
+              onValidate={this.handleUpdateIsValidPhoneNumber}
               onSubmit={this.handleClickContinueButton.bind(this)}
             >
               <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
