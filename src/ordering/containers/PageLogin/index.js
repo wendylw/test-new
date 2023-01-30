@@ -38,7 +38,7 @@ class PageLogin extends React.Component {
   state = {
     sendOtp: false,
     shouldShowModal: false,
-    isValidPhoneNumberImage: false,
+    isPhoneNumberValid: false,
   };
 
   captchaRef = React.createRef();
@@ -103,8 +103,8 @@ class PageLogin extends React.Component {
     appActions.resetGetOtpRequest();
   }
 
-  handleUpdateIsValidPhoneNumber = isValid => {
-    this.setState({ isValidPhoneNumberImage: isValid });
+  handleUpdatePhoneNumberValidation = isValid => {
+    this.setState({ isPhoneNumberValid: isValid });
   };
 
   async handleCompleteReCAPTCHA() {
@@ -377,7 +377,7 @@ class PageLogin extends React.Component {
       isOtpRequestPending,
       isOtpErrorFieldVisible,
     } = this.props;
-    const { isValidPhoneNumberImage } = this.state;
+    const { isPhoneNumberValid } = this.state;
     const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
@@ -413,12 +413,12 @@ class PageLogin extends React.Component {
               <img
                 src={beepLoginActive}
                 alt="otp active"
-                className={`${isValidPhoneNumberImage ? '' : 'page-login__icon--hide'}`}
+                className={`${isPhoneNumberValid ? '' : 'page-login__icon--hide'}`}
               />
               <img
                 src={beepLoginDisabled}
                 alt="otp disabled"
-                className={`${isValidPhoneNumberImage ? 'page-login__icon--hide' : 'page-login__disabled'}`}
+                className={`${isPhoneNumberValid ? 'page-login__icon--hide' : 'page-login__disabled'}`}
               />
             </figure>
             <PhoneViewContainer
@@ -433,7 +433,7 @@ class PageLogin extends React.Component {
               errorText={t(errorTextI18nKey)}
               updatePhoneNumber={this.handleUpdateUser.bind(this)}
               updateCountry={this.handleUpdateUser.bind(this)}
-              onValidate={this.handleUpdateIsValidPhoneNumber}
+              onValidate={this.handleUpdatePhoneNumberValidation}
               onSubmit={this.handleClickContinueButton.bind(this)}
             >
               <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">
