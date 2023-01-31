@@ -26,11 +26,19 @@ import JuiceImage from '../../../../../images/food-court-temp/merchant-Juice.jpe
 import JoeImage from '../../../../../images/food-court-temp/merchant-Joe.jpeg';
 import RiceImage from '../../../../../images/food-court-temp/merchant-rice.jpeg';
 import SeoulImage from '../../../../../images/food-court-temp/merchant-Seoul.png';
-import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.jpg';
+import SubwayImage from '../../../../../images/food-court-temp/merchant-Subway.png';
 import BobaTeaHouseImage from '../../../../../images/food-court-temp/merchant-Boba-Tea-House.jpg';
 import SaladAtelierImage from '../../../../../images/food-court-temp/merchant-Salad-Atelier.jpg';
 import XOXOImage from '../../../../../images/food-court-temp/merchant-XOXO.jpg';
-import HopeCoffeeIMage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
+import HopeCoffeeImage from '../../../../../images/food-court-temp/merchant-Hope-Coffee.png';
+import IronBarImage from '../../../../../images/food-court-temp/merchant-Iron-Bar.png';
+import YuByRainGardenImage from '../../../../../images/food-court-temp/merchant-Yu-by-Rain-Garden.png';
+import FengImage from '../../../../../images/food-court-temp/merchant-Feng.png';
+import ShunImage from '../../../../../images/food-court-temp/merchant-Shun.png';
+import ShunYuanImage from '../../../../../images/food-court-temp/merchant-SHUN-YUAN .jpeg';
+import BKTImage from '../../../../../images/food-court-temp/merchant-BKT.jpeg';
+import FoodImage from '../../../../../images/food-court-temp/merchant-Food.jpeg';
+import DrinkImage from '../../../../../images/food-court-temp/merchant-Drink.jpeg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -143,16 +151,15 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '20:00',
     },
   },
-  '63523a12a66d9d00073eda38': {
-    id: '63523a12a66d9d00073eda38',
-    title: 'Subway',
+  '63a29c30e677e80008f0470d': {
+    id: '63a29c30e677e80008f0470d',
+    title: 'Subway Syopz',
     imageNoCompression: SubwayImage,
-    tags: ['Subs', 'Cookies', 'Sandwiches'],
+    tags: ['Sandwiches', 'Subs', 'Cookies'],
     businessHours: {
       validTimeFrom: '10:00',
       validTimeTo: '22:00',
     },
-    unable: true,
   },
   '63745ceb7b7f960007de8dc5': {
     id: '63745ceb7b7f960007de8dc5',
@@ -164,16 +171,45 @@ export const AllFoodCourtStoreList = {
       validTimeTo: '19:00',
     },
   },
-  '63523bccda13950007f6f714': {
-    id: '63523bccda13950007f6f714',
-    title: 'Salad Atelier',
+  '63a2a5a16b6f220007796bc7': {
+    id: '63a2a5a16b6f220007796bc7',
+    title: "Salad Atelier OTG (Taylor's Lakeside)",
     imageNoCompression: SaladAtelierImage,
-    tags: ['Salad Bar', 'Healthy', 'Fresh'],
+    tags: ['Healthy', 'Salad', 'Fresh'],
     businessHours: {
-      validTimeFrom: '10:00',
+      validTimeFrom: '8:30',
       validTimeTo: '19:30',
     },
-    unable: true,
+  },
+  '63974c018f6d940007f79bb9': {
+    id: '63974c018f6d940007f79bb9',
+    title: 'Food',
+    imageNoCompression: FoodImage,
+    tags: ['Food'],
+    businessHours: {
+      validTimeFrom: '0:00',
+      validTimeTo: '24:00',
+    },
+  },
+  '63b63252202918000780b2db': {
+    id: '63b63252202918000780b2db',
+    title: 'Drink',
+    imageNoCompression: DrinkImage,
+    tags: ['Drinks', 'Beverage'],
+    businessHours: {
+      validTimeFrom: '0:00',
+      validTimeTo: '24:00',
+    },
+  },
+  '63b6324b95cea90007c31bf2': {
+    id: '63b6324b95cea90007c31bf2',
+    title: 'Drink',
+    imageNoCompression: DrinkImage,
+    tags: ['Drinks', 'Beverage'],
+    businessHours: {
+      validTimeFrom: '0:00',
+      validTimeTo: '24:00',
+    },
   },
   '63523c45da13950007f71dd9': {
     id: '63523c45da13950007f71dd9',
@@ -189,7 +225,7 @@ export const AllFoodCourtStoreList = {
   '63747d2aa07b6a0008108c24': {
     id: '63747d2aa07b6a0008108c24',
     title: 'Hope Coffee',
-    imageNoCompression: HopeCoffeeIMage,
+    imageNoCompression: HopeCoffeeImage,
     tags: ['Street Food', 'Toast', 'Croffle', 'Coffee'],
     businessHours: {
       validTimeFrom: '08:00',
@@ -297,6 +333,42 @@ export const AllFoodCourtStoreList = {
     imageNoCompression: HijauKualaLumpurImage,
     title: 'Hijau Kuala Lumpur',
     tags: ['Asian', 'Vegan', 'Sambal'],
+  },
+  '638eaf1ae3ad8a0009890c1d': {
+    id: '638eaf1ae3ad8a0009890c1d',
+    imageNoCompression: YuByRainGardenImage,
+    title: '雨 Yu By Rain Garden',
+    tags: ['Local Food', 'Beverages'],
+  },
+  '639008f3fe077600070ddf07': {
+    id: '639008f3fe077600070ddf07',
+    imageNoCompression: FengImage,
+    title: '峰 Feng Western Food',
+    tags: ['Western food'],
+  },
+  '639023ced5944b00074f3a23': {
+    id: '639023ced5944b00074f3a23',
+    imageNoCompression: ShunImage,
+    title: '顺 中国味道	',
+    tags: ['Chinese food'],
+  },
+  '6390241ec596ab000733c1a9': {
+    id: '6390241ec596ab000733c1a9',
+    imageNoCompression: ShunYuanImage,
+    title: '顺原宫保',
+    tags: ['Asian'],
+  },
+  '63902438f87109000728b09e': {
+    id: '63902438f87109000728b09e',
+    imageNoCompression: BKTImage,
+    title: '肉骨茶',
+    tags: ['Pork'],
+  },
+  '63902490e56c4c000880cede': {
+    id: '63902490e56c4c000880cede',
+    imageNoCompression: IronBarImage,
+    title: 'Iron Bar',
+    tags: ['Alcohol'],
   },
   '608b7c77cc9fd00006d831f3': {
     id: '608b7c77cc9fd00006d831f3',

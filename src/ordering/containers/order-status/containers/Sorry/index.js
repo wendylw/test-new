@@ -7,19 +7,6 @@ import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import { alert } from '../../../../../common/feedback';
 
-const PROVIDER_TO_METHOD = {
-  StripeFPX: 'onlineBanking',
-  CCPPMYCreditCard: 'creditCard',
-  GrabPay: 'onlineBanking',
-  TnGOnline: 'onlineBanking',
-  Boost: 'onlineBanking',
-  BeepTHOnlineBanking: 'onlineBanking',
-  BeepTHCreditCard: 'creditCard',
-  BeepTHLinePay: 'onlineBanking',
-  BeepPHCreditCard: 'creditCard',
-  BeepPHCCPPGcash: 'onlineBanking',
-};
-
 class Sorry extends Component {
   async componentDidMount() {
     const { t } = this.props;
@@ -55,35 +42,19 @@ class Sorry extends Component {
 
   getDescription = () => {
     const params = Utils.getQueryString();
-    const { errorCode, paymentProvider } = params || {};
+    const { errorCode } = params || {};
     const { t } = this.props;
 
-    const methods = {
-      onlineBanking: t('OnlineBanking'),
-      creditCard: t('CreditAndDebitCard'),
-    };
-    const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
-
-    return errorCode && paymentProvider
-      ? t('Description', { paymentMethod: methods[provideMethod], error: t(errorCode) })
-      : t('PaymentFailedDescription');
+    return errorCode ? t('Description', { error: t(errorCode) }) : t('PaymentFailedDescription');
   };
 
   getDescriptionOfPayLater = () => {
     const params = Utils.getQueryString();
-    const { errorCode, paymentProvider } = params || {};
+    const { errorCode } = params || {};
     const { t } = this.props;
 
-    if (errorCode && paymentProvider) {
-      const methods = {
-        onlineBanking: t('OnlineBanking'),
-        creditCard: t('CreditAndDebitCard'),
-      };
-
-      const provideMethod = PROVIDER_TO_METHOD[paymentProvider];
-
+    if (errorCode) {
       return t('SpecificPaymentFailedDescriptionOfPayLater', {
-        paymentMethod: methods[provideMethod],
         error: t(errorCode),
       });
     }

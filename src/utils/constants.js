@@ -46,6 +46,7 @@ const PAYMENT_METHOD_LABELS = {
   TNG_PAY: 'TouchNGo',
   GCASH_PAY: 'GCash',
   LINE_PAY: 'Line',
+  GETZ_PAY: 'GetzPay',
 };
 
 const PAYMENT_PROVIDERS = {
@@ -662,7 +663,10 @@ const LOGISTICS_RIDER_TYPE = {
   GRAB: 'grab',
   GO_GET: 'goget',
   LA_LA_MOVE: 'lalamove',
+  // WB-4715: mrspeedy & borzo are same logistics provider
+  // new orders use borzo, old orders keep mrspeddy
   MR_SPEEDY: 'mrspeedy',
+  BORZO: 'borzo',
   ON_FLEET: 'onfleet',
   PAN_DAGO: 'pandago',
 };
