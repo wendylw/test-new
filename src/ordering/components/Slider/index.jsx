@@ -75,8 +75,11 @@ Slider.propTypes = {
 Slider.defaultProps = {
   children: null,
   showPagination: false,
+  // Sets the animation that is applied after a drag ends.
   mode: 'snap',
+  // Determines what size the slides should be in relation to the viewport/container.
   perView: 1,
+  // Defines the spacing between slides in pixel.
   spacing: 0,
   slideStyle: {},
 };
