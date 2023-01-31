@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
 import propTypes from 'prop-types';
 import 'keen-slider/keen-slider.min.css';
@@ -23,34 +22,36 @@ const Slider = ({ children, showPagination, options, slideStyle }) => {
     destroyed() {
       setLoaded(false);
     },
+    // For the usage of options, please refer to https://keen-slider.io/docs#options
     ...options,
   });
 
   return (
-    <>
-      <div className={`navigation-wrapper ${styles.SliderAndDotsContainer}`}>
-        <ul ref={sliderRef} className={`keen-slider ${styles.SliderContainer}`}>
-          {React.Children.map(children, child => (
-            <li className="keen-slider__slide" key={'li-'.concat(child.key)} style={slideStyle}>
-              {child}
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div className={styles.SliderAndDotsContainer}>
+      <ul ref={sliderRef} className={`keen-slider ${styles.SliderContainer}`}>
+        {React.Children.map(children, child => (
+          <li className="keen-slider__slide" key={`slide-${child.key}`} style={slideStyle}>
+            {child}
+          </li>
+        ))}
+      </ul>
+      {/* showPagination控制是否展示dots */}
+      {/* loaded和instanceRef.current是因为dots的数量依赖slider，需要等slider挂载后才展示，否则报错 */}
       {showPagination && loaded && instanceRef.current && (
         <div className={styles.SliderDots}>
-          {[...Array(instanceRef.current.track.details.slides.length).keys()].map(idx => (
+          {[...Array(instanceRef.current.track.details.slides.length).keys()].map(index => (
+            /* eslint-disable-next-line */
             <button
-              key={idx}
+              key={index}
               onClick={() => {
-                instanceRef.current?.moveToIdx(idx);
+                instanceRef.current?.moveToIdx(index);
               }}
-              className={styles.SliderDot + (currentSlide === idx ? ' active' : '')}
+              className={styles.SliderDot + (currentSlide === index ? ' active' : '')}
             />
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 };
 
