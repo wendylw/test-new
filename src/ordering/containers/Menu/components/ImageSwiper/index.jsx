@@ -11,7 +11,7 @@ const ImageSwiper = props => {
       {images.length > 1 ? (
         <Slider showPagination>
           {images.map(image => (
-            <div key={image} className={`keen-slider__slide ${styles.SliderItemContainer}`}>
+            <div key={image} className={styles.SliderItemContainer}>
               <ObjectFitImage src={image} dimension="500x500" width="100%" height="30vh" />
             </div>
           ))}
