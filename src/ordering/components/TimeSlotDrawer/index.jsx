@@ -79,16 +79,7 @@ const TimeSlotDrawer = ({
                 <span className="tw-px-8 sm:tw-px-8px tw-font-bold">{t('Date')}</span>
               </h3>
               <div className={styles.timeSlotDateList}>
-                <Slider
-                  options={{
-                    mode: 'free-snap',
-                    slides: {
-                      perView: 'auto',
-                      spacing: 16,
-                    },
-                  }}
-                  slideStyle={{ width: 'auto' }}
-                >
+                <Slider mode="free-snap" perView="auto" spacing={16} slideStyle={{ width: 'auto' }}>
                   {dateList.map(({ value, displayWeek, displayDay, available, selected, isToday, isTomorrow }) => {
                     const classNameList = [isTomorrow ? styles.timeSlotDateItemOverWidth : styles.timeSlotDateItem];
                     const dateContentList =

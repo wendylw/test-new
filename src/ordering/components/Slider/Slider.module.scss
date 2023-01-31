@@ -12,12 +12,9 @@
 }
 
 .SliderDot {
-  @apply tw-border-0 tw-cursor-pointer tw-bg-black tw-opacity-20;
+  @apply tw-border-0 tw-cursor-pointer tw-bg-black tw-opacity-20 tw-rounded-full tw-mx-4 sm:tw-mx-4px tw-my-0;
   width: 8px;
   height: 8px;
-  border-radius: 50%;
-  margin: 0 4px;
-  padding: 4px;
 
   &:global(.active) {
     @apply tw-bg-orange tw-opacity-100;
