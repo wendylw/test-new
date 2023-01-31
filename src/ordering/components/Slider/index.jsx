@@ -5,7 +5,7 @@ import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
 import styles from './Slider.module.scss';
 
-const Slider = ({ children, showPagination, options, liStyle }) => {
+const Slider = ({ children, showPagination, options, slideStyle }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [sliderRef, instanceRef] = useKeenSlider({
@@ -31,7 +31,7 @@ const Slider = ({ children, showPagination, options, liStyle }) => {
       <div className={`navigation-wrapper ${styles.SliderAndDotsContainer}`}>
         <ul ref={sliderRef} className={`keen-slider ${styles.SliderContainer}`}>
           {React.Children.map(children, child => (
-            <li className="keen-slider__slide" key={'li-'.concat(child.key)} style={liStyle}>
+            <li className="keen-slider__slide" key={'li-'.concat(child.key)} style={slideStyle}>
               {child}
             </li>
           ))}
@@ -61,13 +61,13 @@ Slider.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   options: propTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
-  liStyle: propTypes.object,
+  slideStyle: propTypes.object,
 };
 Slider.defaultProps = {
   children: null,
   showPagination: false,
   options: {},
-  liStyle: {},
+  slideStyle: {},
 };
 
 export default Slider;

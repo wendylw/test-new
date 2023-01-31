@@ -87,7 +87,7 @@ const TimeSlotDrawer = ({
                       spacing: 16,
                     },
                   }}
-                  liStyle={{ width: 'auto' }}
+                  slideStyle={{ width: 'auto' }}
                 >
                   {dateList.map(({ value, displayWeek, displayDay, available, selected, isToday, isTomorrow }) => {
                     const classNameList = [isTomorrow ? styles.timeSlotDateItemOverWidth : styles.timeSlotDateItem];
