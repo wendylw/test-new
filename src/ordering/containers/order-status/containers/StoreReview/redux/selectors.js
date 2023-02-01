@@ -10,10 +10,14 @@ import {
   getStoreReviewInfoData,
   getIsStoreReviewSupportable,
   getStoreReviewLoadDataRequest,
+  getOffline,
 } from '../../../redux/selector';
 import { STORE_REVIEW_HIGH_RATING, STORE_REVIEW_ERROR_CODES } from '../constants';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { isValidDate } from '../../../../../../utils/datetime-lib';
+import { isWebview } from '../../../../../../common/utils';
+
+const isInWebview = isWebview();
 
 export const getIsHighRatedReview = createSelector(getStoreRating, rating => rating >= STORE_REVIEW_HIGH_RATING);
 
@@ -73,4 +77,4 @@ export const getOrderCreatedDate = createSelector(getStoreReviewInfoData, storeR
   return isValidDate(day.toDate()) ? day.format('DD MMMM YYYY') : '';
 });
 
-export const getOffline = state => state.orderStatus.storeReview.offline;
+export const getShouldShowBackButton = createSelector(getOffline, offline => !offline || isInWebview);

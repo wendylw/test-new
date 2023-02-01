@@ -157,7 +157,7 @@ export class ThankYou extends PureComponent {
     loadCashbackInfo(receiptNumber);
 
     // BEEP-3035: we don't need to wait for the API response, just dispatch the API silently
-    loadOrderStoreReview({ offline: false });
+    loadOrderStoreReview();
 
     const from = Utils.getCookieVariable('__ty_source');
 
@@ -420,7 +420,7 @@ export class ThankYou extends PureComponent {
     }
 
     if (!prevHasOrderPaid && currHasOrderPaid) {
-      loadOrderStoreReview({ offline: false });
+      loadOrderStoreReview();
     }
 
     this.setContainerHeight();
