@@ -23,16 +23,14 @@ import {
   getStoreFullDisplayName,
   getStoreRating,
   getStoreShippingType,
+  getOffline,
   getHasStoreReviewed,
   getIsMerchantContactAllowable,
 } from '../../redux/selector';
-import { getOrderCreatedDate, getOffline } from './redux/selectors';
+import { getOrderCreatedDate, getShouldShowBackButton } from './redux/selectors';
 import { backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES, STORE_REVIEW_COMMENT_CHAR_MAX } from './constants';
 import { gotoHome } from '../../../../../utils/native-methods';
-import { isWebview } from '../../../../../common/utils';
-
-const isInWebview = isWebview();
 
 const StoreReview = () => {
   const dispatch = useDispatch();
@@ -56,6 +54,8 @@ const StoreReview = () => {
   const storeComment = useSelector(getStoreComment);
 
   const orderCreatedDate = useSelector(getOrderCreatedDate);
+
+  const shouldShowBackButton = useSelector(getShouldShowBackButton);
 
   const [rating, setRating] = useState(selectedRating || storeRating);
 
@@ -81,13 +81,16 @@ const StoreReview = () => {
   ]);
 
   const handleClickBackButton = useCallback(
-    () => dispatch(backButtonClicked({ rating, comments, isMerchantContactAllowable: isContactAllowable })),
-    [dispatch, rating, comments, isContactAllowable]
+    () =>
+      offline
+        ? dispatch(gotoHome())
+        : dispatch(backButtonClicked({ rating, comments, isMerchantContactAllowable: isContactAllowable })),
+    [dispatch, rating, comments, isContactAllowable, offline]
   );
 
   const handleClickSubmitButton = useCallback(
-    () => dispatch(submitButtonClicked({ rating, comments, allowMerchantContact: isContactAllowable, offline })),
-    [dispatch, rating, comments, isContactAllowable, offline]
+    () => dispatch(submitButtonClicked({ rating, comments, allowMerchantContact: isContactAllowable })),
+    [dispatch, rating, comments, isContactAllowable]
   );
 
   useEffect(() => {
@@ -111,8 +114,8 @@ const StoreReview = () => {
     <section>
       <PageHeader
         title={t('StoreReview')}
-        onBackArrowClick={isInWebview ? gotoHome : handleClickBackButton}
-        isShowBackButton={!offline || isInWebview}
+        onBackArrowClick={handleClickBackButton}
+        isShowBackButton={shouldShowBackButton}
       />
       <div className="tw-flex tw-flex-col tw-justify-center tw-items-center">
         <img className={styles.StoreReviewContainerImg} src={StoreReviewImg} alt="Store Review" />

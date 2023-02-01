@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get, post } from '../../../../utils/api/api-fetch';
 import Constants from '../../../../utils/constants';
-import { getReceiptNumber } from './selector';
+import { getReceiptNumber, getOffline } from './selector';
 import { API_INFO, getOrderStoreReview, postOrderStoreReview } from './api-info';
 import logger from '../../../../utils/monitoring/logger';
 import { alert } from '../../../../common/utils/feedback';
@@ -68,7 +68,8 @@ export const hideStoreReviewLoadingIndicator = createAsyncThunk(
 
 export const loadOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/loadOrderStoreReview',
-  async ({ offline }, { getState }) => {
+  async (_, { getState }) => {
+    const offline = getOffline(getState());
     const orderId = getReceiptNumber(getState());
     const { data } = await getOrderStoreReview(orderId, offline);
 
@@ -78,9 +79,10 @@ export const loadOrderStoreReview = createAsyncThunk(
 
 export const saveOrderStoreReview = createAsyncThunk(
   'ordering/orderStatus/common/saveOrderStoreReview',
-  async ({ rating, comments, allowMerchantContact, offline }, { dispatch, getState }) => {
+  async ({ rating, comments, allowMerchantContact }, { dispatch, getState }) => {
     const state = getState();
     const orderId = getReceiptNumber(state);
+    const offline = getOffline(getState());
 
     try {
       await dispatch(showStoreReviewLoadingIndicator());

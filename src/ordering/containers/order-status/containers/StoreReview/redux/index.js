@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import Utils from '../../../../../../utils/utils';
+import { initOffline } from './thunks';
 
 const initialState = {
   offline: false,
@@ -8,10 +8,10 @@ const initialState = {
 export const { actions, reducer } = createSlice({
   name: 'ordering/orderStatus/storeReview',
   initialState,
-  reducers: {
-    init(state) {
-      const offline = Utils.getQueryString('offline');
-      state.offline = offline === 'true';
+  extraReducers: {
+    [initOffline.fulfilled.type]: (state, { payload }) => {
+      const { offline } = payload;
+      state.offline = offline;
     },
   },
 });
