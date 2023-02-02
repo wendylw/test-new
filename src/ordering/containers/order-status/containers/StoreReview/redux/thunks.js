@@ -29,6 +29,7 @@ import {
   hasMethodInNative,
   BROWSER_TYPES,
   BEEP_MODULE_METHODS,
+  gotoHome,
 } from '../../../../../../utils/native-methods';
 import { STORE_REVIEW_SOURCE_TYPE_MAPPING, STORE_REVIEW_TEXT_COPIED_TIP_DURATION } from '../constants';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
@@ -160,6 +161,7 @@ export const backButtonClicked = createAsyncThunk(
     const prevComments = getStoreComment(state);
     const hasStoreReviewed = getHasStoreReviewed(state);
     const prevIsMerchantContactAllowable = getIsMerchantContactAllowable(state);
+    const offline = getOffline(state);
 
     CleverTap.pushEvent('Feedback Page - Click Back button', {
       'form submitted': hasStoreReviewed,
@@ -175,7 +177,11 @@ export const backButtonClicked = createAsyncThunk(
       return;
     }
 
-    await dispatch(goBack());
+    if (offline) {
+      await dispatch(gotoHome());
+    } else {
+      await dispatch(goBack());
+    }
   }
 );
 
@@ -282,14 +288,7 @@ export const copyRateButtonClicked = createAsyncThunk(
 
 export const ErrorResultOkayButtonClicked = createAsyncThunk(
   'ordering/orderStatus/storeReview/okayButtonClicked',
-  async (_, { getState, dispatch }) => {
-    const state = getState();
-    const offline = getOffline(state);
-
-    // WB-4816: For offline orders, we don't go to Menu page.
-    if (offline) {
-      return;
-    }
+  async (_, { dispatch }) => {
     await dispatch(goToMenuPage());
   }
 );

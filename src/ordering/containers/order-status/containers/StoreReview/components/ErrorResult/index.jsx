@@ -9,7 +9,7 @@ import { getShouldShowBackButton } from '../../redux/selectors';
 import { getOffline } from '../../../../redux/selector';
 import styles from './ErrorResult.module.scss';
 
-const ErrorResult = ({ title, content, buttonText, imageSrc, onCloseButtonClick, onHeaderBackArrowClick }) => {
+const ErrorResult = ({ title, content, buttonText, imageSrc, onCloseButtonClick, onBackArrowClick }) => {
   const { t } = useTranslation('OrderingThankYou');
 
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
@@ -17,6 +17,7 @@ const ErrorResult = ({ title, content, buttonText, imageSrc, onCloseButtonClick,
 
   return (
     <Result
+      /* TODO: This is a workaround to hide OKAY button. Will change Result button to give an attribute to do it. */
       closeButtonClassName={offline ? styles.ErrorResultButtonHidden : ''}
       show
       mountAtRoot
@@ -25,7 +26,7 @@ const ErrorResult = ({ title, content, buttonText, imageSrc, onCloseButtonClick,
       header={
         <PageHeader
           title={t('StoreReview')}
-          onBackArrowClick={onHeaderBackArrowClick}
+          onBackArrowClick={onBackArrowClick}
           isShowBackButton={shouldShowBackButton}
         />
       }
@@ -44,7 +45,7 @@ ErrorResult.propTypes = {
   buttonText: PropTypes.string,
   imageSrc: PropTypes.string,
   onCloseButtonClick: PropTypes.func,
-  onHeaderBackArrowClick: PropTypes.func,
+  onBackArrowClick: PropTypes.func,
 };
 
 ErrorResult.defaultProps = {
@@ -53,7 +54,7 @@ ErrorResult.defaultProps = {
   buttonText: '',
   imageSrc: '',
   onCloseButtonClick: () => {},
-  onHeaderBackArrowClick: () => {},
+  onBackArrowClick: () => {},
 };
 
 export default ErrorResult;
