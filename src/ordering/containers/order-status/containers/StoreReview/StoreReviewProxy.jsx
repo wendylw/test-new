@@ -47,17 +47,17 @@ const StoreReviewProxy = () => {
           title={t('ExpiredErrorTitle')}
           content={t('ExpiredErrorDescription')}
           onCloseButtonClick={handleClickOkayButton}
-          onHeaderBackArrowClick={handleClickBackButton}
+          onBackArrowClick={handleClickBackButton}
         />
       ) : shouldShowUnsupportedError ? (
         <ErrorResult
           title={t('UnsupportedErrorTitle')}
           content={t('UnsupportedErrorDescription')}
           onCloseButtonClick={handleClickOkayButton}
-          onHeaderBackArrowClick={handleClickBackButton}
+          onBackArrowClick={handleClickBackButton}
         />
       ) : (
-        <StoreReview onHeaderBackArrowClick={handleClickBackButton} />
+        <StoreReview />
       )}
     </Frame>
   );

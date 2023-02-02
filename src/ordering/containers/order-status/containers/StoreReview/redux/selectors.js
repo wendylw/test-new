@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import _isEmpty from 'lodash/isEmpty';
 import { createSelector } from 'reselect';
 import dayjs from 'dayjs';
-import { getIsTNGMiniProgram } from '../../../../../redux/modules/app';
+import { getIsTNGMiniProgram, getIsWebview } from '../../../../../redux/modules/app';
 import {
   getStoreRating,
   getStoreComment,
@@ -15,9 +15,6 @@ import {
 import { STORE_REVIEW_HIGH_RATING, STORE_REVIEW_ERROR_CODES } from '../constants';
 import { API_REQUEST_STATUS } from '../../../../../../common/utils/constants';
 import { isValidDate } from '../../../../../../utils/datetime-lib';
-import { isWebview } from '../../../../../../common/utils';
-
-const isInWebview = isWebview();
 
 export const getIsHighRatedReview = createSelector(getStoreRating, rating => rating >= STORE_REVIEW_HIGH_RATING);
 
@@ -77,4 +74,8 @@ export const getOrderCreatedDate = createSelector(getStoreReviewInfoData, storeR
   return isValidDate(day.toDate()) ? day.format('DD MMMM YYYY') : '';
 });
 
-export const getShouldShowBackButton = createSelector(getOffline, offline => !offline || isInWebview);
+export const getShouldShowBackButton = createSelector(
+  getOffline,
+  getIsWebview,
+  (offline, isInWebview) => !offline || isInWebview
+);

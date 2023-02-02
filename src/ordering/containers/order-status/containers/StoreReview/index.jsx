@@ -30,7 +30,6 @@ import {
 import { getOrderCreatedDate, getShouldShowBackButton } from './redux/selectors';
 import { backButtonClicked, submitButtonClicked } from './redux/thunks';
 import { STORE_REVIEW_SHIPPING_TYPES, STORE_REVIEW_COMMENT_CHAR_MAX } from './constants';
-import { gotoHome } from '../../../../../utils/native-methods';
 
 const StoreReview = () => {
   const dispatch = useDispatch();
@@ -81,11 +80,8 @@ const StoreReview = () => {
   ]);
 
   const handleClickBackButton = useCallback(
-    () =>
-      offline
-        ? dispatch(gotoHome())
-        : dispatch(backButtonClicked({ rating, comments, isMerchantContactAllowable: isContactAllowable })),
-    [dispatch, rating, comments, isContactAllowable, offline]
+    () => dispatch(backButtonClicked({ rating, comments, isMerchantContactAllowable: isContactAllowable })),
+    [dispatch, rating, comments, isContactAllowable]
   );
 
   const handleClickSubmitButton = useCallback(
