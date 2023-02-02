@@ -6,14 +6,18 @@ import Result from '../../../../../../../common/components/Result';
 import PageHeader from '../../../../../../../common/components/PageHeader';
 import ResultContent from '../../../../../../../common/components/Result/ResultContent';
 import { getShouldShowBackButton } from '../../redux/selectors';
+import { getOffline } from '../../../../redux/selector';
+import styles from './ErrorResult.module.scss';
 
 const ErrorResult = ({ title, content, buttonText, imageSrc, onCloseButtonClick, onHeaderBackArrowClick }) => {
   const { t } = useTranslation('OrderingThankYou');
 
   const shouldShowBackButton = useSelector(getShouldShowBackButton);
+  const offline = useSelector(getOffline);
 
   return (
     <Result
+      closeButtonClassName={offline ? styles.ErrorResultButtonHidden : ''}
       show
       mountAtRoot
       closeButtonContent={buttonText}
