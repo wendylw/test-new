@@ -91,7 +91,7 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
-import CompleteProfileModal from '../../../../containers/Profile/index';
+import CompleteProfileModal from '../../../../containers/Profile';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
@@ -1002,6 +1002,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
+        <CompleteProfileModal closeModal={this.handleCompleteProfileModalClose} showProfileVisibility={true} />
         {order && (
           <CompleteProfileModal
             closeModal={this.handleCompleteProfileModalClose}

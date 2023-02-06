@@ -22,9 +22,9 @@ export const checkBirthdayIsValid = birthday => {
 };
 
 export const convertToBackEndFormat = inputDate => {
-  const [birthdayDay, birthdayMonth] = inputDate.split('/');
+  const [birthdayDay, birthdayMonth, birthdayYear] = inputDate.split('/');
   // Warning: Before, DUE to some reasons, PO decided to fix the year of use to 2020, which is consistent with app
-  const birthdayYear = '2020';
+  // const birthdayYear = '2020';
   const date = new Date();
   date.setDate(birthdayDay);
   date.setMonth(birthdayMonth - 1);

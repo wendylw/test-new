@@ -17,10 +17,10 @@ export const getEmailInvalidErrorVisibility = createSelector(
 export const getProfileBirthdayIsValid = state => state.profile.birthday.isValid;
 export const getProfileBirthdayIsComplete = state => state.profile.birthday.isComplete;
 
-export const getbirthdayInvalidErrorVisibility = createSelector(
+export const getBirthdayInvalidErrorVisibility = createSelector(
   getProfileBirthdayIsValid,
   getProfileBirthdayIsComplete,
   (isValid, isComplete) => !isValid && isComplete
 );
 
-export const getDuplicatedEmailAlertVisibile = state => state.profile.updateProfileResult.error?.code === '40024';
+export const getDuplicatedEmailAlertVisibility = state => state.profile.updateProfileResult.error?.code === '40024';

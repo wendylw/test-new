@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import Constants from '../../../utils/constants';
-import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../redux/modules/app';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import CleverTap from '../../../utils/clevertap';
-import './Profile.scss';
+import { actions as appActionCreators, getUser, getDeliveryDetails } from '../../redux/modules/app';
 import Utils from '../../../utils/utils';
-import DuplicatedEmailAlert from '../Profile/components/DuplicatedEmailAlert/DuplicatedEmailAlert.jsx';
+import DuplicatedEmailAlert from './components/DuplicatedEmailAlert';
 import { actions as profileActionCreators } from './redux/index';
 import {
   getUpdateProfileError,
@@ -15,12 +12,15 @@ import {
   getProfileEmail,
   getProfileBirthday,
   getEmailInvalidErrorVisibility,
-  getbirthdayInvalidErrorVisibility,
-  getDuplicatedEmailAlertVisibile,
+  getBirthdayInvalidErrorVisibility,
+  getDuplicatedEmailAlertVisibility,
 } from './redux/selectors';
 import { saveProfileInfo } from './redux/thunk';
 import * as NativeMethods from '../../../utils/native-methods';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
+import './Profile.scss';
+import CleverTap from '../../../utils/clevertap';
+
 class CompleteProfileModal extends Component {
   state = {
     nativeMethodExist: true,
@@ -31,7 +31,7 @@ class CompleteProfileModal extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { duplicatedEmailAlertVisibile } = this.props;
+    const { duplicatedEmailAlertVisibility } = this.props;
     if (this.props.showProfileVisibility !== prevProps.showProfileVisibility) {
       this.props.onModalVisibilityChanged(this.props.showProfileVisibility);
       if (Utils.isWebview() && this.props.showProfileVisibility) {
@@ -43,7 +43,7 @@ class CompleteProfileModal extends Component {
       this.initCompleteProfileIfNeeded();
     }
 
-    if (duplicatedEmailAlertVisibile && duplicatedEmailAlertVisibile !== prevProps.duplicatedEmailAlertVisibile) {
+    if (duplicatedEmailAlertVisibility && duplicatedEmailAlertVisibility !== prevProps.duplicatedEmailAlertVisibility) {
       CleverTap.pushEvent('Complete profile page - Email duplicate pop up');
     }
   }
@@ -158,7 +158,7 @@ class CompleteProfileModal extends Component {
     const {
       t,
       showProfileVisibility,
-      duplicatedEmailAlertVisibile,
+      duplicatedEmailAlertVisibility,
       profileEmail: email,
       profileBirthday: birthday,
       profileName: name,
@@ -177,7 +177,7 @@ class CompleteProfileModal extends Component {
     return (
       <div>
         <DuplicatedEmailAlert
-          show={duplicatedEmailAlertVisibile}
+          show={duplicatedEmailAlertVisibility}
           onDoNotAsk={this.handleDoNotAsk}
           onBackEdit={this.handleBackEdit}
           t={this.props.t}
@@ -259,7 +259,7 @@ class CompleteProfileModal extends Component {
                       className={`profile__input form__input
                   ${this.props.birthdayInvalidErrorVisibility ? 'text-error' : ''}
                    `}
-                      placeholder="DD/MM"
+                      placeholder="DD/MM/YYYY"
                       type="text"
                       onChange={this.handleInputChange}
                       onFocus={this.handleBirthdayInputFocus}
@@ -307,8 +307,8 @@ export default compose(
       deliveryDetails: getDeliveryDetails(state),
       updateProfileError: getUpdateProfileError(state),
       emailInvalidErrorVisibility: getEmailInvalidErrorVisibility(state),
-      birthdayInvalidErrorVisibility: getbirthdayInvalidErrorVisibility(state),
-      duplicatedEmailAlertVisibile: getDuplicatedEmailAlertVisibile(state),
+      birthdayInvalidErrorVisibility: getBirthdayInvalidErrorVisibility(state),
+      duplicatedEmailAlertVisibility: getDuplicatedEmailAlertVisibility(state),
     }),
     dispatch => ({
       appActions: bindActionCreators(appActionCreators, dispatch),

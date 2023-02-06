@@ -13,7 +13,7 @@ function DuplicatedEmailAlert(props) {
           {t('DuplicatedEmailAlertTitle')}
         </h2>
         <p className="profile-duplicated-email-alert__description padding-small text-size-big text-line-height-higher">
-          {t('DuplicatedEmailAlertEmial')}
+          {t('DuplicatedEmailAlertEmail')}
         </p>
       </Modal.Body>
       <Modal.Footer className="flex flex-stretch">

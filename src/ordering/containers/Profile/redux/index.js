@@ -1,7 +1,6 @@
-/* eslint-disable no-param-reassign */
-import { createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import _trim from 'lodash/trim';
+import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../utils/constants';
 import Utils from '../../../../utils/utils';
 import { checkBirthdayIsValid } from '../utils';
@@ -37,11 +36,11 @@ export const { actions, reducer } = createSlice({
       const { name, email, birthday } = action.payload;
       const birthdayDayjs = dayjs(birthday);
 
-      const trimedEmail = _trim(email);
-      if (trimedEmail.length > 0) {
+      const formattedEmail = _trim(email);
+      if (formattedEmail.length > 0) {
         state.email = {
-          data: trimedEmail,
-          isValid: Utils.checkEmailIsValid(trimedEmail),
+          data: formattedEmail,
+          isValid: Utils.checkEmailIsValid(formattedEmail),
           isComplete: true,
         };
       } else {
@@ -55,11 +54,12 @@ export const { actions, reducer } = createSlice({
         data: name,
       };
 
-      const tirmedBirthday = _trim(birthday);
-      if (tirmedBirthday.length > 0) {
+      const formattedBirthday = _trim(birthday);
+
+      if (formattedBirthday.length > 0) {
         state.birthday = {
-          data: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM') : '',
-          isValid: checkBirthdayIsValid(birthdayDayjs.format('DD/MM')),
+          data: birthdayDayjs.isValid() ? birthdayDayjs.format('DD/MM/YYYY') : '',
+          isValid: checkBirthdayIsValid(birthdayDayjs.format('DD/MM/YYYY')),
           isComplete: true,
         };
       } else {
