@@ -43,10 +43,10 @@ import logger from '../../../utils/monitoring/logger';
 import { isFromBeepSite, isFromBeepSiteOrderHistory, isFromFoodCourt } from '../../../common/utils';
 import { replace } from 'connected-react-router';
 import { toast } from '../../../common/utils/feedback';
+import { COUNTRIES as AVAILABLE_COUNTRIES } from '../../../common/utils/phone-number-constants';
 
 const { AUTH_INFO, DELIVERY_METHOD, REGISTRATION_SOURCE, CLIENTS, OTP_REQUEST_PLATFORM, OTP_REQUEST_TYPES } = Constants;
 const localePhoneNumber = Utils.getLocalStorageVariable('user.p');
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 export const types = APP_TYPES;
 
@@ -119,7 +119,7 @@ export const initialState = {
       status: null,
       error: null,
     },
-    country: Utils.getCountry(localePhoneNumber, navigator.language, Object.keys(metadataMobile.countries || {}), 'MY'),
+    country: Utils.getCountry(localePhoneNumber, navigator.language, AVAILABLE_COUNTRIES, 'MY'),
     phone: localePhoneNumber || '',
     noWhatsAppAccount: true,
     loginRequestStatus: null,

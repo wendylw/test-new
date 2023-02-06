@@ -4,6 +4,7 @@ import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-pho
 import Utils from '../../../../../utils/utils';
 import HybridHeader from '../../../../../components/HybridHeader';
 import constants from '../../../../../utils/constants';
+import { COUNTRY_PHONE_CODES } from '../../../../../common/utils/phone-number-constants';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { getUser, getDeliveryDetails } from '../../../../redux/modules/app';
@@ -11,7 +12,6 @@ import { actions as ContactDetailActions } from './redux';
 import 'react-phone-number-input/style.css';
 import './ContactDetail.scss';
 import { updateContactDetail, getUsername, getPhone } from './redux';
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
 
 class ContactDetail extends Component {
   componentDidMount() {
@@ -74,13 +74,12 @@ class ContactDetail extends Component {
                   placeholder={t('EnterPhoneNumber')}
                   value={formatPhoneNumberIntl(phone)}
                   country={country}
-                  metadata={metadataMobile}
                   onChange={phone => {
                     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
 
                     updatePhone(
-                      metadataMobile.countries[selectedCountry] &&
-                        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0])
+                      COUNTRY_PHONE_CODES[selectedCountry] &&
+                        Utils.getFormatPhoneNumber(phone || '', COUNTRY_PHONE_CODES[selectedCountry])
                     );
                   }}
                 />

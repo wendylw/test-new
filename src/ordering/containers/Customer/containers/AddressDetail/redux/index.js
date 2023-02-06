@@ -1,8 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import _trim from 'lodash/trim';
-import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { init } from './thunk';
+import { init, completePhoneNumber } from './thunk';
 
 const initialState = {
   id: '',
@@ -42,11 +41,6 @@ export const { actions, reducer } = createSlice({
     updatePhoneNumber(state, action) {
       state.contactNumber = _trim(action.payload);
     },
-    completePhoneNumber(state) {
-      state.contactNumber = _trim(state.contactNumber);
-      state.contactNumberValidStatus.isValid = isValidPhoneNumber(state.contactNumber);
-      state.contactNumberValidStatus.isComplete = true;
-    },
   },
 
   extraReducers: {
@@ -65,6 +59,12 @@ export const { actions, reducer } = createSlice({
       state.postCode = payload.postCode;
       state.countryCode = payload.countryCode;
       state.contactName = payload.contactName;
+    },
+    [completePhoneNumber.fulfilled.type]: (state, action) => {
+      const { payload } = action;
+      state.contactNumber = _trim(state.contactNumber);
+      state.contactNumberValidStatus.isValid = payload;
+      state.contactNumberValidStatus.isComplete = true;
     },
   },
 });

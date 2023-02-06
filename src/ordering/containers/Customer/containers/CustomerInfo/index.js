@@ -4,7 +4,8 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
 import { Link } from 'react-router-dom';
-import { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
+import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js/core';
+import metadata from 'libphonenumber-js/metadata.mobile.json';
 import Utils from '../../../../../utils/utils';
 import Constants from '../../../../../utils/constants';
 import { formatToDeliveryTime } from '../../../../../utils/datetime-lib';
@@ -378,7 +379,9 @@ class CustomerInfo extends Component {
     const { addressChange, processing } = this.state;
     const { username, phone } = deliveryDetails;
     const pageTitle = Utils.isDineInType() ? t('DineInCustomerPageTitle') : t('PickupCustomerPageTitle');
-    const formatPhone = formatPhoneNumberIntl(phone);
+    const formatPhone = isValidPhoneNumber(phone || '', metadata)
+      ? parsePhoneNumber(phone, metadata).format('INTERNATIONAL')
+      : '';
     const splitIndex = phone ? formatPhone.indexOf(' ') : 0;
     const { total, shippingFee } = cartBilling || {};
     const shouldShowRedirectLoader = isTNGMiniProgram && processing;
