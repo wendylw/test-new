@@ -22,7 +22,13 @@ const PageHeader = props => {
                 <CaretLeft size={24} weight="light" />
               </button>
             )}
-            <div className={styles.PageHeaderTitle}>{title}</div>
+            <div
+              className={
+                isShowBackButton ? `${styles.PageHeaderTitle}` : `${styles.PageHeaderTitle} tw-px-12 sm:tw-px-12px`
+              }
+            >
+              {title}
+            </div>
           </div>
           {rightContent}
         </header>

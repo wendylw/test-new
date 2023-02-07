@@ -74,6 +74,7 @@ const { reducer, actions } = createSlice({
       state.storeReviewInfo.data.tableId = _get(transaction, 'tableId', null);
       state.storeReviewInfo.data.isExpired = _get(review, 'isExpired', false);
       state.storeReviewInfo.data.isSupportable = _get(review, 'supportable', false);
+      state.storeReviewInfo.data.createdTime = _get(transaction, 'createdTime', '');
 
       state.storeReviewInfo.loadDataRequest.status = API_REQUEST_STATUS.FULFILLED;
     },

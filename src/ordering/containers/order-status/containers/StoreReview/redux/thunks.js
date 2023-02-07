@@ -19,6 +19,7 @@ import {
   getStoreShippingType,
   getStoreGoogleReviewURL,
   getIsMerchantContactAllowable,
+  getOffline,
 } from '../../../redux/selector';
 import { getIsWebview } from '../../../../../redux/modules/app';
 import { getIsCommentEmpty, getTransactionInfoForCleverTap } from './selectors';
@@ -28,6 +29,7 @@ import {
   hasMethodInNative,
   BROWSER_TYPES,
   BEEP_MODULE_METHODS,
+  gotoHome,
 } from '../../../../../../utils/native-methods';
 import { STORE_REVIEW_SOURCE_TYPE_MAPPING, STORE_REVIEW_TEXT_COPIED_TIP_DURATION } from '../constants';
 import { PATH_NAME_MAPPING } from '../../../../../../common/utils/constants';
@@ -69,6 +71,12 @@ export const goBack = createAsyncThunk('ordering/orderStatus/storeReview/goBack'
   const state = getState();
   const isWebview = getIsWebview(state);
   const sourceType = getSessionVariable('__sr_source');
+  const offline = getOffline(state);
+
+  // WB-4816: For offline orders, we simply hide modal.
+  if (offline) {
+    return;
+  }
 
   switch (sourceType) {
     case REFERRER_SOURCE_TYPES.THANK_YOU:
@@ -115,11 +123,17 @@ export const openGoogleReviewURL = createAsyncThunk(
   }
 );
 
+export const initOffline = createAsyncThunk('ordering/orderStatus/storeReview/initOffline', async () => {
+  const offline = getQueryString('offline');
+  return { offline: offline === 'true' };
+});
+
 export const mounted = createAsyncThunk(
   'ordering/orderStatus/storeReview/mounted',
   async (_, { getState, dispatch }) => {
     const state = getState();
     const ifStoreReviewInfoExists = getIfStoreReviewInfoExists(state);
+    await dispatch(initOffline());
 
     // No need to send API request again for better performance
     if (!ifStoreReviewInfoExists) {
@@ -147,6 +161,7 @@ export const backButtonClicked = createAsyncThunk(
     const prevComments = getStoreComment(state);
     const hasStoreReviewed = getHasStoreReviewed(state);
     const prevIsMerchantContactAllowable = getIsMerchantContactAllowable(state);
+    const offline = getOffline(state);
 
     CleverTap.pushEvent('Feedback Page - Click Back button', {
       'form submitted': hasStoreReviewed,
@@ -162,7 +177,11 @@ export const backButtonClicked = createAsyncThunk(
       return;
     }
 
-    await dispatch(goBack());
+    if (offline) {
+      await dispatch(gotoHome());
+    } else {
+      await dispatch(goBack());
+    }
   }
 );
 
@@ -171,13 +190,14 @@ export const submitButtonClicked = createAsyncThunk(
   async ({ rating, comments, allowMerchantContact }, { getState, dispatch }) => {
     const state = getState();
     const transactionInfoCleverTap = getTransactionInfoForCleverTap(state);
+    const offline = getOffline(state);
 
     CleverTap.pushEvent('Feedback Page - Click Submit', {
       rating,
       'allow store to contact': allowMerchantContact,
       ...transactionInfoCleverTap,
     });
-    await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact }));
+    await dispatch(saveOrderStoreReview({ rating, comments, allowMerchantContact, offline }));
   }
 );
 
