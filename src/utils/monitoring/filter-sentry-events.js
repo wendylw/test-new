@@ -1,3 +1,5 @@
+import _get from 'lodash/get';
+
 export const getErrorMessageFromHint = ({ originalException, syntheticException }) => {
   if (typeof originalException === 'string') {
     return originalException;
@@ -138,6 +140,47 @@ const isTikTokIssues = (event, hint) => {
   }
 };
 
+const isReCAPTCHAIssues = (event, hint) => {
+  // These issues cause by reCAPTCHA script.
+  try {
+    // WB-4596: The errors thrown directly from reCAPTCHA script should be ignored.
+    // Reasons: They are not harmful to Beep and also cannot be fixed by our side.
+    // Refer to: https://kibana.pro.mymyhub.com/_plugin/kibana/goto/f9dc1773113db0e1e8882dd0e7322588?security_tenant=global
+    const recaptchaRegex = /https:\/\/www.gstatic.com\/recaptcha/;
+    const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => recaptchaRegex.test(filename));
+
+    // BEEP-2657: The errors thrown indirectly from reCAPTCHA script should be ignored.
+    // Reasons: They are not harmful to Beep and also cannot be fixed by our side.
+    // Refer to: https://github.com/getsentry/sentry-javascript/issues/2514#issuecomment-603971338
+    const message = getErrorMessageFromHint(hint);
+    const type = _get(event, 'exception.values[0].type', null);
+    const isTimeoutIssue = message.includes('Timeout') && type === 'UnhandledRejection';
+
+    return isScriptIssue || isTimeoutIssue;
+  } catch {
+    return false;
+  }
+};
+
+const isGoogleMapsIssues = (event, hint) => {
+  // These issues cause by Google Maps script.
+  try {
+    // WB-4239 & WB-4931: The errors thrown directly from Google Map script should be ignored.
+    // Reasons: They are mostly network errors and also cannot be fixed by our side.
+    // Refer to: https://developers.google.com/maps/documentation/javascript/place-id#refresh-id
+    const googleMapsRegex = /https:\/\/maps.googleapis.com/;
+    const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => googleMapsRegex.test(filename));
+
+    // BEEP-1710 & BEEP-1947: The errors thrown indirectly from Google Map script should be ignored.
+    // Reasons: This problem is duplicated since it only occurs when Google Maps API is undefined. However, we have already logged the Google Maps API load failure case.
+    const isNullPropertyIssue = isReadGoogleMapsPropertiesFromNullIssues(event, hint);
+
+    return isScriptIssue || isNullPropertyIssue;
+  } catch {
+    return false;
+  }
+};
+
 const isVivoAdblockProblem = (event, hint) => {
   // BEEP-1622: This problem only occurs on Vivo browser. Seems to be a problem with Vivo's adblock service.
   try {
@@ -149,7 +192,6 @@ const isVivoAdblockProblem = (event, hint) => {
 };
 
 const isReadGoogleMapsPropertiesFromNullIssues = (event, hint) => {
-  // BEEP-1710 & BEEP-1947: This problem is duplicated since it only occurs when Google Maps API is undefined. However, we have already logged the Google Maps API load failure case.
   try {
     const message = getErrorMessageFromHint(hint);
     const readGoogleMapsPropertiesFromNullIssues = [
@@ -190,8 +232,9 @@ const shouldFilter = (event, hint) => {
       isGoogleAnalytics(event) ||
       isIgnoreObjectNotFoundMatchingId(event, hint) ||
       isTikTokIssues(event, hint) ||
+      isReCAPTCHAIssues(event, hint) ||
+      isGoogleMapsIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
-      isReadGoogleMapsPropertiesFromNullIssues(event, hint) ||
       isDuplicateAlert(hint)
     );
   } catch {

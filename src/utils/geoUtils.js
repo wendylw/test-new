@@ -268,7 +268,7 @@ export const getHistoricalDeliveryAddresses = async () => {
     const results = await get('/api/storage/location-history');
     return results;
   } catch (e) {
-    console.error('failed to get historical delivery addresses', e);
+    logger.error('Utils_GeoUtils_FailedToGetHistoricalDeliveryAddresses', { message: e?.message });
     return [];
   }
 };
@@ -280,7 +280,7 @@ export const setHistoricalDeliveryAddresses = async positionInfo => {
     delete clonedPositionInfo.distance;
     await post('/api/storage/location-history', clonedPositionInfo);
   } catch (e) {
-    console.error('failed to set historical delivery addresses', e);
+    logger.error('Utils_GeoUtils_FailedToSetHistoricalDeliveryAddresses', { message: e?.message });
   }
 };
 
@@ -356,7 +356,6 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
             fields,
             placeId,
           });
-          console.error('Fail to get place detail:', status, placeId);
           reject(new Error('Fail to get place detail'));
         }
       }

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 import { IconChecked } from '../../../../../components/Icons';
 import RedirectPageLoader from '../../../../components/RedirectPageLoader';
+import NativeHeader from '../../../../../components/NativeHeader';
 import {
   getCartSubmissionFailedStatus,
   getCartSubmittedStatus,
@@ -16,6 +17,7 @@ import {
   clearQueryCartSubmissionStatus as clearQueryCartSubmissionStatusThunk,
 } from '../../../../redux/cart/thunks';
 import { getCleverTapAttributes } from '../../redux/common/selector';
+import { getIsWebview } from '../../../../redux/modules/app';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import prefetch from '../../../../../common/utils/prefetch-assets';
@@ -106,10 +108,11 @@ class CartSubmissionStatus extends Component {
   };
 
   render() {
-    const { t, pendingCartSubmissionResult, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
+    const { t, isWebview, pendingCartSubmissionResult, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
 
     return (
       <section className="ordering-submission absolute-wrapper">
+        {isWebview && <NativeHeader isPage title="" navFunc={this.handleClickAddMoreItems} />}
         {pendingCartSubmissionResult && <RedirectPageLoader />}
         {cartSubmittedStatus && (
           <>
@@ -166,6 +169,7 @@ class CartSubmissionStatus extends Component {
 CartSubmissionStatus.displayName = 'CartSubmissionStatus';
 
 CartSubmissionStatus.propTypes = {
+  isWebview: PropTypes.bool,
   cartSubmittedStatus: PropTypes.bool,
   pendingCartSubmissionResult: PropTypes.bool,
   cartSubmissionFailedStatus: PropTypes.bool,
@@ -177,6 +181,7 @@ CartSubmissionStatus.propTypes = {
 };
 
 CartSubmissionStatus.defaultProps = {
+  isWebview: false,
   cartSubmittedStatus: false,
   pendingCartSubmissionResult: false,
   cartSubmissionFailedStatus: false,
@@ -190,6 +195,7 @@ export default compose(
   withTranslation(['OrderingCart']),
   connect(
     state => ({
+      isWebview: getIsWebview(state),
       cartSubmittedStatus: getCartSubmittedStatus(state),
       pendingCartSubmissionResult: getCartSubmissionHasNotResult(state),
       cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),

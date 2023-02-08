@@ -172,3 +172,5 @@ export const getIsStoreReviewExpired = createSelector(getStoreReviewInfoData, st
 export const getIsStoreReviewSupportable = createSelector(getStoreReviewInfoData, storeReviewInfoData =>
   _get(storeReviewInfoData, 'isSupportable', false)
 );
+
+export const getOffline = state => state.orderStatus.storeReview.offline;
