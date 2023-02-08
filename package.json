@@ -69,7 +69,7 @@
     "invariant": "^2.2.4",
     "js-cookie": "^3.0.1",
     "ky": "^0.28.7",
-    "libphonenumber-js": "^1.9.51",
+    "libphonenumber-js": "^1.9.19",
     "lodash": "^4.17.21",
     "normalize.css": "^8.0.1",
     "phosphor-react": "^1.4.0",

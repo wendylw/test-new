@@ -76,6 +76,9 @@ export const init = createAsyncThunk(
       payload.postCode = _get(selectedAddress, 'postCode', '') || getAddressPostCode(state);
       payload.countryCode = _get(selectedAddress, 'countryCode', '') || getAddressCountryCode(state);
     }
+
     return payload;
   }
 );
+
+export const completePhoneNumber = createAsyncThunk('ordering/customer/completePhoneNumber', async isValid => isValid);
