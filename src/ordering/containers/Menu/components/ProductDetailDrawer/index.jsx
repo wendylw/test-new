@@ -6,7 +6,7 @@ import { useTimeout } from 'react-use';
 import Drawer from '../../../../../common/components/Drawer';
 import Loader from '../../../../../common/components/Loader';
 import QuantityAdjuster from '../../../../../common/components/QuantityAdjuster';
-import ImageSwiper from './ImageSwiper';
+import ImageSwiper from '../ImageSwiper';
 import SingleChoiceVariation from './SingleChoiceVariation';
 import SimpleMultipleChoiceVariation from './SimpleMultipleChoiceVariation';
 import QuantityMultipleChoiceVariation from './QuantityMultipleChoiceVariation';

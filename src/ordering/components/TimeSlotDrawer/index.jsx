@@ -2,14 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { X } from 'phosphor-react';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import Slider from '../Slider';
 import { DateIcon, TimeIcon } from '../../../common/components/Icons';
 import Button from '../../../common/components/Button';
 import Drawer from '../../../common/components/Drawer';
 import DrawerHeader from '../../../common/components/Drawer/DrawerHeader';
 import Loader from '../../../common/components/Loader';
 import { SHIPPING_TYPES } from '../../../common/utils/constants';
-import 'swiper/components/pagination/pagination.scss';
 import styles from './TimeSlotDrawer.module.scss';
 
 const SHIPPING_TYPE_MAPPING = {
@@ -79,45 +78,39 @@ const TimeSlotDrawer = ({
                 <DateIcon className="tw-inline-flex" />
                 <span className="tw-px-8 sm:tw-px-8px tw-font-bold">{t('Date')}</span>
               </h3>
-              <Swiper
-                wrapperTag="ul"
-                slidesPerView="auto"
-                pagination={{
-                  clickable: false,
-                  bulletClass: 'swiper-pagination-bullet',
-                }}
-                className={styles.timeSlotDateList}
-              >
-                {dateList.map(({ value, displayWeek, displayDay, available, selected, isToday, isTomorrow }) => {
-                  const classNameList = [isTomorrow ? styles.timeSlotDateItemOverWidth : styles.timeSlotDateItem];
-                  const dateContentList =
-                    !isToday && !isTomorrow ? [t(displayWeek), displayDay] : isToday ? [t('Today')] : [t('Tomorrow')];
+              <div className={styles.timeSlotDateList}>
+                <Slider mode="free-snap" perView="auto" spacing={16} slideStyle={{ width: 'auto' }}>
+                  {dateList.map(({ value, displayWeek, displayDay, available, selected, isToday, isTomorrow }) => {
+                    const classNameList = [isTomorrow ? styles.timeSlotDateItemOverWidth : styles.timeSlotDateItem];
+                    const dateContentList =
+                      !isToday && !isTomorrow ? [t(displayWeek), displayDay] : isToday ? [t('Today')] : [t('Tomorrow')];
 
-                  if (selected) {
-                    classNameList.push('active');
-                  }
+                    if (selected) {
+                      classNameList.push('active');
+                    }
 
-                  if (!available) {
-                    classNameList.push('disabled');
-                  }
+                    if (!available) {
+                      classNameList.push('disabled');
+                    }
 
-                  return (
-                    <SwiperSlide
-                      data-text={isTomorrow ? dateContentList[0] : ''}
-                      tag="li"
-                      key={value}
-                      className={classNameList.join(' ')}
-                      onClick={() => (available ? changeDate(value) : {})}
-                    >
-                      {dateContentList.map(content => (
-                        <span key={content} className={styles.timeSlotDateItemText}>
-                          {content}
-                        </span>
-                      ))}
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
+                    return (
+                      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                      <div
+                        data-text={isTomorrow ? dateContentList[0] : ''}
+                        key={value}
+                        className={classNameList.join(' ')}
+                        onClick={() => (available ? changeDate(value) : {})}
+                      >
+                        {dateContentList.map(content => (
+                          <span key={content} className={styles.timeSlotDateItemText}>
+                            {content}
+                          </span>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </Slider>
+              </div>
             </section>
 
             <section className="tw-my-8 sm:tw-my-8px tw-mx-16 sm:tw-mx-16px">

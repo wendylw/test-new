@@ -136,6 +136,8 @@ const blockBodyScroll = () => {
   const scrollBarWidth = window.innerWidth - html.clientWidth;
   const bodyPaddingRight = parseInt(window.getComputedStyle(body).getPropertyValue('padding-right'), 10) || 0;
   const offset = bodyPaddingRight + scrollBarWidth;
+
+  // body-scroll-block-fix is used to set drawer position correctly at computer full screen mode
   updateBodyScrollBlockerStyle(`
     body { position: relative; overflow: hidden; padding-right: ${offset}px;}
     .body-scroll-block-fix {

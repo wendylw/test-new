@@ -51,17 +51,12 @@
 }
 
 .timeSlotDateList {
-  @apply tw-py-8 sm:tw-py-8px tw-mx-8 sm:tw-mx-8px;
-
-  :global(.swiper-pagination) {
-    display: none;
-  }
+  @apply tw-py-8 sm:tw-py-8px tw-mx-16 sm:tw-mx-16px;
 }
 
 .timeSlotDateItem {
-  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-8 sm:tw-px-8px tw-py-12 sm:tw-py-12px tw-mx-8 sm:tw-mx-8px tw-border tw-border-solid tw-border-gray-300 tw-rounded tw-text-gray-700 tw-bg-gray-50 tw-cursor-pointer;
+  @apply tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-8 sm:tw-px-8px tw-py-12 sm:tw-py-12px tw-border tw-border-solid tw-border-gray-300 tw-rounded tw-text-gray-700 tw-bg-gray-50 tw-cursor-pointer;
 
-  width: auto;
   height: 64px;
   min-width: 64px;
 
@@ -79,9 +74,8 @@
 }
 
 .timeSlotDateItemOverWidth {
-  @apply tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-8 sm:tw-px-8px tw-py-12 sm:tw-py-12px tw-mx-8 sm:tw-mx-8px tw-border tw-border-solid tw-border-gray-300 tw-rounded tw-text-gray-700 tw-bg-gray-50 tw-cursor-pointer;
+  @apply tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center tw-px-8 sm:tw-px-8px tw-py-12 sm:tw-py-12px tw-border tw-border-solid tw-border-gray-300 tw-rounded tw-text-gray-700 tw-bg-gray-50 tw-cursor-pointer;
 
-  width: auto;
   height: 64px;
   min-width: 64px;
 
