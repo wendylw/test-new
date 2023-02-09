@@ -138,7 +138,7 @@ class Login extends React.Component {
   async handleClickResendButton(phone, type) {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
-    logger.log('Cashback_Login_ClickResendButton', { type });
+    logger.log('Cashback_Login_ClickResendButton', { name: type });
 
     try {
       const isWhatsAppType = type === OTP_REQUEST_TYPES.WHATSAPP;

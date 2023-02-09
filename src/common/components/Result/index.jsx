@@ -52,7 +52,7 @@ const Result = props => {
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
-      logger.log('Common_Feedback_ShowResult', { text });
+      logger.log('Common_Feedback_ShowResult', { message: text });
     }
   }, [children, show]);
 

@@ -283,7 +283,7 @@ class PayLater extends Component {
 
   handleDecreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
-    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { action: 'decrease' });
+    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { name: 'decrease' });
     const { quantity } = cartItem;
 
     if (quantity <= 1) {
@@ -295,13 +295,13 @@ class PayLater extends Component {
 
   handleIncreaseCartItem = cartItem => {
     const { updateCartItems } = this.props;
-    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { action: 'increase' });
+    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { name: 'increase' });
 
     updateCartItems(this.getUpdateShoppingCartItemData(cartItem, 1));
   };
 
   handleRemoveCartItem = cartItem => {
-    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { action: 'remove' });
+    logger.log('Ordering_PayLaterCart_AdjustItemQuantity', { name: 'remove' });
     const { id } = cartItem;
     const { removeCartItemsById } = this.props;
     removeCartItemsById(id);

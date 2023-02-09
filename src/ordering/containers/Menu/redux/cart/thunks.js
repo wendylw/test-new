@@ -103,7 +103,7 @@ const getCartItemGTMData = cartItem =>
 export const increaseCartItemQuantity = createAsyncThunk(
   'ordering/menu/cart/increaseCartItemQuantity',
   async ({ cartItemId }, { dispatch, getState }) => {
-    logger.log('Ordering_MenuCart_AdjustItemQuantity', { action: 'increase' });
+    logger.log('Ordering_MenuCart_AdjustItemQuantity', { name: 'increase' });
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -160,7 +160,7 @@ export const increaseCartItemQuantity = createAsyncThunk(
 export const removeCartItem = createAsyncThunk(
   'ordering/menu/cart/removeCartItem',
   async ({ cartItemId }, { dispatch, getState }) => {
-    logger.log('Ordering_MenuCart_AdjustItemQuantity', { action: 'remove' });
+    logger.log('Ordering_MenuCart_AdjustItemQuantity', { name: 'remove' });
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);
@@ -192,7 +192,7 @@ export const removeCartItem = createAsyncThunk(
 export const decreaseCartItemQuantity = createAsyncThunk(
   'ordering/menu/cart/decreaseCartItemQuantity',
   async ({ cartItemId }, { dispatch, getState }) => {
-    logger.log('Ordering_MenuCart_AdjustItemQuantity', { action: 'decrease' });
+    logger.log('Ordering_MenuCart_AdjustItemQuantity', { name: 'decrease' });
 
     const state = getState();
     const enablePayLater = getEnablePayLater(state);

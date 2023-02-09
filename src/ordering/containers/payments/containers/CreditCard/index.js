@@ -395,7 +395,7 @@ class CreditCard extends Component {
       return;
     }
 
-    logger.log('Ordering_Payment_OrderCreatedByCreditCard', { orderId });
+    logger.log('Ordering_Payment_OrderCreatedByCreditCard');
   };
 
   checkCardRisky = async () => {

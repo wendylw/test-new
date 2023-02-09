@@ -56,7 +56,7 @@ const dsBridgeSyncCall = (method, params) => {
     }
 
     logger.log('Utils_DSBridge_CallAPISucceeded', {
-      method,
+      name: method,
     });
 
     return data;
@@ -88,7 +88,7 @@ const dsBridgeAsyncCall = (method, params) =>
         }
 
         logger.log('Utils_DSBridge_CallAPISucceeded', {
-          method,
+          name: method,
         });
 
         resolve(data);

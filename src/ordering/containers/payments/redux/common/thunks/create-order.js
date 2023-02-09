@@ -424,7 +424,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       }
 
       Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.PAY_AT_COUNTER);
-      logger.log('Ordering_Payment_GoToThankYouPageForOfflinePayment', { orderId });
+      logger.log('Ordering_Payment_GoToThankYouPageForOfflinePayment');
 
       // Add "type" in thankYouPageUrl query
       const urlObj = new URL(thankYouPageUrl, window.location.origin);

@@ -55,14 +55,14 @@ export const loadOrdersStatus = createAsyncThunk(
 );
 
 export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) => {
-  logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', receiptNumber });
+  logger.log('Ordering_TableSummary_QueryOrderStatus', { name: 'start' });
   try {
     const queryOrderStatus = () => {
       queryOrdersAndStatus.timer = setTimeout(async () => {
         await dispatch(loadOrdersStatus(receiptNumber));
         // Loop has been stopped
         if (!queryOrdersAndStatus.timer) {
-          logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'quit-silently', receiptNumber });
+          logger.log('Ordering_TableSummary_QueryOrderStatus', { name: 'quit-silently' });
           return;
         }
 
@@ -93,7 +93,7 @@ export const hideProcessingLoader = createAsyncThunk('ordering/tableSummary/hide
 
 export const clearQueryOrdersAndStatus = () => () => {
   clearTimeout(queryOrdersAndStatus.timer);
-  logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'stop' });
+  logger.log('Ordering_TableSummary_QueryOrderStatus', { name: 'stop' });
   queryOrdersAndStatus.timer = null;
 };
 

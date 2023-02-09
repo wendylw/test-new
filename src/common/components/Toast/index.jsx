@@ -45,7 +45,7 @@ const Toast = props => {
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
-      logger.log('Common_Feedback_ShowToast', { text });
+      logger.log('Common_Feedback_ShowToast', { message: text });
     }
   }, [children, show]);
 
