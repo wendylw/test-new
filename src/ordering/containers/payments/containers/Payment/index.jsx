@@ -121,7 +121,7 @@ class Payment extends Component {
       paymentActions,
       receiptNumber,
     } = this.props;
-    logger.log('Ordering_Payment_PayBySelectedOption', { name: currentPaymentOption.paymentProvider });
+    logger.log('Ordering_Payment_PayBySelectedOption', { method: currentPaymentOption.paymentProvider });
 
     this.setState({
       payNowLoading: true,
@@ -217,7 +217,7 @@ class Payment extends Component {
         payNowLoading: true,
       });
 
-      logger.log('Ordering_Payment_PayByCash', { name: paymentProvider });
+      logger.log('Ordering_Payment_PayByCash', { method: paymentProvider });
 
       let orderId = receiptNumber;
 
@@ -237,7 +237,7 @@ class Payment extends Component {
             ORDER_STATUS.DELIVERED,
           ].includes(order.status)
         ) {
-          logger.log('Ordering_Payment_OrderHasPaid');
+          logger.log('Ordering_Payment_OrderHasPaid', { id: orderId });
 
           alert(t('OrderHasPaidAlertDescription'), {
             closeButtonContent: t('Continue'),
@@ -255,7 +255,7 @@ class Payment extends Component {
 
         orderId = order.orderId;
 
-        logger.log('Ordering_Payment_OrderCreated');
+        logger.log('Ordering_Payment_OrderCreated', { id: orderId });
 
         if (orderId) {
           Utils.removeSessionVariable('additionalComments');

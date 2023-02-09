@@ -201,7 +201,7 @@ class PageLogin extends React.Component {
   async handleClickResendButton(phone, type) {
     const payload = { phone, type };
     this.setState({ sendOtp: false });
-    logger.log('Ordering_PageLogin_ClickResendButton', { name: type });
+    logger.log('Ordering_PageLogin_ClickResendButton', { type });
 
     try {
       const isWhatsAppType = type === OTP_REQUEST_TYPES.WHATSAPP;

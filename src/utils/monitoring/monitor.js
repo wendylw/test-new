@@ -101,8 +101,8 @@ const trackError = (event, hint) => {
 
 const logUrlChange = type => {
   logger.log('Common_PageNavigation', {
-    name: type,
-    source: window.location.search,
+    type,
+    query: window.location.search,
   });
 };
 

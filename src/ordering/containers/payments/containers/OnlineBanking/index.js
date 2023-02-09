@@ -117,7 +117,8 @@ class OnlineBanking extends Component {
     const { currentOnlineBanking } = this.props;
 
     logger.log('Ordering_Payment_OrderCreatedByOnlineBanking', {
-      name: currentOnlineBanking.agentCode,
+      id: orderId,
+      method: currentOnlineBanking.agentCode,
     });
   };
 
