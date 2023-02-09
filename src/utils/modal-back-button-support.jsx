@@ -63,7 +63,6 @@ window.addEventListener(
       const modalId = poppedModalIds[0];
       if (modalId === preventHashPoppedId) {
         preventHashPoppedId = null;
-        logger.log('Utils_ModalBackButtonSupport_ChangeModalIdFailed', { id: modalId });
         return;
       }
       const keepDefault = window.dispatchEvent(
