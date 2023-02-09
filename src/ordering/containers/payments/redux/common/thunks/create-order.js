@@ -444,7 +444,7 @@ export const gotoPayment = ({ orderId, total }, paymentArgs) => async (dispatch,
       'Ordering_Payment_InitPaymentFailed',
       {
         message: error?.message,
-        paymentName: paymentProvider,
+        name: paymentProvider,
       },
       {
         bizFlow: {

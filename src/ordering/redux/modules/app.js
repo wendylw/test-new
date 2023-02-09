@@ -407,7 +407,7 @@ export const actions = {
       }
     } catch (error) {
       logger.error('Ordering_App_SyncLoginFromNativeFailed', {
-        error: error?.message,
+        message: error?.message,
         code: error?.code,
       });
     }

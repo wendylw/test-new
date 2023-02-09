@@ -205,7 +205,7 @@ class AddressDetail extends Component {
       logger.error(
         'Ordering_AddAddress_SaveAddressFailed',
         {
-          error: error?.message,
+          message: error?.message,
         },
         {
           bizFlow: {

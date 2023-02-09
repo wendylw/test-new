@@ -112,11 +112,8 @@ export const getPlaceAutocompleteList = async (text, { location, origin, radius,
             resolve(results);
           } else {
             logger.error('Utils_GeoUtils_GetGoogleMapsAPIPlacePredictionsFailed', {
-              error: status,
-              input: text,
-              location: locationCoords,
-              origin: originCoords,
-              radius: radiusNumber,
+              code: status,
+              query: text,
               country,
             });
             resolve([]);
@@ -241,8 +238,7 @@ export const getPlacesFromCoordinates = async coords => {
           resolve(result);
         } else {
           logger.error('Utils_GeoUtils_GetGeocodeFromGoogleMapsAPIFailed', {
-            error: status,
-            location,
+            code: status,
           });
           reject(new Error(`Failed to get location from coordinates: ${status}`));
         }
@@ -318,8 +314,8 @@ export const getPlaceInfoFromPlaceId = async (placeId, options = {}) => {
           resolve(result);
         } else {
           logger.error('Utils_GeoUtils_GetGeocodeFromGoogleMapsAPIFailed', {
-            error: status,
-            placeId,
+            code: status,
+            id: placeId,
           });
           reject(`Failed to get location from coordinates: ${status}`);
         }
@@ -352,9 +348,9 @@ const getPlaceDetails = async (placeId, { fields = ['geometry', 'address_compone
           resolve(result);
         } else {
           logger.error('Utils_GeoUtils_GetGoogleMapsAPIPlaceDetailsFailed', {
-            error: status,
-            fields,
-            placeId,
+            code: status,
+            query: fields,
+            id: placeId,
           });
           reject(new Error('Fail to get place detail'));
         }
@@ -383,7 +379,7 @@ export const fetchGeolocationByIp = () => {
     })
     .catch(err => {
       logger.error('Utils_GeoUtils_FetchGeolocationByIPFailed', {
-        error: err?.message,
+        message: err?.message,
       });
       throw err;
     });

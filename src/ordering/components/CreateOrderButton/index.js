@@ -92,7 +92,7 @@ class CreateOrderButton extends React.Component {
         'Ordering_CreateOrderButton_CreateOrderFailed',
         {
           message: error?.message,
-          paymentName: paymentName || 'N/A',
+          name: paymentName || 'N/A',
         },
         {
           bizFlow: {

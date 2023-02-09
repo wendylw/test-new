@@ -176,8 +176,8 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
   } catch (error) {
     logger.error('Ordering_TableSummary_GoToPaymentFailed', {
-      error: error?.message,
-      receiptNumber,
+      message: error?.message,
+      id: receiptNumber,
     });
     throw error;
   }

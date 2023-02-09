@@ -33,7 +33,7 @@ export class TermsPrivacy extends Component {
     const { pageName } = this.props;
 
     const data = await getFiles(pageName).catch(error => {
-      logger.error('Site_TermsPrivacy_LoadFileFailed', error);
+      logger.error('Site_TermsPrivacy_LoadFileFailed', { message: error?.message });
     });
 
     this.setState({ termsPrivacyData: data });

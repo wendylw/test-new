@@ -278,7 +278,7 @@ export const loadSearchLocationListData = createAsyncThunk(
 
       return result;
     } catch (e) {
-      logger.error('Ordering_Menu_LoadSearchLocationListFailed', e);
+      logger.error('Ordering_Menu_LoadSearchLocationListFailed', { message: e?.message });
 
       return [];
     }

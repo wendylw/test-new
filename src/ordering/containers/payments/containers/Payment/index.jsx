@@ -273,9 +273,8 @@ class Payment extends Component {
       }
     } catch (error) {
       logger.error('Ordering_Payment_CreateOrderFailed', {
-        error: error?.message,
-        shippingType,
-        paymentName: paymentProvider,
+        message: error?.message,
+        name: paymentProvider,
       });
 
       this.setState({
@@ -301,7 +300,7 @@ class Payment extends Component {
         'Ordering_Payment_SubmitOrderFailed',
         {
           message: 'Failed to submit order',
-          paymentName: currentPaymentOption.paymentProvider,
+          name: currentPaymentOption.paymentProvider,
         },
         {
           bizFlow: {

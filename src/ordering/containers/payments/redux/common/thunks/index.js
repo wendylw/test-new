@@ -147,8 +147,8 @@ export const initialize = createAsyncThunk(
       cleverTapViewPageEvent('Payment Method - View page', getState);
     } catch (error) {
       logger.error('Ordering_Payment_InitializeFailed', {
-        error: error?.message,
-        initialPaymentMethod,
+        message: error?.message,
+        method: initialPaymentMethod,
       });
 
       throw error;
