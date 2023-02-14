@@ -39,6 +39,7 @@ import ShunYuanImage from '../../../../../images/food-court-temp/merchant-SHUN-Y
 import BKTImage from '../../../../../images/food-court-temp/merchant-BKT.jpeg';
 import FoodImage from '../../../../../images/food-court-temp/merchant-Food.jpeg';
 import DrinkImage from '../../../../../images/food-court-temp/merchant-Drink.jpeg';
+import JomTarikImage from '../../../../../images/food-court-temp/merchant-Jom-Tarik.jpg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -230,6 +231,16 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '08:00',
       validTimeTo: '19:30',
+    },
+  },
+  '63c76dcefd60c7000810a5c2': {
+    id: '63c76dcefd60c7000810a5c2',
+    imageNoCompression: JomTarikImage,
+    title: 'Jom Tarik',
+    tags: ['Local Favourites', 'Rice', 'Noodles'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '21:00',
     },
   },
   '61b93058cef3c900060ca990': {
