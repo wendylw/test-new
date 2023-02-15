@@ -39,6 +39,9 @@ import ShunYuanImage from '../../../../../images/food-court-temp/merchant-SHUN-Y
 import BKTImage from '../../../../../images/food-court-temp/merchant-BKT.jpeg';
 import FoodImage from '../../../../../images/food-court-temp/merchant-Food.jpeg';
 import DrinkImage from '../../../../../images/food-court-temp/merchant-Drink.jpeg';
+import NurulImage from '../../../../../images/food-court-temp/food-Nurul-logo.jpg';
+import NurulAsamImage from '../../../../../images/food-court-temp/merchant-Nurul-Asam.png';
+import JomTarikImage from '../../../../../images/food-court-temp/merchant-Jom-Tarik.jpg';
 
 export const AllFoodCourtStoreList = {
   '6294429ddf0225000788e6e5': {
@@ -230,6 +233,36 @@ export const AllFoodCourtStoreList = {
     businessHours: {
       validTimeFrom: '08:00',
       validTimeTo: '19:30',
+    },
+  },
+  '60750940db81da0007dd1f70': {
+    id: '60750940db81da0007dd1f70',
+    title: 'Nurul Sate Batang Pinang',
+    imageNoCompression: NurulImage,
+    tags: ['Drinks', 'Rice', 'Noodles'],
+    businessHours: {
+      validTimeFrom: '07:30',
+      validTimeTo: '14:00',
+    },
+  },
+  '636c5b0fd4d68200074dc451': {
+    id: '636c5b0fd4d68200074dc451',
+    title: 'Nurul Asam Pedas Johor',
+    imageNoCompression: NurulAsamImage,
+    tags: ['Rice', 'Seafood', 'Local Food', 'Drinks'],
+    businessHours: {
+      validTimeFrom: '08:30',
+      validTimeTo: '14:00',
+    },
+  },
+  '63c76dcefd60c7000810a5c2': {
+    id: '63c76dcefd60c7000810a5c2',
+    imageNoCompression: JomTarikImage,
+    title: 'Jom Tarik',
+    tags: ['Local Favourites', 'Rice', 'Noodles'],
+    businessHours: {
+      validTimeFrom: '10:00',
+      validTimeTo: '21:00',
     },
   },
   '61b93058cef3c900060ca990': {
