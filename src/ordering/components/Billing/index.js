@@ -4,6 +4,21 @@ import { withTranslation } from 'react-i18next';
 import CurrencyNumber from '../CurrencyNumber';
 import './Billing.scss';
 class Billing extends Component {
+  renderDiscount() {
+    const { t, discount } = this.props;
+
+    if (!discount) {
+      return null;
+    }
+
+    return (
+      <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+        <label className="margin-top-bottom-smaller text-size-big">{t('Discount')}</label>
+        <CurrencyNumber className="text-size-big" money={-discount} />
+      </li>
+    );
+  }
+
   renderServiceCharge() {
     const { t, serviceCharge, businessInfo, serviceChargeRate } = this.props;
     const { enableServiceCharge = false } = businessInfo;
@@ -68,6 +83,7 @@ class Billing extends Component {
             <CurrencyNumber className="text-size-big" money={tax || 0} />
           </li>
           {this.renderServiceCharge()}
+          {this.renderDiscount()}
           {isDeliveryType ? (
             <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
               <label className="margin-top-bottom-smaller text-size-big">{t('DeliveryFee')}</label>

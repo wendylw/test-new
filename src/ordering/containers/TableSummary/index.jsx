@@ -55,6 +55,7 @@ import {
   getOrderPromoDiscount,
   getOrderPromotionCode,
   getVoucherBillingIfExist,
+  getAdhocDiscount,
   getOrderVoucherCode,
   getOrderApplyCashback,
   getOrderVoucherDiscount,
@@ -636,6 +637,7 @@ export class TableSummary extends React.Component {
       shouldShowPayNowButton,
       isTNGMiniProgram,
       isStorePayByCashOnly,
+      adhocDiscount,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -685,6 +687,7 @@ export class TableSummary extends React.Component {
             shippingFee={shippingFee}
             businessInfo={businessInfo}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
+            discount={adhocDiscount}
           >
             {this.renderCashbackItem()}
             {this.renderPromotionItem()}
@@ -761,6 +764,7 @@ TableSummary.propTypes = {
   removePromo: PropTypes.func,
   oderPromoDiscount: PropTypes.number,
   orderPromotionCode: PropTypes.string,
+  adhocDiscount: PropTypes.number,
   removeVoucherPayLater: PropTypes.func,
   voucherBilling: PropTypes.string,
   orderVoucherCode: PropTypes.string,
@@ -816,6 +820,7 @@ TableSummary.defaultProps = {
   removePromo: () => {},
   oderPromoDiscount: 0,
   orderPromotionCode: '',
+  adhocDiscount: 0,
   removeVoucherPayLater: () => {},
   voucherBilling: '',
   orderVoucherCode: '',
@@ -868,6 +873,7 @@ export default compose(
       orderBillingPromo: getOrderBillingPromoIfExist(state),
       oderPromoDiscount: getOrderPromoDiscount(state),
       orderPromotionCode: getOrderPromotionCode(state),
+      adhocDiscount: getAdhocDiscount(state),
       voucherBilling: getVoucherBillingIfExist(state),
       orderVoucherCode: getOrderVoucherCode(state),
       orderVoucherDiscount: getOrderVoucherDiscount(state),

@@ -57,6 +57,7 @@
   "GeneralPaymentFailedDescriptionOfPayLater": "We could not process your online payment. Please try a different payment method",
   "GotoPaymentFailedDescription": "We could not process your payment. Please check your network and try again.",
   "ServiceChargeTitle": "Service Charge {{serviceChargeRate}}",
+  "Discount": "Discount",
   "Subtotal": "Subtotal",
   "BeepCashback": "Beep Cashback",
   "Tax": "Tax",
