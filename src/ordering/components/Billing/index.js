@@ -14,7 +14,7 @@ class Billing extends Component {
     return (
       <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
         <label className="margin-top-bottom-smaller text-size-big">{t('Discount')}</label>
-        <CurrencyNumber className="text-size-big" money={-discount} />
+        <CurrencyNumber className="text-size-big" money={discount} />
       </li>
     );
   }
