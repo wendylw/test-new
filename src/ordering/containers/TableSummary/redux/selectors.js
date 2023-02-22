@@ -101,7 +101,12 @@ export const getOrderVoucherCode = state => state.tableSummary.order.appliedVouc
 
 export const getOrderVoucherDiscount = state => state.tableSummary.order.appliedVoucher?.value;
 
-export const getAdhocDiscount = state => state.tableSummary.order.adhocDiscount;
+export const getAdhocDiscountOriginal = state => state.tableSummary.order.adhocDiscount;
+
+export const getAdhocDiscount = createSelector(getAdhocDiscountOriginal, adhocDiscountOriginal => {
+  const adhocDiscount = -adhocDiscountOriginal;
+  return adhocDiscount < 0 ? adhocDiscount : 0;
+});
 
 export const getPromoOrVoucherExist = createSelector(
   getOrderBillingPromoIfExist,
