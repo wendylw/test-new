@@ -427,7 +427,9 @@ export class TableSummary extends React.Component {
         <label className="margin-top-bottom-smaller text-size-big" htmlFor="discount">
           {t('Discount')}
         </label>
-        - <CurrencyNumber className="text-size-big" money={adhocDiscount} />
+        <span>
+          - <CurrencyNumber className="text-size-big" money={adhocDiscount} />
+        </span>
       </li>
     );
   }
