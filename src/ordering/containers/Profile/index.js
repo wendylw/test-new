@@ -22,6 +22,7 @@ import './Profile.scss';
 import CleverTap from '../../../utils/clevertap';
 
 class CompleteProfileModal extends Component {
+  // eslint-disable-next-line react/state-in-constructor
   state = {
     nativeMethodExist: true,
   };
@@ -31,14 +32,18 @@ class CompleteProfileModal extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    // eslint-disable-next-line react/prop-types
     const { duplicatedEmailAlertVisibility } = this.props;
+    // eslint-disable-next-line react/destructuring-assignment
     if (this.props.showProfileVisibility !== prevProps.showProfileVisibility) {
       this.props.onModalVisibilityChanged(this.props.showProfileVisibility);
+      // eslint-disable-next-line react/destructuring-assignment
       if (Utils.isWebview() && this.props.showProfileVisibility) {
         this.showNativeCompleteProfilePage();
       }
     }
 
+    // eslint-disable-next-line react/destructuring-assignment
     if (this.props.user.profile !== prevProps.user.profile) {
       this.initCompleteProfileIfNeeded();
     }
@@ -195,7 +200,7 @@ class CompleteProfileModal extends Component {
               </div>
               <div className="padding-top-bottom-smaller padding-left-right-normal">
                 <h2 className="profile__title padding-top-bottom-normal text-size-huge text-weight-bolder">
-                  {t('CompleteYourProfile')}
+                  {t('CompleteProfile')}
                 </h2>
                 <p className="profile__tip-color text-size-big text-line-height-base">{t('CompleteProfileTip')}</p>
               </div>

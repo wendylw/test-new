@@ -1,7 +1,7 @@
 {
   "EmailAddress": "Email Address",
   "DateOfBirth": "Date of Birth",
-  "CompleteYourProfile": "Complete Your Profile",
+  "CompleteProfile": "Complete Profile",
   "NotValidEmail": "Please try again or enter a valid email address",
   "NotValidBirthday": "Please enter a valid date of birth (DD/MM/YYYY)",
   "SkipForNow": "Skip for now",
