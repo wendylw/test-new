@@ -7,7 +7,7 @@ class Billing extends Component {
   renderDiscount() {
     const { t, discount } = this.props;
 
-    if (!discount) {
+    if (discount >= 0) {
       return null;
     }
 
@@ -118,6 +118,7 @@ Billing.propTypes = {
   takeawayCharges: PropTypes.number,
   total: PropTypes.number,
   shippingFee: PropTypes.number,
+  discount: PropTypes.number,
 };
 
 Billing.defaultProps = {
@@ -129,6 +130,7 @@ Billing.defaultProps = {
   takeawayCharges: 0,
   total: 0,
   shippingFee: 0,
+  discount: 0,
 };
 
 export default withTranslation()(Billing);

@@ -241,7 +241,7 @@ export class OrderDetails extends Component {
   renderDiscount() {
     const { t, adhocDiscount } = this.props;
 
-    if (!adhocDiscount) {
+    if (adhocDiscount >= 0) {
       return null;
     }
 
