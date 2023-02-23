@@ -241,14 +241,14 @@ export class OrderDetails extends Component {
   renderDiscount() {
     const { t, adhocDiscount } = this.props;
 
-    if (adhocDiscount >= 0) {
+    if (adhocDiscount <= 0) {
       return null;
     }
 
     return (
       <li className="flex flex-space-between flex-middle">
         <span className="padding-top-bottom-small text-opacity">{t('Discount')}</span>
-        <CurrencyNumber className="padding-top-bottom-small text-opacity" money={adhocDiscount} />
+        <CurrencyNumber className="padding-top-bottom-small text-opacity" money={-adhocDiscount} />
       </li>
     );
   }

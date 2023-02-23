@@ -415,6 +415,23 @@ export class TableSummary extends React.Component {
     return '';
   }
 
+  renderDiscount() {
+    const { t, adhocDiscount } = this.props;
+
+    if (adhocDiscount <= 0) {
+      return null;
+    }
+
+    return (
+      <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
+        <label className="margin-top-bottom-smaller text-size-big" htmlFor="discount">
+          {t('Discount')}
+        </label>
+        - <CurrencyNumber className="text-size-big" money={adhocDiscount} />
+      </li>
+    );
+  }
+
   renderCashbackItem() {
     const {
       t,
@@ -637,7 +654,6 @@ export class TableSummary extends React.Component {
       shouldShowPayNowButton,
       isTNGMiniProgram,
       isStorePayByCashOnly,
-      adhocDiscount,
     } = this.props;
     const { cartContainerHeight } = this.state;
 
@@ -687,7 +703,6 @@ export class TableSummary extends React.Component {
             shippingFee={shippingFee}
             businessInfo={businessInfo}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
-            discount={adhocDiscount}
           >
             {this.renderCashbackItem()}
             {this.renderPromotionItem()}

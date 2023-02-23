@@ -77,12 +77,7 @@ export const getOrderItems = createSelector(getOrder, order => _get(order, 'item
 
 export const getServiceCharge = createSelector(getOrder, order => _get(order, 'serviceCharge', null));
 
-export const getAdhocDiscountOriginal = createSelector(getOrder, order => _get(order, 'adhocDiscount', 0));
-
-export const getAdhocDiscount = createSelector(getAdhocDiscountOriginal, adhocDiscountOriginal => {
-  const adhocDiscount = -adhocDiscountOriginal;
-  return adhocDiscount < 0 ? adhocDiscount : 0;
-});
+export const getAdhocDiscount = createSelector(getOrder, order => _get(order, 'adhocDiscount', 0));
 
 export const getDisplayDiscount = createSelector(getOrder, order => {
   const { loyaltyDiscounts } = order || {};
