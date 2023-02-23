@@ -704,6 +704,7 @@ export class TableSummary extends React.Component {
             businessInfo={businessInfo}
             isDeliveryType={shippingType === DELIVERY_METHOD.DELIVERY}
           >
+            {this.renderDiscount()}
             {this.renderCashbackItem()}
             {this.renderPromotionItem()}
           </Billing>
