@@ -14,7 +14,7 @@ import {
 } from '../../../../redux/modules/app';
 import { actions as customerActionCreators } from './redux';
 import { getAddressInfo, getContactNumberInvalidErrorVisibility } from './redux/selectors';
-import { init } from './redux/thunk';
+import { init, completePhoneNumber } from './redux/thunk';
 import Utils from '../../../../../utils/utils';
 import { post, put } from '../../../../../utils/request';
 import url from '../../../../../utils/url';
@@ -22,12 +22,12 @@ import qs from 'qs';
 import CleverTap from '../../../../../utils/clevertap';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import _trim from 'lodash/trim';
-import PhoneInput, { formatPhoneNumberIntl } from 'react-phone-number-input/mobile';
+import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import './AddressDetail.scss';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
+import { COUNTRY_PHONE_CODES } from '../../../../../common/utils/phone-number-constants';
 const actions = {
   EDIT: 'edit',
   ADD: 'add',
@@ -79,8 +79,8 @@ class AddressDetail extends Component {
   phoneInputChange = phone => {
     const selectedCountry = document.querySelector('.PhoneInputCountrySelect').value;
     const phoneInput =
-      (metadataMobile.countries[selectedCountry] &&
-        Utils.getFormatPhoneNumber(phone || '', metadataMobile.countries[selectedCountry][0])) ||
+      (COUNTRY_PHONE_CODES[selectedCountry] &&
+        Utils.getFormatPhoneNumber(phone || '', COUNTRY_PHONE_CODES[selectedCountry])) ||
       '';
     this.props.customerActions.updatePhoneNumber(phoneInput);
     this.setState({
@@ -205,7 +205,7 @@ class AddressDetail extends Component {
       logger.error(
         'Ordering_AddAddress_SaveAddressFailed',
         {
-          error: error?.message,
+          message: error?.message,
         },
         {
           bizFlow: {
@@ -221,8 +221,11 @@ class AddressDetail extends Component {
     this.props.customerActions.startEditPhoneNumber();
   };
 
-  handleNameInputBlur = () => {
-    this.props.customerActions.completePhoneNumber();
+  handlePhoneNumberInputBlur = async event => {
+    const { completePhoneNumber } = this.props;
+    const isValid = isValidPhoneNumber(event.target.value);
+
+    completePhoneNumber(isValid);
   };
 
   render() {
@@ -292,10 +295,9 @@ class AddressDetail extends Component {
                     placeholder={t('EnterPhoneNumber')}
                     value={formatPhoneNumberIntl(contactNumber)}
                     country={country}
-                    metadata={metadataMobile}
                     onChange={this.phoneInputChange}
                     onFocus={this.handlePhoneNumberFocus}
-                    onBlur={this.handleNameInputBlur}
+                    onBlur={this.handlePhoneNumberInputBlur}
                   />
                 </div>
               </div>
@@ -420,6 +422,7 @@ export default compose(
       customerActions: bindActionCreators(customerActionCreators, dispatch),
       appActions: bindActionCreators(appActionCreators, dispatch),
       init: bindActionCreators(init, dispatch),
+      completePhoneNumber: bindActionCreators(completePhoneNumber, dispatch),
     })
   )
 )(AddressDetail);

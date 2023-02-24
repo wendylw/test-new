@@ -272,7 +272,7 @@ export const loadCartSubmissionStatus = createAsyncThunk(
 );
 
 export const queryCartSubmissionStatus = submissionId => (dispatch, getState) => {
-  logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'start', submissionId });
+  logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'start', id: submissionId });
   const targetTimestamp = Date.parse(new Date()) + TIMEOUT_CART_SUBMISSION_TIME;
 
   try {
@@ -280,7 +280,11 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
       queryCartSubmissionStatus.timer = setTimeout(async () => {
         if (targetTimestamp - Date.parse(new Date()) <= 0) {
           clearTimeout(queryCartSubmissionStatus.timer);
-          logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', reason: 'timeout', submissionId });
+          logger.log('Ordering_Cart_PollCartSubmissionStatus', {
+            action: 'stop',
+            message: 'timeout',
+            id: submissionId,
+          });
           dispatch(cartActionCreators.updateCartSubmission({ status: CART_SUBMISSION_STATUS.FAILED }));
 
           return;
@@ -292,7 +296,11 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
 
         if (isCartSubmissionStatusQueryPollingStoppable) {
           clearTimeout(queryCartSubmissionStatus.timer);
-          logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', reason: 'finished', submissionId });
+          logger.log('Ordering_Cart_PollCartSubmissionStatus', {
+            action: 'stop',
+            message: 'finished',
+            id: submissionId,
+          });
           return;
         }
 
@@ -320,6 +328,6 @@ export const queryCartSubmissionStatus = submissionId => (dispatch, getState) =>
 export const clearQueryCartSubmissionStatus = () => () => {
   if (queryCartSubmissionStatus.timer) {
     clearTimeout(queryCartSubmissionStatus.timer);
-    logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', reason: 'unmount' });
+    logger.log('Ordering_Cart_PollCartSubmissionStatus', { action: 'stop', message: 'unmount' });
   }
 };

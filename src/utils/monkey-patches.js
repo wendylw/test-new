@@ -33,7 +33,7 @@ if (typeof Node === 'function' && Node.prototype) {
   Node.prototype.removeChild = function(child) {
     if (child.parentNode !== this) {
       // If you see this error on logger, please refer to above comment.
-      logger.error(`Cannot remove a child from a different parent, child text: ${getText(child)}`);
+      logger.error('Common_Utils_RemoveChildNodeFailed', { message: getText(child) });
       return child;
     }
     return originalRemoveChild.apply(this, arguments);
@@ -43,9 +43,7 @@ if (typeof Node === 'function' && Node.prototype) {
   Node.prototype.insertBefore = function(newNode, referenceNode) {
     if (referenceNode && referenceNode.parentNode !== this) {
       // If you see this error on logger, please refer to above comment.
-      logger.error(
-        `Cannot insert before a reference node from a different parent, reference node text: ${getText(referenceNode)}`
-      );
+      logger.error('Common_Utils_InsertNodeFailed', { message: getText(referenceNode) });
       return newNode;
     }
     return originalInsertBefore.apply(this, arguments);

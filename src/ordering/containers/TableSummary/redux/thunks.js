@@ -55,14 +55,14 @@ export const loadOrdersStatus = createAsyncThunk(
 );
 
 export const queryOrdersAndStatus = receiptNumber => async (dispatch, getState) => {
-  logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', receiptNumber });
+  logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'start', id: receiptNumber });
   try {
     const queryOrderStatus = () => {
       queryOrdersAndStatus.timer = setTimeout(async () => {
         await dispatch(loadOrdersStatus(receiptNumber));
         // Loop has been stopped
         if (!queryOrdersAndStatus.timer) {
-          logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'quit-silently', receiptNumber });
+          logger.log('Ordering_TableSummary_QueryOrderStatus', { action: 'quit-silently', id: receiptNumber });
           return;
         }
 
@@ -176,8 +176,8 @@ export const gotoPayment = createAsyncThunk('ordering/tableSummary/gotoPayment',
     dispatch(push(`${PATH_NAME_MAPPING.ORDERING_PAYMENT}${search}`));
   } catch (error) {
     logger.error('Ordering_TableSummary_GoToPaymentFailed', {
-      error: error?.message,
-      receiptNumber,
+      message: error?.message,
+      id: receiptNumber,
     });
     throw error;
   }

@@ -1,29 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import PhoneInput, { formatPhoneNumberIntl, isValidPhoneNumber } from 'react-phone-number-input/mobile';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import PhoneInput, {
+  formatPhoneNumberIntl,
+  isValidPhoneNumber,
+  parsePhoneNumber,
+} from 'react-phone-number-input/mobile';
 import 'react-phone-number-input/style.css';
 import Utils from '../utils/utils';
 import Constants from '../utils/constants';
 import './PhoneViewContainer.scss';
 
-const metadataMobile = require('libphonenumber-js/metadata.mobile.json');
-
 class PhoneViewContainer extends React.Component {
   handleUpdatePhoneNumber(phone) {
-    const { updatePhoneNumber } = this.props;
-    const { number } = (phone && parsePhoneNumberFromString(phone)) || {};
+    const { updatePhoneNumber, onValidate } = this.props;
+    const { number } = (phone && parsePhoneNumber(phone)) || {};
 
     updatePhoneNumber({ phone: number || '' });
+
+    onValidate(isValidPhoneNumber(number || ''));
   }
 
   handleUpdateCountry(country) {
-    const { updateCountry } = this.props;
+    const { updateCountry, phone, onValidate } = this.props;
 
     if (country) {
-      updateCountry({ country: country });
+      updateCountry({ country });
     }
+
+    onValidate(isValidPhoneNumber(phone || ''));
   }
 
   handleSubmitPhoneNumber() {
@@ -76,7 +81,6 @@ class PhoneViewContainer extends React.Component {
           value={formatPhoneNumberIntl(phone)}
           defaultCountry={country}
           country={country}
-          metadata={metadataMobile}
           onChange={newPhone => this.handleUpdatePhoneNumber(newPhone)}
           onCountryChange={newCountry => this.handleUpdateCountry(newCountry)}
         />
@@ -107,6 +111,7 @@ PhoneViewContainer.propTypes = {
   updatePhoneNumber: PropTypes.func,
   updateCountry: PropTypes.func,
   onSubmit: PropTypes.func,
+  onValidate: PropTypes.func,
 };
 
 PhoneViewContainer.defaultProps = {
@@ -116,6 +121,7 @@ PhoneViewContainer.defaultProps = {
   updatePhoneNumber: () => {},
   updateCountry: () => {},
   onSubmit: () => {},
+  onValidate: () => {},
 };
 PhoneViewContainer.displayName = 'PhoneViewContainer';
 

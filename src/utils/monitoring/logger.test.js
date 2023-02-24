@@ -1,11 +1,5 @@
 /* eslint-disable dot-notation */
-import {
-  getMerchantID,
-  getFormattedTags,
-  getFormattedActionName,
-  getFormattedPrivateDateKeyName,
-  getStringifiedJSON,
-} from './logger';
+import { getMerchantID, getFormattedTags, getFormattedActionName, getStringifiedJSON } from './logger';
 import { get as requestGet, RequestError } from '../request';
 import { get as apiFetchGet } from '../api/api-fetch';
 import { NativeAPIError } from '../native-methods';
@@ -149,21 +143,6 @@ describe('utils/monitoring/logger', () => {
     test('from beepit.com from site URL', () => {
       window.location.hostname = 'www.beep.local.shub.us';
       expect(getMerchantID()).toBe('beepit.com');
-    });
-  });
-
-  describe('test getFormattedPrivateDateKey function', () => {
-    test('return underline-concatenated private data key name if the action name is separated by underlines', () => {
-      const actionName = getFormattedActionName('location_data_continue');
-      expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_location_data_continue');
-    });
-    test('return underline-concatenated private data key name if the action name is separated by white space', () => {
-      const actionName = getFormattedActionName('load core stores failed on location page');
-      expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_load_core_stores_failed_on_location_page');
-    });
-    test('return underline-concatenated private data key name if the action name is separated by period mark', () => {
-      const actionName = getFormattedActionName('google-maps-api.geocode-failure');
-      expect(getFormattedPrivateDateKeyName(actionName)).toEqual('BeepV1Web_google_maps_api_geocode_failure');
     });
   });
 

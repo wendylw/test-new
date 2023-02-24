@@ -237,7 +237,7 @@ class Payment extends Component {
             ORDER_STATUS.DELIVERED,
           ].includes(order.status)
         ) {
-          logger.log('Ordering_Payment_OrderHasPaid', { order });
+          logger.log('Ordering_Payment_OrderHasPaid', { id: orderId });
 
           alert(t('OrderHasPaidAlertDescription'), {
             closeButtonContent: t('Continue'),
@@ -255,7 +255,7 @@ class Payment extends Component {
 
         orderId = order.orderId;
 
-        logger.log('Ordering_Payment_OrderCreated', { orderId });
+        logger.log('Ordering_Payment_OrderCreated', { id: orderId });
 
         if (orderId) {
           Utils.removeSessionVariable('additionalComments');
@@ -273,9 +273,8 @@ class Payment extends Component {
       }
     } catch (error) {
       logger.error('Ordering_Payment_CreateOrderFailed', {
-        error: error?.message,
-        shippingType,
-        paymentName: paymentProvider,
+        message: error?.message,
+        name: paymentProvider,
       });
 
       this.setState({
@@ -301,7 +300,7 @@ class Payment extends Component {
         'Ordering_Payment_SubmitOrderFailed',
         {
           message: 'Failed to submit order',
-          paymentName: currentPaymentOption.paymentProvider,
+          name: currentPaymentOption.paymentProvider,
         },
         {
           bizFlow: {

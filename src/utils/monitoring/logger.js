@@ -22,7 +22,7 @@ const EVENT_LEVEL_TYPES = {
   ERROR: 'error',
 };
 
-const PROJECT_PREFIX_NAME = 'BeepV1Web';
+const PROJECT_NAME = 'BeepV1Web';
 
 const getDeviceId = _once(() => {
   try {
@@ -103,8 +103,6 @@ export const getFormattedActionName = name => {
   return name;
 };
 
-export const getFormattedPrivateDateKeyName = actionName => [PROJECT_PREFIX_NAME, actionName].join('_');
-
 export const getStringifiedJSON = data =>
   JSON.stringify(data, (_, value) => (value instanceof Error ? serializeError(value) : value));
 
@@ -146,7 +144,6 @@ const track = async (name, data, options = {}) => {
     const { sess_tid: sessTid, perm_tid: permTid } = tids;
     const shippingType = getQueryString('type');
     const action = getFormattedActionName(name);
-    const privateDataKeyName = getFormattedPrivateDateKeyName(action);
 
     if (!(_isEmpty(publicData) || _isPlainObject(publicData))) {
       throw new Error('public data should be plain object');
@@ -157,7 +154,7 @@ const track = async (name, data, options = {}) => {
       uuid: getUUID(),
       level,
       platform: 'Web',
-      project: 'BeepV1Web',
+      project: PROJECT_NAME,
       ts: new Date().valueOf(),
       action,
       tags: getFormattedTags(tags),
@@ -177,7 +174,7 @@ const track = async (name, data, options = {}) => {
         clientInfo: getClientInfo(),
       },
       privateData: {
-        [privateDataKeyName]: data,
+        [PROJECT_NAME]: data,
       },
     };
 

@@ -26,7 +26,7 @@ const Alert = props => {
   useEffect(() => {
     if (show && contentContainerRef.current) {
       const text = contentContainerRef.current.innerText;
-      logger.log('Common_Feedback_ShowAlert', { text });
+      logger.log('Common_Feedback_ShowAlert', { message: text });
     }
   }, [children, show]);
 

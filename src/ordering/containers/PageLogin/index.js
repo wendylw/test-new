@@ -11,7 +11,6 @@ import PageLoader from '../../../components/PageLoader';
 import ReCAPTCHA, { globalName as RECAPTCHA_GLOBAL_NAME } from '../../../common/components/ReCAPTCHA';
 import { connect } from 'react-redux';
 import { bindActionCreators, compose } from 'redux';
-import { isValidPhoneNumber } from 'react-phone-number-input/mobile';
 import { actions as appActionCreators, getUser, getIsLoginRequestFailed } from '../../redux/modules/app';
 import {
   getShouldShowLoader,
@@ -39,6 +38,7 @@ class PageLogin extends React.Component {
   state = {
     sendOtp: false,
     shouldShowModal: false,
+    isPhoneNumberValid: false,
   };
 
   captchaRef = React.createRef();
@@ -102,6 +102,10 @@ class PageLogin extends React.Component {
 
     appActions.resetGetOtpRequest();
   }
+
+  handleUpdatePhoneNumberValidation = isValid => {
+    this.setState({ isPhoneNumberValid: isValid });
+  };
 
   async handleCompleteReCAPTCHA() {
     try {
@@ -373,6 +377,7 @@ class PageLogin extends React.Component {
       isOtpRequestPending,
       isOtpErrorFieldVisible,
     } = this.props;
+    const { isPhoneNumberValid } = this.state;
     const { isLogin, phone, country } = user || {};
     const classList = ['page-login flex flex-column'];
 
@@ -408,12 +413,12 @@ class PageLogin extends React.Component {
               <img
                 src={beepLoginActive}
                 alt="otp active"
-                className={`${isValidPhoneNumber(phone || '') ? '' : 'page-login__icon--hide'}`}
+                className={`${isPhoneNumberValid ? '' : 'page-login__icon--hide'}`}
               />
               <img
                 src={beepLoginDisabled}
                 alt="otp disabled"
-                className={`${isValidPhoneNumber(phone || '') ? 'page-login__icon--hide' : 'page-login__disabled'}`}
+                className={`${isPhoneNumberValid ? 'page-login__icon--hide' : 'page-login__disabled'}`}
               />
             </figure>
             <PhoneViewContainer
@@ -428,6 +433,7 @@ class PageLogin extends React.Component {
               errorText={t(errorTextI18nKey)}
               updatePhoneNumber={this.handleUpdateUser.bind(this)}
               updateCountry={this.handleUpdateUser.bind(this)}
+              onValidate={this.handleUpdatePhoneNumberValidation}
               onSubmit={this.handleClickContinueButton.bind(this)}
             >
               <p className="text-center margin-top-bottom-small text-line-height-base text-opacity">

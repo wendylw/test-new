@@ -92,7 +92,7 @@ class CreateOrderButton extends React.Component {
         'Ordering_CreateOrderButton_CreateOrderFailed',
         {
           message: error?.message,
-          paymentName: paymentName || 'N/A',
+          name: paymentName || 'N/A',
         },
         {
           bizFlow: {
@@ -186,7 +186,7 @@ class CreateOrderButton extends React.Component {
           ORDER_STATUS.DELIVERED,
         ].includes(order.status)
       ) {
-        logger.log('Ordering_CreateOrderButton_OrderHasPaid', { orderId });
+        logger.log('Ordering_CreateOrderButton_OrderHasPaid', { id: orderId });
 
         alert(i18next.t('OrderHasPaidAlertDescription'), {
           closeButtonContent: i18next.t('Continue'),
@@ -209,7 +209,7 @@ class CreateOrderButton extends React.Component {
         total = order.total;
       }
 
-      logger.log('Ordering_CreateOrderButton_OrderHasCreated', { orderId });
+      logger.log('Ordering_CreateOrderButton_OrderHasCreated', { id: orderId });
 
       if (orderId) {
         Utils.removeSessionVariable('additionalComments');
@@ -218,7 +218,7 @@ class CreateOrderButton extends React.Component {
 
       if (thankYouPageUrl) {
         Utils.setCookieVariable('__ty_source', REFERRER_SOURCE_TYPES.CASHBACK);
-        logger.log('Ordering_CreateOrderButton_GoToThankYouPage', { orderId });
+        logger.log('Ordering_CreateOrderButton_GoToThankYouPage', { id: orderId });
         window.location = `${thankYouPageUrl}${tableId ? `&tableId=${tableId}` : ''}${type ? `&type=${type}` : ''}`;
 
         return;

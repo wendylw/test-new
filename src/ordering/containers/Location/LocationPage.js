@@ -139,7 +139,7 @@ class LocationPage extends Component {
         return;
       }
     } catch (e) {
-      logger.error('Ordering_LocationPage_LoadCoreStoresFailed', e);
+      logger.error('Ordering_LocationPage_LoadCoreStoresFailed', { message: e?.message });
 
       throw e;
     }

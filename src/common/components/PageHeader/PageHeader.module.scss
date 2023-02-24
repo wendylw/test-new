@@ -1,5 +1,7 @@
 .PageHeaderContainer {
   @apply tw-flex tw-justify-between tw-items-center tw-border-0 tw-border-b tw-border-solid tw-border-gray-200;
+
+  height: 49px;
 }
 
 .PageHeaderLeftContainer {

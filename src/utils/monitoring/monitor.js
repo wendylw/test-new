@@ -88,7 +88,7 @@ class SentryCapturedError extends Error {
 const trackError = (event, hint) => {
   try {
     const errorMessage = getErrorMessageFromHint(hint);
-    logger.error('Common_SentryCapturedError', { message: errorMessage, sentryId: event?.event_id });
+    logger.error('Common_SentryCapturedError', { message: errorMessage, id: event?.event_id });
 
     window.newrelic?.addPageAction('common.error', {
       message: errorMessage,
@@ -108,7 +108,7 @@ const logUrlChange = type => {
 
 const logClientInfo = () => {
   logger.log('Common_ClientInfo', {
-    userAgent: navigator.userAgent,
+    name: navigator.userAgent,
   });
 };
 

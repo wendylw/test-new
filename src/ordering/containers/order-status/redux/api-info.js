@@ -38,7 +38,8 @@ export const postFoodCourtIdHashCode = (foodCourtId, payload) => {
   return post(`/api/ordering/stores/${foodCourtId}`, payload);
 };
 
-export const getOrderStoreReview = (orderId) => get(`/api/transactions/${orderId}/review`);
+export const getOrderStoreReview = (orderId, offline) =>
+  get(`/api/transactions/${orderId}/review`, { queryParams: { offline } });
 
-export const postOrderStoreReview = ({ orderId, rating, comments, allowMerchantContact }) =>
-  post(`/api/transactions/${orderId}/review`, { rating, comments, allowMerchantContact });
+export const postOrderStoreReview = ({ orderId, rating, comments, allowMerchantContact, offline }) =>
+  post(`/api/transactions/${orderId}/review`, { rating, comments, allowMerchantContact, offline });
