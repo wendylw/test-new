@@ -2,7 +2,15 @@ import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-const Input = ({ children }) => {
+const Input = ({
+  className,
+  placeholder,
+  defaultSearchKeyword,
+  allowClear,
+  searching,
+  onChangeInputValue,
+  onClearInput,
+}) => {
   const { t } = useTranslation();
 
   return (
