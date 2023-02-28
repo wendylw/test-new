@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import SwiperCore, { Autoplay } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from '../../../../components/Image';
+import Slider from '../../../../common/components/Slider';
 import CleverTap from '../../../../utils/clevertap';
-import 'swiper/swiper.scss';
 import './index.scss';
-
-SwiperCore.use([Autoplay]);
 
 class Banners extends Component {
   render() {
@@ -19,21 +15,11 @@ class Banners extends Component {
 
     return (
       <div>
-        <Swiper
-          className="sm:tw-my-16px tw-my-16"
-          slidesPerView={'auto'}
-          spaceBetween={12}
-          loop={true}
-          centeredSlides={true}
-          autoplay={{
-            delay: 2000,
-            disableOnInteraction: false,
-          }}
-        >
+        <Slider loop spacing={12} autoplay autoplayTime={2000}>
           {(collections || []).map((collection, index) => {
             const { image, beepCollectionId, urlPath, name } = collection;
             return (
-              <SwiperSlide
+              <div
                 key={beepCollectionId}
                 onClick={() => {
                   CleverTap.pushEvent('Homepage - Click Collection Banner', {
@@ -49,10 +35,10 @@ class Banners extends Component {
                 className="banners-item tw-cursor-pointer"
               >
                 <Image src={image} alt={name} scalingRatioIndex={2} />
-              </SwiperSlide>
+              </div>
             );
           })}
-        </Swiper>
+        </Slider>
       </div>
     );
   }

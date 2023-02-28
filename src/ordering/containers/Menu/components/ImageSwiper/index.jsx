@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ObjectFitImage } from '../../../../../common/components/Image';
 import styles from './ImageSwiper.module.scss';
-import Slider from '../../../../components/Slider';
+import Slider from '../../../../../common/components/Slider';
 
 const ImageSwiper = props => {
   const { images = [] } = props;

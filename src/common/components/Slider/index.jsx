@@ -1,37 +1,87 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import propTypes from 'prop-types';
 import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
 import styles from './Slider.module.scss';
 
-const Slider = ({ children, showPagination, mode, perView, spacing, slideStyle }) => {
+const Slider = ({
+  children,
+  showPagination,
+  mode,
+  perView,
+  spacing,
+  origin,
+  slideStyle,
+  loop,
+  autoplay,
+  autoplayTime,
+}) => {
+  const timeout = useRef();
+  const mouseOver = useRef(false);
+  function clearNextTimeout() {
+    clearTimeout(timeout.current);
+  }
+
+  const selfAutoplay = useCallback(
+    slider => {
+      function nextTimeout() {
+        clearTimeout(timeout.current);
+        if (mouseOver) return;
+        timeout.current = setTimeout(() => {
+          slider.next();
+        }, autoplayTime);
+      }
+      slider.on('created', () => {
+        slider.container.addEventListener('mouseover', () => {
+          mouseOver.current = true;
+          clearNextTimeout();
+        });
+        slider.container.addEventListener('mouseout', () => {
+          mouseOver.current = false;
+          nextTimeout();
+        });
+        nextTimeout();
+      });
+      slider.on('dragStarted', clearNextTimeout);
+      slider.on('animationEnded', nextTimeout);
+      slider.on('updated', nextTimeout);
+    },
+    [autoplayTime]
+  );
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   // For more options, please refer to https://keen-slider.io/docs#options
   const options = {
     mode,
+    loop,
     slides: {
       perView,
       spacing,
+      origin,
     },
   };
-  const [sliderRef, instanceRef] = useKeenSlider({
-    slideChanged(slider) {
-      setCurrentSlide(slider.track.details.rel);
+  const [sliderRef, instanceRef] = useKeenSlider(
+    {
+      slideChanged(slider) {
+        setCurrentSlide(slider.track.details.rel);
+      },
+      created(slider) {
+        setLoaded(true);
+        // bugfix: When Slider calculates max-width & min-width, product detail drawer has not shown.
+        // Width of scroll bar on the product list will be deducted in the calculation of Slider width.
+        setTimeout(() => {
+          slider.update();
+        }, 0);
+      },
+      destroyed() {
+        setLoaded(false);
+        clearTimeout(timeout.current);
+      },
+      ...options,
     },
-    created(slider) {
-      setLoaded(true);
-      // bugfix: When Slider calculates max-width & min-width, product detail drawer has not shown.
-      // Width of scroll bar on the product list will be deducted in the calculation of Slider width.
-      setTimeout(() => {
-        slider.update();
-      }, 0);
-    },
-    destroyed() {
-      setLoaded(false);
-    },
-    ...options,
-  });
+    autoplay ? [selfAutoplay] : undefined
+  );
 
   return (
     <div className={styles.SliderAndDotsContainer}>
@@ -68,20 +118,30 @@ Slider.propTypes = {
   showPagination: propTypes.bool,
   // Sets the animation that is applied after a drag ends.
   mode: propTypes.oneOf(['snap', 'free', 'free-snap']),
+  // Enables or disables carousel/loop functionality of the slider.
+  loop: propTypes.bool,
   // Determines what size the slides should be in relation to the viewport/container.
   perView: propTypes.number || 'auto',
   // Defines the spacing between slides in pixel.
   spacing: propTypes.number,
+  // Sets the origin of the slides.
+  origin: propTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   slideStyle: propTypes.object,
+  autoplay: propTypes.bool,
+  autoplayTime: propTypes.number,
 };
 Slider.defaultProps = {
   children: null,
   showPagination: false,
   mode: 'snap',
+  loop: false,
   perView: 1,
   spacing: 0,
+  origin: 'auto',
   slideStyle: {},
+  autoplay: false,
+  autoplayTime: 2000,
 };
 
 export default Slider;
