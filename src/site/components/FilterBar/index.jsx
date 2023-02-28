@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import { CaretDown, FunnelSimple } from 'phosphor-react';
 import ChipSelector from './components/ChipSelector';
+import Slider from '../../../common/components/Slider';
 import { DISPLAY_ICON_TYPES } from '../../../utils/constants';
-import 'swiper/swiper.scss';
 import styles from './FilterBar.module.scss';
 
 const FilterBar = ({
@@ -35,35 +34,32 @@ const FilterBar = ({
           {t('Reset')}
         </button>
       )}
-      <Swiper
-        slidesPerView="auto"
-        grabCursor="true"
-        onSwiper={onSwiper}
-        className={shouldShowResetButton ? '' : 'sm:tw-pl-16px tw-pl-16'}
-      >
-        {categories.map(category => (
-          <SwiperSlide key={category.id} className={styles.FilterBarSwiperSlideWrapper}>
-            <ChipSelector
-              category={category}
-              left={
-                category.displayInfo.icons.includes(DISPLAY_ICON_TYPES.FUNNEL_SIMPLE) && (
-                  <FunnelSimple size={16} weight="light" />
-                )
-              }
-              right={
-                category.displayInfo.icons.includes(DISPLAY_ICON_TYPES.CARET_DOWN) && (
-                  <CaretDown size={16} weight="light" className="tw-text-gray-600" />
-                )
-              }
-              onClick={onCategoryButtonClick}
-            >
-              <span className="tw-text-left tw-text-base tw-leading-relaxed tw-whitespace-nowrap">
-                {category.displayInfo.name}
-              </span>
-            </ChipSelector>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      <div className={shouldShowResetButton ? '' : 'sm:tw-pl-16px tw-pl-16'}>
+        <Slider mode="free-snap" perView="auto" spacing={8} slideStyle={{ flex: '0 0 auto', width: 'auto' }}>
+          {categories.map(category => (
+            <div key={category.id} className={styles.FilterBarSwiperSlideWrapper}>
+              <ChipSelector
+                category={category}
+                left={
+                  category.displayInfo.icons.includes(DISPLAY_ICON_TYPES.FUNNEL_SIMPLE) && (
+                    <FunnelSimple size={16} weight="light" />
+                  )
+                }
+                right={
+                  category.displayInfo.icons.includes(DISPLAY_ICON_TYPES.CARET_DOWN) && (
+                    <CaretDown size={16} weight="light" className="tw-text-gray-600" />
+                  )
+                }
+                onClick={onCategoryButtonClick}
+              >
+                <span className="tw-text-left tw-text-base tw-leading-relaxed tw-whitespace-nowrap">
+                  {category.displayInfo.name}
+                </span>
+              </ChipSelector>
+            </div>
+          ))}
+        </Slider>
+      </div>
     </div>
   );
 };

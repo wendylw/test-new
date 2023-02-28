@@ -10,8 +10,4 @@
 
 .FilterBarSwiperSlideWrapper {
   width: auto;
-
-  &:not(:last-child) {
-    @apply sm:tw-mr-8px tw-mr-8;
-  }
 }
