@@ -125,6 +125,7 @@ Please contact the project administrator to access apollo https://apollo.shub.us
 
    > 1. Update to `REACT_APP_MERCHANT_STORE_URL=http://%business%.beep.local.shub.us:3000` on `frontend/.env` (1. local domain)
    > 2. Update to `REACT_APP_QR_SCAN_DOMAINS={business}.local.beep.shub.us` on `frontend/.env` (1. local domain)
+   > 3. Update to `HOST=scan.local.beep.shub.us` on `frontend/.env` (1. local domain)
 
 2. Start site
 
