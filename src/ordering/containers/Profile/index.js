@@ -220,10 +220,8 @@ const Profile = ({ showProfileModal, closeModal }) => {
                     }`}
                     name="profileBirthday"
                     type="date"
+                    min="1900-01-01"
                     onChange={handleSelectBirthDay}
-                    onBlur={() => {
-                      console.log(111);
-                    }}
                   />
                   <input
                     className="profile__input profile__input-birthday-text form__input"
