@@ -59,7 +59,7 @@ import {
   getStoreRating,
 } from '../../redux/selector';
 import {
-  getshowProfileVisibility,
+  getShowProfileVisibility,
   getFoodCourtId,
   getFoodCourtHashCode,
   getFoodCourtMerchantName,
@@ -91,7 +91,7 @@ import OrderCancellationReasonsAside from './components/OrderCancellationReasons
 import OrderDelayMessage from './components/OrderDelayMessage';
 import SelfPickup from './components/SelfPickup';
 import HybridHeader from '../../../../../components/HybridHeader';
-import CompleteProfileModal from '../../../../containers/Profile';
+import Profile from '../../../../containers/Profile';
 import { ICON_RES } from '../../../../../components/NativeHeader';
 import logger from '../../../../../utils/monitoring/logger';
 import { KEY_EVENTS_FLOWS, KEY_EVENTS_STEPS } from '../../../../../utils/monitoring/constants';
@@ -1002,11 +1002,10 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        <CompleteProfileModal closeModal={this.handleCompleteProfileModalClose} showProfileVisibility={true} />
         {order && (
-          <CompleteProfileModal
+          <Profile
             closeModal={this.handleCompleteProfileModalClose}
-            showProfileVisibility={this.props.profileModalVisibility}
+            showProfileModal={this.props.profileModalVisibility}
           />
         )}
         <>
@@ -1117,7 +1116,7 @@ export default compose(
       isCashbackAvailable: getIsCashbackAvailable(state),
       shouldShowCashbackCard: getShouldShowCashbackCard(state),
       shouldShowCashbackBanner: getShouldShowCashbackBanner(state),
-      profileModalVisibility: getshowProfileVisibility(state),
+      profileModalVisibility: getShowProfileVisibility(state),
       hasOrderPaid: getHasOrderPaid(state),
       isPayLater: getIsPayLater(state),
       foodCourtId: getFoodCourtId(state),

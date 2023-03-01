@@ -1,4 +1,7 @@
 @import "src/Variables";
+$profile-tip-background: #fffbe6;
+$required-star: #e15343;
+$input-border-color: #1c1c1c;
 
 .profile {
   width: 100%;
@@ -15,8 +18,33 @@
     height: 0;
   }
 
-  &__tip-color {
-    color: $new-grey-1-1;
+  &__container {
+    height: 100%;
+  }
+
+  &__skip-button {
+    line-height: 1.6;
+  }
+
+  &__tip-container {
+    background-color: $profile-tip-background;
+  }
+
+  &__tip-reward-image {
+    width: 32px;
+  }
+
+  &__tip-title,
+  &__tip {
+    line-height: 1.6;
+  }
+
+  &__form-item {
+    border-color: $input-border-color;
+  }
+
+  &__form-item--error {
+    border-color: $required-star;
   }
 
   &__input {
@@ -25,44 +53,42 @@
     height: 24px;
   }
 
-  &__input-message--error {
-    float: left;
+  &__form-item--error &__label {
+    color: $required-star;
   }
 
-  &__container {
-    height: 100vh;
-    width: 100%;
-    overflow: auto;
-    color: $gray-3;
-  }
-
-  &__label {
-    color: $gray-3;
-  }
-
-  &__input--required &__label::after {
+  &__label--required::after {
     content: "*";
-    color: $status-red;
-    line-height: 1em;
-    font-size: 0.8571rem;
+    color: $required-star;
     vertical-align: top;
-    margin-left: 0.3em;
+    margin-left: 2px;
   }
 
-  &__margin-top {
-    margin-top: -32px;
+  &__input-birthday-container {
+    position: relative;
   }
 
-  &__input-next {
-    border: 1px solid $gray-4;
+  &__input-birthday {
+    position: relative;
+    opacity: 0;
+  }
 
-    input {
-      height: 26px;
-    }
+  &__input-birthday-safari {
+    z-index: 100;
+  }
 
-    &.error {
-      border: 1px solid $status-red;
-      height: auto;
-    }
+  &__input-birthday-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: default;
+  }
+
+  &__save-button {
+    height: 50px;
+    letter-spacing: 0.02em;
+    border-radius: 8px;
   }
 }
