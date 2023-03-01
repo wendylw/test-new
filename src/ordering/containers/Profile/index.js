@@ -114,9 +114,9 @@ const Profile = ({ showProfileModal, closeModal }) => {
     );
   }
 
-  // if (!isProfileWebVisibility || !showProfileModal) {
-  //   return null;
-  // }
+  if (!isProfileWebVisibility || !showProfileModal) {
+    return null;
+  }
 
   if (showProfileModal) {
     className.join('active');
