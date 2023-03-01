@@ -166,10 +166,14 @@ export const getIsProfileVisibility = createSelector(
   }
 );
 
+export const getIsNativeProfileDisplayFailed = state => state.profile.nativeProfileDisplayFailed;
+
 export const getIsProfileWebVisibility = createSelector(
   getIsProfileVisibility,
   getIsWebview,
-  (isProfileWebVisibility, isWebview) => isProfileWebVisibility && !isWebview
+  getIsNativeProfileDisplayFailed,
+  (isProfileWebVisibility, isWebview, nativeProfileDisplayFailed) =>
+    isProfileWebVisibility && (!isWebview || nativeProfileDisplayFailed)
 );
 
 export const getIsProfileDataUpdating = state => state.profile.profileUpdatedStatus === API_REQUEST_STATUS.PENDING;

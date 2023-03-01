@@ -13,7 +13,7 @@ const initialState = {
   nameInputCompletedStatus: false,
   emailInputCompletedStatus: false,
   birthdayInputCompletedStatus: false,
-  webViewProfileDisplayFailed: false,
+  nativeProfileDisplayFailed: false,
 };
 
 export const { actions, reducer } = createSlice({
@@ -39,10 +39,10 @@ export const { actions, reducer } = createSlice({
   },
   extraReducers: {
     [nativeProfileShown.fulfilled.type]: state => {
-      state.webViewProfileDisplayFailed = false;
+      state.nativeProfileDisplayFailed = false;
     },
     [nativeProfileShown.rejected.type]: state => {
-      state.webViewProfileDisplayFailed = true;
+      state.nativeProfileDisplayFailed = true;
     },
     [init.fulfilled.type]: (state, { payload }) => {
       state.name = payload.name;
