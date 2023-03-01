@@ -6,7 +6,7 @@
   "NameIsRequired": "Please enter your name",
   "EmailIsRequired": "Please enter your email",
   "BirthdayIsRequired": "Please select your birthday",
-  "NotValidEmail": "Please try again or enter a valid email",
+  "NotValidEmail": "Please enter a valid email address",
   "NotValidBirthday": "Please select a valid date of birth (DD/MM/YYYY)",
   "DuplicatedEmail": "Please enter another valid email",
   "SkipForNow": "Skip for now",
