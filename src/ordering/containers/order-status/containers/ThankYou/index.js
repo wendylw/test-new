@@ -132,21 +132,12 @@ export class ThankYou extends PureComponent {
       return;
     }
 
-    const isDoNotAsk = Utils.getCookieVariable('do_not_ask');
     const delay = this.state.from === REFERRER_SOURCE_TYPES.LOGIN ? 1000 : 3000;
 
-    if (isDoNotAsk === '1') {
-      return;
-    }
-
-    const { name, email, birthday, status } = this.props.user.profile || {};
-
-    if (status === 'fulfilled' && REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
-      if (!name || !email || !birthday) {
-        this.timer = setTimeout(() => {
-          this.props.setShowProfileVisibility(true);
-        }, delay);
-      }
+    if (true || REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
+      this.timer = setTimeout(() => {
+        this.props.setShowProfileVisibility(true);
+      }, delay);
     }
   };
 
@@ -991,6 +982,7 @@ export class ThankYou extends PureComponent {
       shouldShowCashbackCard,
       shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
+      profileModalVisibility,
     } = this.props;
     const date = new Date();
     const { total } = order || {};
@@ -1003,10 +995,7 @@ export class ThankYou extends PureComponent {
         data-heap-name="ordering.thank-you.container"
       >
         {order && (
-          <Profile
-            closeModal={this.handleCompleteProfileModalClose}
-            showProfileModal={this.props.profileModalVisibility}
-          />
+          <Profile closeModal={this.handleCompleteProfileModalClose} showProfileModal={profileModalVisibility} />
         )}
         <>
           <HybridHeader

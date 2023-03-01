@@ -6,9 +6,14 @@ import { getCookieVariable, isSafari, isMobile } from '../../../../common/utils'
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { isValidBirthdayDateString } from '../utils';
 import { PROFILE_FIELD_ERROR_TYPES } from '../utils/constants';
-import { getIsWebview, getIsUserProfileStatusFulfilled, getUserIsLogin } from '../../../redux/modules/app';
+import {
+  getIsWebview,
+  getIsUserProfileStatusFulfilled,
+  getUserProfile,
+  getUserIsLogin,
+} from '../../../redux/modules/app';
 
-export const getProfileName = state => state.profile.name;
+export const getProfileName = state => state.profile.name || '';
 
 export const getIsValidName = createSelector(
   getProfileName,
@@ -35,7 +40,7 @@ export const getIsNameInputErrorDisplay = createSelector(
   (nameInputCompletedStatus, isValidName) => nameInputCompletedStatus && !isValidName
 );
 
-export const getProfileEmail = state => state.profile.email;
+export const getProfileEmail = state => state.profile.email || '';
 
 export const getIsValidEmail = createSelector(
   getProfileEmail,
@@ -67,7 +72,7 @@ export const getIsEmailInputErrorDisplay = createSelector(
   (emailInputCompletedStatus, isValidEmail) => emailInputCompletedStatus && !isValidEmail
 );
 
-export const getProfileBirthday = state => state.profile.birthday;
+export const getProfileBirthday = state => state.profile.birthday || '';
 
 export const getIsValidBirthday = createSelector(
   getProfileBirthday,
@@ -101,6 +106,13 @@ export const getIsBirthdayInputErrorDisplay = createSelector(
   getBirthdayInputCompletedStatus,
   getIsValidBirthday,
   (birthdayInputCompletedStatus, isValidBirthday) => birthdayInputCompletedStatus && !isValidBirthday
+);
+
+export const getIsValidProfileForm = createSelector(
+  getIsValidName,
+  getIsValidEmail,
+  getIsValidBirthday,
+  (isValidName, isValidEmail, isValidBirthday) => isValidName && isValidEmail && isValidBirthday
 );
 
 export const getIsDisabledProfileSubmit = createSelector(
@@ -137,28 +149,25 @@ export const getProfileRequestData = createSelector(
 
 export const getIsProfileMissingSkippedExpired = state => getCookieVariable('do_not_ask') !== '1';
 
+export const getIsProfileDataNotUpdated = state => state.profile.profileUpdatedStatus !== API_REQUEST_STATUS.FULFILLED;
+
 export const getIsProfileVisibility = createSelector(
   getIsUserProfileStatusFulfilled,
+  getIsProfileDataNotUpdated,
   getIsProfileMissingSkippedExpired,
-  getNameErrorType,
-  getEmailErrorType,
-  getBirthdayErrorType,
+  getUserProfile,
   getUserIsLogin,
-  (
-    isUserProfileStatusFulfilled,
-    isProfileMissingSkippedExpired,
-    nameErrorType,
-    emailErrorType,
-    birthdayErrorType,
-    isWebview,
-    userIsLogin
-  ) => {
-    const hasRequiredError =
-      nameErrorType === PROFILE_FIELD_ERROR_TYPES.REQUIRED ||
-      emailErrorType === PROFILE_FIELD_ERROR_TYPES.REQUIRED ||
-      birthdayErrorType === PROFILE_FIELD_ERROR_TYPES.REQUIRED;
+  (isUserProfileStatusFulfilled, isProfileDataNotUpdated, isProfileMissingSkippedExpired, profile, userIsLogin) => {
+    const { name, email, birthday } = profile || {};
+    const hasRequiredError = !name || !email || !birthday;
 
-    if (isUserProfileStatusFulfilled && isProfileMissingSkippedExpired && hasRequiredError && userIsLogin) {
+    if (
+      isUserProfileStatusFulfilled &&
+      isProfileDataNotUpdated &&
+      isProfileMissingSkippedExpired &&
+      hasRequiredError &&
+      userIsLogin
+    ) {
       return true;
     }
 
@@ -180,26 +189,5 @@ export const getIsProfileDataUpdating = state => state.profile.profileUpdatedSta
 
 // For date input can be click in Desktop Safari
 export const getIsLaptopSafari = state => isSafari() && !isMobile();
-
-// old
-export const getUpdateProfileError = state => state.profile.updateProfileResult;
-
-export const getProfileEmailIsValid = state => state.profile.email.isValid;
-export const getProfileEmailIsComplete = state => state.profile.email.isComplete;
-
-export const getEmailInvalidErrorVisibility = createSelector(
-  getProfileEmailIsValid,
-  getProfileEmailIsComplete,
-  (isValid, isComplete) => !isValid && isComplete
-);
-
-export const getProfileBirthdayIsValid = state => state.profile.birthday.isValid;
-export const getProfileBirthdayIsComplete = state => state.profile.birthday.isComplete;
-
-export const getBirthdayInvalidErrorVisibility = createSelector(
-  getProfileBirthdayIsValid,
-  getProfileBirthdayIsComplete,
-  (isValid, isComplete) => !isValid && isComplete
-);
 
 // export const getDuplicatedEmailAlertVisibility = state => state.profile.updateProfileResult.error?.code === '40024';

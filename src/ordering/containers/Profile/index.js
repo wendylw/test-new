@@ -15,16 +15,18 @@ import {
   getIsBirthdayInputErrorDisplay,
   getIsLaptopSafari,
   getIsDisabledProfileSubmit,
+  getIsValidProfileForm,
 } from './redux/selectors';
 import { init, profileUpdated, profileMissingSkippedLimitUpdated } from './redux/thunk';
 import { actions as profileActions } from './redux';
-import { confirm } from '../../../common/utils/feedback';
+import { confirm, toast } from '../../../common/utils/feedback';
 import { PROFILE_BIRTHDAY_FORMAT, PROFILE_FIELD_ERROR_TYPES } from './utils/constants';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
 import PageLoader from '../../../components/PageLoader';
 import CleverTap from '../../../utils/clevertap';
 import './Profile.scss';
+import logger from '../../../utils/monitoring/logger';
 
 const ERROR_TRANSLATION_KEYS = {
   [PROFILE_FIELD_ERROR_TYPES.REQUIRED]: {
@@ -58,11 +60,12 @@ const Profile = ({ showProfileModal, closeModal }) => {
   const birthdayErrorType = useSelector(getBirthdayErrorType);
   const isBirthdayInputErrorDisplay = useSelector(getIsBirthdayInputErrorDisplay);
   const isDisabledProfileSubmit = useSelector(getIsDisabledProfileSubmit);
+  const isValidProfileForm = useSelector(getIsValidProfileForm);
   const className = ['profile flex flex-column flex-end aside fixed-wrapper'];
   const handleSkipProfilePage = useCallback(() => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
     closeModal();
-  }, []);
+  }, [closeModal]);
   const handleChangeName = e => {
     dispatch(profileActions.nameUpdated(e.target.value));
   };
@@ -72,14 +75,19 @@ const Profile = ({ showProfileModal, closeModal }) => {
   const handleSelectBirthDay = e => {
     dispatch(profileActions.birthDayUpdated(e.target.value));
   };
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
     CleverTap.pushEvent('Complete profile page - Click continue');
 
+    if (!isValidProfileForm) {
+      return;
+    }
+
     try {
-      dispatch(profileUpdated());
-    } catch (error) {
-      if (error.code === '40024') {
+      const result = await dispatch(profileUpdated());
+
+      if (result.error && result.error?.code === '40024') {
         confirm(t('DuplicatedEmailAlertEmail'), {
+          className: 'profile__email-duplicated-confirm',
           closeByBackButton: false,
           closeByBackDrop: false,
           cancelButtonContent: t('DuplicatedEmailAlertDoNotAskAgain'),
@@ -96,7 +104,13 @@ const Profile = ({ showProfileModal, closeModal }) => {
             }
           },
         });
+
+        return;
       }
+
+      toast.success(t('SaveSuccess'));
+    } catch (error) {
+      logger.error('Ordering_OrderStatus_ProfileUpdatedFailed', { message: error?.message });
     }
   };
 
@@ -106,7 +120,7 @@ const Profile = ({ showProfileModal, closeModal }) => {
     }
   }, [dispatch, showProfileModal]);
 
-  if (isUserProfileStatusPending) {
+  if (isUserProfileStatusPending && showProfileModal) {
     return (
       <aside className={className.join(' ')}>
         <PageLoader />
@@ -119,7 +133,7 @@ const Profile = ({ showProfileModal, closeModal }) => {
   }
 
   if (showProfileModal) {
-    className.join('active');
+    className.push('active');
   }
 
   return (
