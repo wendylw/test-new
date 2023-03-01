@@ -34,7 +34,7 @@ const FilterBar = ({
           {t('Reset')}
         </button>
       )}
-      <div className={shouldShowResetButton ? '' : 'sm:tw-pl-16px tw-pl-16'}>
+      <div className={`${shouldShowResetButton ? '' : 'sm:tw-pl-16px tw-pl-16'} tw-flex tw-flex-1 tw-min-w-0`}>
         <Slider mode="free-snap" perView="auto" spacing={8} slideStyle={{ flex: '0 0 auto', width: 'auto' }}>
           {categories.map(category => (
             <div key={category.id} className={styles.FilterBarSwiperSlideWrapper}>

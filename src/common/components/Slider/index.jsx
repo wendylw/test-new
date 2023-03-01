@@ -67,13 +67,8 @@ const Slider = ({
       slideChanged(slider) {
         setCurrentSlide(slider.track.details.rel);
       },
-      created(slider) {
+      created() {
         setLoaded(true);
-        // bugfix: When Slider calculates max-width & min-width, product detail drawer has not shown.
-        // Width of scroll bar on the product list will be deducted in the calculation of Slider width.
-        setTimeout(() => {
-          slider.update();
-        }, 0);
       },
       destroyed() {
         setLoaded(false);
@@ -85,7 +80,6 @@ const Slider = ({
   );
 
   useEffect(() => {
-    console.log(instanceRef);
     instanceRef.current && instanceRef.current.update && instanceRef.current.update();
   }, [instanceRef, children]);
 
