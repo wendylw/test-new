@@ -61,7 +61,7 @@ const Profile = ({ showProfileModal, closeModal }) => {
   const isBirthdayInputErrorDisplay = useSelector(getIsBirthdayInputErrorDisplay);
   const isDisabledProfileSubmit = useSelector(getIsDisabledProfileSubmit);
   const isValidProfileForm = useSelector(getIsValidProfileForm);
-  const className = ['profile flex flex-column flex-end aside fixed-wrapper'];
+  const className = ['profile flex flex-column flex-end aside fixed-wrapper active'];
   const handleSkipProfilePage = useCallback(() => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
     closeModal();
@@ -227,28 +227,30 @@ const Profile = ({ showProfileModal, closeModal }) => {
                   {t('DateOfBirth')}
                 </label>
                 <div className="profile__input-birthday-container">
-                  <input
-                    ref={birthdayInputRef}
-                    className={`profile__input profile__input-birthday form__input ${
-                      isLaptopSafari ? 'profile__input-birthday-safari' : ''
-                    }`}
-                    name="profileBirthday"
-                    type="date"
-                    min="1900-01-01"
-                    onChange={handleSelectBirthDay}
-                  />
-                  <input
-                    className="profile__input profile__input-birthday-text form__input"
-                    name="profileBirthday"
-                    value={profileBirthday}
-                    placeholder={PROFILE_BIRTHDAY_FORMAT}
-                    type="text"
-                    onClick={e => {
-                      e.stopPropagation();
-                      birthdayInputRef.current.showPicker();
-                    }}
-                    readOnly
-                  />
+                  <div>
+                    <input
+                      ref={birthdayInputRef}
+                      className={`profile__input profile__input-birthday form__input ${
+                        isLaptopSafari ? 'profile__input-birthday-safari' : ''
+                      }`}
+                      name="profileBirthday"
+                      type="date"
+                      min="1900-01-01"
+                      onChange={handleSelectBirthDay}
+                    />
+                    <input
+                      className="profile__input profile__input-birthday-text form__input"
+                      name="profileBirthday"
+                      value={profileBirthday}
+                      placeholder={PROFILE_BIRTHDAY_FORMAT}
+                      type="text"
+                      onClick={e => {
+                        e.stopPropagation();
+                        birthdayInputRef.current.showPicker();
+                      }}
+                      readOnly
+                    />
+                  </div>
                 </div>
               </div>
               {isBirthdayInputErrorDisplay ? (
