@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import propTypes from 'prop-types';
 import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
@@ -51,6 +51,7 @@ const Slider = ({
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
+
   // For more options, please refer to https://keen-slider.io/docs#options
   const options = {
     mode,
@@ -82,6 +83,11 @@ const Slider = ({
     },
     autoplay ? [selfAutoplay] : undefined
   );
+
+  useEffect(() => {
+    console.log(instanceRef);
+    instanceRef.current && instanceRef.current.update && instanceRef.current.update();
+  }, [instanceRef, children]);
 
   return (
     <div className={styles.SliderAndDotsContainer}>
