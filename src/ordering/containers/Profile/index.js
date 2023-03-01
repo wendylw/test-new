@@ -1,21 +1,9 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { getIsUserProfileStatusPending } from '../../redux/modules/app';
 import {
-  actions as appActionCreators,
-  getUser,
-  getDeliveryDetails,
-  getIsUserProfileStatusPending,
-} from '../../redux/modules/app';
-import Utils from '../../../utils/utils';
-import DuplicatedEmailAlert from './components/DuplicatedEmailAlert';
-import {
-  getUpdateProfileError,
-  getEmailInvalidErrorVisibility,
-  // getBirthdayInvalidErrorVisibility,
-  // getDuplicatedEmailAlertVisibility,
-  // new
-  getIsProfileVisibility,
+  getIsProfileWebVisibility,
   getProfileName,
   getNameErrorType,
   getIsNameInputErrorDisplay,
@@ -28,15 +16,15 @@ import {
   getIsLaptopSafari,
   getIsDisabledProfileSubmit,
 } from './redux/selectors';
-import { init, profileUpdated } from './redux/thunk';
+import { init, profileUpdated, profileMissingSkippedLimitUpdated } from './redux/thunk';
 import { actions as profileActions } from './redux';
+import { confirm } from '../../../common/utils/feedback';
 import { PROFILE_BIRTHDAY_FORMAT, PROFILE_FIELD_ERROR_TYPES } from './utils/constants';
-import * as NativeMethods from '../../../utils/native-methods';
 import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
 import PageLoader from '../../../components/PageLoader';
-import './Profile.scss';
 import CleverTap from '../../../utils/clevertap';
+import './Profile.scss';
 
 const ERROR_TRANSLATION_KEYS = {
   [PROFILE_FIELD_ERROR_TYPES.REQUIRED]: {
@@ -57,7 +45,7 @@ const Profile = ({ showProfileModal, closeModal }) => {
   const { t } = useTranslation(['Profile']);
   const birthdayInputRef = useRef(null);
   const dispatch = useDispatch();
-  const isProfileVisibility = useSelector(getIsProfileVisibility);
+  const isProfileWebVisibility = useSelector(getIsProfileWebVisibility);
   const isUserProfileStatusPending = useSelector(getIsUserProfileStatusPending);
   const isLaptopSafari = useSelector(getIsLaptopSafari);
   const profileName = useSelector(getProfileName);
@@ -85,7 +73,31 @@ const Profile = ({ showProfileModal, closeModal }) => {
     dispatch(profileActions.birthDayUpdated(e.target.value));
   };
   const handleUpdateProfile = () => {
-    dispatch(profileUpdated());
+    CleverTap.pushEvent('Complete profile page - Click continue');
+
+    try {
+      dispatch(profileUpdated());
+    } catch (error) {
+      if (error.code === '40024') {
+        confirm(t('DuplicatedEmailAlertEmail'), {
+          closeByBackButton: false,
+          closeByBackDrop: false,
+          cancelButtonContent: t('DuplicatedEmailAlertDoNotAskAgain'),
+          confirmButtonContent: t('DuplicatedEmailAlertBackToEdit'),
+          title: t('DuplicatedEmailAlertTitle'),
+          onSelection: async status => {
+            if (status) {
+              CleverTap.pushEvent('Complete profile page email duplicate pop up - Click back to edit');
+              dispatch(profileActions.emailUpdated(''));
+            } else {
+              CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again");
+              dispatch(profileMissingSkippedLimitUpdated());
+              closeModal();
+            }
+          },
+        });
+      }
+    }
   };
 
   useEffect(() => {
@@ -102,11 +114,14 @@ const Profile = ({ showProfileModal, closeModal }) => {
     );
   }
 
-  // if (!isProfileVisibility || !showProfileModal) {
+  // if (!isProfileWebVisibility || !showProfileModal) {
   //   return null;
   // }
 
-  // TODO: showProfileModal for aside class name
+  if (showProfileModal) {
+    className.join('active');
+  }
+
   // TODO: claimed cashback and login in only display for isProfileVisibility
   return (
     <aside className={className.join(' ')} data-heap-name="ordering.home.profile.container">
@@ -247,12 +262,6 @@ const Profile = ({ showProfileModal, closeModal }) => {
   );
 };
 
-// !name ||
-// !birthday ||
-// !email ||
-// this.props.emailInvalidErrorVisibility ||
-// this.props.birthdayInvalidErrorVisibility
-
 // class Profile extends Component {
 //   // eslint-disable-next-line react/state-in-constructor
 //   state = {
@@ -325,54 +334,8 @@ const Profile = ({ showProfileModal, closeModal }) => {
 //       this.closeProfileModal();
 //     }
 //   };
-
-//   closeProfileModal = () => {
-//     this.props.closeModal();
-//   };
-
 //   onHistoryBackReceived = () => {
 //     this.props.closeModal();
-//   };
-
-//   handleDoNotAsk = () => {
-//     CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again");
-//     Utils.setCookieVariable('do_not_ask', '1', {
-//       expires: 3650,
-//       path: '/',
-//       domain: Utils.getMainDomain(),
-//     });
-
-//     this.props.profileAction.doNotAskAgain();
-//     this.props.closeModal();
-//   };
-
-//   handleBackEdit = () => {
-//     CleverTap.pushEvent('Complete profile page email duplicate pop up - Click back to edit');
-//     this.props.profileAction.resetUpdateProfileResult();
-//   };
-
-//   handleNameInputBlur = () => {
-//     this.props.profileAction.completeName();
-//   };
-
-//   handleBirthdayInputBlur = () => {
-//     this.props.profileAction.completeBirthday();
-//   };
-
-//   handleEmailInputBlur = () => {
-//     this.props.profileAction.completeEmail();
-//   };
-
-//   handleNameInputFocus = () => {
-//     this.props.profileAction.startEditName();
-//   };
-
-//   handleEmailInputFocus = () => {
-//     this.props.profileAction.startEditEmail();
-//   };
-
-//   handleBirthdayInputFocus = () => {
-//     this.props.profileAction.startEditBirthday();
 //   };
 
 //   render() {

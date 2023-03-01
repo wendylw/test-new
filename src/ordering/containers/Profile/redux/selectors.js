@@ -143,7 +143,6 @@ export const getIsProfileVisibility = createSelector(
   getNameErrorType,
   getEmailErrorType,
   getBirthdayErrorType,
-  getIsWebview,
   getUserIsLogin,
   (
     isUserProfileStatusFulfilled,
@@ -159,18 +158,18 @@ export const getIsProfileVisibility = createSelector(
       emailErrorType === PROFILE_FIELD_ERROR_TYPES.REQUIRED ||
       birthdayErrorType === PROFILE_FIELD_ERROR_TYPES.REQUIRED;
 
-    if (
-      isUserProfileStatusFulfilled &&
-      isProfileMissingSkippedExpired &&
-      hasRequiredError &&
-      !isWebview &&
-      userIsLogin
-    ) {
+    if (isUserProfileStatusFulfilled && isProfileMissingSkippedExpired && hasRequiredError && userIsLogin) {
       return true;
     }
 
     return false;
   }
+);
+
+export const getIsProfileWebVisibility = createSelector(
+  getIsProfileVisibility,
+  getIsWebview,
+  (isProfileWebVisibility, isWebview) => isProfileWebVisibility && !isWebview
 );
 
 export const getIsProfileDataUpdating = state => state.profile.profileUpdatedStatus === API_REQUEST_STATUS.PENDING;
