@@ -134,7 +134,7 @@ export class ThankYou extends PureComponent {
 
     const delay = this.state.from === REFERRER_SOURCE_TYPES.LOGIN ? 1000 : 3000;
 
-    if (true || REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
+    if (REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
       this.timer = setTimeout(() => {
         this.props.setShowProfileVisibility(true);
       }, delay);
