@@ -7,14 +7,7 @@ import Slider from '../../../common/components/Slider';
 import { DISPLAY_ICON_TYPES } from '../../../utils/constants';
 import styles from './FilterBar.module.scss';
 
-const FilterBar = ({
-  className,
-  categories,
-  shouldShowResetButton,
-  onSwiper,
-  onResetButtonClick,
-  onCategoryButtonClick,
-}) => {
+const FilterBar = ({ className, categories, shouldShowResetButton, onResetButtonClick, onCategoryButtonClick }) => {
   const { t } = useTranslation();
   const classNameList = [styles.FilterBarContainer, 'text-size-reset'];
 
@@ -81,7 +74,6 @@ FilterBar.propTypes = {
     })
   ),
   shouldShowResetButton: PropTypes.bool,
-  onSwiper: PropTypes.func,
   onResetButtonClick: PropTypes.func,
   onCategoryButtonClick: PropTypes.func,
 };
@@ -90,7 +82,6 @@ FilterBar.defaultProps = {
   className: '',
   categories: [],
   shouldShowResetButton: false,
-  onSwiper: () => {},
   onResetButtonClick: () => {},
   onCategoryButtonClick: () => {},
 };
