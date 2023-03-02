@@ -85,19 +85,19 @@ const Profile = ({ show, onClose }) => {
   };
   const handleFocusNameInput = useCallback(() => {
     dispatch(profileActions.nameInputCompletedStatusUpdated(false));
-  });
+  }, [dispatch]);
   const handleBlurNameInput = useCallback(() => {
     dispatch(profileActions.nameInputCompletedStatusUpdated(true));
-  });
+  }, [dispatch]);
   const handleChangeEmail = e => {
     dispatch(profileActions.emailUpdated(e.target.value));
   };
   const handleFocusEmailInput = useCallback(() => {
     dispatch(profileActions.emailInputCompletedStatusUpdated(false));
-  });
+  }, [dispatch]);
   const handleBlurEmailInput = useCallback(() => {
     dispatch(profileActions.emailInputCompletedStatusUpdated(true));
-  });
+  }, [dispatch]);
   const handleSelectBirthDay = e => {
     dispatch(profileActions.birthDayUpdated(e.target.value));
   };
