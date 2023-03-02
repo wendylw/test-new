@@ -23,13 +23,16 @@ export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated'
   }
 });
 
-export const profileMissingSkippedLimitUpdated = createAsyncThunk('ordering/profile/profileUpdated', () => {
-  setCookieVariable('do_not_ask', '1', {
-    expires: PROFILE_SKIP_CYCLE,
-    path: '/',
-    domain: Utils.getMainDomain(),
-  });
-});
+export const profileMissingSkippedLimitUpdated = createAsyncThunk(
+  'ordering/profile/profileMissingSkippedLimitUpdated',
+  () => {
+    setCookieVariable('do_not_ask', '1', {
+      expires: PROFILE_SKIP_CYCLE,
+      path: '/',
+      domain: Utils.getMainDomain(),
+    });
+  }
+);
 
 export const validateName = createAsyncThunk('ordering/profile/validateName', profileName => {
   if (_isEmpty(profileName) || _isUndefined(profileName)) {
