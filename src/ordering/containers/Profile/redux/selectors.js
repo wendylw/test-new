@@ -77,7 +77,10 @@ export const getProfileBirthday = state => state.profile.birthday || '';
 export const getIsValidBirthday = createSelector(
   getProfileBirthday,
   profileBirthday =>
-    !_isEmpty(profileBirthday) && !_isUndefined(profileBirthday) && isValidBirthdayDateString(profileBirthday)
+    !_isEmpty(profileBirthday) &&
+    !_isUndefined(profileBirthday) &&
+    isValidBirthdayDateString(profileBirthday) &&
+    !isAfterTodayBirthdayDate(profileBirthday)
 );
 
 export const getBirthdayErrorType = createSelector(
