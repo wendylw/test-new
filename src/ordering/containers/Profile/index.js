@@ -14,7 +14,7 @@ import {
   getProfileBirthday,
   getBirthdayErrorType,
   getIsBirthdayInputErrorDisplay,
-  getIsLaptopSafari,
+  getIsSafari,
   getIsDisabledProfileSubmit,
   getIsValidProfileForm,
 } from './redux/selectors';
@@ -55,7 +55,7 @@ const Profile = ({ show, onClose }) => {
   const dispatch = useDispatch();
   const isProfileWebVisibility = useSelector(getIsProfileWebVisibility);
   const isUserProfileStatusPending = useSelector(getIsUserProfileStatusPending);
-  const isLaptopSafari = useSelector(getIsLaptopSafari);
+  const isSafari = useSelector(getIsSafari);
   const profileName = useSelector(getProfileName);
   const nameErrorType = useSelector(getNameErrorType);
   const isNameInputErrorDisplay = useSelector(getIsNameInputErrorDisplay);
@@ -251,7 +251,7 @@ const Profile = ({ show, onClose }) => {
                       // If browser is desktop Safari, showPicker() can not be execute
                       // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
                       className={`profile__input profile__input-birthday form__input ${
-                        isLaptopSafari ? 'profile__input-birthday-safari' : ''
+                        isSafari ? 'profile__input-birthday-safari' : ''
                       }`}
                       name="profileBirthday"
                       type="date"

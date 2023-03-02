@@ -188,6 +188,6 @@ export const getIsProfileWebVisibility = createSelector(
 export const getIsProfileDataUpdating = state => state.profile.profileUpdatedStatus === API_REQUEST_STATUS.PENDING;
 
 // For date input can be click in Desktop Safari
-export const getIsLaptopSafari = state => isSafari() && !isMobile();
+export const getIsSafari = state => isSafari();
 
 // export const getDuplicatedEmailAlertVisibility = state => state.profile.updateProfileResult.error?.code === '40024';
