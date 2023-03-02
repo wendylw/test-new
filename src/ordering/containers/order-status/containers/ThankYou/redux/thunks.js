@@ -1,4 +1,6 @@
 import _get from 'lodash/get';
+import _isEmpty from 'lodash/isEmpty';
+import _isUndefined from 'lodash/isUndefined';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import i18next from 'i18next';
 import { get, post, put } from '../../../../../../utils/api/api-fetch';
@@ -6,9 +8,20 @@ import { alert } from '../../../../../../common/feedback';
 import { API_INFO, postFoodCourtIdHashCode } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
+import * as NativeMethods from '../../../../../../utils/native-methods';
 import { getPaidToCurrentEventDurationMinutes } from '../utils';
-import { actions as appActions, getBusinessInfo } from '../../../../../redux/modules/app';
+import { PROFILE_DISPLAY_DELAY_DURATION } from '../constants';
+import {
+  actions as appActions,
+  getBusinessInfo,
+  getUserIsLogin,
+  getUserConsumerId,
+  getUserProfileStatus,
+  getUserProfile,
+  getIsWebview,
+} from '../../../../../redux/modules/app';
 import { getOrder } from '../../../redux/selector';
+import { getIsProfileMissingSkippedExpired } from './selector';
 import { loadOrder } from '../../../redux/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
 
@@ -132,6 +145,63 @@ export const loadFoodCourtIdHashCode = createAsyncThunk(
       logger.error('Ordering_ThankYou_LoadFoodCourtHashCodeFailed', { message: e?.message });
 
       throw e;
+    }
+  }
+);
+
+export const showProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/showProfileModal', async () => {});
+
+export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/hideProfileModal', async () => {});
+
+export const callNativeProfile = createAsyncThunk('ordering/profile/nativeProfileShown', async () => {
+  // eslint-disable-next-line no-useless-catch
+  try {
+    await NativeMethods.showCompleteProfilePageAsync();
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const loadProfilePageInfo = createAsyncThunk(
+  'ordering/orderStatus/thankYou/loadProfilePageInfo',
+  async ({ from, hasOrderPaid }, { dispatch, getState }) => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      // Delay Profile display duration
+      const delay = PROFILE_DISPLAY_DELAY_DURATION[from] || PROFILE_DISPLAY_DELAY_DURATION.DEFAULT;
+      const state = getState();
+      const userIsLogin = getUserIsLogin(state);
+      const consumerId = getUserConsumerId(state);
+      const profileDataStatus = getUserProfileStatus(state);
+      const isProfileMissingSkippedExpired = getIsProfileMissingSkippedExpired(state);
+      const isWebview = getIsWebview(state);
+
+      // First must to confirm profile info is loaded
+      if (userIsLogin && (_isEmpty(profileDataStatus) || _isUndefined(profileDataStatus))) {
+        await dispatch(appActions.getProfileInfo(consumerId));
+      }
+
+      if (isWebview) {
+        dispatch(callNativeProfile());
+      }
+
+      const profile = getUserProfile(getState());
+      const { name, email, birthday } = profile || {};
+      const hasRequiredError = !name || !email || !birthday;
+      const isProfileModalShown =
+        isProfileMissingSkippedExpired && hasRequiredError && userIsLogin && hasOrderPaid && !isWebview;
+
+      if (isProfileModalShown) {
+        const timer = setTimeout(() => {
+          clearTimeout(timer);
+
+          dispatch(showProfileModal());
+        }, delay);
+      }
+    } catch (error) {
+      throw error;
     }
   }
 );

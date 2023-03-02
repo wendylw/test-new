@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import { createCurrencyFormatter } from '@storehub/frontend-utils';
 import Constants from '../../../../../../utils/constants';
 import { CASHBACK_CAN_CLAIM_STATUS_LIST, AFTER_PAID_STATUS_LIST, CASHBACK_CLAIMED_STATUS_LIST } from '../constants';
+import { getCookieVariable } from '../../../../../../common/utils';
 import {
   getOrder,
   getOrderStatus,
@@ -193,3 +194,6 @@ export const getShouldShowStoreReviewCard = createSelector(
   getIsStoreReviewable,
   (hasOrderPaid, hasReviewed, isReviewable) => hasOrderPaid && isReviewable && !hasReviewed
 );
+
+// Profile selectors
+export const getIsProfileMissingSkippedExpired = state => getCookieVariable('do_not_ask') !== '1';

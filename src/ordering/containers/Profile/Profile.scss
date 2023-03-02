@@ -1,6 +1,5 @@
-@import "src/Variables";
+@import "../../../Variables";
 $profile-tip-background: #fffbe6;
-$required-star: #e15343;
 $input-border-color: #1c1c1c;
 
 .profile {
@@ -44,7 +43,7 @@ $input-border-color: #1c1c1c;
   }
 
   &__form-item--error {
-    border-color: $required-star;
+    border-color: $status-error-basic;
   }
 
   &__input {
@@ -54,12 +53,12 @@ $input-border-color: #1c1c1c;
   }
 
   &__form-item--error &__label {
-    color: $required-star;
+    color: $status-error-basic;
   }
 
   &__label--required::after {
     content: "*";
-    color: $required-star;
+    color: $status-error-basic;
     vertical-align: top;
     margin-left: 2px;
   }
@@ -74,7 +73,7 @@ $input-border-color: #1c1c1c;
   }
 
   &__input-birthday-safari {
-    z-index: 100;
+    z-index: $z-index-base;
   }
 
   &__input-birthday-text {
@@ -88,6 +87,7 @@ $input-border-color: #1c1c1c;
 
   &__save-button {
     height: 50px;
+    // Updated button text letter-spacing match new design
     letter-spacing: 0.02em;
     border-radius: 8px;
   }

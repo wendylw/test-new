@@ -1,15 +1,12 @@
-import _trim from 'lodash/trim';
-import dayjs from 'dayjs';
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { PROFILE_BIRTHDAY_FORMAT } from '../utils/constants';
-import { profileUpdated, nativeProfileShown, init } from './thunk';
+import { profileUpdated, validateName, validateEmail, validateBirthday } from './thunk';
 
 const initialState = {
-  name: '',
-  email: '',
-  birthday: '',
-  profileUpdatedStatus: API_REQUEST_STATUS.IDLE,
+  profileUpdatedStatus: null,
+  nameErrorType: null,
+  emailErrorType: null,
+  birthdayErrorType: null,
   nameInputCompletedStatus: false,
   emailInputCompletedStatus: false,
   birthdayInputCompletedStatus: false,
@@ -20,36 +17,17 @@ export const { actions, reducer } = createSlice({
   name: 'ordering/profile',
   initialState,
   reducers: {
-    nameUpdated: (state, { payload }) => {
-      state.name = payload;
-    },
     nameInputCompletedStatusUpdated: (state, { payload }) => {
       state.nameInputCompletedStatus = payload;
-    },
-    emailUpdated: (state, { payload }) => {
-      state.email = _trim(payload);
     },
     emailInputCompletedStatusUpdated: (state, { payload }) => {
       state.emailInputCompletedStatus = payload;
     },
-    birthDayUpdated: (state, { payload }) => {
-      state.birthday = dayjs(_trim(payload)).format(PROFILE_BIRTHDAY_FORMAT);
-      state.birthdayInputCompletedStatus = true;
+    birthdaySelectorCompletedStatusUpdated: (state, { payload }) => {
+      state.birthdayInputCompletedStatus = payload;
     },
   },
   extraReducers: {
-    [nativeProfileShown.fulfilled.type]: state => {
-      state.nativeProfileDisplayFailed = false;
-    },
-    [nativeProfileShown.rejected.type]: state => {
-      state.nativeProfileDisplayFailed = true;
-    },
-    [init.fulfilled.type]: (state, { payload }) => {
-      // init user profile data to page data for updating
-      state.name = payload.name;
-      state.email = _trim(payload.email);
-      state.birthday = _trim(payload.birthday);
-    },
     [profileUpdated.pending.type]: state => {
       state.profileUpdatedStatus = API_REQUEST_STATUS.PENDING;
     },
@@ -58,6 +36,15 @@ export const { actions, reducer } = createSlice({
     },
     [profileUpdated.rejected.type]: state => {
       state.profileUpdatedStatus = API_REQUEST_STATUS.REJECTED;
+    },
+    [validateName.fulfilled.type]: (state, { payload }) => {
+      state.nameErrorType = payload;
+    },
+    [validateEmail.fulfilled.type]: (state, { payload }) => {
+      state.emailErrorType = payload;
+    },
+    [validateBirthday.fulfilled.type]: (state, { payload }) => {
+      state.birthdayErrorType = payload;
     },
   },
 });

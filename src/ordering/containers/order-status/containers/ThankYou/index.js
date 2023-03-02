@@ -72,6 +72,8 @@ import {
   cancelOrder,
   loadCashbackInfo,
   loadFoodCourtIdHashCode,
+  initProfilePage,
+  hideProfileModal,
 } from './redux/thunks';
 import {
   getCashback,
@@ -125,24 +127,8 @@ export class ThankYou extends PureComponent {
 
   pollOrderStatusTimer = null;
 
-  showCompleteProfileIfNeeded = async () => {
-    const { hasOrderPaid } = this.props;
-    //Explain: The profile page is not displayed before the order is paid
-    if (this.state.from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && !hasOrderPaid) {
-      return;
-    }
-
-    const delay = this.state.from === REFERRER_SOURCE_TYPES.LOGIN ? 1000 : 3000;
-
-    if (REFERRERS_REQUIRING_PROFILE.includes(this.state.from)) {
-      this.timer = setTimeout(() => {
-        this.props.setShowProfileVisibility(true);
-      }, delay);
-    }
-  };
-
   componentDidMount = async () => {
-    const { user, loadCashbackInfo, loadOrderStoreReview } = this.props;
+    const { user, loadCashbackInfo, loadOrderStoreReview, initProfilePage } = this.props;
     const receiptNumber = Utils.getQueryString('receiptNumber') || '';
 
     loadCashbackInfo(receiptNumber);
@@ -152,7 +138,7 @@ export class ThankYou extends PureComponent {
 
     const from = Utils.getCookieVariable('__ty_source');
 
-    this.setState({ from }, () => this.showCompleteProfileIfNeeded());
+    this.setState({ from });
 
     // immidiately remove __ty_source cookie after setting in the state.
     Utils.removeCookieVariable('__ty_source');
@@ -180,7 +166,12 @@ export class ThankYou extends PureComponent {
 
     await this.loadOrder();
 
-    const { shippingType, foodCourtId } = this.props;
+    const { shippingType, foodCourtId, hasOrderPaid } = this.props;
+
+    // WB-4979: initProfilePage must after loadOrder, we need order payment status
+    if (REFERRERS_REQUIRING_PROFILE.includes(from)) {
+      initProfilePage({ from, hasOrderPaid });
+    }
 
     this.setContainerHeight();
 
@@ -380,10 +371,6 @@ export class ThankYou extends PureComponent {
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
     } = this.props;
-
-    if (this.props.user.profile !== prevProps.user.profile || this.props.orderStatus !== prevProps.orderStatus) {
-      this.showCompleteProfileIfNeeded();
-    }
 
     const { storeId } = order || {};
 
@@ -898,6 +885,7 @@ export class ThankYou extends PureComponent {
       isPayLater,
       foodCourtId,
       isFromBeepSiteOrderHistory,
+      hideProfileModal,
     } = this.props;
     const isWebview = Utils.isWebview();
 
@@ -905,7 +893,7 @@ export class ThankYou extends PureComponent {
     const sourceUrl = Utils.getSourceUrlFromSessionStorage();
 
     if (profileModalVisibility) {
-      this.props.setShowProfileVisibility(false);
+      hideProfileModal();
       return;
     }
 
@@ -976,6 +964,7 @@ export class ThankYou extends PureComponent {
       history,
       match,
       order,
+      orderStatus,
       storeRating,
       businessUTCOffset,
       onlineStoreInfo,
@@ -983,6 +972,7 @@ export class ThankYou extends PureComponent {
       shouldShowStoreReviewCard,
       shouldShowCashbackBanner,
       profileModalVisibility,
+      hideProfileModal,
     } = this.props;
     const date = new Date();
     const { total } = order || {};
@@ -994,7 +984,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {order && <Profile onClose={this.handleCompleteProfileModalClose} show={profileModalVisibility} />}
+        {orderStatus && <Profile onClose={hideProfileModal} show={profileModalVisibility} />}
         <>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}
@@ -1123,7 +1113,6 @@ export default compose(
         thankYouActionCreators.updateCancellationReasonVisibleState,
         dispatch
       ),
-      setShowProfileVisibility: bindActionCreators(thankYouActionCreators.setShowProfileVisibility, dispatch),
       loadStoreIdHashCode: bindActionCreators(loadStoreIdHashCode, dispatch),
       loadStoreIdTableIdHashCode: bindActionCreators(loadStoreIdTableIdHashCode, dispatch),
       cancelOrder: bindActionCreators(cancelOrder, dispatch),
@@ -1132,6 +1121,8 @@ export default compose(
       loadCashbackInfo: bindActionCreators(loadCashbackInfo, dispatch),
       loadOrderStoreReview: bindActionCreators(loadOrderStoreReviewThunk, dispatch),
       loadFoodCourtIdHashCode: bindActionCreators(loadFoodCourtIdHashCode, dispatch),
+      initProfilePage: bindActionCreators(initProfilePage, dispatch),
+      hideProfileModal: bindActionCreators(hideProfileModal, dispatch),
     })
   )
 )(ThankYou);
