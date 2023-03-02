@@ -1,9 +1,16 @@
 import dayjs from 'dayjs';
 import { isValidDate } from '../../../../utils/datetime-lib';
 
-export const isValidBirthdayDateString = birthday => {
+const getMatchedBirthdayGroups = birthday => {
   const birthdayDateRegex = /^(?<day>\d{1,2})\/(?<month>\d{1,2})\/(?<year>\d{1,4})$/;
-  const { groups: matchedBirthdayGroups } = birthday.match(birthdayDateRegex) || {};
+
+  const { groups } = birthday.match(birthdayDateRegex) || {};
+
+  return groups;
+};
+
+export const isValidBirthdayDateString = birthday => {
+  const matchedBirthdayGroups = getMatchedBirthdayGroups(birthday);
 
   if (!matchedBirthdayGroups) {
     return false;
@@ -13,6 +20,18 @@ export const isValidBirthdayDateString = birthday => {
   const internalBirthdayDate = `${year}/${month}/${day}`;
 
   return isValidDate(new Date(internalBirthdayDate));
+};
+
+export const getRequestBirthdayData = birthday => {
+  const matchedBirthdayGroups = getMatchedBirthdayGroups(birthday);
+
+  if (!matchedBirthdayGroups) {
+    return birthday;
+  }
+
+  const { day, month, year } = matchedBirthdayGroups;
+
+  return `${year}/${month}/${day}`;
 };
 
 export const isAfterTodayBirthdayDate = birthday => dayjs(birthday).isAfter(dayjs());

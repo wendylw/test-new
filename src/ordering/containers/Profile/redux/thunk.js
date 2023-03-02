@@ -42,7 +42,7 @@ export const validateName = createAsyncThunk('ordering/profile/validateName', pr
   return null;
 });
 
-export const validateEmail = createAsyncThunk('ordering/profile/validateName', profileEmail => {
+export const validateEmail = createAsyncThunk('ordering/profile/validateEmail', profileEmail => {
   if (_isEmpty(profileEmail) || _isUndefined(profileEmail)) {
     return PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }
@@ -55,7 +55,7 @@ export const validateEmail = createAsyncThunk('ordering/profile/validateName', p
   return null;
 });
 
-export const validateBirthday = createAsyncThunk('ordering/profile/validateName', profileBirthday => {
+export const validateBirthday = createAsyncThunk('ordering/profile/validateBirthday', profileBirthday => {
   if (_isEmpty(profileBirthday) || _isUndefined(profileBirthday)) {
     return PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }

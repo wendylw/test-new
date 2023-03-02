@@ -1,11 +1,10 @@
 import _isNull from 'lodash/isNull';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { PROFILE_FIELD_ERROR_TYPES } from '../utils/constants';
 
 export const getNameErrorType = state => state.profile.nameErrorType;
 
-export const getIsValidName = createSelector(getNameErrorType, nameErrorType => !_isNull(nameErrorType));
+export const getIsValidName = createSelector(getNameErrorType, nameErrorType => _isNull(nameErrorType));
 
 export const getNameInputCompletedStatus = state => state.profile.nameInputCompletedStatus;
 
@@ -17,7 +16,7 @@ export const getIsNameInputErrorDisplay = createSelector(
 
 export const getEmailErrorType = state => state.profile.emailErrorType;
 
-export const getIsValidEmail = createSelector(getEmailErrorType, emailErrorType => !_isNull(emailErrorType));
+export const getIsValidEmail = createSelector(getEmailErrorType, emailErrorType => _isNull(emailErrorType));
 
 export const getEmailInputCompletedStatus = state => state.profile.emailInputCompletedStatus;
 
@@ -29,10 +28,7 @@ export const getIsEmailInputErrorDisplay = createSelector(
 
 export const getBirthdayErrorType = state => state.profile.birthdayErrorType;
 
-export const getIsValidBirthday = createSelector(
-  getBirthdayErrorType,
-  birthdayErrorType => !_isNull(birthdayErrorType)
-);
+export const getIsValidBirthday = createSelector(getBirthdayErrorType, birthdayErrorType => _isNull(birthdayErrorType));
 
 export const getBirthdayInputCompletedStatus = state => state.profile.birthdayInputCompletedStatus;
 

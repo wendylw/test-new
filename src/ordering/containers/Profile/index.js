@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { useMount } from 'react-use';
 import { getIsUserProfileStatusPending, getUserProfile } from '../../redux/modules/app';
 import {
   getNameErrorType,
@@ -32,154 +33,20 @@ import CleverTap from '../../../utils/clevertap';
 import './Profile.scss';
 import logger from '../../../utils/monitoring/logger';
 
-const ProfileFields = ({
-  profileName,
-  profileEmail,
-  profileBirthday,
-  onUpdateName,
-  onUpdateEmail,
-  onUpdateBirthday,
-}) => {
+const Profile = ({ show, onClose }) => {
   const { t } = useTranslation(['Profile']);
-  const birthdayInputRef = useRef(null);
   const dispatch = useDispatch();
+  const birthdayInputRef = useRef(null);
+  const { name, email, birthday } = useSelector(getUserProfile) || {};
+  const isUserProfileStatusPending = useSelector(getIsUserProfileStatusPending);
+  const isDisabledProfileSaveButton = useSelector(getIsDisabledProfileSaveButton);
+  const isProfileDataUpdating = useSelector(getIsProfileDataUpdating);
   const nameErrorType = useSelector(getNameErrorType);
   const isNameInputErrorDisplay = useSelector(getIsNameInputErrorDisplay);
   const emailErrorType = useSelector(getEmailErrorType);
   const isEmailInputErrorDisplay = useSelector(getIsEmailInputErrorDisplay);
   const birthdayErrorType = useSelector(getBirthdayErrorType);
   const isBirthdayInputErrorDisplay = useSelector(getIsBirthdayInputErrorDisplay);
-  const handleChangeName = e => {
-    const newName = e.target.value;
-
-    dispatch(profileActions.nameInputCompletedStatusUpdated(false));
-    onUpdateName(newName);
-    validateName(newName);
-  };
-  const handleChangeEmail = e => {
-    const newEmail = _trim(e.target.value);
-
-    dispatch(profileActions.emailInputCompletedStatusUpdated(false));
-    onUpdateEmail(newEmail);
-    validateEmail(newEmail);
-  };
-  const handleSelectBirthDay = e => {
-    const selectedBirthday = dayjs(_trim(e.target.value)).format(PROFILE_BIRTHDAY_FORMAT);
-
-    dispatch(profileActions.birthdaySelectorCompletedStatusUpdated(true));
-    onUpdateBirthday(selectedBirthday);
-    validateBirthday(selectedBirthday);
-  };
-  const handleBlurNameInput = useCallback(() => {
-    dispatch(profileActions.nameInputCompletedStatusUpdated(true));
-  }, [dispatch]);
-  const handleBlurEmailInput = useCallback(() => {
-    dispatch(profileActions.emailInputCompletedStatusUpdated(true));
-  }, [dispatch]);
-
-  return (
-    <div className="padding-left-right-normal">
-      <div className="margin-top-bottom-normal">
-        <div
-          className={`profile__form-item form__group padding-small padding-left-right-normal border-radius-large ${
-            isNameInputErrorDisplay ? 'profile__form-item--error' : ''
-          }`}
-        >
-          <label className="profile__label profile__label--required text-size-small text-top">{t('Name')}</label>
-          <input
-            name="profileName"
-            value={profileName}
-            className="profile__input form__input"
-            type="text"
-            required={true}
-            onChange={handleChangeName}
-            onBlur={handleBlurNameInput}
-          />
-        </div>
-        {isNameInputErrorDisplay ? (
-          <p className="form__error-message padding-top-bottom-smaller text-size-small">
-            {t(ERROR_TRANSLATION_KEYS[nameErrorType].name)}
-          </p>
-        ) : null}
-      </div>
-      <div className="margin-top-bottom-normal">
-        <div
-          className={`profile__form-item form__group padding-small border-radius-large padding-left-right-normal ${
-            isEmailInputErrorDisplay ? 'profile__form-item--error' : ''
-          }`}
-        >
-          <label className="profile__label profile__label--required text-size-small text-top">{t('Email')}</label>
-          <input
-            className="profile__input form__input"
-            name="profileEmail"
-            value={profileEmail}
-            onChange={handleChangeEmail}
-            onBlur={handleBlurEmailInput}
-          />
-        </div>
-        {isEmailInputErrorDisplay ? (
-          <p className="form__error-message padding-top-bottom-smaller text-size-small">
-            {t(ERROR_TRANSLATION_KEYS[emailErrorType].email)}
-          </p>
-        ) : null}
-      </div>
-      <div className="margin-top-bottom-normal">
-        <div
-          className={`profile__form-item form__group padding-small padding-left-right-normal border-radius-large ${
-            isBirthdayInputErrorDisplay ? 'profile__form-item--error' : ''
-          }`}
-        >
-          <label className="profile__label profile__label--required text-size-small text-top">{t('DateOfBirth')}</label>
-          <div className="profile__input-birthday-container">
-            <div>
-              <input
-                ref={birthdayInputRef}
-                // If browser is desktop Safari, showPicker() can not be execute
-                // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
-                // For date input can be click in Safari
-                className={`profile__input profile__input-birthday form__input ${
-                  isSafari() ? 'profile__input-birthday-safari' : ''
-                }`}
-                name="profileBirthday"
-                type="date"
-                min={BIRTHDAY_DATE.MIN}
-                max={BIRTHDAY_DATE.MAX}
-                onChange={handleSelectBirthDay}
-              />
-              <input
-                className="profile__input profile__input-birthday-text form__input"
-                name="profileBirthday"
-                value={profileBirthday}
-                placeholder={PROFILE_BIRTHDAY_FORMAT}
-                type="text"
-                onClick={e => {
-                  e.stopPropagation();
-                  birthdayInputRef.current.showPicker();
-                }}
-                readOnly
-              />
-            </div>
-          </div>
-        </div>
-        {isBirthdayInputErrorDisplay ? (
-          <p className="form__error-message padding-top-bottom-smaller text-size-small">
-            {t(ERROR_TRANSLATION_KEYS[birthdayErrorType].birthday)}
-          </p>
-        ) : null}
-      </div>
-    </div>
-  );
-};
-
-ProfileFields.displayName = 'ProfileFields';
-
-const Profile = ({ show, onClose }) => {
-  const { t } = useTranslation(['Profile']);
-  const dispatch = useDispatch();
-  const { name, email, birthday } = useSelector(getUserProfile) || {};
-  const isUserProfileStatusPending = useSelector(getIsUserProfileStatusPending);
-  const isDisabledProfileSaveButton = useSelector(getIsDisabledProfileSaveButton);
-  const isProfileDataUpdating = useSelector(getIsProfileDataUpdating);
   const className = ['profile flex flex-column flex-end aside fixed-wrapper'];
   const onHistoryBackReceived = useCallback(() => {
     onClose();
@@ -191,19 +58,64 @@ const Profile = ({ show, onClose }) => {
     onHistoryBackReceived,
   });
 
+  const handleChangeName = e => {
+    const newName = e.target.value;
+
+    setProfileName(newName);
+    dispatch(validateName(newName));
+  };
+  const handleChangeEmail = e => {
+    const newEmail = _trim(e.target.value);
+
+    setProfileEmail(newEmail);
+    dispatch(validateEmail(newEmail));
+  };
+  const handleSelectBirthDay = e => {
+    const selectedBirthday = dayjs(_trim(e.target.value)).format(PROFILE_BIRTHDAY_FORMAT);
+
+    setProfileBirthday(selectedBirthday);
+    dispatch(validateBirthday(selectedBirthday));
+    dispatch(profileActions.birthdaySelectorCompletedStatusUpdated(true));
+  };
+  const handleFocusNameInput = useCallback(() => {
+    dispatch(profileActions.nameInputCompletedStatusUpdated(false));
+  }, [dispatch]);
+  const handleBlurNameInput = async e => {
+    const newName = e.target.value;
+
+    dispatch(validateName(newName));
+    dispatch(profileActions.nameInputCompletedStatusUpdated(true));
+  };
+  const handleFocusEmailInput = useCallback(() => {
+    dispatch(profileActions.emailInputCompletedStatusUpdated(false));
+  }, [dispatch]);
+  const handleBlurEmailInput = e => {
+    const newEmail = _trim(e.target.value);
+
+    dispatch(validateEmail(newEmail));
+    dispatch(profileActions.emailInputCompletedStatusUpdated(true));
+  };
   const onSkipProfilePage = useCallback(() => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
     onClose();
   }, [onClose]);
-  const [profileName, setProfileName] = useState(name);
-  const [profileEmail, setProfileEmail] = useState(_trim(email));
-  const [profileBirthday, setProfileBirthday] = useState(_trim(birthday));
+  const [profileName, setProfileName] = useState(name || '');
+  const [profileEmail, setProfileEmail] = useState(_trim(email || ''));
+  const [profileBirthday, setProfileBirthday] = useState(_trim(birthday || ''));
   const onSaveButtonClick = async () => {
     CleverTap.pushEvent('Complete profile page - Click continue');
 
     try {
+      console.log(profileBirthday);
+
+      debugger;
+
       const result = await dispatch(
-        profileUpdated({ firstName: profileName, email: profileEmail, birthday: profileBirthday })
+        profileUpdated({
+          firstName: profileName,
+          email: profileEmail,
+          birthday: dayjs(profileBirthday).format('YYYY/MM/DD'),
+        })
       );
 
       if (result.error && result.error?.code === '40024') {
@@ -217,7 +129,7 @@ const Profile = ({ show, onClose }) => {
           onSelection: async status => {
             if (status) {
               CleverTap.pushEvent('Complete profile page email duplicate pop up - Click back to edit');
-              dispatch(profileActions.emailUpdated(''));
+              setProfileEmail('');
             } else {
               CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again");
               dispatch(profileMissingSkippedLimitUpdated());
@@ -234,6 +146,12 @@ const Profile = ({ show, onClose }) => {
       logger.error('Ordering_OrderStatus_ProfileUpdatedFailed', { message: error?.message });
     }
   };
+
+  useMount(() => {
+    dispatch(validateName(profileName));
+    dispatch(validateEmail(profileEmail));
+    dispatch(validateBirthday(profileBirthday));
+  });
 
   if (show) {
     className.push('active');
@@ -269,14 +187,104 @@ const Profile = ({ show, onClose }) => {
                   <p className="profile__tip">{t('CompleteProfileTip')}</p>
                 </div>
               </div>
-              <ProfileFields
-                name={profileName}
-                email={profileEmail}
-                birthday={profileBirthday}
-                onUpdateName={setProfileName}
-                onUpdateEmail={setProfileEmail}
-                onUpdateBirthday={setProfileBirthday}
-              />
+              <div className="padding-left-right-normal">
+                <div className="margin-top-bottom-normal">
+                  <div
+                    className={`profile__form-item form__group padding-small padding-left-right-normal border-radius-large ${
+                      isNameInputErrorDisplay ? 'profile__form-item--error' : ''
+                    }`}
+                  >
+                    <label className="profile__label profile__label--required text-size-small text-top">
+                      {t('Name')}
+                    </label>
+                    <input
+                      name="profileName"
+                      value={profileName}
+                      className="profile__input form__input"
+                      type="text"
+                      required={true}
+                      onChange={handleChangeName}
+                      onFocus={handleFocusNameInput}
+                      onBlur={handleBlurNameInput}
+                    />
+                  </div>
+                  {isNameInputErrorDisplay ? (
+                    <p className="form__error-message padding-top-bottom-smaller text-size-small">
+                      {t(ERROR_TRANSLATION_KEYS[nameErrorType].name)}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="margin-top-bottom-normal">
+                  <div
+                    className={`profile__form-item form__group padding-small border-radius-large padding-left-right-normal ${
+                      isEmailInputErrorDisplay ? 'profile__form-item--error' : ''
+                    }`}
+                  >
+                    <label className="profile__label profile__label--required text-size-small text-top">
+                      {t('Email')}
+                    </label>
+                    <input
+                      className="profile__input form__input"
+                      name="profileEmail"
+                      value={profileEmail}
+                      onChange={handleChangeEmail}
+                      onFocus={handleFocusEmailInput}
+                      onBlur={handleBlurEmailInput}
+                    />
+                  </div>
+                  {isEmailInputErrorDisplay ? (
+                    <p className="form__error-message padding-top-bottom-smaller text-size-small">
+                      {t(ERROR_TRANSLATION_KEYS[emailErrorType].email)}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="margin-top-bottom-normal">
+                  <div
+                    className={`profile__form-item form__group padding-small padding-left-right-normal border-radius-large ${
+                      isBirthdayInputErrorDisplay ? 'profile__form-item--error' : ''
+                    }`}
+                  >
+                    <label className="profile__label profile__label--required text-size-small text-top">
+                      {t('DateOfBirth')}
+                    </label>
+                    <div className="profile__input-birthday-container">
+                      <div>
+                        <input
+                          ref={birthdayInputRef}
+                          // If browser is desktop Safari, showPicker() can not be execute
+                          // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
+                          // For date input can be click in Safari
+                          className={`profile__input profile__input-birthday form__input ${
+                            isSafari() ? 'profile__input-birthday-safari' : ''
+                          }`}
+                          name="profileBirthday"
+                          type="date"
+                          min={BIRTHDAY_DATE.MIN}
+                          max={BIRTHDAY_DATE.MAX}
+                          onChange={handleSelectBirthDay}
+                        />
+                        <input
+                          className="profile__input profile__input-birthday-text form__input"
+                          name="profileBirthday"
+                          value={profileBirthday}
+                          placeholder={PROFILE_BIRTHDAY_FORMAT}
+                          type="text"
+                          onClick={e => {
+                            e.stopPropagation();
+                            birthdayInputRef.current.showPicker();
+                          }}
+                          readOnly
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {isBirthdayInputErrorDisplay ? (
+                    <p className="form__error-message padding-top-bottom-smaller text-size-small">
+                      {t(ERROR_TRANSLATION_KEYS[birthdayErrorType].birthday)}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
             </section>
             <footer className="footer footer__transparent margin-normal">
               <button
