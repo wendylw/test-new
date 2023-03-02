@@ -25,6 +25,7 @@ import {
 import { actions as profileActions } from './redux';
 import { confirm, toast } from '../../../common/utils/feedback';
 import { isSafari } from '../../../common/utils';
+import { getRequestBirthdayData } from './utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from './utils/constants';
 import { useBackButtonSupport } from '../../../utils/modal-back-button-support';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
@@ -106,15 +107,11 @@ const Profile = ({ show, onClose }) => {
     CleverTap.pushEvent('Complete profile page - Click continue');
 
     try {
-      console.log(profileBirthday);
-
-      debugger;
-
       const result = await dispatch(
         profileUpdated({
           firstName: profileName,
           email: profileEmail,
-          birthday: dayjs(profileBirthday).format('YYYY/MM/DD'),
+          birthday: getRequestBirthdayData(profileBirthday),
         })
       );
 
