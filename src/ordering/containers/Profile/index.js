@@ -24,7 +24,7 @@ import {
 } from './redux/thunk';
 import { actions as profileActions } from './redux';
 import { confirm, toast } from '../../../common/utils/feedback';
-import { isSafari } from '../../../../common/utils';
+import { isSafari } from '../../../common/utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from './utils/constants';
 import { useBackButtonSupport } from '../../../utils/modal-back-button-support';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';

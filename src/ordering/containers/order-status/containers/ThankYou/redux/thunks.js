@@ -153,7 +153,7 @@ export const showProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/
 
 export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/hideProfileModal', async () => {});
 
-export const callNativeProfile = createAsyncThunk('ordering/profile/nativeProfileShown', async () => {
+export const callNativeProfile = createAsyncThunk('ordering/profile/callNativeProfile', async () => {
   // eslint-disable-next-line no-useless-catch
   try {
     await NativeMethods.showCompleteProfilePageAsync();
