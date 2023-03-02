@@ -2,14 +2,15 @@ import dayjs from 'dayjs';
 import { isValidDate } from '../../../../utils/datetime-lib';
 
 export const isValidBirthdayDateString = birthday => {
-  const birthdayDateRegex = /^(\d{1,2})(\/)(\d{1,2})(\/)(\d{1,4})$/;
-  const matchedBirthday = birthday.match(birthdayDateRegex);
+  const birthdayDateRegex = /^(?<day>\d{1,2})\/(?<month>\d{1,2})\/(?<year>\d{1,4})$/;
+  const { groups: matchedBirthdayGroups } = birthday.match(birthdayDateRegex) || {};
 
-  if (!matchedBirthday) {
+  if (!matchedBirthdayGroups) {
     return false;
   }
 
-  const internalBirthdayDate = `${matchedBirthday[5]}/${matchedBirthday[3]}/${matchedBirthday[1]}`;
+  const { day, month, year } = matchedBirthdayGroups;
+  const internalBirthdayDate = `${year}/${month}/${day}`;
 
   return isValidDate(new Date(internalBirthdayDate));
 };
