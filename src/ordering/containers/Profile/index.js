@@ -11,7 +11,6 @@ import {
   getIsEmailInputErrorDisplay,
   getBirthdayErrorType,
   getIsBirthdayInputErrorDisplay,
-  getIsSafari,
   getIsDisabledProfileSaveButton,
   getIsValidProfileForm,
   getIsProfileDataUpdating,
@@ -25,6 +24,7 @@ import {
 } from './redux/thunk';
 import { actions as profileActions } from './redux';
 import { confirm, toast } from '../../../common/utils/feedback';
+import { isSafari } from '../../../../common/utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from './utils/constants';
 import { useBackButtonSupport } from '../../../utils/modal-back-button-support';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
@@ -44,7 +44,6 @@ const ProfileFields = ({
   const { t } = useTranslation(['Profile']);
   const birthdayInputRef = useRef(null);
   const dispatch = useDispatch();
-  const isSafari = useSelector(getIsSafari);
   const nameErrorType = useSelector(getNameErrorType);
   const isNameInputErrorDisplay = useSelector(getIsNameInputErrorDisplay);
   const emailErrorType = useSelector(getEmailErrorType);
@@ -138,8 +137,9 @@ const ProfileFields = ({
                 ref={birthdayInputRef}
                 // If browser is desktop Safari, showPicker() can not be execute
                 // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
+                // For date input can be click in Safari
                 className={`profile__input profile__input-birthday form__input ${
-                  isSafari ? 'profile__input-birthday-safari' : ''
+                  isSafari() ? 'profile__input-birthday-safari' : ''
                 }`}
                 name="profileBirthday"
                 type="date"

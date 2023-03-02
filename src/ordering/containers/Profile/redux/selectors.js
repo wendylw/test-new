@@ -1,6 +1,5 @@
 import _isNull from 'lodash/isNull';
 import { createSelector } from 'reselect';
-import { isSafari } from '../../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 import { PROFILE_FIELD_ERROR_TYPES } from '../utils/constants';
 
@@ -74,6 +73,3 @@ export const getIsDisabledProfileSaveButton = createSelector(
     return false;
   }
 );
-
-// For date input can be click in Safari
-export const getIsSafari = state => isSafari();
