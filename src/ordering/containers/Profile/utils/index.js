@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { isValidDate } from '../../../../utils/datetime-lib';
 
 export const isValidBirthdayDateString = birthday => {
@@ -12,3 +13,5 @@ export const isValidBirthdayDateString = birthday => {
 
   return isValidDate(new Date(internalBirthdayDate));
 };
+
+export const isAfterTodayBirthdayDate = birthday => dayjs(birthday).isAfter(dayjs());

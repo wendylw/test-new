@@ -2,9 +2,9 @@ import _isEmpty from 'lodash/isEmpty';
 import _isUndefined from 'lodash/isUndefined';
 import { createSelector } from 'reselect';
 import Utils from '../../../../utils/utils';
-import { getCookieVariable, isSafari, isMobile } from '../../../../common/utils';
+import { getCookieVariable, isSafari } from '../../../../common/utils';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { isValidBirthdayDateString } from '../utils';
+import { isValidBirthdayDateString, isAfterTodayBirthdayDate } from '../utils';
 import { PROFILE_FIELD_ERROR_TYPES } from '../utils/constants';
 import {
   getIsWebview,
@@ -94,6 +94,11 @@ export const getBirthdayErrorType = createSelector(
 
     if (!isValidBirthdayDateString(profileBirthday)) {
       return PROFILE_FIELD_ERROR_TYPES.UNAVAILABLE;
+    }
+
+    // If selected birthday is after today, will display error
+    if (isAfterTodayBirthdayDate(profileBirthday)) {
+      return PROFILE_FIELD_ERROR_TYPES.OUT_OF_DATE;
     }
 
     return null;
@@ -187,7 +192,5 @@ export const getIsProfileWebVisibility = createSelector(
 
 export const getIsProfileDataUpdating = state => state.profile.profileUpdatedStatus === API_REQUEST_STATUS.PENDING;
 
-// For date input can be click in Desktop Safari
+// For date input can be click in Safari
 export const getIsSafari = state => isSafari();
-
-// export const getDuplicatedEmailAlertVisibility = state => state.profile.updateProfileResult.error?.code === '40024';

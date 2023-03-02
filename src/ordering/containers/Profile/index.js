@@ -47,6 +47,9 @@ const ERROR_TRANSLATION_KEYS = {
   [PROFILE_FIELD_ERROR_TYPES.DUPLICATED]: {
     email: 'DuplicatedEmail',
   },
+  [PROFILE_FIELD_ERROR_TYPES.OUT_OF_DATE]: {
+    birthday: 'BirthdayCanNotLaterThanToday',
+  },
 };
 
 const Profile = ({ show, onClose }) => {

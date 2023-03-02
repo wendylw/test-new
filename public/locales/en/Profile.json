@@ -8,6 +8,7 @@
   "BirthdayIsRequired": "Please select your birthday",
   "NotValidEmail": "Please enter a valid email address",
   "NotValidBirthday": "Please select a valid date of birth (DD/MM/YYYY)",
+  "BirthdayCanNotLaterThanToday": "Date cannot be later than today",
   "DuplicatedEmail": "Please enter another valid email",
   "SkipForNow": "Skip for now",
   "DuplicatedEmailAlertTitle": "Oops! this is awkward…",
