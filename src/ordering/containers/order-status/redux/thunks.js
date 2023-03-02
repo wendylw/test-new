@@ -1,9 +1,17 @@
+import dayjs from 'dayjs';
 import i18next from 'i18next';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { get, post } from '../../../../utils/api/api-fetch';
 import Constants from '../../../../utils/constants';
-import { getReceiptNumber, getOffline } from './selector';
-import { API_INFO, getOrderStoreReview, postOrderStoreReview } from './api-info';
+import { getReceiptNumber, getOffline, getPayLaterOrderModifiedTime } from './selector';
+import {
+  API_INFO,
+  getPayLaterOrderStatus,
+  postPayLaterOrderSubmission,
+  getOrderStoreReview,
+  postOrderStoreReview,
+} from './api-info';
+import { fetchOrder } from '../../../../utils/api-request';
 import logger from '../../../../utils/monitoring/logger';
 import { alert } from '../../../../common/utils/feedback';
 
@@ -33,6 +41,49 @@ export const loadOrder = createAsyncThunk('ordering/orderStatus/common/fetchOrde
 
 export const loadOrderStatus = createAsyncThunk('ordering/orderStatus/common/fetchOrderStatus', async orderId =>
   get(API_INFO.getOrderStatus(orderId).url)
+);
+
+export const loadPayLaterOrder = createAsyncThunk(
+  'ordering/orderStatus/common/loadPayLaterOrder',
+  async receiptNumber => {
+    try {
+      const result = await fetchOrder(receiptNumber);
+
+      return result;
+    } catch (error) {
+      console.error(error);
+
+      throw error;
+    }
+  }
+);
+
+export const loadPayLaterOrderStatus = createAsyncThunk(
+  'ordering/orderStatus/common/loadPayLaterOrderStatus',
+  async (receiptNumber, { dispatch, getState }) => {
+    try {
+      const state = getState();
+      const prevModifiedTime = getPayLaterOrderModifiedTime(state);
+      const result = await getPayLaterOrderStatus({ receiptNumber });
+      const prevModifiedTimeDate = dayjs(prevModifiedTime);
+      const modifiedTimeDate = dayjs(result.modifiedTime);
+
+      if (dayjs(modifiedTimeDate).isAfter(prevModifiedTimeDate, 'second')) {
+        await dispatch(loadPayLaterOrder(receiptNumber));
+      }
+
+      return result;
+    } catch (error) {
+      console.error(error);
+
+      throw error;
+    }
+  }
+);
+
+export const submitPayLaterOrder = createAsyncThunk(
+  'ordering/orderStatus/common/submitPayLaterOrder',
+  async ({ receiptNumber, data }) => postPayLaterOrderSubmission(receiptNumber, data)
 );
 
 // Store Review
