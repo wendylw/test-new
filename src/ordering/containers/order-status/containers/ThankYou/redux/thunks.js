@@ -164,7 +164,7 @@ export const callNativeProfile = createAsyncThunk('ordering/profile/nativeProfil
   }
 });
 
-export const loadProfilePageInfo = createAsyncThunk(
+export const initProfilePage = createAsyncThunk(
   'ordering/orderStatus/thankYou/loadProfilePageInfo',
   async ({ from, hasOrderPaid }, { dispatch, getState }) => {
     // eslint-disable-next-line no-useless-catch
