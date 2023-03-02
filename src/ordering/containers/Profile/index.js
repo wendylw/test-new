@@ -12,7 +12,6 @@ import {
   getBirthdayErrorType,
   getIsBirthdayInputErrorDisplay,
   getIsDisabledProfileSaveButton,
-  getIsValidProfileForm,
   getIsProfileDataUpdating,
 } from './redux/selectors';
 import {
@@ -180,7 +179,6 @@ const Profile = ({ show, onClose }) => {
   const { name, email, birthday } = useSelector(getUserProfile) || {};
   const isUserProfileStatusPending = useSelector(getIsUserProfileStatusPending);
   const isDisabledProfileSaveButton = useSelector(getIsDisabledProfileSaveButton);
-  const isValidProfileForm = useSelector(getIsValidProfileForm);
   const isProfileDataUpdating = useSelector(getIsProfileDataUpdating);
   const className = ['profile flex flex-column flex-end aside fixed-wrapper'];
   const onHistoryBackReceived = useCallback(() => {
@@ -202,10 +200,6 @@ const Profile = ({ show, onClose }) => {
   const [profileBirthday, setProfileBirthday] = useState(_trim(birthday));
   const onSaveButtonClick = async () => {
     CleverTap.pushEvent('Complete profile page - Click continue');
-
-    if (!isValidProfileForm) {
-      return;
-    }
 
     try {
       const result = await dispatch(

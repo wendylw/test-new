@@ -42,27 +42,17 @@ export const getIsBirthdayInputErrorDisplay = createSelector(
   (birthdayInputCompletedStatus, isValidBirthday) => birthdayInputCompletedStatus && !isValidBirthday
 );
 
-export const getIsValidProfileForm = createSelector(
-  getIsValidName,
-  getIsValidEmail,
-  getIsValidBirthday,
-  (isValidName, isValidEmail, isValidBirthday) => isValidName && isValidEmail && isValidBirthday
-);
-
 export const getIsProfileDataUpdating = state => state.profile.profileUpdatedStatus === API_REQUEST_STATUS.PENDING;
 
 export const getIsDisabledProfileSaveButton = createSelector(
-  getNameErrorType,
-  getEmailErrorType,
-  getBirthdayErrorType,
+  getIsValidName,
+  getIsValidEmail,
+  getIsValidBirthday,
   getIsProfileDataUpdating,
-  (nameErrorType, emailErrorType, birthdayErrorType, isProfileDataUpdating) => {
-    const hasRequiredError =
-      nameErrorType === PROFILE_FIELD_ERROR_TYPES.REQUIRED ||
-      emailErrorType === PROFILE_FIELD_ERROR_TYPES.REQUIRED ||
-      birthdayErrorType === PROFILE_FIELD_ERROR_TYPES.REQUIRED;
+  (isValidName, isValidEmail, isValidBirthday, isProfileDataUpdating) => {
+    const isValidForm = isValidName && isValidEmail && isValidBirthday;
 
-    if (hasRequiredError) {
+    if (!isValidForm) {
       return true;
     }
 
