@@ -67,7 +67,7 @@ const Profile = ({ showProfileModal, closeModal }) => {
   const isBirthdayInputErrorDisplay = useSelector(getIsBirthdayInputErrorDisplay);
   const isDisabledProfileSubmit = useSelector(getIsDisabledProfileSubmit);
   const isValidProfileForm = useSelector(getIsValidProfileForm);
-  const className = ['profile flex flex-column flex-end aside fixed-wrapper active'];
+  const className = ['profile flex flex-column flex-end aside fixed-wrapper'];
   const handleSkipProfilePage = useCallback(() => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
     closeModal();
