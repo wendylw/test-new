@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,6 +28,11 @@ import PageLoader from '../../../components/PageLoader';
 import CleverTap from '../../../utils/clevertap';
 import './Profile.scss';
 import logger from '../../../utils/monitoring/logger';
+
+const BIRTHDAY_DATE = {
+  MIN: '1900-01-01',
+  MAX: dayjs().format('YYYY-MM-DD'),
+};
 
 const ERROR_TRANSLATION_KEYS = {
   [PROFILE_FIELD_ERROR_TYPES.REQUIRED]: {
@@ -235,7 +241,8 @@ const Profile = ({ showProfileModal, closeModal }) => {
                       }`}
                       name="profileBirthday"
                       type="date"
-                      min="1900-01-01"
+                      min={BIRTHDAY_DATE.MIN}
+                      max={BIRTHDAY_DATE.MAX}
                       onChange={handleSelectBirthDay}
                     />
                     <input
