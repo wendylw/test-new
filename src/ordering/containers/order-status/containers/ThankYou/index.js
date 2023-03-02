@@ -994,9 +994,7 @@ export class ThankYou extends PureComponent {
         className={`ordering-thanks flex flex-middle flex-column ${match.isExact ? '' : 'hide'}`}
         data-heap-name="ordering.thank-you.container"
       >
-        {order && (
-          <Profile closeModal={this.handleCompleteProfileModalClose} showProfileModal={profileModalVisibility} />
-        )}
+        {order && <Profile onClose={this.handleCompleteProfileModalClose} show={profileModalVisibility} />}
         <>
           <HybridHeader
             headerRef={ref => (this.headerEl = ref)}

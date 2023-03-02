@@ -45,6 +45,7 @@ export const { actions, reducer } = createSlice({
       state.nativeProfileDisplayFailed = true;
     },
     [init.fulfilled.type]: (state, { payload }) => {
+      // init user profile data to page data for updating
       state.name = payload.name;
       state.email = _trim(payload.email);
       state.birthday = _trim(payload.birthday);

@@ -22,7 +22,7 @@ import { init, profileUpdated, profileMissingSkippedLimitUpdated } from './redux
 import { actions as profileActions } from './redux';
 import { confirm, toast } from '../../../common/utils/feedback';
 import { PROFILE_BIRTHDAY_FORMAT, PROFILE_FIELD_ERROR_TYPES } from './utils/constants';
-import { withBackButtonSupport } from '../../../utils/modal-back-button-support';
+import { useBackButtonSupport } from '../../../utils/modal-back-button-support';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
 import PageLoader from '../../../components/PageLoader';
 import CleverTap from '../../../utils/clevertap';
@@ -49,7 +49,7 @@ const ERROR_TRANSLATION_KEYS = {
   },
 };
 
-const Profile = ({ showProfileModal, closeModal }) => {
+const Profile = ({ show, onClose }) => {
   const { t } = useTranslation(['Profile']);
   const birthdayInputRef = useRef(null);
   const dispatch = useDispatch();
@@ -68,16 +68,36 @@ const Profile = ({ showProfileModal, closeModal }) => {
   const isDisabledProfileSubmit = useSelector(getIsDisabledProfileSubmit);
   const isValidProfileForm = useSelector(getIsValidProfileForm);
   const className = ['profile flex flex-column flex-end aside fixed-wrapper'];
+  const onHistoryBackReceived = useCallback(() => {
+    onClose();
+    return true;
+  }, [onClose]);
+  useBackButtonSupport({
+    visibility: show,
+    onHistoryBackReceived,
+  });
   const handleSkipProfilePage = useCallback(() => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
-    closeModal();
-  }, [closeModal]);
+    onClose();
+  }, [onClose]);
   const handleChangeName = e => {
     dispatch(profileActions.nameUpdated(e.target.value));
   };
+  const handleFocusNameInput = useCallback(() => {
+    dispatch(profileActions.nameInputCompletedStatusUpdated(false));
+  });
+  const handleBlurNameInput = useCallback(() => {
+    dispatch(profileActions.nameInputCompletedStatusUpdated(true));
+  });
   const handleChangeEmail = e => {
     dispatch(profileActions.emailUpdated(e.target.value));
   };
+  const handleFocusEmailInput = useCallback(() => {
+    dispatch(profileActions.emailInputCompletedStatusUpdated(false));
+  });
+  const handleBlurEmailInput = useCallback(() => {
+    dispatch(profileActions.emailInputCompletedStatusUpdated(true));
+  });
   const handleSelectBirthDay = e => {
     dispatch(profileActions.birthDayUpdated(e.target.value));
   };
@@ -106,7 +126,7 @@ const Profile = ({ showProfileModal, closeModal }) => {
             } else {
               CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again");
               dispatch(profileMissingSkippedLimitUpdated());
-              closeModal();
+              onClose();
             }
           },
         });
@@ -121,12 +141,12 @@ const Profile = ({ showProfileModal, closeModal }) => {
   };
 
   useEffect(() => {
-    if (showProfileModal) {
+    if (show) {
       dispatch(init());
     }
-  }, [dispatch, showProfileModal]);
+  }, [dispatch, show]);
 
-  if (isUserProfileStatusPending && showProfileModal) {
+  if (isUserProfileStatusPending && show) {
     return (
       <aside className={className.join(' ')}>
         <PageLoader />
@@ -134,11 +154,11 @@ const Profile = ({ showProfileModal, closeModal }) => {
     );
   }
 
-  if (!isProfileWebVisibility || !showProfileModal) {
+  if (!isProfileWebVisibility || !show) {
     return null;
   }
 
-  if (showProfileModal) {
+  if (show) {
     className.push('active');
   }
 
@@ -183,12 +203,8 @@ const Profile = ({ showProfileModal, closeModal }) => {
                   type="text"
                   required={true}
                   onChange={handleChangeName}
-                  onFocus={() => {
-                    dispatch(profileActions.nameInputCompletedStatusUpdated(false));
-                  }}
-                  onBlur={() => {
-                    dispatch(profileActions.nameInputCompletedStatusUpdated(true));
-                  }}
+                  onFocus={handleFocusNameInput}
+                  onBlur={handleBlurNameInput}
                 />
               </div>
               {isNameInputErrorDisplay ? (
@@ -209,12 +225,8 @@ const Profile = ({ showProfileModal, closeModal }) => {
                   name="profileEmail"
                   value={profileEmail}
                   onChange={handleChangeEmail}
-                  onFocus={() => {
-                    dispatch(profileActions.emailInputCompletedStatusUpdated(false));
-                  }}
-                  onBlur={() => {
-                    dispatch(profileActions.emailInputCompletedStatusUpdated(true));
-                  }}
+                  onFocus={handleFocusEmailInput}
+                  onBlur={handleBlurEmailInput}
                 />
               </div>
               {isEmailInputErrorDisplay ? (
@@ -236,6 +248,8 @@ const Profile = ({ showProfileModal, closeModal }) => {
                   <div>
                     <input
                       ref={birthdayInputRef}
+                      // If browser is desktop Safari, showPicker() can not be execute
+                      // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
                       className={`profile__input profile__input-birthday form__input ${
                         isLaptopSafari ? 'profile__input-birthday-safari' : ''
                       }`}
@@ -284,4 +298,4 @@ const Profile = ({ showProfileModal, closeModal }) => {
 
 Profile.displayName = 'Profile';
 
-export default withBackButtonSupport(Profile);
+export default Profile;
