@@ -10,7 +10,6 @@ const initialState = {
   nameInputCompletedStatus: false,
   emailInputCompletedStatus: false,
   birthdayInputCompletedStatus: false,
-  nativeProfileDisplayFailed: false,
 };
 
 export const { actions, reducer } = createSlice({
