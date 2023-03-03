@@ -37,7 +37,7 @@ export const profileMissingSkippedLimitUpdated = createAsyncThunk(
 );
 
 export const validateName = createAsyncThunk('ordering/profile/validateName', profileName => {
-  if (_isEmpty(profileName) || _isUndefined(profileName)) {
+  if (!profileName) {
     return PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }
 
@@ -45,7 +45,7 @@ export const validateName = createAsyncThunk('ordering/profile/validateName', pr
 });
 
 export const validateEmail = createAsyncThunk('ordering/profile/validateEmail', profileEmail => {
-  if (_isEmpty(profileEmail) || _isUndefined(profileEmail)) {
+  if (!profileEmail) {
     return PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }
 
@@ -58,7 +58,7 @@ export const validateEmail = createAsyncThunk('ordering/profile/validateEmail', 
 });
 
 export const validateBirthday = createAsyncThunk('ordering/profile/validateBirthday', profileBirthday => {
-  if (_isEmpty(profileBirthday) || _isUndefined(profileBirthday)) {
+  if (!profileBirthday) {
     return PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }
 

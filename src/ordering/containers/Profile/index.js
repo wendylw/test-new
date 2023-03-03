@@ -136,6 +136,10 @@ const Profile = ({ show, onClose }) => {
         });
 
         return;
+      } else if (result.error) {
+        alert(t('ApiError:40002Description'), { title: 'ApiError:40002Title' });
+
+        return;
       }
 
       toast.success(t('SaveSuccess'));

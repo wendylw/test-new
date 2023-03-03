@@ -9,7 +9,7 @@ import { API_INFO, postFoodCourtIdHashCode } from '../../../redux/api-info';
 import Constants from '../../../../../../utils/constants';
 import CleverTap from '../../../../../../utils/clevertap';
 import * as NativeMethods from '../../../../../../utils/native-methods';
-import { getPaidToCurrentEventDurationMinutes } from '../utils';
+import { getPaidToCurrentEventDurationMinutes, getIsProfileMissingSkippedExpired } from '../utils';
 import { PROFILE_DISPLAY_DELAY_DURATION } from '../constants';
 import {
   actions as appActions,
@@ -21,7 +21,6 @@ import {
   getIsWebview,
 } from '../../../../../redux/modules/app';
 import { getOrder } from '../../../redux/selector';
-import { getIsProfileMissingSkippedExpired } from './selector';
 import { loadOrder } from '../../../redux/thunks';
 import logger from '../../../../../../utils/monitoring/logger';
 
