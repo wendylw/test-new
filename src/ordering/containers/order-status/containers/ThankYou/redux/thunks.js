@@ -154,12 +154,13 @@ export const showProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/
 export const hideProfileModal = createAsyncThunk('ordering/orderStatus/thankYou/hideProfileModal', async () => {});
 
 export const callNativeProfile = createAsyncThunk('ordering/profile/callNativeProfile', async () => {
-  // eslint-disable-next-line no-useless-catch
   try {
     await NativeMethods.showCompleteProfilePageAsync();
 
     return true;
   } catch (error) {
+    logger.error('Ordering_OrderStatus_CallNativeProfileFailed', { message: error?.message });
+
     throw error;
   }
 });
@@ -167,7 +168,6 @@ export const callNativeProfile = createAsyncThunk('ordering/profile/callNativePr
 export const initProfilePage = createAsyncThunk(
   'ordering/orderStatus/thankYou/loadProfilePageInfo',
   async ({ from, hasOrderPaid }, { dispatch, getState }) => {
-    // eslint-disable-next-line no-useless-catch
     try {
       // Delay Profile display duration
       const delay = PROFILE_DISPLAY_DELAY_DURATION[from] || PROFILE_DISPLAY_DELAY_DURATION.DEFAULT;
@@ -201,6 +201,8 @@ export const initProfilePage = createAsyncThunk(
         }, delay);
       }
     } catch (error) {
+      logger.error('Ordering_OrderStatus_InitProfileFailed', { message: error?.message });
+
       throw error;
     }
   }

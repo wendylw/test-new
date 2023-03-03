@@ -7,9 +7,9 @@ import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
 import { isValidBirthdayDateString, isAfterTodayBirthdayDate } from '../utils';
 import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES } from '../utils/constants';
+import logger from '../../../../utils/monitoring/logger';
 
 export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated', async (payload, { getState }) => {
-  // eslint-disable-next-line no-useless-catch
   try {
     const state = getState();
     const { name, email, birthday } = getUserProfile(state);
@@ -19,6 +19,8 @@ export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated'
 
     return result;
   } catch (error) {
+    logger.error('Ordering_OrderStatus_ProfileUpdatedFailed', { message: error?.message });
+
     throw error;
   }
 });
