@@ -14,8 +14,15 @@ class Banners extends Component {
     }
 
     return (
-      <div>
-        <Slider loop spacing={12} autoplay autoplayTime={2000}>
+      <div className="tw-ml-16 sm:tw-ml-16px">
+        <Slider
+          mode="free-snap"
+          perView="auto"
+          loop
+          autoplay
+          autoplayTime={2000}
+          slideStyle={{ flex: '0 0 auto', width: '84vw' }}
+        >
           {(collections || []).map((collection, index) => {
             const { image, beepCollectionId, urlPath, name } = collection;
             return (

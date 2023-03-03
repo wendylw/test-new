@@ -24,19 +24,25 @@ const Slider = ({
 
   const selfAutoplay = useCallback(
     slider => {
+      console.log('selfAutoplay starts');
       function nextTimeout() {
+        console.log('selfAutoplay clearTimeout');
         clearTimeout(timeout.current);
-        if (mouseOver) return;
+        if (mouseOver.current) return;
         timeout.current = setTimeout(() => {
+          console.log('selfAutoplay timeout');
           slider.next();
+          console.log('slider.track.details.abs:', slider.track.details.abs);
         }, autoplayTime);
       }
       slider.on('created', () => {
         slider.container.addEventListener('mouseover', () => {
+          console.log('selfAutoplay mouseover');
           mouseOver.current = true;
           clearNextTimeout();
         });
         slider.container.addEventListener('mouseout', () => {
+          console.log('selfAutoplay mouseout');
           mouseOver.current = false;
           nextTimeout();
         });
@@ -67,7 +73,8 @@ const Slider = ({
       slideChanged(slider) {
         setCurrentSlide(slider.track.details.rel);
       },
-      created() {
+      created(slider) {
+        console.log(slider);
         setLoaded(true);
       },
       destroyed() {
