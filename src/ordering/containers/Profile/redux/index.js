@@ -40,11 +40,6 @@ export const { actions, reducer } = createSlice({
     [profileUpdated.rejected.type]: state => {
       state.profileUpdatedStatus = API_REQUEST_STATUS.REJECTED;
     },
-    [init.fulfilled.type]: (state, { payload }) => {
-      state.name = payload.name;
-      state.email = payload.email;
-      state.email = payload.birthday;
-    },
     [nameUpdated.fulfilled.type]: (state, { payload }) => {
       state.name = payload.name;
       state.nameErrorType = payload.errorType;
