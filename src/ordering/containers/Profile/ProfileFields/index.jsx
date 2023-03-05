@@ -18,7 +18,7 @@ import { isSafari } from '../../../../common/utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from '../utils/constants';
 
 const ProfileFields = () => {
-  const { t } = useTranslation(['ProfileFields']);
+  const { t } = useTranslation(['Profile']);
   const dispatch = useDispatch();
   const emailInputRef = useRef(null);
   const birthdayInputRef = useRef(null);
@@ -38,7 +38,7 @@ const ProfileFields = () => {
     dispatch(emailUpdated(e.target.value));
   };
   const handleSelectBirthDay = e => {
-    birthdayUpdated(e.target.value);
+    dispatch(birthdayUpdated(e.target.value));
     dispatch(profileActions.birthdaySelectorCompletedStatusUpdated(true));
   };
   const handleFocusNameInput = useCallback(() => {

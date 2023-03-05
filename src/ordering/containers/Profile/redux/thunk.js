@@ -5,7 +5,6 @@ import { getUserConsumerId, getUserProfile } from '../../../redux/modules/app';
 import { putProfileInfo } from './api-request';
 import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
-import { toast } from '../../../../common/utils/feedback';
 import { isValidBirthdayDateString, isAfterTodayBirthdayDate, getRequestBirthdayData } from '../utils';
 import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES, PROFILE_BIRTHDAY_FORMAT } from '../utils/constants';
 import { getProfileBirthday, getProfileEmail, getProfileName } from './selectors';
@@ -16,13 +15,12 @@ export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated'
     const state = getState();
     const consumerId = getUserConsumerId(state);
     const birthday = getProfileBirthday(state);
-    const payload = {
-      name: getProfileName(state),
+
+    const result = await putProfileInfo(consumerId, {
+      firstName: getProfileName(state),
       email: getProfileEmail(state),
       birthday: getRequestBirthdayData(birthday),
-    };
-
-    const result = await putProfileInfo(consumerId, { payload });
+    });
 
     return result;
   } catch (error) {
@@ -63,10 +61,8 @@ export const emailUpdated = createAsyncThunk('ordering/profile/emailUpdated', pr
 
   if (!email) {
     errorType = PROFILE_FIELD_ERROR_TYPES.REQUIRED;
-  }
-
-  // TODO: Migrate to v2
-  if (!Utils.checkEmailIsValid(email)) {
+  } else if (!Utils.checkEmailIsValid(email)) {
+    // TODO: Migrate to v2
     errorType = PROFILE_FIELD_ERROR_TYPES.UNAVAILABLE;
   }
 
@@ -77,19 +73,15 @@ export const emailUpdated = createAsyncThunk('ordering/profile/emailUpdated', pr
 });
 
 export const birthdayUpdated = createAsyncThunk('ordering/profile/birthdayUpdated', profileBirthday => {
-  const birthday = dayjs(_trim(profileBirthday)).format(PROFILE_BIRTHDAY_FORMAT);
+  const birthday = !profileBirthday ? '' : dayjs(_trim(profileBirthday)).format(PROFILE_BIRTHDAY_FORMAT);
   let errorType = null;
 
   if (!birthday) {
     errorType = PROFILE_FIELD_ERROR_TYPES.REQUIRED;
-  }
-
-  if (!isValidBirthdayDateString(birthday)) {
+  } else if (!isValidBirthdayDateString(birthday)) {
     errorType = PROFILE_FIELD_ERROR_TYPES.UNAVAILABLE;
-  }
-
-  // If selected birthday is after today, will display error
-  if (isAfterTodayBirthdayDate(birthday)) {
+  } else if (isAfterTodayBirthdayDate(birthday)) {
+    // If selected birthday is after today, will display error
     errorType = PROFILE_FIELD_ERROR_TYPES.OUT_OF_DATE;
   }
 

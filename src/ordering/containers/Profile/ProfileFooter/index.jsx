@@ -9,7 +9,7 @@ import CleverTap from '../../../../utils/clevertap';
 import logger from '../../../../utils/monitoring/logger';
 
 const ProfileFooter = ({ onCloseProfile }) => {
-  const { t } = useTranslation(['ProfileFooter']);
+  const { t } = useTranslation(['Profile']);
   const dispatch = useDispatch();
   const isDisabledProfileSaveButton = useSelector(getIsDisabledProfileSaveButton);
   const isProfileDataUpdating = useSelector(getIsProfileDataUpdating);
@@ -24,7 +24,7 @@ const ProfileFooter = ({ onCloseProfile }) => {
       onSelection: async status => {
         if (status) {
           CleverTap.pushEvent('Complete profile page email duplicate pop up - Click back to edit');
-          emailUpdated('');
+          dispatch(emailUpdated(''));
         } else {
           CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again");
           dispatch(profileMissingSkippedLimitUpdated());
@@ -47,7 +47,7 @@ const ProfileFooter = ({ onCloseProfile }) => {
         onConfirmDuplicatedEmailNextStep();
       } else {
         // 40002 is common error for verification failed. BE set this code as profile common error
-        alert(t('ApiError:40002Description'), { title: 'ApiError:40002Title' });
+        alert(t('ApiError:40002Description'), { title: t('ApiError:40002Title', { error_code: '40002' }) });
       }
     } catch (error) {
       logger.error('Ordering_OrderStatus_ProfileUpdatedFailed', { message: error?.message });
