@@ -2,6 +2,8 @@ import _isNull from 'lodash/isNull';
 import { createSelector } from 'reselect';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
 
+export const getProfileName = state => state.profile.name;
+
 export const getNameErrorType = state => state.profile.nameErrorType;
 
 export const getIsValidName = createSelector(getNameErrorType, nameErrorType => _isNull(nameErrorType));
@@ -14,6 +16,8 @@ export const getIsNameInputErrorDisplay = createSelector(
   (nameInputCompletedStatus, isValidName) => nameInputCompletedStatus && !isValidName
 );
 
+export const getProfileEmail = state => state.profile.email;
+
 export const getEmailErrorType = state => state.profile.emailErrorType;
 
 export const getIsValidEmail = createSelector(getEmailErrorType, emailErrorType => _isNull(emailErrorType));
@@ -25,6 +29,8 @@ export const getIsEmailInputErrorDisplay = createSelector(
   getIsValidEmail,
   (emailInputCompletedStatus, isValidEmail) => emailInputCompletedStatus && !isValidEmail
 );
+
+export const getProfileBirthday = state => state.profile.birthday;
 
 export const getBirthdayErrorType = state => state.profile.birthdayErrorType;
 

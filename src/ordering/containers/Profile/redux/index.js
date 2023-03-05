@@ -1,8 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { profileUpdated, validateName, validateEmail, validateBirthday } from './thunk';
+import { profileUpdated, init, nameUpdated, emailUpdated, birthdayUpdated } from './thunk';
 
+// if name, email or birthday is updated will inset state
 const initialState = {
+  name: '',
+  email: '',
+  birthday: '',
   profileUpdatedStatus: null,
   nameErrorType: null,
   emailErrorType: null,
@@ -36,14 +40,22 @@ export const { actions, reducer } = createSlice({
     [profileUpdated.rejected.type]: state => {
       state.profileUpdatedStatus = API_REQUEST_STATUS.REJECTED;
     },
-    [validateName.fulfilled.type]: (state, { payload }) => {
-      state.nameErrorType = payload;
+    [init.fulfilled.type]: (state, { payload }) => {
+      state.name = payload.name;
+      state.email = payload.email;
+      state.email = payload.birthday;
     },
-    [validateEmail.fulfilled.type]: (state, { payload }) => {
-      state.emailErrorType = payload;
+    [nameUpdated.fulfilled.type]: (state, { payload }) => {
+      state.name = payload.name;
+      state.nameErrorType = payload.errorType;
     },
-    [validateBirthday.fulfilled.type]: (state, { payload }) => {
-      state.birthdayErrorType = payload;
+    [emailUpdated.fulfilled.type]: (state, { payload }) => {
+      state.email = payload.email;
+      state.emailErrorType = payload.errorType;
+    },
+    [birthdayUpdated.fulfilled.type]: (state, { payload }) => {
+      state.birthday = payload.birthday;
+      state.birthdayErrorType = payload.errorType;
     },
   },
 });

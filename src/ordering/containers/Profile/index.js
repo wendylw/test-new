@@ -1,10 +1,10 @@
 import _trim from 'lodash/trim';
 import dayjs from 'dayjs';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMount } from 'react-use';
-import { getIsUserProfileStatusPending, getUserProfile } from '../../redux/modules/app';
+import { getIsUserProfileStatusPending } from '../../redux/modules/app';
 import {
   getNameErrorType,
   getIsNameInputErrorDisplay,
@@ -14,18 +14,21 @@ import {
   getIsBirthdayInputErrorDisplay,
   getIsDisabledProfileSaveButton,
   getIsProfileDataUpdating,
+  getProfileName,
+  getProfileEmail,
+  getProfileBirthday,
 } from './redux/selectors';
 import {
   profileUpdated,
   profileMissingSkippedLimitUpdated,
-  validateName,
-  validateEmail,
-  validateBirthday,
+  init,
+  nameUpdated,
+  emailUpdated,
+  birthdayUpdated,
 } from './redux/thunk';
 import { actions as profileActions } from './redux';
 import { confirm, toast } from '../../../common/utils/feedback';
 import { isSafari } from '../../../common/utils';
-import { getRequestBirthdayData } from './utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from './utils/constants';
 import { useBackButtonSupport } from '../../../utils/modal-back-button-support';
 import ProfileRewardsImage from '../../../images/profile-rewards.svg';
@@ -37,17 +40,20 @@ import logger from '../../../utils/monitoring/logger';
 const Profile = ({ show, onClose }) => {
   const { t } = useTranslation(['Profile']);
   const dispatch = useDispatch();
+  const emailInputRef = useRef(null);
   const birthdayInputRef = useRef(null);
-  const { name, email, birthday } = useSelector(getUserProfile) || {};
-  const isUserProfileStatusPending = useSelector(getIsUserProfileStatusPending);
-  const isDisabledProfileSaveButton = useSelector(getIsDisabledProfileSaveButton);
-  const isProfileDataUpdating = useSelector(getIsProfileDataUpdating);
+  const profileName = useSelector(getProfileName);
+  const profileEmail = useSelector(getProfileEmail);
+  const profileBirthday = useSelector(getProfileBirthday);
   const nameErrorType = useSelector(getNameErrorType);
   const isNameInputErrorDisplay = useSelector(getIsNameInputErrorDisplay);
   const emailErrorType = useSelector(getEmailErrorType);
   const isEmailInputErrorDisplay = useSelector(getIsEmailInputErrorDisplay);
   const birthdayErrorType = useSelector(getBirthdayErrorType);
   const isBirthdayInputErrorDisplay = useSelector(getIsBirthdayInputErrorDisplay);
+  const isUserProfileStatusPending = useSelector(getIsUserProfileStatusPending);
+  const isDisabledProfileSaveButton = useSelector(getIsDisabledProfileSaveButton);
+  const isProfileDataUpdating = useSelector(getIsProfileDataUpdating);
   const className = ['profile flex flex-column flex-end aside fixed-wrapper'];
   const onHistoryBackReceived = useCallback(() => {
     onClose();
@@ -60,98 +66,77 @@ const Profile = ({ show, onClose }) => {
   });
 
   const handleChangeName = e => {
-    const newName = e.target.value;
-
-    setProfileName(newName);
-    dispatch(validateName(newName));
+    dispatch(nameUpdated(e.target.value));
   };
   const handleChangeEmail = e => {
-    const newEmail = _trim(e.target.value);
-
-    setProfileEmail(newEmail);
-    dispatch(validateEmail(newEmail));
+    dispatch(emailUpdated(e.target.value));
   };
   const handleSelectBirthDay = e => {
     const selectedBirthday = dayjs(_trim(e.target.value)).format(PROFILE_BIRTHDAY_FORMAT);
 
-    setProfileBirthday(selectedBirthday);
-    dispatch(validateBirthday(selectedBirthday));
+    birthdayUpdated(selectedBirthday);
     dispatch(profileActions.birthdaySelectorCompletedStatusUpdated(true));
   };
   const handleFocusNameInput = useCallback(() => {
     dispatch(profileActions.nameInputCompletedStatusUpdated(false));
   }, [dispatch]);
-  const handleBlurNameInput = async e => {
-    const newName = e.target.value;
-
-    dispatch(validateName(newName));
+  const handleBlurNameInput = () => {
     dispatch(profileActions.nameInputCompletedStatusUpdated(true));
   };
   const handleFocusEmailInput = useCallback(() => {
     dispatch(profileActions.emailInputCompletedStatusUpdated(false));
   }, [dispatch]);
-  const handleBlurEmailInput = e => {
-    const newEmail = _trim(e.target.value);
-
-    dispatch(validateEmail(newEmail));
+  const handleBlurEmailInput = () => {
     dispatch(profileActions.emailInputCompletedStatusUpdated(true));
   };
   const onSkipProfilePage = useCallback(() => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
     onClose();
   }, [onClose]);
-  const [profileName, setProfileName] = useState(name || '');
-  const [profileEmail, setProfileEmail] = useState(_trim(email || ''));
-  const [profileBirthday, setProfileBirthday] = useState(_trim(birthday || ''));
+  const onConfirmDuplicatedEmailNextStep = useCallback(() => {
+    confirm(t('DuplicatedEmailAlertEmail'), {
+      className: 'profile__email-duplicated-confirm',
+      closeByBackButton: false,
+      closeByBackDrop: false,
+      cancelButtonContent: t('DuplicatedEmailAlertDoNotAskAgain'),
+      confirmButtonContent: t('DuplicatedEmailAlertBackToEdit'),
+      title: t('DuplicatedEmailAlertTitle'),
+      onSelection: async status => {
+        if (status) {
+          CleverTap.pushEvent('Complete profile page email duplicate pop up - Click back to edit');
+          emailUpdated('');
+          emailInputRef.current.focus();
+        } else {
+          CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again");
+          dispatch(profileMissingSkippedLimitUpdated());
+          onClose();
+        }
+      },
+    });
+  }, [dispatch, onClose, t]);
   const onSaveButtonClick = async () => {
     CleverTap.pushEvent('Complete profile page - Click continue');
 
     try {
-      const result = await dispatch(
-        profileUpdated({
-          firstName: profileName,
-          email: profileEmail,
-          birthday: getRequestBirthdayData(profileBirthday),
-        })
-      );
+      const result = await dispatch(profileUpdated());
 
-      if (result.error && result.error?.code === '40024') {
-        confirm(t('DuplicatedEmailAlertEmail'), {
-          className: 'profile__email-duplicated-confirm',
-          closeByBackButton: false,
-          closeByBackDrop: false,
-          cancelButtonContent: t('DuplicatedEmailAlertDoNotAskAgain'),
-          confirmButtonContent: t('DuplicatedEmailAlertBackToEdit'),
-          title: t('DuplicatedEmailAlertTitle'),
-          onSelection: async status => {
-            if (status) {
-              CleverTap.pushEvent('Complete profile page email duplicate pop up - Click back to edit');
-              setProfileEmail('');
-            } else {
-              CleverTap.pushEvent("Complete profile page email duplicate pop up - Click don't ask again");
-              dispatch(profileMissingSkippedLimitUpdated());
-              onClose();
-            }
-          },
-        });
-
-        return;
-      } else if (result.error) {
-        alert(t('ApiError:40002Description'), { title: 'ApiError:40002Title' });
-
-        return;
+      if (!result.error) {
+        toast.success(t('SaveSuccess'));
       }
 
-      toast.success(t('SaveSuccess'));
+      if (result.error?.code === '40024') {
+        onConfirmDuplicatedEmailNextStep();
+      } else {
+        // 40002 is common error for verification failed. BE set this code as profile common error
+        alert(t('ApiError:40002Description'), { title: 'ApiError:40002Title' });
+      }
     } catch (error) {
       logger.error('Ordering_OrderStatus_ProfileUpdatedFailed', { message: error?.message });
     }
   };
 
   useMount(() => {
-    dispatch(validateName(profileName));
-    dispatch(validateEmail(profileEmail));
-    dispatch(validateBirthday(profileBirthday));
+    dispatch(init());
   });
 
   if (show) {
@@ -199,11 +184,11 @@ const Profile = ({ show, onClose }) => {
                       {t('Name')}
                     </label>
                     <input
-                      name="profileName"
-                      value={profileName}
                       className="profile__input form__input"
+                      name="profileName"
                       type="text"
                       required={true}
+                      value={profileName}
                       onChange={handleChangeName}
                       onFocus={handleFocusNameInput}
                       onBlur={handleBlurNameInput}
@@ -225,8 +210,11 @@ const Profile = ({ show, onClose }) => {
                       {t('Email')}
                     </label>
                     <input
+                      ref={emailInputRef}
                       className="profile__input form__input"
                       name="profileEmail"
+                      type="email"
+                      required={true}
                       value={profileEmail}
                       onChange={handleChangeEmail}
                       onFocus={handleFocusEmailInput}

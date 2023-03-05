@@ -1,21 +1,28 @@
-import _isEmpty from 'lodash/isEmpty';
-import _isUndefined from 'lodash/isUndefined';
+import _trim from 'lodash/trim';
+import dayjs from 'dayjs';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserConsumerId, getUserProfile } from '../../../redux/modules/app';
 import { putProfileInfo } from './api-request';
 import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
-import { isValidBirthdayDateString, isAfterTodayBirthdayDate } from '../utils';
-import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES } from '../utils/constants';
+import { toast } from '../../../../common/utils/feedback';
+import { isValidBirthdayDateString, isAfterTodayBirthdayDate, getRequestBirthdayData } from '../utils';
+import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES, PROFILE_BIRTHDAY_FORMAT } from '../utils/constants';
+import { getProfileBirthday, getProfileEmail, getProfileName } from './selectors';
 import logger from '../../../../utils/monitoring/logger';
 
-export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated', async (payload, { getState }) => {
+export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated', async (_, { getState }) => {
   try {
     const state = getState();
-    const { name, email, birthday } = getUserProfile(state);
     const consumerId = getUserConsumerId(state);
+    const birthday = getProfileBirthday(state);
+    const payload = {
+      name: getProfileName(state),
+      email: getProfileEmail(state),
+      birthday: getRequestBirthdayData(birthday),
+    };
 
-    const result = await putProfileInfo(consumerId, { name, email, birthday, ...payload });
+    const result = await putProfileInfo(consumerId, { payload });
 
     return result;
   } catch (error) {
@@ -36,40 +43,69 @@ export const profileMissingSkippedLimitUpdated = createAsyncThunk(
   }
 );
 
-export const validateName = createAsyncThunk('ordering/profile/validateName', profileName => {
-  if (!profileName) {
-    return PROFILE_FIELD_ERROR_TYPES.REQUIRED;
+export const nameUpdated = createAsyncThunk('ordering/profile/nameUpdated', profileName => {
+  const name = _trim(profileName);
+  let errorType = null;
+
+  if (!name) {
+    errorType = PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }
 
-  return null;
+  return {
+    name,
+    errorType,
+  };
 });
 
-export const validateEmail = createAsyncThunk('ordering/profile/validateEmail', profileEmail => {
-  if (!profileEmail) {
-    return PROFILE_FIELD_ERROR_TYPES.REQUIRED;
+export const emailUpdated = createAsyncThunk('ordering/profile/emailUpdated', profileEmail => {
+  const email = _trim(profileEmail);
+  let errorType = null;
+
+  if (!email) {
+    errorType = PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }
 
   // TODO: Migrate to v2
-  if (!Utils.checkEmailIsValid(profileEmail)) {
-    return PROFILE_FIELD_ERROR_TYPES.UNAVAILABLE;
+  if (!Utils.checkEmailIsValid(email)) {
+    errorType = PROFILE_FIELD_ERROR_TYPES.UNAVAILABLE;
   }
 
-  return null;
+  return {
+    email,
+    errorType,
+  };
 });
 
-export const validateBirthday = createAsyncThunk('ordering/profile/validateBirthday', profileBirthday => {
-  if (!profileBirthday) {
-    return PROFILE_FIELD_ERROR_TYPES.REQUIRED;
+export const birthdayUpdated = createAsyncThunk('ordering/profile/birthdayUpdated', profileBirthday => {
+  const birthday = dayjs(_trim(profileBirthday)).format(PROFILE_BIRTHDAY_FORMAT);
+  let errorType = null;
+
+  if (!birthday) {
+    errorType = PROFILE_FIELD_ERROR_TYPES.REQUIRED;
   }
 
-  if (!isValidBirthdayDateString(profileBirthday)) {
-    return PROFILE_FIELD_ERROR_TYPES.UNAVAILABLE;
+  if (!isValidBirthdayDateString(birthday)) {
+    errorType = PROFILE_FIELD_ERROR_TYPES.UNAVAILABLE;
   }
 
   // If selected birthday is after today, will display error
-  if (isAfterTodayBirthdayDate(profileBirthday)) {
-    return PROFILE_FIELD_ERROR_TYPES.OUT_OF_DATE;
+  if (isAfterTodayBirthdayDate(birthday)) {
+    errorType = PROFILE_FIELD_ERROR_TYPES.OUT_OF_DATE;
   }
 
-  return null;
+  return {
+    birthday,
+    errorType,
+  };
+});
+
+export const init = createAsyncThunk('ordering/profile/init', (_, { dispatch, getState }) => {
+  const state = getState();
+  const { name, email, birthday } = getUserProfile(state);
+
+  // In fact, the profile data does not need to be returned with the redux merge of the page every time,
+  // it only needs to be put in redux during initialization
+  dispatch(nameUpdated(name));
+  dispatch(emailUpdated(email));
+  dispatch(birthdayUpdated(birthday));
 });
