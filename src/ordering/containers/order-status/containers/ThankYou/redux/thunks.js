@@ -193,9 +193,7 @@ export const initProfilePage = createAsyncThunk(
         isProfileMissingSkippedExpired && hasRequiredError && userIsLogin && hasOrderPaid && !isWebview;
 
       if (isProfileModalShown) {
-        const timer = setTimeout(() => {
-          clearTimeout(timer);
-
+        setTimeout(() => {
           dispatch(showProfileModal());
         }, delay);
       }
