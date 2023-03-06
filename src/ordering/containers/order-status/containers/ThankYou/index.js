@@ -138,7 +138,15 @@ export class ThankYou extends PureComponent {
 
     const from = Utils.getCookieVariable('__ty_source');
 
-    this.setState({ from });
+    this.setState({ from }, () => {
+      const { from } = this.state;
+
+      // WB-4979: If payment method is not pay at counter, will display profile page immediately
+      // Pay at counter logic is in componentDidUpdate
+      if (from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
+        initProfilePage({ from });
+      }
+    });
 
     // immidiately remove __ty_source cookie after setting in the state.
     Utils.removeCookieVariable('__ty_source');
@@ -166,12 +174,7 @@ export class ThankYou extends PureComponent {
 
     await this.loadOrder();
 
-    const { shippingType, foodCourtId, hasOrderPaid } = this.props;
-
-    // WB-4979: initProfilePage must after loadOrder, we need order payment status
-    if (REFERRERS_REQUIRING_PROFILE.includes(from)) {
-      initProfilePage({ from, hasOrderPaid });
-    }
+    const { shippingType, foodCourtId } = this.props;
 
     this.setContainerHeight();
 
@@ -371,8 +374,13 @@ export class ThankYou extends PureComponent {
       loadOrderStoreReview,
       hasOrderPaid: currHasOrderPaid,
     } = this.props;
-
+    const { from } = this.state;
     const { storeId } = order || {};
+
+    // WB-4979: pay at counter initProfilePage must after loadOrder, we need order payment status
+    if (from === REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && currHasOrderPaid && !prevHasOrderPaid) {
+      initProfilePage({ from });
+    }
 
     if (storeId && prevStoreId !== storeId) {
       shippingType === DELIVERY_METHOD.DINE_IN

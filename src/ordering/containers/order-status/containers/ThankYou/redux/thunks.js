@@ -166,7 +166,7 @@ export const callNativeProfile = createAsyncThunk('ordering/profile/callNativePr
 
 export const initProfilePage = createAsyncThunk(
   'ordering/orderStatus/thankYou/loadProfilePageInfo',
-  async ({ from, hasOrderPaid }, { dispatch, getState }) => {
+  async ({ from }, { dispatch, getState }) => {
     try {
       // Delay Profile display duration
       const delay = PROFILE_DISPLAY_DELAY_DURATION[from] || PROFILE_DISPLAY_DELAY_DURATION.DEFAULT;
@@ -184,13 +184,14 @@ export const initProfilePage = createAsyncThunk(
 
       if (isWebview) {
         dispatch(callNativeProfile());
+
+        return;
       }
 
       const profile = getUserProfile(getState());
       const { name, email, birthday } = profile || {};
       const hasRequiredError = !name || !email || !birthday;
-      const isProfileModalShown =
-        isProfileMissingSkippedExpired && hasRequiredError && userIsLogin && hasOrderPaid && !isWebview;
+      const isProfileModalShown = isProfileMissingSkippedExpired && hasRequiredError && userIsLogin && !isWebview;
 
       if (isProfileModalShown) {
         setTimeout(() => {
