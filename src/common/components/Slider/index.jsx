@@ -11,6 +11,7 @@ const Slider = ({
   perView,
   spacing,
   origin,
+  slideContainerStyle,
   slideStyle,
   loop,
   autoplay,
@@ -24,25 +25,19 @@ const Slider = ({
 
   const selfAutoplay = useCallback(
     slider => {
-      console.log('selfAutoplay starts');
       function nextTimeout() {
-        console.log('selfAutoplay clearTimeout');
         clearTimeout(timeout.current);
         if (mouseOver.current) return;
         timeout.current = setTimeout(() => {
-          console.log('selfAutoplay timeout');
           slider.next();
-          console.log('slider.track.details.abs:', slider.track.details.abs);
         }, autoplayTime);
       }
       slider.on('created', () => {
         slider.container.addEventListener('mouseover', () => {
-          console.log('selfAutoplay mouseover');
           mouseOver.current = true;
           clearNextTimeout();
         });
         slider.container.addEventListener('mouseout', () => {
-          console.log('selfAutoplay mouseout');
           mouseOver.current = false;
           nextTimeout();
         });
@@ -74,7 +69,6 @@ const Slider = ({
         setCurrentSlide(slider.track.details.rel);
       },
       created(slider) {
-        console.log(slider);
         setLoaded(true);
       },
       destroyed() {
@@ -92,7 +86,7 @@ const Slider = ({
 
   return (
     <div className={styles.SliderAndDotsContainer}>
-      <ul ref={sliderRef} className={`keen-slider ${styles.SliderContainer}`}>
+      <ul ref={sliderRef} className={`keen-slider ${styles.SliderContainer}`} style={slideContainerStyle}>
         {React.Children.map(children, child => (
           <li className="keen-slider__slide" key={`slide-${child.key}`} style={slideStyle}>
             {child}
@@ -134,6 +128,8 @@ Slider.propTypes = {
   // Sets the origin of the slides.
   origin: propTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
+  slideContainerStyle: propTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
   slideStyle: propTypes.object,
   autoplay: propTypes.bool,
   autoplayTime: propTypes.number,
@@ -146,6 +142,7 @@ Slider.defaultProps = {
   perView: 1,
   spacing: 0,
   origin: 'auto',
+  slideContainerStyle: {},
   slideStyle: {},
   autoplay: false,
   autoplayTime: 2000,

@@ -14,20 +14,20 @@ class Banners extends Component {
     }
 
     return (
-      <div className="tw-ml-16 sm:tw-ml-16px">
+      <div className="banner-container">
         <Slider
           mode="free-snap"
-          perView="auto"
+          perView={2}
           loop
           autoplay
           autoplayTime={2000}
-          slideStyle={{ flex: '0 0 auto', width: '84vw' }}
+          slideContainerStyle={{ width: window.innerWidth < 770 ? '181vw' : '744px' }}
         >
-          {(collections || []).map((collection, index) => {
+          {([...collections, ...collections] || []).map((collection, index) => {
             const { image, beepCollectionId, urlPath, name } = collection;
             return (
               <div
-                key={beepCollectionId}
+                key={beepCollectionId + index}
                 onClick={() => {
                   CleverTap.pushEvent('Homepage - Click Collection Banner', {
                     'collection name': name,

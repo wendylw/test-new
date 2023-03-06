@@ -1,23 +1,31 @@
 @import "../../../Variables";
 
+.banner-container {
+  margin-left: 4px;
+}
+
 .banners-item {
-  width: 84vw;
+  width: 90.5vw;
+  height: 27vw;
 
   img {
-    width: 84vw;
+    width: calc(90.5vw - 12px);
     height: 27vw;
     border-radius: $border-radius-large;
+    margin-left: 12px;
   }
 }
 
 @media (min-width: 770px) {
   .banners-item {
-    width: 350px;
+    width: 372px;
+    height: 128px;
 
     img {
-      width: 350px;
-      height: 117px;
+      width: 360px;
+      height: 128px;
       border-radius: $border-radius-large;
+      margin-left: 12px;
     }
   }
 }
