@@ -187,7 +187,7 @@ const isCleverTapIssues = (event, hint) => {
     // WB-5086 & WB-5087: The errors thrown directly from CleverTap script should be ignored.
     // Reasons: They are mostly raised intentionally by CleverTap to avoid further security risks. Nothing can be done on our side.
     // Refer to: https://github.com/CleverTap/clevertap-web-sdk/blob/5cf459521e5b83213e9a2d0e59b7e5000a5cbcbb/clevertap.js#L1347
-    const cleverTapRegex = /\/js\/clevertap.min.j/;
+    const cleverTapRegex = /\/js\/clevertap.min.js/;
     const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => cleverTapRegex.test(filename));
 
     return isScriptIssue;
