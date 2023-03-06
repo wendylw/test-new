@@ -39,19 +39,19 @@ const ProfileFields = () => {
   };
   const handleSelectBirthDay = e => {
     dispatch(birthdayUpdated(e.target.value));
-    dispatch(profileActions.birthdaySelectorCompletedStatusUpdated(true));
+    dispatch(profileActions.birthdaySelectorSelectedStatusUpdated(true));
   };
   const handleFocusNameInput = useCallback(() => {
-    dispatch(profileActions.nameInputCompletedStatusUpdated(false));
+    dispatch(profileActions.nameInputFilledStatusUpdated(false));
   }, [dispatch]);
   const handleBlurNameInput = () => {
-    dispatch(profileActions.nameInputCompletedStatusUpdated(true));
+    dispatch(profileActions.nameInputFilledStatusUpdated(true));
   };
   const handleFocusEmailInput = useCallback(() => {
-    dispatch(profileActions.emailInputCompletedStatusUpdated(false));
+    dispatch(profileActions.emailInputFilledStatusUpdated(false));
   }, [dispatch]);
   const handleBlurEmailInput = () => {
-    dispatch(profileActions.emailInputCompletedStatusUpdated(true));
+    dispatch(profileActions.emailInputFilledStatusUpdated(true));
   };
 
   return (

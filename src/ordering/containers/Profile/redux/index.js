@@ -11,23 +11,35 @@ const initialState = {
   nameErrorType: null,
   emailErrorType: null,
   birthdayErrorType: null,
-  nameInputCompletedStatus: false,
-  emailInputCompletedStatus: false,
-  birthdayInputCompletedStatus: false,
+  isNameInputFilled: false,
+  isEmailInputFilledStatus: false,
+  isBirthdaySelectorSelectedStatus: false,
 };
 
 export const { actions, reducer } = createSlice({
   name: 'ordering/profile',
   initialState,
   reducers: {
-    nameInputCompletedStatusUpdated: (state, { payload }) => {
-      state.nameInputCompletedStatus = payload;
+    nameInputFilledStatusUpdated: (state, { payload }) => {
+      state.isNameInputFilled = payload;
     },
-    emailInputCompletedStatusUpdated: (state, { payload }) => {
-      state.emailInputCompletedStatus = payload;
+    emailInputFilledStatusUpdated: (state, { payload }) => {
+      state.isEmailInputFilledStatus = payload;
     },
-    birthdaySelectorCompletedStatusUpdated: (state, { payload }) => {
-      state.birthdayInputCompletedStatus = payload;
+    birthdaySelectorSelectedStatusUpdated: (state, { payload }) => {
+      state.isBirthdaySelectorSelectedStatus = payload;
+    },
+    resetProfilePageData: state => {
+      state.name = '';
+      state.email = '';
+      state.birthday = '';
+      state.profileUpdatedStatus = null;
+      state.nameErrorType = null;
+      state.emailErrorType = null;
+      state.birthdayErrorType = null;
+      state.isNameInputFilled = false;
+      state.isEmailInputFilledStatus = false;
+      state.isBirthdaySelectorSelectedStatus = false;
     },
   },
   extraReducers: {

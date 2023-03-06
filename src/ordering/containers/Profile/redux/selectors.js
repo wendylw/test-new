@@ -8,12 +8,12 @@ export const getNameErrorType = state => state.profile.nameErrorType;
 
 export const getIsValidName = createSelector(getNameErrorType, nameErrorType => _isNull(nameErrorType));
 
-export const getNameInputCompletedStatus = state => state.profile.nameInputCompletedStatus;
+export const getIsNameInputFilled = state => state.profile.isNameInputFilled;
 
 export const getIsNameInputErrorDisplay = createSelector(
-  getNameInputCompletedStatus,
+  getIsNameInputFilled,
   getIsValidName,
-  (nameInputCompletedStatus, isValidName) => nameInputCompletedStatus && !isValidName
+  (isNameInputFilled, isValidName) => isNameInputFilled && !isValidName
 );
 
 export const getProfileEmail = state => state.profile.email;
@@ -22,12 +22,12 @@ export const getEmailErrorType = state => state.profile.emailErrorType;
 
 export const getIsValidEmail = createSelector(getEmailErrorType, emailErrorType => _isNull(emailErrorType));
 
-export const getEmailInputCompletedStatus = state => state.profile.emailInputCompletedStatus;
+export const getIsEmailInputFilledStatus = state => state.profile.isEmailInputFilledStatus;
 
 export const getIsEmailInputErrorDisplay = createSelector(
-  getEmailInputCompletedStatus,
+  getIsEmailInputFilledStatus,
   getIsValidEmail,
-  (emailInputCompletedStatus, isValidEmail) => emailInputCompletedStatus && !isValidEmail
+  (isEmailInputFilledStatus, isValidEmail) => isEmailInputFilledStatus && !isValidEmail
 );
 
 export const getProfileBirthday = state => state.profile.birthday;
@@ -36,12 +36,12 @@ export const getBirthdayErrorType = state => state.profile.birthdayErrorType;
 
 export const getIsValidBirthday = createSelector(getBirthdayErrorType, birthdayErrorType => _isNull(birthdayErrorType));
 
-export const getBirthdayInputCompletedStatus = state => state.profile.birthdayInputCompletedStatus;
+export const getIsBirthdaySelectorSelectedStatus = state => state.profile.isBirthdaySelectorSelectedStatus;
 
 export const getIsBirthdayInputErrorDisplay = createSelector(
-  getBirthdayInputCompletedStatus,
+  getIsBirthdaySelectorSelectedStatus,
   getIsValidBirthday,
-  (birthdayInputCompletedStatus, isValidBirthday) => birthdayInputCompletedStatus && !isValidBirthday
+  (isBirthdaySelectorSelectedStatus, isValidBirthday) => isBirthdaySelectorSelectedStatus && !isValidBirthday
 );
 
 export const getIsProfileDataUpdating = state => state.profile.profileUpdatedStatus === API_REQUEST_STATUS.PENDING;
