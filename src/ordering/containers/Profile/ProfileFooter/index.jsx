@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getIsDisabledProfileSaveButton, getIsProfileDataUpdating } from '../redux/selectors';
 import { profileUpdated, profileMissingSkippedLimitUpdated, emailUpdated } from '../redux/thunk';
 import { alert, confirm, toast } from '../../../../common/utils/feedback';
-// Migrate after app error be revamped
-import { ERROR_CODE_MAP } from '../../../../utils/constants';
 import CleverTap from '../../../../utils/clevertap';
 import logger from '../../../../utils/monitoring/logger';
 
@@ -43,6 +41,7 @@ const ProfileFooter = ({ onCloseProfile }) => {
 
       if (!result.error) {
         toast.success(t('SaveSuccess'));
+        onCloseProfile();
 
         return;
       }

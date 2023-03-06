@@ -1,7 +1,7 @@
 import _trim from 'lodash/trim';
 import dayjs from 'dayjs';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserConsumerId, getUserProfile } from '../../../redux/modules/app';
+import { actions as appActions, getUserConsumerId, getUserProfile } from '../../../redux/modules/app';
 import { putProfileInfo } from './api-request';
 import Utils from '../../../../utils/utils';
 import { setCookieVariable } from '../../../../common/utils';
@@ -10,7 +10,7 @@ import { PROFILE_SKIP_CYCLE, PROFILE_FIELD_ERROR_TYPES, PROFILE_BIRTHDAY_FORMAT 
 import { getProfileBirthday, getProfileEmail, getProfileName } from './selectors';
 import logger from '../../../../utils/monitoring/logger';
 
-export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated', async (_, { getState }) => {
+export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated', async (_, { dispatch, getState }) => {
   try {
     const state = getState();
     const consumerId = getUserConsumerId(state);
@@ -21,6 +21,9 @@ export const profileUpdated = createAsyncThunk('ordering/profile/profileUpdated'
       email: getProfileEmail(state),
       birthday: getRequestBirthdayData(birthday),
     });
+
+    // If profile info updated, should get new profile info for app level
+    dispatch(appActions.getProfileInfo(consumerId));
 
     return result;
   } catch (error) {
