@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import { isValidDate } from '../../../../utils/datetime-lib';
 
+export const isSupportedShowPicker = () => 'showPicker' in HTMLInputElement.prototype;
+
 const getMatchedBirthdayGroups = birthday => {
   const birthdayDateRegex = /^(?<day>\d{1,2})\/(?<month>\d{1,2})\/(?<year>\d{1,4})$/;
 

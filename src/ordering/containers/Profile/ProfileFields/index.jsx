@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -12,9 +12,10 @@ import {
   getProfileEmail,
   getProfileBirthday,
 } from '../redux/selectors';
-import { nameUpdated, emailUpdated, birthdayUpdated } from '../redux/thunk';
+import { nameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from '../redux/thunk';
 import { actions as profileActions } from '../redux';
 import { isSafari } from '../../../../common/utils';
+import { isSupportedShowPicker } from '../utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from '../utils/constants';
 
 const ProfileFields = () => {
@@ -38,8 +39,8 @@ const ProfileFields = () => {
     dispatch(emailUpdated(e.target.value));
   };
   const handleSelectBirthDay = e => {
-    dispatch(birthdayUpdated(e.target.value));
-    dispatch(profileActions.birthdaySelectorSelectedStatusUpdated(true));
+    dispatch(birthdaySelected(e.target.value));
+    dispatch(profileActions.birthdayInputFilledStatusUpdated(true));
   };
   const handleFocusNameInput = useCallback(() => {
     dispatch(profileActions.nameInputFilledStatusUpdated(false));
@@ -52,6 +53,16 @@ const ProfileFields = () => {
   }, [dispatch]);
   const handleBlurEmailInput = () => {
     dispatch(profileActions.emailInputFilledStatusUpdated(true));
+  };
+  // Birthday Input call change, focus & blur, when browser unsupported showPicker
+  const handleChangeBirthDay = e => {
+    dispatch(birthdayUpdated(e.target.value));
+  };
+  const handleFocusBirthdayInput = useCallback(() => {
+    dispatch(profileActions.birthdayInputFilledStatusUpdated(false));
+  }, [dispatch]);
+  const handleBlurBirthdayInput = () => {
+    dispatch(profileActions.birthdayInputFilledStatusUpdated(true));
   };
 
   return (
@@ -120,32 +131,49 @@ const ProfileFields = () => {
           </label>
           <div className="profile__input-birthday-container">
             <div>
-              <input
-                ref={birthdayInputRef}
-                // If browser is desktop Safari, showPicker() can not be execute
-                // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
-                // For date input can be click in Safari
-                className={`profile__input profile__input-birthday form__input ${
-                  isSafari() ? 'profile__input-birthday-safari' : ''
-                }`}
-                name="profileBirthday"
-                type="date"
-                min={BIRTHDAY_DATE.MIN}
-                max={BIRTHDAY_DATE.MAX}
-                onChange={handleSelectBirthDay}
-              />
-              <input
-                className="profile__input profile__input-birthday-text form__input"
-                name="profileBirthday"
-                value={profileBirthday}
-                placeholder={PROFILE_BIRTHDAY_FORMAT}
-                type="text"
-                onClick={e => {
-                  e.stopPropagation();
-                  birthdayInputRef.current.showPicker();
-                }}
-                readOnly
-              />
+              {/* If show picker unsupported, date input is removed, let customer can fill date by text input */}
+              {!isSupportedShowPicker() ? (
+                <>
+                  <input
+                    ref={birthdayInputRef}
+                    // If browser is desktop Safari, showPicker() can not be execute
+                    // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
+                    // For date input can be click in Safari
+                    className={`profile__input profile__input-birthday form__input ${
+                      isSafari() ? 'profile__input-birthday-safari' : ''
+                    }`}
+                    name="profileBirthday"
+                    type="date"
+                    min={BIRTHDAY_DATE.MIN}
+                    max={BIRTHDAY_DATE.MAX}
+                    onChange={handleSelectBirthDay}
+                  />
+                  <input
+                    className="profile__input profile__input-birthday-text form__input"
+                    name="profileBirthday"
+                    value={profileBirthday}
+                    placeholder={PROFILE_BIRTHDAY_FORMAT}
+                    type="text"
+                    onClick={e => {
+                      e.stopPropagation();
+                      // only input date supported will call showPicker
+                      birthdayInputRef.current.showPicker();
+                    }}
+                    readOnly
+                  />
+                </>
+              ) : (
+                <input
+                  className="profile__input form__input"
+                  name="profileBirthday"
+                  value={profileBirthday}
+                  placeholder={PROFILE_BIRTHDAY_FORMAT}
+                  type="text"
+                  onChange={handleChangeBirthDay}
+                  onFocus={handleFocusBirthdayInput}
+                  onBlur={handleBlurBirthdayInput}
+                />
+              )}
             </div>
           </div>
         </div>

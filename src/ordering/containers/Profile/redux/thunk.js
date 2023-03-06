@@ -75,8 +75,7 @@ export const emailUpdated = createAsyncThunk('ordering/profile/emailUpdated', pr
   };
 });
 
-export const birthdayUpdated = createAsyncThunk('ordering/profile/birthdayUpdated', profileBirthday => {
-  const birthday = !profileBirthday ? '' : dayjs(_trim(profileBirthday)).format(PROFILE_BIRTHDAY_FORMAT);
+const getBirthdayErrorType = birthday => {
   let errorType = null;
 
   if (!birthday) {
@@ -90,9 +89,27 @@ export const birthdayUpdated = createAsyncThunk('ordering/profile/birthdayUpdate
     errorType = PROFILE_FIELD_ERROR_TYPES.OUT_OF_DATE;
   }
 
+  return errorType;
+};
+
+export const birthdaySelected = createAsyncThunk('ordering/profile/birthdaySelected', profileBirthday => {
+  const birthday = !profileBirthday ? '' : dayjs(_trim(profileBirthday)).format(PROFILE_BIRTHDAY_FORMAT);
+
   return {
     birthday,
-    errorType,
+    errorType: getBirthdayErrorType(birthday),
+  };
+});
+
+// Birthday call birthdayUpdated, when browser unsupported showPicker()
+export const birthdayUpdated = createAsyncThunk('ordering/profile/birthdayUpdated', profileBirthday => {
+  const birthday = !profileBirthday ? '' : _trim(profileBirthday);
+
+  console.log(birthday);
+
+  return {
+    birthday,
+    errorType: getBirthdayErrorType(birthday),
   };
 });
 
@@ -104,5 +121,5 @@ export const init = createAsyncThunk('ordering/profile/init', (_, { dispatch, ge
   // it only needs to be put in redux during initialization
   dispatch(nameUpdated(name));
   dispatch(emailUpdated(email));
-  dispatch(birthdayUpdated(birthday));
+  dispatch(birthdaySelected(birthday));
 });

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { API_REQUEST_STATUS } from '../../../../common/utils/constants';
-import { profileUpdated, init, nameUpdated, emailUpdated, birthdayUpdated } from './thunk';
+import { profileUpdated, nameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from './thunk';
 
 // if name, email or birthday is updated will inset state
 const initialState = {
@@ -13,7 +13,7 @@ const initialState = {
   birthdayErrorType: null,
   isNameInputFilled: false,
   isEmailInputFilledStatus: false,
-  isBirthdaySelectorSelectedStatus: false,
+  isBirthdayInputFilledStatus: false,
 };
 
 export const { actions, reducer } = createSlice({
@@ -26,8 +26,8 @@ export const { actions, reducer } = createSlice({
     emailInputFilledStatusUpdated: (state, { payload }) => {
       state.isEmailInputFilledStatus = payload;
     },
-    birthdaySelectorSelectedStatusUpdated: (state, { payload }) => {
-      state.isBirthdaySelectorSelectedStatus = payload;
+    birthdayInputFilledStatusUpdated: (state, { payload }) => {
+      state.isBirthdayInputFilledStatus = payload;
     },
     resetProfilePageData: state => {
       state.name = '';
@@ -39,7 +39,7 @@ export const { actions, reducer } = createSlice({
       state.birthdayErrorType = null;
       state.isNameInputFilled = false;
       state.isEmailInputFilledStatus = false;
-      state.isBirthdaySelectorSelectedStatus = false;
+      state.isBirthdayInputFilledStatus = false;
     },
   },
   extraReducers: {
@@ -59,6 +59,10 @@ export const { actions, reducer } = createSlice({
     [emailUpdated.fulfilled.type]: (state, { payload }) => {
       state.email = payload.email;
       state.emailErrorType = payload.errorType;
+    },
+    [birthdaySelected.fulfilled.type]: (state, { payload }) => {
+      state.birthday = payload.birthday;
+      state.birthdayErrorType = payload.errorType;
     },
     [birthdayUpdated.fulfilled.type]: (state, { payload }) => {
       state.birthday = payload.birthday;
