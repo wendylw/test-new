@@ -34,4 +34,14 @@ export const getRequestBirthdayData = birthday => {
   return `${year}/${month}/${day}`;
 };
 
-export const isAfterTodayBirthdayDate = birthday => dayjs(birthday).isAfter(dayjs());
+export const isAfterTodayBirthdayDate = birthday => {
+  const matchedBirthdayGroups = getMatchedBirthdayGroups(birthday);
+
+  if (!matchedBirthdayGroups) {
+    return true;
+  }
+
+  const { day, month, year } = matchedBirthdayGroups;
+
+  return dayjs(`${year}-${month}-${day}`).isAfter(dayjs());
+};

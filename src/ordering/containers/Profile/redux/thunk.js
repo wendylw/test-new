@@ -84,6 +84,8 @@ export const birthdayUpdated = createAsyncThunk('ordering/profile/birthdayUpdate
   } else if (!isValidBirthdayDateString(birthday)) {
     errorType = PROFILE_FIELD_ERROR_TYPES.UNAVAILABLE;
   } else if (isAfterTodayBirthdayDate(birthday)) {
+    console.log(dayjs(birthday));
+    console.log(isAfterTodayBirthdayDate(birthday));
     // If selected birthday is after today, will display error
     errorType = PROFILE_FIELD_ERROR_TYPES.OUT_OF_DATE;
   }
