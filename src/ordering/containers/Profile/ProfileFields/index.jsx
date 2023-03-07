@@ -166,6 +166,10 @@ const ProfileFields = () => {
                     placeholder={PROFILE_BIRTHDAY_FORMAT}
                     type="text"
                     onClick={e => {
+                      console.log(isSupportedShowPicker());
+                      console.log(birthdayInputRef.current.showPicker);
+                      console.log(navigator.userAgent);
+
                       e.stopPropagation();
                       // only input date supported will call showPicker
                       birthdayInputRef.current.showPicker();
