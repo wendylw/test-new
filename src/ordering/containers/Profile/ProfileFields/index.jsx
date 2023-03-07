@@ -14,9 +14,9 @@ import {
 } from '../redux/selectors';
 import { nameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from '../redux/thunk';
 import { actions as profileActions } from '../redux';
-import { isSafari, isTNGMiniProgram } from '../../../../common/utils';
-import { isSupportedShowPicker } from '../utils';
+import { getIsSupportedShowPicker, getIsUpDateInputDOMLayer } from '../utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from '../utils/constants';
+import logger from '../../../../utils/monitoring/logger';
 
 const ProfileFields = () => {
   const { t } = useTranslation(['Profile']);
@@ -32,7 +32,6 @@ const ProfileFields = () => {
   const isEmailInputErrorDisplay = useSelector(getIsEmailInputErrorDisplay);
   const birthdayErrorType = useSelector(getBirthdayErrorType);
   const isBirthdayInputErrorDisplay = useSelector(getIsBirthdayInputErrorDisplay);
-  const isUpDateInputDOMLayer = isSafari() || isTNGMiniProgram();
   const handleChangeName = e => {
     dispatch(nameUpdated(e.target.value));
   };
@@ -133,15 +132,15 @@ const ProfileFields = () => {
           <div className="profile__input-birthday-container">
             <div>
               {/* If show picker unsupported, date input is removed, let customer can fill date by text input */}
-              {isSupportedShowPicker() ? (
+              {getIsSupportedShowPicker() ? (
                 <>
                   <input
                     ref={birthdayInputRef}
-                    // If browser is desktop Safari or TNG, showPicker() can not be execute
+                    // If browser is Safari or iOS TNG, showPicker() can not be execute
                     // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
-                    // For date input can be click in Safari or TNG
+                    // For date input can be click in Safari or iOS TNG
                     className={`profile__input profile__input-birthday form__input ${
-                      isUpDateInputDOMLayer ? 'profile__input-birthday-up-layer' : ''
+                      getIsUpDateInputDOMLayer() ? 'profile__input-birthday-up-layer' : ''
                     }`}
                     name="profileBirthday"
                     type="date"
@@ -149,6 +148,7 @@ const ProfileFields = () => {
                     max={BIRTHDAY_DATE.MAX}
                     onChange={handleSelectBirthDay}
                   />
+                  {/* Reference input text is for most can */}
                   <input
                     className="profile__input profile__input-birthday-text form__input"
                     name="profileBirthday"
@@ -156,13 +156,16 @@ const ProfileFields = () => {
                     placeholder={PROFILE_BIRTHDAY_FORMAT}
                     type="text"
                     onClick={e => {
-                      console.log(isSupportedShowPicker());
-                      console.log(birthdayInputRef.current.showPicker);
-                      console.log(navigator.userAgent);
+                      try {
+                        e.stopPropagation();
+                        // only input date supported will call showPicker
+                        birthdayInputRef.current.showPicker();
+                      } catch (error) {
+                        // TODO: two weeks will be removed, want to collect that how much browser unsupported via Sentry
+                        console.error(e?.message);
 
-                      e.stopPropagation();
-                      // only input date supported will call showPicker
-                      birthdayInputRef.current.showPicker();
+                        logger.error('Common_InputBirthDay_ShowPickerFailed', { message: e?.message });
+                      }
                     }}
                     readOnly
                   />
