@@ -132,7 +132,7 @@ const ProfileFields = () => {
           <div className="profile__input-birthday-container">
             <div>
               {/* If show picker unsupported, date input is removed, let customer can fill date by text input */}
-              {!isSupportedShowPicker() ? (
+              {isSupportedShowPicker() ? (
                 <>
                   <input
                     ref={birthdayInputRef}
