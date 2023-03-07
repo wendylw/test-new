@@ -387,7 +387,7 @@ export class OrderDetails extends Component {
                 <span className="padding-top-bottom-small text-opacity">{t('Tax')}</span>
                 <CurrencyNumber className="padding-top-bottom-small text-opacity" money={tax || 0} />
               </li>
-              {isTakeAwayType && takeawayCharges && (
+              {isTakeAwayType && !!takeawayCharges && (
                 <li className="flex flex-space-between flex-middle">
                   <span className="padding-top-bottom-small text-opacity">{t('TakeawayCharge')}</span>
                   <CurrencyNumber className="padding-top-bottom-small text-opacity" money={takeawayCharges || 0} />
