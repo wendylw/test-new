@@ -147,6 +147,13 @@ const ProfileFields = () => {
                     min={BIRTHDAY_DATE.MIN}
                     max={BIRTHDAY_DATE.MAX}
                     onChange={handleSelectBirthDay}
+                    onClick={e => {
+                      if (isSafari()) {
+                        e.stopPropagation();
+                        // only input date supported will call showPicker
+                        birthdayInputRef.current.showPicker();
+                      }
+                    }}
                   />
                   <input
                     className="profile__input profile__input-birthday-text form__input"
