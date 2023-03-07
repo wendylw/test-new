@@ -150,6 +150,7 @@ const ProfileFields = () => {
                     onClick={e => {
                       console.log(isSupportedShowPicker());
                       console.log(birthdayInputRef.current.showPicker);
+                      console.log(navigator.userAgent);
                       // TNG MiniProgram browser is not support date-picker display automatically
                       if (isTNGMiniProgram()) {
                         e.stopPropagation();
