@@ -32,6 +32,7 @@ const ProfileFields = () => {
   const isEmailInputErrorDisplay = useSelector(getIsEmailInputErrorDisplay);
   const birthdayErrorType = useSelector(getBirthdayErrorType);
   const isBirthdayInputErrorDisplay = useSelector(getIsBirthdayInputErrorDisplay);
+  const isUpDateInputDOMLayer = isSafari() || isTNGMiniProgram();
   const handleChangeName = e => {
     dispatch(nameUpdated(e.target.value));
   };
@@ -136,28 +137,17 @@ const ProfileFields = () => {
                 <>
                   <input
                     ref={birthdayInputRef}
-                    // If browser is desktop Safari, showPicker() can not be execute
+                    // If browser is desktop Safari or TNG, showPicker() can not be execute
                     // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
-                    // For date input can be click in Safari
+                    // For date input can be click in Safari or TNG
                     className={`profile__input profile__input-birthday form__input ${
-                      isSafari() ? 'profile__input-birthday-safari' : ''
+                      isUpDateInputDOMLayer ? 'profile__input-birthday-up-layer' : ''
                     }`}
                     name="profileBirthday"
                     type="date"
                     min={BIRTHDAY_DATE.MIN}
                     max={BIRTHDAY_DATE.MAX}
                     onChange={handleSelectBirthDay}
-                    onClick={e => {
-                      console.log(isSupportedShowPicker());
-                      console.log(birthdayInputRef.current.showPicker);
-                      console.log(navigator.userAgent);
-                      // TNG MiniProgram browser is not support date-picker display automatically
-                      if (isTNGMiniProgram()) {
-                        e.stopPropagation();
-                        // only input date supported will call showPicker
-                        birthdayInputRef.current.showPicker();
-                      }
-                    }}
                   />
                   <input
                     className="profile__input profile__input-birthday-text form__input"
