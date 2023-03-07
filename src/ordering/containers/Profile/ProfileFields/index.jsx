@@ -14,7 +14,7 @@ import {
 } from '../redux/selectors';
 import { nameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from '../redux/thunk';
 import { actions as profileActions } from '../redux';
-import { isSafari } from '../../../../common/utils';
+import { isSafari, isTNGMiniProgram } from '../../../../common/utils';
 import { isSupportedShowPicker } from '../utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from '../utils/constants';
 
@@ -148,7 +148,10 @@ const ProfileFields = () => {
                     max={BIRTHDAY_DATE.MAX}
                     onChange={handleSelectBirthDay}
                     onClick={e => {
-                      if (isSafari()) {
+                      console.log(isSupportedShowPicker());
+                      console.log(birthdayInputRef.current.showPicker);
+                      // TNG MiniProgram browser is not support date-picker display automatically
+                      if (isTNGMiniProgram()) {
                         e.stopPropagation();
                         // only input date supported will call showPicker
                         birthdayInputRef.current.showPicker();
