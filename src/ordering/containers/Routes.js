@@ -11,7 +11,7 @@ const Cart = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_SC" */ './shopping-cart/containers/Cart'))
 );
 const CartSubmissionStatus = lazy(() =>
-  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_CSS" */ './shopping-cart/containers/CartSubmissionStatus'))
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_CSS" */ './order-status/containers/CartSubmissionStatus'))
 );
 const Payment = lazy(() =>
   Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_PMT" */ './payments/containers/Payment'))
@@ -74,7 +74,9 @@ const StoreReviewProxy = lazy(() =>
     import(/* webpackChunkName: "ORD_SR" */ './order-status/containers/StoreReview/StoreReviewProxy')
   )
 );
-const TableSummary = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_TS" */ './TableSummary')));
+const TableSummary = lazy(() =>
+  Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_TS" */ './order-status/containers/TableSummary'))
+);
 const FoodCourt = lazy(() => Utils.attemptLoad(() => import(/* webpackChunkName: "ORD_FC" */ './food-court')));
 
 const { ROUTER_PATHS } = Constants;

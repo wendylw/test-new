@@ -13,20 +13,35 @@ import {
   getCartSubmissionReceiptNumber,
 } from '../../../../redux/cart/selectors';
 import {
+  getHasPayLaterOrderTableIdChanged as getHasTableIdChanged,
+  getPayLaterStoreHash as getStoreHash,
+  getPayLaterOrderStatusTableId as getOrderTableId,
+} from '../../redux/selector';
+import {
   queryCartSubmissionStatus as queryCartSubmissionStatusThunk,
   clearQueryCartSubmissionStatus as clearQueryCartSubmissionStatusThunk,
 } from '../../../../redux/cart/thunks';
-import { getCleverTapAttributes } from '../../redux/common/selector';
+import { loadPayLaterOrderStatus as loadOrderStatusThunk } from '../../redux/thunks';
+import { getCleverTapAttributes } from './redux/selector';
 import { getIsWebview } from '../../../../redux/modules/app';
 import Constants from '../../../../../utils/constants';
 import Utils from '../../../../../utils/utils';
 import prefetch from '../../../../../common/utils/prefetch-assets';
 import orderSuccessImage from '../../../../../images/order-success-1.svg';
 import orderFailureImage from '../../../../../images/order-status-payment-cancelled.png';
+import PageProcessingLoader from '../../../../components/PageProcessingLoader';
+import { alert } from '../../../../../common/utils/feedback';
 import CleverTap from '../../../../../utils/clevertap';
 import './CartSubmissionStatus.scss';
 
 class CartSubmissionStatus extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      shouldShowProcessingLoader: false,
+    };
+  }
+
   componentDidMount = async () => {
     const { queryCartSubmissionStatus, cartSubmittedStatus, history, receiptNumber, cleverTapAttributes } = this.props;
     const submissionId = Utils.getQueryString('submissionId');
@@ -85,10 +100,32 @@ class CartSubmissionStatus extends Component {
     );
   };
 
-  handleClickAddMoreItems = () => {
-    const { history, cleverTapAttributes } = this.props;
+  handleHeaderNavFunc = async () => {
+    const { t, history, receiptNumber, loadOrderStatus } = this.props;
 
-    CleverTap.pushEvent('Order Placed Page - Add More Items', cleverTapAttributes);
+    await loadOrderStatus(receiptNumber);
+
+    const { hasTableIdChanged, storeHash, orderTableId } = this.props;
+
+    if (hasTableIdChanged) {
+      alert(t('TableNumberUpdatedDescription'), {
+        id: 'TableNumberUpdatedAlert',
+        title: t('TableNumberUpdatedTitle'),
+        closeButtonContent: t('GotIt'),
+        onClose: () => {
+          this.setState({ shouldShowProcessingLoader: true });
+          window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+            Constants.ROUTER_PATHS.ORDERING_HOME
+          }${Utils.getFilteredQueryString([
+            'h',
+            'table',
+            'receiptNumber',
+            'submissionId',
+          ])}&h=${storeHash}&table=${orderTableId}`;
+        },
+      });
+      return;
+    }
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
@@ -96,10 +133,69 @@ class CartSubmissionStatus extends Component {
     });
   };
 
-  handleClickViewTableSummary = () => {
-    const { history, receiptNumber, cleverTapAttributes } = this.props;
+  handleClickAddMoreItems = async () => {
+    const { t, history, cleverTapAttributes, receiptNumber, loadOrderStatus } = this.props;
+
+    CleverTap.pushEvent('Order Placed Page - Add More Items', cleverTapAttributes);
+
+    await loadOrderStatus(receiptNumber);
+
+    const { hasTableIdChanged, storeHash, orderTableId } = this.props;
+
+    if (hasTableIdChanged) {
+      alert(t('TableNumberUpdatedDescription'), {
+        id: 'TableNumberUpdatedAlert',
+        title: t('TableNumberUpdatedTitle'),
+        closeButtonContent: t('GotIt'),
+        onClose: () => {
+          this.setState({ shouldShowProcessingLoader: true });
+          window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+            Constants.ROUTER_PATHS.ORDERING_HOME
+          }${Utils.getFilteredQueryString([
+            'h',
+            'table',
+            'receiptNumber',
+            'submissionId',
+          ])}&h=${storeHash}&table=${orderTableId}`;
+        },
+      });
+      return;
+    }
+
+    history.push({
+      pathname: Constants.ROUTER_PATHS.ORDERING_HOME,
+      search: `${Utils.getFilteredQueryString(['submissionId', 'receiptNumber'])}`,
+    });
+  };
+
+  handleClickViewTableSummary = async () => {
+    const { t, history, receiptNumber, cleverTapAttributes, loadOrderStatus } = this.props;
 
     CleverTap.pushEvent('Order Placed Page - View Order', cleverTapAttributes);
+
+    await loadOrderStatus(receiptNumber);
+
+    const { hasTableIdChanged, storeHash, orderTableId } = this.props;
+
+    if (hasTableIdChanged) {
+      alert(t('TableNumberUpdatedDescription'), {
+        id: 'TableNumberUpdatedAlert',
+        title: t('TableNumberUpdatedTitle'),
+        closeButtonContent: t('GotIt'),
+        onClose: () => {
+          this.setState({ shouldShowProcessingLoader: true });
+          window.location.href = `${window.location.origin}${Constants.ROUTER_PATHS.ORDERING_BASE}${
+            Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY
+          }${Utils.getFilteredQueryString([
+            'h',
+            'table',
+            'receiptNumber',
+            'submissionId',
+          ])}&h=${storeHash}&table=${orderTableId}&receiptNumber=${receiptNumber}`;
+        },
+      });
+      return;
+    }
 
     history.push({
       pathname: Constants.ROUTER_PATHS.ORDERING_TABLE_SUMMARY,
@@ -109,10 +205,11 @@ class CartSubmissionStatus extends Component {
 
   render() {
     const { t, isWebview, pendingCartSubmissionResult, cartSubmittedStatus, cartSubmissionFailedStatus } = this.props;
+    const { shouldShowProcessingLoader } = this.state;
 
     return (
       <section className="ordering-submission absolute-wrapper">
-        {isWebview && <NativeHeader isPage title="" navFunc={this.handleClickAddMoreItems} />}
+        {isWebview && <NativeHeader isPage title="" navFunc={this.handleHeaderNavFunc} />}
         {pendingCartSubmissionResult && <RedirectPageLoader />}
         {cartSubmittedStatus && (
           <>
@@ -137,6 +234,7 @@ class CartSubmissionStatus extends Component {
                 </button>
               </div>
             </div>
+            <PageProcessingLoader show={shouldShowProcessingLoader} loaderText={t('Processing')} />
           </>
         )}
 
@@ -170,24 +268,32 @@ CartSubmissionStatus.displayName = 'CartSubmissionStatus';
 
 CartSubmissionStatus.propTypes = {
   isWebview: PropTypes.bool,
+  storeHash: PropTypes.string,
+  orderTableId: PropTypes.string,
+  hasTableIdChanged: PropTypes.bool,
   cartSubmittedStatus: PropTypes.bool,
   pendingCartSubmissionResult: PropTypes.bool,
   cartSubmissionFailedStatus: PropTypes.bool,
   receiptNumber: PropTypes.string,
   clearQueryCartSubmissionStatus: PropTypes.func,
   queryCartSubmissionStatus: PropTypes.func,
+  loadOrderStatus: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
   cleverTapAttributes: PropTypes.object,
 };
 
 CartSubmissionStatus.defaultProps = {
   isWebview: false,
+  storeHash: null,
+  orderTableId: null,
+  hasTableIdChanged: false,
   cartSubmittedStatus: false,
   pendingCartSubmissionResult: false,
   cartSubmissionFailedStatus: false,
   receiptNumber: null,
   clearQueryCartSubmissionStatus: () => {},
   queryCartSubmissionStatus: () => {},
+  loadOrderStatus: () => {},
   cleverTapAttributes: {},
 };
 
@@ -196,15 +302,19 @@ export default compose(
   connect(
     state => ({
       isWebview: getIsWebview(state),
+      storeHash: getStoreHash(state),
+      orderTableId: getOrderTableId(state),
       cartSubmittedStatus: getCartSubmittedStatus(state),
       pendingCartSubmissionResult: getCartSubmissionHasNotResult(state),
       cartSubmissionFailedStatus: getCartSubmissionFailedStatus(state),
       receiptNumber: getCartSubmissionReceiptNumber(state),
       cleverTapAttributes: getCleverTapAttributes(state),
+      hasTableIdChanged: getHasTableIdChanged(state),
     }),
     dispatch => ({
       clearQueryCartSubmissionStatus: bindActionCreators(clearQueryCartSubmissionStatusThunk, dispatch),
       queryCartSubmissionStatus: bindActionCreators(queryCartSubmissionStatusThunk, dispatch),
+      loadOrderStatus: bindActionCreators(loadOrderStatusThunk, dispatch),
     })
   )
 )(CartSubmissionStatus);
