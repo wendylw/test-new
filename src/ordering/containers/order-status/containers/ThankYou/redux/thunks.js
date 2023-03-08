@@ -16,7 +16,7 @@ import {
   getBusinessInfo,
   getUserIsLogin,
   getUserConsumerId,
-  getUserProfileStatus,
+  getIsUserProfileStatusFulfilled,
   getUserProfile,
   getIsWebview,
 } from '../../../../../redux/modules/app';
@@ -173,12 +173,12 @@ export const initProfilePage = createAsyncThunk(
       const state = getState();
       const userIsLogin = getUserIsLogin(state);
       const consumerId = getUserConsumerId(state);
-      const profileDataStatus = getUserProfileStatus(state);
+      const isUserProfileStatusFulfilled = getIsUserProfileStatusFulfilled(state);
       const isProfileMissingSkippedExpired = getIsProfileMissingSkippedExpired(state);
       const isWebview = getIsWebview(state);
 
       // First must to confirm profile info is loaded
-      if (userIsLogin && (_isEmpty(profileDataStatus) || _isUndefined(profileDataStatus))) {
+      if (userIsLogin && !isUserProfileStatusFulfilled) {
         await dispatch(appActions.getProfileInfo(consumerId));
       }
 
@@ -190,8 +190,8 @@ export const initProfilePage = createAsyncThunk(
 
       const profile = getUserProfile(getState());
       const { name, email, birthday } = profile || {};
-      const hasRequiredError = !name || !email || !birthday;
-      const isProfileModalShown = isProfileMissingSkippedExpired && hasRequiredError && userIsLogin && !isWebview;
+      const isProfileInfoComplete = !name || !email || !birthday;
+      const isProfileModalShown = isProfileMissingSkippedExpired && isProfileInfoComplete && userIsLogin && !isWebview;
 
       if (isProfileModalShown) {
         setTimeout(() => {

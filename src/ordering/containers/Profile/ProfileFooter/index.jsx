@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { func } from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { actions as profileActions } from '../redux';
 import { getIsDisabledProfileSaveButton, getIsProfileDataUpdating } from '../redux/selectors';
 import { profileUpdated, profileMissingSkippedLimitUpdated, emailUpdated } from '../redux/thunk';
 import { alert, confirm, toast } from '../../../../common/utils/feedback';
@@ -42,7 +41,6 @@ const ProfileFooter = ({ onCloseProfile }) => {
 
       if (!result.error) {
         toast.success(t('SaveSuccess'));
-        dispatch(profileActions.resetProfilePageData());
         onCloseProfile();
 
         return;

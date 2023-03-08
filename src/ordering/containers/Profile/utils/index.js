@@ -1,10 +1,11 @@
 import dayjs from 'dayjs';
+import _once from 'lodash/once';
 import { isValidDate } from '../../../../utils/datetime-lib';
 import { isSafari, isTNGMiniProgram } from '../../../../common/utils';
 // TODO: Migrate to v2
 import Utils from '../../../../utils/utils';
 
-export const getIsSupportedShowPicker = () => {
+export const getIsSupportedShowPicker = _once(() => {
   // isDateInputSupported Method from: https://gomakethings.com/how-to-check-if-a-browser-supports-native-input-date-pickers/
   // if want to do more fallback can check: https://developer.chrome.com/blog/show-picker/
   const input = document.createElement('input');
@@ -24,11 +25,11 @@ export const getIsSupportedShowPicker = () => {
   }
 
   return true;
-};
+});
 
 // If browser is Safari or iOS TNG, showPicker() can not be execute
 // For date input can be click in Safari or iOS TNG
-export const getIsUpDateInputDOMLayer = () => {
+export const getIsDateInputOnUpperLayer = _once(() => {
   if (isSafari()) {
     return true;
   }
@@ -39,7 +40,7 @@ export const getIsUpDateInputDOMLayer = () => {
   }
 
   return false;
-};
+});
 
 const getMatchedBirthdayGroups = birthday => {
   const birthdayDateRegex = /^(?<day>\d{1,2})\/(?<month>\d{1,2})\/(?<year>\d{1,4})$/;

@@ -14,7 +14,7 @@ import {
 } from '../redux/selectors';
 import { nameUpdated, emailUpdated, birthdaySelected, birthdayUpdated } from '../redux/thunk';
 import { actions as profileActions } from '../redux';
-import { getIsSupportedShowPicker, getIsUpDateInputDOMLayer } from '../utils';
+import { getIsSupportedShowPicker, getIsDateInputOnUpperLayer } from '../utils';
 import { PROFILE_BIRTHDAY_FORMAT, ERROR_TRANSLATION_KEYS, BIRTHDAY_DATE } from '../utils/constants';
 import logger from '../../../../utils/monitoring/logger';
 
@@ -138,7 +138,7 @@ const ProfileFields = () => {
                     ref={birthdayInputRef}
                     // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
                     className={`profile__input profile__input-birthday form__input ${
-                      getIsUpDateInputDOMLayer() ? 'profile__input-birthday-up-layer' : ''
+                      getIsDateInputOnUpperLayer() ? 'profile__upper-layer' : ''
                     }`}
                     name="profileBirthday"
                     type="date"
