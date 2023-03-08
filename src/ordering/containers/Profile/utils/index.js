@@ -6,6 +6,7 @@ import Utils from '../../../../utils/utils';
 
 export const getIsSupportedShowPicker = () => {
   // isDateInputSupported Method from: https://gomakethings.com/how-to-check-if-a-browser-supports-native-input-date-pickers/
+  // if want to do more fallback can check: https://developer.chrome.com/blog/show-picker/
   const input = document.createElement('input');
   const value = 'test date text value';
 
@@ -25,6 +26,8 @@ export const getIsSupportedShowPicker = () => {
   return true;
 };
 
+// If browser is Safari or iOS TNG, showPicker() can not be execute
+// For date input can be click in Safari or iOS TNG
 export const getIsUpDateInputDOMLayer = () => {
   if (isSafari()) {
     return true;

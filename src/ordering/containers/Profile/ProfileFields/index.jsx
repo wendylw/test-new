@@ -136,9 +136,7 @@ const ProfileFields = () => {
                 <>
                   <input
                     ref={birthdayInputRef}
-                    // If browser is Safari or iOS TNG, showPicker() can not be execute
                     // Customer clicked input text to show date picker, so need to up date z-index can be touch on layout top
-                    // For date input can be click in Safari or iOS TNG
                     className={`profile__input profile__input-birthday form__input ${
                       getIsUpDateInputDOMLayer() ? 'profile__input-birthday-up-layer' : ''
                     }`}
