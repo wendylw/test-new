@@ -15,7 +15,7 @@ import './Profile.scss';
 const Profile = ({ show, onClose }) => {
   const { t } = useTranslation(['Profile']);
   const dispatch = useDispatch();
-  const className = ['profile flex flex-column flex-end aside fixed-wrapper'];
+  const className = ['profile flex flex-column flex-end aside fixed-wrapper active'];
   const onSkipProfilePage = useCallback(() => {
     CleverTap.pushEvent('Complete profile page - Click skip for now');
     onClose();
@@ -39,7 +39,7 @@ const Profile = ({ show, onClose }) => {
   }
 
   return (
-    <aside className={className.push('active').join(' ')} data-heap-name="ordering.home.profile.container">
+    <aside className={className.join(' ')} data-heap-name="ordering.home.profile.container">
       <div className="profile__container flex flex-column flex-space-between aside__content">
         <section>
           <div className="text-right">
