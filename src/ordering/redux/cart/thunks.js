@@ -72,7 +72,9 @@ export const loadCartStatus = createAsyncThunk(
 
       dispatch(cartActionCreators.updateCart(result));
 
-      if (result.version > prevCartVersion) {
+      if (result.version !== prevCartVersion) {
+        // WB-5038: The cart version is not always self-increment.
+        // To prevent users from placing outdated shopping cart, we should load cart as long as version is changed.
         await dispatch(loadCart());
       }
 

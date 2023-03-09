@@ -34,6 +34,11 @@ export const API_INFO = {
   }),
 };
 
+export const getPayLaterOrderStatus = ({ receiptNumber }) => get(`/api/v3/transactions/${receiptNumber}/status`);
+
+export const postPayLaterOrderSubmission = (receiptNumber, data) =>
+  post(`/api/v3/transactions/${receiptNumber}/submission`, data);
+
 export const postFoodCourtIdHashCode = (foodCourtId, payload) => {
   return post(`/api/ordering/stores/${foodCourtId}`, payload);
 };

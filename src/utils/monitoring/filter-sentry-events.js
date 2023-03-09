@@ -181,6 +181,21 @@ const isGoogleMapsIssues = (event, hint) => {
   }
 };
 
+const isCleverTapIssues = (event, hint) => {
+  // These issues are raised by CleverTap script.
+  try {
+    // WB-5086 & WB-5087: The errors thrown directly from CleverTap script should be ignored.
+    // Reasons: They are mostly raised intentionally by CleverTap to avoid further security risks. Nothing can be done on our side.
+    // Refer to: https://github.com/CleverTap/clevertap-web-sdk/blob/5cf459521e5b83213e9a2d0e59b7e5000a5cbcbb/clevertap.js#L1347
+    const cleverTapRegex = /\/js\/clevertap.min.js/;
+    const isScriptIssue = getErrorStacktraceFrames(event).some(({ filename }) => cleverTapRegex.test(filename));
+
+    return isScriptIssue;
+  } catch {
+    return false;
+  }
+};
+
 const isVivoAdblockProblem = (event, hint) => {
   // BEEP-1622: This problem only occurs on Vivo browser. Seems to be a problem with Vivo's adblock service.
   try {
@@ -234,6 +249,7 @@ const shouldFilter = (event, hint) => {
       isTikTokIssues(event, hint) ||
       isReCAPTCHAIssues(event, hint) ||
       isGoogleMapsIssues(event, hint) ||
+      isCleverTapIssues(event, hint) ||
       isVivoAdblockProblem(event, hint) ||
       isDuplicateAlert(hint)
     );
