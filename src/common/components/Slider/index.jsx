@@ -11,6 +11,7 @@ const Slider = ({
   perView,
   spacing,
   origin,
+  slideContainerClassName,
   slideContainerStyle,
   slideStyle,
   loop,
@@ -86,7 +87,11 @@ const Slider = ({
 
   return (
     <div className={styles.SliderAndDotsContainer}>
-      <ul ref={sliderRef} className={`keen-slider ${styles.SliderContainer}`} style={slideContainerStyle}>
+      <ul
+        ref={sliderRef}
+        className={`keen-slider ${styles.SliderContainer} ${slideContainerClassName}`}
+        style={slideContainerStyle}
+      >
         {React.Children.map(children, child => (
           <li className="keen-slider__slide" key={`slide-${child.key}`} style={slideStyle}>
             {child}
@@ -127,6 +132,7 @@ Slider.propTypes = {
   spacing: propTypes.number,
   // Sets the origin of the slides.
   origin: propTypes.string,
+  slideContainerClassName: propTypes.string,
   // eslint-disable-next-line react/forbid-prop-types
   slideContainerStyle: propTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
@@ -142,6 +148,7 @@ Slider.defaultProps = {
   perView: 1,
   spacing: 0,
   origin: 'auto',
+  slideContainerClassName: '',
   slideContainerStyle: {},
   slideStyle: {},
   autoplay: false,
