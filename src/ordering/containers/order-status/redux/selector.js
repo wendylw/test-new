@@ -91,6 +91,14 @@ export const getLiveChatUserProfile = createSelector(getUserProfile, profile => 
   email: profile.email || '',
 }));
 
+export const getOrderTableId = createSelector(getOrder, order => _get(order, 'tableId', null));
+
+export const getHasOrderTableIdChanged = createSelector(getTableId, getOrderTableId, (prevTableId, currTableId) => {
+  const shouldSkipDiffCheck = !prevTableId || !currTableId;
+
+  return !(shouldSkipDiffCheck || _isEqual(prevTableId, currTableId));
+});
+
 // Pay Later Order
 export const getPayLaterOrderInfo = state => state.orderStatus.common.payLaterOrderInfo;
 

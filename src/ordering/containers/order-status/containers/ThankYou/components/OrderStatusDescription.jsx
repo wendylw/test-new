@@ -12,6 +12,7 @@ import {
   getIsPreOrder,
   getCancelOperator,
   getIsPayLater,
+  getHasOrderTableIdChanged,
 } from '../../../redux/selector';
 import { getDeliverySwitchedToSelfPickupState, getOrderStoreName, getOrderPaymentMethod } from '../redux/selector';
 import orderStatusAccepted from '../../../../../../images/order-status-accepted.gif';
@@ -53,7 +54,8 @@ const getNotDeliveryTitleAndDescription = (
   shippingType,
   paymentMethod,
   deliveryToSelfPickup,
-  isPayLater
+  isPayLater,
+  hasOrderTableIdChanged
 ) => {
   if (orderStatus === ORDER_STATUS.PAYMENT_CANCELLED) {
     return {
@@ -67,6 +69,16 @@ const getNotDeliveryTitleAndDescription = (
     return {
       titleKey: 'PayAtCounter',
       descriptionKey: isPayLater ? 'PendingPaymentDescriptionForPayLater' : 'PendingPaymentDescription',
+      emoji: null,
+    };
+  }
+
+  // WB-5071: if the order table id has been changed then  the order status will be reverted to 'created'
+  // However, if the order status is updated we should be able to handle it according to the current process.
+  if (hasOrderTableIdChanged && orderStatus === ORDER_STATUS.CREATED) {
+    return {
+      titleKey: 'TableNumberUpdatedTitle',
+      descriptionKey: 'TableNumberUpdatedDescription',
       emoji: null,
     };
   }
@@ -127,6 +139,7 @@ function OrderStatusDescription(props) {
     cancelAmountEl,
     inApp,
     isPayLater,
+    hasOrderTableIdChanged,
   } = props;
   const delayByBadWeatherImageSource =
     orderDelayReason === ORDER_DELAY_REASON_CODES.BAD_WEATHER ? RAINY_IMAGES_MAPPING[orderStatus] : null;
@@ -144,7 +157,8 @@ function OrderStatusDescription(props) {
     shippingType,
     paymentMethod,
     deliveryToSelfPickup,
-    isPayLater
+    isPayLater,
+    hasOrderTableIdChanged
   );
 
   return (
@@ -201,6 +215,7 @@ OrderStatusDescription.propTypes = {
   cancelAmountEl: PropTypes.element,
   inApp: PropTypes.bool,
   isPayLater: PropTypes.bool,
+  hasOrderTableIdChanged: PropTypes.bool,
 };
 
 OrderStatusDescription.defaultProps = {
@@ -215,6 +230,7 @@ OrderStatusDescription.defaultProps = {
   cancelAmountEl: <span />,
   inApp: false,
   isPayLater: false,
+  hasOrderTableIdChanged: false,
 };
 
 export default connect(state => ({
@@ -227,4 +243,5 @@ export default connect(state => ({
   storeName: getOrderStoreName(state),
   paymentMethod: getOrderPaymentMethod(state),
   isPayLater: getIsPayLater(state),
+  hasOrderTableIdChanged: getHasOrderTableIdChanged(state),
 }))(OrderStatusDescription);
