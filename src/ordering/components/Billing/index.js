@@ -57,7 +57,7 @@ class Billing extends Component {
             <label className="margin-top-bottom-smaller text-size-big">{t('Subtotal')}</label>
             <CurrencyNumber className="text-size-big" money={subtotal || 0} />
           </li>
-          {isTakeAwayType && takeawayCharges ? (
+          {isTakeAwayType && takeawayCharges > 0 ? (
             <li className="padding-top-bottom-small padding-left-right-normal flex flex-middle flex-space-between">
               <label className="margin-top-bottom-smaller text-size-big">{t('TakeawayFee')}</label>
               <CurrencyNumber className="text-size-big" money={takeawayCharges || 0} />
