@@ -21,7 +21,7 @@ class Banners extends Component {
           loop
           autoplay
           autoplayTime={2000}
-          slideContainerStyle={{ width: window.innerWidth < 770 ? '181vw' : '744px' }}
+          slideContainerStyle={{ width: window.innerWidth < 770 ? '180vw' : '744px' }}
         >
           {([...collections, ...collections] || []).map((collection, index) => {
             const { image, beepCollectionId, urlPath, name } = collection;
