@@ -157,7 +157,6 @@ const legacyFiles = [
   'src/ordering/containers/payments/redux/index.js',
   'src/ordering/containers/payments/utils/index.js',
   'src/ordering/containers/payments/utils/utils.test.js',
-  'src/ordering/containers/Profile/index.js',
   'src/ordering/containers/Promotion/components/PromoList/PromoItem.js',
   'src/ordering/containers/Promotion/components/PromoList/PromoList.js',
   'src/ordering/containers/Promotion/index.js',

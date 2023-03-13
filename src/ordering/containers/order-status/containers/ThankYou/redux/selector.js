@@ -82,7 +82,7 @@ export const getCancelOrderRequestErrorMessage = createSelector(getCancelOrderEr
   _get(cancelOrderError, 'message', '')
 );
 
-export const getshowProfileVisibility = state => state.orderStatus.thankYou.profileModalVisibility;
+export const getShowProfileVisibility = state => state.orderStatus.thankYou.profileModalVisibility;
 
 export const getUpdateShippingTypeStatus = state => state.orderStatus.thankYou.updateShippingTypeStatus;
 
