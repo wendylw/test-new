@@ -141,9 +141,14 @@ export class ThankYou extends PureComponent {
     this.setState({ from }, () => {
       const { from, hasOrderPaid } = this.state;
 
+      console.log('from', from);
+
       // WB-4979: If payment method is not pay at counter, will display profile page immediately
       // Pay at counter logic is in componentDidUpdate
-      if (hasOrderPaid || from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER) {
+      if (
+        hasOrderPaid ||
+        (from !== REFERRER_SOURCE_TYPES.PAY_AT_COUNTER && REFERRERS_REQUIRING_PROFILE.includes(from))
+      ) {
         initProfilePage({ from });
       }
     });
