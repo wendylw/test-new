@@ -6,6 +6,20 @@ import CleverTap from '../../../../utils/clevertap';
 import './index.scss';
 
 class Banners extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { width: window.innerWidth };
+  }
+  updateWidth = () => {
+    console.log('updateWidth', window.innerWidth);
+    this.setState({ width: window.innerWidth });
+  };
+  componentDidMount() {
+    window.addEventListener('resize', this.updateWidth);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWidth);
+  }
   render() {
     const { collections } = this.props;
 
@@ -17,13 +31,14 @@ class Banners extends Component {
       <div className="banner-container">
         <Slider
           mode="free-snap"
-          perView={2}
+          perView={3}
           loop
           autoplay
           autoplayTime={2000}
-          slideContainerStyle={{ width: window.innerWidth < 770 ? '180vw' : '744px' }}
+          slideContainerStyle={{ width: this.state.width < 770 ? 'calc(252vw + 36px)' : '1086px' }}
         >
-          {([...collections, ...collections] || []).map((collection, index) => {
+          {/* WB-4662: The reason why we triple collections when replacing swiper: We show 3 slides in a page, we must make total slides a multiple of 3. Or the calculation of keen-slider will encounter division and residual of non-integer, that suffers JS precision issue. This will lead the autoplay to a wrong direction at a certain moment. */}
+          {([...collections, ...collections, ...collections] || []).map((collection, index) => {
             const { image, beepCollectionId, urlPath, name } = collection;
             return (
               <div

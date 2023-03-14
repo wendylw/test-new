@@ -80,7 +80,7 @@ const Slider = ({
     },
     autoplay ? [selfAutoplay] : undefined
   );
-
+  // TODO: Updating an instance cannot update its plugin (autoplay). If there's such requirement in the future, we'll research.
   useEffect(() => {
     instanceRef.current && instanceRef.current.update && instanceRef.current.update();
   }, [instanceRef, children]);
